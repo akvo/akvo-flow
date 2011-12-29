@@ -183,6 +183,8 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private Integer numberOfUsers= null;
 	@MappableField(displayName="Number of liters per person per day")
 	private Integer numberOfLitersPerPersonPerDay = null;
+	@MappableField(displayName="System Support Expansion")
+	private String systemExpansion = null;
 	@NotPersistent
 	private List<AccessPointScoreDetail> apScoreDetailList = null;
 
@@ -976,5 +978,13 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public Boolean getSparePartsOnHand() {
 		return sparePartsOnHand;
+	}
+
+	public void setSystemExpansion(String systemExpansion) {
+		this.systemExpansion = systemExpansion;
+	}
+
+	public String getSystemExpansion() {
+		return systemExpansion;
 	}
 }

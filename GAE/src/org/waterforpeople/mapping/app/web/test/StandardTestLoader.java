@@ -237,7 +237,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(7);
 		losScoreToStatusMapping.setColor(LOSColor.Green);
 		losList.add(losScoreToStatusMapping);
+		
+		//		//&& ap.getImprovedWaterPointFlag()
 
+		
 		losBaseDao.save(losList);
 	}
 	
@@ -410,6 +413,47 @@ public class StandardTestLoader {
 		standard.setAccessPointAttribute("positiveBalance");
 		standardDao.save(standard);
 
+		standard = new Standard();
+		standard.setAccessPointType(AccessPointType.WATER_POINT);
+		standard.setStandardType(StandardType.WaterPointSustainability);
+		standard.setStandardScope(StandardScope.Global);
+		posValues = new ArrayList<String>();
+		posValues.add("No One");
+		posValues.add("Don't Know");
+		standard.setPositiveValues(posValues);
+		standard.setAcessPointAttributeType(StandardValueType.String);
+		standard.setStandardComparison(StandardComparisons.notequal);
+		standard.setStandardDescription("Who is responsible for performing maintenance");
+		standard.setAccessPointAttribute("whoRepairsPoint");
+		standardDao.save(standard);
+		
+		standard = new Standard();
+		standard.setAccessPointType(AccessPointType.WATER_POINT);
+		standard.setStandardType(StandardType.WaterPointSustainability);
+		standard.setStandardScope(StandardScope.Global);
+		posValues = new ArrayList<String>();
+		posValues.add("No");
+		standard.setPositiveValues(posValues);
+		standard.setAcessPointAttributeType(StandardValueType.String);
+		standard.setStandardComparison(StandardComparisons.equal);
+		standard.setStandardDescription("Current Problems");
+		standard.setAccessPointAttribute("whoRepairsPoint");
+		standardDao.save(standard);
+		
+		standard = new Standard();
+		standard.setAccessPointType(AccessPointType.WATER_POINT);
+		standard.setStandardType(StandardType.WaterPointSustainability);
+		standard.setStandardScope(StandardScope.Global);
+		posValues = new ArrayList<String>();
+		posValues.add("Yes");
+		posValues.add("Don't Know");
+		standard.setPositiveValues(posValues);
+		standard.setAcessPointAttributeType(StandardValueType.String);
+		standard.setStandardComparison(StandardComparisons.equal);
+		standard.setStandardDescription("System Support Expansion");
+		standard.setAccessPointAttribute("sytemExpansion");
+		standardDao.save(standard);
+		
 		CompoundStandard cs = new CompoundStandard();
 		cs.setStandardType(StandardType.WaterPointSustainability);
 		standard = new Standard();

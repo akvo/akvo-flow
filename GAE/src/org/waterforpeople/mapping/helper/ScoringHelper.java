@@ -40,12 +40,12 @@ public class ScoringHelper {
 				los.setScoreDetails(sdc.getDetails());
 			sdc = scoreCompound(ap, scoreType);
 			los.setScore(los.getScore() + sdc.getScore());
-			if (los.getScoreDetails() != null&&sdc.getDetails()!=null) {
+			if (los.getScoreDetails() != null && sdc.getDetails() != null) {
 				ArrayList<String> temp = los.getScoreDetails();
 				temp.addAll(sdc.getDetails());
 				los.setScoreDetails(temp);
 			}
-			
+
 		} else {
 			los.setScore(0);
 			los.addScoreDetail("0 not improved waterpoint");
@@ -158,14 +158,32 @@ public class ScoringHelper {
 		return answer;
 	}
 
-	private Boolean compareStrings(String apvalue, ArrayList<String> valueList) {
-		Boolean answer = false;
-		for (String item : valueList) {
-			if (item.equals(apvalue)) {
-				answer = true;
+	
+	public static void main(String[] args){
+	
+	}
+	
+	private Boolean compareStrings(String apvalue, ArrayList<String> valueList,
+			StandardComparisons operator) {
+
+		if (operator.equals(StandardComparisons.equal)) {
+			Boolean answer = false;
+			for (String item : valueList) {
+				if (item.equals(apvalue)) {
+					answer = true;
+				}
 			}
+			return answer;
+		}else if (operator.equals(StandardComparisons.notequal)) {
+			Boolean answer = true;
+			for (String item : valueList) {
+				if (item.equals(apvalue)) {
+					answer = true;
+				}
+			}			
+			return answer;
 		}
-		return answer;
+		return null;
 	}
 
 	private Boolean compareDouble(
@@ -306,7 +324,7 @@ public class ScoringHelper {
 		ScoreDetailContainer sdc = new ScoreDetailContainer();
 		if (standard.getAcessPointAttributeType().equals(
 				StandardValueType.String)) {
-			if (this.compareStrings(value, standard.getPositiveValues())) {
+			if (this.compareStrings(value, standard.getPositiveValues(),standard.getStandardComparison())) {
 				sdc.setScore(sdc.getScore() + 1);
 				sdc.add(formScoreDetailMessage(1, standard
 						.getStandardDescription(), " WaterPoint ", standard
