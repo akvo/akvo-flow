@@ -118,7 +118,7 @@ public class StandardTestLoader {
 		standardDao.save(standard);
 
 		writeln("Saved: " + standard.toString());
-		
+
 		DistanceStandard ds = new DistanceStandard();
 		ds.setAccessPointType(AccessPointType.WATER_POINT);
 		ds.setStandardType(StandardType.WaterPointLevelOfService);
@@ -127,9 +127,9 @@ public class StandardTestLoader {
 		ds.setMaxDistance(100);
 		ds.setLocationType(AccessPoint.LocationType.URBAN);
 		ds.setStandardDescription("Distance standard for Urban waterpoints");
-		
+
 		standardDao.save(ds);
-		
+
 		ds = new DistanceStandard();
 		ds.setAccessPointType(AccessPointType.WATER_POINT);
 		ds.setStandardType(StandardType.WaterPointLevelOfService);
@@ -138,10 +138,9 @@ public class StandardTestLoader {
 		ds.setMaxDistance(500);
 		ds.setLocationType(AccessPoint.LocationType.RURAL);
 		ds.setStandardDescription("Distance standard for Rural waterpoints");
-		
+
 		standardDao.save(ds);
-		
-		
+
 		ds = new DistanceStandard();
 		ds.setAccessPointType(AccessPointType.WATER_POINT);
 		ds.setStandardType(StandardType.WaterPointLevelOfService);
@@ -150,9 +149,9 @@ public class StandardTestLoader {
 		ds.setMaxDistance(200);
 		ds.setLocationType(AccessPoint.LocationType.PERIURBAN);
 		ds.setStandardDescription("Distance standard for Peri-Urban waterpoints");
-		
+
 		standardDao.save(ds);
-		
+
 		ds = new DistanceStandard();
 		ds.setAccessPointType(AccessPointType.WATER_POINT);
 		ds.setStandardType(StandardType.WaterPointLevelOfService);
@@ -161,9 +160,9 @@ public class StandardTestLoader {
 		ds.setMaxDistance(100);
 		ds.setLocationType(AccessPoint.LocationType.OTHER);
 		ds.setStandardDescription("Distance standard for other than rural, urban, or peri-urban waterpoints");
-		
+
 		standardDao.save(ds);
-		
+
 	}
 
 	private void loadWaterPointScoreToStatus() {
@@ -204,7 +203,45 @@ public class StandardTestLoader {
 		BaseDAO<LOSScoreToStatusMapping> losBaseDao = new BaseDAO<LOSScoreToStatusMapping>(
 				LOSScoreToStatusMapping.class);
 		losBaseDao.save(losList);
+		
+		 losList = new ArrayList<LOSScoreToStatusMapping>();
+
+		losScoreToStatusMapping = new LOSScoreToStatusMapping();
+		losScoreToStatusMapping
+				.setLevelOfServiceScoreType(StandardType.WaterPointSustainability);
+		losScoreToStatusMapping.setFloor(0);
+		losScoreToStatusMapping.setCeiling(0);
+		losScoreToStatusMapping.setColor(LOSColor.Black);
+		losList.add(losScoreToStatusMapping);
+
+		losScoreToStatusMapping = new LOSScoreToStatusMapping();
+		losScoreToStatusMapping
+				.setLevelOfServiceScoreType(StandardType.WaterPointSustainability);
+		losScoreToStatusMapping.setFloor(1);
+		losScoreToStatusMapping.setCeiling(1);
+		losScoreToStatusMapping.setColor(LOSColor.Red);
+		losList.add(losScoreToStatusMapping);
+
+		losScoreToStatusMapping = new LOSScoreToStatusMapping();
+		losScoreToStatusMapping
+				.setLevelOfServiceScoreType(StandardType.WaterPointSustainability);
+		losScoreToStatusMapping.setFloor(2);
+		losScoreToStatusMapping.setCeiling(5);
+		losScoreToStatusMapping.setColor(LOSColor.Yellow);
+		losList.add(losScoreToStatusMapping);
+
+		losScoreToStatusMapping = new LOSScoreToStatusMapping();
+		losScoreToStatusMapping
+				.setLevelOfServiceScoreType(StandardType.WaterPointSustainability);
+		losScoreToStatusMapping.setFloor(6);
+		losScoreToStatusMapping.setCeiling(7);
+		losScoreToStatusMapping.setColor(LOSColor.Green);
+		losList.add(losScoreToStatusMapping);
+
+		losBaseDao.save(losList);
 	}
+	
+	
 
 	public void setReq(HttpServletRequest req) {
 		this.req = req;
@@ -255,10 +292,10 @@ public class StandardTestLoader {
 //		writeln("Deleted All CompoundStandards");
 	}
 
-	
-	public void listResults(){
+	public void listResults() {
 		listAPScoreAndStatus();
 	}
+
 	private void listAPScoreAndStatus() {
 		AccessPointDao apDao = new AccessPointDao();
 		List<AccessPoint> apList = apDao.list("all");
@@ -271,18 +308,23 @@ public class StandardTestLoader {
 				writeln("   LevelOfServiceScore: " + losItem.getScore()
 						+ " Score Date: " + losItem.getLastUpdateDateTime());
 				LOSScoreToStatusMappingDao losMap = new LOSScoreToStatusMappingDao();
-				LOSScoreToStatusMapping losMapItem = losMap.findByLOSScoreTypeAndScore(losItem.getScoreType(), losItem.getScore());
-				writeln("       Status: " + losMapItem.getColor() + " " + losMapItem.getLevelOfServiceScoreType());
-				for(String detail:losItem.getScoreDetails()){
+				LOSScoreToStatusMapping losMapItem = losMap
+						.findByLOSScoreTypeAndScore(losItem.getScoreType(),
+								losItem.getScore());
+				if (losMapItem != null) {
+					writeln("       Status: " + losMapItem.getColor() + " "
+							+ losMapItem.getLevelOfServiceScoreType());
+				}
+				for (String detail : losItem.getScoreDetails()) {
 					writeln("      Details: " + detail);
 				}
 			}
 		}
 	}
-	
-	private void loadWaterPointSustainability(){
+
+	private void loadWaterPointSustainability() {
 		StandardDao standardDao = new StandardDao();
-		//Water Available Day of Visit
+		// Water Available Day of Visit
 		Standard standard = new Standard();
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
 		standard.setStandardType(StandardType.WaterPointSustainability);
@@ -295,7 +337,7 @@ public class StandardTestLoader {
 		standard.setStandardDescription("Water Available day of visit");
 		standard.setAccessPointAttribute("waterAvailableDayVisitFlag");
 		standardDao.save(standard);
-		
+
 		standard = new Standard();
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
 		standard.setStandardType(StandardType.WaterPointSustainability);
@@ -308,7 +350,7 @@ public class StandardTestLoader {
 		standard.setStandardDescription("Is there a tariff or user fee");
 		standard.setAccessPointAttribute("collectTariffFlag");
 		standardDao.save(standard);
-		
+
 		standard = new Standard();
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
 		standard.setStandardType(StandardType.WaterPointSustainability);
@@ -321,8 +363,7 @@ public class StandardTestLoader {
 		standard.setStandardDescription("Are there financial records");
 		standard.setAccessPointAttribute("financialRecordsAvailableDayOfVisitFlag");
 		standardDao.save(standard);
-		
-		
+
 		standard = new Standard();
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
 		standard.setStandardType(StandardType.WaterPointSustainability);
@@ -335,9 +376,9 @@ public class StandardTestLoader {
 		standard.setStandardDescription("Are there financial records");
 		standard.setAccessPointAttribute("positiveBalance");
 		standardDao.save(standard);
-		
+
 		AccessPoint ap = new AccessPoint();
-		
+
 		standard = new Standard();
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
 		standard.setStandardType(StandardType.WaterPointSustainability);
@@ -350,7 +391,7 @@ public class StandardTestLoader {
 		standard.setStandardDescription("Are there financial records");
 		standard.setAccessPointAttribute("positiveBalance");
 		standardDao.save(standard);
-		
+
 		CompoundStandard cs = new CompoundStandard();
 		cs.setStandardType(StandardType.WaterPointSustainability);
 		standard = new Standard();
@@ -365,7 +406,7 @@ public class StandardTestLoader {
 		standard.setStandardDescription("Spare Parts on Hand");
 		standard.setAccessPointAttribute("sparePartsOnHand");
 		cs.setStandardLeft(standard);
-		
+
 		standard = new Standard();
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
 		standard.setStandardType(StandardType.WaterPointSustainability);
@@ -381,9 +422,6 @@ public class StandardTestLoader {
 		CompoundStandardDao csDao = new CompoundStandardDao();
 		csDao.save(cs);
 		cs.setOperator(Operator.OR);
-		
-		
-		
-		
+
 	}
 }

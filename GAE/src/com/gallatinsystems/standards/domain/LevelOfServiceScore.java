@@ -54,6 +54,12 @@ public class LevelOfServiceScore extends BaseDomain {
 	public void setScoreDetails(ArrayList<String> scoreDetails) {
 		this.scoreDetails = scoreDetails;
 	}
+	public void addScoreDetail(String message){
+		if(scoreDetails==null){
+			scoreDetails = new ArrayList<String>();
+		}
+		scoreDetails.add(message);
+	}
 
 	public Integer getScore() {
 		return score;

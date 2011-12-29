@@ -115,6 +115,10 @@ public class AccessPointTest {
 					ap.setPpmFecalColiform(new Random().nextDouble());
 					ap.setNumberOfLitersPerPersonPerDay(new Random().nextInt());
 					ap.setExtimatedPopulation(new Random().nextLong());
+					ap.setPositiveBalance( getRandomBoolean());
+					ap.setFinancialRecordsAvailableDayOfVisitFlag(getRandomBoolean());
+					ap.setSparePartsOnHand(getRandomBoolean());
+					ap.setLocalSparePartsFlag(getRandomBoolean());
 					LocationType locationType = null;
 					Integer locationRandom = new Random().nextInt(3);
 					if ( locationRandom == 3)

@@ -33,7 +33,7 @@ public class LOSScoreToStatusMappingDao extends
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("standardType", filterString,
+		appendNonNullParam("levelOfServiceScoreType", filterString,
 				paramString, "String", type.toString(), paramMap);
 		super.appendNonNullParam("floor",filterString, paramString, "Integer", score, paramMap,
 				LTE_OP);

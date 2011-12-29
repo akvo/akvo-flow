@@ -21,107 +21,24 @@ import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.standards.domain.Standard.StandardValueType;
 
 public class ScoringHelper {
-	private static Logger log = Logger.getLogger(ScoringHelper.class
-			.getName());
+	private static Logger log = Logger.getLogger(ScoringHelper.class.getName());
 
-	public void scoreWaterPointByLevelOfService(AccessPoint ap, StandardType scoreType) {
+	public void scoreWaterPointByLevelOfService(AccessPoint ap,
+			StandardType scoreType) {
 		LevelOfServiceScore los = new LevelOfServiceScore();
 		los.setScoreType(scoreType);
 		los.setObjectKey(ap.getKey());
 		los.setScoreObject(ScoreObject.AccessPoint);
-		ArrayList<String> scoreDetails = new ArrayList<String>();
 		BaseDAO<LevelOfServiceScore> losDao = new BaseDAO<LevelOfServiceScore>(
 				LevelOfServiceScore.class);
 		if (ap.getImprovedWaterPointFlag()) {
-			StandardDao standardDao = new StandardDao();
-			List<Standard> standardList = standardDao.listByAccessPointTypeAndStandardType(AccessPointType.WATER_POINT, scoreType);
-			if (standardList != null) {
-				for (Standard standard : standardList) {
-					if (standard.getStandardScope()
-							.equals(StandardScope.Global)
-							|| (standard.getStandardScope()
-									.equals(StandardScope.Local))
-							&& standard.getCountry()
-									.equals(ap.getCountryCode())) {
-						String value = getAccessPointFieldValue(ap,
-								standard.getAccessPointAttribute());
-						if (standard.getAcessPointAttributeType().equals(
-								StandardValueType.Boolean)) {
-							if (compareBoolean(value,
-									Boolean.parseBoolean(standard
-											.getPositiveValues().get(0)))) {
-								los.setScore(los.getScore() + 1);
-								scoreDetails.add(formScoreDetailMessage(1,
-										standard.getStandardDescription(),
-										" WaterPoint ",
-										standard.getAccessPointAttribute(),
-										value,
-										standard.getStandardComparison().toString(),
-										standard.getPositiveValues().toString()));
-							} else {
-								scoreDetails.add(formScoreDetailMessage(0,
-										standard.getStandardDescription(),
-										" WaterPoint ",
-										standard.getAccessPointAttribute(),
-										value,
-										standard.getStandardComparison().toString(),
-										standard.getPositiveValues().toString()));
-							}
-						} else if (standard.getAcessPointAttributeType()
-								.equals(StandardValueType.String)) {
-							if (this.compareStrings(value,
-									standard.getPositiveValues())) {
-								los.setScore(los.getScore() + 1);
-								scoreDetails.add(formScoreDetailMessage(1,
-										standard.getStandardDescription(),
-										" WaterPoint ",
-										standard.getAccessPointAttribute(),
-										value,
-										standard.getStandardComparison().toString(),
-										standard.getPositiveValues().toString()));
-							} else {
-								scoreDetails.add(formScoreDetailMessage(0,
-										standard.getStandardDescription(),
-										" WaterPoint ",
-										standard.getAccessPointAttribute(),
-										value,
-										standard.getStandardComparison().toString(),
-										standard.getPositiveValues().toString()));
-							}
-						} else if (standard.getAcessPointAttributeType()
-								.equals(StandardValueType.Number)) {
-							if (this.compareDouble(standard
-									.getStandardComparison(), value, Double
-									.parseDouble(standard.getPositiveValues()
-											.get(0)))) {
-								los.setScore(los.getScore() + 1);
-								scoreDetails.add(formScoreDetailMessage(1,
-										standard.getStandardDescription(),
-										" WaterPoint ",
-										standard.getAccessPointAttribute(),
-										value,
-										standard.getStandardComparison().toString(),
-										standard.getPositiveValues().toString()));
-							} else {
-								scoreDetails.add(formScoreDetailMessage(0,
-										standard.getStandardDescription(),
-										" WaterPoint ",
-										standard.getAccessPointAttribute(),
-										value,
-										standard.getStandardComparison().toString(),
-										standard.getPositiveValues().toString()));
-							}
-						}
-					}
-				}
-				los.setScoreDetails(scoreDetails);
-				
-				losDao.save(los);
-			}
+			ScoreDetailContainer sdc  = scoreStandard(ap, scoreType);
+			los.setScore(sdc.getScore());
+			los.setScoreDetails(sdc.getDetails());
+			losDao.save(los);
 		} else {
 			los.setScore(0);
-			ArrayList<String> details = new ArrayList<String>();
-			details.add("0 not improved waterpoint");
+			los.addScoreDetail("0 not improved waterpoint");
 			losDao.save(los);
 		}
 	}
@@ -177,9 +94,10 @@ public class ScoringHelper {
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch(NullPointerException e){
-			log.info("AccessPoint Attribute: " + accessPointAttribute );
+		} catch (NullPointerException e) {
+			log.info("AccessPoint Attribute: " + accessPointAttribute);
 			e.printStackTrace();
+			return null;
 		}
 		return value;
 	}
@@ -233,5 +151,174 @@ public class ScoringHelper {
 			}
 		}
 		return answer;
+	}
+
+	private class ScoreDetailContainer{
+		private Integer score=0;
+		private ArrayList<String> details = null;
+		public Integer getScore() {
+			return score;
+		}
+		public void setScore(Integer score) {
+			this.score = score;
+		}
+		public ArrayList<String> getDetails() {
+			return details;
+		}
+		public void setDetails(ArrayList<String> details) {
+			this.details = details;
+		}
+		public void add(String message){
+			if(details == null){
+				details = new ArrayList<String>();
+			}
+			details.add(message);
+		}
+		
+	}
+	
+	private ScoreDetailContainer scoreStandard( AccessPoint ap, StandardType scoreType) {
+		ArrayList<String> scoreDetails  =new ArrayList<String>();
+		Integer score = 0;
+		ScoreDetailContainer sdc = new ScoreDetailContainer();
+		StandardDao standardDao = new StandardDao();
+		List<Standard> standardList = standardDao
+				.listByAccessPointTypeAndStandardType(
+						AccessPointType.WATER_POINT, scoreType);
+		if (standardList != null) {
+			for (Standard standard : standardList) {
+				if (standard.getStandardScope().equals(StandardScope.Global)
+						|| (standard.getStandardScope()
+								.equals(StandardScope.Local))
+						&& standard.getCountry().equals(ap.getCountryCode())) {
+					String value = getAccessPointFieldValue(ap,
+							standard.getAccessPointAttribute());
+					if(value==null){
+						sdc.add("Could not score attribute " + standard.getAccessPointAttribute());
+						sdc.setScore(0);
+					}
+					if(standard.getAcessPointAttributeType().equals(StandardValueType.Boolean)){
+						sdc = scoreBoolean(standard, value);
+						score = score + sdc.getScore();
+						scoreDetails.addAll(sdc.getDetails());
+					}
+					else if (standard.getAcessPointAttributeType().equals(
+							StandardValueType.String)) {
+						sdc = scoreString(standard, value);
+						score = score + sdc.getScore();
+						scoreDetails.addAll(sdc.getDetails());
+					} else if (standard.getAcessPointAttributeType().equals(
+							StandardValueType.Number)) {
+						sdc = scoreDouble(standard, value);
+						score = score + sdc.getScore();
+						scoreDetails.addAll(sdc.getDetails());
+					}
+				}
+			}
+			sdc.setDetails(scoreDetails);
+			sdc.setScore(score);
+
+			return sdc;
+		}
+		return null;
+	}
+	
+	private ScoreDetailContainer scoreBoolean(Standard standard, String value){
+		ScoreDetailContainer sdc  = new ScoreDetailContainer();
+		if (standard.getAcessPointAttributeType().equals(
+				StandardValueType.Boolean)) {
+			if (compareBoolean(value, Boolean.parseBoolean(standard
+					.getPositiveValues().get(0)))) {
+				sdc.setScore(sdc.getScore() + 1);
+				sdc
+						.add(formScoreDetailMessage(1, standard
+								.getStandardDescription(),
+								" WaterPoint ", standard
+										.getAccessPointAttribute(),
+								value, standard
+										.getStandardComparison()
+										.toString(), standard
+										.getPositiveValues()
+										.toString()));
+			} else {
+				sdc.setScore(sdc.getScore()+1);
+				sdc
+						.add(formScoreDetailMessage(0, standard
+								.getStandardDescription(),
+								" WaterPoint ", standard
+										.getAccessPointAttribute(),
+								value, standard
+										.getStandardComparison()
+										.toString(), standard
+										.getPositiveValues()
+										.toString()));
+			}
+		}
+		return sdc;
+	}
+	private ScoreDetailContainer scoreString(Standard standard, String value){
+		ScoreDetailContainer sdc  = new ScoreDetailContainer();
+		if (standard.getAcessPointAttributeType().equals(
+				StandardValueType.String)) {
+			if (this.compareStrings(value,
+					standard.getPositiveValues())) {
+				sdc.setScore(sdc.getScore() + 1);
+				sdc
+						.add(formScoreDetailMessage(1, standard
+								.getStandardDescription(),
+								" WaterPoint ", standard
+										.getAccessPointAttribute(),
+								value, standard
+										.getStandardComparison()
+										.toString(), standard
+										.getPositiveValues()
+										.toString()));
+			} else {
+				sdc.setScore(sdc.getScore()+0);
+				sdc
+						.add(formScoreDetailMessage(0, standard
+								.getStandardDescription(),
+								" WaterPoint ", standard
+										.getAccessPointAttribute(),
+								value, standard
+										.getStandardComparison()
+										.toString(), standard
+										.getPositiveValues()
+										.toString()));
+			}
+		}
+		return sdc;
+	}
+	private ScoreDetailContainer scoreDouble(Standard standard, String value){
+		ScoreDetailContainer sdc  = new ScoreDetailContainer();
+		if (this.compareDouble(
+				standard.getStandardComparison(), value, Double
+						.parseDouble(standard
+								.getPositiveValues().get(0)))) {
+			sdc.setScore(sdc.getScore() + 1);
+			sdc
+					.add(formScoreDetailMessage(1, standard
+							.getStandardDescription(),
+							" WaterPoint ", standard
+									.getAccessPointAttribute(),
+							value, standard
+									.getStandardComparison()
+									.toString(), standard
+									.getPositiveValues()
+									.toString()));
+		} else {
+			sdc.setScore(sdc.getScore() + 0);
+			sdc
+					.add(formScoreDetailMessage(0, standard
+							.getStandardDescription(),
+							" WaterPoint ", standard
+									.getAccessPointAttribute(),
+							value, standard
+									.getStandardComparison()
+									.toString(), standard
+									.getPositiveValues()
+									.toString()));
+		}
+		return sdc;
 	}
 }
