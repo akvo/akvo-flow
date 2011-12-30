@@ -78,6 +78,11 @@ public class AccessPointTest {
 					ap.setLatitude(lat);
 					ap.setLongitude(lon);
 					ap.setCountryCode("BO");
+					if (getRandomBoolean()) {
+						ap.setWhoRepairsPoint("No One");
+					} else {
+						ap.setWhoRepairsPoint("Dru");
+					}
 					Date today = new Date();
 					System.out
 							.println("AP: " + ap.getLatitude() + "/"
@@ -115,21 +120,22 @@ public class AccessPointTest {
 					ap.setPpmFecalColiform(new Random().nextDouble());
 					ap.setNumberOfLitersPerPersonPerDay(new Random().nextInt());
 					ap.setExtimatedPopulation(new Random().nextLong());
-					ap.setPositiveBalance( getRandomBoolean());
+					ap.setPositiveBalance(getRandomBoolean());
 					ap.setFinancialRecordsAvailableDayOfVisitFlag(getRandomBoolean());
 					ap.setSparePartsOnHand(getRandomBoolean());
 					ap.setLocalSparePartsFlag(getRandomBoolean());
 					LocationType locationType = null;
 					Integer locationRandom = new Random().nextInt(3);
-					if ( locationRandom == 3)
+					ap.setSystemExpansion("Yes");
+					if (locationRandom == 3)
 						locationType = LocationType.PERIURBAN;
-					else if(locationRandom==1)
+					else if (locationRandom == 1)
 						locationType = LocationType.RURAL;
-					else if(locationRandom==0)
+					else if (locationRandom == 0)
 						locationType = LocationType.URBAN;
 					else
 						locationType = LocationType.OTHER;
-					
+
 					ap.setLocationType(locationType);
 					if (getRandomBoolean())
 						ap.setCurrentProblem("Yes");

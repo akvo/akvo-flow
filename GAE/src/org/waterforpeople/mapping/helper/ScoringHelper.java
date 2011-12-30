@@ -169,16 +169,18 @@ public class ScoringHelper {
 		if (operator.equals(StandardComparisons.equal)) {
 			Boolean answer = false;
 			for (String item : valueList) {
-				if (item.equals(apvalue)) {
+				if (item.trim().equalsIgnoreCase(apvalue.trim())) {
 					answer = true;
+					break;
 				}
 			}
 			return answer;
 		}else if (operator.equals(StandardComparisons.notequal)) {
 			Boolean answer = true;
 			for (String item : valueList) {
-				if (item.equals(apvalue)) {
-					answer = true;
+				if (item.trim().equalsIgnoreCase(apvalue.trim())) {
+					answer = false;
+					break;
 				}
 			}			
 			return answer;
@@ -323,7 +325,7 @@ public class ScoringHelper {
 	private ScoreDetailContainer scoreString(Standard standard, String value) {
 		ScoreDetailContainer sdc = new ScoreDetailContainer();
 		if (standard.getAcessPointAttributeType().equals(
-				StandardValueType.String)) {
+				StandardValueType.String)&&value!=null) {
 			if (this.compareStrings(value, standard.getPositiveValues(),standard.getStandardComparison())) {
 				sdc.setScore(sdc.getScore() + 1);
 				sdc.add(formScoreDetailMessage(1, standard
@@ -339,6 +341,13 @@ public class ScoringHelper {
 						.getStandardComparison().toString(), standard
 						.getPositiveValues().toString()));
 			}
+		}else{
+			sdc.setScore(sdc.getScore() + 0);
+			sdc.add(formScoreDetailMessage(0, standard
+					.getStandardDescription(), " WaterPoint ", standard
+					.getAccessPointAttribute(), "Null", standard
+					.getStandardComparison().toString(), standard
+					.getPositiveValues().toString()));
 		}
 		return sdc;
 	}

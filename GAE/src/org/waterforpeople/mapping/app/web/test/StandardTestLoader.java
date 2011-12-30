@@ -451,7 +451,7 @@ public class StandardTestLoader {
 		standard.setAcessPointAttributeType(StandardValueType.String);
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("System Support Expansion");
-		standard.setAccessPointAttribute("sytemExpansion");
+		standard.setAccessPointAttribute("systemExpansion");
 		standardDao.save(standard);
 		
 		CompoundStandard cs = new CompoundStandard();
