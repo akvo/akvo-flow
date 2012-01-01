@@ -29,6 +29,11 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.standards.dao.LOSScoreToStatusMappingDao;
+import com.gallatinsystems.standards.dao.LevelOfServiceScoreDao;
+import com.gallatinsystems.standards.domain.LOSScoreToStatusMapping;
+import com.gallatinsystems.standards.domain.LevelOfServiceScore;
+import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
@@ -139,6 +144,8 @@ public class KMLGenerator {
 
 	public static final String defaultPhotoCaption = PropertyUtil
 			.getProperty("defaultPhotoCaption");
+
+	private static final String DYNAMIC_SCORING_FLAG = null;
 
 	public String generateRegionDocumentString(String regionVMName) {
 		String regionKML = generateRegionOutlines(regionVMName);
@@ -474,11 +481,16 @@ public class KMLGenerator {
 							context.put("communityCode", "Unknown" + new Date());
 						// Need to check this
 						if (ap.getPointType() != null) {
-							encodeStatusString(ap, context);
-							context.put(
-									"pinStyle",
-									encodePinStyle(ap.getPointType(),
-											ap.getPointStatus()));
+							if (Boolean.parseBoolean(PropertyUtil
+									.getProperty(DYNAMIC_SCORING_FLAG))) {
+								
+							} else {
+								encodeStatusString(ap, context);
+								context.put(
+										"pinStyle",
+										encodePinStyle(ap.getPointType(),
+												ap.getPointStatus()));
+							}
 						} else {
 							context.put("pinStyle", "waterpushpinblk");
 						}
@@ -625,9 +637,9 @@ public class KMLGenerator {
 			context.put("photoUrl",
 					"http://waterforpeople.s3.amazonaws.com/images/wfplogo.jpg");
 		}
-		
-		context.put("latitude",ap.getLatitude());
-		context.put("longitude",ap.getLongitude());
+
+		context.put("latitude", ap.getLatitude());
+		context.put("longitude", ap.getLongitude());
 
 		if (ap.getLocaleType() != null) {
 			context.put("type", ap.getLocaleType());
@@ -920,9 +932,18 @@ public class KMLGenerator {
 
 			// Need to check this
 			if (ap.getPointType() != null) {
-				encodeStatusString(ap, context);
-				context.put("pinStyle",
-						encodePinStyle(ap.getPointType(), ap.getPointStatus()));
+				if (Boolean.parseBoolean(PropertyUtil
+						.getProperty(DYNAMIC_SCORING_FLAG))) {
+					HashMap<String,String> combinedScore = fetchLevelOfServiceScoreStatus(ap);
+					context.put("losPinStyle", combinedScore.get(StandardType.WaterPointLevelOfService));
+					context.put("sustainabilityStyle", combinedScore.get(StandardType.WaterPointSustainability));
+				} else {
+					encodeStatusString(ap, context);
+					context.put(
+							"pinStyle",
+							encodePinStyle(ap.getPointType(),
+									ap.getPointStatus()));
+				}
 			} else {
 				context.put("pinStyle", "waterpushpinblk");
 			}
@@ -933,6 +954,20 @@ public class KMLGenerator {
 		}
 		return null;
 
+	}
+
+	private HashMap<String, String> fetchLevelOfServiceScoreStatus(
+			AccessPoint ap) {
+		HashMap<String,String> losStyles = new HashMap<String,String>();
+		LevelOfServiceScoreDao losScoreDao = new LevelOfServiceScoreDao();
+		List<LevelOfServiceScore> losList = losScoreDao
+				.listByAccessPoint(ap.getKey());
+		LOSScoreToStatusMappingDao losScoreToStatusMappingDao = new LOSScoreToStatusMappingDao();
+		for (LevelOfServiceScore losItem : losList) {
+			LOSScoreToStatusMapping losScoreToStatusMapping = losScoreToStatusMappingDao.findByLOSScoreTypeAndScore(losItem.getScoreType(), losItem.getScore());
+			losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType().toString(), losScoreToStatusMapping.getColor().toString());		
+		}
+		return losStyles;
 	}
 
 	public String generateRegionOutlines(String vmName) {
