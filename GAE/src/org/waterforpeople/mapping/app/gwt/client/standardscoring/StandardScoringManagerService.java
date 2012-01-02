@@ -16,4 +16,5 @@ public interface StandardScoringManagerService extends RemoteService {
 	ArrayList<StandardScoreBucketDto> listStandardScoreBuckets();
 	TreeMap<String, String> listObjectAttributes(String objectName);
 	StandardScoreBucketDto save(StandardScoreBucketDto item);
+	ArrayList<StandardContainerDto> listStandardContainer(String standardType);
 }

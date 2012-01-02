@@ -25,4 +25,7 @@ public interface StandardScoringManagerServiceAsync {
 	void save(StandardScoreBucketDto item,
 			AsyncCallback<StandardScoreBucketDto> callback);
 
+	void listStandardContainer(String standardType,
+			AsyncCallback<ArrayList<StandardContainerDto>> callback);
+
 }
