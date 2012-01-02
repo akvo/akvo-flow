@@ -208,7 +208,7 @@ public class StandardTestLoader {
 		losScoreToStatusMapping
 				.setLevelOfServiceScoreType(StandardType.WaterPointLevelOfService);
 		losScoreToStatusMapping.setFloor(6);
-		losScoreToStatusMapping.setCeiling(7);
+		losScoreToStatusMapping.setCeiling(8);
 		losScoreToStatusMapping.setColor(LOSColor.Green);
 		losScoreToStatusMapping.setDescription("High Level Of Service");
 		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconGreen36.png");
@@ -262,7 +262,7 @@ public class StandardTestLoader {
 		losScoreToStatusMapping
 				.setLevelOfServiceScoreType(StandardType.WaterPointSustainability);
 		losScoreToStatusMapping.setFloor(6);
-		losScoreToStatusMapping.setCeiling(7);
+		losScoreToStatusMapping.setCeiling(8);
 		losScoreToStatusMapping.setColor(LOSColor.Green);
 		losScoreToStatusMapping.setDescription("Highly Likely to be Sustainable");
 		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconGreen36.png");
