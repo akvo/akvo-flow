@@ -265,8 +265,8 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(8);
 		losScoreToStatusMapping.setColor(LOSColor.Green);
 		losScoreToStatusMapping.setDescription("Highly Likely to be Sustainable");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconGreen36.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconGreen32.png");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpingreen");
 		losList.add(losScoreToStatusMapping);
 		
