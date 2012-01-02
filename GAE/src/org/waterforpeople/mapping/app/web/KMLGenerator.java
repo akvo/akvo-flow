@@ -1054,6 +1054,14 @@ public class KMLGenerator {
 			return "No";
 		}
 	}
+	
+	public LOSScoreToStatusMapping encodePinStyle(Key accessPointKey, StandardType standardType){
+		LevelOfServiceScoreDao losScoreDao = new LevelOfServiceScoreDao();
+		LevelOfServiceScore losScore = losScoreDao.findByAccessPoint(accessPointKey, standardType);
+		LOSScoreToStatusMappingDao losMapDao = new LOSScoreToStatusMappingDao();
+		LOSScoreToStatusMapping losMapItem =losMapDao.findByLOSScoreTypeAndScore(standardType, losScore.getScore());
+		return losMapItem;
+	}
 
 	public static String encodePinStyle(AccessPointType type,
 			AccessPoint.Status status) {

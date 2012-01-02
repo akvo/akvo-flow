@@ -41,8 +41,8 @@ public class AccessPointTest {
 					// ghana 7.9596438809,-1.20704621427
 					// double lon = -106;
 					// double lat = 39.1;
-					double lon = -1.1;
-					double lat = 7.0;
+					double lon = -68.1;
+					double lat = -16.4;
 					if (getRandomBoolean()) {
 						lon = lon
 								+ (new Random().nextDouble() * new Random()

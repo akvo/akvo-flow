@@ -27,6 +27,7 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.standards.domain.LOSScoreToStatusMapping;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -129,7 +130,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 					apList.add(ap);
 				}
 				response = (PlacemarkRestResponse) convertToResponse(apList,
-						true, null, null, piReq.getDisplay(),standardType);
+						true, null, null, piReq.getDisplay(), standardType);
 
 			} else {
 				// ListPlacemarks Action
@@ -144,7 +145,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						response = (PlacemarkRestResponse) convertToResponse(
 								results, piReq.getNeedDetailsFlag(),
 								AccessPointDao.getCursor(results),
-								piReq.getCursor(), display,standardType);
+								piReq.getCursor(), display, standardType);
 					} else if (piReq.getSubLevel() != null) {
 
 						List<AccessPoint> results = apDao.listBySubLevel(
@@ -154,7 +155,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						response = (PlacemarkRestResponse) convertToResponse(
 								results, piReq.getNeedDetailsFlag(),
 								AccessPointDao.getCursor(results),
-								piReq.getCursor(), display,standardType);
+								piReq.getCursor(), display, standardType);
 					} else {
 						List<AccessPoint> results = apDao.searchAccessPoints(
 								piReq.getCountry(), null, null, null, null,
@@ -166,7 +167,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						response = (PlacemarkRestResponse) convertToResponse(
 								results, piReq.getNeedDetailsFlag(),
 								AccessPointDao.getCursor(results),
-								piReq.getCursor(), display,standardType);
+								piReq.getCursor(), display, standardType);
 					}
 				} else if (piReq.getAction().equals(
 						PlacemarkRestRequest.LIST_BOUNDING_BOX_ACTION)
@@ -180,7 +181,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 					response = (PlacemarkRestResponse) convertToResponse(
 							results, piReq.getNeedDetailsFlag(),
 							AccessPointDao.getCursor(results),
-							piReq.getCursor(), piReq.getDisplay(),standardType);
+							piReq.getCursor(), piReq.getDisplay(), standardType);
 				}
 			}
 		} else {
@@ -283,9 +284,9 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 				ap.getCurrentStatus()));
 		pdto.setIconUrl(KMLGenerator.getMarkerImageUrl(ap.getLocaleType(),
 				ap.getCurrentStatus()));
-		if(ap.getLocaleType() == null){
-		pdto.setMarkType(AccessPointType.WATER_POINT.toString());
-		}else{
+		if (ap.getLocaleType() == null) {
+			pdto.setMarkType(AccessPointType.WATER_POINT.toString());
+		} else {
 			pdto.setMarkType(ap.getLocaleType());
 		}
 
@@ -310,11 +311,18 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	private PlacemarkDto marshallDomainToDto(AccessPoint ap,
 			Boolean needDetailsFlag, String display, StandardType standardType) {
 		PlacemarkDto pdto = new PlacemarkDto();
-		pdto.setPinStyle(KMLGenerator.encodePinStyle(ap.getPointType(),
-				ap.getPointStatus()));
+		if (standardType != null) {
+			KMLGenerator kmlGen = new KMLGenerator();
+			LOSScoreToStatusMapping losItem =kmlGen.encodePinStyle(ap.getKey(), standardType); 
+			pdto.setPinStyle(losItem.getIconStyle());
+			pdto.setIconUrl(losItem.getIconLargeUrl());
+		} else {
+			pdto.setPinStyle(KMLGenerator.encodePinStyle(ap.getPointType(),
+					ap.getPointStatus()));
+			pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap.getPointType()));
+		}
 		pdto.setLatitude(ap.getLatitude());
 		pdto.setLongitude(ap.getLongitude());
-		pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap.getPointType()));
 		pdto.setCommunityCode(ap.getCommunityCode());
 		pdto.setMarkType(ap.getPointType().toString());
 		pdto.setCollectionDate(ap.getCollectionDate());

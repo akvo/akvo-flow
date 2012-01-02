@@ -9,7 +9,7 @@ function getCountry() {
 	if ($.jqURL.get('country')) {
 		initialCountry = $.jqURL.get('country').toUpperCase();
 	} else {
-		initialCountry = 'MW';
+		initialCountry = 'BO';
 		$("#tabs").tabs("select", 5);
 	}
 	setCountryLatLon(initialCountry);
@@ -260,13 +260,16 @@ function clearOverlays() {
 
 function getPlacemarkInfo(countryCode, cursor) {
 	var url = '/placemarkrestapi?country=' + countryCode
-			+ '&needDetailsFlag=false&maxResults=200';
+			+ '&needDetailsFlag=false&maxResults=200&ignoreCache=true';
 	if(currSelectedOrg == "wfp"){
 		url += '&org=wfp';
 	}else if(currSelectedOrg == 'other'){
 		url += '&org=other';
 	}
 	
+	if(currSelectedStandardType!=null){
+		url += '&standardType=' + currSelectedStandardType;
+	}
 	if (cursor != null) {
 		url += '&cursor=' + cursor;
 	}
