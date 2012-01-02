@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.memcache.MemcacheService;
@@ -115,6 +115,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		PlacemarkRestResponse response = null;
 		// if we had a cache miss (or the cache is not available), then hit the
 		// datastore and cache the result
+		StandardType standardType = piReq.getStandardType();
 		if (piReq.getDomain() == null
 				|| AP_DOMAIN.equalsIgnoreCase(piReq.getDomain())) {
 			if (piReq.getAction() != null
@@ -128,7 +129,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 					apList.add(ap);
 				}
 				response = (PlacemarkRestResponse) convertToResponse(apList,
-						true, null, null, piReq.getDisplay());
+						true, null, null, piReq.getDisplay(),standardType);
 
 			} else {
 				// ListPlacemarks Action
@@ -143,7 +144,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						response = (PlacemarkRestResponse) convertToResponse(
 								results, piReq.getNeedDetailsFlag(),
 								AccessPointDao.getCursor(results),
-								piReq.getCursor(), display);
+								piReq.getCursor(), display,standardType);
 					} else if (piReq.getSubLevel() != null) {
 
 						List<AccessPoint> results = apDao.listBySubLevel(
@@ -153,7 +154,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						response = (PlacemarkRestResponse) convertToResponse(
 								results, piReq.getNeedDetailsFlag(),
 								AccessPointDao.getCursor(results),
-								piReq.getCursor(), display);
+								piReq.getCursor(), display,standardType);
 					} else {
 						List<AccessPoint> results = apDao.searchAccessPoints(
 								piReq.getCountry(), null, null, null, null,
@@ -165,7 +166,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						response = (PlacemarkRestResponse) convertToResponse(
 								results, piReq.getNeedDetailsFlag(),
 								AccessPointDao.getCursor(results),
-								piReq.getCursor(), display);
+								piReq.getCursor(), display,standardType);
 					}
 				} else if (piReq.getAction().equals(
 						PlacemarkRestRequest.LIST_BOUNDING_BOX_ACTION)
@@ -179,7 +180,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 					response = (PlacemarkRestResponse) convertToResponse(
 							results, piReq.getNeedDetailsFlag(),
 							AccessPointDao.getCursor(results),
-							piReq.getCursor(), piReq.getDisplay());
+							piReq.getCursor(), piReq.getDisplay(),standardType);
 				}
 			}
 		} else {
@@ -226,7 +227,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 
 	private RestResponse convertToResponse(List<AccessPoint> apList,
 			Boolean needDetailsFlag, String cursor, String oldCursor,
-			String display) {
+			String display, StandardType standardType) {
 		PlacemarkRestResponse resp = new PlacemarkRestResponse();
 		if (needDetailsFlag == null)
 			needDetailsFlag = true;
@@ -236,7 +237,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			for (AccessPoint ap : apList) {
 				if (!ap.getPointType().equals(AccessPointType.SANITATION_POINT)) {
 					dtoList.add(marshallDomainToDto(ap, needDetailsFlag,
-							display));
+							display, standardType));
 				}
 				resp.setPlacemarks(dtoList);
 			}
@@ -307,7 +308,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	}
 
 	private PlacemarkDto marshallDomainToDto(AccessPoint ap,
-			Boolean needDetailsFlag, String display) {
+			Boolean needDetailsFlag, String display, StandardType standardType) {
 		PlacemarkDto pdto = new PlacemarkDto();
 		pdto.setPinStyle(KMLGenerator.encodePinStyle(ap.getPointType(),
 				ap.getPointStatus()));
@@ -321,7 +322,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			String placemarkString = null;
 			try {
 				placemarkString = kmlGen.bindPlacemark(ap,
-						"placemarkExternalMap.vm", display);
+						"placemarkExternalMap.vm", display, standardType);
 				pdto.setPlacemarkContents(placemarkString);
 			} catch (Exception e) {
 				log.log(Level.SEVERE, "Could not bind placemarks", e);

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +37,7 @@ import com.gallatinsystems.standards.domain.LevelOfServiceScore;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.google.appengine.api.datastore.Key;
 
 public class KMLGenerator {
 	private static final String IMAGE_ROOT = "imageroot";
@@ -145,7 +147,7 @@ public class KMLGenerator {
 	public static final String defaultPhotoCaption = PropertyUtil
 			.getProperty("defaultPhotoCaption");
 
-	private static final String DYNAMIC_SCORING_FLAG = null;
+	private static final String DYNAMIC_SCORING_FLAG = "scoreAPDynamicFlag";
 
 	public String generateRegionDocumentString(String regionVMName) {
 		String regionKML = generateRegionOutlines(regionVMName);
@@ -446,7 +448,7 @@ public class KMLGenerator {
 						String pmContents = bindPlacemark(
 								ap,
 								display.equalsIgnoreCase(GOOGLE_EARTH_DISPLAY) ? "placemarkGoogleEarth.vm"
-										: "placemarkExternalMap.vm", display);
+										: "placemarkExternalMap.vm", display,null);
 
 						if (ap.getCollectionDate() != null) {
 							String timestamp = DateFormatUtils.formatUTC(ap
@@ -483,6 +485,7 @@ public class KMLGenerator {
 						if (ap.getPointType() != null) {
 							if (Boolean.parseBoolean(PropertyUtil
 									.getProperty(DYNAMIC_SCORING_FLAG))) {
+								StandardType standardType = StandardType.WaterPointLevelOfService;
 								
 							} else {
 								encodeStatusString(ap, context);
@@ -652,8 +655,8 @@ public class KMLGenerator {
 		return output;
 	}
 
-	public String bindPlacemark(AccessPoint ap, String vmName, String display)
-			throws Exception {
+	public String bindPlacemark(AccessPoint ap, String vmName, String display,
+			StandardType standardType) throws Exception {
 		// if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW"))
 		// {
 		if (display != null
@@ -934,9 +937,28 @@ public class KMLGenerator {
 			if (ap.getPointType() != null) {
 				if (Boolean.parseBoolean(PropertyUtil
 						.getProperty(DYNAMIC_SCORING_FLAG))) {
-					HashMap<String,String> combinedScore = fetchLevelOfServiceScoreStatus(ap);
-					context.put("losPinStyle", combinedScore.get(StandardType.WaterPointLevelOfService));
-					context.put("sustainabilityStyle", combinedScore.get(StandardType.WaterPointSustainability));
+					TreeMap<String, String> combinedScore = fetchLevelOfServiceScoreStatus(ap);
+					for (Map.Entry<String, String> entry : combinedScore
+							.entrySet()) {
+						context.put(entry.getKey(), entry.getValue());
+						String style = null;
+						if (standardType != null) {
+							if (standardType
+									.equals(StandardType.WaterPointLevelOfService)
+									&& entry.getKey()
+											.equals(StandardType.WaterPointLevelOfService
+													.toString() + "-pinStyle")) {
+								style = entry.getValue();
+							} else if (standardType
+									.equals(StandardType.WaterPointSustainability)
+									&& entry.getKey()
+											.equals(StandardType.WaterPointSustainability
+													.toString() + "-pinStyle")) {
+								style = entry.getValue();
+							}
+						}
+						context.put("pinStyle", style);
+					}
 				} else {
 					encodeStatusString(ap, context);
 					context.put(
@@ -956,16 +978,31 @@ public class KMLGenerator {
 
 	}
 
-	private HashMap<String, String> fetchLevelOfServiceScoreStatus(
+	private TreeMap<String, String> fetchLevelOfServiceScoreStatus(
 			AccessPoint ap) {
-		HashMap<String,String> losStyles = new HashMap<String,String>();
+		TreeMap<String, String> losStyles = new TreeMap<String, String>();
 		LevelOfServiceScoreDao losScoreDao = new LevelOfServiceScoreDao();
-		List<LevelOfServiceScore> losList = losScoreDao
-				.listByAccessPoint(ap.getKey());
+		List<LevelOfServiceScore> losList = losScoreDao.listByAccessPoint(ap
+				.getKey());
 		LOSScoreToStatusMappingDao losScoreToStatusMappingDao = new LOSScoreToStatusMappingDao();
 		for (LevelOfServiceScore losItem : losList) {
-			LOSScoreToStatusMapping losScoreToStatusMapping = losScoreToStatusMappingDao.findByLOSScoreTypeAndScore(losItem.getScoreType(), losItem.getScore());
-			losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType().toString(), losScoreToStatusMapping.getColor().toString());		
+			LOSScoreToStatusMapping losScoreToStatusMapping = losScoreToStatusMappingDao
+					.findByLOSScoreTypeAndScore(losItem.getScoreType(),
+							losItem.getScore());
+			losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType()
+					.toString() + "-color", losScoreToStatusMapping.getColor()
+					.toString());
+			losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType()
+					.toString() + "-desc",
+					losScoreToStatusMapping.getDescription());
+			losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType()
+					.toString() + "-score", losItem.getScore().toString());
+			losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType()
+					.toString() + "-pinstyle",
+					losScoreToStatusMapping.getIconStyle());
+			// losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType().toString()+"details",
+			// losItem.getScoreDetails().toString());
+
 		}
 		return losStyles;
 	}
@@ -1042,6 +1079,8 @@ public class KMLGenerator {
 			return prefix + "pushpinblk";
 		}
 	}
+
+	
 
 	public static String encodePinStyle(String type, String status) {
 		String prefix = "water";

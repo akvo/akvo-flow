@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.standards.domain.Standard.StandardType;
 
 public class PlacemarkRestRequest extends RestRequest {
 	private static final String DOMAIN_CONFIG_KEY = "domainType";
@@ -29,6 +30,7 @@ public class PlacemarkRestRequest extends RestRequest {
 	private static final String LONG2_PARAM = "long2";
 	private static final String DOMAIN_PARAM = "domain";
 	private static final String ORG_PARAM = "org";
+	private static final String STANDARD_TYPE = "standardType";
 	private String country;
 	private Boolean needDetailsFlag = null;
 	private String communityCode = null;
@@ -44,6 +46,7 @@ public class PlacemarkRestRequest extends RestRequest {
 	private Double long2 = null;
 	private String domain;
 	private String org = null;
+	private StandardType standardType = null;
 
 	public String getOrg() {
 		return org;
@@ -198,6 +201,14 @@ public class PlacemarkRestRequest extends RestRequest {
 							.equals(pointTypeString))
 				setPointType(AccessPointType.WATER_POINT);			
 		}
+		
+		if(req.getParameter(this.STANDARD_TYPE)!=null){
+			if(req.getParameter(STANDARD_TYPE).equals(StandardType.WaterPointLevelOfService.toString())){
+				setStandardType(StandardType.WaterPointLevelOfService);
+			}else if(req.getParameter(STANDARD_TYPE).equals(StandardType.WaterPointSustainability.toString())){
+				setStandardType(StandardType.WaterPointSustainability);
+			}
+		}
 		try {
 			if (req.getParameter(NEED_DETAILS_PARM) != null) {
 				setNeedDetailsFlag(new Boolean(req.getParameter(
@@ -284,6 +295,14 @@ public class PlacemarkRestRequest extends RestRequest {
 
 	public void setPointTypeString(String pointTypeString) {
 		this.pointTypeString = pointTypeString;
+	}
+
+	public void setStandardType(StandardType standardType) {
+		this.standardType = standardType;
+	}
+
+	public StandardType getStandardType() {
+		return standardType;
 	}
 	
 }

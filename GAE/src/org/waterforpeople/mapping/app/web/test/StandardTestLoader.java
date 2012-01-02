@@ -174,6 +174,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setFloor(0);
 		losScoreToStatusMapping.setCeiling(0);
 		losScoreToStatusMapping.setColor(LOSColor.Black);
+		losScoreToStatusMapping.setDescription("No Improved System");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconBlack36.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconBlack32.png");
+		losScoreToStatusMapping.setIconStyle("waterpushpinblack");
 		losList.add(losScoreToStatusMapping);
 
 		losScoreToStatusMapping = new LOSScoreToStatusMapping();
@@ -182,6 +186,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setFloor(1);
 		losScoreToStatusMapping.setCeiling(1);
 		losScoreToStatusMapping.setColor(LOSColor.Red);
+		losScoreToStatusMapping.setDescription("Basic Level Of Service");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconRed36.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconRed32.png");
+		losScoreToStatusMapping.setIconStyle("waterpushpinred");
 		losList.add(losScoreToStatusMapping);
 
 		losScoreToStatusMapping = new LOSScoreToStatusMapping();
@@ -190,6 +198,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setFloor(2);
 		losScoreToStatusMapping.setCeiling(5);
 		losScoreToStatusMapping.setColor(LOSColor.Yellow);
+		losScoreToStatusMapping.setDescription("Intermediate Level Of Service");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconYellow36.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconYellow32.png");
+		losScoreToStatusMapping.setIconStyle("waterpushpinyellow");
 		losList.add(losScoreToStatusMapping);
 
 		losScoreToStatusMapping = new LOSScoreToStatusMapping();
@@ -198,6 +210,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setFloor(6);
 		losScoreToStatusMapping.setCeiling(7);
 		losScoreToStatusMapping.setColor(LOSColor.Green);
+		losScoreToStatusMapping.setDescription("High Level Of Service");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconGreen36.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconGreen32.png");
+		losScoreToStatusMapping.setIconStyle("waterpushpingreen");
 		losList.add(losScoreToStatusMapping);
 
 		BaseDAO<LOSScoreToStatusMapping> losBaseDao = new BaseDAO<LOSScoreToStatusMapping>(
@@ -212,6 +228,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setFloor(0);
 		losScoreToStatusMapping.setCeiling(0);
 		losScoreToStatusMapping.setColor(LOSColor.Black);
+		losScoreToStatusMapping.setDescription("No Improved System");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconBlack36.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconBlack32.png");
+		losScoreToStatusMapping.setIconStyle("waterpushpinblack");
 		losList.add(losScoreToStatusMapping);
 
 		losScoreToStatusMapping = new LOSScoreToStatusMapping();
@@ -220,6 +240,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setFloor(1);
 		losScoreToStatusMapping.setCeiling(1);
 		losScoreToStatusMapping.setColor(LOSColor.Red);
+		losScoreToStatusMapping.setDescription("Unlikely to be Sustainable");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconRed36.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconRed32.png");
+		losScoreToStatusMapping.setIconStyle("waterpushpinred");
 		losList.add(losScoreToStatusMapping);
 
 		losScoreToStatusMapping = new LOSScoreToStatusMapping();
@@ -228,6 +252,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setFloor(2);
 		losScoreToStatusMapping.setCeiling(5);
 		losScoreToStatusMapping.setColor(LOSColor.Yellow);
+		losScoreToStatusMapping.setDescription("Likely to be Sustainable");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconYellow36.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconYellow32.png");
+		losScoreToStatusMapping.setIconStyle("waterpushpinyellow");
 		losList.add(losScoreToStatusMapping);
 
 		losScoreToStatusMapping = new LOSScoreToStatusMapping();
@@ -236,6 +264,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setFloor(6);
 		losScoreToStatusMapping.setCeiling(7);
 		losScoreToStatusMapping.setColor(LOSColor.Green);
+		losScoreToStatusMapping.setDescription("Highly Likely to be Sustainable");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconGreen36.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconGreen32.png");
+		losScoreToStatusMapping.setIconStyle("waterpushpingreen");
 		losList.add(losScoreToStatusMapping);
 		
 		//		//&& ap.getImprovedWaterPointFlag()
