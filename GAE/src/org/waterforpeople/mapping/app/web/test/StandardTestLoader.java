@@ -187,8 +187,8 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(1);
 		losScoreToStatusMapping.setColor(LOSColor.Red);
 		losScoreToStatusMapping.setDescription("Basic Level Of Service");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconRed36.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconRed32.png");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassRed32.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassRed32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpinred");
 		losList.add(losScoreToStatusMapping);
 
@@ -199,8 +199,8 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(5);
 		losScoreToStatusMapping.setColor(LOSColor.Yellow);
 		losScoreToStatusMapping.setDescription("Intermediate Level Of Service");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconYellow36.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconYellow32.png");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassOrange32.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassOrange32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpinyellow");
 		losList.add(losScoreToStatusMapping);
 
@@ -211,8 +211,8 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(8);
 		losScoreToStatusMapping.setColor(LOSColor.Green);
 		losScoreToStatusMapping.setDescription("High Level Of Service");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconGreen36.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconGreen32.png");
+		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
+		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpingreen");
 		losList.add(losScoreToStatusMapping);
 
