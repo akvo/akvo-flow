@@ -436,5 +436,9 @@
         <property name="localeType" direction="asc"/>
         <property name="identifier" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="LOSScoreToStatusMapping" ancestor="false" source="manual">
+        <property name="levelOfServiceScoreType" direction="asc"/>
+        <property name="floor" direction="asc"/>
+    </datastore-index>
     
 </datastore-indexes>
