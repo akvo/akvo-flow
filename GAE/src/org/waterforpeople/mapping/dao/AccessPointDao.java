@@ -22,6 +22,7 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 
@@ -40,15 +41,23 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		super(AccessPoint.class);
 	}
 	
-	public Iterable<Entity> listRawEntity(){
+	public Iterable<Entity> listRawEntity(Boolean returnKeysOnly){
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		// The Query interface assembles a query
 		Query q = new Query("AccessPoint");
+		if(returnKeysOnly){
+			q.setKeysOnly();
+		}
 		PreparedQuery pq = datastore.prepare(q);
 		return pq.asIterable();
-		
 	}
+	
+	 
+	public AccessPoint findByKey(Key key){
+		return super.getByKey(key);
+	}
+	
 	
 	
 	/**

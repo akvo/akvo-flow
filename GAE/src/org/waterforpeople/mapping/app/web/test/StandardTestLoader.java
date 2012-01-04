@@ -11,6 +11,7 @@ import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.waterforpeople.mapping.app.web.ScoreProcessor;
 import org.waterforpeople.mapping.app.web.TestHarnessServlet;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -45,6 +46,15 @@ public class StandardTestLoader {
 	public StandardTestLoader(HttpServletRequest req, HttpServletResponse resp) {
 		this.req = req;
 		this.resp = resp;
+	}
+
+	public void scoreAllPoints() {
+		ScoreProcessor sp = new ScoreProcessor();
+		try {
+			sp.doGet(req, resp);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public void loadWaterPointStandard() {
@@ -180,8 +190,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(0);
 		losScoreToStatusMapping.setColor(LOSColor.Black);
 		losScoreToStatusMapping.setDescription("No Improved System");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconBlack36.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconBlack32.png");
+		losScoreToStatusMapping
+				.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconBlack36.png");
+		losScoreToStatusMapping
+				.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconBlack32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpinblack");
 		losList.add(losScoreToStatusMapping);
 
@@ -192,8 +204,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(1);
 		losScoreToStatusMapping.setColor(LOSColor.Red);
 		losScoreToStatusMapping.setDescription("Basic Level Of Service");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassRed32.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassRed32.png");
+		losScoreToStatusMapping
+				.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassRed32.png");
+		losScoreToStatusMapping
+				.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassRed32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpinred");
 		losList.add(losScoreToStatusMapping);
 
@@ -204,8 +218,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(5);
 		losScoreToStatusMapping.setColor(LOSColor.Yellow);
 		losScoreToStatusMapping.setDescription("Intermediate Level Of Service");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassOrange32.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassOrange32.png");
+		losScoreToStatusMapping
+				.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassOrange32.png");
+		losScoreToStatusMapping
+				.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassOrange32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpinyellow");
 		losList.add(losScoreToStatusMapping);
 
@@ -216,16 +232,18 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(8);
 		losScoreToStatusMapping.setColor(LOSColor.Green);
 		losScoreToStatusMapping.setDescription("High Level Of Service");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
+		losScoreToStatusMapping
+				.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
+		losScoreToStatusMapping
+				.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpingreen");
 		losList.add(losScoreToStatusMapping);
 
 		BaseDAO<LOSScoreToStatusMapping> losBaseDao = new BaseDAO<LOSScoreToStatusMapping>(
 				LOSScoreToStatusMapping.class);
 		losBaseDao.save(losList);
-		
-		 losList = new ArrayList<LOSScoreToStatusMapping>();
+
+		losList = new ArrayList<LOSScoreToStatusMapping>();
 
 		losScoreToStatusMapping = new LOSScoreToStatusMapping();
 		losScoreToStatusMapping
@@ -234,8 +252,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(0);
 		losScoreToStatusMapping.setColor(LOSColor.Black);
 		losScoreToStatusMapping.setDescription("No Improved System");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconBlack36.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconBlack32.png");
+		losScoreToStatusMapping
+				.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconBlack36.png");
+		losScoreToStatusMapping
+				.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconBlack32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpinblack");
 		losList.add(losScoreToStatusMapping);
 
@@ -246,8 +266,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(1);
 		losScoreToStatusMapping.setColor(LOSColor.Red);
 		losScoreToStatusMapping.setDescription("Unlikely to be Sustainable");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconRed36.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconRed32.png");
+		losScoreToStatusMapping
+				.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconRed36.png");
+		losScoreToStatusMapping
+				.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconRed32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpinred");
 		losList.add(losScoreToStatusMapping);
 
@@ -258,8 +280,10 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setCeiling(5);
 		losScoreToStatusMapping.setColor(LOSColor.Yellow);
 		losScoreToStatusMapping.setDescription("Likely to be Sustainable");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconYellow36.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconYellow32.png");
+		losScoreToStatusMapping
+				.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/iconYellow36.png");
+		losScoreToStatusMapping
+				.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/iconYellow32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpinyellow");
 		losList.add(losScoreToStatusMapping);
 
@@ -269,19 +293,19 @@ public class StandardTestLoader {
 		losScoreToStatusMapping.setFloor(6);
 		losScoreToStatusMapping.setCeiling(8);
 		losScoreToStatusMapping.setColor(LOSColor.Green);
-		losScoreToStatusMapping.setDescription("Highly Likely to be Sustainable");
-		losScoreToStatusMapping.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
-		losScoreToStatusMapping.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
+		losScoreToStatusMapping
+				.setDescription("Highly Likely to be Sustainable");
+		losScoreToStatusMapping
+				.setIconLargeUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
+		losScoreToStatusMapping
+				.setIconSmallUrl("http://watermapmonitordev.appspot.com/images/glassGreen32.png");
 		losScoreToStatusMapping.setIconStyle("waterpushpingreen");
 		losList.add(losScoreToStatusMapping);
-		
-		//		//&& ap.getImprovedWaterPointFlag()
 
-		
+		// //&& ap.getImprovedWaterPointFlag()
+
 		losBaseDao.save(losList);
 	}
-	
-	
 
 	public void setReq(HttpServletRequest req) {
 		this.req = req;
@@ -300,8 +324,8 @@ public class StandardTestLoader {
 			e.printStackTrace();
 		}
 	}
-	
-	private void write(String message){
+
+	private void write(String message) {
 		try {
 			log.info(message);
 			resp.getWriter().print(message);
@@ -318,18 +342,19 @@ public class StandardTestLoader {
 		loadWaterPointScoreToStatus();
 		AccessPointTest apt = new AccessPointTest();
 		apt.loadLots(resp, 10);
+		scoreAllPoints();
 	}
 
 	private void clearAPs() {
 		DeleteObjectUtil dou = new DeleteObjectUtil();
-//		dou.deleteAllObjects("AccessPoint");
-//		writeln("Deleted APs");
-//		dou.deleteAllObjects("AccessPointScoreComputationItem");
-//		writeln("Deleted APSCI");
-//		dou.deleteAllObjects("AccessPointScoreDetail");
-//		writeln("Deleted APSD");
-//		dou.deleteAllObjects("AccessPointsStatusSummary");
-//		writeln("Deleted AccessPointsStatusSummary");
+		// dou.deleteAllObjects("AccessPoint");
+		// writeln("Deleted APs");
+		// dou.deleteAllObjects("AccessPointScoreComputationItem");
+		// writeln("Deleted APSCI");
+		// dou.deleteAllObjects("AccessPointScoreDetail");
+		// writeln("Deleted APSD");
+		// dou.deleteAllObjects("AccessPointsStatusSummary");
+		// writeln("Deleted AccessPointsStatusSummary");
 		dou.deleteAllObjects("Standard");
 		writeln("Deleted All the Standards");
 		dou.deleteAllObjects("LevelOfServiceScore");
@@ -348,38 +373,45 @@ public class StandardTestLoader {
 
 	private void listAPScoreAndStatus() {
 		AccessPointDao apDao = new AccessPointDao();
-//		List<AccessPoint> apList = apDao.list("all");
+		// List<AccessPoint> apList = apDao.list("all");
 		PersistenceManager pm = PersistenceFilter.getManager();
-		Extent<AccessPoint> extent = pm.getExtent(AccessPoint.class,false);
-		
+		Extent<AccessPoint> extent = pm.getExtent(AccessPoint.class, false);
+
 		LevelOfServiceScoreDao lesScoreDao = new LevelOfServiceScoreDao();
 		writeln("<html><table border=1>");
-		write("<tr><td>AccessPoint Key</td><td>Country Code</td><td>Community Name</td><td>Access Point Code</td><td>Access Point Collection Date</td><td>Number HH within Acceptable Distance</td>" +
-		"<td>Number Outside Acceptable Distance</td><td>LOS Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td>"+
-		"<td>Sustainability Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td></tr>");
-		
-		//for (AccessPoint item : extent) {
-		for(Entity result : apDao.listRawEntity()){
+		write("<tr><td>AccessPoint Key</td><td>Country Code</td><td>Community Name</td><td>Access Point Code</td><td>Access Point Collection Date</td><td>Number HH within Acceptable Distance</td>"
+				+ "<td>Number Outside Acceptable Distance</td><td>LOS Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td>"
+				+ "<td>Sustainability Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td></tr>");
+
+		// for (AccessPoint item : extent) {
+		for (Entity result : apDao.listRawEntity(false)) {
 			AccessPoint item = new AccessPoint();
 			item.setKey(result.getKey());
-			item.setCommunityCode((String)result.getProperty("communityCode"));
-			item.setCollectionDate((Date)result.getProperty("collectionDate"));
+			item.setCommunityCode((String) result.getProperty("communityCode"));
+			item.setCollectionDate((Date) result.getProperty("collectionDate"));
 			List<LevelOfServiceScore> losScoreList = lesScoreDao
 					.listByAccessPoint(item.getKey());
-			write("<tr><td>" + item.getKeyString() + "</td><td>"+item.getCountryCode() +"</td><td>"+item.getCommunityName()+"</td><td>" + item.getAccessPointCode()+"</td><td>" + item.getCollectionDate()+ "</td><td>" + 
-					item.getNumberWithinAcceptableDistance() + " </td><td> " + item.getNumberWithinAcceptableDistance()+ "</td>");
+			write("<tr><td>" + item.getKeyString() + "</td><td>"
+					+ item.getCountryCode() + "</td><td>"
+					+ item.getCommunityName() + "</td><td>"
+					+ item.getAccessPointCode() + "</td><td>"
+					+ item.getCollectionDate() + "</td><td>"
+					+ item.getNumberWithinAcceptableDistance() + " </td><td> "
+					+ item.getNumberWithinAcceptableDistance() + "</td>");
 			for (LevelOfServiceScore losItem : losScoreList) {
 				LOSScoreToStatusMappingDao losMap = new LOSScoreToStatusMappingDao();
 				LOSScoreToStatusMapping losMapItem = losMap
 						.findByLOSScoreTypeAndScore(losItem.getScoreType(),
 								losItem.getScore());
 				if (losMapItem != null) {
-					write("<td>"+ losItem.getScore()+"</td><td>"+
-							 losItem.getLastUpdateDateTime()+"</td><td>" + losMapItem.getColor() + "</td><td>"+losMapItem.getLevelOfServiceScoreType()+"</td>");
+					write("<td>" + losItem.getScore() + "</td><td>"
+							+ losItem.getLastUpdateDateTime() + "</td><td>"
+							+ losMapItem.getColor() + "</td><td>"
+							+ losMapItem.getLevelOfServiceScoreType() + "</td>");
 				}
 				write("<td>");
 				for (String detail : losItem.getScoreDetails()) {
-					write(" "+detail +"<br>");
+					write(" " + detail + "<br>");
 				}
 				write("</td>");
 			}
@@ -472,7 +504,7 @@ public class StandardTestLoader {
 		standard.setStandardDescription("Who is responsible for performing maintenance");
 		standard.setAccessPointAttribute("whoRepairsPoint");
 		standardDao.save(standard);
-		
+
 		standard = new Standard();
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
 		standard.setStandardType(StandardType.WaterPointSustainability);
@@ -485,7 +517,7 @@ public class StandardTestLoader {
 		standard.setStandardDescription("Current Problems");
 		standard.setAccessPointAttribute("whoRepairsPoint");
 		standardDao.save(standard);
-		
+
 		standard = new Standard();
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
 		standard.setStandardType(StandardType.WaterPointSustainability);
@@ -499,7 +531,7 @@ public class StandardTestLoader {
 		standard.setStandardDescription("System Support Expansion");
 		standard.setAccessPointAttribute("systemExpansion");
 		standardDao.save(standard);
-		
+
 		CompoundStandard cs = new CompoundStandard();
 		cs.setStandardType(StandardType.WaterPointSustainability);
 		standard = new Standard();
@@ -530,7 +562,6 @@ public class StandardTestLoader {
 		CompoundStandardDao csDao = new CompoundStandardDao();
 		cs.setOperator(Operator.OR);
 		csDao.save(cs);
-		
 
 	}
 }
