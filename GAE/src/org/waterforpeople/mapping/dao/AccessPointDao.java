@@ -19,6 +19,11 @@ import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 
 /**
  * dao for manipulating access points
@@ -34,7 +39,18 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	public AccessPointDao() {
 		super(AccessPoint.class);
 	}
+	
+	public Iterable<Entity> listRawEntity(){
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
+		// The Query interface assembles a query
+		Query q = new Query("AccessPoint");
+		PreparedQuery pq = datastore.prepare(q);
+		return pq.asIterable();
+		
+	}
+	
+	
 	/**
 	 * Lists all access points that are near the point identified by the lat/lon
 	 * parameters in order of increasing distance. if maxDistance is 0, all

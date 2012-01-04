@@ -2,9 +2,12 @@ package org.waterforpeople.mapping.app.web.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.jdo.Extent;
+import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,6 +17,7 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.standards.dao.CompoundStandardDao;
 import com.gallatinsystems.standards.dao.LOSScoreToStatusMappingDao;
 import com.gallatinsystems.standards.dao.LevelOfServiceScoreDao;
@@ -29,6 +33,7 @@ import com.gallatinsystems.standards.domain.Standard.StandardComparisons;
 import com.gallatinsystems.standards.domain.Standard.StandardScope;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.standards.domain.Standard.StandardValueType;
+import com.google.appengine.api.datastore.Entity;
 
 public class StandardTestLoader {
 	private HttpServletRequest req;
@@ -343,14 +348,22 @@ public class StandardTestLoader {
 
 	private void listAPScoreAndStatus() {
 		AccessPointDao apDao = new AccessPointDao();
-		List<AccessPoint> apList = apDao.list("all");
+//		List<AccessPoint> apList = apDao.list("all");
+		PersistenceManager pm = PersistenceFilter.getManager();
+		Extent<AccessPoint> extent = pm.getExtent(AccessPoint.class,false);
+		
 		LevelOfServiceScoreDao lesScoreDao = new LevelOfServiceScoreDao();
 		writeln("<html><table border=1>");
 		write("<tr><td>AccessPoint Key</td><td>Country Code</td><td>Community Name</td><td>Access Point Code</td><td>Access Point Collection Date</td><td>Number HH within Acceptable Distance</td>" +
 		"<td>Number Outside Acceptable Distance</td><td>LOS Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td>"+
 		"<td>Sustainability Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td></tr>");
-
-		for (AccessPoint item : apList) {
+		
+		//for (AccessPoint item : extent) {
+		for(Entity result : apDao.listRawEntity()){
+			AccessPoint item = new AccessPoint();
+			item.setKey(result.getKey());
+			item.setCommunityCode((String)result.getProperty("communityCode"));
+			item.setCollectionDate((Date)result.getProperty("collectionDate"));
 			List<LevelOfServiceScore> losScoreList = lesScoreDao
 					.listByAccessPoint(item.getKey());
 			write("<tr><td>" + item.getKeyString() + "</td><td>"+item.getCountryCode() +"</td><td>"+item.getCommunityName()+"</td><td>" + item.getAccessPointCode()+"</td><td>" + item.getCollectionDate()+ "</td><td>" + 
@@ -372,6 +385,7 @@ public class StandardTestLoader {
 			}
 			write("</tr>");
 		}
+		extent.closeAll();
 		writeln("</table></html>");
 	}
 
