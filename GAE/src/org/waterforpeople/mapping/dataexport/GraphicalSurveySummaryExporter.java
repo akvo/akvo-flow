@@ -49,9 +49,9 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and
  * including chart images.
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final int MAX_COL = 255;
@@ -102,7 +102,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final NumberFormat PCT_FMT = DecimalFormat
 			.getPercentInstance();
 
-	
+
 	static {
 		// populate all translations
 		RANGE_LABEL = new HashMap<String, String>();
@@ -358,32 +358,43 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			started++;
 			threadPool.execute(new Runnable() {
 				public void run() {
-					try {						
-						Map<String, String> responseMap = BulkDataServiceClient
-								.fetchQuestionResponses(instanceId, serverBase);
+					int attempts = 0;
+					boolean done = false;
 
-						SurveyInstanceDto dto = BulkDataServiceClient
-								.findSurveyInstance(
-										Long.parseLong(instanceId.trim()),
-										serverBase);
-						synchronized (allData) {
-							RowData rd = new RowData();
-							rd.setResponseMap(responseMap);
-							rd.setDto(dto);
-							rd.setInstanceId(instanceId);
-							rd.setDateString(dateString);
-							allData.add(rd);
-						}						
+					while(!done && attempts < 10){
+						try {
 
-					} catch (Exception e) {
-						e.printStackTrace();
-					}finally{
-						synchronized(lock){
-							threadsCompleted++;
+							Map<String, String> responseMap = BulkDataServiceClient
+									.fetchQuestionResponses(instanceId, serverBase);
+
+							SurveyInstanceDto dto = BulkDataServiceClient
+									.findSurveyInstance(
+											Long.parseLong(instanceId.trim()),
+											serverBase);
+							if(dto != null){
+								done = true;
+							}
+							synchronized (allData) {
+								RowData rd = new RowData();
+								rd.setResponseMap(responseMap);
+								rd.setDto(dto);
+								rd.setInstanceId(instanceId);
+								rd.setDateString(dateString);
+								allData.add(rd);
+							}
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}finally{
+							synchronized(lock){
+								threadsCompleted++;
+							}
 						}
+						attempts++;
 					}
 				}
-			});
+			}
+			);
 		}
 		while (!jobQueue.isEmpty() || threadPool.getActiveCount()>0 || started > threadsCompleted) {
 			try {
@@ -395,13 +406,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		}
 		//write the data now
 		for(RowData rd: allData){
-			Row row = getRow(curRow++,sheet);		
+			Row row = getRow(curRow++,sheet);
 			writeRow(row, rd.getDto(), rd.getResponseMap(), rd.getDateString(), rd.getInstanceId(),
 				generateSummary, questionIdList,
 				unsummarizable, nameToIdMap, collapseIdMap,
 				model);
 		}
-		
+
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				WRITING_RAW_DATA.get(locale)));
 		return model;
@@ -427,8 +438,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				createCell(row, col++, " ", null);
 			}
 		}
-		
-		
+
+
 		for (String q : questionIdList) {
 			String val = null;
 			if (responseMap != null) {
@@ -438,12 +449,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				if (val.contains(SDCARD_PREFIX)) {
 					val = imagePrefix
 							+ val.substring(val.indexOf(SDCARD_PREFIX)
-									+ SDCARD_PREFIX.length());	
+									+ SDCARD_PREFIX.length());
 				}
-				String cellVal = val.replaceAll("\n", " ").trim();				
+				String cellVal = val.replaceAll("\n", " ").trim();
 				createCell(row, col++, cellVal, null);
 				digest.update(cellVal.getBytes());
-			} else {				
+			} else {
 				createCell(row, col++, "", null);
 			}
 		}
@@ -478,7 +489,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 	/**
 	 * creates the header for the raw data tab
-	 * 
+	 *
 	 * @param row
 	 * @param questionMap
 	 * @return - returns a 2 element array. The first element is a List of
@@ -530,7 +541,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	}
 
 	/**
-	 * 
+	 *
 	 * Writes the report as an XLS document
 	 */
 	private void writeSummaryReport(
@@ -763,7 +774,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	/**
 	 * creates a cell in the row passed in and sets the style and value (if
 	 * non-null)
-	 * 
+	 *
 	 */
 	private Cell createCell(Row row, int col, String value, CellStyle style) {
 		Cell cell = row.createCell(col);
@@ -773,13 +784,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		if (value != null) {
 			cell.setCellValue(value);
 		}
-	
+
 		return cell;
 	}
 
 	/**
 	 * finds or creates the row at the given index
-	 * 
+	 *
 	 * @param index
 	 * @param rowLocalMax
 	 * @param sheet
@@ -799,7 +810,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	/**
 	 * sets instance variables to the values passed in in the Option map. If the
 	 * option is not set, the default values are used.
-	 * 
+	 *
 	 * @param options
 	 */
 	private void processOptions(Map<String, String> options) {
@@ -838,7 +849,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	/**
 	 * call the server to augment the data already loaded in each QuestionDto in
 	 * the map passed in.
-	 * 
+	 *
 	 * @param questionMap
 	 */
 	private void loadFullQuestions(
@@ -863,7 +874,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	/**
 	 * uses the locale and the translation map passed in to determine what value
 	 * to use for the string
-	 * 
+	 *
 	 * @param text
 	 * @param translationMap
 	 * @return
@@ -930,7 +941,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		public void setDto(SurveyInstanceDto dto) {
 			this.dto = dto;
 		}
-		
-		
+
+
 	}
 }
