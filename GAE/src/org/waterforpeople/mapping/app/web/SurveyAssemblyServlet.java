@@ -155,7 +155,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 	/**
 	 * uploads full survey XML to S3
-	 * 
+	 *
 	 * @param surveyId
 	 */
 	private void uploadSurvey(Long surveyId, Long transactionId) {
@@ -219,7 +219,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 	/**
 	 * deletes fragments for the survey
-	 * 
+	 *
 	 * @param surveyId
 	 */
 	private void cleanupFragments(Long surveyId, Long transactionId) {
@@ -382,7 +382,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 	/**
 	 * sends a message to the task queue for survey assembly
-	 * 
+	 *
 	 * @param action
 	 * @param surveyId
 	 * @param questionGroups
@@ -490,6 +490,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 					tip.setType("tip");
 				} else {
 					tip.setType(helpItem.getType().toString().toLowerCase());
+					tip.setValue(helpItem.getResourceUrl());
 				}
 				if (helpItem.getTranslationMap() != null) {
 					List<AltText> translationList = new ArrayList<AltText>();
