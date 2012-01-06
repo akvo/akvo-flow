@@ -1000,6 +1000,8 @@ public class KMLGenerator {
 			losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType()
 					.toString() + "-pinstyle",
 					losScoreToStatusMapping.getIconStyle());
+			losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType()
+					.toString() +"-iconSmallUrl", losScoreToStatusMapping.getIconSmallUrl());
 			// losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType().toString()+"details",
 			// losItem.getScoreDetails().toString());
 
