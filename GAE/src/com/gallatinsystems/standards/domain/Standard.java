@@ -2,6 +2,7 @@ package com.gallatinsystems.standards.domain;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.jdo.annotations.PersistenceCapable;
 
@@ -41,6 +42,24 @@ public class Standard extends BaseDomain {
 	private StandardComparisons standardComparison = null;
 	private StandardType standardType = null;
 	private Boolean partOfCompoundRule = false;
+	private Date effectiveStartDate = null;
+	private Date effectiveEndDate = null;
+
+	public Date getEffectiveStartDate() {
+		return effectiveStartDate;
+	}
+
+	public void setEffectiveStartDate(Date effectiveStartDate) {
+		this.effectiveStartDate = effectiveStartDate;
+	}
+
+	public Date getEffectiveEndDate() {
+		return effectiveEndDate;
+	}
+
+	public void setEffectiveEndDate(Date effectiveEndDate) {
+		this.effectiveEndDate = effectiveEndDate;
+	}
 
 	public Boolean getPartOfCompoundRule() {
 		return partOfCompoundRule;

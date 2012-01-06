@@ -1,5 +1,7 @@
 package org.waterforpeople.mapping.app.web.test;
 
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.app.web.ScoreProcessor;
 import org.waterforpeople.mapping.app.web.TestHarnessServlet;
+import org.waterforpeople.mapping.app.web.dto.DeleteTaskRequest;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
@@ -35,6 +38,8 @@ import com.gallatinsystems.standards.domain.Standard.StandardScope;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.standards.domain.Standard.StandardValueType;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
 
 public class StandardTestLoader {
 	private HttpServletRequest req;
@@ -49,12 +54,7 @@ public class StandardTestLoader {
 	}
 
 	public void scoreAllPoints() {
-		ScoreProcessor sp = new ScoreProcessor();
-		try {
-			sp.doGet(req, resp);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+		this.fireAsnycRescoreAllPoints();
 	}
 
 	public void loadWaterPointStandard() {
@@ -72,6 +72,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.lessthan);
 		standard.setStandardDescription("Estimated Number of Users");
 		standard.setAccessPointAttribute("extimatedPopulation");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		// hasSystemBeenDown1DayFlag global boolean true=0 false=1
@@ -86,6 +88,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Has System Been down in last 30 days");
 		standard.setAccessPointAttribute("hasSystemBeenDown1DayFlag");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		// provideAdequateQuantity global boolean true=1 flase=0
@@ -101,6 +105,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Does the water source provide enough drinking water for the community every day of the year?");
 		standard.setAccessPointAttribute("provideAdequateQuantity");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 		// ppmFecalColiform local double <
 		standard = new Standard();
@@ -115,6 +121,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.lessthan);
 		standard.setStandardDescription("How much fecal coliform were present on the day of collection?");
 		standard.setAccessPointAttribute("ppmFecalColiform");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		// numberOfLitersPerPersonPerDay local < govt standard
@@ -130,6 +138,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.greaterthan);
 		standard.setStandardDescription("How many liters of water per person per day does this source provide?");
 		standard.setAccessPointAttribute("numberOfLitersPerPersonPerDay");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		writeln("Saved: " + standard.toString());
@@ -142,7 +152,8 @@ public class StandardTestLoader {
 		ds.setMaxDistance(100);
 		ds.setLocationType(AccessPoint.LocationType.URBAN);
 		ds.setStandardDescription("Distance standard for Urban waterpoints");
-
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(ds);
 
 		ds = new DistanceStandard();
@@ -153,7 +164,8 @@ public class StandardTestLoader {
 		ds.setMaxDistance(500);
 		ds.setLocationType(AccessPoint.LocationType.RURAL);
 		ds.setStandardDescription("Distance standard for Rural waterpoints");
-
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(ds);
 
 		ds = new DistanceStandard();
@@ -164,7 +176,8 @@ public class StandardTestLoader {
 		ds.setMaxDistance(200);
 		ds.setLocationType(AccessPoint.LocationType.PERIURBAN);
 		ds.setStandardDescription("Distance standard for Peri-Urban waterpoints");
-
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(ds);
 
 		ds = new DistanceStandard();
@@ -175,7 +188,8 @@ public class StandardTestLoader {
 		ds.setMaxDistance(100);
 		ds.setLocationType(AccessPoint.LocationType.OTHER);
 		ds.setStandardDescription("Distance standard for other than rural, urban, or peri-urban waterpoints");
-
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(ds);
 
 	}
@@ -341,20 +355,20 @@ public class StandardTestLoader {
 		loadWaterPointSustainability();
 		loadWaterPointScoreToStatus();
 		AccessPointTest apt = new AccessPointTest();
-		apt.loadLots(resp, 10);
+		apt.loadLots(resp, 50);
 		scoreAllPoints();
 	}
 
 	private void clearAPs() {
 		DeleteObjectUtil dou = new DeleteObjectUtil();
-		// dou.deleteAllObjects("AccessPoint");
-		// writeln("Deleted APs");
-		// dou.deleteAllObjects("AccessPointScoreComputationItem");
-		// writeln("Deleted APSCI");
-		// dou.deleteAllObjects("AccessPointScoreDetail");
-		// writeln("Deleted APSD");
-		// dou.deleteAllObjects("AccessPointsStatusSummary");
-		// writeln("Deleted AccessPointsStatusSummary");
+		 dou.deleteAllObjects("AccessPoint");
+		 writeln("Deleted APs");
+		 dou.deleteAllObjects("AccessPointScoreComputationItem");
+		 writeln("Deleted APSCI");
+		 dou.deleteAllObjects("AccessPointScoreDetail");
+		 writeln("Deleted APSD");
+		 dou.deleteAllObjects("AccessPointsStatusSummary");
+		 writeln("Deleted AccessPointsStatusSummary");
 		dou.deleteAllObjects("Standard");
 		writeln("Deleted All the Standards");
 		dou.deleteAllObjects("LevelOfServiceScore");
@@ -435,6 +449,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Water Available day of visit");
 		standard.setAccessPointAttribute("waterAvailableDayVisitFlag");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -448,6 +464,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Is there a tariff or user fee");
 		standard.setAccessPointAttribute("collectTariffFlag");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -461,6 +479,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Are there financial records");
 		standard.setAccessPointAttribute("financialRecordsAvailableDayOfVisitFlag");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -474,6 +494,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Are there financial records");
 		standard.setAccessPointAttribute("positiveBalance");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		AccessPoint ap = new AccessPoint();
@@ -489,6 +511,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Are there financial records");
 		standard.setAccessPointAttribute("positiveBalance");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -503,6 +527,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.notequal);
 		standard.setStandardDescription("Who is responsible for performing maintenance");
 		standard.setAccessPointAttribute("whoRepairsPoint");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -516,6 +542,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Current Problems");
 		standard.setAccessPointAttribute("whoRepairsPoint");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -530,6 +558,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("System Support Expansion");
 		standard.setAccessPointAttribute("systemExpansion");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		standardDao.save(standard);
 
 		CompoundStandard cs = new CompoundStandard();
@@ -545,6 +575,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Spare Parts on Hand");
 		standard.setAccessPointAttribute("sparePartsOnHand");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		cs.setStandardLeft(standard);
 
 		standard = new Standard();
@@ -558,10 +590,20 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Local Spare Parts");
 		standard.setAccessPointAttribute("localSparePartsFlag");
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		cs.setStandardRight(standard);
 		CompoundStandardDao csDao = new CompoundStandardDao();
+		standard.setEffectiveStartDate(new Date("1/1/1990"));
+		standard.setEffectiveEndDate(new Date("1/1/2013"));
 		cs.setOperator(Operator.OR);
 		csDao.save(cs);
+
+	}
+	private void fireAsnycRescoreAllPoints(){
+		Queue rescoreQueue = QueueFactory.getQueue(ScoreProcessor.ACCESSPOINT_QUEUE_NAME);
+		rescoreQueue.add(url(ScoreProcessor.OBJECT_TASK_URL).param(
+				DeleteTaskRequest.TASK_COUNT_PARAM, "0").param("cursor", "null"));
 
 	}
 }

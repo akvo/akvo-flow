@@ -570,11 +570,11 @@ public class AccessPointHelper {
 		}
 
 		if (ap != null) {
-//			if (Boolean.parseBoolean(PropertyUtil
-//					.getProperty(SCORE_AP_DYNAMIC_FLAG))) {
-//				AccessPointHelper aph = new AccessPointHelper();
-//				aph.scoreAccessPointNew(ap);
-//			}
+			if (Boolean.parseBoolean(PropertyUtil
+					.getProperty(SCORE_AP_DYNAMIC_FLAG))) {
+				AccessPointHelper aph = new AccessPointHelper();
+				aph.scoreAccessPointNew(ap);
+			}
 			return ap;
 		} else
 			return null;
@@ -1083,85 +1083,85 @@ public class AccessPointHelper {
 	}
 
 	public AccessPoint computeDistanceRule(AccessPoint ap) {
-//		AccessPointDao apDao = new AccessPointDao();
-//		if (ap != null) {
-//			// StandardScoringDao ssDao = new StandardScoringDao();
-//			// List<StandardScoring> ssList = ssDao
-//			// .listLocalDistanceStandardScoringForAccessPoint(ap);
-//			Integer acceptableDistance = 500;
-//
-//			DistanceStandardDao distanceStandardDao = new DistanceStandardDao();
-//			DistanceStandard ds = distanceStandardDao.findDistanceStandard(
-//					StandardType.WaterPointLevelOfService, ap.getCountryCode(),
-//					ap.getLocationType());
-//			if (ds != null) {
-//				acceptableDistance = ds.getMaxDistance();
-//			}
-//
-//			// if (ssList != null && !ssList.isEmpty()) {
-//			// StandardScoring ssItem = ssList.get(0);
-//			// if (ssItem != null && ssItem.getPositiveCriteria() != null)
-//			// targetDistance = Integer.parseInt(ssItem
-//			// .getPositiveCriteria());
-//			// }
-//			if (ap.getTypeTechnologyString().equals(
-//					"Gravity Fed System with Household Taps")) {
-//				// ToDo: check against tech type of HH, but need to know which
-//				// question
-//				ap.setNumberWithinAcceptableDistance(ap
-//						.getNumberWithinAcceptableDistance() + 1);
-//			} else if (ap.getPointType().equals(
-//					AccessPoint.AccessPointType.WATER_POINT)
-//					&& (ap.getCommunityCode() != null)) {
-//				List<AccessPoint> apList = apDao.listAccessPointByLocation(
-//						ap.getCountryCode(), ap.getCommunityCode(),
-//						AccessPointType.HOUSEHOLD.toString(), null, "all");
-//				if (apList != null && !apList.isEmpty()) {
-//					for (AccessPoint hh : apList) {
-//						Double distance = CoordinateUtilities.computeDistance(
-//								ap.getLatitude(), ap.getLongitude(),
-//								hh.getLatitude(), hh.getLongitude());
-//						if (distance != null && distance < acceptableDistance) {
-//							ap.setNumberWithinAcceptableDistance(ap
-//									.getNumberWithinAcceptableDistance() + 1);
-//						} else {
-//							ap.setNumberOutsideAcceptableDistance(ap
-//									.getNumberOutsideAcceptableDistance() + 1);
-//						}
-//					}
-//					apDao.save(ap);
-//				}
-//			} else if (ap.getPointType().equals(AccessPointType.HOUSEHOLD)
-//					&& ap.getCommunityCode() != null) {
-//				List<AccessPoint> apList = apDao.listAccessPointByLocation(
-//						ap.getCountryCode(), ap.getCommunityCode(),
-//						AccessPointType.WATER_POINT.toString(), null, "all");
-//				AccessPoint minDistanceWaterPoint = null;
-//				Double minDistance = null;
-//				for (AccessPoint wp : apList) {
-//					Double distance = CoordinateUtilities.computeDistance(
-//							ap.getLatitude(), ap.getLongitude(),
-//							wp.getLatitude(), wp.getLongitude());
-//					if (distance < minDistance || minDistance == null) {
-//						minDistance = CoordinateUtilities.computeDistance(
-//								ap.getLatitude(), ap.getLongitude(),
-//								wp.getLatitude(), wp.getLongitude());
-//						minDistanceWaterPoint = wp;
-//					}
-//				}
-//				if (minDistance != null && minDistance < acceptableDistance) {
-//					minDistanceWaterPoint
-//							.setNumberWithinAcceptableDistance(minDistanceWaterPoint
-//									.getNumberWithinAcceptableDistance() + 1);
-//				} else {
-//					minDistanceWaterPoint
-//							.setNumberOutsideAcceptableDistance(minDistanceWaterPoint
-//									.getNumberOutsideAcceptableDistance());
-//				}
-//				apDao.save(minDistanceWaterPoint);
-//			}
-//
-//		}
+		AccessPointDao apDao = new AccessPointDao();
+		if (ap != null) {
+			// StandardScoringDao ssDao = new StandardScoringDao();
+			// List<StandardScoring> ssList = ssDao
+			// .listLocalDistanceStandardScoringForAccessPoint(ap);
+			Integer acceptableDistance = 500;
+
+			DistanceStandardDao distanceStandardDao = new DistanceStandardDao();
+			DistanceStandard ds = distanceStandardDao.findDistanceStandard(
+					StandardType.WaterPointLevelOfService, ap.getCountryCode(),
+					ap.getLocationType());
+			if (ds != null) {
+				acceptableDistance = ds.getMaxDistance();
+			}
+
+			// if (ssList != null && !ssList.isEmpty()) {
+			// StandardScoring ssItem = ssList.get(0);
+			// if (ssItem != null && ssItem.getPositiveCriteria() != null)
+			// targetDistance = Integer.parseInt(ssItem
+			// .getPositiveCriteria());
+			// }
+			if (ap.getTypeTechnologyString().equals(
+					"Gravity Fed System with Household Taps")) {
+				// ToDo: check against tech type of HH, but need to know which
+				// question
+				ap.setNumberWithinAcceptableDistance(ap
+						.getNumberWithinAcceptableDistance() + 1);
+			} else if (ap.getPointType().equals(
+					AccessPoint.AccessPointType.WATER_POINT)
+					&& (ap.getCommunityCode() != null)) {
+				List<AccessPoint> apList = apDao.listAccessPointByLocation(
+						ap.getCountryCode(), ap.getCommunityCode(),
+						AccessPointType.HOUSEHOLD.toString(), null, "all");
+				if (apList != null && !apList.isEmpty()) {
+					for (AccessPoint hh : apList) {
+						Double distance = CoordinateUtilities.computeDistance(
+								ap.getLatitude(), ap.getLongitude(),
+								hh.getLatitude(), hh.getLongitude());
+						if (distance != null && distance < acceptableDistance) {
+							ap.setNumberWithinAcceptableDistance(ap
+									.getNumberWithinAcceptableDistance() + 1);
+						} else {
+							ap.setNumberOutsideAcceptableDistance(ap
+									.getNumberOutsideAcceptableDistance() + 1);
+						}
+					}
+					apDao.save(ap);
+				}
+			} else if (ap.getPointType().equals(AccessPointType.HOUSEHOLD)
+					&& ap.getCommunityCode() != null) {
+				List<AccessPoint> apList = apDao.listAccessPointByLocation(
+						ap.getCountryCode(), ap.getCommunityCode(),
+						AccessPointType.WATER_POINT.toString(), null, "all");
+				AccessPoint minDistanceWaterPoint = null;
+				Double minDistance = null;
+				for (AccessPoint wp : apList) {
+					Double distance = CoordinateUtilities.computeDistance(
+							ap.getLatitude(), ap.getLongitude(),
+							wp.getLatitude(), wp.getLongitude());
+					if (distance < minDistance || minDistance == null) {
+						minDistance = CoordinateUtilities.computeDistance(
+								ap.getLatitude(), ap.getLongitude(),
+								wp.getLatitude(), wp.getLongitude());
+						minDistanceWaterPoint = wp;
+					}
+				}
+				if (minDistance != null && minDistance < acceptableDistance) {
+					minDistanceWaterPoint
+							.setNumberWithinAcceptableDistance(minDistanceWaterPoint
+									.getNumberWithinAcceptableDistance() + 1);
+				} else {
+					minDistanceWaterPoint
+							.setNumberOutsideAcceptableDistance(minDistanceWaterPoint
+									.getNumberOutsideAcceptableDistance());
+				}
+				apDao.save(minDistanceWaterPoint);
+			}
+
+		}
 		return ap;
 	}
 }

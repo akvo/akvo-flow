@@ -1,5 +1,7 @@
 package com.gallatinsystems.standards.domain;
 
+import java.util.Date;
+
 import javax.jdo.annotations.PersistenceCapable;
 
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -28,7 +30,25 @@ public class DistanceStandard extends BaseDomain {
 	private String countryCode = null;
 	private StandardScope standardScope = null;
 	private String standardDescription = null;
+	private Date effectiveStartDate = null;
+	private Date effectiveEndDate = null;
 	
+	public Date getEffectiveStartDate() {
+		return effectiveStartDate;
+	}
+
+	public void setEffectiveStartDate(Date effectiveStartDate) {
+		this.effectiveStartDate = effectiveStartDate;
+	}
+
+	public Date getEffectiveEndDate() {
+		return effectiveEndDate;
+	}
+
+	public void setEffectiveEndDate(Date effectiveEndDate) {
+		this.effectiveEndDate = effectiveEndDate;
+	}
+
 	public String getStandardDescription() {
 		return standardDescription;
 	}
