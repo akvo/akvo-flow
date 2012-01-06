@@ -29,6 +29,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>CronCommanderServlet</servlet-name>
 		<url-pattern>/cron/croncommander</url-pattern>
 	</servlet-mapping>
+<servlet>
+		<servlet-name>ScoreProcessor</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.ScoreProcessor</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ScoreProcessor</servlet-name>
+		<url-pattern>/app_worker/scoreprocessor</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>LocationBeacon</servlet-name>
@@ -318,7 +326,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		<servlet-name>StandardScoringServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/standardscoring</url-pattern>
 	</servlet-mapping>
-
 	<servlet>
 		<servlet-name>SpreadsheetProcessor</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.SpreadsheetProcessorServlet</servlet-class>
