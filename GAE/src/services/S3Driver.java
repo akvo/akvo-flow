@@ -45,9 +45,8 @@ public class S3Driver {
 		this.aws_identifier = awsIdentifier;
 		init();
 	}
-	
 
-	public void uploadFile(String bucketName, final String fileName,  byte[] file) {
+	public void uploadFile(String bucketName, final String fileName, byte[] file) {
 
 		s3Store.setBucket(bucketName);
 		try {
@@ -55,7 +54,7 @@ public class S3Driver {
 					"public-read");
 			log.info("Stored image: " + fileName + " " + storedFlag);
 		} catch (IOException e) {
-			log.log(Level.SEVERE,"Could upload file",e);
+			log.log(Level.SEVERE, "Could upload file", e);
 		}
 
 	}
@@ -90,7 +89,7 @@ public class S3Driver {
 			log.info("map values: " + key);
 		}
 		s3Store.setBucket(bucketName);
-		
+
 		File dir = new File(fileDir);
 		log.info("Files to upload: " + dir.list().length);
 		int i = 0;
@@ -122,30 +121,31 @@ public class S3Driver {
 				log.info(iCountInBucket++ + "file in bucket: " + fileInBucket);
 				marker = fileInBucket;
 			}
-			
+
 		} catch (IOException e1) {
-			log.log(Level.SEVERE,"Could not upload files",e1);
+			log.log(Level.SEVERE, "Could not upload files", e1);
 		}
-		
+
 		List<String> uberFiles = new ArrayList<String>();
 		uberFiles.addAll(filesInBucket);
 		uberFiles.addAll(filesInBucket1);
 		uberFiles.addAll(filesInBucket2);
 		uberFiles.addAll(filesInBucket3);
 		log.info("uberfiles: " + uberFiles.size());
-		
+
 		for (File file : dir.listFiles()) {
 
 			if (file.getName().toLowerCase().contains(".jpg")) {
 				String fileName = file.getName().toLowerCase();
-				String searchKey = fileName.substring(0, fileName
-						.indexOf(".jpg"));
+				String searchKey = fileName.substring(0,
+						fileName.indexOf(".jpg"));
 				if (filesToUpload.get(searchKey) != null) {
-					String searchForFile = "images/africa/malawi/"+fileName;
-					boolean fileExistsInBucket = uberFiles.contains(searchForFile);
+					String searchForFile = "images/africa/malawi/" + fileName;
+					boolean fileExistsInBucket = uberFiles
+							.contains(searchForFile);
 					if (!fileExistsInBucket) {
 						files.add(file.getName());
-						log.info("adding: " + file.getName());						
+						log.info("adding: " + file.getName());
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
 						FileInputStream fis = null;
 						try {
@@ -160,9 +160,10 @@ public class S3Driver {
 							log.info("Stored image: " + fileName + " "
 									+ storedFlag);
 						} catch (FileNotFoundException e) {
-							log.log(Level.SEVERE,"Could not find file",e);
+							log.log(Level.SEVERE, "Could not find file", e);
 						} catch (IOException e) {
-							log.log(Level.SEVERE,"Could not read/write file",e);
+							log.log(Level.SEVERE, "Could not read/write file",
+									e);
 						}
 					}
 				}
@@ -194,7 +195,7 @@ public class S3Driver {
 				try {
 					fis = new FileInputStream(fileName);
 				} catch (FileNotFoundException e) {
-					log.log(Level.SEVERE,"Could not find file",e);
+					log.log(Level.SEVERE, "Could not find file", e);
 				}
 				byte[] buffer = new byte[2048];
 				int size;
@@ -203,17 +204,36 @@ public class S3Driver {
 						out.write(buffer, 0, size);
 					}
 				} catch (IOException e) {
-					log.log(Level.SEVERE,"Could not read file",e);
+					log.log(Level.SEVERE, "Could not read file", e);
 				}
 				try {
-					boolean storedFlag = s3Store.storeItem(fileName, out
-							.toByteArray(), "public-read");
+					boolean storedFlag = s3Store.storeItem(fileName,
+							out.toByteArray(), "public-read");
 					log.info("Stored image: " + fileName + " " + storedFlag);
 				} catch (IOException e) {
-					log.log(Level.SEVERE,"Could not store file",e);
+					log.log(Level.SEVERE, "Could not store file", e);
 				}
 			}
 		}
+	}
 
+	public List<String> listAllFiles(String bucketName, String fileDir,
+			String fileListPath) {
+		String marker = null;
+		s3Store.setBucket(bucketName);
+		List<String> filesInBucket3 = null;
+		try {
+			filesInBucket3 = s3Store.listItems(
+					"devicezip/", marker);
+			Integer iCountInBucket = 0;
+			for (String fileInBucket : filesInBucket3) {
+				log.info(iCountInBucket++ + "file in bucket: "
+						+ fileInBucket);
+				marker = fileInBucket;
+			}
+		} catch (IOException ie) {
+			ie.printStackTrace();
+		}
+		return filesInBucket3;
 	}
 }

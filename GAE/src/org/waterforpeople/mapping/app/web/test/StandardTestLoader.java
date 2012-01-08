@@ -356,7 +356,7 @@ public class StandardTestLoader {
 		loadWaterPointScoreToStatus();
 		AccessPointTest apt = new AccessPointTest();
 		apt.loadLots(resp, 50);
-		scoreAllPoints();
+		//scoreAllPoints();
 	}
 
 	private void clearAPs() {
