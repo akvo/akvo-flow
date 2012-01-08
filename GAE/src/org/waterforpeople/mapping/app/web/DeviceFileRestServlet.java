@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.DeviceFileFindRestResponse;
 import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
 import org.waterforpeople.mapping.app.web.dto.DeviceFileRestResponse;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
@@ -46,7 +47,7 @@ public class DeviceFileRestServlet extends AbstractRestApiServlet {
 
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		DeviceFileRestResponse response = new DeviceFileRestResponse();
+
 		DeviceFileRestRequest importReq = (DeviceFileRestRequest) req;
 		if (DeviceFileRestRequest.LIST_DEVICE_FILES_ACTION.equals(importReq
 				.getAction())) {
@@ -59,11 +60,30 @@ public class DeviceFileRestServlet extends AbstractRestApiServlet {
 				DtoMarshaller.copyToDto(instance, dto);
 				dtoList.add(dto);
 			}
+			DeviceFileRestResponse response = new DeviceFileRestResponse();
 			cursor = BaseDAO.getCursor(dfList);
 			response.setDtoList(dtoList);
 			response.setCursor(cursor);
+			return response;
+		} else if (DeviceFileRestRequest.FIND_DEVICE_FILE_ACTION
+				.equals(importReq.getAction())) {
+			String deviceFileFullPath = importReq.getDeviceFullPath().trim();
+			Boolean foundFlag = false;
+			if (deviceFileFullPath != "" && deviceFileFullPath != null) {
+				DeviceFiles df = dfDao.findByUri(deviceFileFullPath);
+				DeviceFileFindRestResponse response = new DeviceFileFindRestResponse();
+				DeviceFilesDto dto=null;
+				if (df != null) {
+					dto = new DeviceFilesDto();
+					DtoMarshaller.copyToDto(df, dto);
+					foundFlag = true;
+				}
+				response.setFoundFlag(foundFlag);
+				response.setDeviceFile(dto);
+				return response;
+			}
 		}
-		return response;
+		return null;
 	}
 
 	@Override

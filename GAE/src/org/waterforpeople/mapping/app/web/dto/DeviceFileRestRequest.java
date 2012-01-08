@@ -11,8 +11,10 @@ public class DeviceFileRestRequest extends RestRequest {
 	 */
 	private static final long serialVersionUID = -1363635676106322333L;
 	public static final String LIST_DEVICE_FILES_ACTION = "listDeviceFiles";
+	public static final String FIND_DEVICE_FILE_ACTION = "findDeviceFile";
 	public static final String CURSOR_PARAM = "cursor";
 	public static final String PROCESSED_STATUS_PARAM = "processedStatus";
+	public static final String DEVICE_FULL_PATH="deviceFullPath";
 
 	public String getCursor() {
 		return cursor;
@@ -32,6 +34,7 @@ public class DeviceFileRestRequest extends RestRequest {
 
 	private String cursor = null;
 	private String processedStatus = null;
+	private String deviceFullPath = null;
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
@@ -41,6 +44,9 @@ public class DeviceFileRestRequest extends RestRequest {
 		if (req.getParameter(PROCESSED_STATUS_PARAM) != null) {
 			setProcessedStatus(req.getParameter(PROCESSED_STATUS_PARAM));
 		}
+		if(req.getParameter(DEVICE_FULL_PATH)!=null){
+			setDeviceFullPath(req.getParameter(DEVICE_FULL_PATH));
+		}
 
 	}
 
@@ -48,6 +54,14 @@ public class DeviceFileRestRequest extends RestRequest {
 	protected void populateErrors() {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void setDeviceFullPath(String deviceFullPath) {
+		this.deviceFullPath = deviceFullPath;
+	}
+
+	public String getDeviceFullPath() {
+		return deviceFullPath;
 	}
 
 }
