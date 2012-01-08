@@ -18,6 +18,7 @@ import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
@@ -682,35 +683,8 @@ public class BulkDataServiceClient {
 			if (arr != null) {
 
 				for (int i = 0; i < arr.length(); i++) {
-					DeviceFilesDto dto = new DeviceFilesDto();
 					JSONObject json = arr.getJSONObject(i);
-					if (json != null) {
-						if (json.has("processingMessage")) {
-							String x = json.getString("processingMessage");
-							dto.setProcessingMessage(x);
-						}
-						if (json.has("phoneNumber")) {
-							String x = json.getString("phoneNumber");
-							dto.setPhoneNumber(x);
-						}
-						if (json.has("processedStatus")) {
-							String x = json.getString("processedStatus");
-							dto.setProcessedStatus(x);
-						}
-						if (json.has("checksum")) {
-							String x = json.getString("checksum");
-							dto.setChecksum(x);
-						}
-						if (json.has("processDate")) {
-							String x = json.getString("processDate");
-							dto.setProcessDate(x);
-						}
-						if (json.has("URI")) {
-							String x = json.getString("URI");
-							dto.setURI(x);
-						}
-					}
-					dtoList.add(dto);
+					dtoList.add(parseDeviceFile(json));
 				}
 				return dtoList;
 			}
@@ -719,6 +693,41 @@ public class BulkDataServiceClient {
 		return null;
 	}
 
+	public static DeviceFilesDto parseDeviceFile(JSONObject json) throws JSONException{
+		DeviceFilesDto dto = new DeviceFilesDto();
+		if (json != null) {
+			if (json.has("processingMessage")) {
+				String x = json.getString("processingMessage");
+				dto.setProcessingMessage(x);
+			}
+			if (json.has("phoneNumber")) {
+				String x = json.getString("phoneNumber");
+				dto.setPhoneNumber(x);
+			}
+			if (json.has("processedStatus")) {
+				String x = json.getString("processedStatus");
+				dto.setProcessedStatus(x);
+			}
+			if (json.has("checksum")) {
+				String x = json.getString("checksum");
+				dto.setChecksum(x);
+			}
+			if (json.has("processDate")) {
+				String x = json.getString("processDate");
+				dto.setProcessDate(x);
+			}
+			if (json.has("URI")) {
+				String x = json.getString("URI");
+				dto.setURI(x);
+			}
+			if(json.has("surveyInstanceId")){
+				String x = json.getString("surveyInstanceId");
+				dto.setSurveyInstanceId(Long.parseLong(x));
+			}
+		}
+		return dto;
+	}
+	
 	/**
 	 * parses question responses into QuesitonDto objects
 	 * 
@@ -1043,7 +1052,7 @@ public class BulkDataServiceClient {
 	/**
 	 * converts the string into a JSON array object.
 	 */
-	private static JSONArray getJsonArray(String response) throws Exception {
+	public static JSONArray getJsonArray(String response) throws Exception {
 		System.out.println("response: " + response);
 		if (response != null) {
 			JSONObject json = new JSONObject(response);
