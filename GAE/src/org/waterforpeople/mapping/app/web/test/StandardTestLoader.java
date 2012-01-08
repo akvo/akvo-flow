@@ -361,14 +361,14 @@ public class StandardTestLoader {
 
 	private void clearAPs() {
 		DeleteObjectUtil dou = new DeleteObjectUtil();
-		 dou.deleteAllObjects("AccessPoint");
-		 writeln("Deleted APs");
-		 dou.deleteAllObjects("AccessPointScoreComputationItem");
-		 writeln("Deleted APSCI");
-		 dou.deleteAllObjects("AccessPointScoreDetail");
-		 writeln("Deleted APSD");
-		 dou.deleteAllObjects("AccessPointsStatusSummary");
-		 writeln("Deleted AccessPointsStatusSummary");
+//		 dou.deleteAllObjects("AccessPoint");
+//		 writeln("Deleted APs");
+//		 dou.deleteAllObjects("AccessPointScoreComputationItem");
+//		 writeln("Deleted APSCI");
+//		 dou.deleteAllObjects("AccessPointScoreDetail");
+//		 writeln("Deleted APSD");
+//		 dou.deleteAllObjects("AccessPointsStatusSummary");
+//		 writeln("Deleted AccessPointsStatusSummary");
 		dou.deleteAllObjects("Standard");
 		writeln("Deleted All the Standards");
 		dou.deleteAllObjects("LevelOfServiceScore");

@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.client.devicefiles;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
@@ -14,6 +15,8 @@ public class DeviceFilesDto extends BaseDto {
 	private String processingMessage = null;
 	private String phoneNumber;
 	private String checksum;
+	private Long surveyInstanceId = null;
+	
 	
 	public String getURI() {
 		return URI;
@@ -56,6 +59,12 @@ public class DeviceFilesDto extends BaseDto {
 	}
 	public void setChecksum(String checksum) {
 		this.checksum = checksum;
+	}
+	public void setSurveyInstanceId(Long surveyInstanceId) {
+		this.surveyInstanceId = surveyInstanceId;
+	}
+	public Long getSurveyInstanceId() {
+		return surveyInstanceId;
 	}
 
 }
