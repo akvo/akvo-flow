@@ -39,6 +39,7 @@ public class PrecacheService extends Service {
 	private Thread thread;
 	private static Semaphore lock = new Semaphore(1);
 	private PropertyUtil props;
+	private String[] countryArray;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -49,6 +50,7 @@ public class PrecacheService extends Service {
 	 * service is started
 	 */
 	public int onStartCommand(final Intent intent, int flags, int startid) {
+		countryArray = getResources().getStringArray(R.array.countries);
 		thread = new Thread(new Runnable() {
 			public void run() {
 				if (intent != null) {
@@ -72,7 +74,7 @@ public class PrecacheService extends Service {
 									.getProperty(ConstantUtil.SERVER_BASE);
 						}
 						String pointCountries = databaseAdapter
-								.findPreference(ConstantUtil.PRECACHE_POINT_COUNTRY_KEY);
+								.findPreference(ConstantUtil.PRECACHE_POINT_COUNTRY_KEY);						
 						if (pointCountries != null
 								&& pointCountries.trim().length() > 0
 								&& canDownload(precacheOption)) {
@@ -115,11 +117,16 @@ public class PrecacheService extends Service {
 	private void cachePoints(String countries, int limit) {
 		String[] countryList = countries.split(",");
 		for (int i = 0; i < countryList.length; i++) {
+			String countryName = countryList[i];
+			try{
+				int countryIdx = Integer.parseInt(countryName);
+				countryName = countryArray[countryIdx];
+			}catch(Exception e){}
 			PointOfInterestService pointOfInterestService = new PointOfInterestService(serverBase);
 			int count = 0;
 			do {
 				ArrayList<PointOfInterest> points = pointOfInterestService
-						.getNearbyAccessPoints(null, null, countryList[i],
+						.getNearbyAccessPoints(null, null, countryName,
 								serverBase, true);
 				if (points != null) {
 					for (int j = 0; j < points.size(); j++) {
