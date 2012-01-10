@@ -73,8 +73,8 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			StandardScoringDto dtoDist = new StandardScoringDto();
 			dtoDist.setGlobalStandard(false);
 			dtoDist.setCountryCode(dsItem.getCountryCode());
-			dtoDist.setDisplayName("Distance rule for: " + dsItem.getLocationType().toString());
-			dtoDist.setPositiveCriteria(dsItem.getMaxDistance().toString());
+			dtoDist.setDisplayName(dsItem.getLocationType().toString());
+			dtoDist.addPositiveCriteria(dsItem.getMaxDistance().toString());
 			dtoDist.setPositiveOperator("<");
 			dtoDist.setCriteriaType("Distance");
 			dtoDist.setPointType("WaterPoint");
@@ -113,7 +113,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 				dto.setPositiveOperator("!=");
 			}
 			dto.setMapToObject("AccessPoint");
-			dto.setPositiveCriteria(item.getPositiveValues().toString());
+			dto.setPositiveCriteria(item.getPositiveValues());
 			dto.setPositiveScore(1);
 			dto.setPointType("WaterPoint");
 			

@@ -73,12 +73,12 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			new DataTableHeader(TEXT_CONSTANTS.countryCode(), "countryCode",
 					true),
 			new DataTableHeader(TEXT_CONSTANTS.pointType(), "pointType", true),
+			new DataTableHeader(TEXT_CONSTANTS.criteriaType(), "criteriaType",
+					true),
 			new DataTableHeader(TEXT_CONSTANTS.description(), "displayName",
 					true),
 			new DataTableHeader(TEXT_CONSTANTS.evaluateField(),
 					"evaluateField", true),
-			new DataTableHeader(TEXT_CONSTANTS.criteriaType(), "criteriaType",
-					true),
 			new DataTableHeader(TEXT_CONSTANTS.positiveCriteria(),
 					"positiveCriteria", true),
 			new DataTableHeader(TEXT_CONSTANTS.positiveOperator(),
@@ -138,7 +138,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		loadCountries();
 		scoringTable.setVisible(false);
 		bucketsHPanel.add(scoreBucketsBox);
-		//loadStandardScoreBuckets();
+		// loadStandardScoreBuckets();
 		addScoringBucket.setText("Add Bucket");
 		addScoringBucket.addClickHandler(new ClickHandler() {
 			@Override
@@ -225,29 +225,30 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	}
 
 	private void loadStandardScoreBuckets() {
-//		svc.listStandardScoreBuckets(new AsyncCallback<ArrayList<StandardScoreBucketDto>>() {
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				// TODO Auto-generated method stub
-//
-//			}
-//
-//			@Override
-//			public void onSuccess(ArrayList<StandardScoreBucketDto> result) {
-//				if (result != null && !result.isEmpty()) {
-//					for (StandardScoreBucketDto item : result) {
-//						scoreBucketsBox.addItem(item.getName(), item.getKeyId()
-//								.toString());
-//					}
-//					scoreBucketsBox.setSelectedIndex(0);
-//					Long scoreBucketKey = Long.parseLong(scoreBucketsBox
-//							.getValue(scoreBucketsBox.getSelectedIndex()));
-//					requestScoringData(scoreBucketKey);
-//				}
-//			}
-//		});
-		
+		// svc.listStandardScoreBuckets(new
+		// AsyncCallback<ArrayList<StandardScoreBucketDto>>() {
+		//
+		// @Override
+		// public void onFailure(Throwable caught) {
+		// // TODO Auto-generated method stub
+		//
+		// }
+		//
+		// @Override
+		// public void onSuccess(ArrayList<StandardScoreBucketDto> result) {
+		// if (result != null && !result.isEmpty()) {
+		// for (StandardScoreBucketDto item : result) {
+		// scoreBucketsBox.addItem(item.getName(), item.getKeyId()
+		// .toString());
+		// }
+		// scoreBucketsBox.setSelectedIndex(0);
+		// Long scoreBucketKey = Long.parseLong(scoreBucketsBox
+		// .getValue(scoreBucketsBox.getSelectedIndex()));
+		// requestScoringData(scoreBucketKey);
+		// }
+		// }
+		// });
+
 		scoreBucketsBox.addItem("WaterPointLevelOfService");
 		scoreBucketsBox.setSelectedIndex(0);
 		requestScoringData(0L);
@@ -282,7 +283,6 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				for (CountryDto item : result) {
 					countryCodesList.add(item);
 				}
-				
 
 			}
 		});
@@ -316,7 +316,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		ListBox global = new ListBox();
 		global.addItem("Global");
 		global.addItem("Local");
-		if (item != null && item.getGlobalStandard()!=null && item.getGlobalStandard()) {
+		if (item != null && item.getGlobalStandard() != null
+				&& item.getGlobalStandard()) {
 			global.setSelectedIndex(0);
 		} else {
 			global.setSelectedIndex(1);
@@ -325,11 +326,11 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			if (item != null && item.getCountryCode() != null)
 				selectedCountry = item.getCountryCode();
 			populateCountryCodeControl(grid, selectedCountry, row);
-//			ListBox subValue = new ListBox();
-//			if (item != null && item.getSubValue() != null) {
-//				fetchSubCountries(item.getSubValue(), row, item.getSubValue());
-//			}
-//			grid.setWidget(row, 1, subValue);
+			// ListBox subValue = new ListBox();
+			// if (item != null && item.getSubValue() != null) {
+			// fetchSubCountries(item.getSubValue(), row, item.getSubValue());
+			// }
+			// grid.setWidget(row, 1, subValue);
 		}
 		grid.setWidget(row, 0, global);
 
@@ -345,9 +346,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					ListBox country = (ListBox) grid.getWidget(row, 1);
 					if (country != null)
 						grid.remove(country);
-//					ListBox subValue = (ListBox) grid.getWidget(row, 2);
-//					if (subValue != null)
-//						grid.remove(subValue);
+					// ListBox subValue = (ListBox) grid.getWidget(row, 2);
+					// if (subValue != null)
+					// grid.remove(subValue);
 				}
 			}
 		});
@@ -372,69 +373,98 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			// ToDo complete
 		}
 		grid.setWidget(row, 2, pointType);
+		// Handle Distance
+		configureCriteriaTypeBox(item, grid, row, 3);
 
-		// DisplayName
-		TextBox displayName = new TextBox();
-		if (item != null && item.getDisplayName() != null) {
-			displayName.setText(item.getDisplayName());
-		}
-		grid.setWidget(row, 3, displayName);
-
-		// evalField
-		ListBox fields = new ListBox();
-		fields.addItem(" ");
-		fields.setSelectedIndex(0);
-		int ifield = 1;
-		int i = 0;
-		if(item.getEvaluateField()==null){
-			TextBox distanceTB = new TextBox();
-			distanceTB.setText("Distance Rule");
-			grid.setWidget(row, 4, distanceTB);
-		}
-		else if (objectAttributes.size() > 0) {
-			for (Entry<String, String> field : objectAttributes.entrySet()) {
-				if (field.getValue() != null)
-					fields.addItem(field.getValue(), field.getKey());
-				else
-					fields.addItem(field.getKey(), field.getKey());
-				if (item != null && item.getEvaluateField() != null) {
-					if (item.getEvaluateField().toLowerCase().trim()
-							.equals(field.getKey().toLowerCase())) {
-						fields.setSelectedIndex(ifield);
-					}
+		if (((ListBox) grid.getWidget(row, 3)).getSelectedIndex() == 4) {
+			ListBox locationType = new ListBox();
+			locationType.addItem("Urban");
+			locationType.addItem("Peri-Urban");
+			locationType.addItem("Rural");
+			locationType.addItem("Other");
+			if (item != null && item.getDisplayName() != null) {
+				if (item.getDisplayName().equalsIgnoreCase("URBAN")) {
+					locationType.setSelectedIndex(0);
+				} else if (item.getDisplayName().equalsIgnoreCase("PERIURBAN")) {
+					locationType.setSelectedIndex(1);
+				} else if (item.getDisplayName().equals("RURAL")) {
+					locationType.setSelectedIndex(2);
+				} else if (item.getDisplayName().equals("OTHER")) {
+					locationType.setSelectedIndex(3);
 				}
-				++ifield;
 			}
-			grid.setWidget(row, 4, fields);
+			grid.setWidget(row, 4, locationType);
+			grid.setWidget(row, 5, new Label("Distance"));
+		} else {
+
+			// DisplayName
+			TextBox displayName = new TextBox();
+			if (item != null && item.getDisplayName() != null) {
+				displayName.setText(item.getDisplayName());
+			}
+			grid.setWidget(row, 4, displayName);
+
+			// evalField
+			ListBox fields = new ListBox();
+			fields.addItem(" ");
+			fields.setSelectedIndex(0);
+			int ifield = 1;
+			int i = 0;
+			if (item.getEvaluateField() == null) {
+				TextBox distanceTB = new TextBox();
+				distanceTB.setText("Distance Rule");
+				grid.setWidget(row, 5, distanceTB);
+			} else if (objectAttributes.size() > 0) {
+				for (Entry<String, String> field : objectAttributes.entrySet()) {
+					if (field.getValue() != null)
+						fields.addItem(field.getValue(), field.getKey());
+					else
+						fields.addItem(field.getKey(), field.getKey());
+					if (item != null && item.getEvaluateField() != null) {
+						if (item.getEvaluateField().toLowerCase().trim()
+								.equals(field.getKey().toLowerCase())) {
+							fields.setSelectedIndex(ifield);
+						}
+					}
+					++ifield;
+				}
+				grid.setWidget(row, 5, fields);
+			}
 		}
-		
 		// criteriatype
 
-		configureCriteriaTypeBox(item, grid, row, 5);
-
 		// positivecriteria
-		TextBox positiveCriteria = new TextBox();
+		VerticalPanel critPanel = new VerticalPanel();
+
 		if (item != null && item.getPositiveCriteria() != null) {
-			positiveCriteria.setText(item.getPositiveCriteria());
+			for (String posCrit : item.getPositiveCriteria()) {
+				HorizontalPanel hcritPanel = new HorizontalPanel();
+				TextBox positiveCriteria = new TextBox();
+				positiveCriteria.setText(posCrit);
+				hcritPanel.add(positiveCriteria);
+				Button delete = new Button("-");
+				hcritPanel.add(delete);
+				critPanel.add(hcritPanel);
+			}
+			Button add = new Button("+");
+			critPanel.add(add);
 		}
-		grid.setWidget(row, 6, positiveCriteria);
-//		loadCriteriaOperators(grid, row, 8,
-//				item.getCriteriaType(), item.getPositiveOperator());
+		grid.setWidget(row, 6, critPanel);
+		// loadCriteriaOperators(grid, row, 8,
+		// item.getCriteriaType(), item.getPositiveOperator());
 		// positiveoperator 8
 
-//		TextBox positiveScore = new TextBox();
-//		if (item != null && item.getPositiveScore() != null) {
-//			positiveScore.setText(item.getPositiveScore().toString());
-//		}
-//		grid.setWidget(row, 9, positiveScore);
+		// TextBox positiveScore = new TextBox();
+		// if (item != null && item.getPositiveScore() != null) {
+		// positiveScore.setText(item.getPositiveScore().toString());
+		// }
+		// grid.setWidget(row, 9, positiveScore);
 
-//		TextBox positiveMessage = new TextBox();
-//		if (item != null && item.getPositiveMessage() != null) {
-//			positiveMessage.setText(item.getPositiveMessage());
-//		}
-//		grid.setWidget(row, 10, positiveMessage);
-
-	
+		// TextBox positiveMessage = new TextBox();
+		// if (item != null && item.getPositiveMessage() != null) {
+		// positiveMessage.setText(item.getPositiveMessage());
+		// }
+		// grid.setWidget(row, 10, positiveMessage);
 
 		// effectivestartdate
 		DateBox effectiveStartDate = new DateBox();
@@ -544,28 +574,28 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			final String selectedCountry, final Integer row) {
 		ListBox country = new ListBox();
 		country.addItem(selectedCountry);
-//		int i = 1;
-//		country.addItem(" ");
-//		country.setSelectedIndex(0);
-//		for (CountryDto countryCode : countryCodesList) {
-//			country.addItem(countryCode.getDisplayName(),
-//					countryCode.getIsoAlpha2Code());
-//			if (selectedCountry != null) {
-//				if (countryCode.getIsoAlpha2Code().equals(selectedCountry)) {
-//					country.setSelectedIndex(i);
-//				}
-//			}
-//			i++;
-//		}
-//
+		// int i = 1;
+		// country.addItem(" ");
+		// country.setSelectedIndex(0);
+		// for (CountryDto countryCode : countryCodesList) {
+		// country.addItem(countryCode.getDisplayName(),
+		// countryCode.getIsoAlpha2Code());
+		// if (selectedCountry != null) {
+		// if (countryCode.getIsoAlpha2Code().equals(selectedCountry)) {
+		// country.setSelectedIndex(i);
+		// }
+		// }
+		// i++;
+		// }
+		//
 		grid.setWidget(row, 1, country);
-//		country.addChangeHandler(new ChangeHandler() {
-//
-//			@Override
-//			public void onChange(ChangeEvent event) {
-//				fetchSubCountries(selectedCountry, row, null);
-//			}
-//		});
+		// country.addChangeHandler(new ChangeHandler() {
+		//
+		// @Override
+		// public void onChange(ChangeEvent event) {
+		// fetchSubCountries(selectedCountry, row, null);
+		// }
+		// });
 	}
 
 	private void fetchSubCountries(String selectedCountry, final Integer row,
@@ -677,9 +707,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 		}
 		TextBox positiveCriteria = (TextBox) grid.getWidget(row, 7);
-		if (positiveCriteria.getText().trim().length() > 0) {
-			item.setPositiveCriteria(positiveCriteria.getText().trim());
-		}
+//		if (positiveCriteria.getText().trim().length() > 0) {
+//			item.setPositiveCriteria(positiveCriteria.getText().trim());
+//		}
 		ListBox positiveOp = (ListBox) grid.getWidget(row, 8);
 		if (positiveOp.getSelectedIndex() > 0) {
 			String op = positiveOp.getItemText(positiveOp.getSelectedIndex());
@@ -838,6 +868,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 						loadCriteriaOperators(grid, row, column + 6,
 								"NotNumber", negOper);
 					} else if (target.getSelectedIndex() == 4) {
+						// Add urban or periurban
+
 						loadCriteriaOperators(grid, row, column + 2,
 								"Distance", posOper);
 						loadCriteriaOperators(grid, row, column + 6,
@@ -853,11 +885,10 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private void setupOperatorListBox(StandardScoringDto item, Grid grid,
 			Integer row, Integer column) {
 		if (item.getCriteriaType() != null) {
-			
-				loadCriteriaOperators(grid, row, column + 2, item.getCriteriaType(),
-						currentItem.getPositiveOperator());
-				
-			
+
+			loadCriteriaOperators(grid, row, column + 4,
+					item.getCriteriaType(), currentItem.getPositiveOperator());
+
 		}
 	}
 

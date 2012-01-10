@@ -1,9 +1,10 @@
 package org.waterforpeople.mapping.app.gwt.client.standardscoring;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.gallatinsystems.standards.domain.StandardScoring.Scope;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class StandardScoringDto extends BaseDto {
 
@@ -19,7 +20,7 @@ public class StandardScoringDto extends BaseDto {
 	// AccessPoint or Survey
 	private String mapToObject = null;
 	private String evaluateField = null;
-	private String positiveCriteria = null;
+	private ArrayList<String> positiveCriteria = null;
 	private String positiveOperator = null;
 	private String criteriaType = null;
 	private Integer positiveScore = null;
@@ -98,12 +99,19 @@ public class StandardScoringDto extends BaseDto {
 		this.evaluateField = evaluateField;
 	}
 
-	public String getPositiveCriteria() {
+	public ArrayList<String> getPositiveCriteria() {
 		return positiveCriteria;
 	}
 
-	public void setPositiveCriteria(String positiveCriteria) {
-		this.positiveCriteria = positiveCriteria;
+	public void setPositiveCriteria(ArrayList<String> positiveCriteria){
+		this.positiveCriteria=positiveCriteria;
+	}
+	
+	public void addPositiveCriteria(String positiveCriteria) {
+		if(this.positiveCriteria==null){
+			this.positiveCriteria = new ArrayList<String>();
+		}
+		this.positiveCriteria.add(positiveCriteria);
 	}
 
 	public String getPositiveOperator() {
