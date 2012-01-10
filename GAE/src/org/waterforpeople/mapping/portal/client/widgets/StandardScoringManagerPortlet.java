@@ -32,6 +32,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -307,7 +308,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	}
 
 	@Override
-	public void bindRow(Grid grid, StandardScoringDto item, final int row) {
+	public void bindRow(final Grid grid, StandardScoringDto item, final int row) {
 		if (item != null) {
 			currentItem = item;
 		} else {
@@ -448,6 +449,20 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 			Button add = new Button("+");
 			critPanel.add(add);
+			HandlerRegistration addClickHandler = add
+					.addClickHandler(new ClickHandler() {
+
+						@Override
+						public void onClick(ClickEvent event) {
+							VerticalPanel critVertPanel = (VerticalPanel) grid
+									.getWidget(row, 6);
+							HorizontalPanel hpanel = new HorizontalPanel();
+							hpanel.add(new TextBox());
+							hpanel.add(new Button("-"));
+							//critVertPanel.add(hpanel);
+							critVertPanel.insert(hpanel, critVertPanel.getWidgetCount()-2);
+						}
+					});
 		}
 		grid.setWidget(row, 6, critPanel);
 		// loadCriteriaOperators(grid, row, 8,
@@ -707,9 +722,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 		}
 		TextBox positiveCriteria = (TextBox) grid.getWidget(row, 7);
-//		if (positiveCriteria.getText().trim().length() > 0) {
-//			item.setPositiveCriteria(positiveCriteria.getText().trim());
-//		}
+		// if (positiveCriteria.getText().trim().length() > 0) {
+		// item.setPositiveCriteria(positiveCriteria.getText().trim());
+		// }
 		ListBox positiveOp = (ListBox) grid.getWidget(row, 8);
 		if (positiveOp.getSelectedIndex() > 0) {
 			String op = positiveOp.getItemText(positiveOp.getSelectedIndex());
