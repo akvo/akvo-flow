@@ -58,7 +58,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		// }
 		StandardDao standardDao = new StandardDao();
 		DistanceStandardDao distanceStandardDao = new DistanceStandardDao();
-		
+
 		StandardType standardType = null;
 		if (scoreBucketId == 0) {
 			standardType = StandardType.WaterPointLevelOfService;
@@ -68,8 +68,10 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		List<Standard> sList = standardDao
 				.listByAccessPointTypeAndStandardType(
 						AccessPointType.WATER_POINT, standardType);
-		List<DistanceStandard> distanceList = distanceStandardDao.listDistanceStandard(StandardType.WaterPointLevelOfService,null);
-		for(DistanceStandard dsItem : distanceList){
+		List<DistanceStandard> distanceList = distanceStandardDao
+				.listDistanceStandard(StandardType.WaterPointLevelOfService,
+						null);
+		for (DistanceStandard dsItem : distanceList) {
 			StandardScoringDto dtoDist = new StandardScoringDto();
 			dtoDist.setGlobalStandard(false);
 			dtoDist.setCountryCode(dsItem.getCountryCode());
@@ -88,7 +90,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			dto.setCountryCode(item.getCountry());
 			dto.setDisplayName(item.getStandardDescription());
 			dto.setEvaluateField(item.getAccessPointAttribute());
-			if (item.getCountry()==null)
+			if (item.getCountry() == null)
 				dto.setGlobalStandard(true);
 			else
 				dto.setGlobalStandard(false);
@@ -99,36 +101,41 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			} else if (item.getStandardComparison().equals(
 					Standard.StandardComparisons.greaterthan)) {
 				dto.setPositiveOperator(">");
-			}else if (item.getStandardComparison().equals(
+			} else if (item.getStandardComparison().equals(
 					Standard.StandardComparisons.lessthan)) {
 				dto.setPositiveOperator("<");
-			}else if (item.getStandardComparison().equals(
+			} else if (item.getStandardComparison().equals(
 					Standard.StandardComparisons.greaterthanorequal)) {
 				dto.setPositiveOperator(">=");
-			}else if (item.getStandardComparison().equals(
+			} else if (item.getStandardComparison().equals(
 					Standard.StandardComparisons.lessthanorequal)) {
 				dto.setPositiveOperator("<=");
-			}else if (item.getStandardComparison().equals(
+			} else if (item.getStandardComparison().equals(
 					Standard.StandardComparisons.notequal)) {
 				dto.setPositiveOperator("!=");
 			}
 			dto.setMapToObject("AccessPoint");
-			dto.setPositiveCriteria(item.getPositiveValues());
+			for (String crit : item.getPositiveValues()) {
+				dto.addPositiveCriteria(crit);
+			}
 			dto.setPositiveScore(1);
 			dto.setPointType("WaterPoint");
-			
-			if(item.getAcessPointAttributeType().equals(StandardValueType.Boolean)){
+
+			if (item.getAcessPointAttributeType().equals(
+					StandardValueType.Boolean)) {
 				dto.setCriteriaType("Boolean");
-			}else if (item.getAcessPointAttributeType().equals(StandardValueType.Number)){
+			} else if (item.getAcessPointAttributeType().equals(
+					StandardValueType.Number)) {
 				dto.setCriteriaType("Number");
-			}else if(item.getAccessPointType().equals(StandardValueType.String)){
+			} else if (item.getAccessPointType().equals(
+					StandardValueType.String)) {
 				dto.setCriteriaType("String");
 			}
 			dto.setEffectiveEndDate(item.getEffectiveEndDate());
 			dto.setEffectiveStartDate(item.getEffectiveStartDate());
 			ssDtoList.add(dto);
 		}
-		
+
 		ResponseDto<ArrayList<StandardScoringDto>> response = new ResponseDto<ArrayList<StandardScoringDto>>();
 		response.setCursorString(StandardScoringDao.getCursor(sList));
 		response.setPayload(ssDtoList);
