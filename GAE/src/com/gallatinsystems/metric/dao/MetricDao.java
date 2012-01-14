@@ -47,6 +47,7 @@ public class MetricDao extends BaseDAO<Metric> {
 				paramMap);
 		appendNonNullParam("valueType", filterString, paramString, "String", valueType,
 				paramMap);
+		query.setOrdering("name asc");		
 		if (filterString.toString().trim().length() > 0) {
 			query.setFilter(filterString.toString());
 			query.declareParameters(paramString.toString());

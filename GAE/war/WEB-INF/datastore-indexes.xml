@@ -440,5 +440,18 @@
         <property name="levelOfServiceScoreType" direction="asc"/>
         <property name="floor" direction="asc"/>
     </datastore-index>
+        <datastore-index kind="Metric" ancestor="false">
+        <property name="group" direction="asc"/>
+        <property name="valueType" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="Metric" ancestor="false">
+        <property name="group" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="Metric" ancestor="false">
+        <property name="valueType" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
     
 </datastore-indexes>
