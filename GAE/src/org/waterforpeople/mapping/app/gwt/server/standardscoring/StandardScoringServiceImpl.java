@@ -12,9 +12,7 @@ import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardContain
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoreBucketDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerService;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-import org.waterforpeople.mapping.domain.AccessPoint.LocationType;
 
 import com.gallatinsystems.common.util.ClassAttributeUtil;
 import com.gallatinsystems.common.util.StringUtil;
@@ -25,11 +23,12 @@ import com.gallatinsystems.standards.dao.StandardDao;
 import com.gallatinsystems.standards.dao.StandardScoringDao;
 import com.gallatinsystems.standards.domain.DistanceStandard;
 import com.gallatinsystems.standards.domain.Standard;
-import com.gallatinsystems.standards.domain.Standard.StandardScope;
+import com.gallatinsystems.standards.domain.Standard.StandardComparisons;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.standards.domain.Standard.StandardValueType;
+import com.gallatinsystems.standards.domain.StandardDef;
 import com.gallatinsystems.standards.domain.StandardScoreBucket;
-import com.gallatinsystems.standards.domain.StandardScoring;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class StandardScoringServiceImpl extends RemoteServiceServlet implements
@@ -73,83 +72,175 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 						null);
 		for (DistanceStandard dsItem : distanceList) {
 			StandardScoringDto dtoDist = new StandardScoringDto();
-			dtoDist.setGlobalStandard(false);
-			dtoDist.setCountryCode(dsItem.getCountryCode());
-			dtoDist.setDisplayName(dsItem.getLocationType().toString());
-			dtoDist.addPositiveCriteria(dsItem.getMaxDistance().toString());
-			dtoDist.setPositiveOperator("<");
-			dtoDist.setCriteriaType("Distance");
-			dtoDist.setPointType("WaterPoint");
-			dtoDist.setKeyId(dsItem.getKey().getId());
-			dtoDist.setEffectiveStartDate(dsItem.getEffectiveStartDate());
-			dtoDist.setEffectiveEndDate(dsItem.getEffectiveEndDate());
+			dtoDist = marshallStandard(dsItem);
+			dtoDist.setScoreBucket(standardType.toString());
 			ssDtoList.add(dtoDist);
 		}
 		for (Standard item : sList) {
-			StandardScoringDto dto = new StandardScoringDto();
-			dto.setCountryCode(item.getCountry());
-			dto.setDisplayName(item.getStandardDescription());
-			dto.setEvaluateField(item.getAccessPointAttribute());
-			if (item.getCountry() == null)
-				dto.setGlobalStandard(true);
-			else
-				dto.setGlobalStandard(false);
-			dto.setKeyId(item.getKey().getId());
-			if (item.getStandardComparison().equals(
-					Standard.StandardComparisons.equal)) {
-				dto.setPositiveOperator("==");
-			} else if (item.getStandardComparison().equals(
-					Standard.StandardComparisons.greaterthan)) {
-				dto.setPositiveOperator(">");
-			} else if (item.getStandardComparison().equals(
-					Standard.StandardComparisons.lessthan)) {
-				dto.setPositiveOperator("<");
-			} else if (item.getStandardComparison().equals(
-					Standard.StandardComparisons.greaterthanorequal)) {
-				dto.setPositiveOperator(">=");
-			} else if (item.getStandardComparison().equals(
-					Standard.StandardComparisons.lessthanorequal)) {
-				dto.setPositiveOperator("<=");
-			} else if (item.getStandardComparison().equals(
-					Standard.StandardComparisons.notequal)) {
-				dto.setPositiveOperator("!=");
-			}
-			dto.setMapToObject("AccessPoint");
-			for (String crit : item.getPositiveValues()) {
-				dto.addPositiveCriteria(crit);
-			}
-			dto.setPositiveScore(1);
-			dto.setPointType("WaterPoint");
-
-			if (item.getAcessPointAttributeType().equals(
-					StandardValueType.Boolean)) {
-				dto.setCriteriaType("Boolean");
-			} else if (item.getAcessPointAttributeType().equals(
-					StandardValueType.Number)) {
-				dto.setCriteriaType("Number");
-			} else if (item.getAccessPointType().equals(
-					StandardValueType.String)) {
-				dto.setCriteriaType("String");
-			}
-			dto.setEffectiveEndDate(item.getEffectiveEndDate());
-			dto.setEffectiveStartDate(item.getEffectiveStartDate());
+			StandardScoringDto dto = marshallStandard(item);
+			dto.setScoreBucket(standardType.toString());
 			ssDtoList.add(dto);
 		}
-
 		ResponseDto<ArrayList<StandardScoringDto>> response = new ResponseDto<ArrayList<StandardScoringDto>>();
 		response.setCursorString(StandardScoringDao.getCursor(sList));
 		response.setPayload(ssDtoList);
 		return response;
 	}
 
+	private StandardScoringDto marshallStandard(StandardDef item) {
+		if (item instanceof Standard) {
+			StandardScoringDto dto = new StandardScoringDto();
+			dto.setCountryCode(((Standard) item).getCountry());
+			dto.setDisplayName(item.getStandardDescription());
+			dto.setEvaluateField(((Standard) item).getAccessPointAttribute());
+			if (((Standard) item).getCountry() == null)
+				dto.setGlobalStandard(true);
+			else
+				dto.setGlobalStandard(false);
+			dto.setKeyId(((Standard) item).getKey().getId());
+			if (((Standard) item).getStandardComparison() != null) {
+				if (((Standard) item).getStandardComparison().equals(
+						Standard.StandardComparisons.equal)) {
+					dto.setPositiveOperator("==");
+				} else if (((Standard) item).getStandardComparison().equals(
+						Standard.StandardComparisons.greaterthan)) {
+					dto.setPositiveOperator(">");
+				} else if (((Standard) item).getStandardComparison().equals(
+						Standard.StandardComparisons.lessthan)) {
+					dto.setPositiveOperator("<");
+				} else if (((Standard) item).getStandardComparison().equals(
+						Standard.StandardComparisons.greaterthanorequal)) {
+					dto.setPositiveOperator(">=");
+				} else if (((Standard) item).getStandardComparison().equals(
+						Standard.StandardComparisons.lessthanorequal)) {
+					dto.setPositiveOperator("<=");
+				} else if (((Standard) item).getStandardComparison().equals(
+						Standard.StandardComparisons.notequal)) {
+					dto.setPositiveOperator("!=");
+				}
+			}
+			dto.setMapToObject("AccessPoint");
+			for (String crit : ((Standard) item).getPositiveValues()) {
+				dto.addPositiveCriteria(crit);
+			}
+			dto.setPositiveScore(1);
+			dto.setPointType("WaterPoint");
+			if (((Standard) item).getAcessPointAttributeType() != null) {
+				if (((Standard) item).getAcessPointAttributeType().equals(
+						StandardValueType.Boolean)) {
+					dto.setCriteriaType("Boolean");
+				} else if (((Standard) item).getAcessPointAttributeType()
+						.equals(StandardValueType.Number)) {
+					dto.setCriteriaType("Number");
+				} else if (((Standard) item).getAccessPointType().equals(
+						StandardValueType.String)) {
+					dto.setCriteriaType("String");
+				}
+			}
+			dto.setEffectiveEndDate(item.getEffectiveEndDate());
+			dto.setEffectiveStartDate(item.getEffectiveStartDate());
+			return dto;
+		} else {
+			StandardScoringDto dtoDist = new StandardScoringDto();
+			dtoDist.setGlobalStandard(false);
+			dtoDist.setCountryCode(item.getCountryCode());
+			dtoDist.setDisplayName(((DistanceStandard) item).getLocationType()
+					.toString());
+			dtoDist.addPositiveCriteria(((DistanceStandard) item)
+					.getMaxDistance().toString());
+			dtoDist.setPositiveOperator("<");
+			dtoDist.setCriteriaType("Distance");
+			dtoDist.setPointType("WaterPoint");
+			dtoDist.setKeyId(((DistanceStandard) item).getKey().getId());
+			dtoDist.setEffectiveStartDate(((DistanceStandard) item)
+					.getEffectiveStartDate());
+			dtoDist.setEffectiveEndDate(item.getEffectiveEndDate());
+			return dtoDist;
+		}
+	}
+
 	@Override
 	public StandardScoringDto save(StandardScoringDto item) {
-		StandardScoringDao ssDao = new StandardScoringDao();
-		StandardScoring canonical = new StandardScoring();
-		DtoMarshaller.copyToCanonical(canonical, item);
-		ssDao.save(canonical);
-		DtoMarshaller.copyToDto(canonical, item);
-		return item;
+		StandardDef standard = null;
+		if (item.getCriteriaType().equals("DISTANCE")) {
+			DistanceStandardDao dsDao = new DistanceStandardDao();
+			standard = new DistanceStandard();
+			standard = setStandardFields(standard, item);
+			standard = dsDao.save((DistanceStandard) standard);
+			item = marshallStandard(standard);
+			return item;
+		} else {
+			StandardDao ssDao = new StandardDao();
+			standard = new Standard();
+			standard = setStandardFields(standard, item);
+			((Standard) standard).setPositiveValues(item.getPositiveCriteria());
+			((Standard) standard).setAccessPointAttribute(item
+					.getEvaluateField());
+			((Standard) standard).setAcessPointAttributeType(StandardValueType
+					.valueOf(item.getCriteriaType()));
+			standard = ssDao.save(((Standard) standard));
+			item = marshallStandard(standard);
+			return item;
+		}
+	}
+
+	private StandardDef setStandardFields(StandardDef standard,
+			StandardScoringDto item) {
+		if (item.getKeyId() != null) {
+			// by default, the JDO key kind uses the Simple name
+			standard.setKey(KeyFactory.createKey(standard.getClass()
+					.getSimpleName(), item.getKeyId()));
+		}
+		String standardType = item.getScoreBucket();
+		if (standardType.equals(StandardType.WaterPointLevelOfService
+				.toString())) {
+			standard.setStandardType(StandardType.WaterPointLevelOfService);
+		} else if (standardType.equals(StandardType.WaterPointSustainability
+				.toString())) {
+			standard.setStandardType(StandardType.WaterPointSustainability);
+		}
+		if (item.getPointType().equals("WATER_POINT")) {
+			standard.setAccessPointType(AccessPointType.WATER_POINT);
+		} else if (item.getPointType().equals("HOUSEHOLD")) {
+			standard.setAccessPointType(AccessPointType.HOUSEHOLD);
+		} else if (item.getPointType().equals("PUBLIC_INSTITUTION")) {
+			standard.setAccessPointType(AccessPointType.PUBLIC_INSTITUTION);
+		} else if (item.getPointType().equals("SANITATION")) {
+			standard.setAccessPointType(AccessPointType.SANITATION_POINT);
+		}
+		if (item.getCountryCode() != null)
+			standard.setCountryCode(item.getCountryCode());
+		StandardComparisons sc = null;
+		if (item.getPositiveOperator().equals("==")) {
+			sc = StandardComparisons.equal;
+		} else if (item.getPositiveOperator().equals("<")) {
+			sc = StandardComparisons.lessthan;
+		} else if (item.getPositiveOperator().equals(">")) {
+			sc = StandardComparisons.greaterthan;
+		} else if (item.getPositiveOperator().equals(">=")) {
+			sc = StandardComparisons.greaterthanorequal;
+		} else if (item.getPositiveOperator().equals("<=")) {
+			sc = StandardComparisons.lessthanorequal;
+		} else if (item.getPositiveOperator().equals("!=")) {
+			sc = StandardComparisons.notequal;
+		}
+
+		// criteriaType.addItem("Text", "String");
+		// criteriaType.addItem("Number", "Number");
+		// criteriaType.addItem("True/False", "Boolean");
+		// criteriaType.addItem("Distance", "Distance");
+		StandardValueType apAttrType = null;
+		if (item.getCriteriaType().equalsIgnoreCase("Number")) {
+			apAttrType = StandardValueType.Number;
+		} else if (item.getCriteriaType().equalsIgnoreCase("STRING")) {
+			apAttrType = StandardValueType.String;
+		} else if (item.getCriteriaType().equalsIgnoreCase("BOOLEAN")) {
+			apAttrType = StandardValueType.Boolean;
+		}
+		standard.setEffectiveStartDate(item.getEffectiveStartDate());
+		standard.setEffectiveEndDate(item.getEffectiveEndDate());
+		standard.setStandardDescription(item.getDisplayName());
+		return standard;
 	}
 
 	@Override

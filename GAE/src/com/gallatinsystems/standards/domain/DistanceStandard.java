@@ -13,7 +13,7 @@ import com.gallatinsystems.standards.domain.Standard.StandardScope;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 
 @PersistenceCapable
-public class DistanceStandard extends BaseDomain {
+public class DistanceStandard extends BaseDomain implements StandardDef {
 
 	/**
 	 * ds.setAccessPointType(AccessPointType.WATER_POINT);

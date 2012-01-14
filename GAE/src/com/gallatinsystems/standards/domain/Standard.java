@@ -10,7 +10,7 @@ import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
-public class Standard extends BaseDomain {
+public class Standard extends BaseDomain implements StandardDef{
 
 	public enum StandardScope {
 		Global, Local
@@ -171,5 +171,16 @@ public class Standard extends BaseDomain {
 		result.append("}");
 
 		return result.toString();
+	}
+
+	@Override
+	public String getCountryCode() {
+		
+		return this.getCountry();
+	}
+
+	@Override
+	public void setCountryCode(String countryCode) {
+		this.setCountry(countryCode);
 	}
 }

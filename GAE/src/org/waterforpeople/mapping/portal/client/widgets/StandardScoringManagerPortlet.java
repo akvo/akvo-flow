@@ -527,7 +527,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			for (String posCrit : item.getPositiveCriteria()) {
 				buildCriteriaEntry(grid, posCrit, row, critPanel, i);
 			}
-		} else if(criteriaBox.getSelectedIndex()>0){
+		} else if (criteriaBox.getSelectedIndex() > 0) {
 			buildCriteriaEntry(grid, null, row, critPanel, i);
 		}
 		grid.setWidget(row, 6, critPanel);
@@ -597,7 +597,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					@Override
 					public void onSuccess(StandardScoringDto result) {
 						Grid grid = scoringTable.getGrid();
-						TextBox id = (TextBox) grid.getWidget(row, 18);
+						TextBox id = (TextBox) grid.getWidget(row, 10);
 						id.setText(result.getKeyId().toString());
 					}
 				});
@@ -743,13 +743,16 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		StandardScoringDto item = new StandardScoringDto();
 		Grid grid = scoringTable.getGrid();
 
-		Long scoreBucketKey = Long.parseLong(scoreBucketsBox
-				.getValue(scoreBucketsBox.getSelectedIndex()));
-		if (scoreBucketKey != null) {
-			// item.setScoreBucketId(scoreBucketKey);
-			item.setScoreBucket(scoreBucketsBox.getItemText(scoreBucketsBox
-					.getSelectedIndex()));
-		}
+		item.setScoreBucket(scoreBucketsBox.getValue(scoreBucketsBox
+				.getSelectedIndex()));
+
+		// // Long scoreBucketKey = Long.parseLong(scoreBucketsBox
+		// // .getValue(scoreBucketsBox.getSelectedIndex()));
+		// if (scoreBucketKey != null) {
+		// // item.setScoreBucketId(scoreBucketKey);
+		// item.setScoreBucket(scoreBucketsBox.getItemText(scoreBucketsBox
+		// .getSelectedIndex()));
+		// }
 
 		ListBox global = (ListBox) grid.getWidget(row, 0);
 		if (global.getSelectedIndex() == 0) {
@@ -760,7 +763,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 		ListBox country = (ListBox) grid.getWidget(row, 1);
 		if (country != null) {
-			if (country.getSelectedIndex() > 0) {
+			if (!country.getValue(country.getSelectedIndex()).trim().equals("")) {
 				item.setCountryCode(country.getValue(country.getSelectedIndex()));
 			}
 		}
@@ -797,50 +800,57 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 		}
 
-		ListBox fields = (ListBox) grid.getWidget(row, 4);
+		TextBox desc = (TextBox) grid.getWidget(row, 4);
+		if (desc.getText().trim() != "") {
+			item.setDisplayName(desc.getText().trim());
+		}
+
+		ListBox fields = (ListBox) grid.getWidget(row, 5);
 		if (fields.getSelectedIndex() > 0) {
 			item.setEvaluateField(fields.getValue(fields.getSelectedIndex()));
 		}
 
-		VerticalPanel positiveCriteria = (VerticalPanel) grid.getWidget(row, 5);
+		VerticalPanel positiveCriteria = (VerticalPanel) grid.getWidget(row, 6);
 		for (int i = 0; i < positiveCriteria.getWidgetCount(); i++) {
-			if (positiveCriteria.getWidget(i).getClass().getName()
-					.equals("TextBox")) {
-				String value = ((TextBox) positiveCriteria.getWidget(i))
-						.getText();
-				item.addPositiveCriteria(value);
-			} else if (positiveCriteria.getWidget(i).getClass().getName()
-					.equals("ListBox")) {
-				ListBox truefalse = (ListBox) positiveCriteria.getWidget(i);
-				if (truefalse.getSelectedIndex() == 0) {
-					item.addPositiveCriteria("null");
-				} else if (truefalse.getSelectedIndex() == 1) {
-					item.addPositiveCriteria("True");
-				} else if (truefalse.getSelectedIndex() == 2) {
-					item.addPositiveCriteria("False");
+			if (positiveCriteria.getWidget(i) instanceof HorizontalPanel) {
+				HorizontalPanel hpanel = (HorizontalPanel) positiveCriteria
+						.getWidget(i);
+				String controlType = hpanel.getWidget(0).getClass().getName();
+				if (hpanel.getWidget(0) instanceof TextBox) {
+					String value = ((TextBox) hpanel.getWidget(0)).getText();
+					item.addPositiveCriteria(value);
+				} else if (hpanel.getWidget(0) instanceof ListBox) {
+					ListBox truefalse = (ListBox) hpanel.getWidget(0);
+					if (truefalse.getSelectedIndex() == 0) {
+						item.addPositiveCriteria("null");
+					} else if (truefalse.getSelectedIndex() == 1) {
+						item.addPositiveCriteria("True");
+					} else if (truefalse.getSelectedIndex() == 2) {
+						item.addPositiveCriteria("False");
+					}
 				}
 			}
 		}
 		// if (positiveCriteria.getText().trim().length() > 0) {
 		// item.setPositiveCriteria(positiveCriteria.getText().trim());
 		// }
-		ListBox positiveOp = (ListBox) grid.getWidget(row, 6);
+		ListBox positiveOp = (ListBox) grid.getWidget(row, 7);
 		if (positiveOp.getSelectedIndex() > 0) {
 			String op = positiveOp.getItemText(positiveOp.getSelectedIndex());
 			item.setPositiveOperator(op);
 		}
 
 		// effectivestartdate
-		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 7);
+		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 8);
 		if (effectiveStartDate.getValue() != null) {
 			item.setEffectiveStartDate(effectiveStartDate.getValue());
 		}
 		// effectiveenddate
-		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 8);
+		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 9);
 		if (effectiveEndDate.getValue() != null) {
 			item.setEffectiveEndDate(effectiveEndDate.getValue());
 		}
-		TextBox keyBox = (TextBox) grid.getWidget(row, 9);
+		TextBox keyBox = (TextBox) grid.getWidget(row, 10);
 		if (keyBox.getValue().trim() != "" && keyBox.getValue() != null) {
 			item.setKeyId(Long.parseLong(keyBox.getText()));
 		}
@@ -926,22 +936,22 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 					if (target.getSelectedIndex() == 1) {
 						bindAttributes(grid, null, row);
-						bindCriteria(grid,null,row);
+						bindCriteria(grid, null, row);
 						loadCriteriaOperators(grid, row, column + 4, "String",
 								posOper);
 					} else if (target.getSelectedIndex() == 2) {
 						bindAttributes(grid, null, row);
-						bindCriteria(grid,null,row);
+						bindCriteria(grid, null, row);
 						loadCriteriaOperators(grid, row, column + 4, "Number",
 								posOper);
 					} else if (target.getSelectedIndex() == 3) {
 						bindAttributes(grid, null, row);
-						bindCriteria(grid,null,row);
+						bindCriteria(grid, null, row);
 						loadCriteriaOperators(grid, row, column + 4, "Boolean",
 								posOper);
 					} else if (target.getSelectedIndex() == 4) {
 						bindAttributes(grid, null, row);
-						bindCriteria(grid,null,row);
+						bindCriteria(grid, null, row);
 						loadCriteriaOperators(grid, row, column + 4,
 								"Distance", posOper);
 					}
