@@ -68,7 +68,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 				.listByAccessPointTypeAndStandardType(
 						AccessPointType.WATER_POINT, standardType);
 		List<DistanceStandard> distanceList = distanceStandardDao
-				.listDistanceStandard(StandardType.WaterPointLevelOfService,
+				.listDistanceStandard(standardType,
 						null);
 		for (DistanceStandard dsItem : distanceList) {
 			StandardScoringDto dtoDist = new StandardScoringDto();
@@ -132,7 +132,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 				} else if (((Standard) item).getAcessPointAttributeType()
 						.equals(StandardValueType.Number)) {
 					dto.setCriteriaType("Number");
-				} else if (((Standard) item).getAccessPointType().equals(
+				} else if (((Standard) item).getAcessPointAttributeType().equals(
 						StandardValueType.String)) {
 					dto.setCriteriaType("String");
 				}

@@ -259,8 +259,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			@Override
 			public void onChange(ChangeEvent event) {
 				ListBox scoreBuckets = (ListBox) event.getSource();
-				Long scoreBucketKey = Long.parseLong(scoreBuckets
-						.getValue(scoreBuckets.getSelectedIndex()));
+				Long scoreBucketKey = Integer.valueOf(scoreBuckets.getSelectedIndex()).longValue();
 				requestScoringData(scoreBucketKey);
 
 			}
@@ -462,14 +461,14 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 						truefalse.setSelectedIndex(3);
 					}
 				hcritPanel.add(truefalse);
-			} else if (selectedValue.equals("String")) {
+			} else if (selectedValue.equalsIgnoreCase("String")||selectedValue.equalsIgnoreCase("Text")) {
 				TextBox positiveCriteria = new TextBox();
 				if (posCrit != null)
 					positiveCriteria.setText(posCrit);
 				hcritPanel.add(positiveCriteria);
 			}
 			Button delete = new Button("-");
-			delete.setText(i.toString());
+			delete.setTitle(i.toString());
 			hcritPanel.add(delete);
 
 			i++;
@@ -480,41 +479,13 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					HorizontalPanel hcritPanel = (HorizontalPanel) grid
 							.getWidget(row, 6);
 					hcritPanel.remove(Integer.parseInt(((Button) event
-							.getSource()).getText()));
+							.getSource()).getTitle()));
 				}
 			});
 			critPanel.add(hcritPanel);
-			Button add = new Button("+");
-			critPanel.add(add);
-			HandlerRegistration addClickHandler = add
-					.addClickHandler(new ClickHandler() {
-
-						@Override
-						public void onClick(ClickEvent event) {
-							VerticalPanel critVertPanel = (VerticalPanel) grid
-									.getWidget(row, 6);
-							HorizontalPanel hpanel = new HorizontalPanel();
-							ListBox criteriaBox = ((ListBox) grid.getWidget(
-									row, 3));
-							String selectedValue = criteriaBox
-									.getValue(criteriaBox.getSelectedIndex());
-							if (selectedValue.equals("Boolean")) {
-								ListBox truefalse = new ListBox();
-								truefalse.addItem("");
-								truefalse.addItem("True");
-								truefalse.addItem("False");
-								hpanel.add(truefalse);
-							} else {
-								hpanel.add(new TextBox());
-							}
-							hpanel.add(new Button("-"));
-							// critVertPanel.add(hpanel);
-							critVertPanel.insert(hpanel,
-									critVertPanel.getWidgetCount() - 2);
-						}
-					});
+			
+			
 		}
-
 	}
 
 	private void bindCriteria(final Grid grid, StandardScoringDto item,
@@ -527,9 +498,39 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			for (String posCrit : item.getPositiveCriteria()) {
 				buildCriteriaEntry(grid, posCrit, row, critPanel, i);
 			}
+			Button add = new Button("+");
+			critPanel.add(add);
+			HandlerRegistration addClickHandler = add
+			.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					VerticalPanel critVertPanel = (VerticalPanel) grid
+							.getWidget(row, 6);
+					HorizontalPanel hpanel = new HorizontalPanel();
+					ListBox criteriaBox = ((ListBox) grid.getWidget(
+							row, 3));
+					String selectedValue = criteriaBox
+							.getValue(criteriaBox.getSelectedIndex());
+					if (selectedValue.equals("Boolean")) {
+						ListBox truefalse = new ListBox();
+						truefalse.addItem("");
+						truefalse.addItem("True");
+						truefalse.addItem("False");
+						hpanel.add(truefalse);
+					} else {
+						hpanel.add(new TextBox());
+					}
+					hpanel.add(new Button("-"));
+					// critVertPanel.add(hpanel);
+					critVertPanel.insert(hpanel,
+							critVertPanel.getWidgetCount() - 2);
+				}
+			});
 		} else if (criteriaBox.getSelectedIndex() > 0) {
 			buildCriteriaEntry(grid, null, row, critPanel, i);
 		}
+		
 		grid.setWidget(row, 6, critPanel);
 	}
 
