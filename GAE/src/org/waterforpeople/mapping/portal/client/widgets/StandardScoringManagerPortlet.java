@@ -411,7 +411,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			fields.setSelectedIndex(0);
 			int ifield = 1;
 			int i = 0;
-			if (item.getEvaluateField() == null) {
+			if ((item != null && item.getEvaluateField() == null)
+					|| ((ListBox) grid.getWidget(row, 3)).getSelectedIndex() == 4) {
 				TextBox distanceTB = new TextBox();
 				distanceTB.setText("Distance Rule");
 				grid.setWidget(row, 5, distanceTB);
@@ -434,95 +435,100 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		}
 	}
 
+	private void buildCriteriaEntry(final Grid grid, String posCrit,
+			final int row, VerticalPanel critPanel, Integer i) {
+		final HorizontalPanel hcritPanel = new HorizontalPanel();
+		ListBox criteriaBox = ((ListBox) grid.getWidget(row, 3));
+		String selectedValue = criteriaBox.getValue(criteriaBox
+				.getSelectedIndex());
+		if (selectedValue.equals("Distance") || selectedValue.equals("Number")) {
+			TextBox positiveCriteria = new TextBox();
+			if (posCrit != null)
+				positiveCriteria.setText(posCrit);
+			hcritPanel.add(positiveCriteria);
+			critPanel.add(hcritPanel);
+		} else {
+			if (selectedValue.equals("Boolean")) {
+				ListBox truefalse = new ListBox();
+				truefalse.addItem("");
+				truefalse.addItem("True");
+				truefalse.addItem("False");
+				if (posCrit != null)
+					if (Boolean.parseBoolean(posCrit)) {
+						truefalse.setSelectedIndex(1);
+					} else if (!Boolean.parseBoolean(posCrit)) {
+						truefalse.setSelectedIndex(2);
+					} else {
+						truefalse.setSelectedIndex(3);
+					}
+				hcritPanel.add(truefalse);
+			} else if (selectedValue.equals("String")) {
+				TextBox positiveCriteria = new TextBox();
+				if (posCrit != null)
+					positiveCriteria.setText(posCrit);
+				hcritPanel.add(positiveCriteria);
+			}
+			Button delete = new Button("-");
+			delete.setText(i.toString());
+			hcritPanel.add(delete);
+
+			i++;
+			delete.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					HorizontalPanel hcritPanel = (HorizontalPanel) grid
+							.getWidget(row, 6);
+					hcritPanel.remove(Integer.parseInt(((Button) event
+							.getSource()).getText()));
+				}
+			});
+			critPanel.add(hcritPanel);
+			Button add = new Button("+");
+			critPanel.add(add);
+			HandlerRegistration addClickHandler = add
+					.addClickHandler(new ClickHandler() {
+
+						@Override
+						public void onClick(ClickEvent event) {
+							VerticalPanel critVertPanel = (VerticalPanel) grid
+									.getWidget(row, 6);
+							HorizontalPanel hpanel = new HorizontalPanel();
+							ListBox criteriaBox = ((ListBox) grid.getWidget(
+									row, 3));
+							String selectedValue = criteriaBox
+									.getValue(criteriaBox.getSelectedIndex());
+							if (selectedValue.equals("Boolean")) {
+								ListBox truefalse = new ListBox();
+								truefalse.addItem("");
+								truefalse.addItem("True");
+								truefalse.addItem("False");
+								hpanel.add(truefalse);
+							} else {
+								hpanel.add(new TextBox());
+							}
+							hpanel.add(new Button("-"));
+							// critVertPanel.add(hpanel);
+							critVertPanel.insert(hpanel,
+									critVertPanel.getWidgetCount() - 2);
+						}
+					});
+		}
+
+	}
+
 	private void bindCriteria(final Grid grid, StandardScoringDto item,
 			final int row) {
 		// positivecriteria
 		final VerticalPanel critPanel = new VerticalPanel();
-		// criteriaType.addItem(" ");
-		// criteriaType.addItem("Text", "String");
-		// criteriaType.addItem("Number", "Number");
-		// criteriaType.addItem("True/False", "Boolean");
-		// criteriaType.addItem("Distance", "Distance");
+		Integer i = 0;
+		ListBox criteriaBox = ((ListBox) grid.getWidget(row, 3));
 		if (item != null && item.getPositiveCriteria() != null) {
-			Integer i = 0;
 			for (String posCrit : item.getPositiveCriteria()) {
-				final HorizontalPanel hcritPanel = new HorizontalPanel();
-				ListBox criteriaBox = ((ListBox) grid.getWidget(row, 3));
-				String selectedValue = criteriaBox.getValue(criteriaBox
-						.getSelectedIndex());
-				if (selectedValue.equals("Distance")
-						|| selectedValue.equals("Number")) {
-					TextBox positiveCriteria = new TextBox();
-					positiveCriteria.setText(posCrit);
-					hcritPanel.add(positiveCriteria);
-					critPanel.add(hcritPanel);
-				} else {
-					if (selectedValue.equals("Boolean")) {
-						ListBox truefalse = new ListBox();
-						truefalse.addItem("");
-						truefalse.addItem("True");
-						truefalse.addItem("False");
-						if (Boolean.parseBoolean(posCrit)) {
-							truefalse.setSelectedIndex(1);
-						} else if (!Boolean.parseBoolean(posCrit)) {
-							truefalse.setSelectedIndex(2);
-						} else {
-							truefalse.setSelectedIndex(3);
-						}
-						hcritPanel.add(truefalse);
-					} else if (selectedValue.equals("String")) {
-						TextBox positiveCriteria = new TextBox();
-						positiveCriteria.setText(posCrit);
-						hcritPanel.add(positiveCriteria);
-					}
-					Button delete = new Button("-");
-					delete.setText(i.toString());
-					hcritPanel.add(delete);
-
-					i++;
-					delete.addClickHandler(new ClickHandler() {
-
-						@Override
-						public void onClick(ClickEvent event) {
-							HorizontalPanel hcritPanel = (HorizontalPanel) grid
-									.getWidget(row, 6);
-							hcritPanel.remove(Integer.parseInt(((Button) event
-									.getSource()).getText()));
-						}
-					});
-					critPanel.add(hcritPanel);
-					Button add = new Button("+");
-					critPanel.add(add);
-					HandlerRegistration addClickHandler = add
-							.addClickHandler(new ClickHandler() {
-
-								@Override
-								public void onClick(ClickEvent event) {
-									VerticalPanel critVertPanel = (VerticalPanel) grid
-											.getWidget(row, 6);
-									HorizontalPanel hpanel = new HorizontalPanel();
-									ListBox criteriaBox = ((ListBox) grid
-											.getWidget(row, 3));
-									String selectedValue = criteriaBox
-											.getValue(criteriaBox
-													.getSelectedIndex());
-									if (selectedValue.equals("Boolean")) {
-										ListBox truefalse = new ListBox();
-										truefalse.addItem("");
-										truefalse.addItem("True");
-										truefalse.addItem("False");
-										hpanel.add(truefalse);
-									} else {
-										hpanel.add(new TextBox());
-									}
-									hpanel.add(new Button("-"));
-									// critVertPanel.add(hpanel);
-									critVertPanel.insert(hpanel,
-											critVertPanel.getWidgetCount() - 2);
-								}
-							});
-				}
+				buildCriteriaEntry(grid, posCrit, row, critPanel, i);
 			}
+		} else if(criteriaBox.getSelectedIndex()>0){
+			buildCriteriaEntry(grid, null, row, critPanel, i);
 		}
 		grid.setWidget(row, 6, critPanel);
 	}
@@ -909,12 +915,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 				if (target.getSelectedIndex() > 0) {
 					String posOper = null;
-					String negOper = null;
 					if (currentItem != null) {
 						if (currentItem.getPositiveOperator() != null)
 							posOper = currentItem.getPositiveOperator();
-						if (currentItem.getNegativeOperator() != null)
-							negOper = currentItem.getNegativeOperator();
 					}
 					// criteriaType.addItem("Text", "String");
 					// criteriaType.addItem("Number", "Number");
@@ -922,23 +925,28 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					// criteriaType.addItem("Distance", "Distance");
 
 					if (target.getSelectedIndex() == 1) {
-						bindAttributes(grid,null,row);
+						bindAttributes(grid, null, row);
+						bindCriteria(grid,null,row);
 						loadCriteriaOperators(grid, row, column + 4, "String",
 								posOper);
 					} else if (target.getSelectedIndex() == 2) {
-						bindAttributes(grid,null,row);
+						bindAttributes(grid, null, row);
+						bindCriteria(grid,null,row);
 						loadCriteriaOperators(grid, row, column + 4, "Number",
 								posOper);
 					} else if (target.getSelectedIndex() == 3) {
-						bindAttributes(grid,null,row);
+						bindAttributes(grid, null, row);
+						bindCriteria(grid,null,row);
 						loadCriteriaOperators(grid, row, column + 4, "Boolean",
 								posOper);
 					} else if (target.getSelectedIndex() == 4) {
-						bindAttributes(grid,null,row);
+						bindAttributes(grid, null, row);
+						bindCriteria(grid,null,row);
 						loadCriteriaOperators(grid, row, column + 4,
 								"Distance", posOper);
 					}
 				}
+
 			}
 
 		});
