@@ -307,13 +307,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 	}
 
-	@Override
-	public void bindRow(final Grid grid, StandardScoringDto item, final int row) {
-		if (item != null) {
-			currentItem = item;
-		} else {
-			currentItem = null;
-		}
+	private void bindGlobal(final Grid grid, StandardScoringDto item,
+			final int row) {
 		ListBox global = new ListBox();
 		global.addItem("Global");
 		global.addItem("Local");
@@ -354,6 +349,10 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 		});
 
+	}
+
+	private void bindPointType(final Grid grid, StandardScoringDto item,
+			final int row) {
 		ListBox pointType = new ListBox();
 		pointType.addItem(" ");
 		pointType.addItem("Water Point");
@@ -374,9 +373,10 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			// ToDo complete
 		}
 		grid.setWidget(row, 2, pointType);
-		// Handle Distance
-		configureCriteriaTypeBox(item, grid, row, 3);
+	}
 
+	private void bindAttributes(final Grid grid, StandardScoringDto item,
+			final int row) {
 		if (((ListBox) grid.getWidget(row, 3)).getSelectedIndex() == 4) {
 			ListBox locationType = new ListBox();
 			locationType.addItem("Urban");
@@ -432,55 +432,103 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				grid.setWidget(row, 5, fields);
 			}
 		}
-		// criteriatype
+	}
 
+	private void bindCriteria(final Grid grid, StandardScoringDto item,
+			final int row) {
 		// positivecriteria
-		VerticalPanel critPanel = new VerticalPanel();
-
+		final VerticalPanel critPanel = new VerticalPanel();
+		// criteriaType.addItem(" ");
+		// criteriaType.addItem("Text", "String");
+		// criteriaType.addItem("Number", "Number");
+		// criteriaType.addItem("True/False", "Boolean");
+		// criteriaType.addItem("Distance", "Distance");
 		if (item != null && item.getPositiveCriteria() != null) {
+			Integer i = 0;
 			for (String posCrit : item.getPositiveCriteria()) {
-				HorizontalPanel hcritPanel = new HorizontalPanel();
-				TextBox positiveCriteria = new TextBox();
-				positiveCriteria.setText(posCrit);
-				hcritPanel.add(positiveCriteria);
-				Button delete = new Button("-");
-				hcritPanel.add(delete);
-				critPanel.add(hcritPanel);
-			}
-			Button add = new Button("+");
-			critPanel.add(add);
-			HandlerRegistration addClickHandler = add
-					.addClickHandler(new ClickHandler() {
+				final HorizontalPanel hcritPanel = new HorizontalPanel();
+				ListBox criteriaBox = ((ListBox) grid.getWidget(row, 3));
+				String selectedValue = criteriaBox.getValue(criteriaBox
+						.getSelectedIndex());
+				if (selectedValue.equals("Distance")
+						|| selectedValue.equals("Number")) {
+					TextBox positiveCriteria = new TextBox();
+					positiveCriteria.setText(posCrit);
+					hcritPanel.add(positiveCriteria);
+					critPanel.add(hcritPanel);
+				} else {
+					if (selectedValue.equals("Boolean")) {
+						ListBox truefalse = new ListBox();
+						truefalse.addItem("");
+						truefalse.addItem("True");
+						truefalse.addItem("False");
+						if (Boolean.parseBoolean(posCrit)) {
+							truefalse.setSelectedIndex(1);
+						} else if (!Boolean.parseBoolean(posCrit)) {
+							truefalse.setSelectedIndex(2);
+						} else {
+							truefalse.setSelectedIndex(3);
+						}
+						hcritPanel.add(truefalse);
+					} else if (selectedValue.equals("String")) {
+						TextBox positiveCriteria = new TextBox();
+						positiveCriteria.setText(posCrit);
+						hcritPanel.add(positiveCriteria);
+					}
+					Button delete = new Button("-");
+					delete.setText(i.toString());
+					hcritPanel.add(delete);
+
+					i++;
+					delete.addClickHandler(new ClickHandler() {
 
 						@Override
 						public void onClick(ClickEvent event) {
-							VerticalPanel critVertPanel = (VerticalPanel) grid
+							HorizontalPanel hcritPanel = (HorizontalPanel) grid
 									.getWidget(row, 6);
-							HorizontalPanel hpanel = new HorizontalPanel();
-							hpanel.add(new TextBox());
-							hpanel.add(new Button("-"));
-							//critVertPanel.add(hpanel);
-							critVertPanel.insert(hpanel, critVertPanel.getWidgetCount()-2);
+							hcritPanel.remove(Integer.parseInt(((Button) event
+									.getSource()).getText()));
 						}
 					});
+					critPanel.add(hcritPanel);
+					Button add = new Button("+");
+					critPanel.add(add);
+					HandlerRegistration addClickHandler = add
+							.addClickHandler(new ClickHandler() {
+
+								@Override
+								public void onClick(ClickEvent event) {
+									VerticalPanel critVertPanel = (VerticalPanel) grid
+											.getWidget(row, 6);
+									HorizontalPanel hpanel = new HorizontalPanel();
+									ListBox criteriaBox = ((ListBox) grid
+											.getWidget(row, 3));
+									String selectedValue = criteriaBox
+											.getValue(criteriaBox
+													.getSelectedIndex());
+									if (selectedValue.equals("Boolean")) {
+										ListBox truefalse = new ListBox();
+										truefalse.addItem("");
+										truefalse.addItem("True");
+										truefalse.addItem("False");
+										hpanel.add(truefalse);
+									} else {
+										hpanel.add(new TextBox());
+									}
+									hpanel.add(new Button("-"));
+									// critVertPanel.add(hpanel);
+									critVertPanel.insert(hpanel,
+											critVertPanel.getWidgetCount() - 2);
+								}
+							});
+				}
+			}
 		}
 		grid.setWidget(row, 6, critPanel);
-		// loadCriteriaOperators(grid, row, 8,
-		// item.getCriteriaType(), item.getPositiveOperator());
-		// positiveoperator 8
+	}
 
-		// TextBox positiveScore = new TextBox();
-		// if (item != null && item.getPositiveScore() != null) {
-		// positiveScore.setText(item.getPositiveScore().toString());
-		// }
-		// grid.setWidget(row, 9, positiveScore);
-
-		// TextBox positiveMessage = new TextBox();
-		// if (item != null && item.getPositiveMessage() != null) {
-		// positiveMessage.setText(item.getPositiveMessage());
-		// }
-		// grid.setWidget(row, 10, positiveMessage);
-
+	private void bindDates(final Grid grid, StandardScoringDto item,
+			final int row) {
 		// effectivestartdate
 		DateBox effectiveStartDate = new DateBox();
 		if (item != null && item.getEffectiveStartDate() != null) {
@@ -495,11 +543,19 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 		grid.setWidget(row, 9, effectiveEndDate);
 
+	}
+
+	private void bindKey(final Grid grid, StandardScoringDto item, final int row) {
 		TextBox keyBox = new TextBox();
 		if (item != null && item.getKeyId() != null) {
 			keyBox.setText(item.getKeyId().toString());
 		}
 		grid.setWidget(row, 10, keyBox);
+
+	}
+
+	private void bindButtons(final Grid grid, StandardScoringDto item,
+			final int row) {
 		HorizontalPanel hpanel = new HorizontalPanel();
 		Button saveButton = new Button();
 		saveButton.setText(TEXT_CONSTANTS.save());
@@ -585,6 +641,25 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		});
 	}
 
+	@Override
+	public void bindRow(final Grid grid, StandardScoringDto item, final int row) {
+		if (item != null) {
+			currentItem = item;
+		} else {
+			currentItem = null;
+		}
+		bindGlobal(grid, item, row);
+		bindPointType(grid, item, row);
+		// Handle Distance
+		configureCriteriaTypeBox(item, grid, row, 3);
+		bindAttributes(grid, item, row);
+		// criteriatype
+		bindCriteria(grid, item, row);
+		bindDates(grid, item, row);
+		bindKey(grid, item, row);
+		bindButtons(grid, item, row);
+	}
+
 	private void populateCountryCodeControl(Grid grid,
 			final String selectedCountry, final Integer row) {
 		ListBox country = new ListBox();
@@ -665,7 +740,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		Long scoreBucketKey = Long.parseLong(scoreBucketsBox
 				.getValue(scoreBucketsBox.getSelectedIndex()));
 		if (scoreBucketKey != null) {
-			item.setScoreBucketId(scoreBucketKey);
+			// item.setScoreBucketId(scoreBucketKey);
 			item.setScoreBucket(scoreBucketsBox.getItemText(scoreBucketsBox
 					.getSelectedIndex()));
 		}
@@ -684,29 +759,23 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 		}
 
-		ListBox subValue = (ListBox) grid.getWidget(row, 2);
-		if (subValue != null) {
-			if (subValue.getSelectedIndex() > 0) {
-				item.setSubValue(subValue.getItemText(subValue
-						.getSelectedIndex()));
-			}
-		}
-
-		ListBox pointType = (ListBox) grid.getWidget(row, 3);
+		// 0=null
+		// 1=WP
+		// 2=Sani
+		// 3=HH
+		// 4=PI
+		ListBox pointType = (ListBox) grid.getWidget(row, 2);
 		if (pointType.getSelectedIndex() == 1) {
 			item.setPointType("WATER_POINT");
+		} else if (pointType.getSelectedIndex() == 2) {
+			item.setPointType("SANITATION");
+		} else if (pointType.getSelectedIndex() == 3) {
+			item.setPointType("HOUSEHOLD");
+		} else if (pointType.getSelectedIndex() == 4) {
+			item.setPointType("PUBLICINSTITUTION");
 		}
 
-		TextBox displayName = (TextBox) grid.getWidget(row, 4);
-		if (displayName.getText().trim().length() > 0) {
-			item.setDisplayName(displayName.getText().trim());
-		}
-
-		ListBox fields = (ListBox) grid.getWidget(row, 5);
-		if (fields.getSelectedIndex() > 0) {
-			item.setEvaluateField(fields.getValue(fields.getSelectedIndex()));
-		}
-		ListBox criteriaType = (ListBox) grid.getWidget(row, 6);
+		ListBox criteriaType = (ListBox) grid.getWidget(row, 3);
 		if (criteriaType.getSelectedIndex() > 0) {
 			if (criteriaType.getSelectedIndex() == 1) {
 				// text
@@ -721,72 +790,51 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				item.setCriteriaType("Distance");
 			}
 		}
-		TextBox positiveCriteria = (TextBox) grid.getWidget(row, 7);
+
+		ListBox fields = (ListBox) grid.getWidget(row, 4);
+		if (fields.getSelectedIndex() > 0) {
+			item.setEvaluateField(fields.getValue(fields.getSelectedIndex()));
+		}
+
+		VerticalPanel positiveCriteria = (VerticalPanel) grid.getWidget(row, 5);
+		for (int i = 0; i < positiveCriteria.getWidgetCount(); i++) {
+			if (positiveCriteria.getWidget(i).getClass().getName()
+					.equals("TextBox")) {
+				String value = ((TextBox) positiveCriteria.getWidget(i))
+						.getText();
+				item.addPositiveCriteria(value);
+			} else if (positiveCriteria.getWidget(i).getClass().getName()
+					.equals("ListBox")) {
+				ListBox truefalse = (ListBox) positiveCriteria.getWidget(i);
+				if (truefalse.getSelectedIndex() == 0) {
+					item.addPositiveCriteria("null");
+				} else if (truefalse.getSelectedIndex() == 1) {
+					item.addPositiveCriteria("True");
+				} else if (truefalse.getSelectedIndex() == 2) {
+					item.addPositiveCriteria("False");
+				}
+			}
+		}
 		// if (positiveCriteria.getText().trim().length() > 0) {
 		// item.setPositiveCriteria(positiveCriteria.getText().trim());
 		// }
-		ListBox positiveOp = (ListBox) grid.getWidget(row, 8);
+		ListBox positiveOp = (ListBox) grid.getWidget(row, 6);
 		if (positiveOp.getSelectedIndex() > 0) {
 			String op = positiveOp.getItemText(positiveOp.getSelectedIndex());
 			item.setPositiveOperator(op);
 		}
-		TextBox positiveScore = (TextBox) grid.getWidget(row, 9);
-		if (positiveScore.getText().trim().length() > 0) {
-			Integer score = Integer.parseInt(positiveScore.getText().trim());
-			item.setPositiveScore(score);
-		}
-		TextBox positiveMessage = (TextBox) grid.getWidget(row, 10);
-		if (positiveMessage.getText().trim().length() > 0) {
-			if (positiveMessage.getText().trim().length() < 500)
-				item.setPositiveMessage(positiveMessage.getText().trim());
-			else
-				item.setPositiveMessage(positiveMessage.getText().trim()
-						.substring(0, 498));
-		}
-		TextBox negativeCriteria = (TextBox) grid.getWidget(row, 11);
-		if (negativeCriteria.getText().trim().length() > 0) {
-			item.setNegativeCriteria(negativeCriteria.getText());
-		}
-		ListBox negativeOp = (ListBox) grid.getWidget(row, 12);
-		if (negativeOp.getSelectedIndex() > 0) {
-			item.setNegativeOperator(negativeOp.getItemText(negativeOp
-					.getSelectedIndex()));
-		}
-
-		TextBox negativeScore = (TextBox) grid.getWidget(row, 13);
-		if (negativeScore.getText().trim().length() > 0) {
-			Integer score = Integer.parseInt(negativeScore.getText().trim());
-			item.setNegativeScore(score);
-		}
-
-		ListBox negativeOverride = (ListBox) grid.getWidget(row, 14);
-		if (negativeOverride.getSelectedIndex() == 0) {
-			item.setNegativeOverride(false);
-		} else {
-			item.setNegativeOverride(true);
-		}
-
-		TextBox negativeMessage = (TextBox) grid.getWidget(row, 15);
-		if (negativeMessage.getText().trim().length() > 0) {
-			if (negativeMessage.getText().trim().length() < 500) {
-				item.setNegativeMessage(negativeMessage.getText().trim());
-			} else {
-				item.setNegativeMessage(negativeMessage.getText().trim()
-						.substring(0, 498));
-			}
-		}
 
 		// effectivestartdate
-		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 16);
+		DateBox effectiveStartDate = (DateBox) grid.getWidget(row, 7);
 		if (effectiveStartDate.getValue() != null) {
 			item.setEffectiveStartDate(effectiveStartDate.getValue());
 		}
 		// effectiveenddate
-		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 17);
+		DateBox effectiveEndDate = (DateBox) grid.getWidget(row, 8);
 		if (effectiveEndDate.getValue() != null) {
 			item.setEffectiveEndDate(effectiveEndDate.getValue());
 		}
-		TextBox keyBox = (TextBox) grid.getWidget(row, 18);
+		TextBox keyBox = (TextBox) grid.getWidget(row, 9);
 		if (keyBox.getValue().trim() != "" && keyBox.getValue() != null) {
 			item.setKeyId(Long.parseLong(keyBox.getText()));
 		}
@@ -851,6 +899,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			@Override
 			public void onChange(ChangeEvent event) {
 				// set operator choices
+
 				ListBox target = ((ListBox) event.getSource());
 				String title = target.getTitle();
 				Grid grid = (Grid) target.getParent();
@@ -867,28 +916,27 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 						if (currentItem.getNegativeOperator() != null)
 							negOper = currentItem.getNegativeOperator();
 					}
-					if (target.getSelectedIndex() == 1) {
-						loadCriteriaOperators(grid, row, column + 2, "String",
-								posOper);
-						loadCriteriaOperators(grid, row, column + 6, "String",
-								negOper);
-					} else if (target.getSelectedIndex() == 2) {
-						loadCriteriaOperators(grid, row, column + 2, "Number",
-								posOper);
-						loadCriteriaOperators(grid, row, column + 6, "Number",
-								negOper);
-					} else if (target.getSelectedIndex() == 3) {
-						loadCriteriaOperators(grid, row, column + 2,
-								"NotNumber", posOper);
-						loadCriteriaOperators(grid, row, column + 6,
-								"NotNumber", negOper);
-					} else if (target.getSelectedIndex() == 4) {
-						// Add urban or periurban
+					// criteriaType.addItem("Text", "String");
+					// criteriaType.addItem("Number", "Number");
+					// criteriaType.addItem("True/False", "Boolean");
+					// criteriaType.addItem("Distance", "Distance");
 
-						loadCriteriaOperators(grid, row, column + 2,
+					if (target.getSelectedIndex() == 1) {
+						bindAttributes(grid,null,row);
+						loadCriteriaOperators(grid, row, column + 4, "String",
+								posOper);
+					} else if (target.getSelectedIndex() == 2) {
+						bindAttributes(grid,null,row);
+						loadCriteriaOperators(grid, row, column + 4, "Number",
+								posOper);
+					} else if (target.getSelectedIndex() == 3) {
+						bindAttributes(grid,null,row);
+						loadCriteriaOperators(grid, row, column + 4, "Boolean",
+								posOper);
+					} else if (target.getSelectedIndex() == 4) {
+						bindAttributes(grid,null,row);
+						loadCriteriaOperators(grid, row, column + 4,
 								"Distance", posOper);
-						loadCriteriaOperators(grid, row, column + 6,
-								"Distance", negOper);
 					}
 				}
 			}
