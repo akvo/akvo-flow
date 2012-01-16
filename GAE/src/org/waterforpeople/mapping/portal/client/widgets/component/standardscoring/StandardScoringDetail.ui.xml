@@ -3,6 +3,9 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
 		/* Add CSS here. See the GWT docs on UI Binder for more details */
+		.body{
+			background-color:white;
+		}
 		.important {
 			font-weight: bold;
 		}

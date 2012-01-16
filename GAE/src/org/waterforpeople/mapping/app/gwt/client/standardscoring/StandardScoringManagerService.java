@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.client.standardscoring;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeMap;
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
@@ -17,4 +16,6 @@ public interface StandardScoringManagerService extends RemoteService {
 	TreeMap<String, String> listObjectAttributes(String objectName);
 	StandardScoreBucketDto save(StandardScoreBucketDto item);
 	ArrayList<StandardContainerDto> listStandardContainer(String standardType);
+	Long saveCompoundRule(Long compoundRuleId,String standardType, Long leftRuleId, Long rightRuleId, String operator);
+	void listCompoundRule(String standardType);
 }

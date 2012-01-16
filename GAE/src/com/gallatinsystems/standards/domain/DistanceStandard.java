@@ -32,7 +32,7 @@ public class DistanceStandard extends BaseDomain implements StandardDef {
 	private String standardDescription = null;
 	private Date effectiveStartDate = null;
 	private Date effectiveEndDate = null;
-	
+	private Boolean partOfCompoundRule = null;
 	public Date getEffectiveStartDate() {
 		return effectiveStartDate;
 	}
@@ -103,5 +103,16 @@ public class DistanceStandard extends BaseDomain implements StandardDef {
 
 	public void setMaxDistance(Integer maxDistance) {
 		this.maxDistance = maxDistance;
+	}
+
+	@Override
+	public void setPartOfCompoundRule(Boolean partOfCompoundRule) {
+		this.partOfCompoundRule= partOfCompoundRule;
+	}
+
+	@Override
+	public Boolean getPartOfCompoundRule() {
+		// TODO Auto-generated method stub
+		return partOfCompoundRule;
 	}
 }

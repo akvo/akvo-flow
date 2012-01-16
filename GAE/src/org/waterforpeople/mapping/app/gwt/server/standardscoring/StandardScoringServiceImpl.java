@@ -18,9 +18,12 @@ import com.gallatinsystems.common.util.ClassAttributeUtil;
 import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.standards.dao.CompoundStandardDao;
 import com.gallatinsystems.standards.dao.DistanceStandardDao;
 import com.gallatinsystems.standards.dao.StandardDao;
 import com.gallatinsystems.standards.dao.StandardScoringDao;
+import com.gallatinsystems.standards.domain.CompoundStandard;
+import com.gallatinsystems.standards.domain.CompoundStandard.Operator;
 import com.gallatinsystems.standards.domain.DistanceStandard;
 import com.gallatinsystems.standards.domain.Standard;
 import com.gallatinsystems.standards.domain.Standard.StandardComparisons;
@@ -68,8 +71,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 				.listByAccessPointTypeAndStandardType(
 						AccessPointType.WATER_POINT, standardType);
 		List<DistanceStandard> distanceList = distanceStandardDao
-				.listDistanceStandard(standardType,
-						null);
+				.listDistanceStandard(standardType, null);
 		for (DistanceStandard dsItem : distanceList) {
 			StandardScoringDto dtoDist = new StandardScoringDto();
 			dtoDist = marshallStandard(dsItem);
@@ -132,8 +134,8 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 				} else if (((Standard) item).getAcessPointAttributeType()
 						.equals(StandardValueType.Number)) {
 					dto.setCriteriaType("Number");
-				} else if (((Standard) item).getAcessPointAttributeType().equals(
-						StandardValueType.String)) {
+				} else if (((Standard) item).getAcessPointAttributeType()
+						.equals(StandardValueType.String)) {
 					dto.setCriteriaType("String");
 				}
 			}
@@ -359,5 +361,35 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		attributesMap.put("standardScope", "String");
 		attributesMap.put("standardType", "String");
 		return attributesMap;
+	}
+
+	@Override
+	public Long saveCompoundRule(Long compoundRuleId, String standardType,
+			Long leftRuleId, Long rightRuleId, String operator) {
+		CompoundStandardDao csDao = new CompoundStandardDao();
+		CompoundStandard cs = null;
+		if (compoundRuleId != null) {
+			cs = csDao.getByKey(compoundRuleId);
+		} else {
+			cs = new CompoundStandard();
+		}
+		cs.setStandardIdLeft(leftRuleId);
+		cs.setStandardIdRight(rightRuleId);
+		if (standardType.equalsIgnoreCase("waterpointlevelofservice"))
+			cs.setStandardType(StandardType.WaterPointLevelOfService);
+		else
+			cs.setStandardType(StandardType.WaterPointSustainability);
+		if (operator.equalsIgnoreCase("and"))
+			cs.setOperator(Operator.AND);
+		else
+			cs.setOperator(Operator.OR);
+		cs = csDao.save(cs);
+		return cs.getKey().getId();
+	}
+
+	@Override
+	public void listCompoundRule(String standardType) {
+		// TODO Auto-generated method stub
+
 	}
 }

@@ -16,6 +16,7 @@ import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoring
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerService;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.portal.client.widgets.component.standardscoring.CompoundRulePopup;
 
 import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
@@ -94,6 +95,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 	private VerticalPanel contentPane;
 	private Button addNewButton = new Button(TEXT_CONSTANTS.add());
+	private Button addNewCompoundRuleButton = new Button(
+			TEXT_CONSTANTS.addNewCompoundRule());
 	private VerticalPanel tablePanel = new VerticalPanel();
 	private HorizontalPanel bucketsHPanel = new HorizontalPanel();
 	private Button addScoringBucket = new Button();
@@ -187,11 +190,22 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 		tablePanel.add(scoringTable);
 		tablePanel.add(addNewButton);
+		tablePanel.add(addNewCompoundRuleButton);
 		addNewButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				scoringTable.addNewRow(null);
+			}
+		});
+		addNewCompoundRuleButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				final CompoundRulePopup cpp = new CompoundRulePopup(
+						scoreBucketsBox.getValue(scoreBucketsBox
+								.getSelectedIndex()), svc);
+				cpp.show();
 			}
 		});
 		scrollP.add(tablePanel);
@@ -259,7 +273,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			@Override
 			public void onChange(ChangeEvent event) {
 				ListBox scoreBuckets = (ListBox) event.getSource();
-				Long scoreBucketKey = Integer.valueOf(scoreBuckets.getSelectedIndex()).longValue();
+				Long scoreBucketKey = Integer.valueOf(
+						scoreBuckets.getSelectedIndex()).longValue();
 				requestScoringData(scoreBucketKey);
 
 			}
@@ -461,7 +476,8 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 						truefalse.setSelectedIndex(3);
 					}
 				hcritPanel.add(truefalse);
-			} else if (selectedValue.equalsIgnoreCase("String")||selectedValue.equalsIgnoreCase("Text")) {
+			} else if (selectedValue.equalsIgnoreCase("String")
+					|| selectedValue.equalsIgnoreCase("Text")) {
 				TextBox positiveCriteria = new TextBox();
 				if (posCrit != null)
 					positiveCriteria.setText(posCrit);
@@ -483,8 +499,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				}
 			});
 			critPanel.add(hcritPanel);
-			
-			
+
 		}
 	}
 
@@ -501,36 +516,36 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			Button add = new Button("+");
 			critPanel.add(add);
 			HandlerRegistration addClickHandler = add
-			.addClickHandler(new ClickHandler() {
+					.addClickHandler(new ClickHandler() {
 
-				@Override
-				public void onClick(ClickEvent event) {
-					VerticalPanel critVertPanel = (VerticalPanel) grid
-							.getWidget(row, 6);
-					HorizontalPanel hpanel = new HorizontalPanel();
-					ListBox criteriaBox = ((ListBox) grid.getWidget(
-							row, 3));
-					String selectedValue = criteriaBox
-							.getValue(criteriaBox.getSelectedIndex());
-					if (selectedValue.equals("Boolean")) {
-						ListBox truefalse = new ListBox();
-						truefalse.addItem("");
-						truefalse.addItem("True");
-						truefalse.addItem("False");
-						hpanel.add(truefalse);
-					} else {
-						hpanel.add(new TextBox());
-					}
-					hpanel.add(new Button("-"));
-					// critVertPanel.add(hpanel);
-					critVertPanel.insert(hpanel,
-							critVertPanel.getWidgetCount() - 2);
-				}
-			});
+						@Override
+						public void onClick(ClickEvent event) {
+							VerticalPanel critVertPanel = (VerticalPanel) grid
+									.getWidget(row, 6);
+							HorizontalPanel hpanel = new HorizontalPanel();
+							ListBox criteriaBox = ((ListBox) grid.getWidget(
+									row, 3));
+							String selectedValue = criteriaBox
+									.getValue(criteriaBox.getSelectedIndex());
+							if (selectedValue.equals("Boolean")) {
+								ListBox truefalse = new ListBox();
+								truefalse.addItem("");
+								truefalse.addItem("True");
+								truefalse.addItem("False");
+								hpanel.add(truefalse);
+							} else {
+								hpanel.add(new TextBox());
+							}
+							hpanel.add(new Button("-"));
+							// critVertPanel.add(hpanel);
+							critVertPanel.insert(hpanel,
+									critVertPanel.getWidgetCount() - 2);
+						}
+					});
 		} else if (criteriaBox.getSelectedIndex() > 0) {
 			buildCriteriaEntry(grid, null, row, critPanel, i);
 		}
-		
+
 		grid.setWidget(row, 6, critPanel);
 	}
 

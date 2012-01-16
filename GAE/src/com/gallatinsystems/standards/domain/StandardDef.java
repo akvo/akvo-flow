@@ -37,5 +37,8 @@ public interface StandardDef {
 	public StandardScope getStandardScope() ;
 
 	public void setStandardScope(StandardScope standardScope);
+	
+	public void setPartOfCompoundRule(Boolean partOfCompoundRule);
+	public Boolean getPartOfCompoundRule();
 
 }
