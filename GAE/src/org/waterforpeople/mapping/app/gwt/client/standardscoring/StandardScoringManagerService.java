@@ -17,5 +17,5 @@ public interface StandardScoringManagerService extends RemoteService {
 	StandardScoreBucketDto save(StandardScoreBucketDto item);
 	ArrayList<StandardContainerDto> listStandardContainer(String standardType);
 	Long saveCompoundRule(Long compoundRuleId,String standardType, Long leftRuleId, Long rightRuleId, String operator);
-	void listCompoundRule(String standardType);
+	ArrayList<CompoundStandardDto> listCompoundRule(String standardType);
 }

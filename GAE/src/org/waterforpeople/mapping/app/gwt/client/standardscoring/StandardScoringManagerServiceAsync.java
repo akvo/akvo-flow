@@ -32,6 +32,7 @@ public interface StandardScoringManagerServiceAsync {
 			Long leftRuleId, Long rightRuleId, String operator,
 			AsyncCallback<Long> callback);
 
-	void listCompoundRule(String standardType, AsyncCallback<Void> callback);
+	void listCompoundRule(String standardType,
+			AsyncCallback<ArrayList<CompoundStandardDto>> callback);
 
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.waterforpeople.mapping.app.gwt.client.standardscoring.CompoundStandardDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoreBucketDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringDto;
@@ -388,8 +389,28 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void listCompoundRule(String standardType) {
+	public ArrayList<CompoundStandardDto> listCompoundRule(String standardType) {
 		// TODO Auto-generated method stub
-
+		CompoundStandardDao csDao = new CompoundStandardDao();
+		StandardType st = null;
+		if (standardType.equalsIgnoreCase("waterpointlevelofservice"))
+			st = StandardType.WaterPointLevelOfService;
+		else
+			st=StandardType.WaterPointSustainability;
+		
+		List<CompoundStandard> csList =  csDao.listByType(st);
+		ArrayList<CompoundStandardDto> dtoList = new ArrayList<CompoundStandardDto>();
+		
+		for(CompoundStandard item:csList){
+			CompoundStandardDto dto = new CompoundStandardDto();
+			dto.setKeyId(item.getKey().getId());
+			dto.setOperator(CompoundStandardDto.Operator.valueOf(item.getOperator().toString()));
+			dto.setStandardIdLeft(item.getStandardIdLeft());
+			dto.setStandardIdRight(item.getStandardIdRight());
+			dto.setStandardLeftDesc(item.getStandardLeft().getStandardDescription());
+			dto.setStandardRightDesc(item.getStandardRight().getStandardDescription());
+			dtoList.add(dto);
+		}
+		return dtoList;
 	}
 }

@@ -7,17 +7,27 @@ import com.google.gwt.user.client.ui.PopupPanel;
 
 public class CompoundRulePopup extends PopupPanel {
 	public CompoundRulePopup(String standardType,
-			StandardScoringManagerServiceAsync svc) {
+			StandardScoringManagerServiceAsync svc, Boolean displayDetail) {
 		super(true);
-		init(standardType, svc);
+		if (displayDetail) {
+			initDetail(standardType, svc);
+		}else{
+			initList(standardType, svc);
+		}
 
 	}
 
-	public void init(String standardType, StandardScoringManagerServiceAsync svc) {
+	public void initDetail(String standardType, StandardScoringManagerServiceAsync svc) {
 		setWidget(new Label("Compound Rule Manager"));
 		CompoundStandardDetail csd = new CompoundStandardDetail(standardType,
 				svc);
 		setWidget(csd);
+	}
+	
+	public void initList(String standardType, StandardScoringManagerServiceAsync svc){
+		setWidget(new Label("Compound Rule List View"));
+		CompoundRuleListView crlv = new CompoundRuleListView(standardType, svc);
+		setWidget(crlv);
 	}
 
 }
