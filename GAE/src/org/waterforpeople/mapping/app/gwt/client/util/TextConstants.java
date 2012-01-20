@@ -47,6 +47,7 @@ public interface TextConstants extends Constants{
 	public String dateAndEmailMandatory();
 	public String remove();
 	public String add();
+	public String addSimpleRule();
 	public String addNewCompoundRule();
 	public String editHelpMedia();
 	public String discardChanges();

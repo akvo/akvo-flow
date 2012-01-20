@@ -9,25 +9,26 @@ import javax.jdo.annotations.PersistenceCapable;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+
 @PersistenceCapable
-public class Standard extends BaseDomain implements StandardDef{
+public class Standard extends BaseDomain implements StandardDef {
 
 	public enum StandardScope {
 		Global, Local
 	};
-	
+
 	public enum StandardType {
-		WaterPointLevelOfService, WaterPointSustainability
+		WaterPointLevelOfService, WaterPointSustainability, PublicInstitutionLevelOfService, PublicInstitutionSustainability
 	};
-	
-	public enum StandardValueType{
+
+	public enum StandardValueType {
 		Number, String, Boolean
 	}
 
-	public enum StandardComparisons{
+	public enum StandardComparisons {
 		equal, notequal, lessthan, greaterthan, greaterthanorequal, lessthanorequal
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -105,7 +106,8 @@ public class Standard extends BaseDomain implements StandardDef{
 		return acessPointAttributeType;
 	}
 
-	public void setAcessPointAttributeType(StandardValueType acessPointAttributeType) {
+	public void setAcessPointAttributeType(
+			StandardValueType acessPointAttributeType) {
 		this.acessPointAttributeType = acessPointAttributeType;
 	}
 
@@ -175,7 +177,7 @@ public class Standard extends BaseDomain implements StandardDef{
 
 	@Override
 	public String getCountryCode() {
-		
+
 		return this.getCountry();
 	}
 

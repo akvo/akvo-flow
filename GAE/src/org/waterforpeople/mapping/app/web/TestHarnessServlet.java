@@ -213,7 +213,19 @@ public class TestHarnessServlet extends HttpServlet {
 			stl.runTest();
 		} else if ("listStandardScoringResults".equals(action)) {
 			StandardTestLoader stl  = new StandardTestLoader(req,resp);
-			stl.listResults();
+			String countryCode = null;
+			String communityCode = null;
+			String accessPointCode = null;
+			if(req.getParameter("countryCode")!=null){
+				countryCode = req.getParameter("countryCode");
+			}
+			if(req.getParameter("communityCode")!=null){
+				communityCode = req.getParameter("communityCode");
+			}
+			if(req.getParameter("accessPointCode")!=null){
+				accessPointCode = req.getParameter("accessPointCode");
+			}
+			stl.listResults(countryCode, communityCode, accessPointCode);
 		} else if ("testDistanceRule".equals(action)) {
 			DeleteObjectUtil dou = new DeleteObjectUtil();
 			dou.deleteAllObjects("AccessPointScoreComputationItem");

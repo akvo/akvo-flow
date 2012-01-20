@@ -65,8 +65,12 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		StandardType standardType = null;
 		if (scoreBucketId == 0) {
 			standardType = StandardType.WaterPointLevelOfService;
-		} else {
+		} else if(scoreBucketId ==1) {
 			standardType = StandardType.WaterPointSustainability;
+		}else if(scoreBucketId==2){
+			standardType = StandardType.PublicInstitutionLevelOfService;
+		}else if(scoreBucketId==3){
+			standardType = StandardType.PublicInstitutionSustainability;
 		}
 		List<Standard> sList = standardDao
 				.listByAccessPointTypeAndStandardType(
@@ -307,7 +311,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		ArrayList<Standard> standardList = (ArrayList) standardDao
 				.listByAccessPointTypeAndStandardType(
 						AccessPointType.WATER_POINT,
-						StandardType.WaterPointLevelOfService);
+						encodeStandardTypeString(standardType));
 
 		for (Standard itemStandard : standardList) {
 			for (Entry<String, String> entry : attributesMap.entrySet()) {
@@ -376,10 +380,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		}
 		cs.setStandardIdLeft(leftRuleId);
 		cs.setStandardIdRight(rightRuleId);
-		if (standardType.equalsIgnoreCase("waterpointlevelofservice"))
-			cs.setStandardType(StandardType.WaterPointLevelOfService);
-		else
-			cs.setStandardType(StandardType.WaterPointSustainability);
+		cs.setStandardType(encodeStandardTypeString(standardType));
 		if (operator.equalsIgnoreCase("and"))
 			cs.setOperator(Operator.AND);
 		else
@@ -393,10 +394,8 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		// TODO Auto-generated method stub
 		CompoundStandardDao csDao = new CompoundStandardDao();
 		StandardType st = null;
-		if (standardType.equalsIgnoreCase("waterpointlevelofservice"))
-			st = StandardType.WaterPointLevelOfService;
-		else
-			st=StandardType.WaterPointSustainability;
+		st =encodeStandardTypeString(standardType);
+		
 		
 		List<CompoundStandard> csList =  csDao.listByType(st);
 		ArrayList<CompoundStandardDto> dtoList = new ArrayList<CompoundStandardDto>();
@@ -412,5 +411,19 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			dtoList.add(dto);
 		}
 		return dtoList;
+	}
+
+	private StandardType encodeStandardTypeString(String standardType) {
+		StandardType st = null;
+		if (standardType.equalsIgnoreCase("waterpointlevelofservice"))
+			st = StandardType.WaterPointLevelOfService;
+		else if(standardType.equalsIgnoreCase(StandardType.WaterPointSustainability.toString()))
+			st=StandardType.WaterPointSustainability;
+		else if(standardType.equalsIgnoreCase(StandardType.PublicInstitutionLevelOfService.toString())){
+			st=StandardType.PublicInstitutionLevelOfService;
+		}else if(standardType.equalsIgnoreCase(StandardType.PublicInstitutionSustainability.toString())){
+			st=StandardType.PublicInstitutionSustainability;
+		}
+		return st;
 	}
 }

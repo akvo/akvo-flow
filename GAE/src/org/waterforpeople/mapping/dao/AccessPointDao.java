@@ -25,6 +25,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * dao for manipulating access points
@@ -34,32 +35,53 @@ import com.google.appengine.api.datastore.Query;
  */
 public class AccessPointDao extends BaseDAO<AccessPoint> {
 	private static final String SCORE_AP_FLAG = "scoreAPFlag";
-	
+
 	private static final int MAX_RESULTS = 40;
 
 	public AccessPointDao() {
 		super(AccessPoint.class);
 	}
-	
-	public Iterable<Entity> listRawEntity(Boolean returnKeysOnly){
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+	public Iterable<Entity> listRawEntity(Boolean returnKeysOnly) {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
 
 		// The Query interface assembles a query
 		Query q = new Query("AccessPoint");
-		if(returnKeysOnly){
+		if (returnKeysOnly) {
 			q.setKeysOnly();
 		}
 		PreparedQuery pq = datastore.prepare(q);
 		return pq.asIterable();
 	}
-	
-	 
-	public AccessPoint findByKey(Key key){
+
+	public Iterable<Entity> listRawEntity(Boolean returnKeysOnly,
+			String countryCode, String communityCode, String accessPointCode) {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+
+		// The Query interface assembles a query
+		Query q = new Query("AccessPoint");
+		if (returnKeysOnly) {
+			q.setKeysOnly();
+		}
+
+		if (countryCode != null)
+			q.addFilter("countryCode", FilterOperator.EQUAL, countryCode);
+		if (communityCode != null)
+			q.addFilter("communtiyCode", FilterOperator.EQUAL, communityCode);
+		if (accessPointCode != null)
+			q.addFilter("accessPointCode", FilterOperator.EQUAL,
+					accessPointCode);
+
+		PreparedQuery pq = datastore.prepare(q);
+		return pq.asIterable();
+	}
+
+	public AccessPoint findByKey(Key key) {
 		return super.getByKey(key);
 	}
-	
-	
-	
+
 	/**
 	 * Lists all access points that are near the point identified by the lat/lon
 	 * parameters in order of increasing distance. if maxDistance is 0, all
@@ -490,9 +512,9 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	public AccessPoint save(AccessPoint point) {
 		if (Boolean.parseBoolean(PropertyUtil.getProperty(SCORE_AP_FLAG)))
 			point = AccessPointHelper.scoreAccessPoint(point);
-		
+
 		point = super.save(point);
-		
+
 		if (point.getApScoreDetailList() != null) {
 			for (AccessPointScoreDetail item : point.getApScoreDetailList()) {
 				if (item.getKey() == null) {

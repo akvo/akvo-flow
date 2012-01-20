@@ -4,6 +4,7 @@ import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoring
 
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 
 public class CompoundRulePopup extends PopupPanel {
 	public CompoundRulePopup(String standardType,
@@ -27,7 +28,9 @@ public class CompoundRulePopup extends PopupPanel {
 	public void initList(String standardType, StandardScoringManagerServiceAsync svc){
 		setWidget(new Label("Compound Rule List View"));
 		CompoundRuleListView crlv = new CompoundRuleListView(standardType, svc);
-		setWidget(crlv);
+		RootPanel rp = RootPanel.get();
+		rp.add(crlv);
+		//setWidget(crlv.getVp());
 	}
 
 }

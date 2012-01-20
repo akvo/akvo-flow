@@ -356,19 +356,19 @@ public class StandardTestLoader {
 		loadWaterPointScoreToStatus();
 		AccessPointTest apt = new AccessPointTest();
 		apt.loadLots(resp, 50);
-		//scoreAllPoints();
+		// scoreAllPoints();
 	}
 
 	private void clearAPs() {
 		DeleteObjectUtil dou = new DeleteObjectUtil();
-//		 dou.deleteAllObjects("AccessPoint");
-//		 writeln("Deleted APs");
-//		 dou.deleteAllObjects("AccessPointScoreComputationItem");
-//		 writeln("Deleted APSCI");
-//		 dou.deleteAllObjects("AccessPointScoreDetail");
-//		 writeln("Deleted APSD");
-//		 dou.deleteAllObjects("AccessPointsStatusSummary");
-//		 writeln("Deleted AccessPointsStatusSummary");
+		// dou.deleteAllObjects("AccessPoint");
+		// writeln("Deleted APs");
+		// dou.deleteAllObjects("AccessPointScoreComputationItem");
+		// writeln("Deleted APSCI");
+		// dou.deleteAllObjects("AccessPointScoreDetail");
+		// writeln("Deleted APSD");
+		// dou.deleteAllObjects("AccessPointsStatusSummary");
+		// writeln("Deleted AccessPointsStatusSummary");
 		dou.deleteAllObjects("Standard");
 		writeln("Deleted All the Standards");
 		dou.deleteAllObjects("LevelOfServiceScore");
@@ -381,24 +381,26 @@ public class StandardTestLoader {
 		writeln("Deleted All CompoundStandards");
 	}
 
-	public void listResults() {
-		listAPScoreAndStatus();
+	public void listResults(String countryCode, String communityCode,
+			String accessPointCode) {
+		listAPScoreAndStatus(countryCode, communityCode, accessPointCode);
 	}
 
-	private void listAPScoreAndStatus() {
+	private void listAPScoreAndStatus(String countryCode, String communityCode,
+			String accessPointCode) {
 		AccessPointDao apDao = new AccessPointDao();
 		// List<AccessPoint> apList = apDao.list("all");
 		PersistenceManager pm = PersistenceFilter.getManager();
-		Extent<AccessPoint> extent = pm.getExtent(AccessPoint.class, false);
 
 		LevelOfServiceScoreDao lesScoreDao = new LevelOfServiceScoreDao();
 		writeln("<html><table border=1>");
 		write("<tr><td>AccessPoint Key</td><td>Country Code</td><td>Community Name</td><td>Access Point Code</td><td>Access Point Collection Date</td><td>Number HH within Acceptable Distance</td>"
 				+ "<td>Number Outside Acceptable Distance</td><td>LOS Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td>"
 				+ "<td>Sustainability Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td></tr>");
-
+		Iterable<Entity> entList =null;
+		entList = apDao.listRawEntity(false,countryCode, communityCode, accessPointCode);
 		// for (AccessPoint item : extent) {
-		for (Entity result : apDao.listRawEntity(false)) {
+		for (Entity result : entList) {
 			AccessPoint item = new AccessPoint();
 			item.setKey(result.getKey());
 			item.setCommunityCode((String) result.getProperty("communityCode"));
@@ -431,7 +433,6 @@ public class StandardTestLoader {
 			}
 			write("</tr>");
 		}
-		extent.closeAll();
 		writeln("</table></html>");
 	}
 
@@ -600,10 +601,13 @@ public class StandardTestLoader {
 		csDao.save(cs);
 
 	}
-	private void fireAsnycRescoreAllPoints(){
-		Queue rescoreQueue = QueueFactory.getQueue(ScoreProcessor.ACCESSPOINT_QUEUE_NAME);
+
+	private void fireAsnycRescoreAllPoints() {
+		Queue rescoreQueue = QueueFactory
+				.getQueue(ScoreProcessor.ACCESSPOINT_QUEUE_NAME);
 		rescoreQueue.add(url(ScoreProcessor.OBJECT_TASK_URL).param(
-				DeleteTaskRequest.TASK_COUNT_PARAM, "0").param("cursor", "null"));
+				DeleteTaskRequest.TASK_COUNT_PARAM, "0")
+				.param("cursor", "null"));
 
 	}
 }
