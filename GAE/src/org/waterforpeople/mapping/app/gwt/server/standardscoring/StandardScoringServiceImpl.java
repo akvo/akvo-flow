@@ -61,20 +61,24 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		// }
 		StandardDao standardDao = new StandardDao();
 		DistanceStandardDao distanceStandardDao = new DistanceStandardDao();
-
+AccessPointType apt = null;
 		StandardType standardType = null;
 		if (scoreBucketId == 0) {
 			standardType = StandardType.WaterPointLevelOfService;
+			apt = AccessPointType.WATER_POINT;
 		} else if(scoreBucketId ==1) {
 			standardType = StandardType.WaterPointSustainability;
+			apt = AccessPointType.WATER_POINT;
 		}else if(scoreBucketId==2){
 			standardType = StandardType.PublicInstitutionLevelOfService;
+			apt = AccessPointType.PUBLIC_INSTITUTION;
 		}else if(scoreBucketId==3){
 			standardType = StandardType.PublicInstitutionSustainability;
+			apt = AccessPointType.PUBLIC_INSTITUTION;
 		}
 		List<Standard> sList = standardDao
 				.listByAccessPointTypeAndStandardType(
-						AccessPointType.WATER_POINT, standardType);
+						apt, standardType);
 		List<DistanceStandard> distanceList = distanceStandardDao
 				.listDistanceStandard(standardType, null);
 		for (DistanceStandard dsItem : distanceList) {
@@ -199,18 +203,12 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 					.getSimpleName(), item.getKeyId()));
 		}
 		String standardType = item.getScoreBucket();
-		if (standardType.equals(StandardType.WaterPointLevelOfService
-				.toString())) {
-			standard.setStandardType(StandardType.WaterPointLevelOfService);
-		} else if (standardType.equals(StandardType.WaterPointSustainability
-				.toString())) {
-			standard.setStandardType(StandardType.WaterPointSustainability);
-		}
+		standard.setStandardType(encodeStandardTypeString(item.getScoreBucket()));
 		if (item.getPointType().equals("WATER_POINT")) {
 			standard.setAccessPointType(AccessPointType.WATER_POINT);
 		} else if (item.getPointType().equals("HOUSEHOLD")) {
 			standard.setAccessPointType(AccessPointType.HOUSEHOLD);
-		} else if (item.getPointType().equals("PUBLIC_INSTITUTION")) {
+		} else if (item.getPointType().equals("PUBLICINSTITUTION")) {
 			standard.setAccessPointType(AccessPointType.PUBLIC_INSTITUTION);
 		} else if (item.getPointType().equals("SANITATION")) {
 			standard.setAccessPointType(AccessPointType.SANITATION_POINT);
