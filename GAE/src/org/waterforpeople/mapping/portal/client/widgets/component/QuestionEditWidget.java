@@ -980,6 +980,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 										q.setText(currentQuestion.getText());
 										q.setTranslationMap(currentQuestion
 												.getTranslationMap());
+										//also update the options in case they added/removed any
+										q.setOptionContainerDto(currentQuestion.getOptionContainerDto());
 										found = true;
 									}
 								}
