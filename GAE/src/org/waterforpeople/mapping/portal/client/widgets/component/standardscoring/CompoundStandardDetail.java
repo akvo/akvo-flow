@@ -77,7 +77,7 @@ public class CompoundStandardDetail extends Composite implements HasText,
 	VerticalPanel detailPanel;
 	@UiField
 	TextBox tbRuleName;
-	
+
 	void loadPanel() {
 		init();
 		listPanel.add(vp);
@@ -91,7 +91,7 @@ public class CompoundStandardDetail extends Composite implements HasText,
 		if (!value.equals("")) {
 			compoundRuleIDValue = Long.parseLong(compoundRuleID.getText());
 		}
-		
+
 		String name = tbRuleName.getText();
 		Long leftRuleId = Integer.valueOf(
 				lbLeftHandRule.getValue(lbLeftHandRule.getSelectedIndex()))
@@ -101,8 +101,9 @@ public class CompoundStandardDetail extends Composite implements HasText,
 				.longValue();
 		String operatorValue = operator.getValue(operator.getSelectedIndex());
 
-		svc.saveCompoundRule(compoundRuleIDValue, standardType,name, leftRuleId,
-				rightRuleId, operatorValue, new AsyncCallback<Long>() {
+		svc.saveCompoundRule(compoundRuleIDValue, name, standardType,
+				leftRuleId, rightRuleId, operatorValue,
+				new AsyncCallback<Long>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -120,14 +121,11 @@ public class CompoundStandardDetail extends Composite implements HasText,
 
 	@UiHandler("lbLeftHandRule")
 	void onLbLeftHandRuleChange(ChangeEvent e) {
-		Window.alert(lbLeftHandRule.getValue(lbLeftHandRule.getSelectedIndex()));
 		setupOperatorControl();
 	}
 
 	@UiHandler("lbRightHandRule")
 	void onLbRightHandRuleChange(ChangeEvent e) {
-		Window.alert(lbRightHandRule.getValue(lbRightHandRule
-				.getSelectedIndex()));
 		setupOperatorControl();
 	}
 
@@ -155,12 +153,12 @@ public class CompoundStandardDetail extends Composite implements HasText,
 		Long standardKey = null;
 		operator.addItem("and");
 		operator.addItem("or");
-		if(csItem!=null){
+		if (csItem != null) {
 			compoundRuleID.setText(csItem.getKeyId().toString());
 			tbRuleName.setText(csItem.getName());
-			if(csItem.getOperator().equals(Operator.AND)){
+			if (csItem.getOperator().equals(Operator.AND)) {
 				operator.setSelectedIndex(0);
-			}else{
+			} else {
 				operator.setSelectedIndex(1);
 			}
 		}
@@ -217,10 +215,10 @@ public class CompoundStandardDetail extends Composite implements HasText,
 									}
 
 								}
-								
+
 							}
 							i++;
-							
+
 						}
 						lbLeftHandRule.setVisible(true);
 						lbRightHandRule.setVisible(true);
@@ -305,13 +303,13 @@ public class CompoundStandardDetail extends Composite implements HasText,
 		CompoundStandardDto item = new CompoundStandardDto();
 		Grid grid = ft.getGrid();
 		TextBox id = (TextBox) grid.getWidget(row, 0);
-		TextBox name = (TextBox)grid.getWidget(row, 1);
-		TextBox leftHandRuleDesc = (TextBox) grid.getWidget(row,2);
+		TextBox name = (TextBox) grid.getWidget(row, 1);
+		TextBox leftHandRuleDesc = (TextBox) grid.getWidget(row, 2);
 		TextBox operator = (TextBox) grid.getWidget(row, 3);
 		TextBox rightHandRuleDesc = (TextBox) grid.getWidget(row, 4);
 		if (id.getText() != null)
 			item.setKeyId(Long.parseLong(id.getText()));
-		if(name.getText()!=null)
+		if (name.getText() != null)
 			item.setName(name.getText().trim());
 		if (leftHandRuleDesc.getText() != null)
 			item.setStandardLeftDesc(leftHandRuleDesc.getText().trim());
@@ -369,8 +367,12 @@ public class CompoundStandardDetail extends Composite implements HasText,
 					@Override
 					public void onSuccess(
 							ResponseDto<ArrayList<CompoundStandardDto>> result) {
-						ft.bindData(result.getPayload(),
-								result.getCursorString(), isNew, isResort);
+						if (result.getPayload().size() > 0) {
+							ft.bindData(result.getPayload(),
+									result.getCursorString(), isNew, isResort);
+						}else{
+							loadStandards(null);
+						}
 					}
 
 				});
