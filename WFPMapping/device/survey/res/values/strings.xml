@@ -192,8 +192,8 @@
 	<string name="pleasewaitforbootstrap">Please wait until the bootstrap file has finished processing.</string>
 	<string name="surveychecklabel">Automatically Check for Survey Updates</string>
 	<string name="uploaderrorlabel">Automatically Upload App Errors</string>
-	<string name="appversion">1.9.25</string>
 	<string name="radiuslabel">Search radius for Points</string>
 	<string name="radiusprompt">Radius (km)</string>
 	<string name="addtestpoints">Add test points</string>
+	<string name="appversion">1.9.26</string>
 </resources>
