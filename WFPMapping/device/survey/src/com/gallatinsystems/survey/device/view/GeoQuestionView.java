@@ -28,10 +28,10 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
 /**
  * Question that can handle geographic location input. This question can also
  * listen to location updates from the GPS sensor on the device.
- * 
- * 
+ *
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class GeoQuestionView extends QuestionView implements OnClickListener,
 		LocationListener, OnFocusChangeListener {
@@ -191,7 +191,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 	/**
 	 * populates the fields on the UI with the location info from the event
-	 * 
+	 *
 	 * @param loc
 	 */
 	private void populateLocation(Location loc) {
@@ -216,13 +216,13 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	 * generates a unique code based on the lat/lon passed in. Current algorithm
 	 * returns the concatenation of the integer portion of 1000 times absolute
 	 * value of lat and lon in base 36
-	 * 
+	 *
 	 * @param lat
 	 * @param lon
 	 * @return
 	 */
 	private String generateCode(double lat, double lon) {
-		Long code = Long.parseLong((int) ((Math.abs(lat) * 10000d)) + ""
+		Long code = Long.parseLong((int) ((Math.abs(lat) * 100000d)) + ""
 				+ (int) ((Math.abs(lon) * 10000d)));
 		return Long.toString(code, 36);
 	}
