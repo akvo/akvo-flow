@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.CompoundStandardDto;
-import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
@@ -12,16 +11,16 @@ import com.gallatinsystems.framework.gwt.component.DataTableBinder;
 import com.gallatinsystems.framework.gwt.component.DataTableHeader;
 import com.gallatinsystems.framework.gwt.component.DataTableListener;
 import com.gallatinsystems.framework.gwt.component.PaginatedDataTable;
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,23 +34,20 @@ public class CompoundRuleListView extends Composite implements HasWidgets,
 	private PaginatedDataTable<CompoundStandardDto> ft = null;
 	private String standardType = null;
 	private StandardScoringManagerServiceAsync svc = null;
-	// ft.setWidget(0,0,new Label("ID"));
-	// ft.setWidget(0,1,new Label("Name"));
-	// ft.setWidget(0,2,new Label("Left Rule Description"));
-	// ft.setWidget(0,3,new Label("Operator"));
-	// ft.setWidget(0,4,new Label("Right Rule Description"));
-	// ft.setWidget(0,5,new Label("Action"));
+	private static final String EDITED_ROW_CSS = "gridCell-edited";
+
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader("Id", "key", true),
 			new DataTableHeader(TEXT_CONSTANTS.name(), "name", true),
-			new DataTableHeader("Left Hand Rule ","",
+			new DataTableHeader("Left Hand Rule ","standardLeftDesc",
 					true),
 			new DataTableHeader(TEXT_CONSTANTS.positiveOperator(), "operator",
 					true),
 			new DataTableHeader("Right Hand Rule",
-					"rightHandRule", true),
+					"standardRightDesc", true),
 			new DataTableHeader("Action") };
-	private static final String DEFAULT_SORT_FIELD = "leftHandRule";
+	private static final String DEFAULT_SORT_FIELD = "name";
+	private static final Integer PAGE_SIZE = 20;
 
 	public CompoundRuleListView() {
 		initWidget(vp);
@@ -66,35 +62,10 @@ public class CompoundRuleListView extends Composite implements HasWidgets,
 	};
 
 	private void init() {
-		// RootPanel root = RootPanel.get();
-		// root.add(vp);
-		vp.addStyleName("compoundrulelistview");
 		ft = new PaginatedDataTable<CompoundStandardDto>(DEFAULT_SORT_FIELD,
-				this, this, true);
+				this, this, true,true);
 		getVp().add(ft);
-		//loadCompoundRules();
-	}
-
-	private void loadCompoundRules() {
-		svc.listCompoundRule(standardType,
-				new AsyncCallback<ArrayList<CompoundStandardDto>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-
-					}
-
-					@Override
-					public void onSuccess(ArrayList<CompoundStandardDto> result) {
-						int i = 0;
-						for (CompoundStandardDto item : result) {
-							bindRow(ft.getGrid(),item, i);
-							i++;
-						}
-					}
-
-				});
+		requestData(null,false);
 	}
 
 	
@@ -127,6 +98,13 @@ public class CompoundRuleListView extends Composite implements HasWidgets,
 		Button deleteRow = new Button("Delete");
 		deleteRow.setTitle(new Integer(row).toString());
 		hpanel.add(editRow);
+		editRow.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				
+			}});
 		hpanel.add(deleteRow);
 		grid.setWidget(row, 4, hpanel);
 	}
@@ -181,8 +159,23 @@ public class CompoundRuleListView extends Composite implements HasWidgets,
 	}
 
 	@Override
-	public void requestData(String cursor, boolean isResort) {
-		loadCompoundRules();
+	public void requestData(String cursor, final boolean isResort) {
+		final boolean isNew = (cursor == null);
+		svc.listCompoundRule(standardType,
+				new AsyncCallback<ResponseDto<ArrayList<CompoundStandardDto>>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onSuccess(ResponseDto<ArrayList<CompoundStandardDto>> result) {
+						ft.bindData(result.getPayload(),result.getCursorString(), isNew, isResort);
+					}
+
+				});
 	}
 
 	@Override
@@ -194,7 +187,6 @@ public class CompoundRuleListView extends Composite implements HasWidgets,
 
 	@Override
 	public Integer getPageSize() {
-		// TODO Auto-generated method stub
-		return null;
+		return PAGE_SIZE;
 	}
 }

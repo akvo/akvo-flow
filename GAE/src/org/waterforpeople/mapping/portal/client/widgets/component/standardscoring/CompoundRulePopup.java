@@ -32,5 +32,7 @@ public class CompoundRulePopup extends PopupPanel {
 		rp.add(crlv);
 		//setWidget(crlv.getVp());
 	}
+	
+	
 
 }

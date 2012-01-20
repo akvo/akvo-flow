@@ -16,6 +16,7 @@ public class CompoundStandard extends BaseDomain {
 	 * 
 	 */
 	private static final long serialVersionUID = 5812262258895279483L;
+	private String name = null;
 	private Long standardIdLeft = null;
 	private Long standardIdRight = null;
 	@NotPersistent
@@ -107,5 +108,13 @@ public class CompoundStandard extends BaseDomain {
 		result.append("}");
 
 		return result.toString();
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 }

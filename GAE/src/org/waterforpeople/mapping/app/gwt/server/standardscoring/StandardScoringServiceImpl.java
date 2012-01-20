@@ -369,7 +369,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public Long saveCompoundRule(Long compoundRuleId, String standardType,
+	public Long saveCompoundRule(Long compoundRuleId, String name,String standardType,
 			Long leftRuleId, Long rightRuleId, String operator) {
 		CompoundStandardDao csDao = new CompoundStandardDao();
 		CompoundStandard cs = null;
@@ -378,6 +378,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		} else {
 			cs = new CompoundStandard();
 		}
+		cs.setName(name);
 		cs.setStandardIdLeft(leftRuleId);
 		cs.setStandardIdRight(rightRuleId);
 		cs.setStandardType(encodeStandardTypeString(standardType));
@@ -390,8 +391,10 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public ArrayList<CompoundStandardDto> listCompoundRule(String standardType) {
+	public ResponseDto<ArrayList<CompoundStandardDto>> listCompoundRule(String standardType) {
 		// TODO Auto-generated method stub
+		ResponseDto<ArrayList<CompoundStandardDto>> response = new ResponseDto<ArrayList<CompoundStandardDto>>();
+		
 		CompoundStandardDao csDao = new CompoundStandardDao();
 		StandardType st = null;
 		st =encodeStandardTypeString(standardType);
@@ -408,9 +411,12 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			dto.setStandardIdRight(item.getStandardIdRight());
 			dto.setStandardLeftDesc(item.getStandardLeft().getStandardDescription());
 			dto.setStandardRightDesc(item.getStandardRight().getStandardDescription());
+			dto.setName(item.getName());
 			dtoList.add(dto);
 		}
-		return dtoList;
+		response.setPayload(dtoList);
+		response.setCursorString(BaseDAO.getCursor(csList));
+		return response;
 	}
 
 	private StandardType encodeStandardTypeString(String standardType) {

@@ -94,10 +94,9 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private static final String DEFAULT_SORT_FIELD = "globalStandard";
 
 	private VerticalPanel contentPane;
-	private Button addNewButton = new Button(TEXT_CONSTANTS.add());
+	private Button addNewButton = new Button("Add Simple Rule");
 	private Button addNewCompoundRuleButton = new Button(
-			TEXT_CONSTANTS.addNewCompoundRule());
-	private Button listCompoundRuleButton = new Button("List Compound Rules");
+			"Add/List Compound Rule");
 	private VerticalPanel tablePanel = new VerticalPanel();
 	private HorizontalPanel bucketsHPanel = new HorizontalPanel();
 	//private Button addScoringBucket = new Button();
@@ -192,8 +191,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		tablePanel.add(scoringTable);
 		tablePanel.add(addNewButton);
 		tablePanel.add(addNewCompoundRuleButton);
-		tablePanel.add(listCompoundRuleButton);
-		addNewButton.addClickHandler(new ClickHandler() {
+	addNewButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -210,15 +208,6 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				cpp.show();
 			}
 		});
-		listCompoundRuleButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				final CompoundRulePopup cpp = new CompoundRulePopup(
-						scoreBucketsBox.getValue(scoreBucketsBox
-								.getSelectedIndex()), svc, false);
-				cpp.show();
-			}});
 		scrollP.add(tablePanel);
 		scrollP.setAlwaysShowScrollBars(true);
 		scrollP.setWidth("1900px");

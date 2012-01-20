@@ -2,14 +2,13 @@ package org.waterforpeople.mapping.app.gwt.client.standardscoring;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-
 public class CompoundStandardDto extends BaseDto {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1642166127044477715L;
-	
+
 	public enum Operator {
 		AND, OR, NOT
 	}
@@ -17,25 +16,27 @@ public class CompoundStandardDto extends BaseDto {
 	/**
 	 * 
 	 */
+	private String name = null;
 	private Long standardIdLeft = null;
 	private Long standardIdRight = null;
 	private String standardLeftDesc = null;
 	private String standardRightDesc = null;
-	
+
 	private Operator operator = null;
+
 	public enum StandardType {
-		WaterPointLevelOfService, WaterPointSustainability
+		WaterPointLevelOfService, WaterPointSustainability, PublicInstitutionLevelOfService, PublicInstitutionSustainability
 	};
-	
-	public enum StandardValueType{
+
+	public enum StandardValueType {
 		Number, String, Boolean
 	}
 
-	public enum StandardComparisons{
+	public enum StandardComparisons {
 		equal, notequal, lessthan, greaterthan, greaterthanorequal, lessthanorequal
 	}
+
 	private StandardType standardType = null;
-	
 
 	public StandardType getStandardType() {
 		return standardType;
@@ -44,7 +45,7 @@ public class CompoundStandardDto extends BaseDto {
 	public void setStandardType(StandardType standardType) {
 		this.standardType = standardType;
 	}
-	
+
 	public Long getStandardIdLeft() {
 		return standardIdLeft;
 	}
@@ -83,5 +84,13 @@ public class CompoundStandardDto extends BaseDto {
 
 	public String getStandardRightDesc() {
 		return standardRightDesc;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 }
