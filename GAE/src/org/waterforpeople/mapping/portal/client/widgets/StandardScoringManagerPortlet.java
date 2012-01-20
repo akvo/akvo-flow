@@ -687,21 +687,21 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private void populateCountryCodeControl(Grid grid,
 			final String selectedCountry, final Integer row) {
 		ListBox country = new ListBox();
-		country.addItem(selectedCountry);
-		// int i = 1;
-		// country.addItem(" ");
-		// country.setSelectedIndex(0);
-		// for (CountryDto countryCode : countryCodesList) {
-		// country.addItem(countryCode.getDisplayName(),
-		// countryCode.getIsoAlpha2Code());
-		// if (selectedCountry != null) {
-		// if (countryCode.getIsoAlpha2Code().equals(selectedCountry)) {
-		// country.setSelectedIndex(i);
-		// }
-		// }
-		// i++;
-		// }
-		//
+		//country.addItem(selectedCountry);
+		int i = 1;
+		country.addItem(" ");
+		country.setSelectedIndex(0);
+		for (CountryDto countryCode : countryCodesList) {
+			country.addItem(countryCode.getDisplayName(),
+					countryCode.getIsoAlpha2Code());
+			if (selectedCountry != null) {
+				if (countryCode.getIsoAlpha2Code().equals(selectedCountry)) {
+					country.setSelectedIndex(i);
+				}
+			}
+			i++;
+		}
+
 		grid.setWidget(row, 1, country);
 		// country.addChangeHandler(new ChangeHandler() {
 		//
