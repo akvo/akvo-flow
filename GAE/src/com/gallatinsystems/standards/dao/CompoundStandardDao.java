@@ -59,14 +59,18 @@ public class CompoundStandardDao extends BaseDAO<CompoundStandard> {
 		StandardDao ssdao = new StandardDao();
 		if (item.getStandardIdLeft() != null) {
 			Standard left = ssdao.getByKey(item.getStandardIdLeft());
-			if (left != null) {
+			if (left == null) {
 				DistanceStandardDao dsDao = new DistanceStandardDao();
 				DistanceStandard ds = dsDao.getByKey(item.getStandardIdLeft());
 				if (ds != null) {
 					ds.setPartOfCompoundRule(true);
+					item.setStandardLeft(ds);
+					item.setStandardIdLeft(ds.getKey().getId());
 					dsDao.save(ds);
 				}
 			} else {
+				item.setStandardLeft(left);
+				item.setStandardIdLeft(left.getKey().getId());
 				left.setPartOfCompoundRule(true);
 				ssdao.save(left);
 			}
@@ -78,10 +82,14 @@ public class CompoundStandardDao extends BaseDAO<CompoundStandard> {
 				DistanceStandard ds = dsDao.getByKey(item.getStandardIdRight());
 				if (ds != null) {
 					ds.setPartOfCompoundRule(true);
+					item.setStandardRight(ds);
+					item.setStandardIdRight(ds.getKey().getId());
 					dsDao.save(ds);
 				}
 			} else {
+				item.setStandardRight(right);
 				right.setPartOfCompoundRule(true);
+				item.setStandardIdRight(right.getKey().getId());
 				ssdao.save(right);
 			}
 		}
