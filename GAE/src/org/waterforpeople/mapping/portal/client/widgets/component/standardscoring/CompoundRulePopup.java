@@ -38,7 +38,6 @@ public class CompoundRulePopup extends PopupPanel {
 		setWidget(vp);
 		addCloseHandler();
 	}
-	Button addnew = new Button("Add");
 	Button close = new Button("Close");
 	
 	public void initList(String standardType, StandardScoringManagerServiceAsync svc){
@@ -49,21 +48,11 @@ public class CompoundRulePopup extends PopupPanel {
 		vp.add(crlv);
 		HorizontalPanel hPanel = new HorizontalPanel();
 		addCloseHandler();
-		addNewHandler();
-		hPanel.add(addnew);
 		hPanel.add(close);
 		vp.add(hPanel);
 		rp.add(vp);	
 	}
-	private void addNewHandler(){
-		addnew.addClickHandler(new ClickHandler(){
 
-			@Override
-			public void onClick(ClickEvent event) {
-				initDetail(standardType,svc);
-				
-			}});
-	}
 	private void addCloseHandler(){
 		close.addClickHandler(new ClickHandler(){
 

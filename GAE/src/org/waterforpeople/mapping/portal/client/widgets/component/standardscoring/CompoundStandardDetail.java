@@ -243,16 +243,28 @@ public class CompoundStandardDetail extends Composite implements HasText,
 			new DataTableHeader("Action") };
 	private static final String DEFAULT_SORT_FIELD = "name";
 	private static final Integer PAGE_SIZE = 20;
-
+	private Button addNewItem = new Button("Add New Compound Rule");
 	private void init() {
 		ft = new PaginatedDataTable<CompoundStandardDto>(DEFAULT_SORT_FIELD,
 				this, this, true, true);
+		
 		getVp().add(ft);
+		getVp().add(addNewItem);
+		addNewHandler();
 		requestData(null, false);
 	}
 
 	public void setStandardType(String standardType) {
 		this.standardType = standardType;
+	}
+	
+	public void addNewHandler(){
+		addNewItem.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				loadStandards(null);
+			}});
 	}
 
 	@Override
