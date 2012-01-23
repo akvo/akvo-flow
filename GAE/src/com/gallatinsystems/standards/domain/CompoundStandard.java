@@ -20,9 +20,9 @@ public class CompoundStandard extends BaseDomain {
 	private Long standardIdLeft = null;
 	private Long standardIdRight = null;
 	@NotPersistent
-	private Standard standardLeft = null;
+	private StandardDef standardLeft = null;
 	@NotPersistent
-	private Standard standardRight = null;
+	private StandardDef standardRight = null;
 
 	private Operator operator = null;
 	
@@ -53,20 +53,20 @@ public class CompoundStandard extends BaseDomain {
 		this.standardIdRight = standardIdRight;
 	}
 
-	public Standard getStandardLeft() {
+	public StandardDef getStandardLeft() {
 		return standardLeft;
 	}
 
-	public void setStandardLeft(Standard standardScoreLeft) {
+	public void setStandardLeft(StandardDef standardScoreLeft) {
 		this.standardLeft = standardScoreLeft;
 		this.standardLeft.setPartOfCompoundRule(true);
 	}
 
-	public Standard getStandardRight() {
+	public StandardDef getStandardRight() {
 		return standardRight;
 	}
 
-	public void setStandardRight(Standard standardScoreRight) {
+	public void setStandardRight(StandardDef standardScoreRight) {
 		this.standardRight = standardScoreRight;
 		this.standardRight.setPartOfCompoundRule(true);
 	}

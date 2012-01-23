@@ -60,8 +60,6 @@ public class CompoundStandardDetail extends Composite implements HasText,
 	@UiField
 	Button saveButton;
 	@UiField
-	Button cancelButton;
-	@UiField
 	ListBox lbLeftHandRule;
 	@UiField
 	ListBox lbRightHandRule;
@@ -296,6 +294,27 @@ public class CompoundStandardDetail extends Composite implements HasText,
 			}
 		});
 		hpanel.add(deleteRow);
+		deleteRow.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Button deletebutton = (Button)event.getSource();
+				final Integer row = Integer.parseInt(deletebutton.getTitle());
+				TextBox id = (TextBox)grid.getWidget(row, 0);
+				final Long keyId = Long.parseLong(id.getText());
+				svc.deleteCompoundStandard(keyId, new AsyncCallback<Void>(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onSuccess(Void result) {
+						grid.removeRow(row);
+					}});
+			}});
 		grid.setWidget(row, 5, hpanel);
 	}
 

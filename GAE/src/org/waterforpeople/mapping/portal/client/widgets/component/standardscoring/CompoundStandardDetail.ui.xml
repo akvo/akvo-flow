@@ -39,8 +39,6 @@
 					<g:HorizontalPanel>
 						<g:Button styleName="{style.important}" ui:field="saveButton"
 							ui:text="Save" ui:enabled="false" />
-						<g:Button styleName="{style.important}" ui:field="cancelButton"
-							ui:text="Cancel" ui:enabled="true" />
 					</g:HorizontalPanel>
 				</g:VerticalPanel>
 			</g:HorizontalPanel>

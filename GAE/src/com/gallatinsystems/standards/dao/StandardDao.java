@@ -10,6 +10,7 @@ import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.standards.domain.CompoundStandard;
 import com.gallatinsystems.standards.domain.Standard;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 
@@ -43,5 +44,19 @@ public class StandardDao extends BaseDAO<Standard> {
 		List<Standard> standardList = (List<Standard>) query
 				.executeWithMap(paramMap);
 		return standardList;
+	}
+	
+	private void delete(Long id){
+		Standard standard = this.getByKey(id);
+		if(standard!=null){
+			if(standard.getPartOfCompoundRule()){
+				CompoundStandardDao csDao = new CompoundStandardDao();
+				List<CompoundStandard> csList = csDao.listByChildStandard(id);
+				for(CompoundStandard csItem : csList){
+					csDao.delete(csItem);
+				}
+				super.delete(standard);
+			}
+		}
 	}
 }

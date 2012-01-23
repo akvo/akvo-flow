@@ -191,41 +191,49 @@ public class TestHarnessServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 
-		} else if ("reprocessFiles".equalsIgnoreCase(action)){
+		} else if ("reprocessFiles".equalsIgnoreCase(action)) {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
 			String cursor = null;
 			List<DeviceFiles> files = null;
-			do{
-				files = dfDao.listDeviceFilesByStatus(StatusCode.IN_PROGRESS, cursor);
-				if(files !=null){
+			do {
+				files = dfDao.listDeviceFilesByStatus(StatusCode.IN_PROGRESS,
+						cursor);
+				if (files != null) {
 					cursor = DeviceFilesDao.getCursor(files);
-					for(DeviceFiles fi: files){
+					for (DeviceFiles fi : files) {
 						Queue queue = QueueFactory.getDefaultQueue();
-						queue.add(url("/app_worker/task")
-								.param("action", "processFile")
-								.param("fileName", fi.getURI().substring(fi.getURI().lastIndexOf("/")+1)));
-								
-					}			
+						queue.add(url("/app_worker/task").param("action",
+								"processFile").param(
+								"fileName",
+								fi.getURI().substring(
+										fi.getURI().lastIndexOf("/") + 1)));
+
+					}
 				}
-			}while(files !=null && files.size()>0 && cursor != null);
-		}else if ("testStandardScoring".equals(action)) {
-			StandardTestLoader stl  = new StandardTestLoader(req,resp);
+			} while (files != null && files.size() > 0 && cursor != null);
+		} else if ("testStandardScoring".equals(action)) {
+			StandardTestLoader stl = new StandardTestLoader(req, resp);
 			stl.runTest();
 		} else if ("listStandardScoringResults".equals(action)) {
-			StandardTestLoader stl  = new StandardTestLoader(req,resp);
+			StandardTestLoader stl = new StandardTestLoader(req, resp);
 			String countryCode = null;
 			String communityCode = null;
 			String accessPointCode = null;
-			if(req.getParameter("countryCode")!=null){
+			if (req.getParameter("countryCode") != null) {
 				countryCode = req.getParameter("countryCode");
 			}
-			if(req.getParameter("communityCode")!=null){
+			if (req.getParameter("communityCode") != null) {
 				communityCode = req.getParameter("communityCode");
 			}
-			if(req.getParameter("accessPointCode")!=null){
+			if (req.getParameter("accessPointCode") != null) {
 				accessPointCode = req.getParameter("accessPointCode");
 			}
-			stl.listResults(countryCode, communityCode, accessPointCode);
+			String cursorString = null;
+			if (req.getParameter("cursorString") != null) {
+				cursorString = req.getParameter("cursorString");
+			}
+			stl.listResults(countryCode, communityCode, accessPointCode,
+					cursorString);
 		} else if ("testDistanceRule".equals(action)) {
 			DeleteObjectUtil dou = new DeleteObjectUtil();
 			dou.deleteAllObjects("AccessPointScoreComputationItem");
@@ -257,7 +265,7 @@ public class TestHarnessServlet extends HttpServlet {
 				this.populatePermissions();
 				resp.getWriter().println("Completed setting up permissions");
 				AccessPointTest apt = new AccessPointTest();
-				apt.loadLots(resp,100);
+				apt.loadLots(resp, 100);
 				StandardScoringTest sct = new StandardScoringTest();
 				sct.populateData();
 				setupMetrics();
@@ -713,7 +721,7 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 		} else if ("loadLots".equals(action)) {
 			AccessPointTest apt = new AccessPointTest();
-			apt.loadLots(resp,500);
+			apt.loadLots(resp, 500);
 		} else if ("loadCountries".equals(action)) {
 			Country c = new Country();
 			c.setIsoAlpha2Code("HN");

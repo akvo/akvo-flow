@@ -35,4 +35,6 @@ public interface StandardScoringManagerServiceAsync {
 	void listCompoundRule(String standardType,
 			AsyncCallback<ResponseDto<ArrayList<CompoundStandardDto>>> callback);
 
+	void deleteCompoundStandard(Long id, AsyncCallback<Void> callback);
+
 }

@@ -21,6 +21,7 @@ import com.gallatinsystems.standards.domain.Standard.StandardComparisons;
 import com.gallatinsystems.standards.domain.Standard.StandardScope;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.standards.domain.Standard.StandardValueType;
+import com.gallatinsystems.standards.domain.StandardDef;
 
 public class ScoringHelper {
 	private static Logger log = Logger.getLogger(ScoringHelper.class.getName());
@@ -61,8 +62,8 @@ public class ScoringHelper {
 		CompoundStandardDao csdao = new CompoundStandardDao();
 		List<CompoundStandard> csList = csdao.listByType(scoreType);
 		for (CompoundStandard item : csList) {
-			Standard left = item.getStandardLeft();
-			Standard right = item.getStandardRight();
+			StandardDef left = item.getStandardLeft();
+			StandardDef right = item.getStandardRight();
 			ScoreDetailContainer sdcLeft = processStandard(left, ap);
 			ScoreDetailContainer sdcRight = processStandard(right, ap);
 			if (item.getOperator().equals(CompoundStandard.Operator.AND)) {
@@ -270,29 +271,30 @@ public class ScoringHelper {
 		return null;
 	}
 
-	private ScoreDetailContainer processStandard(Standard standard,
+	private ScoreDetailContainer processStandard(StandardDef standard,
 			AccessPoint ap) {
 		ScoreDetailContainer sdc = new ScoreDetailContainer();
 		Integer score = 0;
+		
 		if (standard.getStandardScope().equals(StandardScope.Global)
 				|| (standard.getStandardScope().equals(StandardScope.Local))
-				&& standard.getCountry().equals(ap.getCountryCode())) {
+				&& ((Standard)standard).getCountry().equals(ap.getCountryCode())) {
 			String value = getAccessPointFieldValue(ap,
-					standard.getAccessPointAttribute());
+					((Standard)standard).getAccessPointAttribute());
 			if (value == null) {
 				sdc.add("Could not score attribute "
-						+ standard.getAccessPointAttribute());
+						+ ((Standard)standard).getAccessPointAttribute());
 				sdc.setScore(0);
 			}
-			if (standard.getAcessPointAttributeType().equals(
+			if (((Standard)standard).getAcessPointAttributeType().equals(
 					StandardValueType.Boolean)) {
-				sdc = scoreBoolean(standard, value);
-			} else if (standard.getAcessPointAttributeType().equals(
+				sdc = scoreBoolean((Standard)standard, value);
+			} else if (((Standard)standard).getAcessPointAttributeType().equals(
 					StandardValueType.String)) {
-				sdc = scoreString(standard, value);
-			} else if (standard.getAcessPointAttributeType().equals(
+				sdc = scoreString((Standard)standard, value);
+			} else if (((Standard)standard).getAcessPointAttributeType().equals(
 					StandardValueType.Number)) {
-				sdc = scoreDouble(standard, value);
+				sdc = scoreDouble((Standard)standard, value);
 			}
 		}
 		return sdc;

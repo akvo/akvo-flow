@@ -9,6 +9,7 @@ import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 import org.waterforpeople.mapping.domain.AccessPoint.LocationType;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.standards.domain.Standard.StandardComparisons;
 import com.gallatinsystems.standards.domain.Standard.StandardScope;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 
@@ -114,5 +115,15 @@ public class DistanceStandard extends BaseDomain implements StandardDef {
 	public Boolean getPartOfCompoundRule() {
 		// TODO Auto-generated method stub
 		return partOfCompoundRule;
+	}
+
+	@Override
+	public void setStandardComparisons(StandardComparisons sc) {
+	}
+
+	@Override
+	public StandardComparisons getStandardComparisons() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -99,7 +99,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			"Add/List Compound Rule");
 	private VerticalPanel tablePanel = new VerticalPanel();
 	private HorizontalPanel bucketsHPanel = new HorizontalPanel();
-	//private Button addScoringBucket = new Button();
+	// private Button addScoringBucket = new Button();
 	private Label bucketsBoxLbl = new Label("Enter new bucket name");
 	private TextBox bucketsEntryBox = new TextBox();
 	private Button saveBucket = new Button("Save New Bucket");
@@ -143,55 +143,55 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		scoringTable.setVisible(false);
 		bucketsHPanel.add(scoreBucketsBox);
 		// loadStandardScoreBuckets();
-//		addScoringBucket.setText("Add Bucket");
-//		addScoringBucket.addClickHandler(new ClickHandler() {
-//			@Override
-//			public void onClick(ClickEvent event) {
-//				scoreBucketsBox.setEnabled(false);
-//				addScoringBucket.setEnabled(false);
-//
-//				bucketsEntryBox.addKeyPressHandler(new KeyPressHandler() {
-//					@Override
-//					public void onKeyPress(KeyPressEvent event) {
-//						TextBox bucketEntryBox = (TextBox) event.getSource();
-//						if (bucketEntryBox.getText().trim().length() > 0) {
-//							saveBucket.setEnabled(true);
-//						} else {
-//							saveBucket.setEnabled(false);
-//						}
-//					}
-//				});
-//				saveBucket.addClickHandler(new ClickHandler() {
-//					@Override
-//					public void onClick(ClickEvent event) {
-//						String newBucketName = bucketsEntryBox.getText().trim();
-//						Boolean didnotfindinexisting = true;
-//						for (int i = 0; i < scoreBucketsBox.getItemCount(); i++) {
-//							if (scoreBucketsBox.getItemText(i).trim()
-//									.toLowerCase()
-//									.equals(newBucketName.toLowerCase())) {
-//								didnotfindinexisting = false;
-//							}
-//						}
-//						if (didnotfindinexisting)
-//							saveScoreBucket(newBucketName);
-//						else
-//							Window.alert("Could not add bucket as a bucket with that name already exists");
-//					}
-//
-//				});
-//				bucketsHPanel.add(bucketsBoxLbl);
-//				bucketsHPanel.add(bucketsEntryBox);
-//				bucketsHPanel.add(saveBucket);
-//			}
-//		});
-//		bucketsHPanel.add(addScoringBucket);
+		// addScoringBucket.setText("Add Bucket");
+		// addScoringBucket.addClickHandler(new ClickHandler() {
+		// @Override
+		// public void onClick(ClickEvent event) {
+		// scoreBucketsBox.setEnabled(false);
+		// addScoringBucket.setEnabled(false);
+		//
+		// bucketsEntryBox.addKeyPressHandler(new KeyPressHandler() {
+		// @Override
+		// public void onKeyPress(KeyPressEvent event) {
+		// TextBox bucketEntryBox = (TextBox) event.getSource();
+		// if (bucketEntryBox.getText().trim().length() > 0) {
+		// saveBucket.setEnabled(true);
+		// } else {
+		// saveBucket.setEnabled(false);
+		// }
+		// }
+		// });
+		// saveBucket.addClickHandler(new ClickHandler() {
+		// @Override
+		// public void onClick(ClickEvent event) {
+		// String newBucketName = bucketsEntryBox.getText().trim();
+		// Boolean didnotfindinexisting = true;
+		// for (int i = 0; i < scoreBucketsBox.getItemCount(); i++) {
+		// if (scoreBucketsBox.getItemText(i).trim()
+		// .toLowerCase()
+		// .equals(newBucketName.toLowerCase())) {
+		// didnotfindinexisting = false;
+		// }
+		// }
+		// if (didnotfindinexisting)
+		// saveScoreBucket(newBucketName);
+		// else
+		// Window.alert("Could not add bucket as a bucket with that name already exists");
+		// }
+		//
+		// });
+		// bucketsHPanel.add(bucketsBoxLbl);
+		// bucketsHPanel.add(bucketsEntryBox);
+		// bucketsHPanel.add(saveBucket);
+		// }
+		// });
+		// bucketsHPanel.add(addScoringBucket);
 		tablePanel.add(bucketsHPanel);
 
 		tablePanel.add(scoringTable);
 		tablePanel.add(addNewButton);
 		tablePanel.add(addNewCompoundRuleButton);
-	addNewButton.addClickHandler(new ClickHandler() {
+		addNewButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -205,6 +205,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				final CompoundRulePopup cpp = new CompoundRulePopup(
 						scoreBucketsBox.getValue(scoreBucketsBox
 								.getSelectedIndex()), svc, true);
+				cpp.center();
 				cpp.show();
 			}
 		});
@@ -625,6 +626,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 		deleteButton.addClickHandler(new ClickHandler() {
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onClick(ClickEvent event) {
 				Button deleteButton = (Button) event.getSource();
@@ -642,14 +644,13 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 					public void onSuccess(Object result) {
 						Grid grid = scoringTable.getGrid();
 						grid.removeRow(selectedRow);
-
 						for (int i = selectedRow; i < grid.getRowCount(); i++) {
 							HorizontalPanel buttonPanel = (HorizontalPanel) grid
-									.getWidget(i, 19);
+									.getWidget(i, 11);
 							Button deleteButton = (Button) buttonPanel
 									.getWidget(1);
 							Long keyId = 0L;
-							TextBox keyIdBox = (TextBox) grid.getWidget(i, 18);
+							TextBox keyIdBox = (TextBox) grid.getWidget(i, 10);
 							if (keyIdBox != null
 									&& keyIdBox.getText().trim().length() > 0) {
 								keyId = Long.parseLong(keyIdBox.getText()

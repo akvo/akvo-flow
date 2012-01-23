@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
+import com.gallatinsystems.standards.domain.Standard.StandardComparisons;
 import com.gallatinsystems.standards.domain.Standard.StandardScope;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.google.appengine.api.datastore.Key;
@@ -40,5 +41,6 @@ public interface StandardDef {
 	
 	public void setPartOfCompoundRule(Boolean partOfCompoundRule);
 	public Boolean getPartOfCompoundRule();
-
+	public void setStandardComparisons(StandardComparisons sc);
+	public StandardComparisons getStandardComparisons();
 }

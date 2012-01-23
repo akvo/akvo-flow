@@ -61,24 +61,23 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		// }
 		StandardDao standardDao = new StandardDao();
 		DistanceStandardDao distanceStandardDao = new DistanceStandardDao();
-AccessPointType apt = null;
+		AccessPointType apt = null;
 		StandardType standardType = null;
 		if (scoreBucketId == 0) {
 			standardType = StandardType.WaterPointLevelOfService;
 			apt = AccessPointType.WATER_POINT;
-		} else if(scoreBucketId ==1) {
+		} else if (scoreBucketId == 1) {
 			standardType = StandardType.WaterPointSustainability;
 			apt = AccessPointType.WATER_POINT;
-		}else if(scoreBucketId==2){
+		} else if (scoreBucketId == 2) {
 			standardType = StandardType.PublicInstitutionLevelOfService;
 			apt = AccessPointType.PUBLIC_INSTITUTION;
-		}else if(scoreBucketId==3){
+		} else if (scoreBucketId == 3) {
 			standardType = StandardType.PublicInstitutionSustainability;
 			apt = AccessPointType.PUBLIC_INSTITUTION;
 		}
 		List<Standard> sList = standardDao
-				.listByAccessPointTypeAndStandardType(
-						apt, standardType);
+				.listByAccessPointTypeAndStandardType(apt, standardType);
 		List<DistanceStandard> distanceList = distanceStandardDao
 				.listDistanceStandard(standardType, null);
 		for (DistanceStandard dsItem : distanceList) {
@@ -229,6 +228,7 @@ AccessPointType apt = null;
 		} else if (item.getPositiveOperator().equals("!=")) {
 			sc = StandardComparisons.notequal;
 		}
+		standard.setStandardComparisons(sc);
 
 		// criteriaType.addItem("Text", "String");
 		// criteriaType.addItem("Number", "Number");
@@ -250,8 +250,13 @@ AccessPointType apt = null;
 
 	@Override
 	public void delete(Long id) {
-		StandardScoringDao ssDao = new StandardScoringDao();
-		ssDao.delete(ssDao.getByKey(id));
+		StandardDao ssDao = new StandardDao();
+		if (ssDao.getByKey(id) != null) {
+			ssDao.delete(ssDao.getByKey(id));
+		} else {
+			DistanceStandardDao dDao = new DistanceStandardDao();
+			dDao.delete(dDao.getByKey(id));
+		}
 	}
 
 	@Override
@@ -367,8 +372,9 @@ AccessPointType apt = null;
 	}
 
 	@Override
-	public Long saveCompoundRule(Long compoundRuleId, String name,String standardType,
-			Long leftRuleId, Long rightRuleId, String operator) {
+	public Long saveCompoundRule(Long compoundRuleId, String name,
+			String standardType, Long leftRuleId, Long rightRuleId,
+			String operator) {
 		CompoundStandardDao csDao = new CompoundStandardDao();
 		CompoundStandard cs = null;
 		if (compoundRuleId != null) {
@@ -389,26 +395,29 @@ AccessPointType apt = null;
 	}
 
 	@Override
-	public ResponseDto<ArrayList<CompoundStandardDto>> listCompoundRule(String standardType) {
+	public ResponseDto<ArrayList<CompoundStandardDto>> listCompoundRule(
+			String standardType) {
 		// TODO Auto-generated method stub
 		ResponseDto<ArrayList<CompoundStandardDto>> response = new ResponseDto<ArrayList<CompoundStandardDto>>();
-		
+
 		CompoundStandardDao csDao = new CompoundStandardDao();
 		StandardType st = null;
-		st =encodeStandardTypeString(standardType);
-		
-		
-		List<CompoundStandard> csList =  csDao.listByType(st);
+		st = encodeStandardTypeString(standardType);
+
+		List<CompoundStandard> csList = csDao.listByType(st);
 		ArrayList<CompoundStandardDto> dtoList = new ArrayList<CompoundStandardDto>();
-		
-		for(CompoundStandard item:csList){
+
+		for (CompoundStandard item : csList) {
 			CompoundStandardDto dto = new CompoundStandardDto();
 			dto.setKeyId(item.getKey().getId());
-			dto.setOperator(CompoundStandardDto.Operator.valueOf(item.getOperator().toString()));
+			dto.setOperator(CompoundStandardDto.Operator.valueOf(item
+					.getOperator().toString()));
 			dto.setStandardIdLeft(item.getStandardIdLeft());
 			dto.setStandardIdRight(item.getStandardIdRight());
-			dto.setStandardLeftDesc(item.getStandardLeft().getStandardDescription());
-			dto.setStandardRightDesc(item.getStandardRight().getStandardDescription());
+			dto.setStandardLeftDesc(item.getStandardLeft()
+					.getStandardDescription());
+			dto.setStandardRightDesc(item.getStandardRight()
+					.getStandardDescription());
 			dto.setName(item.getName());
 			dtoList.add(dto);
 		}
@@ -421,13 +430,25 @@ AccessPointType apt = null;
 		StandardType st = null;
 		if (standardType.equalsIgnoreCase("waterpointlevelofservice"))
 			st = StandardType.WaterPointLevelOfService;
-		else if(standardType.equalsIgnoreCase(StandardType.WaterPointSustainability.toString()))
-			st=StandardType.WaterPointSustainability;
-		else if(standardType.equalsIgnoreCase(StandardType.PublicInstitutionLevelOfService.toString())){
-			st=StandardType.PublicInstitutionLevelOfService;
-		}else if(standardType.equalsIgnoreCase(StandardType.PublicInstitutionSustainability.toString())){
-			st=StandardType.PublicInstitutionSustainability;
+		else if (standardType
+				.equalsIgnoreCase(StandardType.WaterPointSustainability
+						.toString()))
+			st = StandardType.WaterPointSustainability;
+		else if (standardType
+				.equalsIgnoreCase(StandardType.PublicInstitutionLevelOfService
+						.toString())) {
+			st = StandardType.PublicInstitutionLevelOfService;
+		} else if (standardType
+				.equalsIgnoreCase(StandardType.PublicInstitutionSustainability
+						.toString())) {
+			st = StandardType.PublicInstitutionSustainability;
 		}
 		return st;
+	}
+
+	@Override
+	public void deleteCompoundStandard(Long id) {
+		CompoundStandardDao csDao = new CompoundStandardDao();
+		csDao.delete(id);
 	}
 }

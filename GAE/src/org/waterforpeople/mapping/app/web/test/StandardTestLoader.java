@@ -382,12 +382,12 @@ public class StandardTestLoader {
 	}
 
 	public void listResults(String countryCode, String communityCode,
-			String accessPointCode) {
-		listAPScoreAndStatus(countryCode, communityCode, accessPointCode);
+			String accessPointCode, String cursorString) {
+		listAPScoreAndStatus(countryCode, communityCode, accessPointCode, cursorString);
 	}
 
 	private void listAPScoreAndStatus(String countryCode, String communityCode,
-			String accessPointCode) {
+			String accessPointCode, String cursorString) {
 		AccessPointDao apDao = new AccessPointDao();
 		// List<AccessPoint> apList = apDao.list("all");
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -398,7 +398,7 @@ public class StandardTestLoader {
 				+ "<td>Number Outside Acceptable Distance</td><td>LOS Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td>"
 				+ "<td>Sustainability Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td></tr>");
 		Iterable<Entity> entList =null;
-		entList = apDao.listRawEntity(false,countryCode, communityCode, accessPointCode);
+		entList = apDao.listRawEntity(false,countryCode, communityCode, accessPointCode, cursorString);
 		// for (AccessPoint item : extent) {
 		for (Entity result : entList) {
 			AccessPoint item = new AccessPoint();

@@ -19,13 +19,16 @@ import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.QueryResultList;
 
 /**
  * dao for manipulating access points
@@ -56,12 +59,13 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 	}
 
 	public Iterable<Entity> listRawEntity(Boolean returnKeysOnly,
-			String countryCode, String communityCode, String accessPointCode) {
+			String countryCode, String communityCode, String accessPointCode,
+			String cursorString) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
-
 		// The Query interface assembles a query
 		Query q = new Query("AccessPoint");
+		int pageSize = 50;
 		if (returnKeysOnly) {
 			q.setKeysOnly();
 		}
@@ -73,9 +77,15 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		if (accessPointCode != null)
 			q.addFilter("accessPointCode", FilterOperator.EQUAL,
 					accessPointCode);
-
 		PreparedQuery pq = datastore.prepare(q);
-		return pq.asIterable();
+		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(pageSize);
+		String startCursor = cursorString;
+		if (startCursor != null) {
+			fetchOptions.startCursor(Cursor.fromWebSafeString(startCursor));
+		}
+
+		return pq.asIterable(fetchOptions);
+
 	}
 
 	public AccessPoint findByKey(Key key) {

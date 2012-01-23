@@ -185,4 +185,15 @@ public class Standard extends BaseDomain implements StandardDef {
 	public void setCountryCode(String countryCode) {
 		this.setCountry(countryCode);
 	}
+
+	@Override
+	public void setStandardComparisons(StandardComparisons sc) {
+		this.standardComparison=sc;
+	}
+
+	@Override
+	public StandardComparisons getStandardComparisons() {
+		// TODO Auto-generated method stub
+		return this.standardComparison;
+	}
 }

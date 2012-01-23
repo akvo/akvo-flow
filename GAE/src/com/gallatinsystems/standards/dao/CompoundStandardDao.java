@@ -1,5 +1,6 @@
 package com.gallatinsystems.standards.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -13,6 +14,45 @@ public class CompoundStandardDao extends BaseDAO<CompoundStandard> {
 
 	public CompoundStandardDao() {
 		super(CompoundStandard.class);
+	}
+	
+	public List<CompoundStandard> listByChildStandard(Long id){
+		List<CompoundStandard> csListLeft = super.listByProperty("standardIdLeft", id, "Long");
+		List<CompoundStandard> csListRight = super.listByProperty("standardIdRight", id, "Long");
+		List<CompoundStandard> csList = new ArrayList<CompoundStandard>();
+		if(csListLeft!=null&&csListLeft.size()>0)
+			csList.addAll(csListLeft);
+		if(csListRight!=null&&csListRight.size()>0)
+			csList.addAll(csListRight);
+		return csList;
+	}
+	
+	public void delete(Long id){
+		CompoundStandard cs = this.getByKey(id);
+		if(cs!=null){
+			DistanceStandardDao dsDao = new DistanceStandardDao();
+			if(dsDao.getByKey(cs.getStandardIdLeft())!=null){
+				DistanceStandard ds = dsDao.getByKey(cs.getStandardIdLeft());
+				ds.setPartOfCompoundRule(false);
+				dsDao.save(ds);
+			}
+			if(dsDao.getByKey(cs.getStandardIdRight())!=null){
+				DistanceStandard ds = dsDao.getByKey(cs.getStandardIdRight());
+				ds.setPartOfCompoundRule(false);
+				dsDao.save(ds);
+			}
+			StandardDao sDao = new StandardDao();
+			if(sDao.getByKey(cs.getStandardIdLeft())!=null){
+				Standard s = sDao.getByKey(cs.getStandardIdLeft());
+				s.setPartOfCompoundRule(false);
+				sDao.save(s);
+			}
+			if(sDao.getByKey(cs.getStandardIdRight())!=null){
+				Standard s = sDao.getByKey(cs.getStandardIdRight());
+				s.setPartOfCompoundRule(false);
+				sDao.save(s);
+			}			  
+		}
 	}
 
 	public CompoundStandard save(CompoundStandard item) {
@@ -53,8 +93,32 @@ public class CompoundStandardDao extends BaseDAO<CompoundStandard> {
 				type, "String");
 		StandardDao ssDao = new StandardDao();
 		for (CompoundStandard item : csList) {
-			item.setStandardLeft(ssDao.getByKey(item.getStandardIdLeft()));
-			item.setStandardRight(ssDao.getByKey(item.getStandardIdRight()));
+			if (item.getStandardIdLeft() != null) {
+				Standard left = ssDao.getByKey(item.getStandardIdLeft());
+				if (left != null)
+					item.setStandardLeft(left);
+				else {
+					DistanceStandardDao dsDao = new DistanceStandardDao();
+					DistanceStandard leftDs = dsDao.getByKey(item
+							.getStandardIdLeft());
+					if (leftDs != null) {
+						item.setStandardLeft(leftDs);
+					}
+				}
+			}
+			if (item.getStandardIdRight() != null) {
+				Standard right = ssDao.getByKey(item.getStandardIdRight());
+				if (right != null)
+					item.setStandardRight(right);
+				else {
+					DistanceStandardDao dsDao = new DistanceStandardDao();
+					DistanceStandard rightDs = dsDao.getByKey(item
+							.getStandardIdRight());
+					if (rightDs != null) {
+						item.setStandardLeft(rightDs);
+					}
+				}
+			}
 		}
 		return csList;
 	}
