@@ -343,6 +343,8 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 							.getQuestion().getId());
 					responseMap.remove(curResponse.getQuestionId());
 				} else if (curResponse != null) {
+					//if we're here, the response is blank but hasn't been saved yet (has no ID)
+					//so we can just discard it
 					responseMap.remove(curResponse.getQuestionId());
 				}
 			}
