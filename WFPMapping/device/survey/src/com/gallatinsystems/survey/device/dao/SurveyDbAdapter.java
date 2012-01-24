@@ -698,6 +698,7 @@ public class SurveyDbAdapter {
 			}
 		}
 		responseToSave.setId(id);
+		resp.setId(id);
 		return responseToSave;
 	}
 
