@@ -327,23 +327,23 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 		}
 		if (questionMap != null) {
 			for (QuestionView q : questionMap.values()) {
-				if (q.getResponse(true) != null
-						&& q.getResponse(true).hasValue()) {
-					q.getResponse(true).setRespondentId(respondentId);
-					databaseAdaptor.createOrUpdateSurveyResponse(q
-							.getResponse(true));
-					responseMap.put(q.getResponse(true).getQuestionId(),
-							q.getResponse(true));
-				} else if (q.getResponse(true) != null
-						&& q.getResponse(true).getId() != null
-						&& q.getResponse(true).getId() > 0) {
+				QuestionResponse curResponse = q.getResponse(true);
+				if (curResponse != null
+						&& curResponse.hasValue()) {
+					curResponse.setRespondentId(respondentId);
+					databaseAdaptor.createOrUpdateSurveyResponse(curResponse);
+					responseMap.put(curResponse.getQuestionId(),
+							curResponse);
+				} else if (curResponse != null
+						&& curResponse.getId() != null
+						&& curResponse.getId() > 0) {
 					// if we don't have a value BUT there is an ID, we need to
 					// remove it since the user blanked out their response
 					databaseAdaptor.deleteResponse(respondentId.toString(), q
 							.getQuestion().getId());
-					responseMap.remove(q.getResponse(true).getQuestionId());
-				} else if (q.getResponse(true) != null) {
-					responseMap.remove(q.getResponse(true).getQuestionId());
+					responseMap.remove(curResponse.getQuestionId());
+				} else if (curResponse != null) {
+					responseMap.remove(curResponse.getQuestionId());
 				}
 			}
 		}
