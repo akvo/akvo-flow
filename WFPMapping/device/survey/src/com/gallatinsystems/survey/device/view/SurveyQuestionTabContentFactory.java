@@ -181,6 +181,9 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 			}
 			resetView();
 		}
+		if(responseMap != null){
+			responseMap.clear();
+		}
 	}
 	
 	/**
