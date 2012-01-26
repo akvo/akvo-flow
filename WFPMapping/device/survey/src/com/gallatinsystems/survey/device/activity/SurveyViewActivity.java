@@ -660,8 +660,9 @@ public class SurveyViewActivity extends TabActivity implements
 		if (responses != null) {
 			QuestionResponse resp = responses.get(dep.getQuestion());
 			if (resp != null && resp.hasValue()
-					&& resp.getValue().equalsIgnoreCase(dep.getAnswer())
+					&& dep.isMatch(resp.getValue())
 					&& "true".equalsIgnoreCase(resp.getIncludeFlag())) {
+				
 				isSatisfied = true;
 			}
 		}
