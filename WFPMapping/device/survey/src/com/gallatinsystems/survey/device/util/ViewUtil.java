@@ -102,6 +102,8 @@ public class ViewUtil {
 	 * @param parentContext
 	 * @param includeNegative
 	 * @param positiveListener
+	 *            - if includeNegative is false, this will also be bound to the
+	 *            cancel handler
 	 * @param negativeListener
 	 *            - only used if includeNegative is true - if the negative
 	 *            listener is non-null, it will also be bound to the cancel
@@ -110,7 +112,7 @@ public class ViewUtil {
 	 */
 	public static void showConfirmDialog(int titleId, int textId,
 			Context parentContext, boolean includeNegative,
-			DialogInterface.OnClickListener positiveListener,
+			final DialogInterface.OnClickListener positiveListener,
 			final DialogInterface.OnClickListener negativeListener) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
 		TextView tipText = new TextView(parentContext);
@@ -128,6 +130,13 @@ public class ViewUtil {
 					}
 				});
 			}
+		} else if (positiveListener != null) {
+			builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					positiveListener.onClick(dialog, -1);
+				}
+			});
 		}
 
 		builder.show();

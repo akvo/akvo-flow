@@ -78,6 +78,11 @@ public class SurveyViewActivity extends TabActivity implements
 	private static final String VIDEO_TYPE = "video/*";
 	private static final String IMAGE_SUFFIX = ".jpg";
 	private static final String VIDEO_SUFFIX = ".mp4";
+	
+	private static int pendingRequestCode;
+	private static int pendingResultCode;
+	private static Intent pendingData;
+	
 	private ArrayList<SurveyQuestionTabContentFactory> tabContentFactories;
 	private QuestionView eventQuestionSource;
 	private SurveyDbAdapter databaseAdapter;
@@ -98,9 +103,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private PropertyUtil props;
 	private HashSet<String> missingQuestions;
 	private boolean hasAddedTabs;
-	private int pendingRequestCode;
-	private int pendingResultCode;
-	private Intent pendingData;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -951,11 +954,10 @@ public class SurveyViewActivity extends TabActivity implements
 						tab.loadState(respondentId);
 					}
 				}
-			} else if (survey != null) {
-				if (pendingRequestCode > 0) {
+			}
+			if (survey != null && pendingRequestCode > 0) {				
 					processActivityResult(pendingRequestCode,
-							pendingResultCode, pendingData);
-				}
+							pendingResultCode, pendingData);				
 			}
 
 		} catch (Exception e) {
