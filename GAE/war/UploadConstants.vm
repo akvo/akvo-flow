@@ -4,7 +4,7 @@ s3Id = $awsIdentifier
 #NOTE: the S3 policies expire on 10/2/2013
 surveyDataS3Policy = $surveyDataS3Policy
 surveyDataS3Sig = $surveyDataS3Sig
-surveyDataS3Path = devicezip 
+surveyDataS3Path = devicezip
 surveyDataContentType = application/zip
 
 imageS3Policy = $imagesS3Policy
