@@ -33,7 +33,8 @@ public class ViewUtil {
 	 */
 	public static void showGPSDialog(final Context parentContext) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
-		builder.setMessage(R.string.geodialog).setCancelable(true)
+		builder.setMessage(R.string.geodialog)
+				.setCancelable(true)
 				.setPositiveButton(R.string.okbutton,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
@@ -41,7 +42,8 @@ public class ViewUtil {
 										.startActivity(new Intent(
 												"android.settings.LOCATION_SOURCE_SETTINGS"));
 							}
-						}).setNegativeButton(R.string.cancelbutton,
+						})
+				.setNegativeButton(R.string.cancelbutton,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								dialog.cancel();
@@ -101,12 +103,15 @@ public class ViewUtil {
 	 * @param includeNegative
 	 * @param positiveListener
 	 * @param negativeListener
-	 *            - only used if includeNegative is true
+	 *            - only used if includeNegative is true - if the negative
+	 *            listener is non-null, it will also be bound to the cancel
+	 *            listener so pressing back to dismiss the dialog will have the
+	 *            same effect as clicking the negative button.
 	 */
 	public static void showConfirmDialog(int titleId, int textId,
 			Context parentContext, boolean includeNegative,
 			DialogInterface.OnClickListener positiveListener,
-			DialogInterface.OnClickListener negativeListener) {
+			final DialogInterface.OnClickListener negativeListener) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
 		TextView tipText = new TextView(parentContext);
 		builder.setTitle(titleId);
@@ -115,7 +120,16 @@ public class ViewUtil {
 		builder.setPositiveButton(R.string.okbutton, positiveListener);
 		if (includeNegative) {
 			builder.setNegativeButton(R.string.cancelbutton, negativeListener);
+			if (negativeListener != null) {
+				builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						negativeListener.onClick(dialog, -1);
+					}
+				});
+			}
 		}
+
 		builder.show();
 	}
 
@@ -139,8 +153,8 @@ public class ViewUtil {
 		if (iconId != null) {
 			icon = iconId;
 		}
-		Notification notification = new Notification(icon, headline, System
-				.currentTimeMillis());
+		Notification notification = new Notification(icon, headline,
+				System.currentTimeMillis());
 		Intent notificationIntent = new Intent(context, DataSyncService.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
 				notificationIntent, 0);
@@ -201,19 +215,20 @@ public class ViewUtil {
 			final boolean selectionMandatory,
 			final int mandatoryTitleResourceId,
 			final int mandatoryTextResourceId) {
-		AlertDialog dia = new AlertDialog.Builder(context).setTitle(
-				labelResourceId).setMultiChoiceItems(valueArrayResourceId,
-				selections, new DialogInterface.OnMultiChoiceClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which,
-							boolean isChecked) {
-						switch (which) {
-						case DialogInterface.BUTTON_POSITIVE:
-							break;
-						}
-					}
-				}).setPositiveButton("OK",
-				new DialogInterface.OnClickListener() {
+		AlertDialog dia = new AlertDialog.Builder(context)
+				.setTitle(labelResourceId)
+				.setMultiChoiceItems(valueArrayResourceId, selections,
+						new DialogInterface.OnMultiChoiceClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which, boolean isChecked) {
+								switch (which) {
+								case DialogInterface.BUTTON_POSITIVE:
+									break;
+								}
+							}
+						})
+				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
