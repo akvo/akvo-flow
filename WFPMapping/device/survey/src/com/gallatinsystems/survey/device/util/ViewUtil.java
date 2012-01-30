@@ -65,7 +65,9 @@ public class ViewUtil {
 		showConfirmDialog(titleId, textId, parentContext, false,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
+						if(dialog != null){
+							dialog.cancel();
+						}
 					}
 				});
 	}
