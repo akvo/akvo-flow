@@ -235,8 +235,13 @@ public class SurveyReviewActivity extends ListActivity {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									databaseAdapter.deleteAllResponses();
-									getData();
+									ViewUtil.showAdminAuthDialog(SurveyReviewActivity.this, new ViewUtil.AdminAuthDialogListener() {										
+										@Override
+										public void onAuthenticated() {
+											databaseAdapter.deleteAllResponses();
+											getData();										
+										}
+									});									
 								}
 							})
 					.setNegativeButton(R.string.cancelbutton,
