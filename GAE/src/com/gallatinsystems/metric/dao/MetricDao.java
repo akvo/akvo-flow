@@ -53,8 +53,9 @@ public class MetricDao extends BaseDAO<Metric> {
 			query.declareParameters(paramString.toString());
 			prepareCursor(cursorString, query);
 			return (List<Metric>) query.executeWithMap(paramMap);
-		} else {
-			return list(cursorString);
+		} else {			
+			prepareCursor(cursorString, query);
+			return (List<Metric>)query.execute();
 		}
 	}
 
