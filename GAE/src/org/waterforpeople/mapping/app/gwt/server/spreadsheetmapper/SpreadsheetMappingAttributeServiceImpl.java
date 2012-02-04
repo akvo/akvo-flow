@@ -1,13 +1,13 @@
 package org.waterforpeople.mapping.app.gwt.server.spreadsheetmapper;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,8 +33,9 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SpreadsheetMappingAttributeServiceImpl extends
@@ -442,7 +443,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 	private void sendSurveyProcessingMessage(String spreadsheetName,
 			int startRow, String token, byte[] key, String keySpec) {
 		Queue importQueue = QueueFactory.getQueue("spreadsheetImport");
-		importQueue.add(url("/app_worker/sheetimport").param("identifier",
+		importQueue.add(TaskOptions.Builder.withUrl("/app_worker/sheetimport").param("identifier",
 				spreadsheetName).param("type", "Survey").param("action",
 				"processFile").param("startRow", startRow + "").param(
 				"sessionToken", token).param("privateKey", key).param(

@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.helper;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -48,8 +46,9 @@ import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.standards.domain.StandardScoring;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class AccessPointHelper {
 
@@ -516,7 +515,8 @@ public class AccessPointHelper {
 									AccessPointStatusSummary.class.getName(),
 									"n/a", oldValues, newValues);
 							Queue queue = QueueFactory.getQueue("dataUpdate");
-							queue.add(url("/app_worker/dataupdate")
+							queue.add(TaskOptions.Builder
+									.withUrl("/app_worker/dataupdate")
 									.param(DataSummarizationRequest.OBJECT_KEY,
 											ap.getKey().getId() + "")
 									.param(DataSummarizationRequest.OBJECT_TYPE,
@@ -556,7 +556,8 @@ public class AccessPointHelper {
 					if (ap.getKey() != null) {
 						Queue summQueue = QueueFactory
 								.getQueue("dataSummarization");
-						summQueue.add(url("/app_worker/datasummarization")
+						summQueue.add(TaskOptions.Builder
+								.withUrl("/app_worker/datasummarization")
 								.param("objectKey", ap.getKey().getId() + "")
 								.param("type", "AccessPoint"));
 					} else {
@@ -973,11 +974,12 @@ public class AccessPointHelper {
 							+ ap.getNumberOutsideAcceptableDistance());
 					losDao.save(los);
 				}
-			}else{
+			} else {
 				losDao.save(los);
 			}
-			LevelOfServiceScore losSustain = sh.scoreWaterPointByLevelOfService(ap,
-					StandardType.WaterPointSustainability);
+			LevelOfServiceScore losSustain = sh
+					.scoreWaterPointByLevelOfService(ap,
+							StandardType.WaterPointSustainability);
 			losDao.save(losSustain);
 		}
 	}

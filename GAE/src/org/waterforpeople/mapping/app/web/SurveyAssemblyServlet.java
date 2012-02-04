@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.web;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -54,9 +53,9 @@ import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
@@ -390,7 +389,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	private void sendQueueMessage(String action, Long surveyId,
 			String questionGroups, Long transactionId) {
 		Queue surveyAssemblyQueue = QueueFactory.getQueue("surveyAssembly");
-		TaskOptions task = url("/app_worker/surveyassembly").param("action",
+		TaskOptions task = TaskOptions.Builder.withUrl("/app_worker/surveyassembly").param("action",
 				action).param("surveyId", surveyId.toString());
 		if (questionGroups != null) {
 			task.param("questionGroupId", questionGroups);

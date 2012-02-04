@@ -1,6 +1,6 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,8 +26,9 @@ import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -191,7 +192,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 					SurveyAssignment.class.getName(), assignment.getKey()
 							.getId() + "", builder.toString(), "n/");
 			Queue queue = QueueFactory.getQueue("dataUpdate");
-			queue.add(url("/app_worker/dataupdate")
+			queue.add(TaskOptions.Builder.withUrl("/app_worker/dataupdate")
 					.param(DataSummarizationRequest.OBJECT_KEY,
 							assignment.getKey().getId() + "")
 					.param(DataSummarizationRequest.OBJECT_TYPE,

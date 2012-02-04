@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.web;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -23,8 +22,9 @@ import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.TranslationDao;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class SurveyTaskServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger.getLogger(SurveyTaskServlet.class
@@ -101,7 +101,7 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
 							}
 							buffer.append(nextSet.get(i).getKey().getId());
 						}
-						queue.add(url("/app_worker/surveytask").param("action",
+						queue.add(TaskOptions.Builder.withUrl("/app_worker/surveytask").param("action",
 								"reprocessMapSurveyInstance").param(
 								SurveyTaskRequest.ID_PARAM,
 								stReq.getId().toString()).param(

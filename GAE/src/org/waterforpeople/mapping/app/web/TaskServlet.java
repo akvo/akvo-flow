@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.web;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,7 +29,6 @@ import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
-import org.waterforpeople.mapping.domain.Status;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
@@ -50,9 +48,9 @@ import com.gallatinsystems.image.GAEImageAdapter;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class TaskServlet extends AbstractRestApiServlet {
 
@@ -198,7 +196,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 						// if we haven't processed everything yet, invoke a
 						// new service
 						Queue queue = QueueFactory.getDefaultQueue();
-						queue.add(url("/app_worker/task")
+						queue.add(TaskOptions.Builder.withUrl("/app_worker/task")
 								.param("action", "processFile")
 								.param("fileName", fileName)
 								.param("offset", lineNum + ""));
@@ -285,7 +283,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 					// add queue call to resize
 					Queue queue = QueueFactory.getDefaultQueue();
 
-					queue.add(url("imageprocessor").param("imageURL",
+					queue.add(TaskOptions.Builder.withUrl("imageprocessor").param("imageURL",
 							imageParts[1]));
 					log.info("submiting image resize for imageURL: "
 							+ imageParts[1]);
@@ -425,7 +423,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 				} else {
 					ProcessingAction pa = dispatch(instance.getKey().getId()
 							+ "");
-					TaskOptions options = url(pa.getDispatchURL());
+					TaskOptions options = TaskOptions.Builder.withUrl(pa.getDispatchURL());
 					Iterator it = pa.getParams().keySet().iterator();
 					while (it.hasNext()) {
 						options.param("key", (String) it.next());
@@ -433,12 +431,12 @@ public class TaskServlet extends AbstractRestApiServlet {
 					log.info("Received Task Queue calls for surveyInstanceKey: "
 							+ instance.getKey().getId() + "");
 					aph.processSurveyInstance(instance.getKey().getId() + "");
-					summQueue.add(url("/app_worker/datasummarization").param(
+					summQueue.add(TaskOptions.Builder.withUrl("/app_worker/datasummarization").param(
 							"objectKey", instance.getKey().getId() + "").param(
 							"type", "SurveyInstance"));
 					// process the "new" domain structure
 
-					defaultQueue.add(url("/app_worker/surveyalservlet").param(
+					defaultQueue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet").param(
 							SurveyalRestRequest.ACTION_PARAM,
 							SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
 							SurveyalRestRequest.SURVEY_INSTANCE_PARAM,

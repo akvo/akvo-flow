@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.app.web;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -159,8 +157,8 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class TestHarnessServlet extends HttpServlet {
@@ -200,14 +198,17 @@ public class TestHarnessServlet extends HttpServlet {
 						cursor);
 				if (files != null) {
 					cursor = DeviceFilesDao.getCursor(files);
+					Queue queue = QueueFactory.getDefaultQueue();
 					for (DeviceFiles fi : files) {
-						Queue queue = QueueFactory.getDefaultQueue();
-						queue.add(url("/app_worker/task").param("action",
-								"processFile").param(
-								"fileName",
-								fi.getURI().substring(
-										fi.getURI().lastIndexOf("/") + 1)));
-
+						queue.add(TaskOptions.Builder
+								.withUrl("/app_worker/task")
+								.param("action", "processFile")
+								.param("fileName",
+										fi.getURI()
+												.substring(
+														fi.getURI()
+																.lastIndexOf(
+																		"/") + 1)));
 					}
 				}
 			} while (files != null && files.size() > 0 && cursor != null);
@@ -519,7 +520,7 @@ public class TestHarnessServlet extends HttpServlet {
 							.toString();
 					Queue queue = QueueFactory.getDefaultQueue();
 
-					queue.add(url("/app_worker/surveytask").param("action",
+					queue.add(TaskOptions.Builder.withUrl("/app_worker/surveytask").param("action",
 							"reprocessMapSurveyInstance").param("id",
 							surveyInstanceId));
 					log.info("submiting task for SurveyInstanceId: "
@@ -870,7 +871,7 @@ public class TestHarnessServlet extends HttpServlet {
 			ans.setSurveyInstanceId(si.getKey().getId());
 			dao.save(ans);
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
-			summQueue.add(url("/app_worker/datasummarization").param(
+			summQueue.add(TaskOptions.Builder.withUrl("/app_worker/datasummarization").param(
 					"objectKey", si.getKey().getId() + "").param("type",
 					"SurveyInstance"));
 		} else if ("createCommunity".equals(action)) {
@@ -1584,7 +1585,7 @@ public class TestHarnessServlet extends HttpServlet {
 				if (country != null) {
 					Queue summQueue = QueueFactory
 							.getQueue("dataSummarization");
-					summQueue.add(url("/app_worker/datasummarization").param(
+					summQueue.add(TaskOptions.Builder.withUrl("/app_worker/datasummarization").param(
 							"objectKey", country).param("type", "OGRFeature"));
 				} else {
 					resp.getWriter()
@@ -1749,7 +1750,7 @@ public class TestHarnessServlet extends HttpServlet {
 		// com.google.appengine.api.taskqueue.QueueFactory.getQueue("notification");
 		Queue queue = QueueFactory.getQueue("notification");
 
-		queue.add(url("/notificationprocessor")
+		queue.add(TaskOptions.Builder.withUrl("/notificationprocessor")
 				.param(NotificationRequest.DEST_PARAM,
 						"christopher.fagiani@gmail.com||christopher.fagiani@gmail.com")
 				.param(NotificationRequest.DEST_OPT_PARAM, "ATTACHMENT||LINK")
@@ -1918,7 +1919,7 @@ public class TestHarnessServlet extends HttpServlet {
 
 	private void fixNameQuestion(String questionId) {
 		Queue summQueue = QueueFactory.getQueue("dataUpdate");
-		summQueue.add(url("/app_worker/dataupdate").param("objectKey",
+		summQueue.add(TaskOptions.Builder.withUrl("/app_worker/dataupdate").param("objectKey",
 				questionId + "").param("type", "NameQuestionFix"));
 	}
 

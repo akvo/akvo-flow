@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.app.gwt.server.surveyinstance;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,8 +29,9 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
@@ -44,8 +43,8 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
-			Date beginDate, Date toDate, boolean unapprovedOnlyFlag,Long surveyId, String source,
-			String cursorString) {
+			Date beginDate, Date toDate, boolean unapprovedOnlyFlag,
+			Long surveyId, String source, String cursorString) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
 		List<Survey> surveyList = surveyDao.list("all");
@@ -59,8 +58,8 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			c.add(Calendar.YEAR, -90);
 			beginDate = c.getTime();
 		}
-		siList = dao.listByDateRange(beginDate, toDate, unapprovedOnlyFlag,surveyId, source,
-				cursorString);
+		siList = dao.listByDateRange(beginDate, toDate, unapprovedOnlyFlag,
+				surveyId, source, cursorString);
 		String newCursor = SurveyInstanceDAO.getCursor(siList);
 
 		ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
@@ -142,12 +141,13 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	 */
 	@Override
 	public List<QuestionAnswerStoreDto> updateQuestions(
-			List<QuestionAnswerStoreDto> dtoList, boolean isApproved){
-		return updateQuestions(dtoList, isApproved,true);
+			List<QuestionAnswerStoreDto> dtoList, boolean isApproved) {
+		return updateQuestions(dtoList, isApproved, true);
 	}
-	
+
 	public List<QuestionAnswerStoreDto> updateQuestions(
-			List<QuestionAnswerStoreDto> dtoList, boolean isApproved, boolean processSummaries) {
+			List<QuestionAnswerStoreDto> dtoList, boolean isApproved,
+			boolean processSummaries) {
 		List<QuestionAnswerStore> domainList = new ArrayList<QuestionAnswerStore>();
 		for (QuestionAnswerStoreDto dto : dtoList) {
 			QuestionAnswerStore answer = new QuestionAnswerStore();
@@ -168,7 +168,8 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 						QuestionAnswerStore.class.getName(),
 						item.getQuestionID(), item.getOldValue(),
 						item.getValue());
-				queue.add(url("/app_worker/dataupdate")
+				queue.add(TaskOptions.Builder
+						.withUrl("/app_worker/dataupdate")
 						.param(DataSummarizationRequest.OBJECT_KEY,
 								item.getQuestionID())
 						.param(DataSummarizationRequest.OBJECT_TYPE,
@@ -187,7 +188,8 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 									+ item.getSurveyInstanceId() + "|"
 									+ mapping.getKey().getId(),
 							item.getOldValue(), item.getValue());
-					queue.add(url("/app_worker/dataupdate")
+					queue.add(TaskOptions.Builder
+							.withUrl("/app_worker/dataupdate")
 							.param(DataSummarizationRequest.OBJECT_KEY,
 									item.getQuestionID())
 							.param(DataSummarizationRequest.OBJECT_TYPE,
@@ -240,7 +242,8 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 					DataChangeRecord value = new DataChangeRecord(
 							QuestionAnswerStore.class.getName(),
 							ans.getQuestionID(), ans.getValue(), "");
-					queue.add(url("/app_worker/dataupdate")
+					queue.add(TaskOptions.Builder
+							.withUrl("/app_worker/dataupdate")
 							.param(DataSummarizationRequest.OBJECT_KEY,
 									ans.getQuestionID())
 							.param(DataSummarizationRequest.OBJECT_TYPE,
@@ -298,8 +301,7 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 				sendProcessingMessages(domain);
 			}
 		}
-		SurveyEventHelper.fireEvent(
-				SurveyEventHelper.SUBMISSION_EVENT,
+		SurveyEventHelper.fireEvent(SurveyEventHelper.SUBMISSION_EVENT,
 				instance.getSurveyId(), instance.getKeyId());
 		return instance;
 	}
@@ -358,19 +360,21 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 	public void sendProcessingMessages(SurveyInstance domain) {
 		// send async request to populate the AccessPoint using the mapping
 		QueueFactory.getDefaultQueue().add(
-				url("/app_worker/task").param("action", "addAccessPoint")
+				TaskOptions.Builder.withUrl("/app_worker/task")
+						.param("action", "addAccessPoint")
 						.param("surveyId", domain.getKey().getId() + ""));
 		// send asyn crequest to summarize the instance
 		QueueFactory.getQueue("dataSummarization").add(
-				url("/app_worker/datasummarization").param("objectKey",
-						domain.getKey().getId() + "").param("type",
-						"SurveyInstance"));
+				TaskOptions.Builder.withUrl("/app_worker/datasummarization")
+						.param("objectKey", domain.getKey().getId() + "")
+						.param("type", "SurveyInstance"));
 		QueueFactory.getDefaultQueue().add(
-				url("/app_worker/surveyalservlet").param(
-						SurveyalRestRequest.ACTION_PARAM,
-						SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
-						SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-						domain.getKey().getId() + ""));
+				TaskOptions.Builder
+						.withUrl("/app_worker/surveyalservlet")
+						.param(SurveyalRestRequest.ACTION_PARAM,
+								SurveyalRestRequest.INGEST_INSTANCE_ACTION)
+						.param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+								domain.getKey().getId() + ""));
 	}
 
 }

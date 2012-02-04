@@ -1,6 +1,6 @@
 package org.waterforpeople.mapping.analytics;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 
 import java.util.List;
 
@@ -11,8 +11,9 @@ import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizationRequest;
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 /**
  * cleans data by fixing capitalization of Name field values. Though not really
@@ -83,7 +84,7 @@ public class NameQuestionDataCleanser implements DataSummarizer {
 	 */
 	private void sendChangeMessage(DataChangeRecord value) {
 		Queue queue = QueueFactory.getQueue("dataUpdate");
-		queue.add(url("/app_worker/dataupdate")
+		queue.add(TaskOptions.Builder.withUrl("/app_worker/dataupdate")
 				.param(DataSummarizationRequest.OBJECT_KEY, value.getId())
 				.param(DataSummarizationRequest.OBJECT_TYPE,
 						"QuestionDataChange")

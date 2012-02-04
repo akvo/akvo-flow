@@ -1,14 +1,11 @@
 package org.waterforpeople.mapping.app.web.test;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.jdo.Extent;
 import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,8 +35,9 @@ import com.gallatinsystems.standards.domain.Standard.StandardScope;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.gallatinsystems.standards.domain.Standard.StandardValueType;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class StandardTestLoader {
 	private HttpServletRequest req;
@@ -383,7 +381,8 @@ public class StandardTestLoader {
 
 	public void listResults(String countryCode, String communityCode,
 			String accessPointCode, String cursorString) {
-		listAPScoreAndStatus(countryCode, communityCode, accessPointCode, cursorString);
+		listAPScoreAndStatus(countryCode, communityCode, accessPointCode,
+				cursorString);
 	}
 
 	private void listAPScoreAndStatus(String countryCode, String communityCode,
@@ -397,8 +396,9 @@ public class StandardTestLoader {
 		write("<tr><td>AccessPoint Key</td><td>Country Code</td><td>Community Name</td><td>Access Point Code</td><td>Access Point Collection Date</td><td>Number HH within Acceptable Distance</td>"
 				+ "<td>Number Outside Acceptable Distance</td><td>LOS Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td>"
 				+ "<td>Sustainability Score</td><td>ScoreDate</td><td>status color</td><td>Score Status String</td><td>Score Details</td></tr>");
-		Iterable<Entity> entList =null;
-		entList = apDao.listRawEntity(false,countryCode, communityCode, accessPointCode, cursorString);
+		Iterable<Entity> entList = null;
+		entList = apDao.listRawEntity(false, countryCode, communityCode,
+				accessPointCode, cursorString);
 		// for (AccessPoint item : extent) {
 		for (Entity result : entList) {
 			AccessPoint item = new AccessPoint();
@@ -605,8 +605,9 @@ public class StandardTestLoader {
 	private void fireAsnycRescoreAllPoints() {
 		Queue rescoreQueue = QueueFactory
 				.getQueue(ScoreProcessor.ACCESSPOINT_QUEUE_NAME);
-		rescoreQueue.add(url(ScoreProcessor.OBJECT_TASK_URL).param(
-				DeleteTaskRequest.TASK_COUNT_PARAM, "0")
+		rescoreQueue.add(TaskOptions.Builder
+				.withUrl(ScoreProcessor.OBJECT_TASK_URL)
+				.param(DeleteTaskRequest.TASK_COUNT_PARAM, "0")
 				.param("cursor", "null"));
 
 	}

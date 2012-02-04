@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.app.web;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
-
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,8 +18,9 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 
@@ -92,17 +91,16 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 				for (Entity entity : results) {
 					Queue deleteQueue = QueueFactory
 							.getQueue("accesspointmetricsummqueue");
-					
-					deleteQueue.add(url(
-							"/app_worker/accesspointmetricprocessor")
+
+					deleteQueue.add(TaskOptions.Builder
+							.withUrl("/app_worker/accesspointmetricprocessor")
 							.param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
 							.param(DeleteTaskRequest.KEY_PARAM,
 									String.valueOf(entity.getKey().getId()))
 							.param(DeleteTaskRequest.CURSOR_PARAM, newCursor)
-							.param("itemnum",
-									String.valueOf(deleted_count)).param(
-											DeleteTaskRequest.TASK_COUNT_PARAM,
-											taskcount.toString()));
+							.param("itemnum", String.valueOf(deleted_count))
+							.param(DeleteTaskRequest.TASK_COUNT_PARAM,
+									taskcount.toString()));
 
 					++deleted_count;
 				}
@@ -124,7 +122,8 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 
 				Queue deleteQueue = QueueFactory
 						.getQueue(ACCESSPOINT_QUEUE_NAME);
-				deleteQueue.add(url(OBJECT_TASK_URL)
+				deleteQueue.add(TaskOptions.Builder
+						.withUrl(OBJECT_TASK_URL)
 						.param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
 						.param(DeleteTaskRequest.KEY_PARAM, dtReq.getKey())
 						.param(DeleteTaskRequest.CURSOR_PARAM, newCursor)

@@ -1,6 +1,6 @@
 package com.gallatinsystems.framework.analytics.summarization;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 
 import java.util.List;
 import java.util.Map;
@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 /**
  * 
@@ -125,7 +126,7 @@ public abstract class DataSummarizationHandler extends AbstractRestApiServlet {
 	private void invokeSummarizer(DataSummarizationRequest request) {
 		Queue queue = QueueFactory.getQueue(queueName);
 		queue
-				.add(url(summarizerPath).param(
+				.add(TaskOptions.Builder.withUrl(summarizerPath).param(
 						DataSummarizationRequest.ACTION_PARAM,
 						request.getAction()).param(
 						DataSummarizationRequest.OBJECT_KEY,

@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -78,10 +77,10 @@ import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
@@ -1110,13 +1109,13 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					buffer.append(",");
 				}
 				buffer.append(siList.get(i).getKey().getId());
-				queue.add(url("/app_worker/surveyalservlet").param(
+				queue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet").param(
 						SurveyalRestRequest.ACTION_PARAM,
 						SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
 						SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
 						siList.get(i).getKey().getId() + ""));
 			}
-			queue.add(url("/app_worker/surveytask")
+			queue.add(TaskOptions.Builder.withUrl("/app_worker/surveytask")
 					.param("action", "reprocessMapSurveyInstance")
 					.param(SurveyTaskRequest.ID_PARAM, surveyId.toString())
 					.param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
@@ -1388,7 +1387,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		Queue queue = QueueFactory.getQueue("background-processing");
-		queue.add(url("/app_worker/bootstrapgen")
+		queue.add(TaskOptions.Builder.withUrl("/app_worker/bootstrapgen")
 				.param(BootstrapGeneratorRequest.ACTION_PARAM,
 						BootstrapGeneratorRequest.GEN_ACTION)
 				.param(BootstrapGeneratorRequest.SURVEY_ID_LIST_PARAM,

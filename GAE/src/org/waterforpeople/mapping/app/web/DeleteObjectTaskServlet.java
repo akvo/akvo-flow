@@ -1,6 +1,6 @@
 package org.waterforpeople.mapping.app.web;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 
 import java.util.ArrayList;
 
@@ -17,8 +17,9 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
 
@@ -112,7 +113,7 @@ public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
 			}
 
 			Queue deleteQueue = QueueFactory.getQueue(DELETE_QUEUE_NAME);
-			deleteQueue.add(url(DELETE_OBJECT_TASK_URL)
+			deleteQueue.add(TaskOptions.Builder.withUrl(DELETE_OBJECT_TASK_URL)
 					.param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
 					.param(DeleteTaskRequest.KEY_PARAM, key)
 					.param(DeleteTaskRequest.TASK_COUNT_PARAM,

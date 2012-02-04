@@ -1,7 +1,5 @@
 package org.waterforpeople.mapping.app.gwt.server.devicefiles;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +14,9 @@ import org.waterforpeople.mapping.domain.Status.StatusCode;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
@@ -47,8 +46,8 @@ public class DeviceFilesServiceImpl extends RemoteServiceServlet implements
 				phoneNumber = "null";
 			if (checksum == null)
 				checksum = "null";
-			queue.add(url("/app_worker/task").param("action", "processFile")
-					.param("fileName", fileName)
+			queue.add(TaskOptions.Builder.withUrl("/app_worker/task")
+					.param("action", "processFile").param("fileName", fileName)
 					.param("phoneNumber", phoneNumber)
 					.param("checksum", checksum));
 			dfDao.save(df);

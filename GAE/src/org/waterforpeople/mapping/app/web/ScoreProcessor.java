@@ -1,6 +1,6 @@
 package org.waterforpeople.mapping.app.web;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,8 +26,9 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultIterable;
 import com.google.appengine.api.datastore.QueryResultIterator;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class ScoreProcessor extends HttpServlet {
 
@@ -128,7 +129,7 @@ public class ScoreProcessor extends HttpServlet {
 			}
 			String key = req.getParameter("key");
 			Queue deleteQueue = QueueFactory.getQueue(ACCESSPOINT_QUEUE_NAME);
-			deleteQueue.add(url(OBJECT_TASK_URL).param(
+			deleteQueue.add(TaskOptions.Builder.withUrl(OBJECT_TASK_URL).param(
 					DeleteTaskRequest.TASK_COUNT_PARAM, taskcount.toString()).param("cursor", endCursor.toWebSafeString()));
 			System.err.println("*** finished scoring " + scored_count + " APs");
 			System.err.println("*** score task # " + taskcount + " for "
