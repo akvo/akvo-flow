@@ -1689,6 +1689,18 @@ public class TestHarnessServlet extends HttpServlet {
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
 			queue.add(options);
+		}else if ("fixNullGroupNames".equals(action)){
+			fixNullQuestionGroupNames();
+		}
+	}
+	
+	private void fixNullQuestionGroupNames(){
+		QuestionGroupDao dao = new QuestionGroupDao();
+		List<QuestionGroup> groups = dao.listQuestionGroupsByName(null);
+		if(groups != null){
+			for(QuestionGroup g: groups){
+				g.setName(g.getCode());
+			}
 		}
 	}
 

@@ -48,6 +48,10 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
 		delete(item);
 	}
+	
+	public List<QuestionGroup> listQuestionGroupsByName(String code){
+		return listByProperty("name", code, "String");
+	}
 
 	/**
 	 * lists all question groups within a survey
