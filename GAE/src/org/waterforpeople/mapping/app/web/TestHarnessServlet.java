@@ -1700,6 +1700,14 @@ public class TestHarnessServlet extends HttpServlet {
 					"/app_worker/dataprocessor").param(
 					DataProcessorRequest.ACTION_PARAM,
 					DataProcessorRequest.TRIM_OPTIONS);
+			if (req.getParameter("bypassBackend") == null
+					|| !req.getParameter("bypassBackend").equals("true")) {
+				// change the host so the queue invokes the backend
+				options = options
+						.header("Host",
+								BackendServiceFactory.getBackendService()
+										.getBackendAddress("dataprocessor"));
+			}
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
 			queue.add(options);
