@@ -18,6 +18,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String IMPORT_REMOTE_SURVEY_ACTION = "importRemoteSurvey";
 	public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
 	public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
+	public static final String TRIM_OPTIONS = "trimOptions";
 	public static final String RESCORE_AP_ACTION = "rescoreAp";
 	public static final String SOURCE_PARAM = "source";
 	public static final String COUNTRY_PARAM = "country";

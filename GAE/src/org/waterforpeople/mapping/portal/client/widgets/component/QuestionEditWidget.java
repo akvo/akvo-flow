@@ -65,9 +65,9 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Widget for creating and editing a Survey Question.
- *
+ * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class QuestionEditWidget extends Composite implements ContextAware,
 		ChangeHandler, ClickHandler, TranslationChangeListener,
@@ -432,7 +432,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	/**
 	 * populates the UI with data from all the QuestionOptionDto objects in the
 	 * question.
-	 *
+	 * 
 	 * @param optionContainer
 	 */
 	private void populateOptions(OptionContainerDto optionContainer,
@@ -457,7 +457,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	/**
 	 * adds a row representing a Question Option to the UI. The rows support
 	 * deletion as well as reordering.
-	 *
+	 * 
 	 * @param opt
 	 */
 	private void installOptionRow(QuestionOptionDto opt, boolean isEditable) {
@@ -548,7 +548,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	/**
 	 * displays a message in the loading label
-	 *
+	 * 
 	 * @param container
 	 * @param labelText
 	 */
@@ -561,7 +561,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	/**
 	 * clears the container and adds the widget in content as the new child of
 	 * container
-	 *
+	 * 
 	 * @param container
 	 * @param content
 	 */
@@ -619,7 +619,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	 * populates the question dependency selector drop down and ensures the
 	 * correct value is selected (if the currentQuestion's dependency is
 	 * non-null).
-	 *
+	 * 
 	 * @param currentQuestion
 	 * @param questionList
 	 */
@@ -655,7 +655,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	/**
 	 * loads the list of potential responses for the questionId passed in.
-	 *
+	 * 
 	 * @param questionId
 	 */
 	private void loadDependentQuestionAnswers(String questionId) {
@@ -716,7 +716,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	/**
 	 * populates the dependent question answer selector and selects the correct
 	 * value
-	 *
+	 * 
 	 * @param currentQuestion
 	 * @param options
 	 */
@@ -980,8 +980,10 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 										q.setText(currentQuestion.getText());
 										q.setTranslationMap(currentQuestion
 												.getTranslationMap());
-										//also update the options in case they added/removed any
-										q.setOptionContainerDto(currentQuestion.getOptionContainerDto());
+										// also update the options in case they
+										// added/removed any
+										q.setOptionContainerDto(currentQuestion
+												.getOptionContainerDto());
 										found = true;
 									}
 								}
@@ -1016,7 +1018,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 	/**
 	 * updates the cached questionDto using the values currently present in the
 	 * UI
-	 *
+	 * 
 	 * @return
 	 */
 	private List<String> updateCurrentQuestion() {
@@ -1110,7 +1112,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 										.getValue(i));
 							}
 						}
-						depDto.setAnswerValue(builder.toString());
+						depDto.setAnswerValue(builder.toString().trim());
 					}
 				}
 			} else {
@@ -1194,7 +1196,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	/**
 	 * installs metrics into the selection dialog
-	 *
+	 * 
 	 * @param metrics
 	 */
 	private void populateMetricControl(List<MetricDto> metrics) {
@@ -1342,7 +1344,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 
 	/**
 	 * finds the highest Order value amongst all the questions in a group
-	 *
+	 * 
 	 * @param group
 	 * @return
 	 */
@@ -1431,8 +1433,12 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					dependentQuestionSelector, true);
 			if (val != null) {
 				depDto.setQuestionId(new Long(val));
-				depDto.setAnswerValue(ViewUtil.getListBoxSelection(
-						dependentAnswerSelector, true));
+				String valString = ViewUtil.getListBoxSelection(
+						dependentAnswerSelector, true);
+				if (valString != null) {
+					valString = valString.trim();
+				}
+				depDto.setAnswerValue(valString);
 				if (depDto.getAnswerValue() != null) {
 					temp.setQuestionDependency(depDto);
 					WidgetDialog dia = new WidgetDialog(

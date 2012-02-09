@@ -520,9 +520,10 @@ public class TestHarnessServlet extends HttpServlet {
 							.toString();
 					Queue queue = QueueFactory.getDefaultQueue();
 
-					queue.add(TaskOptions.Builder.withUrl("/app_worker/surveytask").param("action",
-							"reprocessMapSurveyInstance").param("id",
-							surveyInstanceId));
+					queue.add(TaskOptions.Builder
+							.withUrl("/app_worker/surveytask")
+							.param("action", "reprocessMapSurveyInstance")
+							.param("id", surveyInstanceId));
 					log.info("submiting task for SurveyInstanceId: "
 							+ surveyInstanceId);
 				}
@@ -871,9 +872,10 @@ public class TestHarnessServlet extends HttpServlet {
 			ans.setSurveyInstanceId(si.getKey().getId());
 			dao.save(ans);
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
-			summQueue.add(TaskOptions.Builder.withUrl("/app_worker/datasummarization").param(
-					"objectKey", si.getKey().getId() + "").param("type",
-					"SurveyInstance"));
+			summQueue.add(TaskOptions.Builder
+					.withUrl("/app_worker/datasummarization")
+					.param("objectKey", si.getKey().getId() + "")
+					.param("type", "SurveyInstance"));
 		} else if ("createCommunity".equals(action)) {
 			CommunityDao dao = new CommunityDao();
 			Country c = new Country();
@@ -1585,8 +1587,10 @@ public class TestHarnessServlet extends HttpServlet {
 				if (country != null) {
 					Queue summQueue = QueueFactory
 							.getQueue("dataSummarization");
-					summQueue.add(TaskOptions.Builder.withUrl("/app_worker/datasummarization").param(
-							"objectKey", country).param("type", "OGRFeature"));
+					summQueue.add(TaskOptions.Builder
+							.withUrl("/app_worker/datasummarization")
+							.param("objectKey", country)
+							.param("type", "OGRFeature"));
 				} else {
 					resp.getWriter()
 							.println("country is a mandatory parameter");
@@ -1689,16 +1693,24 @@ public class TestHarnessServlet extends HttpServlet {
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
 			queue.add(options);
-		}else if ("fixNullGroupNames".equals(action)){
+		} else if ("fixNullGroupNames".equals(action)) {
 			fixNullQuestionGroupNames();
+		} else if ("trimOptions".equals(action)) {
+			TaskOptions options = TaskOptions.Builder.withUrl(
+					"/app_worker/dataprocessor").param(
+					DataProcessorRequest.ACTION_PARAM,
+					DataProcessorRequest.TRIM_OPTIONS);
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
 		}
 	}
-	
-	private void fixNullQuestionGroupNames(){
+
+	private void fixNullQuestionGroupNames() {
 		QuestionGroupDao dao = new QuestionGroupDao();
 		List<QuestionGroup> groups = dao.listQuestionGroupsByName(null);
-		if(groups != null){
-			for(QuestionGroup g: groups){
+		if (groups != null) {
+			for (QuestionGroup g : groups) {
 				g.setName(g.getCode());
 			}
 		}
@@ -1762,7 +1774,8 @@ public class TestHarnessServlet extends HttpServlet {
 		// com.google.appengine.api.taskqueue.QueueFactory.getQueue("notification");
 		Queue queue = QueueFactory.getQueue("notification");
 
-		queue.add(TaskOptions.Builder.withUrl("/notificationprocessor")
+		queue.add(TaskOptions.Builder
+				.withUrl("/notificationprocessor")
 				.param(NotificationRequest.DEST_PARAM,
 						"christopher.fagiani@gmail.com||christopher.fagiani@gmail.com")
 				.param(NotificationRequest.DEST_OPT_PARAM, "ATTACHMENT||LINK")
@@ -1931,8 +1944,9 @@ public class TestHarnessServlet extends HttpServlet {
 
 	private void fixNameQuestion(String questionId) {
 		Queue summQueue = QueueFactory.getQueue("dataUpdate");
-		summQueue.add(TaskOptions.Builder.withUrl("/app_worker/dataupdate").param("objectKey",
-				questionId + "").param("type", "NameQuestionFix"));
+		summQueue.add(TaskOptions.Builder.withUrl("/app_worker/dataupdate")
+				.param("objectKey", questionId + "")
+				.param("type", "NameQuestionFix"));
 	}
 
 	private boolean deleteSurveyResponses(Integer surveyId, Integer count) {

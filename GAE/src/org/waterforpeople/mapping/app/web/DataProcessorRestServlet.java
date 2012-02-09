@@ -31,7 +31,11 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.operations.dao.ProcessingStatusDao;
 import com.gallatinsystems.operations.domain.ProcessingStatus;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -80,6 +84,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.FIX_DUPLICATE_OTHER_TEXT_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			fixDuplicateOtherText();
+		} else if (DataProcessorRequest.TRIM_OPTIONS.equalsIgnoreCase(dpReq
+				.getAction())) {
+			trimOptions();
 		}
 		return new RestResponse();
 	}
@@ -87,6 +94,45 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
+	}
+
+	/**
+	 * lists all QuestionOptions and trims trailing/leading spaces. Then does
+	 * the same for any dependencies
+	 */
+	private void trimOptions() {
+		QuestionOptionDao optDao = new QuestionOptionDao();
+		QuestionDao qDao = new QuestionDao();
+		String cursor = null;
+		do {
+			List<QuestionOption> optList = optDao.list(cursor);
+
+			if (optList != null && optList.size() > 0) {
+				for (QuestionOption opt : optList) {
+					if (opt.getText() != null) {
+						opt.setText(opt.getText().trim());
+					}
+					List<Question> qList = qDao.listQuestionsByDependency(opt
+							.getQuestionId());
+					for (Question q : qList) {
+						if (q.getText() != null) {
+							q.setText(q.getText().trim());
+						}
+						if (q.getDependentQuestionAnswer() != null) {
+							q.setDependentQuestionAnswer(q
+									.getDependentQuestionAnswer().trim());
+						}
+					}
+				}
+				if (optList.size() == QuestionOptionDao.DEFAULT_RESULT_COUNT) {
+					cursor = QuestionOptionDao.getCursor(optList);
+				} else {
+					cursor = null;
+				}
+			} else {
+				cursor = null;
+			}
+		} while (cursor != null);
 	}
 
 	/**
