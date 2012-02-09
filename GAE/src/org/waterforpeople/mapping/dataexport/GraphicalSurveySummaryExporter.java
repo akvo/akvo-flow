@@ -49,9 +49,9 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and
  * including chart images.
- *
+ * 
  * @author Christopher Fagiani
- *
+ * 
  */
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final int MAX_COL = 255;
@@ -101,7 +101,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final int RAW_STEPS = 5;
 	private static final NumberFormat PCT_FMT = DecimalFormat
 			.getPercentInstance();
-
 
 	static {
 		// populate all translations
@@ -361,17 +360,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					int attempts = 0;
 					boolean done = false;
 
-					while(!done && attempts < 10){
+					while (!done && attempts < 10) {
 						try {
 
 							Map<String, String> responseMap = BulkDataServiceClient
-									.fetchQuestionResponses(instanceId, serverBase);
+									.fetchQuestionResponses(instanceId,
+											serverBase);
 
 							SurveyInstanceDto dto = BulkDataServiceClient
 									.findSurveyInstance(
 											Long.parseLong(instanceId.trim()),
 											serverBase);
-							if(dto != null){
+							if (dto != null) {
 								done = true;
 							}
 							synchronized (allData) {
@@ -385,18 +385,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 						} catch (Exception e) {
 							e.printStackTrace();
-						}finally{
-							synchronized(lock){
+						} finally {
+							synchronized (lock) {
 								threadsCompleted++;
 							}
 						}
 						attempts++;
 					}
 				}
-			}
-			);
+			});
 		}
-		while (!jobQueue.isEmpty() || threadPool.getActiveCount()>0 || started > threadsCompleted) {
+		while (!jobQueue.isEmpty() || threadPool.getActiveCount() > 0
+				|| started > threadsCompleted) {
 			try {
 				System.out.println("Sleeping, Queue has: " + jobQueue.size());
 				Thread.sleep(5000);
@@ -404,13 +404,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				e.printStackTrace();
 			}
 		}
-		//write the data now
-		for(RowData rd: allData){
-			Row row = getRow(curRow++,sheet);
-			writeRow(row, rd.getDto(), rd.getResponseMap(), rd.getDateString(), rd.getInstanceId(),
-				generateSummary, questionIdList,
-				unsummarizable, nameToIdMap, collapseIdMap,
-				model);
+		// write the data now
+		for (RowData rd : allData) {
+			Row row = getRow(curRow++, sheet);
+			writeRow(row, rd.getDto(), rd.getResponseMap(), rd.getDateString(),
+					rd.getInstanceId(), generateSummary, questionIdList,
+					unsummarizable, nameToIdMap, collapseIdMap, model);
 		}
 
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
@@ -438,7 +437,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				createCell(row, col++, " ", null);
 			}
 		}
-
 
 		for (String q : questionIdList) {
 			String val = null;
@@ -489,7 +487,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 	/**
 	 * creates the header for the raw data tab
-	 *
+	 * 
 	 * @param row
 	 * @param questionMap
 	 * @return - returns a 2 element array. The first element is a List of
@@ -541,16 +539,26 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	}
 
 	/**
-	 *
+	 * 
 	 * Writes the report as an XLS document
 	 */
 	private void writeSummaryReport(
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap,
 			SummaryModel summaryModel, String sector, Workbook wb)
 			throws Exception {
-
-		Sheet sheet = wb.createSheet(sector == null ? SUMMARY_LABEL.get(locale)
-				: sector);
+		String title = sector == null ? SUMMARY_LABEL.get(locale) : sector;
+		Sheet sheet = null;
+		int sheetCount = 2;
+		String curTitle = title;
+		while (sheet == null) {
+			sheet = wb.getSheet(curTitle);
+			if (sheet == null) {
+				wb.createSheet(curTitle);
+			} else {
+				curTitle = title + " " + sheetCount;
+				sheetCount++;
+			}
+		}
 		CreationHelper creationHelper = wb.getCreationHelper();
 		Drawing patriarch = sheet.createDrawingPatriarch();
 		int curRow = 0;
@@ -774,7 +782,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	/**
 	 * creates a cell in the row passed in and sets the style and value (if
 	 * non-null)
-	 *
+	 * 
 	 */
 	private Cell createCell(Row row, int col, String value, CellStyle style) {
 		Cell cell = row.createCell(col);
@@ -790,7 +798,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 	/**
 	 * finds or creates the row at the given index
-	 *
+	 * 
 	 * @param index
 	 * @param rowLocalMax
 	 * @param sheet
@@ -810,7 +818,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	/**
 	 * sets instance variables to the values passed in in the Option map. If the
 	 * option is not set, the default values are used.
-	 *
+	 * 
 	 * @param options
 	 */
 	private void processOptions(Map<String, String> options) {
@@ -849,7 +857,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	/**
 	 * call the server to augment the data already loaded in each QuestionDto in
 	 * the map passed in.
-	 *
+	 * 
 	 * @param questionMap
 	 */
 	private void loadFullQuestions(
@@ -874,7 +882,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	/**
 	 * uses the locale and the translation map passed in to determine what value
 	 * to use for the string
-	 *
+	 * 
 	 * @param text
 	 * @param translationMap
 	 * @return
@@ -912,36 +920,43 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		}
 	}
 
-	private class RowData{
-		private Map<String,String> responseMap;
+	private class RowData {
+		private Map<String, String> responseMap;
 		private String dateString;
 		private String instanceId;
 		private SurveyInstanceDto dto;
+
 		public Map<String, String> getResponseMap() {
 			return responseMap;
 		}
+
 		public void setResponseMap(Map<String, String> responseMap) {
 			this.responseMap = responseMap;
 		}
+
 		public String getDateString() {
 			return dateString;
 		}
+
 		public void setDateString(String dateString) {
 			this.dateString = dateString;
 		}
+
 		public String getInstanceId() {
 			return instanceId;
 		}
+
 		public void setInstanceId(String instanceId) {
 			this.instanceId = instanceId;
 		}
+
 		public SurveyInstanceDto getDto() {
 			return dto;
 		}
+
 		public void setDto(SurveyInstanceDto dto) {
 			this.dto = dto;
 		}
-
 
 	}
 }
