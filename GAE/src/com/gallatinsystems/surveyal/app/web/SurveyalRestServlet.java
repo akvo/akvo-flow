@@ -223,6 +223,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 								.getProperty(DEFAULT_ORG_PROP));
 					}
 					locale = surveyedLocaleDao.save(locale);
+				}else{
+					if(survey.getPointType()!=null && !survey.getPointType().equals(locale.getLocaleType())){
+						locale.setLocaleType(survey.getPointType());
+					}
 				}
 			}
 			if (instance != null && geoPlace != null) {
