@@ -1,7 +1,6 @@
 package com.gallatinsystems.framework.domain;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Date;
 
 import javax.jdo.annotations.IdGeneratorStrategy;

@@ -11,7 +11,6 @@ import javax.xml.bind.JAXBException;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
-import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -163,6 +162,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	 * @param surveyGroupId
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public Survey getByParentIdAndCode(String code, Long surveyGroupId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Survey.class);
@@ -254,6 +254,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Key> listSurveyIds() {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery("select key from "

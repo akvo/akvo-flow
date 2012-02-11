@@ -9,7 +9,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
-import com.gallatinsystems.metric.dao.MetricDao;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -28,11 +27,10 @@ public class SurveyMetricMappingServiceImpl extends RemoteServiceServlet
 			.getLogger(SurveyMetricMappingServiceImpl.class.getName());
 
 	private SurveyMetricMappingDao mappingDao;
-	private MetricDao metricDao;
+	
 
 	public SurveyMetricMappingServiceImpl() {
-		mappingDao = new SurveyMetricMappingDao();
-		metricDao = new MetricDao();
+		mappingDao = new SurveyMetricMappingDao();	
 	}
 
 	/**

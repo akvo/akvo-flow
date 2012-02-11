@@ -12,54 +12,57 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class CompoundRulePopup extends PopupPanel {
-	private String standardType=null;
-	private StandardScoringManagerServiceAsync svc =null;
+
 	public CompoundRulePopup(String standardType,
 			StandardScoringManagerServiceAsync svc, Boolean displayDetail) {
 		super(true);
-		this.standardType = standardType;
-		this.svc = svc;
+
 		if (displayDetail) {
 			initDetail(standardType, svc);
-		}else{
+		} else {
 			initList(standardType, svc);
 		}
 
 	}
+
 	VerticalPanel vp = new VerticalPanel();
-	public void initDetail(String standardType, StandardScoringManagerServiceAsync svc) {
+
+	public void initDetail(String standardType,
+			StandardScoringManagerServiceAsync svc) {
 		setWidget(new Label("Compound Rule Manager"));
 		CompoundStandardDetail csd = new CompoundStandardDetail(standardType,
 				svc);
-		this.standardType = standardType;
-		this.svc = svc;
+
 		vp.add(csd);
 		vp.add(close);
 		setWidget(vp);
 		addCloseHandler();
 	}
+
 	Button close = new Button("Close");
-	
-	public void initList(String standardType, StandardScoringManagerServiceAsync svc){
+
+	public void initList(String standardType,
+			StandardScoringManagerServiceAsync svc) {
 		setWidget(new Label("Compound Rule List View"));
 		CompoundRuleListView crlv = new CompoundRuleListView(standardType, svc);
 		RootPanel rp = RootPanel.get();
-		
+
 		vp.add(crlv);
 		HorizontalPanel hPanel = new HorizontalPanel();
 		addCloseHandler();
 		hPanel.add(close);
 		vp.add(hPanel);
-		rp.add(vp);	
+		rp.add(vp);
 	}
 
-	private void addCloseHandler(){
-		close.addClickHandler(new ClickHandler(){
+	private void addCloseHandler() {
+		close.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				hide();
-			}});
+			}
+		});
 
 	}
 

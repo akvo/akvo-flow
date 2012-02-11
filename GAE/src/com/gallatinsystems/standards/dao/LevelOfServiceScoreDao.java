@@ -8,7 +8,6 @@ import javax.jdo.PersistenceManager;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.standards.domain.DistanceStandard;
 import com.gallatinsystems.standards.domain.LevelOfServiceScore;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.google.appengine.api.datastore.Key;
@@ -22,6 +21,7 @@ public class LevelOfServiceScoreDao extends BaseDAO<LevelOfServiceScore> {
 		return super.listByProperty("objectKey", accessPointKey, "com.google.appengine.api.datastore.Key");
 	}
 	
+	@SuppressWarnings("unchecked")
 	public LevelOfServiceScore findByAccessPoint(Key accessPointKey, StandardType standardType){
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(LevelOfServiceScore.class);

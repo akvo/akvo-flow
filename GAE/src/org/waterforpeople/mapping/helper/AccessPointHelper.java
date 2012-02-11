@@ -669,41 +669,7 @@ public class AccessPointHelper {
 		return status;
 	}
 
-	private void copyNonKeyValues(AccessPoint source, AccessPoint target) {
-		if (source != null && target != null) {
-			Field[] fields = AccessPoint.class.getDeclaredFields();
-			for (int i = 0; i < fields.length; i++) {
-				try {
-					if (isCopyable(fields[i].getName())) {
-						fields[i].setAccessible(true);
-						fields[i].set(target, fields[i].get(source));
-					}
-				} catch (Exception e) {
-					logger.log(Level.SEVERE, "Can't set the field: "
-							+ fields[i].getName());
-				}
-			}
-		}
-	}
-
-	private boolean isCopyable(String name) {
-		if ("key".equals(name)) {
-			return false;
-		} else if ("serialVersionUID".equals(name)) {
-			return false;
-		} else if ("jdoFieldFlags".equals(name)) {
-			return false;
-		} else if ("jdoPersistenceCapableSuperclass".equals(name)) {
-			return false;
-		} else if ("jdoFieldTypes".equals(name)) {
-			return false;
-		} else if ("jdoFieldNames".equals(name)) {
-			return false;
-		} else if ("jdoInheritedFieldCount".equals(name)) {
-			return false;
-		}
-		return true;
-	}
+	
 
 	public AccessPoint setGeoDetails(AccessPoint point) {
 		if (point.getLatitude() != null && point.getLongitude() != null) {
@@ -814,8 +780,8 @@ public class AccessPointHelper {
 					.capitalizeFirstCharacterString(item.getEvaluateField()));
 			if (criteriaType.equals("String")) {
 				Method m = AccessPoint.class.getMethod(
-						"get" + item.getEvaluateField(), null);
-				String value = (String) m.invoke(ap, null);
+						"get" + item.getEvaluateField(),(Class<?>[])null);
+				String value = (String) m.invoke(ap, (Object[])null);
 				if (item.getPositiveOperator().equals("==")) {
 					if (item.getPositiveCriteria().equals(value)) {
 						score = score + item.getPositiveScore();
@@ -839,11 +805,11 @@ public class AccessPointHelper {
 				}
 			} else if (criteriaType.equals("Boolean")) {
 				Method m = AccessPoint.class.getMethod(
-						"get" + item.getEvaluateField(), null);
+						"get" + item.getEvaluateField(), (Class<?>[])null);
 				Boolean value = null;
 				String type = m.getReturnType().toString();
 				if (type.equals("class java.lang.Boolean")) {
-					value = Boolean.parseBoolean(m.invoke(ap, null).toString());
+					value = Boolean.parseBoolean(m.invoke(ap, (Object[])null).toString());
 					if (item.getPositiveOperator().equals("==")) {
 						if (Boolean.parseBoolean(item.getPositiveCriteria()) == value) {
 							score = score + item.getPositiveScore();
@@ -873,19 +839,19 @@ public class AccessPointHelper {
 			} else if (criteriaType.equals("Integer")
 					|| criteriaType.equals("Number")) {
 				Method m = AccessPoint.class.getMethod(
-						"get" + item.getEvaluateField(), null);
+						"get" + item.getEvaluateField(),(Class<?>[])null);
 				Float value = null;
-				String type = m.getReturnType().toString();
+				
 				if (m.getReturnType().toString().equals("class java.lang.Long"))
-					value = Float.parseFloat(((Long) m.invoke(ap, null))
+					value = Float.parseFloat(((Long) m.invoke(ap, (Object[])null))
 							.toString());
 				else if (m.getReturnType().toString()
 						.equals("class java.lang.Integer"))
-					value = Float.parseFloat(((Integer) m.invoke(ap, null))
+					value = Float.parseFloat(((Integer) m.invoke(ap, (Object[])null))
 							.toString());
 				else if (m.getReturnType().toString()
 						.equals("class java.lang.Double"))
-					value = Float.parseFloat(((Double) m.invoke(ap, null))
+					value = Float.parseFloat(((Double) m.invoke(ap,(Object[])null))
 							.toString());
 				if (item.getPositiveOperator().equals("<=")) {
 					if (Integer.parseInt(item.getPositiveCriteria()) <= value) {

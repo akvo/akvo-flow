@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class StandardScoringDto extends BaseDto {
 

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
@@ -31,10 +29,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -55,9 +49,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
 	private static String title = "Scoring Manager";
-	private static Boolean scrollable = true;
-	private DateTimeFormat dateFormat = null;
-	private static Boolean errorMode = null;
+
 	private StandardScoringManagerServiceAsync svc;
 	private CommunityServiceAsync communitySvc;
 	private static final Integer PAGE_SIZE = 40;
@@ -65,7 +57,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	PaginatedDataTable<StandardScoringDto> scoringTable;
 	private VerticalPanel mainVPanel = new VerticalPanel();
 	ScrollPanel scrollP = new ScrollPanel();
-	private AccessPointManagerServiceAsync apSvc = null;
+	
 	private ArrayList<CountryDto> countryCodesList = null;
 	private ListBox scoreBucketsBox = new ListBox();
 
@@ -128,16 +120,16 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 	private void init() {
 		svc = GWT.create(StandardScoringManagerService.class);
-		apSvc = GWT.create(AccessPointManagerService.class);
+	
 		communitySvc = GWT.create(CommunityService.class);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		scoringTable = new PaginatedDataTable<StandardScoringDto>(
 				DEFAULT_SORT_FIELD, this, this, true);
-		dateFormat = DateTimeFormat.getShortDateFormat();
+	
 		contentPane.add(header);
 		setContent(contentPane);
-		errorMode = false;
+	
 		loadAttributes();
 		loadCountries();
 		scoringTable.setVisible(false);
@@ -216,6 +208,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 	}
 
+	@SuppressWarnings("unused")
 	private void saveScoreBucket(String trim) {
 		StandardScoreBucketDto ssbDto = new StandardScoreBucketDto();
 		ssbDto.setName(bucketsEntryBox.getText().trim());
@@ -426,8 +419,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			ListBox fields = new ListBox();
 			fields.addItem(" ");
 			fields.setSelectedIndex(0);
-			int ifield = 1;
-			int i = 0;
+			int ifield = 1;			
 			if ((item != null && item.getEvaluateField() == null)
 					|| ((ListBox) grid.getWidget(row, 3)).getSelectedIndex() == 4) {
 				TextBox distanceTB = new TextBox();
@@ -518,7 +510,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 			Button add = new Button("+");
 			critPanel.add(add);
-			HandlerRegistration addClickHandler = add
+			add
 					.addClickHandler(new ClickHandler() {
 
 						@Override
@@ -625,8 +617,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		});
 
 		deleteButton.addClickHandler(new ClickHandler() {
-
-			@SuppressWarnings("unchecked")
+			
 			@Override
 			public void onClick(ClickEvent event) {
 				Button deleteButton = (Button) event.getSource();
@@ -634,14 +625,14 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				Integer row = Integer.parseInt(title.split("\\|")[0]);
 				Long keyId = Long.parseLong(title.split("\\|")[1]);
 				selectedRow = row;
-				svc.delete(keyId, new AsyncCallback() {
+				svc.delete(keyId, new AsyncCallback<Void>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
 					}
 
 					@Override
-					public void onSuccess(Object result) {
+					public void onSuccess(Void result) {
 						Grid grid = scoringTable.getGrid();
 						grid.removeRow(selectedRow);
 						for (int i = selectedRow; i < grid.getRowCount(); i++) {
@@ -712,7 +703,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		// }
 		// });
 	}
-
+	@SuppressWarnings("unused")
 	private void fetchSubCountries(String selectedCountry, final Integer row,
 			final String selectedSub) {
 		ListBox country = (ListBox) scoringTable.getGrid().getWidget(row, 1);
@@ -834,7 +825,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			if (positiveCriteria.getWidget(i) instanceof HorizontalPanel) {
 				HorizontalPanel hpanel = (HorizontalPanel) positiveCriteria
 						.getWidget(i);
-				String controlType = hpanel.getWidget(0).getClass().getName();
+				
 				if (hpanel.getWidget(0) instanceof TextBox) {
 					String value = ((TextBox) hpanel.getWidget(0)).getText();
 					item.addPositiveCriteria(value);

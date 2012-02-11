@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerService;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointManagerServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityService;
 import org.waterforpeople.mapping.app.gwt.client.community.CommunityServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
@@ -37,8 +35,7 @@ public class StandardScoringDetail extends Composite implements HasText {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
 	private StandardScoringManagerServiceAsync svc;
-	private CommunityServiceAsync communitySvc;
-	private AccessPointManagerServiceAsync apSvc;
+	private CommunityServiceAsync communitySvc;	
 	private static StandardScoringDetailUiBinder uiBinder = GWT
 			.create(StandardScoringDetailUiBinder.class);
 
@@ -56,8 +53,7 @@ public class StandardScoringDetail extends Composite implements HasText {
 	 * HasHTML instead of HasText.
 	 */
 	public StandardScoringDetail() {
-		svc = GWT.create(StandardScoringManagerService.class);
-		apSvc = GWT.create(AccessPointManagerService.class);
+		svc = GWT.create(StandardScoringManagerService.class);		
 		communitySvc = GWT.create(CommunityService.class);
 		initWidget(uiBinder.createAndBindUi(this));
 		lbGlobal.addItem("Global");

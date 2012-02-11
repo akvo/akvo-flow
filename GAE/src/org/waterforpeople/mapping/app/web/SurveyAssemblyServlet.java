@@ -350,6 +350,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		return sb.toString() + "</questionGroup>";
 	}
 
+	@SuppressWarnings("unused")
 	private void assembleSurvey(Long surveyId) {
 
 		/**************

@@ -201,7 +201,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			standard.setKey(KeyFactory.createKey(standard.getClass()
 					.getSimpleName(), item.getKeyId()));
 		}
-		String standardType = item.getScoreBucket();
+		
 		standard.setStandardType(encodeStandardTypeString(item.getScoreBucket()));
 		if (item.getPointType().equals("WATER_POINT")) {
 			standard.setAccessPointType(AccessPointType.WATER_POINT);
@@ -241,7 +241,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			apAttrType = StandardValueType.String;
 		} else if (item.getCriteriaType().equalsIgnoreCase("BOOLEAN")) {
 			apAttrType = StandardValueType.Boolean;
-		}
+		}		
 		standard.setEffectiveStartDate(item.getEffectiveStartDate());
 		standard.setEffectiveEndDate(item.getEffectiveEndDate());
 		standard.setStandardDescription(item.getDisplayName());
@@ -308,10 +308,10 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 
 		attributesMap = loadStandardAttributesMap();
 		ArrayList<StandardContainerDto> stcDtoList = new ArrayList<StandardContainerDto>();
-		String value = null;
+		
 		StandardDao standardDao = new StandardDao();
-		@SuppressWarnings("unchecked")
-		ArrayList<Standard> standardList = (ArrayList) standardDao
+		
+		List<Standard> standardList = standardDao
 				.listByAccessPointTypeAndStandardType(
 						AccessPointType.WATER_POINT,
 						encodeStandardTypeString(standardType));
@@ -325,12 +325,12 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 									"get"
 											+ StringUtil
 													.capitalizeFirstCharacterString(entry
-															.getKey()), null);
+															.getKey()),(Class<?>[])null);
 
 					if (!m.getReturnType().getName().equals("java.lang.String")) {
-						value = m.invoke(itemStandard, null).toString();
+						m.invoke(itemStandard, (Object[])null).toString();
 					} else {
-						value = (String) m.invoke(itemStandard, null);
+						m.invoke(itemStandard,(Object[]) null);
 					}
 
 				} catch (SecurityException e) {

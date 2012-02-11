@@ -72,8 +72,6 @@ public class PortletFactory {
 			} else {
 				return new SurveyAttributeMappingPortlet();
 			}
-		} else if (name.equals(SurveyManagerPortlet.NAME)) {
-			return new SurveyManagerPortlet(user);
 		} else if (name.equals(DataUploadPortlet.NAME)) {
 			return new DataUploadPortlet();
 		} else if (name.equals(SurveyLoaderPortlet.NAME)) {

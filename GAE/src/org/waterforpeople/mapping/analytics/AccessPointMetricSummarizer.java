@@ -12,8 +12,6 @@ import org.waterforpeople.mapping.domain.AccessPointMetricMapping;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
-import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
-import com.gallatinsystems.gis.map.domain.OGRFeature;
 
 /**
  * Summarizer for populating AccessPointMetricSummary objects based on values in

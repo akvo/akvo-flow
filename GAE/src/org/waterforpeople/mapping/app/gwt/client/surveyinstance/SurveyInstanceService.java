@@ -12,9 +12,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface SurveyInstanceService extends RemoteService {
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
 			Date beginDate, Date toDate, boolean unapprovedOnlyFlag, Long surveyId, String source,
-			String cursorString);
-
-	public List<QuestionAnswerStoreDto> listQuestionsByInstance(Long instanceId);
+			String cursorString);	
 
 	public List<QuestionAnswerStoreDto> updateQuestions(
 			List<QuestionAnswerStoreDto> dtoList, boolean isApproved);
@@ -48,4 +46,6 @@ public interface SurveyInstanceService extends RemoteService {
 	 * @return
 	 */
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listInstancesByLocale(Long localeId, Date dateFrom, Date dateTo, String cursor);
+
+	List<QuestionAnswerStoreDto> listQuestionsByInstance(Long instanceId);
 }

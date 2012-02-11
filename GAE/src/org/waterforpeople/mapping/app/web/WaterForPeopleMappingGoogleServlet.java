@@ -68,7 +68,7 @@ public class WaterForPeopleMappingGoogleServlet extends HttpServlet {
 				ServletOutputStream out = resp.getOutputStream();
 
 				ByteArrayOutputStream os = ZipUtil
-						.generateZip(placemarksDocument);
+						.generateZip(placemarksDocument, "waterforpeoplemapping.kml");
 				out.write(os.toByteArray());
 				out.flush();
 

@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.portal.client.widgets.component.standardscoring;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.CompoundStandardDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.CompoundStandardDto.Operator;
@@ -230,8 +229,7 @@ public class CompoundStandardDetail extends Composite implements HasText,
 	private VerticalPanel vp = new VerticalPanel();
 	private PaginatedDataTable<CompoundStandardDto> ft = null;
 	private String standardType = null;
-	private StandardScoringManagerServiceAsync svc = null;
-	private static final String EDITED_ROW_CSS = "gridCell-edited";
+	private StandardScoringManagerServiceAsync svc = null;	
 
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader("Id", "key", true),
@@ -299,8 +297,7 @@ public class CompoundStandardDetail extends Composite implements HasText,
 		editRow.addClickHandler(new ClickHandler() {
 
 			@Override
-			public void onClick(ClickEvent event) {
-				TextBox idBox = (TextBox) grid.getWidget(row, 0);
+			public void onClick(ClickEvent event) {				
 				CompoundStandardDto item = formStandardScoringDto(row);
 				loadStandards(item);
 			}

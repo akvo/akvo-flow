@@ -24,7 +24,6 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.QueryResultIterable;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -74,8 +73,7 @@ public class ScoreProcessor extends HttpServlet {
 			final ArrayList<Key> keys = new ArrayList<Key>();
 			String cursor = req.getParameter("cursor");
 		
-			pquery = dss.prepare(query);
-			QueryResultIterable<Entity> qri = null;
+			pquery = dss.prepare(query);			
 			cursor = cursor.trim();
 			FetchOptions fetchOptions = null;
 			if(cursor !=null&&!cursor.equalsIgnoreCase("null")&&!cursor.equals("")){
@@ -126,8 +124,7 @@ public class ScoreProcessor extends HttpServlet {
 				taskcount = 0;
 			} else {
 				taskcount = Integer.parseInt(tcs) + 1;
-			}
-			String key = req.getParameter("key");
+			}			
 			Queue deleteQueue = QueueFactory.getQueue(ACCESSPOINT_QUEUE_NAME);
 			deleteQueue.add(TaskOptions.Builder.withUrl(OBJECT_TASK_URL).param(
 					DeleteTaskRequest.TASK_COUNT_PARAM, taskcount.toString()).param("cursor", endCursor.toWebSafeString()));

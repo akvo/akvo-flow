@@ -26,6 +26,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
@@ -74,7 +75,7 @@ public class WebActivityAuthorizationListWidget extends Composite implements
 		this.user = user;
 		this.controller = controller;
 		authService = GWT.create(WebActivityAuthorizationService.class);
-		dateFormat = DateTimeFormat.getShortDateFormat();
+		dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
 		contentPanel = new VerticalPanel();
 		surveySelector = new SurveySelectionWidget(Orientation.HORIZONTAL,
 				TerminalType.SURVEY);

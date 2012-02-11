@@ -34,7 +34,7 @@ public class CompoundRuleListView extends Composite implements HasWidgets,
 	private PaginatedDataTable<CompoundStandardDto> ft = null;
 	private String standardType = null;
 	private StandardScoringManagerServiceAsync svc = null;
-	private static final String EDITED_ROW_CSS = "gridCell-edited";
+	
 
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader("Id", "key", true),

@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -278,7 +277,6 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 	@Override
 	public ArrayList<AccessPointScoreComputationItemDto> scorePoint(
 			AccessPointDto accessPointDto) {
-		HashMap<Integer, String> scoreDetails = new HashMap<Integer, String>();
 		AccessPointHelper aph = new AccessPointHelper();
 		AccessPoint ap = new AccessPoint();
 		ap = AccessPointServiceSupport.copyDtoToCanonical(accessPointDto);
@@ -315,7 +313,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 
 	@Override
 	public DtoValueContainer getAccessPointDtoInfo(AccessPointDto accessPointDto) {
-		Class cls = null;
+		Class<?> cls = null;
 		DtoValueContainer dtoVal = new DtoValueContainer();
 
 		try {
@@ -347,8 +345,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		}
 		return dtoVal;
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public DtoValueContainer saveDtoValueContainer(DtoValueContainer dtoValue) {
 		Class<?> cls = null;
@@ -356,8 +353,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		AccessPointDao apDao = new AccessPointDao();
 		AccessPoint ap = apDao.getByKey(dtoValue.getKeyId());
 		try {
-			cls = ap.getClass();
-			Integer i = 0;
+			cls = ap.getClass();			
 			for (Row row : dtoValue.getRows()) {
 				String fieldToSet = row.getFieldName();
 				String value = row.getFieldValue();
@@ -428,8 +424,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 
 	@Override
 	public ArrayList<AccessPointScoreDetailDto> scorePointDynamic(
-			AccessPointDto accessPointDto) {
-		HashMap<Integer, String> scoreDetails = new HashMap<Integer, String>();
+			AccessPointDto accessPointDto) {		
 		AccessPointHelper aph = new AccessPointHelper();
 		AccessPoint ap = new AccessPoint();
 		//ap = AccessPointServiceSupport.copyDtoToCanonical(accessPointDto);
@@ -437,9 +432,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 		ap = apDao.getByKey(accessPointDto.getKeyId());
 		ap = aph.scoreAccessPointDynamic(ap);
 		List<AccessPointScoreDetail> apsdList = ap.getApScoreDetailList();
-		Date latestDate = null;
-		AccessPointScoreDetail selectedItem = null;
-
+		
 		ArrayList<AccessPointScoreDetailDto> apsdDtoList = new ArrayList<AccessPointScoreDetailDto>();
 		for (AccessPointScoreDetail item : apsdList) {
 			AccessPointScoreDetailDto apsdto = new AccessPointScoreDetailDto();

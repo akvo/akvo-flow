@@ -23,11 +23,7 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
-public class SurveyReplicationImporter {
-
-	public static void main(String[] args) {
-		SurveyReplicationImporter sri = new SurveyReplicationImporter();
-	}
+public class SurveyReplicationImporter {	
 
 	public void executeImport(String sourceBase, Long surveyId) {
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
@@ -108,7 +104,7 @@ public class SurveyReplicationImporter {
 		List<QuestionDto> qgDtoList = BulkDataServiceClient.fetchQuestions(
 				serverBase, questionGroupId);
 		List<Question> qList = new ArrayList<Question>();
-		List<QuestionDto> qDtoDetailList = new ArrayList<QuestionDto>();
+		
 		SurveyServiceImpl ssi = new SurveyServiceImpl();
 		for (QuestionDto dto : qgDtoList) {
 			QuestionDto dtoDetail = null;

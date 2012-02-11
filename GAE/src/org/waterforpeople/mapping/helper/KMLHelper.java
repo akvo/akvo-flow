@@ -13,8 +13,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
-import org.waterforpeople.mapping.domain.TechnologyType;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
+import org.waterforpeople.mapping.domain.TechnologyType;
 
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -25,7 +25,6 @@ import com.gallatinsystems.gis.map.domain.MapControl;
 import com.gallatinsystems.gis.map.domain.MapFragment;
 import com.gallatinsystems.gis.map.domain.MapFragment.FRAGMENTTYPE;
 import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.datastore.Text;
 
 public class KMLHelper {
 	private static final Logger log = Logger.getLogger(KMLHelper.class
@@ -44,25 +43,6 @@ public class KMLHelper {
 		}
 	}
 
-	public String getKMZ(String country) throws Exception {
-		String vmName = "";
-		if (country == null) {
-			// return all countries
-			MapFragmentDao mfDao = new MapFragmentDao();
-			VelocityContext context = new VelocityContext();
-			List<MapFragment> mfList = null; // mfDao.getAllCountriesMapFragments
-			// ();
-			if (mfList != null) {
-				for (MapFragment item : mfList) {
-					context.put("countryPlacemarks", item);
-				}
-			}
-			mergeContext(context, vmName);
-		} else {
-
-		}
-		return null;
-	}
 
 	/**
 	 * merges a hydrated context with a template identified by the templateName
@@ -80,34 +60,7 @@ public class KMLHelper {
 		t.merge(context, writer);
 		return writer.toString();
 	}
-
-	private String buildCountryTechnologyPlacemark(String countryCode,
-			String technologyType) {
-		String vmName = null;
-
-		BaseDAO<TechnologyType> techDAO = new BaseDAO<TechnologyType>(
-				TechnologyType.class);
-		AccessPointDao apDao = new AccessPointDao();
-		List<AccessPoint> apList = apDao.listAccessPointsByTechnology(
-				countryCode, technologyType, "all");
-		StringBuilder sbPlacemarks = new StringBuilder();
-		for (AccessPoint item : apList) {
-			try {
-				sbPlacemarks.append(bindPlacemark(item, vmName));
-
-			} catch (Exception e) {
-				log.info(e.getMessage());
-			}
-
-		}
-		MapFragment mf = new MapFragment();
-		mf.setCountryCode(countryCode);
-		mf.setTechnologyType(technologyType);
-		mf.setFragmentValue(new Text(sbPlacemarks.toString()));
-		MapFragmentDao mfDao = new MapFragmentDao();
-		mfDao.save(mf);
-		return sbPlacemarks.toString();
-	}
+	
 
 	public String bindPlacemark(AccessPoint ap, String vmName) throws Exception {
 		if (ap.getCountryCode() != null && !ap.getCountryCode().equals("MW")) {
@@ -338,21 +291,7 @@ public class KMLHelper {
 		}
 		encodeStatusString(status, context);
 	}
-
-	private String encodePinStyle(AccessPointType type,
-			AccessPoint.Status status) {
-		if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
-			return "pushpingreen";
-		} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)) {
-			return "pushpinyellow";
-		} else if (status.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
-			return "pushpinred";
-		} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
-			return "pushpinblk";
-		} else {
-			return "pushpinblk";
-		}
-	}
+	
 
 	private String encodeStatusString(AccessPoint.Status status,
 			VelocityContext context) {
@@ -382,19 +321,7 @@ public class KMLHelper {
 		}
 	}
 
-	private String encodeStatusString(AccessPoint.Status status) {
-		if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
-			return "System Functioning and Meets Government Standards";
-		} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)) {
-			return "Functioning but with Problems";
-		} else if (status.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
-			return "Broken-down system";
-		} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
-			return "No Improved System";
-		} else {
-			return "Unknown";
-		}
-	}
+
 
 	private String generateFolderContents(String countryCode, String techType,
 			String mapFragmentText) throws Exception {
@@ -415,12 +342,11 @@ public class KMLHelper {
 		// Save complete kml to mapfragment
 		// Save to s3?
 		BaseDAO<Country> countryDao = new BaseDAO<Country>(Country.class);
-		MapFragmentDao mfDao = new MapFragmentDao();
+		
 		MapControl mc = new MapControl();
-		MapControlDao mcDao = new MapControlDao();
+		
 		mc.setStartDate(new Date());
-		List<Country> countryList = countryDao.list("all");
-		StringBuilder kml = new StringBuilder();
+		List<Country> countryList = countryDao.list("all");		
 		if (countryList != null)
 			for (Country country : countryList) {
 				if (country != null) {
@@ -494,7 +420,7 @@ public class KMLHelper {
 			MapFragment mf = new MapFragment();
 			mf.setCountryCode("ALL");
 			mf.setFragmentType(FRAGMENTTYPE.GLOBAL_ALL_PLACEMARKS);
-			ByteArrayOutputStream bos = ZipUtil.generateZip(completeKML);
+			ByteArrayOutputStream bos = ZipUtil.generateZip(completeKML, "waterforpeoplemapping.kml");
 			mf.setBlob(new Blob(bos.toByteArray()));
 			// mfDao.save(mf);
 			// mc.setEndDate(new Date());
@@ -530,7 +456,7 @@ public class KMLHelper {
 		mf.setCountryCode(countryCode);
 		mf.setTechnologyType(techType);
 		// mf.setFragmentValue(new Text(mfTechItemsByCountry));
-		ByteArrayOutputStream os = ZipUtil.generateZip(mfTechItemsByCountry);
+		ByteArrayOutputStream os = ZipUtil.generateZip(mfTechItemsByCountry, "waterforpeoplemapping.kml");
 		Blob blob = new Blob(os.toByteArray());
 
 		mf.setBlob(blob);
@@ -540,8 +466,7 @@ public class KMLHelper {
 	}
 
 	public Boolean checkCreateNewMap() {
-		Boolean runFlag = false;
-		MapFragmentDao mfDao = new MapFragmentDao();
+		Boolean runFlag = false;		
 		Date lastPointDate = null;
 		AccessPointDao apDao = new AccessPointDao();
 

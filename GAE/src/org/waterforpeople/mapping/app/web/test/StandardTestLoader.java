@@ -3,10 +3,10 @@ package org.waterforpeople.mapping.app.web.test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.jdo.PersistenceManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,7 +18,6 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.standards.dao.CompoundStandardDao;
 import com.gallatinsystems.standards.dao.LOSScoreToStatusMappingDao;
 import com.gallatinsystems.standards.dao.LevelOfServiceScoreDao;
@@ -70,8 +69,9 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.lessthan);
 		standard.setStandardDescription("Estimated Number of Users");
 		standard.setAccessPointAttribute("extimatedPopulation");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		// hasSystemBeenDown1DayFlag global boolean true=0 false=1
@@ -86,8 +86,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Has System Been down in last 30 days");
 		standard.setAccessPointAttribute("hasSystemBeenDown1DayFlag");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		// provideAdequateQuantity global boolean true=1 flase=0
@@ -103,8 +103,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Does the water source provide enough drinking water for the community every day of the year?");
 		standard.setAccessPointAttribute("provideAdequateQuantity");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 		// ppmFecalColiform local double <
 		standard = new Standard();
@@ -119,8 +119,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.lessthan);
 		standard.setStandardDescription("How much fecal coliform were present on the day of collection?");
 		standard.setAccessPointAttribute("ppmFecalColiform");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		// numberOfLitersPerPersonPerDay local < govt standard
@@ -136,8 +136,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.greaterthan);
 		standard.setStandardDescription("How many liters of water per person per day does this source provide?");
 		standard.setAccessPointAttribute("numberOfLitersPerPersonPerDay");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		writeln("Saved: " + standard.toString());
@@ -150,8 +150,8 @@ public class StandardTestLoader {
 		ds.setMaxDistance(100);
 		ds.setLocationType(AccessPoint.LocationType.URBAN);
 		ds.setStandardDescription("Distance standard for Urban waterpoints");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(ds);
 
 		ds = new DistanceStandard();
@@ -162,8 +162,8 @@ public class StandardTestLoader {
 		ds.setMaxDistance(500);
 		ds.setLocationType(AccessPoint.LocationType.RURAL);
 		ds.setStandardDescription("Distance standard for Rural waterpoints");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(ds);
 
 		ds = new DistanceStandard();
@@ -174,8 +174,8 @@ public class StandardTestLoader {
 		ds.setMaxDistance(200);
 		ds.setLocationType(AccessPoint.LocationType.PERIURBAN);
 		ds.setStandardDescription("Distance standard for Peri-Urban waterpoints");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(ds);
 
 		ds = new DistanceStandard();
@@ -186,8 +186,8 @@ public class StandardTestLoader {
 		ds.setMaxDistance(100);
 		ds.setLocationType(AccessPoint.LocationType.OTHER);
 		ds.setStandardDescription("Distance standard for other than rural, urban, or peri-urban waterpoints");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(ds);
 
 	}
@@ -388,8 +388,7 @@ public class StandardTestLoader {
 	private void listAPScoreAndStatus(String countryCode, String communityCode,
 			String accessPointCode, String cursorString) {
 		AccessPointDao apDao = new AccessPointDao();
-		// List<AccessPoint> apList = apDao.list("all");
-		PersistenceManager pm = PersistenceFilter.getManager();
+		// List<AccessPoint> apList = apDao.list("all");		
 
 		LevelOfServiceScoreDao lesScoreDao = new LevelOfServiceScoreDao();
 		writeln("<html><table border=1>");
@@ -450,8 +449,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Water Available day of visit");
 		standard.setAccessPointAttribute("waterAvailableDayVisitFlag");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -465,8 +464,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Is there a tariff or user fee");
 		standard.setAccessPointAttribute("collectTariffFlag");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -480,8 +479,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Are there financial records");
 		standard.setAccessPointAttribute("financialRecordsAvailableDayOfVisitFlag");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -495,11 +494,10 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Are there financial records");
 		standard.setAccessPointAttribute("positiveBalance");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
-
-		AccessPoint ap = new AccessPoint();
+		
 
 		standard = new Standard();
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
@@ -512,8 +510,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Are there financial records");
 		standard.setAccessPointAttribute("positiveBalance");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -528,8 +526,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.notequal);
 		standard.setStandardDescription("Who is responsible for performing maintenance");
 		standard.setAccessPointAttribute("whoRepairsPoint");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -543,8 +541,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Current Problems");
 		standard.setAccessPointAttribute("whoRepairsPoint");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		standard = new Standard();
@@ -559,8 +557,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("System Support Expansion");
 		standard.setAccessPointAttribute("systemExpansion");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		standardDao.save(standard);
 
 		CompoundStandard cs = new CompoundStandard();
@@ -576,8 +574,8 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Spare Parts on Hand");
 		standard.setAccessPointAttribute("sparePartsOnHand");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		cs.setStandardLeft(standard);
 
 		standard = new Standard();
@@ -591,12 +589,12 @@ public class StandardTestLoader {
 		standard.setStandardComparison(StandardComparisons.equal);
 		standard.setStandardDescription("Local Spare Parts");
 		standard.setAccessPointAttribute("localSparePartsFlag");
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		cs.setStandardRight(standard);
 		CompoundStandardDao csDao = new CompoundStandardDao();
-		standard.setEffectiveStartDate(new Date("1/1/1990"));
-		standard.setEffectiveEndDate(new Date("1/1/2013"));
+		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
+		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
 		cs.setOperator(Operator.OR);
 		csDao.save(cs);
 

@@ -109,14 +109,13 @@ public class WebActivityAuthorizationServiceImpl extends RemoteServiceServlet
 		return authDto;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
+	@Override	
 	public ResponseDto<HashMap<BaseDto, WebActivityAuthorizationDto>> listUserAuthorizations(
 			String activityName) {
 		UserDto user = userService.getCurrentUserConfig(false);
 
-		ResponseDto response = new ResponseDto<HashMap<BaseDto, WebActivityAuthorizationDto>>();
-		HashMap<SurveyDto, WebActivityAuthorizationDto> authMap = new HashMap<SurveyDto, WebActivityAuthorizationDto>();
+		ResponseDto<HashMap<BaseDto, WebActivityAuthorizationDto>> response = new ResponseDto<HashMap<BaseDto, WebActivityAuthorizationDto>>();
+		HashMap<BaseDto, WebActivityAuthorizationDto> authMap = new HashMap<BaseDto, WebActivityAuthorizationDto>();
 		Map<String, Survey> surveyCache = new HashMap<String, Survey>();
 		if (user != null) {
 			List<WebActivityAuthorization> authList = authDao.listByUser(user

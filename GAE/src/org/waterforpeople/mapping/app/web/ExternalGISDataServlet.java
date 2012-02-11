@@ -95,7 +95,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 					Double y1;
 					Double x2;
 					Double y2;
-					int length = geometry.getBoundingBox().length;
+					//int length = geometry.getBoundingBox().length;
 					x1 = geometry.getBoundingBox()[1].x;
 					y1 = geometry.getBoundingBox()[1].y;
 					x2 = geometry.getBoundingBox()[3].x;
@@ -167,8 +167,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 		DtoMarshaller.copyToDto(item, dto);
 		return dto;
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	private Geometry parseGeometryString(String geometryString)
 			throws ParseException {
 		GeometryFactory geometryFactory = new GeometryFactory();
@@ -176,8 +175,7 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
 		Geometry geo = new Geometry();
 		geo.setWktText(geometryString);
 		Point centroid = null;
-		if (geometryString.contains("POLYGON")) {
-			com.vividsolutions.jts.geom.Geometry geoHolder = null;
+		if (geometryString.contains("POLYGON")) {			
 			if (geometryString.startsWith("POLYGON")) {
 				geo.setType(GeometryType.POLYGON);
 				Polygon mp = (Polygon) reader.read(geometryString);

@@ -100,8 +100,6 @@ import com.gallatinsystems.diagnostics.domain.RemoteStacktrace;
 import com.gallatinsystems.editorial.dao.EditorialPageDao;
 import com.gallatinsystems.editorial.domain.EditorialPage;
 import com.gallatinsystems.editorial.domain.EditorialPageContent;
-import com.gallatinsystems.editorial.domain.MapBalloonDefinition;
-import com.gallatinsystems.editorial.domain.MapBalloonDefinition.BalloonType;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
@@ -157,8 +155,8 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class TestHarnessServlet extends HttpServlet {
@@ -329,13 +327,7 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 
 			}
-		} else if ("genBalloonData".equals(action)) {
-			MapBalloonDefinition mpd = new MapBalloonDefinition();
-			mpd.setBalloonType(BalloonType.KML_WATER_POINT);
-			mpd.setStyleData("@charset \"utf-8\"; body {font-family: Trebuchet MS, Arial, Helvetica, sans-serif;font-weight: bold;color: #6d6e71;}");
-			mpd.setName("WFPWaterPoint");
-
-		} else if ("deleteGeoData".equals(action)) {
+		}  else if ("deleteGeoData".equals(action)) {
 			try {
 				OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 				for (OGRFeature item : ogrFeatureDao.list("all")) {
@@ -2083,18 +2075,6 @@ public class TestHarnessServlet extends HttpServlet {
 		}
 	}
 
-	private void writeImageToResponse(HttpServletResponse resp,
-			byte[] imageBytes) {
-		resp.setContentType("image/jpeg");
-		try {
-			ServletOutputStream out = resp.getOutputStream();
-
-			out.write(imageBytes, 0, imageBytes.length);
-			out.flush();
-		} catch (Exception ex) {
-
-		}
-	}
 
 	private void createSurveyGroupGraph(HttpServletResponse resp) {
 		com.gallatinsystems.survey.dao.SurveyGroupDAO sgDao = new com.gallatinsystems.survey.dao.SurveyGroupDAO();

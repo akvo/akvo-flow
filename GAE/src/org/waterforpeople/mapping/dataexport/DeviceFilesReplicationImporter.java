@@ -61,7 +61,7 @@ public class DeviceFilesReplicationImporter {
 
 	public static List<DeviceFiles> copyAndCreateList(
 			List<DeviceFiles> canonicalList, List<DeviceFilesDto> dtoList) {
-		String surveyDtoStatus = null;
+		
 
 		for (DeviceFilesDto dto : dtoList) {
 			DeviceFiles canonical = null;

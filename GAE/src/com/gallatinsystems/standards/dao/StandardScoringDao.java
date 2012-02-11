@@ -51,6 +51,7 @@ public class StandardScoringDao extends BaseDAO<StandardScoring> {
 		return ssList;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<StandardScoring> listGlobalStandardScoringForAccessPoint(
 			Long scoreBucketId, AccessPoint ap) {
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -78,6 +79,7 @@ public class StandardScoringDao extends BaseDAO<StandardScoring> {
 		return results;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<StandardScoring> listLocalDistanceStandardScoringForAccessPoint(
 			AccessPoint ap) {
 		PersistenceManager pm = PersistenceFilter.getManager();
@@ -110,6 +112,7 @@ public class StandardScoringDao extends BaseDAO<StandardScoring> {
 		return results;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<StandardScoring> listLocalStandardScoringForAccessPoint(
 			Long scoreBucketId, AccessPoint ap) {
 		PersistenceManager pm = PersistenceFilter.getManager();

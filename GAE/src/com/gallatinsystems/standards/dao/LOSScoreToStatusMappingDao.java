@@ -23,6 +23,7 @@ public class LOSScoreToStatusMappingDao extends
 		return super.listByProperty("levelOfServiceScoreType", type, "String");
 	}
 
+	@SuppressWarnings("unchecked")
 	public LOSScoreToStatusMapping findByLOSScoreTypeAndScore(
 			StandardType type,Integer score) {
 		PersistenceManager pm = PersistenceFilter.getManager();

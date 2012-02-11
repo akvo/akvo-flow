@@ -18,7 +18,6 @@ import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.AdminWizardPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DataUploadPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DeviceFileManagerPortlet;
-import org.waterforpeople.mapping.portal.client.widgets.DisplayContentManager;
 import org.waterforpeople.mapping.portal.client.widgets.MappingAttributeManager;
 import org.waterforpeople.mapping.portal.client.widgets.MessageViewPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.MetricManagerPortlet;
@@ -88,7 +87,6 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final String DEFAULT_DOMAIN_TYPE = "accessPoint";
 	private static final String DOMAIN_CONFIG_KEY = "domainType";
 
-	private static final String LOCALE_DOMAIN = "locale";
 	private UserDto currentUser;
 	private VerticalPanel containerPanel;
 	private Image confImage;

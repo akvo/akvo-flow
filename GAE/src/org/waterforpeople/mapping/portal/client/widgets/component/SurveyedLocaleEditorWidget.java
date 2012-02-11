@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingService;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyMetricMappingServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyalValueDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyedLocaleService;
@@ -27,7 +25,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -72,8 +69,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 	private boolean readWriteMode;
 	private Button saveButton;
 	private SurveyInstanceServiceAsync surveyInstanceService;
-	private SurveyedLocaleServiceAsync surveyedLocaleService;
-	private SurveyMetricMappingServiceAsync metricService;
+	private SurveyedLocaleServiceAsync surveyedLocaleService;	
 	private List<SurveyInstanceDto> surveyInstances;
 	private Map<Long, List<SurveyalValueDto>> surveyalValueMap;
 	private SurveyedLocaleDto localeDto;
@@ -109,8 +105,7 @@ public class SurveyedLocaleEditorWidget extends Composite implements
 		surveyalValueMap = new HashMap<Long, List<SurveyalValueDto>>();
 		localeDto = surveyedLocale;
 		surveyInstanceService = GWT.create(SurveyInstanceService.class);
-		surveyedLocaleService = GWT.create(SurveyedLocaleService.class);
-		metricService = GWT.create(SurveyMetricMappingService.class);
+		surveyedLocaleService = GWT.create(SurveyedLocaleService.class);		
 
 		dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
 		initializeUi();

@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.gwt.client.devicefiles;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;

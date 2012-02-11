@@ -28,7 +28,6 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.QueryResultList;
 
 /**
  * dao for manipulating access points
@@ -456,6 +455,7 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		return results.get(0);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<AccessPoint> listAccessPointsByBoundingBox(
 			AccessPointType pointType, Double lat1, Double lat2, Double long1,
 			Double long2, String cursorString, Integer maxResults) {

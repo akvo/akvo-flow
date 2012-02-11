@@ -10,7 +10,6 @@ import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSummaryService;
 
-import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -27,7 +26,7 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 	private static final long serialVersionUID = -5722103696712574220L;
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger
-			.getLogger(DeviceManagerServlet.class.getName());
+			.getLogger(AccessPointSummaryServiceImpl.class.getName());
 
 	/**
 	 * returns an array of AccessPointSummaryDto objects that match the criteria

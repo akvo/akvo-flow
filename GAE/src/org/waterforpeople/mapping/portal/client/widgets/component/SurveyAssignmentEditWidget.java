@@ -28,6 +28,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
@@ -139,13 +140,11 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		labelPanel.add(eventName);
 		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.start(), LABEL_STYLE));
 		effectiveStartDate = new DateBox();
-		effectiveStartDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
-				.getShortDateFormat()));
+		effectiveStartDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT)));				
 		labelPanel.add(effectiveStartDate);
 		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.end(), LABEL_STYLE));
 		effectiveEndDate = new DateBox();
-		effectiveEndDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
-				.getShortDateFormat()));
+		effectiveEndDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT)));
 		labelPanel.add(effectiveEndDate);
 		VerticalPanel main = new VerticalPanel();
 		main.add(labelPanel);

@@ -55,8 +55,7 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 	public DeviceFiles findByInstance(Long instanceId) {
 		return findByProperty("surveyInstanceId", instanceId, "Long");
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	public DeviceFiles findByUri(String uri) {
 		List<DeviceFiles> dfList = (List<DeviceFiles>) listByProperty("URI",
 				uri, "String");
@@ -75,6 +74,7 @@ public class DeviceFilesDao extends BaseDAO<DeviceFiles> {
 			return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<DeviceFiles> listDeviceFilesByStatus(Status.StatusCode status,
 			String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();

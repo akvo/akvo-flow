@@ -9,7 +9,6 @@ import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 
 import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -28,7 +27,7 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger
-			.getLogger(DeviceManagerServlet.class.getName());
+			.getLogger(DeviceServiceImpl.class.getName());
 
 	@Override
 	public DeviceDto[] listDevice() {

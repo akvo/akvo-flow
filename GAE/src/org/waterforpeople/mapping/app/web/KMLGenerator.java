@@ -484,8 +484,7 @@ public class KMLGenerator {
 						// Need to check this
 						if (ap.getPointType() != null) {
 							if (Boolean.parseBoolean(PropertyUtil
-									.getProperty(DYNAMIC_SCORING_FLAG))) {
-								StandardType standardType = StandardType.WaterPointLevelOfService;
+									.getProperty(DYNAMIC_SCORING_FLAG))) {								
 								
 							} else {
 								encodeStatusString(ap, context);
@@ -1189,7 +1188,7 @@ public class KMLGenerator {
 			throws InvocationTargetException, NoSuchMethodException {
 		Integer score = AccessPointHelper.scoreAccessPoint(ap).getScore();
 
-		Integer score2 = new AccessPointHelper().scoreAccessPointDynamic(ap)
+		new AccessPointHelper().scoreAccessPointDynamic(ap)
 				.getScore();
 
 		if (score == 0) {

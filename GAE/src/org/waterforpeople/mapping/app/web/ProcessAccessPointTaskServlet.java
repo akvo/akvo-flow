@@ -1,10 +1,7 @@
 package org.waterforpeople.mapping.app.web;
 
-import java.util.ArrayList;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.waterforpeople.mapping.analytics.AccessPointMetricSummarizer;
 import org.waterforpeople.mapping.app.web.dto.DeleteTaskRequest;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -15,7 +12,6 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.taskqueue.Queue;
@@ -42,8 +38,7 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 		restRequest.populateFromHttpRequest(req);
 		return restRequest;
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		DeleteTaskRequest dtReq = (DeleteTaskRequest) req;
@@ -55,10 +50,9 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 			boolean is_finished = false;
 
 			final DatastoreService dss = DatastoreServiceFactory
-					.getDatastoreService();
-			final long start = System.currentTimeMillis();
+					.getDatastoreService();			
 
-			AccessPointMetricSummarizer apms = new AccessPointMetricSummarizer();
+			
 			final Query query = new Query(kind);
 			int limit = 10;
 			if (dtReq.getCursor() != null) {
@@ -72,8 +66,7 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 			}
 
 			query.setKeysOnly();
-
-			ArrayList<Key> keys = new ArrayList<Key>();
+			
 			QueryResultList<Entity> results = dss.prepare(query)
 					.asQueryResultList(fetchOptions);
 			newCursor = results.getCursor().toWebSafeString();

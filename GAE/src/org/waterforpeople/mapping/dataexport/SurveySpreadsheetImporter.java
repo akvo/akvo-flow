@@ -60,8 +60,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
 		}
 		try {
 			inp = new FileInputStream(file);
-			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
-			int i = 0;
+			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));			
 			sheet1 = wb.getSheetAt(0);
 			if (!isWholeSurvey) {
 				// even though there is a header row, we want lastRowNum since

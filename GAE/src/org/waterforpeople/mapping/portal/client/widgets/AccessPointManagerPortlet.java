@@ -118,7 +118,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		Widget header = buildHeader();
 		apTable = new PaginatedDataTable<AccessPointDto>(DEFAULT_SORT_FIELD,
 				this, this, true);
-		dateFormat = DateTimeFormat.getShortDateFormat();
+		dateFormat = DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.DATE_SHORT );
 		contentPane.add(header);
 		setContent(contentPane);
 		errorMode = false;
@@ -301,8 +301,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		return accessPointDetailAll;
 	}
 
-	private void loadAPDtoDetails(AccessPointDto accessPointDto) {
-		Integer i = 0;
+	private void loadAPDtoDetails(AccessPointDto accessPointDto) {		
 		svc.getAccessPointDtoInfo(accessPointDto,
 				new AsyncCallback<DtoValueContainer>() {
 

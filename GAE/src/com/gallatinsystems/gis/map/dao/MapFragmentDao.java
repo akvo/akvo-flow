@@ -6,8 +6,6 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.map.domain.MapFragment;

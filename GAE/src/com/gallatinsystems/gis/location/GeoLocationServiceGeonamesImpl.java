@@ -40,7 +40,7 @@ import com.vividsolutions.jts.io.WKTReader;
 public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 	private static final Logger log = Logger.getLogger(SurveyXMLAdapter.class
 			.getName());
-	private static final String COUNTRY_SERVICE_URL = "http://ws.geonames.org/countryCode?";
+	//private static final String COUNTRY_SERVICE_URL = "http://ws.geonames.org/countryCode?";
 	private static final String PLACE_SERVICE_URL = "http://ws.geonames.org/findNearbyPlaceName?";
 	private static final String LAT_PARAM = "lat";
 	private static final String LON_PARAM = "lng";

@@ -1,9 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.accesspoint;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
 
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.AsyncCallback;

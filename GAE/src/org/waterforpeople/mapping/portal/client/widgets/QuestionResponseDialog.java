@@ -62,7 +62,7 @@ public class QuestionResponseDialog extends DialogBox implements ClickHandler {
 	private List<QuestionAnswerStoreDto> currentAnswers;
 	private List<TextBox> currentTextboxes;
 	private static final DateTimeFormat DATE_FMT = DateTimeFormat
-			.getShortDateFormat();
+			.getFormat(DateTimeFormat.PredefinedFormat.DATE_SHORT);
 
 	public QuestionResponseDialog(Long questionId) {
 		super();

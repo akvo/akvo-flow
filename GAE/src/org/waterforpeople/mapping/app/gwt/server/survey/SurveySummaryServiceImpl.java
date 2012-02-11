@@ -13,7 +13,6 @@ import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveySummaryService;
 
-import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -30,7 +29,7 @@ public class SurveySummaryServiceImpl extends RemoteServiceServlet implements
 	private static final long serialVersionUID = -5722103696712574220L;
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger
-			.getLogger(DeviceManagerServlet.class.getName());
+			.getLogger(SurveySummaryServiceImpl.class.getName());
 
 	/**
 	 * returns an array of SurveySummaryDto objects that match the questionId

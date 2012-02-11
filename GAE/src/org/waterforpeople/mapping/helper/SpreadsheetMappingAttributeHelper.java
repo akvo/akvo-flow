@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.waterforpeople.mapping.adapter.SpreadsheetAccessPointAdapter;

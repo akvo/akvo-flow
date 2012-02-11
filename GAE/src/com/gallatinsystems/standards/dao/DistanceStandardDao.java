@@ -11,7 +11,6 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.standards.domain.DistanceStandard;
-import com.gallatinsystems.standards.domain.LOSScoreToStatusMapping;
 import com.gallatinsystems.standards.domain.Standard;
 
 public class DistanceStandardDao extends BaseDAO<DistanceStandard> {
@@ -21,6 +20,7 @@ public class DistanceStandardDao extends BaseDAO<DistanceStandard> {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	public List<DistanceStandard> listDistanceStandard(Standard.StandardType type, String countryCode){
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(DistanceStandard.class);
@@ -42,6 +42,7 @@ public class DistanceStandardDao extends BaseDAO<DistanceStandard> {
 		return standardList;
 			
 	}
+	@SuppressWarnings("unchecked")
 	public DistanceStandard findDistanceStandard(Standard.StandardType type, String countryCode, AccessPoint.LocationType locationType){
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(DistanceStandard.class);

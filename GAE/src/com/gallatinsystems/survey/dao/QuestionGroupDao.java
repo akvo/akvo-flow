@@ -100,6 +100,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 	 * @param surveyId
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public QuestionGroup getByParentIdandCode(String code, Long surveyId) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(QuestionGroup.class);

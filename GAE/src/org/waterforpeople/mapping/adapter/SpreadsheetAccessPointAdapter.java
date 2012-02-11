@@ -259,7 +259,7 @@ public class SpreadsheetAccessPointAdapter {
 		return ap;
 	}
 
-	@SuppressWarnings("deprecation")
+	
 	private Date parseDate(String value) {
 		Date date;
 		try {

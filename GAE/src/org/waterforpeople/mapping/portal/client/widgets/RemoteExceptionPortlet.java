@@ -130,10 +130,15 @@ public class RemoteExceptionPortlet extends Portlet implements
 	 */
 	@Override
 	public void bindRow(Grid grid, final RemoteStacktraceDto item, int row) {
-		grid.setWidget(row, 0, new Label(DateTimeFormat.getMediumDateFormat()
-				.format(item.getErrorDate())));
-		grid.setWidget(row, 1, new Label(item.getPhoneNumber() != null ? item
-				.getPhoneNumber() : ""));
+		grid.setWidget(
+				row,
+				0,
+				new Label(DateTimeFormat.getFormat(
+						DateTimeFormat.PredefinedFormat.DATE_MEDIUM).format(
+						item.getErrorDate())));
+		grid.setWidget(row, 1,
+				new Label(item.getPhoneNumber() != null ? item.getPhoneNumber()
+						: ""));
 		grid.setWidget(row, 2, new Label(
 				item.getDeviceIdentifier() != null ? item.getDeviceIdentifier()
 						: ""));
@@ -152,9 +157,10 @@ public class RemoteExceptionPortlet extends Portlet implements
 
 					@Override
 					public void onFailure(Throwable caught) {
-						MessageDialog errDia = new MessageDialog(TEXT_CONSTANTS
-								.error(), TEXT_CONSTANTS.errorTracePrefix()
-								+ " " + caught.getLocalizedMessage());
+						MessageDialog errDia = new MessageDialog(
+								TEXT_CONSTANTS.error(),
+								TEXT_CONSTANTS.errorTracePrefix() + " "
+										+ caught.getLocalizedMessage());
 						errDia.showRelativeTo(remoteExceptionTable);
 					}
 
@@ -167,11 +173,11 @@ public class RemoteExceptionPortlet extends Portlet implements
 					}
 				};
 				if (event.getSource() == ackButton) {
-					remoteExceptionService.acknowledgeRemoteStacktrace(item
-							.getKeyId(), callback);
+					remoteExceptionService.acknowledgeRemoteStacktrace(
+							item.getKeyId(), callback);
 				} else if (event.getSource() == delButton) {
-					remoteExceptionService.deleteRemoteStacktrace(item
-							.getKeyId(), callback);
+					remoteExceptionService.deleteRemoteStacktrace(
+							item.getKeyId(), callback);
 				}
 
 			}
@@ -208,9 +214,9 @@ public class RemoteExceptionPortlet extends Portlet implements
 							if (result != null
 									&& result.getLastKnownLat() != null
 									&& result.getLastKnownLon() != null) {
-								LatLng point = LatLng.newInstance(result
-										.getLastKnownLat(), result
-										.getLastKnownLon());
+								LatLng point = LatLng.newInstance(
+										result.getLastKnownLat(),
+										result.getLastKnownLon());
 								if (deviceLocOverlay != null) {
 									mapWidget.removeOverlay(deviceLocOverlay);
 								}
@@ -257,8 +263,8 @@ public class RemoteExceptionPortlet extends Portlet implements
 							@Override
 							public void onSuccess(
 									ResponseDto<ArrayList<RemoteStacktraceDto>> result) {
-								remoteExceptionTable.bindData(result
-										.getPayload(),
+								remoteExceptionTable.bindData(
+										result.getPayload(),
 										result.getCursorString(), isNew,
 										isResort);
 							}
@@ -287,9 +293,10 @@ public class RemoteExceptionPortlet extends Portlet implements
 		if (event.getSource() == findButton) {
 			requestData(null, false);
 		} else if (event.getSource() == deleteOldButton) {
-			MessageDialog confDia = new MessageDialog(TEXT_CONSTANTS
-					.confirmDelete(), TEXT_CONSTANTS.deleteExceptionsWarning(),
-					false, new ClickHandler() {
+			MessageDialog confDia = new MessageDialog(
+					TEXT_CONSTANTS.confirmDelete(),
+					TEXT_CONSTANTS.deleteExceptionsWarning(), false,
+					new ClickHandler() {
 						@Override
 						public void onClick(ClickEvent event) {
 							final MessageDialog waitDia = new MessageDialog(
@@ -307,8 +314,7 @@ public class RemoteExceptionPortlet extends Portlet implements
 													TEXT_CONSTANTS
 															.errorTracePrefix()
 															+ " "
-															+ caught
-																	.getLocalizedMessage());
+															+ caught.getLocalizedMessage());
 											errDia.showCentered();
 										}
 

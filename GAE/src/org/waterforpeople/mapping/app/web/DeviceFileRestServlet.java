@@ -22,6 +22,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 
 public class DeviceFileRestServlet extends AbstractRestApiServlet {
+	@SuppressWarnings("unused")
 	private static final Logger log = Logger
 			.getLogger(DeviceFileRestServlet.class.getName());
 	DeviceFilesDao dfDao = null;

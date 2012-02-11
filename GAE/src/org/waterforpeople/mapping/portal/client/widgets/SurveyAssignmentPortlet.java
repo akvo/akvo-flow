@@ -33,6 +33,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -72,8 +73,7 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 	private static final int MAX_ITEMS = 20;
 	private static final int HEIGHT = 1600;
 	private static final int WIDTH = 900;
-	private static final DateTimeFormat DATE_FMT = DateTimeFormat
-			.getShortDateFormat();
+	private static final DateTimeFormat DATE_FMT =DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
 	private Tree deviceRoot;
 	private Tree surveyRoot;
 	private Label statusLabel;
@@ -326,13 +326,11 @@ public class SurveyAssignmentPortlet extends Portlet implements ClickHandler {
 		labelPanel.add(eventName);
 		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.start()));
 		effectiveStartDate = new DateBox();
-		effectiveStartDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
-				.getShortDateFormat()));
+		effectiveStartDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT)));
 		labelPanel.add(effectiveStartDate);
 		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.end()));
 		effectiveEndDate = new DateBox();
-		effectiveEndDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
-				.getShortDateFormat()));
+		effectiveEndDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT)));
 		labelPanel.add(effectiveEndDate);
 		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.language()));
 		language = new ListBox();

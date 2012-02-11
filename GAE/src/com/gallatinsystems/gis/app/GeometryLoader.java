@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.swing.JApplet;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -47,7 +46,6 @@ public class GeometryLoader extends JApplet implements Runnable {
 	private JLabel statusLabel;
 	private String serverBase;
 
-	private String fileName;
 	private CoordinateType ct;
 	private Integer utmZone;
 	private Double centralMeridian;
@@ -56,18 +54,10 @@ public class GeometryLoader extends JApplet implements Runnable {
 
 	private static TreeMap<String, String> attributeIdentifierMapping;
 	private static final String GEOMETRY_STRING_PARAM = "geometryString";
-	private static final String RECIPROCAL_OF_FLATTENING_PARAM = "reciprocalOfFlattening";
-	private static final String Y2_PARAM = "y2";
-	private static final String Y1_PARAM = "y1";
-	private static final String X2_PARAM = "x2";
-	private static final String X1_PARAM = "x1";
+
 	private static final String COUNTRY_CODE_PARAM = "countryCode";
-	private static final String SPHEROID_PARAM = "spheroid";
-	private static final String DATUM_IDENTIFIER_PARAM = "datumIdentifier";
-	private static final String GEO_COORDINATE_SYSTEM_IDENTIFIER_PARAM = "geoCoordinateSystemIdentifier";
-	private static final String PROJECT_COORDINATE_SYSTEM_IDENTIFIER_PARAM = "projectCoordinateSystemIdentifier";
 	private static final String NAME_PARAM = "name";
-	private static final String OGR_FEATURE_TYPE_PARAM = "ogrFeatureType";
+
 	private static final String UN_CODE_PARAM = "unCode";
 	private static final String CENTROID_LAT_PARAM = "centroidLat";
 	private static final String CENTROID_LON_PARAM = "centroldLon";
@@ -90,9 +80,9 @@ public class GeometryLoader extends JApplet implements Runnable {
 		}
 		loadCountryMap();
 		configureFileIdentifier();
-		Thread worker = new Thread(this);		
+		Thread worker = new Thread(this);
 		worker.start();
-		
+
 	}
 
 	@Override
@@ -137,7 +127,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 						if (coordinateSystemType != null) {
 							SwingUtilities.invokeLater(new StatusUpdater(
 									"Importing data"));
-							ArrayList<String> shapefileFields = readShapefileMetadata(fileName);
+							readShapefileMetadata(fileName);
 							// Boolean configured =
 							// configureFields(shapefileFields);
 							// if (configured) {
@@ -160,27 +150,12 @@ public class GeometryLoader extends JApplet implements Runnable {
 		}
 	}
 
-	private Boolean configureFields(ArrayList<String> shapefileFields) {
-		JComboBox fieldToMapCB = new JComboBox();
-
-		for (String field : shapefileFields) {
-			fieldToMapCB.addItem(field);
-		}
-		for (Integer i = 0; i < shapefileFields.size(); i++) {
-			getContentPane().add(new JLabel("Field " + i));
-			getContentPane().add(fieldToMapCB);
-		}
-		return false;
-	}
-
 	private ArrayList<String> readShapefileMetadata(String fileName2)
 			throws IOException {
 		ArrayList<String> properties = new ArrayList<String>();
 		FileDataStore store = FileDataStoreFinder.getDataStore(new File(
 				fileName2));
-		@SuppressWarnings("rawtypes")
-		FeatureSource featureSource = store.getFeatureSource();
-		ReferencedEnvelope re = featureSource.getBounds();
+		
 
 		FeatureReader<org.opengis.feature.simple.SimpleFeatureType, org.opengis.feature.simple.SimpleFeature> fr = store
 				.getFeatureReader();
@@ -357,9 +332,6 @@ public class GeometryLoader extends JApplet implements Runnable {
 		String dataIdent = "WGS_1984";
 		String spheroid = "6378137";
 		String ogrFeatureType = "COUNTRY";
-		String geometryString = null;
-		String name = null;
-		String countryCode = null;
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("name=");
@@ -485,7 +457,6 @@ public class GeometryLoader extends JApplet implements Runnable {
 				}
 			}
 			if (countryCodeOverride != null) {
-				countryCode = countryCodeOverride;
 				valuesMap.put(COUNTRY_CODE_PARAM, countryCodeOverride);
 			}
 			String urlRequest = null;

@@ -1,12 +1,10 @@
 package com.gallatinsystems.survey.dao;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.google.appengine.api.datastore.Key;
 
 /**
  * 

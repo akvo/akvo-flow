@@ -52,7 +52,7 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 	 */
 	@Override
 	public CountryDto[] listCountries() {
-		CommunityDao commDao = new CommunityDao();
+		
 		CountryDto[] dtoList = null;
 		CountryDao countryDao = new CountryDao();
 		List<Country> cList= countryDao.list("displayName", "asc", "all");

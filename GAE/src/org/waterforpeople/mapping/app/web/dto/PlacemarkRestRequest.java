@@ -202,7 +202,7 @@ public class PlacemarkRestRequest extends RestRequest {
 				setPointType(AccessPointType.WATER_POINT);			
 		}
 		
-		if(req.getParameter(this.STANDARD_TYPE)!=null){
+		if(req.getParameter(STANDARD_TYPE)!=null){
 			if(req.getParameter(STANDARD_TYPE).equals(StandardType.WaterPointLevelOfService.toString())){
 				setStandardType(StandardType.WaterPointLevelOfService);
 			}else if(req.getParameter(STANDARD_TYPE).equals(StandardType.WaterPointSustainability.toString())){

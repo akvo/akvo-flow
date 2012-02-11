@@ -37,8 +37,7 @@ public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
 		restRequest.populateFromHttpRequest(req);
 		return restRequest;
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		DeleteTaskRequest dtReq = (DeleteTaskRequest) convertRequest();

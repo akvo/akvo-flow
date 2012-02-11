@@ -1,7 +1,6 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 	private AccessPointMetricSummaryDao apMetricSummaryDao;
 	private static String imageRoot;
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({"unchecked","rawtypes"})
 	public SummaryDataRestServlet() {
 		setMode(JSON_MODE);
 		apMetricSummaryDao = new AccessPointMetricSummaryDao();
@@ -57,7 +56,7 @@ public class SummaryDataRestServlet extends AbstractRestApiServlet {
 			Map configMap = new HashMap();
 			configMap.put(GCacheFactory.EXPIRATION_DELTA, 3600);
 			configMap.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
-			cache = cacheFactory.createCache(Collections.emptyMap());
+			cache = cacheFactory.createCache(configMap);
 		} catch (CacheException e) {
 			log.log(Level.SEVERE, "Could not initialize cache", e);
 

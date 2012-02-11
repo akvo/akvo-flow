@@ -10,7 +10,6 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.common.util.StringUtil;
-import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.standards.dao.CompoundStandardDao;
 import com.gallatinsystems.standards.dao.StandardDao;
 import com.gallatinsystems.standards.domain.CompoundStandard;
@@ -32,8 +31,7 @@ public class ScoringHelper {
 		los.setScoreType(scoreType);
 		los.setObjectKey(ap.getKey());
 		los.setScoreObject(ScoreObject.AccessPoint);
-		BaseDAO<LevelOfServiceScore> losDao = new BaseDAO<LevelOfServiceScore>(
-				LevelOfServiceScore.class);
+		
 		if (ap.getImprovedWaterPointFlag()) {
 			ScoreDetailContainer sdc = scoreStandard(ap, scoreType);
 			los.setScore(sdc.getScore());
@@ -57,8 +55,6 @@ public class ScoringHelper {
 	private ScoreDetailContainer scoreCompound(AccessPoint ap,
 			StandardType scoreType) {
 		ScoreDetailContainer sdc = new ScoreDetailContainer();
-		Boolean scoreLeft = null;
-		Boolean scoreRight = null;
 		CompoundStandardDao csdao = new CompoundStandardDao();
 		List<CompoundStandard> csList = csdao.listByType(scoreType);
 		for (CompoundStandard item : csList) {
@@ -119,11 +115,11 @@ public class ScoringHelper {
 							"get"
 									+ StringUtil
 											.capitalizeFirstCharacterString(accessPointAttribute),
-							null);
+											(Class<?>[])null);
 			if (!m.getReturnType().getName().equals("java.lang.String")) {
-				value = m.invoke(ap, null).toString();
+				value = m.invoke(ap,(Object[]) null).toString();
 			} else {
-				value = (String) m.invoke(ap, null);
+				value = (String) m.invoke(ap,(Object[]) null);
 			}
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
@@ -274,7 +270,7 @@ public class ScoringHelper {
 	private ScoreDetailContainer processStandard(StandardDef standard,
 			AccessPoint ap) {
 		ScoreDetailContainer sdc = new ScoreDetailContainer();
-		Integer score = 0;
+		
 		
 		if (standard.getStandardScope().equals(StandardScope.Global)
 				|| (standard.getStandardScope().equals(StandardScope.Local))

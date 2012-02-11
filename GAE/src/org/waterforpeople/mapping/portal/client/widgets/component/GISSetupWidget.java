@@ -6,7 +6,6 @@ import java.util.TreeMap;
 
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
-import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.gis.app.gwt.client.GISSupportService;
 import com.gallatinsystems.gis.app.gwt.client.GISSupportServiceAsync;
@@ -26,10 +25,8 @@ public class GISSetupWidget extends Composite implements ChangeHandler {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
 	private static final String LABEL_STYLE = "input-label-padded";
-	private static final int DEFAULT_ITEM_COUNT = 5;
+	
 	private Panel contentPanel;
-	private MessageDialog loadingDialog;
-	private TerminalType termType;
 	private ListBox coordinateSystemType = new ListBox();
 	private ListBox utmZones = new ListBox();
 	private TextBox centralMeridian = new TextBox();

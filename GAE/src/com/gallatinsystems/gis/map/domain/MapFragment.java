@@ -2,8 +2,6 @@ package com.gallatinsystems.gis.map.domain;
 
 import javax.jdo.annotations.PersistenceCapable;
 
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
-
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Text;

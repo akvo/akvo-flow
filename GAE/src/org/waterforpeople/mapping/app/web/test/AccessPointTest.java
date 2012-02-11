@@ -12,12 +12,9 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.app.web.TestHarnessServlet;
-import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.LocationType;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
-
-import com.gallatinsystems.gis.map.dao.MapFragmentDao;
 
 public class AccessPointTest {
 	private static Logger log = Logger.getLogger(TestHarnessServlet.class
@@ -25,8 +22,7 @@ public class AccessPointTest {
 
 	public void loadLots(HttpServletResponse resp, Integer numToCreate) {
 		try {
-			MapFragmentDao mfDao = new MapFragmentDao();
-			AccessPointDao apDao = new AccessPointDao();
+					
 			AccessPointHelper aph = new AccessPointHelper();
 
 			ArrayList<AccessPoint> apList = new ArrayList<AccessPoint>();
@@ -83,7 +79,7 @@ public class AccessPointTest {
 					} else {
 						ap.setWhoRepairsPoint("Dru");
 					}
-					Date today = new Date();
+					
 					System.out
 							.println("AP: " + ap.getLatitude() + "/"
 									+ ap.getLongitude() + "Date: "
@@ -183,9 +179,7 @@ public class AccessPointTest {
 	}
 
 	public void loadWPDistanceTestData(HttpServletResponse resp) {
-		try {
-			MapFragmentDao mfDao = new MapFragmentDao();
-			AccessPointDao apDao = new AccessPointDao();
+		try {			
 			AccessPointHelper aph = new AccessPointHelper();
 
 			ArrayList<AccessPoint> apList = new ArrayList<AccessPoint>();
@@ -233,7 +227,7 @@ public class AccessPointTest {
 					ap.setLatitude(lat);
 					ap.setLongitude(lon);
 					ap.setCountryCode("US");
-					Date today = new Date();
+					
 					System.out
 							.println("AP: " + ap.getLatitude() + "/"
 									+ ap.getLongitude() + "Date: "
@@ -290,9 +284,7 @@ public class AccessPointTest {
 	}
 
 	public void loadHHDistanceTestData(HttpServletResponse resp) {
-		try {
-			MapFragmentDao mfDao = new MapFragmentDao();
-			AccessPointDao apDao = new AccessPointDao();
+		try {					
 			AccessPointHelper aph = new AccessPointHelper();
 
 			ArrayList<AccessPoint> apList = new ArrayList<AccessPoint>();
@@ -340,7 +332,7 @@ public class AccessPointTest {
 					ap.setLatitude(lat);
 					ap.setLongitude(lon);
 					ap.setCountryCode("US");
-					Date today = new Date();
+					
 					System.out
 							.println("AP: " + ap.getLatitude() + "/"
 									+ ap.getLongitude() + "Date: "

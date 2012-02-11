@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.waterforpeople.mapping.helper.KMLHelper;
-
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.notification.helper.NotificationHelper;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
@@ -31,9 +29,9 @@ public class CronCommanderServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		String action = req.getParameter("action");
-		if ("buildMap".equals(action)) {
-			KMLHelper kmlHelper = new KMLHelper();
+		if ("buildMap".equals(action)) {			
 			/*
+			 * KMLHelper kmlHelper = new KMLHelper();
 			 * if (kmlHelper.checkCreateNewMap()) { Queue mapAssemblyQueue =
 			 * QueueFactory.getQueue("mapAssembly"); TaskOptions task =
 			 * url("/app_worker/mapassembly").param("action",

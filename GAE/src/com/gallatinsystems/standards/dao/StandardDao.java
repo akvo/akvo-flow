@@ -24,6 +24,7 @@ public class StandardDao extends BaseDAO<Standard> {
 		return super.listByProperty("accessPointType", accessPointType, "String");
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Standard> listByAccessPointTypeAndStandardType(AccessPointType accessPointType, StandardType standardType){
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(Standard.class);
@@ -46,6 +47,7 @@ public class StandardDao extends BaseDAO<Standard> {
 		return standardList;
 	}
 	
+	@SuppressWarnings("unused")
 	private void delete(Long id){
 		Standard standard = this.getByKey(id);
 		if(standard!=null){

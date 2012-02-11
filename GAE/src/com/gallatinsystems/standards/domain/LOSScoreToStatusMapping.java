@@ -2,7 +2,6 @@ package com.gallatinsystems.standards.domain;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.jdo.annotations.PersistenceCapable;
 

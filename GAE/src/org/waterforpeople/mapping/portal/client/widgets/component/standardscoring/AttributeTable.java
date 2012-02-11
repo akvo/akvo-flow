@@ -6,7 +6,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.TextBox;
 
 public class AttributeTable extends Composite implements ClickHandler {
 
@@ -21,17 +20,7 @@ public class AttributeTable extends Composite implements ClickHandler {
 	
 	public AttributeTable(){
 	}
-	
-	private FlexTable getFlexTable(){
-		return attributeTable;
-	}
-	
-	private void addAttributeRow(String currentSelectedAttribute){
-		Integer row = attributeTable.getRowCount();
 		
-		attributeTable.setWidget(row+1,ATTRIBUTE_ROW_ID_COL , new TextBox());
-		//attributeTable.setWidget(row+1, column, widget) 
-	}
 	
 	@Override
 	public void onClick(ClickEvent event) {

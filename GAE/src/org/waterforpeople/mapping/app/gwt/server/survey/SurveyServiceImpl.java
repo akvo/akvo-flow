@@ -43,7 +43,6 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
-import com.gallatinsystems.device.app.web.DeviceManagerServlet;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.messaging.dao.MessageDao;
@@ -108,7 +107,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	private static final String CACHE_EXP_PROP = "cacheExpirySeconds";
 
 	private static final Logger log = Logger
-			.getLogger(DeviceManagerServlet.class.getName());
+			.getLogger(SurveyServiceImpl.class.getName());
 
 	private static final long serialVersionUID = 5557965649047558451L;
 	private SurveyDAO surveyDao;
