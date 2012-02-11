@@ -53,6 +53,8 @@ public class CronCommanderServlet extends HttpServlet {
 		NotificationHelper helper = new NotificationHelper("rawDataReport",
 				null);
 		helper.execute();
+		NotificationHelper fieldReportHelper = new NotificationHelper("fieldStatusReport",null);
+		fieldReportHelper.execute();
 	}
 
 	private void purgeExpiredSurveys() {
