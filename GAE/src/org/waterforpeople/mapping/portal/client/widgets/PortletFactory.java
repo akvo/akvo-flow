@@ -45,8 +45,6 @@ public class PortletFactory {
 			}
 		} else if (name.equals(DeviceLocationPortlet.NAME)) {
 			return new DeviceLocationPortlet();
-		} else if (name.equals(TechnologyTypeManagerPortlet.NAME)) {
-			return new TechnologyTypeManagerPortlet();
 		} else if (name.equals(SurveyAssignmentPortlet.NAME)) {
 			return new SurveyAssignmentPortlet();
 		} else if (name.equals(DisplayContentManager.NAME)) {

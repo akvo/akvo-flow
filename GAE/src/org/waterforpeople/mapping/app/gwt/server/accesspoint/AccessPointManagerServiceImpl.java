@@ -21,7 +21,6 @@ import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointScoreDet
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.DtoValueContainer;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.Row;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.TechnologyTypeDto;
 import org.waterforpeople.mapping.app.util.AccessPointServiceSupport;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -138,29 +137,7 @@ public class AccessPointManagerServiceImpl extends RemoteServiceServlet
 						.copyDtoToCanonical(accessPointDto)));
 	}
 
-	@Override
-	public void delete(TechnologyTypeDto item) {
-		// TODO implement delete tech type
-	}
-
-	@Override
-	public TechnologyTypeDto getTechnologyType(Long id) {
-		// TODO implement find by id
-		return null;
-	}
-
-	@Override
-	public List<TechnologyTypeDto> list() {
-		// TODO implement list tech type
-		return null;
-	}
-
-	@Override
-	public TechnologyTypeDto save(TechnologyTypeDto item) {
-		// TODO implement save tech type
-		return null;
-	}
-
+	
 	@Override
 	public void rotateImage(String fileName) {
 		String[] imageURLParts = ImageUtils.parseImageParts(fileName);

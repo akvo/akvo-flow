@@ -28,8 +28,6 @@ public class AccessPointDto extends BaseDto {
 
 	private String photoURL = null;
 
-	private TechnologyType typeTechnology = null;
-
 	private String TechnologyTypeOther = null;
 	private String typeTechnologyString = null;
 	private String constructionDateYear = null;
@@ -319,7 +317,7 @@ public class AccessPointDto extends BaseDto {
 
 	private Double costPer = null;
 	private UnitOfMeasureDto costPerUnitOfMeasure = null;
-	private CurrencyDto costPerCurrency = null;
+	
 
 	private String farthestHouseholdfromPoint = null;
 
@@ -394,14 +392,7 @@ public class AccessPointDto extends BaseDto {
 		this.photoURL = photoURL;
 	}
 
-	public TechnologyType getTypeTechnology() {
-		return typeTechnology;
-	}
-
-	public void setTypeTechnology(TechnologyType typeTechnology) {
-		this.typeTechnology = typeTechnology;
-	}
-
+	
 	public Date getConstructionDate() {
 		return constructionDate;
 	}
@@ -488,14 +479,7 @@ public class AccessPointDto extends BaseDto {
 		return costPerUnitOfMeasure;
 	}
 
-	public void setCostPerCurrency(CurrencyDto costPerCurrency) {
-		this.costPerCurrency = costPerCurrency;
-	}
-
-	public CurrencyDto getCostPerCurrency() {
-		return costPerCurrency;
-	}
-
+	
 	public void setOtherStatus(String otherStatus) {
 		this.otherStatus = otherStatus;
 	}

@@ -17,14 +17,7 @@ public interface AccessPointManagerService extends RemoteService {
 
 	Integer deleteAccessPoint(Long id);
 
-	List<TechnologyTypeDto> list();
-
-	TechnologyTypeDto getTechnologyType(Long id);
-
-	void delete(TechnologyTypeDto item);
-
-	TechnologyTypeDto save(TechnologyTypeDto item);
-
+	
 	void rotateImage(String fileName);
 
 	AccessPointDto[] listAccessPointByLocation(String country,
