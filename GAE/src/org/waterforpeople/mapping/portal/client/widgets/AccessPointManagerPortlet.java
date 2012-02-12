@@ -60,6 +60,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 
+/**
+ * 
+ * TODO: once everyone is on Survey Locale, remove this portlet
+ * 
+ */
 public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		DataTableBinder<AccessPointDto>, DataTableListener<AccessPointDto> {
 	private static TextConstants TEXT_CONSTANTS = GWT
@@ -118,7 +123,8 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		Widget header = buildHeader();
 		apTable = new PaginatedDataTable<AccessPointDto>(DEFAULT_SORT_FIELD,
 				this, this, true);
-		dateFormat = DateTimeFormat.getFormat( DateTimeFormat.PredefinedFormat.DATE_SHORT );
+		dateFormat = DateTimeFormat
+				.getFormat(DateTimeFormat.PredefinedFormat.DATE_SHORT);
 		contentPane.add(header);
 		setContent(contentPane);
 		errorMode = false;
@@ -301,7 +307,7 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		return accessPointDetailAll;
 	}
 
-	private void loadAPDtoDetails(AccessPointDto accessPointDto) {		
+	private void loadAPDtoDetails(AccessPointDto accessPointDto) {
 		svc.getAccessPointDtoInfo(accessPointDto,
 				new AsyncCallback<DtoValueContainer>() {
 
@@ -1196,9 +1202,9 @@ public class AccessPointManagerPortlet extends UserAwarePortlet implements
 		} else {
 			apDto.setKeyId(null);
 		}
-		TextBox communityNameTB = (TextBox)accessPointDetail.getWidget(0,1);
+		TextBox communityNameTB = (TextBox) accessPointDetail.getWidget(0, 1);
 		apDto.setCommunityName(communityNameTB.getText());
-		
+
 		TextBox communityCodeTB = (TextBox) accessPointDetail.getWidget(1, 1);
 		String communityCode = communityCodeTB.getText();
 		apDto.setCommunityCode(communityCode);
