@@ -18,20 +18,11 @@ public class PortletFactory {
 	public static final Object[][] AVAILABLE_PORTLETS = {
 			{ SummaryPortlet.NAME, SummaryPortlet.DESCRIPTION },
 			{ ActivityChartPortlet.NAME, ActivityChartPortlet.DESCRIPTION },
-			// { ActivityMapPortlet.NAME, ActivityMapPortlet.DESCRIPTION },
+
 			{ SurveyQuestionPortlet.NAME, SurveyQuestionPortlet.DESCRIPTION },
-			/*
-			 * { AccessPointStatusPortlet.NAME,
-			 * AccessPointStatusPortlet.DESCRIPTION },
-			 */
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
-			/*
-			 * { AccessPointPerformancePortlet.NAME,
-			 * AccessPointPerformancePortlet.DESCRIPTION },
-			 */
 			{ AccessPointMetricChartPortlet.NAME,
-					AccessPointMetricChartPortlet.DESCRIPTION },
-	/* { RecentPointsPortlet.NAME, RecentPointsPortlet.DESCRIPTION } */
+					AccessPointMetricChartPortlet.DESCRIPTION }
 	};
 
 	public static Portlet createPortlet(String name, UserDto user,
@@ -44,12 +35,8 @@ public class PortletFactory {
 			return new SummaryPortlet();
 		} else if (name.equals(ActivityChartPortlet.NAME)) {
 			return new ActivityChartPortlet(user);
-		} else if (name.equals(ActivityMapPortlet.NAME)) {
-			return new ActivityMapPortlet(user);
 		} else if (name.equals(SurveyQuestionPortlet.NAME)) {
 			return new SurveyQuestionPortlet();
-		} else if (name.equals(AccessPointStatusPortlet.NAME)) {
-			return new AccessPointStatusPortlet(user);
 		} else if (name.equals(AccessPointManagerPortlet.NAME)) {
 			if (LOCALE_DOMAIN_TYPE.equalsIgnoreCase(domainType)) {
 				return new SurveyedLocaleManagerPortlet(user);
@@ -58,8 +45,6 @@ public class PortletFactory {
 			}
 		} else if (name.equals(DeviceLocationPortlet.NAME)) {
 			return new DeviceLocationPortlet();
-		} else if (name.equals(AccessPointPerformancePortlet.NAME)) {
-			return new AccessPointPerformancePortlet(user);
 		} else if (name.equals(TechnologyTypeManagerPortlet.NAME)) {
 			return new TechnologyTypeManagerPortlet();
 		} else if (name.equals(SurveyAssignmentPortlet.NAME)) {
@@ -80,8 +65,6 @@ public class PortletFactory {
 			return new RawDataViewPortlet(user);
 		} else if (name.equals(MappingAttributeManager.NAME)) {
 			return new MappingAttributeManager();
-		} else if (name.equals(RecentPointsPortlet.NAME)) {
-			return new RecentPointsPortlet();
 		} else if (name.equals(UserManagerPortlet.NAME)) {
 			return new UserManagerPortlet(user);
 		} else if (name.equals(RemoteExceptionPortlet.NAME)) {

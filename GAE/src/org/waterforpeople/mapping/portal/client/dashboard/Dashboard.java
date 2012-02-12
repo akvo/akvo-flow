@@ -14,7 +14,6 @@ import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationServiceAsyn
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
-import org.waterforpeople.mapping.portal.client.widgets.ActivityMapPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.AdminWizardPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DataUploadPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DeviceFileManagerPortlet;
@@ -502,7 +501,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	@Override
 	public Class<?>[] getInvolvedClasses() {
 		return new Class[] { this.getClass(), SummaryPortlet.class,
-				ActivityChartPortlet.class, ActivityMapPortlet.class };
+				ActivityChartPortlet.class };
 	}
 
 	/**
