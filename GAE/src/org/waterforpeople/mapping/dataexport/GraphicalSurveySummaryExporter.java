@@ -553,7 +553,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		while (sheet == null) {
 			sheet = wb.getSheet(curTitle);
 			if (sheet == null) {
-				wb.createSheet(curTitle);
+				sheet = wb.createSheet(curTitle);
 			} else {
 				curTitle = title + " " + sheetCount;
 				sheetCount++;
