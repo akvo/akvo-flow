@@ -32,6 +32,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
@@ -549,11 +550,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		String title = sector == null ? SUMMARY_LABEL.get(locale) : sector;
 		Sheet sheet = null;
 		int sheetCount = 2;
-		String curTitle = title;
+		String curTitle = WorkbookUtil.createSafeSheetName(title);
 		while (sheet == null) {
 			sheet = wb.getSheet(curTitle);
 			if (sheet == null) {
-				sheet = wb.createSheet(curTitle);
+				sheet = wb.createSheet(WorkbookUtil.createSafeSheetName(curTitle));
 			} else {
 				curTitle = title + " " + sheetCount;
 				sheetCount++;
