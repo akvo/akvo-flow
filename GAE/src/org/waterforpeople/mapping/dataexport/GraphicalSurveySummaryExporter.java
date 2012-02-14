@@ -808,6 +808,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		Row row = null;
 		if (index < sheet.getLastRowNum()) {
 			row = sheet.getRow(index);
+			if(row == null){
+				row = sheet.createRow(index);
+			}
 		} else {
 			row = sheet.createRow(index);
 		}
