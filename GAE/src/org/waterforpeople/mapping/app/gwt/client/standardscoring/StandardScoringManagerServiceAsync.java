@@ -29,7 +29,7 @@ public interface StandardScoringManagerServiceAsync {
 			AsyncCallback<ArrayList<StandardContainerDto>> callback);
 
 	void saveCompoundRule(Long compoundRuleId, String standardType, String name,
-			Long leftRuleId, Long rightRuleId, String operator,
+			Long leftRuleId, String leftRuleType, Long rightRuleId, String rightRuleType, String operator,
 			AsyncCallback<Long> callback);
 
 	void listCompoundRule(String standardType,

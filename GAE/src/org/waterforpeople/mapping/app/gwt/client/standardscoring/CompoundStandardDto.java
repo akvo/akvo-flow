@@ -1,6 +1,7 @@
 package org.waterforpeople.mapping.app.gwt.client.standardscoring;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.standards.domain.CompoundStandard.RuleType;
 
 public class CompoundStandardDto extends BaseDto {
 
@@ -12,12 +13,17 @@ public class CompoundStandardDto extends BaseDto {
 	public enum Operator {
 		AND, OR, NOT
 	}
+	public enum RuleType {
+		DISTANCE,NONDISTANCE
+	}
 
 	/**
 	 * 
 	 */
 	private String name = null;
 	private Long standardIdLeft = null;
+	private RuleType standardLeftRuleType = null;
+	private RuleType standardRightRuleType = null;
 	private Long standardIdRight = null;
 	private String standardLeftDesc = null;
 	private String standardRightDesc = null;
@@ -37,6 +43,22 @@ public class CompoundStandardDto extends BaseDto {
 	}
 
 	private StandardType standardType = null;
+
+	public RuleType getStandardLeftRuleType() {
+		return standardLeftRuleType;
+	}
+
+	public void setStandardLeftRuleType(RuleType standardLeftRuleType) {
+		this.standardLeftRuleType = standardLeftRuleType;
+	}
+
+	public RuleType getStandardRightRuleType() {
+		return standardRightRuleType;
+	}
+
+	public void setStandardRightRuleType(RuleType standardRightRuleType) {
+		this.standardRightRuleType = standardRightRuleType;
+	}
 
 	public StandardType getStandardType() {
 		return standardType;

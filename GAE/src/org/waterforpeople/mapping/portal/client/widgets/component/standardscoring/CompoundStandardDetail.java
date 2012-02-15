@@ -96,11 +96,25 @@ public class CompoundStandardDetail extends Composite implements HasText,
 		Long rightRuleId = Integer.valueOf(
 				lbRightHandRule.getValue(lbRightHandRule.getSelectedIndex()))
 				.longValue();
+		String leftRuleType = lbLeftHandRule.getItemText(lbLeftHandRule
+				.getSelectedIndex());
+		if (leftRuleType.contains("Distance")) {
+			leftRuleType = "DISTANCE";
+		} else {
+			leftRuleType = "NONDISTANCE";
+		}
+		String rightRuleType = lbRightHandRule.getItemText(lbRightHandRule
+				.getSelectedIndex());
+		if (rightRuleType.contains("Distance")) {
+			rightRuleType = "DISTANCE";
+		} else {
+			rightRuleType = "NONDISTANCE";
+		}
 		String operatorValue = operator.getValue(operator.getSelectedIndex());
 
 		svc.saveCompoundRule(compoundRuleIDValue, name, standardType,
-				leftRuleId, rightRuleId, operatorValue,
-				new AsyncCallback<Long>() {
+				leftRuleId, leftRuleType, rightRuleId, leftRuleType,
+				operatorValue, new AsyncCallback<Long>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -229,7 +243,7 @@ public class CompoundStandardDetail extends Composite implements HasText,
 	private VerticalPanel vp = new VerticalPanel();
 	private PaginatedDataTable<CompoundStandardDto> ft = null;
 	private String standardType = null;
-	private StandardScoringManagerServiceAsync svc = null;	
+	private StandardScoringManagerServiceAsync svc = null;
 
 	private static final DataTableHeader HEADERS[] = {
 			new DataTableHeader("Id", "key", true),
@@ -242,10 +256,11 @@ public class CompoundStandardDetail extends Composite implements HasText,
 	private static final String DEFAULT_SORT_FIELD = "name";
 	private static final Integer PAGE_SIZE = 20;
 	private Button addNewItem = new Button("Add New Compound Rule");
+
 	private void init() {
 		ft = new PaginatedDataTable<CompoundStandardDto>(DEFAULT_SORT_FIELD,
 				this, this, true, true);
-		
+
 		getVp().add(ft);
 		getVp().add(addNewItem);
 		addNewHandler();
@@ -255,14 +270,15 @@ public class CompoundStandardDetail extends Composite implements HasText,
 	public void setStandardType(String standardType) {
 		this.standardType = standardType;
 	}
-	
-	public void addNewHandler(){
-		addNewItem.addClickHandler(new ClickHandler(){
+
+	public void addNewHandler() {
+		addNewItem.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				loadStandards(null);
-			}});
+			}
+		});
 	}
 
 	@Override
@@ -297,33 +313,35 @@ public class CompoundStandardDetail extends Composite implements HasText,
 		editRow.addClickHandler(new ClickHandler() {
 
 			@Override
-			public void onClick(ClickEvent event) {				
+			public void onClick(ClickEvent event) {
 				CompoundStandardDto item = formStandardScoringDto(row);
 				loadStandards(item);
 			}
 		});
 		hpanel.add(deleteRow);
-		deleteRow.addClickHandler(new ClickHandler(){
+		deleteRow.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Button deletebutton = (Button)event.getSource();
+				Button deletebutton = (Button) event.getSource();
 				final Integer row = Integer.parseInt(deletebutton.getTitle());
-				TextBox id = (TextBox)grid.getWidget(row, 0);
+				TextBox id = (TextBox) grid.getWidget(row, 0);
 				final Long keyId = Long.parseLong(id.getText());
-				svc.deleteCompoundStandard(keyId, new AsyncCallback<Void>(){
+				svc.deleteCompoundStandard(keyId, new AsyncCallback<Void>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
 						// TODO Auto-generated method stub
-						
+
 					}
 
 					@Override
 					public void onSuccess(Void result) {
 						grid.removeRow(row);
-					}});
-			}});
+					}
+				});
+			}
+		});
 		grid.setWidget(row, 5, hpanel);
 	}
 
@@ -398,7 +416,7 @@ public class CompoundStandardDetail extends Composite implements HasText,
 						if (result.getPayload().size() > 0) {
 							ft.bindData(result.getPayload(),
 									result.getCursorString(), isNew, isResort);
-						}else{
+						} else {
 							loadStandards(null);
 						}
 					}

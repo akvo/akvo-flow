@@ -373,7 +373,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Long saveCompoundRule(Long compoundRuleId, String name,
-			String standardType, Long leftRuleId, Long rightRuleId,
+			String standardType, Long leftRuleId, String leftRuleType, Long rightRuleId, String rightRuleType,
 			String operator) {
 		CompoundStandardDao csDao = new CompoundStandardDao();
 		CompoundStandard cs = null;
@@ -413,7 +413,9 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			dto.setOperator(CompoundStandardDto.Operator.valueOf(item
 					.getOperator().toString()));
 			dto.setStandardIdLeft(item.getStandardIdLeft());
+			dto.setStandardLeftRuleType(CompoundStandardDto.RuleType.valueOf(item.getStandardLeftRuleType().toString()));
 			dto.setStandardIdRight(item.getStandardIdRight());
+			dto.setStandardRightRuleType(CompoundStandardDto.RuleType.valueOf(item.getStandardRightRuleType().toString()));
 			dto.setStandardLeftDesc(item.getStandardLeft()
 					.getStandardDescription());
 			dto.setStandardRightDesc(item.getStandardRight()

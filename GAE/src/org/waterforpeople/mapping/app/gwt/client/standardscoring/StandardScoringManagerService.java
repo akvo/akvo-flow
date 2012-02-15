@@ -16,7 +16,7 @@ public interface StandardScoringManagerService extends RemoteService {
 	TreeMap<String, String> listObjectAttributes(String objectName);
 	StandardScoreBucketDto save(StandardScoreBucketDto item);
 	ArrayList<StandardContainerDto> listStandardContainer(String standardType);
-	Long saveCompoundRule(Long compoundRuleId,String standardType,String name, Long leftRuleId, Long rightRuleId, String operator);
+	Long saveCompoundRule(Long compoundRuleId,String standardType,String name, Long leftRuleId, String leftRuleType, Long rightRuleId, String rightRuleType, String operator);
 	ResponseDto<ArrayList<CompoundStandardDto>> listCompoundRule(String standardType);
 	void deleteCompoundStandard(Long id);
 }

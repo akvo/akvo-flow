@@ -11,14 +11,19 @@ public class CompoundStandard extends BaseDomain {
 	public enum Operator {
 		AND, OR, NOT
 	}
-
+	
+	public enum RuleType {
+		DISTANCE,NONDISTANCE
+	}
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5812262258895279483L;
 	private String name = null;
 	private Long standardIdLeft = null;
+	private RuleType standardLeftRuleType = null;
 	private Long standardIdRight = null;
+	private RuleType standardRightRuleType = null;
 	@NotPersistent
 	private StandardDef standardLeft = null;
 	@NotPersistent
@@ -28,6 +33,22 @@ public class CompoundStandard extends BaseDomain {
 	
 	private Standard.StandardType standardType = null;
 	
+
+	public RuleType getStandardLeftRuleType() {
+		return standardLeftRuleType;
+	}
+
+	public void setStandardLeftRuleType(RuleType standardLeftRuleType) {
+		this.standardLeftRuleType = standardLeftRuleType;
+	}
+
+	public RuleType getStandardRightRuleType() {
+		return standardRightRuleType;
+	}
+
+	public void setStandardRightRuleType(RuleType standardRightRuleType) {
+		this.standardRightRuleType = standardRightRuleType;
+	}
 
 	public Standard.StandardType getStandardType() {
 		return standardType;
