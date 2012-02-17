@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
 
 /**
@@ -30,7 +31,6 @@ public class RawDataExporter extends AbstractDataExporter {
 	public static final String SURVEY_ID = "surveyId";
 	private Map<String, String> questionMap;
 	private List<String> keyList;
-		
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -46,8 +46,8 @@ public class RawDataExporter extends AbstractDataExporter {
 			if (results != null) {
 				keyList = (List<String>) results[0];
 				questionMap = (Map<String, String>) results[1];
-				pw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName),
-						"UTF8"));				
+				pw = new BufferedWriter(new OutputStreamWriter(
+						new FileOutputStream(fileName), "UTF8"));
 				writeHeader(pw, questionMap);
 				exportInstances(pw, keyList);
 			} else {
@@ -60,7 +60,7 @@ public class RawDataExporter extends AbstractDataExporter {
 				try {
 					pw.close();
 				} catch (IOException e) {
-					System.err.println("Could not close writer: "+e);
+					System.err.println("Could not close writer: " + e);
 				}
 			}
 		}
@@ -106,6 +106,12 @@ public class RawDataExporter extends AbstractDataExporter {
 		Map<String, String> instances = BulkDataServiceClient.fetchInstanceIds(
 				surveyId, serverBase);
 		if (instances != null) {
+			String imagePrefix = IMAGE_PREFIX;
+			try {
+				imagePrefix = PropertyUtil.getProperty("photo_url_root");
+			} catch (Exception e) {
+				imagePrefix = IMAGE_PREFIX;
+			}
 			int i = 0;
 			for (Entry<String, String> instanceEntry : instances.entrySet()) {
 				String instanceId = instanceEntry.getKey();
@@ -114,7 +120,7 @@ public class RawDataExporter extends AbstractDataExporter {
 					try {
 						Map<String, String> responses = BulkDataServiceClient
 								.fetchQuestionResponses(instanceId, serverBase);
-						if (responses != null && responses.size()>0) {
+						if (responses != null && responses.size() > 0) {
 							pw.write(instanceId);
 							pw.write("\t");
 							pw.write(dateString);
@@ -135,7 +141,7 @@ public class RawDataExporter extends AbstractDataExporter {
 								pw.write("\t");
 								if (val != null) {
 									if (val.contains(SDCARD_PREFIX)) {
-										val = IMAGE_PREFIX
+										val = imagePrefix
 												+ val.substring(val
 														.indexOf(SDCARD_PREFIX)
 														+ SDCARD_PREFIX
