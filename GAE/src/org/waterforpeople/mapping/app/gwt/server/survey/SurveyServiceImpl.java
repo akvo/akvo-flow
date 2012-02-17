@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.gwt.server.survey;
 
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -106,8 +105,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	private static final int CACHE_EXPIRY_DEFAULT = 3600;
 	private static final String CACHE_EXP_PROP = "cacheExpirySeconds";
 
-	private static final Logger log = Logger
-			.getLogger(SurveyServiceImpl.class.getName());
+	private static final Logger log = Logger.getLogger(SurveyServiceImpl.class
+			.getName());
 
 	private static final long serialVersionUID = 5557965649047558451L;
 	private SurveyDAO surveyDao;
@@ -1108,13 +1107,17 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					buffer.append(",");
 				}
 				buffer.append(siList.get(i).getKey().getId());
-				queue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet").param(
-						SurveyalRestRequest.ACTION_PARAM,
-						SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
-						SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-						siList.get(i).getKey().getId() + ""));
 			}
-			queue.add(TaskOptions.Builder.withUrl("/app_worker/surveytask")
+
+			queue.add(TaskOptions.Builder
+					.withUrl("/app_worker/surveyalservlet")
+					.param(SurveyalRestRequest.ACTION_PARAM,
+							SurveyalRestRequest.RERUN_ACTION)
+					.param(SurveyalRestRequest.SURVEY_ID_PARAM,
+							surveyId.toString()));
+
+			queue.add(TaskOptions.Builder
+					.withUrl("/app_worker/surveytask")
 					.param("action", "reprocessMapSurveyInstance")
 					.param(SurveyTaskRequest.ID_PARAM, surveyId.toString())
 					.param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
@@ -1386,7 +1389,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		Queue queue = QueueFactory.getQueue("background-processing");
-		queue.add(TaskOptions.Builder.withUrl("/app_worker/bootstrapgen")
+		queue.add(TaskOptions.Builder
+				.withUrl("/app_worker/bootstrapgen")
 				.param(BootstrapGeneratorRequest.ACTION_PARAM,
 						BootstrapGeneratorRequest.GEN_ACTION)
 				.param(BootstrapGeneratorRequest.SURVEY_ID_LIST_PARAM,

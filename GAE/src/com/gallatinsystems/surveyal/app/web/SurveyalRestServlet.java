@@ -16,6 +16,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -86,8 +87,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		if (mergeProp != null && "false".equalsIgnoreCase(mergeProp.trim())) {
 			mergeNearby = false;
 		}
-		//TODO: once the appropriate metric types are defined and reliably
-		//assigned, consider removing the  in favor of metrics
+		// TODO: once the appropriate metric types are defined and reliably
+		// assigned, consider removing this in favor of metrics
 		statusFragment = PropertyUtil.getProperty("statusQuestionText");
 		if (statusFragment != null && statusFragment.trim().length() > 0) {
 			useConfigStatusScore = true;
@@ -127,8 +128,37 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 								+ sReq.getSurveyInstanceId() + ": "
 								+ e.getMessage());
 			}
+		} else if (SurveyalRestRequest.RERUN_ACTION.equalsIgnoreCase(req
+				.getAction())) {
+			rerunForSurvey(sReq.getSurveyId());
+
 		}
 		return resp;
+	}
+
+	/**
+	 * reruns the locale hydration for a survey
+	 * 
+	 * @param surveyId
+	 */
+	private void rerunForSurvey(Long surveyId) {
+		if (surveyId != null) {
+
+			List<SurveyInstance> siList = surveyInstanceDao
+					.listSurveyInstanceBySurveyId(surveyId, Constants.ALL_RESULTS);
+			if (siList != null) {
+				log.info("Reprocessoing "+siList.size()+" instances for survey "+surveyId);
+				for (SurveyInstance inst : siList) {
+					ingestSurveyInstance(inst);
+				}
+			}
+
+		}
+	}
+
+	private void ingestSurveyInstance(Long surveyInstanceId) {
+
+		ingestSurveyInstance(surveyInstanceDao.getByKey(surveyInstanceId));
 	}
 
 	/**
@@ -139,12 +169,11 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 * 
 	 * @param surveyInstanceId
 	 */
-	private void ingestSurveyInstance(Long surveyInstanceId) {
-		SurveyInstance instance = surveyInstanceDao.getByKey(surveyInstanceId);
+	private void ingestSurveyInstance(SurveyInstance instance) {
 		SurveyedLocale locale = null;
 		if (instance != null) {
 			List<QuestionAnswerStore> answers = surveyInstanceDao
-					.listQuestionAnswerStore(surveyInstanceId, null);
+					.listQuestionAnswerStore(instance.getKey().getId(), null);
 			QuestionAnswerStore geoQ = null;
 			SurveyDAO surveyDao = new SurveyDAO();
 			Survey survey = surveyDao.getByKey(instance.getSurveyId());
@@ -223,8 +252,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 								.getProperty(DEFAULT_ORG_PROP));
 					}
 					locale = surveyedLocaleDao.save(locale);
-				}else{
-					if(survey.getPointType()!=null && !survey.getPointType().equals(locale.getLocaleType())){
+				} else {
+					if (survey.getPointType() != null
+							&& !survey.getPointType().equals(
+									locale.getLocaleType())) {
 						locale.setLocaleType(survey.getPointType());
 					}
 				}
