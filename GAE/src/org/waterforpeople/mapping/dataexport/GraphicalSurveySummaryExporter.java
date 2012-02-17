@@ -625,6 +625,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					for (Entry<String, Long> count : counts.entrySet()) {
 						row = getRow(curRow++, sheet);
 						String labelText = count.getKey();
+						if(labelText == null){
+							labelText = "";
+						}
 						StringBuilder builder = new StringBuilder();
 						if (QuestionType.OPTION == question.getType()
 								&& !DEFAULT_LOCALE.equals(locale)) {
