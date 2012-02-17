@@ -101,7 +101,7 @@ public class AccessPointHelper {
 						.getSurveyId()), questionAnswerList,
 						AccessPoint.AccessPointType.WATER_POINT);
 			} catch (Exception ex) {
-				logger.log(Level.SEVERE, "problem parsing access point." + ex);
+				logger.log(Level.SEVERE, "problem parsing access point." , ex);
 			}
 			if (apList != null) {
 				for (AccessPoint ap : apList) {

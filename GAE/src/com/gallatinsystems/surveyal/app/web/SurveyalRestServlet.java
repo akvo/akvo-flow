@@ -191,7 +191,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					throw new RuntimeException(
 							"Could not parse lat/lon from Geo Question "
 									+ geoQ.getQuestionID());
-				} else if (mergeNearby) {
+				} else if (mergeNearby && locale == null) {
 					// if we have a geo question but no locale id, see if we can
 					// find one based on lat/lon
 					List<SurveyedLocale> candidates = surveyedLocaleDao
