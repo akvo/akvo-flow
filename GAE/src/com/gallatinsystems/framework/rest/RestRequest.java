@@ -3,6 +3,10 @@ package com.gallatinsystems.framework.rest;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,13 +23,17 @@ import com.gallatinsystems.framework.rest.exception.RestValidationException;
  */
 public abstract class RestRequest implements Serializable {
 	private static final long serialVersionUID = -8356057661356968219L;
-	public static final String ACTION_PARAM = "action";
-	private static final String API_KEY_PARAM = "apiKey";
+	public static final String ACTION_PARAM = "action";	
 	private static final String STARTROW_PARAM = "startRow";
 	private static final String ENDROW_PARAM = "endRow";
 	public static final String CURSOR_PARAM = "cursor";
 	private static final String DESIRED_RESULTS_PARAM = "maxResults";
 	private static final String NULL_STRING = "null";
+	public static final String API_KEY_PARAM = "k";
+	public static final String HASH_PARAM = "h";
+	public static final String TIMESTAMP_PARAM="ts";
+	  
+	
 
 	private List<RestError> validationErrorList;
 
@@ -34,6 +42,24 @@ public abstract class RestRequest implements Serializable {
 	private int desiredResults;
 	private String action;
 	private String apiKey;
+	private String hash;
+	private Date timestamp;
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	private String cursor;
 
 	/**
@@ -47,6 +73,19 @@ public abstract class RestRequest implements Serializable {
 			throws Exception {
 		setAction(servletRequest.getParameter(RestRequest.ACTION_PARAM));
 		setApiKey(servletRequest.getParameter(RestRequest.API_KEY_PARAM));
+		setHash(servletRequest.getParameter(RestRequest.HASH_PARAM));
+		if(servletRequest.getParameter(RestRequest.TIMESTAMP_PARAM) != null){
+			try{
+				DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ssTZD");  
+			    df.setTimeZone(TimeZone.getTimeZone("GMT"));			    
+				setTimestamp(df.parse(servletRequest.getParameter(RestRequest.TIMESTAMP_PARAM)));
+			}catch(Exception e){
+				addError(new RestError(RestError.BAD_DATATYPE_CODE,
+						RestError.BAD_DATATYPE_MESSAGE, TIMESTAMP_PARAM
+								+ " must be an integer"));
+			}
+		}
+		
 		cursor = servletRequest.getParameter(CURSOR_PARAM);
 		if (cursor != null) {
 			if (NULL_STRING.equalsIgnoreCase(cursor.trim())
