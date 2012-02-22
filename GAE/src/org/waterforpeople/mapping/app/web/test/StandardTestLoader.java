@@ -24,6 +24,7 @@ import com.gallatinsystems.standards.dao.LevelOfServiceScoreDao;
 import com.gallatinsystems.standards.dao.StandardDao;
 import com.gallatinsystems.standards.domain.CompoundStandard;
 import com.gallatinsystems.standards.domain.CompoundStandard.Operator;
+import com.gallatinsystems.standards.domain.CompoundStandard.RuleType;
 import com.gallatinsystems.standards.domain.DistanceStandard;
 import com.gallatinsystems.standards.domain.LOSScoreToStatusMapping;
 import com.gallatinsystems.standards.domain.LOSScoreToStatusMapping.LOSColor;
@@ -567,6 +568,8 @@ public class StandardTestLoader {
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
 		standard.setStandardType(StandardType.WaterPointSustainability);
 		standard.setStandardScope(StandardScope.Global);
+		cs.setStandardLeftRuleType(RuleType.NONDISTANCE);
+		cs.setStandardRightRuleType(RuleType.NONDISTANCE);
 		posValues = new ArrayList<String>();
 		posValues.add("true");
 		standard.setPositiveValues(posValues);
@@ -576,7 +579,9 @@ public class StandardTestLoader {
 		standard.setAccessPointAttribute("sparePartsOnHand");
 		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
 		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
+		standardDao.save(standard);
 		cs.setStandardLeft(standard);
+		cs.setStandardIdLeft(standard.getKey().getId());
 
 		standard = new Standard();
 		standard.setAccessPointType(AccessPointType.WATER_POINT);
@@ -595,6 +600,8 @@ public class StandardTestLoader {
 		CompoundStandardDao csDao = new CompoundStandardDao();
 		standard.setEffectiveStartDate(new GregorianCalendar(1990,0,1).getTime());
 		standard.setEffectiveEndDate(new GregorianCalendar(2013,0,1).getTime());
+		standardDao.save(standard);
+		cs.setStandardIdRight(standard.getKey().getId());
 		cs.setOperator(Operator.OR);
 		csDao.save(cs);
 

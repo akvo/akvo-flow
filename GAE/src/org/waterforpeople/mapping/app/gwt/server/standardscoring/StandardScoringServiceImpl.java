@@ -16,15 +16,19 @@ import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoring
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.common.util.ClassAttributeUtil;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
+import com.gallatinsystems.metric.dao.MetricDao;
+import com.gallatinsystems.metric.domain.Metric;
 import com.gallatinsystems.standards.dao.CompoundStandardDao;
 import com.gallatinsystems.standards.dao.DistanceStandardDao;
 import com.gallatinsystems.standards.dao.StandardDao;
 import com.gallatinsystems.standards.dao.StandardScoringDao;
 import com.gallatinsystems.standards.domain.CompoundStandard;
 import com.gallatinsystems.standards.domain.CompoundStandard.Operator;
+import com.gallatinsystems.standards.domain.CompoundStandard.RuleType;
 import com.gallatinsystems.standards.domain.DistanceStandard;
 import com.gallatinsystems.standards.domain.Standard;
 import com.gallatinsystems.standards.domain.Standard.StandardComparisons;
@@ -201,7 +205,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			standard.setKey(KeyFactory.createKey(standard.getClass()
 					.getSimpleName(), item.getKeyId()));
 		}
-		
+
 		standard.setStandardType(encodeStandardTypeString(item.getScoreBucket()));
 		if (item.getPointType().equals("WATER_POINT")) {
 			standard.setAccessPointType(AccessPointType.WATER_POINT);
@@ -241,7 +245,7 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			apAttrType = StandardValueType.String;
 		} else if (item.getCriteriaType().equalsIgnoreCase("BOOLEAN")) {
 			apAttrType = StandardValueType.Boolean;
-		}		
+		}
 		standard.setEffectiveStartDate(item.getEffectiveStartDate());
 		standard.setEffectiveEndDate(item.getEffectiveEndDate());
 		standard.setStandardDescription(item.getDisplayName());
@@ -286,8 +290,19 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public TreeMap<String, String> listObjectAttributes(String objectName) {
-		return ClassAttributeUtil.listObjectAttributes(objectName);
-
+		if (PropertyUtil.getProperty("domainType").equals("accessPoint")) {
+			return ClassAttributeUtil.listObjectAttributes(objectName);
+		} else {
+			TreeMap<String, String> metricsMap = new TreeMap<String, String>();
+			MetricDao metricDao = new MetricDao();
+			List<Metric> metricsList = metricDao.list("all");
+			if (metricsList != null && metricsList.size() > 0) {
+				for (Metric metric : metricsList) {
+					metricsMap.put(metric.getName(), metric.getName());
+				}
+			}
+			return metricsMap;
+		}
 	}
 
 	@Override
@@ -308,9 +323,9 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 
 		attributesMap = loadStandardAttributesMap();
 		ArrayList<StandardContainerDto> stcDtoList = new ArrayList<StandardContainerDto>();
-		
+
 		StandardDao standardDao = new StandardDao();
-		
+
 		List<Standard> standardList = standardDao
 				.listByAccessPointTypeAndStandardType(
 						AccessPointType.WATER_POINT,
@@ -325,12 +340,13 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 									"get"
 											+ StringUtil
 													.capitalizeFirstCharacterString(entry
-															.getKey()),(Class<?>[])null);
+															.getKey()),
+									(Class<?>[]) null);
 
 					if (!m.getReturnType().getName().equals("java.lang.String")) {
-						m.invoke(itemStandard, (Object[])null).toString();
+						m.invoke(itemStandard, (Object[]) null).toString();
 					} else {
-						m.invoke(itemStandard,(Object[]) null);
+						m.invoke(itemStandard, (Object[]) null);
 					}
 
 				} catch (SecurityException e) {
@@ -373,8 +389,8 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Long saveCompoundRule(Long compoundRuleId, String name,
-			String standardType, Long leftRuleId, String leftRuleType, Long rightRuleId, String rightRuleType,
-			String operator) {
+			String standardType, Long leftRuleId, String leftRuleType,
+			Long rightRuleId, String rightRuleType, String operator) {
 		CompoundStandardDao csDao = new CompoundStandardDao();
 		CompoundStandard cs = null;
 		if (compoundRuleId != null) {
@@ -386,6 +402,8 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		cs.setStandardIdLeft(leftRuleId);
 		cs.setStandardIdRight(rightRuleId);
 		cs.setStandardType(encodeStandardTypeString(standardType));
+		cs.setStandardLeftRuleType(RuleType.valueOf(leftRuleType));
+		cs.setStandardRightRuleType(RuleType.valueOf(rightRuleType));
 		if (operator.equalsIgnoreCase("and"))
 			cs.setOperator(Operator.AND);
 		else
@@ -413,9 +431,11 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			dto.setOperator(CompoundStandardDto.Operator.valueOf(item
 					.getOperator().toString()));
 			dto.setStandardIdLeft(item.getStandardIdLeft());
-			dto.setStandardLeftRuleType(CompoundStandardDto.RuleType.valueOf(item.getStandardLeftRuleType().toString()));
+			dto.setStandardLeftRuleType(CompoundStandardDto.RuleType
+					.valueOf(item.getStandardLeftRuleType().toString()));
 			dto.setStandardIdRight(item.getStandardIdRight());
-			dto.setStandardRightRuleType(CompoundStandardDto.RuleType.valueOf(item.getStandardRightRuleType().toString()));
+			dto.setStandardRightRuleType(CompoundStandardDto.RuleType
+					.valueOf(item.getStandardRightRuleType().toString()));
 			dto.setStandardLeftDesc(item.getStandardLeft()
 					.getStandardDescription());
 			dto.setStandardRightDesc(item.getStandardRight()

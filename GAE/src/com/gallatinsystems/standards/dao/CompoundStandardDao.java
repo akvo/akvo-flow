@@ -125,7 +125,7 @@ public class CompoundStandardDao extends BaseDAO<CompoundStandard> {
 				}
 			}
 			if (item.getStandardIdRight() != null) {
-				if (item.getStandardRightRuleType().equals(RuleType.DISTANCE)) {
+				if (item.getStandardRightRuleType().equals(RuleType.NONDISTANCE)) {
 					Standard right = ssDao.getByKey(item.getStandardIdRight());
 					if (right != null)
 						item.setStandardRight(right);
@@ -135,7 +135,7 @@ public class CompoundStandardDao extends BaseDAO<CompoundStandard> {
 					DistanceStandard rightDs = dsDao.getByKey(item
 							.getStandardIdRight());
 					if (rightDs != null) {
-						item.setStandardLeft(rightDs);
+						item.setStandardRight(rightDs);
 					}
 				}
 			}

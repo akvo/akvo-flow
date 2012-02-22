@@ -98,14 +98,14 @@ public class CompoundStandardDetail extends Composite implements HasText,
 				.longValue();
 		String leftRuleType = lbLeftHandRule.getItemText(lbLeftHandRule
 				.getSelectedIndex());
-		if (leftRuleType.contains("Distance")) {
+		if (leftRuleType.startsWith("Distance")) {
 			leftRuleType = "DISTANCE";
 		} else {
 			leftRuleType = "NONDISTANCE";
 		}
 		String rightRuleType = lbRightHandRule.getItemText(lbRightHandRule
 				.getSelectedIndex());
-		if (rightRuleType.contains("Distance")) {
+		if (rightRuleType.startsWith("Distance")) {
 			rightRuleType = "DISTANCE";
 		} else {
 			rightRuleType = "NONDISTANCE";
