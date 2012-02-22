@@ -57,7 +57,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	PaginatedDataTable<StandardScoringDto> scoringTable;
 	private VerticalPanel mainVPanel = new VerticalPanel();
 	ScrollPanel scrollP = new ScrollPanel();
-	
+
 	private ArrayList<CountryDto> countryCodesList = null;
 	private ListBox scoreBucketsBox = new ListBox();
 
@@ -120,16 +120,16 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 
 	private void init() {
 		svc = GWT.create(StandardScoringManagerService.class);
-	
+
 		communitySvc = GWT.create(CommunityService.class);
 		contentPane = new VerticalPanel();
 		Widget header = buildHeader();
 		scoringTable = new PaginatedDataTable<StandardScoringDto>(
 				DEFAULT_SORT_FIELD, this, this, true);
-	
+
 		contentPane.add(header);
 		setContent(contentPane);
-	
+
 		loadAttributes();
 		loadCountries();
 		scoringTable.setVisible(false);
@@ -419,7 +419,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			ListBox fields = new ListBox();
 			fields.addItem(" ");
 			fields.setSelectedIndex(0);
-			int ifield = 1;			
+			int ifield = 1;
 			if ((item != null && item.getEvaluateField() == null)
 					|| ((ListBox) grid.getWidget(row, 3)).getSelectedIndex() == 4) {
 				TextBox distanceTB = new TextBox();
@@ -510,33 +510,31 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			}
 			Button add = new Button("+");
 			critPanel.add(add);
-			add
-					.addClickHandler(new ClickHandler() {
+			add.addClickHandler(new ClickHandler() {
 
-						@Override
-						public void onClick(ClickEvent event) {
-							VerticalPanel critVertPanel = (VerticalPanel) grid
-									.getWidget(row, 6);
-							HorizontalPanel hpanel = new HorizontalPanel();
-							ListBox criteriaBox = ((ListBox) grid.getWidget(
-									row, 3));
-							String selectedValue = criteriaBox
-									.getValue(criteriaBox.getSelectedIndex());
-							if (selectedValue.equals("Boolean")) {
-								ListBox truefalse = new ListBox();
-								truefalse.addItem("");
-								truefalse.addItem("True");
-								truefalse.addItem("False");
-								hpanel.add(truefalse);
-							} else {
-								hpanel.add(new TextBox());
-							}
-							hpanel.add(new Button("-"));
-							// critVertPanel.add(hpanel);
-							critVertPanel.insert(hpanel,
-									critVertPanel.getWidgetCount() - 2);
-						}
-					});
+				@Override
+				public void onClick(ClickEvent event) {
+					VerticalPanel critVertPanel = (VerticalPanel) grid
+							.getWidget(row, 6);
+					HorizontalPanel hpanel = new HorizontalPanel();
+					ListBox criteriaBox = ((ListBox) grid.getWidget(row, 3));
+					String selectedValue = criteriaBox.getValue(criteriaBox
+							.getSelectedIndex());
+					if (selectedValue.equals("Boolean")) {
+						ListBox truefalse = new ListBox();
+						truefalse.addItem("");
+						truefalse.addItem("True");
+						truefalse.addItem("False");
+						hpanel.add(truefalse);
+					} else {
+						hpanel.add(new TextBox());
+					}
+					hpanel.add(new Button("-"));
+					// critVertPanel.add(hpanel);
+					critVertPanel.insert(hpanel,
+							critVertPanel.getWidgetCount() - 2);
+				}
+			});
 		} else if (criteriaBox.getSelectedIndex() > 0) {
 			buildCriteriaEntry(grid, null, row, critPanel, i);
 		}
@@ -617,7 +615,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		});
 
 		deleteButton.addClickHandler(new ClickHandler() {
-			
+
 			@Override
 			public void onClick(ClickEvent event) {
 				Button deleteButton = (Button) event.getSource();
@@ -679,7 +677,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 	private void populateCountryCodeControl(Grid grid,
 			final String selectedCountry, final Integer row) {
 		ListBox country = new ListBox();
-		//country.addItem(selectedCountry);
+		// country.addItem(selectedCountry);
 		int i = 1;
 		country.addItem(" ");
 		country.setSelectedIndex(0);
@@ -703,6 +701,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		// }
 		// });
 	}
+
 	@SuppressWarnings("unused")
 	private void fetchSubCountries(String selectedCountry, final Integer row,
 			final String selectedSub) {
@@ -809,23 +808,35 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 				item.setCriteriaType("Distance");
 			}
 		}
-
-		TextBox desc = (TextBox) grid.getWidget(row, 4);
-		if (desc.getText().trim() != "") {
-			item.setDisplayName(desc.getText().trim());
+		if (criteriaType.getSelectedIndex() != 4) {
+			TextBox desc = (TextBox) grid.getWidget(row, 4);
+			if (desc.getText().trim() != "") {
+				item.setDisplayName(desc.getText().trim());
+			}
+			ListBox fields = (ListBox) grid.getWidget(row, 5);
+			if (fields.getSelectedIndex() > 0) {
+				item.setEvaluateField(fields.getValue(fields.getSelectedIndex()));
+			}
+		}else{ //distance
+			ListBox distanceType = (ListBox)grid.getWidget(row, 4);
+			//Urban, PeriUrban, rural, Other
+			//RURAL, URBAN, PERIURBAN, OTHER
+			if(distanceType.getSelectedIndex()==0){
+				item.setEvaluateField("URBAN");
+			}else if(distanceType.getSelectedIndex()==1){
+				item.setEvaluateField("PERIURBAN");
+			}else if(distanceType.getSelectedIndex()==2){
+				item.setEvaluateField("RURAL");
+			}else if(distanceType.getSelectedIndex()==3){
+				item.setEvaluateField("OTHER");
+			}
 		}
-
-		ListBox fields = (ListBox) grid.getWidget(row, 5);
-		if (fields.getSelectedIndex() > 0) {
-			item.setEvaluateField(fields.getValue(fields.getSelectedIndex()));
-		}
-
 		VerticalPanel positiveCriteria = (VerticalPanel) grid.getWidget(row, 6);
 		for (int i = 0; i < positiveCriteria.getWidgetCount(); i++) {
 			if (positiveCriteria.getWidget(i) instanceof HorizontalPanel) {
 				HorizontalPanel hpanel = (HorizontalPanel) positiveCriteria
 						.getWidget(i);
-				
+
 				if (hpanel.getWidget(0) instanceof TextBox) {
 					String value = ((TextBox) hpanel.getWidget(0)).getText();
 					item.addPositiveCriteria(value);

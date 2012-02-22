@@ -13,6 +13,7 @@ import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardContain
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoreBucketDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringDto;
 import org.waterforpeople.mapping.app.gwt.client.standardscoring.StandardScoringManagerService;
+import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.common.util.ClassAttributeUtil;
@@ -160,8 +161,9 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 			dtoDist.setCountryCode(item.getCountryCode());
 			dtoDist.setDisplayName(((DistanceStandard) item).getLocationType()
 					.toString());
-			dtoDist.addPositiveCriteria(((DistanceStandard) item)
-					.getMaxDistance().toString());
+			if (((DistanceStandard) item).getMaxDistance() != null)
+				dtoDist.addPositiveCriteria(((DistanceStandard) item)
+						.getMaxDistance().toString());
 			dtoDist.setPositiveOperator("<");
 			dtoDist.setCriteriaType("Distance");
 			dtoDist.setPointType("WaterPoint");
@@ -176,10 +178,15 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public StandardScoringDto save(StandardScoringDto item) {
 		StandardDef standard = null;
-		if (item.getCriteriaType().equals("DISTANCE")) {
+		if (item.getCriteriaType().equalsIgnoreCase("DISTANCE")) {
 			DistanceStandardDao dsDao = new DistanceStandardDao();
 			standard = new DistanceStandard();
 			standard = setStandardFields(standard, item);
+			((DistanceStandard) standard)
+					.setLocationType(AccessPoint.LocationType.valueOf(item
+							.getEvaluateField()));
+			((DistanceStandard) standard).setMaxDistance(Integer.parseInt(item
+					.getPositiveCriteria().get(0)));
 			standard = dsDao.save((DistanceStandard) standard);
 			item = marshallStandard(standard);
 			return item;
