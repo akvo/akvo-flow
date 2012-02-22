@@ -2,6 +2,8 @@ package com.gallatinsystems.framework.servlet;
 
 import java.io.IOException;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
 import java.util.Map;
 import java.util.List;
@@ -95,12 +97,22 @@ public class RestAuthFilter implements Filter {
 	}
 
 	private String getHMAC(String content) {
-		Mac mac = Mac.getInstance("HmacSHA1");
-		SecretKeySpec secret = new SecretKeySpec(privateKey.getBytes(),
-				mac.getAlgorithm());
-		mac.init(secret);
-		byte[] digest = mac.doFinal(content.getBytes());
-		return Base64.encode(digest);
+		Mac mac;
+		try {
+			mac = Mac.getInstance("HmacSHA1");
+			SecretKeySpec secret = new SecretKeySpec(privateKey.getBytes(),
+					mac.getAlgorithm());
+			mac.init(secret);
+			byte[] digest = mac.doFinal(content.getBytes());
+			return Base64.encode(digest);	
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
