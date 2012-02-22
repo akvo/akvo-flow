@@ -84,6 +84,10 @@ public class RestAuthFilter implements Filter {
 			}
 			if(incomingHash != null){
 				String ourHash =getHMAC(builder.toString());
+				if(ourHash==null){
+					//Do something but for now  return false;
+					return false;
+				}
 				if(ourHash.equals(incomingHash)){
 					return isTimestampValid(incomingTimestamp);
 				}
@@ -106,11 +110,9 @@ public class RestAuthFilter implements Filter {
 			byte[] digest = mac.doFinal(content.getBytes());
 			return Base64.encode(digest);	
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.severe(e.getMessage() + e.getStackTrace());
 		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.severe(e.getMessage() + e.getStackTrace());
 		}
 		return null;
 	}
