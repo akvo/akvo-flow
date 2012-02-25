@@ -76,13 +76,13 @@ public abstract class RestRequest implements Serializable {
 		setHash(servletRequest.getParameter(RestRequest.HASH_PARAM));
 		if(servletRequest.getParameter(RestRequest.TIMESTAMP_PARAM) != null){
 			try{
-				DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ssTZD");  
+				DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");  
 			    df.setTimeZone(TimeZone.getTimeZone("GMT"));			    
 				setTimestamp(df.parse(servletRequest.getParameter(RestRequest.TIMESTAMP_PARAM)));
 			}catch(Exception e){
 				addError(new RestError(RestError.BAD_DATATYPE_CODE,
 						RestError.BAD_DATATYPE_MESSAGE, TIMESTAMP_PARAM
-								+ " must be an integer"));
+								+ " must be an w3c date"));
 			}
 		}
 		
