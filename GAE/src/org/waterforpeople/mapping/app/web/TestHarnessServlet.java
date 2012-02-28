@@ -855,19 +855,21 @@ public class TestHarnessServlet extends HttpServlet {
 			ArrayList<QuestionAnswerStore> store = new ArrayList<QuestionAnswerStore>();
 			QuestionAnswerStore ans = new QuestionAnswerStore();
 			ans.setQuestionID("2166031");
-			ans.setValue("Geneva");
+			ans.setValue("12.379456758498787|-85.53869247436275|548.0|1kvc9dqy");
+			ans.setType("GEO");
 			ans.setSurveyId(1360012L);
 			store.add(ans);
 			si.setQuestionAnswersStore(store);
+			si.setUuid("12345");
 			SurveyInstanceDAO dao = new SurveyInstanceDAO();
 			si = dao.save(si);
 			ans.setSurveyInstanceId(si.getKey().getId());
 			dao.save(ans);
-			Queue summQueue = QueueFactory.getQueue("dataSummarization");
-			summQueue.add(TaskOptions.Builder
-					.withUrl("/app_worker/datasummarization")
-					.param("objectKey", si.getKey().getId() + "")
-					.param("type", "SurveyInstance"));
+//			Queue summQueue = QueueFactory.getQueue("dataSummarization");
+//			summQueue.add(TaskOptions.Builder
+//					.withUrl("/app_worker/datasummarization")
+//					.param("objectKey", si.getKey().getId() + "")
+//					.param("type", "SurveyInstance"));
 		} else if ("createCommunity".equals(action)) {
 			CommunityDao dao = new CommunityDao();
 			Country c = new Country();

@@ -63,4 +63,23 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		prepareCursor(cursor, pageSize, query);
 		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 	}
+	
+	public List<QuestionAnswerStore> listByTypeValue(String type, String value){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("type", filterString, paramString, "String", type,
+				paramMap);
+		appendNonNullParam("value", filterString, paramString, "String",
+				value, paramMap);
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+	}
 }
