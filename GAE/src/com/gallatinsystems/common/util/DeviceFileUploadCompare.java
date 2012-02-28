@@ -1,7 +1,9 @@
 package com.gallatinsystems.common.util;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,7 +15,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import org.jfree.util.Log;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
@@ -25,6 +31,8 @@ public class DeviceFileUploadCompare {
 
 	class DeviceFileResponseInternalContainer {
 		private Boolean foundFlag = null;
+		private Boolean foundByUUID = null;
+		private Boolean foundByGEOKey = null;
 		private DeviceFilesDto deviceFilesDto = null;
 
 		public Boolean getFoundFlag() {
@@ -41,6 +49,22 @@ public class DeviceFileUploadCompare {
 
 		public void setDeviceFilesDto(DeviceFilesDto deviceFilesDto) {
 			this.deviceFilesDto = deviceFilesDto;
+		}
+
+		public void setFoundByUUID(Boolean foundByUUID) {
+			this.foundByUUID = foundByUUID;
+		}
+
+		public Boolean getFoundByUUID() {
+			return foundByUUID;
+		}
+
+		public void setFoundByGEOKey(Boolean foundByGEOKey) {
+			this.foundByGEOKey = foundByGEOKey;
+		}
+
+		public Boolean getFoundByGEOKey() {
+			return foundByGEOKey;
 		}
 	}
 
@@ -80,14 +104,16 @@ public class DeviceFileUploadCompare {
 		dfuc.setServerBase(args[2]);
 		dfuc.fileName = args[3];
 		dfuc.checkAllFiles(args[0], args[1]);
+
 	}
 
 	private void checkAllFiles(String key, String identifier) {
 		compare(key, identifier);
 	}
+
 	private ArrayList<S3Item> s3ItemList = new ArrayList<S3Item>();
-	
-	public void addS3Item(String name, Long sizeBytes, Date lastUpdateDate){
+
+	public void addS3Item(String name, Long sizeBytes, Date lastUpdateDate) {
 		S3Item item = new S3Item();
 		item.setLastUpdateDate(lastUpdateDate);
 		item.setName(name);
@@ -136,7 +162,7 @@ public class DeviceFileUploadCompare {
 		HashMap<String, DeviceFileResponseInternalContainer> filesMap = new HashMap<String, DeviceFileResponseInternalContainer>();
 		Integer iCount = 0;
 		for (String item : fileList) {
-			if (item.endsWith(".zip")) {
+			if (item.startsWith("devicezip/wfp") && item.endsWith(".zip")) {
 				System.out.print("iCount: " + iCount++ + "   ");
 				DeviceFileResponseInternalContainer container = findFile(item);
 				filesMap.put(item, container);
@@ -149,7 +175,8 @@ public class DeviceFileUploadCompare {
 		HashMap<S3Item, DeviceFileResponseInternalContainer> filesMap = new HashMap<S3Item, DeviceFileResponseInternalContainer>();
 		Integer iCount = 0;
 		for (S3Item item : s3ItemList) {
-			if (item.getName().endsWith(".zip")) {
+			if (item.getName().startsWith("wfp")
+					&& item.getName().endsWith(".zip")) {
 				System.out.print("iCount: " + iCount++ + "   ");
 				DeviceFileResponseInternalContainer container = findFile(item
 						.getName());
@@ -197,7 +224,7 @@ public class DeviceFileUploadCompare {
 	private void writeReportDetail(
 			HashMap<S3Item, DeviceFileResponseInternalContainer> filesMap) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("File on S3,S3 Last Update Date, Size (Bytes),Found in FLOW,Status,SurveyInstanceId,Processed Date\n");
+		sb.append("File on S3,S3 Last Update Date, Size (Bytes),Found in Device File FLOW,Found By UUID, Found By GEO Key, Status,SurveyInstanceId,Processed Date\n");
 		for (Entry<S3Item, DeviceFileResponseInternalContainer> item : filesMap
 				.entrySet()) {
 			S3Item s3file = item.getKey();
@@ -206,6 +233,8 @@ public class DeviceFileUploadCompare {
 					+ s3file.getSizeBytes() + ",");
 			if (df != null && df.getFoundFlag() != null) {
 				sb.append(df.getFoundFlag() + ",");
+				sb.append(df.getFoundByUUID()+",");
+				sb.append(df.getFoundByGEOKey()+",");
 				if (df.getFoundFlag()) {
 					sb.append(df.getDeviceFilesDto().getProcessedStatus() + ","
 							+ df.getDeviceFilesDto().getSurveyInstanceId()
@@ -240,7 +269,7 @@ public class DeviceFileUploadCompare {
 		String prefix = "http://waterforpeople.s3.amazonaws.com/";
 		urlRequest = String.format(serviceUrl, actionParam, prefix + fileName);
 		try {
-			return sendRequest(getServerBase(), urlRequest);
+			return sendRequest(getServerBase(), urlRequest, prefix + fileName);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -248,8 +277,8 @@ public class DeviceFileUploadCompare {
 		return null;
 	}
 
-	private DeviceFileResponseInternalContainer sendRequest(String serverBase,
-			String urlString) throws IOException {
+	private String exectueRequest(String serverBase, String urlString)
+			throws IOException {
 		URL url = new URL("http://" + serverBase + urlString);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("POST");
@@ -269,14 +298,21 @@ public class DeviceFileUploadCompare {
 			System.out.println("    Got: " + line);
 			response.append(line);
 		}
-		DeviceFileResponseInternalContainer container = parseResponse(response
-				.toString());
 		wr.close();
 		rd.close();
+		return response.toString();
+	}
+
+	private DeviceFileResponseInternalContainer sendRequest(String serverBase,
+			String urlString, String fileName) throws IOException {
+		String response = exectueRequest(serverBase, urlString);
+		DeviceFileResponseInternalContainer container = parseResponse(response,
+				fileName);
 		return container;
 	}
 
-	private DeviceFileResponseInternalContainer parseResponse(String response) {
+	private DeviceFileResponseInternalContainer parseResponse(String response,
+			String fileName) {
 		try {
 			DeviceFileResponseInternalContainer container = new DeviceFileResponseInternalContainer();
 			if (response.startsWith("{")) {
@@ -292,6 +328,26 @@ public class DeviceFileUploadCompare {
 											.getJSONObject("deviceFile"));
 							container.setDeviceFilesDto(item);
 						}
+					} else {
+						// download zip
+						// extract zip
+						// look for UUID in file call
+						// surveyinstanceservlet?type=uuid&value=
+						// if no UUID then look up by GEO Key
+						// surveyinstanceservlet?type=GEO&value=
+						ArrayList<String> lines = this
+								.downloadExtractDeviceFile(fileName);
+						ArrayList<String> linesNew = new ArrayList<String>();
+						for (String line : lines) {
+							String[] linesSplit = line.split("\n");
+							for (String s : linesSplit) {
+								if (s.contains("\u0000")) {
+									s = s.replaceAll("\u0000", "");
+								}
+								linesNew.add(s);
+							}
+						}
+						container = parseFile(linesNew, "\t", container);
 					}
 				}
 				return container;
@@ -310,4 +366,103 @@ public class DeviceFileUploadCompare {
 		return serverBase;
 	}
 
+	private ArrayList<String> downloadExtractDeviceFile(String urlString)
+			throws IOException {
+		URL url = new URL(urlString);
+		BufferedInputStream bis = new BufferedInputStream(url.openStream());
+		ZipInputStream zis = new ZipInputStream(bis);
+		ArrayList<String> lines = new ArrayList<String>();
+		String line = null;
+		String surveyDataOnly = null;
+		String dataSig = null;
+		ZipEntry entry;
+		while ((entry = zis.getNextEntry()) != null) {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			byte[] buffer = new byte[2048];
+			int size;
+			while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
+				out.write(buffer, 0, size);
+			}
+			lines.add(out.toString());
+		}
+		zis.closeEntry();
+		return lines;
+	}
+
+	private DeviceFileResponseInternalContainer parseFile(ArrayList<String> unparsedLines, String delimiter, DeviceFileResponseInternalContainer container) {
+		for (String line : unparsedLines) {
+			String[] parts = line.split(",");
+			if (parts.length < 12) {
+				// pre uuid so look for geo question
+				int i = 0;
+				String geoCoord = null;
+				for (String item : parts) {
+					if (item.equalsIgnoreCase("GEO")) {
+						geoCoord = parts[i + 1];
+						if (geoCoord.equals("||")) {
+							Log.info("Empty Geo Coordinates");
+						} else {
+							// search by geo
+							try {
+								// http://watermappingmonitoring.appspot.com/surveyinstance?fieldName=GEO&value=-16.320276260375504|35.07026910781759|80.0|22z2grqm
+								String response = exectueRequest(
+										"watermappingmonitoring.appspot.com",
+										"/surveyinstance?fieldName=GEO&value="
+												+ geoCoord);
+								Long surveyInstanceId = parseSurveyInstanceResponse(response);
+								if(surveyInstanceId!=null){
+									container.setFoundByGEOKey(true);
+									DeviceFilesDto dfDto = new DeviceFilesDto();
+									dfDto.setSurveyInstanceId(surveyInstanceId);
+									container.setDeviceFilesDto(dfDto);
+								}
+							} catch (IOException e) {
+								e.printStackTrace();
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+						}
+						break;
+					}
+					i++;
+				}
+			} else if (parts.length >= 12) {
+				String uuid = parts[parts.length - 1];
+				if (uuid != null && uuid.trim().length() > 0) {
+
+					try {
+						String response = exectueRequest(
+								"watermappingmonitoring.appspot.com",
+								"/surveyinstance?fieldName=uuid&value=" + uuid);
+						Long surveyInstanceId = parseSurveyInstanceResponse(response);
+						if(surveyInstanceId!=null){
+							container.setFoundByUUID(true);
+							DeviceFilesDto dfDto = new DeviceFilesDto();
+							dfDto.setSurveyInstanceId(surveyInstanceId);
+							container.setDeviceFilesDto(dfDto);
+						}
+
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return container;
+	}
+
+	private Long parseSurveyInstanceResponse(String response)
+			throws JSONException {
+		Long surveyInstanceId = null;
+		if (response.startsWith("{")) {
+			JSONObject json = new JSONObject(response);
+			if (json.has("surveyInstanceId")) {
+				surveyInstanceId = json.getLong("surveyInstanceId");
+			}
+		}
+		return surveyInstanceId;
+	}
 }
