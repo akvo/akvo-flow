@@ -163,6 +163,10 @@
 		<property name="type" direction="asc" />
 		<property name="createdDateTime" direction="desc" />
 	</datastore-index>
+	<datastore-index kind="QuestionAnswerStore" ancestor="false"
+		source="manual">
+		<property name="__key__" direction="desc" />
+	</datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointStatus" direction="asc" />
@@ -290,6 +294,10 @@
 		<property name="processedStatus" direction="asc" />
 		<property name="createdDateTime" direction="desc" />
 	</datastore-index>
+	<datastore-index kind="DeviceFiles" ancestor="false"
+		source="manual">
+		<property name="__key__" direction="desc" />
+	</datastore-index>
 	<datastore-index kind="EditorialPageContent" ancestor="false"
 		source="manual">
 		<property name="editorialPageId" direction="asc" />
@@ -349,6 +357,10 @@
 		source="manual">
 		<property name="approvedFlag" direction="asc" />
 		<property name="collectionDate" direction="desc" />
+	</datastore-index>
+	<datastore-index kind="SurveyInstance" ancestor="false"
+		source="manual">
+		<property name="__key__" direction="desc" />
 	</datastore-index>
 	<datastore-index kind="AccessPointScoreDetail"
 		ancestor="false" source="manual">
