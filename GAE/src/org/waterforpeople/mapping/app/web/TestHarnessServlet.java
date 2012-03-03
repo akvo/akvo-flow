@@ -59,6 +59,7 @@ import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.test.AccessPointMetricSummaryTest;
 import org.waterforpeople.mapping.app.web.test.AccessPointTest;
+import org.waterforpeople.mapping.app.web.test.DataFixes;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
 import org.waterforpeople.mapping.app.web.test.StandardScoringTest;
 import org.waterforpeople.mapping.app.web.test.StandardTestLoader;
@@ -187,6 +188,15 @@ public class TestHarnessServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 
+		} else if ("fixQuestionAnswerStoreDates".equals(action)) {
+//			 DataFixes df = new DataFixes();
+//			 df.generateTestData();
+
+			Queue queue = QueueFactory.getDefaultQueue();
+
+			queue.add(TaskOptions.Builder
+					.withUrl("/app_worker/questionanswerstorecleanup"));
+			log.info("submiting task QAS CollectionDate Cleanup");
 		} else if ("reprocessFiles".equalsIgnoreCase(action)) {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
 			String cursor = null;
@@ -327,7 +337,7 @@ public class TestHarnessServlet extends HttpServlet {
 				}
 
 			}
-		}  else if ("deleteGeoData".equals(action)) {
+		} else if ("deleteGeoData".equals(action)) {
 			try {
 				OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
 				for (OGRFeature item : ogrFeatureDao.list("all")) {
@@ -865,11 +875,11 @@ public class TestHarnessServlet extends HttpServlet {
 			si = dao.save(si);
 			ans.setSurveyInstanceId(si.getKey().getId());
 			dao.save(ans);
-//			Queue summQueue = QueueFactory.getQueue("dataSummarization");
-//			summQueue.add(TaskOptions.Builder
-//					.withUrl("/app_worker/datasummarization")
-//					.param("objectKey", si.getKey().getId() + "")
-//					.param("type", "SurveyInstance"));
+			// Queue summQueue = QueueFactory.getQueue("dataSummarization");
+			// summQueue.add(TaskOptions.Builder
+			// .withUrl("/app_worker/datasummarization")
+			// .param("objectKey", si.getKey().getId() + "")
+			// .param("type", "SurveyInstance"));
 		} else if ("createCommunity".equals(action)) {
 			CommunityDao dao = new CommunityDao();
 			Country c = new Country();
@@ -2076,7 +2086,6 @@ public class TestHarnessServlet extends HttpServlet {
 
 		}
 	}
-
 
 	private void createSurveyGroupGraph(HttpServletResponse resp) {
 		com.gallatinsystems.survey.dao.SurveyGroupDAO sgDao = new com.gallatinsystems.survey.dao.SurveyGroupDAO();
