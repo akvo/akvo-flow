@@ -26,22 +26,41 @@ public class DataFixes {
 				.listByNotNullCollectionDateBefore(new Date("1/1/1900"), "all",
 						500);
 		for (QuestionAnswerStore item : qasList) {
-			SurveyInstance si = siDao.getByKey(item.getSurveyInstanceId());
-			if (si != null && si.getCollectionDate() != null) {
-				item.setCollectionDate(si.getCollectionDate());
-				qasDao.save(item);
-				log.log(Level.INFO, "fixed: " + item.getKey()
-						+ " set collectionDate to: " + item.getCollectionDate()
-						+ " from surveyInstanceId: " + si.getKey().getId());
+			SurveyInstance si = null;
+			if (item != null && item.getSurveyInstanceId() != null) {
+				try {
+					si = siDao.getByKey(item.getSurveyInstanceId());
+				} catch (NullPointerException nex) {
+					log.log(Level.INFO,
+							"Caught a null pointer exception fetching "
+									+ item.toString()
+									+ " during QuestionAnswerStore cleanup will set default collectiondate");
+				}
+				if (si != null && si.getCollectionDate() != null) {
+					item.setCollectionDate(si.getCollectionDate());
+					qasDao.save(item);
+					log.log(Level.INFO,
+							"fixed: " + item.getKey()
+									+ " set collectionDate to: "
+									+ item.getCollectionDate()
+									+ " from surveyInstanceId: "
+									+ si.getKey().getId());
+				} else {
+					item.setCollectionDate(new Date("1/1/1980"));
+					qasDao.save(item);
+					log.log(Level.INFO,
+							"fixed: "
+									+ item.getKey()
+									+ " set collectionDate to: "
+									+ item.getCollectionDate()
+									+ " Because I couldn't find a surveyinstance or it was missing a collectionDate");
+				}
 			} else {
 				item.setCollectionDate(new Date("1/1/1980"));
 				qasDao.save(item);
-				log.log(Level.INFO,
-						"fixed: "
-								+ item.getKey()
-								+ " set collectionDate to: "
-								+ item.getCollectionDate()
-								+ " Because I couldn't find a surveyinstance or it was missing a collectionDate");
+				log.log(Level.INFO, "fixed: " + item.getKey()
+						+ " set collectionDate to: " + item.getCollectionDate()
+						+ " SurveyInstanceId == null so setting default date");
 			}
 		}
 
