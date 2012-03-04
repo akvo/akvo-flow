@@ -1,9 +1,15 @@
 package com.gallatinsystems.common.util;
 
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import com.google.gdata.util.common.util.Base64;
 
 /**
  * 
@@ -34,6 +40,23 @@ public class MD5Util {
 			return result;
 		} catch (NoSuchAlgorithmException e) {
 			log.log(Level.SEVERE, "Could not generate checksum", e);
+		}
+		return null;
+	}
+	
+	public static String generateHMAC(String content, String privateKey){
+		Mac mac;
+		try {
+			mac = Mac.getInstance("HmacSHA1");
+			SecretKeySpec secret = new SecretKeySpec(privateKey.getBytes(),
+					mac.getAlgorithm());
+			mac.init(secret);
+			byte[] digest = mac.doFinal(content.getBytes());
+			return Base64.encode(digest);
+		} catch (NoSuchAlgorithmException e) {
+			log.severe(e.getMessage() + e.getStackTrace());
+		} catch (InvalidKeyException e) {
+			log.severe(e.getMessage() + e.getStackTrace());
 		}
 		return null;
 	}

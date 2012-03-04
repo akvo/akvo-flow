@@ -2,8 +2,6 @@ package com.gallatinsystems.framework.servlet;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,8 +11,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -23,8 +19,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.common.util.PropertyUtil;
-import com.google.gdata.util.common.util.Base64;
 
 /**
  * Handles verifying that the incoming request is authorized by checking the
@@ -110,7 +106,7 @@ public class RestAuthFilter implements Filter {
 				}
 			}
 			if (incomingHash != null) {
-				String ourHash = getHMAC(builder.toString());
+				String ourHash = MD5Util.generateHMAC(builder.toString(),privateKey);
 				if (ourHash == null) {
 					// Do something but for now return false;
 					return false;
@@ -130,23 +126,6 @@ public class RestAuthFilter implements Filter {
 		} else {
 			return true;
 		}
-	}
-
-	private String getHMAC(String content) {
-		Mac mac;
-		try {
-			mac = Mac.getInstance("HmacSHA1");
-			SecretKeySpec secret = new SecretKeySpec(privateKey.getBytes(),
-					mac.getAlgorithm());
-			mac.init(secret);
-			byte[] digest = mac.doFinal(content.getBytes());
-			return Base64.encode(digest);
-		} catch (NoSuchAlgorithmException e) {
-			log.severe(e.getMessage() + e.getStackTrace());
-		} catch (InvalidKeyException e) {
-			log.severe(e.getMessage() + e.getStackTrace());
-		}
-		return null;
 	}
 
 	@Override
