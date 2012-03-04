@@ -21,4 +21,10 @@ public class QuestionAnswerStoreCleanup extends HttpServlet {
 		df.fixQuestionAnswerStoreCollectionDate(req, resp);
 	}
 
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
+		DataFixes df = new DataFixes();
+		df.fixQuestionAnswerStoreCollectionDate(req, resp);
+	}
+
 }
