@@ -452,7 +452,10 @@ public class AccessPointDao extends BaseDAO<AccessPoint> {
 		List<AccessPoint> results = (List<AccessPoint>) query
 				.executeWithMap(paramMap);
 
-		return results.get(0);
+		if(results!=null && results.size()>=1)
+			return results.get(0);
+		else 
+			return null;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -185,6 +185,8 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 	private Integer numberOfLitersPerPersonPerDay = null;
 	@MappableField(displayName="System Support Expansion")
 	private String systemExpansion = null;
+	@MappableField(displayName="Where does the money come from to operate and maintain the water point/system?")
+	private String moneySource = null;
 	@NotPersistent
 	private List<AccessPointScoreDetail> apScoreDetailList = null;
 
@@ -986,5 +988,13 @@ public class AccessPoint extends BaseDomain implements LocationCapable {
 
 	public String getSystemExpansion() {
 		return systemExpansion;
+	}
+
+	public void setMoneySource(String moneySource) {
+		this.moneySource = moneySource;
+	}
+
+	public String getMoneySource() {
+		return moneySource;
 	}
 }

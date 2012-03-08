@@ -68,6 +68,7 @@ public class KMLGenerator {
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseYellow36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseRed36.png";
 	public static final String PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL = "http://watermapmonitordev.appspot.com/images/houseBlack36.png";
+	public static final String PUBLIC_INSTITUTION_FUNCTION_BLACK_ICON_URL_2 = "http://watermapmonitordev.appspot.com/images/iconBlack36.png";
 	public static final String SCHOOL_INSTITUTION_FUNCTIONING_GREEN_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilGreen36.png";
 	public static final String SCHOOL_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilYellow36.png";
 	public static final String SCHOOL_INSTITUTION_FUNCTIONING_RED_ICON_URL = "http://watermapmonitordev.appspot.com/images/pencilRed36.png";

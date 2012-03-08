@@ -68,10 +68,9 @@ public class AccessPointDto extends BaseDto {
 	private Integer numberOutsideAcceptableDistance = null;
 	private Integer numberOfUsers= null;
 	private Integer numberOfLitersPerPersonPerDay = null;
-	@MappableField(displayName="Financial Records/Books Available for Point")
 	private Boolean financialRecordsAvailableDayOfVisitFlag = null;
-	@MappableField(displayName="Enumerator Reviewed Record")
 	private Boolean enumeratorReviewedRecord = null;
+	private String moneySource = null;
 	
 	public enum LocationType{
 		URBAN, RURAL, PERIURBAN
@@ -635,5 +634,13 @@ public class AccessPointDto extends BaseDto {
 
 	public Boolean getEnumeratorReviewedRecord() {
 		return enumeratorReviewedRecord;
+	}
+
+	public void setMoneySource(String moneySource) {
+		this.moneySource = moneySource;
+	}
+
+	public String getMoneySource() {
+		return moneySource;
 	}
 }

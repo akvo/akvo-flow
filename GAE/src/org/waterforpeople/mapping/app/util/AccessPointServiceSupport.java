@@ -131,7 +131,7 @@ public class AccessPointServiceSupport {
 		}
 
 		apDto.setLocationTypeString(apCanonical.getLocationTypeString());
-
+		apDto.setMoneySource(apCanonical.getMoneySource());
 		apDto.setScore(apCanonical.getScore());
 		apDto.setScoreComputationDate(apCanonical.getScoreComputationDate());
 		if (apCanonical.getApScoreDetailList() != null) {
@@ -244,6 +244,7 @@ public class AccessPointServiceSupport {
 				.getFinancialRecordsAvailableDayOfVisitFlag());
 		accessPoint.setEnumeratorReviewedRecord(apDto
 				.getEnumeratorReviewedRecord());
+		accessPoint.setMoneySource(apDto.getMoneySource());
 		if (AccessPointDto.Status.FUNCTIONING_HIGH == apDto.getPointStatus()) {
 			accessPoint.setPointStatus(AccessPoint.Status.FUNCTIONING_HIGH);
 		} else if (AccessPointDto.Status.FUNCTIONING_OK == apDto

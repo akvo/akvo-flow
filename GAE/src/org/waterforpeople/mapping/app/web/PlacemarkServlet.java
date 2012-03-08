@@ -127,7 +127,14 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 						&& piReq.getCommunityCode().trim().length() > 0) {
 					AccessPoint ap = (AccessPoint) apDao.findAccessPoint(
 							piReq.getCommunityCode(), piReq.getPointType());
-					apList.add(ap);
+					if (ap != null)
+						apList.add(ap);
+					else
+						log.log(Level.SEVERE,
+								"PlacemarkServlet.handleRequest getAPDetails didn't find AP for CommunityCode : "
+										+ piReq.getCommunityCode()
+										+ " piReq.getPointType: "
+										+ piReq.getPointTypeString());
 				}
 				response = (PlacemarkRestResponse) convertToResponse(apList,
 						true, null, null, piReq.getDisplay(), standardType);
@@ -313,13 +320,15 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 		PlacemarkDto pdto = new PlacemarkDto();
 		if (standardType != null) {
 			KMLGenerator kmlGen = new KMLGenerator();
-			LOSScoreToStatusMapping losItem =kmlGen.encodePinStyle(ap.getKey(), standardType); 
+			LOSScoreToStatusMapping losItem = kmlGen.encodePinStyle(
+					ap.getKey(), standardType);
 			pdto.setPinStyle(losItem.getIconStyle());
 			pdto.setIconUrl(losItem.getIconLargeUrl());
 		} else {
 			pdto.setPinStyle(KMLGenerator.encodePinStyle(ap.getPointType(),
 					ap.getPointStatus()));
-			pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(), ap.getPointType()));
+			pdto.setIconUrl(getUrlFromStatus(ap.getPointStatus(),
+					ap.getPointType()));
 		}
 		pdto.setLatitude(ap.getLatitude());
 		pdto.setLongitude(ap.getLongitude());

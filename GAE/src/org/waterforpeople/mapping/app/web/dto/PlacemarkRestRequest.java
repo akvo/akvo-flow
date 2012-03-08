@@ -125,7 +125,7 @@ public class PlacemarkRestRequest extends RestRequest {
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		domain = req.getParameter(DOMAIN_PARAM);
-		if(domain == null){
+		if (domain == null) {
 			domain = PropertyUtil.getProperty(DOMAIN_CONFIG_KEY);
 		}
 		country = req.getParameter(COUNTRY_PARAM);
@@ -167,10 +167,13 @@ public class PlacemarkRestRequest extends RestRequest {
 
 		if (req.getParameter(POINT_TYPE_PARAM) != null) {
 			pointTypeString = req.getParameter(POINT_TYPE_PARAM);
-			if (AccessPoint.AccessPointType.HEALTH_POSTS.equals(pointTypeString))
+			if (AccessPoint.AccessPointType.HEALTH_POSTS
+					.equals(pointTypeString))
 				setPointType(AccessPointType.HEALTH_POSTS);
 			else if (AccessPointType.PUBLIC_INSTITUTION.equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL
+							.equals(pointTypeString)
+					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTION_BLACK_ICON_URL_2
 							.equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL
 							.equals(pointTypeString)
@@ -199,13 +202,15 @@ public class PlacemarkRestRequest extends RestRequest {
 							.equals(pointTypeString)
 					|| KMLGenerator.WATER_POINT_FUNCTIONING_YELLOW_ICON_URL
 							.equals(pointTypeString))
-				setPointType(AccessPointType.WATER_POINT);			
+				setPointType(AccessPointType.WATER_POINT);
 		}
-		
-		if(req.getParameter(STANDARD_TYPE)!=null){
-			if(req.getParameter(STANDARD_TYPE).equals(StandardType.WaterPointLevelOfService.toString())){
+
+		if (req.getParameter(STANDARD_TYPE) != null) {
+			if (req.getParameter(STANDARD_TYPE).equals(
+					StandardType.WaterPointLevelOfService.toString())) {
 				setStandardType(StandardType.WaterPointLevelOfService);
-			}else if(req.getParameter(STANDARD_TYPE).equals(StandardType.WaterPointSustainability.toString())){
+			} else if (req.getParameter(STANDARD_TYPE).equals(
+					StandardType.WaterPointSustainability.toString())) {
 				setStandardType(StandardType.WaterPointSustainability);
 			}
 		}
@@ -264,7 +269,8 @@ public class PlacemarkRestRequest extends RestRequest {
 		String key = getAction();
 		if (key == null) {
 			key = LIST_PLACEMARK;
-			key += country + (display != null ? display : "")+(pointTypeString!=null?pointTypeString:"")
+			key += country + (display != null ? display : "")
+					+ (pointTypeString != null ? pointTypeString : "")
 					+ (getCursor() != null ? getCursor() : "");
 			if (getOrg() != null) {
 				key += key + ":" + "org=" + getOrg();
@@ -273,7 +279,8 @@ public class PlacemarkRestRequest extends RestRequest {
 			key += "-" + communityCode + (display != null ? display : "")
 					+ (pointTypeString != null ? pointTypeString : "");
 		} else if (LIST_BOUNDING_BOX_ACTION.equals(key)) {
-			key += "/" + getLat1() + "/" + getLat2() + "/" + getPointTypeString();
+			key += "/" + getLat1() + "/" + getLat2() + "/"
+					+ getPointTypeString();
 			if (getCursor() != null) {
 				key += "/" + getCursor();
 			}
@@ -304,5 +311,5 @@ public class PlacemarkRestRequest extends RestRequest {
 	public StandardType getStandardType() {
 		return standardType;
 	}
-	
+
 }
