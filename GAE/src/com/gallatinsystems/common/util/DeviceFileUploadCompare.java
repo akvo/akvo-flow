@@ -391,7 +391,13 @@ public class DeviceFileUploadCompare {
 
 	private DeviceFileResponseInternalContainer parseFile(ArrayList<String> unparsedLines, String delimiter, DeviceFileResponseInternalContainer container) {
 		for (String line : unparsedLines) {
-			String[] parts = line.split(",");
+			String[] parts=null;
+			if(line.contains(",")){
+				parts = line.split(",");	
+			}else if(line.contains("/t")){
+				parts = line.split("/t");
+			}
+			
 			if (parts.length < 12) {
 				// pre uuid so look for geo question
 				int i = 0;
