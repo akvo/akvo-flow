@@ -173,8 +173,8 @@ public class PlacemarkRestRequest extends RestRequest {
 			else if (AccessPointType.PUBLIC_INSTITUTION.equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL
 							.equals(pointTypeString)
-					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTION_BLACK_ICON_URL_2
-							.equals(pointTypeString)
+//					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTION_BLACK_ICON_URL_2
+//							.equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL
 							.equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL
