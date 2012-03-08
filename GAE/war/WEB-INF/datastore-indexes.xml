@@ -13,7 +13,10 @@
         <property name="pointType" direction="asc"/>
         <property name="communityName" direction="desc"/>
     </datastore-index>
-	
+	 <datastore-index kind="AccessPoint" ancestor="false">
+        <property name="pointStatus" direction="asc"/>
+        <property name="pointType" direction="asc"/>
+    </datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
