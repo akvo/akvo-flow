@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
  * Handles verifying that the incoming request is authorized by checking the
@@ -35,6 +36,8 @@ public class RestAuthFilter implements Filter {
 	private static final long MAX_TIME = 60000;
 	private static final String HASH_PARAM = "h";
 	private static final String TIMESTAMP_PARAM = "ts";
+	private static final String[] RESTRICTED_ACTIONS = { "delete", "save",
+			"update", "create", "purge", "reset" };
 	private static final Logger log = Logger.getLogger(RestAuthFilter.class
 			.getName());
 	private static final String ENABLED_PROP = "enableRestSecurity";
@@ -70,12 +73,15 @@ public class RestAuthFilter implements Filter {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean isAuthorized(ServletRequest req) throws Exception {
-		boolean authorized = false;
+
 		Map paramMap = req.getParameterMap();
 		String incomingHash = null;
 		long incomingTimestamp = 0;
 		List<String> names = new ArrayList<String>();
-		if (paramMap != null) {
+		if (paramMap != null
+				&& isRestrictedAction((String[]) paramMap
+						.get(RestRequest.ACTION_PARAM))) {
+
 			names.addAll(paramMap.keySet());
 			Collections.sort(names);
 			StringBuilder builder = new StringBuilder();
@@ -105,18 +111,36 @@ public class RestAuthFilter implements Filter {
 					incomingHash = ((String[]) paramMap.get(name))[0];
 				}
 			}
+
 			if (incomingHash != null) {
-				String ourHash = MD5Util.generateHMAC(builder.toString(),privateKey);
+				String ourHash = MD5Util.generateHMAC(builder.toString(),
+						privateKey);
 				if (ourHash == null) {
 					// Do something but for now return false;
 					return false;
 				}
 				if (ourHash.equals(incomingHash)) {
 					return isTimestampValid(incomingTimestamp);
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean isRestrictedAction(String[] action) {
+		if (action != null && action.length > 0) {
+			String actionVal = action[0].trim().toLowerCase();
+			for (int i = 0; i < RESTRICTED_ACTIONS.length; i++) {
+				if (actionVal.contains(RESTRICTED_ACTIONS[i])) {
+					return true;
 				}
 			}
 		}
-		return authorized;
+		return false;
 	}
 
 	private boolean isTimestampValid(long theirTime) {
