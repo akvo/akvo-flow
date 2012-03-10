@@ -10,6 +10,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyService;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.Orientation;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.SelectionMode;
 import org.waterforpeople.mapping.portal.client.widgets.component.SurveySelectionWidget.TerminalType;
@@ -46,6 +47,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class QuestionImportDialog extends DialogBox implements ChangeHandler {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private static UploadConstants UPLOAD_CONSTANTS = GWT
+			.create(UploadConstants.class);
 	private VerticalPanel controlPanel;
 	private DockPanel contentPane;
 	private static final String FILE_SOURCE = "FILE";
@@ -338,7 +341,9 @@ public class QuestionImportDialog extends DialogBox implements ChangeHandler {
 		appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 		appletString += "<PARAM name='importType' value='SURVEY_SPREADSHEET'>";
 		appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-		appletString += "<PARAM name='criteria' value='isWholeSurvey:=false;beforeQuestionId:="
+		appletString += "<PARAM name='criteria' value='k:=+"
+				+ UPLOAD_CONSTANTS.apiKey()
+				+ ";isWholeSurvey:=false;beforeQuestionId:="
 				+ ViewUtil.getListBoxSelection(questionBox, false) + "'>";
 		appletString += "</applet>";
 		HTML html = new HTML();

@@ -6,7 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 
@@ -36,6 +41,9 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDt
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 import org.waterforpeople.mapping.app.web.dto.DeviceFileRestRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
+
+import com.gallatinsystems.common.util.MD5Util;
+import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
  * client code for calling the apis for data processing on the server
@@ -316,8 +324,8 @@ public class BulkDataServiceClient {
 	 * @return
 	 */
 	private static Map<String, String> parseInstanceValues(String data) {
-		Map<String, String> responseMap = new HashMap<String, String>();	
-		if (data != null) {	
+		Map<String, String> responseMap = new HashMap<String, String>();
+		if (data != null) {
 			StringTokenizer lines = new StringTokenizer(data, "\n");
 			if (lines != null) {
 				while (lines.hasMoreTokens()) {
@@ -349,7 +357,7 @@ public class BulkDataServiceClient {
 					}
 				}
 			}
-		}		
+		}
 		return responseMap;
 	}
 
@@ -693,7 +701,8 @@ public class BulkDataServiceClient {
 		return null;
 	}
 
-	public static DeviceFilesDto parseDeviceFile(JSONObject json) throws JSONException{
+	public static DeviceFilesDto parseDeviceFile(JSONObject json)
+			throws JSONException {
 		DeviceFilesDto dto = new DeviceFilesDto();
 		if (json != null) {
 			if (json.has("processingMessage")) {
@@ -720,14 +729,14 @@ public class BulkDataServiceClient {
 				String x = json.getString("URI");
 				dto.setURI(x);
 			}
-			if(json.has("surveyInstanceId")){
+			if (json.has("surveyInstanceId")) {
 				String x = json.getString("surveyInstanceId");
 				dto.setSurveyInstanceId(Long.parseLong(x));
 			}
 		}
 		return dto;
 	}
-	
+
 	/**
 	 * parses question responses into QuesitonDto objects
 	 * 
@@ -923,131 +932,192 @@ public class BulkDataServiceClient {
 	}
 
 	/**
-		 * invokes a remote REST api. If the url is longer than 2048 characters, this method will use POST since that is too long for a GET
-		 * 
-		 * @param fullUrl
-		 * @return
-		 * @throws Exception
-		 */
-		public static String fetchDataFromServer(String fullUrl) throws Exception {
-			if (fullUrl != null) {
-				if (fullUrl.length() > 2048) {
-					return fetchDataFromServerPOST(fullUrl);
-				} else {
-					return fetchDataFromServerGET(fullUrl);
-				}
+	 * invokes a remote REST api using the base and query string passed in. If
+	 * shouldSign is true, the queryString will be augmented with a timestamp
+	 * and hash parameter.
+	 * 
+	 * @param baseUrl
+	 * @param queryString
+	 * @param shouldSign
+	 * @param key
+	 * @return
+	 * @throws Exception
+	 */
+	public static String fetchDataFromServer(String baseUrl,
+			String queryString, boolean shouldSign, String key)
+			throws Exception {
+		if (shouldSign) {
+			if (queryString == null) {
+				queryString = new String();
 			} else {
-				return null;
+				if (queryString.trim().startsWith("?")) {
+					queryString = queryString.trim().substring(1);
+				}
+				queryString += "&";
 			}
+			DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			df.setTimeZone(TimeZone.getTimeZone("GMT"));
+			queryString += RestRequest.TIMESTAMP_PARAM + "="
+					+ URLEncoder.encode(df.format(new Date()), "UTF-8");
+			queryString = sortQueryString(queryString);
+			queryString += RestRequest.HASH_PARAM + "="
+					+ MD5Util.generateHMAC(queryString, key);
 		}
-	
-	/**
-	* executes a post to invoke a rest api
-	*/
-		private static String fetchDataFromServerPOST(String fullUrl)
-				throws Exception {
-			BufferedReader reader = null;
-			String result = null;
-			try {
-				String baseUrl = fullUrl;
-				String queryString = null;
-				if (fullUrl.contains("?")) {
-					baseUrl = fullUrl.substring(0, fullUrl.indexOf("?"));
-					queryString = fullUrl.substring(fullUrl.indexOf("?") + 1);
-				}
-				URL url = new URL(baseUrl);
-				System.out.println("Calling: " + baseUrl + " with params: "
-						+ queryString);
-				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-	
-				conn.setConnectTimeout(30000);
-				conn.setRequestMethod("POST");
-				conn.setUseCaches(false);
-				conn.setRequestProperty("Content-Length",
-						"" + Integer.toString(queryString.getBytes().length));
-				conn.setRequestProperty("Content-Type",
-						"application/x-www-form-urlencoded");
-	
-				conn.setDoInput(true);
-				conn.setDoOutput(true);
-				conn.addRequestProperty("Accept-Encoding", "gzip");
-				conn.addRequestProperty("User-Agent", "gzip");
-	
-				DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-				wr.writeBytes(queryString);
-				wr.flush();
-				wr.close();
-				InputStream instream = conn.getInputStream();
-				String contentEncoding = conn.getHeaderField("Content-Encoding");
-	
-				if (contentEncoding != null
-						&& contentEncoding.equalsIgnoreCase("gzip")) {
-					reader = new BufferedReader(new InputStreamReader(
-							new GZIPInputStream(instream), "UTF-8"));
-				} else {
-					reader = new BufferedReader(new InputStreamReader(instream,
-							"UTF-8"));
-				}
-	
-				StringBuilder sb = new StringBuilder();
-				String line = null;
-	
-				while ((line = reader.readLine()) != null) {
-					sb.append(line + "\n");
-				}
-				result = sb.toString();
-			} finally {
-				if (reader != null) {
-					reader.close();
-				}
-			}
-			return result;
-		}
-	
-	/**
-	* executes a GET to invoke a rest api
-	*/
-		private static String fetchDataFromServerGET(String fullUrl)
-				throws Exception {
-			BufferedReader reader = null;
-			String result = null;
-			try {
-				URL url = new URL(fullUrl);
-				System.out.println("Calling: " + url.toString());
-				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-	
-				conn.setConnectTimeout(30000);
-				conn.setRequestMethod("GET");
-				conn.setDoOutput(true);
-				conn.addRequestProperty("Accept-Encoding", "gzip");
-				conn.addRequestProperty("User-Agent", "gzip");
-				InputStream instream = conn.getInputStream();
-				String contentEncoding = conn.getHeaderField("Content-Encoding");
-	
-				if (contentEncoding != null
-						&& contentEncoding.equalsIgnoreCase("gzip")) {
-					reader = new BufferedReader(new InputStreamReader(
-							new GZIPInputStream(instream), "UTF-8"));
-				} else {
-					reader = new BufferedReader(new InputStreamReader(instream,
-							"UTF-8"));
-				}
-	
-				StringBuilder sb = new StringBuilder();
-				String line = null;
-	
-				while ((line = reader.readLine()) != null) {
-					sb.append(line + "\n");
-				}
-				result = sb.toString();
-			} finally {
-				if (reader != null) {
-					reader.close();
-				}
-			}
-			return result;
-		}
+		return fetchDataFromServer(baseUrl
+				+ ((queryString != null && queryString.trim().length() > 0) ? "?"
+						+ queryString
+						: ""));
 
+	}
+
+	/**
+	 * invokes a remote REST api. If the url is longer than 2048 characters,
+	 * this method will use POST since that is too long for a GET
+	 * 
+	 * @param fullUrl
+	 * @return
+	 * @throws Exception
+	 */
+	public static String fetchDataFromServer(String fullUrl) throws Exception {
+		if (fullUrl != null) {
+			if (fullUrl.length() > 2048) {
+				return fetchDataFromServerPOST(fullUrl);
+			} else {
+				return fetchDataFromServerGET(fullUrl);
+			}
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * executes a post to invoke a rest api
+	 */
+	private static String fetchDataFromServerPOST(String fullUrl)
+			throws Exception {
+		BufferedReader reader = null;
+		String result = null;
+		try {
+			String baseUrl = fullUrl;
+			String queryString = null;
+			if (fullUrl.contains("?")) {
+				baseUrl = fullUrl.substring(0, fullUrl.indexOf("?"));
+				queryString = fullUrl.substring(fullUrl.indexOf("?") + 1);
+			}
+			URL url = new URL(baseUrl);
+			System.out.println("Calling: " + baseUrl + " with params: "
+					+ queryString);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			conn.setConnectTimeout(30000);
+			conn.setRequestMethod("POST");
+			conn.setUseCaches(false);
+			conn.setRequestProperty("Content-Length",
+					"" + Integer.toString(queryString.getBytes().length));
+			conn.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+
+			conn.setDoInput(true);
+			conn.setDoOutput(true);
+			conn.addRequestProperty("Accept-Encoding", "gzip");
+			conn.addRequestProperty("User-Agent", "gzip");
+
+			DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+			wr.writeBytes(queryString);
+			wr.flush();
+			wr.close();
+			InputStream instream = conn.getInputStream();
+			String contentEncoding = conn.getHeaderField("Content-Encoding");
+
+			if (contentEncoding != null
+					&& contentEncoding.equalsIgnoreCase("gzip")) {
+				reader = new BufferedReader(new InputStreamReader(
+						new GZIPInputStream(instream), "UTF-8"));
+			} else {
+				reader = new BufferedReader(new InputStreamReader(instream,
+						"UTF-8"));
+			}
+
+			StringBuilder sb = new StringBuilder();
+			String line = null;
+
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+			result = sb.toString();
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * executes a GET to invoke a rest api
+	 */
+	private static String fetchDataFromServerGET(String fullUrl)
+			throws Exception {
+		BufferedReader reader = null;
+		String result = null;
+		try {
+			URL url = new URL(fullUrl);
+			System.out.println("Calling: " + url.toString());
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			conn.setConnectTimeout(30000);
+			conn.setRequestMethod("GET");
+			conn.setDoOutput(true);
+			conn.addRequestProperty("Accept-Encoding", "gzip");
+			conn.addRequestProperty("User-Agent", "gzip");
+			InputStream instream = conn.getInputStream();
+			String contentEncoding = conn.getHeaderField("Content-Encoding");
+
+			if (contentEncoding != null
+					&& contentEncoding.equalsIgnoreCase("gzip")) {
+				reader = new BufferedReader(new InputStreamReader(
+						new GZIPInputStream(instream), "UTF-8"));
+			} else {
+				reader = new BufferedReader(new InputStreamReader(instream,
+						"UTF-8"));
+			}
+
+			StringBuilder sb = new StringBuilder();
+			String line = null;
+
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+			result = sb.toString();
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
+		}
+		return result;
+	}
+
+	private static String sortQueryString(String queryString) {
+		String[] parts = queryString.split("&");
+		Map<String, String> pairs = new HashMap<String, String>();
+		for (int i = 0; i < parts.length; i++) {
+			String[] nvp = parts[i].split("=");
+			if (nvp.length > 1) {
+				pairs.put(nvp[0], nvp[1]);
+			}
+		}
+		// now sort the names
+		List<String> names = new ArrayList<String>(pairs.keySet());
+		Collections.sort(names);
+		StringBuilder result = new StringBuilder();
+		for (String name : names) {
+			if (result.length() > 0) {
+				result.append("&");
+			}
+			result.append(name).append("=").append(pairs.get(name));
+		}
+		return result.toString();
+	}
 
 	/**
 	 * converts the string into a JSON array object.

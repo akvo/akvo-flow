@@ -34,8 +34,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 public class RestAuthFilter implements Filter {
 
 	private static final long MAX_TIME = 60000;
-	private static final String HASH_PARAM = "h";
-	private static final String TIMESTAMP_PARAM = "ts";
+	
 	private static final String[] RESTRICTED_ACTIONS = { "delete", "save",
 			"update", "create", "purge", "reset" };
 	private static final Logger log = Logger.getLogger(RestAuthFilter.class
@@ -86,7 +85,7 @@ public class RestAuthFilter implements Filter {
 			Collections.sort(names);
 			StringBuilder builder = new StringBuilder();
 			for (String name : names) {
-				if (!HASH_PARAM.equals(name)) {
+				if (!RestRequest.HASH_PARAM.equals(name)) {
 					if (builder.length() > 0) {
 						builder.append("&");
 					}
@@ -94,7 +93,7 @@ public class RestAuthFilter implements Filter {
 							.append("=")
 							.append(URLEncoder.encode(
 									((String[]) paramMap.get(name))[0], "UTF-8"));
-					if (TIMESTAMP_PARAM.equals(name)) {
+					if (RestRequest.TIMESTAMP_PARAM.equals(name)) {
 						try {
 							DateFormat df = new SimpleDateFormat(
 									"yyyy/MM/dd HH:mm:ss");

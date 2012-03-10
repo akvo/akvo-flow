@@ -79,6 +79,7 @@ public class DataImportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='importType' value='SURVEY_SPREADSHEET'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
+			appletString += "<PARAM name='criteria' value=k:="+UPLOAD_CONSTANTS.apiKey() +"'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);
@@ -97,10 +98,10 @@ public class DataImportWidget extends MenuBasedWidget {
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 								appletString += "<PARAM name='importType' value='RAW_DATA'>";
-								appletString += "<PARAM name='criteria' value=surveyId:="
-										+ payload
-												.get(SurveySelectionDialog.SURVEY_KEY)
-										+ ">";
+								appletString += "<PARAM name='criteria' value='k:="+UPLOAD_CONSTANTS.apiKey() +";surveyId:="
+								+ payload
+										.get(SurveySelectionDialog.SURVEY_KEY)
+								+ "'>";
 								appletString += "</applet>";
 								HTML html = new HTML();
 								html.setHTML(appletString);
@@ -173,10 +174,10 @@ public class DataImportWidget extends MenuBasedWidget {
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 								appletString += "<PARAM name='importType' value='FIXED_FORMAT'>";
 								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-								appletString += "<PARAM name='criteria' value=surveyId:="
+								appletString += "<PARAM name='criteria' value='k:="+UPLOAD_CONSTANTS.apiKey() +";surveyId:="
 										+ payload
 												.get(SurveySelectionDialog.SURVEY_KEY)
-										+ ">";
+										+ "'>";
 								appletString += "</applet>";
 								HTML html = new HTML();
 								html.setHTML(appletString);
@@ -197,7 +198,7 @@ public class DataImportWidget extends MenuBasedWidget {
 					+ UPLOAD_CONSTANTS.surveyDataS3Policy() + ";dataSig:="
 					+ UPLOAD_CONSTANTS.surveyDataS3Sig() + ";awsId:="
 					+ UPLOAD_CONSTANTS.s3Id() + ";uploadBase:="
-					+ UPLOAD_CONSTANTS.uploadUrl() + "'>";
+					+ UPLOAD_CONSTANTS.uploadUrl() + ";k:="+UPLOAD_CONSTANTS.apiKey()+"'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);

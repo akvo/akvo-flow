@@ -99,7 +99,7 @@ public class FixedFormatRawDataImporter extends RawDataSpreadsheetImporter {
 				if (valueCount > 0) {
 					sb.append(RawDataImportRequest.FIXED_FIELD_VALUE_PARAM
 							+ "=" + valueBuilder.toString());
-					invokeUrl(serverBase, sb.toString());
+					invokeUrl(serverBase, sb.toString(), true,criteria.get(KEY_PARAM));
 				}
 			}
 		} catch (Exception e) {

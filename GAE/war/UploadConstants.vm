@@ -17,4 +17,4 @@ helpS3Sig =  $helpcontentS3Sig
 helpS3Path = helpcontent
 videoContentType = video/mpeg
 
-
+apiKey = $restApiKey

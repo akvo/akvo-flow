@@ -38,6 +38,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
 	private static final String SERVLET_URL = "/surveyrestapi";
 	private static final String BEFORE_QUESTION_ID_PARAM = "beforeQuestionId";
 	private static final String WHOLE_SURVEY_PARAM = "isWholeSurvey";
+	private static final String KEY_PARAM = "k";
 
 	@Override
 	public void executeImport(File file, String serverBase,
@@ -60,7 +61,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
 		}
 		try {
 			inp = new FileInputStream(file);
-			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));			
+			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
 			sheet1 = wb.getSheetAt(0);
 			if (!isWholeSurvey) {
 				// even though there is a header row, we want lastRowNum since
@@ -97,8 +98,9 @@ public class SurveySpreadsheetImporter implements DataImporter {
 									.append((q.getOrder() + questionCount));
 							System.out.println(BulkDataServiceClient
 									.fetchDataFromServer(serverBase
-											+ SERVLET_URL
-											+ reorderBuffer.toString()));
+											+ SERVLET_URL,
+											reorderBuffer.toString(), true,
+											criteria.get(KEY_PARAM)));
 						}
 					}
 				}
@@ -286,15 +288,17 @@ public class SurveySpreadsheetImporter implements DataImporter {
 					}
 					try {
 						System.out.println(BulkDataServiceClient
-								.fetchDataFromServer(serverBase + SERVLET_URL
-										+ sb.toString()));
+								.fetchDataFromServer(serverBase + SERVLET_URL,
+										sb.toString(), true,
+										criteria.get(KEY_PARAM)));
 					} catch (Throwable t) {
 						System.out.println("Error: " + t);
 						t.printStackTrace();
 						System.out.println("Trying again");
 						System.out.println(BulkDataServiceClient
-								.fetchDataFromServer(serverBase + SERVLET_URL
-										+ sb.toString()));
+								.fetchDataFromServer(serverBase + SERVLET_URL,
+										sb.toString(), true,
+										criteria.get(KEY_PARAM)));
 					}
 				}
 			}

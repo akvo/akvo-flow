@@ -3,10 +3,6 @@ package org.waterforpeople.mapping.dataexport;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.StringTokenizer;
@@ -20,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
+import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 /**
  * simple applet to back out data from a single survey at a time
@@ -30,12 +27,14 @@ import org.waterforpeople.mapping.app.web.dto.DataBackoutRequest;
 public class DataBackoutApplet extends JApplet implements Runnable {
 
 	private static final long serialVersionUID = 944163825066341210L;
-	private static final String SERVER_PATH = "/databackout?action=";
+	private static final String SERVER_PATH = "/databackout";
+	private static final String KEY_PARAM = "k";
 	private JLabel statusLabel;
 	private String surveyId;
 	private String date;
 	private String country;
 	private String serverBase;
+	private String privateKey;
 
 	public void init() {
 		statusLabel = new JLabel();
@@ -45,6 +44,7 @@ public class DataBackoutApplet extends JApplet implements Runnable {
 			serverBase = serverBase.trim().substring(0,
 					serverBase.lastIndexOf("/"));
 		}
+		privateKey = getParameter(KEY_PARAM);
 		InputDialog dia = new InputDialog();
 		if (!dia.isCancelled()) {
 			if (country != null && surveyId != null && date != null) {
@@ -71,7 +71,7 @@ public class DataBackoutApplet extends JApplet implements Runnable {
 			deleteAccessPoints();
 			SwingUtilities.invokeLater(new StatusUpdater(
 					"Deleting AP summaries"));
-			deleteAccessPointSummary();			
+			deleteAccessPointSummary();
 			SwingUtilities.invokeLater(new StatusUpdater("Backout Complete"));
 		} catch (Exception e) {
 			SwingUtilities
@@ -83,12 +83,11 @@ public class DataBackoutApplet extends JApplet implements Runnable {
 		String resultString = "true";
 		while (resultString != null
 				&& "true".equalsIgnoreCase(resultString.trim())) {
-			resultString = invokeRemoteMethod(DataBackoutRequest.DELETE_ACCESS_POINT_ACTION
-					+ "&"
-					+ DataBackoutRequest.COUNTRY_PARAM
-					+ "="
-					+ country
-					+ "&" + DataBackoutRequest.DATE_PARAM + "=" + date);
+			resultString = invokeRemoteMethod(
+					DataBackoutRequest.DELETE_ACCESS_POINT_ACTION + "&"
+							+ DataBackoutRequest.COUNTRY_PARAM + "=" + country
+							+ "&" + DataBackoutRequest.DATE_PARAM + "=" + date,
+					true);
 		}
 	}
 
@@ -96,62 +95,52 @@ public class DataBackoutApplet extends JApplet implements Runnable {
 		String resultString = "true";
 		while (resultString != null
 				&& "true".equalsIgnoreCase(resultString.trim())) {
-			resultString = invokeRemoteMethod(DataBackoutRequest.DELETE_AP_SUMMARY_ACTION
-					+ "&"
-					+ DataBackoutRequest.COUNTRY_PARAM
-					+ "="
-					+ country
-					+ "&" + DataBackoutRequest.DATE_PARAM + "=" + date);
+			resultString = invokeRemoteMethod(
+					DataBackoutRequest.DELETE_AP_SUMMARY_ACTION + "&"
+							+ DataBackoutRequest.COUNTRY_PARAM + "=" + country
+							+ "&" + DataBackoutRequest.DATE_PARAM + "=" + date,
+					true);
 		}
 	}
 
 	private void deleteQuestionSummaries() throws Exception {
-		String summaryString = invokeRemoteMethod(DataBackoutRequest.GET_QUESTION_ACTION
-				+ "&" + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId);
+		String summaryString = invokeRemoteMethod(
+				DataBackoutRequest.GET_QUESTION_ACTION + "&"
+						+ DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId,
+				false);
 		if (summaryString != null) {
 			StringTokenizer strTok = new StringTokenizer(summaryString, ",");
 			while (strTok.hasMoreTokens()) {
-				invokeRemoteMethod(DataBackoutRequest.DELETE_QUESTION_SUMMARY_ACTION
-						+ "&"
-						+ DataBackoutRequest.QUESTION_ID_PARAM
-						+ "="
-						+ strTok.nextToken());
+				invokeRemoteMethod(
+						DataBackoutRequest.DELETE_QUESTION_SUMMARY_ACTION + "&"
+								+ DataBackoutRequest.QUESTION_ID_PARAM + "="
+								+ strTok.nextToken(), true);
 			}
 		}
 	}
 
 	private void deleteSurveyInstances() throws Exception {
-		String instanceString = invokeRemoteMethod(DataBackoutRequest.LIST_INSTANCE_ACTION
-				+ "&"
-				+ DataBackoutRequest.SURVEY_ID_PARAM
-				+ "="
-				+ surveyId
-				+ "&" + DataBackoutRequest.DATE_PARAM + "=" + date);
+		String instanceString = invokeRemoteMethod(
+				DataBackoutRequest.LIST_INSTANCE_ACTION + "&"
+						+ DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId
+						+ "&" + DataBackoutRequest.DATE_PARAM + "=" + date,
+				false);
 		if (instanceString != null) {
 			StringTokenizer strTok = new StringTokenizer(instanceString, ",");
 			while (strTok.hasMoreTokens()) {
-				invokeRemoteMethod(DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION
-						+ "&"
-						+ DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM
-						+ "=" + strTok.nextToken());
+				invokeRemoteMethod(
+						DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION + "&"
+								+ DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM
+								+ "=" + strTok.nextToken(), true);
 			}
 		}
 	}
 
-	private String invokeRemoteMethod(String queryString) throws Exception {
-		URL url = new URL(serverBase + SERVER_PATH + queryString);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("GET");
-		conn.setDoOutput(true);
-		String line;
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				conn.getInputStream()));
-		StringBuilder builder = new StringBuilder();
-		while ((line = reader.readLine()) != null) {
-			builder.append(line);
-		}
-		reader.close();
-		return builder.toString();
+	private String invokeRemoteMethod(String queryString, boolean shouldSign)
+			throws Exception {
+		queryString = "action="+queryString;
+		return BulkDataServiceClient.fetchDataFromServer(serverBase
+				+ SERVER_PATH, queryString, shouldSign, privateKey);
 	}
 
 	/**

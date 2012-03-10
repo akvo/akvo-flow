@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
@@ -30,6 +27,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
+import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
@@ -39,6 +37,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	private static final String SERVLET_URL = "/rawdatarestapi";
 	private static final String DEFAULT_LOCALE = "en";
 	public static final String SURVEY_CONFIG_KEY = "surveyId";
+	protected static final String KEY_PARAM = "k";
 	private static final Map<String, String> SAVING_DATA;
 	private static final Map<String, String> COMPLETE;
 	private Long surveyId;
@@ -103,7 +102,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					jobQueue);
 			DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
 			setSurveyId(criteria);
-			
+
 			Sheet sheet1 = getDataSheet(file);
 			progressDialog = new ProgressDialog(sheet1.getLastRowNum(), locale);
 			progressDialog.setVisible(true);
@@ -181,7 +180,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						String cellVal = parseCellAsString(cell);
 						if (cellVal != null) {
 							cellVal = cellVal.trim();
-							//need to update digest before manipulating the data
+							// need to update digest before manipulating the
+							// data
 							digest.update(cellVal.getBytes());
 							if (cellVal.contains("|")) {
 								cellVal = cellVal.replaceAll("\\|", "^^");
@@ -202,7 +202,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 											+ "|value=").append(
 									cellVal != null ? URLEncoder.encode(
 											cellVal, "UTF-8") : "");
-							
+
 						}
 						type = typeMap.get(questionIDColMap.get(cell
 								.getColumnIndex()));
@@ -223,11 +223,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							String md5 = parseCellAsString(cell);
 							String digestVal = StringUtil.toHexString(digest
 									.digest());
-							if (md5 != null && md5.equals(digestVal)) {								
+							if (md5 != null && md5.equals(digestVal)) {
 								needUpload = false;
-							}else if(md5 != null){
+							} else if (md5 != null) {
 								System.out.println("Row: " + row.getRowNum()
-										+ " MD5: " + digestVal+" orig md5: "+md5);
+										+ " MD5: " + digestVal + " orig md5: "
+										+ md5);
 							}
 						} catch (Exception e) {
 							// if we can't handle the md5, then just assume we
@@ -249,7 +250,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							+ URLEncoder.encode(dateString, "UTF-8") + "&"
 							+ RawDataImportRequest.SUBMITTER_PARAM + "="
 							+ URLEncoder.encode(submitter, "UTF-8"),
-							sb.toString());
+							sb.toString(), criteria.get(KEY_PARAM));
 
 				} else if (row.getRowNum() > 0) {
 					// if we didn't need to upload, then just increment our
@@ -261,9 +262,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			while (!jobQueue.isEmpty()) {
 				Thread.sleep(5000);
 			}
-			if(errorIds.size()>0){
+			if (errorIds.size() > 0) {
 				System.out.println("There were ERRORS: ");
-				for(String line:errorIds){
+				for (String line : errorIds) {
 					System.out.println(line);
 				}
 			}
@@ -271,7 +272,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			// now update the summaries
 			invokeUrl(serverBase, "action="
 					+ RawDataImportRequest.UPDATE_SUMMARIES_ACTION + "&"
-					+ RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId);
+					+ RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId,
+					true, criteria.get(KEY_PARAM));
 
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 					COMPLETE.get(locale), true));
@@ -291,15 +293,16 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	 * @param saveUrlString
 	 */
 	private void sendDataToServer(final String serverBase,
-			final String resetUrlString, final String saveUrlString) {
+			final String resetUrlString, final String saveUrlString,
+			final String key) {
 		threadPool.execute(new Runnable() {
 
 			public void run() {
 				try {
 					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 							SAVING_DATA.get(locale)));
-					invokeUrl(serverBase, resetUrlString);
-					invokeUrl(serverBase, saveUrlString);
+					invokeUrl(serverBase, resetUrlString, true, key);
+					invokeUrl(serverBase, saveUrlString, true, key);
 				} catch (Exception e) {
 					errorIds.add(saveUrlString);
 					System.err.println("Could not invoke rest services: " + e);
@@ -316,28 +319,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	 * @param urlString
 	 * @throws Exception
 	 */
-	protected void invokeUrl(String serverBase, String urlString)
-			throws Exception {
+	protected void invokeUrl(String serverBase, String urlString,
+			boolean shouldSign, String key) throws Exception {
 
-		URL url = new URL(serverBase + SERVLET_URL);
-		System.out.println(serverBase + SERVLET_URL + urlString);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("POST");
-		conn.setDoOutput(true);
-		conn.setRequestProperty("Content-Type",
-				"application/x-www-form-urlencoded");
-		conn.setRequestProperty("Content-Length", urlString.getBytes().length
-				+ "");
-		try {
-			OutputStream os = conn.getOutputStream();
-			os.write(urlString.getBytes("UTF-8"));
-			os.flush();
-			os.close();
-			conn.getResponseCode();
-		} catch (Exception e) {
-			System.err.println("ERROR invoking service");
-			e.printStackTrace(System.err);
-		}
+		BulkDataServiceClient.fetchDataFromServer(serverBase + SERVLET_URL,
+				urlString, shouldSign, key);
 	}
 
 	@Override
