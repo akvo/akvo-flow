@@ -960,7 +960,7 @@ public class BulkDataServiceClient {
 			queryString += RestRequest.TIMESTAMP_PARAM + "="
 					+ URLEncoder.encode(df.format(new Date()), "UTF-8");
 			queryString = sortQueryString(queryString);
-			queryString += RestRequest.HASH_PARAM + "="
+			queryString += "&"+RestRequest.HASH_PARAM + "="
 					+ MD5Util.generateHMAC(queryString, key);
 		}
 		return fetchDataFromServer(baseUrl
