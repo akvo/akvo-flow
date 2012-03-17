@@ -59,7 +59,6 @@ import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.test.AccessPointMetricSummaryTest;
 import org.waterforpeople.mapping.app.web.test.AccessPointTest;
-import org.waterforpeople.mapping.app.web.test.DataFixes;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
 import org.waterforpeople.mapping.app.web.test.StandardScoringTest;
 import org.waterforpeople.mapping.app.web.test.StandardTestLoader;
@@ -189,8 +188,8 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 
 		} else if ("fixQuestionAnswerStoreDates".equals(action)) {
-//			 DataFixes df = new DataFixes();
-//			 df.generateTestData();
+			// DataFixes df = new DataFixes();
+			// df.generateTestData();
 
 			Queue queue = QueueFactory.getDefaultQueue();
 
@@ -1715,6 +1714,24 @@ public class TestHarnessServlet extends HttpServlet {
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
 			queue.add(options);
+		} else if ("testTemplateOverride".equals(action)) {
+			KMLGenerator gen = new KMLGenerator();
+			SurveyedLocale ap = new SurveyedLocale();
+			ap.setAmbiguous(false);
+			ap.setCountryCode("US");
+			ap.setCreatedDateTime(new Date());
+			ap.setCurrentStatus("OK");
+			ap.setIdentifier("1234");
+			ap.setLastSurveyedDate(new Date());
+			ap.setLatitude(12d);
+			ap.setLongitude(12d);
+			try {
+				String result = gen.bindPlacemark(ap, "localePlacemarkExternal.vm", null);
+				resp.getWriter().println(result);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

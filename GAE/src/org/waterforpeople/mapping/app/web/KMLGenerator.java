@@ -1,6 +1,5 @@
 package org.waterforpeople.mapping.app.web;
 
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,9 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointMetricSummaryDto;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.GeoRegionDAO;
@@ -29,6 +26,9 @@ import org.waterforpeople.mapping.helper.AccessPointHelper;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.common.util.VelocityUtil;
+import com.gallatinsystems.editorial.dao.EditorialPageDao;
+import com.gallatinsystems.editorial.domain.EditorialPage;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.standards.dao.LOSScoreToStatusMappingDao;
 import com.gallatinsystems.standards.dao.LevelOfServiceScoreDao;
@@ -44,8 +44,6 @@ public class KMLGenerator {
 
 	private static final Logger log = Logger.getLogger(KMLGenerator.class
 			.getName());
-
-	private VelocityEngine engine;
 
 	public static final String GOOGLE_EARTH_DISPLAY = "googleearth";
 	// public static final String WATER_POINT_FUNCTIONING_GREEN_ICON_URL =
@@ -86,6 +84,11 @@ public class KMLGenerator {
 	private static final String IMAGE_PREFIX = PropertyUtil
 			.getProperty(IMAGE_ROOT);
 	private static final String DEFAULT = "DEFAULT";
+	public static final String defaultPhotoCaption = PropertyUtil
+			.getProperty("defaultPhotoCaption");
+
+	private static final String DYNAMIC_SCORING_FLAG = "scoreAPDynamicFlag";
+
 	static {
 		ICON_TYPE_MAPPING = new HashMap<String, String>();
 		ICON_TYPE_MAPPING.put("WaterPoint", "glass");
@@ -135,42 +138,12 @@ public class KMLGenerator {
 			.getProperty("useLongDates");
 
 	public KMLGenerator() {
-		engine = new VelocityEngine();
-		engine.setProperty("runtime.log.logsystem.class",
-				"org.apache.velocity.runtime.log.NullLogChute");
-		try {
-			engine.init();
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not initialize velocity", e);
-		}
+
 	}
-
-	public static final String defaultPhotoCaption = PropertyUtil
-			.getProperty("defaultPhotoCaption");
-
-	private static final String DYNAMIC_SCORING_FLAG = "scoreAPDynamicFlag";
 
 	public String generateRegionDocumentString(String regionVMName) {
 		String regionKML = generateRegionOutlines(regionVMName);
 		return regionKML;
-	}
-
-	/**
-	 * merges a hydrated context with a template identified by the templateName
-	 * passed in.
-	 * 
-	 * @param context
-	 * @param templateName
-	 * @return
-	 * @throws Exception
-	 */
-	private String mergeContext(VelocityContext context, String templateName)
-			throws Exception {
-		Template t = engine.getTemplate(templateName);
-		StringWriter writer = new StringWriter();
-		t.merge(context, writer);
-		context = null;
-		return writer.toString();
 	}
 
 	public String generateDocument(String placemarksVMName) {
@@ -206,7 +179,8 @@ public class KMLGenerator {
 			}
 			context.put("techFolderName", key);
 			context.put("techPlacemarks", sbFolderPl);
-			techFolders.append(mergeContext(context, "techFolders.vm"));
+			techFolders.append(mergeContext(context,
+					"techFolders.vm"));
 		}
 		context.put("techFolders", techFolders.toString());
 		return mergeContext(context, vmName);
@@ -449,7 +423,8 @@ public class KMLGenerator {
 						String pmContents = bindPlacemark(
 								ap,
 								display.equalsIgnoreCase(GOOGLE_EARTH_DISPLAY) ? "placemarkGoogleEarth.vm"
-										: "placemarkExternalMap.vm", display,null);
+										: "placemarkExternalMap.vm", display,
+								null);
 
 						if (ap.getCollectionDate() != null) {
 							String timestamp = DateFormatUtils.formatUTC(ap
@@ -485,8 +460,8 @@ public class KMLGenerator {
 						// Need to check this
 						if (ap.getPointType() != null) {
 							if (Boolean.parseBoolean(PropertyUtil
-									.getProperty(DYNAMIC_SCORING_FLAG))) {								
-								
+									.getProperty(DYNAMIC_SCORING_FLAG))) {
+
 							} else {
 								encodeStatusString(ap, context);
 								context.put(
@@ -519,6 +494,35 @@ public class KMLGenerator {
 					+ entries.get(i + 1).toString());
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * attempts to merge the context with the template. The template will be
+	 * resolved from cache and, if there is a miss, it will use the
+	 * EditorialPageDao as the templateBackingStore. If the template is still
+	 * not found, it will attempt to use a static template file from the
+	 * application context.
+	 * 
+	 * @param context
+	 * @param template
+	 * @return
+	 * @throws Exception
+	 */
+	private String mergeContext(VelocityContext context, String template)
+			throws Exception {
+		return VelocityUtil.mergeContext(context, template,
+				new VelocityUtil.TemplateCacheBackingStore() {
+					@Override
+					public String getByKey(String key) {
+						EditorialPageDao edDao = new EditorialPageDao();
+						EditorialPage page = edDao.findByTargetPage(key);
+						if (page != null) {
+							return page.getTemplate().getValue();
+						} else {
+							return null;
+						}
+					}
+				});
 	}
 
 	public String bindPlacemark(SurveyedLocale ap, String vmName, String display)
@@ -1001,7 +1005,8 @@ public class KMLGenerator {
 					.toString() + "-pinstyle",
 					losScoreToStatusMapping.getIconStyle());
 			losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType()
-					.toString() +"-iconSmallUrl", losScoreToStatusMapping.getIconSmallUrl());
+					.toString() + "-iconSmallUrl",
+					losScoreToStatusMapping.getIconSmallUrl());
 			// losStyles.put(losScoreToStatusMapping.getLevelOfServiceScoreType().toString()+"details",
 			// losItem.getScoreDetails().toString());
 
@@ -1056,12 +1061,15 @@ public class KMLGenerator {
 			return "No";
 		}
 	}
-	
-	public LOSScoreToStatusMapping encodePinStyle(Key accessPointKey, StandardType standardType){
+
+	public LOSScoreToStatusMapping encodePinStyle(Key accessPointKey,
+			StandardType standardType) {
 		LevelOfServiceScoreDao losScoreDao = new LevelOfServiceScoreDao();
-		LevelOfServiceScore losScore = losScoreDao.findByAccessPoint(accessPointKey, standardType);
+		LevelOfServiceScore losScore = losScoreDao.findByAccessPoint(
+				accessPointKey, standardType);
 		LOSScoreToStatusMappingDao losMapDao = new LOSScoreToStatusMappingDao();
-		LOSScoreToStatusMapping losMapItem =losMapDao.findByLOSScoreTypeAndScore(standardType, losScore.getScore());
+		LOSScoreToStatusMapping losMapItem = losMapDao
+				.findByLOSScoreTypeAndScore(standardType, losScore.getScore());
 		return losMapItem;
 	}
 
@@ -1089,8 +1097,6 @@ public class KMLGenerator {
 			return prefix + "pushpinblk";
 		}
 	}
-
-	
 
 	public static String encodePinStyle(String type, String status) {
 		String prefix = "water";
@@ -1189,8 +1195,7 @@ public class KMLGenerator {
 			throws InvocationTargetException, NoSuchMethodException {
 		Integer score = AccessPointHelper.scoreAccessPoint(ap).getScore();
 
-		new AccessPointHelper().scoreAccessPointDynamic(ap)
-				.getScore();
+		new AccessPointHelper().scoreAccessPointDynamic(ap).getScore();
 
 		if (score == 0) {
 			return "No Improved System";

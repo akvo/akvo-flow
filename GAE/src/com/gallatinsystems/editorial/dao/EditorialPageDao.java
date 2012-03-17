@@ -39,4 +39,5 @@ public class EditorialPageDao extends BaseDAO<EditorialPage> {
 		return findByProperty("targetFileName", name, "String");
 	}
 
+	
 }

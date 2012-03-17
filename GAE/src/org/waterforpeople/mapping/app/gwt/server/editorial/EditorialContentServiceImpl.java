@@ -1,13 +1,21 @@
 package org.waterforpeople.mapping.app.gwt.server.editorial;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
+import net.sf.jsr107cache.CacheManager;
 
 import org.waterforpeople.mapping.app.gwt.client.editorial.EditorialPageContentDto;
 import org.waterforpeople.mapping.app.gwt.client.editorial.EditorialPageDto;
 import org.waterforpeople.mapping.app.gwt.client.editorial.EditorialPageService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
+import com.gallatinsystems.common.util.VelocityUtil;
 import com.gallatinsystems.editorial.dao.EditorialPageDao;
 import com.gallatinsystems.editorial.domain.EditorialPage;
 import com.gallatinsystems.editorial.domain.EditorialPageContent;
@@ -21,13 +29,24 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 public class EditorialContentServiceImpl extends RemoteServiceServlet implements
 		EditorialPageService {
+	private static final Logger log = Logger
+			.getLogger(EditorialContentServiceImpl.class.getName());
 
 	private static final long serialVersionUID = 1631722278637197282L;
+	
 	private EditorialPageDao editorialDao;
+	private Cache cache;
 
 	public EditorialContentServiceImpl() {
 		super();
 		editorialDao = new EditorialPageDao();
+		try {
+			cache = CacheManager.getInstance().getCacheFactory()
+					.createCache(Collections.EMPTY_MAP);
+		} catch (CacheException e) {
+			log.log(Level.SEVERE, "Could not initialize cache", e);
+
+		}
 	}
 
 	/**
@@ -72,6 +91,9 @@ public class EditorialContentServiceImpl extends RemoteServiceServlet implements
 		EditorialPage page = new EditorialPage();
 		DtoMarshaller.copyToCanonical(page, content);
 		page = editorialDao.save(page);
+		// update the cache with the new value too
+		cache.put(VelocityUtil.CACHE_KEY_PREFIX + content.getTargetFileName(),
+				content.getTemplate());
 		content.setKeyId(page.getKey().getId());
 		return content;
 	}
