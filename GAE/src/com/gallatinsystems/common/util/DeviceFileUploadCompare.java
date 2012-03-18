@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.log4j.Level;
 import org.jfree.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -421,6 +422,8 @@ public class DeviceFileUploadCompare {
 									DeviceFilesDto dfDto = new DeviceFilesDto();
 									dfDto.setSurveyInstanceId(surveyInstanceId);
 									container.setDeviceFilesDto(dfDto);
+								}else{
+									Log.log(Level.DEBUG_INT, "didn't find survey by geo: " + geoCoord);
 								}
 							} catch (IOException e) {
 								e.printStackTrace();
