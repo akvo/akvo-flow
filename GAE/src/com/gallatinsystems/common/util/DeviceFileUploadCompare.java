@@ -176,11 +176,12 @@ public class DeviceFileUploadCompare {
 		HashMap<S3Item, DeviceFileResponseInternalContainer> filesMap = new HashMap<S3Item, DeviceFileResponseInternalContainer>();
 		Integer iCount = 0;
 		for (S3Item item : s3ItemList) {
-			if (item.getName().startsWith("wfp")
+			if (item.getName().startsWith("devicezip/wfp")
 					&& item.getName().endsWith(".zip")) {
+				//String itemName = item.getName().replace("devicezip/", "");
+				String itemName = item.getName();
 				System.out.print("iCount: " + iCount++ + "   ");
-				DeviceFileResponseInternalContainer container = findFile(item
-						.getName());
+				DeviceFileResponseInternalContainer container = findFile(itemName);
 				filesMap.put(item, container);
 			}
 		}
@@ -417,6 +418,7 @@ public class DeviceFileUploadCompare {
 										"/surveyinstance?fieldName=GEO&value="
 												+ geoCoord);
 								Long surveyInstanceId = parseSurveyInstanceResponse(response);
+								
 								if(surveyInstanceId!=null){
 									container.setFoundByGEOKey(true);
 									DeviceFilesDto dfDto = new DeviceFilesDto();
@@ -428,7 +430,11 @@ public class DeviceFileUploadCompare {
 							} catch (IOException e) {
 								e.printStackTrace();
 							} catch (JSONException e) {
-								e.printStackTrace();
+								Log.log(Level.ERROR_INT, "Got an exception while parsing for geo surveyinstance lookup:" + e.getMessage());
+								container.setFoundByGEOKey(false);
+								DeviceFilesDto dfDto = new DeviceFilesDto();
+								dfDto.setSurveyInstanceId(null);
+								container.setDeviceFilesDto(dfDto);
 							}
 						}
 						break;
