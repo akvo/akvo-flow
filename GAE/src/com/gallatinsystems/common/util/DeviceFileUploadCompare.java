@@ -114,11 +114,13 @@ public class DeviceFileUploadCompare {
 
 	private ArrayList<S3Item> s3ItemList = new ArrayList<S3Item>();
 
-	public void addS3Item(String name, Long sizeBytes, Date lastUpdateDate) {
+	public void addS3Item(String name, Long sizeBytes, Date lastUpdateDate, Boolean processed, Date processedDate) {
 		S3Item item = new S3Item();
 		item.setLastUpdateDate(lastUpdateDate);
 		item.setName(name);
 		item.setSizeBytes(sizeBytes);
+		item.setProcessed(processed);
+		item.setProcessedDate(processedDate);
 		s3ItemList.add(item);
 	}
 
@@ -126,6 +128,24 @@ public class DeviceFileUploadCompare {
 		private String name = null;
 		private Long sizeBytes = null;
 		private Date lastUpdateDate = null;
+		private Boolean processed = null;
+		private Date processedDate = null;
+
+		public Boolean getProcessed() {
+			return processed;
+		}
+
+		public void setProcessed(Boolean processed) {
+			this.processed = processed;
+		}
+
+		public Date getProcessedDate() {
+			return processedDate;
+		}
+
+		public void setProcessedDate(Date processedDate) {
+			this.processedDate = processedDate;
+		}
 
 		public String getName() {
 			return name;
