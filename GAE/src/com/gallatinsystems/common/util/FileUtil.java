@@ -3,9 +3,11 @@ package com.gallatinsystems.common.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -118,11 +120,15 @@ public class FileUtil {
 	 * @param textToWrite
 	 * @param fileName
 	 * @return - the absolute path of the file written
+	 * @throws IOException
 	 */
 	public static String writeToFile(String textToWrite, String fileName) {
 		File outFile = new File(fileName);
 		try {
-			FileWriter out = new FileWriter(outFile);
+			if (!outFile.exists()) {
+				outFile.createNewFile();
+			}
+			FileWriter out = new FileWriter(outFile, true);
 			out.write(textToWrite);
 			out.close();
 		} catch (IOException e) {
@@ -131,6 +137,21 @@ public class FileUtil {
 		}
 		return outFile.getAbsolutePath();
 
+	}
+
+	public static void main(String[] args) {
+		for (Integer i = 0; i < 100; i++) {
+			FileUtil.writeToFile(i.toString()+"\n", "/devenv/reports/example.txt");
+		}
+	}
+
+	public static void appendLineToFile(String textToWrite, String fileName)
+			throws IOException {
+		String eol = System.getProperty("line.separator");  
+		FileWriter out = new FileWriter(fileName,true);
+		BufferedWriter writer = new BufferedWriter(out);
+		writer.write(textToWrite+eol);
+		writer.close();
 	}
 
 	/**

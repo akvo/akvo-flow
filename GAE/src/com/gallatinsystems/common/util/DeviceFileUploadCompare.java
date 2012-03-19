@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -31,10 +32,37 @@ public class DeviceFileUploadCompare {
 	private String serverBase = null;
 
 	class DeviceFileResponseInternalContainer {
-		private Boolean foundFlag = null;
-		private Boolean foundByUUID = null;
-		private Boolean foundByGEOKey = null;
+		private Boolean foundFlag = false;
+		private Boolean foundByUUID = false;
+		private Boolean foundByGEOKey = false;
 		private DeviceFilesDto deviceFilesDto = null;
+		private Boolean emptyFileOnParse = false;
+		private Integer surveysFound = 0;
+		private Boolean errorUnzippingFile = false;
+
+		public Boolean getErrorUnzippingFile() {
+			return errorUnzippingFile;
+		}
+
+		public void setErrorUnzippingFile(Boolean errorUnzippingFile) {
+			this.errorUnzippingFile = errorUnzippingFile;
+		}
+
+		public Integer getSurveysFound() {
+			return surveysFound;
+		}
+
+		public void setSurveysFound(Integer surveysFound) {
+			this.surveysFound = surveysFound;
+		}
+
+		public Boolean getEmptyFileOnParse() {
+			return emptyFileOnParse;
+		}
+
+		public void setEmptyFileOnParse(Boolean emptyFileOnParse) {
+			this.emptyFileOnParse = emptyFileOnParse;
+		}
 
 		public Boolean getFoundFlag() {
 			return foundFlag;
@@ -114,7 +142,8 @@ public class DeviceFileUploadCompare {
 
 	private ArrayList<S3Item> s3ItemList = new ArrayList<S3Item>();
 
-	public void addS3Item(String name, Long sizeBytes, Date lastUpdateDate, Boolean processed, Date processedDate) {
+	public void addS3Item(String name, Long sizeBytes, Date lastUpdateDate,
+			Boolean processed, Date processedDate) {
 		S3Item item = new S3Item();
 		item.setLastUpdateDate(lastUpdateDate);
 		item.setName(name);
@@ -195,17 +224,16 @@ public class DeviceFileUploadCompare {
 	public void compare() {
 		HashMap<S3Item, DeviceFileResponseInternalContainer> filesMap = new HashMap<S3Item, DeviceFileResponseInternalContainer>();
 		Integer iCount = 0;
+		this.writeHeader();
 		for (S3Item item : s3ItemList) {
 			if (item.getName().startsWith("devicezip/wfp")
 					&& item.getName().endsWith(".zip")) {
-				//String itemName = item.getName().replace("devicezip/", "");
 				String itemName = item.getName();
 				System.out.print("iCount: " + iCount++ + "   ");
 				DeviceFileResponseInternalContainer container = findFile(itemName);
-				filesMap.put(item, container);
+				this.writeDetailRow(item, container);
 			}
 		}
-		writeReportDetail(filesMap);
 	}
 
 	private void writeReport(
@@ -243,31 +271,46 @@ public class DeviceFileUploadCompare {
 		}
 	}
 
+	private void writeHeader() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("FileonS3,S3LastUpdateDate, SizeBytes,FoundinDeviceFileFLOW,FoundByUUID,FoundByGEOKey,Status,SurveyInstanceId,ProcessedDate,EmptyFileOnParse,NumberSurveyFoundInFile,ErrorUnzipping\n");
+		this.writeLineToFile(sb.toString());
+	}
+
+	private void writeDetailRow(S3Item s3file,
+			DeviceFileResponseInternalContainer df) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(s3file.getName() + "," + s3file.getLastUpdateDate() + ","
+				+ s3file.getSizeBytes() + ",");
+		if (df != null && df.getFoundFlag() != null) {
+			sb.append(df.getFoundFlag() + ",");
+			sb.append(df.getFoundByUUID() + ",");
+			sb.append(df.getFoundByGEOKey() + ",");
+			if (df.getDeviceFilesDto() != null) {
+				sb.append(df.getDeviceFilesDto().getProcessedStatus() + ","
+						+ df.getDeviceFilesDto().getSurveyInstanceId() + ","
+						+ df.getDeviceFilesDto().getProcessDate() + ","
+						+ df.getEmptyFileOnParse() + "," + df.getSurveysFound()
+						+ ","+df.getErrorUnzippingFile()+"\n");
+			} else {
+				sb.append("null,null,null," + df.getEmptyFileOnParse()
+						+ df.getSurveysFound()+","+df.getErrorUnzippingFile() + "\n");
+			}
+		} else {
+			sb.append("Couldn't obtain FLOW data for file\n");
+		}
+		FileUtil.writeToFile(sb.toString(), fileName);
+	}
+
 	private void writeReportDetail(
 			HashMap<S3Item, DeviceFileResponseInternalContainer> filesMap) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("File on S3,S3 Last Update Date, Size (Bytes),Found in Device File FLOW,Found By UUID, Found By GEO Key, Status,SurveyInstanceId,Processed Date\n");
+
 		for (Entry<S3Item, DeviceFileResponseInternalContainer> item : filesMap
 				.entrySet()) {
 			S3Item s3file = item.getKey();
 			DeviceFileResponseInternalContainer df = item.getValue();
-			sb.append(s3file.getName() + "," + s3file.getLastUpdateDate() + ","
-					+ s3file.getSizeBytes() + ",");
-			if (df != null && df.getFoundFlag() != null) {
-				sb.append(df.getFoundFlag() + ",");
-				sb.append(df.getFoundByUUID()+",");
-				sb.append(df.getFoundByGEOKey()+",");
-				if (df.getFoundFlag()) {
-					sb.append(df.getDeviceFilesDto().getProcessedStatus() + ","
-							+ df.getDeviceFilesDto().getSurveyInstanceId()
-							+ "," + df.getDeviceFilesDto().getProcessDate()
-							+ "\n");
-				} else {
-					sb.append("\n");
-				}
-			} else {
-				sb.append("Couldn't obtain FLOW data for file\n");
-			}
+
 		}
 		System.out.println(sb.toString());
 		BufferedWriter out;
@@ -275,6 +318,17 @@ public class DeviceFileUploadCompare {
 			out = new BufferedWriter(new FileWriter(fileName));
 			out.write(sb.toString());
 			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void writeLineToFile(String line) {
+		try {
+			FileUtil.appendLineToFile(line, fileName);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -335,8 +389,8 @@ public class DeviceFileUploadCompare {
 
 	private DeviceFileResponseInternalContainer parseResponse(String response,
 			String fileName) {
+		DeviceFileResponseInternalContainer container = new DeviceFileResponseInternalContainer();
 		try {
-			DeviceFileResponseInternalContainer container = new DeviceFileResponseInternalContainer();
 			if (response.startsWith("{")) {
 				JSONObject json = new JSONObject(response);
 				if (json.has("foundFlag")) {
@@ -375,7 +429,9 @@ public class DeviceFileUploadCompare {
 				return container;
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			container.setErrorUnzippingFile(true);
+			Log.log(Level.ERROR_INT, "error inflating " + fileName);
+			return container;
 		}
 		return null;
 	}
@@ -411,16 +467,25 @@ public class DeviceFileUploadCompare {
 		return lines;
 	}
 
-	private DeviceFileResponseInternalContainer parseFile(ArrayList<String> unparsedLines, String delimiter, DeviceFileResponseInternalContainer container) {
+	private DeviceFileResponseInternalContainer parseFile(
+			ArrayList<String> unparsedLines, String delimiter,
+			DeviceFileResponseInternalContainer container) {
+		Integer surveysFound = 0;
 		for (String line : unparsedLines) {
-			String[] parts=null;
-			if(line.contains(",")){
-				parts = line.split(",");	
-			}else if(line.contains("/t")){
+			String[] parts = null;
+			if (line.contains(",")) {
+				parts = line.split(",");
+			} else if (line.contains("/t")) {
 				parts = line.split("/t");
 			}
-			
-			if (parts.length < 12) {
+			if (parts == null) {
+				container.setFoundByGEOKey(false);
+				DeviceFilesDto dfDto = new DeviceFilesDto();
+				dfDto.setSurveyInstanceId(null);
+				container.setDeviceFilesDto(dfDto);
+				container.setFoundByUUID(false);
+				container.setEmptyFileOnParse(true);
+			} else if (parts.length <= 11) {
 				// pre uuid so look for geo question
 				int i = 0;
 				String geoCoord = null;
@@ -438,50 +503,80 @@ public class DeviceFileUploadCompare {
 										"/surveyinstance?fieldName=GEO&value="
 												+ geoCoord);
 								Long surveyInstanceId = parseSurveyInstanceResponse(response);
-								
-								if(surveyInstanceId!=null){
+
+								if (surveyInstanceId != null) {
 									container.setFoundByGEOKey(true);
 									DeviceFilesDto dfDto = new DeviceFilesDto();
 									dfDto.setSurveyInstanceId(surveyInstanceId);
 									container.setDeviceFilesDto(dfDto);
-								}else{
-									Log.log(Level.DEBUG_INT, "didn't find survey by geo: " + geoCoord);
+									container.setFoundByUUID(false);
+								} else {
+									Log.log(Level.DEBUG_INT,
+											"didn't find survey by geo: "
+													+ geoCoord);
+									container.setFoundByGEOKey(false);
+									DeviceFilesDto dfDto = new DeviceFilesDto();
+									dfDto.setSurveyInstanceId(null);
+									container.setFoundByUUID(false);
+									container.setDeviceFilesDto(dfDto);
+									surveysFound++;
+									container.setSurveysFound(surveysFound);
 								}
 							} catch (IOException e) {
-								e.printStackTrace();
-							} catch (JSONException e) {
-								Log.log(Level.ERROR_INT, "Got an exception while parsing for geo surveyinstance lookup:" + e.getMessage());
+								Log.log(Level.ERROR_INT,
+										"Got an ioexception while parsing for geo surveyinstance lookup:"
+												+ e.getMessage());
 								container.setFoundByGEOKey(false);
 								DeviceFilesDto dfDto = new DeviceFilesDto();
 								dfDto.setSurveyInstanceId(null);
 								container.setDeviceFilesDto(dfDto);
+								container.setFoundByUUID(false);
+							} catch (JSONException e) {
+								Log.log(Level.ERROR_INT,
+										"Got an exception while parsing for geo surveyinstance lookup:"
+												+ e.getMessage());
+								container.setFoundByGEOKey(false);
+								DeviceFilesDto dfDto = new DeviceFilesDto();
+								dfDto.setSurveyInstanceId(null);
+								container.setDeviceFilesDto(dfDto);
+								container.setFoundByUUID(false);
 							}
 						}
-						break;
 					}
 					i++;
 				}
-			} else if (parts.length >= 12) {
+			} else if (parts.length > 11) {
 				String uuid = parts[parts.length - 1];
 				if (uuid != null && uuid.trim().length() > 0) {
-
 					try {
 						String response = exectueRequest(
 								"watermappingmonitoring.appspot.com",
 								"/surveyinstance?fieldName=uuid&value=" + uuid);
 						Long surveyInstanceId = parseSurveyInstanceResponse(response);
-						if(surveyInstanceId!=null){
+						if (surveyInstanceId != null) {
 							container.setFoundByUUID(true);
 							DeviceFilesDto dfDto = new DeviceFilesDto();
 							dfDto.setSurveyInstanceId(surveyInstanceId);
 							container.setDeviceFilesDto(dfDto);
+							container.setFoundByGEOKey(false);
+							break;
 						}
-
 					} catch (IOException e) {
-						e.printStackTrace();
+						Log.log(Level.ERROR_INT, e.getMessage());
+						container.setFoundByUUID(false);
+						DeviceFilesDto dfDto = new DeviceFilesDto();
+						dfDto.setSurveyInstanceId(null);
+						container.setDeviceFilesDto(dfDto);
+						container.setFoundByGEOKey(false);
+						break;
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						Log.log(Level.ERROR_INT, e.getMessage());
+						container.setFoundByUUID(false);
+						DeviceFilesDto dfDto = new DeviceFilesDto();
+						dfDto.setSurveyInstanceId(null);
+						container.setDeviceFilesDto(dfDto);
+						container.setFoundByGEOKey(false);
+						break;
 					}
 				}
 			}
@@ -495,7 +590,11 @@ public class DeviceFileUploadCompare {
 		if (response.startsWith("{")) {
 			JSONObject json = new JSONObject(response);
 			if (json.has("surveyInstanceId")) {
-				surveyInstanceId = json.getLong("surveyInstanceId");
+				if (json.getString("surveyInstanceId").equalsIgnoreCase("null")) {
+					return null;
+				} else {
+					surveyInstanceId = json.getLong("surveyInstanceId");
+				}
 			}
 		}
 		return surveyInstanceId;
