@@ -282,7 +282,7 @@ public class DeviceFileUploadCompare {
 		StringBuilder sb = new StringBuilder();
 		sb.append(s3file.getName() + "," + s3file.getLastUpdateDate() + ","
 				+ s3file.getSizeBytes() + ",");
-		String fullUri = s3file.getName().replace("devicezips/", prefix);
+		String fullUri = s3file.getName().replace("devicezip/", prefix);
 		if (df != null && df.getFoundFlag() != null) {
 			sb.append(df.getFoundFlag() + ",");
 			sb.append(df.getFoundByUUID() + ",");
