@@ -30,7 +30,7 @@ import services.S3Driver;
 
 public class DeviceFileUploadCompare {
 	private String serverBase = null;
-
+	static String eol = System.getProperty("line.separator");
 	class DeviceFileResponseInternalContainer {
 		private Boolean foundFlag = false;
 		private Boolean foundByUUID = false;
@@ -273,7 +273,7 @@ public class DeviceFileUploadCompare {
 
 	private void writeHeader() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("FileonS3,S3LastUpdateDate, SizeBytes,FoundinDeviceFileFLOW,FoundByUUID,FoundByGEOKey,Status,SurveyInstanceId,ProcessedDate,EmptyFileOnParse,NumberSurveyFoundInFile,ErrorUnzipping\n");
+		sb.append("FileonS3,S3LastUpdateDate, SizeBytes,FoundinDeviceFileFLOW,FoundByUUID,FoundByGEOKey,Status,SurveyInstanceId,ProcessedDate,EmptyFileOnParse,NumberSurveyFoundInFile,ErrorUnzipping,FullPathZip"+eol);
 		this.writeLineToFile(sb.toString());
 	}
 
@@ -282,6 +282,7 @@ public class DeviceFileUploadCompare {
 		StringBuilder sb = new StringBuilder();
 		sb.append(s3file.getName() + "," + s3file.getLastUpdateDate() + ","
 				+ s3file.getSizeBytes() + ",");
+		String fullUri = s3file.getName().replace("devicezips/", prefix);
 		if (df != null && df.getFoundFlag() != null) {
 			sb.append(df.getFoundFlag() + ",");
 			sb.append(df.getFoundByUUID() + ",");
@@ -291,39 +292,18 @@ public class DeviceFileUploadCompare {
 						+ df.getDeviceFilesDto().getSurveyInstanceId() + ","
 						+ df.getDeviceFilesDto().getProcessDate() + ","
 						+ df.getEmptyFileOnParse() + "," + df.getSurveysFound()
-						+ ","+df.getErrorUnzippingFile()+"\n");
+						+ ","+df.getErrorUnzippingFile());
 			} else {
-				sb.append("null,null,null," + df.getEmptyFileOnParse()
-						+ df.getSurveysFound()+","+df.getErrorUnzippingFile() + "\n");
+				sb.append("null,null,null," + df.getEmptyFileOnParse()+","
+						+ df.getSurveysFound()+","+df.getErrorUnzippingFile());
 			}
+			sb.append(","+fullUri+eol);
 		} else {
-			sb.append("Couldn't obtain FLOW data for file\n");
+			sb.append("Couldn't obtain FLOW data for file"+eol);
 		}
 		FileUtil.writeToFile(sb.toString(), fileName);
 	}
-
-	private void writeReportDetail(
-			HashMap<S3Item, DeviceFileResponseInternalContainer> filesMap) {
-		StringBuilder sb = new StringBuilder();
-
-		for (Entry<S3Item, DeviceFileResponseInternalContainer> item : filesMap
-				.entrySet()) {
-			S3Item s3file = item.getKey();
-			DeviceFileResponseInternalContainer df = item.getValue();
-
-		}
-		System.out.println(sb.toString());
-		BufferedWriter out;
-		try {
-			out = new BufferedWriter(new FileWriter(fileName));
-			out.write(sb.toString());
-			out.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
+	
 	private void writeLineToFile(String line) {
 		try {
 			FileUtil.appendLineToFile(line, fileName);
@@ -336,13 +316,14 @@ public class DeviceFileUploadCompare {
 	}
 
 	private String fileName = null;
-
+	String prefix = "http://waterforpeople.s3.amazonaws.com/";
+	
 	private DeviceFileResponseInternalContainer findFile(String fileName) {
 		String serviceUrl = "/devicefilesrestapi?action=%s&"
 				+ "deviceFullPath=%s";
 		String urlRequest = null;
 		String actionParam = "findDeviceFile";
-		String prefix = "http://waterforpeople.s3.amazonaws.com/";
+		
 		urlRequest = String.format(serviceUrl, actionParam, prefix + fileName);
 		try {
 			return sendRequest(getServerBase(), urlRequest, prefix + fileName);
