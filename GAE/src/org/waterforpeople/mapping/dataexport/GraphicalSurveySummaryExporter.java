@@ -446,9 +446,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			}
 			if (val != null) {
 				if (val.contains(SDCARD_PREFIX)) {
-					val = imagePrefix
-							+ val.substring(val.indexOf(SDCARD_PREFIX)
-									+ SDCARD_PREFIX.length());
+					String[] photoParts = val.split("/");
+					if(photoParts.length>1){
+						val = imagePrefix + photoParts[photoParts.length-1];
+					}else{
+						val = imagePrefix
+						+ val.substring(val.indexOf(SDCARD_PREFIX)
+								+ SDCARD_PREFIX.length());
+					}					
 				}
 				String cellVal = val.replaceAll("\n", " ").trim();
 				createCell(row, col++, cellVal, null);

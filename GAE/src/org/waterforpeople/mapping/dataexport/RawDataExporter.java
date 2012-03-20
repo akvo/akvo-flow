@@ -139,13 +139,16 @@ public class RawDataExporter extends AbstractDataExporter {
 							for (String key : idList) {
 								String val = responses.get(key);
 								pw.write("\t");
-								if (val != null) {
+								if (val != null) {																		
 									if (val.contains(SDCARD_PREFIX)) {
-										val = imagePrefix
-												+ val.substring(val
-														.indexOf(SDCARD_PREFIX)
-														+ SDCARD_PREFIX
-																.length());
+										String[] photoParts = val.split("/");
+										if(photoParts.length>1){
+											val = imagePrefix + photoParts[photoParts.length-1];
+										}else{
+											val = imagePrefix
+											+ val.substring(val.indexOf(SDCARD_PREFIX)
+													+ SDCARD_PREFIX.length());
+										}										
 									}
 									pw.write(val.replaceAll("\n", " ").trim());
 								}

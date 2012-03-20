@@ -293,17 +293,9 @@ public class AccessPointHelper {
 					|| qas.getType().equals("PHOTO")) {
 				String newURL = null;
 				String[] photoParts = qas.getValue().split("/");
-				if (photoParts.length > 1) {
-					if (qas.getValue().startsWith("/sdcard")) {
-						newURL = photo_url_root + photoParts[2];
-					} else if (qas.getValue().startsWith("/mnt")) {
-						newURL = photo_url_root + photoParts[3];
-					} else {
-						// otherwise, take the last token and concatenate with
-						// the photo_url_root
+				if (photoParts.length > 1) {				
 						newURL = photo_url_root
-								+ photoParts[photoParts.length - 1];
-					}
+								+ photoParts[photoParts.length - 1];				
 				} else if (photoParts.length == 1) {
 					// handle the case where we only have the filename (no
 					// paths)
