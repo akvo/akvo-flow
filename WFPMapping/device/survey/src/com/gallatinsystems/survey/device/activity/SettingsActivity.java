@@ -352,6 +352,9 @@ public class SettingsActivity extends ListActivity {
 																	false);
 															
 															//now delete exported zips and images
+															FileUtil.deleteFilesMatchingExpression(FileUtil.getStorageDirectory(ConstantUtil.SURVEYAL_DIR,useInternalStorage),"wfp[0-9]+\\.zip",true);
+															FileUtil.deleteFilesMatchingExpression(FileUtil.getStorageDirectory(ConstantUtil.SURVEYAL_DIR,useInternalStorage),"fpPhoto[0-9]+\\.jpg",true);
+															//handle "legacy" storage location. This can be removed once all phones have been cleaned and are using the new storage path 
 															FileUtil.deleteFilesMatchingExpression(Environment.getExternalStorageDirectory().getAbsolutePath(),"wfp[0-9]+\\.zip");
 															FileUtil.deleteFilesMatchingExpression(Environment.getExternalStorageDirectory().getAbsolutePath(),"wfpPhoto[0-9]+\\.jpg");
 

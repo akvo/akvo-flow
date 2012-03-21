@@ -25,7 +25,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -34,6 +33,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.util.Base64;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
 import com.gallatinsystems.survey.device.util.MultipartStream;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
@@ -126,9 +126,8 @@ public class DataSyncService extends Service {
 	 */
 	public void onCreate() {
 		super.onCreate();
-		Thread
-				.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
-						.getInstance());
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+				.getInstance());
 		props = new PropertyUtil(getResources());
 	}
 
@@ -223,10 +222,8 @@ public class DataSyncService extends Service {
 								}
 								fireNotification(ConstantUtil.SEND, destName);
 							} else {
-								Log
-										.e(
-												TAG,
-												"Could not update send status of data in the database. It will be resent on next execution of the service");
+								Log.e(TAG,
+										"Could not update send status of data in the database. It will be resent on next execution of the service");
 							}
 						}
 					} else {
@@ -381,12 +378,10 @@ public class DataSyncService extends Service {
 									String name = ZIP_IMAGE_DIR;
 									if (imagePaths.get(i).contains("/")) {
 										name = name
-												+ paths
-														.getValue()
+												+ paths.getValue()
 														.get(i)
 														.substring(
-																paths
-																		.getValue()
+																paths.getValue()
 																		.get(i)
 																		.lastIndexOf(
 																				"/") + 1);
@@ -415,10 +410,8 @@ public class DataSyncService extends Service {
 									boolean isOk = sendFile(
 											paths.getValue().get(i),
 											S3_IMAGE_FILE_PATH,
-											props
-													.getProperty(ConstantUtil.IMAGE_S3_POLICY),
-											props
-													.getProperty(ConstantUtil.IMAGE_S3_SIG),
+											props.getProperty(ConstantUtil.IMAGE_S3_POLICY),
+											props.getProperty(ConstantUtil.IMAGE_S3_SIG),
 											IMAGE_CONTENT_TYPE);
 									if (isOk) {
 										databaseAdaptor
@@ -511,34 +504,20 @@ public class DataSyncService extends Service {
 					buf.append(plotId).append(",");
 					plotIds.add(plotId);
 					buf.append(plotPointId).append(",");
-					buf
-							.append(data
-									.getString(data
-											.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
-					buf
-							.append(",")
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.LAT_COL)));
-					buf
-							.append(",")
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.LON_COL)));
-					buf
-							.append(",")
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.ELEVATION_COL)));
-					buf
-							.append(",")
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.CREATED_DATE_COL)));
+					buf.append(data.getString(data
+							.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL)));
+					buf.append(",")
+							.append(data.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.LAT_COL)));
+					buf.append(",")
+							.append(data.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.LON_COL)));
+					buf.append(",")
+							.append(data.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.ELEVATION_COL)));
+					buf.append(",")
+							.append(data.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.CREATED_DATE_COL)));
 					buf.append("\n");
 				} while (data.moveToNext());
 			}
@@ -583,7 +562,7 @@ public class DataSyncService extends Service {
 				if (deviceIdentifier == null) {
 					deviceIdentifier = "unset";
 				} else {
-					deviceIdentifier = cleanVal(deviceIdentifier);					
+					deviceIdentifier = cleanVal(deviceIdentifier);
 				}
 				do {
 
@@ -598,11 +577,9 @@ public class DataSyncService extends Service {
 						continue;
 					}
 
-					buf
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
+					buf.append(
+							data.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
 							.append(DELIMITER);
 
 					String type = data
@@ -610,32 +587,21 @@ public class DataSyncService extends Service {
 									.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_TYPE_COL));
 					buf.append(data.getString(data
 							.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
-					buf
-							.append(DELIMITER)
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_FK_COL)));
+					buf.append(DELIMITER)
+							.append(data.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_FK_COL)));
 					buf.append(DELIMITER).append(type);
 					buf.append(DELIMITER).append(value);
-					
-					buf
-							.append(DELIMITER)
-							.append(cleanVal(data
-									.getString(data
-											.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL))));
-					buf
-							.append(DELIMITER)
-							.append(cleanVal(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL))));
-					buf
-							.append(DELIMITER)
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
+
+					buf.append(DELIMITER)
+							.append(cleanVal(data.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL))));
+					buf.append(DELIMITER)
+							.append(cleanVal(data.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL))));
+					buf.append(DELIMITER)
+							.append(data.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
 					buf.append(DELIMITER).append(deviceIdentifier);
 					String scoredVal = data
 							.getString(data
@@ -647,12 +613,9 @@ public class DataSyncService extends Service {
 									.getColumnIndexOrThrow(SurveyDbAdapter.STRENGTH_COL));
 					buf.append(DELIMITER).append(
 							strength != null ? strength : "");
-					buf
-							.append(DELIMITER)
-							.append(
-									data
-											.getString(data
-													.getColumnIndexOrThrow(SurveyDbAdapter.UUID_COL)));
+					buf.append(DELIMITER)
+							.append(data.getString(data
+									.getColumnIndexOrThrow(SurveyDbAdapter.UUID_COL)));
 					buf.append("\n");
 
 					String respId = data.getString(data
@@ -678,13 +641,13 @@ public class DataSyncService extends Service {
 			}
 		}
 	}
-	
-	private String cleanVal(String val){
-		if(val != null){
-			if(val.contains(DELIMITER)){
+
+	private String cleanVal(String val) {
+		if (val != null) {
+			if (val.contains(DELIMITER)) {
 				val = val.replaceAll(DELIMITER, " ");
 			}
-			if(val.contains(",")){
+			if (val.contains(",")) {
 				val.replaceAll(",", " ");
 			}
 		}
@@ -710,12 +673,12 @@ public class DataSyncService extends Service {
 			final String fileNameForNotification = fileName;
 			fireNotification(ConstantUtil.PROGRESS, fileName);
 
-			MultipartStream stream = new MultipartStream(new URL(props
-					.getProperty(ConstantUtil.DATA_UPLOAD_URL)));
+			MultipartStream stream = new MultipartStream(new URL(
+					props.getProperty(ConstantUtil.DATA_UPLOAD_URL)));
 
 			stream.addFormField("key", dir + "/${filename}");
-			stream.addFormField("AWSAccessKeyId", props
-					.getProperty(ConstantUtil.S3_ID));
+			stream.addFormField("AWSAccessKeyId",
+					props.getProperty(ConstantUtil.S3_ID));
 			stream.addFormField("acl", "public-read");
 			stream.addFormField("success_action_redirect",
 					"http://www.gallatinsystems.com/SuccessUpload.html");
@@ -736,9 +699,9 @@ public class DataSyncService extends Service {
 							if (percentComplete >= 1) {
 								percentComplete = 0.99d;
 							}
-							fireNotification(ConstantUtil.PROGRESS, PCT_FORMAT
-									.format(percentComplete)
-									+ " - " + fileNameForNotification);
+							fireNotification(ConstantUtil.PROGRESS,
+									PCT_FORMAT.format(percentComplete) + " - "
+											+ fileNameForNotification);
 
 						}
 					});
@@ -768,9 +731,15 @@ public class DataSyncService extends Service {
 	 * @return
 	 */
 	private String createFileName(boolean isAll) {
-		return Environment.getExternalStorageDirectory().getAbsolutePath()
-				+ TEMP_FILE_NAME + System.nanoTime() + (isAll ? "-all-" : "")
-				+ ".zip";
+		String fileName =TEMP_FILE_NAME + System.nanoTime() + ".zip"; 
+		String dir = FileUtil.getStorageDirectory(ConstantUtil.SURVEYAL_DIR,
+				fileName,
+				props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE));
+		FileUtil.findOrCreateDir(dir);		
+		if(isAll){
+			fileName = fileName.replace(".zip", "-all.zip");
+		}		
+		return dir + File.separator + fileName;
 	}
 
 	/**

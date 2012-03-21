@@ -200,9 +200,10 @@ public class FileUtil {
 	 * directories. If the file name is < 5 characters long, it will be padded
 	 * with 0
 	 * 
-	 * as an example:
-	 * getStorageDirectory("test","photo12345.jpg", false) would return something like "/sdcard/test/1/2/3/4/5/"
-	 * and getStorageDirectory("test,"abc.jpg",false) would return something like "/sdcard/test/a/b/c/0/0"
+	 * as an example: getStorageDirectory("test","photo12345.jpg", false) would
+	 * return something like "/sdcard/test/1/2/3/4/5/" and
+	 * getStorageDirectory("test,"
+	 * abc.jpg",false) would return something like "/sdcard/test/a/b/c/0/0"
 	 * 
 	 * @param subDir
 	 * @param fileName
@@ -213,7 +214,7 @@ public class FileUtil {
 			String useInternalStorage) {
 		String dir = "";
 		if (useInternalStorage == null
-				|| "false".equalsIgnoreCase(useInternalStorage)) {
+				|| !"true".equalsIgnoreCase(useInternalStorage)) {
 			dir = Environment.getExternalStorageDirectory().getAbsolutePath();
 
 		} else {
@@ -225,21 +226,21 @@ public class FileUtil {
 		if (subDir != null) {
 			dir += subDir;
 		}
-		if(fileName != null){			
-			if(fileName.contains(".")){
-				fileName = fileName.substring(0,fileName.lastIndexOf("."));
+		if (fileName != null) {
+			if (fileName.contains(".")) {
+				fileName = fileName.substring(0, fileName.lastIndexOf("."));
 			}
 			char[] fileChars = fileName.toCharArray();
 			int count = 0;
-			for(int i =Math.max(0,fileChars.length-5); i <fileChars.length; i++ ){
-				dir = dir+File.separator+fileChars[i];
+			for (int i = Math.max(0, fileChars.length - 5); i < fileChars.length; i++) {
+				dir = dir + File.separator + fileChars[i];
 				count++;
 			}
-			if(count < 5){
-				for(int i =count; i < 5; i++){
-					dir = dir+File.separator+"0";
+			if (count < 5) {
+				for (int i = count; i < 5; i++) {
+					dir = dir + File.separator + "0";
 				}
-			}	
+			}
 		}
 		return dir;
 	}
@@ -279,14 +280,44 @@ public class FileUtil {
 	 */
 	public static void deleteFilesMatchingExpression(String path,
 			String expression) {
-		if (path != null) {
-			File dir = new File(path);
-			if (dir.isDirectory()) {
-				File[] files = dir.listFiles();
+		deleteFilesMatchingExpression(new File(path), expression, false);
+	}
+	
+	/**
+	 * non-recursive delete of all files in a single directory that match the
+	 * expression (regex) passed in
+	 * 
+	 * @param path
+	 * @param expression
+	 */
+	public static void deleteFilesMatchingExpression(String path,
+			String expression, boolean recurse) {
+		deleteFilesMatchingExpression(new File(path), expression, recurse);
+	}
+
+	/**
+	 * delete of all files in a single directory that match the
+	 * expression (regex) passed in
+	 * 
+	 * @param path
+	 * @param expression
+	 * @param recurse
+	 *            - if true, traverse subdirs too
+	 */
+	public static void deleteFilesMatchingExpression(File root,
+			String expression, boolean recurse) {
+		if (root != null) {			
+			if (root.isDirectory()) {
+				File[] files = root.listFiles();
 				if (files != null) {
 					for (int i = 0; i < files.length; i++) {
-						if (files[i].getName().matches(expression)) {
-							files[i].delete();
+						if (recurse && files[i].isDirectory()) {
+							deleteFilesMatchingExpression(files[i], expression,
+									recurse);
+						} else if (files[i].isFile()) {
+							if (files[i].getName().matches(expression)) {
+								files[i].delete();
+							}
 						}
 					}
 				}

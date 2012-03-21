@@ -71,8 +71,8 @@ public class SurveyViewActivity extends TabActivity implements
 
 	private static final float LARGE_TXT_SIZE = 22;
 	private static final float NORMAL_TXT_SIZE = 14;
-	private static final String TEMP_PHOTO_NAME_PREFIX = "/wfpPhoto";
-	private static final String TEMP_VIDEO_NAME_PREFIX = "/wfpVideo";
+	private static final String TEMP_PHOTO_NAME_PREFIX = "wfpPhoto";
+	private static final String TEMP_VIDEO_NAME_PREFIX = "wfpVideo";
 	private static final String VIDEO_PREFIX = "file:////";
 	private static final String HTTP_PREFIX = "http://";
 	private static final String VIDEO_TYPE = "video/*";
@@ -317,17 +317,16 @@ public class SurveyViewActivity extends TabActivity implements
 					}
 
 					File f = new File(Environment.getExternalStorageDirectory()
-							.getAbsolutePath() + filePrefix + fileSuffix);
-					String newName = Environment.getExternalStorageDirectory()
-							.getAbsolutePath()
-							+ filePrefix
-							+ System.nanoTime()
-							+ fileSuffix;
-					f.renameTo(new File(newName));
+							.getAbsolutePath() + File.separator+filePrefix + fileSuffix);
+					String newFilename = filePrefix+System.nanoTime()+fileSuffix;
+					String newPath = FileUtil.getStorageDirectory(ConstantUtil.SURVEYAL_DIR,newFilename,props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE));
+					FileUtil.findOrCreateDir(newPath);
+					String absoluteFile = newPath+File.separator+newFilename;
+					f.renameTo(new File(absoluteFile));
 					try {
 						Bundle photoData = new Bundle();
 						photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
-								newName);
+								absoluteFile);
 						if (eventQuestionSource != null) {
 							eventQuestionSource.questionComplete(photoData);
 						} else if (eventSourceQuestionId != null) {
@@ -463,7 +462,7 @@ public class SurveyViewActivity extends TabActivity implements
 					android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 			i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri
 					.fromFile(new File(Environment
-							.getExternalStorageDirectory().getAbsolutePath()
+							.getExternalStorageDirectory().getAbsolutePath()+File.separator
 							+ TEMP_PHOTO_NAME_PREFIX + IMAGE_SUFFIX)));
 			if (event.getSource() != null) {
 				eventQuestionSource = event.getSource();
@@ -547,7 +546,7 @@ public class SurveyViewActivity extends TabActivity implements
 					android.provider.MediaStore.ACTION_VIDEO_CAPTURE);
 			i.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri
 					.fromFile(new File(Environment
-							.getExternalStorageDirectory().getAbsolutePath()
+							.getExternalStorageDirectory().getAbsolutePath()+File.separator
 							+ TEMP_VIDEO_NAME_PREFIX + VIDEO_SUFFIX)));
 			if (event.getSource() != null) {
 				eventQuestionSource = event.getSource();
