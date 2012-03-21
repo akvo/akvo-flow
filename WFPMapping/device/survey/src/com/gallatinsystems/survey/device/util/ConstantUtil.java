@@ -14,9 +14,10 @@ import com.gallatinsystems.survey.device.activity.WaterflowCalculatorActivity;
 public class ConstantUtil {
 
 	/**
-	 * filesystem constants
+	 * file system constants
 	 */
 	public static final String DATA_DIR = "fieldsurvey/data/";
+	public static final String SURVEYAL_DIR = "fieldsurvey/surveyal";
 	public static final String FILE_SURVEY_LOCATION_TYPE = "file";
 	public static final String ARCHIVE_SUFFIX = ".zip";
 	public static final String XML_SUFFIX = ".xml";

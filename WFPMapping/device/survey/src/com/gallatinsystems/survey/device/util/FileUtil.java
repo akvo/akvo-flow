@@ -179,7 +179,37 @@ public class FileUtil {
 		return in;
 	}
 
+	/**
+	 * returns the path to the storage directory rooted at either the internal
+	 * or external storage root. This method will NOT create any directories.
+	 * 
+	 * @param subDir
+	 * @param useInternalStorage
+	 * @return
+	 */
 	public static String getStorageDirectory(String subDir,
+			String useInternalStorage) {
+		return getStorageDirectory(subDir, null, useInternalStorage);
+	}
+
+	/**
+	 * returns the full path to a storage directory rooted at either the
+	 * internal or external storage root. If subdir is not null, it will be
+	 * appended to the root. If fileName is not null, the last 5 characters of
+	 * the filename (before the file extension, if any) will be used as
+	 * directories. If the file name is < 5 characters long, it will be padded
+	 * with 0
+	 * 
+	 * as an example:
+	 * getStorageDirectory("test","photo12345.jpg", false) would return something like "/sdcard/test/1/2/3/4/5/"
+	 * and getStorageDirectory("test,"abc.jpg",false) would return something like "/sdcard/test/a/b/c/0/0"
+	 * 
+	 * @param subDir
+	 * @param fileName
+	 * @param useInternalStorage
+	 * @return
+	 */
+	public static String getStorageDirectory(String subDir, String fileName,
 			String useInternalStorage) {
 		String dir = "";
 		if (useInternalStorage == null
@@ -194,6 +224,22 @@ public class FileUtil {
 		}
 		if (subDir != null) {
 			dir += subDir;
+		}
+		if(fileName != null){			
+			if(fileName.contains(".")){
+				fileName = fileName.substring(0,fileName.lastIndexOf("."));
+			}
+			char[] fileChars = fileName.toCharArray();
+			int count = 0;
+			for(int i =Math.max(0,fileChars.length-5); i <fileChars.length; i++ ){
+				dir = dir+File.separator+fileChars[i];
+				count++;
+			}
+			if(count < 5){
+				for(int i =count; i < 5; i++){
+					dir = dir+File.separator+"0";
+				}
+			}	
 		}
 		return dir;
 	}
@@ -233,13 +279,13 @@ public class FileUtil {
 	 */
 	public static void deleteFilesMatchingExpression(String path,
 			String expression) {
-		if(path != null){
+		if (path != null) {
 			File dir = new File(path);
-			if(dir.isDirectory()){
+			if (dir.isDirectory()) {
 				File[] files = dir.listFiles();
-				if(files != null){
-					for (int i =0; i < files.length; i++){
-						if(files[i].getName().matches(expression)){
+				if (files != null) {
+					for (int i = 0; i < files.length; i++) {
+						if (files[i].getName().matches(expression)) {
 							files[i].delete();
 						}
 					}

@@ -460,7 +460,9 @@ public class NearbyItemActivity extends ListActivity implements
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								dialog.dismiss();
+								if(dialog != null){
+									dialog.dismiss();
+								}
 
 							}
 						}).create();

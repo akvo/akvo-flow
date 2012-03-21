@@ -58,8 +58,9 @@ public class PointsOfInterestOverlay extends GeoOverlay {
 			builder.setPositiveButton(R.string.okbutton,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-
-							dialog.dismiss();
+							if(dialog != null){
+								dialog.dismiss();
+							}
 						}
 					});
 			builder.show();

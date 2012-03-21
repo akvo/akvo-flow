@@ -155,7 +155,9 @@ public class FreetextQuestionView extends QuestionView implements
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int id) {
-										dialog.dismiss();
+										if(dialog!=null){
+											dialog.dismiss();
+										}
 									}
 								});
 						builder.show();

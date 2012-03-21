@@ -340,7 +340,9 @@ public class RegionPlotActivity extends MapActivity implements OnClickListener,
 					dbAdaptor.savePreference(
 							ConstantUtil.PLOT_INTERVAL_SETTING_KEY, interval
 									+ "");
-					dialog.dismiss();
+					if(dialog != null){
+						dialog.dismiss();
+					}
 				}
 			});
 			builder.show();

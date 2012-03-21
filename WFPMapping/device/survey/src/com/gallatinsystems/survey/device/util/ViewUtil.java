@@ -266,7 +266,9 @@ public class ViewUtil {
 										public void onClick(
 												DialogInterface dialog,
 												int which) {
-											dialog.dismiss();
+											if(dialog != null){
+												dialog.dismiss();
+											}
 											displaySelectionDialog(context,
 													selections, listener,
 													labelResourceId,
@@ -299,11 +301,15 @@ public class ViewUtil {
 						String val = input.getText().toString();
 						if (ConstantUtil.ADMIN_AUTH_CODE.equals(val)) {
 							listener.onAuthenticated();
-							dialog.dismiss();
+							if(dialog!=null){
+								dialog.dismiss();
+							}
 						} else {
 							showConfirmDialog(R.string.authfailed,
 									R.string.invalidpassword, parentContext);
-							dialog.dismiss();
+							if(dialog != null){
+								dialog.dismiss();
+							}
 						}
 					}
 				});
@@ -338,7 +344,9 @@ public class ViewUtil {
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
+						if(dialog!=null){
+							dialog.dismiss();
+						}
 					}
 				});
 

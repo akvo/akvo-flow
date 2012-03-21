@@ -525,7 +525,9 @@ public class OptionQuestionView extends QuestionView {
 						if (otherText != null) {
 							otherText.setText(latestOtherText);
 						}
-						dialog.dismiss();
+						if(dialog != null){
+							dialog.dismiss();
+						}
 					}
 				});
 		otherDialog.setNegativeButton(R.string.cancelbutton,
@@ -534,7 +536,9 @@ public class OptionQuestionView extends QuestionView {
 						setResponse(new QuestionResponse("",
 								ConstantUtil.OTHER_RESPONSE_TYPE, question
 										.getId()));
-						dialog.dismiss();
+						if(dialog != null){
+							dialog.dismiss();
+						}
 					}
 				});
 		otherDialog.show();

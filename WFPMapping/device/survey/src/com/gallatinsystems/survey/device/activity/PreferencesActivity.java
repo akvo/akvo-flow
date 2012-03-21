@@ -265,7 +265,9 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 							languageTextView.setText(ArrayPreferenceUtil
 									.formSelectedItemString(languageArray,
 											selectedLanguages));
-							dialog.dismiss();
+							if(dialog!=null){
+								dialog.dismiss();
+							}
 						}
 					});
 		} else if (R.id.precachehelpbutton == v.getId()) {
@@ -324,7 +326,9 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 									.formSelectedItemString(
 											precacheCountryArray,
 											selectedPrecacheCountries));
-							dialog.dismiss();
+							if(dialog!=null){
+								dialog.dismiss();
+							}
 						}
 					});
 		} else if (R.id.identbutton == v.getId()) {
@@ -392,7 +396,9 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 								sendBroadcast(new Intent(actionIntent));
 							}
 						}
-						dialog.dismiss();
+						if(dialog != null){
+							dialog.dismiss();
+						}
 					}
 				});
 		builder.show();

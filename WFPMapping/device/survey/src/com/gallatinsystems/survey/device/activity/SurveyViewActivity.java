@@ -716,7 +716,9 @@ public class SurveyViewActivity extends TabActivity implements
 			ViewUtil.displayLanguageSelector(this, selectedLanguages,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int clicked) {
-							dialog.dismiss();
+							if(dialog!=null){
+								dialog.dismiss();
+							}
 							selectedLanguageCodes = ArrayPreferenceUtil
 									.getSelectedCodes(SurveyViewActivity.this,
 											selectedLanguages,
@@ -746,7 +748,9 @@ public class SurveyViewActivity extends TabActivity implements
 								databaseAdapter.deleteResponses(respondentId
 										.toString());
 								resetAllQuestions();
-								dialog.dismiss();
+								if(dialog!=null){
+									dialog.dismiss();
+								}
 							}
 						});
 
@@ -764,7 +768,9 @@ public class SurveyViewActivity extends TabActivity implements
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								dialog.dismiss();
+								if(dialog!=null){
+									dialog.dismiss();
+								}
 								startNewSurvey();
 
 							}

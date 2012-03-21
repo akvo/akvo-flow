@@ -51,7 +51,9 @@ public class GeoPlotOverlay extends GeoOverlay {
 								plotActivity.deletePoint(index);
 								mapView.invalidate();
 							}
-							dialog.dismiss();
+							if(dialog!=null){
+								dialog.dismiss();
+							}
 						}
 					});
 			builder.setNegativeButton(R.string.cancelbutton,

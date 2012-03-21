@@ -233,7 +233,9 @@ public class QuestionView extends TableLayout implements
 				} else {
 					displayHelp(ConstantUtil.ACTIVITY_HELP_TYPE);
 				}
-				dialog.dismiss();
+				if(dialog != null){
+					dialog.dismiss();
+				}
 			}
 		});
 		builder.show();
