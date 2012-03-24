@@ -98,40 +98,43 @@ public class QuestionDao extends BaseDAO<Question> {
 	}
 
 	public void delete(Question question) throws IllegalDeletionException {
-		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-		if (qasDao.listByQuestion(question.getKey().getId()).size() == 0) {
-			for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
-					.listOptionByQuestion(question.getKey().getId()).entrySet()) {
-				SurveyTaskUtil.spawnDeleteTask("deleteQuestionOptions", qoItem
-						.getValue().getKey().getId());
-			}
-			TranslationDao tDao = new TranslationDao();
-			tDao.deleteTranslationsForParent(question.getKey().getId(),
-					Translation.ParentType.QUESTION_TEXT);
-			// TODO:Implement help media delete
-			Question q = getByKey(question.getKey());
-			if (q != null) {
-				int order = q.getOrder();
-				Long groupId = q.getQuestionGroupId();
-				super.delete(q);
-				// now adjust other orders
-				TreeMap<Integer, Question> groupQs = listQuestionsByQuestionGroup(
-						groupId, false);
-				if (groupQs != null) {
-					for (Question gq : groupQs.values()) {
-						if (gq.getOrder() >= order) {
-							gq.setOrder(gq.getOrder() - 1);
+		if (question != null) {
+			QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+			if (qasDao.listByQuestion(question.getKey().getId()).size() == 0) {
+				for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
+						.listOptionByQuestion(question.getKey().getId())
+						.entrySet()) {
+					SurveyTaskUtil.spawnDeleteTask("deleteQuestionOptions",
+							qoItem.getValue().getKey().getId());
+				}
+				TranslationDao tDao = new TranslationDao();
+				tDao.deleteTranslationsForParent(question.getKey().getId(),
+						Translation.ParentType.QUESTION_TEXT);
+				// TODO:Implement help media delete
+				Question q = getByKey(question.getKey());
+				if (q != null) {
+					int order = q.getOrder();
+					Long groupId = q.getQuestionGroupId();
+					super.delete(q);
+					// now adjust other orders
+					TreeMap<Integer, Question> groupQs = listQuestionsByQuestionGroup(
+							groupId, false);
+					if (groupQs != null) {
+						for (Question gq : groupQs.values()) {
+							if (gq.getOrder() >= order) {
+								gq.setOrder(gq.getOrder() - 1);
+							}
 						}
 					}
 				}
+			} else {
+				throw new IllegalDeletionException(
+						"Cannot delete questionId: "
+								+ question.getKey().getId()
+								+ " surveyCode:"
+								+ question.getText()
+								+ " because there is a QuestionAnswerStore value for this question. Please delete all survey response first");
 			}
-		} else {
-			throw new IllegalDeletionException(
-					"Cannot delete questionId: "
-							+ question.getKey().getId()
-							+ " surveyCode:"
-							+ question.getText()
-							+ " because there is a QuestionAnswerStore value for this question. Please delete all survey response first");
 		}
 	}
 
