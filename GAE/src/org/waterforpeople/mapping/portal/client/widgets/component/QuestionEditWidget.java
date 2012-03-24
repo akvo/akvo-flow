@@ -197,6 +197,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				QuestionDto.QuestionType.STRENGTH.toString());
 		questionTypeSelector.addItem(TEXT_CONSTANTS.date(),
 				QuestionDto.QuestionType.DATE.toString());
+		questionTypeSelector.addItem(TEXT_CONSTANTS.barcode(),
+				QuestionDto.QuestionType.SCAN.toString());
 		questionTypeSelector.addChangeHandler(this);
 
 		metricSelector = new ListBox();
@@ -355,7 +357,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			}
 			minVal.setEnabled(isEditable);
 			validationPanel.setVisible(true);
-		} else if (QuestionDto.QuestionType.FREE_TEXT == currentQuestion
+		} else if (currentQuestion.getType() == null || QuestionDto.QuestionType.FREE_TEXT == currentQuestion
 				.getType()) {
 			validationPanel.clear();
 			validationPanel.add(textValidationPanel);
@@ -1388,6 +1390,8 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					validationPanel.clear();
 					validationPanel.add(textValidationPanel);
 					validationPanel.setVisible(true);
+				}else{					
+					validationPanel.setVisible(false);
 				}
 			}
 		} else if (event.getSource() == dependentQuestionSelector) {
