@@ -1,1 +1,3 @@
-# list files/paths to ignore relative to the repository root
+GAE/war/WEB-INF/*.jks
+WFPMapping/device/debugcert
+WFPMapping/device/survey/res/raw/survey.properties
