@@ -75,7 +75,7 @@ public class DataImportWidget extends MenuBasedWidget {
 	public void onClick(ClickEvent event) {
 		appletPanel.clear();
 		if (event.getSource() == surveyImportButton) {
-			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,poi-3.5-signed.jar,json.jar'>";
+			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,poi-3.5-signed.jar,json.jar,gdata-core-1.0.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 			appletString += "<PARAM name='importType' value='SURVEY_SPREADSHEET'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
@@ -94,9 +94,10 @@ public class DataImportWidget extends MenuBasedWidget {
 									&& payload != null
 									&& payload
 											.get(SurveySelectionDialog.SURVEY_KEY) != null) {
-								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
+								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.7-20101029.jar,poi-ooxml-3.7-20101029.jar,poi-ooxml-schemas-3.7-20101029.jar,xbean.jar,dom4j-1.6.1.jar,gdata-core-1.0.jar'>";
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
+								appletString += "<param name='java_arguments' value='-Xmx512m'>";
 								appletString += "<PARAM name='importType' value='RAW_DATA'>";
 								appletString += "<PARAM name='criteria' value='k:="+UPLOAD_CONSTANTS.apiKey() +";surveyId:="
 								+ payload
@@ -120,7 +121,7 @@ public class DataImportWidget extends MenuBasedWidget {
 									&& payload != null
 									&& payload
 											.get(GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM) != null) {
-								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.gis.app.GeometryLoader width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,jts-1.11-serializable-indexes.jar,gt-api-2.6.5.jar,gt-main-2.6.5.jar,gt-metadata-2.6.5.jar,gt-shapefile-2.6.5.jar'>";
+								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.gis.app.GeometryLoader width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,jts-1.11-serializable-indexes.jar,gt-api-2.6.5.jar,gt-main-2.6.5.jar,gt-metadata-2.6.5.jar,gt-shapefile-2.6.5.jar,gdata-core-1.0.jar'>";
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 								appletString += "<PARAM name='"
 										+ GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM
@@ -170,7 +171,7 @@ public class DataImportWidget extends MenuBasedWidget {
 									&& payload != null
 									&& payload
 											.get(SurveySelectionDialog.SURVEY_KEY) != null) {
-								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar'>";
+								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,gdata-core-1.0.jar'>";
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 								appletString += "<PARAM name='importType' value='FIXED_FORMAT'>";
 								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
@@ -187,7 +188,7 @@ public class DataImportWidget extends MenuBasedWidget {
 					});
 			surveyDia.showCentered();
 		} else if (event.getSource() == bulkImportButton) {
-			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar'>";
+			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,gdata-core-1.0.jar'>";
 			appletString += "<PARAM name='importType' value='BULK_SURVEY'>";
 			appletString += "<PARAM name='selectionMode' value='dir'>";
 			appletString +="<param name='java_arguments' value='-Xmx512m'>";

@@ -31,6 +31,7 @@
 			<include name="gt-api-2.6.5.jar" />
 			<include name="jcommon-1.0.16.jar" />
 			<include name="jfreechart-1.0.13.jar" />
+			<include name="gdata-core-1.0.jar" />
 		</fileset>
 		<fileset dir="gwtlibs">
 			<include name="gwt-dnd-3.0.1.jar" />
@@ -92,6 +93,7 @@
 		<signjar jar="war/poi-ooxml-schemas-3.7-20101029.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 		<signjar jar="war/xbean.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 		<signjar jar="war/dom4j-1.6.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+		<signjar jar="war/gdata-core-1.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
 	</target>
 
 

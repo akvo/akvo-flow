@@ -26,6 +26,8 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -67,7 +69,21 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	 */
 	protected Sheet getDataSheet(File file) throws Exception {
 		stream = new FileInputStream(file);
-		HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(stream));
+		Workbook wb = null;
+		if (file.getName().toLowerCase().endsWith("xlsx")) {
+			try {
+				wb = new XSSFWorkbook(stream);
+			} catch (Exception e) {
+				wb = new HSSFWorkbook(new POIFSFileSystem(stream));
+			}
+		} else {
+			try {
+				wb = new HSSFWorkbook(new POIFSFileSystem(stream));
+			} catch (Exception e) {
+				wb = new XSSFWorkbook(stream);
+			}
+		}
+
 		return wb.getSheetAt(0);
 
 	}
