@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableRow;
 
@@ -25,11 +26,11 @@ public class BarcodeQuestionView extends QuestionView implements
 		OnClickListener {
 
 	private Button barcodeButton;
-	private ImageView completeIcon;
+	private EditText barcodeText;
 
-	public BarcodeQuestionView(Context context, Question q, String defaultLanguage,String[] langCodes,
-			boolean readOnly) {
-		super(context, q, defaultLanguage,langCodes, readOnly);
+	public BarcodeQuestionView(Context context, Question q,
+			String defaultLanguage, String[] langCodes, boolean readOnly) {
+		super(context, q, defaultLanguage, langCodes, readOnly);
 		init();
 	}
 
@@ -37,18 +38,22 @@ public class BarcodeQuestionView extends QuestionView implements
 		Context context = getContext();
 		TableRow tr = new TableRow(context);
 		barcodeButton = new Button(context);
+		barcodeText = new EditText(context);
+		barcodeText.setWidth(DEFAULT_WIDTH);
 
 		barcodeButton.setText(R.string.scanbarcode);
 
 		barcodeButton.setOnClickListener(this);
 		if (readOnly) {
 			barcodeButton.setEnabled(false);
+			barcodeText.setEnabled(false);
 		}
-		completeIcon = new ImageView(context);
-		completeIcon.setImageResource(R.drawable.checkmark);
-		completeIcon.setVisibility(View.GONE);
+
 		tr.addView(barcodeButton);
-		tr.addView(completeIcon);
+		addView(tr);
+		tr = new TableRow(context);
+		tr.addView(barcodeText);
+
 		addView(tr);
 	}
 
@@ -62,9 +67,10 @@ public class BarcodeQuestionView extends QuestionView implements
 	@Override
 	public void questionComplete(Bundle barcodeData) {
 		if (barcodeData != null) {
-			completeIcon.setVisibility(View.VISIBLE);
-			setResponse(new QuestionResponse(barcodeData
-					.getString(ConstantUtil.BARCODE_CONTENT),
+			barcodeText.setText(barcodeData
+					.getString(ConstantUtil.BARCODE_CONTENT));
+			setResponse(new QuestionResponse(
+					barcodeData.getString(ConstantUtil.BARCODE_CONTENT),
 					ConstantUtil.VALUE_RESPONSE_TYPE, getQuestion().getId()));
 		}
 	}
@@ -78,7 +84,7 @@ public class BarcodeQuestionView extends QuestionView implements
 		super.rehydrate(resp);
 		if (resp != null) {
 			if (resp.getValue() != null) {
-				completeIcon.setVisibility(View.VISIBLE);
+				barcodeText.setText(resp.getValue());
 			}
 
 		}
@@ -90,7 +96,7 @@ public class BarcodeQuestionView extends QuestionView implements
 	@Override
 	public void resetQuestion(boolean fireEvent) {
 		super.resetQuestion(fireEvent);
-		completeIcon.setVisibility(View.GONE);
+		barcodeText.setText("");
 	}
 
 }
