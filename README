@@ -1,0 +1,8 @@
+This is the main repository for the FLOW system. It consists of 3 applications:
+Field Survey - the FLOW mobile application for data collection
+Flow Launcher - a custom home screen replacement for Android that locks phones down so they can only use Field Survey and the camera
+Flow Server - the server application for defining surveys, managing phones, and collecting/analyzing/visualizing data.
+
+The Field Survey application is rooted at WFPMapping/device/survey
+Flow Launcher is rooted at WFPMapping/device/launcher
+Flow Server is rooted at GAE
