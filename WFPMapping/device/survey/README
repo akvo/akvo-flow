@@ -1,0 +1,12 @@
+This is the root directory of the Flow Field Survey application.
+
+The project depends on Android version 
+
+Before the project will build, the survey.properties file must be placed in the following location:
+res/raw/
+This file contains the secret keys needed to communicate with the Flow Server instance set up for a given organization.
+
+This file is slated to be replaced via a central configuration service in an upcoming version.
+
+
+
