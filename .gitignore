@@ -3,3 +3,4 @@ WFPMapping/device/debugcert
 WFPMapping/device/survey/res/raw/survey.properties
 GAE/war/WEB-INF/appengine-web.xml
 GAE/build.properties
+GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties
