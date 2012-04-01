@@ -471,5 +471,8 @@
         <property name="valueType" direction="asc"/>
         <property name="name" direction="asc"/>
     </datastore-index>
-    
+     <datastore-index kind="Metric" ancestor="false" source="manual">
+        <property name="organization" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>
