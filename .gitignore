@@ -1,3 +1,4 @@
 GAE/war/WEB-INF/*.jks
 WFPMapping/device/debugcert
 WFPMapping/device/survey/res/raw/survey.properties
+GAE/war/WEB-INF/appengine-web.xml
