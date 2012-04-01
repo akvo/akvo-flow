@@ -268,9 +268,9 @@ public class TestHarnessServlet extends HttpServlet {
 				dou.deleteAllObjects("StandardScoring");
 				resp.getWriter().println(
 						"About to configure development environment");
+				
 				setupTestUser();
 				resp.getWriter().println("Completed setting up test user");
-				this.populatePermissions();
 				resp.getWriter().println("Completed setting up permissions");
 				AccessPointTest apt = new AccessPointTest();
 				apt.loadLots(resp, 100);
@@ -1851,6 +1851,11 @@ public class TestHarnessServlet extends HttpServlet {
 	private void setupTestUser() {
 		UserDao userDao = new UserDao();
 		User user = userDao.findUserByEmail("test@example.com");
+		if(user==null){
+			user = new User();
+			user.setEmailAddress("test@example.com");
+			userDao.save(user);
+		}
 		String permissionList = "";
 		int i = 0;
 		List<Permission> pList = userDao.listPermissions();
