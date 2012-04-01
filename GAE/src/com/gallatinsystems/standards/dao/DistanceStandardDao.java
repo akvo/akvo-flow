@@ -14,14 +14,14 @@ import com.gallatinsystems.standards.domain.DistanceStandard;
 import com.gallatinsystems.standards.domain.Standard;
 
 public class DistanceStandardDao extends BaseDAO<DistanceStandard> {
-	
-	public DistanceStandardDao(){
+
+	public DistanceStandardDao() {
 		super(DistanceStandard.class);
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
-	public List<DistanceStandard> listDistanceStandard(Standard.StandardType type, String countryCode){
+	public List<DistanceStandard> listDistanceStandard(
+			Standard.StandardType type, String countryCode) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(DistanceStandard.class);
 		Map<String, Object> paramMap = null;
@@ -30,20 +30,24 @@ public class DistanceStandardDao extends BaseDAO<DistanceStandard> {
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("standardType", filterString,paramString, "String", type.toString(), paramMap);
-		appendNonNullParam("countryCode", filterString, paramString, "String", countryCode, paramMap);
-		
+		appendNonNullParam("standardType", filterString, paramString, "String",
+				type.toString(), paramMap);
+		appendNonNullParam("countryCode", filterString, paramString, "String",
+				countryCode, paramMap);
+
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
-		
+
 		List<DistanceStandard> standardList = (List<DistanceStandard>) query
 				.executeWithMap(paramMap);
-		
+
 		return standardList;
-			
+
 	}
+
 	@SuppressWarnings("unchecked")
-	public DistanceStandard findDistanceStandard(Standard.StandardType type, String countryCode, AccessPoint.LocationType locationType){
+	public DistanceStandard findDistanceStandard(Standard.StandardType type,
+			String countryCode, AccessPoint.LocationType locationType) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(DistanceStandard.class);
 		Map<String, Object> paramMap = null;
@@ -52,18 +56,23 @@ public class DistanceStandardDao extends BaseDAO<DistanceStandard> {
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("standardType", filterString,paramString, "String", type.toString(), paramMap);
-		appendNonNullParam("countryCode", filterString, paramString, "String", countryCode, paramMap);
-		appendNonNullParam("locationType", filterString, paramString,"String", locationType, paramMap);
-		
+		appendNonNullParam("standardType", filterString, paramString, "String",
+				type.toString(), paramMap);
+		appendNonNullParam("countryCode", filterString, paramString, "String",
+				countryCode, paramMap);
+		appendNonNullParam("locationType", filterString, paramString, "String",
+				locationType, paramMap);
+
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
-		
+
 		List<DistanceStandard> standardList = (List<DistanceStandard>) query
 				.executeWithMap(paramMap);
-		
-		return standardList.get(0);
-			
+		if (standardList != null && standardList.size() > 0)
+			return standardList.get(0);
+		else
+			return null;
+
 	}
 
 }
