@@ -16,7 +16,6 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -37,6 +36,10 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 /**
  * RESTFul servlet that can handle handle operations on SurveyedLocale and
@@ -132,6 +135,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				.getAction())) {
 			rerunForSurvey(sReq.getSurveyId());
 
+		}else if(SurveyalRestRequest.REINGEST_INSTANCE_ACTION.equalsIgnoreCase(req.getAction())){
+			log.log(Level.INFO, "Reprocessing SurveyInstanceId: "
+					+ sReq.getSurveyInstanceId());
+			ingestSurveyInstance(sReq.getSurveyInstanceId());
 		}
 		return resp;
 	}
@@ -143,13 +150,19 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 */
 	private void rerunForSurvey(Long surveyId) {
 		if (surveyId != null) {
-
-			List<SurveyInstance> siList = surveyInstanceDao
-					.listSurveyInstanceBySurveyId(surveyId, Constants.ALL_RESULTS);
+			Queue queue = QueueFactory.getDefaultQueue();
+			List<Key> siList = surveyInstanceDao
+					.listSurveyInstanceKeysBySurveyId(surveyId);
 			if (siList != null) {
-				log.info("Reprocessoing "+siList.size()+" instances for survey "+surveyId);
-				for (SurveyInstance inst : siList) {
-					ingestSurveyInstance(inst);
+				log.info("Reprocessoing " + siList.size()
+						+ " instances for survey " + surveyId);
+				for (Key inst : siList) {
+					queue.add(TaskOptions.Builder
+							.withUrl("/app_worker/surveyalservlet")
+							.param(SurveyalRestRequest.ACTION_PARAM,
+									SurveyalRestRequest.REINGEST_INSTANCE_ACTION)
+							.param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+									new Long(inst.getId()).toString()));
 				}
 			}
 

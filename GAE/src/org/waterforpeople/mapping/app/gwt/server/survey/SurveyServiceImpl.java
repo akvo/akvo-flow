@@ -1096,35 +1096,40 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public void rerunAPMappings(Long surveyId) {
-		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-		
-		List<Key> siList = siDao.listSurveyInstanceKeysBySurveyId(
-				surveyId);
-		if (siList != null && siList.size() > 0) {
-			Queue queue = QueueFactory.getDefaultQueue();
-			StringBuffer buffer = new StringBuffer();
-			for (int i = 0; i < siList.size(); i++) {
-				if (i > 0) {
-					buffer.append(",");
-				}
-				buffer.append(siList.get(i).getId());
-			}
-
+		Queue queue = QueueFactory.getDefaultQueue();
+		if (PropertyUtil.getProperty("domainType") != null
+				&& PropertyUtil.getProperty("domainType").equalsIgnoreCase(
+						"locale")) {
 			queue.add(TaskOptions.Builder
 					.withUrl("/app_worker/surveyalservlet")
 					.param(SurveyalRestRequest.ACTION_PARAM,
 							SurveyalRestRequest.RERUN_ACTION)
 					.param(SurveyalRestRequest.SURVEY_ID_PARAM,
 							surveyId.toString()));
+		} else {
+			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 
-			queue.add(TaskOptions.Builder
-					.withUrl("/app_worker/surveytask")
-					.param("action", "reprocessMapSurveyInstance")
-					.param(SurveyTaskRequest.ID_PARAM, surveyId.toString())
-					.param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
-					.param(SurveyTaskRequest.CURSOR_PARAM,
-							SurveyInstanceDAO.getCursor(siList)));
+			List<Key> siList = siDao.listSurveyInstanceKeysBySurveyId(surveyId);
+			if (siList != null && siList.size() > 0) {
 
+				StringBuffer buffer = new StringBuffer();
+				for (int i = 0; i < siList.size(); i++) {
+					if (i > 0) {
+						buffer.append(",");
+					}
+					buffer.append(siList.get(i).getId());
+				}
+
+				queue.add(TaskOptions.Builder
+						.withUrl("/app_worker/surveytask")
+						.param("action", "reprocessMapSurveyInstance")
+						.param(SurveyTaskRequest.ID_PARAM, surveyId.toString())
+						.param(SurveyTaskRequest.ID_LIST_PARAM,
+								buffer.toString())
+						.param(SurveyTaskRequest.CURSOR_PARAM,
+								SurveyInstanceDAO.getCursor(siList)));
+
+			}
 		}
 	}
 
