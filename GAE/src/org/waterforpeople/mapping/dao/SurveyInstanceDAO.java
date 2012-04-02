@@ -19,6 +19,7 @@ import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
+import com.google.appengine.api.datastore.Key;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
@@ -348,6 +349,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			String cursorString) {
 		return listSurveyInstanceBySurvey(surveyId, null,
 				cursorString);
+	}
+	
+	public List<Key> listSurveyInstanceKeysBySurveyId(Long surveyId){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery("SELECT __key__ FROM " +SurveyInstance.class.getName() + " where surveyId="+surveyId);
+		return (List<Key>) query.execute();
+		
 	}
 
 	/**

@@ -38,7 +38,6 @@ import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
@@ -74,6 +73,7 @@ import com.gallatinsystems.survey.domain.xml.Text;
 import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
@@ -1097,8 +1097,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void rerunAPMappings(Long surveyId) {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-		List<SurveyInstance> siList = siDao.listSurveyInstanceBySurveyId(
-				surveyId, null);
+		
+		List<Key> siList = siDao.listSurveyInstanceKeysBySurveyId(
+				surveyId);
 		if (siList != null && siList.size() > 0) {
 			Queue queue = QueueFactory.getDefaultQueue();
 			StringBuffer buffer = new StringBuffer();
@@ -1106,7 +1107,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				if (i > 0) {
 					buffer.append(",");
 				}
-				buffer.append(siList.get(i).getKey().getId());
+				buffer.append(siList.get(i).getId());
 			}
 
 			queue.add(TaskOptions.Builder
