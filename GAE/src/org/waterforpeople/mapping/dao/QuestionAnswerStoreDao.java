@@ -135,7 +135,8 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		}
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
-		prepareCursor(cursor, pageSize, query);
+		//prepareCursor(cursor, pageSize, query);
+		log.log(Level.INFO,query.toString());
 		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 	}
 	/**

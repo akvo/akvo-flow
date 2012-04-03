@@ -85,12 +85,13 @@ public class DataFixes {
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		List<QuestionAnswerStore> qasList = qasDao.listByNotNullCollectionDateAfter(new Date(), null, null);
 		List<QuestionAnswerStore> newQasList = new ArrayList<QuestionAnswerStore>();
-		
+		log.log(Level.INFO, "Found "+ qasList.size() + " qas records from the future.");
 		for (QuestionAnswerStore item : qasList) {
 			item.setCollectionDate(item.getCreatedDateTime());
 			newQasList.add(item);
 		}
 		qasDao.save(newQasList);
+		log.log(Level.INFO,"Fixed " +newQasList.size() + " from the future");
 	}
 
 	public void generateTestData() {
