@@ -21,6 +21,7 @@ import net.sf.jsr107cache.CacheException;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
+import org.jfree.util.Log;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -1100,6 +1101,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 		if (PropertyUtil.getProperty("domainType") != null
 				&& PropertyUtil.getProperty("domainType").equalsIgnoreCase(
 						"locale")) {
+			log.log(Level.INFO, "Running Remap for locale");
 			queue.add(TaskOptions.Builder
 					.withUrl("/app_worker/surveyalservlet")
 					.param(SurveyalRestRequest.ACTION_PARAM,
@@ -1107,6 +1109,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					.param(SurveyalRestRequest.SURVEY_ID_PARAM,
 							surveyId.toString()));
 		} else {
+			log.log(Level.INFO, "AccessPoint");
 			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 
 			List<Key> siList = siDao.listSurveyInstanceKeysBySurveyId(surveyId);

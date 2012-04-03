@@ -63,8 +63,8 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		prepareCursor(cursor, pageSize, query);
 		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 	}
-	
-	public List<QuestionAnswerStore> listByTypeValue(String type, String value){
+
+	public List<QuestionAnswerStore> listByTypeValue(String type, String value) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
 
@@ -76,13 +76,13 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
 		appendNonNullParam("type", filterString, paramString, "String", type,
 				paramMap);
-		appendNonNullParam("value", filterString, paramString, "String",
-				value, paramMap);
+		appendNonNullParam("value", filterString, paramString, "String", value,
+				paramMap);
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 	}
-	
+
 	/**
 	 * lists all the QuestionAnswerStore objects that match the type passed in
 	 * 
@@ -103,8 +103,8 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		StringBuilder filterString = new StringBuilder();
 		StringBuilder paramString = new StringBuilder();
 		paramMap = new HashMap<String, Object>();
-		appendNonNullParam("collectionDate", filterString, paramString,
-				"Date", sinceDate, paramMap, LTE_OP);
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				sinceDate, paramMap, LTE_OP);
 		if (sinceDate != null) {
 			query.declareImports("import java.util.Date");
 		}
@@ -112,5 +112,23 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		query.declareParameters(paramString.toString());
 		prepareCursor(cursor, pageSize, query);
 		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+	}
+
+	/**
+	 * lists all the QuestionAnswerStore objects that match the type passed in
+	 * 
+	 * @param sinceDate
+	 * @param cursor
+	 * @param pageSize
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<QuestionAnswerStore> listByExactDateString() {
+
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery("select * from "
+				+ QuestionAnswerStore.class.getName()
+				+ " where collectionDate == 5674906531303000000");
+		return (List<QuestionAnswerStore>) query.execute();
 	}
 }
