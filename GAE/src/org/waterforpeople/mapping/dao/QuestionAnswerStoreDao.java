@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 
@@ -126,9 +127,10 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 	public List<QuestionAnswerStore> listByExactDateString() {
 
 		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery("select * from "
+		javax.jdo.Query query = pm.newQuery("select from "
 				+ QuestionAnswerStore.class.getName()
 				+ " where collectionDate == 5674906531303000000");
+		log.log(Level.INFO,query.toString());
 		return (List<QuestionAnswerStore>) query.execute();
 	}
 }
