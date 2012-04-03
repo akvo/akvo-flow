@@ -20,6 +20,8 @@ public class DataFixes {
 	@SuppressWarnings("deprecation")
 	public void fixQuestionAnswerStoreCollectionDate(HttpServletRequest req,
 			HttpServletResponse resp) {
+		fixDateAfterToday();
+		log.log(Level.INFO, "Completed fixing collectiondates from the future");
 		fixExactDate();
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
@@ -70,6 +72,18 @@ public class DataFixes {
 	private void fixExactDate() {
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		List<QuestionAnswerStore> qasList = qasDao.listByExactDateString();
+		List<QuestionAnswerStore> newQasList = new ArrayList<QuestionAnswerStore>();
+		
+		for (QuestionAnswerStore item : qasList) {
+			item.setCollectionDate(item.getCreatedDateTime());
+			newQasList.add(item);
+		}
+		qasDao.save(newQasList);
+	}
+	
+	private void fixDateAfterToday(){
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		List<QuestionAnswerStore> qasList = qasDao.listByNotNullCollectionDateAfter(new Date(), null, null);
 		List<QuestionAnswerStore> newQasList = new ArrayList<QuestionAnswerStore>();
 		
 		for (QuestionAnswerStore item : qasList) {
