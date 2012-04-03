@@ -115,6 +115,29 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 	}
 
+	
+	@SuppressWarnings("unchecked")
+	public List<QuestionAnswerStore> listByNotNullCollectionDateAfter(
+			Date sinceDate, String cursor, Integer pageSize) {
+
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				sinceDate, paramMap, GTE_OP);
+		if (sinceDate != null) {
+			query.declareImports("import java.util.Date");
+		}
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		prepareCursor(cursor, pageSize, query);
+		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+	}
 	/**
 	 * lists all the QuestionAnswerStore objects that match the type passed in
 	 * 
