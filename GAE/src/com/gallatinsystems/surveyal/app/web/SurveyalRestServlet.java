@@ -135,7 +135,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		} else if (SurveyalRestRequest.RERUN_ACTION.equalsIgnoreCase(req
 				.getAction())) {
 			rerunForSurvey(sReq.getSurveyId());
-
 		} else if (SurveyalRestRequest.REINGEST_INSTANCE_ACTION
 				.equalsIgnoreCase(req.getAction())) {
 			log.log(Level.INFO,
@@ -157,29 +156,53 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			Iterable<Entity> siList = surveyInstanceDao
 					.listSurveyInstanceKeysBySurveyId(surveyId);
 			if (siList != null) {
+				int i = 0;
 				for (Entity inst : siList) {
 					if (inst != null && inst.getKey() != null) {
-						Key key = inst.getKey();
-						String surveyInstanceIdString = key.getName();
+						String item = inst.getKey().toString();
+						Integer startPos = item.indexOf("(");
+						Integer endPos = item.indexOf(")");
+						String surveyInstanceIdString = item.substring(
+								startPos + 1, endPos);
 						if (surveyInstanceIdString != null
 								&& !surveyInstanceIdString.trim()
-										.equalsIgnoreCase(""))
-							queue.add(TaskOptions.Builder
+										.equalsIgnoreCase("")) {
+							TaskOptions to = TaskOptions.Builder
 									.withUrl("/app_worker/surveyalservlet")
 									.param(SurveyalRestRequest.ACTION_PARAM,
 											SurveyalRestRequest.REINGEST_INSTANCE_ACTION)
 									.param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-											surveyInstanceIdString));
+											surveyInstanceIdString);
+							log.log(Level.INFO, to.toString());
+							queue.add(to);
+
+							i++;
+						}
+					} else {
+						String instString = null;
+						if (inst != null)
+							instString = inst.toString();
+						log.log(Level.INFO,
+								"Inside rerunForSurvey in the null or empty instanceid branch: "
+										+ instString);
 					}
 				}
+				log.log(Level.INFO, "Submitted: " + i
+						+ " SurveyInstances for remapping");
 			}
 
 		}
 	}
 
 	private void ingestSurveyInstance(Long surveyInstanceId) {
+		SurveyInstance instance = surveyInstanceDao.getByKey(surveyInstanceId);
+		if (instance != null) {
+			ingestSurveyInstance(instance);
+		} else
+			log.log(Level.INFO,
+					"Got to ingestSurveyInstance, but instance is null for surveyInstanceId: "
+							+ surveyInstanceId);
 
-		ingestSurveyInstance(surveyInstanceDao.getByKey(surveyInstanceId));
 	}
 
 	/**
@@ -191,6 +214,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 * @param surveyInstanceId
 	 */
 	private void ingestSurveyInstance(SurveyInstance instance) {
+
 		SurveyedLocale locale = null;
 		if (instance != null) {
 			List<QuestionAnswerStore> answers = surveyInstanceDao

@@ -1120,7 +1120,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 					if (i > 0) {
 						buffer.append(",");
 					}
-					buffer.append(item.getKey().getName());
+					String key = item.getKey().toString();
+					Integer startPos = key.indexOf("(");
+					Integer endPos = key.indexOf(")");
+					buffer.append(key.subSequence(startPos+1, endPos));
 					i++;
 				}
 
