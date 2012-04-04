@@ -18,8 +18,12 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
-import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
@@ -351,11 +355,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				cursorString);
 	}
 	
-	public List<Key> listSurveyInstanceKeysBySurveyId(Long surveyId){
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery("SELECT __key__ FROM " +SurveyInstance.class.getName() + " where surveyId="+surveyId);
-		return (List<Key>) query.execute();
-		
+	public Iterable<Entity> listSurveyInstanceKeysBySurveyId(Long surveyId){
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("SurveyInstance");
+		q.setKeysOnly();
+		q.addFilter("surveyId", FilterOperator.EQUAL, surveyId);
+		PreparedQuery pq = datastore.prepare(q);
+		return pq.asIterable();
 	}
 
 	/**

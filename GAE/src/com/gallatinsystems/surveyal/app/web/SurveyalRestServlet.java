@@ -36,6 +36,7 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -151,18 +152,18 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private void rerunForSurvey(Long surveyId) {
 		if (surveyId != null) {
 			Queue queue = QueueFactory.getDefaultQueue();
-			List<Key> siList = surveyInstanceDao
+			Iterable<Entity> siList = surveyInstanceDao
 					.listSurveyInstanceKeysBySurveyId(surveyId);
 			if (siList != null) {
-				log.info("Reprocessoing " + siList.size()
-						+ " instances for survey " + surveyId);
-				for (Key inst : siList) {
+				for (Entity inst : siList) {
+					Key key = inst.getKey();
+					String surveyInstanceIdString = key.getName();
 					queue.add(TaskOptions.Builder
 							.withUrl("/app_worker/surveyalservlet")
 							.param(SurveyalRestRequest.ACTION_PARAM,
 									SurveyalRestRequest.REINGEST_INSTANCE_ACTION)
 							.param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-									new Long(inst.getId()).toString()));
+									surveyInstanceIdString));
 				}
 			}
 

@@ -21,7 +21,6 @@ import net.sf.jsr107cache.CacheException;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
-import org.jfree.util.Log;
 import org.waterforpeople.mapping.app.gwt.client.survey.OptionContainerDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDependencyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -74,7 +73,7 @@ import com.gallatinsystems.survey.domain.xml.Text;
 import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
-import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
@@ -1112,15 +1111,17 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 			log.log(Level.INFO, "AccessPoint");
 			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 
-			List<Key> siList = siDao.listSurveyInstanceKeysBySurveyId(surveyId);
-			if (siList != null && siList.size() > 0) {
+			Iterable<Entity> siList = siDao.listSurveyInstanceKeysBySurveyId(surveyId);
+			if (siList != null ) {
 
 				StringBuffer buffer = new StringBuffer();
-				for (int i = 0; i < siList.size(); i++) {
+				int i=0;
+				for (Entity item:siList ) {
 					if (i > 0) {
 						buffer.append(",");
 					}
-					buffer.append(siList.get(i).getId());
+					buffer.append(item.getKey().getName());
+					i++;
 				}
 
 				queue.add(TaskOptions.Builder
@@ -1129,8 +1130,9 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 						.param(SurveyTaskRequest.ID_PARAM, surveyId.toString())
 						.param(SurveyTaskRequest.ID_LIST_PARAM,
 								buffer.toString())
-						.param(SurveyTaskRequest.CURSOR_PARAM,
-								SurveyInstanceDAO.getCursor(siList)));
+//						.param(SurveyTaskRequest.CURSOR_PARAM,
+//								SurveyInstanceDAO.getCursor(siList))
+								);
 
 			}
 		}

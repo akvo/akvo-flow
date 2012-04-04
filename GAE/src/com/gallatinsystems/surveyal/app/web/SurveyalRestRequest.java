@@ -46,6 +46,9 @@ public class SurveyalRestRequest extends RestRequest {
 								+ " must be an Integer"));
 			}
 		}
+		if(req.getParameter(SURVEY_INSTANCE_PARAM)!=null){
+			setSurveyInstanceId(Long.parseLong(req.getParameter(SURVEY_INSTANCE_PARAM).trim()));
+		}
 
 	}
 
