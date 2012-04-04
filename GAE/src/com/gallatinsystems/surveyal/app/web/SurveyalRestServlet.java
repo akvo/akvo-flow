@@ -173,7 +173,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 											SurveyalRestRequest.REINGEST_INSTANCE_ACTION)
 									.param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
 											surveyInstanceIdString);
-							log.log(Level.INFO, to.toString());
 							queue.add(to);
 
 							i++;
