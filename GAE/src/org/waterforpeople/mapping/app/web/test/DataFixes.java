@@ -1,5 +1,6 @@
 package org.waterforpeople.mapping.app.web.test;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,7 +20,9 @@ public class DataFixes {
 	@SuppressWarnings("deprecation")
 	public void fixQuestionAnswerStoreCollectionDate(HttpServletRequest req,
 			HttpServletResponse resp) {
-
+		fixDateAfterToday();
+		log.log(Level.INFO, "Completed fixing collectiondates from the future");
+		fixExactDate();
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		List<QuestionAnswerStore> qasList = qasDao
@@ -64,6 +67,31 @@ public class DataFixes {
 			}
 		}
 
+	}
+
+	private void fixExactDate() {
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		List<QuestionAnswerStore> qasList = qasDao.listByExactDateString();
+		List<QuestionAnswerStore> newQasList = new ArrayList<QuestionAnswerStore>();
+		
+		for (QuestionAnswerStore item : qasList) {
+			item.setCollectionDate(item.getCreatedDateTime());
+			newQasList.add(item);
+		}
+		qasDao.save(newQasList);
+	}
+	
+	private void fixDateAfterToday(){
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		List<QuestionAnswerStore> qasList = qasDao.listByNotNullCollectionDateAfter(new Date(), null, null);
+		List<QuestionAnswerStore> newQasList = new ArrayList<QuestionAnswerStore>();
+		log.log(Level.INFO, "Found "+ qasList.size() + " qas records from the future.");
+		for (QuestionAnswerStore item : qasList) {
+			item.setCollectionDate(item.getCreatedDateTime());
+			newQasList.add(item);
+		}
+		qasDao.save(newQasList);
+		log.log(Level.INFO,"Fixed " +newQasList.size() + " from the future");
 	}
 
 	public void generateTestData() {

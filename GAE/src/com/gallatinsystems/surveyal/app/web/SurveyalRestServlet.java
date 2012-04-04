@@ -16,7 +16,6 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -37,6 +36,11 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 /**
  * RESTFul servlet that can handle handle operations on SurveyedLocale and
@@ -131,7 +135,12 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		} else if (SurveyalRestRequest.RERUN_ACTION.equalsIgnoreCase(req
 				.getAction())) {
 			rerunForSurvey(sReq.getSurveyId());
-
+		} else if (SurveyalRestRequest.REINGEST_INSTANCE_ACTION
+				.equalsIgnoreCase(req.getAction())) {
+			log.log(Level.INFO,
+					"Reprocessing SurveyInstanceId: "
+							+ sReq.getSurveyInstanceId());
+			ingestSurveyInstance(sReq.getSurveyInstanceId());
 		}
 		return resp;
 	}
@@ -143,22 +152,56 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 */
 	private void rerunForSurvey(Long surveyId) {
 		if (surveyId != null) {
-
-			List<SurveyInstance> siList = surveyInstanceDao
-					.listSurveyInstanceBySurveyId(surveyId, Constants.ALL_RESULTS);
+			Queue queue = QueueFactory.getDefaultQueue();
+			Iterable<Entity> siList = surveyInstanceDao
+					.listSurveyInstanceKeysBySurveyId(surveyId);
 			if (siList != null) {
-				log.info("Reprocessoing "+siList.size()+" instances for survey "+surveyId);
-				for (SurveyInstance inst : siList) {
-					ingestSurveyInstance(inst);
+				int i = 0;
+				for (Entity inst : siList) {
+					if (inst != null && inst.getKey() != null) {
+						String item = inst.getKey().toString();
+						Integer startPos = item.indexOf("(");
+						Integer endPos = item.indexOf(")");
+						String surveyInstanceIdString = item.substring(
+								startPos + 1, endPos);
+						if (surveyInstanceIdString != null
+								&& !surveyInstanceIdString.trim()
+										.equalsIgnoreCase("")) {
+							TaskOptions to = TaskOptions.Builder
+									.withUrl("/app_worker/surveyalservlet")
+									.param(SurveyalRestRequest.ACTION_PARAM,
+											SurveyalRestRequest.REINGEST_INSTANCE_ACTION)
+									.param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+											surveyInstanceIdString);
+							queue.add(to);
+
+							i++;
+						}
+					} else {
+						String instString = null;
+						if (inst != null)
+							instString = inst.toString();
+						log.log(Level.INFO,
+								"Inside rerunForSurvey in the null or empty instanceid branch: "
+										+ instString);
+					}
 				}
+				log.log(Level.INFO, "Submitted: " + i
+						+ " SurveyInstances for remapping");
 			}
 
 		}
 	}
 
 	private void ingestSurveyInstance(Long surveyInstanceId) {
+		SurveyInstance instance = surveyInstanceDao.getByKey(surveyInstanceId);
+		if (instance != null) {
+			ingestSurveyInstance(instance);
+		} else
+			log.log(Level.INFO,
+					"Got to ingestSurveyInstance, but instance is null for surveyInstanceId: "
+							+ surveyInstanceId);
 
-		ingestSurveyInstance(surveyInstanceDao.getByKey(surveyInstanceId));
 	}
 
 	/**
@@ -170,6 +213,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 * @param surveyInstanceId
 	 */
 	private void ingestSurveyInstance(SurveyInstance instance) {
+
 		SurveyedLocale locale = null;
 		if (instance != null) {
 			List<QuestionAnswerStore> answers = surveyInstanceDao

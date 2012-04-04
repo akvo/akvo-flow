@@ -38,7 +38,6 @@ import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
@@ -74,6 +73,7 @@ import com.gallatinsystems.survey.domain.xml.Text;
 import com.gallatinsystems.survey.domain.xml.ValidationRule;
 import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.jsr107cache.GCacheFactory;
@@ -1096,34 +1096,48 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public void rerunAPMappings(Long surveyId) {
-		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-		List<SurveyInstance> siList = siDao.listSurveyInstanceBySurveyId(
-				surveyId, null);
-		if (siList != null && siList.size() > 0) {
-			Queue queue = QueueFactory.getDefaultQueue();
-			StringBuffer buffer = new StringBuffer();
-			for (int i = 0; i < siList.size(); i++) {
-				if (i > 0) {
-					buffer.append(",");
-				}
-				buffer.append(siList.get(i).getKey().getId());
-			}
-
+		Queue queue = QueueFactory.getDefaultQueue();
+		if (PropertyUtil.getProperty("domainType") != null
+				&& PropertyUtil.getProperty("domainType").equalsIgnoreCase(
+						"locale")) {
+			log.log(Level.INFO, "Running Remap for locale");
 			queue.add(TaskOptions.Builder
 					.withUrl("/app_worker/surveyalservlet")
 					.param(SurveyalRestRequest.ACTION_PARAM,
 							SurveyalRestRequest.RERUN_ACTION)
 					.param(SurveyalRestRequest.SURVEY_ID_PARAM,
 							surveyId.toString()));
+		} else {
+			log.log(Level.INFO, "AccessPoint");
+			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 
-			queue.add(TaskOptions.Builder
-					.withUrl("/app_worker/surveytask")
-					.param("action", "reprocessMapSurveyInstance")
-					.param(SurveyTaskRequest.ID_PARAM, surveyId.toString())
-					.param(SurveyTaskRequest.ID_LIST_PARAM, buffer.toString())
-					.param(SurveyTaskRequest.CURSOR_PARAM,
-							SurveyInstanceDAO.getCursor(siList)));
+			Iterable<Entity> siList = siDao.listSurveyInstanceKeysBySurveyId(surveyId);
+			if (siList != null ) {
 
+				StringBuffer buffer = new StringBuffer();
+				int i=0;
+				for (Entity item:siList ) {
+					if (i > 0) {
+						buffer.append(",");
+					}
+					String key = item.getKey().toString();
+					Integer startPos = key.indexOf("(");
+					Integer endPos = key.indexOf(")");
+					buffer.append(key.subSequence(startPos+1, endPos));
+					i++;
+				}
+
+				queue.add(TaskOptions.Builder
+						.withUrl("/app_worker/surveytask")
+						.param("action", "reprocessMapSurveyInstance")
+						.param(SurveyTaskRequest.ID_PARAM, surveyId.toString())
+						.param(SurveyTaskRequest.ID_LIST_PARAM,
+								buffer.toString())
+//						.param(SurveyTaskRequest.CURSOR_PARAM,
+//								SurveyInstanceDAO.getCursor(siList))
+								);
+
+			}
 		}
 	}
 
