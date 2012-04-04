@@ -7,6 +7,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.MetricDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.MetricService;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.metric.dao.MetricDao;
 import com.gallatinsystems.metric.domain.Metric;
@@ -14,7 +15,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class MetricServiceImpl extends RemoteServiceServlet implements
 		MetricService {
-
+	private static final String DEFAULT_ORG_PROP = "defaultOrg";
 	private static final long serialVersionUID = -7385390184438218799L;
 	private MetricDao metricDao;
 
@@ -71,9 +72,14 @@ public class MetricServiceImpl extends RemoteServiceServlet implements
 		Metric mToSave = new Metric();
 		DtoMarshaller.copyToCanonical(mToSave, metric);
 		if (metric.getKeyId() == null) {
+			if (mToSave.getOrganization() == null
+					|| mToSave.getOrganization().trim().length() == 0) {
+				mToSave.setOrganization(PropertyUtil
+						.getProperty(DEFAULT_ORG_PROP));
+			}
 			List<Metric> mList = metricDao.listMetrics(metric.getName(),
 					metric.getGroup(), metric.getValueType(),
-					metric.getOrganization(), null);
+					mToSave.getOrganization(), null);
 			if (mList != null && mList.size() > 0) {
 				DtoMarshaller.copyToDto(mList.get(0), metric);
 				return metric;
