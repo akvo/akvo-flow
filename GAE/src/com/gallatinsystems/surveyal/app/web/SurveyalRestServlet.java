@@ -136,9 +136,11 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				.getAction())) {
 			rerunForSurvey(sReq.getSurveyId());
 
-		}else if(SurveyalRestRequest.REINGEST_INSTANCE_ACTION.equalsIgnoreCase(req.getAction())){
-			log.log(Level.INFO, "Reprocessing SurveyInstanceId: "
-					+ sReq.getSurveyInstanceId());
+		} else if (SurveyalRestRequest.REINGEST_INSTANCE_ACTION
+				.equalsIgnoreCase(req.getAction())) {
+			log.log(Level.INFO,
+					"Reprocessing SurveyInstanceId: "
+							+ sReq.getSurveyInstanceId());
 			ingestSurveyInstance(sReq.getSurveyInstanceId());
 		}
 		return resp;
@@ -156,14 +158,19 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					.listSurveyInstanceKeysBySurveyId(surveyId);
 			if (siList != null) {
 				for (Entity inst : siList) {
-					Key key = inst.getKey();
-					String surveyInstanceIdString = key.getName();
-					queue.add(TaskOptions.Builder
-							.withUrl("/app_worker/surveyalservlet")
-							.param(SurveyalRestRequest.ACTION_PARAM,
-									SurveyalRestRequest.REINGEST_INSTANCE_ACTION)
-							.param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-									surveyInstanceIdString));
+					if (inst != null && inst.getKey() != null) {
+						Key key = inst.getKey();
+						String surveyInstanceIdString = key.getName();
+						if (surveyInstanceIdString != null
+								&& !surveyInstanceIdString.trim()
+										.equalsIgnoreCase(""))
+							queue.add(TaskOptions.Builder
+									.withUrl("/app_worker/surveyalservlet")
+									.param(SurveyalRestRequest.ACTION_PARAM,
+											SurveyalRestRequest.REINGEST_INSTANCE_ACTION)
+									.param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+											surveyInstanceIdString));
+					}
 				}
 			}
 
