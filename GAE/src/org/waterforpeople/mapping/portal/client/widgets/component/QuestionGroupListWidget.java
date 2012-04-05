@@ -187,8 +187,8 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 		gToMove.setOrder(idx+1 + increment);
 		targetGroup.setOrder(idx+1);		
 		
-		survey.getQuestionGroupList().set(targetGroup.getOrder(), targetGroup);
-		survey.getQuestionGroupList().set(gToMove.getOrder(), gToMove);
+		survey.getQuestionGroupList().set(targetGroup.getOrder()-1, targetGroup);
+		survey.getQuestionGroupList().set(gToMove.getOrder()-1, gToMove);
 
 		groupsToUpdate.add(gToMove);
 		groupsToUpdate.add(targetGroup);
