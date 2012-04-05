@@ -72,6 +72,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 				// isn't used.
 				if (map.containsKey(group.getOrder())) {
 					map.put(i, group);
+					group.setOrder(i);
 				} else {
 					map.put(group.getOrder() != null ? group.getOrder() : i,
 							group);
