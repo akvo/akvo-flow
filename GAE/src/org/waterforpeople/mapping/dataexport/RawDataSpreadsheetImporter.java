@@ -22,7 +22,6 @@ import javax.swing.SwingUtilities;
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -74,11 +73,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			try {
 				wb = new XSSFWorkbook(stream);
 			} catch (Exception e) {
-				wb = new HSSFWorkbook(new POIFSFileSystem(stream));
+				wb = new HSSFWorkbook(stream);
 			}
-		} else {
+		} else { 
 			try {
-				wb = new HSSFWorkbook(new POIFSFileSystem(stream));
+				wb = new HSSFWorkbook(stream);
 			} catch (Exception e) {
 				wb = new XSSFWorkbook(stream);
 			}
