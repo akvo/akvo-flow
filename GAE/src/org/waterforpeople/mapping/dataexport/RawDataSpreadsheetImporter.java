@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
@@ -21,12 +22,11 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -67,24 +67,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	 * @throws Exception
 	 */
 	protected Sheet getDataSheet(File file) throws Exception {
-		stream = new FileInputStream(file);
+		stream = new PushbackInputStream(new FileInputStream(file));
 		Workbook wb = null;
-		if (file.getName().toLowerCase().endsWith("xlsx")) {
-			try {
-				wb = new XSSFWorkbook(stream);
-			} catch (Exception e) {
-				wb = new HSSFWorkbook(stream);
-			}
-		} else { 
-			try {
-				wb = new HSSFWorkbook(stream);
-			} catch (Exception e) {
-				wb = new XSSFWorkbook(stream);
-			}
+		try {
+			wb = WorkbookFactory.create(stream);
+		} catch (Exception e) {
 		}
-
 		return wb.getSheetAt(0);
-
 	}
 
 	/**
