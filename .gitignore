@@ -13,3 +13,8 @@ WFPMapping/device/survey/.classpath
 WFPMapping/device/launcher/.project
 WFPMapping/device/launcher/.settings
 WFPMapping/device/launcher/.classpath
+WFPMapping/device/survey_test/.project
+WFPMapping/device/survey_test/.settings
+WFPMapping/device/survey_test/.classpath
+WFPMapping/device/survey_test/bin/*
+WFPMapping/device/survey_test/.DS_Store
