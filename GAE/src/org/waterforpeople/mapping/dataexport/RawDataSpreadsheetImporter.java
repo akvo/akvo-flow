@@ -176,7 +176,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ "&");
 						}
 					}
-					String value = null;
+
 					boolean hasValue = false;
 					if (cell.getRowIndex() > 0
 							&& cell.getColumnIndex() > 2
@@ -192,9 +192,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							}
 							if (cellVal.endsWith(".jpg")) {
 								type = "PHOTO";
-								cellVal = cellVal.substring(cellVal
-										.lastIndexOf("/"));
-								cellVal = "/sdcard" + value;
+								if (cellVal.contains("/")) {
+									cellVal = cellVal.substring(cellVal
+											.lastIndexOf("/"));
+								}
+								cellVal = "/sdcard" + cellVal;
 							}
 						}
 						if (cellVal != null && cellVal.trim().length() > 0) {
