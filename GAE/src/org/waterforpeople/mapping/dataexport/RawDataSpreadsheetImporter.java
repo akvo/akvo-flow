@@ -132,6 +132,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						// load questionIds
 						String[] parts = cell.getStringCellValue().split("\\|");
 						questionIDColMap.put(cell.getColumnIndex(), parts[0]);
+						
 						if (parts.length > 1) {
 							if ("lat/lon".equalsIgnoreCase(parts[1].trim())
 									|| "location".equalsIgnoreCase(parts[1]
@@ -244,7 +245,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						}
 					}
 				}
-				if (row.getRowNum() > 0 && needUpload) {
+				if (row.getRowNum() > 0 && needUpload) {					
 					sendDataToServer(serverBase, "action="
 							+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 							+ "&"
@@ -265,7 +266,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							SAVING_DATA.get(locale)));
 				}
 			}
-			while (!jobQueue.isEmpty()) {
+			while (!jobQueue.isEmpty() && threadPool.getActiveCount()>0) {
 				Thread.sleep(5000);
 			}
 			if (errorIds.size() > 0) {
@@ -274,6 +275,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					System.out.println(line);
 				}
 			}
+			Thread.sleep(5000);
 			System.out.println("Updating summaries");
 			// now update the summaries
 			invokeUrl(serverBase, "action="
@@ -401,4 +403,5 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			progressDialog.update(step, msg, isComplete);
 		}
 	}
+	
 }
