@@ -24,6 +24,7 @@ var loadedSV = new Boolean(false);
 var loadedNI = new Boolean(false);
 var loadedBO = new Boolean(false);
 var loadedDO = new Boolean(false);
+var loadedUG = new Boolean(false);
 var latlngRW = new google.maps.LatLng(-1.7, 30);
 var latlngMW = new google.maps.LatLng(-15.79, 35);
 var latlngHN = new google.maps.LatLng(15, -88);;
@@ -34,6 +35,7 @@ var latlngSV = new google.maps.LatLng(14, -89);
 var latlngNI = new google.maps.LatLng(12.7, -85.7);
 var latlngBO = new google.maps.LatLng(-17.648, -65.812);
 var latlngDO = new google.maps.LatLng(19.015,-70.729);
+var latlngUG = new google.maps.LatLng(0.29,30.45);
 
 function setCountryLatLon(country) {
 	if (country == 'MW') {
@@ -56,7 +58,10 @@ function setCountryLatLon(country) {
 		countryLatLon = latlngBO;
 	} else if (country == 'DO'){
 		countryLatLon= latlngDO;
-	}else{
+	}else if (country == 'UG'){
+		countryLatLon = latlngUG;
+	}
+	else{
 		countryLatLon = new google.maps.LatLng(-15, 35);
 		alert('Water For People does not have projects in that country yet. So we will show you our work in Malawi.');
 	}
@@ -94,7 +99,11 @@ function loadCountryData(countryToLoad) {
 	}else if(countryToLoad =='DO' && loadedDO == false){
 		getPlacemarkInfo('DO');
 		loadedDO = true;
+	}else if(countryToLoad =='UG' && loadedUG == false){
+		getPlacemarkInfo('UG');
+		loadedUG = true;
 	}
+	
 }
 
 function initialize() {
@@ -141,6 +150,7 @@ function initialize() {
 		var containsNI = curBounds.contains(latlngNI);
 		var containsBO = curBounds.contains(latlngBO);
 		var containsDO = curBounds.contains(latlngDO);
+		var containsUG = curBounds.contains(latlngUG);
 
 		if (containsRW) {				
 			loadCountryData('RW');
@@ -173,6 +183,9 @@ function initialize() {
 		}
 		if(containsDO){
 			loadCountryData('DO');
+		}
+		if(containsUG){
+			loadCountryData('UG');
 		}
 	});
 	loadCountryData(initialCountry);
@@ -308,7 +321,7 @@ function createCountryControl() {
 	controlText.style.fontSize = '12px';
 	controlText.style.paddingLeft = '4px';
 	controlText.style.paddingRight = '4px';
-	controlText.innerHTML = '<select id=countrySel><option value="">Select Country</option><option value="BO">Bolivia</option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option><option value="DO">Dominican Republic</option></select>';
+	controlText.innerHTML = '<select id=countrySel><option value="">Select Country</option><option value="BO">Bolivia</option><option value="SV">El Salvador</option><option value="GT">Guatemala</option><option value="HN">Honduras</option><option value="IN">India</option><option value="MW">Malawi</option><option value="NI">Nicaragua</option><option value="PE">Peru</option><option value="RW">Rwanda</option><option value="DO">Dominican Republic</option><option value="UG">Uganda</option></select>';
 	controlUI.appendChild(controlText);
 	map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
 	google.maps.event
@@ -356,6 +369,11 @@ function createCountryControl() {
 							map.setCenter(latlngDO);
 							map.setZoom(10);
 							$("#tabs").tabs("select", 9);
+						}else if (document.getElementById("countrySel").selectedIndex == 11) {
+							map.setCenter(latlngUG);
+							map.setZoom(10);
+							//TODO: add this back once we have copy for uganda
+							//$("#tabs").tabs("select", 9);
 						}
 					});
 
@@ -407,6 +425,8 @@ function createChartControl() {
 			displayChart("RW", latlngRW);
 		} else if(document.getElementById("chartSel").selectedIndex ==10){
 			displayChart("DO".latlngDO);
+		} else if(document.getElementById("chartSel").selectedIndex ==11){
+			displayChart("UG".latlngUG);
 		}
 	});
 }
@@ -505,6 +525,10 @@ $('#tabs').bind('tabsselect',function(event,ui){
 	}else if (ui.index == 9){
 		jQuery("select#countrySel option[value='DO']").attr("selected", "selected");
 		map.setCenter(latlngDO);
+		map.setZoom(10);
+	}else if (ui.index == 10){
+		jQuery("select#countrySel option[value='UG']").attr("selected", "selected");
+		map.setCenter(latlngUG);
 		map.setZoom(10);
 	}
 	

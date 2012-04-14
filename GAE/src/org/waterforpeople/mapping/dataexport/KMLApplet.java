@@ -109,6 +109,7 @@ public class KMLApplet extends JApplet implements Runnable {
 			countryList.add("SL");
 			countryList.add("DO");
 			countryList.add("GH");
+			countryList.add("UG");
 			processFile(path, countryList);
 		} catch (Exception e1) {
 			e1.printStackTrace();
