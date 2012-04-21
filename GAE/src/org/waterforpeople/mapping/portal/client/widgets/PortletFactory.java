@@ -22,8 +22,7 @@ public class PortletFactory {
 			{ SurveyQuestionPortlet.NAME, SurveyQuestionPortlet.DESCRIPTION },
 			{ DeviceLocationPortlet.NAME, DeviceLocationPortlet.DESCRIPTION },
 			{ AccessPointMetricChartPortlet.NAME,
-					AccessPointMetricChartPortlet.DESCRIPTION }
-	};
+					AccessPointMetricChartPortlet.DESCRIPTION } };
 
 	public static Portlet createPortlet(String name, UserDto user,
 			String domainType) {
@@ -83,6 +82,8 @@ public class PortletFactory {
 			return new SurveyedLocaleManagerPortlet(user);
 		} else if (name.equals(MetricManagerPortlet.NAME)) {
 			return new MetricManagerPortlet(user);
+		} else if (name.equals(SuperAdminPortlet.NAME)) {
+			return new SuperAdminPortlet();
 		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}

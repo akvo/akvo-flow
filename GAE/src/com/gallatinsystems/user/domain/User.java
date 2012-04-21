@@ -23,6 +23,7 @@ public class User extends BaseDomain {
 
 	private String emailAddress;
 	private String permissionList;
+	private Boolean superAdmin;
 	@Persistent
 	private List<UserConfig> config;
 
@@ -57,4 +58,14 @@ public class User extends BaseDomain {
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
+
+	public Boolean isSuperAdmin() {
+		return superAdmin;
+	}
+
+	public void setSuperAdmin(Boolean superAdmin) {
+		this.superAdmin = superAdmin;
+	}
+	
+	
 }

@@ -26,6 +26,7 @@ import org.waterforpeople.mapping.portal.client.widgets.RemoteExceptionPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.RunReportsPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.StandardScoringManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SummaryPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.SuperAdminPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAssignmentPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyAttributeMappingPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.SurveyLoaderPortlet;
@@ -233,15 +234,6 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 						}
 					});
 		}
-		/*if (getCurrentUser().hasPermission(PermissionConstants.EDIT_EDITORIAL)) {
-			mgrMenu.addItem(TEXT_CONSTANTS.displayContentManagerTitle(),
-					new Command() {
-						public void execute() {
-							launchFullscreen(DisplayContentManager.NAME);
-
-						}
-					});
-		}*/
 
 		if (getCurrentUser().hasPermission(
 				PermissionConstants.UPLOAD_SURVEY_DATA)) {
@@ -352,6 +344,15 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				@Override
 				public void execute() {
 					launchFullscreen(MessageViewPortlet.NAME);
+
+				}
+			});
+		}
+
+		if (getCurrentUser().isSuperAdmin()) {
+			menu.addItem(TEXT_CONSTANTS.adminOnly(), new Command() {
+				public void execute() {
+					launchFullscreen(SuperAdminPortlet.NAME);
 
 				}
 			});

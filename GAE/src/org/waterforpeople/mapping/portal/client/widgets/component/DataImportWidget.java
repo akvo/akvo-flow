@@ -29,7 +29,7 @@ public class DataImportWidget extends MenuBasedWidget {
 	private static UploadConstants UPLOAD_CONSTANTS = GWT
 			.create(UploadConstants.class);
 	private Panel appletPanel;
-	private Button surveyImportButton;
+
 	private Button rawDataImportButton;
 	private Button importGISButton;
 	private Button fixedFormatImportButton;
@@ -37,34 +37,31 @@ public class DataImportWidget extends MenuBasedWidget {
 
 	public DataImportWidget() {
 		Panel contentPanel = new VerticalPanel();
-		Grid grid = new Grid(5, 2);
+		Grid grid = new Grid(4, 2);
 		contentPanel.add(grid);
 		appletPanel = new VerticalPanel();
 		contentPanel.add(appletPanel);
-		surveyImportButton = initButton(TEXT_CONSTANTS.importSurvey());
-		grid.setWidget(0, 0, surveyImportButton);
-		grid.setWidget(0, 1,
-				createDescription(TEXT_CONSTANTS.importSurveyDescription()));
+
 		rawDataImportButton = initButton(TEXT_CONSTANTS.rawDataImport());
-		grid.setWidget(1, 0, rawDataImportButton);
-		grid.setWidget(1, 1,
+		grid.setWidget(0, 0, rawDataImportButton);
+		grid.setWidget(0, 1,
 				createDescription(TEXT_CONSTANTS.rawDataImportDescription()));
 
 		importGISButton = initButton(TEXT_CONSTANTS.importGISData());
-		grid.setWidget(2, 0, importGISButton);
-		grid.setWidget(2, 1,
+		grid.setWidget(1, 0, importGISButton);
+		grid.setWidget(1, 1,
 				createDescription(TEXT_CONSTANTS.importGISDataDescriptions()));
 
 		fixedFormatImportButton = initButton(TEXT_CONSTANTS
 				.importFixedFormatFile());
-		grid.setWidget(3, 0, fixedFormatImportButton);
-		grid.setWidget(3, 1, createDescription(TEXT_CONSTANTS
+		grid.setWidget(2, 0, fixedFormatImportButton);
+		grid.setWidget(2, 1, createDescription(TEXT_CONSTANTS
 				.importFixedFormatFileDescription()));
 
 		bulkImportButton = initButton(TEXT_CONSTANTS.bulkImportSurveys());
-		grid.setWidget(4, 0, bulkImportButton);
+		grid.setWidget(3, 0, bulkImportButton);
 		grid.setWidget(
-				4,
+				3,
 				1,
 				createDescription(TEXT_CONSTANTS.bulkImportSurveysDescription()));
 
@@ -74,17 +71,7 @@ public class DataImportWidget extends MenuBasedWidget {
 	@Override
 	public void onClick(ClickEvent event) {
 		appletPanel.clear();
-		if (event.getSource() == surveyImportButton) {
-			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,poi-3.5-signed.jar,json.jar,gdata-core-1.0.jar'>";
-			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
-			appletString += "<PARAM name='importType' value='SURVEY_SPREADSHEET'>";
-			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value=k:="+UPLOAD_CONSTANTS.apiKey() +"'>";
-			appletString += "</applet>";
-			HTML html = new HTML();
-			html.setHTML(appletString);
-			appletPanel.add(html);
-		} else if (event.getSource() == rawDataImportButton) {
+		 if (event.getSource() == rawDataImportButton) {
 			SurveySelectionDialog surveyDia = new SurveySelectionDialog(
 					new CompletionListener() {
 						@Override
@@ -99,10 +86,12 @@ public class DataImportWidget extends MenuBasedWidget {
 								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 								appletString += "<param name='java_arguments' value='-Xmx512m'>";
 								appletString += "<PARAM name='importType' value='RAW_DATA'>";
-								appletString += "<PARAM name='criteria' value='k:="+UPLOAD_CONSTANTS.apiKey() +";surveyId:="
-								+ payload
-										.get(SurveySelectionDialog.SURVEY_KEY)
-								+ "'>";
+								appletString += "<PARAM name='criteria' value='k:="
+										+ UPLOAD_CONSTANTS.apiKey()
+										+ ";surveyId:="
+										+ payload
+												.get(SurveySelectionDialog.SURVEY_KEY)
+										+ "'>";
 								appletString += "</applet>";
 								HTML html = new HTML();
 								html.setHTML(appletString);
@@ -175,7 +164,9 @@ public class DataImportWidget extends MenuBasedWidget {
 								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 								appletString += "<PARAM name='importType' value='FIXED_FORMAT'>";
 								appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-								appletString += "<PARAM name='criteria' value='k:="+UPLOAD_CONSTANTS.apiKey() +";surveyId:="
+								appletString += "<PARAM name='criteria' value='k:="
+										+ UPLOAD_CONSTANTS.apiKey()
+										+ ";surveyId:="
 										+ payload
 												.get(SurveySelectionDialog.SURVEY_KEY)
 										+ "'>";
@@ -191,7 +182,7 @@ public class DataImportWidget extends MenuBasedWidget {
 			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,gdata-core-1.0.jar'>";
 			appletString += "<PARAM name='importType' value='BULK_SURVEY'>";
 			appletString += "<PARAM name='selectionMode' value='dir'>";
-			appletString +="<param name='java_arguments' value='-Xmx512m'>";
+			appletString += "<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 			appletString += "<PARAM name='criteria' value='imagePolicy:="
 					+ UPLOAD_CONSTANTS.imageS3Policy() + ";imageSig:="
@@ -199,7 +190,8 @@ public class DataImportWidget extends MenuBasedWidget {
 					+ UPLOAD_CONSTANTS.surveyDataS3Policy() + ";dataSig:="
 					+ UPLOAD_CONSTANTS.surveyDataS3Sig() + ";awsId:="
 					+ UPLOAD_CONSTANTS.s3Id() + ";uploadBase:="
-					+ UPLOAD_CONSTANTS.uploadUrl() + ";k:="+UPLOAD_CONSTANTS.apiKey()+"'>";
+					+ UPLOAD_CONSTANTS.uploadUrl() + ";k:="
+					+ UPLOAD_CONSTANTS.apiKey() + "'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);
