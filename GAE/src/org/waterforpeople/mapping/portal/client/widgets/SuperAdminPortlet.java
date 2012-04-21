@@ -14,8 +14,8 @@ public class SuperAdminPortlet extends Portlet implements ClickHandler {
 
 	public static final String NAME = TEXT_CONSTANTS.adminOnly();
 
-	private static final int WIDTH = 300;
-	private static final int HEIGHT = 300;
+	private static final int WIDTH = 600;
+	private static final int HEIGHT = 600;
 	private SuperAdminWidget widget;
 
 	public SuperAdminPortlet() {

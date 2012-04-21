@@ -7,6 +7,7 @@ import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
+import com.gallatinsystems.gis.app.gwt.client.GISSupportConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -23,11 +24,12 @@ public class SuperAdminWidget extends MenuBasedWidget {
 			.create(UploadConstants.class);
 	private Button surveyImportButton;
 	private Button offlineReportButton;
+	private Button importGISButton;
 	private Panel appletPanel;
 
 	public SuperAdminWidget() {
 		Panel contentPanel = new VerticalPanel();
-		Grid grid = new Grid(2, 2);
+		Grid grid = new Grid(3, 2);
 		contentPanel.add(grid);
 		appletPanel = new VerticalPanel();
 		contentPanel.add(appletPanel);
@@ -40,6 +42,10 @@ public class SuperAdminWidget extends MenuBasedWidget {
 		grid.setWidget(1, 0, offlineReportButton);
 		grid.setWidget(1, 1,
 				createDescription(TEXT_CONSTANTS.offlineReportDesc()));
+		importGISButton = initButton(TEXT_CONSTANTS.importGISData());
+		grid.setWidget(2, 0, importGISButton);
+		grid.setWidget(2, 1,
+				createDescription(TEXT_CONSTANTS.importGISDataDescriptions()));
 
 		initWidget(contentPanel);
 	}
@@ -77,6 +83,56 @@ public class SuperAdminWidget extends MenuBasedWidget {
 					}, false, null, true);
 			surveyDia.showCentered();
 
+		} else if (event.getSource() == importGISButton) {
+			GISSetupDialog gisDia = new GISSetupDialog(
+					new CompletionListener() {
+						@Override
+						public void operationComplete(boolean wasSuccessful,
+								Map<String, Object> payload) {
+							if (wasSuccessful
+									&& payload != null
+									&& payload
+											.get(GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM) != null) {
+								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.gis.app.GeometryLoader width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,jts-1.11-serializable-indexes.jar,gt-api-2.6.5.jar,gt-main-2.6.5.jar,gt-metadata-2.6.5.jar,gt-shapefile-2.6.5.jar,gdata-core-1.0.jar'>";
+								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
+								appletString += "<PARAM name='"
+										+ GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM
+										+ "' value='"
+										+ payload
+												.get(GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM)
+										+ "'>";
+								appletString += "<PARAM name='"
+										+ GISSupportConstants.CENTRAL_MERIDIAN_PARAM
+										+ "' value='"
+										+ payload
+												.get(GISSupportConstants.CENTRAL_MERIDIAN_PARAM)
+										+ "'>";
+								appletString += "<PARAM name='"
+										+ GISSupportConstants.COUNTRY_CODE_PARAM
+										+ "' value='"
+										+ payload
+												.get(GISSupportConstants.COUNTRY_CODE_PARAM)
+										+ "'>";
+								appletString += "<PARAM name='"
+										+ GISSupportConstants.GIS_FEATURE_TYPE_PARAM
+										+ "' value='"
+										+ payload
+												.get(GISSupportConstants.GIS_FEATURE_TYPE_PARAM)
+										+ "'>";
+								appletString += "<PARAM name='"
+										+ GISSupportConstants.UTM_ZONE_PARAM
+										+ "' value='"
+										+ payload
+												.get(GISSupportConstants.UTM_ZONE_PARAM)
+										+ "'>";
+								appletString += "</applet>";
+								HTML html = new HTML();
+								html.setHTML(appletString);
+								appletPanel.add(html);
+							}
+						}
+					});
+			gisDia.showCentered();
 		}
 
 	}

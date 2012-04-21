@@ -31,13 +31,13 @@ public class DataImportWidget extends MenuBasedWidget {
 	private Panel appletPanel;
 
 	private Button rawDataImportButton;
-	private Button importGISButton;
+	
 	private Button fixedFormatImportButton;
 	private Button bulkImportButton;
 
 	public DataImportWidget() {
 		Panel contentPanel = new VerticalPanel();
-		Grid grid = new Grid(4, 2);
+		Grid grid = new Grid(3, 2);
 		contentPanel.add(grid);
 		appletPanel = new VerticalPanel();
 		contentPanel.add(appletPanel);
@@ -47,21 +47,17 @@ public class DataImportWidget extends MenuBasedWidget {
 		grid.setWidget(0, 1,
 				createDescription(TEXT_CONSTANTS.rawDataImportDescription()));
 
-		importGISButton = initButton(TEXT_CONSTANTS.importGISData());
-		grid.setWidget(1, 0, importGISButton);
-		grid.setWidget(1, 1,
-				createDescription(TEXT_CONSTANTS.importGISDataDescriptions()));
-
+	
 		fixedFormatImportButton = initButton(TEXT_CONSTANTS
 				.importFixedFormatFile());
-		grid.setWidget(2, 0, fixedFormatImportButton);
-		grid.setWidget(2, 1, createDescription(TEXT_CONSTANTS
+		grid.setWidget(1, 0, fixedFormatImportButton);
+		grid.setWidget(1, 1, createDescription(TEXT_CONSTANTS
 				.importFixedFormatFileDescription()));
 
 		bulkImportButton = initButton(TEXT_CONSTANTS.bulkImportSurveys());
-		grid.setWidget(3, 0, bulkImportButton);
+		grid.setWidget(2, 0, bulkImportButton);
 		grid.setWidget(
-				3,
+				2,
 				1,
 				createDescription(TEXT_CONSTANTS.bulkImportSurveysDescription()));
 
@@ -100,57 +96,7 @@ public class DataImportWidget extends MenuBasedWidget {
 						}
 					});
 			surveyDia.showCentered();
-		} else if (event.getSource() == importGISButton) {
-			GISSetupDialog gisDia = new GISSetupDialog(
-					new CompletionListener() {
-						@Override
-						public void operationComplete(boolean wasSuccessful,
-								Map<String, Object> payload) {
-							if (wasSuccessful
-									&& payload != null
-									&& payload
-											.get(GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM) != null) {
-								String appletString = "<applet width='100' height='30' code=com.gallatinsystems.gis.app.GeometryLoader width=256 height=256 archive='exporterapplet.jar,json.jar,poi-3.5-signed.jar,jts-1.11-serializable-indexes.jar,gt-api-2.6.5.jar,gt-main-2.6.5.jar,gt-metadata-2.6.5.jar,gt-shapefile-2.6.5.jar,gdata-core-1.0.jar'>";
-								appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
-								appletString += "<PARAM name='"
-										+ GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM
-										+ "' value='"
-										+ payload
-												.get(GISSupportConstants.COORDINATE_SYSTEM_TYPE_PARAM)
-										+ "'>";
-								appletString += "<PARAM name='"
-										+ GISSupportConstants.CENTRAL_MERIDIAN_PARAM
-										+ "' value='"
-										+ payload
-												.get(GISSupportConstants.CENTRAL_MERIDIAN_PARAM)
-										+ "'>";
-								appletString += "<PARAM name='"
-										+ GISSupportConstants.COUNTRY_CODE_PARAM
-										+ "' value='"
-										+ payload
-												.get(GISSupportConstants.COUNTRY_CODE_PARAM)
-										+ "'>";
-								appletString += "<PARAM name='"
-										+ GISSupportConstants.GIS_FEATURE_TYPE_PARAM
-										+ "' value='"
-										+ payload
-												.get(GISSupportConstants.GIS_FEATURE_TYPE_PARAM)
-										+ "'>";
-								appletString += "<PARAM name='"
-										+ GISSupportConstants.UTM_ZONE_PARAM
-										+ "' value='"
-										+ payload
-												.get(GISSupportConstants.UTM_ZONE_PARAM)
-										+ "'>";
-								appletString += "</applet>";
-								HTML html = new HTML();
-								html.setHTML(appletString);
-								appletPanel.add(html);
-							}
-						}
-					});
-			gisDia.showCentered();
-		} else if (event.getSource() == fixedFormatImportButton) {
+		}  else if (event.getSource() == fixedFormatImportButton) {
 			SurveySelectionDialog surveyDia = new SurveySelectionDialog(
 					new CompletionListener() {
 						@Override
