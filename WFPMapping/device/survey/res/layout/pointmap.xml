@@ -3,12 +3,10 @@
 	android:id="@+id/home_container" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 	<!--
-		NOTE: the apiKey below is tied to Chris's local debug key. This must
-		be changed to the version of the key signed with the release key when
-		we launch
+		NOTE: the apiKey below is tied to the release keystore. If you use a different keystore, you'll need a new key.
 	-->
 	<com.google.android.maps.MapView
 		android:id="@+id/pointmapview" android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:apiKey="0-VFNHx65gE6OqJZPaTIeowR2Kg2aeYfMokk5mA"
+		android:layout_height="fill_parent" android:apiKey="0-VFNHx65gE7XrBkuymcDhoWWiU1dgCx3mN9GkQ"
 		android:enabled="true" android:clickable="true" />
 </FrameLayout>
