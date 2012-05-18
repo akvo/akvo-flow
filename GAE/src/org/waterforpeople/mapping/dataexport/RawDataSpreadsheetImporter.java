@@ -61,7 +61,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	/**
 	 * opens a file input stream using the file passed in and tries to return
 	 * the first worksheet in that file
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 * @throws Exception
@@ -132,7 +132,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						// load questionIds
 						String[] parts = cell.getStringCellValue().split("\\|");
 						questionIDColMap.put(cell.getColumnIndex(), parts[0]);
-						
+
 						if (parts.length > 1) {
 							if ("lat/lon".equalsIgnoreCase(parts[1].trim())
 									|| "location".equalsIgnoreCase(parts[1]
@@ -245,12 +245,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						}
 					}
 				}
-				if (row.getRowNum() > 0 && needUpload) {					
-					sendDataToServer(serverBase, "action="
+				if (row.getRowNum() > 0 && needUpload) {
+					sendDataToServer(serverBase, instanceId == null?null:"action="
 							+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 							+ "&"
 							+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
-							+ "=" + (instanceId != null ? instanceId : "")
+							+ "=" + instanceId
 							+ "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
 							+ getSurveyId() + "&"
 							+ RawDataImportRequest.COLLECTION_DATE_PARAM + "="
@@ -295,7 +295,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	/**
 	 * handles calling invokeURL twice (once to reset the instance and again to
 	 * save the new one) as a separate job submitted to the thread pool
-	 * 
+	 *
 	 * @param serverBase
 	 * @param resetUrlString
 	 * @param saveUrlString
@@ -309,7 +309,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				try {
 					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 							SAVING_DATA.get(locale)));
-					invokeUrl(serverBase, resetUrlString, true, key);
+					if(resetUrlString != null){
+						invokeUrl(serverBase, resetUrlString, true, key);
+					}
 					invokeUrl(serverBase, saveUrlString, true, key);
 				} catch (Exception e) {
 					errorIds.add(saveUrlString);
@@ -322,7 +324,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 	/**
 	 * calls a remote api by posting to the url passed in.
-	 * 
+	 *
 	 * @param serverBase
 	 * @param urlString
 	 * @throws Exception
@@ -403,5 +405,5 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			progressDialog.update(step, msg, isComplete);
 		}
 	}
-	
+
 }

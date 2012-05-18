@@ -971,7 +971,7 @@ public class BulkDataServiceClient {
 	}
 
 	/**
-	 * invokes a remote REST api. If the url is longer than 2048 characters,
+	 * invokes a remote REST api. If the url is longer than 1900 characters,
 	 * this method will use POST since that is too long for a GET
 	 * 
 	 * @param fullUrl
@@ -980,7 +980,7 @@ public class BulkDataServiceClient {
 	 */
 	public static String fetchDataFromServer(String fullUrl) throws Exception {
 		if (fullUrl != null) {
-			if (fullUrl.length() > 2048) {
+			if (fullUrl.length() > 1900) {
 				return fetchDataFromServerPOST(fullUrl);
 			} else {
 				return fetchDataFromServerGET(fullUrl);
