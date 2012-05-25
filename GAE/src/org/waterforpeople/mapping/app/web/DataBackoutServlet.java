@@ -33,6 +33,7 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.google.appengine.api.datastore.Entity;
 
 /**
  * servlet for backing out survey response data (and corresponding
@@ -207,21 +208,23 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	 */
 	private String listSurveyInstance(Long surveyId, Date beforeDate,
 			boolean includeDate) {
-		List<SurveyInstance> instances = instanceDao.listByDateRange(null,
-				beforeDate, false, surveyId, null, Constants.ALL_RESULTS);
+		boolean keysOnly = true;
+		if(includeDate)
+			keysOnly=false;
+		Iterable<Entity> instances = instanceDao.listRawEntity(keysOnly, null, beforeDate, surveyId);
 		StringBuilder buffer = new StringBuilder();
 		if (instances != null) {
 			boolean isFirst = true;
-			for (SurveyInstance i : instances) {
+			for (Entity result : instances)  {
 				if (!isFirst) {
 					buffer.append(",");
 				} else {
 					isFirst = false;
 				}
-				buffer.append(i.getKey().getId());
-				if (includeDate && i.getCollectionDate() != null) {
+				buffer.append(result.getKey().getId());
+				if (includeDate && result.getProperty("collectionDate") != null) {
 					buffer.append("|").append(
-							OUT_FMT.format(i.getCollectionDate()));
+							OUT_FMT.format(result.getProperty("collectionDate")));
 				}
 			}
 		}

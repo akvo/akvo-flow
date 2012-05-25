@@ -18,10 +18,12 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
@@ -223,6 +225,30 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	}
 
+	public Iterable<Entity> listRawEntity(Boolean returnKeysOnly,
+			Date beginDate, Date endDate, Long surveyId) {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		// The Query interface assembles a query
+		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
+				"SurveyInstance");
+		if (returnKeysOnly) {
+			q.setKeysOnly();
+		}
+
+		if (surveyId != null)
+			q.addFilter("surveyId", FilterOperator.EQUAL, surveyId);
+		if (beginDate != null)
+			q.addFilter("collectionDate", FilterOperator.GREATER_THAN_OR_EQUAL,
+					beginDate);
+		if (endDate != null)
+			q.addFilter("collectionDate", FilterOperator.LESS_THAN_OR_EQUAL,
+					endDate);
+		PreparedQuery pq = datastore.prepare(q);
+		return pq.asIterable();
+
+	}
+
 	/**
 	 * finds a questionAnswerStore object for the surveyInstance and questionId
 	 * passed in (if it exists)
@@ -328,10 +354,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	 * @param surveyId
 	 * @return
 	 */
-	
+
 	public List<SurveyInstance> listSurveyInstanceBySurvey(Long surveyId,
 			Integer count) {
-		return listSurveyInstanceBySurvey(surveyId,count,null);
+		return listSurveyInstanceBySurvey(surveyId, count, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -341,23 +367,23 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		Query q = pm.newQuery(SurveyInstance.class);
 		q.setFilter("surveyId == surveyIdParam");
 		q.declareParameters("Long surveyIdParam");
-		prepareCursor(cursorString,count,q);
+		prepareCursor(cursorString, count, q);
 		List<SurveyInstance> siList = (List<SurveyInstance>) q
 				.execute(surveyId);
 
 		return siList;
 	}
 
-	
 	public List<SurveyInstance> listSurveyInstanceBySurveyId(Long surveyId,
 			String cursorString) {
-		return listSurveyInstanceBySurvey(surveyId, null,
-				cursorString);
+		return listSurveyInstanceBySurvey(surveyId, null, cursorString);
 	}
-	
-	public Iterable<Entity> listSurveyInstanceKeysBySurveyId(Long surveyId){
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query("SurveyInstance");
+
+	public Iterable<Entity> listSurveyInstanceKeysBySurveyId(Long surveyId) {
+		DatastoreService datastore = DatastoreServiceFactory
+				.getDatastoreService();
+		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
+				"SurveyInstance");
 		q.setKeysOnly();
 		q.addFilter("surveyId", FilterOperator.EQUAL, surveyId);
 		PreparedQuery pq = datastore.prepare(q);
