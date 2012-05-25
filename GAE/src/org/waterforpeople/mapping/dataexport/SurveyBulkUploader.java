@@ -47,8 +47,9 @@ public class SurveyBulkUploader implements DataImporter {
 	private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
 	private static final String UPLOAD_IMAGE_MODE = "uploadImageOnly";
 	private static final String ZIP_ONLY_MODE = "processZipOnly";
-	private static final String MODE_KEY = "mode";
+	public static final String MODE_KEY = "mode";
 	private static final String PROGRESS_FILE_NAME = "progress.txt";
+	public static final String MERGE_ONLY_MODE = "mergeOnly";
 
 	private static final String IMAGE_TEMP_DIR = "resized";
 
@@ -61,6 +62,7 @@ public class SurveyBulkUploader implements DataImporter {
 	private static final String DEFAULT_LOCALE = "en";
 	private static Map<String, String> UPLOADING;
 	private static Map<String, String> COMPLETE;
+	private List<File> filesToUpload;
 
 	static {
 		UPLOADING = new HashMap<String, String>();
@@ -89,7 +91,6 @@ public class SurveyBulkUploader implements DataImporter {
 		boolean processZip = true;
 		List<String> processedList = new ArrayList<String>();
 
-
 		String progressFileName = sourceDirectory + File.separator
 				+ PROGRESS_FILE_NAME;
 		try {
@@ -112,11 +113,14 @@ public class SurveyBulkUploader implements DataImporter {
 		progressDialog = new ProgressDialog(filesInDir.size(), locale);
 		progressDialog.setVisible(true);
 
-		List<File> filesToUpload = filesInDir.get(0);
+		filesToUpload = filesInDir.get(0);
 		if (UPLOAD_IMAGE_MODE.equalsIgnoreCase(criteria.get(MODE_KEY))) {
 			processZip = false;
 		} else if (ZIP_ONLY_MODE.equalsIgnoreCase(criteria.get(MODE_KEY))) {
 			uploadImage = false;
+		} else if (MERGE_ONLY_MODE.equalsIgnoreCase(criteria.get(MODE_KEY))) {
+			uploadImage = false;
+			processZip = false;
 		}
 		File tempDir = new File(sourceDirectory, IMAGE_TEMP_DIR);
 		tempDir.mkdirs();
@@ -132,7 +136,8 @@ public class SurveyBulkUploader implements DataImporter {
 						if (uploadImage) {
 							File resizedFile = ImageUtil.resizeImage(fx,
 									tempDir.getAbsolutePath(), 500, 500);
-							UploadUtil.upload(FileUtil.readFileBytes(resizedFile),
+							UploadUtil.upload(
+									FileUtil.readFileBytes(resizedFile),
 									resizedFile.getName(), "images",
 									criteria.get(UPLOAD_BASE_KEY),
 									criteria.get(AWS_ID_KEY),
@@ -211,7 +216,7 @@ public class SurveyBulkUploader implements DataImporter {
 							&& !ignoreList.contains(files[i].getName())) {
 						if (files[i].getName().endsWith(".jpg")) {
 							if (!files[i].getName().endsWith(" - Copy.jpg")) {
-					
+
 								fileList.add(files[i]);
 							}
 						} else if (files[i].getName().endsWith(".zip")) {
@@ -237,19 +242,8 @@ public class SurveyBulkUploader implements DataImporter {
 					StringBuilder allContent = new StringBuilder();
 					for (File fx : zipFileList) {
 						try {
-							FileInputStream fis;
-							fis = new FileInputStream(fx);
-							long length = fx.length();
-							byte[] bytes = new byte[(int) length];
-							int offset = 0;
-							int numRead = 0;
-							while (offset < bytes.length
-									&& (numRead = fis.read(bytes, offset,
-											bytes.length - offset)) >= 0) {
-								offset += numRead;
-							}
-							fis.close();
-							allContent.append(ZipUtil.unZip(bytes, "data.txt"));
+							
+							allContent.append(getContentFromZip(fx));
 							collapsedZips.add(fx);
 						} catch (Exception e) {
 
@@ -313,6 +307,26 @@ public class SurveyBulkUploader implements DataImporter {
 		result.add(fileList);
 		result.add(collapsedZips);
 		return result;
+	}
+	
+	public static String getContentFromZip(File zip) throws Exception{
+		FileInputStream fis;
+		fis = new FileInputStream(zip);
+		long length = zip.length();
+		byte[] bytes = new byte[(int) length];
+		int offset = 0;
+		int numRead = 0;
+		while (offset < bytes.length
+				&& (numRead = fis.read(bytes, offset,
+						bytes.length - offset)) >= 0) {
+			offset += numRead;
+		}
+		fis.close();
+		return ZipUtil.unZip(bytes, "data.txt");
+	}
+
+	public List<File> getFilesToUpload() {
+		return filesToUpload;
 	}
 
 	/**

@@ -1,0 +1,6 @@
+This is the root directory of the Robotium tests for the Flow Field Survey application.
+
+It requires a functioning Field Survey app on the emulator or phone.
+
+Application is run as "Android JUnit test" in Eclipse.
+

@@ -250,7 +250,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 			while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
 				out.write(buffer, 0, size);
 			}
-			line = out.toString();
+			line = out.toString("UTF-8");
 
 			if (entry.getName().endsWith("txt")) {
 				if (entry.getName().equals("regions.txt")) {

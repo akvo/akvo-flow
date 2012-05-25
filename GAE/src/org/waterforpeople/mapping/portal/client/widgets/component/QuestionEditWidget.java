@@ -357,8 +357,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 			}
 			minVal.setEnabled(isEditable);
 			validationPanel.setVisible(true);
-		} else if (currentQuestion.getType() == null || QuestionDto.QuestionType.FREE_TEXT == currentQuestion
-				.getType()) {
+		} else if (currentQuestion.getType() == null
+				|| QuestionDto.QuestionType.FREE_TEXT == currentQuestion
+						.getType()) {
 			validationPanel.clear();
 			validationPanel.add(textValidationPanel);
 			validationPanel.setVisible(true);
@@ -1188,9 +1189,9 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 							if (result.getCursorString() != null
 									&& result.getPayload().size() == ResponseDto.DEFAULT_PAGE_SIZE) {
 								loadMetrics(result.getCursorString());
+							} else {
+								loadMetricMapping();
 							}
-						} else {
-							loadMetricMapping();
 						}
 					}
 				});
@@ -1276,6 +1277,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 				this.bundle = new HashMap<String, Object>();
 			}
 			this.bundle.put(BundleConstants.METRIC_LIST, metricList);
+
 		}
 		insertAboveQuestion = (QuestionDto) bundle
 				.get(BundleConstants.INSERT_ABOVE_QUESTION);
@@ -1390,7 +1392,7 @@ public class QuestionEditWidget extends Composite implements ContextAware,
 					validationPanel.clear();
 					validationPanel.add(textValidationPanel);
 					validationPanel.setVisible(true);
-				}else{					
+				} else {
 					validationPanel.setVisible(false);
 				}
 			}

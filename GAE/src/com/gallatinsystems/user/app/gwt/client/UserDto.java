@@ -23,6 +23,7 @@ public class UserDto extends BaseDto {
 	private String logoutUrl;
 	private boolean hasAccess = true;
 	private boolean admin = false;
+	private boolean superAdmin = false;
 	private String permissionList;
 
 	public String getPermissionList() {
@@ -36,6 +37,14 @@ public class UserDto extends BaseDto {
 	public boolean isAdmin() {
 
 		return hasPermission(PermissionConstants.ADMIN);
+	}
+
+	public boolean isSuperAdmin() {
+		return superAdmin;
+	}
+
+	public void setSuperAdmin(boolean isSuper) {
+		this.superAdmin = isSuper;
 	}
 
 	public void setAdmin(boolean isAdmin) {

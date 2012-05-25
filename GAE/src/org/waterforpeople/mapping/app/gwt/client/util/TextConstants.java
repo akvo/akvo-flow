@@ -586,5 +586,7 @@ public interface TextConstants extends Constants{
 	public String bulkImportSurveys();
 	public String bulkImportSurveysDescription();
 	public String barcode();
+	public String offlineReport();
+	public String offlineReportDesc();
 }
 

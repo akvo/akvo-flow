@@ -1,6 +1,14 @@
-GAE/war/WEB-INF/*.jks
-WFPMapping/device/debugcert
-WFPMapping/device/survey/res/raw/survey.properties
-GAE/war/WEB-INF/appengine-web.xml
+# Globally ignored files
+.DS_Store
+.classpath
+.project
+.settings
+
+# Specific paths
 GAE/build.properties
 GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties
+GAE/war/WEB-INF/*.jks
+GAE/war/WEB-INF/appengine-web.xml
+WFPMapping/device/debugcert
+WFPMapping/device/survey/res/raw/survey.properties
+WFPMapping/device/survey_test/bin/*

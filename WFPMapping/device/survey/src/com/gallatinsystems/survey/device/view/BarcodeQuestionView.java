@@ -4,9 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TableRow;
 
 import com.gallatinsystems.survey.device.R;
@@ -23,7 +23,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
  * 
  */
 public class BarcodeQuestionView extends QuestionView implements
-		OnClickListener {
+		OnClickListener, OnFocusChangeListener {
 
 	private Button barcodeButton;
 	private EditText barcodeText;
@@ -40,7 +40,7 @@ public class BarcodeQuestionView extends QuestionView implements
 		barcodeButton = new Button(context);
 		barcodeText = new EditText(context);
 		barcodeText.setWidth(DEFAULT_WIDTH);
-
+		barcodeText.setOnFocusChangeListener(this);
 		barcodeButton.setText(R.string.scanbarcode);
 
 		barcodeButton.setOnClickListener(this);
@@ -97,6 +97,28 @@ public class BarcodeQuestionView extends QuestionView implements
 	public void resetQuestion(boolean fireEvent) {
 		super.resetQuestion(fireEvent);
 		barcodeText.setText("");
+	}
+
+	/**
+	 * captures the response and runs validation on loss of focus
+	 */
+	@Override
+	public void onFocusChange(View view, boolean hasFocus) {
+		// we need to listen to loss of focus
+		// and make sure input is valid
+		if (!hasFocus) {
+			captureResponse(false);
+		}
+	}
+
+	/**
+	 * pulls the data out of the fields and saves it as a response object,
+	 * possibly suppressing listeners
+	 */
+	public void captureResponse(boolean suppressListeners) {
+		setResponse(new QuestionResponse(barcodeText.getText().toString(),
+				ConstantUtil.VALUE_RESPONSE_TYPE, getQuestion().getId()),
+				suppressListeners);
 	}
 
 }

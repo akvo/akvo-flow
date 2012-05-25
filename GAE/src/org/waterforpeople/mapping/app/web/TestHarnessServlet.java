@@ -268,7 +268,7 @@ public class TestHarnessServlet extends HttpServlet {
 				dou.deleteAllObjects("StandardScoring");
 				resp.getWriter().println(
 						"About to configure development environment");
-				
+
 				setupTestUser();
 				resp.getWriter().println("Completed setting up test user");
 				resp.getWriter().println("Completed setting up permissions");
@@ -1726,12 +1726,21 @@ public class TestHarnessServlet extends HttpServlet {
 			ap.setLatitude(12d);
 			ap.setLongitude(12d);
 			try {
-				String result = gen.bindPlacemark(ap, "localePlacemarkExternal.vm", null);
+				String result = gen.bindPlacemark(ap,
+						"localePlacemarkExternal.vm", null);
 				resp.getWriter().println(result);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else if ("setSuperUser".equals(action)) {
+			String email = req.getParameter("email");
+			UserDao udao = new UserDao();
+			User u = udao.findUserByEmail(email);
+			if (u != null) {
+				u.setSuperAdmin(true);
+			}
+
 		}
 	}
 
@@ -1851,7 +1860,7 @@ public class TestHarnessServlet extends HttpServlet {
 	private void setupTestUser() {
 		UserDao userDao = new UserDao();
 		User user = userDao.findUserByEmail("test@example.com");
-		if(user==null){
+		if (user == null) {
 			user = new User();
 			user.setEmailAddress("test@example.com");
 			userDao.save(user);

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
@@ -21,13 +22,11 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -62,30 +61,19 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	/**
 	 * opens a file input stream using the file passed in and tries to return
 	 * the first worksheet in that file
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 * @throws Exception
 	 */
 	protected Sheet getDataSheet(File file) throws Exception {
-		stream = new FileInputStream(file);
+		stream = new PushbackInputStream(new FileInputStream(file));
 		Workbook wb = null;
-		if (file.getName().toLowerCase().endsWith("xlsx")) {
-			try {
-				wb = new XSSFWorkbook(stream);
-			} catch (Exception e) {
-				wb = new HSSFWorkbook(new POIFSFileSystem(stream));
-			}
-		} else {
-			try {
-				wb = new HSSFWorkbook(new POIFSFileSystem(stream));
-			} catch (Exception e) {
-				wb = new XSSFWorkbook(stream);
-			}
+		try {
+			wb = WorkbookFactory.create(stream);
+		} catch (Exception e) {
 		}
-
 		return wb.getSheetAt(0);
-
 	}
 
 	/**
@@ -144,6 +132,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						// load questionIds
 						String[] parts = cell.getStringCellValue().split("\\|");
 						questionIDColMap.put(cell.getColumnIndex(), parts[0]);
+
 						if (parts.length > 1) {
 							if ("lat/lon".equalsIgnoreCase(parts[1].trim())
 									|| "location".equalsIgnoreCase(parts[1]
@@ -188,7 +177,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ "&");
 						}
 					}
-					String value = null;
+
 					boolean hasValue = false;
 					if (cell.getRowIndex() > 0
 							&& cell.getColumnIndex() > 2
@@ -204,9 +193,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							}
 							if (cellVal.endsWith(".jpg")) {
 								type = "PHOTO";
-								cellVal = cellVal.substring(cellVal
-										.lastIndexOf("/"));
-								cellVal = "/sdcard" + value;
+								if (cellVal.contains("/")) {
+									cellVal = cellVal.substring(cellVal
+											.lastIndexOf("/"));
+								}
+								cellVal = "/sdcard" + cellVal;
 							}
 						}
 						if (cellVal != null && cellVal.trim().length() > 0) {
@@ -255,11 +246,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					}
 				}
 				if (row.getRowNum() > 0 && needUpload) {
-					sendDataToServer(serverBase, "action="
+					sendDataToServer(serverBase, instanceId == null?null:"action="
 							+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 							+ "&"
 							+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
-							+ "=" + (instanceId != null ? instanceId : "")
+							+ "=" + instanceId
 							+ "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
 							+ getSurveyId() + "&"
 							+ RawDataImportRequest.COLLECTION_DATE_PARAM + "="
@@ -275,7 +266,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							SAVING_DATA.get(locale)));
 				}
 			}
-			while (!jobQueue.isEmpty()) {
+			while (!jobQueue.isEmpty() && threadPool.getActiveCount()>0) {
 				Thread.sleep(5000);
 			}
 			if (errorIds.size() > 0) {
@@ -284,6 +275,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					System.out.println(line);
 				}
 			}
+			Thread.sleep(5000);
 			System.out.println("Updating summaries");
 			// now update the summaries
 			invokeUrl(serverBase, "action="
@@ -303,7 +295,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	/**
 	 * handles calling invokeURL twice (once to reset the instance and again to
 	 * save the new one) as a separate job submitted to the thread pool
-	 * 
+	 *
 	 * @param serverBase
 	 * @param resetUrlString
 	 * @param saveUrlString
@@ -317,7 +309,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				try {
 					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 							SAVING_DATA.get(locale)));
-					invokeUrl(serverBase, resetUrlString, true, key);
+					if(resetUrlString != null){
+						invokeUrl(serverBase, resetUrlString, true, key);
+					}
 					invokeUrl(serverBase, saveUrlString, true, key);
 				} catch (Exception e) {
 					errorIds.add(saveUrlString);
@@ -330,7 +324,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 	/**
 	 * calls a remote api by posting to the url passed in.
-	 * 
+	 *
 	 * @param serverBase
 	 * @param urlString
 	 * @throws Exception
@@ -411,4 +405,5 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			progressDialog.update(step, msg, isComplete);
 		}
 	}
+
 }

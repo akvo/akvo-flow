@@ -960,7 +960,7 @@ public class BulkDataServiceClient {
 			queryString += RestRequest.TIMESTAMP_PARAM + "="
 					+ URLEncoder.encode(df.format(new Date()), "UTF-8");
 			queryString = sortQueryString(queryString);
-			queryString += "&"+RestRequest.HASH_PARAM + "="
+			queryString += "&" + RestRequest.HASH_PARAM + "="
 					+ MD5Util.generateHMAC(queryString, key);
 		}
 		return fetchDataFromServer(baseUrl
@@ -971,7 +971,7 @@ public class BulkDataServiceClient {
 	}
 
 	/**
-	 * invokes a remote REST api. If the url is longer than 2048 characters,
+	 * invokes a remote REST api. If the url is longer than 1900 characters,
 	 * this method will use POST since that is too long for a GET
 	 * 
 	 * @param fullUrl
@@ -980,7 +980,7 @@ public class BulkDataServiceClient {
 	 */
 	public static String fetchDataFromServer(String fullUrl) throws Exception {
 		if (fullUrl != null) {
-			if (fullUrl.length() > 2048) {
+			if (fullUrl.length() > 1900) {
 				return fetchDataFromServerPOST(fullUrl);
 			} else {
 				return fetchDataFromServerGET(fullUrl);
@@ -1099,22 +1099,35 @@ public class BulkDataServiceClient {
 
 	private static String sortQueryString(String queryString) {
 		String[] parts = queryString.split("&");
-		Map<String, String> pairs = new HashMap<String, String>();
+		List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 		for (int i = 0; i < parts.length; i++) {
 			String[] nvp = parts[i].split("=");
 			if (nvp.length > 1) {
-				pairs.put(nvp[0], nvp[1]);
+				if (nvp.length == 2) {
+					pairs.add(new NameValuePair(nvp[0], nvp[1]));
+				} else {
+					// if we're here, we have multiple "=" so we need to merge
+					// parts 1..n
+					StringBuilder builder = new StringBuilder();
+					for (int j = 1; j < nvp.length; j++) {
+						if (builder.length() > 0) {
+							builder.append("=");
+						}
+						builder.append(nvp[j]);
+					}
+					pairs.add(new NameValuePair(nvp[0], builder.toString()));
+				}
 			}
 		}
 		// now sort the names
-		List<String> names = new ArrayList<String>(pairs.keySet());
-		Collections.sort(names);
+
+		Collections.sort(pairs);
 		StringBuilder result = new StringBuilder();
-		for (String name : names) {
+		for (NameValuePair nvp : pairs) {
 			if (result.length() > 0) {
 				result.append("&");
 			}
-			result.append(name).append("=").append(pairs.get(name));
+			result.append(nvp.getName()).append("=").append(nvp.getValue());
 		}
 		return result.toString();
 	}

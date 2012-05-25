@@ -148,6 +148,9 @@ public class UserServiceImpl extends RemoteServiceServlet implements
 				userDto.setEmailAddress(u.getEmailAddress());
 				userDto.setPermissionList(u.getPermissionList());
 				userDto.setAdmin(userService.isUserAdmin());
+				if(u.isSuperAdmin()!=null && u.isSuperAdmin()){
+					userDto.setSuperAdmin(true);
+				}
 				userDto.setKeyId(u.getKey().getId());
 			} else {
 				userDto.setHasAccess(false);

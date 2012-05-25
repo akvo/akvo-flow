@@ -24,4 +24,5 @@ public class PermissionConstants {
 	public static final String VIEW_MESSAGES = "VIEW MESSAGES";
 	public static final String EDIT_IMMUTABLITY = "EDIT IMMUTABILITY";
 	public static final String ADMIN = "ADMIN";
+	public static final String SUPER_ADMIN = "SUPER_ADMIN";
 }
