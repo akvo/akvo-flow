@@ -69,6 +69,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private SurveyMetricMappingDao metricMappingDao;
 	private MetricDao metricDao;
 	private boolean useConfigStatusScore = false;
+	private boolean useDynamicScoring = false;
 	private String statusFragment;
 	private Map<String, String> scoredVals;
 	private boolean mergeNearby;
@@ -88,6 +89,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		metricMappingDao = new SurveyMetricMappingDao();
 		mergeNearby = true;
 		String mergeProp = PropertyUtil.getProperty("mergeNearbyLocales");
+		useDynamicScoring = Boolean.parseBoolean(PropertyUtil.getProperty("scoreLocaleDynmaic"));
 		if (mergeProp != null && "false".equalsIgnoreCase(mergeProp.trim())) {
 			mergeNearby = false;
 		}
@@ -371,6 +373,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 								}
 							}
 						}
+					} else if (useDynamicScoring) {
+						
 					} else {
 						for (SurveyalValue val : values) {
 							if (val.getQuestionText() != null
