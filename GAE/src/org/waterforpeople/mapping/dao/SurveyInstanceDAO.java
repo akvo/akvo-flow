@@ -225,6 +225,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	}
 
+	
+	/***********************
+	 * returns raw entities
+	 * @param returnKeysOnly
+	 * @param beginDate
+	 * @param endDate
+	 * @param surveyId
+	 * @return
+	 */
 	public Iterable<Entity> listRawEntity(Boolean returnKeysOnly,
 			Date beginDate, Date endDate, Long surveyId) {
 		DatastoreService datastore = DatastoreServiceFactory
