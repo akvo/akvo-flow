@@ -2,10 +2,12 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.Map;
 
+import org.apache.commons.lang.SystemUtils;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
@@ -164,13 +166,16 @@ public class RunReportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='exportType' value='RAW_DATA'>";
 			appletString += "<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value=surveyId:=" + surveyId
-					+ ">";
+			appletString += "<PARAM name='criteria' value=surveyId:="
+					+ surveyId + ">";
 			appletString += "<PARAM name='options' value='exportMode:=RAW_DATA;locale:="
 					+ locale
 					+ ";imgPrefix:="
 					+ UPLOAD_CONSTANTS.uploadUrl()
-					+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";
+					+ UPLOAD_CONSTANTS.imageS3Path()
+					+ ";"
+					+ "generateTabFormat="
+					+ PropertyUtil.getProperty("useTabRDRFlag") + "/'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);
@@ -180,8 +185,8 @@ public class RunReportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar, poi-3.5-signed.jar'><PARAM name='cache-version' value'1.3, 1.0, 3.5'>";
 			appletString += "<PARAM name='exportType' value='SURVEY_FORM'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value=surveyId:=" + surveyId
-					+ ">";
+			appletString += "<PARAM name='criteria' value=surveyId:="
+					+ surveyId + ">";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);
@@ -192,8 +197,8 @@ public class RunReportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='exportType' value='SURVEY_SUMMARY'>";
 			appletString += "<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value=surveyId:=" + surveyId
-					+ ">";
+			appletString += "<PARAM name='criteria' value=surveyId:="
+					+ surveyId + ">";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);
@@ -204,8 +209,8 @@ public class RunReportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='exportType' value='GRAPHICAL_SURVEY_SUMMARY'>";
 			appletString += "<param name='java_arguments' value='-Xmx512m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
-			appletString += "<PARAM name='criteria' value=surveyId:=" + surveyId
-					+ ">";
+			appletString += "<PARAM name='criteria' value=surveyId:="
+					+ surveyId + ">";
 			appletString += "<PARAM name='options' value='locale:=" + locale;
 			if (!doRollups) {
 				appletString += ";performRollup:=false";

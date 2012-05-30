@@ -39,7 +39,7 @@ public class RawDataExporter extends AbstractDataExporter {
 		this.serverBase = serverBase;
 		surveyId = criteria.get(SURVEY_ID);
 		Writer pw = null;
-
+		System.out.println("In CSV exporter");
 		try {
 			Object[] results = BulkDataServiceClient.loadQuestions(surveyId,
 					serverBase);
@@ -139,24 +139,29 @@ public class RawDataExporter extends AbstractDataExporter {
 							for (String key : idList) {
 								String val = responses.get(key);
 								pw.write("\t");
-								if (val != null) {																		
+								if (val != null) {
 									if (val.contains(SDCARD_PREFIX)) {
 										String[] photoParts = val.split("/");
-										if(photoParts.length>1){
-											val = imagePrefix + photoParts[photoParts.length-1];
-										}else{
+										if (photoParts.length > 1) {
 											val = imagePrefix
-											+ val.substring(val.indexOf(SDCARD_PREFIX)
-													+ SDCARD_PREFIX.length());
-										}										
+													+ photoParts[photoParts.length - 1];
+										} else {
+											val = imagePrefix
+													+ val.substring(val
+															.indexOf(SDCARD_PREFIX)
+															+ SDCARD_PREFIX
+																	.length());
+										}
 									}
 									pw.write(val.replaceAll("\n", " ").trim());
 								}
 							}
 
 							pw.write("\n");
+							pw.flush();
 							i++;
 							System.out.println("Row: " + i);
+							responses = null;
 						}
 					} catch (Exception ex) {
 						System.out

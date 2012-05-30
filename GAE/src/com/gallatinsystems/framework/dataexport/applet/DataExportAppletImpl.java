@@ -1,9 +1,12 @@
 package com.gallatinsystems.framework.dataexport.applet;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+
+import org.waterforpeople.mapping.dataexport.RawDataExporter;
 
 /**
  * simple applet to allow us to export data from google app engine
@@ -18,6 +21,7 @@ public class DataExportAppletImpl extends AbstractDataImportExportApplet {
 	private static final String OPTIONS_PARAM = "options";
 	private JLabel statusLabel;
 	private DataImportExportFactory dataExporterFactory;
+	private Boolean useTabFlag = false;
 
 	/**
 	 * initializes the UI, constructs the exporter factory then invokes the
@@ -54,8 +58,17 @@ public class DataExportAppletImpl extends AbstractDataImportExportApplet {
 				serverBase = serverBase.trim().substring(0,
 						serverBase.lastIndexOf("/"));
 			}
-			exporter.export(criteriaMap, chooser.getSelectedFile(), serverBase,
-					options);
+			if(options.containsKey("useTabRDRFlag")){
+				if(options.get("useTabRDRFlag").trim()!=null && !options.get("useTabRDRFlag").trim().equalsIgnoreCase(""))
+				useTabFlag = Boolean.parseBoolean(options.get("useTabRDRFlag"));
+			}
+			if (type.equalsIgnoreCase("RAW_DATA")&&useTabFlag) {
+				RawDataExporter rde = new RawDataExporter();
+				rde.export(criteriaMap , chooser.getSelectedFile(), serverBase, options);
+			} else {
+				exporter.export(criteriaMap, chooser.getSelectedFile(),
+						serverBase, options);
+			}
 			statusLabel.setText("Export Complete");
 		}
 	}
