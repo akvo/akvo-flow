@@ -35,54 +35,54 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	}
 
 
-//	@Smoke
-//	public void testAndDeleteUser() throws Exception {
-//		
-//		// go to manage users 
-//		solo.clickOnMenuItem("Manage Users");
-//		
-//		// click on menu button
-//		solo.sendKey(solo.MENU);
-//		
-//		solo.clickOnText("Add User") ;
-//	
-//		solo.enterText(0, "Test User 1");
-//		solo.enterText(1, "test@akvo.org");
-//		solo.clickOnText("Save") ;
-//		solo.goBack();
-//		solo.clickOnMenuItem("Manage Users");
-//		
-//		//check if user has been added correctly
-//		boolean actual = solo.searchText("^Test User 1$");
-//		assertEquals("User not added correctly", true, actual); 
-//		
-//		//delete user
-//		solo.clickLongOnText("^Test User 1$");
-//		solo.clickOnText("Delete User");
-//		
-//		//check if user has been deleted correctly
-//		boolean actual2 = solo.searchText("^Test User 1$");
-//		assertEquals("User not deleted correctly", false, actual2); 	
-//		
-//		
-//		// Make sure user 'Test User' exists
-//		
-//		boolean test_user_exists = solo.searchText("^Test User$");
-//		
-//		if (!test_user_exists){
-//			solo.sendKey(solo.MENU);
-//			solo.clickOnText("Add User") ;
-//			solo.enterText(0, "Test User");
-//			solo.enterText(1, "test@akvo.org");
-//			solo.clickOnText("Save") ;
-//			solo.goBack();
-//		}
-//	}
+	@Smoke
+	public void testAndDeleteUser() throws Exception {
+		
+		// go to manage users 
+		solo.clickOnMenuItem("Manage Users");
+		
+		// click on menu button
+		solo.sendKey(solo.MENU);
+		
+		solo.clickOnText("Add User") ;
+	
+		solo.enterText(0, "Test User 1");
+		solo.enterText(1, "test@akvo.org");
+		solo.clickOnText("Save") ;
+		solo.goBack();
+		solo.clickOnMenuItem("Manage Users");
+		
+		//check if user has been added correctly
+		boolean actual = solo.searchText("^Test User 1$");
+		assertEquals("User not added correctly", true, actual); 
+		
+		//delete user
+		solo.clickLongOnText("^Test User 1$");
+		solo.clickOnText("Delete User");
+		
+		//check if user has been deleted correctly
+		boolean actual2 = solo.searchText("^Test User 1$");
+		assertEquals("User not deleted correctly", false, actual2); 	
+		
+		
+		// Make sure user 'Test User' exists
+		
+		boolean test_user_exists = solo.searchText("^Test User$");
+		
+		if (!test_user_exists){
+			solo.sendKey(solo.MENU);
+			solo.clickOnText("Add User") ;
+			solo.enterText(0, "Test User");
+			solo.enterText(1, "test@akvo.org");
+			solo.clickOnText("Save") ;
+			solo.goBack();
+		}
+	}
 
 	@Smoke 
 	public void testSelectSurvey() throws Exception {
 		
-		solo.clickOnMenuItem("FieldSurvey Test.*");
+		solo.clickOnMenuItem("Test Survey.*");
 		// no user yet, should show error message
 		boolean actual = solo.searchText("Please click the Manage Users icon and choose a user before continuing.");
 		assertEquals("no-user-selected error message not shown", true, actual); 
@@ -98,8 +98,8 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		assertEquals("User not selected", true, actual); 
 		
 		// select to FieldSurvey Test 1
-		solo.clickOnMenuItem("FieldSurvey Test.*");
-		actual = solo.searchText("^FieldSurvey Test 1$");
+		solo.clickOnMenuItem("Test Survey.*");
+		actual = solo.searchText("^Test Survey");
 		assertEquals("Survey not started", true, actual); 	
 		
 		solo.goBack();	
