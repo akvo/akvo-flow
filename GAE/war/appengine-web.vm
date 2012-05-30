@@ -64,5 +64,6 @@
 		<property name="asyncTaskTimeout" value="16384"/>
 		<property name="enableRestSecurity" value="false"/>
 		<property name="restPrivateKey" value="test"/>
+		<property name="useTabRDRFlag" value="false"/>
 	</system-properties>
 </appengine-web-app>
