@@ -2,17 +2,19 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.Map;
 
-import org.apache.commons.lang.SystemUtils;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointSearchCriteriaDto;
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationItemDto;
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationService;
+import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 
-import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
 import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Grid;
@@ -34,6 +36,8 @@ public class RunReportWidget extends MenuBasedWidget {
 			.create(TextConstants.class);
 	private static UploadConstants UPLOAD_CONSTANTS = GWT
 			.create(UploadConstants.class);
+	private static final String TAB_RDR_FILE_FLAG = "useTabRDRFlag";
+
 	private Grid grid;
 	private Panel appletPanel;
 	private Panel contentPanel;
@@ -43,8 +47,29 @@ public class RunReportWidget extends MenuBasedWidget {
 	private Button comprehensiveReportButton;
 	private Button kmlButton;
 	private Button surveyFormButton;
+	private Boolean useTabRDRFlag;
 
 	public RunReportWidget() {
+		ConfigurationServiceAsync cfgService = GWT
+		.create(ConfigurationService.class);
+		cfgService.getConfigurationItem(TAB_RDR_FILE_FLAG,
+				new AsyncCallback<ConfigurationItemDto>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						setUseTabRDRFlag(false);
+						
+					}
+
+					@Override
+					public void onSuccess(ConfigurationItemDto result) {
+						if (result == null || result.getValue() == null) {
+							setUseTabRDRFlag(false);
+						} else {
+							setUseTabRDRFlag(Boolean.parseBoolean(result.getValue()));
+						}
+					}
+				});
 		contentPanel = new VerticalPanel();
 		grid = new Grid(7, 2);
 		appletPanel = new VerticalPanel();
@@ -175,7 +200,7 @@ public class RunReportWidget extends MenuBasedWidget {
 					+ UPLOAD_CONSTANTS.imageS3Path()
 					+ ";"
 					+ "generateTabFormat="
-					+ PropertyUtil.getProperty("useTabRDRFlag") + "/'>";
+					+ getUseTabRDRFlag()+ "/'>";
 			appletString += "</applet>";
 			HTML html = new HTML();
 			html.setHTML(appletString);
@@ -223,6 +248,14 @@ public class RunReportWidget extends MenuBasedWidget {
 			appletPanel.add(html);
 		}
 
+	}
+
+	public void setUseTabRDRFlag(Boolean useTabRDRFlag) {
+		this.useTabRDRFlag = useTabRDRFlag;
+	}
+
+	public Boolean getUseTabRDRFlag() {
+		return useTabRDRFlag;
 	}
 
 }

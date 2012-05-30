@@ -58,9 +58,9 @@ public class DataExportAppletImpl extends AbstractDataImportExportApplet {
 				serverBase = serverBase.trim().substring(0,
 						serverBase.lastIndexOf("/"));
 			}
-			if(options.containsKey("useTabRDRFlag")){
-				if(options.get("useTabRDRFlag").trim()!=null && !options.get("useTabRDRFlag").trim().equalsIgnoreCase(""))
-				useTabFlag = Boolean.parseBoolean(options.get("useTabRDRFlag"));
+			if(options.containsKey("generateTabFormat")){
+				if(options.get("generateTabFormat").trim()!=null && !options.get("generateTabFormat").trim().equalsIgnoreCase(""))
+				useTabFlag = Boolean.parseBoolean(options.get("generateTabFormat"));
 			}
 			if (type.equalsIgnoreCase("RAW_DATA")&&useTabFlag) {
 				RawDataExporter rde = new RawDataExporter();
