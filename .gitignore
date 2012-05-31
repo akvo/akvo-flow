@@ -12,3 +12,4 @@ GAE/war/WEB-INF/appengine-web.xml
 WFPMapping/device/debugcert
 WFPMapping/device/survey/res/raw/survey.properties
 WFPMapping/device/survey_test/bin/*
+WFPMapping/device/calabash/.calabash_settings
