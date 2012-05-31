@@ -244,8 +244,10 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 
 			for (AccessPoint ap : apList) {
 				if (!ap.getPointType().equals(AccessPointType.SANITATION_POINT)) {
-					dtoList.add(marshallDomainToDto(ap, needDetailsFlag,
-							display, standardType));
+					PlacemarkDto pdto = marshallDomainToDto(ap,
+							needDetailsFlag, display, standardType);
+					if (pdto != null)
+						dtoList.add(pdto);
 				}
 				resp.setPlacemarks(dtoList);
 			}

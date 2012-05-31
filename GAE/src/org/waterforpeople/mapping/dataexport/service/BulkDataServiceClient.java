@@ -136,7 +136,11 @@ public class BulkDataServiceClient {
 
 	public static PlacemarkDtoResponse fetchPlacemarks(String countryCode,
 			String serverBase, String cursor) throws Exception {
-		return fetchPlacemarkData(cursor, serverBase, countryCode);
+		try {
+			return fetchPlacemarkData(cursor, serverBase, countryCode);
+		} catch (Exception ex) {
+			return fetchPlacemarkData(cursor, serverBase, countryCode);
+		}
 	}
 
 	private static PlacemarkDtoResponse fetchPlacemarkData(String cursor,
