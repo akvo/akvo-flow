@@ -110,7 +110,7 @@ public class UserEditActivity extends Activity {
 		String name = displayName.getText().toString();
 		String email = emailAddr.getText().toString();
 		name = cleanupString(name);
-		email = cleanupString(name);
+		email = cleanupString(email);
 		databaseAdaptor.createOrUpdateUser(userId, name, email);
 	}
 
