@@ -352,54 +352,67 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 
 	private String getUrlFromStatus(Status status,
 			AccessPoint.AccessPointType pointType) {
-		if (status == null) {
+		if (pointType
+				.equals(AccessPoint.AccessPointType.WATER_POINT.toString())
+				&& status == null) {
 			return KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL;
 		}
 		if (AccessPointType.WATER_POINT.equals(pointType)) {
-			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
-				return KMLGenerator.WATER_POINT_FUNCTIONING_GREEN_ICON_URL;
-			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
-					|| status
-							.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
-				return KMLGenerator.WATER_POINT_FUNCTIONING_YELLOW_ICON_URL;
-			} else if (status.equals(AccessPoint.Status.BROKEN_DOWN)) {
-				return KMLGenerator.WATER_POINT_FUNCTIONING_RED_ICON_URL;
-			} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
-				return KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL;
-			} else {
+			if (status != null) {
+				if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
+					return KMLGenerator.WATER_POINT_FUNCTIONING_GREEN_ICON_URL;
+				} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
+						|| status
+								.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+					return KMLGenerator.WATER_POINT_FUNCTIONING_YELLOW_ICON_URL;
+				} else if (status.equals(AccessPoint.Status.BROKEN_DOWN)) {
+					return KMLGenerator.WATER_POINT_FUNCTIONING_RED_ICON_URL;
+				} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+					return KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL;
+				} else {
+					return KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL;
+				}
+			}else{
 				return KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL;
 			}
 		} else if (AccessPointType.PUBLIC_INSTITUTION.equals(pointType)) {
-			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
-				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL;
-			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
-					|| status
-							.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
-				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL;
-			} else if (status.equals(AccessPoint.Status.BROKEN_DOWN)) {
-				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL;
-			} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
-				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
+			if (status != null) {
+				if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
+					return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL;
+				} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
+						|| status
+								.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+					return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL;
+				} else if (status.equals(AccessPoint.Status.BROKEN_DOWN)) {
+					return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_RED_ICON_URL;
+				} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+					return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
+				} else {
+					return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
+				}
 			} else {
 				return KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
 			}
 		} else if (AccessPointType.SCHOOL.equals(pointType)) {
-			if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
-				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_GREEN_ICON_URL;
-			} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
-					|| status
-							.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
-				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL;
-			} else if (status.equals(AccessPoint.Status.BROKEN_DOWN)) {
-				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_RED_ICON_URL;
-			} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
-				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
+			if (status != null) {
+				if (status.equals(AccessPoint.Status.FUNCTIONING_HIGH)) {
+					return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_GREEN_ICON_URL;
+				} else if (status.equals(AccessPoint.Status.FUNCTIONING_OK)
+						|| status
+								.equals(AccessPoint.Status.FUNCTIONING_WITH_PROBLEMS)) {
+					return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL;
+				} else if (status.equals(AccessPoint.Status.BROKEN_DOWN)) {
+					return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_RED_ICON_URL;
+				} else if (status.equals(AccessPoint.Status.NO_IMPROVED_SYSTEM)) {
+					return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
+				} else {
+					return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
+				}
 			} else {
 				return KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL;
 			}
 		}
 		return null;
-
 	}
 
 	@Override
