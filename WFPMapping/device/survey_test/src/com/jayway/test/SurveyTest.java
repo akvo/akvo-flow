@@ -26,89 +26,92 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	public SurveyTest() {
 		super("com.gallatinsystems.survey.device", SurveyHomeActivity.class);
-
 	}
 
 	public void setUp() throws Exception {
-		solo = new Solo(getInstrumentation(), getActivity());
-		
+		solo = new Solo(getInstrumentation(), getActivity());		
 	}
 
-
-	@Smoke
-	public void testAndDeleteUser() throws Exception {
-		
-		// go to manage users 
+	private void createUser(String string, String string2) {
 		solo.clickOnMenuItem("Manage Users");
-		
-		// click on menu button
 		solo.sendKey(solo.MENU);
-		
 		solo.clickOnText("Add User") ;
-	
-		solo.enterText(0, "Test User 1");
-		solo.enterText(1, "test@akvo.org");
+		solo.enterText(0, string);
+		solo.enterText(1, string2);
 		solo.clickOnText("Save") ;
 		solo.goBack();
+	}
+	
+	private void deleteTestUsers() {
+		solo.clickOnMenuItem("Manage Users");
+		while (solo.searchText("^Test User.*")) {
+			solo.clickLongOnText("^Test User.*");
+			solo.clickOnText("Delete") ;
+			
+		}
+		solo.goBack();
+		
+	
+	}
+
+	@Smoke
+	public void testCreateUser() throws Exception {
+		////////////////  SCENARIO - CREATE A USER /////////////////
+		// go to manage users 
+		deleteTestUsers();
 		solo.clickOnMenuItem("Manage Users");
 		
 		//check if user has been added correctly
-		boolean actual = solo.searchText("^Test User 1$");
-		assertEquals("User not added correctly", true, actual); 
+		assertEquals("User selection text not present", true, solo.searchText("^Select the current user by clicking. To create a new user, press the Menu button and select Add User. Long-click to edit a user.$")); 
 		
-		//delete user
+		// click on menu button and select Add User
+		solo.sendKey(solo.MENU);
+		solo.clickOnText("Add User") ;
+		
+		solo.enterText(0, "Test User 1");
+		solo.enterText(1, "name-1.lastname@akvo.org");
+		solo.clickOnText("Save") ;
+		
+		// test if user is there
+		assertEquals("Test User 1 not present", true, solo.searchText("Test User 1")); 
+	
+		//test if user details are ok
 		solo.clickLongOnText("^Test User 1$");
-		solo.clickOnText("Delete User");
+		solo.clickOnText("Edit User");
 		
-		//check if user has been deleted correctly
-		boolean actual2 = solo.searchText("^Test User 1$");
-		assertEquals("User not deleted correctly", false, actual2); 	
-		
-		
-		// Make sure user 'Test User' exists
-		
-		boolean test_user_exists = solo.searchText("^Test User$");
-		
-		if (!test_user_exists){
-			solo.sendKey(solo.MENU);
-			solo.clickOnText("Add User") ;
-			solo.enterText(0, "Test User");
-			solo.enterText(1, "test@akvo.org");
-			solo.clickOnText("Save") ;
-			solo.goBack();
-		}
+		assertEquals("Name Test User 1 not there", true, solo.searchText("Test User 1")); 
+		assertEquals("email Test User 1 not there", true, solo.searchText("name-1.lastname@akvo.org")); 
 	}
-
-	@Smoke 
-	public void testSelectSurvey() throws Exception {
+	
+	@Smoke
+	public void testEditUser() throws Exception {
+		//////////////// SCENARIO -  EDIT A USER /////////////////////
+		deleteTestUsers();
+		createUser("Test User 2","name-2.lastname@akvo.org");
 		
-		solo.clickOnMenuItem("Test Survey.*");
-		// no user yet, should show error message
-		boolean actual = solo.searchText("Please click the Manage Users icon and choose a user before continuing.");
-		assertEquals("no-user-selected error message not shown", true, actual); 
-		
-		solo.clickOnMenuItem("OK");
-		
-		// select Test User
 		solo.clickOnMenuItem("Manage Users");
-		solo.clickOnText("^Test User$");
+		solo.clickLongOnText("^Test User 2$");
+		solo.clickOnText("Edit User");
 		
-		//should go back to main screen now
-		actual = solo.searchText("Test User");
-		assertEquals("User not selected", true, actual); 
+		solo.clearEditText(0);
+		solo.enterText(0, "Test User 2a");
+		solo.clearEditText(1);
+		solo.enterText(1, "name-2a.lastname@akvo.org");
+		solo.clickOnText("Save") ;
+	
+		assertEquals("Name change did not work", true, solo.searchText("Test User 2a")); 
 		
-		// select to FieldSurvey Test 1
-		solo.clickOnMenuItem("Test Survey.*");
-		actual = solo.searchText("^Test Survey");
-		assertEquals("Survey not started", true, actual); 	
+		solo.clickLongOnText("^Test User 2a$");
+		solo.clickOnText("Edit User");
 		
-		solo.goBack();	
+		assertEquals("Name not correct", true, solo.searchText("Test User 2a")); 
+		assertEquals("email not correct", true, solo.searchText("name-2a.lastname@akvo.org")); 
 	}
-
+	
 
 	@Smoke
-	public void fillInSurvey() throws Exception {
-		solo.clickOnMenuItem("FieldSurvey Test.*");
+	public void testfillInSurvey() throws Exception {
+		solo.clickOnMenuItem("Calabash testsurvey 1.*");
 		
 	}
 
