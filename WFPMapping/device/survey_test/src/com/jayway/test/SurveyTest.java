@@ -19,6 +19,9 @@ import android.widget.TextView;
 import android.widget.Button;
 import java.util.ArrayList;
 
+import java.util.TreeMap;
+
+
 
 public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActivity>{
 
@@ -31,7 +34,8 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	public void setUp() throws Exception {
 		solo = new Solo(getInstrumentation(), getActivity());		
 	}
-
+	
+	
 	private void createUser(String string, String string2) {
 		solo.clickOnMenuItem("Manage Users");
 		solo.sendKey(solo.MENU);
@@ -40,6 +44,17 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		solo.enterText(1, string2);
 		solo.clickOnText("Save") ;
 		solo.goBack();
+	}
+	
+	private void createAndSelectUser(String string, String string2){
+		createUser(string,string2);
+		solo.clickOnMenuItem("Manage Users");
+		solo.clickOnText(string);
+	}
+	
+	private void selectUser(String string){
+		solo.clickOnMenuItem("Manage Users");
+		solo.clickOnText(string);
 	}
 	
 	private void deleteTestUsers() {
@@ -51,11 +66,10 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		}
 		solo.goBack();
 		
-	
 	}
 
 	@Smoke
-	public void testCreateUser() throws Exception {
+	public void t1estCreateUser() throws Exception {
 		////////////////  SCENARIO - CREATE A USER /////////////////
 		// go to manage users 
 		deleteTestUsers();
@@ -84,7 +98,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	}
 	
 	@Smoke
-	public void testEditUser() throws Exception {
+	public void t1estEditUser() throws Exception {
 		//////////////// SCENARIO -  EDIT A USER /////////////////////
 		deleteTestUsers();
 		createUser("Test User 2","name-2.lastname@akvo.org");
@@ -108,10 +122,63 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		assertEquals("email not correct", true, solo.searchText("name-2a.lastname@akvo.org")); 
 	}
 	
-
 	@Smoke
-	public void testfillInSurvey() throws Exception {
-		solo.clickOnMenuItem("Calabash testsurvey 1.*");
+	public void t1estDeleteUser() throws Exception {
+		////////////////SCENARIO -  Delete A USER /////////////////////	
+		deleteTestUsers();
+		createUser("Test User 3","name-3.lastname@akvo.org");
+		solo.clickOnMenuItem("Manage Users");
+		solo.clickLongOnText("^Test User 3$");
+		solo.clickOnText("Delete");
+		assertEquals("user not deleted", false, solo.searchText("Test User 3")); 	
+	}
+	
+	@Smoke
+	public void t1estSelectUser() throws Exception {
+		////////////////SCENARIO -  Delete A USER /////////////////////	
+		deleteTestUsers();
+		createUser("Test User 4","name-4.lastname@akvo.org");
+		solo.clickOnMenuItem("Manage Users");
+		solo.clickOnText("^Test User 4$");
+		assertEquals("user not selected", true, solo.searchText("Test User 4")); 	
+	}
+	
+	@Smoke
+	public void testFillAllQuestions() throws Exception {
+		////////////////SCENARIO -  Delete A USER /////////////////////	
+		//deleteTestUsers();
+		//createAndSelectUser("Test User 1","name-1.lastname@akvo.org");
+		selectUser("Test User 1");
+		solo.clickOnText("Robotium test survey 1.*");
+		assertEquals("Survey not selected", true, solo.searchText("Group 1.*")); 	
+		
+		// free text field
+		solo.clearEditText(0);
+		solo.enterText(0, "content textfield 1");
+		
+		// option field
+		solo.clickOnRadioButton(1);
+		
+		// number field
+		solo.clearEditText(1);
+		solo.enterText(1,"42.42");
+
+		// geo field
+		solo.clickOnText("Check Geo Location");
+		
+		// date field
+		solo.clickOnText("Select Date");
+		solo.clickOnText("Set");
+		
+		// barcode field
+		solo.clearEditText(2);
+		solo.enterText(2,"Barcode code");
+
+		solo.clickOnText("Next");
+		
+		solo.sendKey(solo.MENU);
+		solo.clickOnText("Save and Start New") ;
+		
 		
 	}
 
