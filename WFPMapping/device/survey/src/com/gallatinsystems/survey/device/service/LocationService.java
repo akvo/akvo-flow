@@ -127,27 +127,18 @@ public class LocationService extends Service {
 		if (serverBase != null) {
 			try {
 				String phoneNumber = StatusUtil.getPhoneNumber(this);
-				if (loc != null) {
-					if (phoneNumber != null) {
-						String url = serverBase + BEACON_SERVICE_PATH
-								+ URLEncoder.encode(phoneNumber, "UTF-8") + LAT
-								+ loc.getLatitude() + LON + loc.getLongitude()
-								+ ACC + loc.getAccuracy() + VER + version;
-						if (deviceId != null) {
-							url += DEV_ID
-									+ URLEncoder.encode(deviceId, "UTF-8");
-						}
-						HttpUtil.httpGet(url);
+				if (phoneNumber != null) {
+					String url = serverBase + BEACON_SERVICE_PATH
+								+ URLEncoder.encode(phoneNumber, "UTF-8");
+					if (loc != null) {
+						url += LAT + loc.getLatitude() + LON + loc.getLongitude()
+						     + ACC + loc.getAccuracy();
 					}
-				} else {
-					if (phoneNumber != null) {
-						// if location is null, send an update anyway, just
-						// without
-						// lat/lon
-						HttpUtil.httpGet(serverBase + BEACON_SERVICE_PATH
-								+ URLEncoder.encode(phoneNumber, "UTF-8") + VER
-								+ version);
+					url += VER + version;
+					if (deviceId != null) {
+						url += DEV_ID + URLEncoder.encode(deviceId, "UTF-8");
 					}
+					HttpUtil.httpGet(url);
 				}
 			} catch (Exception e) {
 				Log.e(TAG, "Could not send location beacon", e);
