@@ -14,6 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.net.URLEncoder;
 
 import org.apache.http.HttpException;
 
@@ -395,7 +396,7 @@ public class SurveyDownloadService extends Service {
 			response = HttpUtil.httpGet(serverBase + SURVEY_HEADER_SERVICE_PATH
 					+ surveyId + "&devicePhoneNumber="
 					+ StatusUtil.getPhoneNumber(this)
-					+ (deviceId != null ? (DEV_ID_PARAM + deviceId) : ""));
+					+ (deviceId != null ? (DEV_ID_PARAM + URLEncoder.encode(deviceId, "UTF-8")) : ""));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");
 				while (strTok.hasMoreTokens()) {
@@ -438,7 +439,7 @@ public class SurveyDownloadService extends Service {
 		try {
 			response = HttpUtil.httpGet(serverBase + SURVEY_LIST_SERVICE_PATH
 					+ StatusUtil.getPhoneNumber(this)
-					+ (deviceId != null ? DEV_ID_PARAM + deviceId : ""));
+					+ (deviceId != null ? DEV_ID_PARAM + URLEncoder.encode(deviceId, "UTF-8") : ""));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");
 				while (strTok.hasMoreTokens()) {
