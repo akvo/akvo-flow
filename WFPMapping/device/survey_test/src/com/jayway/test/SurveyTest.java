@@ -93,7 +93,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 3.1
 	@Smoke
-	public void INACT1AppOpen() throws Exception {
+	public void testACT1AppOpen() throws Exception {
 		assertEquals("App not opening correctly", true, solo.searchText("^Manage Users$")); 
 		assertEquals("App not opening correctly", true, solo.searchText("^Review Saved Surveys$"));
 		assertEquals("App not opening correctly", true, solo.searchText("^Settings$")); 
@@ -101,7 +101,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 4.1
 	@Smoke
-	public void INACT2CreateUser() throws Exception {
+	public void testACT2CreateUser() throws Exception {
 		////////////////  SCENARIO - CREATE A USER /////////////////
 		// go to manage users 
 		deleteTestUsers();
@@ -131,7 +131,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 4.3
 	@Smoke
-	public void INACT3EditUser() throws Exception {
+	public void testACT3EditUser() throws Exception {
 		//////////////// SCENARIO -  EDIT A USER /////////////////////
 		deleteTestUsers();
 		createUser("Test User 2","name-2.lastname@akvo.org");
@@ -157,7 +157,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 4.2
 	@Smoke
-	public void INACT4DeleteUser() throws Exception {
+	public void testACT4DeleteUser() throws Exception {
 		////////////////SCENARIO -  Delete A USER /////////////////////	
 		deleteTestUsers();
 		createUser("Test User 3","name-3.lastname@akvo.org");
@@ -169,7 +169,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 4.4
 	@Smoke
-	public void INACT5SelectUser() throws Exception {
+	public void testACT5SelectUser() throws Exception {
 		////////////////SCENARIO -  Delete A USER /////////////////////	
 		deleteTestUsers();
 		createUser("Test User 4","name-4.lastname@akvo.org");
@@ -180,7 +180,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 5.1
 	@Smoke
-	public void INACT6DownloadSurveys() throws Exception {
+	public void testACT6DownloadSurveys() throws Exception {
 		deleteAllData();
 		assertEquals("Survey should not be here", false, solo.searchText("FLOW test survey")); 	
 		
@@ -211,7 +211,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	}
 	
 	//test 5.3
-	public void test7DownloadExtraSurvey() throws Exception {
+	public void testACT7DownloadExtraSurvey() throws Exception {
 		deleteAllData();
 		assertEquals("Survey should not be here", false, solo.searchText("FLOW test survey")); 	
 		
@@ -243,7 +243,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		
 	}
 	// test 14.8
-	public void INACT8DeleteAllData() throws Exception {
+	public void testACT8DeleteAllData() throws Exception {
 		//create user
 		createUser("Test User 2","name-2.lastname@akvo.org");
 		
@@ -270,7 +270,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 6.1
 	@Smoke
-	public void INACT90OpenSurvey() throws Exception {
+	public void testACT90OpenSurvey() throws Exception {
 		deleteTestUsers();
 		
 		solo.clickOnText("FLOW test survey 1");
@@ -286,7 +286,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 5.2
 	@Smoke
-	public void INACT91ReloadSurveys() throws Exception {
+	public void testACT91ReloadSurveys() throws Exception {
 		deleteAllData();
 		assertEquals("Survey should not be here", false, solo.searchText("FLOW test survey")); 	
 		
@@ -305,7 +305,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 9.1
 	@Smoke
-	public void INACT92Dependencies() throws Exception {
+	public void testACT92Dependencies() throws Exception {
 		deleteTestUsers();
 		createAndSelectUser("Test User 1","name-1.lastname@akvo.org");
 		
@@ -348,7 +348,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 13.2
 	@Smoke
-	public void INACT93KeepLastSelectedUserLoggedIn() throws Exception {
+	public void testACT93KeepLastSelectedUserLoggedIn() throws Exception {
 		deleteTestUsers();
 		createAndSelectUser("Test User 1","name-1.lastname@akvo.org");
 		assertEquals("Test user 1 not selected", true, solo.searchText("Test User 1",true)); 
@@ -397,7 +397,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		
 	}
 	// test 13.5
-	public void INACT94ChangeSurveyLanguage() throws Exception {
+	public void testACT94ChangeSurveyLanguage() throws Exception {
 		solo.scrollDown();
 		solo.clickOnText("Settings.*");
 		//solo.clickOnMenuItem("Settings");
@@ -429,7 +429,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	}
 	
 	// test 13.12
-	public void INACT95SetDeviceIdentifier() throws Exception {
+	public void testACT95SetDeviceIdentifier() throws Exception {
 		solo.clickOnMenuItem("Settings");
 		solo.clickOnText("Preferences");
 		solo.clickOnImageButton(8);
@@ -460,7 +460,7 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 	
 	// test 7.1, 7.2, 7.3, 7.8
 	@Smoke
-	public void INACT96FillQuestions() throws Exception {
+	public void testACT96FillQuestions() throws Exception {
 		////////////////SCENARIO -  Delete A USER /////////////////////	
 		deleteTestUsers();
 		createAndSelectUser("Test User 1","name-1.lastname@akvo.org");
