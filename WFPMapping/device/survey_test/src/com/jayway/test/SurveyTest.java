@@ -85,20 +85,23 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		solo.clickOnText("Delete All Data");
 		solo.enterText(0,"12345");
 		solo.clickOnButton("OK");
+		solo.sleep(500);
 		solo.clickOnButton("OK");
 		solo.sleep(2000);
 		solo.goBack();
 	}
 	
+	// test 3.1
 	@Smoke
-	public void testAppOpen() throws Exception {
+	public void INACT1AppOpen() throws Exception {
 		assertEquals("App not opening correctly", true, solo.searchText("^Manage Users$")); 
 		assertEquals("App not opening correctly", true, solo.searchText("^Review Saved Surveys$"));
 		assertEquals("App not opening correctly", true, solo.searchText("^Settings$")); 
 	}
 	
+	// test 4.1
 	@Smoke
-	public void testCreateUser() throws Exception {
+	public void INACT2CreateUser() throws Exception {
 		////////////////  SCENARIO - CREATE A USER /////////////////
 		// go to manage users 
 		deleteTestUsers();
@@ -126,8 +129,9 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		assertEquals("email Test User 1 not there", true, solo.searchText("name-1.lastname@akvo.org")); 
 	}
 	
+	// test 4.3
 	@Smoke
-	public void testEditUser() throws Exception {
+	public void INACT3EditUser() throws Exception {
 		//////////////// SCENARIO -  EDIT A USER /////////////////////
 		deleteTestUsers();
 		createUser("Test User 2","name-2.lastname@akvo.org");
@@ -151,8 +155,9 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		assertEquals("email not correct", true, solo.searchText("name-2a.lastname@akvo.org")); 
 	}
 	
+	// test 4.2
 	@Smoke
-	public void testDeleteUser() throws Exception {
+	public void INACT4DeleteUser() throws Exception {
 		////////////////SCENARIO -  Delete A USER /////////////////////	
 		deleteTestUsers();
 		createUser("Test User 3","name-3.lastname@akvo.org");
@@ -162,8 +167,9 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		assertEquals("user not deleted", false, solo.searchText("Test User 3")); 	
 	}
 	
+	// test 4.4
 	@Smoke
-	public void testSelectUser() throws Exception {
+	public void INACT5SelectUser() throws Exception {
 		////////////////SCENARIO -  Delete A USER /////////////////////	
 		deleteTestUsers();
 		createUser("Test User 4","name-4.lastname@akvo.org");
@@ -172,8 +178,9 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		assertEquals("user not selected", true, solo.searchText("Test User 4")); 	
 	}
 	
+	// test 5.1
 	@Smoke
-	public void testDownloadSurveys() throws Exception {
+	public void INACT6DownloadSurveys() throws Exception {
 		deleteAllData();
 		assertEquals("Survey should not be here", false, solo.searchText("FLOW test survey")); 	
 		
@@ -184,7 +191,14 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		//start app
 		launchActivity("com.gallatinsystems.survey.device","com.gallatinsystems.survey.device.activity.SurveyHomeActivity");
 		solo=new Solo(getInstrumentation());
+		solo.sleep(1000);
+		//start app again
+		solo.goBack();
+		solo.goBack();
+		launchActivity("com.gallatinsystems.survey.device","com.gallatinsystems.survey.device.activity.SurveyHomeActivity");
+		solo=new Solo(getInstrumentation());
 		
+		solo.sleep(1000);
 		//start app again
 		solo.goBack();
 		solo.goBack();
@@ -196,7 +210,8 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		assertEquals("Survey 2 should be here", true, solo.searchText("FLOW test survey 2")); 
 	}
 	
-	public void testDownloadExtraSurvey() throws Exception {
+	//test 5.3
+	public void test7DownloadExtraSurvey() throws Exception {
 		deleteAllData();
 		assertEquals("Survey should not be here", false, solo.searchText("FLOW test survey")); 	
 		
@@ -205,16 +220,30 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		
 		solo.enterText(0,"12345");
 		solo.clickOnButton("OK");
-		
-		solo.enterText(0,"686193");
-		solo.clickOnButton("OK");
-		solo.goBack();
 		solo.sleep(500);
+		// FLOW test survey 4 is 686193
+		solo.enterText(0,"686193");
+		solo.clickOnButton("Ok");
+		
+		solo.sleep(1000);
+		
+		solo.goBack();
+		solo.goBack();
+		launchActivity("com.gallatinsystems.survey.device","com.gallatinsystems.survey.device.activity.SurveyHomeActivity");
+		solo=new Solo(getInstrumentation());
+		
+		solo.sleep(1000);
+		solo.goBack();
+		solo.goBack();
+		launchActivity("com.gallatinsystems.survey.device","com.gallatinsystems.survey.device.activity.SurveyHomeActivity");
+		solo=new Solo(getInstrumentation());
+		
+		
 		assertEquals("Survey FLOW test survey 4 should be here", true, solo.searchText("FLOW test survey 4")); 	
 		
 	}
-	
-	public void testDeleteAllData() throws Exception {
+	// test 14.8
+	public void INACT8DeleteAllData() throws Exception {
 		//create user
 		createUser("Test User 2","name-2.lastname@akvo.org");
 		
@@ -225,21 +254,23 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		solo.enterText(0,"12345");
 		solo.clickOnButton("OK");
 		
-		solo.enterText(0,"686193");
-		solo.clickOnButton("OK");
+		// FLOW test servey 1 has id 671060
+		solo.enterText(0,"671060");
+		solo.clickOnButton("Ok");
 		solo.goBack();
 		solo.sleep(500);
 		
 		// delete all data
 		deleteAllData();
 		assertEquals("Survey should not be here", false, solo.searchText("FLOW test survey")); 	
-		solo.clickOnText("User Management");
+		solo.clickOnText("Manage Users");
 		assertEquals("User should not be here", false, solo.searchText("Test User")); 	
 		
 	}
 	
+	// test 6.1
 	@Smoke
-	public void testOpenSurvey() throws Exception {
+	public void INACT90OpenSurvey() throws Exception {
 		deleteTestUsers();
 		
 		solo.clickOnText("FLOW test survey 1");
@@ -253,8 +284,9 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		assertEquals("Survey not selected", true, solo.searchText("Group 1.*")); 	
 	}	
 	
+	// test 5.2
 	@Smoke
-	public void testReloadSurveys() throws Exception {
+	public void INACT91ReloadSurveys() throws Exception {
 		deleteAllData();
 		assertEquals("Survey should not be here", false, solo.searchText("FLOW test survey")); 	
 		
@@ -271,13 +303,15 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		
 	}
 	
+	// test 9.1
 	@Smoke
-	public void testDependencies() throws Exception {
+	public void INACT92Dependencies() throws Exception {
 		deleteTestUsers();
 		createAndSelectUser("Test User 1","name-1.lastname@akvo.org");
 		
 		// make sure we can select FLOW test survey 2
 		solo.clickOnText("FLOW test survey 2.*");
+		solo.sleep(1000);
 		assertEquals("Survey not selected", true, solo.searchText("Group 1.*")); 	
 	
 		// click on first option of button 1 - nothing should be visible now
@@ -312,11 +346,21 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 			
 	}
 	
+	// test 13.2
 	@Smoke
-	public void testKeepLastSelectedUserLoggedIn() throws Exception {
+	public void INACT93KeepLastSelectedUserLoggedIn() throws Exception {
 		deleteTestUsers();
 		createAndSelectUser("Test User 1","name-1.lastname@akvo.org");
 		assertEquals("Test user 1 not selected", true, solo.searchText("Test User 1",true)); 
+		
+		solo.clickOnMenuItem("Settings");
+		solo.clickOnText("Preferences");
+		if (solo.isCheckBoxChecked(0)){
+			solo.clickOnCheckBox(0);
+			solo.goBack();
+			solo.goBack();
+		}
+		
 		
 		//leave app
 		solo.goBack();
@@ -352,9 +396,11 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		
 		
 	}
-	
-	public void testChangeSurveyLanguage() throws Exception {
-		solo.clickOnMenuItem("Settings");
+	// test 13.5
+	public void INACT94ChangeSurveyLanguage() throws Exception {
+		solo.scrollDown();
+		solo.clickOnText("Settings.*");
+		//solo.clickOnMenuItem("Settings");
 		solo.clickOnText("Preferences");
 		solo.clickOnImageButton(2);
 		
@@ -382,7 +428,8 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		assertEquals("Language spanish not selected.", true, solo.isTextChecked("Spanish")); 
 	}
 	
-	public void testSetDeviceIdentifier() throws Exception {
+	// test 13.12
+	public void INACT95SetDeviceIdentifier() throws Exception {
 		solo.clickOnMenuItem("Settings");
 		solo.clickOnText("Preferences");
 		solo.clickOnImageButton(8);
@@ -404,15 +451,16 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		solo.enterText(0,"12345");
 		solo.clickOnButton("OK");
 		solo.clearEditText(0);
-		solo.enterText(0,"FLOW test ID");
+		solo.enterText(0,"FLOW_test_ID");
 		solo.clickOnButton("OK");
 		
 		
-		assertEquals("device identifier not set", true, solo.searchText("FLOW test ID")); 	
+		assertEquals("device identifier not set", true, solo.searchText("FLOW_test_ID")); 	
 	}
 	
+	// test 7.1, 7.2, 7.3, 7.8
 	@Smoke
-	public void testFillQuestions() throws Exception {
+	public void INACT96FillQuestions() throws Exception {
 		////////////////SCENARIO -  Delete A USER /////////////////////	
 		deleteTestUsers();
 		createAndSelectUser("Test User 1","name-1.lastname@akvo.org");
@@ -435,7 +483,8 @@ public class SurveyTest extends ActivityInstrumentationTestCase2<SurveyHomeActiv
 		solo.clickOnButton("Select Date");
 		solo.setDatePicker(0, 2012, 2, 16);
 		solo.clickOnButton("Set");
-		assertEquals("date not set", true, solo.searchText("Mar 16, 2012")); 
+		boolean dates=solo.searchText("Mar 16, 2012") | solo.searchText("16 Mar 2012");
+		assertEquals("date not set", true, dates); 
 		
 		solo.goBack();
 		//solo.sendKey(solo.MENU);
