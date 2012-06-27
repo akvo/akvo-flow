@@ -1,6 +1,19 @@
-/**
- * 
+/*
+ *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *
+ *  This file is part of Akvo FLOW.
+ *
+ *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+ *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+ *  either version 3 of the License or any later version.
+ *
+ *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License included below for more details.
+ *
+ *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.portal.client.widgets.component.standardscoring;
 
 import java.util.ArrayList;
@@ -47,7 +60,23 @@ public class StandardScoringDetail extends Composite implements HasText {
 	 * Because this class has a default constructor, it can be used as a binder
 	 * template. In other words, it can be used in other *.ui.xml files as
 	 * follows: <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	 * xmlns:g="urn:import:**user's package**">
+	 * xmlns:g="urn:import:**user's /*
+ *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *
+ *  This file is part of Akvo FLOW.
+ *
+ *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+ *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+ *  either version 3 of the License or any later version.
+ *
+ *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License included below for more details.
+ *
+ *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+ */
+
+package**">
 	 * <g:**UserClassName**>Hello!</g:**UserClassName> </ui:UiBinder> Note that
 	 * depending on the widget that is used, it may be necessary to implement
 	 * HasHTML instead of HasText.
