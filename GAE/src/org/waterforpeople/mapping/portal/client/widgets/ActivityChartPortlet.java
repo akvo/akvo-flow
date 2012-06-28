@@ -31,14 +31,14 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
+import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.LegendPosition;
 import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine;
-import com.google.gwt.visualization.client.visualizations.ImageLineChart;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.Options;
 import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.WindowMode;
+import com.google.gwt.visualization.client.visualizations.ImageLineChart;
 
 /**
  * Portlet that displays the current system activity over a period of time using
@@ -53,9 +53,11 @@ import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine.Wind
  */
 public class ActivityChartPortlet extends LocationDrivenPortlet {
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);
-	public static final String DESCRIPTION = TEXT_CONSTANTS.activityChartPortletDescription();
-	public static final String NAME = TEXT_CONSTANTS.activityChartPortletTitle();
+			.create(TextConstants.class);
+	public static final String DESCRIPTION = TEXT_CONSTANTS
+			.activityChartPortletDescription();
+	public static final String NAME = TEXT_CONSTANTS
+			.activityChartPortletTitle();
 	private static final String CONFIG_NAME = "ActivityChart";
 	private static final int WIDTH = 600;
 	private static final int HEIGHT = 300;
@@ -151,57 +153,42 @@ public class ActivityChartPortlet extends LocationDrivenPortlet {
 					}
 				};
 				VisualizationUtils.loadVisualizationApi(onLoadCallback,
-						AnnotatedTimeLine./*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
- *
- *  This file is part of Akvo FLOW.
- *
- *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
- *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
- *  either version 3 of the License or any later version.
- *
- *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License included below for more details.
- *
- *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
- */
+                        AnnotatedTimeLine.PACKAGE);
+}
+};
+siService.listInstanceSummaryByLocation(
+        ALL_OPT.equals(countryCode) ? null : countryCode, ALL_OPT
+                        .equals(communityCode) ? null : communityCode,
+        siCallback);
+}
 
-package);
-			}
-		};
-		siService.listInstanceSummaryByLocation(
-				ALL_OPT.equals(countryCode) ? null : countryCode, ALL_OPT
-						.equals(communityCode) ? null : communityCode,
-				siCallback);
-	}
+protected void communitySelected(String community) {
+setConfig(getSelectedCountry() + "," + getSelectedCommunity());
+buildChart(getSelectedCountry(), getSelectedCommunity());
+}
 
-	protected void communitySelected(String community) {
-		setConfig(getSelectedCountry() + "," + getSelectedCommunity());
-		buildChart(getSelectedCountry(), getSelectedCommunity());
-	}
+/**
+* constructs and installs the menu for this portlet. Also wires in the
+* event handlers so we can update on menu value change
+* 
+* @return
+*/
+private Widget buildHeader() {
+Grid grid = new Grid(1, 2);
 
-	/**
-	 * constructs and installs the menu for this portlet. Also wires in the
-	 * event handlers so we can update on menu value change
-	 * 
-	 * @return
-	 */
-	private Widget buildHeader() {
-		Grid grid = new Grid(1, 2);
+HorizontalPanel countryPanel = new HorizontalPanel();
+countryPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.country()));
+countryPanel.add(getCountryControl());
+grid.setWidget(0, 0, countryPanel);
 
-		HorizontalPanel countryPanel = new HorizontalPanel();
-		countryPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.country()));
-		countryPanel.add(getCountryControl());
-		grid.setWidget(0, 0, countryPanel);
+HorizontalPanel commPanel = new HorizontalPanel();
+commPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.community()));
+commPanel.add(getCommunityControl());
+grid.setWidget(0, 1, commPanel);
 
-		HorizontalPanel commPanel = new HorizontalPanel();
-		commPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.community()));
-		commPanel.add(getCommunityControl());
-		grid.setWidget(0, 1, commPanel);
+return grid;
+}
 
-		return grid;
-	}
 
 	/**
 	 * configures the Options to initialize the visualization
@@ -240,23 +227,7 @@ package);
 		};
 		if (currentTable != null) {
 			VisualizationUtils.loadVisualizationApi(onLoadCallback,
-					ImageLineChart./*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
- *
- *  This file is part of Akvo FLOW.
- *
- *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
- *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
- *  either version 3 of the License or any later version.
- *
- *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License included below for more details.
- *
- *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
- */
-
-package);
+					ImageLineChart.PACKAGE);
 		}
 	}
 

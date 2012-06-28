@@ -101,7 +101,7 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 	private Widget buildHeader() {
 
 		metricListbox = new ListBox();
-		metricListbox.addItem(TEXT_CONSTANTS.select(),TEXT_CONSTANTS.select());
+		metricListbox.addItem(TEXT_CONSTANTS.select(), TEXT_CONSTANTS.select());
 		metricListbox.addItem(TEXT_CONSTANTS.technologyTypeMetric(),
 				TECH_METRIC);
 		metricListbox.addItem(TEXT_CONSTANTS.pointTypeMetric(), TYPE_METRIC);
@@ -109,21 +109,21 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 		metricListbox.addChangeHandler(this);
 
 		VerticalPanel headerPanel = new VerticalPanel();
-		
-		HorizontalPanel topRow = new HorizontalPanel();		
+
+		HorizontalPanel topRow = new HorizontalPanel();
 		topRow.add(ViewUtil.initLabel(TEXT_CONSTANTS.country()));
 		topRow.add(getCountryControl());
 		topRow.add(ViewUtil.initLabel(TEXT_CONSTANTS.metric()));
 		topRow.add(metricListbox);
-		
+
 		headerPanel.add(topRow);
 		List<ListBox> boxes = getSubLevelControls();
-		if (boxes != null && boxes.size()>0) {
+		if (boxes != null && boxes.size() > 0) {
 			headerPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.subdivision()));
 			for (ListBox box : boxes) {
 				headerPanel.add(box);
 			}
-		}		
+		}
 
 		return headerPanel;
 	}
@@ -131,7 +131,8 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 	@Override
 	public void onChange(ChangeEvent event) {
 		selectedMetric = getSelectedValue(metricListbox);
-		if (selectedMetric != null && !TEXT_CONSTANTS.select().equals(selectedMetric)) {
+		if (selectedMetric != null
+				&& !TEXT_CONSTANTS.select().equals(selectedMetric)) {
 			loadData();
 		}
 	}
@@ -206,7 +207,7 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 					}
 				});
 	}
-	
+
 	@Override
 	public void handleExportClick() {
 		Runnable onLoadCallback = new Runnable() {
@@ -223,23 +224,7 @@ public class AccessPointMetricChartPortlet extends LocationDrivenPortlet
 		};
 		if (currentTable != null) {
 			VisualizationUtils.loadVisualizationApi(onLoadCallback,
-					ImagePieChart./*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
- *
- *  This file is part of Akvo FLOW.
- *
- *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
- *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
- *  either version 3 of the License or any later version.
- *
- *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License included below for more details.
- *
- *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
- */
-
-package);
+					ImagePieChart.PACKAGE);
 		}
 	}
 
@@ -255,7 +240,7 @@ package);
 		options.setWidth(WIDTH);
 		return options;
 	}
-	
+
 	@Override
 	protected String getConfigItemName() {
 		return CONFIG_ITEM_NAME;

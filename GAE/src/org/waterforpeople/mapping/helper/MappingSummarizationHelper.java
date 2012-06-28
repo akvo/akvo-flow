@@ -13,7 +13,6 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
-
 package org.waterforpeople.mapping.helper;
 
 import java.util.ArrayList;
@@ -33,25 +32,6 @@ import com.vividsolutions.jts.index.strtree.STRtree;
 
 /**
  * This helper performs mapping summarization as well as abstracts clients from
- * details of the JTS GIS /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
- *
- *  This file is part of Akvo FLOW.
- *
- *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
- *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
- *  either version 3 of the License or any later version.
- *
- *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License included below for more details.
- *
- *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
- */
-
-package. <b>No JTS classes should leak out of this
- * layer.</b>
- * 
  * Some of the methods (addPointToPoly, for instance) are STATEFUL in that they
  * can be used to accumulate points over multiple method invocations in member
  * variables so that they can eventually be flushed to an index in a single
@@ -143,7 +123,7 @@ public class MappingSummarizationHelper {
 			// 1 rule we have. once we have more, this will be abstracted out
 			int functionalCount = 0;
 			for (AccessPoint ap : accessPoints) {
-				if (AccessPoint.Status.FUNCTIONING_HIGH==ap.getPointStatus()) {
+				if (AccessPoint.Status.FUNCTIONING_HIGH == ap.getPointStatus()) {
 					functionalCount++;
 				}
 			}
@@ -171,7 +151,8 @@ public class MappingSummarizationHelper {
 		// can't do anything
 		STRtree regionIndex = geoIndexDao.findGeoIndex(regionUUID);
 		// TODO: filter access points!!! for now, we get them all
-		List<AccessPoint> accessPoints = accessPointDao.list(Constants.ALL_RESULTS);
+		List<AccessPoint> accessPoints = accessPointDao
+				.list(Constants.ALL_RESULTS);
 		List<AccessPoint> pointsInRegion = new ArrayList<AccessPoint>();
 		if (accessPoints != null && regionIndex != null) {
 

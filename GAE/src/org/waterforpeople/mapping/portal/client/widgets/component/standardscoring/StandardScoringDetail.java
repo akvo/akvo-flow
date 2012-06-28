@@ -41,6 +41,13 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
+ * Because this class has a default constructor, it can be used as a binder
+ * template. In other words, it can be used in other *.ui.xml files as follows:
+ * <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+ * xmlns:g="urn:import:**user's <g:**UserClassName**>Hello!</g:**UserClassName>
+ * </ui:UiBinder> Note that depending on the widget that is used, it may be
+ * necessary to implement HasHTML instead of HasText.
+ * 
  * @author dru
  * 
  */
@@ -48,7 +55,7 @@ public class StandardScoringDetail extends Composite implements HasText {
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
 	private StandardScoringManagerServiceAsync svc;
-	private CommunityServiceAsync communitySvc;	
+	private CommunityServiceAsync communitySvc;
 	private static StandardScoringDetailUiBinder uiBinder = GWT
 			.create(StandardScoringDetailUiBinder.class);
 
@@ -56,33 +63,8 @@ public class StandardScoringDetail extends Composite implements HasText {
 			UiBinder<Widget, StandardScoringDetail> {
 	}
 
-	/**
-	 * Because this class has a default constructor, it can be used as a binder
-	 * template. In other words, it can be used in other *.ui.xml files as
-	 * follows: <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	 * xmlns:g="urn:import:**user's /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
- *
- *  This file is part of Akvo FLOW.
- *
- *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
- *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
- *  either version 3 of the License or any later version.
- *
- *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *  See the GNU Affero General Public License included below for more details.
- *
- *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
- */
-
-package**">
-	 * <g:**UserClassName**>Hello!</g:**UserClassName> </ui:UiBinder> Note that
-	 * depending on the widget that is used, it may be necessary to implement
-	 * HasHTML instead of HasText.
-	 */
 	public StandardScoringDetail() {
-		svc = GWT.create(StandardScoringManagerService.class);		
+		svc = GWT.create(StandardScoringManagerService.class);
 		communitySvc = GWT.create(CommunityService.class);
 		initWidget(uiBinder.createAndBindUi(this));
 		lbGlobal.addItem("Global");
@@ -164,7 +146,7 @@ package**">
 
 			@Override
 			public void onSuccess(CountryDto[] result) {
-				for(CountryDto item:result){
+				for (CountryDto item : result) {
 					lbCountry.addItem(item.getIsoAlpha2Code(), item.getName());
 				}
 			}
