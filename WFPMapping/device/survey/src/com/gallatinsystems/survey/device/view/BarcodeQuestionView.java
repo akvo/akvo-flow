@@ -18,6 +18,7 @@ package com.gallatinsystems.survey.device.view;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Build;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -63,6 +64,11 @@ public class BarcodeQuestionView extends QuestionView implements
 		if (readOnly) {
 			barcodeButton.setEnabled(false);
 			barcodeText.setEnabled(false);
+		}
+	        //Barcode scanning crashes API 6 app, at least on Emulator
+    		if (Build.VERSION_INT <= Build.VERSION_CODES.ECLAIR_0_1) {
+        		//Maybe change button text as well?
+			barcodeButton.setEnabled(false);
 		}
 
 		tr.addView(barcodeButton);
