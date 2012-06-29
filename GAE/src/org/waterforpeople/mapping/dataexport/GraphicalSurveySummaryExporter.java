@@ -448,7 +448,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			String name = dto.getSubmitterName();
 			if (name != null) {
 				createCell(row, col++,
-						dto.getSubmitterName().replaceAll("\n", " ").trim(),
+						dto.getSubmitterName().replaceAll("\n", " ").replaceAll("\t"," ").trim(),
 						null);
 			} else {
 				createCell(row, col++, " ", null);
