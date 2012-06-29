@@ -77,6 +77,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final String LOCALE_OPT = "locale";
 	private static final String TYPE_OPT = "exportMode";
 	private static final String RAW_ONLY_TYPE = "RAW_DATA";
+	private static final String NO_CHART_OPT = "nocharts";
 
 	private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 	private static final String SDCARD_PREFIX = "/sdcard/";
@@ -240,6 +241,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private BlockingQueue<Runnable> jobQueue;
 	private volatile int threadsCompleted = 0;
 	private Object lock = new Object();
+	private boolean generateCharts;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
@@ -448,8 +450,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			String name = dto.getSubmitterName();
 			if (name != null) {
 				createCell(row, col++,
-						dto.getSubmitterName().replaceAll("\n", " ").replaceAll("\t"," ").trim(),
-						null);
+						dto.getSubmitterName().replaceAll("\n", " ")
+								.replaceAll("\t", " ").trim(), null);
 			} else {
 				createCell(row, col++, " ", null);
 			}
@@ -766,7 +768,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 						}
 						// only insert the image if we have at least 1 non-zero
 						// value
-						if (hasVals) {
+						if (hasVals && generateCharts) {
 							// now insert the graph
 							int indx = wb
 									.addPicture(
@@ -881,6 +883,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			imagePrefix = imagePrefix.trim();
 		} else {
 			imagePrefix = DEFAULT_IMAGE_PREFIX;
+		}
+		if (options.get(NO_CHART_OPT) != null) {
+			if ("true".equalsIgnoreCase(options.get(NO_CHART_OPT))) {
+				generateCharts = false;
+			} else {
+				generateCharts = true;
+			}
 		}
 	}
 

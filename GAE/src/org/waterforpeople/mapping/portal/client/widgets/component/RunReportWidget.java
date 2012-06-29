@@ -164,17 +164,29 @@ public class RunReportWidget extends MenuBasedWidget {
 			final Object eventSource = event.getSource();
 			final Widget rollupControl;
 			final CheckBox summaryBox;
+			final CheckBox chartBox;
 			if (eventSource == comprehensiveReportButton) {
+				VerticalPanel vPanel = new VerticalPanel();
 				HorizontalPanel rollupPanel = new HorizontalPanel();
 				rollupPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS
-						.generateSummariesByGeography()));
+						.generateSummariesByGeography()));				
 				summaryBox = new CheckBox();
 				summaryBox.setValue(true);
 				rollupPanel.add(summaryBox);
-				rollupControl = rollupPanel;
+				vPanel.add(rollupPanel);
+				
+				HorizontalPanel imgPanel = new HorizontalPanel();
+				imgPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.omitCharts()));
+				chartBox = new CheckBox();
+				chartBox.setValue(false);
+				imgPanel.add(chartBox);
+				vPanel.add(imgPanel);
+				
+				rollupControl = vPanel;
 			} else {
 				rollupControl = null;
 				summaryBox = null;
+				chartBox = null;
 			}
 			SurveySelectionDialog surveyDia = new SurveySelectionDialog(
 					new CompletionListener() {
@@ -191,7 +203,7 @@ public class RunReportWidget extends MenuBasedWidget {
 										(Long) payload
 												.get(SurveySelectionDialog.SURVEY_KEY),
 										summaryBox != null ? summaryBox
-												.getValue() : true, lang);
+												.getValue() : true, lang, chartBox != null? chartBox.getValue():false);
 							}
 						}
 					}, false, rollupControl, true);
@@ -200,7 +212,7 @@ public class RunReportWidget extends MenuBasedWidget {
 	}
 
 	private void handleSurveySelection(Object eventSource, Long surveyId,
-			boolean doRollups, String locale) {
+			boolean doRollups, String locale, boolean omitCharts) {
 		if (eventSource == rawDataReportButton) {
 			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,poi-3.7-20101029.jar,poi-ooxml-3.7-20101029.jar,poi-ooxml-schemas-3.7-20101029.jar,xbean.jar,dom4j-1.6.1.jar,gdata-core-1.0.jar'>";
 			appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
@@ -255,6 +267,9 @@ public class RunReportWidget extends MenuBasedWidget {
 			appletString += "<PARAM name='options' value='locale:=" + locale;
 			if (!doRollups) {
 				appletString += ";performRollup:=false";
+			}
+			if(omitCharts){
+				appletString+= ";nocharts:=true";
 			}
 			appletString += ";imgPrefix:=" + UPLOAD_CONSTANTS.uploadUrl()
 					+ UPLOAD_CONSTANTS.imageS3Path() + "/'>";

@@ -604,5 +604,6 @@ public interface TextConstants extends Constants{
 	public String barcode();
 	public String offlineReport();
 	public String offlineReportDesc();
+	public String omitCharts();
 }
 
