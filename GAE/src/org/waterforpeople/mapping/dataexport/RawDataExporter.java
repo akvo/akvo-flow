@@ -149,7 +149,7 @@ public class RawDataExporter extends AbstractDataExporter {
 								String name = dto.getSubmitterName();
 								if (name != null) {
 									pw.write(dto.getSubmitterName()
-											.replaceAll("\n", " ").trim());
+											.replaceAll("\n", " ").replaceAll("\t"," ").trim());
 								}
 							}
 							for (String key : idList) {
