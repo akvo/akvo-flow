@@ -3,6 +3,7 @@
 .classpath
 .project
 .settings
+*.class
 
 # Specific paths
 GAE/build.properties
