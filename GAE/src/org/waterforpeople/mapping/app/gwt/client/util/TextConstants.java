@@ -605,5 +605,7 @@ public interface TextConstants extends Constants{
 	public String offlineReport();
 	public String offlineReportDesc();
 	public String omitCharts();
+	public String viewHelp();
+	public String unsupportedOnWeb();
 }
 

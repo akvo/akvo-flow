@@ -21,8 +21,12 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerSt
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -35,7 +39,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public abstract class QuestionWidget extends Composite {
 	protected static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);
+			.create(TextConstants.class);
 	private static String TEXT_WIDTH = "300px";
 	private static final String DEFAULT_ANS_TYPE = "VALUE";
 	private Grid mainGrid;
@@ -47,9 +51,9 @@ public abstract class QuestionWidget extends Composite {
 	protected QuestionWidget(QuestionDto question, QuestionAnswerStoreDto ans) {
 		answerPanel = new VerticalPanel();
 		answer = ans;
-		currentLocale =  com.google.gwt.i18n.client.LocaleInfo.getCurrentLocale()
-		.getLocaleName();
-		if(currentLocale == null){
+		currentLocale = com.google.gwt.i18n.client.LocaleInfo
+				.getCurrentLocale().getLocaleName();
+		if (currentLocale == null) {
 			currentLocale = "en";
 		}
 		if (answer == null) {
@@ -73,11 +77,27 @@ public abstract class QuestionWidget extends Composite {
 	 * TODO: handle unsupported question types (SCAN, TRACK, etc)
 	 */
 	protected void bindQuestion() {
+		HorizontalPanel panel = new HorizontalPanel();
 		Label text = new Label(question.getLocalizedText(currentLocale)
 				+ (question.getMandatoryFlag() ? "*" : ""));
 		text.setWordWrap(true);
 		text.setWidth(TEXT_WIDTH);
-		mainGrid.setWidget(0, 0, text);
+		panel.add(text);
+		if (question.getQuestionHelpList() != null
+				&& question.getQuestionHelpList().size() > 0) {
+			Button helpButton = new Button(TEXT_CONSTANTS.viewHelp());
+			panel.add(helpButton);
+			helpButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					HelpDialog dia = new HelpDialog(question
+							.getQuestionHelpList(), currentLocale);
+					dia.showCentered();
+				}
+			});
+		}
+		mainGrid.setWidget(0, 0, panel);
 		constructResponseUi();
 	}
 
@@ -99,7 +119,6 @@ public abstract class QuestionWidget extends Composite {
 	public QuestionAnswerStoreDto getAnswer() {
 		return answer;
 	}
-
 
 	protected Panel getPanel() {
 		return answerPanel;
@@ -123,12 +142,13 @@ public abstract class QuestionWidget extends Composite {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * indicates whether the underlying quesiton is mandatory
+	 * 
 	 * @return
 	 */
-	public boolean isMandatory(){
+	public boolean isMandatory() {
 		return getQuestion().getMandatoryFlag();
 	}
 

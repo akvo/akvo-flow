@@ -502,8 +502,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				Help tip = new Help();
 				com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
 				t.setContent(helpItem.getText());
+				tip.setText(t);
 				if (helpItem.getType() == QuestionHelpMedia.Type.TEXT) {
-					tip.setType("tip");
+					tip.setType("tip");					
+					
 				} else {
 					tip.setType(helpItem.getType().toString().toLowerCase());
 					tip.setValue(helpItem.getResourceUrl());

@@ -165,7 +165,9 @@ public class SurveyXmlDtoHelper {
 										.toUpperCase()));
 							}
 							hDto.setResourceUrl(h.getValue());
-							hDto.setText(hDto.getText());
+							if(h.getText() != null){
+								hDto.setText(h.getText().getContent());
+							}
 							if (h.getAltText() != null) {
 								for (AltText alt : h.getAltText()) {
 									hDto.addTranslation(parseTranslation(alt));
