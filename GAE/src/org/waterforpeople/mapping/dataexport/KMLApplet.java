@@ -104,6 +104,7 @@ public class KMLApplet extends JApplet implements Runnable {
 		try {
 			System.out.println("File to save to: " + path);
 			ArrayList<String> countryList = new ArrayList<String>();
+			countryList.add("BF");
 			countryList.add("MW");
 			countryList.add("RW");
 			countryList.add("BO");
