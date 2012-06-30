@@ -108,6 +108,61 @@ public class SurveyDataTest extends ActivityInstrumentationTestCase2<SurveyHomeA
 	}
 	
 	
+	@Smoke
+	public void testDo100surveys() throws Exception {
+	//deleteAllData();
+	
+	// get surveys in
+	solo.goBack();
+	solo.goBack();
+			
+	//start app
+	launchActivity("com.gallatinsystems.survey.device","com.gallatinsystems.survey.device.activity.SurveyHomeActivity");
+	solo=new Solo(getInstrumentation());
+	solo.sleep(1000);
+	//start app again
+	solo.goBack();
+	solo.goBack();
+	launchActivity("com.gallatinsystems.survey.device","com.gallatinsystems.survey.device.activity.SurveyHomeActivity");
+	solo=new Solo(getInstrumentation());
+			
+	solo.sleep(1000);
+	//start app again
+	solo.goBack();
+	solo.goBack();
+	launchActivity("com.gallatinsystems.survey.device","com.gallatinsystems.survey.device.activity.SurveyHomeActivity");
+	solo=new Solo(getInstrumentation());
+	
+	// FLOW test survey 1 and 2 should be there now
+	
+	createAndSelectUser("FLOW tester","flow.tester@akvo.org");
+	solo.clickOnText("FLOW test survey 1.*");
+	
+	for (int i=0;i<10;i++){	
+		// free text field
+		solo.clearEditText(0);
+		solo.enterText(0, "Survey instance "+i);
+		
+		// number field
+		solo.clearEditText(1);
+		solo.enterText(1,Integer.toString(i));
+		
+		solo.clickOnText("Check Geo Location");
+		
+		solo.clickOnButton("Select Date");
+		solo.setDatePicker(0, 2012+i, 2, 16);
+		solo.clickOnButton("Set");
+		
+		solo.clickOnText("Next");
+		solo.clickOnButton("Submit");
+		solo.clickOnText("OK");
+		
+		solo.sleep(1000);
+		}
+	}
+	
+	
+	
 
 	@Override
 	public void tearDown() throws Exception {
