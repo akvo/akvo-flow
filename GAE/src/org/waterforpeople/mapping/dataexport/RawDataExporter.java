@@ -125,8 +125,12 @@ public class RawDataExporter extends AbstractDataExporter {
 			String imagePrefix = IMAGE_PREFIX;
 			try {
 				imagePrefix = PropertyUtil.getProperty("photo_url_root");
+				
 			} catch (Exception e) {
 				imagePrefix = IMAGE_PREFIX;
+			}
+			if(imagePrefix != null && !imagePrefix.endsWith("/")){
+				imagePrefix = imagePrefix + "/";
 			}
 			int i = 0;
 			for (Entry<String, String> instanceEntry : instances.entrySet()) {

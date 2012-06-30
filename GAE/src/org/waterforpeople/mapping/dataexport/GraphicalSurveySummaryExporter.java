@@ -881,6 +881,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		}
 		if (imagePrefix != null) {
 			imagePrefix = imagePrefix.trim();
+			if (!imagePrefix.endsWith("/")) {
+				imagePrefix = imagePrefix + "/";
+			}
 		} else {
 			imagePrefix = DEFAULT_IMAGE_PREFIX;
 		}
