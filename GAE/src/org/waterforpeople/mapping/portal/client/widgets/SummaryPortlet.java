@@ -16,6 +16,8 @@
 
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import java.util.List;
+
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
@@ -50,7 +52,8 @@ public class SummaryPortlet extends Portlet {
 	private static final int HEIGHT = 300;
 	private static final String TREE_ITEM_HEIGHT = "25";
 	private static final String USER_IMAGE = "images/users.png";
-	//private static final String GOOGLE_EARTH_IMAGE = "images/google_earth_icon.png";
+	// private static final String GOOGLE_EARTH_IMAGE =
+	// "images/google_earth_icon.png";
 	private static final String SURVEY_IMAGE = "images/surveys.png";
 	private static final String DEVICE_IMAGE = "images/device.png";
 	private TreeItem surveyRoot;
@@ -68,16 +71,15 @@ public class SummaryPortlet extends Portlet {
 
 		DeviceServiceAsync deviceService = GWT.create(DeviceService.class);
 		// Set up the callback object.
-		AsyncCallback<DeviceDto[]> deviceCallback = new AsyncCallback<DeviceDto[]>() {
+		AsyncCallback<List<DeviceDto>> deviceCallback = new AsyncCallback<List<DeviceDto>>() {
 			public void onFailure(Throwable caught) {
 				// no-op
 			}
 
-			public void onSuccess(DeviceDto[] result) {
+			public void onSuccess(List<DeviceDto> result) {
 				if (result != null) {
-					for (int i = 0; i < result.length; i++) {
-						TreeItem tItem = new TreeItem(
-								result[i].getPhoneNumber());
+					for (DeviceDto d : result) {
+						TreeItem tItem = new TreeItem(d.getDisplayValue());
 						deviceRoot.addItem(tItem);
 
 					}
@@ -134,7 +136,6 @@ public class SummaryPortlet extends Portlet {
 
 		return t;
 	}
-	
 
 	public String getName() {
 		return NAME;

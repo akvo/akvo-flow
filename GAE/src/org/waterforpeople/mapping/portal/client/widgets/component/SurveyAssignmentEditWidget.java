@@ -120,7 +120,7 @@ public class SurveyAssignmentEditWidget extends Composite implements
 					for (DeviceDto dto : allDevices) {
 						if (dto.getPhoneNumber().startsWith(text)) {
 							filteredDevices.add(dto);
-						} else if (dto.getDeviceIdentifier() != null
+						} else if (dto.getDisplayValue() != null
 								&& dto.getDeviceIdentifier().startsWith(text)) {
 							filteredDevices.add(dto);
 						}
@@ -156,11 +156,13 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		labelPanel.add(eventName);
 		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.start(), LABEL_STYLE));
 		effectiveStartDate = new DateBox();
-		effectiveStartDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT)));				
+		effectiveStartDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
+				.getFormat(PredefinedFormat.DATE_SHORT)));
 		labelPanel.add(effectiveStartDate);
 		labelPanel.add(ViewUtil.initLabel(TEXT_CONSTANTS.end(), LABEL_STYLE));
 		effectiveEndDate = new DateBox();
-		effectiveEndDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT)));
+		effectiveEndDate.setFormat(new DateBox.DefaultFormat(DateTimeFormat
+				.getFormat(PredefinedFormat.DATE_SHORT)));
 		labelPanel.add(effectiveEndDate);
 		VerticalPanel main = new VerticalPanel();
 		main.add(labelPanel);
@@ -222,26 +224,14 @@ public class SurveyAssignmentEditWidget extends Composite implements
 		if (deviceList == null && allDevices != null) {
 			devicePickerListbox.clear();
 			for (DeviceDto dto : allDevices) {
-				devicePickerListbox
-						.addItem(
-								dto.getPhoneNumber()
-										+ (dto.getDeviceIdentifier() != null ? " ("
-												+ dto.getDeviceIdentifier()
-												+ ")"
-												: ""), dto.getKeyId()
-										.toString());
+				devicePickerListbox.addItem(dto.getDisplayValue(), dto
+						.getKeyId().toString());
 			}
 		} else if (deviceList != null) {
 			devicePickerListbox.clear();
 			for (DeviceDto dto : deviceList) {
-				devicePickerListbox
-						.addItem(
-								dto.getPhoneNumber()
-										+ (dto.getDeviceIdentifier() != null ? " ("
-												+ dto.getDeviceIdentifier()
-												+ ")"
-												: ""), dto.getKeyId()
-										.toString());
+				devicePickerListbox.addItem(dto.getDisplayValue(), dto
+						.getKeyId().toString());
 			}
 		}
 
@@ -394,11 +384,8 @@ public class SurveyAssignmentEditWidget extends Composite implements
 			}
 			if (dto.getDevices() != null) {
 				for (DeviceDto d : dto.getDevices()) {
-					selectedDevicesListbox.addItem(
-							d.getPhoneNumber()
-									+ (d.getDeviceIdentifier() != null ? " ("
-											+ d.getDeviceIdentifier() + ")"
-											: ""), d.getKeyId().toString());
+					selectedDevicesListbox.addItem(d.getDisplayValue(), d
+							.getKeyId().toString());
 				}
 			}
 		}

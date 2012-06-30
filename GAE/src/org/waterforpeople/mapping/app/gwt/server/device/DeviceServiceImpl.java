@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.gwt.server.device;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -42,21 +43,22 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 	private static final String UNASSIGNED_GROUP = "Unassigned";
 
 	@SuppressWarnings("unused")
-	private static final Logger log = Logger
-			.getLogger(DeviceServiceImpl.class.getName());
+	private static final Logger log = Logger.getLogger(DeviceServiceImpl.class
+			.getName());
 
 	@Override
-	public DeviceDto[] listDevice() {
+	public List<DeviceDto> listDevice() {
 
 		DeviceDAO deviceDao = new DeviceDAO();
 		List<Device> devices = deviceDao.list(Constants.ALL_RESULTS);
-		DeviceDto[] deviceDtos = null;
+		List<DeviceDto> deviceDtos = new ArrayList<DeviceDto>();
 		if (devices != null) {
-			deviceDtos = new DeviceDto[devices.size()];
+
 			for (int i = 0; i < devices.size(); i++) {
-				deviceDtos[i] = marshalDevice(devices.get(i));
+				deviceDtos.add(marshalDevice(devices.get(i)));
 			}
 		}
+		Collections.sort(deviceDtos);
 		return deviceDtos;
 	}
 
@@ -87,10 +89,10 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 	 */
 	public HashMap<String, ArrayList<DeviceDto>> listDeviceByGroup() {
 		HashMap<String, ArrayList<DeviceDto>> groupedDevices = new HashMap<String, ArrayList<DeviceDto>>();
-		DeviceDto[] dtos = listDevice();
+		List<DeviceDto> dtos = listDevice();
 		if (dtos != null) {
-			for (int i = 0; i < dtos.length; i++) {
-				String groupName = dtos[i].getDeviceGroup();
+			for (DeviceDto d : dtos) {
+				String groupName = d.getDeviceGroup();
 				if (groupName == null) {
 					groupName = UNASSIGNED_GROUP;
 				}
@@ -99,8 +101,11 @@ public class DeviceServiceImpl extends RemoteServiceServlet implements
 					dtoList = new ArrayList<DeviceDto>();
 					groupedDevices.put(groupName, dtoList);
 				}
-				dtoList.add(dtos[i]);
+				dtoList.add(d);
 			}
+		}
+		for (ArrayList<DeviceDto> list : groupedDevices.values()) {
+			Collections.sort(list);
 		}
 
 		return groupedDevices;

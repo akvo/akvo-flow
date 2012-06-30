@@ -1293,6 +1293,15 @@ public class TestHarnessServlet extends HttpServlet {
 			device.setPhoneNumber("9175667663");
 			device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
 			devDao.save(device);
+			device = new Device();
+			device.setPhoneNumber("aa:bb:ee:dd");
+			device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
+			devDao.save(device);
+			device = new Device();
+			device.setDeviceIdentifier("test");
+			device.setPhoneNumber("123456890");
+			device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
+			devDao.save(device);
 		} else if ("reprocessSurveys".equals(action)) {
 			try {
 				reprocessSurveys(req.getParameter("date"));

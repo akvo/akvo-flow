@@ -20,7 +20,7 @@ import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-public class DeviceDto extends BaseDto {
+public class DeviceDto extends BaseDto implements Comparable<DeviceDto> {
 
 	private static final long serialVersionUID = 3197857074399585732L;
 	private String phoneNumber;
@@ -94,5 +94,32 @@ public class DeviceDto extends BaseDto {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	@Override
+	public int compareTo(DeviceDto o) {
+		String myId = getDisplayValue(this);
+		String otherId = getDisplayValue(o);
+		return myId.compareTo(otherId);
+	}
+
+	private String getDisplayValue(DeviceDto o) {
+		String val = o.getDeviceIdentifier();
+		if (val == null) {
+			val = o.getPhoneNumber();
+		}else if (o.getPhoneNumber()!=null){
+			val += " ("+o.getPhoneNumber()+")";
+		}
+		if (val == null) {
+			val = o.getEsn();
+		}
+		if (val == null) {
+			val = "";
+		}
+		return val;
+	}
+
+	public String getDisplayValue() {
+		return getDisplayValue(this);
 	}
 }

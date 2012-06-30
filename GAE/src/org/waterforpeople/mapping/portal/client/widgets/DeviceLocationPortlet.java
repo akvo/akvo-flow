@@ -16,6 +16,8 @@
 
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import java.util.List;
+
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
@@ -40,9 +42,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class DeviceLocationPortlet extends Portlet {
 	private static TextConstants TEXT_CONSTANTS = GWT
-	.create(TextConstants.class);
-	public static final String DESCRIPTION = TEXT_CONSTANTS.deviceLocationPortletDescription();
-	public static final String NAME = TEXT_CONSTANTS.deviceLocatoinPortletTitle();
+			.create(TextConstants.class);
+	public static final String DESCRIPTION = TEXT_CONSTANTS
+			.deviceLocationPortletDescription();
+	public static final String NAME = TEXT_CONSTANTS
+			.deviceLocatoinPortletTitle();
 	private static final int WIDTH = 500;
 	private static final int HEIGHT = 500;
 	private MapWidget map;
@@ -53,19 +57,19 @@ public class DeviceLocationPortlet extends Portlet {
 		DeviceServiceAsync deviceService = GWT.create(DeviceService.class);
 		// Set up the callback object.
 		setContent(constructMap());
-		AsyncCallback<DeviceDto[]> deviceCallback = new AsyncCallback<DeviceDto[]>() {
+		AsyncCallback<List<DeviceDto>> deviceCallback = new AsyncCallback<List<DeviceDto>>() {
 			public void onFailure(Throwable caught) {
 				// no-op
 			}
 
-			public void onSuccess(DeviceDto[] result) {
+			public void onSuccess(List<DeviceDto> result) {
 				if (result != null && map != null) {
-					for (int i = 0; i < result.length; i++) {
-						if (result[i].getLastKnownLat() != null
-								&& result[i].getLastKnownLon() != null) {
-							map.addOverlay(createMarker(LatLng.newInstance(
-									result[i].getLastKnownLat(), result[i]
-											.getLastKnownLon()), result[i]));
+					for (DeviceDto d : result) {
+						if (d.getLastKnownLat() != null
+								&& d.getLastKnownLon() != null) {
+							map.addOverlay(createMarker(
+									LatLng.newInstance(d.getLastKnownLat(),
+											d.getLastKnownLon()), d));
 						}
 					}
 				}
@@ -87,9 +91,11 @@ public class DeviceLocationPortlet extends Portlet {
 		marker.addMarkerClickHandler(new MarkerClickHandler() {
 			public void onClick(MarkerClickEvent event) {
 				InfoWindow info = map.getInfoWindow();
-				info.open(marker, new InfoWindowContent("<b>"+TEXT_CONSTANTS.phoneNum()+":</b> "
-						+ device.getPhoneNumber() + "<br><b>"+TEXT_CONSTANTS.lastUpdated()+":</b> "
-						+ device.getLastPositionDate()));
+				info.open(marker,
+						new InfoWindowContent("<b>" + TEXT_CONSTANTS.deviceId()
+								+ ":</b> " + device.getDisplayValue()
+								+ "<br><b>" + TEXT_CONSTANTS.lastUpdated()
+								+ ":</b> " + device.getLastPositionDate()));
 			}
 		});
 
