@@ -3,12 +3,15 @@
 .classpath
 .project
 .settings
+*.rpc
+*.class
 
 # Specific paths
 GAE/build.properties
 GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties
 GAE/war/WEB-INF/*.jks
 GAE/war/WEB-INF/appengine-web.xml
+GAE/war/WEB-INF/classes
 WFPMapping/device/debugcert
 WFPMapping/device/survey/res/raw/survey.properties
 WFPMapping/device/survey_test/bin/*
