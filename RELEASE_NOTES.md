@@ -17,21 +17,18 @@ New features & enhancements
 ----
 ### New feature: Barcode question type in surveys
 
-xxx
 
 GitHub issues:
 [17](https://github.com/akvo/akvo-flow/issues/17), [59](https://github.com/akvo/akvo-flow/issues/59)
 
 ### Enhancement: Enable users to store large numbers of surveys and photos on device SD card
 
-xxx
 
 GitHub issue:
 [16](https://https://github.com/akvo/akvo-flow/issues/16)
 
 ### Enhancement: New keystore for apk generation to eliminate signature conflicts
 
-xxx
 
 GitHub issue:
 [21](https://https://github.com/akvo/akvo-flow/issues/21)
@@ -40,7 +37,6 @@ GitHub issue:
 Bug fixes
 ----
 ### Email address of user not displayed correctly in user management
-xxx
 
 GitHub issue:
 [51](https://https://github.com/akvo/akvo-flow/issues/51)
