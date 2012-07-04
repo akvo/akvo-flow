@@ -138,7 +138,7 @@ public class SurveyDataTest extends ActivityInstrumentationTestCase2<SurveyHomeA
 	createAndSelectUser("FLOW tester","flow.tester@akvo.org");
 	solo.clickOnText("FLOW test survey 1.*");
 	
-	for (int i=0;i<10;i++){	
+	for (int i=0;i<2;i++){	
 		// free text field
 		solo.clearEditText(0);
 		solo.enterText(0, "Survey instance "+i);
