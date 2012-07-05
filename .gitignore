@@ -5,6 +5,7 @@
 .settings
 *.rpc
 *.class
+.gwt-log
 
 # Specific paths
 GAE/build.properties
