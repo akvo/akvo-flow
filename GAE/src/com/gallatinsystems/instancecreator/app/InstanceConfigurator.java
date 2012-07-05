@@ -106,6 +106,7 @@ public class InstanceConfigurator {
 		String localLocation = args[16];
 		ic.addAttribute("keystore", args[17]);
 		ic.addAttribute("mapsApiKey", args[18]);
+		ic.addAttribute("restApiKey",args[19]);
 
 		localLocation = ic.createLocalDeployDir(localLocation, args[2]);
 
@@ -158,9 +159,9 @@ public class InstanceConfigurator {
 	}
 
 	private static void checkUsage(String[] args) {
-		if (args.length != 19) {
+		if (args.length != 20) {
 			System.out
-					.println("Bad command line arguments. Usage:\n\t java com.gallatinsystems.instancecreator.app.InstanceConfigurator <awsSecretKey> <awsIdentifier> <instanceName> <s3Bucket> <directories> <s3policyFileTemplateName> <signingKey> <dataUploadUrl> <serverBase> <storepass> <keypass> <alias> <reportsEmailAddress> <defaultPhotoCaption> <scoreAPFlag> <organization> <localLocation> <keystore> <mapsApiKey>");
+					.println("Bad command line arguments. Usage:\n\t java com.gallatinsystems.instancecreator.app.InstanceConfigurator <awsSecretKey> <awsIdentifier> <instanceName> <s3Bucket> <directories> <s3policyFileTemplateName> <signingKey> <dataUploadUrl> <serverBase> <storepass> <keypass> <alias> <reportsEmailAddress> <defaultPhotoCaption> <scoreAPFlag> <organization> <localLocation> <keystore> <mapsApiKey> <restApiKey>");
 			System.exit(1);
 		}
 	}
