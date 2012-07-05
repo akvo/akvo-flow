@@ -112,10 +112,22 @@ public class SurveyDataTest extends ActivityInstrumentationTestCase2<SurveyHomeA
 	public void testDo100surveys() throws Exception {
 	//deleteAllData();
 	
+		solo.clickOnMenuItem("Settings");
+		solo.clickOnText("Preferences");
+		solo.clickOnImageButton(8);
+		solo.enterText(0,"12345");
+		solo.clickOnButton("OK");
+		solo.clearEditText(0);
+		solo.enterText(0,"FLOW tester");
+		solo.clickOnButton("OK");	
+		
+		
 	// get surveys in
 	solo.goBack();
 	solo.goBack();
 			
+	
+	
 	//start app
 	launchActivity("com.gallatinsystems.survey.device","com.gallatinsystems.survey.device.activity.SurveyHomeActivity");
 	solo=new Solo(getInstrumentation());
@@ -138,10 +150,10 @@ public class SurveyDataTest extends ActivityInstrumentationTestCase2<SurveyHomeA
 	createAndSelectUser("FLOW tester","flow.tester@akvo.org");
 	solo.clickOnText("FLOW test survey 1.*");
 	
-	for (int i=0;i<2;i++){	
+	for (int i=0;i<11;i++){	
 		// free text field
 		solo.clearEditText(0);
-		solo.enterText(0, "Survey instance "+i);
+		solo.enterText(0, "Run 5 - Survey instance "+i);
 		
 		// number field
 		solo.clearEditText(1);
@@ -157,7 +169,7 @@ public class SurveyDataTest extends ActivityInstrumentationTestCase2<SurveyHomeA
 		solo.clickOnButton("Submit");
 		solo.clickOnText("OK");
 		
-		solo.sleep(1000);
+		solo.sleep(5000);
 		}
 	}
 	
