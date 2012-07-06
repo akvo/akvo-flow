@@ -118,7 +118,7 @@ public class SurveyDataTest extends ActivityInstrumentationTestCase2<SurveyHomeA
 		solo.enterText(0,"12345");
 		solo.clickOnButton("OK");
 		solo.clearEditText(0);
-		solo.enterText(0,"FLOW tester");
+		solo.enterText(0,"FLOW 13 tester");
 		solo.clickOnButton("OK");	
 		
 		
@@ -147,13 +147,13 @@ public class SurveyDataTest extends ActivityInstrumentationTestCase2<SurveyHomeA
 	
 	// FLOW test survey 1 and 2 should be there now
 	
-	createAndSelectUser("FLOW tester","flow.tester@akvo.org");
+	createAndSelectUser("FLOW samsung ace","flow.tester@akvo.org");
 	solo.clickOnText("FLOW test survey 1.*");
 	
-	for (int i=0;i<11;i++){	
+	for (int i=0;i<20;i++){	
 		// free text field
 		solo.clearEditText(0);
-		solo.enterText(0, "Run 5 - Survey instance "+i);
+		solo.enterText(0, "Run 13 - Survey instance "+i);
 		
 		// number field
 		solo.clearEditText(1);
