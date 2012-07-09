@@ -66,6 +66,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	private List<String> errorIds;
 	private volatile int currentStep;
 
+	private static final DateFormat DATE_FMT = new SimpleDateFormat(
+			"dd-MM-yyyy HH:mm:ss z");
+
 	static {
 		SAVING_DATA = new HashMap<String, String>();
 		SAVING_DATA.put("en", "Saving Data");
@@ -77,7 +80,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	/**
 	 * opens a file input stream using the file passed in and tries to return
 	 * the first worksheet in that file
-	 *
+	 * 
 	 * @param file
 	 * @return
 	 * @throws Exception
@@ -215,6 +218,15 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 								}
 								cellVal = "/sdcard" + cellVal;
 							}
+							if (cellVal.endsWith("UTC")) {
+								try {
+									cellVal = DATE_FMT.parse(cellVal).getTime()
+											+ "";
+								} catch (Exception e) {
+									System.out.println("bad date format: "
+											+ cellVal + "\n" + e.getMessage());
+								}
+							}
 						}
 						if (cellVal != null && cellVal.trim().length() > 0) {
 							hasValue = true;
@@ -262,18 +274,30 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					}
 				}
 				if (row.getRowNum() > 0 && needUpload) {
-					sendDataToServer(serverBase, instanceId == null?null:"action="
-							+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
-							+ "&"
-							+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
-							+ "=" + instanceId
-							+ "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
-							+ getSurveyId() + "&"
-							+ RawDataImportRequest.COLLECTION_DATE_PARAM + "="
-							+ URLEncoder.encode(dateString, "UTF-8") + "&"
-							+ RawDataImportRequest.SUBMITTER_PARAM + "="
-							+ URLEncoder.encode(submitter, "UTF-8"),
-							sb.toString(), criteria.get(KEY_PARAM));
+					sendDataToServer(
+							serverBase,
+							instanceId == null ? null
+									: "action="
+											+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
+											+ "&"
+											+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
+											+ "="
+											+ instanceId
+											+ "&"
+											+ RawDataImportRequest.SURVEY_ID_PARAM
+											+ "="
+											+ getSurveyId()
+											+ "&"
+											+ RawDataImportRequest.COLLECTION_DATE_PARAM
+											+ "="
+											+ URLEncoder.encode(dateString,
+													"UTF-8")
+											+ "&"
+											+ RawDataImportRequest.SUBMITTER_PARAM
+											+ "="
+											+ URLEncoder.encode(submitter,
+													"UTF-8"), sb.toString(),
+							criteria.get(KEY_PARAM));
 
 				} else if (row.getRowNum() > 0) {
 					// if we didn't need to upload, then just increment our
@@ -282,7 +306,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							SAVING_DATA.get(locale)));
 				}
 			}
-			while (!jobQueue.isEmpty() && threadPool.getActiveCount()>0) {
+			while (!jobQueue.isEmpty() && threadPool.getActiveCount() > 0) {
 				Thread.sleep(5000);
 			}
 			if (errorIds.size() > 0) {
@@ -311,7 +335,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	/**
 	 * handles calling invokeURL twice (once to reset the instance and again to
 	 * save the new one) as a separate job submitted to the thread pool
-	 *
+	 * 
 	 * @param serverBase
 	 * @param resetUrlString
 	 * @param saveUrlString
@@ -325,7 +349,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				try {
 					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 							SAVING_DATA.get(locale)));
-					if(resetUrlString != null){
+					if (resetUrlString != null) {
 						invokeUrl(serverBase, resetUrlString, true, key);
 					}
 					invokeUrl(serverBase, saveUrlString, true, key);
@@ -340,7 +364,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
 	/**
 	 * calls a remote api by posting to the url passed in.
-	 *
+	 * 
 	 * @param serverBase
 	 * @param urlString
 	 * @throws Exception
