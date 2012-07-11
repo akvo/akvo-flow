@@ -157,7 +157,7 @@ public class SuperAdminWidget extends MenuBasedWidget {
 		String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl width=256 height=256 archive='exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,poi-3.7-20101029.jar,poi-ooxml-3.7-20101029.jar,poi-ooxml-schemas-3.7-20101029.jar,xbean.jar,dom4j-1.6.1.jar,gdata-core-1.0.jar'>";
 		appletString += "<PARAM name='cache-archive' value='exporterapplet.jar, json.jar'><PARAM name='cache-version' value'1.3, 1.0'>";
 		appletString += "<PARAM name='exportType' value='OFFLINE_REPORT'>";
-		appletString += "<param name='java_arguments' value='-Xmx512m'>";
+		appletString += "<param name='java_arguments' value='-Xmx1024m'>";
 		appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 		appletString += "<PARAM name='criteria' value=surveyId:=" + surveyId
 				+ ">";
