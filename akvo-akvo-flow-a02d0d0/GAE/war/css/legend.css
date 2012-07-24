@@ -27,9 +27,10 @@ body {
 	cursor: pointer;
 	font-size: 1.1em;
 	background: rgb(40,40,40);
+	text-transform:uppercase;
 }
-a.showCollapse {background:url(../../images/legend/showCollapse.png) left top no-repeat;display:inline; padding:14px;position:absolute;top:0; left:0;}
-a.showCollapse.collapsed {background: url(../../images/legend/showCollapse.png) left bottom no-repeat;}
+a.showCollapse {background:url(../images/legend/showCollapse.png) left top no-repeat;display:inline; padding:14px;position:absolute;top:0; left:0;}
+a.showCollapse.collapsed {background: url(../images/legend/showCollapse.png) left bottom no-repeat;}
 #acc .acc-section {
 	overflow: hidden;
 }
@@ -46,7 +47,7 @@ a.showCollapse.collapsed {background: url(../../images/legend/showCollapse.png) 
 	width: 16px;
 	padding: 8px 0;
 	position: absolute;
-	background: url(../../images/legend/dragIcon.png) center center no-repeat;
+	background: url(../images/legend/dragIcon.png) center center no-repeat;
 	top: 4px;
 	right: 4px;
 }
@@ -91,13 +92,13 @@ ul.legendLists li {
 	width:160px;
 }
 li.legendListIcon-1 {
-	background: rgb(246,248,251) url(../../images/legend/legend-icon-waterpoint.png) 5px 8px no-repeat;
+	background: rgb(236,238,241) url(../images/legend/legend-icon-waterpoint.png) 5px 8px no-repeat;
 }
 li.legendListIcon-2 {
-	background: rgb(246,248,251) url(../../images/legend/legend-icon-public.png) 5px 8px no-repeat;
+	background: rgb(236,238,241) url(../images/legend/legend-icon-public.png) 5px 8px no-repeat;
 }
 li.legendListIcon-3 {
-	background: rgb(246,248,251) url(../../images/legend/legend-icon-school.png) 5px 8px no-repeat;
+	background: rgb(236,238,241) url(../images/legend/legend-icon-school.png) 5px 8px no-repeat;
 }
 li.legendListIcon-4 {
 	background: url(../../images/legend/legend-icon-service-1.png) 0 4px no-repeat;
