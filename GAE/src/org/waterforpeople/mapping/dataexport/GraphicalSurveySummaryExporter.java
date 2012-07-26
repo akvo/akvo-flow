@@ -50,6 +50,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
@@ -248,8 +250,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			String serverBase, Map<String, String> options) {
 		processOptions(options);
 		jobQueue = new LinkedBlockingQueue<Runnable>();
-		threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
-				jobQueue);
+		threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS, jobQueue);
 		progressDialog = new ProgressDialog(maxSteps, locale);
 		progressDialog.setVisible(true);
 		currentStep = 1;
@@ -275,7 +276,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				if (questionMap.size() > MAX_COL - 3) {
 					wb = new HSSFWorkbook();
 				} else {
-					wb = new XSSFWorkbook();
+//					wb = new XSSFWorkbook();
+					wb = new SXSSFWorkbook(-1); //handle flushing manually
 				}
 				headerStyle = wb.createCellStyle();
 				headerStyle.setAlignment(CellStyle.ALIGN_CENTER);
@@ -343,6 +345,12 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		final Sheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
 		int curRow = 1;
 
+		//indicate new paradigm - all works
+		{
+//			Row row = getRow(curRow++, sheet);
+//			createCell(row, 0, "Streaming G", null);
+			System.out.println("Streaming export G");
+		}
 		final Map<String, String> collapseIdMap = new HashMap<String, String>();
 		final Map<String, String> nameToIdMap = new HashMap<String, String>();
 		for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
@@ -399,7 +407,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 								rd.setDto(dto);
 								rd.setInstanceId(instanceId);
 								rd.setDateString(dateString);
-								allData.add(rd);
+								//test multiplying dummy data to challenge memory performance
+								for (int i =0; i<1000; i++){
+									allData.add(rd);
+								}
 							}
 
 						} catch (Exception e) {
@@ -507,6 +518,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				}
 			}
 		}
+		// flush the sheet so far to disk; we will not go back up
+		//TODO: ((SXSSFSheet)sheet).flushRows(0); // retain 0 last rows and flush all others
+
 	}
 
 	/**
@@ -516,7 +530,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 * @param questionMap
 	 * @return - returns a 2 element array. The first element is a List of
 	 *         String objects representing all the question Ids. The second
-	 *         element is a List of Strings representing all the non-sumarizable
+	 *         element is a List of Strings representing all the non-summarizable
 	 *         question Ids (i.e. those that aren't OPTION or NUMBER questions)
 	 */
 	protected Object[] createRawDataHeader(Workbook wb, Sheet sheet,
@@ -802,6 +816,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 					// add a blank row between questions
 					getRow(curRow++, sheet);
+					// flush the sheet so far to disk; we will not go back up
+					((SXSSFSheet)sheet).flushRows(0); // retain 0 last rows and flush all others
 
 				}
 			}
@@ -843,6 +859,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		} else {
 			row = sheet.createRow(index);
 		}
+		System.out.println("Row " + index); //debug printout to study backward jumps
+
 		return row;
 
 	}
@@ -857,7 +875,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		isFullReport = true;
 		performGeoRollup = true;
 		maxSteps = FULL_STEPS;
+		generateCharts = true;
 		if (options != null) {
+			for (Map.Entry<String, String> entry : options.entrySet())
+			{
+			    System.out.println("Option " + entry.getKey() + " = " + entry.getValue());
+			}
+			
 			locale = options.get(LOCALE_OPT);
 			imagePrefix = options.get(IMAGE_PREFIX_OPT);
 			if (RAW_ONLY_TYPE.equalsIgnoreCase(options.get(TYPE_OPT))) {
@@ -867,6 +891,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			if (options.get(DO_ROLLUP_OPT) != null) {
 				if ("false".equalsIgnoreCase(options.get(DO_ROLLUP_OPT))) {
 					performGeoRollup = false;
+				}
+			}
+			if (options.get(NO_CHART_OPT) != null) {
+				if ("true".equalsIgnoreCase(options.get(NO_CHART_OPT))) {
+					generateCharts = false;
 				}
 			}
 		}
@@ -886,13 +915,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			}
 		} else {
 			imagePrefix = DEFAULT_IMAGE_PREFIX;
-		}
-		if (options.get(NO_CHART_OPT) != null) {
-			if ("true".equalsIgnoreCase(options.get(NO_CHART_OPT))) {
-				generateCharts = false;
-			} else {
-				generateCharts = true;
-			}
 		}
 	}
 
