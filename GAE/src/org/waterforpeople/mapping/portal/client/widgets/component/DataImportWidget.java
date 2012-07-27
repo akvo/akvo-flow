@@ -144,7 +144,7 @@ public class DataImportWidget extends MenuBasedWidget {
 			String appletString = "<applet width='100' height='30' code=com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl width=256 height=256 archive='exporterapplet.jar,gdata-core-1.0.jar'>";
 			appletString += "<PARAM name='importType' value='BULK_SURVEY'>";
 			appletString += "<PARAM name='selectionMode' value='dir'>";
-			appletString += "<param name='java_arguments' value='-Xmx512m'>";
+			appletString += "<param name='java_arguments' value='-Xmx1024m'>";
 			appletString += "<PARAM name='factoryClass' value='org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory'>";
 			appletString += "<PARAM name='criteria' value='imagePolicy:="
 					+ UPLOAD_CONSTANTS.imageS3Policy() + ";imageSig:="

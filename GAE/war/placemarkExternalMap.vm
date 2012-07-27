@@ -12,10 +12,7 @@
     <p><div id="collectionDate">data collection date: $collectionDate</div></p>
     </div>
     <div class="mapIcon">		
-				#if($WaterPointLevelOfService-iconSmallUrl && $WaterPointSustainability-iconSmallUrl)
-						<img src="$WaterPointLevelOfService-iconSmallUrl" width="32" height="32"  />
-						<img src="$WaterPointSustainability-iconSmallUrl" width="32" height="32"  /> 
-				#end
+				
 					</div>
     			</div>
 
@@ -24,12 +21,6 @@
       <div class="scroll-pane-info">
       <table>
 			 #if($type=="water")
-				#if($WaterPointLevelOfService-desc)
-			 				<tr valign="bottom"><td class="QandA">Water System Level Of Service:</td><td>$WaterPointLevelOfService-desc</td></tr>
-				#end
-				#if($WaterPointSustainability-desc)
-	    					<tr valign="bottom"><td class="QandA">Water System Sustainability:</td><td>$WaterPointSustainability-desc</td></tr>
-				#end
 	    					<tr valign="bottom"><td class="QandA">Water System Status:</td><td>$waterSystemStatus</td></tr>
 	    					<tr valign="bottom"><td class="QandA">Type of Technology:</td><td>$primaryTypeTechnology</td></tr>
 							<tr valign="bottom"><td class="QandA">Construction Date:</td><td>$constructionDateOfWaterPoint</td></tr>

@@ -65,9 +65,10 @@ public class BarcodeQuestionView extends QuestionView implements
 			barcodeButton.setEnabled(false);
 			barcodeText.setEnabled(false);
 		}
-	        //Barcode scanning crashes API 7 app, at least on Emulator
-    		if (Build.VERSION.SDK_INT <= 7) {
-        		//Maybe change button text as well?
+		//Barcode scanning crashes API 7 app, at least on Emulator
+		// ECLAIR_MR1 has code 7, but as we build against 6, it does not know this name yet
+		if (Build.VERSION.SDK_INT <= 7) {
+			//Maybe change button text as well?
 			barcodeButton.setEnabled(false);
 		}
 

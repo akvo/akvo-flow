@@ -5,6 +5,7 @@
 .settings
 *.rpc
 *.class
+.gwt-log
 
 # Specific paths
 GAE/build.properties
@@ -17,3 +18,5 @@ WFPMapping/device/survey/res/raw/survey.properties
 WFPMapping/device/survey_test/bin/*
 WFPMapping/device/survey/bin/*
 WFPMapping/device/calabash/.calabash_settings
+
+WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java

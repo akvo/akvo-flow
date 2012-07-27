@@ -20,11 +20,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +122,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final int RAW_STEPS = 5;
 	private static final NumberFormat PCT_FMT = DecimalFormat
 			.getPercentInstance();
+
+	private static final DateFormat DATE_FMT = new SimpleDateFormat(
+			"dd-MM-yyyy HH:mm:ss z");
 
 	static {
 		// populate all translations
@@ -242,6 +248,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private volatile int threadsCompleted = 0;
 	private Object lock = new Object();
 	private boolean generateCharts;
+	private Map<Long, QuestionDto> questionsById;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
@@ -252,6 +259,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				jobQueue);
 		progressDialog = new ProgressDialog(maxSteps, locale);
 		progressDialog.setVisible(true);
+		questionsById = new HashMap<Long, QuestionDto>();
 		currentStep = 1;
 		this.serverBase = serverBase;
 		PrintWriter pw = null;
@@ -261,6 +269,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
 					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
 					performGeoRollup, serverBase);
+			if (questionMap != null) {
+				for (List<QuestionDto> qList : questionMap.values()) {
+					for (QuestionDto q : qList) {
+						questionsById.put(q.getKeyId(), q);
+					}
+				}
+			}
 			if (!DEFAULT_LOCALE.equals(locale) && questionMap.size() > 0) {
 				// if we are using some other locale, we need to check for
 				// translations
@@ -463,6 +478,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				val = responseMap.get(q);
 			}
 			if (val != null) {
+				try {
+					QuestionDto qdto = questionsById.get(Long.parseLong(q));
+					if (qdto != null && QuestionType.DATE == qdto.getType()) {
+						val = DATE_FMT.format(new Date(
+								Long.parseLong(val.trim())));
+					}
+				} catch (Exception e) {
+					System.out
+							.println("couldn't format value for question id: "
+									+ q + "\n" + e.getMessage());
+				}
 				if (val.contains(SDCARD_PREFIX)) {
 					String[] photoParts = val.split("/");
 					if (photoParts.length > 1) {

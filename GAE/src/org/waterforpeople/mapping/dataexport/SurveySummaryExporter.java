@@ -191,6 +191,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 					group.getKeyId());
 			if (performRollups && questions != null) {
 				for (QuestionDto q : questions) {
+					
 					for (int i = 0; i < ROLLUP_QUESTIONS.length; i++) {
 						if (ROLLUP_QUESTIONS[i].equalsIgnoreCase(q.getText())) {
 							rollupOrder.add(q);
