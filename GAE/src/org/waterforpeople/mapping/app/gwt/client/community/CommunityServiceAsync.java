@@ -16,8 +16,10 @@
 
 package org.waterforpeople.mapping.app.gwt.client.community;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface CommunityServiceAsync {
@@ -25,9 +27,15 @@ public interface CommunityServiceAsync {
 	void listCommunities(String countryCode,
 			AsyncCallback<CommunityDto[]> callback);
 
+	@Deprecated
 	void listCountries(AsyncCallback<CountryDto[]> callback);
 
 	void listChildSubCountries(String country, Long parentId,
 			AsyncCallback<List<SubCountryDto>> callback);
+
+	void listCountries(String cursor,
+			AsyncCallback<ResponseDto<ArrayList<CountryDto>>> callback);
+
+	void saveCountry(CountryDto country, AsyncCallback<CountryDto> callback);
 
 }

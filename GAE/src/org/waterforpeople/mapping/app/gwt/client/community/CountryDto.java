@@ -18,7 +18,9 @@ package org.waterforpeople.mapping.app.gwt.client.community;
 
 import java.io.Serializable;
 
-public class CountryDto implements Serializable {
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+
+public class CountryDto extends BaseDto implements Serializable {
 
 	private static final long serialVersionUID = -4677743992145776719L;
 
@@ -27,6 +29,44 @@ public class CountryDto implements Serializable {
 	private String isoAlpha2Code = null;
 	private String isoAlpha3Code = null;
 	private Integer isoNumeric3Code = null;
+	private Boolean includeInKMZ;
+	private Boolean includeInExternal;
+	private Double centroidLat;
+	private Double centroidLon;
+	
+	
+
+	public Boolean getIncludeInKMZ() {
+		return includeInKMZ;
+	}
+
+	public void setIncludeInKMZ(Boolean includeInKMZ) {
+		this.includeInKMZ = includeInKMZ;
+	}
+
+	public Boolean getIncludeInExternal() {
+		return includeInExternal;
+	}
+
+	public void setIncludeInExternal(Boolean includeInExternal) {
+		this.includeInExternal = includeInExternal;
+	}
+
+	public Double getCentroidLat() {
+		return centroidLat;
+	}
+
+	public void setCentroidLat(Double centroidLat) {
+		this.centroidLat = centroidLat;
+	}
+
+	public Double getCentroidLon() {
+		return centroidLon;
+	}
+
+	public void setCentroidLon(Double centroidLon) {
+		this.centroidLon = centroidLon;
+	}
 
 	public String getDisplayName() {
 		return displayName != null ? displayName : name;

@@ -40,7 +40,7 @@ public class SuperAdminWidget extends MenuBasedWidget {
 			.create(UploadConstants.class);
 	private Button surveyImportButton;
 	private Button offlineReportButton;
-	private Button importGISButton;
+	private Button importGISButton;	
 	private Panel appletPanel;
 
 	public SuperAdminWidget() {

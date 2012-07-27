@@ -31,6 +31,7 @@ import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.AdminWizardPortlet;
+import org.waterforpeople.mapping.portal.client.widgets.CountryManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DataUploadPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.DeviceFileManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.MappingAttributeManager;
@@ -102,13 +103,12 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final String ADD_TOOLTIP = TEXT_CONSTANTS.addToDashboard();
 	private static final String DEFAULT_DOMAIN_TYPE = "accessPoint";
 	private static final String DOMAIN_CONFIG_KEY = "domainType";
-	
+
 	private UserDto currentUser;
 	private VerticalPanel containerPanel;
 	private Image confImage;
 	private Panel menuPanel;
 	private String domainType;
-	
 
 	public Dashboard() {
 		super(COLUMNS);
@@ -366,11 +366,20 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 				}
 			});
 		}
-
 		if (getCurrentUser().isSuperAdmin()) {
-			menu.addItem(TEXT_CONSTANTS.adminOnly(), new Command() {
+			MenuBar adminMenu = new MenuBar(true);
+			adminMenu.setAnimationEnabled(true);
+			menu.addItem(TEXT_CONSTANTS.adminOnly(), adminMenu);
+
+			adminMenu.addItem(TEXT_CONSTANTS.adminHome(), new Command() {
 				public void execute() {
 					launchFullscreen(SuperAdminPortlet.NAME);
+
+				}
+			});
+			adminMenu.addItem(TEXT_CONSTANTS.manageCountries(), new Command() {
+				public void execute() {
+					launchFullscreen(CountryManagerPortlet.NAME);
 
 				}
 			});
@@ -564,7 +573,6 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	protected void updateSavedLayout(Map<String, String> positionMap) {
 		updateUserConfig(positionMap);
 	}
-
 
 	/**
 	 * Renders the dashboard configuration UI as a dialog box. From this box,
