@@ -52,7 +52,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -360,12 +359,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		final Sheet sheet = wb.createSheet(RAW_DATA_LABEL.get(locale));
 		int curRow = 1;
 
-		//indicate new paradigm - all works
-		{
-//			Row row = getRow(curRow++, sheet);
-//			createCell(row, 0, "Streaming G", null);
-			System.out.println("Streaming export G");
-		}
 		final Map<String, String> collapseIdMap = new HashMap<String, String>();
 		final Map<String, String> nameToIdMap = new HashMap<String, String>();
 		for (Entry<QuestionGroupDto, List<QuestionDto>> groupEntry : questionMap
@@ -422,10 +415,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 								rd.setDto(dto);
 								rd.setInstanceId(instanceId);
 								rd.setDateString(dateString);
-								//test multiplying dummy data to challenge memory performance
-								for (int i =0; i<1000; i++){
-									allData.add(rd);
-								}
+								allData.add(rd);
 							}
 
 						} catch (Exception e) {
