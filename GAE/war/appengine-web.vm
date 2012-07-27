@@ -46,6 +46,7 @@
 		<property name="bootstraps3policy" value="$bootstrapS3Policy"/>
 		<property name="bootstraps3sig" value="$bootstrapS3Sig"/>
 		<property name="imageroot" value="http://$instanceName.appspot.com"/>
+		<property name="mapiconimageroot" value="http://$s3bucket.s3.amazonaws.com/images/mapicons"/>
 		<property name="scoreAPFlag" value="$scoreAPFlag"/>
 		<property name="organization" value="$organization"/>
 		<property name="signingKey" value="$signingKey" />
