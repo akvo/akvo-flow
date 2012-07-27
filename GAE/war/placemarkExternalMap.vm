@@ -21,7 +21,6 @@
       <div class="scroll-pane-info">
       <table>
 			 #if($type=="water")
-	    					<tr valign="bottom"><td class="QandA">Water System Status:</td><td>$waterSystemStatus</td></tr>
 	    					<tr valign="bottom"><td class="QandA">Type of Technology:</td><td>$primaryTypeTechnology</td></tr>
 							<tr valign="bottom"><td class="QandA">Construction Date:</td><td>$constructionDateOfWaterPoint</td></tr>
 							#if($numberOfHouseholdsUsingWaterPoint!="null")
