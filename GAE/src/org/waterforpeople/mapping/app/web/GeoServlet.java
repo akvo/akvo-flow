@@ -28,6 +28,7 @@ import org.waterforpeople.mapping.app.gwt.client.community.CountryDto;
 import org.waterforpeople.mapping.app.web.dto.GeoRequest;
 import org.waterforpeople.mapping.app.web.dto.GeoResponse;
 import org.waterforpeople.mapping.dao.CommunityDao;
+import org.waterforpeople.mapping.dao.CommunityDao.MAP_TYPE;
 import org.waterforpeople.mapping.domain.Community;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -74,13 +75,28 @@ public class GeoServlet extends AbstractRestApiServlet {
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		GeoRequest geoReq = (GeoRequest) req;
 		if (GeoRequest.LIST_COUNTRY_ACTION.equalsIgnoreCase(geoReq.getAction())) {
-			return convertToResponse(countryDao.list(CountryDao.CURSOR_TYPE.all
-					.toString()), null);
-
+			if (geoReq.getMapType() == null) {
+				return convertToResponse(
+						countryDao.list(CountryDao.CURSOR_TYPE.all.toString()),
+						null);
+			} else {
+				if (GeoRequest.PUBLIC_MAP_TYPE.equalsIgnoreCase(geoReq
+						.getMapType())) {
+					return convertToResponse(
+							communityDao.listMapCountries(MAP_TYPE.PUBLIC),
+							null);
+				} else if (GeoRequest.KMZ_MAP_TYPE.equalsIgnoreCase(geoReq
+						.getMapType())) {
+					return convertToResponse(
+							communityDao.listMapCountries(MAP_TYPE.KMZ), null);
+				} else {
+					return null;
+				}
+			}
 		} else if (GeoRequest.LIST_COMMUNITY_ACTION.equalsIgnoreCase(geoReq
 				.getAction())) {
-			return convertToResponse(null, communityDao
-					.listCommunityByCountry(geoReq.getCountry()));
+			return convertToResponse(null,
+					communityDao.listCommunityByCountry(geoReq.getCountry()));
 		} else {
 			throw new RestException(new RestError(
 					RestError.MISSING_PARAM_ERROR_CODE, "Unrecognized Action",
@@ -102,6 +118,8 @@ public class GeoServlet extends AbstractRestApiServlet {
 				dto.setIsoAlpha2Code(c.getIsoAlpha2Code());
 				dto.setIsoAlpha3Code(c.getIsoAlpha3Code());
 				dto.setIsoNumeric3Code(c.getIsoNumeric3Code());
+				dto.setCentroidLat(c.getCentroidLat());
+				dto.setCentroidLon(c.getCentroidLon());				
 				dto.setName(c.getName());
 				dtoList.add(dto);
 			}

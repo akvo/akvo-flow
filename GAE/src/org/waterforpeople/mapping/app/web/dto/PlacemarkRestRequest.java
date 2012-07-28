@@ -31,6 +31,7 @@ public class PlacemarkRestRequest extends RestRequest {
 	private static final String DOMAIN_CONFIG_KEY = "domainType";
 	public static final String GET_AP_DETAILS_ACTION = "getAPDetails";
 	public static final String LIST_BOUNDING_BOX_ACTION = "listByBoundingBox";
+	public static final String LIST_COUNTRY_ACTION = "listCountries";
 	public static final String LIST_PLACEMARK = "listPlacemarks";
 	private static final String COUNTRY_PARAM = "country";
 	private static final String NEED_DETAILS_PARM = "needDetailsFlag";

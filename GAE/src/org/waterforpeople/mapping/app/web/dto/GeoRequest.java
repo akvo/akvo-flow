@@ -33,7 +33,11 @@ public class GeoRequest extends RestRequest {
 	public static final String LIST_COUNTRY_ACTION = "getCountries";
 	public static final String LIST_COMMUNITY_ACTION = "getCommunities";
 	public static final String COUNTRY_PARAM = "country";
+	public static final String MAP_TYPE_PARAM = "mapType";
+	public static final String PUBLIC_MAP_TYPE = "public";
+	public static final String KMZ_MAP_TYPE = "kmz";
 	private String country;
+	private String mapType;
 
 	@Override
 	protected void populateErrors() {
@@ -52,6 +56,7 @@ public class GeoRequest extends RestRequest {
 				country = null;
 			}
 		}
+		mapType = req.getParameter(MAP_TYPE_PARAM);
 	}
 
 	public String getCountry() {
@@ -61,4 +66,13 @@ public class GeoRequest extends RestRequest {
 	public void setCountry(String country) {
 		this.country = country;
 	}
+
+	public String getMapType() {
+		return mapType;
+	}
+
+	public void setMapType(String mapType) {
+		this.mapType = mapType;
+	}
+
 }

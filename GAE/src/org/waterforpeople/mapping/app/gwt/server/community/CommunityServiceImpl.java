@@ -101,6 +101,8 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 		}
 		dto.setCentroidLat(c.getCentroidLat());
 		dto.setCentroidLon(c.getCentroidLon());
+		dto.setIncludeInExternal(c.getIncludeInExternal());
+		dto.setIncludeInKMZ(c.getIncludeInKMZ());
 		dto.setKeyId(c.getKey().getId());
 		return dto;
 

@@ -31,6 +31,10 @@ import com.gallatinsystems.gis.geography.domain.Country;
  */
 public class CommunityDao extends BaseDAO<Community> {
 
+	public enum MAP_TYPE {
+		PUBLIC, KMZ
+	};
+
 	public CommunityDao() {
 		super(Community.class);
 	}
@@ -88,6 +92,16 @@ public class CommunityDao extends BaseDAO<Community> {
 			}
 		} else {
 			return null;
+		}
+	}
+
+	public List<Country> listMapCountries(MAP_TYPE type) {
+		if (type == MAP_TYPE.PUBLIC) {
+			return listByProperty("includeInExternal", true, "Boolean",
+					Country.class);
+		} else {
+			return listByProperty("includeInKMZ", true, "Boolean",
+					Country.class);
 		}
 	}
 
