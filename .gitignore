@@ -20,3 +20,5 @@ WFPMapping/device/survey/bin/*
 WFPMapping/device/calabash/.calabash_settings
 
 WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
+deploy
+gwt-unitcache
