@@ -35,6 +35,44 @@ public class Country extends BaseDomain {
 	private String isoAlpha2Code = null;
 	private String isoAlpha3Code = null;
 	private Integer isoNumeric3Code = null;
+	private Boolean includeInKMZ;
+	private Boolean includeInExternal;
+	private Double centroidLat;
+	private Double centroidLon;
+	
+	
+
+	public Boolean getIncludeInKMZ() {
+		return includeInKMZ;
+	}
+
+	public void setIncludeInKMZ(Boolean includeInKMZ) {
+		this.includeInKMZ = includeInKMZ;
+	}
+
+	public Boolean getIncludeInExternal() {
+		return includeInExternal;
+	}
+
+	public void setIncludeInExternal(Boolean includeInExternal) {
+		this.includeInExternal = includeInExternal;
+	}
+
+	public Double getCentroidLat() {
+		return centroidLat;
+	}
+
+	public void setCentroidLat(Double centroidLat) {
+		this.centroidLat = centroidLat;
+	}
+
+	public Double getCentroidLon() {
+		return centroidLon;
+	}
+
+	public void setCentroidLon(Double centroidLon) {
+		this.centroidLon = centroidLon;
+	}
 
 	public String getDisplayName() {
 		return displayName;

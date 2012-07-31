@@ -605,5 +605,9 @@ public interface TextConstants extends Constants{
 	public String offlineReport();
 	public String offlineReportDesc();
 	public String omitCharts();
+	public String includeInKmz();
+	public String includeInPublic();
+	public String countryManagerPortletTitle();
+	public String manageCountries();
 }
 

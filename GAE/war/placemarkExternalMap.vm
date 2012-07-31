@@ -12,10 +12,7 @@
     <p><div id="collectionDate">data collection date: $collectionDate</div></p>
     </div>
     <div class="mapIcon">		
-				#if($WaterPointLevelOfService-iconSmallUrl && $WaterPointSustainability-iconSmallUrl)
-						<img src="$WaterPointLevelOfService-iconSmallUrl" width="32" height="32"  />
-						<img src="$WaterPointSustainability-iconSmallUrl" width="32" height="32"  /> 
-				#end
+				
 					</div>
     			</div>
 
@@ -24,13 +21,6 @@
       <div class="scroll-pane-info">
       <table>
 			 #if($type=="water")
-				#if($WaterPointLevelOfService-desc)
-			 				<tr valign="bottom"><td class="QandA">Water System Level Of Service:</td><td>$WaterPointLevelOfService-desc</td></tr>
-				#end
-				#if($WaterPointSustainability-desc)
-	    					<tr valign="bottom"><td class="QandA">Water System Sustainability:</td><td>$WaterPointSustainability-desc</td></tr>
-				#end
-	    					<tr valign="bottom"><td class="QandA">Water System Status:</td><td>$waterSystemStatus</td></tr>
 	    					<tr valign="bottom"><td class="QandA">Type of Technology:</td><td>$primaryTypeTechnology</td></tr>
 							<tr valign="bottom"><td class="QandA">Construction Date:</td><td>$constructionDateOfWaterPoint</td></tr>
 							#if($numberOfHouseholdsUsingWaterPoint!="null")
@@ -50,8 +40,7 @@
 							<tr valign="bottom"><td class="QandA">Quantity of Water Meets Government Standards:</td><td>#if($meetGovtQuantityStandardFlag=="Yes")<img src="http://watermapmonitordev.appspot.com/images/iconCheck25.png" /> #elseif($meetGovtQuantityStandardFlag=="No")<img src="http://watermapmonitordev.appspot.com/images/iconX25.png" /> #else <img src="http://watermapmonitordev.appspot.com/images/iconQMark25.png" /> #end</td></tr>
 							<tr valign="bottom"><td class="QandA">Tariff/User Fee:</td><td>$costPer</td></tr>
 												
-						#else
-							<tr valign="bottom"><td class="QandA">Water System Status:</td><td>$waterSystemStatus</td></tr>				
+						#else			
 		    				<tr valign="bottom"><td class="QandA">Public Institution Name:</td><td>$institutionName</td></tr>
 	    					<tr valign="bottom"><td class="QandA">Type of Technology:</td><td>$primaryTypeTechnology</td></tr>
 							<tr valign="bottom"><td class="QandA">Construction Date:</td><td>$constructionDateOfWaterPoint</td></tr>

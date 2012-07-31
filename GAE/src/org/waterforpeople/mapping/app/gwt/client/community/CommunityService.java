@@ -16,8 +16,10 @@
 
 package org.waterforpeople.mapping.app.gwt.client.community;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -32,7 +34,10 @@ public interface CommunityService extends RemoteService {
 
 	public CommunityDto[] listCommunities(String countryCode);
 
+	@Deprecated
 	public CountryDto[] listCountries();
+	public ResponseDto<ArrayList<CountryDto>> listCountries(String cursor);
+	public CountryDto saveCountry(CountryDto country);
 	public List<SubCountryDto> listChildSubCountries(String country,
 			Long parentId);
 }

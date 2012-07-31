@@ -1,0 +1,15 @@
+s3Id = your_s3_id
+signingKey = s3_signing_key
+#NOTE: the S3 policies expire on 10/2/2013
+
+dataS3Policy = your_s3_policy_for_data
+dataS3Sig = your_s3_signature_for_data
+imageS3Policy = your_s3_policy_for_images
+imageS3Sig = your_s3_signature_for_images
+dataUploadUrl = http://someinstance.s3.amazonaws.com/
+serverBase = http://someapp.appspot.com
+surveyS3Url = http://someinstance.s3.amazonaws.com/surveys/
+useInternalStorage = false
+includeOptionalIcons = false
+promptOnOptionChange = false
+

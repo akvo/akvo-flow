@@ -27,6 +27,7 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.dao.CommunityDao;
 import org.waterforpeople.mapping.domain.Community;
 
+import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.dao.SubCountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
@@ -43,13 +44,20 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 		CommunityService {
 
 	private static final long serialVersionUID = -1711427640212917332L;
+	private CountryDao countryDao;
+	private CommunityDao commDao;
+
+	public CommunityServiceImpl() {
+		countryDao = new CountryDao();
+		commDao = new CommunityDao();
+	}
 
 	/**
 	 * lists all communities for a country
 	 */
 	@Override
 	public CommunityDto[] listCommunities(String countryCode) {
-		CommunityDao commDao = new CommunityDao();
+
 		CommunityDto[] dtoList = null;
 		List<Community> commList = commDao.listCommunityByCountry(countryCode);
 		if (commList != null) {
@@ -66,22 +74,60 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 	/**
 	 * lists all countries
 	 */
+	@Deprecated
 	@Override
 	public CountryDto[] listCountries() {
-		
+
 		CountryDto[] dtoList = null;
-		CountryDao countryDao = new CountryDao();
-		List<Country> cList= countryDao.list("displayName", "asc", "all");
+
+		List<Country> cList = countryDao.list("displayName", "asc", "all");
 		if (cList != null) {
 			dtoList = new CountryDto[cList.size()];
 			for (int i = 0; i < cList.size(); i++) {
-				CountryDto dto = new CountryDto();
-				dto.setIsoAlpha2Code(cList.get(i).getIsoAlpha2Code());
-				dto.setName(cList.get(i).getName());
-				dtoList[i] = dto;
+				dtoList[i] = convertToCountryDto(cList.get(i));
 			}
 		}
 		return dtoList;
+	}
+
+	private CountryDto convertToCountryDto(Country c) {
+		CountryDto dto = new CountryDto();
+		dto.setIsoAlpha2Code(c.getIsoAlpha2Code());
+		dto.setName(c.getName());
+		if (c.getDisplayName() == null) {
+			dto.setDisplayName(c.getName());
+		} else {
+			dto.setDisplayName(c.getDisplayName());
+		}
+		dto.setCentroidLat(c.getCentroidLat());
+		dto.setCentroidLon(c.getCentroidLon());
+		dto.setIncludeInExternal(c.getIncludeInExternal());
+		dto.setIncludeInKMZ(c.getIncludeInKMZ());
+		dto.setKeyId(c.getKey().getId());
+		return dto;
+
+	}
+
+	/**
+	 * returns a paginated list of countries
+	 * 
+	 * @param cursor
+	 * @return
+	 */
+	public ResponseDto<ArrayList<CountryDto>> listCountries(String cursor) {
+		List<Country> countries = countryDao
+				.list("displayName", "desc", cursor);
+		ResponseDto<ArrayList<CountryDto>> response = new ResponseDto<ArrayList<CountryDto>>();
+		if (countries != null) {
+			ArrayList<CountryDto> dtoList = new ArrayList<CountryDto>();
+			for (Country c : countries) {
+				dtoList.add(convertToCountryDto(c));
+			}
+			response.setPayload(dtoList);
+			response.setCursorString(CountryDao.getCursor(countries));
+		}
+
+		return response;
 	}
 
 	/**
@@ -95,7 +141,7 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<SubCountryDto> listChildSubCountries(String country,
 			Long parentId) {
-		
+
 		SubCountryDao subDao = new SubCountryDao();
 		List<SubCountryDto> results = null;
 		List<SubCountry> subCountries = null;
@@ -114,5 +160,14 @@ public class CommunityServiceImpl extends RemoteServiceServlet implements
 		}
 
 		return results;
+	}
+
+	@Override
+	public CountryDto saveCountry(CountryDto countryDto) {
+		Country country = new Country();
+		DtoMarshaller.copyToCanonical(country, countryDto);
+		country = countryDao.save(country);
+		countryDto.setKeyId(country.getKey().getId());
+		return countryDto;
 	}
 }

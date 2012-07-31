@@ -100,6 +100,8 @@ public class PortletFactory {
 			return new MetricManagerPortlet(user);
 		} else if (name.equals(SuperAdminPortlet.NAME)) {
 			return new SuperAdminPortlet();
+		}else if (name.equals(CountryManagerPortlet.NAME)) {
+			return new CountryManagerPortlet(user);
 		} else {
 			throw new IllegalArgumentException("Unrecognized portlet name");
 		}
