@@ -17,9 +17,13 @@
 package com.gallatinsystems.survey.device.xml;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.InputSource;
 
 import com.gallatinsystems.survey.device.domain.Survey;
 
@@ -36,8 +40,11 @@ public class SaxSurveyParser implements SurveyParser {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         try {
             SAXParser parser = factory.newSAXParser();
-            SurveyHandler handler = new SurveyHandler();            
-            parser.parse(inputStream, handler);
+            SurveyHandler handler = new SurveyHandler();   
+            Reader reader = new InputStreamReader(inputStream,"UTF-8");
+            InputSource source = new InputSource(reader);
+            source.setEncoding("UTF-8");            
+            parser.parse(source, handler);
             return handler.getSurvey();
         } catch (Exception e) {
             throw new RuntimeException(e);
