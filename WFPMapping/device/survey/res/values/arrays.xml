@@ -29,13 +29,14 @@
 		<item>Never</item>
 	</string-array>
 	<string-array name="servers">
-	    <item>http://flowcongo.appspot.com</item>
+	    <item>http://flowakvo.appspot.com</item>
 	<!--    <item>http://watermapmonitordev.appspot.com</item>
 	<item>http://flowachildsright.appspot.com</item>
 	 <item>http://flowakvo.appspot.com</item>
 	<item>http://flowaglimmerofhope.appspot.com</item>	 
 		<item>http://flowamidc.appspot.com</item> 
 		<item>http://flowcrs.appspot.com</item>
+		<item>http://flowcongo.appspot.com</item>
 		<item>http://flowakvo.appspot.com</item>
 		 <item>http://flowdemoenvironment.appspot.com</item>
 		<item>http://flowcommunitysciences.appspot.com</item>
