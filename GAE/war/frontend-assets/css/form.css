@@ -1,0 +1,197 @@
+/* 
+	Author:     Loic Sans, loic@akvo.org
+	Copyright:  2012, Akvo. All rights reserved.
+*/
+
+/* Colours 
+---------------------------
+	
+Akvo Primary Colours:
+	
+	rgb(44, 42, 116);		Akvo Purplish Blue
+	rgb(114,  205, 255);	Akvo very light blue
+	rgb(222, 137, 41);		Akvo Orange / light Brown
+	rgb(153, 153, 153);		Akvo Mid grey
+	rgb(57, 102, 128);		Akvo Darker shade Blue from light blue
+	rgb(107, 134, 141);		Akvo Blueish Green link color
+	
+Akvo Secondary Colours:
+	
+	rgb(225, 237, 195);		Akvo very Light green
+	rgb(227, 27, 35);		Akvo red
+	rgb(219, 135, 201);		Akvo Pink
+	rgb(255, 210, 0);		Akvo Yellow
+	rgb(125, 125, 125);		Akvo Darker Grey
+	rgb(66, 76, 43);		Akvo Very dark Green (Military)
+	rgb(119, 97, 0);		Akvo Kaki (Greenish Brown)
+	rgb(242, 240, 230);		Akvo Off White
+*/
+
+/* Common Form Styles 
+-----------------------------------------------*/
+
+/* =============================================================================
+   Forms
+   ========================================================================== */
+form * {
+	background:none;
+	behavior: url(PIE.htc);
+}
+form {
+	margin: 0;
+	padding:0;
+}
+input, textarea, button, select {
+	/*	-webkit-appearance:none;
+	-moz-appearance:none;
+*/	-webkit-border-radius:3px;
+	-moz-border-radius:3px;
+	-o-border-radius:3px;
+	border-radius:3px;
+	color:rgb(102,102,102);
+	font-weight:normal;
+}
+input, textarea {
+	border: 1px solid rgb(58,58,58);
+	background: rgb(242, 240, 230);
+	-moz-box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
+	-webkit-box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
+	-o-box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
+	box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
+}
+textarea {
+	overflow: auto;
+	resize: vertical;
+	font-size:1.1em;
+	font-family:sans-serif;
+}
+input:hover, textarea:hover {
+	border: 1px solid rgb(114,205,255);
+	background:rgb(224,224,224);
+	background:-webkit-linear-gradient(rgb(255,255,255), rgb(244,244,244));
+	background:-moz-linear-gradient(rgb(255,255,255), rgb(244,244,244));
+	background:-o-linear-gradient(rgb(255,255,255), rgb(244,244,244));
+	background:linear-gradient(rgb(255,255,255), rgb(244,244,244));
+}
+
+:invalid {
+}
+:valid {
+}
+:required {
+}
+input:focus, textarea:focus {
+	border: 1px solid rgb(235,235,235);
+	background:rgb(245,255,216);
+}
+fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+/* Indicate that 'label' will shift focus to the associated form element */
+label {
+	cursor: pointer;
+	font-size:1.3em;
+	margin:5px 2px;
+	text-transform:capitalize;
+}
+/*
+ * 1. Correct color not inheriting in IE6/7/8/9
+ * 2. Correct alignment displayed oddly in IE6/7
+ */
+select {
+	margin: 5px 0 0 5px;
+	padding: 2px 0 3px 5px;
+	background-image: url(../images/selectArrows.png) right center no-repeat;
+	background: #eeeeee; /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VlZWVlZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjY2NjY2MiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top, #fff 0%, #ccc 100%); /* FF3.6+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee), color-stop(100%, #cccccc)); /* Chrome,Safari4+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -webkit-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Chrome10+,Safari5.1+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera 11.10+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
+	background: url(../images/selectArrows.png) right center no-repeat, linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc', GradientType=0 ); /* IE6-8 */
+}
+legend {
+	border: 0;
+*margin-left: -7px;
+	padding: 0;
+	white-space: normal;
+}
+button, input { line-height: normal; }
+/*
+ * 1. Display hand cursor for clickable form elements
+ * 2. Allow styling of clickable form elements in iOS
+ * 3. Correct inner spacing displayed oddly in IE7 (doesn't effect IE6)
+ */
+
+button, input[type="button"], input[type="reset"], input[type="submit"] {
+	cursor: pointer;
+	-webkit-appearance: button;
+*overflow: visible;
+}
+/*
+ * Re-set default cursor for disabled elements
+ */
+
+button[disabled], input[disabled] { cursor: default; }
+/*
+ * Consistent box sizing and appearance
+ */
+
+input[type="checkbox"], input[type="radio"] {
+	box-sizing: border-box;
+	padding: 0;
+	width: 13px;
+	height: 13px;
+}
+input[type="search"] {
+	-webkit-appearance: textfield;
+	-moz-box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+	box-sizing: content-box;
+	padding: 5px 25px 3px 4px;
+	border: 1px solid rgb(58,58,58);
+	background:rgb(255,255,255) url(../images/search-icon.png) no-repeat 3px right;
+	background:url(../images/search-icon.png) no-repeat top right, -webkit-linear-gradient(rgb(255,255,255), rgb(224,224,224));
+	background:url(../images/search-icon.png) no-repeat top right, -moz-linear-gradient(rgb(255,255,255), rgb(224,224,224));
+	background:url(../images/search-icon.png) no-repeat top right, -o-linear-gradient(rgb(255,255,255), rgb(224,224,224));
+	background:url(../images/search-icon.png) no-repeat top right, linear-gradient(rgb(255,255,255), rgb(224,224,224));
+	-moz-box-shadow:inset 0 2px 3px rgb(40,40,40), inset 0px -5px 3px #eee;
+	-webkit-box-shadow:inset 0 2px 3px rgb(40,40,40), inset 0px -5px 3px #eee;
+	-o-box-shadow:inset 0 2px 3px rgb(40,40,40), inset 0px -5px 3px #eee;
+	box-shadow:inset 0 2px 3px rgb(40,40,40), inset 0px -5px 3px #eee;
+}
+input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button {
+-webkit-appearance: none;
+}
+
+/*
+ * Remove inner padding and border in FF3/4: h5bp.com/l
+ */
+
+button::-moz-focus-inner, input::-moz-focus-inner {
+border: 0;
+padding: 0;
+}
+/*
+ * 1. Remove default vertical scrollbar in IE6/7/8/9
+ * 2. Allow only vertical resizing
+ */
+
+input[type="search"]:hover {
+	border: 1px solid rgb(114,  205, 255);
+	background:rgb(224,224,224) url(../images/search-icon.png) no-repeat top right;
+	background:url(../images/search-icon.png) no-repeat top right, -webkit-linear-gradient(rgb(255,255,255), rgb(244,244,244));
+	background:url(../images/search-icon.png) no-repeat top right, -moz-linear-gradient(rgb(255,255,255), rgb(244,244,244));
+	background:url(../images/search-icon.png) no-repeat top right, -o-linear-gradient(rgb(255,255,255), rgb(244,244,244));
+	background:url(../images/search-icon.png) no-repeat top right, linear-gradient(rgb(255,255,255), rgb(244,244,244));
+}
+input[type="search"]:focus {
+	border: 1px solid rgb(23,23,23);
+	background:rgb(224,224,224) url(../images/search-icon.png) no-repeat top right;
+}
