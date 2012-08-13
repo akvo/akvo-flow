@@ -20,8 +20,6 @@ GAE/war/WEB-INF/lib/datanucleus*
 GAE/war/WEB-INF/lib/geronimo*
 GAE/war/WEB-INF/lib/jdo2-api*
 GAE/war/WEB-INF/lib/jsr107*
-GAE/war/frontend.html
-GAE/war/frontend-assets/
 
 WFPMapping/device/debugcert
 WFPMapping/device/survey/res/raw/survey.properties
