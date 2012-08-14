@@ -78,6 +78,10 @@
           route: '/inspectdata',
           connectOutlets: function(router, event) { 
    					router.get('navDataController').connectOutlet('inspectData');
+   					router.get('inspectDataController').set('content', FLOW.store.findAll(FLOW.SurveyGroup));
+        		var newrec= FLOW.store.createRecord(FLOW.SurveyGroup,  
+    								{"description":"MTW description" , "displayName":"MTWTW"});
+    				FLOW.store.commit();
    					router.set('datasubnavController.selected', 'inspectData');
        
         	}
@@ -123,10 +127,6 @@
        navMaps: Ember.Route.extend({
         route: '/maps',
         connectOutlets: function(router, event) {
-        	router.get('navMapsController').set('content', FLOW.store.findAll(FLOW.SurveyGroup));
-        	var newrec= FLOW.store.createRecord(FLOW.SurveyGroup,  
-    {description:"description" , name:"name"});
-    		FLOW.store.commit();
           router.get('applicationController').connectOutlet('navMaps');
           router.set('navigationController.selected', 'navMaps');
         }

@@ -5,12 +5,13 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
 
 ////////////// Create Record //////////////
   createRecord: function(store, type, record) {
-   // var root = this.rootForType(type);
 
-    var data = "7\|0\|7\|http://akvoflowsandbox.appspot.com/org.waterforpeople.mapping.portal.portal/\|A40BA8A568CA4A2E9CBDC22A57BBDF58\|org.waterforpeople.mapping.app.gwt.client.survey.SurveyService\|saveSurveyGroup\|org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto/2955417315\|Mark\|mark westra\|1\|2\|3\|4\|1\|5\|5\|6\|0\|7\|0\|0\|0\|0\|";
-  //  data[root] = record.toJSON();
-	
-	console.log("creating record");
+    var data_part1= "7\|0\|7\|http://akvoflowsandbox.appspot.com/org.waterforpeople.mapping.portal.portal/\|A40BA8A568CA4A2E9CBDC22A57BBDF58\|org.waterforpeople.mapping.app.gwt.client.survey.SurveyService\|saveSurveyGroup\|org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto/2955417315\|"
+    var data_part2= "\|1\|2\|3\|4\|1\|5\|5\|6\|0\|7\|0\|0\|0\|0\|"
+    
+    var data = data_part1 + record.get('displayName') + "\|" + record.get('description') + data_part2;
+
+	console.log("creating record: " + record.get('displayName') + ", " + record.get('description'));
 	
     this.ajaxPOST("http://flow-dashboard.dev/REST/org.waterforpeople.mapping.portal.portal/surveyrpcservice", "POST", {
       data: data,

@@ -142,9 +142,10 @@
       <nav class="tabNav floats-in">
        {{view FLOW.DatasubnavView controllerBinding="controller.controllers.datasubnavController"}}
       </nav>
-    </div>
-  </section>
+   
       {{outlet}}
+ 		</div>
+ 		 </section>
 </script>
 
 <script type="text/x-handlebars" data-template-name="datasubnav">
@@ -173,45 +174,50 @@
 
 <script type="text/x-handlebars" data-template-name="inspectData"> 
       <section id="inspectData" class="fullWidth">
-        <h1>This is the content of Inspect data</h1>   
-      </section>
-</script>
+       
+       
+       <div class="" id="dataFilter">
+      <h3>Choose Survey Data to display:</h3>
+        <form>
+            <select id="" name=""  size="1">
+             	<option value="0" selected class="surveyGroupSelect">Survey Group</option>	
+                <option id="" value="">Survey Group 01</option>
+                <option id="" value="">Survey Group 02</option>
+                <option id="" value="">Survey Group 03</option>
+                <option id="" value="">Survey Group 04</option>
+                <option id="" value="">Survey Group 05</option>
+                <option id="" value="">Survey Group 06</option>
+                <option id="" value="">Survey Group 07</option>
+                <option id="" value="">Survey Group 08</option>
+                <option id="" value="">Survey Group 09</option>
+                <option id="" value="">Survey Group 10</option>
+            </select> 
+            <select id="" name=""  size="1">
+             	<option value="0" selected class="surveySelect">Survey</option>	
+                <option id="" value="">Survey 01</option>
+                <option id="" value="">Survey 02</option>
+                <option id="" value="">Survey 03</option>
+                <option id="" value="">Survey 04</option>
+                <option id="" value="">Survey 05</option>
+                <option id="" value="">Survey 06</option>
+                <option id="" value="">Survey 07</option>
+                <option id="" value="">Survey 08</option>
+                <option id="" value="">Survey 09</option>
+                <option id="" value="">Survey 10</option>
+             </select> 
+             <label for="fromDate">Collected From</label>
+             <input type="text" id="from" class="datePicker" name="from">
+             <label for="toDate">To</label>
+             <input type="text" id="to" class="datePicker" name="to">
+        </form>
+        </div>
+       
+       
+       
 
-<script type="text/x-handlebars" data-template-name="importSurvey">
-      <section id="importSurvey" class="fullWidth">
-        <h1>This is the content of Import survey data</h1>
-      </section>
-</script>
-
-<script type="text/x-handlebars" data-template-name="excelExport">
-      <section id="excelExport" class="fullWidth">
-        <h1>This is the content of Spreadsheet export</h1>
-      </section>
-</script>
-
-<script type="text/x-handlebars" data-template-name="excelImport">
-      <section id="excelImport" class="fullWidth">
-        <h1>This is the content of Spreadsheet import</h1>
-      </section>
-</script>
-
- <script type="text/x-handlebars" data-template-name="navReports">
-      <div class="hero-unit">
-        <h1>Reports</h1>
-        <p>
-        Reports dus.
-        </p>
-      </div>
- </script>
-
- 
- <script type="text/x-handlebars" data-template-name="navMaps">
-      <div class="hero-unit">
-
-<h1>Survey Groups</h1>
     <section id="devicesList" class="fullWidth "> 
         <!-- DEVICES TABLE-->
-        <table id="devicesListTable" class="dataTable" >
+        <table id="surveyDataTable" class="dataTable" >
           <!-- TABLE HEADER-->
           <thead>
             <tr>
@@ -248,9 +254,45 @@
           </tfoot>
         </table>
       </section>
+ 
+         
+      </section>
+</script>
 
+<script type="text/x-handlebars" data-template-name="importSurvey">
+      <section id="importSurvey" class="fullWidth">
+        <h1>This is the content of Import survey data</h1>
+      </section>
+</script>
 
+<script type="text/x-handlebars" data-template-name="excelExport">
+      <section id="excelExport" class="fullWidth">
+        <h1>This is the content of Spreadsheet export</h1>
+      </section>
+</script>
 
+<script type="text/x-handlebars" data-template-name="excelImport">
+      <section id="excelImport" class="fullWidth">
+        <h1>This is the content of Spreadsheet import</h1>
+      </section>
+</script>
+
+ <script type="text/x-handlebars" data-template-name="navReports">
+      <div class="hero-unit">
+        <h1>Reports</h1>
+        <p>
+        Reports dus.
+        </p>
+      </div>
+ </script>
+
+ 
+ <script type="text/x-handlebars" data-template-name="navMaps">
+      <div class="hero-unit">
+        <h1>Maps</h1>
+        <p>
+         Maps.
+        </p>
       </div>
  </script>
   
