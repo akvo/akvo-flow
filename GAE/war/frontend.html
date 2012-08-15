@@ -177,21 +177,20 @@
        
        
        <div class="" id="dataFilter">
+    
+     	
       <h3>Choose Survey Data to display:</h3>
         <form>
-            <select id="" name=""  size="1">
-             	<option value="0" selected class="surveyGroupSelect">Survey Group</option>	
-                <option id="" value="">Survey Group 01</option>
-                <option id="" value="">Survey Group 02</option>
-                <option id="" value="">Survey Group 03</option>
-                <option id="" value="">Survey Group 04</option>
-                <option id="" value="">Survey Group 05</option>
-                <option id="" value="">Survey Group 06</option>
-                <option id="" value="">Survey Group 07</option>
-                <option id="" value="">Survey Group 08</option>
-                <option id="" value="">Survey Group 09</option>
-                <option id="" value="">Survey Group 10</option>
-            </select> 
+           
+     	{{view Ember.Select
+     	contentBinding="controller.content"
+     	selectionBinding="FLOW.surveyGroupcontrol.selectedGroup"
+     	optionLabelPath="content.displayName"
+     	optionValuePath="content.keyId"
+     	prompt="Select survey group"}}
+     	
+    
+     
             <select id="" name=""  size="1">
              	<option value="0" selected class="surveySelect">Survey</option>	
                 <option id="" value="">Survey 01</option>
@@ -261,9 +260,13 @@
 
 <script type="text/x-handlebars" data-template-name="importSurvey">
       <section id="importSurvey" class="fullWidth">
-        <h1>This is the content of Import survey data</h1>
+       
+       
+       <h1>Content of Import Survey Data tab </h1>
+      
       </section>
 </script>
+
 
 <script type="text/x-handlebars" data-template-name="excelExport">
       <section id="excelExport" class="fullWidth">
@@ -328,7 +331,7 @@
  <script src="frontend-assets/js/libs/survey-styling.js"></script>
 <script src="frontend-assets/js/libs/modernizr.custom.32662.js"></script>
 <script src="frontend-assets/js/libs/jquery.dataTables.min.js"></script> 
-
+<script src="frontend-assets/js/libs/jquery-ui-1.8.21.custom.min.js"></script> 
 <!-- Ember app --> 
  <script src="frontend-assets/js/libs/handlebars-1.0.0.beta.6.js"></script>
  <script src="frontend-assets/js/libs/ember-1.0.pre.js"></script>
@@ -364,22 +367,27 @@ $(document).ready(function(){
 				} );
 		$(".dataTables_paginate").addClass("floats-in");
 		$(".dataTables_filter label > input").removeAttr("type").attr("type","search");
+
+		$( "#from" ).datepicker({
+			defaultDate: "+1w",
+			numberOfMonths: 1,
+			onSelect: function( selectedDate ) {
+				$( "#to" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});
+		$( "#to" ).datepicker({
+			defaultDate: "+1w",
+			numberOfMonths: 1,
+			onSelect: function( selectedDate ) {
+				$( "#from" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});
+
+
 });
 
 </script>
 
-<script type="text/javascript">
-(function($){})(window.jQuery);
-$(document).ready(function(){
-
-	$('#devicesListTable').dataTable( {
-					"aaSorting": [[ 1, "desc" ]],					
-				} );
-		$(".dataTables_paginate").addClass("floats-in");
-		$(".dataTables_filter label > input").removeAttr("type").attr("type","search");
-});
-
-</script>
 
 </body>
 </html>

@@ -36,4 +36,10 @@
  
   FLOW.NavAdminController = Ember.Controller.extend();
 
+		 	
+	FLOW.SurveyGroupcontrol = Ember.Object.extend ({
+		selectedSurveyGroup: null,
+		selectedSurveyGroupId:null,
+	});
+	
 
