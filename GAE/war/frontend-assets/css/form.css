@@ -102,7 +102,9 @@ label {
  */
 select {
 	margin: 5px 0 0 5px;
-	padding: 2px 0 3px 5px;
+	padding: 2px 15px 3px 5px; 
+	/* MTW changed padding from "2px 0 3px 5px" to "2px 15px 3px 5px", to make room for select icon*/
+	 
 	background-image: url(../images/selectArrows.png) right center no-repeat;
 	background: #eeeeee; /* Old browsers */
 	/* IE9 SVG, needs conditional override of 'filter' to 'none' */

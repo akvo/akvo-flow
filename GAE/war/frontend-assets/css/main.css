@@ -552,6 +552,17 @@ tfoot tr {
 	border-top:1px solid rgb(255,255,255);
 	background: rgb(224,224,224);
 }
+
+/* ------------ MTW ------------*/
+#inspectData {
+	border: thin solid rgb(224,224,224);
+	border-top:1px solid rgb(255,255,255);
+	background: rgb(224,224,224);
+}
+/* ------------ end MTW ------------*/
+
+
+
 #tabs > section h1 {
 	display: block;
 	width: 50%;
