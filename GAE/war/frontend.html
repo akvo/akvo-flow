@@ -1,0 +1,415 @@
+<!DOCTYPE HTML>
+<!--[if lt IE 7 ]> <html class="ie ie6 no-js" lang="en"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7 no-js" lang="en"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8 no-js" lang="en"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9 no-js" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+<!-- the "no-js" class is for Modernizr. -->
+
+<head id="akvoFlow">
+<meta charset="UTF-8">
+<meta name="description" content="Akvo Flow: field level operations watch" />
+<meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>Akvo Flow - Dashboard</title>
+<link rel="shortcut icon" href="/favicon.ico" />
+<!-- enable HTML5 elements in IE7+8 -->
+<!--[if lt IE 9]>
+   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- Stylesheets -->
+<link rel="stylesheet" href="frontend-assets/css/screen.css"  media="screen,projection" />
+
+<!-- Target iPhone -->
+<link rel="stylesheet" href="frontend-assets/css/handheld.css" media="(max-device-width:480px)" />
+
+<!-- Target iPad -->
+<link rel="stylesheet" href="frontend-assets/css/tablet.css" media="(min-device-width:768px) and (max-device-width:1024px)" />
+
+<!-- Target Galaxy Tab -->
+<link rel="stylesheet" href="frontend-assets/css/tablet.css" media="(min-width:1280px) and (max-width:1280px)" />
+<link rel="stylesheet" href="frontend-assets/css/tablet.css" media="(min-width:800px) and (max-width:800px)" />
+
+
+</head>
+<body>
+<!-- header starts here -->
+
+
+<script type="text/x-handlebars" data-template-name="application">
+ <header class="floats-in top" id="header" role="banner">
+    <div>
+      <hgroup>
+        <h1>Akvo <abbr title="field level operations watch">Flow</abbr></h1>
+        <h2>field level operations watch</h2>
+      </hgroup>
+      <nav id="topnav" role="navigation">
+			 {{view FLOW.NavigationView controllerBinding="controller.controllers.navigationController"}}
+ 			</nav>
+      <form>
+        <input type="search" placeholder="Find anything here." name="flowSearch" />
+      </form>
+    </div>
+  </header>
+  <div id="pageWrap">
+  	{{outlet}} 
+  </div>
+  
+  <footer class="floats-in bottomPage" role="contentinfo">
+  <div>
+    <h1>Footer content goes here.</h1>
+    <div id="backToTop"><a href="#header" rel="self">Back to top</a></div>
+  </div>
+</footer>
+</script>
+
+
+<script type="text/x-handlebars" data-template-name="navigation">
+<ul class="floats-in">
+        {{#view view.NavItemView item="navHome" }}
+            <a {{action doNavHome}} >Home</a>
+        {{/view}}
+        
+        {{#view view.NavItemView item="navSurveys" }}
+            <a {{action doNavSurveys}} >Surveys</a>
+        {{/view}}
+        
+        {{#view view.NavItemView item="navDevices" }}
+            <a {{action doNavDevices}} >Devices</a>
+        {{/view}} 
+        
+        {{#view view.NavItemView item="navData" }}
+            <a {{action doNavData}} >Data</a>
+        {{/view}}
+        
+        {{#view view.NavItemView item="navReports" }}
+            <a {{action doNavReports}} >Reports</a>
+        {{/view}}
+        
+        {{#view view.NavItemView item="navMaps" }}
+            <a {{action doNavMaps}} >Maps</a>
+        {{/view}}   
+        
+        {{#view view.NavItemView item="navUsers" }}
+            <a {{action doNavUsers}} >Users</a>
+        {{/view}}
+        
+        {{#view view.NavItemView item="navAdmin" }}
+            <a {{action doNavAdmin}} >Admin</a>
+        {{/view}}
+              
+</ul>
+
+</script>
+
+
+
+ <script type="text/x-handlebars" data-template-name="navHome">
+      <div class="hero-unit">
+        <h1>Home</h1>
+        <p>
+         Home sweet home!
+        </p>
+       
+      </div>
+ </script>
+
+ <script type="text/x-handlebars" data-template-name="navSurveys">
+      <div class="hero-unit">
+        <h1>Surveys</h1>
+        
+        {{#each controller.controllers.questionSetController}}
+      		{{title}}<br/>
+      		{{#if isOpen}}
+      			{{view FLOW.QuestionsInSetView contentBinding="this" questionListBinding="controller.controllers.questionController"}} <br />    
+      		{{/if}}
+      	{{/each}}
+      </div>
+      
+ 		<section id="questionSet">
+        <section class="aQuestionSet" id="setIndex-01">
+    
+        {{#each controller.controllers.questionSetController}}
+    
+          <header>
+            <h1>{{displayName}}</h1>
+            <a href="#" class="editSetInfo">Edit | Move | Copy | Delete &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	EDIT QUESTIONS</a> 
+          </header>
+		{{/each}}
+			
+			</section>
+	</section>		      
+      
+      
+ </script>
+ 
+ <script type="text/x-handlebars" data-template-name="questionTempl">
+
+  {{#each view.filteredQuestions}}
+        text: {{text}}<br/>
+    {{/each}}
+ </script>
+ 
+ 
+ 
+
+ <script type="text/x-handlebars" data-template-name="navDevices">
+      <div class="hero-unit">
+        <h1>Devices</h1>
+        <p>
+         Devices dus.
+        </p>
+      </div>
+ </script>
+
+<script type="text/x-handlebars" data-template-name="navData">
+   <section id="main" class="dataSection floats-in" role="main">
+    <div id="tabs">
+      <nav class="tabNav floats-in">
+       {{view FLOW.DatasubnavView controllerBinding="controller.controllers.datasubnavController"}}
+      </nav>
+   
+      {{outlet}}
+ 		</div>
+ 		 </section>
+</script>
+
+<script type="text/x-handlebars" data-template-name="datasubnav">
+ <ul>
+  {{#view view.NavItemView item="inspectData" }}
+            <a {{action doInspectData}} >Inspect Data</a>
+  {{/view}}
+  
+  {{#view view.NavItemView item="importSurvey" }}
+            <a {{action doImportSurvey}} >Import survey data</a>
+  {{/view}}
+  
+  {{#view view.NavItemView item="excelExport" }}
+            <a {{action doExcelExport}} >Spreadsheet export</a>
+  {{/view}}
+  
+  {{#view view.NavItemView item="excelImport" }}
+            <a {{action doExcelImport}} >Spreadsheet import</a>
+  {{/view}}
+
+ </ul>
+</script>
+
+
+
+
+<script type="text/x-handlebars" data-template-name="inspectData"> 
+      <section id="inspectData" class="fullWidth">
+       
+       
+       <div class="" id="dataFilter">
+    
+     	
+      <h3>Choose Survey Data to display:</h3>
+        <form>
+           
+     	{{view Ember.Select
+     	contentBinding="controllers.surveyGroupController.content"
+     	selectionBinding="controllers.selectedSurveyGroupController.selectedSurveyGroup"
+     	optionLabelPath="content.displayName"
+     	optionValuePath="content.keyId"
+     	prompt="Select survey group"}}
+     	
+     
+ 		{{view Ember.Select
+     	contentBinding="controllers.surveyController.active"
+     	selectionBinding="controllers.selectedSurveyController.selectedSurvey"
+     	optionLabelPath="content.displayName"
+     	optionValuePath="content.keyId"
+     	prompt="Select survey"
+       }}
+
+
+             <label for="fromDate">Collected From</label>
+             <input type="text" id="from" class="datePicker" name="from">
+             <label for="toDate">To</label>
+             <input type="text" id="to" class="datePicker" name="to">
+        </form>
+        </div>
+       
+
+    <section id="devicesList" class="fullWidth "> 
+        <!-- DEVICES TABLE-->
+        <table id="surveyDataTable" class="dataTable" >
+          <!-- TABLE HEADER-->
+          <thead>
+            <tr>
+              <th>Survey Group name</th>
+              <th>Description</th>
+              <th>Created</th>
+              <th>Last updated</th>
+              <th>ID</th>
+              <th>Action</th>
+  
+            </tr>
+          </thead>
+          
+          <!-- TABLE BODY: MAIN CONTENT-->
+          <tbody>
+          {{#each controllers.surveyGroupController.content}}
+            <tr>
+              <td class="surveyGroup" style="text-align:left;">{{displayName}}</td>
+              <td class="description" style="text-align:left;">{{description}}</td>
+              <td class="created">{{createdDateTime}}</td>
+              <td class="lastUpdated">{{lastUpdateDateTime}}</td>
+              <td class="ID">{{keyId}}</td>
+              <td class="action"><a href="#">action</a></td>
+            </tr>
+          {{/each}}
+        
+            </tbody>
+          
+          <!-- TABLE FOOTER-->
+          <tfoot>
+            <tr>
+              <td colspan="7"><small>This is the footer.</small></td>
+            </tr>
+          </tfoot>
+        </table>
+      </section>
+ 
+         
+      </section>
+</script>
+
+<script type="text/x-handlebars" data-template-name="importSurvey">
+      <section id="importSurvey" class="fullWidth">
+       
+       
+       <h1>Content of Import Survey Data tab </h1>
+      
+      </section>
+</script>
+
+
+<script type="text/x-handlebars" data-template-name="excelExport">
+      <section id="excelExport" class="fullWidth">
+        <h1>This is the content of Spreadsheet export</h1>
+      </section>
+</script>
+
+<script type="text/x-handlebars" data-template-name="excelImport">
+      <section id="excelImport" class="fullWidth">
+        <h1>This is the content of Spreadsheet import</h1>
+      </section>
+</script>
+
+ <script type="text/x-handlebars" data-template-name="navReports">
+      <div class="hero-unit">
+        <h1>Reports</h1>
+        <p>
+        Reports dus.
+        </p>
+      </div>
+ </script>
+
+ 
+ <script type="text/x-handlebars" data-template-name="navMaps">
+      <div class="hero-unit">
+        <h1>Maps</h1>
+        <p>
+         Maps.
+        </p>
+      </div>
+ </script>
+  
+ <script type="text/x-handlebars" data-template-name="navUsers">
+      <div class="hero-unit">
+        <h1>Users</h1>
+        <p>
+         Users dus.
+        </p>
+      </div>
+ </script>
+ 
+  <script type="text/x-handlebars" data-template-name="navAdmin">
+      <div class="hero-unit">
+        <h1>Admin</h1>
+        <p>
+         Admin dus.
+        </p>
+      </div>
+ </script>
+
+
+
+<!-- Main Section ends here --> 
+<!-- Grab Google CDN's jQuery. fall back to local if necessary  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script> 
+<script>window.jQuery || document.write("<script src='/js/jquery-1.7.2.min.js'>\x3C/script>")</script> 
+<script src="js/survey-styling.js"></script>-->
+
+
+ <script src="frontend-assets/js/libs/jquery-1.7.1.js"></script>
+ <script src="frontend-assets/js/libs/bootstrap.min.js"></script>
+ <script src="frontend-assets/js/libs/survey-styling.js"></script>
+<script src="frontend-assets/js/libs/modernizr.custom.32662.js"></script>
+<script src="frontend-assets/js/libs/jquery.dataTables.min.js"></script> 
+<script src="frontend-assets/js/libs/jquery-ui-1.8.21.custom.min.js"></script> 
+<!-- Ember app --> 
+ <script src="frontend-assets/js/libs/handlebars-1.0.0.beta.6.js"></script>
+ <script src="frontend-assets/js/libs/ember-1.0.pre.js"></script>
+ <script src="frontend-assets/js/libs/ember-data.js"></script>
+ <script src="frontend-assets/js/libs/FLOWrest-adapter.js"></script>
+
+ <script src="frontend-assets/js/app.js"></script>
+ <script src="frontend-assets/js/models/models.js"></script>
+ <script src="frontend-assets/js/controllers/controllers.js"></script>
+ <script src="frontend-assets/js/views/views.js"></script>
+ <script src="frontend-assets/js/router.js"></script>
+
+
+
+<!-- Tab Navigation JS --> 
+
+<script type="text/javascript">
+(function($){})(window.jQuery);
+$(document).ready(function(){
+	$('#tabs > section').hide();
+	$('#tabs > section:first').show();
+	$('#tabs ul li:first').addClass('active');
+	$('#tabs ul li a').click(function(){ 
+		$('#tabs ul li').removeClass('active');
+		$(this).parent().addClass('active'); 
+		var currentTab = $(this).attr('href'); 
+		$('#tabs > section').hide();
+		$(currentTab).show();
+		return false;
+	});
+	$('#devicesListTable').dataTable( {
+					"aaSorting": [[ 1, "desc" ]],					
+				} );
+		$(".dataTables_paginate").addClass("floats-in");
+		$(".dataTables_filter label > input").removeAttr("type").attr("type","search");
+
+		$( "#from" ).datepicker({
+			defaultDate: "+1w",
+			numberOfMonths: 1,
+			onSelect: function( selectedDate ) {
+				$( "#to" ).datepicker( "option", "minDate", selectedDate );
+			}
+		});
+		$( "#to" ).datepicker({
+			defaultDate: "+1w",
+			numberOfMonths: 1,
+			onSelect: function( selectedDate ) {
+				$( "#from" ).datepicker( "option", "maxDate", selectedDate );
+			}
+		});
+
+
+});
+
+</script>
+
+
+</body>
+</html>
