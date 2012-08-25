@@ -41,7 +41,7 @@
 
 <script type="text/x-handlebars" data-template-name="application">
  <header class="floats-in top" id="header" role="banner">
-    <div>
+ 		<div>
       <hgroup>
         <h1>Akvo <abbr title="field level operations watch">Flow</abbr></h1>
         <h2>field level operations watch</h2>
@@ -68,93 +68,198 @@
 
 
 <script type="text/x-handlebars" data-template-name="navigation">
-<ul class="floats-in">
-        {{#view view.NavItemView item="navHome" }}
-            <a {{action doNavHome}} >Home</a>
-        {{/view}}
+	<ul class="floats-in">
+    {{#view view.NavItemView item="navHome" }}
+         <a {{action doNavHome}} >Home</a>
+    {{/view}}
         
-        {{#view view.NavItemView item="navSurveys" }}
-            <a {{action doNavSurveys}} >Surveys</a>
-        {{/view}}
+    {{#view view.NavItemView item="navSurveys" }}
+        <a {{action doNavSurveys}} >Surveys</a>
+    {{/view}}
         
-        {{#view view.NavItemView item="navDevices" }}
-            <a {{action doNavDevices}} >Devices</a>
-        {{/view}} 
+    {{#view view.NavItemView item="navDevices" }}
+         <a {{action doNavDevices}} >Devices</a>
+    {{/view}} 
         
-        {{#view view.NavItemView item="navData" }}
-            <a {{action doNavData}} >Data</a>
-        {{/view}}
+    {{#view view.NavItemView item="navData" }}
+        <a {{action doNavData}} >Data</a>
+    {{/view}}
         
-        {{#view view.NavItemView item="navReports" }}
-            <a {{action doNavReports}} >Reports</a>
-        {{/view}}
+    {{#view view.NavItemView item="navReports" }}
+       <a {{action doNavReports}} >Reports</a>
+    {{/view}}
         
-        {{#view view.NavItemView item="navMaps" }}
-            <a {{action doNavMaps}} >Maps</a>
-        {{/view}}   
+    {{#view view.NavItemView item="navMaps" }}
+        <a {{action doNavMaps}} >Maps</a>
+    {{/view}}   
         
-        {{#view view.NavItemView item="navUsers" }}
-            <a {{action doNavUsers}} >Users</a>
-        {{/view}}
+    {{#view view.NavItemView item="navUsers" }}
+        <a {{action doNavUsers}} >Users</a>
+    {{/view}}
         
-        {{#view view.NavItemView item="navAdmin" }}
-            <a {{action doNavAdmin}} >Admin</a>
-        {{/view}}
+    {{#view view.NavItemView item="navAdmin" }}
+        <a {{action doNavAdmin}} >Admin</a>
+    {{/view}}
               
-</ul>
-
+	</ul>
 </script>
 
-
-
- <script type="text/x-handlebars" data-template-name="navHome">
+<script type="text/x-handlebars" data-template-name="navHome">
       <div class="hero-unit">
         <h1>Home</h1>
         <p>
          Home sweet home!
-        </p>
-       
+        </p>       
       </div>
- </script>
+</script>
 
- <script type="text/x-handlebars" data-template-name="navSurveys">
-      <div class="hero-unit">
-        <h1>Surveys</h1>
+<script type="text/x-handlebars" data-template-name="navSurveys">
+  <div class="hero-unit">
         
-        {{#each controller.controllers.questionSetController}}
-      		{{title}}<br/>
-      		{{#if isOpen}}
-      			{{view FLOW.QuestionsInSetView contentBinding="this" questionListBinding="controller.controllers.questionController"}} <br />    
-      		{{/if}}
-      	{{/each}}
-      </div>
+			{{view Ember.Select
+     		contentBinding="controllers.surveyGroupController.content"
+     		selectionBinding="controllers.selectedSurveyGroupController.selectedSurveyGroup"
+     		optionLabelPath="content.displayName"
+     		optionValuePath="content.keyId"
+     		prompt="Select survey group"}}
+     	
+ 			{{view Ember.Select
+     		contentBinding="controllers.surveyController.active"
+     		selectionBinding="controllers.selectedSurveyController.selectedSurvey"
+     		optionLabelPath="content.displayName"
+     		optionValuePath="content.keyId"
+     		prompt="Select survey"}}
       
- 		<section id="questionSet">
+  
+  	
+  		
+  		
+  		
+  		
+  		 <section id="main" class="surveySection floats-in" role="main">
+    <section id="newSurveyInfo" class="leftSidebar">
+      <h2>Edit survey</h2>
+      <form action="#" method="get">
+        <label for="newSurveyName">Survey title:</label>
+        <input type="text" id="newSurveyName" name="surveyName" required title="Type in the name of your survey." placeholder="Type in the name of your survey." autofocus required />
+        <label for="newSurveyDesc">Survey description:</label>
+        <textarea id="newSurveyDesc" name="surveyDesc" required title="Type in the description of your survey." placeholder="Type in the description of your survey."></textarea>
+        <label for="surveyType">Survey Type:</label>
+        <select id="surveyType">
+          <option value="Water Point">Water Point</option>
+          <option value="School">School</option>
+          <option value="Sanitation Point">Sanitation Point</option>
+          <option value="Houselhold">Household</option>
+          <option value="Create a new type">Create a new Survey type</option>
+        </select>
+      </form>
+      <ul id="" class="newSurveyInfoUl">
+        <li>
+          <h3>Survey Summary</h3>
+        </li>
+        <li>Number of Question set: <span id="numberQuestionSet">01</span></li>
+        <li>Number of Questions: <span id="numberQuestion">00</span></li>
+      </ul>
+      <nav class="newSurveyNav">
+        <ul>
+          <li><a href="#" class="saveNewSurvey">Save</a></li>
+          <li><a href="#" class="previewNewSurvey">Preview</a></li>
+          <li><a href="#" class="publishNewSurvey">Publish</a></li>
+        </ul>
+      </nav>
+    </section>
+    <section id="surveyCreator" class="mainRight">
+      <section class="topBar">
+        <nav class="menuTopbar">
+          <ul class="">
+            <li><a href="index.html" class="stepBack">Go back to survey overview</a></li>
+          </ul>
+        </nav>
+      </section>
+      <!-- Beginning Question Set  -->
+      <section id="questionSet">
         <section class="aQuestionSet" id="setIndex-01">
-    
-        {{#each controller.controllers.questionSetController}}
-    
           <header>
-            <h1>{{displayName}}</h1>
-            <a href="#" class="editSetInfo">Edit | Move | Copy | Delete &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	EDIT QUESTIONS</a> 
-          </header>
-		{{/each}}
-			
-			</section>
-	</section>		      
-      
-      
- </script>
- 
- <script type="text/x-handlebars" data-template-name="questionTempl">
+         
+            
 
-  {{#each view.filteredQuestions}}
-        text: {{text}}<br/>
-    {{/each}}
- </script>
- 
- 
- 
+        {{#view FLOW.QuestionGroupView}}	
+  				{{#each qg in controllers.questionGroupController.active}}
+  			    	
+    				{{#view view.QuestionGroupItemView contentBinding="qg"}}
+  						 <header>
+  							<h1>{{view.content.displayName}}</h1>  
+  						  <a href="#" class="editSetInfo">Edit title</a> | <a {{action "toggleVisibility" target="FLOW.questionGroupView"}} class="editSetInfo">{{view.showHideText}}</a> </header>
+  							
+  							{{#if view.amVisible}}
+   								Render Questions 
+   							{{/if}}
+  					{{/view}}
+  				
+  				{{/each}}		
+  			{{/view}}
+  		
+  		
+  		
+        </section>
+      </section>
+      <!-- End Question Set  --> 
+      
+    </section>
+  </section>
+  <p id="back-top"> <a href="#header"><span></span>Back to Top</a> </p>
+</div>
+<!-- Main Section ends here --> 
+  		
+  		
+  		
+  		
+  		
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  		
+  		
+  		
+  		
+  		
+  		
+  		
+  		
+  		
+  				     
+</script>
+
+<script type="text/x-handlebars" data-template-name="question-group-view" >
+    
+    <h1>{{view.content.displayName}}  <a {{action "toggleVisibility" target="FLOW.questionGroupView"}}>{{view.showHideText}}</a> </h2>
+    
+    {{#if view.isChildVisible}}
+   	
+   		
+    	
+    	Using if: {{view.content.displayName}}, {{view.content.keyId}}
+    {{/if}}
+    
+    {{#view Ember.View isVisibleBinding="view.isChildVisible" contentBinding="view.content"}}
+     		using isChildVisible: {{view.content.displayName}}
+    {{/view}}
+</script>
+
+
+
 
  <script type="text/x-handlebars" data-template-name="navDevices">
       <div class="hero-unit">
@@ -203,10 +308,8 @@
 
 <script type="text/x-handlebars" data-template-name="inspectData"> 
       <section id="inspectData" class="fullWidth">
-       
-       
+             
        <div class="" id="dataFilter">
-    
      	
       <h3>Choose Survey Data to display:</h3>
         <form>

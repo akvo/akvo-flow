@@ -77,7 +77,7 @@ FLOW.Survey.FIXTURES = [
   },
 ];
 
-FLOW.QuestionSet = DS.Model.extend({ 
+FLOW.QuestionGroup = DS.Model.extend({ 
     order: DS.attr('number'),
     questionMap: DS.attr('string'),
     description: DS.attr('string'),
@@ -93,7 +93,7 @@ FLOW.QuestionSet = DS.Model.extend({
 });
 
 
-FLOW.QuestionSet.FIXTURES = [
+FLOW.QuestionGroup.FIXTURES = [
   {
     keyId: 1,
     isOpen:0,
@@ -104,7 +104,7 @@ FLOW.QuestionSet.FIXTURES = [
   },
   {
     keyId: 2,
-    isOpen:1,
+    isOpen:0,
     description:"ipsum",
     name: 'question set 2',
     displayName: 'question set 2',
@@ -115,6 +115,13 @@ FLOW.QuestionSet.FIXTURES = [
     description:"dolor",
     name: 'question set 3',
     displayName: 'question set 3',
+       
+   },
+    {
+    keyId: 4,
+    description:"dolor",
+    name: 'question set 4',
+    displayName: 'question set 4',
        
    },
 ];
@@ -154,24 +161,28 @@ FLOW.Question.FIXTURES = [
   {
     keyId: 1,
     text: 'question 1 of set 1',
+    displayName:'name1',
     mandatory:false,
     questionSetId:1
   },
   {
     keyId: 2,
     text: 'question 2 of set 1',
+    displayName:'name2',
     mandatory:false,
     questionSetId:1
   },
     {
     keyId: 3,
     text: 'question 1 of set 2',
+    displayName:'name3',
     mandatory:false,
     questionSetId:2
   },
     {
     keyId: 4,
     text: 'question 2 of set 2',
+    displayName:'name4',
     mandatory:false,
     questionSetId:2
   },

@@ -31,8 +31,9 @@ FLOW.Router = Ember.Router.extend({
     	route: '/surveys',
       connectOutlets: function(router, context) {
       	router.get('applicationController').connectOutlet('navSurveys');
-        router.get('questionSetController').set('content',FLOW.store.findAll(FLOW.QuestionSet));
-        router.get('questionController').set('content',FLOW.store.findAll(FLOW.Question));
+       router.get('surveyGroupController').set('content',FLOW.store.find(FLOW.SurveyGroup,{}));
+       // router.get('questionGroupController').set('content',FLOW.store.find(FLOW.QuestionGroup));
+        //router.get('questionController').set('content',FLOW.store.findAll(FLOW.Question));
         router.set('navigationController.selected', 'navSurveys');
       }
  		}),
@@ -68,7 +69,7 @@ FLOW.Router = Ember.Router.extend({
         route: '/inspectdata',
         connectOutlets: function(router, context) { 
  					router.get('navDataController').connectOutlet({	name:'inspectData'});
- 					router.get('surveyGroupController').set('content',FLOW.store.findAll(FLOW.SurveyGroup));
+ 					router.get('surveyGroupController').set('content',FLOW.store.find(FLOW.SurveyGroup,{}));
       		router.set('datasubnavController.selected', 'inspectData');
         }
       }),

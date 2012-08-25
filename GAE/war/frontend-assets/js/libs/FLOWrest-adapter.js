@@ -33,90 +33,6 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
 
 
 
-////////////// Create Records //////////////
-  createRecords: function(store, type, records) {
-    if (get(this, 'bulkCommit') === false) {
-      return this._super(store, type, records);
-    }
-
-    var root = this.rootForType(type),
-        plural = this.pluralize(root);
-
-    var data = {};
-    data[plural] = records.map(function(record) {
-      return record.toJSON();
-    });
-
-    this.ajax(this.buildURL(root), "POST", {
-      data: data,
-      context: this,
-      success: function(json) {
-        this.didCreateRecords(store, type, records, json);
-      }
-    });
-  },
-
-  didCreateRecords: function(store, type, records, json) {
-    var root = this.pluralize(this.rootForType(type));
-
-    this.sideload(store, type, json, root);
-    store.didCreateRecords(type, records, json[root]);
-  },
-
-////////////// Update Record //////////////
-  updateRecord: function(store, type, record) {
-    var id = get(record, 'id');
-    var root = this.rootForType(type);
-
-    var data = {};
-    data[root] = record.toJSON();
-
-    this.ajax(this.buildURL(root, id), "PUT", {
-      data: data,
-      context: this,
-      success: function(json) {
-        this.didUpdateRecord(store, type, record, json);
-      }
-    });
-  },
-
-  didUpdateRecord: function(store, type, record, json) {
-    var root = this.rootForType(type);
-
-    this.sideload(store, type, json, root);
-    store.didUpdateRecord(record, json && json[root]);
-  },
-
-////////////// Update Records //////////////
-  updateRecords: function(store, type, records) {
-    if (get(this, 'bulkCommit') === false) {
-      return this._super(store, type, records);
-    }
-
-    var root = this.rootForType(type),
-        plural = this.pluralize(root);
-
-    var data = {};
-    data[plural] = records.map(function(record) {
-      return record.toJSON();
-    });
-
-    this.ajax(this.buildURL(root, "bulk"), "PUT", {
-      data: data,
-      context: this,
-      success: function(json) {
-        this.didUpdateRecords(store, type, records, json);
-      }
-    });
-  },
-
-  didUpdateRecords: function(store, type, records, json) {
-    var root = this.pluralize(this.rootForType(type));
-
-    this.sideload(store, type, json, root);
-    store.didUpdateRecords(records, json[root]);
-  },
-
 ////////////// Delete Record //////////////
   deleteRecord: function(store, type, record) {
     var id = get(record, 'id');
@@ -135,106 +51,53 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
     store.didDeleteRecord(record);
   },
 
-////////////// Delete Records //////////////
-  deleteRecords: function(store, type, records) {
-    if (get(this, 'bulkCommit') === false) {
-      return this._super(store, type, records);
-    }
-
-    var root = this.rootForType(type),
-        plural = this.pluralize(root);
-
-    var data = {};
-    data[plural] = records.map(function(record) {
-      return get(record, 'id');
-    });
-
-    this.ajax(this.buildURL(root, 'bulk'), "DELETE", {
-      data: data,
-      context: this,
-      success: function(json) {
-        this.didDeleteRecords(store, type, records, json);
-      }
-    });
-  },
-
-  didDeleteRecords: function(store, type, records, json) {
-    if (json) { this.sideload(store, type, json); }
-    store.didDeleteRecords(records);
-  },
 
 ////////////// find //////////////
-  find: function(store, type, id) {
-    var root = this.rootForType(type);
+//find: function(store, type, id) {
+//    var root = this.rootForType(type);
+//
+//    this.ajax(this.buildURL(root, id), "GET", {
+//      success: function(json) {
+//        this.sideload(store, type, json, root);
+//        store.load(type, json[root]);
+//      }
+//    });
+//  },
 
-    this.ajax(this.buildURL(root, id), "GET", {
-      success: function(json) {
-        this.sideload(store, type, json, root);
-        store.load(type, json[root]);
-      }
-    });
-  },
-
-////////////// find Many //////////////
-  findMany: function(store, type, ids) {
-    var root = this.rootForType(type), plural = this.pluralize(root);
-
-    this.ajax(this.buildURL(root), "GET", {
-      data: { ids: ids },
-      success: function(json) {
-        this.sideload(store, type, json, plural);
-        store.loadMany(type, json[plural]);
-      }
-    });
-  },
-
-
-////////////// find All //////////////
-  findAll: function(store, type) {
-    //var root = this.rootForType(type), plural = this.pluralize(root);
-
-    this.ajax(this.buildURL(""), "GET", {
-      success: function(json) {
-      
-      // we don't need sideload now
-      //  this.sideload(store, type, json, plural);
-            
-        store.loadMany(type, json["dtoList"]);
-
-      }
-    });
-  },
+//////////////// find All //////////////
+//  findAll: function(store, type) {
+//    var root = this.rootForType(type)
+//
+//    this.ajax(this.buildURL(""), "GET", {
+//      success: function(json) {
+//      
+//      // we don't need sideload now
+//      //  this.sideload(store, type, json, plural);
+//            
+//        store.loadMany(type, json["dtoList"]);
+//
+//      }
+//    });
+//  },
 
 ////////////// find Query //////////////
   findQuery: function(store, type, query, recordArray) {
- 	
- 		if (type === FLOW.Survey){
-
-		var root="http://flow-dashboard.dev/REST/surveyrestapi?action=listSurveys&surveyGroupId=";
-	  if (query.surveyGroupId){
- 		console.log("query"+root+query.surveyGroupId.toString());
+    if (type===FLOW.SurveyGroup) {var queryURL="/surveyrestapi?action=listSurveyGroups";}
+    else if (type===FLOW.Survey || query.surveyGroupId) {var queryURL= "/surveyrestapi?action=listSurveys&surveyGroupId=" + query.surveyGroupId.toString();}
+    else if (type===FLOW.QuestionGroup || query.surveyId) {var queryURL= "/surveyrestapi?action=listQuestionGroups&surveyId=" + query.surveyId.toString();}
+    else if (type===FLOW.Question ||query.questionGroupId) {var queryURL="/surveyrestapi?action=listQuestions&questionGroupId=" + query.questionGroupId.toString();}
 	
-    this.ajax(root+query.surveyGroupId.toString(), "GET", {
+ 		console.log("query: " + queryURL);
+	
+    this.ajax(queryURL, "GET", {
       	success: function(json) {
         recordArray.load(json["dtoList"]);
       	}
     	});
-  	}
-  }
-  },
-  
- 
+  	},
   
 
   // HELPERS
-
-  plurals: {},
-
-  // define a plurals hash in your subclass to define
-  // special-case pluralization
-  pluralize: function(name) {
-    return this.plurals[name] || name + "s";
-  },
 
   rootForType: function(type) {
     if (type.url) { return type.url; }
@@ -244,6 +107,7 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
     var name = parts[parts.length - 1];
     return name.replace(/([A-Z])/g, '_$1').toLowerCase().slice(1);
   },
+
 
   ajax: function(url, type, hash) {
     hash.url = url;
@@ -324,11 +188,9 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
   },
 
   buildURL: function(record, suffix) {
-    var url = ["/REST/surveyrestapi"];
+    var url = ["/surveyrestapi"];
 
-    //Ember.assert("Namespace URL (" + this.namespace + ") must not start with slash", !this.namespace || this.namespace.toString().charAt(0) !== "/");
-    //Ember.assert("Record URL (" + record + ") must not start with slash", !record || record.toString().charAt(0) !== "/");
-    //Ember.assert("URL suffix (" + suffix + ") must not start with slash", !suffix || suffix.toString().charAt(0) !== "/");
+    
 
    // if (this.namespace !== undefined) {
    //   url.push(this.namespace);
