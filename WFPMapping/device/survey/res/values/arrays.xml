@@ -10,12 +10,20 @@
 		<item>French</item>
 		<item>Spanish</item>
 		<item>Kinyarwanda</item>
-	</string-array>
+		<item>Chichewa</item>
+		<item>Bengali</item>
+		<item>Hindi</item>
+		<item>Quechua</item>
+		</string-array>
 	<string-array name="languagecodes">
 		<item>en</item>
 		<item>fr</item>
 		<item>es</item>
 		<item>rw</item>
+		<item>ny</item>
+		<item>bn</item>
+		<item>hi</item>
+		<item>qu</item>		
 	</string-array>
 	<string-array name="colors">
 		<item>white</item>
