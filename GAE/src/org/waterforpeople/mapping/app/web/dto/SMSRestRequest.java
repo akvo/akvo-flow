@@ -27,9 +27,9 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
  * represents the data sent over by the an SMS gateway
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class SMSRestRequest extends RestRequest {
 
@@ -119,7 +119,7 @@ public class SMSRestRequest extends RestRequest {
 		String dateString = req.getParameter(TIME_PARAM);
 		if (dateString != null) {
 			try {
-				dateString = DATE_FMT.format(dateString);
+				dateString = DATE_FMT.parse(dateString);
 			} catch (Exception e) {
 				addError(new RestError(RestError.BAD_DATATYPE_CODE,
 						RestError.BAD_DATATYPE_MESSAGE,
