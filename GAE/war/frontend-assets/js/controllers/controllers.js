@@ -2,17 +2,16 @@
 //                 controllers                    
 // ***********************************************//
 
-
 // Define the main application controller. This is automatically picked up by
 // the application and initialized.
 FLOW.ApplicationController = Ember.Controller.extend();
 
 // Navigation controllers  
 FLOW.NavigationController = Em.Controller.extend({
-	selected:null
-	});
-	
-FLOW.DatasubnavController = Em.Controller.extend();  
+	selected: null
+});
+
+FLOW.DatasubnavController = Em.Controller.extend();
 FLOW.NavHomeController = Ember.Controller.extend();
 FLOW.NavSurveysController = Ember.Controller.extend();
 FLOW.NavDevicesController = Ember.Controller.extend();
@@ -28,60 +27,59 @@ FLOW.NavAdminController = Ember.Controller.extend();
 
 
 // Data controllers
-FLOW.SelectedSurveyGroupController = Ember.Controller.extend({
-	selectedSurveyGroup:null
-}); 
-	
-FLOW.SelectedSurveyController =  Ember.Controller.extend({
-	selectedSurvey:null
+
+FLOW.selectedControl = Ember.Controller.create({
+	selectedSurveyGroup: null,
+	selectedSurvey: null,
+	selectedQuestionGroup: null,
+	selectedQuestion: null,
 });
 
-FLOW.SelectedQuestionGroupController =  Ember.Controller.extend({
-	selectedQuestionGroup:null,
+FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {
+	FLOW.selectedControl.set('selectedSurvey', null);
+	FLOW.selectedControl.set('selectedQuestionGroup', null);
+
 });
 
-FLOW.SelectedQuestionController =  Ember.Controller.extend({
-	selectedQuestion:null
+FLOW.SurveyGroupController = Ember.ArrayController.extend({});
+
+FLOW.surveyControl = Ember.ArrayController.create({
+	active: function() {
+		console.log("in surveyControl");
+		if (FLOW.selectedControl.get('selectedSurveyGroup')) {
+			var id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+				console.log("keyId: "+id);
+			return FLOW.store.find(FLOW.Survey, {surveyGroupId: id})
+		} else {
+			FLOW.selectedControl.set('selectedSurvey', null);
+			FLOW.selectedControl.set('selectedQuestionGroup', null);
+			return null;
+		}
+	}.property('FLOW.selectedControl.selectedSurveyGroup').cacheable()
 });
 
-FLOW.SurveyGroupController = Ember.ArrayController.extend();
-  	
-FLOW.SurveyController = Ember.ArrayController.extend({  	
-	active:function() {
-  	if (this.get('controllers.selectedSurveyGroupController.selectedSurveyGroup')){	
-  		var id=this.get('controllers.selectedSurveyGroupController.selectedSurveyGroup.keyId');
-  		return FLOW.store.find(FLOW.Survey,{surveyGroupId:id})
-  	}	
-  	else {
-  		return null;
-  	}
- 	}.property('controllers.selectedSurveyGroupController.selectedSurveyGroup')		
-});
-  
-FLOW.QuestionGroupController = Ember.ArrayController.extend({
-	active:function() {
-  	if (this.get('controllers.selectedSurveyController.selectedSurvey')){	
-  		var id=this.get('controllers.selectedSurveyController.selectedSurvey.keyId');
-  		console.log("selectedsurvey: "+id);
-  		return FLOW.store.find(FLOW.QuestionGroup,{surveyId:id})
-  	}	
-  	else {
-  		return null;
-  	}
- 	}.property('controllers.selectedSurveyController.selectedSurvey')			
+FLOW.questionGroupControl = Ember.ArrayController.create({
+	active: function() {
+		console.log("in questionGroupControl");
+		if (FLOW.selectedControl.get('selectedSurvey')) {
+			var id = FLOW.selectedControl.selectedSurvey.get('keyId');
+			return FLOW.store.find(FLOW.QuestionGroup, {surveyId: id})
+		} else {
+			FLOW.selectedControl.set('selectedQuestionGroup', null);
+			return null;
+		}
+	}.property('FLOW.selectedControl.selectedSurvey', 'FLOW.selectedControl.selectedSurveyGroup').cacheable()
 });
 
-//FLOW.QuestionController = Ember.ArrayController.extend({
-//		
-//	active:function() {
-//  	if (this.get('controllers.selectedQuestionGroupController.selectedQuestionGroup')){	
-//  		var id=this.get('controllers.selectedQuestionGroupController.selectedQuestionGroup.keyId');
-//  		return FLOW.store.find(FLOW.Question,{questionGroupId:id})
-//  	}	
-//  	else {
-//  		return null;
-//  	}
-// 	}.property('controllers.selectedQuestionGroupController.selectedQuestionGroup')		
-//});
-//		 	
+FLOW.questionControl = Ember.ArrayController.create({
+	active: function() {
+		console.log("in questionControl");
+		if (FLOW.selectedControl.get('selectedQuestionGroup')) {
+			var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
+			return FLOW.store.find(FLOW.Question, {questionGroupId: id})
+		} else {
+			return null;
+		}
+	}.property('FLOW.selectedControl.selectedQuestionGroup', 'FLOW.selectedControl.selectedSurvey').cacheable()
+});

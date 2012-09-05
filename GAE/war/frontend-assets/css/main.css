@@ -1281,13 +1281,16 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {
 }
+
+/* MTW changed right from 5px to 25px to avoid clash with lower right folded corner image */
 .innerContent nav {
 	position: absolute;
 	width: 30%;
 	height: 17px;
 	top: 5px;
-	right: 5px;
+	right: 25px;
 }
+
 .innerContent nav ul {
 	width: 100%;
 	height: 17px;
@@ -1310,6 +1313,14 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	background:url(../images/deleteQuestion.png) left top no-repeat;
 	padding:5px 5px 0 17px;
 }
+
+/* MTW */
+.innerContent nav ul li a.editQuestion {
+	background:url(../images/editQuestion.png) left top no-repeat;
+	padding:5px 5px 0 17px;
+}
+
+
 .innerContent nav ul li a.moveQuestion {
 	background:url(../images/moveQuestion.png) left top no-repeat;
 	padding:5px 5px 0 17px;
