@@ -39,8 +39,8 @@ end
 
 output 'assets'
 input 'app' do
-  match 'frontend.html' do
-    copy 'frontend.html'
+  match 'dashboard.html' do
+    copy 'dashboard.html'
   end
 
   match 'js/lib/**/*.js' do
