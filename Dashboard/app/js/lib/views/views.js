@@ -4,6 +4,7 @@
 
 require('akvo-flow/core');
 
+
 FLOW.ApplicationView = Ember.View.extend({
 	templateName: 'application'
 });
@@ -28,7 +29,7 @@ FLOW.NavigationView = Em.View.extend({
 
 // subnavigation for the data tab
 FLOW.DatasubnavView = Em.View.extend({
-	templateName: 'datasubnav',
+	templateName: 'navData/datasubnav',
 	selectedBinding: 'controller.selected',
 	NavItemView: Ember.View.extend({
 		tagName: 'li',
@@ -54,16 +55,16 @@ FLOW.NavDataView = Ember.View.extend({
 	templateName: 'navData'
 });
 FLOW.InspectDataView = Ember.View.extend({
-	templateName: 'inspectData'
+	templateName: 'navData/inspectData'
 });
 FLOW.ImportSurveyView = Ember.View.extend({
-	templateName: 'importSurvey'
+	templateName: 'navData/importSurvey'
 });
 FLOW.ExcelImportView = Ember.View.extend({
-	templateName: 'excelImport'
+	templateName: 'navData/excelImport'
 });
 FLOW.ExcelExportView = Ember.View.extend({
-	templateName: 'excelExport'
+	templateName: 'navData/excelExport'
 });
 FLOW.NavReportsView = Ember.View.extend({
 	templateName: 'navReports'

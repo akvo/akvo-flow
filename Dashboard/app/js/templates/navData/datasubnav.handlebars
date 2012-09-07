@@ -1,0 +1,11 @@
+<ul>
+    {{#view view.NavItemView item="inspectData" }}
+    <a {{action doInspectData}}>Inspect Data</a>
+    {{/view}} {{#view view.NavItemView item="importSurvey" }}
+    <a {{action doImportSurvey}}>Import survey data</a>
+    {{/view}} {{#view view.NavItemView item="excelExport" }}
+    <a {{action doExcelExport}}>Spreadsheet export</a>
+    {{/view}} {{#view view.NavItemView item="excelImport" }}
+    <a {{action doExcelImport}}>Spreadsheet import</a>
+    {{/view}}
+</ul>

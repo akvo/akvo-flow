@@ -27,56 +27,8 @@
         <link href="css/tablet.css" media="(min-width:800px) and (max-width:800px)" rel="stylesheet"/>
     </head>
     <body>
-        <!-- header starts here -->
-        <script data-template-name="application" type="text/x-handlebars">
-            <header class="floats-in top" id="header" role="banner">
-                <div>
-                    <hgroup>
-                        <h1>Akvo
-                            <abbr title="field level operations watch">Flow</abbr></h1>
-                        <h2>field level operations watch</h2>
-                    </hgroup>
-                    <nav id="topnav" role="navigation">
-                        {{view FLOW.NavigationView controllerBinding="controller.controllers.navigationController"}}
-                    </nav>
-                    <form>
-                        <input name="flowSearch" placeholder="Find anything here." type="search"/>
-                    </form>
-                </div>
-            </header>
-            <div id="pageWrap">
-                {{outlet}}
-            </div>
-            <footer class="floats-in bottomPage" role="contentinfo">
-                <div>
-                    <h1>Footer content goes here.</h1>
-                    <div id="backToTop"><a href="#header" rel="self">Back to top</a></div>
-                </div>
-            </footer>
-        </script>
+       
 
- 		<!-- navigation -->
-        <script data-template-name="navigation" type="text/x-handlebars">
-            <ul class="floats-in">
-                {{#view view.NavItemView item="navHome" }}
-                <a {{action doNavHome}}>Home</a>
-                {{/view}} {{#view view.NavItemView item="navSurveys" }}
-                <a {{action doNavSurveys}}>Surveys</a>
-                {{/view}} {{#view view.NavItemView item="navDevices" }}
-                <a {{action doNavDevices}}>Devices</a>
-                {{/view}} {{#view view.NavItemView item="navData" }}
-                <a {{action doNavData}}>Data</a>
-                {{/view}} {{#view view.NavItemView item="navReports" }}
-                <a {{action doNavReports}}>Reports</a>
-                {{/view}} {{#view view.NavItemView item="navMaps" }}
-                <a {{action doNavMaps}}>Maps</a>
-                {{/view}} {{#view view.NavItemView item="navUsers" }}
-                <a {{action doNavUsers}}>Users</a>
-                {{/view}} {{#view view.NavItemView item="navAdmin" }}
-                <a {{action doNavAdmin}}>Admin</a>
-                {{/view}}
-            </ul>
-        </script>
 
 		 <!-- home page -->
         <script data-template-name="navHome" type="text/x-handlebars">
@@ -183,151 +135,31 @@
             {{#if view.amVisible}} Using if: {{view.content.displayName}}, {{view.content.keyId}} {{/if}} {{#view Ember.View isVisibleBinding="view.isChildVisible" contentBinding="view.content"}} using isChildVisible: {{view.content.displayName}} {{/view}}
         </script>
 		
-		 <!-- Devices page -->
-        <script data-template-name="navDevices" type="text/x-handlebars">
-            <div class="hero-unit">
-                <h1>Devices</h1>
-                <p>
-                    {{#view FLOW.TestView}}
-                    <a {{action "change" target="FLOW.testView"}}>click me</a>
-                    {{view.data}} {{/view}} {{FLOW.testController.data}}
-                </p>
-            </div>
-        </script>
 
-		 <!-- Data view -->
-        <script data-template-name="navData" type="text/x-handlebars">
-            <section class="dataSection floats-in" id="main" role="main">
-                <div id="tabs">
-                    <nav class="tabNav floats-in">
-                        {{view FLOW.DatasubnavView controllerBinding="controller.controllers.datasubnavController"}}
-                    </nav>
-                    {{outlet}}
-                </div>
-            </section>
-        </script>
-		
-		 <!-- Data subnavigation -->
-        <script data-template-name="datasubnav" type="text/x-handlebars">
-            <ul>
-                {{#view view.NavItemView item="inspectData" }}
-                <a {{action doInspectData}}>Inspect Data</a>
-                {{/view}} {{#view view.NavItemView item="importSurvey" }}
-                <a {{action doImportSurvey}}>Import survey data</a>
-                {{/view}} {{#view view.NavItemView item="excelExport" }}
-                <a {{action doExcelExport}}>Spreadsheet export</a>
-                {{/view}} {{#view view.NavItemView item="excelImport" }}
-                <a {{action doExcelImport}}>Spreadsheet import</a>
-                {{/view}}
-            </ul>
-        </script>
 
-        <script data-template-name="inspectData" type="text/x-handlebars">
-            <section class="fullWidth" id="inspectData">
-                <div class="" id="dataFilter">
-                    <h3>Choose Survey Data to display:</h3>
-                    <form>
-                        {{view Ember.Select contentBinding="controllers.surveyGroupController.content" selectionBinding="controllers.selectedSurveyGroupController.selectedSurveyGroup" optionLabelPath="content.displayName" optionValuePath="content.keyId" prompt="Select survey group"}} 
-						{{view Ember.Select contentBinding="controllers.surveyController.active" selectionBinding="controllers.selectedSurveyController.selectedSurvey" optionLabelPath="content.displayName" optionValuePath="content.keyId" prompt="Select survey" }}
-                        <label for="fromDate">Collected From</label>
-                        <input class="datePicker" id="from" name="from" type="text">
-                        <label for="toDate">To</label>
-                        <input class="datePicker" id="to" name="to" type="text">
-                    </form>
-                </div>
-                <section class="fullWidth " id="devicesList">
-                    <!-- DEVICES TABLE-->
-                    <table class="dataTable" id="surveyDataTable">
-                        <!-- TABLE HEADER-->
-                        <thead>
-                            <tr>
-                                <th>Survey Group name</th>
-                                <th>Description</th>
-                                <th>Created</th>
-                                <th>Last updated</th>
-                                <th>ID</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <!-- TABLE BODY: MAIN CONTENT-->
-                        <tbody>
-                            {{#each controllers.surveyGroupController.content}}
-                            <tr>
-                                <td class="surveyGroup" style="text-align:left;">{{displayName}}</td>
-                                <td class="description" style="text-align:left;">{{description}}</td>
-                                <td class="created">{{createdDateTime}}</td>
-                                <td class="lastUpdated">{{lastUpdateDateTime}}</td>
-                                <td class="ID">{{keyId}}</td>
-                                <td class="action"><a href="#">action</a></td>
-                            </tr>
-                            {{/each}}
-                        </tbody>
-                        <!-- TABLE FOOTER-->
-                        <tfoot>
-                            <tr>
-                                <td colspan="7"><small>This is the footer.</small></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </section>
-            </section>
-        </script>
-        <script data-template-name="importSurvey" type="text/x-handlebars">
+        
+		<script data-template-name="importSurvey" type="text/x-handlebars">
             <section class="fullWidth" id="importSurvey">
                 <h1>Content of Import Survey Data tab
                 </h1>
             </section>
         </script>
-        <script data-template-name="excelExport" type="text/x-handlebars">
+        
+		<script data-template-name="excelExport" type="text/x-handlebars">
             <section class="fullWidth" id="excelExport">
                 <h1>This is the content of Spreadsheet export</h1>
             </section>
         </script>
-        <script data-template-name="excelImport" type="text/x-handlebars">
+        
+		<script data-template-name="excelImport" type="text/x-handlebars">
             <section class="fullWidth" id="excelImport">
                 <h1>This is the content of Spreadsheet import</h1>
             </section>
         </script>
         
- 		<!-- Reports -->
-		<script data-template-name="navReports" type="text/x-handlebars">
-            <div class="hero-unit">
-                <h1>Reports</h1>
-                <p>
-                    Reports dus.
-                </p>
-            </div>
-        </script>
-		
-		 <!-- Maps -->
-        <script data-template-name="navMaps" type="text/x-handlebars">
-            <div class="hero-unit">
-                <h1>Maps</h1>
-                <p>
-                    Maps.
-                </p>
-            </div>
-        </script>
-		
-		 <!-- Users -->
-        <script data-template-name="navUsers" type="text/x-handlebars">
-            <div class="hero-unit">
-                <h1>Users</h1>
-                <p>
-                    Users dus.
-                </p>
-            </div>
-        </script>
 
-		 <!-- Admin -->
-        <script data-template-name="navAdmin" type="text/x-handlebars">
-            <div class="hero-unit">
-                <h1>Admin</h1>
-                <p>
-                    Admin dus.
-                </p>
-            </div>
-        </script>
+
+
         <!-- Main Section ends here -->
         <!-- Grab Google CDN's jQuery. fall back to local if necessary <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script> <script>window.jQuery || document.write("<script src='/js/jquery-1.7.2.min.js'>\x3C/script>")</script> <script src="js/survey-styling.js"></script>-->
         <script src="js/vendor/jquery-1.7.1.js"></script>
@@ -343,6 +175,7 @@
 
 
 	 	<script src="js/loader.js"></script>
+	
 	    <script src="js/app.js"></script>
 	    <script>
 	      loader.require('akvo-flow/main');

@@ -70,12 +70,12 @@ input 'app' do
     filter HandlebarsFilter
     filter LoaderFilter,
       :module_id_generator => proc { |input|
-        input.path.sub(/^js\/templates\//, "#{APPNAME}/~templates/").sub(/\.handlebars$/, '')
+        input.path.sub(/^js\/templates\//, "#{APPNAME}/templates/").sub(/\.handlebars$/, '')
       }
     if ENV['RAKEP_MODE'] == 'production'
       uglify {|input| input}
     end
-    concat 'js/handlebars.js'
+    concat 'js/app.js'
   end
 
 

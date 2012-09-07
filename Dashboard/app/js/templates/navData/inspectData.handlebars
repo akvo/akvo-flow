@@ -1,0 +1,48 @@
+<section class="fullWidth" id="inspectData">
+    <div class="" id="dataFilter">
+        <h3>Choose Survey Data to display:</h3>
+        <form>
+            {{view Ember.Select contentBinding="controllers.surveyGroupController.content" selectionBinding="controllers.selectedSurveyGroupController.selectedSurveyGroup" optionLabelPath="content.displayName" optionValuePath="content.keyId" prompt="Select survey group"}} 
+			{{view Ember.Select contentBinding="controllers.surveyController.active" selectionBinding="controllers.selectedSurveyController.selectedSurvey" optionLabelPath="content.displayName" optionValuePath="content.keyId" prompt="Select survey" }}
+            <label for="fromDate">Collected From</label>
+            <input class="datePicker" id="from" name="from" type="text">
+            <label for="toDate">To</label>
+            <input class="datePicker" id="to" name="to" type="text">
+        </form>
+    </div>
+    <section class="fullWidth " id="devicesList">
+        <!-- DEVICES TABLE-->
+        <table class="dataTable" id="surveyDataTable">
+            <!-- TABLE HEADER-->
+            <thead>
+                <tr>
+                    <th>Survey Group name</th>
+                    <th>Description</th>
+                    <th>Created</th>
+                    <th>Last updated</th>
+                    <th>ID</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <!-- TABLE BODY: MAIN CONTENT-->
+            <tbody>
+                {{#each controllers.surveyGroupController.content}}
+                <tr>
+                    <td class="surveyGroup" style="text-align:left;">{{displayName}}</td>
+                    <td class="description" style="text-align:left;">{{description}}</td>
+                    <td class="created">{{createdDateTime}}</td>
+                    <td class="lastUpdated">{{lastUpdateDateTime}}</td>
+                    <td class="ID">{{keyId}}</td>
+                    <td class="action"><a href="#">action</a></td>
+                </tr>
+                {{/each}}
+            </tbody>
+            <!-- TABLE FOOTER-->
+            <tfoot>
+                <tr>
+                    <td colspan="7"><small>This is the footer.</small></td>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
+</section>
