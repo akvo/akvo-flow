@@ -1,0 +1,1507 @@
+/* 
+	Title:      Akvo Flow Styles for Desktop
+	Author:     Loic Sans, loic@akvo.org
+*/
+
+
+/* Colours 
+---------------------------
+	
+Akvo Primary Colours:
+	
+	rgb(44, 42, 116);		Akvo Purplish Blue
+	rgb(114,  205, 255);	Akvo very light blue
+	rgb(222, 137, 41);		Akvo Orange / light Brown
+	rgb(153, 153, 153);		Akvo Mid grey
+	rgb(57, 102, 128);		Akvo Darker shade Blue from light blue
+	rgb(107, 134, 141);		Akvo Blueish Green link color
+	
+Akvo Secondary Colours:
+	
+	rgb(225, 237, 195);		Akvo very Light green
+	rgb(227, 27, 35);		Akvo red
+	rgb(219, 135, 201);		Akvo Pink
+	rgb(255, 210, 0);		Akvo Yellow
+	rgb(125, 125, 125);		Akvo Darker Grey
+	rgb(66, 76, 43);		Akvo Very dark Green (Military)
+	rgb(119, 97, 0);		Akvo Kaki (Greenish Brown)
+	rgb(242, 240, 230);		Akvo Off White
+	rgb(74, 177, 207);		Akvo darkish blue / Water Point
+*/
+
+
+
+
+/*--------------------------------------------------------------
+
+   * Default Typography.
+
+-------------------------------------------------------------- */
+
+/* Default font settings.
+   The font-size percentage is of 16px. (0.625 * 16px = 10px) */
+   
+   
+html {
+	font-size: 100%; /* 1 */
+	-webkit-text-size-adjust: 100%; /* 2 */
+	-ms-text-size-adjust: 100%; /* 2 */
+	background: rgb(255, 255, 255);
+}
+body {
+	font-family: Helmet, Freesans, sans-serif;
+	color: rgb(36, 48, 50);
+	font-size: 62.5%;
+	word-spacing:0.25em;
+}
+/* Headings
+-------------------------------------------------------------- */
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+}
+h1 {
+	font-size: 2.4em;
+	line-height: 1.5em;
+}
+h2 {
+	font-size: 2em;
+	line-height: 1em;
+	text-transform: uppercase;
+}
+h3 {
+	font-size: 1.8em;
+	line-height: 1;
+}
+h4 {
+	font-size: 1em;
+	line-height: 1.25em;
+	margin-bottom: 1.25em;
+}
+h5 {
+	font-size: 1em;
+	margin-bottom: 1.5em;
+}
+h6 {
+	font-size: 1em;
+}
+h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {
+	margin: 0;
+}
+/*  Styles the & when class "amp" is applied around &amp;  */
+.amp {
+	font-family: Baskerville, "Goudy Old Style", "Palatino", "Book Antiqua", Georgia, serif;
+	font-style: italic;
+}
+em {
+	padding-bottom: 1em;
+}
+time {
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+/* misc.
+--------------------------------------------- */
+img, object, video, embed {
+	max-width: 100%;
+}
+.hidden {
+	display:none !important;
+	}
+.shown {
+	display:block !important;
+	}
+hr, .hide {
+	display: none;
+}
+a img {
+	border: none;
+}
+/* self-clear floats 
+	I use a class named .floats-in > This implicitely says that each time a container contains floated elements within. We can clear those by applying this class to that container.
+*/
+
+.floats-in:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+/* links 
+---------------------------------------------------------------*/
+
+a:link, a:visited {
+	font-weight: normal;
+	text-decoration: none;
+	outline: none;
+	color: rgb(107, 134, 141);
+}
+a:hover {
+	color: rgb(114,  205, 255);
+}
+
+/* Custom text-selection colors (remove any text shadows: twitter.com/miketaylr/status/12228805301) */
+::-moz-selection {
+background: #930;
+color: #fff;
+text-shadow: none;
+}
+::selection {
+	background: #930;
+	color: #fff;
+	text-shadow: none;
+}
+a:link {
+	-webkit-tap-highlight-color: #fcd700;
+}
+ins {
+	background-color: #930;
+	color: #000;
+	text-decoration: none;
+}
+mark {
+	background-color: #930;
+	color: #000;
+	font-style: italic;
+	font-weight: bold;
+}
+.fadedText {
+	color: rgb(153,153,153);
+}
+.selectInfo {
+	color: rgb(58,58,58);
+	}
+.visible {
+	visibility:hidden;
+	}
+.nonVisible {
+	visibility:visible;
+	}
+/* page structure
+--------------------------------------------- */
+#pageWrap {
+	position: relative;
+	width: 90%;
+	max-width: 100%;
+	min-width: 916px;
+	margin: 0 auto;
+	padding: 0;
+	background: transparent;/*	background:url(../images/light-grain-trans.png) repeat;
+	border:1px sold rgb(36, 48, 50);
+	-moz-box-shadow:2px 0 2px rgba(200, 200, 200, 0.8), -2px 0 2px rgba(200, 200, 200, 0.8);
+	-webkit-box-shadow:2px 0 2px rgba(200, 200, 200, 0.8), -2px 0 2px rgba(200, 200, 200, 0.8);
+	box-shadow:2px 0 2px rgba(200, 200, 200, 0.8), -2px 0 2px rgba(200, 200, 200, 0.8);*/
+}
+header.top > div {
+	position: relative;
+	width: 90%;
+	max-width: 100%;
+	min-width: 916px;
+	margin: 0 auto;
+	padding: 0;
+}
+#main {
+	/*background:rgb(239, 232, 220);
+	padding:10px 0.5%;*/
+	margin: 0 0 20px 0;
+	background: transparent;
+}
+footer > div {
+	color: rgb(255, 255, 255);
+	position: relative;
+	width: 90%;
+	max-width: 100%;
+	min-width: 916px;
+	margin: 0 auto;
+	padding: 0;
+	height: 50px;
+}
+.leftSidebar {
+	position: relative;
+	width: 20%;
+	float: left;
+}
+.rightSidebar {
+	position: relative;
+	width: 22%;
+	float: right;
+}
+.mainRight {
+	position: relative;
+	float: left;
+	width: 80%;
+}
+.mainLeft {
+	position: relative;
+	float: right;
+	width: 78%;
+}
+.topBar {
+	position: relative;
+	width: 100%;
+	height: 38px;
+	background: rgb(58,58,58);
+}
+.fullWidth {
+	position: relative;
+	width: 100%;
+}
+/* .header
+--------------------------------------------- */
+
+header.top {
+	position: relative;
+	width: 100%;
+	height: 100px;
+	padding: 0;
+	margin: 0 0 20px 0;
+	background: rgb(58,58,58);
+}
+header.top hgroup h1 {
+	position: absolute;
+	top: 10px;
+	left: 0px;
+	width: 148px;
+	height: 80px;
+	background: url(../images/akvoFlowLogo.png) no-repeat center top;
+	text-indent: -9999px;
+}
+header.top hgroup h1:hover {
+	background: url(../images/akvoFlowLogo.png) no-repeat center bottom;
+}
+header.top hgroup h1 a {
+	display: block;
+	width: 148px;
+	height: 80px;
+	text-indent: -9999px;
+}
+header.top hgroup h2 {
+	position: absolute;
+	text-align: left;
+	z-index: 0;
+	text-indent: -9999px;
+}
+/* #home page
+--------------------------------------------- */
+
+/* Top navigation styles 
+--------------------------------------------- */
+
+nav#topnav {
+	position: absolute;
+	top: 0px;
+	left: 195px;
+}
+nav#topnav ul {
+	position: relative;
+	width: 100%;
+}
+nav#topnav ul li {
+	display: inline;
+	padding: 0 6px 0 0;
+	float: left;
+	margin: 4px 4px 0 0;
+/*	background: url(../images/navSeparator.png) right center no-repeat;
+*/}
+nav#topnav ul li:last-child, nav#topnav ul li:last-child:hover, nav#topnav ul li.current, nav#topnav ul li.current:hover {
+	background-image: none;
+}
+nav#topnav ul li:hover {
+	background:none;
+}
+nav#topnav ul li a {
+	display: block;
+	font-size: 1.2em;
+	vertical-align: bottom;
+	padding: 62px 6px 18px 6px;
+	text-transform: uppercase;
+	color: rgb(114,  205, 255);
+	vertical-align: middle;
+	-webkit-transition: background-color .4s linear;
+	-moz-transition: background-color .4s linear;
+	-o-transition: background-color .4s linear;
+	transition: background-color .4s linear;
+}
+nav#topnav ul li a:hover, nav#topnav ul li.current a {
+	color: rgb(255,255,255);
+}
+nav#topnav ul li.navSurveys a {
+	background: url(../images/topnavSurveys.png) center top no-repeat;
+}
+
+nav#topnav ul li.navSurveys a:hover {
+	background: rgb(77,77,77) url(../images/topnavSurveys.png) center top no-repeat;
+}
+nav#topnav ul li.navSurveys.current a {
+	background: rgb(77,77,77) url(../images/topnavSurveys.png) center bottom no-repeat;
+}
+
+/* MTW */
+nav#topnav ul li.navHome a {
+	background: url(../images/topnavDashboards.png) center top no-repeat;
+}
+
+nav#topnav ul li.navHome a:hover {
+	background: rgb(77,77,77) url(../images/topnavDashboards.png) center top no-repeat;
+}
+nav#topnav ul li.navHome.current a {
+	background: rgb(77,77,77) url(../images/topnavDashboards.png) center bottom no-repeat;
+}
+
+/* End addition MTW*/
+
+
+nav#topnav ul li.navData a {
+	background: url(../images/topnavData.png) center top no-repeat;
+}
+nav#topnav ul li.navData a:hover {
+	background: rgb(77,77,77) url(../images/topnavData.png) center top no-repeat;
+}
+nav#topnav ul li.navData.current a {
+	background: rgb(77,77,77) url(../images/topnavData.png) center bottom no-repeat;
+}
+nav#topnav ul li.navDashboards a {
+	background: url(../images/topnavDashboards.png) center top no-repeat;
+}
+nav#topnav ul li.navDashboards a:hover {
+	background: rgb(77,77,77) url(../images/topnavDashboards.png) center top no-repeat;
+}
+nav#topnav ul li.navDashboards.current a {
+	background: rgb(77,77,77) url(../images/topnavDashboards.png) center bottom no-repeat;
+}
+nav#topnav ul li.navMaps a {
+	background: url(../images/topnavMaps.png) center top no-repeat;
+}
+nav#topnav ul li.navMaps a:hover {
+	background: rgb(77,77,77) url(../images/topnavMaps.png) center top no-repeat;
+}
+nav#topnav ul li.navMaps.current a {
+	background: rgb(77,77,77) url(../images/topnavMaps.png) center bottom no-repeat;
+}
+nav#topnav ul li.navDevices a {
+	background: url(../images/topnavDevices.png) center top no-repeat;
+}
+nav#topnav ul li.navDevices a:hover {
+	background: rgb(77,77,77) url(../images/topnavDevices.png) center top no-repeat;
+}
+nav#topnav ul li.navDevices.current a {
+	background: rgb(77,77,77) url(../images/topnavDevices.png) center bottom no-repeat;
+}
+nav#topnav ul li.navUsers a {
+	background: url(../images/topnavUsers.png) center top no-repeat;
+}
+nav#topnav ul li.navUsers a:hover {
+	background: rgb(77,77,77) url(../images/topnavUsers.png) center top no-repeat;
+}
+nav#topnav ul li.navUsers.current a {
+	background: rgb(77,77,77) url(../images/topnavUsers.png) center bottom no-repeat;
+}
+nav#topnav ul li.navReports a {
+	background: url(../images/topnavReports.png) center top no-repeat;
+}
+nav#topnav ul li.navReports a:hover {
+	background: rgb(77,77,77) url(../images/topnavReports.png) center top no-repeat;
+}
+nav#topnav ul li.navReports.current a {
+	background: rgb(77,77,77) url(../images/topnavReports.png) center bottom no-repeat;
+}
+nav#topnav ul li.navAdmin a {
+	background: url(../images/topnavAdmin.png) center top no-repeat;
+}
+nav#topnav ul li.navAdmin a:hover {
+	background: rgb(77,77,77) url(../images/topnavAdmin.png) center top no-repeat;
+}
+nav#topnav ul li.navAdmin.current a {
+	background: rgb(77,77,77) url(../images/topnavAdmin.png) center bottom no-repeat;
+}
+/* Top Header Search input
+--------------------------------------------- */
+header input[type="search"] {
+	position: absolute;
+	right: 0px;
+	top: 40px;
+	width: 12%;
+}
+/* main styles
+--------------------------------------------- */
+	
+/*
+Footer
+------------------------------------*/
+footer.bottomPage {
+	position: relative;
+	width: 100%;
+	height: 50px;
+	padding: 0;
+	margin: 0 0 20px 0;
+	background: rgb(58,58,58);
+}
+footer.bottomPage small {
+	display: block;
+	position: relative;
+	color: rgb(205,205,205);
+	font-weight: normal;
+	text-align: center;
+	font-size: 1em;
+	width: 30%;
+	margin: 20px auto;
+	padding: 20px 0 0 0;
+}
+footer.bottomPage div#backToTop {
+}
+footer.bottomPage a[rel="self"] {
+}
+footer.bottomPage a[rel="self"]:hover {
+}
+/*	Devices List table
+----------------------------------------------------------------------*/
+
+#devicesList {
+}
+table.dataTable {
+	width:100%;
+	border-collapse: collapse;
+	text-align: left;
+	color: #606060;
+	margin: 1px auto;
+}
+table.dataTable td {
+	padding: 1.1em 0;
+	overflow: hidden;
+	vertical-align: middle;
+	text-align: center;
+}
+table.dataTable td:hover {
+	font-weight:bold;
+	}
+table.dataTable tbody tr {
+	background: rgb(255, 255, 255);
+	border-bottom: thin solid rgb(255,255,255);
+	-webkit-transition: background-color .4s linear;
+	-moz-transition: background-color .4s linear;
+	-o-transition: background-color .4s linear;
+	transition: background-color .4s linear;
+}
+table.dataTable tbody tr:nth-child(2n), table.dataTable tbody tr.even {
+	background: rgb(232, 230, 220);
+	-webkit-transition: background-color .4s linear;
+	-moz-transition: background-color .4s linear;
+	-o-transition: background-color .4s linear;
+	transition: background-color .4s linear;
+}
+table.dataTable tbody tr:hover, table.dataTable tbody tr:nth-child(2n):hover, table.dataTable tbody tr.even:hover {
+	background: rgb(177,214,224);
+	color: rgb(16, 28, 30);
+}
+table.dataTable thead tr {
+	/*	background:rgb(107, 134, 141);
+	background:rgb(66,82,87);*/
+	background: rgb(58,58,58);
+	border-bottom: none;
+}
+table.dataTable thead tr th {
+	padding: 10px 0px 10px 0px;
+	border-right: thin solid rgb(12,12,12);
+	text-align: center;
+	font-weight: normal;
+	color: rgb(255, 210, 0);
+	font-size: 1.1em;
+	text-transform: uppercase;
+	background: url(../images/sortTableArrows.png) right center no-repeat;
+}
+table.dataTable thead tr th.sorting_desc {
+	background: rgb(23,23,23) url(../images/sortTableDown.png) right center no-repeat;
+}
+table.dataTable thead tr th.sorting_asc {
+	background: rgb(23,23,23) url(../images/sortTableUp.png) right center no-repeat;
+}
+table.dataTable thead tr th:last-child {
+	border-right: none;
+}
+tfoot tr {
+	background:transparent;
+	display:none;
+}
+#devicesListTable .macAddress {
+	text-transform: uppercase;
+	width: 14%;
+}
+#devicesListTable .action {
+	width: 10%;
+}
+#devicesListTable .deviceName {
+	width: 17%;
+}
+#devicesListTable .extraName {
+	width: 17%;
+}
+#devicesListTable .joinDate {
+	width: 10%;
+}
+#devicesListTable .latitude {
+	width: 16%;
+}
+#devicesListTable .longitude {
+	width: 16%;
+}
+/* 
+	Tabs Styling
+----------------------------------------------------------------------*/
+#tabs > section {
+	border: thin solid rgb(224,224,224);
+	border-top:1px solid rgb(255,255,255);
+	background: rgb(224,224,224);
+}
+
+/* ------------ MTW ------------*/
+#inspectData {
+	border: thin solid rgb(224,224,224);
+	border-top:1px solid rgb(255,255,255);
+	background: rgb(224,224,224);
+}
+/* ------------ end MTW ------------*/
+
+
+
+#tabs > section h1 {
+	display: block;
+	width: 50%;
+	margin: 2em auto;
+}
+#tabs nav.tabNav {
+	display: block;
+	padding: 0;
+	width: 100%;
+}
+#tabs nav.tabNav ul {
+	padding: 0;
+}
+#tabs nav.tabNav ul li {
+	display: inline;
+	margin: 0 1px 0 0;
+	float: left;
+background: rgb(201,201,201); /* Old browsers */
+
+/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+
+background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2M5YzljOSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjgzJSIgc3RvcC1jb2xvcj0iI2RmZGZkZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjZWNlY2UiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+
+background: -moz-linear-gradient(top,  rgb(201,201,201) 0%, rgb(223,223,223) 83%, rgb(206,206,206) 100%); /* FF3.6+ */
+
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(201,201,201)), color-stop(83%,rgb(223,223,223)), color-stop(100%,rgb(206,206,206))); /* Chrome,Safari4+ */
+
+background: -webkit-linear-gradient(top,  rgb(201,201,201) 0%,rgb(223,223,223) 83%,rgb(206,206,206) 100%); /* Chrome10+,Safari5.1+ */
+
+background: -o-linear-gradient(top,  rgb(201,201,201) 0%,rgb(223,223,223) 83%,rgb(206,206,206) 100%); /* Opera 11.10+ */
+
+background: -ms-linear-gradient(top,  rgb(201,201,201) 0%,rgb(223,223,223) 83%,rgb(206,206,206) 100%); /* IE10+ */
+
+background: linear-gradient(to bottom,  rgb(201,201,201) 0%,rgb(223,223,223) 83%,rgb(206,206,206) 100%); /* W3C */
+
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', endColorstr='#cecece',GradientType=0 ); /* IE6-8 */
+
+	-webkit-transition: none;
+	-moz-transition: none;
+	-o-transition: none;
+	transition: none;
+	-webkit-border-radius: 5px 5px 0 0;
+     -moz-border-radius: 5px 5px 0 0;
+     border-radius: 5px 5px 0 0;
+    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;}
+#tabs nav.tabNav ul li:hover {
+	background: rgb(174,174,174);
+}
+#tabs nav.tabNav ul li.active, #tabs nav.tabNav ul li.active:hover {
+	
+	background: rgb(69,72,77); /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzQ1NDg0ZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDAwMDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top, rgb(69,72,77) 0%, rgb(0,0,0) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgb(69,72,77)), color-stop(100%, rgb(0,0,0))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgb(69,72,77) 0%, rgb(0,0,0) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgb(69,72,77) 0%, rgb(0,0,0) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgb(69,72,77) 0%, rgb(0,0,0) 100%); /* IE10+ */
+	background: linear-gradient(top, rgb(69,72,77) 0%, rgb(0,0,0) 100%); /* W3C */
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000', GradientType=0 ); /* IE6-8 */
+}
+#tabs nav.tabNav ul li a {
+	font-size: 1.1em;
+	display: block;
+	padding: 1.1em 1.5em;
+	color: rgb(147, 184, 194);
+	text-transform: uppercase;
+	-webkit-transition: none;
+	-moz-transition: none;
+	-o-transition: none;
+	transition: none;
+	-webkit-text-shadow:1px 1px 0 rgb(235,235,235);
+	-moz-text-shadow:1px 1px 0 rgb(235,235,235);
+	text-shadow:1px 1px 0 rgb(235,235,235);
+}
+#tabs nav.tabNav ul li.active a, #tabs nav.tabNav ul li.active a:hover {
+	color: rgb(255,255,255);
+	-webkit-text-shadow:none;
+	-moz-text-shadow:none;
+	text-shadow:none;
+}
+#tabs nav.tabNav ul li a:hover {
+	color: rgb(255,255,255);
+	-webkit-text-shadow:none;
+	-moz-text-shadow:none;
+	text-shadow:none;
+}
+
+/* Survey styles
+--------------------------------------------- */
+.surveysList {
+	position: relative;
+	background: rgba(255,255,255,0.6)
+}
+/* Survey Groups Menu Bar
+--------------------------------------------- */
+#groupBar, #newSurveyInfo {
+	background: rgb(58,58,58);
+	padding: 0 0 1em 0;
+}
+#groupBar input[type="search"] {
+	margin: 5px 0 10px 5px;
+	width: 80%;
+}
+#groupBar h2, #newSurveyInfo h2 {
+	font-size: 1.8em;
+	margin: 10px 0 15px 10px;
+	color: rgb(255,255,255);
+	text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+}
+nav ul.menuGroup {
+	background: rgb(58,58,58);
+}
+nav ul.menuGroup li {
+	width: 98%;
+	margin: 2px 1% 1px 1%;
+	background: url(../images/surveyGroupBg.png) left center repeat-x;
+}
+nav ul.menuGroup li a {
+	display: block;
+	height: 23px;
+	width: 94%;
+	padding: 10px 1% 0 5%;
+	color: rgb(153,153,153);
+	color: rgba(255,255,255,0.6);
+	font-size: 1.2em;
+	background: url(../images/selectIndictr.png) right top no-repeat;
+	text-transform: capitalize;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+nav ul.menuGroup li a:hover {
+	color: rgb(114,  205, 255);
+	background: rgba(255,255,255,0.05) url(../images/selectIndictr.png) right 50% no-repeat;
+}
+nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current {
+	color: rgb(255, 210, 0);
+/*	border-left: thin solid rgb(255,255,255);
+*/	background: url(../images/selectIndictr.png) right bottom no-repeat;
+}
+/* Survey Top Bar
+--------------------------------------------- */
+section.topBar {
+	position: relative;
+	margin: 0 0 10px 0;
+}
+section.topBar h2 {
+	max-width:45%;
+	font-size: 1.7em;
+	color: rgb(255, 210, 0);
+	display: inline;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height:2.4em;
+	margin-left:10px;
+	text-transform:capitalize;
+}
+
+section.topBar > a{
+	position:relative;
+	margin:0 0 0 10px;
+	display:inline-block;
+	color: rgb(114,  205, 255);
+}
+nav.menuTopbar {
+	position: absolute;
+	display: inline;
+	right: 0;
+}
+nav.menuTopbar ul {
+	height: 35px;
+	/*	background: url(../images/topbarSeperator.png) left center no-repeat;
+*/	padding: 0 0 0 15px;
+}
+#surveyCreator nav.menuTopbar ul {
+	background: none;
+}
+nav.menuTopbar ul li {
+	display: inline;
+	float: left;
+	margin: 4px 10px 0 0;
+	text-transform: uppercase;
+}
+nav.menuTopbar ul li:last-child {
+	display: inline;
+	float: left;
+	margin: 4px 4px 0 0;
+	text-transform: uppercase;
+}
+nav.menuTopbar ul li a {
+	font-size: 1em;
+	display: block;
+	height: 7px;
+	padding: 10px 10px 12px 30px;
+	color: rgb(255,255,255);
+	-moz-transition: background-color linear 0.1;
+	-webkit-transition: background-color linear 0.1;
+	-o-transition: background-color linear 0.1;
+	transition: background-color linear 0.1;
+	-moz-border-radius: 3px;
+	-wekit-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px;
+}
+nav.menuTopbar ul li a.addGroup {
+	background: rgb(77,77,77) url(../images/addGroupIcn.png) left top no-repeat;
+}
+nav.menuTopbar ul li a.addGroup:hover {
+	background: rgb(114,  205, 255) url(../images/addGroupIcn.png) left bottom no-repeat;
+	color: rgb(57, 102, 128);
+}
+nav.menuTopbar ul li a.addSurvey {
+	background: rgb(77,77,77) url(../images/addSurveyIcn.png) left top no-repeat;
+}
+nav.menuTopbar ul li a.addSurvey:hover {
+	background: rgb(114,  205, 255) url(../images/addSurveyIcn.png) left bottom no-repeat;
+	color: rgb(57, 102, 128);
+}
+nav.menuTopbar ul li a.stepBack {
+	background: transparent url(../images/backIcn.png) left top no-repeat;
+}
+nav.menuTopbar ul li a.stepBack:hover {
+	background: rgb(114,  205, 255) url(../images/backIcn.png) left bottom no-repeat;
+	color: rgb(57, 102, 128);
+}
+/* Survey Asset
+--------------------------------------------- */
+ul.surveyBatch {
+	width: 100%;
+	position: relative;
+}
+li.aSurvey {
+	position: relative;
+	display: inline-block;
+	width: 23%;
+	padding: 0 0.5% 5px 0.5%;
+	margin: 5px 0.5% 10px 0.5%;
+	float: left;
+/*	background: url(../images/surveySeperator.png) right center no-repeat;
+*/	cursor: pointer;
+	opacity:1;
+	background:transparent;
+	-moz-transition:background 0.2s linear;
+	-webkit-transition:background 0.2s linear;
+	transition:background 0.2s linear;
+}
+
+li.aSurvey:hover {
+	opacity:1;
+	background:rgb(235,235,235);
+}
+
+li.aSurvey:nth-child(4n+1), li.aSurvey.firstOfRow {
+}
+li.aSurvey:nth-child(4n), li.aSurvey.endOfRow {
+	background-image: none;
+}
+li.aSurvey h2 {
+	display: inline-block;
+	margin: 10px 1% 0 2%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 97%;
+	text-transform: capitalize;
+	color:rgb(185,185,185);
+	font-size:1.7em;
+}
+
+li.aSurvey:hover h2 {
+	color:rgb(255,255,255);
+}
+
+ul.surveyInfo {
+	position: relative;
+	width: 100%;
+	margin: 10px auto;
+	height: 40px;
+	padding: 0;
+/*	background: rgb(240,240,240);
+*/	 
+	border-top:thin dotted rgb(225,225,225);
+	border-bottom:thin dotted rgb(225,225,225);
+	text-transform: capitalize;
+	vertical-align: middle;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	-o-border-radius:3px;
+	border-radius:3px;
+}
+li.aSurvey:hover ul.surveyInfo {
+	border-top:thin dotted rgb(255,255,255);
+	border-bottom:thin dotted rgb(255,255,255);
+	}
+
+ul.surveyInfo li {
+	display: inline-block;
+	position: relative;
+	margin-top: 3px;
+}
+ul.surveyInfo li.dateCreated {
+	float: left;
+	height: 26px;
+	padding-top: 10px;
+	margin-left: 5%;
+	width: 35%;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+ul.surveyInfo li.responseNumber {
+	float: right;
+	text-align: right;
+	margin-right: 4%;
+	width: 56%;
+}
+ul.surveyInfo li.responseNumber span {
+	display: inline-block;
+	height: 30px;
+	width: 30px;
+	margin: 2px 0px 0 0;
+	height: 20px;
+	padding-top: 10px;
+	text-align: center;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	-o-border-radius: 15px;
+	border-radius: 15px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	color: rgb(255,255,255);
+}
+ul.surveyInfo li.responseNumber p {
+	display: inline;
+}
+.waterPoint ul.surveyInfo li.responseNumber, li.aSurvey.waterPoint:hover h2  {
+	color: rgb(74, 177, 207);
+}
+
+.houseHold ul.surveyInfo li.responseNumber , li.aSurvey.houseHold:hover h2 {
+	color: rgb(222, 137, 41);
+}
+.school ul.surveyInfo li.responseNumber , li.aSurvey.school:hover h2 {
+	color: rgb(227, 27, 35);
+}
+.sanitationPoint ul.surveyInfo li.responseNumber, li.aSurvey.sanitationPoint:hover h2  {
+	color: rgb(119, 97, 0);
+}
+.waterPoint ul.surveyInfo li.responseNumber span {
+	background: rgb(74, 177, 207);
+}
+.houseHold ul.surveyInfo li.responseNumber span {
+	background: rgb(222, 137, 41);
+}
+.school ul.surveyInfo li.responseNumber span {
+	background: rgb(227, 27, 35);
+}
+.sanitationPoint ul.surveyInfo li.responseNumber span {
+	background: rgb(119, 97, 0);
+}
+.aSurvey dl {
+	position: relative;
+	width: 100%;
+	margin: 5px auto;
+	display: block;
+}
+.aSurvey dl dt, .aSurvey dl dd {
+	display: inline-block;
+	vertical-align: top;
+	margin: 0 0 2px 0;
+	line-height: 1.2em;
+}
+.aSurvey dl dt {
+	width: 25%;
+	color: rgb(153, 153, 153);
+	padding: 2px 0 2px 2%;
+	line-height: 1.2em;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+.aSurvey dl dd {
+	width: 67%;
+	padding: 2px 0 2px 2%;
+}
+.waterPoint dl dd:nth-of-type(2) {
+	color: rgb(74, 177, 207);
+}
+.houseHold dl dd:nth-of-type(2) {
+	color: rgb(222, 137, 41);
+}
+.school dl dd:nth-of-type(2) {
+	color: rgb(227, 27, 35);
+}
+.sanitationPoint dl dd:nth-of-type(2) {
+	color: rgb(119, 97, 0);
+}
+.aSurvey nav {
+	position:relative;
+	width: 100%;
+	padding:5px;
+	opacity:0;
+	-moz-transition:opacity 0.4s linear;
+	-webkit-transition:opacity 0.4s linear;
+	transition:opacity 0.4s linear;
+}
+.aSurvey:hover nav {
+	opacity:1;
+}
+
+.aSurvey nav ul {
+	width: 100%;
+}
+.aSurvey nav ul li {
+	display: inline;
+	float: left;
+	margin: 2px 1% 0 0;
+/*	background: url(../images/aSurveyNavSep.png) right center no-repeat;
+*/	width:52%;
+	background:rgb(235,235,235);
+	padding:5px 0;
+	border-radius:4px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.aSurvey nav ul li:hover {
+	background:rgb(255,255,255);
+}
+
+.aSurvey nav ul li:nth-child(2n+1) {
+	width:46%;
+}
+/*.aSurvey nav ul li:first-child {
+	width: 28%;
+}
+.aSurvey nav ul li:nth-child(even) {
+	width: 36%;
+}
+*/
+.aSurvey nav ul li:nth-child(2n){
+/*	width: 29%;
+	background: none;*/
+}
+.aSurvey nav ul li a {
+	display: block;
+	width:100%;
+	padding:4px 0 1px 28%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.aSurvey nav ul li a:hover {
+	color:rgb(114,  205, 255);
+}
+.aSurvey nav ul li.editSurvey a {
+	background: url(../images/editSurvey.png) 3px top no-repeat;
+}
+.aSurvey nav ul li.previewSurvey a {
+	background: url(../images/previewSurvey.png) 3px top no-repeat;
+}
+.aSurvey nav ul li.deleteSurvey a {
+	background: url(../images/deleteSurvey.png) 3px top no-repeat;
+}
+.aSurvey nav ul li.inspectData a {
+	background: url(../images/inspectData.png) 3px top no-repeat;
+}
+.aSurvey nav ul li.editSurvey a:hover {
+	background: url(../images/editSurvey.png) 3px bottom no-repeat;
+}
+.aSurvey nav ul li.previewSurvey a:hover {
+	background: url(../images/previewSurvey.png) 3px bottom no-repeat;
+}
+.aSurvey nav ul li.deleteSurvey a:hover {
+	background: url(../images/deleteSurvey.png) 3px bottom no-repeat;
+}
+.aSurvey nav ul li.inspectData a:hover {
+	background: url(../images/inspectData.png) 3px bottom no-repeat;
+}
+/*
+ * Survey Creation & Editing
+----------------------------------------------------------------------------------------------------------------*/
+
+#newSurveyInfo h2 {
+	margin: 0.7em 0 1em 3%;
+	font-size: 1.8em;
+	display: block;
+	width: 97%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+#newSurveyInfo form {
+	position: relative;
+	padding: 5px 2%;
+}
+#newSurveyInfo form label, #newSurveyInfo form input, #newSurveyInfo form textarea, #newSurveyInfo form select {
+	display: block;
+}
+#newSurveyInfo form label {
+	color: rgb(255,255,255);
+	margin: 10px 2px 2px 2px;
+}
+#newSurveyInfo form label:first-child {
+	color: rgb(255,255,255);
+	margin: 0px 2px 2px 2px;
+}
+#newSurveyInfo form input {
+	width: 96%;
+	margin: 0 auto;
+	padding: 5px 1.5%;
+}
+#newSurveyInfo form textarea {
+	width: 96%;
+	margin: 0 auto;
+	padding: 10px 1.5%;
+	font-size:1.1em;
+	font-family:sans-serif;
+}
+#newSurveyInfo form select {
+	width: 100%;
+	margin: 0 auto;
+	padding: 2px 0 3px 5px;
+	background-image: url(../images/selectArrows.png) right center no-repeat;
+	background: #eeeeee; /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VlZWVlZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjY2NjY2MiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top, #fff 0%, #ccc 100%); /* FF3.6+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee), color-stop(100%, #cccccc)); /* Chrome,Safari4+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -webkit-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Chrome10+,Safari5.1+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera 11.10+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
+	background: url(../images/selectArrows.png) right center no-repeat, linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc', GradientType=0 ); /* IE6-8 */
+}
+#newSurveyInfo form select option {
+	padding: 0 1.5%;
+	background: rgb(255,255,255);
+}
+.newSurveyInfoUl {
+	width: 100%;
+	padding: 0;
+	margin: 20px 0;
+}
+.newSurveyInfoUl li {
+	width: 85%;
+	padding: 1px 1%;
+	margin: 1px auto;
+	color: rgb(153,153,153);
+	position: relative;
+}
+.newSurveyInfoUl li > span {
+	position: absolute;
+	right: 50px;
+	color: rgb(227, 27, 35);
+	font-weight: bold;
+}
+.newSurveyInfoUl li > span#numberQuestionSet {
+}
+.newSurveyInfoUl li > span#numberQuestion {
+}
+.newSurveyInfoUl li:first-child {
+	background: url(../images/sepHorDark.png) left top repeat-x;
+	padding: 20px 5px;
+	color: rgb(255,255,255);
+	width: 90%;
+}
+nav.newSurveyNav {
+	width: 98%;
+	padding: 0;
+	margin: 0 auto;
+	height: 32px;
+	background: rgb(79,79,79);
+}
+nav.newSurveyNav ul {
+	width: 100%;
+	padding: 0;
+	margin: 0 auto;
+	height: 32px;
+	background: rgb(79,79,79);
+}
+nav.newSurveyNav ul li {
+	width: 33%;
+	padding: 0;
+	height: 30px;
+	display: block;
+	float: left;
+	margin-top: 1px;
+	background: url(../images/topbarSeperator.png) right center no-repeat;
+}
+nav.newSurveyNav ul li:last-child {
+	background: none;
+}
+nav.newSurveyNav ul li a {
+	width: 60%;
+	height: 8px;
+	padding: 12px 0% 10px 40%;
+	display: block;
+}
+nav.newSurveyNav li a:hover {
+	color: rgb(255,255,255);
+}
+nav.newSurveyNav ul li a.saveNewSurvey {
+	background: url(../images/saveNewSurvey.png) left top no-repeat;
+}
+nav.newSurveyNav ul li a.previewNewSurvey {
+	background: url(../images/previewNewSurvey.png) left top no-repeat;
+}
+nav.newSurveyNav ul li a.publishNewSurvey {
+	background: url(../images/publishNewSurvey.png) left top no-repeat;
+}
+nav.newSurveyNav ul li a.saveNewSurvey:hover {
+	background: url(../images/saveNewSurvey.png) left bottom no-repeat;
+}
+nav.newSurveyNav ul li a.previewNewSurvey:hover {
+	background: url(../images/previewNewSurvey.png) left bottom no-repeat;
+}
+nav.newSurveyNav ul li a.publishNewSurvey:hover {
+	background: url(../images/publishNewSurvey.png) left bottom no-repeat;
+}
+/*****
+		A New Question Form
+******---------------------------------------------------------------------------------*/
+
+.aQuestionSet .questionSetContent {
+	position: relative;
+	width: 97%;
+	margin: 0 0.75%;
+	display: block;
+	padding: 5px 0.75%;
+	background: rgb(230,230,230);
+}
+.aQuestionSet .questionSetContent a.addQuestion {
+	display: block;
+	width: 12%;
+	position: relative;
+	margin: 1% auto;
+	padding: 1em 0.5em 1em 45px;
+	background: rgb(204,204,204) url(../images/addQuestion.png) 10px center no-repeat;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	box-shadow: 0 2px 0 rgb(255,255,255);
+	font-size: 1.1em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.aQuestionSet .questionSetContent a.addQuestion:hover {
+	background: rgb(214,214,214) url(../images/addQuestion.png) 10px center no-repeat;
+}
+.aQuestionSet header {
+	position: relative;
+	width: 97%;
+	margin: 0 0.75%;
+	display: block;
+	padding: 10px 0.75%;
+}
+.aQuestionSet header h1 {
+	position: relative;
+	display: inline;
+	font-size: 1.8em;
+	color: rgb(227, 27, 35);
+}
+.aQuestionSet header h1 + a.editSetInfo {
+	position: relative;
+	display: inline-block;
+	margin: 0 0 0 10px;
+	background: url(../images/editTinyIcon.png) left center no-repeat;
+	padding: 0.75em 0.5em 0.25em 17px;
+}
+.aQuestionSet footer {
+	position: relative;
+	width: 98%;
+	margin: 0 0.75%;
+	padding: 5px 0.25%;
+	display: block;
+	background: rgb(179,179,179);
+}
+.aQuestionSet footer a.addSet {
+	display: block;
+	width: 7%;
+	position: relative;
+	margin: 0.25% 1% 0.25% auto;
+	padding: 0.50em 0.5em 0.35em 25px;
+	background: rgb(235,235,235) url(../images/addSet.png) left center no-repeat;
+	font-size: 1.1em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: rgb(227, 27, 35);
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+.aQuestionSet footer a.addSet:hover {
+	background: rgb(214,214,214) url(../images/addSet.png) left center no-repeat;
+	color: rgb(227, 27, 35);
+}
+/*****
+		A New Question Form
+******---------------------------------------------------------------------------------*/
+
+.aQuestionSet .questionSetContent div.innerContent {
+	position: relative;
+	width: 99%;
+	margin: 10px 0.25%;
+	padding: 5px 0.25%;
+	background: rgb(255,255,255) url(../images/lowerCorner.png) right bottom no-repeat;
+	border: thin dashed rgb(204,204,204);
+}
+.aQuestionSet .questionSetContent div.innerContent:focus {
+}
+
+/* MTW changed right from 5px to 25px to avoid clash with lower right folded corner image */
+.innerContent nav {
+	position: absolute;
+	width: 30%;
+	height: 17px;
+	top: 5px;
+	right: 25px;
+}
+
+.innerContent nav ul {
+	width: 100%;
+	height: 17px;
+	padding: 0;
+	margin: 0;
+}
+.innerContent nav ul li {
+	text-align: right;
+	display: inline;
+	height: 17px;
+	float: right;
+	margin: 0 5px 0 0;
+}
+
+.innerContent nav ul li a {
+	display:block;
+	height: 12px;
+}
+.innerContent nav ul li a.deleteQuestion {
+	background:url(../images/deleteQuestion.png) left top no-repeat;
+	padding:5px 5px 0 17px;
+}
+
+/* MTW */
+.innerContent nav ul li a.editQuestion {
+	background:url(../images/editQuestion.png) left top no-repeat;
+	padding:5px 5px 0 17px;
+}
+
+
+.innerContent nav ul li a.moveQuestion {
+	background:url(../images/moveQuestion.png) left top no-repeat;
+	padding:5px 5px 0 17px;
+}
+.innerContent nav ul li a.copyQuestion {
+	background:url(../images/duplicateQuestion.png) left top no-repeat;
+	padding:5px 5px 0 17px;
+}
+.innerContent nav ul li a.deleteQuestion:hover {
+	background:url(../images/deleteQuestion.png) left bottom no-repeat;
+}
+.innerContent nav ul li a.moveQuestion:hover {
+	background:url(../images/moveQuestion.png) left bottom no-repeat;
+}
+.innerContent nav ul li a.copyQuestion:hover {
+	background:url(../images/duplicateQuestion.png) left bottom no-repeat;
+}
+
+
+.innerContent h1 {
+	font-size: 1.5em;
+	margin: 20px 0 0 5px;
+	display: block;
+	font-weight: bold;
+}
+.innerContent h1.questionNbr {
+	margin: 0 0 0 5px;
+	display:inline;
+}
+.innerContent label, .innerContent input, .innerContent select {
+	display: block;
+}
+.innerContent label {
+	margin: 15px 0 0 5px;
+	font-size: 1em;
+	color: rgb(39,94,110);
+}
+.innerContent input[type=text] {
+	width: 96%;
+	padding: 5px 1%;
+	margin: 5px 0 0 5px;
+	border-color: rgb(235,235,235);
+}
+.innerContent select {
+	width: 30%;
+	margin: 5px 0 0 5px;
+	padding: 2px 0 3px 5px;
+	background-image: url(../images/selectArrows.png) right center no-repeat;
+	background: #eeeeee; /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VlZWVlZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjY2NjY2MiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top, #fff 0%, #ccc 100%); /* FF3.6+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee), color-stop(100%, #cccccc)); /* Chrome,Safari4+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -webkit-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Chrome10+,Safari5.1+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera 11.10+ */
+	background: url(../images/selectArrows.png) right center no-repeat, -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
+	background: url(../images/selectArrows.png) right center no-repeat, linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc', GradientType=0 ); /* IE6-8 */
+}
+.innerContent input[type=checkbox] {
+	display: inline-block;
+	padding: 5px 0.5%;
+	margin: 5px 0 0 5px;
+	border-color: rgb(235,235,235);
+}
+.innerContent input[type=checkbox]:first-child {
+	margin: 15px 0 0 5px;
+}
+.innerContent p {
+	padding: 2px 0.5%;
+	margin: 0 0 0 5px;
+}
+
+.innerContent a.saveQuestion {
+	font-size:1.1em;
+	display: block;
+	width:10%;
+	padding: 7px 1%;
+	margin:20px auto;
+	text-align:center;
+	background: rgb(39,94,110);
+	color:rgb(255,255,255);
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	-o-border-radius:3px;
+	border-radius:3px;
+}
+
+.innerContent textarea {
+	margin:5px 0 0 10px;
+	border-color:white;
+}
+
+/****** Data Page
+****************************************************************************/
+#dataFilter {
+	padding:15px 5px;
+	background:rgb(255,255,255) url(../images/dataPointing.png) right center no-repeat;
+	margin:1px auto 0 auto;
+	border-bottom:thin dotted rgb(225,225,225);
+	}
+	
+#dataFilter h3 {
+	font-size:1.8em;
+	font-weight:bold;
+	color:#666;
+	letter-spacing:-0.05em;
+	margin:0 0 5px 5px;
+	}
+
+#dataFilter input {
+	border-color:transparent;
+	height:20px;
+	background:url(../images/icon_cal.png) right center no-repeat;
+	}
+#dataFilter label[for="fromDate"] {
+	margin-left:15px;
+	}
+#dataFilter img.ui-datepicker-trigger {
+	margin-top:4px;
+	display:inline;
+	}
+.dataTables_wrapper {
+	background:rgb(235,235,235);
+	margin:0px auto 1px auto;
+	}
+.dataTables_length {
+	display:inline-block;
+	padding:10px 5px 12px 5px ;
+	}
+.dataTables_length select {
+	padding:0;
+	padding:0 8px 0 0;
+	}
+.dataTables_filter {
+	display:inline-block;
+	padding:10px 5px 12px 5px ;
+	margin-left:70px;
+	}
+.dataTables_filter input{
+	border-color:transparent;
+	}
+.dataTables_info {
+	width:20%;
+	display:block;
+	text-align:center;
+	margin:5px auto;
+	font-size:1.1em;
+	letter-spacing:-0.03em;
+	}
+.dataTables_paginate {
+	position:relative;
+	width:12%;
+	display:block;
+	text-align:center;
+	margin:5px auto 0 auto;
+	}
+.dataTables_paginate a {
+	position:relative;
+	display:block;
+	padding:5px 10px;
+	cursor:pointer;
+	color:rgb(107, 134, 141);
+	font-size:1.1em;
+	}
+.dataTables_paginate a.paginate_disabled_previous, .dataTables_paginate a.paginate_disabled_next {
+	position:relative;
+	display:block;
+	padding:5px 10px;
+	color:rgb(184,184,184);
+	cursor: text;
+	}
+.dataTables_paginate a.paginate_disabled_previous:hover, .dataTables_paginate a.paginate_disabled_next:hover {
+	color:rgb(184,184,184);
+	}
+.dataTables_paginate a.paginate_disabled_previous, .dataTables_paginate a.paginate_enabled_previous  {
+	float:left;
+	}
+
+.dataTables_paginate a.paginate_disabled_next, .dataTables_paginate a.paginate_enabled_next {
+	float:right;
+	}
+.dataSection label {font-size:1em; font-weight:normal;}

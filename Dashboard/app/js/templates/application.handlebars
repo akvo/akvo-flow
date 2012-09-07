@@ -1,0 +1,24 @@
+  <header class="floats-in top" id="header" role="banner">
+        <div>
+            <hgroup>
+                <h1>Akvo
+                    <abbr title="field level operations watch">Flow</abbr></h1>
+                <h2>field level operations watch</h2>
+            </hgroup>
+            <nav id="topnav" role="navigation">
+                {{view FLOW.NavigationView controllerBinding="controller.controllers.navigationController"}}
+            </nav>
+            <form>
+                <input name="flowSearch" placeholder="Find anything here." type="search"/>
+            </form>
+        </div>
+    </header>
+    <div id="pageWrap">
+        {{outlet}}
+    </div>
+    <footer class="floats-in bottomPage" role="contentinfo">
+        <div>
+            <h1>Footer content goes here.</h1>
+            <div id="backToTop"><a href="#header" rel="self">Back to top</a></div>
+        </div>
+    </footer>

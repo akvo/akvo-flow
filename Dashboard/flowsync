@@ -1,0 +1,3 @@
+#!/bin/bash 
+rsync -av  /Users/markwestra/Sites/FLOW-git/FLOW-ember/frontend.html /Users/markwestra/1_Akvo/Software/github/akvo-flow/akvo-flow/GAE/war/
+rsync -av  /Users/markwestra/Sites/FLOW-git/FLOW-ember/frontend-assets /Users/markwestra/1_Akvo/Software/github/akvo-flow/akvo-flow/GAE/war/
