@@ -8,6 +8,11 @@
 .gwt-log
 
 # Specific paths
+
+Dashboard/assets*
+Dashboard/tmp*
+Dashboard/test_assets*
+
 GAE/build.properties
 GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties
 GAE/war/WEB-INF/*.jks
