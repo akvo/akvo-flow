@@ -410,6 +410,21 @@ nav#topnav ul li a {
 nav#topnav ul li a:hover, nav#topnav ul li.current a {
 	color: rgb(246, 160, 26);
 }
+
+/*************** addition MTW **************/
+nav#topnav ul li.navHome a {
+	background: url(../images/topnavDashboards.png) center -18px no-repeat;
+}
+nav#topnav ul li.navHome a:hover {
+	background: rgb(237, 237, 237) url(../images/topnavDashboards.png) center -18px no-repeat;
+}
+nav#topnav ul li.navHome.current a {
+	background:url(../images/topnavDashboards.png) center bottom no-repeat;
+}
+/***************** end addition MTW ************/
+
+
+
 nav#topnav ul li.navSurveys a {
 	background: url(../images/topnavSurveys.png) center -18px no-repeat;
 }
@@ -615,6 +630,18 @@ tfoot tr {
 #devicesListTable .longitude {
 	width: 16%;
 }
+
+/**************** addition MTW **************/
+#inspectData {
+	border: thin solid rgb(224,224,224);
+	border-top:1px solid rgb(255,255,255);
+	background: rgb(224,224,224);
+}
+
+/**************** end addition MTW **************/
+
+
+
 /* 
 	Tabs Styling
 ----------------------------------------------------------------------*/
@@ -731,6 +758,15 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', end
 	margin: 8px auto 10px auto;
 	width: 80%;
 }
+
+/************** MTW added input text field style ***********/
+.topBar input[type="text"] {
+	margin: 7px 0 10px 10px;
+	padding: 3px 3px 3px 3px;
+}
+/* **************** end MTW **************************/
+
+
 #groupBar h2, #newSurveyInfo h2 {
 	font-size: 1.8em;
 	margin: 15px 0 10px 10px;
@@ -768,7 +804,11 @@ nav ul.menuGroup li a:hover {
 	background: rgb(80,80,80) url(../images/selectIndictr.png) right 50% no-repeat;
 	background: rgba(255,255,255,0.05) url(../images/selectIndictr.png) right 50% no-repeat;
 }
-nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current {
+
+/********* MTW changed nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current to 
+"nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a" to select li item instead of a ********/
+
+nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a {
 	color: rgb(255, 210, 0);
 /*	border-left: thin solid rgb(255,255,255);
 */	background: url(../images/selectIndictr.png) right bottom no-repeat;
@@ -800,6 +840,17 @@ section.topBar > a{
 	display:inline-block;
 	color: rgb(114,  205, 255);
 }
+
+/* ****************** MTW added for save and cancel button ************* */
+nav  > a{
+	position:relative;
+	margin:0 0 0 10px;
+	display:inline-block;
+	color: rgb(114,  205, 255);
+}
+/* ********************  end MTW  **************************/
+
+
 nav.menuTopbar {
 	position: absolute;
 	display: inline;
