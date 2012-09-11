@@ -674,6 +674,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', end
 	color: rgb(255,255,255);
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
 }
+
+/* MTW added input text field style */
+.topBar input[type="text"] {
+	margin: 7px 0 10px 10px;
+	padding: 3px 3px 3px 3px;
+}
+/* end MTW */
+
 nav ul.menuGroup {
 	background: rgb(58,58,58);
 }
@@ -700,7 +708,9 @@ nav ul.menuGroup li a:hover {
 	color: rgb(114,  205, 255);
 	background: rgba(255,255,255,0.05) url(../images/selectIndictr.png) right 50% no-repeat;
 }
-nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current {
+/* MTW changed nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current to 
+"nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a" to select li item instead of a*/
+nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a {
 	color: rgb(255, 210, 0);
 /*	border-left: thin solid rgb(255,255,255);
 */	background: url(../images/selectIndictr.png) right bottom no-repeat;
@@ -730,6 +740,16 @@ section.topBar > a{
 	display:inline-block;
 	color: rgb(114,  205, 255);
 }
+
+/* MTW added for save and cancel button */
+nav  > a{
+	position:relative;
+	margin:0 0 0 10px;
+	display:inline-block;
+	color: rgb(114,  205, 255);
+}
+/* end MTW */
+
 nav.menuTopbar {
 	position: absolute;
 	display: inline;

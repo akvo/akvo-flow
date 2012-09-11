@@ -21,13 +21,13 @@ FLOW.store = DS.Store.create({
 });
 
 FLOW.SurveyGroup = DS.Model.extend({
-	surveyList: DS.attr('string'),
-	description: DS.attr('string'),
-	name: DS.attr('string'),
-	createdDateTime: DS.attr('string'),
-	lastUpdateDateTime: DS.attr('string'),
-	code: DS.attr('string'),
-	displayName: DS.attr('string'),
+	surveyList: DS.attr('string',{defaulValue: ""}),
+	description: DS.attr('string',{defaulValue: ""}),
+	name: DS.attr('string',{defaulValue: ""}),
+	createdDateTime: DS.attr('string',{defaulValue: ""}),
+	lastUpdateDateTime: DS.attr('string',{defaulValue: ""}),
+	code: DS.attr('string',{defaulValue: ""}),
+	displayName: DS.attr('string',{defaulValue: ""}),
 	keyId: DS.attr('number'),
 	primaryKey: 'keyId',
 
@@ -64,10 +64,12 @@ FLOW.Survey = DS.Model.extend({
 FLOW.Survey.FIXTURES = [{
 	keyId: 1,
 	displayName: 'Carel van Hassel',
+	name:'Carel van Hassel',
 	surveyGroupId: 1
 }, {
 	keyId: 2,
 	displayName: 'Thomas van Hassel',
+	name:'Thomas van Hassel',
 	surveyGroupId: 2
 }, ];
 

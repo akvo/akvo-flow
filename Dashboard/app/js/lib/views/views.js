@@ -27,27 +27,14 @@ FLOW.NavigationView = Em.View.extend({
 	})
 });
 
-// subnavigation for the data tab
-FLOW.DatasubnavView = Em.View.extend({
-	templateName: 'navData/datasubnav',
-	selectedBinding: 'controller.selected',
-	NavItemView: Ember.View.extend({
-		tagName: 'li',
-		classNameBindings: 'isActive:active'.w(),
-
-		isActive: function() {
-			return this.get('item') === this.get('parentView.selected');
-		}.property('item', 'parentView.selected').cacheable()
-	})
-});
-
-
+// standard views
 FLOW.NavHomeView = Ember.View.extend({
 	templateName: 'navHome'
 });
 FLOW.NavSurveysView = Ember.View.extend({
-	templateName: 'navSurveys'
+	templateName: 'navSurveys'	
 });
+
 FLOW.NavDevicesView = Ember.View.extend({
 	templateName: 'navDevices'
 });
@@ -80,22 +67,21 @@ FLOW.NavAdminView = Ember.View.extend({
 });
 
 
+// subnavigation for the data tab
+FLOW.DatasubnavView = Em.View.extend({
+	templateName: 'navData/datasubnav',
+	selectedBinding: 'controller.selected',
+	NavItemView: Ember.View.extend({
+		tagName: 'li',
+		classNameBindings: 'isActive:active'.w(),
 
-
-FLOW.testControl = Ember.Controller.create({
-	data: 25,
-
-})
-
-FLOW.TestView = Ember.View.extend({
-	dataBinding: "FLOW.testControl.data",
-	change: function() {
-		this.set('data', this.get('data') + 1);
-	}
-
-
+		isActive: function() {
+			return this.get('item') === this.get('parentView.selected');
+		}.property('item', 'parentView.selected').cacheable()
+	})
 });
 
+// ************************ Surveys *************************
 FLOW.QuestionGroupItemView = Ember.View.extend({
 	content: null,
 
@@ -143,4 +129,97 @@ FLOW.QuestionView = Ember.View.extend({
 			console.log("doing doDelete");
 	}
 	
+});
+
+
+FLOW.SurveyGroupMenuItemView = Ember.View.extend({
+	content: null,
+	tagName: 'li',
+	classNameBindings: 'amSelected:current'.w(),
+
+	amSelected: function() {
+		var selected = FLOW.selectedControl.get('selectedSurveyGroup');
+		if (selected) {
+			var amSelected = (this.content.get('keyId') === FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
+			return amSelected;
+		} else {
+			return null;
+		}
+	}.property('FLOW.selectedControl.selectedSurveyGroup', 'content'),
+
+	makeSelected: function() {
+			console.log("selecting survey Group: "+this.content.get('keyId'));
+			FLOW.selectedControl.set('selectedSurveyGroup', this.content);
+	}
+});
+
+FLOW.SurveyGroupTopBarView = Ember.View.extend({
+	
+	showEditField: false,
+	showNewGroupField:false,
+	surveyGroupName:null,
+	
+	oneSelected: function() {
+		var selected = FLOW.selectedControl.get('selectedSurveyGroup');
+		if (selected) {
+			return true;
+		} else {
+			return false;
+		}
+	}.property('FLOW.selectedControl.selectedSurveyGroup'),
+
+	editSurveyInfo: function() {
+			console.log("Edit survey info");
+			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
+			this.set('showEditField',true);			
+	},
+	
+	saveSurveyGroupNameEdit: function() {
+			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
+			var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
+			surveyGroup.set('displayName',this.get('surveyGroupName'));	
+			this.set('showEditField',false);			
+	},
+	
+	cancelSurveyGroupNameEdit: function() {
+			console.log("cancel survey group name edit info");
+			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
+			this.set('showEditField',false);			
+	},
+	
+	addGroup: function() {
+			console.log("create group");
+			FLOW.selectedControl.set('selectedSurveyGroup',null);
+			this.set('surveyGroupName',null);
+			this.set('showNewGroupField',true);	
+	},
+	
+	saveNewSurveyGroupName: function() {
+			console.log("saving new survey group name");
+			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{"keyId":"","name":this.get('surveyGroupName'),"displayName":this.get('surveyGroupName'),"code":this.get('surveyGroupName')});
+
+			this.set('showNewGroupField',false);	
+	},
+	
+	cancelNewSurveyGroupName: function() {
+			console.log("cancel new survey group name");
+			this.set('surveyGroupName',null);
+			this.set('showNewGroupField',false);	
+	},
+		
+	createSurvey: function() {
+			console.log("TODO create Survey");			
+	},
+	editSurvey: function() {
+			console.log("TODO edit Survey");			
+	},
+	previewSurvey: function() {
+			console.log("TODO preview Survey");			
+	},
+	deleteSurvey: function() {
+			console.log("TODO delete Survey");			
+	},
+	inspectData: function() {
+			console.log("TODO inspect Data");			
+	}
 });

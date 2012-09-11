@@ -28,20 +28,108 @@
     </head>
     <body>
        
+<script data-template-name="navSurveys" type="text/x-handlebars">
+
+<section id="main" class="surveySection floats-in" role="main">
+	{{#view FLOW.SurveyGroupTopBarView}}
+   <section id="groupBar" class="leftSidebar">
+     <form action="" method="post">
+       <input type="search" placeholder="Filter Surveys"  name="surveySearch" />
+     </form>
+     <h2>survey groups</h2>
+     <nav>
+       <ul class="menuGroup">
+       
+			{{#each sg in FLOW.surveyGroupControl.active}}
+				{{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
+	    			<a {{action "makeSelected" target="this"}}> {{sg.displayName}}<span class="surveyNo"> (xxx)</span></a>
+				{{/view}}
+			{{/each}}
+
+        </ul>
 
 
-		 <!-- home page -->
-        <script data-template-name="navHome" type="text/x-handlebars">
-            <div class="hero-unit">
-                <h1>Home</h1>
-                <p>
-                    Home sweet home!
-                </p>
-            </div>
-        </script>
+			{{#if view.showNewGroupField}}
+			{{view Ember.TextField valueBinding="view.surveyGroupName" size=30}}
+				<a {{action "saveNewSurveyGroupName" target="this"}}>Save</a>
+				<a {{action "cancelNewSurveyGroupName" target="this"}}>Cancel</a>
+			{{/if}}
+
+
+     </nav>
+   </section>
+   	
+	<section id="allSurvey" class="mainRight surveysList">
+
+     	<section class="topBar">
+	
+			{{#if view.oneSelected}}
+				{{#if view.showEditField}}
+					{{view Ember.TextField valueBinding="view.surveyGroupName" size=45}}
+					<a {{action "saveSurveyGroupNameEdit" target="this"}}>Save</a>
+					<a {{action "cancelSurveyGroupNameEdit" target="this"}}>Cancel</a>
+					
+				{{else}}
+       				<h2>{{FLOW.selectedControl.selectedSurveyGroup.displayName}}</h2> 
+					<a {{action "editSurveyInfo" target="this"}}>Edit survey group info</a>
+				{{/if}}
+			{{/if}}
+		
+			<nav class="menuTopbar">
+         		<ul class="">
+           			<li><a {{action "addGroup" target="this"}} class="addGroup">add a group</a></li>
+           			<li><a {{action "createNewSurvey" target="this"}} class="addSurvey">create a new survey</a></li>
+         		</ul>
+       		</nav>    
+ 		</section>
+	{{/view}}
+
+	
+	
+     <ul class="surveyBatch">
+		{{#each survey in FLOW.surveyControl.active}} 
+			{{#view FLOW.SurveyGroupTopBarView contentBinding="survey"}}
+			<li class="aSurvey waterPoint">
+		
+         <h2 class="">{{survey.code}}</h2>
+         <ul class="surveyInfo floats-in">
+           <li class="dateCreated">
+             <time>
+             07 May 2012
+             <time>
+           </li>
+           <li class="responseNumber"><span>15</span>
+             <p>responses</p>
+           </li>
+         </ul>
+         <dl class="floats-in">
+           <dt>modified</dt>
+           <dd>22 May 2012</dd>
+           <dt>type</dt>
+           <dd>water point</dd>
+           <dt>language</dt>
+           <dd>english, spanish, french, Dutch, German</dd>
+         </dl>
+         <nav>
+           <ul>              
+			 <li class="editSurvey"><a {{action "editSurvey" target="this"}}>Edit</a></li>
+             <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>Preview</a></li>
+             <li class="deleteSurvey"><a {{action "deleteSurvey" target="this"}}>Delete</a></li>
+             <li class="inspectData"><a {{action "inspectData" target="this"}}>Inspect Data</a></li>
+			</ul>
+         </nav>
+       </li>
+	{{/view}}
+	{{/each}}
+	</ul>
+   </section>
+</script>
+
+
+
 
 		 <!-- survey page -->
-        <script data-template-name="navSurveys" type="text/x-handlebars">
+        <script data-template-name="navSurveys1" type="text/x-handlebars">
             <div class="hero-unit">
                 {{view Ember.Select contentBinding="controllers.surveyGroupController.content" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.displayName" optionValuePath="content.keyId" prompt="Select survey group"}} 
 
@@ -136,27 +224,6 @@
         </script>
 		
 
-
-        
-		<script data-template-name="importSurvey" type="text/x-handlebars">
-            <section class="fullWidth" id="importSurvey">
-                <h1>Content of Import Survey Data tab
-                </h1>
-            </section>
-        </script>
-        
-		<script data-template-name="excelExport" type="text/x-handlebars">
-            <section class="fullWidth" id="excelExport">
-                <h1>This is the content of Spreadsheet export</h1>
-            </section>
-        </script>
-        
-		<script data-template-name="excelImport" type="text/x-handlebars">
-            <section class="fullWidth" id="excelImport">
-                <h1>This is the content of Spreadsheet import</h1>
-            </section>
-        </script>
-        
 
 
 
