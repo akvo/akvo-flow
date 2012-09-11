@@ -54,7 +54,6 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 
 FLOW.surveyControl = Ember.ArrayController.create({
 	active: function() {
-		console.log("in surveyControl");
 		if (FLOW.selectedControl.get('selectedSurveyGroup')) {
 			var id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
 			return FLOW.store.find(FLOW.Survey, {surveyGroupId: id})

@@ -10,7 +10,7 @@
 
 			{{#each sg in FLOW.surveyGroupControl.active}}
 				{{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-	    			<a {{action "makeSelected" target="this"}}>{{sg.displayName}}<span class="surveyNo"> (xxx)</span></a>
+	    			<a {{action "makeSelected" target="this"}}>{{sg.displayName}}</a>
 				{{/view}}
 			{{/each}}
 

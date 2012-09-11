@@ -5,7 +5,7 @@ require('akvo-flow/core');
 
 FLOW.Router = Ember.Router.extend({
 	enableLogging: true,
-	location: 'hash',
+	location: 'none', //or 'hash' for URLs
 	root: Ember.Route.extend({
 		doNavHome: function(router, context) {
 			router.transitionTo('navHome');

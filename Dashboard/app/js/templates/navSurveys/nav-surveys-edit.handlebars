@@ -3,11 +3,11 @@
   <section class="leftSidebar" id="newSurveyInfo">
       <h2>Edit survey</h2>
       <form action="#" method="get">
-          <label for="newSurveyName">Survey title:</label>
+          <label for="newSurveyName">Title:</label>
           <input autofocus id="newSurveyName" name="surveyName" placeholder="Type in the name of your survey." required required title="Type in the name of your survey." type="text"/>
-          <label for="newSurveyDesc">Survey description:</label>
+          <label for="newSurveyDesc">Description:</label>
           <textarea id="newSurveyDesc" name="surveyDesc" placeholder="Type in the description of your survey." required title="Type in the description of your survey."></textarea>
-          <label for="surveyType">Survey Type:</label>
+          <label for="surveyType">Type:</label>
           <select id="surveyType">
               <option value="Water Point">Water Point</option>
               <option value="School">School</option>
@@ -56,6 +56,7 @@
 							</header><br/>
 							{{#if view.amVisible}} 
 								{{#each q in FLOW.questionControl.active}} 
+									{{q.displayName}}<br/>
 								{{/each}} 
 							{{/if}} 
 
