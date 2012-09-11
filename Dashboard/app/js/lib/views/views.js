@@ -28,43 +28,18 @@ FLOW.NavigationView = Em.View.extend({
 });
 
 // standard views
-FLOW.NavHomeView = Ember.View.extend({
-	templateName: 'navHome'
-});
-FLOW.NavSurveysView = Ember.View.extend({
-	templateName: 'navSurveys'	
-});
-
-FLOW.NavDevicesView = Ember.View.extend({
-	templateName: 'navDevices'
-});
-FLOW.NavDataView = Ember.View.extend({
-	templateName: 'navData'
-});
-FLOW.InspectDataView = Ember.View.extend({
-	templateName: 'navData/inspectData'
-});
-FLOW.ImportSurveyView = Ember.View.extend({
-	templateName: 'navData/importSurvey'
-});
-FLOW.ExcelImportView = Ember.View.extend({
-	templateName: 'navData/excelImport'
-});
-FLOW.ExcelExportView = Ember.View.extend({
-	templateName: 'navData/excelExport'
-});
-FLOW.NavReportsView = Ember.View.extend({
-	templateName: 'navReports'
-});
-FLOW.NavMapsView = Ember.View.extend({
-	templateName: 'navMaps'
-});
-FLOW.NavUsersView = Ember.View.extend({
-	templateName: 'navUsers'
-});
-FLOW.NavAdminView = Ember.View.extend({
-	templateName: 'navAdmin'
-});
+FLOW.NavHomeView = Ember.View.extend({ templateName: 'navHome'});
+FLOW.NavSurveysView = Ember.View.extend({ templateName: 'navSurveys/navSurveys'});
+FLOW.NavDevicesView = Ember.View.extend({ templateName: 'navDevices'});
+FLOW.NavDataView = Ember.View.extend({ templateName: 'navData/navData'});
+FLOW.InspectDataView = Ember.View.extend({ templateName: 'navData/inspectData'});
+FLOW.ImportSurveyView = Ember.View.extend({ templateName: 'navData/importSurvey'});
+FLOW.ExcelImportView = Ember.View.extend({ templateName: 'navData/excelImport'});
+FLOW.ExcelExportView = Ember.View.extend({ templateName: 'navData/excelExport'});
+FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports'});
+FLOW.NavMapsView = Ember.View.extend({ templateName: 'navMaps'});
+FLOW.NavUsersView = Ember.View.extend({	templateName: 'navUsers'});
+FLOW.NavAdminView = Ember.View.extend({	templateName: 'navAdmin'});
 
 
 // subnavigation for the data tab

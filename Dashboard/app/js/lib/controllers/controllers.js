@@ -46,17 +46,10 @@ FLOW.SurveyGroupController = Ember.ArrayController.extend({});
 
 FLOW.surveyGroupControl = Ember.ArrayController.create({
 	active: function() {
-		//	console.log("in survey Group Control new");
-		//	console.log(FLOW.store.find(FLOW.SurveyGroup, {}));
-		//	var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{"keyId":"67","name":"hoera","displayName":"hoerahoera","code":"hoera"});
-		//	var hebbes1 = FLOW.store.find(FLOW.SurveyGroup,1);
-		//	var hebbes2 = FLOW.store.find(FLOW.SurveyGroup,2);
-		//	var hebbes67 = FLOW.store.find(FLOW.SurveyGroup,67);
-		//	console.log("controller:"+hebbes1.get('displayName'));
-		//	console.log("controller:"+hebbes2.get('displayName'));
-		//	console.log("controller:"+hebbes67.get('displayName'));
+			console.log("in surveyGroupControl");
+			//TODO find out how items are being loaded, difference find and findAll
 			return FLOW.store.findAll(FLOW.SurveyGroup);
-	}.property('FLOW.selectedControl.selectedSurveyGroup').cacheable()
+	}.property('').cacheable()
 });
 
 

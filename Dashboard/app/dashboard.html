@@ -28,7 +28,7 @@
     </head>
     <body>
        
-<script data-template-name="navSurveys" type="text/x-handlebars">
+<script data-template-name="navSurveys2" type="text/x-handlebars">
 
 <section id="main" class="surveySection floats-in" role="main">
 	{{#view FLOW.SurveyGroupTopBarView}}
@@ -40,9 +40,16 @@
      <nav>
        <ul class="menuGroup">
        
+
+			{{#each sg in FLOW.surveyGroupController.content}}
+				{{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
+	    			<a {{action "makeSelected" target="this"}}> 1111{{sg.displayName}}<span class="surveyNo"> (xxx)</span></a>
+				{{/view}}
+			{{/each}}
+
 			{{#each sg in FLOW.surveyGroupControl.active}}
 				{{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-	    			<a {{action "makeSelected" target="this"}}> {{sg.displayName}}<span class="surveyNo"> (xxx)</span></a>
+	    			<a {{action "makeSelected" target="this"}}>{{sg.displayName}}<span class="surveyNo"> (xxx)</span></a>
 				{{/view}}
 			{{/each}}
 
