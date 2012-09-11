@@ -11,7 +11,7 @@ FLOW.Router = Ember.Router.extend({
 			router.transitionTo('navHome');
 		},
 		doNavSurveys: function(router, context) {
-			router.transitionTo('navSurveys');
+			router.transitionTo('navSurveys.index');
 		},
 		doNavDevices: function(router, context) {
 			router.transitionTo('navDevices');
@@ -37,50 +37,86 @@ FLOW.Router = Ember.Router.extend({
 			redirectsTo: 'navHome'
 		}),
 
+// ************************** HOME ROUTER **********************************
 		navHome: Ember.Route.extend({
 			route: '/',
-			connectOutlets: function(router, context) {
+			connectOutlets: function(router, event) {
 				router.get('applicationController').connectOutlet('navHome');
 				router.set('navigationController.selected', 'navHome');
 			}
 		}),
 
+// ******************* SURVEYS ROUTER ********************
 		navSurveys: Ember.Route.extend({
 			route: '/surveys',
-			connectOutlets: function(router, context) {
+			connectOutlets: function(router, event) {
 				router.get('applicationController').connectOutlet('navSurveys');
 				router.get('surveyGroupController').set('content', FLOW.store.find(FLOW.SurveyGroup, {}));
 				router.set('navigationController.selected', 'navSurveys');
-			}
+			},
+
+			doEditSurvey: function(router, event) {
+				FLOW.selectedControl.set('selectedSurvey',event.context);
+				router.transitionTo('navSurveys.navSurveysEdit');
+			},
+			
+			doSurveysMain: function(router, event) {
+				router.transitionTo('navSurveys.navSurveysMain');
+			},
+			
+			index: Ember.Route.extend({
+				route: '/',
+				redirectsTo: 'navSurveysMain'
+			}),
+
+			navSurveysMain: Ember.Route.extend({
+				route: '/main',
+				connectOutlets: function(router, event) {
+					router.get('navSurveysController').connectOutlet({
+						name: 'navSurveysMain'
+					});
+				}
+			}),
+			
+			navSurveysEdit: Ember.Route.extend({
+				route: '/edit',
+				connectOutlets: function(router, event) {
+					router.get('navSurveysController').connectOutlet({
+						name: 'navSurveysEdit'
+					});
+				}
+			}),
+
 		}),
 
+//********************** DEVICES ROUTER *******************
 		navDevices: Ember.Route.extend({
 			route: '/devices',
-			connectOutlets: function(router, context) {
-				router.get('applicationController').connectOutlet('navDevices1');
+			connectOutlets: function(router, event) {
+				router.get('applicationController').connectOutlet('navDevices');
 				router.set('navigationController.selected', 'navDevices');
 			}
 		}),
 
 
-		// the navData tab has subnavigation
+// ******************* DATA ROUTER ***********************
 		navData: Ember.Route.extend({
 			route: '/data',
-			connectOutlets: function(router, context) {
+			connectOutlets: function(router, event) {
 				router.get('applicationController').connectOutlet('navData');
 				router.set('navigationController.selected', 'navData');
 			},
 
-			doInspectData: function(router, context) {
+			doInspectData: function(router, event) {
 				router.transitionTo('navData.inspectData');
 			},
-			doImportSurvey: function(router, context) {
+			doImportSurvey: function(router, event) {
 				router.transitionTo('navData.importSurvey');
 			},
-			doExcelImport: function(router, context) {
+			doExcelImport: function(router, event) {
 				router.transitionTo('navData.excelImport');
 			},
-			doExcelExport: function(router, context) {
+			doExcelExport: function(router, event) {
 				router.transitionTo('navData.excelExport');
 			},
 
@@ -125,7 +161,8 @@ FLOW.Router = Ember.Router.extend({
 				}
 			}),
 		}),
-		// end of navData route
+
+// ************************** REPORTS ROUTER **********************************
 		navReports: Ember.Route.extend({
 			route: '/reports',
 			connectOutlets: function(router, context) {
@@ -134,6 +171,7 @@ FLOW.Router = Ember.Router.extend({
 			}
 		}),
 
+// ************************** MAPS ROUTER **********************************
 		navMaps: Ember.Route.extend({
 			route: '/maps',
 			connectOutlets: function(router, context) {
@@ -141,7 +179,8 @@ FLOW.Router = Ember.Router.extend({
 				router.set('navigationController.selected', 'navMaps');
 			}
 		}),
-
+		
+// ************************** USERS ROUTER **********************************
 		navUsers: Ember.Route.extend({
 			route: '/users',
 			connectOutlets: function(router, context) {
@@ -150,6 +189,7 @@ FLOW.Router = Ember.Router.extend({
 			}
 		}),
 
+// ************************** ADMIN ROUTER **********************************
 		navAdmin: Ember.Route.extend({
 			route: '/admin',
 			connectOutlets: function(router, context) {

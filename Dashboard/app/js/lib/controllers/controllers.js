@@ -46,7 +46,6 @@ FLOW.SurveyGroupController = Ember.ArrayController.extend({});
 
 FLOW.surveyGroupControl = Ember.ArrayController.create({
 	active: function() {
-			console.log("in surveyGroupControl");
 			//TODO find out how items are being loaded, difference find and findAll
 			return FLOW.store.findAll(FLOW.SurveyGroup);
 	}.property('').cacheable()
@@ -58,7 +57,6 @@ FLOW.surveyControl = Ember.ArrayController.create({
 		console.log("in surveyControl");
 		if (FLOW.selectedControl.get('selectedSurveyGroup')) {
 			var id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-				console.log("keyId: "+id);
 			return FLOW.store.find(FLOW.Survey, {surveyGroupId: id})
 		} else {
 			FLOW.selectedControl.set('selectedSurvey', null);
@@ -70,7 +68,6 @@ FLOW.surveyControl = Ember.ArrayController.create({
 
 FLOW.questionGroupControl = Ember.ArrayController.create({
 	active: function() {
-		console.log("in questionGroupControl");
 		if (FLOW.selectedControl.get('selectedSurvey')) {
 			var id = FLOW.selectedControl.selectedSurvey.get('keyId');
 			return FLOW.store.find(FLOW.QuestionGroup, {surveyId: id})
@@ -83,7 +80,6 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 
 FLOW.questionControl = Ember.ArrayController.create({
 	active: function() {
-		console.log("in questionControl");
 		if (FLOW.selectedControl.get('selectedQuestionGroup')) {
 			var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 

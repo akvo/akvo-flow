@@ -1,0 +1,27 @@
+ <div class="hero-unit">
+        <h1>Admin</h1>
+       	{{view Ember.Select 
+			contentBinding="controllers.surveyGroupController.content" 
+			selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
+			optionLabelPath="content.displayName" 
+			optionValuePath="content.keyId" 
+			prompt="Select survey group"}} 
+
+			{{view Ember.Select 
+				contentBinding="FLOW.surveyControl.active" 
+				selectionBinding="FLOW.selectedControl.selectedSurvey" 
+				optionLabelPath="content.displayName" 
+				optionValuePath="content.keyId" 
+				prompt="Select survey"}} 
+
+			{{view Ember.Select 
+				contentBinding="FLOW.questionGroupControl.active" 
+				selectionBinding="FLOW.selectedControl.selectedQuestionGroup" 
+				optionLabelPath="content.displayName" 
+				optionValuePath="content.keyId" 
+				prompt="Select question group"}}
+				
+				 SurveyGroup {{FLOW.selectedControl.selectedSurveyGroup.keyId}}<br>
+                  Survey {{FLOW.selectedControl.selectedSurvey.keyId}}<br>
+                  Question Group {{FLOW.selectedControl.selectedQuestionGroup.keyId}}<br>
+    </div>

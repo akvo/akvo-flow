@@ -9,7 +9,10 @@ FLOW.ApplicationView = Ember.View.extend({
 	templateName: 'application'
 });
 
-// main Navigation with 'active' indication  
+// ********************************************************//
+//                      main navigation                    
+// ********************************************************//
+
 FLOW.NavigationView = Em.View.extend({
 	templateName: 'navigation',
 	selectedBinding: 'controller.selected',
@@ -27,24 +30,38 @@ FLOW.NavigationView = Em.View.extend({
 	})
 });
 
-// standard views
-FLOW.NavHomeView = Ember.View.extend({ templateName: 'navHome'});
-FLOW.NavSurveysView = Ember.View.extend({ templateName: 'navSurveys/navSurveys'});
-FLOW.NavDevicesView = Ember.View.extend({ templateName: 'navDevices'});
-FLOW.NavDataView = Ember.View.extend({ templateName: 'navData/navData'});
-FLOW.InspectDataView = Ember.View.extend({ templateName: 'navData/inspectData'});
-FLOW.ImportSurveyView = Ember.View.extend({ templateName: 'navData/importSurvey'});
-FLOW.ExcelImportView = Ember.View.extend({ templateName: 'navData/excelImport'});
-FLOW.ExcelExportView = Ember.View.extend({ templateName: 'navData/excelExport'});
-FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports'});
-FLOW.NavMapsView = Ember.View.extend({ templateName: 'navMaps'});
-FLOW.NavUsersView = Ember.View.extend({	templateName: 'navUsers'});
-FLOW.NavAdminView = Ember.View.extend({	templateName: 'navAdmin'});
+// ********************************************************//
+//                      standard views                    
+// ********************************************************//
+
+FLOW.NavHomeView = Ember.View.extend({ templateName: 'navHome/nav-home'});
+
+FLOW.NavSurveysView = Ember.View.extend({ templateName: 'navSurveys/nav-surveys'});
+FLOW.NavSurveysMainView = Ember.View.extend({ templateName: 'navSurveys/nav-surveys-main'});
+FLOW.NavSurveysEditView = Ember.View.extend({ templateName: 'navSurveys/nav-surveys-edit'});
+
+FLOW.NavDevicesView = Ember.View.extend({ templateName: 'navDevices/nav-devices'});
+
+FLOW.NavDataView = Ember.View.extend({ templateName: 'navData/nav-data'});
+FLOW.InspectDataView = Ember.View.extend({ templateName: 'navData/inspect-data'});
+FLOW.ImportSurveyView = Ember.View.extend({ templateName: 'navData/import-survey'});
+FLOW.ExcelImportView = Ember.View.extend({ templateName: 'navData/excel-import'});
+FLOW.ExcelExportView = Ember.View.extend({ templateName: 'navData/excel-export'});
+
+FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports/nav-reports'});
+
+FLOW.NavMapsView = Ember.View.extend({ templateName: 'navMaps/nav-maps'});
+
+FLOW.NavUsersView = Ember.View.extend({	templateName: 'navUsers/nav-users'});
+
+FLOW.NavAdminView = Ember.View.extend({	templateName: 'navAdmin/nav-admin'});
 
 
-// subnavigation for the data tab
+// ********************************************************//
+//             Subnavigation for the Data tabs                
+// ********************************************************//
 FLOW.DatasubnavView = Em.View.extend({
-	templateName: 'navData/datasubnav',
+	templateName: 'navData/data-subnav',
 	selectedBinding: 'controller.selected',
 	NavItemView: Ember.View.extend({
 		tagName: 'li',
@@ -55,6 +72,7 @@ FLOW.DatasubnavView = Em.View.extend({
 		}.property('item', 'parentView.selected').cacheable()
 	})
 });
+
 
 // ************************ Surveys *************************
 FLOW.QuestionGroupItemView = Ember.View.extend({
@@ -144,7 +162,6 @@ FLOW.SurveyGroupTopBarView = Ember.View.extend({
 	}.property('FLOW.selectedControl.selectedSurveyGroup'),
 
 	editSurveyInfo: function() {
-			console.log("Edit survey info");
 			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
 			this.set('showEditField',true);			
 	},
@@ -157,27 +174,27 @@ FLOW.SurveyGroupTopBarView = Ember.View.extend({
 	},
 	
 	cancelSurveyGroupNameEdit: function() {
-			console.log("cancel survey group name edit info");
 			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
 			this.set('showEditField',false);			
 	},
 	
 	addGroup: function() {
-			console.log("create group");
 			FLOW.selectedControl.set('selectedSurveyGroup',null);
 			this.set('surveyGroupName',null);
 			this.set('showNewGroupField',true);	
 	},
 	
 	saveNewSurveyGroupName: function() {
-			console.log("saving new survey group name");
-			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{"keyId":"","name":this.get('surveyGroupName'),"displayName":this.get('surveyGroupName'),"code":this.get('surveyGroupName')});
+			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{
+				"keyId":"",
+				"name":this.get('surveyGroupName'),
+				"displayName":this.get('surveyGroupName'),
+				"code":this.get('surveyGroupName')});
 
 			this.set('showNewGroupField',false);	
 	},
 	
 	cancelNewSurveyGroupName: function() {
-			console.log("cancel new survey group name");
 			this.set('surveyGroupName',null);
 			this.set('showNewGroupField',false);	
 	},
@@ -185,9 +202,7 @@ FLOW.SurveyGroupTopBarView = Ember.View.extend({
 	createSurvey: function() {
 			console.log("TODO create Survey");			
 	},
-	editSurvey: function() {
-			console.log("TODO edit Survey");			
-	},
+
 	previewSurvey: function() {
 			console.log("TODO preview Survey");			
 	},

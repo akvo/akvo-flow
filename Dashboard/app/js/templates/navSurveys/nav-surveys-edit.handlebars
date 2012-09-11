@@ -1,0 +1,69 @@
+
+		
+  <section class="leftSidebar" id="newSurveyInfo">
+      <h2>Edit survey</h2>
+      <form action="#" method="get">
+          <label for="newSurveyName">Survey title:</label>
+          <input autofocus id="newSurveyName" name="surveyName" placeholder="Type in the name of your survey." required required title="Type in the name of your survey." type="text"/>
+          <label for="newSurveyDesc">Survey description:</label>
+          <textarea id="newSurveyDesc" name="surveyDesc" placeholder="Type in the description of your survey." required title="Type in the description of your survey."></textarea>
+          <label for="surveyType">Survey Type:</label>
+          <select id="surveyType">
+              <option value="Water Point">Water Point</option>
+              <option value="School">School</option>
+              <option value="Sanitation Point">Sanitation Point</option>
+              <option value="Houselhold">Household</option>
+              <option value="Create a new type">Create a new Survey type</option>
+          </select>
+      </form>
+      <ul class="newSurveyInfoUl" id="">
+          <li>
+              <h3>Survey Summary</h3>
+          </li>
+          <li>Number of Question set:
+              <span id="numberQuestionSet">01</span></li>
+          <li>Number of Questions:
+              <span id="numberQuestion">00</span></li>
+      </ul>
+      <nav class="newSurveyNav">
+          <ul>
+              <li><a href="#" class="saveNewSurvey">Save</a></li>
+              <li><a href="#" class="previewNewSurvey">Preview</a></li>
+              <li><a href="#" class="publishNewSurvey">Publish</a></li>
+          </ul>
+      </nav>
+  </section>
+  <section class="mainRight" id="surveyCreator">
+      <section class="topBar">
+          <nav class="menuTopbar">
+              <ul class="">
+                  <li><a {{action "doSurveysMain"}} class="stepBack">Go back to survey overview</a></li>
+              </ul>
+          </nav>
+      </section>
+
+      <!-- Beginning Question Set  -->
+      <section id="questionSet">
+          <section class="aQuestionSet" id="setIndex-01">
+             
+                 
+                  
+					{{#each qg in FLOW.questionGroupControl.active}} 
+						{{#view FLOW.QuestionGroupItemView contentBinding="qg"}}
+						 	<header>
+				    			<h1>{{qg.displayName}}</h1>
+				    			<a class="editSetInfo" {{action "toggleVisibility" target="this"}}>{{view.showHideText}}</a>
+							</header><br/>
+							{{#if view.amVisible}} 
+								{{#each q in FLOW.questionControl.active}} 
+								{{/each}} 
+							{{/if}} 
+
+						{{/view}} 
+					{{/each}}
+				
+				
+          </section>
+      </section>
+      <!-- End Question Set  -->
+  </section>

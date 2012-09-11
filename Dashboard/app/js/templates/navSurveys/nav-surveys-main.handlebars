@@ -1,6 +1,4 @@
-
-<section id="main" class="surveySection floats-in" role="main">
-	{{#view FLOW.SurveyGroupTopBarView}}
+{{#view FLOW.SurveyGroupTopBarView}}
    <section id="groupBar" class="leftSidebar">
      <form action="" method="post">
        <input type="search" placeholder="Filter Surveys"  name="surveySearch" />
@@ -9,12 +7,6 @@
      <nav>
        <ul class="menuGroup">
        
-
-			{{#each sg in FLOW.surveyGroupController.content}}
-				{{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-	    			<a {{action "makeSelected" target="this"}}> 1111{{sg.displayName}}<span class="surveyNo"> (xxx)</span></a>
-				{{/view}}
-			{{/each}}
 
 			{{#each sg in FLOW.surveyGroupControl.active}}
 				{{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
@@ -88,7 +80,7 @@
          </dl>
          <nav>
            <ul>              
-			 <li class="editSurvey"><a {{action "editSurvey" target="this"}}>Edit</a></li>
+			 <li class="editSurvey"><a {{action "doEditSurvey" survey}}>Edit</a></li>
              <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>Preview</a></li>
              <li class="deleteSurvey"><a {{action "deleteSurvey" target="this"}}>Delete</a></li>
              <li class="inspectData"><a {{action "inspectData" target="this"}}>Inspect Data</a></li>
@@ -98,4 +90,3 @@
 	{{/view}}
 	{{/each}}
 	</ul>
-   </section>
