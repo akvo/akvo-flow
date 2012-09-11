@@ -15,6 +15,8 @@ Akvo Primary Colours:
 	rgb(153, 153, 153);		Akvo Mid grey
 	rgb(57, 102, 128);		Akvo Darker shade Blue from light blue
 	rgb(107, 134, 141);		Akvo Blueish Green link color
+	rgb(246, 160, 26);		Flow Orange
+	rgb(38, 8, 89);			Flow Purple
 	
 Akvo Secondary Colours:
 	
@@ -47,6 +49,8 @@ html {
 	-webkit-text-size-adjust: 100%; /* 2 */
 	-ms-text-size-adjust: 100%; /* 2 */
 	background: rgb(255, 255, 255);
+	overflow-y: scroll;
+	border-top:3px solid rgb(38, 8, 89);
 }
 body {
 	font-family: Helmet, Freesans, sans-serif;
@@ -64,6 +68,14 @@ h1 {
 	font-size: 2.4em;
 	line-height: 1.5em;
 }
+
+.mainContent h1{
+	position: relative;
+	display: inline;
+	font-size: 1.8em;
+	color: rgb(227, 27, 35);
+}
+
 h2 {
 	font-size: 2em;
 	line-height: 1em;
@@ -127,6 +139,39 @@ a img {
 	clear: both;
 	visibility: hidden;
 }
+.emphasized {
+	font-size:1.2em;
+	position:relative;
+	color:rgb(184,184,184);
+	}
+.emphasized span {
+	position:absolute;
+	left:155px;
+	font-weight:bold;
+	color:rgb(222, 137, 41);
+	}
+pre{
+	display:block;
+	font:100% "Courier New", Courier, monospace;
+	padding:10px;
+	border:1px solid #bae2f0;
+	background:#e3f4f9;	
+	margin:.5em 0;
+	overflow:auto;
+	width:800px;
+}
+
+#tooltip{
+	font-size:1.2em;
+	max-width:300px;
+	position:absolute;
+	background:rgb(242, 240, 230);
+	padding:5px;
+	color:#333;
+	display:none;
+	box-shadow:0 0 1px rgb(0,0,0);
+	}	
+
 /* links 
 ---------------------------------------------------------------*/
 
@@ -176,6 +221,38 @@ mark {
 	}
 .nonVisible {
 	visibility:visible;
+	}
+
+a.standardBtn, input[type="submit"] {
+	font-size:1.1em;
+	display: block;
+	width:10%;
+	padding: 7px 1%;
+	margin:20px auto;
+	text-align:center;
+	background: rgb(39,94,110);
+	color:rgb(255,255,255);
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	-o-border-radius:3px;
+	border-radius:3px;
+}
+a.standardBtn:hover, input[type="submit"]:hover {
+	background: rgb(39,94,139);
+	color:rgb(255,255,255);
+}
+a.helpIcon {
+	position:absolute;
+	display:inline-block;
+	width:16px;
+	height:16px;
+	text-indent:-9999px;
+	background:url(../images/helpIcon.png) center top no-repeat;
+	left:290px;
+	top:-1px;
+	}
+a.helpIcon:hover {
+	background:url(../images/helpIcon.png) center bottom no-repeat;
 	}
 /* page structure
 --------------------------------------------- */
@@ -241,38 +318,46 @@ footer > div {
 	width: 100%;
 	height: 38px;
 	background: rgb(58,58,58);
+	-moz-border-radius:0 0 5px 0;
+	-webkit-border-radius:0 0 5px 0;
+	border-radius:0 0 5px 0;
 }
 .fullWidth {
 	position: relative;
 	width: 100%;
 }
+.mainContent {padding:0 0 0 10px;}
+
 /* .header
 --------------------------------------------- */
 
 header.top {
 	position: relative;
 	width: 100%;
-	height: 100px;
+	height: 80px;
 	padding: 0;
 	margin: 0 0 20px 0;
-	background: rgb(58,58,58);
-}
+/*	background: rgb(58,58,58);
+*/
+	}
+header.top > div {
+	}
 header.top hgroup h1 {
 	position: absolute;
-	top: 10px;
+	top: 20px;
 	left: 0px;
-	width: 148px;
-	height: 80px;
-	background: url(../images/akvoFlowLogo.png) no-repeat center top;
+	width: 169px;
+	height: 60px;
+	background: url(../images/akvoFlowLogo2.png) no-repeat center top;
 	text-indent: -9999px;
 }
 header.top hgroup h1:hover {
-	background: url(../images/akvoFlowLogo.png) no-repeat center bottom;
+	background: url(../images/akvoFlowLogo2.png) no-repeat center top;
 }
 header.top hgroup h1 a {
 	display: block;
-	width: 148px;
-	height: 80px;
+	width: 169px;
+	height: 60px;
 	text-indent: -9999px;
 }
 header.top hgroup h2 {
@@ -300,7 +385,7 @@ nav#topnav ul li {
 	display: inline;
 	padding: 0 6px 0 0;
 	float: left;
-	margin: 4px 4px 0 0;
+	margin: 2px 4px 0 0;
 /*	background: url(../images/navSeparator.png) right center no-repeat;
 */}
 nav#topnav ul li:last-child, nav#topnav ul li:last-child:hover, nav#topnav ul li.current, nav#topnav ul li.current:hover {
@@ -313,9 +398,9 @@ nav#topnav ul li a {
 	display: block;
 	font-size: 1.2em;
 	vertical-align: bottom;
-	padding: 62px 6px 18px 6px;
+	padding: 46px 6px 24px 6px;
 	text-transform: uppercase;
-	color: rgb(114,  205, 255);
+	color: rgb(74, 177, 207);
 	vertical-align: middle;
 	-webkit-transition: background-color .4s linear;
 	-moz-transition: background-color .4s linear;
@@ -323,118 +408,105 @@ nav#topnav ul li a {
 	transition: background-color .4s linear;
 }
 nav#topnav ul li a:hover, nav#topnav ul li.current a {
-	color: rgb(255,255,255);
+	color: rgb(246, 160, 26);
 }
 nav#topnav ul li.navSurveys a {
-	background: url(../images/topnavSurveys.png) center top no-repeat;
+	background: url(../images/topnavSurveys.png) center -18px no-repeat;
 }
-
 nav#topnav ul li.navSurveys a:hover {
-	background: rgb(77,77,77) url(../images/topnavSurveys.png) center top no-repeat;
+	background: rgb(237, 237, 237) url(../images/topnavSurveys.png) center -18px no-repeat;
 }
 nav#topnav ul li.navSurveys.current a {
-	background: rgb(77,77,77) url(../images/topnavSurveys.png) center bottom no-repeat;
+	background:  url(../images/topnavSurveys.png) center bottom no-repeat;
 }
-
-/* MTW */
-nav#topnav ul li.navHome a {
-	background: url(../images/topnavDashboards.png) center top no-repeat;
-}
-
-nav#topnav ul li.navHome a:hover {
-	background: rgb(77,77,77) url(../images/topnavDashboards.png) center top no-repeat;
-}
-nav#topnav ul li.navHome.current a {
-	background: rgb(77,77,77) url(../images/topnavDashboards.png) center bottom no-repeat;
-}
-
-/* End addition MTW*/
-
-
 nav#topnav ul li.navData a {
-	background: url(../images/topnavData.png) center top no-repeat;
+	background: url(../images/topnavData.png) center -18px no-repeat;
 }
 nav#topnav ul li.navData a:hover {
-	background: rgb(77,77,77) url(../images/topnavData.png) center top no-repeat;
+	background: rgb(237, 237, 237) url(../images/topnavData.png) center -18px no-repeat;
 }
 nav#topnav ul li.navData.current a {
-	background: rgb(77,77,77) url(../images/topnavData.png) center bottom no-repeat;
+	background: url(../images/topnavData.png) center bottom no-repeat;
 }
 nav#topnav ul li.navDashboards a {
-	background: url(../images/topnavDashboards.png) center top no-repeat;
+	background: url(../images/topnavDashboards.png) center -18px no-repeat;
 }
 nav#topnav ul li.navDashboards a:hover {
-	background: rgb(77,77,77) url(../images/topnavDashboards.png) center top no-repeat;
+	background: rgb(237, 237, 237) url(../images/topnavDashboards.png) center -18px no-repeat;
 }
 nav#topnav ul li.navDashboards.current a {
-	background: rgb(77,77,77) url(../images/topnavDashboards.png) center bottom no-repeat;
+	background:url(../images/topnavDashboards.png) center bottom no-repeat;
 }
 nav#topnav ul li.navMaps a {
-	background: url(../images/topnavMaps.png) center top no-repeat;
+	background: url(../images/topnavMaps.png) center -18px no-repeat;
 }
 nav#topnav ul li.navMaps a:hover {
-	background: rgb(77,77,77) url(../images/topnavMaps.png) center top no-repeat;
+	background: rgb(237, 237, 237) url(../images/topnavMaps.png) center -18px no-repeat;
 }
 nav#topnav ul li.navMaps.current a {
-	background: rgb(77,77,77) url(../images/topnavMaps.png) center bottom no-repeat;
+	background: url(../images/topnavMaps.png) center bottom no-repeat;
 }
 nav#topnav ul li.navDevices a {
-	background: url(../images/topnavDevices.png) center top no-repeat;
+	background: url(../images/topnavDevices.png) center -18px no-repeat;
 }
 nav#topnav ul li.navDevices a:hover {
-	background: rgb(77,77,77) url(../images/topnavDevices.png) center top no-repeat;
+	background: rgb(237, 237, 237) url(../images/topnavDevices.png) center -18px no-repeat;
 }
 nav#topnav ul li.navDevices.current a {
-	background: rgb(77,77,77) url(../images/topnavDevices.png) center bottom no-repeat;
+	background:url(../images/topnavDevices.png) center bottom no-repeat;
 }
 nav#topnav ul li.navUsers a {
-	background: url(../images/topnavUsers.png) center top no-repeat;
+	background: url(../images/topnavUsers.png) center -18px no-repeat;
 }
 nav#topnav ul li.navUsers a:hover {
-	background: rgb(77,77,77) url(../images/topnavUsers.png) center top no-repeat;
+	background: rgb(237, 237, 237) url(../images/topnavUsers.png) center -18px no-repeat;
 }
 nav#topnav ul li.navUsers.current a {
-	background: rgb(77,77,77) url(../images/topnavUsers.png) center bottom no-repeat;
+	background: url(../images/topnavUsers.png) center bottom no-repeat;
 }
 nav#topnav ul li.navReports a {
-	background: url(../images/topnavReports.png) center top no-repeat;
+	background: url(../images/topnavReports.png) center -18px no-repeat;
 }
 nav#topnav ul li.navReports a:hover {
-	background: rgb(77,77,77) url(../images/topnavReports.png) center top no-repeat;
+	background: rgb(237, 237, 237) url(../images/topnavReports.png) center -18px no-repeat;
 }
 nav#topnav ul li.navReports.current a {
-	background: rgb(77,77,77) url(../images/topnavReports.png) center bottom no-repeat;
+	background:url(../images/topnavReports.png) center bottom no-repeat;
 }
 nav#topnav ul li.navAdmin a {
-	background: url(../images/topnavAdmin.png) center top no-repeat;
+	background: url(../images/topnavAdmin.png) center -18px no-repeat;
 }
 nav#topnav ul li.navAdmin a:hover {
-	background: rgb(77,77,77) url(../images/topnavAdmin.png) center top no-repeat;
+	background: rgb(237, 237, 237) url(../images/topnavAdmin.png) center -18px no-repeat;
 }
 nav#topnav ul li.navAdmin.current a {
-	background: rgb(77,77,77) url(../images/topnavAdmin.png) center bottom no-repeat;
+	background:url(../images/topnavAdmin.png) center bottom no-repeat;
 }
-/* Top Header Search input
+
+/*--------------------------------------------- 
+			Top Header Search input
 --------------------------------------------- */
 header input[type="search"] {
 	position: absolute;
 	right: 0px;
-	top: 40px;
+	top: 25px;
 	width: 12%;
 }
-/* main styles
+/*--------------------------------------------- 
+					main styles
 --------------------------------------------- */
-	
-/*
-Footer
-------------------------------------*/
+
+/*--------------------------------------------- 
+					Footer
+-----------------------------------------------*/
 footer.bottomPage {
 	position: relative;
 	width: 100%;
 	height: 50px;
 	padding: 0;
 	margin: 0 0 20px 0;
-	background: rgb(58,58,58);
+	background: rgb(38, 8, 89);	
+	border-bottom:1px solid rgb(246, 160, 26);	
 }
 footer.bottomPage small {
 	display: block;
@@ -453,8 +525,9 @@ footer.bottomPage a[rel="self"] {
 }
 footer.bottomPage a[rel="self"]:hover {
 }
-/*	Devices List table
-----------------------------------------------------------------------*/
+/*--------------------------------------------- 
+			Devices List table
+-----------------------------------------------*/
 
 #devicesList {
 }
@@ -479,14 +552,12 @@ table.dataTable tbody tr {
 	border-bottom: thin solid rgb(255,255,255);
 	-webkit-transition: background-color .4s linear;
 	-moz-transition: background-color .4s linear;
-	-o-transition: background-color .4s linear;
 	transition: background-color .4s linear;
 }
 table.dataTable tbody tr:nth-child(2n), table.dataTable tbody tr.even {
 	background: rgb(232, 230, 220);
 	-webkit-transition: background-color .4s linear;
 	-moz-transition: background-color .4s linear;
-	-o-transition: background-color .4s linear;
 	transition: background-color .4s linear;
 }
 table.dataTable tbody tr:hover, table.dataTable tbody tr:nth-child(2n):hover, table.dataTable tbody tr.even:hover {
@@ -500,7 +571,7 @@ table.dataTable thead tr {
 	border-bottom: none;
 }
 table.dataTable thead tr th {
-	padding: 10px 0px 10px 0px;
+	padding: 10px 5px;
 	border-right: thin solid rgb(12,12,12);
 	text-align: center;
 	font-weight: normal;
@@ -552,17 +623,6 @@ tfoot tr {
 	border-top:1px solid rgb(255,255,255);
 	background: rgb(224,224,224);
 }
-
-/* ------------ MTW ------------*/
-#inspectData {
-	border: thin solid rgb(224,224,224);
-	border-top:1px solid rgb(255,255,255);
-	background: rgb(224,224,224);
-}
-/* ------------ end MTW ------------*/
-
-
-
 #tabs > section h1 {
 	display: block;
 	width: 50%;
@@ -629,11 +689,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', end
 	font-size: 1.1em;
 	display: block;
 	padding: 1.1em 1.5em;
-	color: rgb(147, 184, 194);
+	color: rgb(147, 145, 144);
 	text-transform: uppercase;
 	-webkit-transition: none;
 	-moz-transition: none;
-	-o-transition: none;
 	transition: none;
 	-webkit-text-shadow:1px 1px 0 rgb(235,235,235);
 	-moz-text-shadow:1px 1px 0 rgb(235,235,235);
@@ -662,33 +721,33 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', end
 --------------------------------------------- */
 #groupBar, #newSurveyInfo {
 	background: rgb(58,58,58);
-	padding: 0 0 1em 0;
+	padding: 0 0 5px 0;
+	-moz-border-radius:5px 0 0 0;
+	-webkit-border-radius:5px 0 0 0;
+	border-radius:5px 0 0 0;
 }
 #groupBar input[type="search"] {
-	margin: 5px 0 10px 5px;
+	display:block;
+	margin: 8px auto 10px auto;
 	width: 80%;
 }
 #groupBar h2, #newSurveyInfo h2 {
 	font-size: 1.8em;
-	margin: 10px 0 15px 10px;
-	color: rgb(255,255,255);
-	text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+	margin: 15px 0 10px 10px;
+	color: rgb(5, 5, 5);
+	text-shadow: 0px 1px 0px rgb(125, 125, 125),  0px -1px 0px rgb(0,0,0);
 }
-
-/* MTW added input text field style */
-.topBar input[type="text"] {
-	margin: 7px 0 10px 10px;
-	padding: 3px 3px 3px 3px;
-}
-/* end MTW */
-
 nav ul.menuGroup {
 	background: rgb(58,58,58);
 }
 nav ul.menuGroup li {
 	width: 98%;
 	margin: 2px 1% 1px 1%;
-	background: url(../images/surveyGroupBg.png) left center repeat-x;
+/*	background: url(../images/surveyGroupBg.png) left center repeat-x;
+*/
+	background: rgb(70,70,70);
+	background: rgba(255,255,255,0.05);
+	border-bottom:thin solid rgb(55, 55, 55);
 }
 nav ul.menuGroup li a {
 	display: block;
@@ -706,11 +765,10 @@ nav ul.menuGroup li a {
 }
 nav ul.menuGroup li a:hover {
 	color: rgb(114,  205, 255);
+	background: rgb(80,80,80) url(../images/selectIndictr.png) right 50% no-repeat;
 	background: rgba(255,255,255,0.05) url(../images/selectIndictr.png) right 50% no-repeat;
 }
-/* MTW changed nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current to 
-"nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a" to select li item instead of a*/
-nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a {
+nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current {
 	color: rgb(255, 210, 0);
 /*	border-left: thin solid rgb(255,255,255);
 */	background: url(../images/selectIndictr.png) right bottom no-repeat;
@@ -723,15 +781,17 @@ section.topBar {
 }
 section.topBar h2 {
 	max-width:45%;
-	font-size: 1.7em;
-	color: rgb(255, 210, 0);
+	font-size: 1.5em;
+	color: rgb(205, 205, 205);
 	display: inline;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	line-height:2.4em;
+	line-height:2.6em;
 	margin-left:10px;
 	text-transform:capitalize;
+	padding-left: 15px;
+	background:url(../images/apostrophe.png) left -2px no-repeat;
 }
 
 section.topBar > a{
@@ -740,16 +800,6 @@ section.topBar > a{
 	display:inline-block;
 	color: rgb(114,  205, 255);
 }
-
-/* MTW added for save and cancel button */
-nav  > a{
-	position:relative;
-	margin:0 0 0 10px;
-	display:inline-block;
-	color: rgb(114,  205, 255);
-}
-/* end MTW */
-
 nav.menuTopbar {
 	position: absolute;
 	display: inline;
@@ -783,11 +833,9 @@ nav.menuTopbar ul li a {
 	color: rgb(255,255,255);
 	-moz-transition: background-color linear 0.1;
 	-webkit-transition: background-color linear 0.1;
-	-o-transition: background-color linear 0.1;
 	transition: background-color linear 0.1;
 	-moz-border-radius: 3px;
 	-wekit-border-radius: 3px;
-	-o-border-radius: 3px;
 	border-radius: 3px;
 }
 nav.menuTopbar ul li a.addGroup {
@@ -820,9 +868,9 @@ ul.surveyBatch {
 li.aSurvey {
 	position: relative;
 	display: inline-block;
-	width: 23%;
+	width: 21%;
 	padding: 0 0.5% 5px 0.5%;
-	margin: 5px 0.5% 10px 0.5%;
+	margin: 5px 1.5% 10px 1.5%;
 	float: left;
 /*	background: url(../images/surveySeperator.png) right center no-repeat;
 */	cursor: pointer;
@@ -1067,7 +1115,6 @@ ul.surveyInfo li.responseNumber p {
 /*
  * Survey Creation & Editing
 ----------------------------------------------------------------------------------------------------------------*/
-
 #newSurveyInfo h2 {
 	margin: 0.7em 0 1em 3%;
 	font-size: 1.8em;
@@ -1087,6 +1134,7 @@ ul.surveyInfo li.responseNumber p {
 #newSurveyInfo form label {
 	color: rgb(255,255,255);
 	margin: 10px 2px 2px 2px;
+	margin:10px 0 0 0;
 }
 #newSurveyInfo form label:first-child {
 	color: rgb(255,255,255);
@@ -1207,6 +1255,25 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	background: url(../images/publishNewSurvey.png) left bottom no-repeat;
 }
 /*****
+		NEw Survey Settings
+******---------------------------------------------------------------------------------*/
+#surveySetting p {
+	position:relative;
+	width:90%;
+	}
+#surveySetting div#notifications {
+	margin:10px 0 0 0;
+	}
+#surveySetting div#notifications h3 {
+	font-size:1.3em;
+	}
+#surveySetting form input[type="checkbox"] {
+	margin:15px 0 0 5px;
+	}
+#surveySetting select#surveyLang {
+	margin:0;	
+	}
+/*****
 		A New Question Form
 ******---------------------------------------------------------------------------------*/
 
@@ -1244,12 +1311,6 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 0 0.75%;
 	display: block;
 	padding: 10px 0.75%;
-}
-.aQuestionSet header h1 {
-	position: relative;
-	display: inline;
-	font-size: 1.8em;
-	color: rgb(227, 27, 35);
 }
 .aQuestionSet header h1 + a.editSetInfo {
 	position: relative;
@@ -1301,16 +1362,13 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {
 }
-
-/* MTW changed right from 5px to 25px to avoid clash with lower right folded corner image */
 .innerContent nav {
 	position: absolute;
 	width: 30%;
 	height: 17px;
 	top: 5px;
-	right: 25px;
+	right: 5px;
 }
-
 .innerContent nav ul {
 	width: 100%;
 	height: 17px;
@@ -1333,14 +1391,6 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	background:url(../images/deleteQuestion.png) left top no-repeat;
 	padding:5px 5px 0 17px;
 }
-
-/* MTW */
-.innerContent nav ul li a.editQuestion {
-	background:url(../images/editQuestion.png) left top no-repeat;
-	padding:5px 5px 0 17px;
-}
-
-
 .innerContent nav ul li a.moveQuestion {
 	background:url(../images/moveQuestion.png) left top no-repeat;
 	padding:5px 5px 0 17px;
@@ -1411,25 +1461,9 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 15px 0 0 5px;
 }
 .innerContent p {
-	padding: 2px 0.5%;
+	padding: 3px 0.5%;
 	margin: 0 0 0 5px;
 }
-
-.innerContent a.saveQuestion {
-	font-size:1.1em;
-	display: block;
-	width:10%;
-	padding: 7px 1%;
-	margin:20px auto;
-	text-align:center;
-	background: rgb(39,94,110);
-	color:rgb(255,255,255);
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-	-o-border-radius:3px;
-	border-radius:3px;
-}
-
 .innerContent textarea {
 	margin:5px 0 0 10px;
 	border-color:white;
@@ -1457,6 +1491,10 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	height:20px;
 	background:url(../images/icon_cal.png) right center no-repeat;
 	}
+#dataFilter label[for="fromDate"], #dataFilter label[for="toDate"] {
+	display:inline;
+	}
+
 #dataFilter label[for="fromDate"] {
 	margin-left:15px;
 	}

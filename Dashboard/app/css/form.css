@@ -31,11 +31,10 @@ Akvo Secondary Colours:
 -----------------------------------------------*/
 
 /* =============================================================================
-   Forms
-   ========================================================================== */
+							   Forms
+========================================================================== */
 form * {
 	background:none;
-	behavior: url(PIE.htc);
 }
 form {
 	margin: 0;
@@ -95,6 +94,7 @@ label {
 	font-size:1.3em;
 	margin:5px 2px;
 	text-transform:capitalize;
+	display:block;
 }
 /*
  * 1. Correct color not inheriting in IE6/7/8/9
@@ -102,9 +102,7 @@ label {
  */
 select {
 	margin: 5px 0 0 5px;
-	padding: 2px 15px 3px 5px; 
-	/* MTW changed padding from "2px 0 3px 5px" to "2px 15px 3px 5px", to make room for select icon*/
-	 
+	padding: 3px 12px 3px 5px;
 	background-image: url(../images/selectArrows.png) right center no-repeat;
 	background: #eeeeee; /* Old browsers */
 	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
@@ -150,24 +148,29 @@ input[type="checkbox"], input[type="radio"] {
 	padding: 0;
 	width: 13px;
 	height: 13px;
+	display:block;
 }
+input[type="checkbox"] + label, input[type="radio"] + label {
+	display:inline;
+}
+
 input[type="search"] {
 	-webkit-appearance: textfield;
 	-moz-box-sizing: content-box;
 	-webkit-box-sizing: content-box;
 	box-sizing: content-box;
 	padding: 5px 25px 3px 4px;
-	border: 1px solid rgb(58,58,58);
+	border: 1px solid rgb(218,218,218);
 	background:rgb(255,255,255) url(../images/search-icon.png) no-repeat 3px right;
 	background:url(../images/search-icon.png) no-repeat top right, -webkit-linear-gradient(rgb(255,255,255), rgb(224,224,224));
 	background:url(../images/search-icon.png) no-repeat top right, -moz-linear-gradient(rgb(255,255,255), rgb(224,224,224));
 	background:url(../images/search-icon.png) no-repeat top right, -o-linear-gradient(rgb(255,255,255), rgb(224,224,224));
 	background:url(../images/search-icon.png) no-repeat top right, linear-gradient(rgb(255,255,255), rgb(224,224,224));
-	-moz-box-shadow:inset 0 2px 3px rgb(40,40,40), inset 0px -5px 3px #eee;
-	-webkit-box-shadow:inset 0 2px 3px rgb(40,40,40), inset 0px -5px 3px #eee;
-	-o-box-shadow:inset 0 2px 3px rgb(40,40,40), inset 0px -5px 3px #eee;
-	box-shadow:inset 0 2px 3px rgb(40,40,40), inset 0px -5px 3px #eee;
-}
+/*	-moz-box-shadow:inset 0 2px 3px rgb(140,140,140), inset 0px -5px 3px #eee;
+	-webkit-box-shadow:inset 0 2px 3px rgb(140,140,140), inset 0px -5px 3px #eee;
+	-o-box-shadow:inset 0 2px 3px rgb(140,140,140), inset 0px -5px 3px #eee;
+	box-shadow:inset 0 2px 3px rgb(140,140,140), inset 0px -5px 3px #eee;
+*/}
 input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button {
 -webkit-appearance: none;
 }
@@ -194,6 +197,15 @@ input[type="search"]:hover {
 	background:url(../images/search-icon.png) no-repeat top right, linear-gradient(rgb(255,255,255), rgb(244,244,244));
 }
 input[type="search"]:focus {
-	border: 1px solid rgb(23,23,23);
-	background:rgb(224,224,224) url(../images/search-icon.png) no-repeat top right;
+	border: 1px solid rgb(123,123,123);
+	background:rgb(244,244,244) url(../images/search-icon.png) no-repeat top right;
 }
+
+input[type="submit"] {
+	padding:5px 10px;
+	border:none;
+	}
+input[type="submit"]:hover {
+	padding:5px 10px;
+	border:none;
+	}
