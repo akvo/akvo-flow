@@ -3672,8 +3672,8 @@ DS.Adapter = Ember.Object.extend({
 (function() {
 var set = Ember.set;
 
-Ember.onLoad('application', function(app) {
-  app.registerInjection({
+Ember.onLoad('Ember.Application', function(Application) {
+  Application.registerInjection({
     name: "store",
     before: "controllers",
 
@@ -3684,11 +3684,11 @@ Ember.onLoad('application', function(app) {
     }
   });
 
-  app.registerInjection({
+  Application.registerInjection({
     name: "giveStoreToControllers",
 
     injection: function(app, stateManager, property) {
-      if (property.match(/Controller$/)) {
+      if (/^[A-Z].*Controller$/.test(property)) {
         var controllerName = property.charAt(0).toLowerCase() + property.substr(1);
         var store = stateManager.get('store');
         var controller = stateManager.get(controllerName);
