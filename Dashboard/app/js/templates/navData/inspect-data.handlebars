@@ -2,8 +2,18 @@
     <div class="" id="dataFilter">
         <h3>Choose Survey Data to display:</h3>
         <form>
-            {{view Ember.Select contentBinding="controllers.surveyGroupController.content" selectionBinding="controllers.selectedSurveyGroupController.selectedSurveyGroup" optionLabelPath="content.displayName" optionValuePath="content.keyId" prompt="Select survey group"}} 
-			{{view Ember.Select contentBinding="controllers.surveyController.active" selectionBinding="controllers.selectedSurveyController.selectedSurvey" optionLabelPath="content.displayName" optionValuePath="content.keyId" prompt="Select survey" }}
+            {{view Ember.Select 
+				contentBinding="controllers.surveyGroupController.content" 
+				selectionBinding="controllers.selectedSurveyGroupController.selectedSurveyGroup" 
+				optionLabelPath="content.displayName" 
+				optionValuePath="content.keyId" prompt="Select survey group"}} 
+				
+			{{view Ember.Select 
+				contentBinding="controllers.surveyController.active" 
+				selectionBinding="controllers.selectedSurveyController.selectedSurvey" 
+				optionLabelPath="content.displayName" 
+				optionValuePath="content.keyId" prompt="Select survey" }}
+				
             <label for="fromDate">Collected From</label>
             <input class="datePicker" id="from" name="from" type="text">
             <label for="toDate">To</label>
