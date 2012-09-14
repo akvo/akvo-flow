@@ -259,7 +259,7 @@ a.helpIcon:hover {
 #pageWrap {
 	position: relative;
 	width: 90%;
-	max-width: 100%;
+	max-width: 1188px;
 	min-width: 916px;
 	margin: 0 auto;
 	padding: 0;
@@ -272,7 +272,7 @@ a.helpIcon:hover {
 header.top > div {
 	position: relative;
 	width: 90%;
-	max-width: 100%;
+	max-width: 1188px;
 	min-width: 916px;
 	margin: 0 auto;
 	padding: 0;
@@ -287,7 +287,7 @@ footer > div {
 	color: rgb(255, 255, 255);
 	position: relative;
 	width: 90%;
-	max-width: 100%;
+	max-width: 1188px;
 	min-width: 916px;
 	margin: 0 auto;
 	padding: 0;
@@ -366,6 +366,16 @@ header.top hgroup h2 {
 	z-index: 0;
 	text-indent: -9999px;
 }
+
+#userLog {
+	position:absolute;
+	top:5px;
+	right:0;
+	}
+#userLog ul li {
+	display:inline;
+	}
+
 /* #home page
 --------------------------------------------- */
 
@@ -375,7 +385,7 @@ header.top hgroup h2 {
 nav#topnav {
 	position: absolute;
 	top: 0px;
-	left: 195px;
+	left: 210px;
 }
 nav#topnav ul {
 	position: relative;
@@ -406,6 +416,7 @@ nav#topnav ul li a {
 	-moz-transition: background-color .4s linear;
 	-o-transition: background-color .4s linear;
 	transition: background-color .4s linear;
+	cursor:pointer;
 }
 nav#topnav ul li a:hover, nav#topnav ul li.current a {
 	color: rgb(246, 160, 26);
@@ -504,8 +515,15 @@ nav#topnav ul li.navAdmin.current a {
 header input[type="search"] {
 	position: absolute;
 	right: 0px;
-	top: 25px;
-	width: 12%;
+	top: 36px;
+	width: 10%;
+	-moz-transition:width 0.1s linear;
+	-webkit-transition:width 0.1s linear;
+	-o-transition:width 0.1s linear;
+	transition:width 0.1s linear;
+}
+header input[type="search"]:focus {
+	width: 14%;
 }
 /*--------------------------------------------- 
 					main styles
@@ -521,7 +539,6 @@ footer.bottomPage {
 	padding: 0;
 	margin: 0 0 20px 0;
 	background: rgb(38, 8, 89);	
-	border-bottom:1px solid rgb(246, 160, 26);	
 }
 footer.bottomPage small {
 	display: block;
@@ -567,12 +584,14 @@ table.dataTable tbody tr {
 	border-bottom: thin solid rgb(255,255,255);
 	-webkit-transition: background-color .4s linear;
 	-moz-transition: background-color .4s linear;
+	-o-transition: background-color .4s linear;
 	transition: background-color .4s linear;
 }
 table.dataTable tbody tr:nth-child(2n), table.dataTable tbody tr.even {
 	background: rgb(232, 230, 220);
 	-webkit-transition: background-color .4s linear;
 	-moz-transition: background-color .4s linear;
+	-o-transition: background-color .4s linear;
 	transition: background-color .4s linear;
 }
 table.dataTable tbody tr:hover, table.dataTable tbody tr:nth-child(2n):hover, table.dataTable tbody tr.even:hover {
@@ -756,7 +775,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', end
 #groupBar input[type="search"] {
 	display:block;
 	margin: 8px auto 10px auto;
-	width: 80%;
+	width: 77%;
 }
 
 /************** MTW added input text field style ***********/
@@ -771,6 +790,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', end
 	font-size: 1.8em;
 	margin: 15px 0 10px 10px;
 	color: rgb(5, 5, 5);
+	color: rgba(5, 5, 5, 1);
+	-moz-text-shadow: 0px 1px 0px rgb(125, 125, 125),  0px -1px 0px rgb(0,0,0);
+	-webkit-text-shadow: 0px 1px 0px rgb(125, 125, 125),  0px -1px 0px rgb(0,0,0);
+	-o-text-shadow: 0px 1px 0px rgb(125, 125, 125),  0px -1px 0px rgb(0,0,0);
 	text-shadow: 0px 1px 0px rgb(125, 125, 125),  0px -1px 0px rgb(0,0,0);
 }
 nav ul.menuGroup {
@@ -798,6 +821,7 @@ nav ul.menuGroup li a {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	cursor:pointer;
 }
 nav ul.menuGroup li a:hover {
 	color: rgb(114,  205, 255);
@@ -809,7 +833,7 @@ nav ul.menuGroup li a:hover {
 "nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a" to select li item instead of a ********/
 
 nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a {
-	color: rgb(255, 210, 0);
+	color: rgb(246, 160, 26);
 /*	border-left: thin solid rgb(255,255,255);
 */	background: url(../images/selectIndictr.png) right bottom no-repeat;
 }
@@ -842,7 +866,7 @@ section.topBar > a{
 }
 
 /* ****************** MTW added for save and cancel button ************* */
-nav  > a{
+nav > a{
 	position:relative;
 	margin:0 0 0 10px;
 	display:inline-block;
@@ -929,7 +953,9 @@ li.aSurvey {
 	background:transparent;
 	-moz-transition:background 0.2s linear;
 	-webkit-transition:background 0.2s linear;
+	-o-transition:background 0.2s linear;
 	transition:background 0.2s linear;
+	font-size:1.1em;
 }
 
 li.aSurvey:hover {
@@ -942,6 +968,7 @@ li.aSurvey:nth-child(4n+1), li.aSurvey.firstOfRow {
 li.aSurvey:nth-child(4n), li.aSurvey.endOfRow {
 	background-image: none;
 }
+	font-family: Georgia, "Times New Roman", Times, serif;
 li.aSurvey h2 {
 	display: inline-block;
 	margin: 10px 1% 0 2%;
@@ -950,8 +977,9 @@ li.aSurvey h2 {
 	text-overflow: ellipsis;
 	width: 97%;
 	text-transform: capitalize;
+	font-style:italic;
 	color:rgb(185,185,185);
-	font-size:1.7em;
+	font-size:1.8em;
 }
 
 li.aSurvey:hover h2 {
@@ -988,26 +1016,33 @@ ul.surveyInfo li {
 ul.surveyInfo li.dateCreated {
 	float: left;
 	height: 26px;
-	padding-top: 10px;
-	margin-left: 5%;
+	padding-top: 5px;
+	margin-left:2%;
 	width: 35%;
 	overflow:hidden;
 	white-space:nowrap;
 	text-overflow:ellipsis;
 }
+ul.surveyInfo li.dateCreated span {
+	color: rgb(153, 153, 153);
+	width:35%;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	}
+
 ul.surveyInfo li.responseNumber {
 	float: right;
 	text-align: right;
-	margin-right: 4%;
-	width: 56%;
+	margin-right: 3%;
+	width: 60%;
 }
 ul.surveyInfo li.responseNumber span {
 	display: inline-block;
-	height: 30px;
 	width: 30px;
 	margin: 2px 0px 0 0;
-	height: 20px;
-	padding-top: 10px;
+	height: 23px;
+	padding-top: 7px;
 	text-align: center;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -1418,10 +1453,10 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 /* MTW changed right:5px to 20 px to make room for folded-page graphic */
 .innerContent nav {
 	position: absolute;
-	width: 40%;
+	width: 30%;
 	height: 17px;
 	top: 5px;
-	right: 20px;
+	right: 5px;
 }
 .innerContent nav ul {
 	width: 100%;
