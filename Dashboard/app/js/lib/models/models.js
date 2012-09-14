@@ -16,8 +16,8 @@ DS.Model.reopen({
 
 FLOW.store = DS.Store.create({
 	revision: 4,
-	adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"REST"})
-	//adapter: DS.fixtureAdapter
+	//adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"REST"})
+	adapter: DS.fixtureAdapter
 });
 
 FLOW.SurveyGroup = DS.Model.extend({
@@ -36,11 +36,22 @@ FLOW.SurveyGroup = DS.Model.extend({
 
 FLOW.SurveyGroup.FIXTURES = [{
 	keyId: 1,
-	displayName: 'mark westra',
+	displayName: 'Urban sanitation surveys',
 }, {
 	keyId: 2,
-	displayName: 'Linda porsius',
-}, ];
+	displayName: 'Elise Surveys',
+}, {
+	keyId: 3,
+	displayName: 'Test Survey group',
+},{
+	keyId: 4,
+	displayName: 'Upande - SNVVERMIS',
+},{
+	keyId: 5,
+	displayName: 'Akvo test surveys',
+},
+
+];
 
 
 FLOW.Survey = DS.Model.extend({
@@ -63,15 +74,28 @@ FLOW.Survey = DS.Model.extend({
 
 FLOW.Survey.FIXTURES = [{
 	keyId: 1,
-	displayName: 'Carel van Hassel',
-	name:'Carel van Hassel',
+	displayName: 'Water point survey',
+	name:'Water point survey',
 	surveyGroupId: 1
 }, {
 	keyId: 2,
-	displayName: 'Thomas van Hassel',
-	name:'Thomas van Hassel',
-	surveyGroupId: 2
-}, ];
+	displayName: 'Sanitation survey',
+	name:'Sanitation survey',
+	surveyGroupId: 1
+}, {
+	keyId: 3,
+	displayName: 'Baseline WASH',
+	name:'Baseline WASH',
+	surveyGroupId: 1
+}, {
+	keyId: 4,
+	displayName: 'Akvo RSR update',
+	name:'Akvo RSR update',
+	surveyGroupId: 1
+}, 
+
+
+];
 
 FLOW.QuestionGroup = DS.Model.extend({
 	order: DS.attr('number'),
@@ -93,29 +117,27 @@ FLOW.QuestionGroup = DS.Model.extend({
 
 FLOW.QuestionGroup.FIXTURES = [{
 	keyId: 1,
-	isOpen: 0,
-	description: "lorem",
-	name: 'question set 1',
-	displayName: 'question set 1',
+	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. ",
+	name: 'Location',
+	displayName: 'Location',
 
 }, {
 	keyId: 2,
-	isOpen: 0,
-	description: "ipsum",
-	name: 'question set 2',
-	displayName: 'question set 2',
+	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
+	name: 'Occupation',
+	displayName: 'Occupation',
 
 }, {
 	keyId: 3,
-	description: "dolor",
-	name: 'question set 3',
-	displayName: 'question set 3',
+	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
+	name: 'Water system',
+	displayName: 'Water system',
 
 }, {
 	keyId: 4,
-	description: "dolor",
-	name: 'question set 4',
-	displayName: 'question set 4',
+	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
+	name: 'Sanitation system',
+	displayName: 'Sanitation system',
 
 }, ];
 
@@ -154,26 +176,44 @@ FLOW.Question = DS.Model.extend({
 
 FLOW.Question.FIXTURES = [{
 	keyId: 1,
-	text: 'question 1 of set 1',
-	displayName: 'name1',
+	text: 'What is the name of the community?',
+	displayName: 'What is the name of the community?',
 	mandatory: false,
 	questionSetId: 1
 }, {
 	keyId: 2,
-	text: 'question 2 of set 1',
-	displayName: 'name2',
+	text: 'What is your occupation?',
+	displayName: 'What is your occupation?',
 	mandatory: false,
 	questionSetId: 1
 }, {
 	keyId: 3,
-	text: 'question 1 of set 2',
-	displayName: 'name3',
+	text: 'How much children do you have?',
+	displayName: 'How much children do you have?',
 	mandatory: false,
-	questionSetId: 2
+	questionSetId: 1
 }, {
 	keyId: 4,
-	text: 'question 2 of set 2',
-	displayName: 'name4',
+	text: 'Please take a geolocation',
+	displayName: 'Please take a geolocation',
 	mandatory: false,
-	questionSetId: 2
-}, ];
+	questionSetId: 1
+}, 	{
+	keyId: 4,
+	text: 'Please take a picture',
+	displayName: 'Please take a picture',
+	mandatory: false,
+	questionSetId: 1
+},	{
+	keyId: 4,
+	text: 'Please make a video',
+	displayName: 'Please make a video',
+	mandatory: false,
+	questionSetId: 1
+},	{
+	keyId: 4,
+	text: 'What is the date today?',
+	displayName: 'What is the date today?',
+	mandatory: false,
+	questionSetId: 1
+}];
