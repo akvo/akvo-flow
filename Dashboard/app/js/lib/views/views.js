@@ -87,7 +87,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		} else {
 			return null;
 		}
-	}.property('FLOW.selectedControl.selectedQuestionGroup', 'content.keyId'),
+	}.property('FLOW.selectedControl.selectedQuestionGroup', 'content.keyId').cacheable(),
 
 	toggleVisibility: function() {
 		if (this.get('amVisible')) {
@@ -99,16 +99,20 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 	showHideText: function() {
 		return this.get('amVisible') ? 'Close question group' : 'Open question group';
-	}.property('amVisible')
+	}.property('amVisible').cacheable()
 
 });
 
 FLOW.QuestionView = Ember.View.extend({
 	content:null,
 	questionName:null,
+	optionText:null,
 	checkedMandatory: false,
 	checkedDependent: false,
+	checkedOptionMultiple:false,
+	checkedOptionOther:false,
 	selectedQuestionType:null,
+	selectedOptionEdit:null,
 	
 	amOpenQuestion: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestion');
@@ -119,54 +123,27 @@ FLOW.QuestionView = Ember.View.extend({
 		} else {
 			return false;
 		}
-	}.property('FLOW.selectedControl.selectedQuestion', 'content.keyId'),
-	
-	amFreeTextType:function() {
-		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='freeText') ? true : false;}
-		else {return false;}
-	}.property('this.selectedQuestionType'),
+	}.property('FLOW.selectedControl.selectedQuestion', 'content.keyId').cacheable(),
+
 	
 	amOptionType:function() {
 		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='option') ? true : false;}
 		else {return false;}
-	}.property('this.selectedQuestionType'),
+	}.property('this.selectedQuestionType').cacheable(),
 	
 	amNumberType:function() {
 		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='number') ? true : false;}
 		else {return false;}
-	}.property('this.selectedQuestionType'),
-	
-	amGeoType:function() {
-		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='geoLoc') ? true : false;}
-		else {return false;}
-	}.property('this.selectedQuestionType'),
-	
-	amPhotoType:function() {
-		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='photo') ? true : false;}
-		else {return false;}
-	}.property('this.selectedQuestionType'),
-	
-	amVideoType:function() {
-		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='video') ? true : false;}
-		else {return false;}
-	}.property('this.selectedQuestionType'),
-	
-	amDateType:function() {
-		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='date') ? true : false;}
-		else {return false;}
-	}.property('this.selectedQuestionType'),
-	
-	amBarcodeType:function() {
-		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='barcode') ? true : false;}
-		else {return false;}
-	}.property('this.selectedQuestionType'),
-	
+	}.property('this.selectedQuestionType').cacheable(),
 		
 	doEdit: function() {
 		console.log("doing doEdit");
 		FLOW.selectedControl.set('selectedQuestion', this.content);
 		this.set('questionName',FLOW.selectedControl.selectedQuestion.get('displayName'));
 		//TODO populate tooltip
+		//TODO populate question options
+		//TODO populate help
+		//TODO populate translations
 		
 	},
 	
@@ -175,7 +152,6 @@ FLOW.QuestionView = Ember.View.extend({
 	},
 	
 	doSaveEditQuestion: function() {
-	// TODO
 	},
 	
 	doCopy: function() {
@@ -188,7 +164,35 @@ FLOW.QuestionView = Ember.View.extend({
 	
 	doDelete: function() {
 			console.log("doing doDelete");
-	}
+	},
+	
+	QuestionOptionView: Ember.View.extend({
+		option:null,
+		optionTextTmp:null,
+		
+		isActiveEdit: function(){
+			var selected = FLOW.selectedControl.get('selectedOption');
+			if (selected) {
+				var isActive = (this.option.get('keyId') == FLOW.selectedControl.selectedOption.get('keyId'));
+				return isActive;
+			} else {
+				return false;
+			}
+		}.property('FLOW.selectedControl.selectedOption','this.option').cacheable(),
+			
+		doOptionEdit: function() {
+			console.log("editing option");
+			FLOW.selectedControl.set('selectedOption',this.option);
+			this.set('optionTextTmp',this.option.get('text'));
+			
+		}
+		
+		
+		
+		
+	}),
+
+	
 	
 });
 
@@ -206,7 +210,7 @@ FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 		} else {
 			return null;
 		}
-	}.property('FLOW.selectedControl.selectedSurveyGroup', 'content'),
+	}.property('FLOW.selectedControl.selectedSurveyGroup', 'content').cacheable(),
 
 	makeSelected: function() {
 			console.log("selecting survey Group: "+this.content.get('keyId'));

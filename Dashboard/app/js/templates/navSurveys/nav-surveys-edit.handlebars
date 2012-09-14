@@ -1,118 +1,151 @@
 <section class="leftSidebar" id="newSurveyInfo">
-	<h2>Edit survey</h2>
+    <h2>Edit survey</h2>
     <form action="#" method="get">
-       <label for="newSurveyName">Title:</label>
-	 	<input type="text" id="newSurveyName" name="surveyName" required title="Type in the name of your survey." placeholder="Type in the name of your survey." autofocus required />
+        <label for="newSurveyName">Title:</label>
+        <input autofocus id="newSurveyName" name="surveyName" placeholder="Type in the name of your survey." required required title="Type in the name of your survey." type="text"/>
         <label for="newSurveyDesc">Description:</label>
-        <textarea id="newSurveyDesc" name="surveyDesc" required title="Type in the description of your survey." placeholder="Type in the description of your survey."></textarea>
+        <textarea id="newSurveyDesc" name="surveyDesc" placeholder="Type in the description of your survey." required title="Type in the description of your survey."></textarea>
         <label for="surveyType">Type:</label>
         <select id="surveyType">
-          <option value="Point">Point</option>
-          <option value="Household">Household</option>
-          <option value="Public Institution">Public Institution</option>
-          <option value="Community">Community (Area)</option>
-          <option value="Create a new type">Create a new Survey type</option>
+            <option value="Point">Point</option>
+            <option value="Household">Household</option>
+            <option value="Public Institution">Public Institution</option>
+            <option value="Community">Community (Area)</option>
+            <option value="Create a new type">Create a new Survey type</option>
         </select>
         <label for="sectorFocus">Sector Focus:</label>
         <select id="sectorFocus">
-          <option value="Water">Water</option>
-          <option value="Education">Education</option>
-          <option value="Sanitation">Sanitation</option>
-          <option value="Economic development">Economic development</option>
-          <option value="Health Care">Health Care</option>
-          <option value="IT and Commmunications">IT & Commmunications</option>
-          <option value="Food Security">Food Security</option>
-          <option value="Create a new type">Create a new Survey type</option>
+            <option value="Water">Water</option>
+            <option value="Education">Education</option>
+            <option value="Sanitation">Sanitation</option>
+            <option value="Economic development">Economic development</option>
+            <option value="Health Care">Health Care</option>
+            <option value="IT and Commmunications">IT & Commmunications</option>
+            <option value="Food Security">Food Security</option>
+            <option value="Create a new type">Create a new Survey type</option>
         </select>
-      </form>
-	 <ul id="" class="newSurveyInfoUl">
+    </form>
+    <ul class="newSurveyInfoUl" id="">
         <li>
-          <h3>Survey Summary</h3>
+            <h3>Survey Summary</h3>
         </li>
-        <li>Number of Question set: <span id="numberQuestionSet">01</span></li>
-        <li>Number of Questions: <span id="numberQuestion">00</span></li>
-      </ul>
-      <nav class="newSurveyNav">
+        <li>Number of Question set:
+            <span id="numberQuestionSet">01</span></li>
+        <li>Number of Questions:
+            <span id="numberQuestion">00</span></li>
+    </ul>
+    <nav class="newSurveyNav">
         <ul>
-          <li><a href="#" class="saveNewSurvey">Save</a></li>
-          <li><a href="#" class="previewNewSurvey">Preview</a></li>
-          <li><a href="#" class="publishNewSurvey">Publish</a></li>
+            <li><a href="#" class="saveNewSurvey">Save</a></li>
+            <li><a href="#" class="previewNewSurvey">Preview</a></li>
+            <li><a href="#" class="publishNewSurvey">Publish</a></li>
         </ul>
-      </nav>
-  </section>
-  <section class="mainRight" id="surveyCreator">
-      <section class="topBar">
-          <nav class="menuTopbar">
-              <ul class="">
-                  <li><a {{action "doSurveysMain"}} class="stepBack">Go back to survey overview</a></li>
-              </ul>
-          </nav>
-      </section>
+    </nav>
+</section>
+<section class="mainRight" id="surveyCreator">
+    <section class="topBar">
+        <nav class="menuTopbar">
+            <ul class="">
+                <li><a {{action "doSurveysMain"}} class="stepBack">Go back to survey overview</a></li>
+            </ul>
+        </nav>
+    </section>
+    <!-- Beginning Question Set  -->
+    <section id="questionSet">
+        <section class="aQuestionSet mainContent" id="setIndex-01">
+            {{#each qg in FLOW.questionGroupControl.active}}
+            <!-- -->
+            {{#view FLOW.QuestionGroupItemView contentBinding="qg"}}
+            <header>
+                <h1><a {{action "toggleVisibility" target="this"}}>{{qg.displayName}}</a></h1>
+                <a class="editSetInfo">Edit Set Info</a>
+                <a {{action "toggleVisibility" target="this"}}>{{view.showHideText}}</a>
+            </header><br/>
+            {{#if view.amVisible}}
+            <div class="questionSetContent">
+                <a class="addQuestion" href="#">Add a question here</a>
+                {{#each q in FLOW.questionControl.active}}
+                <!-- Beginning a Question  -->
+                {{#view FLOW.QuestionView contentBinding="q"}}
+                <div class="innerContent" id="innerContent_01">
+                    {{#if view.amOpenQuestion}}
+                    <h1 class="questionNbr">&nbsp;</h1>
+                    <label>Question text: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
+                    
+					<!-- Body of question -->
+                    <label>Question type: {{view Ember.Select 
+						contentBinding="FLOW.questionTypeControl.content" 
+						optionLabelPath="content.label" 
+						optionValuePath="content.value" 
+						selectionBinding="view.selectedQuestionType" }}
+                    </label>
+                    <label>Question Help Tooltip:
+                        <span class="fadedText">(Optional)</span>
+                        {{view Ember.TextField valueBinding="view.questionHelpTooltip" size=100 }}
+                    </label>
+                    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedMandatory"}} Mandatory</label>
+                    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedDependent"}} Dependent</label>
+                   
+                   
+ 					<!-- Question specific material -->
+					{{#if view.amOptionType}}
+ 						<h1 class="answerNbr">Option details: </h1>
+          				<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedOptionMultiple"}} Allow Multiple</label>
+			            <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedOptionOther"}} Allow Other</label>	
+						
+						<br>
+						<p><strong>Add options:</strong></p>
+						<ul>
+							{{#each option in FLOW.optionControl.questionOptions}} 
+							{{#view view.QuestionOptionView optionBinding="option"}}
+							
+							{{option.text}}
+							
+							{{/view}}
+							
+							{{/each}}
+							What is needed: a copy of the options in a controller, which are shown and changed, and which are copied over to the original at saving. 
+							Maybe something link this: http://stackoverflow.com/questions/8567920/dont-sync-bound-value-of-textfield-on-keyup-wait-until-item-is-saved
+							 
+							<li><label class="optiontype">{{view Ember.TextField valueBinding="view.questionName" size=50 }}
+									<a {{action "doDelete" target="this"}} class="deleteQuestionOption">&nbsp;&nbsp;delete</a></label></li>
+						</ul>
 
-      <!-- Beginning Question Set  -->
-      <section id="questionSet">
-          <section class="aQuestionSet mainContent" id="setIndex-01">             
-			{{#each qg in FLOW.questionGroupControl.active}} 
-				{{#view FLOW.QuestionGroupItemView contentBinding="qg"}}
-				 	<header>
-		    			<h1><a {{action "toggleVisibility" target="this"}}>{{qg.displayName}}</a></h1>  
-						<a class="editSetInfo">Edit Set Info</a> 
-		    			<a {{action "toggleVisibility" target="this"}}>{{view.showHideText}}</a>
-					</header><br/>
-				
-					{{#if view.amVisible}} 
-						<div class="questionSetContent"> <a href="#" class="addQuestion">Add a question here</a> 
-							{{#each q in FLOW.questionControl.active}} 
-								<!-- Beginning a Question  -->
-								{{#view FLOW.QuestionView contentBinding="q"}} 
-								<div class="innerContent" id="innerContent_01">
-								{{#if view.amOpenQuestion}}
-									<h1 class="questionNbr">&nbsp;</h1>
-									<label>Question text: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
-									 <!-- Body of question -->    	
-									 <label>Question type: {{view Ember.Select
-										contentBinding="FLOW.questionTypeControl.content"
-										optionLabelPath="content.label"
-										optionValuePath="content.value"
-										selectionBinding="view.selectedQuestionType" }}
-									 </label>
 
-									 <label>Question Help Tooltip: <span class="fadedText">(Optional)</span> 
-										{{view Ember.TextField valueBinding="view.questionHelpTooltip" size=100 }}
-									 </label>
-						 					
-									 <label>{{view Ember.Checkbox checkedBinding="view.checkedMandatory"}} Mandatory </label>
-							 		 <label>{{view Ember.Checkbox checkedBinding="view.checkedDependent"}} Dependent </label>
+                    {{/if}} 
 
-									
-									 <a {{action "doSaveEditQuestion" target="this"}} class="standardBtn" id="standardBtn_01">Save Question</a> 
-									 <a {{action "doCancelEditQuestion" target="this"}} class="standardBtn" id="standardBtn_01">Cancel</a> 
-									
-									 {{else}}
-										<!-- nav is only displayed if question is closed -->
-										<nav>
-								             <ul>
-								                <li><a {{action "doDelete" target="this"}} class="deleteQuestion" id="">Delete</a></li>
-								                <li><a {{action "doCopy" target="this"}} class="copyQuestion" id="">Duplicate</a></li>
-								                <li><a {{action "doMove" target="this"}} class="moveQuestion" id="">Move</a></li>
-												<li><a {{action "doEdit" target="this"}} class="editQuestion" id="">Edit</a></li>
-								               </ul>
-								            </nav>
-							       		<h1 class="questionNbr">{{q.displayName}}</h1>
-									 {{/if}}	
-									 <!-- end body of question -->	
-								</div>
-								{{/view}}
-								<!-- End of Question -->
-							<a href="#" class="addQuestion">Add a question here</a>
-							{{/each}} 
-						</div>
-					{{/if}} 
-					
-				
-				{{/view}} 
-			{{/each}}
-          </section>
-      </section>
-      <!-- End Question Set  -->
-  </section>
+					{{#if view.amNumberType}}
+              				TODO: Number specific content
+                    {{/if}} 
+
+					<!-- End question specific material -->
+					 	<a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>Save Question</a>
+	                    <a class="standardBtn" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>Cancel</a>
+					{{else}}
+                    <!-- nav is only displayed if question is closed -->
+                    <nav>
+                        <ul>
+                            <li><a {{action "doDelete" target="this"}} class="deleteQuestion" id="">Delete</a></li>
+                            <li><a {{action "doCopy" target="this"}} class="copyQuestion" id="">Duplicate</a></li>
+                            <li><a {{action "doMove" target="this"}} class="moveQuestion" id="">Move</a></li>
+                            <li><a {{action "doEdit" target="this"}} class="editQuestion" id="">Edit</a></li>
+                        </ul>
+                    </nav>
+                    <h1 class="questionNbr">{{q.displayName}}</h1>
+                    {{/if}}
+                    <!-- end body of question -->
+                </div>
+                {{/view}}
+                <!-- End of Question -->
+                <a class="addQuestion" href="#">Add a question here</a>
+                {{/each}}
+            </div>
+            {{/if}}
+
+            {{/view}}
+
+            {{/each}}
+        </section>
+    </section>
+    <!-- End Question Set  -->
+</section>

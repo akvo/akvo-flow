@@ -47,8 +47,7 @@ FLOW.selectedControl = Ember.Controller.create({
 	selectedSurvey: null,
 	selectedQuestionGroup: null,
 	selectedQuestion: null,
-//	checkedMandatory: false,
-//	checkedDependent: false
+	selectedOption: null
 });
 
 FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {
@@ -103,3 +102,16 @@ FLOW.questionControl = Ember.ArrayController.create({
 		}
 	}.property('FLOW.selectedControl.selectedQuestionGroup', 'FLOW.selectedControl.selectedSurvey').cacheable()
 });
+
+FLOW.optionControl = Ember.ArrayController.create({
+	questionOptions: function() {
+		if (FLOW.selectedControl.get('selectedQuestion')) {
+			var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+			return FLOW.store.find(FLOW.QuestionOption, {questionId: id});
+		} else {
+			return null;	
+	}
+	}.property('FLOW.selectedControl.selectedQuestion').cacheable(),
+		
+});
+

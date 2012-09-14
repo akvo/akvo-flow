@@ -61,6 +61,7 @@ FLOW.Router = Ember.Router.extend({
 			},
 			
 			doSurveysMain: function(router, event) {
+				FLOW.selectedControl.set('selectedQuestion',null);
 				router.transitionTo('navSurveys.navSurveysMain');
 			},
 			

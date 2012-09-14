@@ -1537,6 +1537,17 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 5px 0 0 5px;
 	border-color: rgb(235,235,235);
 }
+
+/* Addition MTW added optiontype to input fields for options, to make them smaller */
+.innerContent .optiontype input[type=text] {
+	width: 35%;
+	padding: 5px 1%;
+	display:inline;
+	margin: 5px 0 0 5px;
+	border-color: rgb(235,235,235);
+}
+/* end addition MTW */
+
 .innerContent select {
 	width: 30%;
 	margin: 5px 0 0 5px;
@@ -1560,9 +1571,17 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 5px 0 0 5px;
 	border-color: rgb(235,235,235);
 }
+
 .innerContent input[type=checkbox]:first-child {
 	margin: 15px 0 0 5px;
 }
+
+/* MTW added labelcheckbox class to checkbox labels, to decrease vertical spacing */
+.innerContent .labelcheckbox input[type=checkbox]:first-child {
+	margin: 0px 0 0 5px;
+}
+/* end MTW adddition */
+
 .innerContent p {
 	padding: 3px 0.5%;
 	margin: 0 0 0 5px;

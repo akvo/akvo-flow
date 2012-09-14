@@ -217,3 +217,27 @@ FLOW.Question.FIXTURES = [{
 	mandatory: false,
 	questionSetId: 1
 }];
+
+FLOW.QuestionOption = DS.Model.extend({
+	questionId: DS.attr('number'),
+	text: DS.attr('string'),
+	keyId: DS.attr('number'),
+});
+
+FLOW.QuestionOption.FIXTURES = [{
+	keyId: 1,
+	text: 'teacher',
+	questionId: 1
+}, {
+	keyId: 2,
+	text: 'cook',
+	questionId: 1
+},{
+	keyId: 3,
+	text: 'minister',
+	questionId: 1
+},{
+	keyId: 4,
+	text: 'programmer',
+	questionId: 1
+}];
