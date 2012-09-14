@@ -29,11 +29,26 @@ FLOW.NavAdminController = Ember.Controller.extend();
 
 // Data controllers
 
+FLOW.questionTypeControl = Ember.Object.create({
+content:[
+	Ember.Object.create({label: "Free text", value: "freeText"}),
+    Ember.Object.create({label: "Option", value: "option"}),
+   Ember.Object.create({label: "Number", value: "number"}),
+   Ember.Object.create({label: "Geolocation", value: "geoLoc"}),
+   Ember.Object.create({label: "Photo", value: "photo"}),
+   Ember.Object.create({label: "Video", value: "video"}),
+   Ember.Object.create({label: "Date", value: "date"}),
+   Ember.Object.create({label: "Barcode", value: "barcode"}),
+]	
+});
+
 FLOW.selectedControl = Ember.Controller.create({
 	selectedSurveyGroup: null,
 	selectedSurvey: null,
 	selectedQuestionGroup: null,
 	selectedQuestion: null,
+//	checkedMandatory: false,
+//	checkedDependent: false
 });
 
 FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {

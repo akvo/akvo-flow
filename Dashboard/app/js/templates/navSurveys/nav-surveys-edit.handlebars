@@ -55,7 +55,8 @@
 			{{#each qg in FLOW.questionGroupControl.active}} 
 				{{#view FLOW.QuestionGroupItemView contentBinding="qg"}}
 				 	<header>
-		    			<h1>{{qg.displayName}}</h1>  <a class="editSetInfo">Edit Set Info</a> 
+		    			<h1><a {{action "toggleVisibility" target="this"}}>{{qg.displayName}}</a></h1>  
+						<a class="editSetInfo">Edit Set Info</a> 
 		    			<a {{action "toggleVisibility" target="this"}}>{{view.showHideText}}</a>
 					</header><br/>
 				
@@ -63,19 +64,46 @@
 						<div class="questionSetContent"> <a href="#" class="addQuestion">Add a question here</a> 
 							{{#each q in FLOW.questionControl.active}} 
 								<!-- Beginning a Question  -->
-								 <div class="innerContent" id="innerContent_01">
-									<nav>
-						                <ul>
-						                  <li><a href="#" class="deleteQuestion" id="">Delete</a></li>
-						                  <li><a href="#" class="copyQuestion" id="">Duplicate</a></li>
-						                  <li><a href="#" class="moveQuestion" id="">Move</a></li>
-											<li><a href="#" class="editQuestion" id="">Edit</a></li>
-						                </ul>
-						            </nav>
-									 <h1 class="questionNbr">{{q.displayName}}</h1>
-								<br/>
+								{{#view FLOW.QuestionView contentBinding="q"}} 
+								<div class="innerContent" id="innerContent_01">
+								{{#if view.amOpenQuestion}}
+									<h1 class="questionNbr">&nbsp;</h1>
+									<label>Question text: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
+									 <!-- Body of question -->    	
+									 <label>Question type: {{view Ember.Select
+										contentBinding="FLOW.questionTypeControl.content"
+										optionLabelPath="content.label"
+										optionValuePath="content.value"
+										selectionBinding="view.selectedQuestionType" }}
+									 </label>
+
+									 <label>Question Help Tooltip: <span class="fadedText">(Optional)</span> 
+										{{view Ember.TextField valueBinding="view.questionHelpTooltip" size=100 }}
+									 </label>
+						 					
+									 <label>{{view Ember.Checkbox checkedBinding="view.checkedMandatory"}} Mandatory </label>
+							 		 <label>{{view Ember.Checkbox checkedBinding="view.checkedDependent"}} Dependent </label>
+
+									
+									 <a {{action "doSaveEditQuestion" target="this"}} class="standardBtn" id="standardBtn_01">Save Question</a> 
+									 <a {{action "doCancelEditQuestion" target="this"}} class="standardBtn" id="standardBtn_01">Cancel</a> 
+									
+									 {{else}}
+										<!-- nav is only displayed if question is closed -->
+										<nav>
+								             <ul>
+								                <li><a {{action "doDelete" target="this"}} class="deleteQuestion" id="">Delete</a></li>
+								                <li><a {{action "doCopy" target="this"}} class="copyQuestion" id="">Duplicate</a></li>
+								                <li><a {{action "doMove" target="this"}} class="moveQuestion" id="">Move</a></li>
+												<li><a {{action "doEdit" target="this"}} class="editQuestion" id="">Edit</a></li>
+								               </ul>
+								            </nav>
+							       		<h1 class="questionNbr">{{q.displayName}}</h1>
+									 {{/if}}	
+									 <!-- end body of question -->	
 								</div>
-								<!-- end of question -->
+								{{/view}}
+								<!-- End of Question -->
 							<a href="#" class="addQuestion">Add a question here</a>
 							{{/each}} 
 						</div>

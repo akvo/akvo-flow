@@ -105,9 +105,77 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 FLOW.QuestionView = Ember.View.extend({
 	content:null,
+	questionName:null,
+	checkedMandatory: false,
+	checkedDependent: false,
+	selectedQuestionType:null,
 	
+	amOpenQuestion: function() {
+		var selected = FLOW.selectedControl.get('selectedQuestion');
+		if (selected) {
+
+			var isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestion.get('keyId'));
+			return isOpen;
+		} else {
+			return false;
+		}
+	}.property('FLOW.selectedControl.selectedQuestion', 'content.keyId'),
+	
+	amFreeTextType:function() {
+		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='freeText') ? true : false;}
+		else {return false;}
+	}.property('this.selectedQuestionType'),
+	
+	amOptionType:function() {
+		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='option') ? true : false;}
+		else {return false;}
+	}.property('this.selectedQuestionType'),
+	
+	amNumberType:function() {
+		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='number') ? true : false;}
+		else {return false;}
+	}.property('this.selectedQuestionType'),
+	
+	amGeoType:function() {
+		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='geoLoc') ? true : false;}
+		else {return false;}
+	}.property('this.selectedQuestionType'),
+	
+	amPhotoType:function() {
+		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='photo') ? true : false;}
+		else {return false;}
+	}.property('this.selectedQuestionType'),
+	
+	amVideoType:function() {
+		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='video') ? true : false;}
+		else {return false;}
+	}.property('this.selectedQuestionType'),
+	
+	amDateType:function() {
+		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='date') ? true : false;}
+		else {return false;}
+	}.property('this.selectedQuestionType'),
+	
+	amBarcodeType:function() {
+		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='barcode') ? true : false;}
+		else {return false;}
+	}.property('this.selectedQuestionType'),
+	
+		
 	doEdit: function() {
 		console.log("doing doEdit");
+		FLOW.selectedControl.set('selectedQuestion', this.content);
+		this.set('questionName',FLOW.selectedControl.selectedQuestion.get('displayName'));
+		//TODO populate tooltip
+		
+	},
+	
+	doCancelEditQuestion: function() {
+		FLOW.selectedControl.set('selectedQuestion', null);
+	},
+	
+	doSaveEditQuestion: function() {
+	// TODO
 	},
 	
 	doCopy: function() {
