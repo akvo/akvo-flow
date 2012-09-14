@@ -1413,12 +1413,15 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {
 }
+
+/* MTW changed width to 40% from 30% to make room for edit button */
+/* MTW changed right:5px to 20 px to make room for folded-page graphic */
 .innerContent nav {
 	position: absolute;
-	width: 30%;
+	width: 40%;
 	height: 17px;
 	top: 5px;
-	right: 5px;
+	right: 20px;
 }
 .innerContent nav ul {
 	width: 100%;
@@ -1438,6 +1441,20 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	display:block;
 	height: 12px;
 }
+
+
+/* MTW addition: editQuestion icon */
+.innerContent nav ul li a.editQuestion  {
+	background: url(../images/editSurvey.png) left top no-repeat;
+	padding:5px 5px 0 17px;
+}
+
+.innerContent nav ul li a.editQuestion:hover {
+	background: url(../images/editSurvey.png) left top no-repeat;
+	padding:5px 5px 0 17px;
+}
+/* end MTW addition */
+
 .innerContent nav ul li a.deleteQuestion {
 	background:url(../images/deleteQuestion.png) left top no-repeat;
 	padding:5px 5px 0 17px;

@@ -55,14 +55,33 @@
 			{{#each qg in FLOW.questionGroupControl.active}} 
 				{{#view FLOW.QuestionGroupItemView contentBinding="qg"}}
 				 	<header>
-		    			<h1>{{qg.displayName}}</h1>
-		    			<a class="editSetInfo" {{action "toggleVisibility" target="this"}}>{{view.showHideText}}</a>
+		    			<h1>{{qg.displayName}}</h1>  <a class="editSetInfo">Edit Set Info</a> 
+		    			<a {{action "toggleVisibility" target="this"}}>{{view.showHideText}}</a>
 					</header><br/>
+				
 					{{#if view.amVisible}} 
-						{{#each q in FLOW.questionControl.active}} 
-							{{q.displayName}}<br/>
-						{{/each}} 
+						<div class="questionSetContent"> <a href="#" class="addQuestion">Add a question here</a> 
+							{{#each q in FLOW.questionControl.active}} 
+								<!-- Beginning a Question  -->
+								 <div class="innerContent" id="innerContent_01">
+									<nav>
+						                <ul>
+						                  <li><a href="#" class="deleteQuestion" id="">Delete</a></li>
+						                  <li><a href="#" class="copyQuestion" id="">Duplicate</a></li>
+						                  <li><a href="#" class="moveQuestion" id="">Move</a></li>
+											<li><a href="#" class="editQuestion" id="">Edit</a></li>
+						                </ul>
+						            </nav>
+									 <h1 class="questionNbr">{{q.displayName}}</h1>
+								<br/>
+								</div>
+								<!-- end of question -->
+							<a href="#" class="addQuestion">Add a question here</a>
+							{{/each}} 
+						</div>
 					{{/if}} 
+					
+				
 				{{/view}} 
 			{{/each}}
           </section>
