@@ -167,7 +167,7 @@ FLOW.Question = DS.Model.extend({
 	questionDependency: DS.attr('string'),
 	mandatoryFlag: DS.attr('boolean', {defaulValue: 0}),
 	questionGroupId: DS.attr('number'),
-	questionTypeString: DS.attr('string'),
+	questionTypeString: DS.attr('string',{defaultValue:"freeText"}),
 	surveyId: DS.attr('number'),
 	displayName: DS.attr('string'),
 	keyId: DS.attr('number'),
@@ -179,41 +179,48 @@ FLOW.Question.FIXTURES = [{
 	text: 'What is the name of the community?',
 	displayName: 'What is the name of the community?',
 	mandatory: false,
+	questionTypeString:'freeText',
 	questionSetId: 1
 }, {
 	keyId: 2,
 	text: 'What is your occupation?',
 	displayName: 'What is your occupation?',
 	mandatory: false,
+	questionTypeString:'option',
 	questionSetId: 1
 }, {
 	keyId: 3,
 	text: 'How much children do you have?',
 	displayName: 'How much children do you have?',
 	mandatory: false,
+	questionTypeString:'number',
 	questionSetId: 1
 }, {
 	keyId: 4,
 	text: 'Please take a geolocation',
 	displayName: 'Please take a geolocation',
 	mandatory: false,
+	questionTypeString:'geoLoc',
 	questionSetId: 1
 }, 	{
 	keyId: 4,
 	text: 'Please take a picture',
 	displayName: 'Please take a picture',
 	mandatory: false,
+	questionTypeString:'photo',
 	questionSetId: 1
 },	{
 	keyId: 4,
 	text: 'Please make a video',
 	displayName: 'Please make a video',
+	questionTypeString:'video',
 	mandatory: false,
 	questionSetId: 1
 },	{
 	keyId: 4,
 	text: 'What is the date today?',
 	displayName: 'What is the date today?',
+	questionTypeString:'date',
 	mandatory: false,
 	questionSetId: 1
 }];

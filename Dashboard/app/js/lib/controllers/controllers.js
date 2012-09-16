@@ -47,7 +47,7 @@ FLOW.selectedControl = Ember.Controller.create({
 	selectedSurvey: null,
 	selectedQuestionGroup: null,
 	selectedQuestion: null,
-	selectedOption: null
+	selectedOption: null,
 });
 
 FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {
@@ -104,14 +104,25 @@ FLOW.questionControl = Ember.ArrayController.create({
 });
 
 FLOW.optionControl = Ember.ArrayController.create({
+	editCopy:null,
+	
 	questionOptions: function() {
 		if (FLOW.selectedControl.get('selectedQuestion')) {
-			var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+			var id = FLOW.selectedControl.selectedQuestion.get('keyId');
 			return FLOW.store.find(FLOW.QuestionOption, {questionId: id});
 		} else {
 			return null;	
 	}
 	}.property('FLOW.selectedControl.selectedQuestion').cacheable(),
-		
+	
+	questionOptionsList: function(){
+		var opList = this.get('questionOptions').mapProperty('text').join("\n");
+		return opList;
+		}.property('this.questionOptions','this.questionOptions.isLoaded').cacheable(),
+			
+	makeEditCopy: function(){
+		this.set('editCopy',this.get('questionOptionsList'));
+	}.observes('questionOptionsList')
 });
+
 

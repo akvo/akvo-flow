@@ -106,7 +106,6 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 FLOW.QuestionView = Ember.View.extend({
 	content:null,
 	questionName:null,
-	optionText:null,
 	checkedMandatory: false,
 	checkedDependent: false,
 	checkedOptionMultiple:false,
@@ -140,6 +139,12 @@ FLOW.QuestionView = Ember.View.extend({
 		console.log("doing doEdit");
 		FLOW.selectedControl.set('selectedQuestion', this.content);
 		this.set('questionName',FLOW.selectedControl.selectedQuestion.get('displayName'));
+		
+		FLOW.optionControl.set('editCopy',FLOW.optionControl.get('questionOptionsList'));
+		
+		//console.log(options.objectAt(1));
+		//console.log(options.get('length'));
+		//TODO populate selected question type
 		//TODO populate tooltip
 		//TODO populate question options
 		//TODO populate help
@@ -164,36 +169,7 @@ FLOW.QuestionView = Ember.View.extend({
 	
 	doDelete: function() {
 			console.log("doing doDelete");
-	},
-	
-	QuestionOptionView: Ember.View.extend({
-		option:null,
-		optionTextTmp:null,
-		
-		isActiveEdit: function(){
-			var selected = FLOW.selectedControl.get('selectedOption');
-			if (selected) {
-				var isActive = (this.option.get('keyId') == FLOW.selectedControl.selectedOption.get('keyId'));
-				return isActive;
-			} else {
-				return false;
-			}
-		}.property('FLOW.selectedControl.selectedOption','this.option').cacheable(),
-			
-		doOptionEdit: function() {
-			console.log("editing option");
-			FLOW.selectedControl.set('selectedOption',this.option);
-			this.set('optionTextTmp',this.option.get('text'));
-			
-		}
-		
-		
-		
-		
-	}),
-
-	
-	
+	}
 });
 
 

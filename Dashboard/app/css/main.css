@@ -1586,9 +1586,11 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	padding: 3px 0.5%;
 	margin: 0 0 0 5px;
 }
+/* change MTW: added width:35% */
 .innerContent textarea {
 	margin:5px 0 0 10px;
 	border-color:white;
+	width:35%;
 }
 
 /****** Data Page

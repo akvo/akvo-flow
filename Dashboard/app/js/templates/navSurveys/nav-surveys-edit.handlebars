@@ -90,30 +90,20 @@
  					<!-- Question specific material -->
 					{{#if view.amOptionType}}
  						<h1 class="answerNbr">Option details: </h1>
-          				<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedOptionMultiple"}} Allow Multiple</label>
-			            <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedOptionOther"}} Allow Other</label>	
-						
+          				<label class="labelcheckbox">
+							{{view Ember.Checkbox checkedBinding="view.checkedOptionMultiple"}} Allow Multiple
+						</label>
+			            <label class="labelcheckbox">
+							{{view Ember.Checkbox checkedBinding="view.checkedOptionOther"}} Allow Other
+						</label>	
+		
 						<br>
-						<p><strong>Add options:</strong></p>
-						<ul>
-							{{#each option in FLOW.optionControl.questionOptions}} 
-							{{#view view.QuestionOptionView optionBinding="option"}}
-							
-							{{option.text}}
-							
-							{{/view}}
-							
-							{{/each}}
-							What is needed: a copy of the options in a controller, which are shown and changed, and which are copied over to the original at saving. 
-							Maybe something link this: http://stackoverflow.com/questions/8567920/dont-sync-bound-value-of-textfield-on-keyup-wait-until-item-is-saved
-							 
-							<li><label class="optiontype">{{view Ember.TextField valueBinding="view.questionName" size=50 }}
-									<a {{action "doDelete" target="this"}} class="deleteQuestionOption">&nbsp;&nbsp;delete</a></label></li>
-						</ul>
-
-
-                    {{/if}} 
-
+						<p><strong>Options:&nbsp;</strong><span class="fadedText">(Enter each choice on a separate line)</span></p>
+							{{view Ember.TextArea valueBinding="FLOW.optionControl.editCopy" size="100" rows="7" }}  
+		            {{/if}} 
+					
+					{{view.optionList}}
+					
 					{{#if view.amNumberType}}
               				TODO: Number specific content
                     {{/if}} 
