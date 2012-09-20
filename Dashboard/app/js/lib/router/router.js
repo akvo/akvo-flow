@@ -82,9 +82,9 @@ FLOW.Router = Ember.Router.extend({
 			navSurveysEdit: Ember.Route.extend({
 				route: '/edit',
 				connectOutlets: function(router, event) {
-					router.get('navSurveysController').connectOutlet({
-						name: 'navSurveysEdit'
-					});
+					router.get('navSurveysController').connectOutlet({ name: 'navSurveysEdit'});
+					var sId=FLOW.selectedControl.selectedSurvey.get('keyId');
+					//FLOW.questionGroupControl.set('content', FLOW.store.find(FLOW.QuestionGroup, {surveyId:sId}));
 				}
 			}),
 

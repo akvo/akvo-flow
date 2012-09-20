@@ -53,12 +53,23 @@
     <!-- Beginning Question Set  -->
     <section id="questionSet">
         <section class="aQuestionSet mainContent" id="setIndex-01">
-            {{#each qg in FLOW.questionGroupControl.active}}
+     From content<br>
+			 {{#each qg in FLOW.questionGroupControl.content}}
+			        {{qg.displayName}}<br/>
+			     {{/each}}
+<br>
+Numerical:<br>
+		   {{#each item in FLOW.itemControl}}
+		        {{item.id}}<br/>
+		     {{/each}}
+
+			
+ 			{{#each qg in FLOW.questionGroupControl.active}}
             <!-- -->
             {{#view FLOW.QuestionGroupItemView contentBinding="qg"}}
             <header>
-                <h1><a {{action "toggleVisibility" target="this"}}>{{qg.displayName}}</a></h1>
-                <a class="editSetInfo">Edit Set Info</a>
+                Page x -<h1><a {{action "toggleVisibility" target="this"}}>{{qg.displayName}}</a></h1>
+               <!-- <a class="editSetInfo">Edit Set Info</a> -->
                 <a {{action "toggleVisibility" target="this"}}>{{view.showHideText}}</a>
             </header><br/>
             {{#if view.amVisible}}
@@ -67,7 +78,8 @@
                 {{#each q in FLOW.questionControl.active}}
                 <!-- Beginning a Question  -->
                 {{#view FLOW.QuestionView contentBinding="q"}}
-                <div class="innerContent" id="innerContent_01">
+			              
+<div class="innerContent" id="innerContent_01">
                     {{#if view.amOpenQuestion}}
                     <h1 class="questionNbr">&nbsp;</h1>
                     <label>Question text: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>

@@ -16,8 +16,8 @@ DS.Model.reopen({
 
 FLOW.store = DS.Store.create({
 	revision: 4,
-	//adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"REST"})
-	adapter: DS.fixtureAdapter
+	adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"REST"})
+	//adapter: DS.fixtureAdapter
 });
 
 FLOW.SurveyGroup = DS.Model.extend({
@@ -117,24 +117,28 @@ FLOW.QuestionGroup = DS.Model.extend({
 
 FLOW.QuestionGroup.FIXTURES = [{
 	keyId: 1,
+	order:1,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. ",
 	name: 'Location',
 	displayName: 'Location',
 
 }, {
 	keyId: 2,
+	order:3,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
 	name: 'Occupation',
 	displayName: 'Occupation',
 
 }, {
 	keyId: 3,
+	order:2,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
 	name: 'Water system',
 	displayName: 'Water system',
 
 }, {
 	keyId: 4,
+	order:4,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
 	name: 'Sanitation system',
 	displayName: 'Sanitation system',

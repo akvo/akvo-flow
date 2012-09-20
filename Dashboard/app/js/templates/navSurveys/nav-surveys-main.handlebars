@@ -1,28 +1,30 @@
-{{#view FLOW.SurveyGroupTopBarView}}
+{{#view FLOW.SurveyGroupMainView}}
    <section id="groupBar" class="leftSidebar">
 	 <form action="" method="post">
        <input type="search" placeholder="Filter Surveys"  name="surveySearch" />
      </form>
      <h2>survey groups</h2>
      <nav>
-       <ul class="menuGroup">
+				{{#if view.showNewGroupField}}
+					{{view Ember.TextField valueBinding="view.surveyGroupName" size=30}}
+					<a {{action "saveNewSurveyGroupName" target="this"}}>Save</a>
+					<a {{action "cancelNewSurveyGroupName" target="this"}}>Cancel</a>
+				{{/if}}    
+   		<ul class="menuGroup">
 			{{#each sg in FLOW.surveyGroupControl.active}}
 				{{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
 	    			<a {{action "makeSelected" target="this"}}>{{sg.displayName}}</a>
 				{{/view}}
 			{{/each}}
-        </ul>
-			{{#if view.showNewGroupField}}
-				{{view Ember.TextField valueBinding="view.surveyGroupName" size=30}}
-				<a {{action "saveNewSurveyGroupName" target="this"}}>Save</a>
-				<a {{action "cancelNewSurveyGroupName" target="this"}}>Cancel</a>
-			{{/if}}
+       
+ 		</ul>
+	
      </nav>
 	</section>
- {{/view}} 	
+
 	
 	<section id="allSurvey" class="mainRight surveysList">
-		{{#view FLOW.SurveyGroupTopBarView}}    
+
  		<section class="topBar">
 			{{#if view.oneSelected}}
 				{{#if view.showEditField}}
@@ -31,21 +33,23 @@
 					<a {{action "cancelSurveyGroupNameEdit" target="this"}}>Cancel</a>
 				{{else}}
        				<h2>{{FLOW.selectedControl.selectedSurveyGroup.displayName}}</h2> 
-					<a {{action "editSurveyInfo" target="this"}}>Edit survey group info</a>
+					<a {{action "editSurveyGroupName" target="this"}}>Edit name</a>
 				{{/if}}
 			{{/if}}
 			<nav class="menuTopbar">
          		<ul class="">
            			<li><a {{action "addGroup" target="this"}} class="addGroup">add a group</a></li>
-           			<li><a {{action "createNewSurvey" target="this"}} class="addSurvey">create a new survey</a></li>
+           		{{#if view.oneSelected}}
+					<li><a {{action "createNewSurvey" target="this"}} class="addSurvey">create a new survey</a></li>
+				{{/if}}
          		</ul>
        		</nav>    
  		</section>
-		{{/view}}
+
 
      	<ul class="surveyBatch">
 		{{#each survey in FLOW.surveyControl.active}} 
-			{{#view FLOW.SurveyGroupTopBarView contentBinding="survey"}}
+			{{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
 				<li class="aSurvey waterPoint">
 		        	<h2 class="">{{survey.code}}</h2>
          			<ul class="surveyInfo floats-in">
@@ -79,3 +83,4 @@
 		{{/each}}
 		</ul>
 	</section>
+{{/view}}

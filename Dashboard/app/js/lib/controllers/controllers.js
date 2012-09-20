@@ -48,6 +48,7 @@ FLOW.selectedControl = Ember.Controller.create({
 	selectedQuestionGroup: null,
 	selectedQuestion: null,
 	selectedOption: null,
+	selectedCreateNewGroup:false
 });
 
 FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {
@@ -79,7 +80,24 @@ FLOW.surveyControl = Ember.ArrayController.create({
 	}.property('FLOW.selectedControl.selectedSurveyGroup').cacheable()
 });
 
-FLOW.questionGroupControl = Ember.ArrayController.create({
+
+FLOW.itemControl = Em.ArrayController.create({
+    sortProperties: ['id'],
+    // random order
+    content: Em.A([
+        Em.Object.create({ id: 5 }),
+        Em.Object.create({ id: 3 }),
+        Em.Object.create({ id: 10 }),
+        Em.Object.create({ id: 6 }),
+        Em.Object.create({ id: 1 }),
+        Em.Object.create({ id: 2 }),
+        Em.Object.create({ id: 100 }),
+    ]),
+});
+
+FLOW.questionGroupControl = Ember.ArrayController.create({	
+
+	
 	active: function() {
 		if (FLOW.selectedControl.get('selectedSurvey')) {
 			var id = FLOW.selectedControl.selectedSurvey.get('keyId');
@@ -88,7 +106,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 			FLOW.selectedControl.set('selectedQuestionGroup', null);
 			return null;
 		}
-	}.property('FLOW.selectedControl.selectedSurvey', 'FLOW.selectedControl.selectedSurveyGroup').cacheable()
+	}.property('FLOW.selectedControl.selectedSurvey').cacheable(),
 });
 
 FLOW.questionControl = Ember.ArrayController.create({
@@ -124,5 +142,6 @@ FLOW.optionControl = Ember.ArrayController.create({
 		this.set('editCopy',this.get('questionOptionsList'));
 	}.observes('questionOptionsList')
 });
+
 
 

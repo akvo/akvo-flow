@@ -3,7 +3,7 @@
 // ***********************************************//
 
 require('akvo-flow/core');
-
+require('akvo-flow/views/survey-group-views')
 
 FLOW.ApplicationView = Ember.View.extend({
 	templateName: 'application'
@@ -34,26 +34,34 @@ FLOW.NavigationView = Em.View.extend({
 //                      standard views                    
 // ********************************************************//
 
+// home screen view
 FLOW.NavHomeView = Ember.View.extend({ templateName: 'navHome/nav-home'});
 
+// surveys views
 FLOW.NavSurveysView = Ember.View.extend({ templateName: 'navSurveys/nav-surveys'});
 FLOW.NavSurveysMainView = Ember.View.extend({ templateName: 'navSurveys/nav-surveys-main'});
 FLOW.NavSurveysEditView = Ember.View.extend({ templateName: 'navSurveys/nav-surveys-edit'});
 
+// devices views
 FLOW.NavDevicesView = Ember.View.extend({ templateName: 'navDevices/nav-devices'});
 
+// data views
 FLOW.NavDataView = Ember.View.extend({ templateName: 'navData/nav-data'});
 FLOW.InspectDataView = Ember.View.extend({ templateName: 'navData/inspect-data'});
 FLOW.ImportSurveyView = Ember.View.extend({ templateName: 'navData/import-survey'});
 FLOW.ExcelImportView = Ember.View.extend({ templateName: 'navData/excel-import'});
 FLOW.ExcelExportView = Ember.View.extend({ templateName: 'navData/excel-export'});
 
+// reports views
 FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports/nav-reports'});
 
+// maps views
 FLOW.NavMapsView = Ember.View.extend({ templateName: 'navMaps/nav-maps'});
 
+// users views
 FLOW.NavUsersView = Ember.View.extend({	templateName: 'navUsers/nav-users'});
 
+// admin views
 FLOW.NavAdminView = Ember.View.extend({	templateName: 'navAdmin/nav-admin'});
 
 
@@ -98,7 +106,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	},
 
 	showHideText: function() {
-		return this.get('amVisible') ? 'Close question group' : 'Open question group';
+		return this.get('amVisible') ? 'Close' : 'Open';
 	}.property('amVisible').cacheable()
 
 });
@@ -136,20 +144,15 @@ FLOW.QuestionView = Ember.View.extend({
 	}.property('this.selectedQuestionType').cacheable(),
 		
 	doEdit: function() {
-		console.log("doing doEdit");
 		FLOW.selectedControl.set('selectedQuestion', this.content);
 		this.set('questionName',FLOW.selectedControl.selectedQuestion.get('displayName'));
-		
 		FLOW.optionControl.set('editCopy',FLOW.optionControl.get('questionOptionsList'));
-		
-		//console.log(options.objectAt(1));
-		//console.log(options.get('length'));
+	
 		//TODO populate selected question type
 		//TODO populate tooltip
 		//TODO populate question options
 		//TODO populate help
-		//TODO populate translations
-		
+		//TODO populate translations	
 	},
 	
 	doCancelEditQuestion: function() {
@@ -173,91 +176,3 @@ FLOW.QuestionView = Ember.View.extend({
 });
 
 
-FLOW.SurveyGroupMenuItemView = Ember.View.extend({
-	content: null,
-	tagName: 'li',
-	classNameBindings: 'amSelected:current'.w(),
-
-	amSelected: function() {
-		var selected = FLOW.selectedControl.get('selectedSurveyGroup');
-		if (selected) {
-			var amSelected = (this.content.get('keyId') === FLOW.selectedControl.selectedSurveyGroup.get('keyId'));
-			return amSelected;
-		} else {
-			return null;
-		}
-	}.property('FLOW.selectedControl.selectedSurveyGroup', 'content').cacheable(),
-
-	makeSelected: function() {
-			console.log("selecting survey Group: "+this.content.get('keyId'));
-			FLOW.selectedControl.set('selectedSurveyGroup', this.content);
-	}
-});
-
-FLOW.SurveyGroupTopBarView = Ember.View.extend({
-	
-	showEditField: false,
-	showNewGroupField:false,
-	surveyGroupName:null,
-	
-	oneSelected: function() {
-		var selected = FLOW.selectedControl.get('selectedSurveyGroup');
-		if (selected) {
-			return true;
-		} else {
-			return false;
-		}
-	}.property('FLOW.selectedControl.selectedSurveyGroup'),
-
-	editSurveyInfo: function() {
-			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
-			this.set('showEditField',true);			
-	},
-	
-	saveSurveyGroupNameEdit: function() {
-			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
-			var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
-			surveyGroup.set('displayName',this.get('surveyGroupName'));	
-			this.set('showEditField',false);			
-	},
-	
-	cancelSurveyGroupNameEdit: function() {
-			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
-			this.set('showEditField',false);			
-	},
-	
-	addGroup: function() {
-			FLOW.selectedControl.set('selectedSurveyGroup',null);
-			this.set('surveyGroupName',null);
-			this.set('showNewGroupField',true);	
-	},
-	
-	saveNewSurveyGroupName: function() {
-			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{
-				"keyId":"",
-				"name":this.get('surveyGroupName'),
-				"displayName":this.get('surveyGroupName'),
-				"code":this.get('surveyGroupName')});
-
-			this.set('showNewGroupField',false);	
-	},
-	
-	cancelNewSurveyGroupName: function() {
-			this.set('surveyGroupName',null);
-			this.set('showNewGroupField',false);	
-	},
-		
-	createSurvey: function() {
-			console.log("TODO create Survey");			
-	},
-
-	previewSurvey: function() {
-			console.log("TODO preview Survey");			
-	},
-	deleteSurvey: function() {
-			console.log("TODO delete Survey");			
-	},
-	inspectData: function() {
-			console.log("TODO inspect Data");			
-	}
-});
