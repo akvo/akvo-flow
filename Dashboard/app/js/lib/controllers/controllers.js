@@ -68,6 +68,7 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 
 
 FLOW.surveyControl = Ember.ArrayController.create({
+	
 	active: function() {
 		if (FLOW.selectedControl.get('selectedSurveyGroup')) {
 			var id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
@@ -96,7 +97,7 @@ FLOW.itemControl = Em.ArrayController.create({
 });
 
 FLOW.questionGroupControl = Ember.ArrayController.create({	
-
+	sortProperties:['order'],
 	
 	active: function() {
 		if (FLOW.selectedControl.get('selectedSurvey')) {

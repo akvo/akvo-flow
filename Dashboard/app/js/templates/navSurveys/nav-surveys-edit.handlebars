@@ -54,11 +54,18 @@
     <section id="questionSet">
         <section class="aQuestionSet mainContent" id="setIndex-01">
      From content<br>
-			 {{#each qg in FLOW.questionGroupControl.content}}
-			        {{qg.displayName}}<br/>
+			 {{#each qg in FLOW.questionGroupControl}}
+			        {{qg.displayName}} - {{qg.order}}<br/>
 			     {{/each}}
-<br>
-Numerical:<br>
+				<br>
+				
+				 From ArrangedContent<br>
+						 {{#each qg in FLOW.questionGroupControl.arrangedContent}}
+						        {{qg.displayName}} - {{qg.order}}<br/>
+						     {{/each}}
+							<br>
+				
+				Numerical:<br>
 		   {{#each item in FLOW.itemControl}}
 		        {{item.id}}<br/>
 		     {{/each}}

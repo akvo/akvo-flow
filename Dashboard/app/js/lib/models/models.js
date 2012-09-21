@@ -16,8 +16,8 @@ DS.Model.reopen({
 
 FLOW.store = DS.Store.create({
 	revision: 4,
-	adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"REST"})
-	//adapter: DS.fixtureAdapter
+	//adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"REST"})
+	adapter: DS.fixtureAdapter
 });
 
 FLOW.SurveyGroup = DS.Model.extend({
