@@ -1,16 +1,16 @@
 // ***********************************************//
-//                      views                    
+//                      views
 // ***********************************************//
 
 require('akvo-flow/core');
-require('akvo-flow/views/survey-group-views')
+require('akvo-flow/views/survey-group-views');
 
 FLOW.ApplicationView = Ember.View.extend({
 	templateName: 'application'
 });
 
 // ********************************************************//
-//                      main navigation                    
+//                      main navigation
 // ********************************************************//
 
 FLOW.NavigationView = Em.View.extend({
@@ -21,7 +21,7 @@ FLOW.NavigationView = Em.View.extend({
 		classNameBindings: 'isActive:current navItem'.w(),
 
 		navItem: function() {
-			return this.get('item')
+			return this.get('item');
 		}.property('item').cacheable(),
 
 		isActive: function() {
@@ -31,7 +31,7 @@ FLOW.NavigationView = Em.View.extend({
 });
 
 // ********************************************************//
-//                      standard views                    
+//                      standard views
 // ********************************************************//
 
 // home screen view
@@ -66,7 +66,7 @@ FLOW.NavAdminView = Ember.View.extend({	templateName: 'navAdmin/nav-admin'});
 
 
 // ********************************************************//
-//             Subnavigation for the Data tabs                
+//             Subnavigation for the Data tabs
 // ********************************************************//
 FLOW.DatasubnavView = Em.View.extend({
 	templateName: 'navData/data-subnav',
@@ -84,7 +84,8 @@ FLOW.DatasubnavView = Em.View.extend({
 
 // ************************ Surveys *************************
 FLOW.QuestionGroupItemView = Ember.View.extend({
-	content: null,
+	content: null, // question group content comes through binding in handlebars file
+	order: null,
 
 	amVisible: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestionGroup');
@@ -106,9 +107,144 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	},
 
 	showHideText: function() {
-		return this.get('amVisible') ? 'Close' : 'Open';
-	}.property('amVisible').cacheable()
+		return this.get('amVisible') ? 'Hide questions' : 'Show questions';
+	}.property('amVisible').cacheable(),
 
+	doQGroupNameEdit:function(){
+		console.log("TODO - group name edit");
+	},
+
+	// true if one question group has been selected for Move
+	oneSelectedForMove: function() {
+		var selectedForMove = FLOW.selectedControl.get('selectedForMoveQuestionGroup');
+		if (selectedForMove) {
+			return true;
+		} else {
+			return false;
+		}
+	}.property('FLOW.selectedControl.selectedForMoveQuestionGroup'),
+
+	// true if one question group has been selected for Copy
+	oneSelectedForCopy: function() {
+		var selectedForCopy = FLOW.selectedControl.get('selectedForCopyQuestionGroup');
+		if (selectedForCopy) {
+			return true;
+		} else {
+			return false;
+		}
+	}.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
+
+
+	doQGroupDelete:function(){
+		console.log("TODO - group delete");
+	},
+
+	// prepare for group copy. Shows 'copy to here' buttons
+	doQGroupCopy:function(){
+		FLOW.selectedControl.set('selectedForCopyQuestionGroup', this.content);
+	},
+
+	// cancel group copy
+	doQGroupCopyCancel:function(){
+		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
+	},
+
+	// execute group copy to selected location
+	doQGroupCopyHere:function(){
+		console.log("TODO - group copy execute");
+
+		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
+	},
+
+	// prepare for group move. Shows 'move here' buttons
+	doQGroupMove:function(){
+		FLOW.selectedControl.set('selectedForMoveQuestionGroup', this.content);
+	},
+
+	// cancel group move
+	doQGroupMoveCancel:function(){
+		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
+	},
+
+	doSort:function(){
+		console.log('toggling order');
+		FLOW.questionGroupControl.toggleProperty('sortAscending');
+	},
+
+	// execture group move to selected location
+	doQGroupMoveHere:function(){
+		
+
+		var selectedOrder = FLOW.selectedControl.selectedForMoveQuestionGroup.get('order');
+		var insertAfterOrder = this.get('order');
+		var smallestOrder=0;
+		var largestOrder=0;
+		var movingUp=false;
+		
+		if ((selectedOrder==insertAfterOrder)||(selectedOrder==(insertAfterOrder+1))){
+			console.log("doing nothing");
+			// do nothing
+		}
+		
+		else {
+			if (selectedOrder<insertAfterOrder){
+				movingUp=true;
+				console.log("moving up");
+			}
+			else {
+				console.log("moving down");
+				movingUp=false;
+			}
+
+			console.log('selected and insertafter:'+selectedOrder+","+insertAfterOrder);
+		
+			FLOW.questionGroupControl.get('content').forEach(function(item){
+				var currentOrder=item.get('order');
+
+				// item moving up
+				if (movingUp) {
+					if ((currentOrder<selectedOrder) || (currentOrder>insertAfterOrder)){
+						// do not move
+						console.log('not moving '+ currentOrder);
+					}
+
+					// move moving item to right location
+					else if (currentOrder==selectedOrder) {
+						item.set('order',insertAfterOrder);
+						console.log("moving "+ currentOrder+ " to "+ item.get('order'));
+					}
+
+					// move rest down
+					else {
+						item.set('order',item.get('order')-1);
+						console.log("moving "+ currentOrder+ " to "+ item.get('order'));
+					}
+
+				}
+
+				// item moving down
+				else {
+					if ((currentOrder<=insertAfterOrder) || (currentOrder>selectedOrder)){
+						//do not move
+						console.log('not moving '+ currentOrder);
+					}
+
+					else if (currentOrder==selectedOrder) {
+						item.set('order',insertAfterOrder+1);
+						console.log("moving "+ currentOrder+ " to "+ item.get('order'));
+					}
+
+					// move rest up
+					else {
+						item.set('order',item.get('order')+1);
+						console.log("moving "+ currentOrder+ " to "+ item.get('order'));
+					}
+				}
+			}); // end of forEach
+		} // end of top else
+		
+		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
+	}
 });
 
 FLOW.QuestionView = Ember.View.extend({
@@ -152,7 +288,7 @@ FLOW.QuestionView = Ember.View.extend({
 		//TODO populate tooltip
 		//TODO populate question options
 		//TODO populate help
-		//TODO populate translations	
+		//TODO populate translations
 	},
 	
 	doCancelEditQuestion: function() {
@@ -163,7 +299,7 @@ FLOW.QuestionView = Ember.View.extend({
 	},
 	
 	doCopy: function() {
-		console.log("doing doDuplicate");	
+		console.log("doing doDuplicate");
 	},
 	
 	doMove: function() {
@@ -174,5 +310,4 @@ FLOW.QuestionView = Ember.View.extend({
 			console.log("doing doDelete");
 	}
 });
-
 

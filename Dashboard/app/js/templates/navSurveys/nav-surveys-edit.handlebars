@@ -53,40 +53,62 @@
     <!-- Beginning Question Set  -->
     <section id="questionSet">
         <section class="aQuestionSet mainContent" id="setIndex-01">
-     From content<br>
-			 {{#each qg in FLOW.questionGroupControl}}
-			        {{qg.displayName}} - {{qg.order}}<br/>
-			     {{/each}}
-				<br>
-				
-				 From ArrangedContent<br>
-						 {{#each qg in FLOW.questionGroupControl.arrangedContent}}
-						        {{qg.displayName}} - {{qg.order}}<br/>
-						     {{/each}}
-							<br>
-				
-				Numerical:<br>
-		   {{#each item in FLOW.itemControl}}
-		        {{item.id}}<br/>
-		     {{/each}}
 
-			
- 			{{#each qg in FLOW.questionGroupControl.active}}
+
+
+			 {{#view FLOW.QuestionGroupItemView order="0"}}
+            <a {{action "doSort" target="this"}}> sort </a>
+                 {{#if view.oneSelectedForMove}}
+                    <br>
+                    order: {{view.order}}
+                    <a {{action "doQGroupMoveHere" target="this"}}>Move page here </a>|<a {{action "doQGroupMoveCancel" target="this"}}> Cancel move</a>
+                    <br>
+                {{/if}}    
+
+                {{#if view.oneSelectedForCopy}}
+                    <br>
+                    order: {{view.order}}
+                    <a {{action "doQGroupCopyHere" target="this"}}>Paste page here </a>|<a {{action "doQGroupCopyCancel" target="this"}}> Cancel copy</a>
+                    <br>
+                {{/if}}    
+            {{/view}}
+
+ 			{{#each qg in FLOW.questionGroupControl}}
             <!-- -->
-            {{#view FLOW.QuestionGroupItemView contentBinding="qg"}}
+            {{#view FLOW.QuestionGroupItemView contentBinding="qg" orderBinding="qg.order"}}
             <header>
-                Page x -<h1><a {{action "toggleVisibility" target="this"}}>{{qg.displayName}}</a></h1>
+                                    order: {{view.order}} - 
+                Group {{qg.order}} &mdash;<h1><a {{action "toggleVisibility" target="this"}}>{{qg.displayName}}</a></h1>
+			     <a {{action "toggleVisibility" target="this"}}>{{view.showHideText}} </a>|
+				<a {{action "doQGroupNameEdit" target="this"}} class="editQuestion" id=""> Edit group name </a>|   
+                <a {{action "doQGroupDelete" target="this"}} class="deleteQuestion" id=""> Delete </a>|
+                <a {{action "doQGroupCopy" target="this"}} class="copyQuestion" id=""> Copy </a>|
+                <a {{action "doQGroupMove" target="this"}} class="moveQuestion" id=""> Move </a>                      
+	
+               {{#if view.oneSelectedForMove}}
+                    <br>
+                    <a {{action "doQGroupMoveHere" target="this"}}>Move page here </a>|<a {{action "doQGroupMoveCancel" target="this"}}> Cancel move</a>
+                    <br>
+                {{/if}}    
+
+                {{#if view.oneSelectedForCopy}}
+                    <br>
+                    <a {{action "doQGroupCopyHere" target="this"}}>Paste page here </a>|<a {{action "doQGroupCopyCancel" target="this"}}> Cancel copy</a>
+                    <br>
+                {{/if}}    
+
+
                <!-- <a class="editSetInfo">Edit Set Info</a> -->
-                <a {{action "toggleVisibility" target="this"}}>{{view.showHideText}}</a>
+
             </header><br/>
             {{#if view.amVisible}}
             <div class="questionSetContent">
-                <a class="addQuestion" href="#">Add a question here</a>
+                <a class="" href="#">Add a question here</a>
                 {{#each q in FLOW.questionControl.active}}
                 <!-- Beginning a Question  -->
                 {{#view FLOW.QuestionView contentBinding="q"}}
 			              
-<div class="innerContent" id="innerContent_01">
+				<div class="innerContent" id="innerContent_01">
                     {{#if view.amOpenQuestion}}
                     <h1 class="questionNbr">&nbsp;</h1>
                     <label>Question text: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
@@ -146,7 +168,7 @@
                 </div>
                 {{/view}}
                 <!-- End of Question -->
-                <a class="addQuestion" href="#">Add a question here</a>
+                <a class="" href="#">Add question here</a>
                 {{/each}}
             </div>
             {{/if}}

@@ -1,5 +1,5 @@
 // ***********************************************//
-//                 models and stores                    
+//                 models and stores
 // ***********************************************//
 require('akvo-flow/core');
 DS.Model.reopen({
@@ -29,27 +29,27 @@ FLOW.SurveyGroup = DS.Model.extend({
 	code: DS.attr('string',{defaulValue: ""}),
 	displayName: DS.attr('string',{defaulValue: ""}),
 	keyId: DS.attr('number'),
-	primaryKey: 'keyId',
+	primaryKey: 'keyId'
 
 });
 
 
 FLOW.SurveyGroup.FIXTURES = [{
 	keyId: 1,
-	displayName: 'Urban sanitation surveys',
+	displayName: 'Urban sanitation surveys'
 }, {
 	keyId: 2,
-	displayName: 'Elise Surveys',
+	displayName: 'Elise Surveys'
 }, {
 	keyId: 3,
-	displayName: 'Test Survey group',
+	displayName: 'Test Survey group'
 },{
 	keyId: 4,
-	displayName: 'Upande - SNVVERMIS',
+	displayName: 'Upande - SNVVERMIS'
 },{
 	keyId: 5,
-	displayName: 'Akvo test surveys',
-},
+	displayName: 'Akvo test surveys'
+}
 
 ];
 
@@ -68,7 +68,7 @@ FLOW.Survey = DS.Model.extend({
 	keyId: DS.attr('number'),
 	pointType: DS.attr('string'),
 	surveyGroupId: DS.attr('number'),
-	primaryKey: 'keyId',
+	primaryKey: 'keyId'
 
 });
 
@@ -92,10 +92,7 @@ FLOW.Survey.FIXTURES = [{
 	displayName: 'Akvo RSR update',
 	name:'Akvo RSR update',
 	surveyGroupId: 1
-}, 
-
-
-];
+}];
 
 FLOW.QuestionGroup = DS.Model.extend({
 	order: DS.attr('number'),
@@ -111,7 +108,7 @@ FLOW.QuestionGroup = DS.Model.extend({
 	isOpen: DS.attr('boolean', {
 		defaulValue: 0
 	}),
-	primaryKey: 'keyId',
+	primaryKey: 'keyId'
 });
 
 
@@ -120,28 +117,28 @@ FLOW.QuestionGroup.FIXTURES = [{
 	order:1,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. ",
 	name: 'Location',
-	displayName: 'Location',
+	displayName: 'Location'
 
 }, {
 	keyId: 2,
 	order:3,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
 	name: 'Occupation',
-	displayName: 'Occupation',
+	displayName: 'Occupation'
 
 }, {
 	keyId: 3,
 	order:2,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
 	name: 'Water system',
-	displayName: 'Water system',
+	displayName: 'Water system'
 
 }, {
 	keyId: 4,
 	order:4,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
 	name: 'Sanitation system',
-	displayName: 'Sanitation system',
+	displayName: 'Sanitation system'
 
 }, ];
 
@@ -149,7 +146,7 @@ FLOW.QuestionGroup.FIXTURES = [{
 
 FLOW.Question = DS.Model.extend({
 	translationMap: DS.attr('string'),
-	// not sure 
+	// not sure
 	allowDecimal: DS.attr('boolean', {defaulValue: 0}),
 	optionContainerDto: DS.attr('string'),
 	//not sure
@@ -174,7 +171,7 @@ FLOW.Question = DS.Model.extend({
 	questionTypeString: DS.attr('string',{defaultValue:"freeText"}),
 	surveyId: DS.attr('number'),
 	displayName: DS.attr('string'),
-	keyId: DS.attr('number'),
+	keyId: DS.attr('number')
 });
 
 
@@ -232,7 +229,7 @@ FLOW.Question.FIXTURES = [{
 FLOW.QuestionOption = DS.Model.extend({
 	questionId: DS.attr('number'),
 	text: DS.attr('string'),
-	keyId: DS.attr('number'),
+	keyId: DS.attr('number')
 });
 
 FLOW.QuestionOption.FIXTURES = [{

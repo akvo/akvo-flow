@@ -1,5 +1,5 @@
 // ***********************************************//
-//                 controllers                    
+//                 controllers
 // ***********************************************//
 
 // Define the main application controller. This is automatically picked up by
@@ -7,7 +7,7 @@
 require('akvo-flow/core');
 FLOW.ApplicationController = Ember.Controller.extend();
 
-// Navigation controllers  
+// Navigation controllers
 FLOW.NavigationController = Em.Controller.extend({
 	selected: null
 });
@@ -38,14 +38,16 @@ content:[
    Ember.Object.create({label: "Photo", value: "photo"}),
    Ember.Object.create({label: "Video", value: "video"}),
    Ember.Object.create({label: "Date", value: "date"}),
-   Ember.Object.create({label: "Barcode", value: "barcode"}),
-]	
+   Ember.Object.create({label: "Barcode", value: "barcode"})
+]
 });
 
 FLOW.selectedControl = Ember.Controller.create({
 	selectedSurveyGroup: null,
 	selectedSurvey: null,
 	selectedQuestionGroup: null,
+	selectedForMoveQuestionGroup:null,
+	selectedForCopyQuestionGroup:null,
 	selectedQuestion: null,
 	selectedOption: null,
 	selectedCreateNewGroup:false
@@ -72,7 +74,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
 	active: function() {
 		if (FLOW.selectedControl.get('selectedSurveyGroup')) {
 			var id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-			return FLOW.store.find(FLOW.Survey, {surveyGroupId: id})
+			return FLOW.store.find(FLOW.Survey, {surveyGroupId: id});
 		} else {
 			FLOW.selectedControl.set('selectedSurvey', null);
 			FLOW.selectedControl.set('selectedQuestionGroup', null);
@@ -81,33 +83,20 @@ FLOW.surveyControl = Ember.ArrayController.create({
 	}.property('FLOW.selectedControl.selectedSurveyGroup').cacheable()
 });
 
-
-FLOW.itemControl = Em.ArrayController.create({
-    sortProperties: ['id'],
-    // random order
-    content: Em.A([
-        Em.Object.create({ id: 5 }),
-        Em.Object.create({ id: 3 }),
-        Em.Object.create({ id: 10 }),
-        Em.Object.create({ id: 6 }),
-        Em.Object.create({ id: 1 }),
-        Em.Object.create({ id: 2 }),
-        Em.Object.create({ id: 100 }),
-    ]),
-});
-
-FLOW.questionGroupControl = Ember.ArrayController.create({	
+FLOW.questionGroupControl = Ember.ArrayController.create({
 	sortProperties:['order'],
+	sortAscending:true,
 	
+	// not used at the moment in survey tab
 	active: function() {
 		if (FLOW.selectedControl.get('selectedSurvey')) {
 			var id = FLOW.selectedControl.selectedSurvey.get('keyId');
-			return FLOW.store.find(FLOW.QuestionGroup, {surveyId: id})
+			return FLOW.store.find(FLOW.QuestionGroup, {surveyId: id});
 		} else {
 			FLOW.selectedControl.set('selectedQuestionGroup', null);
 			return null;
 		}
-	}.property('FLOW.selectedControl.selectedSurvey').cacheable(),
+	}.property('FLOW.selectedControl.selectedSurvey').cacheable()
 });
 
 FLOW.questionControl = Ember.ArrayController.create({
@@ -115,7 +104,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 		if (FLOW.selectedControl.get('selectedQuestionGroup')) {
 			var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
-			return FLOW.store.find(FLOW.Question, {questionGroupId: id})
+			return FLOW.store.find(FLOW.Question, {questionGroupId: id});
 		} else {
 			return null;
 		}
@@ -130,7 +119,7 @@ FLOW.optionControl = Ember.ArrayController.create({
 			var id = FLOW.selectedControl.selectedQuestion.get('keyId');
 			return FLOW.store.find(FLOW.QuestionOption, {questionId: id});
 		} else {
-			return null;	
+			return null;
 	}
 	}.property('FLOW.selectedControl.selectedQuestion').cacheable(),
 	

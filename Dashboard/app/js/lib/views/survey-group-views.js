@@ -28,17 +28,17 @@ FLOW.SurveyGroupSurveyView = Ember.View.extend({
 
 	// fired when 'preview survey' is clicked in the survey item display
 	previewSurvey: function() {
-			console.log("TODO preview Survey");			
+			console.log("TODO preview Survey");
 	},
 	
 	// fired when 'delete survey' is clicked in the survey item display
 	deleteSurvey: function() {
-			console.log("TODO delete Survey");			
+			console.log("TODO delete Survey");
 	},
 	
-	// fired when 'inspect data' is clicked in the survey item display 
+	// fired when 'inspect data' is clicked in the survey item display
 	inspectData: function() {
-			console.log("TODO inspect Data");			
+			console.log("TODO inspect Data");
 	}
 });
 
@@ -61,28 +61,28 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	// fired when 'edit name' is clicked, shows edit field to change survey group name
 	editSurveyGroupName: function() {
 			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
-			this.set('showEditField',true);			
+			this.set('showEditField',true);
 	},
 	
 	// fired when 'save' is clicked while showing edit group name field. Saves the new group name
 	saveSurveyGroupNameEdit: function() {
 			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
 			var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
-			surveyGroup.set('displayName',this.get('surveyGroupName'));	
-			this.set('showEditField',false);			
+			surveyGroup.set('displayName',this.get('surveyGroupName'));
+			this.set('showEditField',false);
 	},
 	
 	// fired when 'cancel' is clicked while showing edit group name field. Cancels the edit.
 	cancelSurveyGroupNameEdit: function() {
 			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
-			this.set('showEditField',false);			
+			this.set('showEditField',false);
 	},
 	
 	// fired when 'add a group' is clicked. Displays a new group text field in the left sidebar
 	addGroup: function() {
 			FLOW.selectedControl.set('selectedSurveyGroup',null);
 			this.set('surveyGroupName',null);
-			this.set('showNewGroupField',true);	
+			this.set('showNewGroupField',true);
 	},
 	
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
@@ -93,18 +93,18 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 				"displayName":this.get('surveyGroupName'),
 				"code":this.get('surveyGroupName')});
 
-			this.set('showNewGroupField',false);	
+			this.set('showNewGroupField',false);
 	},
 	
 	// fired when 'cancel' is clicked while showing new group text field in left sidebar. Cancels the new survey group creation
 	cancelNewSurveyGroupName: function() {
 			this.set('surveyGroupName',null);
-			this.set('showNewGroupField',false);	
+			this.set('showNewGroupField',false);
 	},
 	
 	// fired when 'create a new survey' is clicked in the top bar. 
 	createSurvey: function() {
-			console.log("TODO create Survey");			
+			console.log("TODO create Survey");		
 	},
 	
 });

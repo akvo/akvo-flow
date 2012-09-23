@@ -1,11 +1,12 @@
 // ***********************************************//
-//                 Router                    
+//                 Router
 // ***********************************************//
 require('akvo-flow/core');
 
 FLOW.Router = Ember.Router.extend({
 	enableLogging: true,
-	location: 'hash', //or 'none' for URLs
+	loggedIn:false,
+	location: 'hash', //'hash'or 'none' for URLs
 	root: Ember.Route.extend({
 		doNavHome: function(router, context) {
 			router.transitionTo('navHome');
@@ -32,6 +33,15 @@ FLOW.Router = Ember.Router.extend({
 			router.transitionTo('navAdmin');
 		},
 
+// non-working code for transitioning to navHome at first entry of the app
+//		setup: function(router){
+//	    	router.send("goHome");
+//	  	},
+		
+//		goHome:function(router){
+//			router.transitionTo('navHome');
+//		},
+		
 		index: Ember.Route.extend({
 			route: '/',
 			redirectsTo: 'navHome'
@@ -86,7 +96,7 @@ FLOW.Router = Ember.Router.extend({
 					var sId=FLOW.selectedControl.selectedSurvey.get('keyId');
 					FLOW.questionGroupControl.set('content', FLOW.store.find(FLOW.QuestionGroup, {surveyId:sId}));
 				}
-			}),
+			})
 
 		}),
 
@@ -160,7 +170,7 @@ FLOW.Router = Ember.Router.extend({
 					router.set('datasubnavController.selected', 'excelExport');
 
 				}
-			}),
+			})
 		}),
 
 // ************************** REPORTS ROUTER **********************************
