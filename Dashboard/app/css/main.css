@@ -56,8 +56,9 @@ body {
 	font-family: Helmet, Freesans, sans-serif;
 	color: rgb(36, 48, 50);
 	font-size: 62.5%;
-	word-spacing: 0.25em;
+	word-spacing: 0.05em;
 }
+
 /* Headings
 -------------------------------------------------------------- */
 
@@ -171,11 +172,11 @@ pre {
 /* links 
 ---------------------------------------------------------------*/
 
-a:link, a:visited {
-	font-weight: normal;
+a, a:link, a:visited {
 	text-decoration: none;
 	outline: none;
 	color: rgb(107, 134, 141);
+	cursor:pointer;
 }
 a:hover {
 	color: rgb(114,  205, 255);
@@ -702,7 +703,6 @@ tfoot tr {
 #tabs nav.tabNav ul li.active, #tabs nav.tabNav ul li.active:hover {
 	background: rgb(69,72,77); /* Old browsers */
 	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
-
 	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzQ1NDg0ZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDAwMDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
 	background: -moz-linear-gradient(top, rgb(69,72,77) 0%, rgb(0,0,0) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgb(69,72,77)), color-stop(100%, rgb(0,0,0))); /* Chrome,Safari4+ */
@@ -785,6 +785,11 @@ nav ul.menuGroup li {
 */
 	background: rgb(70,70,70);
 	background: rgba(255,255,255,0.05);
+	border-bottom: thin solid rgb(55, 55, 55);
+}
+nav ul.menuGroup li.current {
+	background: rgb(90,90,90);
+	background: rgba(255,255,255,0.15);
 	border-bottom: thin solid rgb(55, 55, 55);
 }
 nav ul.menuGroup li a {
@@ -1336,7 +1341,7 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 0 0.75%;
 	display: block;
 	padding: 5px 0.75%;
-	background: rgb(230,230,230);
+	background: rgb(242,242,242);
 }
 .aQuestionSet .questionSetContent a.addQuestion {
 	display: block;
@@ -1363,37 +1368,33 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	width: 97%;
 	margin: 0 0.75%;
 	display: block;
-	padding: 0 0.75% 10px 0.75%;
+	padding: 0 0.75% 0 0.75%;
 	border-bottom:thin solid rgb(224,224,224);
 }
 .aQuestionSet .ember-view {
 	margin: 0 0 20px 0;
 	}
 	
-.aQuestionSet header nav {
+.aQuestionSet header nav.qtnGroupMenu {
 	position: absolute;
-	width: 35%;
 	top: 20px;
 	right: 5px;
 }
-.aQuestionSet header nav ul {
+.aQuestionSet header nav.qtnGroupMenu ul {
 	width: 100%;
 	padding: 0;
 	margin: 0;
 }
-.aQuestionSet header nav ul li {
+.aQuestionSet header nav.qtnGroupMenu ul li {
 	text-align: right;
 	display: inline;
 	float: left;
 	margin: 0 15px 0 0;
 }
-.aQuestionSet header nav ul li:last-child {
+.aQuestionSet header nav.qtnGroupMenu ul li:last-child {
 	margin: 0;
 }
-.aQuestionSet header nav ul li a {
-	display: block;
-	font-size: 1.1em;
-}
+
 span.qtnGroupHead {
 	display: block;
 	width: 100%;
@@ -1402,7 +1403,7 @@ span.qtnGroupHead {
 	font-style: italic;
 	color: rgb(246, 160, 26);
 }
-.aQuestionSet header h1.qtnGroupTitle {
+.aQuestionSet header h1.qtnGroupTitle a {
 	color: rgb(38, 8, 89);
 }
 .aQuestionSet header h1 + a.editSetInfo {
@@ -1447,11 +1448,12 @@ span.qtnGroupHead {
 
 .aQuestionSet .questionSetContent div.innerContent {
 	position: relative;
-	width: 99%;
-	margin: 10px 0.25%;
-	padding: 5px 0.25%;
-	background: rgb(255,255,255) url(../images/lowerCorner.png) right bottom no-repeat;
-	border: thin dashed rgb(204,204,204);
+	width: 99.8%;
+	margin: 10px auto;
+	padding: 3px 0.1%;
+	background: rgb(248,248,248);
+	/*border: thin dashed rgb(204,204,204);*/
+	box-shadow: 0 1px 1px rgba(0,0,0,0.05);
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {
 }
@@ -1522,6 +1524,8 @@ span.qtnGroupHead {
 .innerContent h1.questionNbr {
 	margin: 0 0 0 5px;
 	display: inline;
+	color: rgb(58, 58, 58);
+	font-weight:normal;
 }
 .innerContent label, .innerContent input, .innerContent select {
 	display: block;

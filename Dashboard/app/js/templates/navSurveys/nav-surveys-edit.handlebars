@@ -75,7 +75,7 @@
                 
                 <span class="qtnGroupHead">Group {{view.content.order}}</span>
 				<h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
-               <nav>
+               <nav class="qtnGroupMenu">
 			   <ul>
 				<li><a {{action "toggleVisibility" target="this"}}>{{view.showHideText}} </a></li>
                 <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestion" id=""> Edit group name </a></li> 
@@ -85,9 +85,10 @@
    				</ul>
 				</nav>
                {{#if view.oneSelectedForMove}}
-                    <br>
-                    <a {{action "doQGroupMoveHere" target="this"}}>Move page here </a>|<a {{action "doQGroupMoveCancel" target="this"}}> Cancel move</a>
-                    <br>
+                    <nav><ul>
+				    <li><a {{action "doQGroupMoveHere" target="this"}}>Move page here </a></li>
+					<li><a {{action "doQGroupMoveCancel" target="this"}}> Cancel move</a></li>
+					</ul></nav>
                 {{/if}}    
 
                 {{#if view.oneSelectedForCopy}}
@@ -160,7 +161,7 @@
                             <li><a {{action "doEdit" target="this"}} class="editQuestion" id="">Edit</a></li>
                         </ul>
                     </nav>
-                    <h1 class="questionNbr">{{q.displayName}}</h1>
+                    <h1 class="questionNbr"><span>01: </span>{{q.displayName}}</h1>
                     {{/if}}
                     <!-- end body of question -->
                 </div>
