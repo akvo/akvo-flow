@@ -237,6 +237,23 @@ a.standardBtn:hover, input[type="submit"]:hover {
 	background: rgb(39,94,139);
 	color: rgb(255,255,255);
 }
+a.smallBtn {
+	font-size: 1em;
+	display: inline-block;
+	padding: 5px;
+	text-align: center;
+	background: rgb(39,94,110);
+	color: rgb(255,255,255);
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px;
+}
+a.smallBtn:hover {
+	background: rgb(39,94,139);
+	color: rgb(255,255,255);
+}
+
 a.helpIcon {
 	position: absolute;
 	display: inline-block;
@@ -1344,17 +1361,20 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	background: rgb(242,242,242);
 }
 .aQuestionSet .questionSetContent a.addQuestion {
+	border:thin solid rgb(214,214,214);
 	display: block;
 	width: 12%;
 	position: relative;
-	margin: 1% auto;
-	padding: 1em 0.5em 1em 45px;
-	background: rgb(204,204,204) url(../images/addQuestion.png) 10px center no-repeat;
+	margin: 10px auto 20px auto;
+	padding: 0.85em 0.5em 0.75em 35px;
+	background: rgb(224,224,224) url(../images/addQuestion.png) 10px center no-repeat;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
+	-moz-box-shadow: 0 2px 0 rgb(255,255,255);
+	-webkit-box-shadow: 0 2px 0 rgb(255,255,255);
 	box-shadow: 0 2px 0 rgb(255,255,255);
-	font-size: 1.1em;
+	font-size: 0.9em;
 	text-transform: uppercase;
 	white-space: nowrap;
 	overflow: hidden;
@@ -1369,7 +1389,7 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 0 0.75%;
 	display: block;
 	padding: 0 0.75% 0 0.75%;
-	border-bottom:thin solid rgb(224,224,224);
+	border-top:thin solid rgb(224,224,224);
 }
 .aQuestionSet .ember-view {
 	margin: 0 0 20px 0;
@@ -1393,6 +1413,10 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 }
 .aQuestionSet header nav.qtnGroupMenu ul li:last-child {
 	margin: 0;
+}
+.aQuestionSet header nav.qtnGroupMenu ul li a:hover {
+	text-decoration:underline;
+	
 }
 
 span.qtnGroupHead {
@@ -1442,6 +1466,21 @@ span.qtnGroupHead {
 	background: rgb(214,214,214) url(../images/addSet.png) left center no-repeat;
 	color: rgb(227, 27, 35);
 }
+
+nav.moveMenu, nav.copyMenu {
+	display:block;
+	margin:5px auto;
+	width:20%;
+	}
+nav.moveMenu ul, nav.copyMenu ul {
+	
+	}
+nav.moveMenu ul li, nav.copyMenu ul li {
+	text-align:center;
+	display:inline;
+	margin:0 5px 0 0;
+	}
+
 /*****
 		A New Question Form
 ******---------------------------------------------------------------------------------*/
@@ -1452,7 +1491,9 @@ span.qtnGroupHead {
 	margin: 10px auto;
 	padding: 3px 0.1%;
 	background: rgb(248,248,248);
-	/*border: thin dashed rgb(204,204,204);*/
+	border: thin dashed rgb(204,204,204);
+	-moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+	-webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05);
 	box-shadow: 0 1px 1px rgba(0,0,0,0.05);
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {
@@ -1524,7 +1565,7 @@ span.qtnGroupHead {
 .innerContent h1.questionNbr {
 	margin: 0 0 0 5px;
 	display: inline;
-	color: rgb(58, 58, 58);
+	color:rgb(74, 177, 207);
 	font-weight:normal;
 }
 .innerContent label, .innerContent input, .innerContent select {

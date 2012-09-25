@@ -85,16 +85,21 @@
    				</ul>
 				</nav>
                {{#if view.oneSelectedForMove}}
-                    <nav><ul>
-				    <li><a {{action "doQGroupMoveHere" target="this"}}>Move page here </a></li>
-					<li><a {{action "doQGroupMoveCancel" target="this"}}> Cancel move</a></li>
-					</ul></nav>
+                    <nav class="moveMenu">
+					<ul>
+				    <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">Move page here </a></li>
+					<li><a {{action "doQGroupMoveCancel" target="this"}} class="smallBtn"> Cancel move</a></li>
+					</ul>
+					</nav>
                 {{/if}}    
 
                 {{#if view.oneSelectedForCopy}}
-                    <br>
-                    <a {{action "doQGroupCopyHere" target="this"}}>Paste page here </a>|<a {{action "doQGroupCopyCancel" target="this"}}> Cancel copy</a>
-                    <br>
+                    <nav class="copyMenu">
+                    <ul>
+				    <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">Paste page here </a></li>
+					<li><a {{action "doQGroupCopyCancel" target="this"}} class="smallBtn"> Cancel copy</a></li>
+					</ul>
+					</nav>
                 {{/if}}    
 
                <!-- <a class="editSetInfo">Edit Set Info</a> -->
@@ -102,7 +107,7 @@
 
             {{#if view.amVisible}}
             <div class="questionSetContent">
-                <a class="" style="margin 0 0 0 100px;" href="#">Add a question here</a>
+                <a class="addQuestion"  href="#">Add a question here</a>
                 {{#each q in FLOW.questionControl.active}}
                 <!-- Beginning a Question  -->
                 {{#view FLOW.QuestionView contentBinding="q"}}
@@ -167,7 +172,7 @@
                 </div>
                 {{/view}}
                 <!-- End of Question -->
-                <a class="" href="#">Add question here</a>
+                <a class="addQuestion" href="#">Add question here</a>
                 {{/each}}
             </div>
             {{/if}}
