@@ -85,7 +85,8 @@ FLOW.DatasubnavView = Em.View.extend({
 // ************************ Surveys *************************
 FLOW.QuestionGroupItemView = Ember.View.extend({
 	content: null, // question group content comes through binding in handlebars file
-	order: null,
+	zeroItem: false,
+	renderView:false,
 
 	amVisible: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestionGroup');
@@ -149,13 +150,6 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
 	},
 
-	// execute group copy to selected location
-	doQGroupCopyHere:function(){
-		console.log("TODO - group copy execute");
-
-		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
-	},
-
 	// prepare for group move. Shows 'move here' buttons
 	doQGroupMove:function(){
 		FLOW.selectedControl.set('selectedForMoveQuestionGroup', this.content);
@@ -166,86 +160,106 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
 	},
 
-	doSort:function(){
-		console.log('toggling order');
-		FLOW.questionGroupControl.toggleProperty('sortAscending');
-	},
-
 	// execture group move to selected location
 	doQGroupMoveHere:function(){
 		
-
 		var selectedOrder = FLOW.selectedControl.selectedForMoveQuestionGroup.get('order');
-		var insertAfterOrder = this.get('order');
-		var smallestOrder=0;
-		var largestOrder=0;
+		var insertAfterOrder;
 		var movingUp=false;
-		
-		if ((selectedOrder==insertAfterOrder)||(selectedOrder==(insertAfterOrder+1))){
-			console.log("doing nothing");
-			// do nothing
-		}
-		
-		else {
-			if (selectedOrder<insertAfterOrder){
-				movingUp=true;
-				console.log("moving up");
-			}
-			else {
-				console.log("moving down");
-				movingUp=false;
-			}
 
-			console.log('selected and insertafter:'+selectedOrder+","+insertAfterOrder);
+		if (this.get('zeroItem')) {insertAfterOrder=0;} else {insertAfterOrder=this.content.get('order');}
+
+		FLOW.questionGroupControl.propertyWillChange('content');
+
+		// moving to the same place => do nothing
+		if ((selectedOrder==insertAfterOrder)||(selectedOrder==(insertAfterOrder+1))){}
+		else {
+			// determine if the item is moving up or down
+			movingUp = (selectedOrder<insertAfterOrder);
 		
 			FLOW.questionGroupControl.get('content').forEach(function(item){
 				var currentOrder=item.get('order');
 
 				// item moving up
 				if (movingUp) {
-					if ((currentOrder<selectedOrder) || (currentOrder>insertAfterOrder)){
-						// do not move
-						console.log('not moving '+ currentOrder);
-					}
+					// if outside of change region, do not move
+					if ((currentOrder<selectedOrder) || (currentOrder>insertAfterOrder)){ }
 
 					// move moving item to right location
-					else if (currentOrder==selectedOrder) {
-						item.set('order',insertAfterOrder);
-						console.log("moving "+ currentOrder+ " to "+ item.get('order'));
-					}
-
+					else if (currentOrder==selectedOrder) {	item.set('order',insertAfterOrder); }
+					
 					// move rest down
-					else {
-						item.set('order',item.get('order')-1);
-						console.log("moving "+ currentOrder+ " to "+ item.get('order'));
-					}
-
+					else { item.set('order',item.get('order')-1); }
 				}
 
 				// item moving down
 				else {
-					if ((currentOrder<=insertAfterOrder) || (currentOrder>selectedOrder)){
-						//do not move
-						console.log('not moving '+ currentOrder);
-					}
+					if ((currentOrder<=insertAfterOrder) || (currentOrder>selectedOrder)){ }
 
-					else if (currentOrder==selectedOrder) {
-						item.set('order',insertAfterOrder+1);
-						console.log("moving "+ currentOrder+ " to "+ item.get('order'));
-					}
+					else if (currentOrder==selectedOrder) {	item.set('order',insertAfterOrder+1); }
 
-					// move rest up
-					else {
-						item.set('order',item.get('order')+1);
-						console.log("moving "+ currentOrder+ " to "+ item.get('order'));
-					}
+					else {	item.set('order',item.get('order')+1); }
 				}
 			}); // end of forEach
 		} // end of top else
 		
+		FLOW.store.commit();
+		FLOW.questionGroupControl.propertyDidChange('content');
 		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
+	},
+
+	// execure group copy to selected location
+	// *************************** DOES NOT WORK ************************
+	// error: Cannot call method 'destroy' of undefined
+	doQGroupCopyHere:function(){
+		
+		var selectedOrder = FLOW.selectedControl.selectedForCopyQuestionGroup.get('order');
+		var insertAfterOrder = this.get('order');
+		
+		//FLOW.questionGroupControl.propertyWillChange('content');
+		
+		// move up to make space
+		FLOW.questionGroupControl.get('content').forEach(function(item){
+			var currentOrder=item.get('order');
+			if (currentOrder>=insertAfterOrder) {item.set('order',item.get('order')+1);
+				console.log("upping "+currentOrder);
+			}
+		}); // end of forEach
+
+		FLOW.store.commit();
+		
+		// create copy of QuestionGroup item in the store
+		var newRec = FLOW.store.createRecord(FLOW.QuestionGroup,{
+			"description": FLOW.selectedControl.selectedForCopyQuestionGroup.get('description'),
+			"order":insertAfterOrder,
+			"name":FLOW.selectedControl.selectedForCopyQuestionGroup.get('name'),
+			"surveyId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId'),
+			"displayName":FLOW.selectedControl.selectedForCopyQuestionGroup.get('displayName')});
+
+		console.log("displayName: " + newRec.get('displayName'));
+		FLOW.store.commit();
+
+		// TODO implement commit to persistence layer
+		// TODO create copy of questions contained in QuestionGroup and insert them in the store
+		var sId=FLOW.selectedControl.selectedSurvey.get('keyId');
+		console.log("keyId: "+ sId);
+
+		FLOW.questionGroupControl.set('content',FLOW.store.find(FLOW.QuestionGroup, {surveyId:sId})); // only shows original 5. perhaps because of fixtures?
+		//FLOW.questionGroupControl.set('content',null); // works, deletes content
+		//FLOW.questionGroupControl.propertyDidChange('content');
+
+		//console.log("going to print names now!");
+		//FLOW.questionGroupControl.get('content').forEach(function(item){console.log(item.get('displayName'));});
+
+		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
 	}
-});
+	// *************************** END DOES NOT WORK *************************
+
+
+
+}); // end QuestionGroupItemView
+
+
 
 FLOW.QuestionView = Ember.View.extend({
 	content:null,
@@ -261,7 +275,7 @@ FLOW.QuestionView = Ember.View.extend({
 		var selected = FLOW.selectedControl.get('selectedQuestion');
 		if (selected) {
 
-			var isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestion.get('keyId'));
+			var isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestionType.get('keyId'));
 			return isOpen;
 		} else {
 			return false;
@@ -293,6 +307,7 @@ FLOW.QuestionView = Ember.View.extend({
 	
 	doCancelEditQuestion: function() {
 		FLOW.selectedControl.set('selectedQuestion', null);
+		console.log('canceling edit');
 	},
 	
 	doSaveEditQuestion: function() {

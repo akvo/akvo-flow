@@ -114,6 +114,7 @@ FLOW.QuestionGroup = DS.Model.extend({
 
 FLOW.QuestionGroup.FIXTURES = [{
 	keyId: 1,
+	surveyId:1,
 	order:1,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. ",
 	name: 'Location',
@@ -121,26 +122,40 @@ FLOW.QuestionGroup.FIXTURES = [{
 
 }, {
 	keyId: 2,
-	order:3,
+	surveyId:1,
+	order:2,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
 	name: 'Occupation',
 	displayName: 'Occupation'
 
 }, {
 	keyId: 3,
-	order:2,
+	surveyId:1,
+	order:3,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
 	name: 'Water system',
 	displayName: 'Water system'
 
 }, {
 	keyId: 4,
+	surveyId:1,
 	order:4,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
 	name: 'Sanitation system',
 	displayName: 'Sanitation system'
 
-}, ];
+},
+{
+	keyId: 5,
+	surveyId:2,
+	order:5,
+	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
+	name: 'Something else',
+	displayName: 'Something else'
+
+}
+
+];
 
 
 

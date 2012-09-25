@@ -6,7 +6,7 @@ require('akvo-flow/core');
 FLOW.Router = Ember.Router.extend({
 	enableLogging: true,
 	loggedIn:false,
-	location: 'hash', //'hash'or 'none' for URLs
+	location: 'none', //'hash'or 'none' for URLs
 	root: Ember.Route.extend({
 		doNavHome: function(router, context) {
 			router.transitionTo('navHome');
@@ -93,6 +93,9 @@ FLOW.Router = Ember.Router.extend({
 				route: '/edit',
 				connectOutlets: function(router, event) {
 					router.get('navSurveysController').connectOutlet({ name: 'navSurveysEdit'});
+
+					// all questions should be closed when we enter
+					FLOW.selectedControl.set('selectedQuestion',null);
 					var sId=FLOW.selectedControl.selectedSurvey.get('keyId');
 					FLOW.questionGroupControl.set('content', FLOW.store.find(FLOW.QuestionGroup, {surveyId:sId}));
 				}

@@ -86,6 +86,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
 FLOW.questionGroupControl = Ember.ArrayController.create({
 	sortProperties:['order'],
 	sortAscending:true,
+	reSort:false,
 	
 	// not used at the moment in survey tab
 	active: function() {
@@ -96,7 +97,13 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 			FLOW.selectedControl.set('selectedQuestionGroup', null);
 			return null;
 		}
-	}.property('FLOW.selectedControl.selectedSurvey').cacheable()
+	}.property('FLOW.selectedControl.selectedSurvey').cacheable(),
+
+
+	setContent:function(){
+		var id = FLOW.selectedControl.selectedSurvey.get('keyId');
+		this.set('content',FLOW.store.find(FLOW.QuestionGroup, {surveyId: id}));
+	}.observes('this.reSort','reSort')
 });
 
 FLOW.questionControl = Ember.ArrayController.create({
@@ -112,25 +119,31 @@ FLOW.questionControl = Ember.ArrayController.create({
 });
 
 FLOW.optionControl = Ember.ArrayController.create({
-	editCopy:null,
 	
-	questionOptions: function() {
-		if (FLOW.selectedControl.get('selectedQuestion')) {
-			var id = FLOW.selectedControl.selectedQuestion.get('keyId');
-			return FLOW.store.find(FLOW.QuestionOption, {questionId: id});
-		} else {
-			return null;
-	}
-	}.property('FLOW.selectedControl.selectedQuestion').cacheable(),
+
+
+
+
+
+	//editCopy:null,
 	
-	questionOptionsList: function(){
-		var opList = this.get('questionOptions').mapProperty('text').join("\n");
-		return opList;
-		}.property('this.questionOptions','this.questionOptions.isLoaded').cacheable(),
+	//questionOptions: function() {
+	//	if (FLOW.selectedControl.get('selectedQuestion')) {
+	//		var id = FLOW.selectedControl.selectedQuestion.get('keyId');
+	//		return FLOW.store.find(FLOW.QuestionOption, {questionId: id});
+	//	} else {
+	//		return null;
+	//}
+	//}.property('FLOW.selectedControl.selectedQuestion').cacheable(),
+	
+	//questionOptionsList: function(){
+	//	var opList = this.get('questionOptions').mapProperty('text').join("\n");
+	//	return opList;
+	//	}.property('this.questionOptions','this.questionOptions.isLoaded').cacheable(),
 			
-	makeEditCopy: function(){
-		this.set('editCopy',this.get('questionOptionsList'));
-	}.observes('questionOptionsList')
+	//makeEditCopy: function(){
+	//	this.set('editCopy',this.get('questionOptionsList'));
+	//}.observes('questionOptionsList')
 });
 
 

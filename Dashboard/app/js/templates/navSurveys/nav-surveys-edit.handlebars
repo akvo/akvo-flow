@@ -54,10 +54,7 @@
     <section id="questionSet">
         <section class="aQuestionSet mainContent" id="setIndex-01">
 
-
-
-			 {{#view FLOW.QuestionGroupItemView order="0"}}
-            <a {{action "doSort" target="this"}}> sort </a>
+             {{#view FLOW.QuestionGroupItemView zeroItem="true"}}
                  {{#if view.oneSelectedForMove}}
                     <br>
                     order: {{view.order}}
@@ -73,18 +70,17 @@
                 {{/if}}    
             {{/view}}
 
- 			{{#each qg in FLOW.questionGroupControl}}
-            <!-- -->
-            {{#view FLOW.QuestionGroupItemView contentBinding="qg" orderBinding="qg.order"}}
+            {{#collection contentBinding="FLOW.questionGroupControl" itemViewClass="FLOW.QuestionGroupItemView"}}
+
             <header>
-                                    order: {{view.order}} - 
-                Group {{qg.order}} &mdash;<h1><a {{action "toggleVisibility" target="this"}}>{{qg.displayName}}</a></h1>
-			     <a {{action "toggleVisibility" target="this"}}>{{view.showHideText}} </a>|
-				<a {{action "doQGroupNameEdit" target="this"}} class="editQuestion" id=""> Edit group name </a>|   
+                
+                Group {{view.content.order}} &mdash;<h1><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
+                 <a {{action "toggleVisibility" target="this"}}>{{view.showHideText}} </a>|
+                <a {{action "doQGroupNameEdit" target="this"}} class="editQuestion" id=""> Edit group name </a>|   
                 <a {{action "doQGroupDelete" target="this"}} class="deleteQuestion" id=""> Delete </a>|
                 <a {{action "doQGroupCopy" target="this"}} class="copyQuestion" id=""> Copy </a>|
                 <a {{action "doQGroupMove" target="this"}} class="moveQuestion" id=""> Move </a>                      
-	
+    
                {{#if view.oneSelectedForMove}}
                     <br>
                     <a {{action "doQGroupMoveHere" target="this"}}>Move page here </a>|<a {{action "doQGroupMoveCancel" target="this"}}> Cancel move</a>
@@ -97,28 +93,27 @@
                     <br>
                 {{/if}}    
 
-
                <!-- <a class="editSetInfo">Edit Set Info</a> -->
-
             </header><br/>
+
             {{#if view.amVisible}}
             <div class="questionSetContent">
-                <a class="" href="#">Add a question here</a>
+                <a class="" style="margin 0 0 0 100px;" href="#">Add a question here</a>
                 {{#each q in FLOW.questionControl.active}}
                 <!-- Beginning a Question  -->
                 {{#view FLOW.QuestionView contentBinding="q"}}
-			              
-				<div class="innerContent" id="innerContent_01">
+                          
+                <div class="innerContent" id="innerContent_01">
                     {{#if view.amOpenQuestion}}
                     <h1 class="questionNbr">&nbsp;</h1>
                     <label>Question text: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
                     
-					<!-- Body of question -->
+                    <!-- Body of question -->
                     <label>Question type: {{view Ember.Select 
-						contentBinding="FLOW.questionTypeControl.content" 
-						optionLabelPath="content.label" 
-						optionValuePath="content.value" 
-						selectionBinding="view.selectedQuestionType" }}
+                        contentBinding="FLOW.questionTypeControl.content" 
+                        optionLabelPath="content.label" 
+                        optionValuePath="content.value" 
+                        selectionBinding="view.selectedQuestionType" }}
                     </label>
                     <label>Question Help Tooltip:
                         <span class="fadedText">(Optional)</span>
@@ -128,36 +123,36 @@
                     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedDependent"}} Dependent</label>
                    
                    
- 					<!-- Question specific material -->
-					{{#if view.amOptionType}}
- 						<h1 class="answerNbr">Option details: </h1>
-          				<label class="labelcheckbox">
-							{{view Ember.Checkbox checkedBinding="view.checkedOptionMultiple"}} Allow Multiple
-						</label>
-			            <label class="labelcheckbox">
-							{{view Ember.Checkbox checkedBinding="view.checkedOptionOther"}} Allow Other
-						</label>	
-		
-						<br>
-						<p><strong>Options:&nbsp;</strong><span class="fadedText">(Enter each choice on a separate line)</span></p>
-							{{view Ember.TextArea valueBinding="FLOW.optionControl.editCopy" size="100" rows="7" }}  
-		            {{/if}} 
-					
-					{{view.optionList}}
-					
-					{{#if view.amNumberType}}
-              				TODO: Number specific content
+                    <!-- Question specific material -->
+                    {{#if view.amOptionType}}
+                        <h1 class="answerNbr">Option details: </h1>
+                        <label class="labelcheckbox">
+                            {{view Ember.Checkbox checkedBinding="view.checkedOptionMultiple"}} Allow Multiple
+                        </label>
+                        <label class="labelcheckbox">
+                            {{view Ember.Checkbox checkedBinding="view.checkedOptionOther"}} Allow Other
+                        </label>    
+        
+                        <br>
+                        <p><strong>Options:&nbsp;</strong><span class="fadedText">(Enter each choice on a separate line)</span></p>
+                            {{view Ember.TextArea valueBinding="FLOW.optionControl.editCopy" size="100" rows="7" }}  
+                    {{/if}} 
+                    
+                    {{view.optionList}}
+                    
+                    {{#if view.amNumberType}}
+                            TODO: Number specific content
                     {{/if}} 
 
-					<!-- End question specific material -->
-					 	<a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>Save Question</a>
-	                    <a class="standardBtn" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>Cancel</a>
-					{{else}}
+                    <!-- End question specific material -->
+                        <a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>Save Question</a>
+                        <a class="standardBtn" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>Cancel</a>
+                    {{else}}
                     <!-- nav is only displayed if question is closed -->
                     <nav>
                         <ul>
                             <li><a {{action "doDelete" target="this"}} class="deleteQuestion" id="">Delete</a></li>
-                            <li><a {{action "doCopy" target="this"}} class="copyQuestion" id="">Duplicate</a></li>
+                            <li><a {{action "doCopy" target="this"}} class="copyQuestion" id="">Copy</a></li>
                             <li><a {{action "doMove" target="this"}} class="moveQuestion" id="">Move</a></li>
                             <li><a {{action "doEdit" target="this"}} class="editQuestion" id="">Edit</a></li>
                         </ul>
@@ -173,9 +168,8 @@
             </div>
             {{/if}}
 
-            {{/view}}
 
-            {{/each}}
+            {{/collection}}
         </section>
     </section>
     <!-- End Question Set  -->
