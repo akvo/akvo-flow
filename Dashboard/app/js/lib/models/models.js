@@ -195,6 +195,7 @@ FLOW.Question.FIXTURES = [{
 	text: 'What is the name of the community?',
 	displayName: 'What is the name of the community?',
 	mandatory: false,
+	order:1,
 	questionTypeString:'freeText',
 	questionSetId: 1
 }, {
@@ -202,6 +203,7 @@ FLOW.Question.FIXTURES = [{
 	text: 'What is your occupation?',
 	displayName: 'What is your occupation?',
 	mandatory: false,
+	order:2,
 	questionTypeString:'option',
 	questionSetId: 1
 }, {
@@ -209,6 +211,7 @@ FLOW.Question.FIXTURES = [{
 	text: 'How much children do you have?',
 	displayName: 'How much children do you have?',
 	mandatory: false,
+	order:3,
 	questionTypeString:'number',
 	questionSetId: 1
 }, {
@@ -216,6 +219,7 @@ FLOW.Question.FIXTURES = [{
 	text: 'Please take a geolocation',
 	displayName: 'Please take a geolocation',
 	mandatory: false,
+	order:4,
 	questionTypeString:'geoLoc',
 	questionSetId: 1
 }, 	{
@@ -223,6 +227,7 @@ FLOW.Question.FIXTURES = [{
 	text: 'Please take a picture',
 	displayName: 'Please take a picture',
 	mandatory: false,
+	order:5,
 	questionTypeString:'photo',
 	questionSetId: 1
 },	{
@@ -230,6 +235,7 @@ FLOW.Question.FIXTURES = [{
 	text: 'Please make a video',
 	displayName: 'Please make a video',
 	questionTypeString:'video',
+	order:6,
 	mandatory: false,
 	questionSetId: 1
 },	{
@@ -237,6 +243,7 @@ FLOW.Question.FIXTURES = [{
 	text: 'What is the date today?',
 	displayName: 'What is the date today?',
 	questionTypeString:'date',
+	order:7,
 	mandatory: false,
 	questionSetId: 1
 }];
