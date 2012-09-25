@@ -214,48 +214,50 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	doQGroupCopyHere:function(){
 		
 		var selectedOrder = FLOW.selectedControl.selectedForCopyQuestionGroup.get('order');
-		var insertAfterOrder = this.get('order');
-		
-		//FLOW.questionGroupControl.propertyWillChange('content');
-		
+		var insertAfterOrder;
+
+		if (this.get('zeroItem')) {insertAfterOrder=0;} else {insertAfterOrder=this.content.get('order');}
+		console.log("selected, insertAfter: "+selectedOrder+", "+insertAfterOrder);
 		// move up to make space
 		FLOW.questionGroupControl.get('content').forEach(function(item){
 			var currentOrder=item.get('order');
-			if (currentOrder>=insertAfterOrder) {item.set('order',item.get('order')+1);
+			if (currentOrder>insertAfterOrder) {item.set('order',item.get('order')+1);
 				console.log("upping "+currentOrder);
 			}
 		}); // end of forEach
-
-		FLOW.store.commit();
-		
+	
 		// create copy of QuestionGroup item in the store
 		var newRec = FLOW.store.createRecord(FLOW.QuestionGroup,{
 			"description": FLOW.selectedControl.selectedForCopyQuestionGroup.get('description'),
-			"order":insertAfterOrder,
+			"order":insertAfterOrder+1,
 			"name":FLOW.selectedControl.selectedForCopyQuestionGroup.get('name'),
 			"surveyId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId'),
 			"displayName":FLOW.selectedControl.selectedForCopyQuestionGroup.get('displayName')});
 
-		console.log("displayName: " + newRec.get('displayName'));
-		FLOW.store.commit();
-
+		
 		// TODO implement commit to persistence layer
 		// TODO create copy of questions contained in QuestionGroup and insert them in the store
 		var sId=FLOW.selectedControl.selectedSurvey.get('keyId');
-		console.log("keyId: "+ sId);
-
-		FLOW.questionGroupControl.set('content',FLOW.store.find(FLOW.QuestionGroup, {surveyId:sId})); // only shows original 5. perhaps because of fixtures?
-		//FLOW.questionGroupControl.set('content',null); // works, deletes content
-		//FLOW.questionGroupControl.propertyDidChange('content');
-
-		//console.log("going to print names now!");
-		//FLOW.questionGroupControl.get('content').forEach(function(item){console.log(item.get('displayName'));});
-
+		FLOW.questionGroupControl.set('content',FLOW.store.findAll(FLOW.QuestionGroup)); // only loads already loaded models
+		
 		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
-	}
+	},
 	// *************************** END DOES NOT WORK *************************
 
+	addItem:function(){
+		var newRec = FLOW.store.createRecord(FLOW.QuestionGroup,{
+			"description": "hello",
+			"order":"1",
+			"name":"hello there",
+			"surveyId":1,
+			"displayName":"display name"});
 
+		console.log("displayName: " + newRec.get('displayName'));
+		FLOW.store.commit();
+
+		FLOW.questionGroupControl.set('content',FLOW.store.findAll(FLOW.QuestionGroup));
+
+	}
 
 }); // end QuestionGroupItemView
 

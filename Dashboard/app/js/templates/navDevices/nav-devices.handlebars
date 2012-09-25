@@ -1,6 +1,15 @@
 <div class="hero-unit">
        <h1>Devices</h1>
        <p>
+list of question groups:<br>
+ {{#collection contentBinding="FLOW.questionGroupControl" itemViewClass="FLOW.QuestionGroupItemView"}}
+ 	{{view.content.displayName}}<br>
+ 	
+ {{/collection}}
 
+<br>
+  {{#view FLOW.QuestionGroupItemView}}
+		<a {{action "addItem" target="this"}}>add item</a>
+  {{/view}}
        </p>
    </div>

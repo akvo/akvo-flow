@@ -108,6 +108,7 @@ FLOW.Router = Ember.Router.extend({
 			route: '/devices',
 			connectOutlets: function(router, event) {
 				router.get('applicationController').connectOutlet('navDevices');
+				FLOW.questionGroupControl.set('content', FLOW.store.find(FLOW.QuestionGroup, {surveyId:1}));
 				router.set('navigationController.selected', 'navDevices');
 			}
 		}),
