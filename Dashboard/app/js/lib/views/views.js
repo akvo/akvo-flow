@@ -288,7 +288,7 @@ FLOW.QuestionView = Ember.View.extend({
 		var selected = FLOW.selectedControl.get('selectedQuestion');
 		if (selected) {
 
-			var isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestionType.get('keyId'));
+			var isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestion.get('keyId'));
 			return isOpen;
 		} else {
 			return false;
@@ -308,8 +308,10 @@ FLOW.QuestionView = Ember.View.extend({
 		
 	doEdit: function() {
 		FLOW.selectedControl.set('selectedQuestion', this.content);
+	
 		this.set('questionName',FLOW.selectedControl.selectedQuestion.get('displayName'));
-		FLOW.optionControl.set('editCopy',FLOW.optionControl.get('questionOptionsList'));
+		
+		//FLOW.optionControl.set('editCopy',FLOW.optionControl.get('questionOptionsList'));
 	
 		//TODO populate selected question type
 		//TODO populate tooltip
