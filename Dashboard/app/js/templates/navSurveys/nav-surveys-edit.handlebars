@@ -53,7 +53,6 @@
     <!-- Beginning Question Set  -->
     <section id="questionSet">
         <section class="aQuestionSet mainContent" id="setIndex-01">
-
              {{#view FLOW.QuestionGroupItemView zeroItem="true"}}
                  {{#if view.oneSelectedForMove}}
                     <br>
@@ -74,13 +73,17 @@
 
             <header>
                 
-                Group {{view.content.order}} &mdash;<h1><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
-                 <a {{action "toggleVisibility" target="this"}}>{{view.showHideText}} </a>|
-                <a {{action "doQGroupNameEdit" target="this"}} class="editQuestion" id=""> Edit group name </a>|   
-                <a {{action "doQGroupDelete" target="this"}} class="deleteQuestion" id=""> Delete </a>|
-                <a {{action "doQGroupCopy" target="this"}} class="copyQuestion" id=""> Copy </a>|
-                <a {{action "doQGroupMove" target="this"}} class="moveQuestion" id=""> Move </a>                      
-    
+                <span class="qtnGroupHead">Group {{view.content.order}}</span>
+				<h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
+               <nav>
+			   <ul>
+				<li><a {{action "toggleVisibility" target="this"}}>{{view.showHideText}} </a></li>
+                <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestion" id=""> Edit group name </a></li> 
+                <li><a {{action "doQGroupDelete" target="this"}} class="deleteQuestion" id=""> Delete </a></li>
+                <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestion" id=""> Copy </a></li>
+                <li><a {{action "doQGroupMove" target="this"}} class="moveQuestion" id=""> Move </a> </li>                    
+   				</ul>
+				</nav>
                {{#if view.oneSelectedForMove}}
                     <br>
                     <a {{action "doQGroupMoveHere" target="this"}}>Move page here </a>|<a {{action "doQGroupMoveCancel" target="this"}}> Cancel move</a>

@@ -50,13 +50,13 @@ html {
 	-ms-text-size-adjust: 100%; /* 2 */
 	background: rgb(255, 255, 255);
 	overflow-y: scroll;
-	border-top:3px solid rgb(38, 8, 89);
+	border-top: 3px solid rgb(38, 8, 89);
 }
 body {
 	font-family: Helmet, Freesans, sans-serif;
 	color: rgb(36, 48, 50);
 	font-size: 62.5%;
-	word-spacing:0.25em;
+	word-spacing: 0.25em;
 }
 /* Headings
 -------------------------------------------------------------- */
@@ -68,14 +68,12 @@ h1 {
 	font-size: 2.4em;
 	line-height: 1.5em;
 }
-
-.mainContent h1{
+.mainContent h1 {
 	position: relative;
 	display: inline;
 	font-size: 1.8em;
 	color: rgb(227, 27, 35);
 }
-
 h2 {
 	font-size: 2em;
 	line-height: 1em;
@@ -117,11 +115,11 @@ img, object, video, embed {
 	max-width: 100%;
 }
 .hidden {
-	display:none !important;
-	}
+	display: none !important;
+}
 .shown {
-	display:block !important;
-	}
+	display: block !important;
+}
 hr, .hide {
 	display: none;
 }
@@ -140,38 +138,36 @@ a img {
 	visibility: hidden;
 }
 .emphasized {
-	font-size:1.2em;
-	position:relative;
-	color:rgb(184,184,184);
-	}
-.emphasized span {
-	position:absolute;
-	left:155px;
-	font-weight:bold;
-	color:rgb(222, 137, 41);
-	}
-pre{
-	display:block;
-	font:100% "Courier New", Courier, monospace;
-	padding:10px;
-	border:1px solid #bae2f0;
-	background:#e3f4f9;	
-	margin:.5em 0;
-	overflow:auto;
-	width:800px;
+	font-size: 1.2em;
+	position: relative;
+	color: rgb(184,184,184);
 }
-
-#tooltip{
-	font-size:1.2em;
-	max-width:300px;
-	position:absolute;
-	background:rgb(242, 240, 230);
-	padding:5px;
-	color:#333;
-	display:none;
-	box-shadow:0 0 1px rgb(0,0,0);
-	}	
-
+.emphasized span {
+	position: absolute;
+	left: 155px;
+	font-weight: bold;
+	color: rgb(222, 137, 41);
+}
+pre {
+	display: block;
+	font: 100% "Courier New", Courier, monospace;
+	padding: 10px;
+	border: 1px solid #bae2f0;
+	background: #e3f4f9;
+	margin: .5em 0;
+	overflow: auto;
+	width: 800px;
+}
+#tooltip {
+	font-size: 1.2em;
+	max-width: 300px;
+	position: absolute;
+	background: rgb(242, 240, 230);
+	padding: 5px;
+	color: #333;
+	display: none;
+	box-shadow: 0 0 1px rgb(0,0,0);
+}
 /* links 
 ---------------------------------------------------------------*/
 
@@ -215,45 +211,44 @@ mark {
 }
 .selectInfo {
 	color: rgb(58,58,58);
-	}
+}
 .visible {
-	visibility:hidden;
-	}
+	visibility: hidden;
+}
 .nonVisible {
-	visibility:visible;
-	}
-
+	visibility: visible;
+}
 a.standardBtn, input[type="submit"] {
-	font-size:1.1em;
+	font-size: 1.1em;
 	display: block;
-	width:10%;
+	width: 10%;
 	padding: 7px 1%;
-	margin:20px auto;
-	text-align:center;
+	margin: 20px auto;
+	text-align: center;
 	background: rgb(39,94,110);
-	color:rgb(255,255,255);
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-	-o-border-radius:3px;
-	border-radius:3px;
+	color: rgb(255,255,255);
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px;
 }
 a.standardBtn:hover, input[type="submit"]:hover {
 	background: rgb(39,94,139);
-	color:rgb(255,255,255);
+	color: rgb(255,255,255);
 }
 a.helpIcon {
-	position:absolute;
-	display:inline-block;
-	width:16px;
-	height:16px;
-	text-indent:-9999px;
-	background:url(../images/helpIcon.png) center top no-repeat;
-	left:290px;
-	top:-1px;
-	}
+	position: absolute;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	text-indent: -9999px;
+	background: url(../images/helpIcon.png) center top no-repeat;
+	left: 290px;
+	top: -1px;
+}
 a.helpIcon:hover {
-	background:url(../images/helpIcon.png) center bottom no-repeat;
-	}
+	background: url(../images/helpIcon.png) center bottom no-repeat;
+}
 /* page structure
 --------------------------------------------- */
 #pageWrap {
@@ -318,16 +313,17 @@ footer > div {
 	width: 100%;
 	height: 38px;
 	background: rgb(58,58,58);
-	-moz-border-radius:0 0 5px 0;
-	-webkit-border-radius:0 0 5px 0;
-	border-radius:0 0 5px 0;
+	-moz-border-radius: 0 0 5px 0;
+	-webkit-border-radius: 0 0 5px 0;
+	border-radius: 0 0 5px 0;
 }
 .fullWidth {
 	position: relative;
 	width: 100%;
 }
-.mainContent {padding:0 0 0 10px;}
-
+.mainContent {
+	padding: 0 0 0 10px;
+}
 /* .header
 --------------------------------------------- */
 
@@ -336,12 +332,11 @@ header.top {
 	width: 100%;
 	height: 80px;
 	padding: 0;
-	margin: 0 0 20px 0;
-/*	background: rgb(58,58,58);
+	margin: 0 0 20px 0;/*	background: rgb(58,58,58);
 */
-	}
+}
 header.top > div {
-	}
+}
 header.top hgroup h1 {
 	position: absolute;
 	top: 20px;
@@ -366,16 +361,14 @@ header.top hgroup h2 {
 	z-index: 0;
 	text-indent: -9999px;
 }
-
 #userLog {
-	position:absolute;
-	top:5px;
-	right:0;
-	}
+	position: absolute;
+	top: 5px;
+	right: 0;
+}
 #userLog ul li {
-	display:inline;
-	}
-
+	display: inline;
+}
 /* #home page
 --------------------------------------------- */
 
@@ -395,14 +388,13 @@ nav#topnav ul li {
 	display: inline;
 	padding: 0 6px 0 0;
 	float: left;
-	margin: 2px 4px 0 0;
-/*	background: url(../images/navSeparator.png) right center no-repeat;
+	margin: 2px 4px 0 0;/*	background: url(../images/navSeparator.png) right center no-repeat;
 */}
 nav#topnav ul li:last-child, nav#topnav ul li:last-child:hover, nav#topnav ul li.current, nav#topnav ul li.current:hover {
 	background-image: none;
 }
 nav#topnav ul li:hover {
-	background:none;
+	background: none;
 }
 nav#topnav ul li a {
 	display: block;
@@ -416,12 +408,11 @@ nav#topnav ul li a {
 	-moz-transition: background-color .4s linear;
 	-o-transition: background-color .4s linear;
 	transition: background-color .4s linear;
-	cursor:pointer;
+	cursor: pointer;
 }
 nav#topnav ul li a:hover, nav#topnav ul li.current a {
 	color: rgb(246, 160, 26);
 }
-
 /*************** addition MTW **************/
 nav#topnav ul li.navHome a {
 	background: url(../images/topnavDashboards.png) center -18px no-repeat;
@@ -430,7 +421,7 @@ nav#topnav ul li.navHome a:hover {
 	background: rgb(237, 237, 237) url(../images/topnavDashboards.png) center -18px no-repeat;
 }
 nav#topnav ul li.navHome.current a {
-	background:url(../images/topnavDashboards.png) center bottom no-repeat;
+	background: url(../images/topnavDashboards.png) center bottom no-repeat;
 }
 /***************** end addition MTW ************/
 
@@ -443,7 +434,7 @@ nav#topnav ul li.navSurveys a:hover {
 	background: rgb(237, 237, 237) url(../images/topnavSurveys.png) center -18px no-repeat;
 }
 nav#topnav ul li.navSurveys.current a {
-	background:  url(../images/topnavSurveys.png) center bottom no-repeat;
+	background: url(../images/topnavSurveys.png) center bottom no-repeat;
 }
 nav#topnav ul li.navData a {
 	background: url(../images/topnavData.png) center -18px no-repeat;
@@ -461,7 +452,7 @@ nav#topnav ul li.navDashboards a:hover {
 	background: rgb(237, 237, 237) url(../images/topnavDashboards.png) center -18px no-repeat;
 }
 nav#topnav ul li.navDashboards.current a {
-	background:url(../images/topnavDashboards.png) center bottom no-repeat;
+	background: url(../images/topnavDashboards.png) center bottom no-repeat;
 }
 nav#topnav ul li.navMaps a {
 	background: url(../images/topnavMaps.png) center -18px no-repeat;
@@ -479,7 +470,7 @@ nav#topnav ul li.navDevices a:hover {
 	background: rgb(237, 237, 237) url(../images/topnavDevices.png) center -18px no-repeat;
 }
 nav#topnav ul li.navDevices.current a {
-	background:url(../images/topnavDevices.png) center bottom no-repeat;
+	background: url(../images/topnavDevices.png) center bottom no-repeat;
 }
 nav#topnav ul li.navUsers a {
 	background: url(../images/topnavUsers.png) center -18px no-repeat;
@@ -497,7 +488,7 @@ nav#topnav ul li.navReports a:hover {
 	background: rgb(237, 237, 237) url(../images/topnavReports.png) center -18px no-repeat;
 }
 nav#topnav ul li.navReports.current a {
-	background:url(../images/topnavReports.png) center bottom no-repeat;
+	background: url(../images/topnavReports.png) center bottom no-repeat;
 }
 nav#topnav ul li.navAdmin a {
 	background: url(../images/topnavAdmin.png) center -18px no-repeat;
@@ -506,9 +497,8 @@ nav#topnav ul li.navAdmin a:hover {
 	background: rgb(237, 237, 237) url(../images/topnavAdmin.png) center -18px no-repeat;
 }
 nav#topnav ul li.navAdmin.current a {
-	background:url(../images/topnavAdmin.png) center bottom no-repeat;
+	background: url(../images/topnavAdmin.png) center bottom no-repeat;
 }
-
 /*--------------------------------------------- 
 			Top Header Search input
 --------------------------------------------- */
@@ -517,10 +507,10 @@ header input[type="search"] {
 	right: 0px;
 	top: 36px;
 	width: 10%;
-	-moz-transition:width 0.1s linear;
-	-webkit-transition:width 0.1s linear;
-	-o-transition:width 0.1s linear;
-	transition:width 0.1s linear;
+	-moz-transition: width 0.1s linear;
+	-webkit-transition: width 0.1s linear;
+	-o-transition: width 0.1s linear;
+	transition: width 0.1s linear;
 }
 header input[type="search"]:focus {
 	width: 14%;
@@ -538,7 +528,7 @@ footer.bottomPage {
 	height: 50px;
 	padding: 0;
 	margin: 0 0 20px 0;
-	background: rgb(38, 8, 89);	
+	background: rgb(38, 8, 89);
 }
 footer.bottomPage small {
 	display: block;
@@ -564,7 +554,7 @@ footer.bottomPage a[rel="self"]:hover {
 #devicesList {
 }
 table.dataTable {
-	width:100%;
+	width: 100%;
 	border-collapse: collapse;
 	text-align: left;
 	color: #606060;
@@ -577,8 +567,8 @@ table.dataTable td {
 	text-align: center;
 }
 table.dataTable td:hover {
-	font-weight:bold;
-	}
+	font-weight: bold;
+}
 table.dataTable tbody tr {
 	background: rgb(255, 255, 255);
 	border-bottom: thin solid rgb(255,255,255);
@@ -624,8 +614,8 @@ table.dataTable thead tr th:last-child {
 	border-right: none;
 }
 tfoot tr {
-	background:transparent;
-	display:none;
+	background: transparent;
+	display: none;
 }
 #devicesListTable .macAddress {
 	text-transform: uppercase;
@@ -649,14 +639,12 @@ tfoot tr {
 #devicesListTable .longitude {
 	width: 16%;
 }
-
 /**************** addition MTW **************/
 #inspectData {
 	border: thin solid rgb(224,224,224);
-	border-top:1px solid rgb(255,255,255);
+	border-top: 1px solid rgb(255,255,255);
 	background: rgb(224,224,224);
 }
-
 /**************** end addition MTW **************/
 
 
@@ -666,7 +654,7 @@ tfoot tr {
 ----------------------------------------------------------------------*/
 #tabs > section {
 	border: thin solid rgb(224,224,224);
-	border-top:1px solid rgb(255,255,255);
+	border-top: 1px solid rgb(255,255,255);
 	background: rgb(224,224,224);
 }
 #tabs > section h1 {
@@ -686,39 +674,32 @@ tfoot tr {
 	display: inline;
 	margin: 0 1px 0 0;
 	float: left;
-background: rgb(201,201,201); /* Old browsers */
+	background: rgb(201,201,201); /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
 
-/* IE9 SVG, needs conditional override of 'filter' to 'none' */
-
-background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2M5YzljOSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjgzJSIgc3RvcC1jb2xvcj0iI2RmZGZkZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjZWNlY2UiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-
-background: -moz-linear-gradient(top,  rgb(201,201,201) 0%, rgb(223,223,223) 83%, rgb(206,206,206) 100%); /* FF3.6+ */
-
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(201,201,201)), color-stop(83%,rgb(223,223,223)), color-stop(100%,rgb(206,206,206))); /* Chrome,Safari4+ */
-
-background: -webkit-linear-gradient(top,  rgb(201,201,201) 0%,rgb(223,223,223) 83%,rgb(206,206,206) 100%); /* Chrome10+,Safari5.1+ */
-
-background: -o-linear-gradient(top,  rgb(201,201,201) 0%,rgb(223,223,223) 83%,rgb(206,206,206) 100%); /* Opera 11.10+ */
-
-background: -ms-linear-gradient(top,  rgb(201,201,201) 0%,rgb(223,223,223) 83%,rgb(206,206,206) 100%); /* IE10+ */
-
-background: linear-gradient(to bottom,  rgb(201,201,201) 0%,rgb(223,223,223) 83%,rgb(206,206,206) 100%); /* W3C */
-
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', endColorstr='#cecece',GradientType=0 ); /* IE6-8 */
-
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2M5YzljOSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjgzJSIgc3RvcC1jb2xvcj0iI2RmZGZkZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjZWNlY2UiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top, rgb(201,201,201) 0%, rgb(223,223,223) 83%, rgb(206,206,206) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgb(201,201,201)), color-stop(83%, rgb(223,223,223)), color-stop(100%, rgb(206,206,206))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgb(201,201,201) 0%, rgb(223,223,223) 83%, rgb(206,206,206) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgb(201,201,201) 0%, rgb(223,223,223) 83%, rgb(206,206,206) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgb(201,201,201) 0%, rgb(223,223,223) 83%, rgb(206,206,206) 100%); /* IE10+ */
+	background: linear-gradient(to bottom, rgb(201,201,201) 0%, rgb(223,223,223) 83%, rgb(206,206,206) 100%); /* W3C */
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', endColorstr='#cecece', GradientType=0 ); /* IE6-8 */
 	-webkit-transition: none;
 	-moz-transition: none;
 	-o-transition: none;
 	transition: none;
 	-webkit-border-radius: 5px 5px 0 0;
-     -moz-border-radius: 5px 5px 0 0;
-     border-radius: 5px 5px 0 0;
-    -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;}
+	-moz-border-radius: 5px 5px 0 0;
+	border-radius: 5px 5px 0 0;
+	-moz-background-clip: padding;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+}
 #tabs nav.tabNav ul li:hover {
 	background: rgb(174,174,174);
 }
 #tabs nav.tabNav ul li.active, #tabs nav.tabNav ul li.active:hover {
-	
 	background: rgb(69,72,77); /* Old browsers */
 	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
 
@@ -740,23 +721,22 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', end
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
-	-webkit-text-shadow:1px 1px 0 rgb(235,235,235);
-	-moz-text-shadow:1px 1px 0 rgb(235,235,235);
-	text-shadow:1px 1px 0 rgb(235,235,235);
+	-webkit-text-shadow: 1px 1px 0 rgb(235,235,235);
+	-moz-text-shadow: 1px 1px 0 rgb(235,235,235);
+	text-shadow: 1px 1px 0 rgb(235,235,235);
 }
 #tabs nav.tabNav ul li.active a, #tabs nav.tabNav ul li.active a:hover {
 	color: rgb(255,255,255);
-	-webkit-text-shadow:none;
-	-moz-text-shadow:none;
-	text-shadow:none;
+	-webkit-text-shadow: none;
+	-moz-text-shadow: none;
+	text-shadow: none;
 }
 #tabs nav.tabNav ul li a:hover {
 	color: rgb(255,255,255);
-	-webkit-text-shadow:none;
-	-moz-text-shadow:none;
-	text-shadow:none;
+	-webkit-text-shadow: none;
+	-moz-text-shadow: none;
+	text-shadow: none;
 }
-
 /* Survey styles
 --------------------------------------------- */
 .surveysList {
@@ -768,16 +748,15 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', end
 #groupBar, #newSurveyInfo {
 	background: rgb(58,58,58);
 	padding: 0 0 5px 0;
-	-moz-border-radius:5px 0 0 0;
-	-webkit-border-radius:5px 0 0 0;
-	border-radius:5px 0 0 0;
+	-moz-border-radius: 5px 0 0 0;
+	-webkit-border-radius: 5px 0 0 0;
+	border-radius: 5px 0 0 0;
 }
 #groupBar input[type="search"] {
-	display:block;
+	display: block;
 	margin: 8px auto 10px auto;
 	width: 77%;
 }
-
 /************** MTW added input text field style ***********/
 .topBar input[type="text"] {
 	margin: 7px 0 10px 10px;
@@ -791,10 +770,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', end
 	margin: 15px 0 10px 10px;
 	color: rgb(5, 5, 5);
 	color: rgba(5, 5, 5, 1);
-	-moz-text-shadow: 0px 1px 0px rgb(125, 125, 125),  0px -1px 0px rgb(0,0,0);
-	-webkit-text-shadow: 0px 1px 0px rgb(125, 125, 125),  0px -1px 0px rgb(0,0,0);
-	-o-text-shadow: 0px 1px 0px rgb(125, 125, 125),  0px -1px 0px rgb(0,0,0);
-	text-shadow: 0px 1px 0px rgb(125, 125, 125),  0px -1px 0px rgb(0,0,0);
+	-moz-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
+	-webkit-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
+	-o-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
+	text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
 }
 nav ul.menuGroup {
 	background: rgb(58,58,58);
@@ -802,11 +781,11 @@ nav ul.menuGroup {
 nav ul.menuGroup li {
 	width: 98%;
 	margin: 2px 1% 1px 1%;
-/*	background: url(../images/surveyGroupBg.png) left center repeat-x;
+	/*	background: url(../images/surveyGroupBg.png) left center repeat-x;
 */
 	background: rgb(70,70,70);
 	background: rgba(255,255,255,0.05);
-	border-bottom:thin solid rgb(55, 55, 55);
+	border-bottom: thin solid rgb(55, 55, 55);
 }
 nav ul.menuGroup li a {
 	display: block;
@@ -821,20 +800,19 @@ nav ul.menuGroup li a {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	cursor:pointer;
+	cursor: pointer;
 }
 nav ul.menuGroup li a:hover {
 	color: rgb(114,  205, 255);
 	background: rgb(80,80,80) url(../images/selectIndictr.png) right 50% no-repeat;
 	background: rgba(255,255,255,0.05) url(../images/selectIndictr.png) right 50% no-repeat;
 }
-
 /********* MTW changed nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current to 
 "nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a" to select li item instead of a ********/
 
 nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a {
 	color: rgb(246, 160, 26);
-/*	border-left: thin solid rgb(255,255,255);
+	/*	border-left: thin solid rgb(255,255,255);
 */	background: url(../images/selectIndictr.png) right bottom no-repeat;
 }
 /* Survey Top Bar
@@ -844,32 +822,30 @@ section.topBar {
 	margin: 0 0 10px 0;
 }
 section.topBar h2 {
-	max-width:45%;
+	max-width: 45%;
 	font-size: 1.5em;
 	color: rgb(205, 205, 205);
 	display: inline;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	line-height:2.6em;
-	margin-left:10px;
-	text-transform:capitalize;
+	line-height: 2.6em;
+	margin-left: 10px;
+	text-transform: capitalize;
 	padding-left: 15px;
-	background:url(../images/apostrophe.png) left -2px no-repeat;
+	background: url(../images/apostrophe.png) left -2px no-repeat;
 }
-
-section.topBar > a{
-	position:relative;
-	margin:0 0 0 10px;
-	display:inline-block;
+section.topBar > a {
+	position: relative;
+	margin: 0 0 0 10px;
+	display: inline-block;
 	color: rgb(114,  205, 255);
 }
-
 /* ****************** MTW added for save and cancel button ************* */
-nav > a{
-	position:relative;
-	margin:0 0 0 10px;
-	display:inline-block;
+nav > a {
+	position: relative;
+	margin: 0 0 0 10px;
+	display: inline-block;
 	color: rgb(114,  205, 255);
 }
 /* ********************  end MTW  **************************/
@@ -947,28 +923,26 @@ li.aSurvey {
 	padding: 0 0.5% 5px 0.5%;
 	margin: 5px 1.5% 10px 1.5%;
 	float: left;
-/*	background: url(../images/surveySeperator.png) right center no-repeat;
+	/*	background: url(../images/surveySeperator.png) right center no-repeat;
 */	cursor: pointer;
-	opacity:1;
-	background:transparent;
-	-moz-transition:background 0.2s linear;
-	-webkit-transition:background 0.2s linear;
-	-o-transition:background 0.2s linear;
-	transition:background 0.2s linear;
-	font-size:1.1em;
+	opacity: 1;
+	background: transparent;
+	-moz-transition: background 0.2s linear;
+	-webkit-transition: background 0.2s linear;
+	-o-transition: background 0.2s linear;
+	transition: background 0.2s linear;
+	font-size: 1.1em;
 }
-
 li.aSurvey:hover {
-	opacity:1;
-	background:rgb(235,235,235);
+	opacity: 1;
+	background: rgb(235,235,235);
 }
-
 li.aSurvey:nth-child(4n+1), li.aSurvey.firstOfRow {
 }
 li.aSurvey:nth-child(4n), li.aSurvey.endOfRow {
 	background-image: none;
 }
-	font-family: Georgia, "Times New Roman", Times, serif;
+ font-family: Georgia, "Times New Roman", Times, serif;
 li.aSurvey h2 {
 	display: inline-block;
 	margin: 10px 1% 0 2%;
@@ -977,37 +951,34 @@ li.aSurvey h2 {
 	text-overflow: ellipsis;
 	width: 97%;
 	text-transform: capitalize;
-	font-style:italic;
-	color:rgb(185,185,185);
-	font-size:1.8em;
+	font-style: italic;
+	color: rgb(185,185,185);
+	font-size: 1.8em;
 }
-
 li.aSurvey:hover h2 {
-	color:rgb(255,255,255);
+	color: rgb(255,255,255);
 }
-
 ul.surveyInfo {
 	position: relative;
 	width: 100%;
 	margin: 10px auto;
 	height: 40px;
 	padding: 0;
-/*	background: rgb(240,240,240);
+	/*	background: rgb(240,240,240);
 */	 
-	border-top:thin dotted rgb(225,225,225);
-	border-bottom:thin dotted rgb(225,225,225);
+	border-top: thin dotted rgb(225,225,225);
+	border-bottom: thin dotted rgb(225,225,225);
 	text-transform: capitalize;
 	vertical-align: middle;
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-	-o-border-radius:3px;
-	border-radius:3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px;
 }
 li.aSurvey:hover ul.surveyInfo {
-	border-top:thin dotted rgb(255,255,255);
-	border-bottom:thin dotted rgb(255,255,255);
-	}
-
+	border-top: thin dotted rgb(255,255,255);
+	border-bottom: thin dotted rgb(255,255,255);
+}
 ul.surveyInfo li {
 	display: inline-block;
 	position: relative;
@@ -1017,20 +988,19 @@ ul.surveyInfo li.dateCreated {
 	float: left;
 	height: 26px;
 	padding-top: 5px;
-	margin-left:2%;
+	margin-left: 2%;
 	width: 35%;
-	overflow:hidden;
-	white-space:nowrap;
-	text-overflow:ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 ul.surveyInfo li.dateCreated span {
 	color: rgb(153, 153, 153);
-	width:35%;
-	overflow:hidden;
-	white-space:nowrap;
-	text-overflow:ellipsis;
-	}
-
+	width: 35%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
 ul.surveyInfo li.responseNumber {
 	float: right;
 	text-align: right;
@@ -1054,17 +1024,16 @@ ul.surveyInfo li.responseNumber span {
 ul.surveyInfo li.responseNumber p {
 	display: inline;
 }
-.waterPoint ul.surveyInfo li.responseNumber, li.aSurvey.waterPoint:hover h2  {
+.waterPoint ul.surveyInfo li.responseNumber, li.aSurvey.waterPoint:hover h2 {
 	color: rgb(74, 177, 207);
 }
-
-.houseHold ul.surveyInfo li.responseNumber , li.aSurvey.houseHold:hover h2 {
+.houseHold ul.surveyInfo li.responseNumber, li.aSurvey.houseHold:hover h2 {
 	color: rgb(222, 137, 41);
 }
-.school ul.surveyInfo li.responseNumber , li.aSurvey.school:hover h2 {
+.school ul.surveyInfo li.responseNumber, li.aSurvey.school:hover h2 {
 	color: rgb(227, 27, 35);
 }
-.sanitationPoint ul.surveyInfo li.responseNumber, li.aSurvey.sanitationPoint:hover h2  {
+.sanitationPoint ul.surveyInfo li.responseNumber, li.aSurvey.sanitationPoint:hover h2 {
 	color: rgb(119, 97, 0);
 }
 .waterPoint ul.surveyInfo li.responseNumber span {
@@ -1096,9 +1065,9 @@ ul.surveyInfo li.responseNumber p {
 	color: rgb(153, 153, 153);
 	padding: 2px 0 2px 2%;
 	line-height: 1.2em;
-	overflow:hidden;
-	white-space:nowrap;
-	text-overflow:ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 .aSurvey dl dd {
 	width: 67%;
@@ -1117,18 +1086,17 @@ ul.surveyInfo li.responseNumber p {
 	color: rgb(119, 97, 0);
 }
 .aSurvey nav {
-	position:relative;
+	position: relative;
 	width: 100%;
-	padding:5px;
-	opacity:0;
-	-moz-transition:opacity 0.4s linear;
-	-webkit-transition:opacity 0.4s linear;
-	transition:opacity 0.4s linear;
+	padding: 5px;
+	opacity: 0;
+	-moz-transition: opacity 0.4s linear;
+	-webkit-transition: opacity 0.4s linear;
+	transition: opacity 0.4s linear;
 }
 .aSurvey:hover nav {
-	opacity:1;
+	opacity: 1;
 }
-
 .aSurvey nav ul {
 	width: 100%;
 }
@@ -1136,21 +1104,20 @@ ul.surveyInfo li.responseNumber p {
 	display: inline;
 	float: left;
 	margin: 2px 1% 0 0;
-/*	background: url(../images/aSurveyNavSep.png) right center no-repeat;
-*/	width:52%;
-	background:rgb(235,235,235);
-	padding:5px 0;
-	border-radius:4px;
+	/*	background: url(../images/aSurveyNavSep.png) right center no-repeat;
+*/	width: 52%;
+	background: rgb(235,235,235);
+	padding: 5px 0;
+	border-radius: 4px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 .aSurvey nav ul li:hover {
-	background:rgb(255,255,255);
+	background: rgb(255,255,255);
 }
-
 .aSurvey nav ul li:nth-child(2n+1) {
-	width:46%;
+	width: 46%;
 }
 /*.aSurvey nav ul li:first-child {
 	width: 28%;
@@ -1159,20 +1126,20 @@ ul.surveyInfo li.responseNumber p {
 	width: 36%;
 }
 */
-.aSurvey nav ul li:nth-child(2n){
+.aSurvey nav ul li:nth-child(2n) {
 /*	width: 29%;
 	background: none;*/
 }
 .aSurvey nav ul li a {
 	display: block;
-	width:100%;
-	padding:4px 0 1px 28%;
+	width: 100%;
+	padding: 4px 0 1px 28%;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 .aSurvey nav ul li a:hover {
-	color:rgb(114,  205, 255);
+	color: rgb(114,  205, 255);
 }
 .aSurvey nav ul li.editSurvey a {
 	background: url(../images/editSurvey.png) 3px top no-repeat;
@@ -1220,7 +1187,7 @@ ul.surveyInfo li.responseNumber p {
 #newSurveyInfo form label {
 	color: rgb(255,255,255);
 	margin: 10px 2px 2px 2px;
-	margin:10px 0 0 0;
+	margin: 10px 0 0 0;
 }
 #newSurveyInfo form label:first-child {
 	color: rgb(255,255,255);
@@ -1235,8 +1202,8 @@ ul.surveyInfo li.responseNumber p {
 	width: 96%;
 	margin: 0 auto;
 	padding: 10px 1.5%;
-	font-size:1.1em;
-	font-family:sans-serif;
+	font-size: 1.1em;
+	font-family: sans-serif;
 }
 #newSurveyInfo form select {
 	width: 100%;
@@ -1344,21 +1311,21 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 		NEw Survey Settings
 ******---------------------------------------------------------------------------------*/
 #surveySetting p {
-	position:relative;
-	width:90%;
-	}
+	position: relative;
+	width: 90%;
+}
 #surveySetting div#notifications {
-	margin:10px 0 0 0;
-	}
+	margin: 10px 0 0 0;
+}
 #surveySetting div#notifications h3 {
-	font-size:1.3em;
-	}
+	font-size: 1.3em;
+}
 #surveySetting form input[type="checkbox"] {
-	margin:15px 0 0 5px;
-	}
+	margin: 15px 0 0 5px;
+}
 #surveySetting select#surveyLang {
-	margin:0;	
-	}
+	margin: 0;
+}
 /*****
 		A New Question Form
 ******---------------------------------------------------------------------------------*/
@@ -1396,7 +1363,47 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	width: 97%;
 	margin: 0 0.75%;
 	display: block;
-	padding: 10px 0.75%;
+	padding: 0 0.75% 10px 0.75%;
+	border-bottom:thin solid rgb(224,224,224);
+}
+.aQuestionSet .ember-view {
+	margin: 0 0 20px 0;
+	}
+	
+.aQuestionSet header nav {
+	position: absolute;
+	width: 35%;
+	top: 20px;
+	right: 5px;
+}
+.aQuestionSet header nav ul {
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+.aQuestionSet header nav ul li {
+	text-align: right;
+	display: inline;
+	float: left;
+	margin: 0 15px 0 0;
+}
+.aQuestionSet header nav ul li:last-child {
+	margin: 0;
+}
+.aQuestionSet header nav ul li a {
+	display: block;
+	font-size: 1.1em;
+}
+span.qtnGroupHead {
+	display: block;
+	width: 100%;
+	padding-top:5px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-style: italic;
+	color: rgb(246, 160, 26);
+}
+.aQuestionSet header h1.qtnGroupTitle {
+	color: rgb(38, 8, 89);
 }
 .aQuestionSet header h1 + a.editSetInfo {
 	position: relative;
@@ -1448,7 +1455,6 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {
 }
-
 /* MTW changed width to 40% from 30% to make room for edit button */
 /* MTW changed right:5px to 20 px to make room for folded-page graphic */
 .innerContent nav {
@@ -1471,48 +1477,42 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	float: right;
 	margin: 0 5px 0 0;
 }
-
 .innerContent nav ul li a {
-	display:block;
+	display: block;
 	height: 12px;
 }
-
-
 /* MTW addition: editQuestion icon */
-.innerContent nav ul li a.editQuestion  {
+.innerContent nav ul li a.editQuestion {
 	background: url(../images/editSurvey.png) left top no-repeat;
-	padding:5px 5px 0 17px;
+	padding: 5px 5px 0 17px;
 }
-
 .innerContent nav ul li a.editQuestion:hover {
 	background: url(../images/editSurvey.png) left top no-repeat;
-	padding:5px 5px 0 17px;
+	padding: 5px 5px 0 17px;
 }
 /* end MTW addition */
 
 .innerContent nav ul li a.deleteQuestion {
-	background:url(../images/deleteQuestion.png) left top no-repeat;
-	padding:5px 5px 0 17px;
+	background: url(../images/deleteQuestion.png) left top no-repeat;
+	padding: 5px 5px 0 17px;
 }
 .innerContent nav ul li a.moveQuestion {
-	background:url(../images/moveQuestion.png) left top no-repeat;
-	padding:5px 5px 0 17px;
+	background: url(../images/moveQuestion.png) left top no-repeat;
+	padding: 5px 5px 0 17px;
 }
 .innerContent nav ul li a.copyQuestion {
-	background:url(../images/duplicateQuestion.png) left top no-repeat;
-	padding:5px 5px 0 17px;
+	background: url(../images/duplicateQuestion.png) left top no-repeat;
+	padding: 5px 5px 0 17px;
 }
 .innerContent nav ul li a.deleteQuestion:hover {
-	background:url(../images/deleteQuestion.png) left bottom no-repeat;
+	background: url(../images/deleteQuestion.png) left bottom no-repeat;
 }
 .innerContent nav ul li a.moveQuestion:hover {
-	background:url(../images/moveQuestion.png) left bottom no-repeat;
+	background: url(../images/moveQuestion.png) left bottom no-repeat;
 }
 .innerContent nav ul li a.copyQuestion:hover {
-	background:url(../images/duplicateQuestion.png) left bottom no-repeat;
+	background: url(../images/duplicateQuestion.png) left bottom no-repeat;
 }
-
-
 .innerContent h1 {
 	font-size: 1.5em;
 	margin: 20px 0 0 5px;
@@ -1521,7 +1521,7 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 }
 .innerContent h1.questionNbr {
 	margin: 0 0 0 5px;
-	display:inline;
+	display: inline;
 }
 .innerContent label, .innerContent input, .innerContent select {
 	display: block;
@@ -1537,12 +1537,11 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 5px 0 0 5px;
 	border-color: rgb(235,235,235);
 }
-
 /* Addition MTW added optiontype to input fields for options, to make them smaller */
 .innerContent .optiontype input[type=text] {
 	width: 35%;
 	padding: 5px 1%;
-	display:inline;
+	display: inline;
 	margin: 5px 0 0 5px;
 	border-color: rgb(235,235,235);
 }
@@ -1571,11 +1570,9 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 5px 0 0 5px;
 	border-color: rgb(235,235,235);
 }
-
 .innerContent input[type=checkbox]:first-child {
 	margin: 15px 0 0 5px;
 }
-
 /* MTW added labelcheckbox class to checkbox labels, to decrease vertical spacing */
 .innerContent .labelcheckbox input[type=checkbox]:first-child {
 	margin: 0px 0 0 5px;
@@ -1588,102 +1585,100 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 }
 /* change MTW: added width:35% */
 .innerContent textarea {
-	margin:5px 0 0 10px;
-	border-color:white;
-	width:35%;
+	margin: 5px 0 0 10px;
+	border-color: white;
+	width: 35%;
 }
-
 /****** Data Page
 ****************************************************************************/
 #dataFilter {
-	padding:15px 5px;
-	background:rgb(255,255,255) url(../images/dataPointing.png) right center no-repeat;
-	margin:1px auto 0 auto;
-	border-bottom:thin dotted rgb(225,225,225);
-	}
-	
+	padding: 15px 5px;
+	background: rgb(255,255,255) url(../images/dataPointing.png) right center no-repeat;
+	margin: 1px auto 0 auto;
+	border-bottom: thin dotted rgb(225,225,225);
+}
 #dataFilter h3 {
-	font-size:1.8em;
-	font-weight:bold;
-	color:#666;
-	letter-spacing:-0.05em;
-	margin:0 0 5px 5px;
-	}
-
+	font-size: 1.8em;
+	font-weight: bold;
+	color: #666;
+	letter-spacing: -0.05em;
+	margin: 0 0 5px 5px;
+}
 #dataFilter input {
-	border-color:transparent;
-	height:20px;
-	background:url(../images/icon_cal.png) right center no-repeat;
-	}
+	border-color: transparent;
+	height: 20px;
+	background: url(../images/icon_cal.png) right center no-repeat;
+}
 #dataFilter label[for="fromDate"], #dataFilter label[for="toDate"] {
-	display:inline;
-	}
-
+	display: inline;
+}
 #dataFilter label[for="fromDate"] {
-	margin-left:15px;
-	}
+	margin-left: 15px;
+}
 #dataFilter img.ui-datepicker-trigger {
-	margin-top:4px;
-	display:inline;
-	}
+	margin-top: 4px;
+	display: inline;
+}
 .dataTables_wrapper {
-	background:rgb(235,235,235);
-	margin:0px auto 1px auto;
-	}
+	background: rgb(235,235,235);
+	margin: 0px auto 1px auto;
+}
 .dataTables_length {
-	display:inline-block;
-	padding:10px 5px 12px 5px ;
-	}
+	display: inline-block;
+	padding: 10px 5px 12px 5px;
+}
 .dataTables_length select {
-	padding:0;
-	padding:0 8px 0 0;
-	}
+	padding: 0;
+	padding: 0 8px 0 0;
+}
 .dataTables_filter {
-	display:inline-block;
-	padding:10px 5px 12px 5px ;
-	margin-left:70px;
-	}
-.dataTables_filter input{
-	border-color:transparent;
-	}
+	display: inline-block;
+	padding: 10px 5px 12px 5px;
+	margin-left: 70px;
+}
+.dataTables_filter input {
+	border-color: transparent;
+}
 .dataTables_info {
-	width:20%;
-	display:block;
-	text-align:center;
-	margin:5px auto;
-	font-size:1.1em;
-	letter-spacing:-0.03em;
-	}
+	width: 20%;
+	display: block;
+	text-align: center;
+	margin: 5px auto;
+	font-size: 1.1em;
+	letter-spacing: -0.03em;
+}
 .dataTables_paginate {
-	position:relative;
-	width:12%;
-	display:block;
-	text-align:center;
-	margin:5px auto 0 auto;
-	}
+	position: relative;
+	width: 12%;
+	display: block;
+	text-align: center;
+	margin: 5px auto 0 auto;
+}
 .dataTables_paginate a {
-	position:relative;
-	display:block;
-	padding:5px 10px;
-	cursor:pointer;
-	color:rgb(107, 134, 141);
-	font-size:1.1em;
-	}
+	position: relative;
+	display: block;
+	padding: 5px 10px;
+	cursor: pointer;
+	color: rgb(107, 134, 141);
+	font-size: 1.1em;
+}
 .dataTables_paginate a.paginate_disabled_previous, .dataTables_paginate a.paginate_disabled_next {
-	position:relative;
-	display:block;
-	padding:5px 10px;
-	color:rgb(184,184,184);
+	position: relative;
+	display: block;
+	padding: 5px 10px;
+	color: rgb(184,184,184);
 	cursor: text;
-	}
+}
 .dataTables_paginate a.paginate_disabled_previous:hover, .dataTables_paginate a.paginate_disabled_next:hover {
-	color:rgb(184,184,184);
-	}
-.dataTables_paginate a.paginate_disabled_previous, .dataTables_paginate a.paginate_enabled_previous  {
-	float:left;
-	}
-
+	color: rgb(184,184,184);
+}
+.dataTables_paginate a.paginate_disabled_previous, .dataTables_paginate a.paginate_enabled_previous {
+	float: left;
+}
 .dataTables_paginate a.paginate_disabled_next, .dataTables_paginate a.paginate_enabled_next {
-	float:right;
-	}
-.dataSection label {font-size:1em; font-weight:normal;}
+	float: right;
+}
+.dataSection label {
+	font-size: 1em;
+	font-weight: normal;
+}
