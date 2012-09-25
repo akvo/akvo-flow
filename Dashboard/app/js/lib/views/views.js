@@ -135,9 +135,37 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		}
 	}.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
-
+	// execure group delete
 	doQGroupDelete:function(){
-		console.log("TODO - group delete");
+		// TODO show popup
+		// if cancel: remove popup, don't do anything
+		// if delete: remove question group.
+
+		
+		var qgDeleteOrder = this.content.get('order');
+		var qgDeleteId = this.content.get('keyId');
+				
+		FLOW.questionGroupControl.get('content').forEach(function(item){
+			var currentOrder=item.get('order');
+			
+			if (currentOrder==qgDeleteOrder){
+				var questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
+				questionGroup.deleteRecord();
+				FLOW.store.commit();
+			}
+			else if (currentOrder>qgDeleteOrder){
+				item.set('order',item.get('order')-1);
+			}
+		}); // end of forEach
+
+
+
+		FLOW.questionGroupControl.set('content',FLOW.store.findAll(FLOW.QuestionGroup));
+		
+		
+		// TODO: implement persistence
+		// TODO: solve "could not respond to event didChangeData in state rootState.deleted.saved." error.
+
 	},
 
 	// prepare for group copy. Shows 'copy to here' buttons
@@ -209,8 +237,6 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	},
 
 	// execure group copy to selected location
-	// *************************** DOES NOT WORK ************************
-	// error: Cannot call method 'destroy' of undefined
 	doQGroupCopyHere:function(){
 		
 		var selectedOrder = FLOW.selectedControl.selectedForCopyQuestionGroup.get('order');
@@ -233,30 +259,15 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			"name":FLOW.selectedControl.selectedForCopyQuestionGroup.get('name'),
 			"surveyId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId'),
 			"displayName":FLOW.selectedControl.selectedForCopyQuestionGroup.get('displayName')});
-
+		
+		FLOW.store.commit();
 		
 		// TODO implement commit to persistence layer
 		// TODO create copy of questions contained in QuestionGroup and insert them in the store
-		var sId=FLOW.selectedControl.selectedSurvey.get('keyId');
+
 		FLOW.questionGroupControl.set('content',FLOW.store.findAll(FLOW.QuestionGroup)); // only loads already loaded models
 		
 		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
-	},
-	// *************************** END DOES NOT WORK *************************
-
-	addItem:function(){
-		var newRec = FLOW.store.createRecord(FLOW.QuestionGroup,{
-			"description": "hello",
-			"order":"1",
-			"name":"hello there",
-			"surveyId":1,
-			"displayName":"display name"});
-
-		console.log("displayName: " + newRec.get('displayName'));
-		FLOW.store.commit();
-
-		FLOW.questionGroupControl.set('content',FLOW.store.findAll(FLOW.QuestionGroup));
-
 	}
 
 }); // end QuestionGroupItemView
