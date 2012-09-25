@@ -1,3 +1,3 @@
-guard :rake, :task => :test do
-  watch(%r{^app/.+\.js$})
+guard :rake, :task => :build do
+  watch(%r{^app/.+$})
 end
