@@ -54,18 +54,22 @@
     <section id="questionSet">
         <section class="aQuestionSet mainContent" id="setIndex-01">
              {{#view FLOW.QuestionGroupItemView zeroItem="true"}}
-                 {{#if view.oneSelectedForMove}}
-                    <br>
-                    order: {{view.order}}
-                    <a {{action "doQGroupMoveHere" target="this"}}>Move page here </a>|<a {{action "doQGroupMoveCancel" target="this"}}> Cancel move</a>
-                    <br>
+                {{#if view.oneSelectedForMove}}
+                    <nav class="moveMenu">
+                    <ul>
+                    <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">Move page here </a></li>
+                    <li><a {{action "doQGroupMoveCancel" target="this"}} class="smallBtn"> Cancel move</a></li>
+                    </ul>
+                    </nav>
                 {{/if}}    
 
                 {{#if view.oneSelectedForCopy}}
-                    <br>
-                    order: {{view.order}}
-                    <a {{action "doQGroupCopyHere" target="this"}}>Paste page here </a>|<a {{action "doQGroupCopyCancel" target="this"}}> Cancel copy</a>
-                    <br>
+                    <nav class="copyMenu">
+                    <ul>
+                    <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">Paste page here </a></li>
+                    <li><a {{action "doQGroupCopyCancel" target="this"}} class="smallBtn"> Cancel copy</a></li>
+                    </ul>
+                    </nav>
                 {{/if}}    
             {{/view}}
 
@@ -84,6 +88,7 @@
                 <li><a {{action "doQGroupMove" target="this"}} class="moveQuestion" id=""> Move </a> </li>                    
    				</ul>
 				</nav>
+
                {{#if view.oneSelectedForMove}}
                     <nav class="moveMenu">
 					<ul>
@@ -166,7 +171,7 @@
                             <li><a {{action "doEdit" target="this"}} class="editQuestion" id="">Edit</a></li>
                         </ul>
                     </nav>
-                    <h1 class="questionNbr"><span>01: </span>{{q.displayName}}</h1>
+                    <h1 class="questionNbr"><span>{{q.order}}}: </span>{{q.displayName}}</h1>
                     {{/if}}
                     <!-- end body of question -->
                 </div>
