@@ -77,7 +77,7 @@ h1 {
 }
 h2 {
 	font-size: 2em;
-	line-height: 1em;
+	line-height: 1.6em;
 	text-transform: uppercase;
 }
 h3 {
@@ -942,7 +942,7 @@ li.aSurvey {
 	position: relative;
 	display: inline-block;
 	width: 21%;
-	padding: 0 0.5% 5px 0.5%;
+	padding: 0 0.5% 10px 0.5%;
 	margin: 5px 1.5% 10px 1.5%;
 	float: left;
 	/*	background: url(../images/surveySeperator.png) right center no-repeat;
@@ -964,22 +964,24 @@ li.aSurvey:nth-child(4n+1), li.aSurvey.firstOfRow {
 li.aSurvey:nth-child(4n), li.aSurvey.endOfRow {
 	background-image: none;
 }
- font-family: Georgia, "Times New Roman", Times, serif;
+ 
 li.aSurvey h2 {
+	font-family: Georgia, "Times New Roman", Times, serif;
 	display: inline-block;
-	margin: 10px 1% 0 2%;
+	margin: 5px 1% 0 2%;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	width: 97%;
 	text-transform: capitalize;
-	font-style: italic;
-	color: rgb(185,185,185);
-	font-size: 1.8em;
+	font-style:italic;
+	color:rgb(185,185,185);
+	font-size:1.6em;
 }
 li.aSurvey:hover h2 {
-	color: rgb(255,255,255);
+	color:rgb(255,255,255);
 }
+
 ul.surveyInfo {
 	position: relative;
 	width: 100%;
@@ -1017,8 +1019,9 @@ ul.surveyInfo li.dateCreated {
 	text-overflow: ellipsis;
 }
 ul.surveyInfo li.dateCreated span {
+	display:block;
 	color: rgb(153, 153, 153);
-	width: 35%;
+	width: 100%;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -1075,7 +1078,14 @@ ul.surveyInfo li.responseNumber p {
 	width: 100%;
 	margin: 5px auto;
 	display: block;
+	border-bottom: thin dotted rgb(225,225,225);
+	padding-bottom:5px;
 }
+
+.aSurvey:hover dl {
+	border-bottom: thin dotted rgb(255,255,255);
+}
+
 .aSurvey dl dt, .aSurvey dl dd {
 	display: inline-block;
 	vertical-align: top;
@@ -1110,7 +1120,6 @@ ul.surveyInfo li.responseNumber p {
 .aSurvey nav {
 	position: relative;
 	width: 100%;
-	padding: 5px;
 	opacity: 0;
 	-moz-transition: opacity 0.4s linear;
 	-webkit-transition: opacity 0.4s linear;
@@ -1118,6 +1127,7 @@ ul.surveyInfo li.responseNumber p {
 }
 .aSurvey:hover nav {
 	opacity: 1;
+	background:rgb(158,158,158);
 }
 .aSurvey nav ul {
 	width: 100%;
@@ -1127,10 +1137,9 @@ ul.surveyInfo li.responseNumber p {
 	float: left;
 	margin: 2px 1% 0 0;
 	/*	background: url(../images/aSurveyNavSep.png) right center no-repeat;
-*/	width: 52%;
+*/	width: 50%;
 	background: rgb(235,235,235);
-	padding: 5px 0;
-	border-radius: 4px;
+	border-radius: 2px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1139,7 +1148,7 @@ ul.surveyInfo li.responseNumber p {
 	background: rgb(255,255,255);
 }
 .aSurvey nav ul li:nth-child(2n+1) {
-	width: 46%;
+	width: 48%;
 }
 /*.aSurvey nav ul li:first-child {
 	width: 28%;
@@ -1154,8 +1163,9 @@ ul.surveyInfo li.responseNumber p {
 }
 .aSurvey nav ul li a {
 	display: block;
-	width: 100%;
-	padding: 4px 0 1px 28%;
+	width: 72%;
+	height:9px;
+	padding: 3px 0 3px 28%;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
