@@ -1359,6 +1359,8 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	display: block;
 	padding: 5px 0.75%;
 	background: rgb(242,242,242);
+	border-top:thin solid rgb(222,222,222);
+	border-bottom:thin solid rgb(222,222,222);
 }
 .aQuestionSet .questionSetContent a.addQuestion {
 	border:thin solid rgb(214,214,214);
@@ -1389,36 +1391,17 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 0 0.75%;
 	display: block;
 	padding: 0 0.75% 0 0.75%;
-	border-top:thin solid rgb(224,224,224);
-}
-.aQuestionSet .ember-view {
+	border-top:thin dashed rgb(224,224,224);
+	}
+.aQuestionSet  > div > div.ember-view:first-child header {
+	border-top:none;
+	}
+.aQuestionSet > div > div.ember-view {
+	margin: 30px 0 20px 0;
+	}
+.aQuestionSet  > div > div.ember-view:first-child {
 	margin: 0 0 20px 0;
 	}
-	
-.aQuestionSet header nav.qtnGroupMenu {
-	position: absolute;
-	top: 20px;
-	right: 5px;
-}
-.aQuestionSet header nav.qtnGroupMenu ul {
-	width: 100%;
-	padding: 0;
-	margin: 0;
-}
-.aQuestionSet header nav.qtnGroupMenu ul li {
-	text-align: right;
-	display: inline;
-	float: left;
-	margin: 0 15px 0 0;
-}
-.aQuestionSet header nav.qtnGroupMenu ul li:last-child {
-	margin: 0;
-}
-.aQuestionSet header nav.qtnGroupMenu ul li a:hover {
-	text-decoration:underline;
-	
-}
-
 span.qtnGroupHead {
 	display: block;
 	width: 100%;
@@ -1488,73 +1471,111 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 .aQuestionSet .questionSetContent div.innerContent {
 	position: relative;
 	width: 99.8%;
-	margin: 10px auto;
-	padding: 3px 0.1%;
+	margin: 20px auto;
+	padding: 15px 0.1%;
 	background: rgb(248,248,248);
-	border: thin dashed rgb(204,204,204);
-	-moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+	border: thin dotted rgb(214,214,214);
+/*	-moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05);
 	-webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05);
 	box-shadow: 0 1px 1px rgba(0,0,0,0.05);
-}
+*/
+	-moz-border-radius: 0 0 10px 0;
+	-webkit-border-radius: 0 0 10px 0;
+	border-radius: 0 0 10px 0;
+	}
 .aQuestionSet .questionSetContent div.innerContent:focus {
 }
-/* MTW changed width to 40% from 30% to make room for edit button */
-/* MTW changed right:5px to 20 px to make room for folded-page graphic */
+	
+.aQuestionSet header nav.qtnGroupMenu {
+	position: absolute;
+	top: 20px;
+	right: 5px;
+}
+.aQuestionSet header nav.qtnGroupMenu ul {
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+.aQuestionSet header nav.qtnGroupMenu ul li {
+	text-align: right;
+	display: inline;
+	float: left;
+	margin:0 30px 0 0;
+}
+
+.aQuestionSet header nav.qtnGroupMenu ul li a {
+	color: rgb(38, 8, 89);
+	display:block;
+	padding:5px;
+}
+
+.aQuestionSet header nav.qtnGroupMenu ul li:last-child {
+	margin: 0;
+}
+.aQuestionSet header nav.qtnGroupMenu ul li a:hover {
+	text-decoration:underline;
+	
+}
+
 .innerContent nav {
 	position: absolute;
-	width: 30%;
-	height: 17px;
-	top: 5px;
+	width: 35%;
+	top: 17px;
 	right: 5px;
 }
 .innerContent nav ul {
 	width: 100%;
-	height: 17px;
 	padding: 0;
 	margin: 0;
 }
 .innerContent nav ul li {
 	text-align: right;
 	display: inline;
-	height: 17px;
 	float: right;
 	margin: 0 5px 0 0;
+	background:rgb(234,234,234);
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
 }
+.innerContent nav ul li:hover {
+	background:rgb(244,244,244);
+}
+
 .innerContent nav ul li a {
 	display: block;
-	height: 12px;
+	height:10px;
+	padding:5px 10px 5px 20px;
 }
-/* MTW addition: editQuestion icon */
-.innerContent nav ul li a.editQuestion {
+nav ul li a.editQuestion {
 	background: url(../images/editSurvey.png) left top no-repeat;
-	padding: 5px 5px 0 17px;
 }
-.innerContent nav ul li a.editQuestion:hover {
-	background: url(../images/editSurvey.png) left top no-repeat;
-	padding: 5px 5px 0 17px;
-}
-/* end MTW addition */
-
-.innerContent nav ul li a.deleteQuestion {
+nav ul li a.deleteQuestion {
 	background: url(../images/deleteQuestion.png) left top no-repeat;
-	padding: 5px 5px 0 17px;
 }
-.innerContent nav ul li a.moveQuestion {
+nav ul li a.moveQuestion {
 	background: url(../images/moveQuestion.png) left top no-repeat;
-	padding: 5px 5px 0 17px;
 }
-.innerContent nav ul li a.copyQuestion {
+nav ul li a.copyQuestion {
 	background: url(../images/duplicateQuestion.png) left top no-repeat;
-	padding: 5px 5px 0 17px;
 }
-.innerContent nav ul li a.deleteQuestion:hover {
+nav ul li a.showQuestion {
+	background: url(../images/showQuestion.png) left top no-repeat;
+}
+nav ul li a.editQuestion:hover {
+	background: url(../images/editSurvey.png) left bottom no-repeat;
+}
+nav ul li a.deleteQuestion:hover {
 	background: url(../images/deleteQuestion.png) left bottom no-repeat;
 }
-.innerContent nav ul li a.moveQuestion:hover {
+nav ul li a.moveQuestion:hover {
 	background: url(../images/moveQuestion.png) left bottom no-repeat;
 }
-.innerContent nav ul li a.copyQuestion:hover {
+nav ul li a.copyQuestion:hover {
 	background: url(../images/duplicateQuestion.png) left bottom no-repeat;
+}
+nav ul li a.showQuestion:hover {
+	background: url(../images/showQuestion.png) left bottom no-repeat;
 }
 .innerContent h1 {
 	font-size: 1.5em;
@@ -1563,11 +1584,17 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 	font-weight: bold;
 }
 .innerContent h1.questionNbr {
-	margin: 0 0 0 5px;
+	margin: 0 0 0 10px;
 	display: inline;
 	color:rgb(74, 177, 207);
 	font-weight:normal;
 }
+
+.innerContent h1.questionNbr span {
+	color:rgb(158,158,158);
+	font-weight:normal;	
+}
+
 .innerContent label, .innerContent input, .innerContent select {
 	display: block;
 }

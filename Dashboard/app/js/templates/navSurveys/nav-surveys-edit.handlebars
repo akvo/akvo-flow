@@ -76,16 +76,15 @@
             {{#collection contentBinding="FLOW.questionGroupControl" itemViewClass="FLOW.QuestionGroupItemView"}}
 
             <header>
-                
                 <span class="qtnGroupHead">Group {{view.content.order}}</span>
 				<h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
                <nav class="qtnGroupMenu">
 			   <ul>
-				<li><a {{action "toggleVisibility" target="this"}}>{{view.showHideText}} </a></li>
-                <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestion" id=""> Edit group name </a></li> 
-                <li><a {{action "doQGroupDelete" target="this"}} class="deleteQuestion" id=""> Delete </a></li>
-                <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestion" id=""> Copy </a></li>
-                <li><a {{action "doQGroupMove" target="this"}} class="moveQuestion" id=""> Move </a> </li>                    
+				<li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{view.showHideText}} </a></li>
+                <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id=""> Edit group name </a></li> 
+                <li><a {{action "doQGroupDelete" target="this"}} class="deleteQuestionGroup" id=""> Delete </a></li>
+                <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup" id=""> Copy </a></li>
+                <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup" id=""> Move </a> </li>                    
    				</ul>
 				</nav>
 
@@ -108,8 +107,7 @@
                 {{/if}}    
 
                <!-- <a class="editSetInfo">Edit Set Info</a> -->
-            </header><br/>
-
+            </header>
             {{#if view.amVisible}}
             <div class="questionSetContent">
                 <a class="addQuestion"  href="#">Add a question here</a>
