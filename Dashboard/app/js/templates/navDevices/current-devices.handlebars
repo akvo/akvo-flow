@@ -1,0 +1,39 @@
+<section class="fullWidth" id="currentDevices">
+
+ <section class="fullWidth " id="devicesList">
+        <!-- DEVICES TABLE-->
+        <table class="dataTable" id="surveyDataTable">
+            <!-- TABLE HEADER-->
+            <thead>
+                <tr>
+                    <th>Survey Group name</th>
+                    <th>Description</th>
+                    <th>Created</th>
+                    <th>Last updated</th>
+                    <th>ID</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <!-- TABLE BODY: MAIN CONTENT-->
+            <tbody>
+                {{#each controllers.surveyGroupController.content}}
+                <tr>
+                    <td class="surveyGroup" style="text-align:left;">{{displayName}}</td>
+                    <td class="description" style="text-align:left;">{{description}}</td>
+                    <td class="created">{{createdDateTime}}</td>
+                    <td class="lastUpdated">{{lastUpdateDateTime}}</td>
+                    <td class="ID">{{keyId}}</td>
+                    <td class="action"><a href="#">action</a></td>
+                </tr>
+                {{/each}}
+            </tbody>
+            <!-- TABLE FOOTER-->
+            <tfoot>
+                <tr>
+                    <td colspan="7"><small>This is the footer.</small></td>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
+
+</section>

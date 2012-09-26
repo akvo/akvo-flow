@@ -1,0 +1,11 @@
+<ul>
+    {{#view view.NavItemView item="currentDevices" }}
+    	<a {{action doCurrentDevices}}>Current Devices List</a>
+    {{/view}} 
+    {{#view view.NavItemView item="assignSurveys" }}
+    	<a {{action doAssignSurveys}}>Assign Surveys</a>
+    {{/view}} 
+    {{#view view.NavItemView item="troubleshootDevices" }}
+    	<a {{action doTroubleshootDevices}}>Troubleshoot</a>
+    {{/view}} 
+</ul>

@@ -44,6 +44,9 @@ FLOW.NavSurveysEditView = Ember.View.extend({ templateName: 'navSurveys/nav-surv
 
 // devices views
 FLOW.NavDevicesView = Ember.View.extend({ templateName: 'navDevices/nav-devices'});
+FLOW.CurrentDevicesView = Ember.View.extend({ templateName: 'navDevices/current-devices'});
+FLOW.AssignSurveysView = Ember.View.extend({ templateName: 'navDevices/assign-survey'});
+FLOW.TroubleshootDevicesView = Ember.View.extend({ templateName: 'navDevices/troubleshoot-devices'});
 
 // data views
 FLOW.NavDataView = Ember.View.extend({ templateName: 'navData/nav-data'});
@@ -70,6 +73,19 @@ FLOW.NavAdminView = Ember.View.extend({	templateName: 'navAdmin/nav-admin'});
 // ********************************************************//
 FLOW.DatasubnavView = Em.View.extend({
 	templateName: 'navData/data-subnav',
+	selectedBinding: 'controller.selected',
+	NavItemView: Ember.View.extend({
+		tagName: 'li',
+		classNameBindings: 'isActive:active'.w(),
+
+		isActive: function() {
+			return this.get('item') === this.get('parentView.selected');
+		}.property('item', 'parentView.selected').cacheable()
+	})
+});
+
+FLOW.DevicesSubnavView = Em.View.extend({
+	templateName: 'navDevices/devices-subnav',
 	selectedBinding: 'controller.selected',
 	NavItemView: Ember.View.extend({
 		tagName: 'li',

@@ -15,7 +15,7 @@ FLOW.Router = Ember.Router.extend({
 			router.transitionTo('navSurveys.index');
 		},
 		doNavDevices: function(router, context) {
-			router.transitionTo('navDevices');
+			router.transitionTo('navDevices.index');
 		},
 		doNavData: function(router, context) {
 			router.transitionTo('navData.index');
@@ -108,9 +108,50 @@ FLOW.Router = Ember.Router.extend({
 			route: '/devices',
 			connectOutlets: function(router, event) {
 				router.get('applicationController').connectOutlet('navDevices');
-				FLOW.questionGroupControl.set('content', FLOW.store.find(FLOW.QuestionGroup, {surveyId:1}));
 				router.set('navigationController.selected', 'navDevices');
-			}
+			},
+
+			doCurrentDevices: function(router, event) {
+				router.transitionTo('navDevices.currentDevices');
+			},
+			
+			doAssignSurveys: function(router, event) {
+				router.transitionTo('navDevices.assignSurveys');
+			},
+			
+			doTroubleshootDevices: function(router, event) {
+				router.transitionTo('navDevices.troubleshootDevices');
+			},
+
+			index: Ember.Route.extend({
+				route: '/',
+				redirectsTo: 'currentDevices'
+			}),
+
+			currentDevices: Ember.Route.extend({
+				route: '/current-devices',
+				connectOutlets: function(router, context) {
+					router.get('navDevicesController').connectOutlet('currentDevices');
+					router.set('devicesSubnavController.selected', 'currentDevices');
+				}
+			}),
+
+			assignSurveys: Ember.Route.extend({
+				route: '/assign-surveys',
+				connectOutlets: function(router, context) {
+					router.get('navDevicesController').connectOutlet('assignSurveys');
+					router.set('devicesSubnavController.selected', 'assignSurveys');
+				}
+			}),
+
+			troubleshootDevices: Ember.Route.extend({
+				route: '/troubleshoot',
+				connectOutlets: function(router, context) {
+					router.get('navDevicesController').connectOutlet('troubleshootDevices');
+					router.set('devicesSubnavController.selected', 'troubleshootDevices');
+				}
+			})
+
 		}),
 
 
