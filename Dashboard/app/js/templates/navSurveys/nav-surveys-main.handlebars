@@ -29,7 +29,7 @@
 			{{#if view.oneSelected}}
 				{{#if view.showEditField}}
 					{{view Ember.TextField valueBinding="view.surveyGroupName" size=45}}
-					<a {{action "saveSurveyGroupNameEdit" target="this"}}>Save</a>
+					<a {{action "saveSurveyGroupNameEdit" target="this"}} class="smallBtn">Save</a>
 					<a {{action "cancelSurveyGroupNameEdit" target="this"}}>Cancel</a>
 				{{else}}
        				<h2>{{FLOW.selectedControl.selectedSurveyGroup.displayName}}</h2> 

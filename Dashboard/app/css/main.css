@@ -227,11 +227,12 @@ a.standardBtn, input[type="submit"] {
 	margin: 20px auto;
 	text-align: center;
 	background: rgb(39,94,110);
-	color: rgb(255,255,255);
+	color: rgb(235,235,235);
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	-o-border-radius: 3px;
 	border-radius: 3px;
+	text-transform:uppercase;
 }
 a.standardBtn:hover, input[type="submit"]:hover {
 	background: rgb(39,94,139);
@@ -240,14 +241,15 @@ a.standardBtn:hover, input[type="submit"]:hover {
 a.smallBtn {
 	font-size: 1em;
 	display: inline-block;
-	padding: 5px;
+	padding: 5px 7px;
 	text-align: center;
 	background: rgb(39,94,110);
-	color: rgb(255,255,255);
+	color: rgb(235,235,235);
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	-o-border-radius: 3px;
 	border-radius: 3px;
+	text-transform:uppercase;
 }
 a.smallBtn:hover {
 	background: rgb(39,94,139);
@@ -774,12 +776,11 @@ tfoot tr {
 	margin: 8px auto 10px auto;
 	width: 77%;
 }
-/************** MTW added input text field style ***********/
 .topBar input[type="text"] {
 	margin: 7px 0 10px 10px;
-	padding: 3px 3px 3px 3px;
+	padding: 3px 5px;
+	width:20%;
 }
-/* **************** end MTW **************************/
 
 
 #groupBar h2, #newSurveyInfo h2 {
@@ -859,10 +860,16 @@ section.topBar h2 {
 }
 section.topBar > a {
 	position: relative;
-	margin: 0 0 0 10px;
 	display: inline-block;
 	color: rgb(114,  205, 255);
+	padding:8px 7px 5px 7px;
+	text-transform:uppercase;
 }
+section.topBar > a.smallBtn {
+	color: rgb(235,  235, 235);
+	margin: 0 0 0 5px;
+}
+
 /* ****************** MTW added for save and cancel button ************* */
 nav > a {
 	position: relative;
@@ -949,15 +956,20 @@ li.aSurvey {
 */	cursor: pointer;
 	opacity: 1;
 	background: transparent;
-	-moz-transition: background 0.2s linear;
-	-webkit-transition: background 0.2s linear;
-	-o-transition: background 0.2s linear;
-	transition: background 0.2s linear;
+	-moz-transition: background 0.4s linear;
+	-webkit-transition: background 0.4s linear;
+	-o-transition: background 0.4s linear;
+	transition: background 0.4s linear;
 	font-size: 1.1em;
+	min-height:220px;
 }
 li.aSurvey:hover {
 	opacity: 1;
 	background: rgb(235,235,235);
+	-moz-box-shadow:0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248);
+	-webkit-box-shadow:0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248);
+	-o-box-shadow:0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248);
+	box-shadow:0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248);
 }
 li.aSurvey:nth-child(4n+1), li.aSurvey.firstOfRow {
 }
@@ -1164,8 +1176,8 @@ ul.surveyInfo li.responseNumber p {
 .aSurvey nav ul li a {
 	display: block;
 	width: 72%;
-	height:9px;
-	padding: 3px 0 3px 28%;
+	height:8px;
+	padding: 2px 0 5px 28%;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1186,16 +1198,16 @@ ul.surveyInfo li.responseNumber p {
 	background: url(../images/inspectData.png) 3px top no-repeat;
 }
 .aSurvey nav ul li.editSurvey a:hover {
-	background: url(../images/editSurvey.png) 3px bottom no-repeat;
+	background:url(../images/editSurvey.png) 3px bottom no-repeat;
 }
 .aSurvey nav ul li.previewSurvey a:hover {
-	background: url(../images/previewSurvey.png) 3px bottom no-repeat;
+	background:url(../images/previewSurvey.png) 3px bottom no-repeat;
 }
 .aSurvey nav ul li.deleteSurvey a:hover {
-	background: url(../images/deleteSurvey.png) 3px bottom no-repeat;
+	background:url(../images/deleteSurvey.png) 3px bottom no-repeat;
 }
 .aSurvey nav ul li.inspectData a:hover {
-	background: url(../images/inspectData.png) 3px bottom no-repeat;
+	background:url(../images/inspectData.png) 3px bottom no-repeat;
 }
 /*
  * Survey Creation & Editing
@@ -1462,8 +1474,8 @@ span.qtnGroupHead {
 
 nav.moveMenu, nav.copyMenu {
 	display:block;
-	margin:5px auto;
-	width:20%;
+	margin:15px auto 5px auto;
+	width:25%;
 	}
 nav.moveMenu ul, nav.copyMenu ul {
 	
@@ -1514,9 +1526,10 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 }
 
 .aQuestionSet header nav.qtnGroupMenu ul li a {
-	color: rgb(38, 8, 89);
+	color:rgb(227, 27, 35);
 	display:block;
 	padding:5px;
+	text-transform:uppercase;
 }
 
 .aQuestionSet header nav.qtnGroupMenu ul li:last-child {
@@ -1558,7 +1571,7 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 	padding:5px 10px 5px 20px;
 }
 nav ul li a.editQuestion {
-	background: url(../images/editSurvey.png) left top no-repeat;
+	background: url(../images/editQuestion.png) left top no-repeat;
 }
 nav ul li a.deleteQuestion {
 	background: url(../images/deleteQuestion.png) left top no-repeat;
@@ -1573,7 +1586,7 @@ nav ul li a.showQuestion {
 	background: url(../images/showQuestion.png) left top no-repeat;
 }
 nav ul li a.editQuestion:hover {
-	background: url(../images/editSurvey.png) left bottom no-repeat;
+	background: url(../images/editQuestion.png) left bottom no-repeat;
 }
 nav ul li a.deleteQuestion:hover {
 	background: url(../images/deleteQuestion.png) left bottom no-repeat;
