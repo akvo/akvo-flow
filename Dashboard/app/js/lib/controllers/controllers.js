@@ -38,7 +38,6 @@ FLOW.NavAdminController = Ember.Controller.extend();
 
 
 // Data controllers
-
 FLOW.questionTypeControl = Ember.Object.create({
 content:[
 	Ember.Object.create({label: "Free text", value: "freeText"}),
@@ -67,6 +66,12 @@ FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {
 	FLOW.selectedControl.set('selectedSurvey', null);
 	FLOW.selectedControl.set('selectedQuestionGroup', null);
 
+});
+
+
+FLOW.DeviceController = Ember.ArrayController.extend({
+	sortProperties:['phoneNumber'],
+	sortAscending:true
 });
 
 FLOW.SurveyGroupController = Ember.ArrayController.extend({});

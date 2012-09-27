@@ -6,24 +6,29 @@
             <!-- TABLE HEADER-->
             <thead>
                 <tr>
-                    <th>Survey Group name</th>
-                    <th>Description</th>
-                    <th>Created</th>
-                    <th>Last updated</th>
-                    <th>ID</th>
+                    <th>Phonenumber</th>
+                    <th>Device ID</th>
+                    <th>Device group</th>
+                    <th>Last update</th>
+                    <th>Last beacon received</th>
+                    <th>Latest latitude</th>
+                    <th>Latest longitude</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
-                {{#each controllers.surveyGroupController.content}}
+                {{#each controllers.deviceController.content}}
+
                 <tr>
-                    <td class="surveyGroup" style="text-align:left;">{{displayName}}</td>
-                    <td class="description" style="text-align:left;">{{description}}</td>
-                    <td class="created">{{createdDateTime}}</td>
-                    <td class="lastUpdated">{{lastUpdateDateTime}}</td>
-                    <td class="ID">{{keyId}}</td>
-                    <td class="action"><a href="#">action</a></td>
+                    <td class="phoneNumber" style="text-align:left; padding:0 0 0 5px;">{{phoneNumber}}</td>
+                    <td class="deviceId" >{{deviceIdentifier}}</td>
+                    <td class="deviceGroup">{{deviceGroup}}</td>
+                    <td class="lastUpdate" >{{lastUpdate}}</td>
+                    <td class="lastBeacon">{{lastLocationBeaconTime}}</td>
+                    <td class="lastLat">{{lastKnownLat}}</td>
+                    <td class="lastLon">{{lastKnownLong}}</td>
+                    <td class="action"><a>action</a></td>
                 </tr>
                 {{/each}}
             </tbody>

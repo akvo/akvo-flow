@@ -132,6 +132,7 @@ FLOW.Router = Ember.Router.extend({
 				route: '/current-devices',
 				connectOutlets: function(router, context) {
 					router.get('navDevicesController').connectOutlet('currentDevices');
+					router.get('deviceController').set('content', FLOW.store.find(FLOW.Device, {}));
 					router.set('devicesSubnavController.selected', 'currentDevices');
 				}
 			}),

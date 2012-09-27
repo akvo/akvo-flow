@@ -20,6 +20,98 @@ FLOW.store = DS.Store.create({
 	adapter: DS.fixtureAdapter
 });
 
+FLOW.Device = DS.Model.extend({
+	deviceType: DS.attr('string',{defaulValue: ""}),
+	phoneNumber: DS.attr('string',{defaulValue: ""}),
+	esn: DS.attr('string',{defaulValue: ""}),
+	deviceIdentifier: DS.attr('string',{defaulValue: ""}),
+	inServiceDate: DS.attr('date'),
+	outServiceDate: DS.attr('date'),
+	lastUpdate: DS.attr('string',{defaulValue: ""}),	//should be DS.attr('date'),
+	osVersion: DS.attr('string',{defaulValue: ""}),
+	lastKnownLat: DS.attr('number',{defaulValue: 0}),
+	lastKnownLong:DS.attr('number',{defaulValue: 0}),
+	lastKnownAccuracy: DS.attr('number',{defaulValue:0}),
+	lastLocationBeaconTime: DS.attr('string',{defaulValue: ""}), //should be DS.attr('date'),
+	deviceGroup: DS.attr('string',{defaulValue: ""}),
+	keyId: DS.attr('number'),
+	primaryKey:'keyId'
+});
+
+
+FLOW.Device.FIXTURES = [
+{
+	keyId:1,
+	phoneNumber:"3f:d4:8f:2a:8c:9f",
+	deviceIdentifier:"Keri phone 1",
+	deviceGroup:"WFP general",
+	lastUpdate:"21 May 2012 20:30:00",
+	lastLocationBeaconTime:"22 May 2012 20:30:00",
+	lastKnownLat:23.132132321,
+	lastKnownLong:12.23232332
+},
+{
+	keyId:2,
+	phoneNumber:"2a:8c:9f:3f:d4:8f",
+	deviceIdentifier:" Keri phone 2",
+	deviceGroup:"WFP general",
+	lastUpdate:"21 Apr 2012 20:30:00",
+	lastLocationBeaconTime:"27 Feb 2012 20:30:00",
+	lastKnownLat:43.33434343,
+	lastKnownLong:-5.32332343
+},
+{
+	keyId:3,
+	phoneNumber:"31648492710",
+	deviceIdentifier:"Marks phone",
+	deviceGroup:"WFP general",
+	lastUpdate:"01 Sep 2012 20:30:00",
+	lastLocationBeaconTime:"12 Aug 2012 20:30:00",
+	lastKnownLat:34.222334234,
+	lastKnownLong:-7.44343434
+},
+{
+	keyId:4,
+	phoneNumber:"34029392833",
+	deviceIdentifier:"WFP colombia-1",
+	deviceGroup:"Colombia",
+	lastUpdate:"21 Aug 2012 20:30:00",
+	lastLocationBeaconTime:"04 Jan 2012 20:30:00",
+	lastKnownLat:2.334343434,
+	lastKnownLong:-23.33433432
+},
+{
+	keyId:5,
+	phoneNumber:"3f:d4:8f:8b:8c:3e",
+	deviceIdentifier:"WFP colombia 2",
+	deviceGroup:"Colombia",
+	lastUpdate:"12 Apr 2012 20:30:00",
+	lastLocationBeaconTime:"31 Oct 2012 20:30:00",
+	lastKnownLat:8.55454435,
+	lastKnownLong:54.88399473
+},
+{
+	keyId:6,
+	phoneNumber:"2a:8c:9f:3f:d4:8f",
+	deviceIdentifier:"WFP phone 3",
+	deviceGroup:"Malawi",
+	lastUpdate:"17 Jul 2012 20:30:00",
+	lastLocationBeaconTime:"16 Jun 2012 20:30:00",
+	lastKnownLat:23.988332,
+	lastKnownLong:-64.88399483
+},
+{
+	keyId:7,
+	phoneNumber:"3403928293",
+	deviceIdentifier:"WFP phone 4",
+	deviceGroup:"Malawi",
+	lastUpdate:"11 Dec 2012 20:30:00",
+	lastLocationBeaconTime:"14 Nov 2012 20:30:00",
+	lastKnownLat:23.3323432,
+	lastKnownLong:9.88873633
+}]
+
+
 FLOW.SurveyGroup = DS.Model.extend({
 	surveyList: DS.attr('string',{defaulValue: ""}),
 	description: DS.attr('string',{defaulValue: ""}),
@@ -92,7 +184,39 @@ FLOW.Survey.FIXTURES = [{
 	displayName: 'Akvo RSR update',
 	name:'Akvo RSR update',
 	surveyGroupId: 1
+},
+{
+	keyId: 5,
+	displayName: 'Akvo update',
+	name:'Akvo update',
+	surveyGroupId: 1
+},
+{
+	keyId: 6,
+	displayName: 'Loics survey',
+	name:'Loics survey',
+	surveyGroupId: 1
+},
+{
+	keyId: 7,
+	displayName: 'Farmer survey',
+	name:'Farmer survey',
+	surveyGroupId: 1
+},
+{
+	keyId: 8,
+	displayName: 'Rabbit',
+	name:'Rabbit',
+	surveyGroupId: 1
+},
+{
+	keyId: 9,
+	displayName: 'Rabbit II',
+	name:'Rabbit II',
+	surveyGroupId: 1
 }];
+
+
 
 FLOW.QuestionGroup = DS.Model.extend({
 	order: DS.attr('number'),
