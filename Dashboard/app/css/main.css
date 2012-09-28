@@ -589,7 +589,9 @@ table.dataTable td {
 table.dataTable td:hover {
 	font-weight: bold;
 }
-table.dataTable tbody tr {
+
+
+table.dataTable tbody tr{
 	background: rgb(255, 255, 255);
 	border-bottom: thin solid rgb(255,255,255);
 	-webkit-transition: background-color .4s linear;
@@ -614,7 +616,8 @@ table.dataTable thead tr {
 	background: rgb(58,58,58);
 	border-bottom: none;
 }
-table.dataTable thead tr th {
+
+table.dataTable thead tr th{
 	padding: 10px 5px;
 	border-right: thin solid rgb(12,12,12);
 	text-align: center;
@@ -624,6 +627,15 @@ table.dataTable thead tr th {
 	text-transform: uppercase;
 	background: url(../images/sortTableArrows.png) right center no-repeat;
 }
+
+/* Addition MTW - yellow headings in tables */
+table.dataTable thead tr th a, table.dataTable thead tr th a:link, table.dataTable thead tr th a:visited{
+	color:#FFD200;
+	cursor:pointer;
+}
+/* end addition MTW */
+
+
 table.dataTable thead tr th.sorting_desc {
 	background: rgb(23,23,23) url(../images/sortTableDown.png) right center no-repeat;
 }

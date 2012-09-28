@@ -19,7 +19,9 @@ FLOW.NavSurveysController = Ember.Controller.extend();
 
 FLOW.NavDevicesController = Ember.Controller.extend();
 FLOW.DevicesSubnavController = Em.Controller.extend();
-FLOW.DevicesTableHeaderController = Em.Controller.extend();
+FLOW.DevicesTableHeaderController = Em.Controller.extend({
+	selected:null,
+});
 
 
 FLOW.NavDataController = Ember.Controller.extend();
@@ -71,7 +73,8 @@ FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {
 
 FLOW.deviceControl = Ember.ArrayController.create({
 	sortProperties:['phoneNumber'],
-	sortAscending:true
+	sortAscending:true,
+	sortSelected:null
 
 	//active: function() {
 	//		//TODO find out how items are being loaded, difference find and findAll

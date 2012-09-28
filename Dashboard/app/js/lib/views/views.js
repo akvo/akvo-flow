@@ -100,30 +100,34 @@ FLOW.DevicesSubnavView = Em.View.extend({
 
 FLOW.DevicesTableHeaderView = Em.View.extend({
 	templateName: 'navDevices/current-devices-table-header',
-	selectedBinding: 'controller.selected',
 	tagName:'tr',
+	//selectedBinding:'controller.selected',
+	
 	NavItemView: Ember.View.extend({
 		tagName: 'th',
 		item:null,
-		classNameBindings: 'isActive:active'.w(),
+		
+		classNameBindings: ['isActiveAsc:sorting_asc','isActiveDesc:sorting_desc'],
+		
+		isActiveAsc: function() {
+			return (this.get('item') === FLOW.deviceControl.get('selected'))&&(FLOW.deviceControl.get('sortAscending')===true);
+		}.property('item', 'FLOW.deviceControl.selected','FLOW.deviceControl.sortAscending').cacheable(),
 
-		isActive: function() {
-			console.log('is active firing');
-			return this.get('item') === this.get('parentview.selected');
-		}.property('item', 'parentView.selected').cacheable(),
+		isActiveDesc: function() {
+			return (this.get('item') === FLOW.deviceControl.get('selected'))&&(FLOW.deviceControl.get('sortAscending')===false);
+		}.property('item', 'FLOW.deviceControl.selected','FLOW.deviceControl.sortAscending').cacheable(),
 
-		sortPhoneNumber: function(){
-			FLOW.deviceControl.set('sortProperties',['phoneNumber']);
-			//FLOW.devicesTableHeaderController.set('selected','phoneNumber');
-		},
 
-		sortDeviceId: function(){
-			FLOW.deviceControl.set('sortProperties',['deviceIdentifier']);
-			//FLOW.devicesTableHeaderController.set('selected','deviceIdentifier');
+		sort:function(){
+			if ((this.get('isActiveAsc'))||(this.get('isActiveDesc'))) {
+				FLOW.deviceControl.toggleProperty('sortAscending');
+			}
+			else {
+				FLOW.deviceControl.set('sortProperties',[this.get('item')]);
+				FLOW.deviceControl.set('selected',this.get('item'));
+			}
 		}
-	}),
-
-
+	})
 });
 
 
