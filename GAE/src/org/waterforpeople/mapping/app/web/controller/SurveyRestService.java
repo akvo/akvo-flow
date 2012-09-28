@@ -5,7 +5,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -39,6 +42,34 @@ public class SurveyRestService {
 			}
 		}
 		return results;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
+	@ResponseBody
+	public SurveyDto findSurvey(@PathVariable("id") Long id){
+		Survey s =surveyDao.getByKey(id);		
+		SurveyDto dto = null;
+		if(s != null){
+			dto = new SurveyDto();
+			dto.setName(s.getName());
+			dto.setVersion(s.getVersion() != null ? s.getVersion()
+					.toString() : "");
+			dto.setKeyId(s.getKey().getId());
+		}
+		return dto;
+		
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value="/")
+	@ResponseBody
+	public SurveyDto saveSurvey(@RequestBody SurveyDto surveyDto){
+		if(surveyDto != null){
+			Survey s = new Survey();
+			BeanUtils.copyProperties(surveyDto, s);
+			s = surveyDao.save(s);
+			surveyDto.setKeyId(s.getKey().getId());
+		}
+		return surveyDto;
 	}
 
 }
