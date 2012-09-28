@@ -19,6 +19,7 @@ FLOW.NavSurveysController = Ember.Controller.extend();
 
 FLOW.NavDevicesController = Ember.Controller.extend();
 FLOW.DevicesSubnavController = Em.Controller.extend();
+FLOW.DevicesTableHeaderController = Em.Controller.extend();
 
 
 FLOW.NavDataController = Ember.Controller.extend();
@@ -41,7 +42,7 @@ FLOW.NavAdminController = Ember.Controller.extend();
 FLOW.questionTypeControl = Ember.Object.create({
 content:[
 	Ember.Object.create({label: "Free text", value: "freeText"}),
-    Ember.Object.create({label: "Option", value: "option"}),
+   Ember.Object.create({label: "Option", value: "option"}),
    Ember.Object.create({label: "Number", value: "number"}),
    Ember.Object.create({label: "Geolocation", value: "geoLoc"}),
    Ember.Object.create({label: "Photo", value: "photo"}),
@@ -68,11 +69,17 @@ FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {
 
 });
 
-
-FLOW.DeviceController = Ember.ArrayController.extend({
+FLOW.deviceControl = Ember.ArrayController.create({
 	sortProperties:['phoneNumber'],
 	sortAscending:true
+
+	//active: function() {
+	//		//TODO find out how items are being loaded, difference find and findAll
+	//		return FLOW.store.findAll(FLOW.Device);
+	//}.property('').cacheable()
 });
+
+
 
 FLOW.SurveyGroupController = Ember.ArrayController.extend({});
 
@@ -101,8 +108,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
 FLOW.questionGroupControl = Ember.ArrayController.create({
 	sortProperties:['order'],
 	sortAscending:true,
-	reSort:false,
-	
+
 	// not used at the moment in survey tab
 	active: function() {
 		if (FLOW.selectedControl.get('selectedSurvey')) {
@@ -112,13 +118,8 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 			FLOW.selectedControl.set('selectedQuestionGroup', null);
 			return null;
 		}
-	}.property('FLOW.selectedControl.selectedSurvey').cacheable(),
+	}.property('FLOW.selectedControl.selectedSurvey').cacheable()
 
-
-	setContent:function(){
-		var id = FLOW.selectedControl.selectedSurvey.get('keyId');
-		this.set('content',FLOW.store.find(FLOW.QuestionGroup, {surveyId: id}));
-	}.observes('this.reSort','reSort')
 });
 
 FLOW.questionControl = Ember.ArrayController.create({

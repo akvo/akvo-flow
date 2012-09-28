@@ -2,23 +2,15 @@
 
  <section class="fullWidth " id="devicesList">
         <!-- DEVICES TABLE-->
+      {{#view FLOW.CurrentDevicesTabView}}
         <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->
             <thead>
-                <tr>
-                    <th>Phonenumber</th>
-                    <th>Device ID</th>
-                    <th>Device group</th>
-                    <th>Last update</th>
-                    <th>Last beacon received</th>
-                    <th>Latest latitude</th>
-                    <th>Latest longitude</th>
-                    <th>Action</th>
-                </tr>
+                {{view FLOW.DevicesTableHeaderView}}
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
-                {{#each controllers.deviceController.content}}
+                {{#each FLOW.deviceControl}}
 
                 <tr>
                     <td class="phoneNumber" style="text-align:left; padding:0 0 0 5px;">{{phoneNumber}}</td>
@@ -39,6 +31,7 @@
                 </tr>
             </tfoot>
         </table>
+        {{/view}}
     </section>
 
 </section>

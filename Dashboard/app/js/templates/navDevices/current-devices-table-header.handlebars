@@ -1,0 +1,22 @@
+{{#view view.NavItemView item="phoneNumber" }}
+	<a {{action "sortPhoneNumber" target="this"}}>Phonenumber</a>
+{{/view}}
+{{#view view.NavItemView item="deviceIdentifier" }}
+   <a {{action "sortDeviceId" target="this"}}>Device ID</a>
+{{/view}}
+{{#view view.NavItemView item="deviceGroup" }}
+   <a {{action "sortDeviceGroup" target="this"}}>Device group</a>
+{{/view}}
+{{#view view.NavItemView item="lastUpdate" }}
+   <a {{action "sortLastUpdate" target="this"}}>Last update</a>
+{{/view}}
+{{#view view.NavItemView item="lastBeacon" }}
+   <a {{action "sortLastBeacon" target="this"}}>Last beacon received</a>
+{{/view}}
+{{#view view.NavItemView item="lastLat" }}
+   <a {{action "sortlastLat" target="this"}}>Latest latitude</a>
+{{/view}}
+{{#view view.NavItemView item="lastLong" }}
+  <a {{action "sortLastLong" target="this"}}>Latest longitude</a>
+{{/view}}
+ <th> <a {{action "sortDeviceId" target="this"}}>Action</a></th>
