@@ -5,6 +5,29 @@
 	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5"
 	>
+	
+	<context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/webapp-context.xml</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    
+
+    <servlet>
+        <servlet-name>rest</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>rest</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+	
 	<servlet>
 		<servlet-name>StartupServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.StartupServlet</servlet-class>
