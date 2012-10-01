@@ -243,7 +243,7 @@ a.smallBtn {
 	display: inline-block;
 	padding: 5px 7px;
 	text-align: center;
-	background: rgb(39,94,110);
+	background: rgb(107, 134, 141);
 	color: rgb(235,235,235);
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -684,12 +684,12 @@ tfoot tr {
 /* 
 	Tabs Styling
 ----------------------------------------------------------------------*/
-#tabs > section {
+#tabs div > section {
 	border: thin solid rgb(224,224,224);
 	border-top: 1px solid rgb(255,255,255);
 	background: rgb(224,224,224);
 }
-#tabs > section h1 {
+#tabs div > section h1 {
 	display: block;
 	width: 50%;
 	margin: 2em auto;
@@ -805,6 +805,11 @@ tfoot tr {
 	-o-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
 	text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
 }
+
+.no-textshadow #groupBar h2, .no-textshadow #newSurveyInfo h2 {
+	color: rgb(125, 125, 125);
+}
+
 nav ul.menuGroup {
 	background: rgb(58,58,58);
 }
@@ -877,6 +882,10 @@ section.topBar > a {
 	padding:8px 7px 5px 7px;
 	text-transform:uppercase;
 }
+section.topBar > a:hover {
+	color: rgb(255,255,255);
+}
+
 section.topBar > a.smallBtn {
 	color: rgb(235,  235, 235);
 	margin: 0 0 0 5px;
@@ -973,7 +982,7 @@ li.aSurvey {
 	-o-transition: background 0.4s linear;
 	transition: background 0.4s linear;
 	font-size: 1.1em;
-	min-height:220px;
+	min-height:225px;
 }
 li.aSurvey:hover {
 	opacity: 1;
@@ -999,7 +1008,7 @@ li.aSurvey h2 {
 	width: 97%;
 	text-transform: capitalize;
 	font-style:italic;
-	color:rgb(185,185,185);
+	color:rgb(98,98,98);
 	font-size:1.6em;
 }
 li.aSurvey:hover h2 {
@@ -1225,7 +1234,7 @@ ul.surveyInfo li.responseNumber p {
  * Survey Creation & Editing
 ----------------------------------------------------------------------------------------------------------------*/
 #newSurveyInfo h2 {
-	margin: 0.7em 0 1em 3%;
+	margin:5px 0 5px 3%;
 	font-size: 1.8em;
 	display: block;
 	width: 97%;
