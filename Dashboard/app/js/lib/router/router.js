@@ -115,12 +115,12 @@ FLOW.Router = Ember.Router.extend({
 				router.transitionTo('navDevices.currentDevices');
 			},
 			
-			doAssignSurveys: function(router, event) {
-				router.transitionTo('navDevices.assignSurveys');
+			doAssignSurveysOverview: function(router, event) {
+				router.transitionTo('navDevices.assignSurveysOverview');
 			},
-			
-			doTroubleshootDevices: function(router, event) {
-				router.transitionTo('navDevices.troubleshootDevices');
+
+			doEditSurveysAssignment: function(router, event) {
+				router.transitionTo('navDevices.editSurveysAssignment');
 			},
 
 			index: Ember.Route.extend({
@@ -137,22 +137,21 @@ FLOW.Router = Ember.Router.extend({
 				}
 			}),
 
-			assignSurveys: Ember.Route.extend({
+			assignSurveysOverview: Ember.Route.extend({
 				route: '/assign-surveys',
 				connectOutlets: function(router, context) {
-					router.get('navDevicesController').connectOutlet('assignSurveys');
+					router.get('navDevicesController').connectOutlet('assignSurveysOverview');
 					router.set('devicesSubnavController.selected', 'assignSurveys');
 				}
 			}),
 
-			troubleshootDevices: Ember.Route.extend({
-				route: '/troubleshoot',
+			editSurveysAssignment: Ember.Route.extend({
+				route: '/assign-surveys',
 				connectOutlets: function(router, context) {
-					router.get('navDevicesController').connectOutlet('troubleshootDevices');
-					router.set('devicesSubnavController.selected', 'troubleshootDevices');
+					router.get('navDevicesController').connectOutlet('editSurveysAssignment');
+					router.set('devicesSubnavController.selected', 'assignSurveys');
 				}
 			})
-
 		}),
 
 

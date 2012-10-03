@@ -20,7 +20,7 @@ FLOW.NavSurveysController = Ember.Controller.extend();
 FLOW.NavDevicesController = Ember.Controller.extend();
 FLOW.DevicesSubnavController = Em.Controller.extend();
 FLOW.DevicesTableHeaderController = Em.Controller.extend({
-	selected:null,
+	selected:null
 });
 
 

@@ -46,8 +46,9 @@ FLOW.NavSurveysEditView = Ember.View.extend({ templateName: 'navSurveys/nav-surv
 // devices views
 FLOW.NavDevicesView = Ember.View.extend({ templateName: 'navDevices/nav-devices'});
 FLOW.CurrentDevicesView = Ember.View.extend({ templateName: 'navDevices/current-devices'});
-FLOW.AssignSurveysView = Ember.View.extend({ templateName: 'navDevices/assign-survey'});
-FLOW.TroubleshootDevicesView = Ember.View.extend({ templateName: 'navDevices/troubleshoot-devices'});
+FLOW.AssignSurveysOverviewView = Ember.View.extend({ templateName: 'navDevices/assign-survey-overview'});
+FLOW.EditSurveyAssignment = Ember.View.extend({ templateName: 'navDevices/edit-survey-assignment'});
+
 
 // data views
 FLOW.NavDataView = Ember.View.extend({ templateName: 'navData/nav-data'});
