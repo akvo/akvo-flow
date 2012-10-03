@@ -56,7 +56,6 @@ input 'app' do
     concat 'js/app.js'
   end
 
-
   match 'js/plugins/**/*.js' do
     if ENV['RAKEP_MODE'] == 'production'
       uglify {|input| input}
@@ -96,6 +95,7 @@ input 'app' do
       input
     end
   end
+
 
 end
 

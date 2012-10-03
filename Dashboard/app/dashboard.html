@@ -1,48 +1,52 @@
 <!DOCTYPE HTML>
-<!--[if lt IE 7 ]> <html class="ie ie6 no-js" lang="en"> <![endif]-->
-<!--[if IE 7 ]>    <html class="ie ie7 no-js" lang="en"> <![endif]-->
-<!--[if IE 8 ]>    <html class="ie ie8 no-js" lang="en"> <![endif]-->
-<!--[if IE 9 ]>    <html class="ie ie9 no-js" lang="en"> <![endif]-->
+<!--[if lt IE 7 ]><html class="ie ie6 no-js" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7 no-js" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8 no-js" lang="en"><![endif]-->
+<!--[if IE 9 ]><html class="ie ie9 no-js" lang="en"><![endif]-->
 <!--[if gt IE 9]><!-->
 <html class="no-js" lang="en">
 <!--<![endif]-->
 <!-- the "no-js" class is for Modernizr. -->
-<head id="akvoFlow">
- <meta charset="UTF-8">
- <meta name="description" content="Akvo Flow: field level operations watch" />
- <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
- <!-- Force latest IE rendering engine (even in intranet) & Chrome Frame -->
- <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
- <title>Akvo Flow - Dashboard</title>
- <link rel="shortcut icon" href="/favicon.ico" />
- <!-- enable HTML5 elements in IE7+8 -->
- <!--[if lt IE 9]>
-   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
- <![endif]-->
- <!-- Stylesheets -->
- <link rel="stylesheet" href="css/screen.css"  media="screen,projection" />
- <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
- <script>window.jQuery || document.write("<script src='js/vendor/jquery-1.7.2.min.js'>\x3C/script>")</script> 
+  <head id="akvoFlow">
+    <meta charset="UTF-8">
+    <meta name="description" content="Akvo Flow: field level operations watch" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <!-- Force latest IE rendering engine (even in intranet) & Chrome Frame -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Akvo Flow - Dashboard</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <!-- enable HTML5 elements in IE7+8 -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/screen.css"  media="screen,projection" />
+  </head>
+  <body>
 
+  <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write("<script src='js/vendor/jquery-1.8.2.min.js'>\x3C/script>")</script> 
+  <!--
+  <script src="js/vendor/jquery-ui-1.8.21.custom.min.js"></script> 
+  <script src="js/vendor/modernizr.custom.32662.js"></script>
+  <script src="js/vendor/jquery.dataTables.min.js"></script> 
+  
+  -->
 
- <script src="js/vendor/jquery-ui-1.8.21.custom.min.js"></script> 
- <script src="js/vendor/modernizr.custom.32662.js"></script>
- <script src="js/vendor/jquery.dataTables.min.js"></script> 
- <script src="js/flowDashboard.js"></script>
-</head>
-<body>
-
-    <!-- Ember app -->
-    <script src="js/vendor/handlebars-1.0.0.beta.6.js"></script>
+  <!-- Ember app -->
+  <!--
+  <script src="js/vendor/handlebars-1.0.0.beta.6.js"></script>
 	<script src="js/vendor/ember-latest.js"></script>
 	<script src="js/vendor/ember-data.js"></script>
+  -->
+
 	<script src="js/loader.js"></script>
 	<script src="js/app.js"></script>
 	<script>
     	loader.require('akvo-flow/main');
 	</script>
-
-	
-    </body>
+  <script src="js/flowDashboard.js"></script>
+  </body>
 </html>
