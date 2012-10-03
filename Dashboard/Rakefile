@@ -17,6 +17,11 @@ task :build => :clean do
   pipeline.invoke
 end
 
+desc "Watch for changes"
+task :watch do
+  system "bundle exec guard start"
+end
+
 desc "Run tests with PhantomJS"
 task :test => :build do
   unless system("which phantomjs > /dev/null 2>&1")
