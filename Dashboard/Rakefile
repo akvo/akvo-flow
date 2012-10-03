@@ -10,6 +10,7 @@ end
 desc "Clean #{APPNAME}"
 task :clean do
   pipeline.clean
+  system "rm -rf assets/js/vendor"
 end
 
 desc "Build #{APPNAME}"
