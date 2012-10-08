@@ -20,6 +20,35 @@ FLOW.store = DS.Store.create({
 	adapter: DS.fixtureAdapter
 });
 
+
+FLOW.SurveyAssignment = DS.Model.extend({
+
+
+
+
+});
+
+private String devicePhoneNumber;
+	private Long surveyID;
+	private Date effectiveStartDate;
+	private Date effectiveEndDate;
+	private DistributionStatus surveyDistributionStatus;	
+
+	private String language;
+	private String name;
+	private Long assignmentId;
+
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Long id;
+
+
+
+
+
+
+
+
 FLOW.Device = DS.Model.extend({
 	deviceType: DS.attr('string',{defaulValue: ""}),
 	phoneNumber: DS.attr('string',{defaulValue: ""}),
