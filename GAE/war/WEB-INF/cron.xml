@@ -3,12 +3,12 @@
 	<cron>
 		<url>/cron/croncommander?action=purgeExpiredSurveys</url>
 		<description>Purge Expired Surveys from Device Survey Job Queue</description>
-		<schedule>every 4 hours</schedule>
+		<schedule>every 24 hours</schedule>
 	</cron>
 	<cron>
 		<url>/cron/croncommander?action=purgeOrphanJobQueueRecords</url>
 		<description>Purge Orphan Job QueeuDevice Survey Job Queue</description>
-		<schedule>every 4 hours</schedule>
+		<schedule>every 24 hours</schedule>
 	</cron>
 	<cron>
 		<url>/cron/croncommander?action=generateNotifications</url>
