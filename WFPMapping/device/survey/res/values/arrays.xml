@@ -25,11 +25,16 @@
 		<item>hi</item>
 		<item>qu</item>		
 	</string-array>
+	<!-- must have enough colors for all languages -->
 	<string-array name="colors">
 		<item>white</item>
 		<item>red</item>
 		<item>blue</item>
 		<item>yellow</item>
+		<item>green</item>
+		<item>#ff8800</item>
+		<item>#00ffff</item>
+		<item>purple</item>
 	</string-array>
 	<string-array name="precachehelpoptions">
 		<item>Always</item>
@@ -50,7 +55,7 @@
 		<item>http://watermapmonitordev.appspot.com</item>
 		<item>http://flowliberia.appspot.com</item>
 		<item>http://watermappingmonitoring.appspot.com</item> -->
-		<item>http://192.168.0.100:8888</item>
+		<item>http://192.168.1.107:8888</item>
 	</string-array>
 	<string-array name="lengthmetric">
 		<item>millimeters</item>
