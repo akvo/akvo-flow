@@ -35,8 +35,8 @@ FLOW.Router = Ember.Router.extend({
 
 // non-working code for transitioning to navHome at first entry of the app
 //		setup: function(router){
-//	    	router.send("goHome");
-//	  	},
+//			router.send("goHome");
+//		},
 		
 //		goHome:function(router){
 //			router.transitionTo('navHome');

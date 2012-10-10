@@ -4,4 +4,3 @@ Ember.LOG_BINDINGS = false;
 window.FLOW = Ember.Application.create({
   VERSION: '0.0.1'
 });
-
