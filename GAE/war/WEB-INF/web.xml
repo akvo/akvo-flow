@@ -431,6 +431,14 @@
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/devicerpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>DeviceAppRpcServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.gwt.server.device.DeviceApplicationServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeviceAppRpcServlet</servlet-name>
+		<url-pattern>/org.waterforpeople.mapping.portal.portal/deviceapprpcservice</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>UserRpcServlet</servlet-name>
 		<servlet-class>com.gallatinsystems.user.app.gwt.server.UserServiceImpl</servlet-class>
 	</servlet>

@@ -611,5 +611,6 @@ public interface TextConstants extends Constants{
 	public String manageCountries();
 	public String uploadApp();
 	public String uploadAppDescription();
+	public String versionMandatory();
 }
 

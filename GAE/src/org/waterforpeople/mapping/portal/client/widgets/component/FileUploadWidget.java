@@ -65,9 +65,11 @@ public class FileUploadWidget extends Composite implements ClickHandler,
 	private Hidden contentType;
 	private FileUploadHandler uploadHandler;
 	private String[] acceptableExtensions;
+	private boolean hasUploaded;
 
 	public FileUploadWidget(FileUploadHandler handler,
 			String... validExtensions) {
+		hasUploaded = false;
 		contentPane = new VerticalPanel();
 		uploadHandler = handler;
 		acceptableExtensions = validExtensions;
@@ -113,12 +115,15 @@ public class FileUploadWidget extends Composite implements ClickHandler,
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == submitBtn) {
 			boolean valid = validateFile(upload.getFilename());
+			hasUploaded = false;
 			if (valid) {
-				configureForm(upload.getFilename().trim());
-				submitBtn.setVisible(false);
-				statusLabel.setText(TEXT_CONSTANTS.uploading());
-				statusLabel.setVisible(true);
-				form.submit();
+				if (uploadHandler.isReadyToUpload()) {
+					configureForm(upload.getFilename().trim());
+					submitBtn.setVisible(false);
+					statusLabel.setText(TEXT_CONSTANTS.uploading());
+					statusLabel.setVisible(true);
+					form.submit();
+				}
 			} else {
 				MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.error(),
 						buildErrorString());
@@ -184,6 +189,7 @@ public class FileUploadWidget extends Composite implements ClickHandler,
 			statusLabel.setText(TEXT_CONSTANTS.uploadComplete());
 			// delegate to the client class so they can take any required
 			// action
+			hasUploaded = true;
 			uploadHandler.onSubmitSuccess(event, upload.getFilename());
 
 		} else {
@@ -191,11 +197,23 @@ public class FileUploadWidget extends Composite implements ClickHandler,
 		}
 	}
 
+	public boolean hasUploaded() {
+		return hasUploaded;
+	}
+
 	public interface FileUploadHandler {
 		public static final String PATH = "path";
 		public static final String CONTENT_TYPE = "contentType";
 		public static final String SIG = "sig";
 		public static final String POLICY = "policy";
+
+		/**
+		 * called prior to starting the upload. If you want to stop the download
+		 * from starting, return false.
+		 * 
+		 * @return
+		 */
+		public boolean isReadyToUpload();
 
 		/**
 		 * callback invoked if the upload was successful

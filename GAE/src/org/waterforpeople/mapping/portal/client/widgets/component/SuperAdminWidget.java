@@ -18,20 +18,27 @@ package org.waterforpeople.mapping.portal.client.widgets.component;
 
 import java.util.Map;
 
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceApplicationDto;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceApplicationService;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceApplicationServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
 import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 import org.waterforpeople.mapping.portal.client.widgets.component.FileUploadWidget.FileUploadHandler;
 
 import com.gallatinsystems.framework.gwt.component.MenuBasedWidget;
 import com.gallatinsystems.framework.gwt.util.client.CompletionListener;
+import com.gallatinsystems.framework.gwt.util.client.MessageDialog;
+import com.gallatinsystems.framework.gwt.util.client.ViewUtil;
 import com.gallatinsystems.framework.gwt.util.client.WidgetDialog;
 import com.gallatinsystems.gis.app.gwt.client.GISSupportConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 
@@ -47,6 +54,9 @@ public class SuperAdminWidget extends MenuBasedWidget {
 	private Button uploadApkButton;
 	private Panel appletPanel;
 	private WidgetDialog uploadDialog;
+	private FileUploadWidget uploadWidget;
+	private static final String DEFAULT_APP_CODE = "fieldSurvey";
+	private static final String DEFAULT_DEVICE_TYPE = "androidPhone";
 
 	public SuperAdminWidget() {
 		Panel contentPanel = new VerticalPanel();
@@ -166,31 +176,75 @@ public class SuperAdminWidget extends MenuBasedWidget {
 	}
 
 	private void handleApkUpload() {
-		FileUploadWidget uploadWidget = new FileUploadWidget(
-				new FileUploadHandler() {
+		VerticalPanel panel = new VerticalPanel();
+		final TextBox versionField = new TextBox();
+		panel.add(ViewUtil.formFieldPair(TEXT_CONSTANTS.version(),
+				versionField, null));
+		uploadWidget = new FileUploadWidget(new FileUploadHandler() {
 
-					@Override
-					public void onSubmitSuccess(SubmitCompleteEvent event,
-							String fileName) {
-						uploadDialog.hide();
-					}
+			@Override
+			public void onSubmitSuccess(SubmitCompleteEvent event,
+					String fileName) {
 
-					@Override
-					public void configureUploadMap(
-							Map<String, String> uploadMap, String fileName) {
-						uploadMap.put(FileUploadHandler.PATH,
-								UPLOAD_CONSTANTS.apkS3Path());
-						uploadMap.put(FileUploadHandler.SIG,
-								UPLOAD_CONSTANTS.apkS3Sig());
-						uploadMap.put(FileUploadHandler.POLICY,
-								UPLOAD_CONSTANTS.apkS3Policy());
-						uploadMap.put(FileUploadHandler.CONTENT_TYPE,
-								UPLOAD_CONSTANTS.apkContentType());
-					}
-				}, "apk");
-		uploadDialog = new WidgetDialog(TEXT_CONSTANTS.uploadApp(),
-				uploadWidget);
+				if (uploadWidget.hasUploaded()) {
+					saveVersion(versionField.getText());
+				}
+			}
+
+			@Override
+			public void configureUploadMap(Map<String, String> uploadMap,
+					String fileName) {
+				uploadMap.put(FileUploadHandler.PATH,
+						UPLOAD_CONSTANTS.apkS3Path());
+				uploadMap.put(FileUploadHandler.SIG,
+						UPLOAD_CONSTANTS.apkS3Sig());
+				uploadMap.put(FileUploadHandler.POLICY,
+						UPLOAD_CONSTANTS.apkS3Policy());
+				uploadMap.put(FileUploadHandler.CONTENT_TYPE,
+						UPLOAD_CONSTANTS.apkContentType());
+			}
+
+			@Override
+			public boolean isReadyToUpload() {
+				if (ViewUtil.isTextPopulated(versionField)) {
+					return true;
+				} else {
+					MessageDialog dia = new MessageDialog(
+							TEXT_CONSTANTS.error(),
+							TEXT_CONSTANTS.versionMandatory());
+					dia.showCentered();
+					return false;
+				}
+			}
+		}, "apk");
+		panel.add(uploadWidget);
+		uploadDialog = new WidgetDialog(TEXT_CONSTANTS.uploadApp(), panel);
 		uploadDialog.showCentered();
+
+	}
+
+	private void saveVersion(String versionString) {
+		DeviceApplicationServiceAsync devAppService = GWT
+				.create(DeviceApplicationService.class);
+		DeviceApplicationDto appDto = new DeviceApplicationDto();
+		appDto.setAppCode(DEFAULT_APP_CODE);
+		appDto.setDeviceType(DEFAULT_DEVICE_TYPE);
+		appDto.setVersion(versionString);
+		devAppService.save(appDto, new AsyncCallback<DeviceApplicationDto>() {
+
+			@Override
+			public void onSuccess(DeviceApplicationDto result) {
+				uploadDialog.hide();
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.error(),
+						TEXT_CONSTANTS.saveFailed());
+				dia.showCentered();
+
+			}
+		});
 
 	}
 

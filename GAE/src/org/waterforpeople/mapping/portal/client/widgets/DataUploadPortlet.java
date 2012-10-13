@@ -151,4 +151,9 @@ public class DataUploadPortlet extends Portlet implements FileUploadHandler {
 		}
 
 	}
+
+	@Override
+	public boolean isReadyToUpload() {
+		return true;
+	}
 }
