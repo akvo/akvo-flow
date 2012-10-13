@@ -106,7 +106,7 @@ public class InstanceConfigurator {
 		String localLocation = args[16];
 		ic.addAttribute("keystore", args[17]);
 		ic.addAttribute("mapsApiKey", args[18]);
-		ic.addAttribute("restApiKey",args[19]);
+		ic.addAttribute("restApiKey",args[19]);		
 
 		localLocation = ic.createLocalDeployDir(localLocation, args[2]);
 
@@ -139,6 +139,9 @@ public class InstanceConfigurator {
 				} else if (directory.equals("surveys")) {
 					ic.addAttribute("surveyS3Sig", documents[0]);
 					ic.addAttribute("surveyPolicy", documents[1]);
+				}else if ("apk".equals(directory)){
+					ic.addAttribute("apkS3Sig", documents[0]);
+					ic.addAttribute("apkS3Policy", documents[1]);
 				}
 				policyFiles.put(directory, documents);
 			}
