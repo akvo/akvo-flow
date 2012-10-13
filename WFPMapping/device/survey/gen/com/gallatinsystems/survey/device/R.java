@@ -182,7 +182,7 @@ public final class R {
         public static final int addtestpoints=0x7f0700c2;
         public static final int adduser=0x7f070014;
         public static final int app_name=0x7f070000;
-        public static final int appversion=0x7f0700c3;
+        public static final int appversion=0x7f0700c5;
         public static final int authfailed=0x7f07009e;
         public static final int authtext=0x7f07009d;
         public static final int authtitle=0x7f07009c;
@@ -205,6 +205,7 @@ public final class R {
         public static final int clearquestion=0x7f0700a2;
         public static final int clearquestiondesc=0x7f0700a3;
         public static final int cleartitle=0x7f070096;
+        public static final int clicktoinstall=0x7f0700c4;
         public static final int completeplot=0x7f07003c;
         public static final int confirmchangetext=0x7f0700b1;
         public static final int confirmchangetitle=0x7f0700b0;
@@ -353,6 +354,7 @@ public final class R {
         public static final int transmissionhist=0x7f0700aa;
         public static final int transstartdate=0x7f0700ab;
         public static final int unknown=0x7f070013;
+        public static final int updateavail=0x7f0700c3;
         public static final int uploadcomplete=0x7f07001e;
         public static final int uploaderror=0x7f0700b2;
         public static final int uploaderrorlabel=0x7f0700bf;
