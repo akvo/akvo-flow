@@ -38,7 +38,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * 
- * reusable widget for uploading a single file to S3
+ * reusable widget for uploading a single file to S3. Users of this class must
+ * pass in a FileUploadHandler that can configure the relevant S3 parameters
+ * 
  * 
  * @author Christopher Fagiani
  * 
@@ -110,7 +112,7 @@ public class FileUploadWidget extends Composite implements ClickHandler,
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == submitBtn) {
-			boolean valid = validateFile(upload.getFilename());			
+			boolean valid = validateFile(upload.getFilename());
 			if (valid) {
 				configureForm(upload.getFilename().trim());
 				submitBtn.setVisible(false);
@@ -195,8 +197,22 @@ public class FileUploadWidget extends Composite implements ClickHandler,
 		public static final String SIG = "sig";
 		public static final String POLICY = "policy";
 
+		/**
+		 * callback invoked if the upload was successful
+		 * 
+		 * @param event
+		 * @param fileName
+		 */
 		public void onSubmitSuccess(SubmitCompleteEvent event, String fileName);
 
+		/**
+		 * this method should install values in the uploadMap for each of the
+		 * constants defined in this interface. These will be passed to S3 via
+		 * the upload post so uploads can be authorized.
+		 * 
+		 * @param uploadMap
+		 * @param fileName
+		 */
 		public void configureUploadMap(Map<String, String> uploadMap,
 				String fileName);
 	}
