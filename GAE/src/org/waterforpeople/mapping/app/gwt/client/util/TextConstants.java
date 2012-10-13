@@ -609,5 +609,7 @@ public interface TextConstants extends Constants{
 	public String includeInPublic();
 	public String countryManagerPortletTitle();
 	public String manageCountries();
+	public String uploadApp();
+	public String uploadAppDescription();
 }
 

@@ -110,15 +110,7 @@ public class FileUploadWidget extends Composite implements ClickHandler,
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource() == submitBtn) {
-			boolean valid = validateFile(upload.getFilename());
-			if (upload.getFilename() == null
-					|| upload.getFilename().trim().length() == 0) {
-				valid = false;
-			} else if (!(upload.getFilename().toLowerCase().endsWith(".zip")
-					|| upload.getFilename().toLowerCase().endsWith(".jpg") || upload
-					.getFilename().toLowerCase().endsWith(".jpeg"))) {
-				valid = false;
-			}
+			boolean valid = validateFile(upload.getFilename());			
 			if (valid) {
 				configureForm(upload.getFilename().trim());
 				submitBtn.setVisible(false);
@@ -127,10 +119,23 @@ public class FileUploadWidget extends Composite implements ClickHandler,
 				form.submit();
 			} else {
 				MessageDialog dia = new MessageDialog(TEXT_CONSTANTS.error(),
-						TEXT_CONSTANTS.filetypeError());
+						buildErrorString());
 				dia.showCentered();
 			}
 		}
+	}
+
+	protected String buildErrorString() {
+		StringBuilder builder = new StringBuilder();
+		if (acceptableExtensions != null) {
+			for (String ext : acceptableExtensions) {
+				if (builder.length() > 0) {
+					builder.append(", ");
+				}
+				builder.append(ext);
+			}
+		}
+		return TEXT_CONSTANTS.filetypeError() + builder.toString();
 	}
 
 	protected boolean validateFile(String file) {

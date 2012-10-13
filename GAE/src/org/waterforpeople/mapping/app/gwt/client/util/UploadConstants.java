@@ -47,7 +47,15 @@ public interface UploadConstants extends Constants {
 	public String helpS3Path();
 
 	public String videoContentType();
-	
+
 	public String apiKey();
+
+	public String apkS3Policy();
+
+	public String apkS3Sig();
+
+	public String apkS3Path();
+
+	public String apkContentType();
 
 }
