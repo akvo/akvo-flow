@@ -29,6 +29,7 @@ public class DeviceApplicationDto extends BaseDto {
 	private String deviceType;
 	private String appCode;
 	private String version;
+	private String fileName;
 
 	public String getDeviceType() {
 		return deviceType;
@@ -52,6 +53,14 @@ public class DeviceApplicationDto extends BaseDto {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 }

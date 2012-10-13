@@ -22,11 +22,11 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
 public class DeviceApplication extends BaseDomain {
 
-		
 	private static final long serialVersionUID = -190410750699633199L;
 	private String deviceType;
 	private String appCode;
 	private String version;
+	private String fileName;
 
 	public String getDeviceType() {
 		return deviceType;
@@ -51,5 +51,15 @@ public class DeviceApplication extends BaseDomain {
 	public void setVersion(String version) {
 		this.version = version;
 	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	
+	
 
 }

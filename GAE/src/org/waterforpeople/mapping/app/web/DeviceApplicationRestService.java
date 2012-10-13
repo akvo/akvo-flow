@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.web.dto.DeviceApplicationRestRequest;
+import org.waterforpeople.mapping.app.web.dto.DeviceApplicationRestResponse;
 import org.waterforpeople.mapping.dao.DeviceApplicationDao;
 import org.waterforpeople.mapping.domain.DeviceApplication;
 
@@ -54,7 +55,7 @@ public class DeviceApplicationRestService extends AbstractRestApiServlet {
 
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		RestResponse resp = new RestResponse();
+		DeviceApplicationRestResponse resp = new DeviceApplicationRestResponse();
 		if (DeviceApplicationRestRequest.GET_LATEST_VERSION_ACTION
 				.equalsIgnoreCase(req.getAction())) {
 
@@ -63,7 +64,8 @@ public class DeviceApplicationRestService extends AbstractRestApiServlet {
 					.listByDeviceTypeAndAppCode(daReq.getDeviceType(),
 							daReq.getAppCode(), 1);
 			if (devAppList != null && devAppList.size() > 0) {
-				resp.setMessage(devAppList.get(0).getVersion());
+				resp.setVersion(devAppList.get(0).getVersion());
+				resp.setFileName(devAppList.get(0).getFileName());
 			}
 		}
 		return resp;

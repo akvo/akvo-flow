@@ -201,6 +201,14 @@ public class FileUploadWidget extends Composite implements ClickHandler,
 		return hasUploaded;
 	}
 
+	public String getFileName() {
+		if (hasUploaded) {
+			return upload.getFilename();
+		} else {
+			return null;
+		}
+	}
+
 	public interface FileUploadHandler {
 		public static final String PATH = "path";
 		public static final String CONTENT_TYPE = "contentType";

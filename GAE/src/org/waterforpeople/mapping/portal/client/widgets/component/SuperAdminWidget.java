@@ -187,7 +187,8 @@ public class SuperAdminWidget extends MenuBasedWidget {
 					String fileName) {
 
 				if (uploadWidget.hasUploaded()) {
-					saveVersion(versionField.getText());
+					saveVersion(versionField.getText(),
+							uploadWidget.getFileName());
 				}
 			}
 
@@ -223,13 +224,14 @@ public class SuperAdminWidget extends MenuBasedWidget {
 
 	}
 
-	private void saveVersion(String versionString) {
+	private void saveVersion(String versionString, String fileName) {
 		DeviceApplicationServiceAsync devAppService = GWT
 				.create(DeviceApplicationService.class);
 		DeviceApplicationDto appDto = new DeviceApplicationDto();
 		appDto.setAppCode(DEFAULT_APP_CODE);
 		appDto.setDeviceType(DEFAULT_DEVICE_TYPE);
 		appDto.setVersion(versionString);
+		appDto.setFileName(fileName);
 		devAppService.save(appDto, new AsyncCallback<DeviceApplicationDto>() {
 
 			@Override
