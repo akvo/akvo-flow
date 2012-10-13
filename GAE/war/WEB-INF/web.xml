@@ -537,6 +537,14 @@
 		<url-pattern>/surveyrestapi</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>DeviceAppRestApi</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.DeviceApplicationRestService</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeviceAppRestApi</servlet-name>
+		<url-pattern>/deviceapprest</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>DeviceFilesRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.DeviceFileRestServlet</servlet-class>
 	</servlet>
