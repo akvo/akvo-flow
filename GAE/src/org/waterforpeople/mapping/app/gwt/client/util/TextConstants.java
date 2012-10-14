@@ -612,5 +612,6 @@ public interface TextConstants extends Constants{
 	public String uploadApp();
 	public String uploadAppDescription();
 	public String versionMandatory();
+	public String latestAPK();
 }
 
