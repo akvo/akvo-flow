@@ -43,7 +43,7 @@
 		<item>http://watermapmonitordev.appspot.com</item>
 		<item>http://flowliberia.appspot.com</item>
 		<item>http://watermappingmonitoring.appspot.com</item> -->
-		<item>http://192.168.0.100:8888</item>
+		<item>http://192.168.1.111:8888</item>
 	</string-array>
 	<string-array name="lengthmetric">
 		<item>millimeters</item>

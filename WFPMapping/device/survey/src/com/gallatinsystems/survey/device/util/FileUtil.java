@@ -181,7 +181,18 @@ public class FileUtil {
 		}
 		return out;
 	}
-	
+
+	public static String getPathForFile(String file, String subDir,
+			String useInternal) {
+		String path = null;
+		if (useInternal != null && "true".equalsIgnoreCase(useInternal)) {
+			path = file;
+		} else {
+			String dir = getStorageDirectory(subDir, useInternal);
+			path = dir + file;
+		}
+		return path;
+	}
 
 	public static FileInputStream getFileInputStream(String file,
 			String subDir, String useInternal, Context c)
@@ -299,7 +310,7 @@ public class FileUtil {
 			String expression) {
 		deleteFilesMatchingExpression(new File(path), expression, false);
 	}
-	
+
 	/**
 	 * non-recursive delete of all files in a single directory that match the
 	 * expression (regex) passed in
@@ -313,8 +324,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * delete of all files in a single directory that match the
-	 * expression (regex) passed in
+	 * delete of all files in a single directory that match the expression
+	 * (regex) passed in
 	 * 
 	 * @param path
 	 * @param expression
@@ -323,7 +334,7 @@ public class FileUtil {
 	 */
 	public static void deleteFilesMatchingExpression(File root,
 			String expression, boolean recurse) {
-		if (root != null) {			
+		if (root != null) {
 			if (root.isDirectory()) {
 				File[] files = root.listFiles();
 				if (files != null) {

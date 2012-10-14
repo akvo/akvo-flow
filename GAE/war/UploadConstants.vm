@@ -17,4 +17,9 @@ helpS3Sig =  $helpcontentS3Sig
 helpS3Path = helpcontent
 videoContentType = video/mpeg
 
+apkS3Policy = $apkS3Policy
+apkS3Sig = $apkS3Sig
+apkS3Path = apk
+apkContentType = application/vnd.android.package-archive
+
 apiKey = $restApiKey
