@@ -16,7 +16,6 @@
 
 package com.gallatinsystems.framework.dataexport.applet;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JFileChooser;
