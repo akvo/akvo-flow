@@ -8,7 +8,7 @@ if (typeof locale === 'undefined') {
   locale = "en";
 }
 
-if (locale == "nl") {
+if (locale === "nl") {
   require('akvo-flow/locale/nl');
 } else {
   require('akvo-flow/locale/en');
