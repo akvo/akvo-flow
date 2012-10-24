@@ -1,86 +1,79 @@
 {{#view FLOW.SurveyGroupMainView}}
-   <section id="groupBar" class="leftSidebar">
-	 <form action="" method="post">
-       <input type="search" placeholder="Filter Surveys"  name="surveySearch" />
-     </form>
-     <h2>survey groups</h2>
-     <nav>
-				{{#if view.showNewGroupField}}
-					{{view Ember.TextField valueBinding="view.surveyGroupName" size=30}}
-					<a {{action "saveNewSurveyGroupName" target="this"}}>Save</a>
-					<a {{action "cancelNewSurveyGroupName" target="this"}}>Cancel</a>
-				{{/if}}    
-   		<ul class="menuGroup">
-			{{#each sg in FLOW.surveyGroupControl.active}}
-				{{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-	    			<a {{action "makeSelected" target="this"}}>{{sg.displayName}}</a>
-				{{/view}}
-			{{/each}}
-       
- 		</ul>
-	
-     </nav>
-	</section>
+  <section id="groupBar" class="leftSidebar">
+    <form action="" method="post">
+      <input type="search" placeholder="Filter Surveys"  name="surveySearch" />
+    </form>
+    <h2>{{t _survey_groups}}</h2>
+    <nav>
+      {{#if view.showNewGroupField}}
+        {{view Ember.TextField valueBinding="view.surveyGroupName" size=30}}
+        <a {{action "saveNewSurveyGroupName" target="this"}}>{{t _save}}</a>
+        <a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a>
+      {{/if}}    
+      <ul class="menuGroup">
+        {{#each sg in FLOW.surveyGroupControl.active}}
+          {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
+            <a {{action "makeSelected" target="this"}}>{{sg.displayName}}</a>
+          {{/view}}
+        {{/each}} 
+      </ul>
+    </nav>
+  </section>
 
-	
-	<section id="allSurvey" class="mainRight surveysList">
+  <section id="allSurvey" class="mainRight surveysList">
+    <section class="topBar">
+      {{#if view.oneSelected}}
+        {{#if view.showEditField}}
+          {{view Ember.TextField valueBinding="view.surveyGroupName" size=45}}
+          <a {{action "saveSurveyGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a>
+          <a {{action "cancelSurveyGroupNameEdit" target="this"}}>{{t _cancel}}</a>
+        {{else}}
+          <h2>{{FLOW.selectedControl.selectedSurveyGroup.displayName}}</h2> 
+          <a {{action "editSurveyGroupName" target="this"}}>{{t _edit_name}}</a>
+        {{/if}}
+      {{/if}}
+      <nav class="menuTopbar">
+        <ul class="">
+          <li><a {{action "addGroup" target="this"}} class="addGroup">{{t _add_a_group}}</a></li>
+          {{#if view.oneSelected}}
+            <li><a {{action "createNewSurvey" target="this"}} class="addSurvey">{{t _create_a_new_survey}}</a></li>
+          {{/if}}
+        </ul>
+      </nav>    
+    </section>
 
- 		<section class="topBar">
-			{{#if view.oneSelected}}
-				{{#if view.showEditField}}
-					{{view Ember.TextField valueBinding="view.surveyGroupName" size=45}}
-					<a {{action "saveSurveyGroupNameEdit" target="this"}} class="smallBtn">Save</a>
-					<a {{action "cancelSurveyGroupNameEdit" target="this"}}>Cancel</a>
-				{{else}}
-       				<h2>{{FLOW.selectedControl.selectedSurveyGroup.displayName}}</h2> 
-					<a {{action "editSurveyGroupName" target="this"}}>Edit name</a>
-				{{/if}}
-			{{/if}}
-			<nav class="menuTopbar">
-         		<ul class="">
-           			<li><a {{action "addGroup" target="this"}} class="addGroup">add a group</a></li>
-           		{{#if view.oneSelected}}
-					<li><a {{action "createNewSurvey" target="this"}} class="addSurvey">create a new survey</a></li>
-				{{/if}}
-         		</ul>
-       		</nav>    
- 		</section>
-
-
-     	<ul class="surveyBatch">
-		{{#each survey in FLOW.surveyControl.active}} 
-			{{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
-				<li class="aSurvey waterPoint">
-		        	<h2 class="">{{survey.displayName}}</h2>
-         			<ul class="surveyInfo floats-in">
-           				<li class="dateCreated"> <span>Created</span>
-             				<time>
-             					07 May 2012
-             				<time>
-           				</li>
-           				<li class="responseNumber"><span>15</span>
-             				<p>responses</p>
-           				</li>
-         			</ul>
-         			<dl class="floats-in">
-           				<dt>modified</dt>
-           				<dd>22 May 2012</dd>
-           				<dt>type</dt>
-           				<dd>water point</dd>
-           				<dt>language</dt>
-           				<dd>english, spanish, french, Dutch, German</dd>
-         			</dl>
-         			<nav>
-           				<ul>              
-			 				<li class="editSurvey"><a {{action "doEditSurvey" survey}}>Edit</a></li>
-             				<li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>Preview</a></li>
-             				<li class="deleteSurvey"><a {{action "deleteSurvey" target="this"}}>Delete</a></li>
-             				<li class="inspectData"><a {{action "inspectData" target="this"}}>Inspect Data</a></li>
-						</ul>
-         			</nav>
-       			</li>
-			{{/view}}
-		{{/each}}
-		</ul>
-	</section>
+    <ul class="surveyBatch">
+      {{#each survey in FLOW.surveyControl.active}} 
+        {{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
+          <li class="aSurvey waterPoint">
+            <h2 class="">{{survey.displayName}}</h2>
+            <ul class="surveyInfo floats-in">
+              <li class="dateCreated"> <span>{{t created}}</span>
+                <time>07 May 2012<time>
+              </li>
+              <li class="responseNumber"><span>15</span>
+                <p>{{t _responses}}</p>
+              </li>
+            </ul>
+            <dl class="floats-in">
+              <dt>modified</dt>
+              <dd>22 May 2012</dd>
+              <dt>type</dt>
+              <dd>water point</dd>
+              <dt>language</dt>
+              <dd>english, spanish, french, Dutch, German</dd>
+            </dl>
+            <nav>
+              <ul>              
+                <li class="editSurvey"><a {{action "doEditSurvey" survey}}>{{t _edit}}</a></li>
+                  <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>{{t _preview}}</a></li>
+                  <li class="deleteSurvey"><a {{action "deleteSurvey" target="this"}}>{{t _delete}}</a></li>
+                  <li class="inspectData"><a {{action "inspectData" target="this"}}>{{t _inspect_data}}</a></li>
+              </ul>
+            </nav>
+          </li>
+        {{/view}}
+      {{/each}}
+    </ul>
+  </section>
 {{/view}}
