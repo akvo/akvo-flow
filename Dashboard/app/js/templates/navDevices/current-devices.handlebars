@@ -2,7 +2,31 @@
 
  <section class="fullWidth " id="devicesList">
         <!-- DEVICES TABLE-->
+
       {{#view FLOW.CurrentDevicesTabView}}
+
+        <div id="devicesListTable_length" class="dataTables_length">
+            <label>
+                Show
+                <select size="1" name="deviceListTable_length">
+                    <option value="10" selected="selected">10</option> 
+                    <option value="20" >20</option> 
+                    <option value="50" >50</option> 
+                    <option value="100" >100</option> 
+
+                </select>
+
+                &nbsp;entries
+
+            </label>
+
+        </div>
+         
+         {{#if FLOW.deviceControl.atLeastOneSelected}}
+            <a {{action "showDeleteDevicesDialogue" target="this"}}>Delete Devices</a>
+        {{/if}}
+
+
         <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->
             <thead>
@@ -13,6 +37,7 @@
                 {{#each FLOW.deviceControl}}
 
                 <tr>
+                    <td class="selection" style="text-align:left; padding:0 0 0 5px;"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
                     <td class="phoneNumber" style="text-align:left; padding:0 0 0 5px;">{{phoneNumber}}</td>
                     <td class="deviceId" >{{deviceIdentifier}}</td>
                     <td class="deviceGroup">{{deviceGroup}}</td>
@@ -32,7 +57,13 @@
                 </tr>
             </tfoot>
         </table>
+   <!--     {{#if view.showConfirmDeleteDialogue}}
+            <a {{action "doDelete" target="this"}}>Ok</a>
+            <a {{action "cancelDelete" target="this"}}>Cancel</a>
+        {{/if}}     -->
+
         {{/view}}
     </section>
+       
 
 </section>

@@ -20,22 +20,50 @@ FLOW.store = DS.Store.create({
 	adapter: DS.fixtureAdapter
 });
 
+
+FLOW.SurveyAssignment = DS.Model.extend({
+
+
+
+
+});
+
+FLOW.DeviceGroup = DS.Model.extend({
+	displayName: DS.attr('string',{defaultValue: ""}),
+	code: DS.attr('string',{defaultValue: ""})
+});
+
+
+FLOW.DeviceGroup.FIXTURES = [
+{
+	id:1,
+	displayName:'Malawi',
+	code:'malawi'
+},
+{
+	id:2,
+	displayName:'Bolivia',
+	code:'bolivia'
+}
+];
+
 FLOW.Device = DS.Model.extend({
-	deviceType: DS.attr('string',{defaulValue: ""}),
-	phoneNumber: DS.attr('string',{defaulValue: ""}),
-	esn: DS.attr('string',{defaulValue: ""}),
-	deviceIdentifier: DS.attr('string',{defaulValue: ""}),
+	deviceType: DS.attr('string',{defaultValue: ""}),
+	phoneNumber: DS.attr('string',{defaultValue: ""}),
+	esn: DS.attr('string',{defaultValue: ""}),
+	deviceIdentifier: DS.attr('string',{defaultValue: ""}),
 	inServiceDate: DS.attr('date'),
 	outServiceDate: DS.attr('date'),
-	lastUpdate: DS.attr('string',{defaulValue: ""}),	//should be DS.attr('date'),
-	osVersion: DS.attr('string',{defaulValue: ""}),
-	lastKnownLat: DS.attr('number',{defaulValue: 0}),
-	lastKnownLong:DS.attr('number',{defaulValue: 0}),
-	lastKnownAccuracy: DS.attr('number',{defaulValue:0}),
-	lastLocationBeaconTime: DS.attr('string',{defaulValue: ""}), //should be DS.attr('date'),
-	deviceGroup: DS.attr('string',{defaulValue: ""}),
+	lastUpdate: DS.attr('string',{defaultValue: ""}),	//should be DS.attr('date'),
+	osVersion: DS.attr('string',{defaultValue: ""}),
+	lastKnownLat: DS.attr('number',{defaultValue: 0}),
+	lastKnownLong:DS.attr('number',{defaultValue: 0}),
+	lastKnownAccuracy: DS.attr('number',{defaultValue:0}),
+	lastLocationBeaconTime: DS.attr('string',{defaultValue: ""}), //should be DS.attr('date'),
+	deviceGroup: DS.attr('string',{defaultValue: ""}),
 	keyId: DS.attr('number'),
-	primaryKey:'keyId'
+	primaryKey:'keyId',
+	isSelected: DS.attr('boolean', {defaultValue: false})
 });
 
 
@@ -48,7 +76,7 @@ FLOW.Device.FIXTURES = [
 	lastUpdate:"21 May 2012 20:30:00",
 	lastLocationBeaconTime:"22 May 2012 20:30:00",
 	lastKnownLat:23.132132321,
-	lastKnownLong:12.23232332
+	lastKnownLong:12.23232332,
 },
 {
 	keyId:2,
@@ -58,7 +86,7 @@ FLOW.Device.FIXTURES = [
 	lastUpdate:"21 Apr 2012 20:30:00",
 	lastLocationBeaconTime:"27 Feb 2012 20:30:00",
 	lastKnownLat:43.33434343,
-	lastKnownLong:-5.32332343
+	lastKnownLong:-5.32332343,
 },
 {
 	keyId:3,
@@ -113,13 +141,13 @@ FLOW.Device.FIXTURES = [
 
 
 FLOW.SurveyGroup = DS.Model.extend({
-	surveyList: DS.attr('string',{defaulValue: ""}),
-	description: DS.attr('string',{defaulValue: ""}),
-	name: DS.attr('string',{defaulValue: ""}),
-	createdDateTime: DS.attr('string',{defaulValue: ""}),
-	lastUpdateDateTime: DS.attr('string',{defaulValue: ""}),
-	code: DS.attr('string',{defaulValue: ""}),
-	displayName: DS.attr('string',{defaulValue: ""}),
+	surveyList: DS.attr('string',{defaultValue: ""}),
+	description: DS.attr('string',{defaultValue: ""}),
+	name: DS.attr('string',{defaultValue: ""}),
+	createdDateTime: DS.attr('string',{defaultValue: ""}),
+	lastUpdateDateTime: DS.attr('string',{defaultValue: ""}),
+	code: DS.attr('string',{defaultValue: ""}),
+	displayName: DS.attr('string',{defaultValue: ""}),
 	keyId: DS.attr('number'),
 	primaryKey: 'keyId'
 
@@ -230,7 +258,7 @@ FLOW.QuestionGroup = DS.Model.extend({
 	displayName: DS.attr('string'),
 	keyId: DS.attr('number'),
 	isOpen: DS.attr('boolean', {
-		defaulValue: 0
+		defaultValue: 0
 	}),
 	primaryKey: 'keyId'
 });
@@ -286,7 +314,7 @@ FLOW.QuestionGroup.FIXTURES = [{
 FLOW.Question = DS.Model.extend({
 	translationMap: DS.attr('string'),
 	// not sure
-	allowDecimal: DS.attr('boolean', {defaulValue: 0}),
+	allowDecimal: DS.attr('boolean', {defaultValue: 0}),
 	optionContainerDto: DS.attr('string'),
 	//not sure
 	// type:     --- not now
@@ -294,18 +322,18 @@ FLOW.Question = DS.Model.extend({
 	maxVal: DS.attr('number'),
 	minVal: DS.attr('number'),
 	order: DS.attr('number'),
-	isName: DS.attr('boolean', {defaulValue: 0}),
+	isName: DS.attr('boolean', {defaultValue: 0}),
 	// questionHelpList:     --- now now
-	collabseable: DS.attr('boolean', {defaulValue: 0}),
+	collabseable: DS.attr('boolean', {defaultValue: 0}),
 	path: DS.attr('string'),
-	allowMultipleFlag: DS.attr('boolean', {defaulValue: 0}),
-	immutable: DS.attr('boolean', {defaulValue: 0}),
-	allowOtherFlag: DS.attr('boolean', {defaulValue: 0}),
-	allowSign: DS.attr('boolean', {defaulValue: 0}),
+	allowMultipleFlag: DS.attr('boolean', {defaultValue: 0}),
+	immutable: DS.attr('boolean', {defaultValue: 0}),
+	allowOtherFlag: DS.attr('boolean', {defaultValue: 0}),
+	allowSign: DS.attr('boolean', {defaultValue: 0}),
 	text: DS.attr('string'),
 	class: DS.attr('string'),
 	questionDependency: DS.attr('string'),
-	mandatoryFlag: DS.attr('boolean', {defaulValue: 0}),
+	mandatoryFlag: DS.attr('boolean', {defaultValue: 0}),
 	questionGroupId: DS.attr('number'),
 	questionTypeString: DS.attr('string',{defaultValue:"freeText"}),
 	surveyId: DS.attr('number'),
