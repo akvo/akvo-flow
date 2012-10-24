@@ -3,6 +3,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	content: null, // question group content comes through binding in handlebars file
 	zeroItem: false,
 	renderView:false,
+	showQGDeleteDialogue:false,
 
 	amVisible: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestionGroup');
@@ -51,12 +52,23 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		}
 	}.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
+	
+	// show delete QGroup dialogue
+	ShowQGroupDeleteDialogue:function(){
+		this.set('showQGDeleteDialogue',true);
+	},
+
+	// cancel question group delete
+	cancelQGroupDelete:function(){
+		this.set('showQGDeleteDialogue',false);
+	},
+
 	// execure group delete
 	doQGroupDelete:function(){
 		// TODO show popup
 		// if cancel: remove popup, don't do anything
 		// if delete: remove question group.
-
+		this.set('showQGDeleteDialogue',false);
 		
 		var qgDeleteOrder = this.content.get('order');
 		var qgDeleteId = this.content.get('keyId');

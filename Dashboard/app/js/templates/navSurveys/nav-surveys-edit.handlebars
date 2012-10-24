@@ -74,7 +74,6 @@
             {{/view}}
 
             {{#collection contentBinding="FLOW.questionGroupControl" itemViewClass="FLOW.QuestionGroupItemView"}}
-
             <header>
                 <span class="qtnGroupHead">Group {{view.content.order}}</span>
 				<h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
@@ -82,7 +81,7 @@
 			   <ul>
 				<li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{view.showHideText}} </a></li>
                 <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id=""> Edit group name </a></li> 
-                <li><a {{action "doQGroupDelete" target="this"}} class="deleteQuestionGroup" id=""> Delete </a></li>
+                <li><a {{action "ShowQGroupDeleteDialogue" target="this"}} class="deleteQuestionGroup" id=""> Delete </a></li>
                 <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup" id=""> Copy </a></li>
                 <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup" id=""> Move </a> </li>                    
    				</ul>
@@ -180,6 +179,17 @@
             </div>
             {{/if}}
 
+            <!-- dialogues -->
+                <div {{bindAttr class="view.showQGDeleteDialogue:display :overlay"}}>
+                    <div class="blanket"></div>
+                    <!-- the dialog contents -->
+                    <div class="confirmDialog dialog"  style="display:block;">
+                        <h4>Are you sure you want to do this?</h4>
+                        <p class="dialogMsg">If we want to give a specific message this is where it can be loaded</p>
+                        <div class="buttons"> <a {{action "doQGroupDelete" target="this"}} class="ok">OK</a> <a {{action "cancelQGroupDelete" target="this"}}} class="cancel">CANCEL</a> </div>
+                    </div>
+                </div>
+            <!-- end dialogues -->
 
             {{/collection}}
         </section>
