@@ -1,6 +1,18 @@
  <div class="hero-unit">
         <h1>Admin</h1>
-       	{{view Ember.Select 
+     
+
+   <label>Dashboard language: {{view Ember.Select 
+      contentBinding="FLOW.languageControl.content" 
+      optionLabelPath="content.label" 
+      optionValuePath="content.value" 
+      selectionBinding="FLOW.languageControl.dashboardLanguage" }}
+   </label>
+    
+    hier zou ie moeten zijn: {{FLOW.languageControl.dashboardLanguage.value}}
+
+    <h3>For later use</h3>
+  	{{view Ember.Select 
 			contentBinding="controllers.surveyGroupController.content" 
 			selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
 			optionLabelPath="content.displayName" 
@@ -23,5 +35,7 @@
 				
 				 SurveyGroup {{FLOW.selectedControl.selectedSurveyGroup.keyId}}<br>
                   Survey {{FLOW.selectedControl.selectedSurvey.keyId}}<br>
-                  Question Group {{FLOW.selectedControl.selectedQuestionGroup.keyId}}<br>
+                  Question Group {{FLOW.selectedControl.selectedQuestionGroup.keyId}}<br><br>
+
+
     </div>

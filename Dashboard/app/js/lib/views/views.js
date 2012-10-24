@@ -10,6 +10,10 @@ FLOW.ApplicationView = Ember.View.extend({
 	templateName: 'application'
 });
 
+Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
+  return Ember.String.loc(i18nKey);
+});
+
 // ********************************************************//
 //                      main navigation
 // ********************************************************//

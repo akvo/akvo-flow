@@ -5,7 +5,12 @@
 // Define the main application controller. This is automatically picked up by
 // the application and initialized.
 require('akvo-flow/core');
-FLOW.ApplicationController = Ember.Controller.extend();
+FLOW.ApplicationController = Ember.Controller.extend({
+	init:function(){
+		Ember.STRINGS=Ember.STRINGS_EN;
+		//this.set("dashboardLanguage","en");
+	}
+});
 
 // Navigation controllers
 FLOW.NavigationController = Em.Controller.extend({
@@ -41,6 +46,27 @@ FLOW.NavAdminController = Ember.Controller.extend();
 
 
 // Data controllers
+
+FLOW.languageControl = Ember.Object.create({
+	dashboardLanguage:null,
+
+	content:[
+      Ember.Object.create({label: "English", value: "en"}),
+      Ember.Object.create({label: "Dutch", value: "nl"}),
+      Ember.Object.create({label: "Spanish", value: "sp"}),
+      Ember.Object.create({label: "French", value: "fr"})],
+
+	changeLanguage:function(){
+		locale=this.get("dashboardLanguage.value");
+		console.log('changing language to ',locale);
+		Ember.STRINGS=Ember.STRINGS_NL;
+	//	if (locale == "nl") {Ember.STRINGS=Ember.STRINGS_NL;}
+	//	else if (locale == "fr") {Ember.STRINGS=Ember.STRINGS_FR;}
+	//	else if (locale == "sp") {Ember.STRINGS=Ember.STRINGS_SP;}
+	//	else {Ember.STRINGS=Ember.STRINGS_EN;}
+	}.observes('dashboardLanguage')
+});
+
 FLOW.questionTypeControl = Ember.Object.create({
 content:[
 	Ember.Object.create({label: "Free text", value: "freeText"}),

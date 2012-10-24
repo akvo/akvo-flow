@@ -1,5 +1,5 @@
 
-Ember.STRINGS = {
+Ember.STRINGS_EN = {
   '_add_a_group': 'add a group',
   '_add_a_question_here': 'add a question here',
   '_add_question_here': 'add question here',
@@ -41,4 +41,12 @@ Ember.STRINGS = {
   '_survey_groups': 'survey groups',
   '_surveys': 'surveys',
   '_users': 'users'
+};
+
+
+Ember.STRINGS_NL = {
+  '_home': 'thuis',
+  '_devices':'toestellen',
+  '_survey_groups':'Enquetegroepen',
+  '_add_a_group':'voeg een groep toe'
 };
