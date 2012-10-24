@@ -10,6 +10,7 @@ FLOW.ApplicationView = Ember.View.extend({
 	templateName: 'application'
 });
 
+// localisation helper
 Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
   return Ember.String.loc(i18nKey);
 });
@@ -21,6 +22,11 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
 FLOW.NavigationView = Em.View.extend({
 	templateName: 'navigation',
 	selectedBinding: 'controller.selected',
+
+	onLanguageChange:function(){
+		this.rerender();
+	}.observes('FLOW.languageControl.dashboardLanguage'),
+
 	NavItemView: Ember.View.extend({
 		tagName: 'li',
 		classNameBindings: 'isActive:current navItem'.w(),

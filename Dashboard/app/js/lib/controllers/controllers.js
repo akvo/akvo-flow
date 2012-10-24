@@ -59,11 +59,11 @@ FLOW.languageControl = Ember.Object.create({
 	changeLanguage:function(){
 		locale=this.get("dashboardLanguage.value");
 		console.log('changing language to ',locale);
-		Ember.STRINGS=Ember.STRINGS_NL;
-	//	if (locale == "nl") {Ember.STRINGS=Ember.STRINGS_NL;}
-	//	else if (locale == "fr") {Ember.STRINGS=Ember.STRINGS_FR;}
-	//	else if (locale == "sp") {Ember.STRINGS=Ember.STRINGS_SP;}
-	//	else {Ember.STRINGS=Ember.STRINGS_EN;}
+		
+		if (locale == "nl") {Ember.STRINGS=Ember.STRINGS_NL;}
+		else if (locale == "fr") {Ember.STRINGS=Ember.STRINGS_FR;}
+		else if (locale == "sp") {Ember.STRINGS=Ember.STRINGS_SP;}
+		else {Ember.STRINGS=Ember.STRINGS_EN;}
 	}.observes('dashboardLanguage')
 });
 
