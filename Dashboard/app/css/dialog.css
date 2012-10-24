@@ -1,9 +1,9 @@
-div.overlay.display {
+.overlay.display {
 	display:block;
 	opacity: 1.0;
 }
 
-div.overlay {
+.overlay {
 	display:none;
 	top: 0; right: 0; bottom: 0; left: 0;
 	margin-right: auto;

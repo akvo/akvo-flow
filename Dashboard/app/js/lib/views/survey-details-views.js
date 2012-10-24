@@ -54,7 +54,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 	
 	// show delete QGroup dialogue
-	ShowQGroupDeleteDialogue:function(){
+	showQGroupDeleteDialogue:function(){
 		this.set('showQGDeleteDialogue',true);
 	},
 
