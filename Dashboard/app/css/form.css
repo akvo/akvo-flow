@@ -145,6 +145,10 @@ button[disabled], input[disabled] { cursor: default; }
 
 input[type="checkbox"], input[type="radio"] {
 	box-sizing: border-box;
+	/* MTW added */
+	-webkit-appearance: checkbox;
+	/* end MTW added */
+	
 	padding: 0;
 	width: 13px;
 	height: 13px;

@@ -73,13 +73,31 @@ FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {
 
 FLOW.deviceControl = Ember.ArrayController.create({
 	sortProperties:['phoneNumber'],
+	pleaseShow:true,
 	sortAscending:true,
-	sortSelected:null
+	sortSelected:null,
 
 	//active: function() {
 	//		//TODO find out how items are being loaded, difference find and findAll
 	//		return FLOW.store.findAll(FLOW.Device);
 	//}.property('').cacheable()
+
+	allAreSelected: function(key, value) {
+    if (arguments.length === 2) {
+      this.setEach('isSelected', value);
+      return value;
+    }
+    else {
+      return !this.get('isEmpty') && this.everyProperty('isSelected', true);
+    }
+  }.property('@each.isSelected'),
+
+  atLeastOneSelected: function() {
+    return this.filterProperty('isSelected', true).get('length');
+  }.property('@each.isSelected')
+
+
+
 });
 
 

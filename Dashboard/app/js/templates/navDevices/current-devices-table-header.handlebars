@@ -1,3 +1,6 @@
+{{#view view.NavItemView item="select" }}
+	{{view Ember.Checkbox checkedBinding="FLOW.deviceControl.allAreSelected"}}
+{{/view}}
 {{#view view.NavItemView item="phoneNumber" }}
 	<a {{action "sort" target="this"}}>Phonenumber</a>
 {{/view}}
@@ -8,15 +11,15 @@
    <a {{action "sort" target="this"}}>Device group</a>
 {{/view}}
 {{#view view.NavItemView item="lastUpdate" }}
-   <a {{action "sort" target="this"}}>Last update</a>
+   <a {{action "sort" target="this"}}>transmission</a>
 {{/view}}
 {{#view view.NavItemView item="lastLocationBeaconTime" }}
-   <a {{action "sort" target="this"}}>Last beacon received</a>
+   <a {{action "sort" target="this"}}>Beacon</a>
 {{/view}}
 {{#view view.NavItemView item="lastKnownLat" }}
-   <a {{action "sort" target="this"}}>Latest latitude</a>
+   <a {{action "sort" target="this"}}>Latitude</a>
 {{/view}}
 {{#view view.NavItemView item="lastKnownLong" }}
-  <a {{action "sort" target="this"}}>Latest longitude</a>
+  <a {{action "sort" target="this"}}>Longitude</a>
 {{/view}}
  <th> <a>Action</a></th>
