@@ -1,208 +1,392 @@
 require('akvo-flow/core');
+
+//require('ember-data/system/adapter');
+//require('ember-data/serializers/rest_serializer');
+/*global jQuery*/
+
 var get = Ember.get, set = Ember.set;
 
 DS.FLOWRESTAdapter = DS.Adapter.extend({
   bulkCommit: false,
 
-////////////// Create Record //////////////
-  createRecord: function(store, type, record) {
+  serializer: DS.RESTSerializer,
 
-		if (type===FLOW.SurveyGroup){
-			data = this.createSurveyGroupPayload(store,type,record); }
-    
-    this.ajaxPOST("http://flow-dashboard.dev/REST/org.waterforpeople.mapping.portal.portal/surveyrpcservice", "POST", {
-      data: data,
-      context: this,
-      success: function(json) {
-        this.didCreateRecord(store, type, record, json);
-      }
-    });
-  },
+  // shouldCommit: function(record) {
+  //   if (record.isCommittingBecause('attribute') || record.isCommittingBecause('belongsTo')) {
+  //     return true;
+  //   }
+  // },
 
-  didCreateRecord: function(store, type, record, json) {
-    var root = this.rootForType(type);
+  // createRecord: function(store, type, record) {
+  //   var root = this.rootForType(type);
 
-    this.sideload(store, type, json, root);
-    store.didCreateRecord(record, json[root]);
-  },
+  //   var data = {};
+  //   data[root] = this.toJSON(record, { includeId: true });
 
-	createSurveyGroupPayload: function(store,type,record) {
-		var data_part1= "7\|0\|7\|http://akvoflowsandbox.appspot.com/org.waterforpeople.mapping.portal.portal/\|A40BA8A568CA4A2E9CBDC22A57BBDF58\|org.waterforpeople.mapping.app.gwt.client.survey.SurveyService\|saveSurveyGroup\|org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto/2955417315\|"
-    var data_part2= "\|1\|2\|3\|4\|1\|5\|5\|6\|0\|7\|0\|0\|0\|0\|"
-    return data_part1 + record.get('displayName') + "\|" + record.get('description') + data_part2	
-	},
+  //   this.ajax(this.buildURL(root), "POST", {
+  //     data: data,
+  //     context: this,
+  //     success: function(json) {
+  //       this.didCreateRecord(store, type, record, json);
+  //     }
+  //   });
+  // },
 
+  // didSaveRecord: function(store, record, hash) {
+  //   record.eachAssociation(function(name, meta) {
+  //     if (meta.kind === 'belongsTo') {
+  //       store.didUpdateRelationship(record, name);
+  //     }
+  //   });
 
+  //   store.didSaveRecord(record, hash);
+  // },
 
-////////////// Delete Record //////////////
-  deleteRecord: function(store, type, record) {
-    var id = get(record, 'id');
-    var root = this.rootForType(type);
+  // didSaveRecords: function(store, records, array) {
+  //   var i = 0;
 
-    this.ajax(this.buildURL(root, id), "DELETE", {
-      context: this,
-      success: function(json) {
-        this.didDeleteRecord(store, type, record, json);
-      }
-    });
-  },
+  //   records.forEach(function(record) {
+  //     this.didSaveRecord(store, record, array && array[i++]);
+  //   }, this);
+  // },
 
-  didDeleteRecord: function(store, type, record, json) {
-    if (json) { this.sideload(store, type, json); }
-    store.didDeleteRecord(record);
-  },
+  // didCreateRecord: function(store, type, record, json) {
+  //   var root = this.rootForType(type);
 
+  //   this.sideload(store, type, json, root);
+  //   this.didSaveRecord(store, record, json[root]);
+  // },
 
-////////////// find //////////////
-//find: function(store, type, id) {
-//    var root = this.rootForType(type);
-//
-//    this.ajax(this.buildURL(root, id), "GET", {
-//      success: function(json) {
-//        this.sideload(store, type, json, root);
-//        store.load(type, json[root]);
-//      }
-//    });
-//  },
+  // createRecords: function(store, type, records) {
+  //   if (get(this, 'bulkCommit') === false) {
+  //     return this._super(store, type, records);
+  //   }
 
-//////////////// find All //////////////
-//  findAll: function(store, type) {
-//    var root = this.rootForType(type)
-//
-//    this.ajax(this.buildURL(""), "GET", {
-//      success: function(json) {
-//      
-//      // we don't need sideload now
-//      //  this.sideload(store, type, json, plural);
-//            
-//        store.loadMany(type, json["dtoList"]);
-//
-//      }
-//    });
-//  },
+  //   var root = this.rootForType(type),
+  //       plural = this.pluralize(root);
+
+  //   var data = {};
+  //   data[plural] = [];
+  //   records.forEach(function(record) {
+  //     data[plural].push(this.toJSON(record, { includeId: true }));
+  //   }, this);
+
+  //   this.ajax(this.buildURL(root), "POST", {
+  //     data: data,
+  //     context: this,
+  //     success: function(json) {
+  //       this.didCreateRecords(store, type, records, json);
+  //     }
+  //   });
+  // },
+
+  // didCreateRecords: function(store, type, records, json) {
+  //   var root = this.pluralize(this.rootForType(type));
+
+  //   this.sideload(store, type, json, root);
+  //   this.didSaveRecords(store, records, json[root]);
+  // },
+
+  // updateRecord: function(store, type, record) {
+  //   var id = get(record, 'id');
+  //   var root = this.rootForType(type);
+
+  //   var data = {};
+  //   data[root] = this.toJSON(record);
+
+  //   this.ajax(this.buildURL(root, id), "PUT", {
+  //     data: data,
+  //     context: this,
+  //     success: function(json) {
+  //       this.didUpdateRecord(store, type, record, json);
+  //     }
+  //   });
+  // },
+
+  // didUpdateRecord: function(store, type, record, json) {
+  //   var root = this.rootForType(type);
+
+  //   this.sideload(store, type, json, root);
+  //   this.didSaveRecord(store, record, json && json[root]);
+  // },
+
+  // updateRecords: function(store, type, records) {
+  //   if (get(this, 'bulkCommit') === false) {
+  //     return this._super(store, type, records);
+  //   }
+
+  //   var root = this.rootForType(type),
+  //       plural = this.pluralize(root);
+
+  //   var data = {};
+  //   data[plural] = [];
+  //   records.forEach(function(record) {
+  //     data[plural].push(record.toJSON());
+  //   }, this);
+
+  //   this.ajax(this.buildURL(root, "bulk"), "PUT", {
+  //     data: data,
+  //     context: this,
+  //     success: function(json) {
+  //       this.didUpdateRecords(store, type, records, json);
+  //     }
+  //   });
+  // },
+
+  // didUpdateRecords: function(store, type, records, json) {
+  //   var root = this.pluralize(this.rootForType(type));
+
+  //   this.sideload(store, type, json, root);
+  //   this.didSaveRecords(store, records, json[root]);
+  // },
+
+  // deleteRecord: function(store, type, record) {
+  //   var id = get(record, 'id');
+  //   var root = this.rootForType(type);
+
+  //   this.ajax(this.buildURL(root, id), "DELETE", {
+  //     context: this,
+  //     success: function(json) {
+  //       this.didDeleteRecord(store, type, record, json);
+  //     }
+  //   });
+  // },
+
+  // didDeleteRecord: function(store, type, record, json) {
+  //   if (json) { this.sideload(store, type, json); }
+  //   store.didSaveRecord(record);
+  // },
+
+  // deleteRecords: function(store, type, records) {
+  //   if (get(this, 'bulkCommit') === false) {
+  //     return this._super(store, type, records);
+  //   }
+
+  //   var root = this.rootForType(type),
+  //       plural = this.pluralize(root);
+
+  //   var data = {};
+  //   data[plural] = [];
+  //   records.forEach(function(record) {
+  //     data[plural].push(get(record, 'id'));
+  //   });
+
+  //   this.ajax(this.buildURL(root, 'bulk'), "DELETE", {
+  //     data: data,
+  //     context: this,
+  //     success: function(json) {
+  //       this.didDeleteRecords(store, type, records, json);
+  //     }
+  //   });
+  // },
+
+  // didDeleteRecords: function(store, type, records, json) {
+  //   if (json) { this.sideload(store, type, json); }
+  //   this.didSaveRecords(store, records);
+  // },
+
+  // find: function(store, type, id) {
+  //   var root = this.rootForType(type);
+
+  //   this.ajax(this.buildURL(root, id), "GET", {
+  //     success: function(json) {
+  //       this.didFindRecord(store, type, json, id);
+  //     }
+  //   });
+  // },
+
+  // didFindRecord: function(store, type, json, id) {
+  //   var root = this.rootForType(type);
+
+  //   this.sideload(store, type, json, root);
+  //   store.load(type, id, json[root]);
+  // },
+
+  // findAll: function(store, type, since) {
+  //   var root = this.rootForType(type);
+
+  //   this.ajax(this.buildURL(root), "GET", {
+  //     data: this.sinceQuery(since),
+  //     success: function(json) {
+  //       this.didFindAll(store, type, json);
+  //     }
+  //   });
+  // },
+
+  // didFindAll: function(store, type, json) {
+  //   var root = this.pluralize(this.rootForType(type)),
+  //       since = this.extractSince(json);
+
+  //   this.sideload(store, type, json, root);
+  //   store.loadMany(type, json[root]);
+
+  //   // this registers the id with the store, so it will be passed
+  //   // into the next call to `findAll`
+  //   if (since) { store.sinceForType(type, since); }
+
+  //   store.didUpdateAll(type);
+  // },
 
 ////////////// find Query //////////////
-  findQuery: function(store, type, query, recordArray) {
-    if (type===FLOW.SurveyGroup) {var queryURL="/surveyrestapi?action=listSurveyGroups";}
-    else if (type===FLOW.Survey || query.surveyGroupId) {var queryURL= "/surveyrestapi?action=listSurveys&surveyGroupId=" + query.surveyGroupId.toString();}
-    else if (type===FLOW.QuestionGroup || query.surveyId) {var queryURL= "/surveyrestapi?action=listQuestionGroups&surveyId=" + query.surveyId.toString();}
-    else if (type===FLOW.Question ||query.questionGroupId) {var queryURL="/surveyrestapi?action=listQuestions&questionGroupId=" + query.questionGroupId.toString();}
-	
- 		console.log("query: " + queryURL);
-	
-    this.ajax(queryURL, "GET", {
-      	success: function(json) {
-        recordArray.load(json["dtoList"]);
-      	}
-    	});
-  	},
-  
+   findQuery: function(store, type, query, recordArray) {
+     var root = this.rootForType(type);
 
-  // HELPERS
+     this.ajax(this.buildURL(root), "GET", {
+       data: query,
+       success: function(json) {
+         this.didFindQuery(store, type, json, recordArray);
+       }
+     });
+   },
 
-  rootForType: function(type) {
-    if (type.url) { return type.url; }
+   didFindQuery: function(store, type, json, recordArray) {
+     var root = this.pluralize(this.rootForType(type));
 
-    // use the last part of the name as the URL
-    var parts = type.toString().split(".");
-    var name = parts[parts.length - 1];
-    return name.replace(/([A-Z])/g, '_$1').toLowerCase().slice(1);
-  },
+     this.sideload(store, type, json, root);
+     recordArray.load(json[root]);
+   },
 
+  // findMany: function(store, type, ids) {
+  //   var root = this.rootForType(type);
+  //   ids = get(this, 'serializer').serializeIds(ids);
 
-  ajax: function(url, type, hash) {
-    hash.url = url;
-    hash.type = type;
-    hash.dataType = 'json';
-    hash.contentType = 'application/json; charset=utf-8';
-    hash.context = this;
+  //   this.ajax(this.buildURL(root), "GET", {
+  //     data: {ids: ids},
+  //     success: function(json) {
+  //       this.didFindMany(store, type, json);
+  //     }
+  //   });
+  // },
 
-    if (hash.data && type !== 'GET') {
-     // hash.data = JSON.stringify(hash.data);
-    }
+  // didFindMany: function(store, type, json) {
+  //   var root = this.pluralize(this.rootForType(type));
 
-    jQuery.ajax(hash);
-  },
-  
-  ajaxPOST: function(url, type, hash) {
-    hash.url = url;
-    hash.type = type;
-    hash.dataType = 'json';
-    hash.contentType = "text/x-gwt-rpc; charset=utf-8";
-    hash.context = this;
-    hash.headers = {"X-GWT-Permutation":"5CEEFB2FFADF2FDF2DCA6D2DF2D13328"};
-  
+  //   this.sideload(store, type, json, root);
+  //   store.loadMany(type, json[root]);
+  // },
 
-    jQuery.ajax(hash);
-  },
+   // HELPERS ////////////////////////////////////////
 
-  sideload: function(store, type, json, root) {
-    var sideloadedType, mappings, loaded = {};
+   plurals: {},
 
-    loaded[root] = true;
+   // define a plurals hash in your subclass to define
+   // special-case pluralization
+   pluralize: function(name) {
+     return this.plurals[name] || name + "s";
+   },
 
-    for (var prop in json) {
-      if (!json.hasOwnProperty(prop)) { continue; }
-      if (prop === root) { continue; }
+   rootForType: function(type) {
+     if (type.url) { return type.url; }
 
-      sideloadedType = type.typeForAssociation(prop);
+     // use the last part of the name as the URL
+     var parts = type.toString().split(".");
+     var name = parts[parts.length - 1];
+     return name.replace(/([A-Z])/g, '_$1').toLowerCase().slice(1);
+   },
 
-      if (!sideloadedType) {
-        mappings = get(this, 'mappings');
-        Ember.assert("Your server returned a hash with the key " + prop + " but you have no mappings", !!mappings);
+   ajax: function(url, type, hash) {
+     hash.url = url;
+     hash.type = type;
+     hash.dataType = 'json';
+     hash.contentType = 'application/json; charset=utf-8';
+     hash.context = this;
 
-        sideloadedType = get(mappings, prop);
+     if (hash.data && type !== 'GET') {
+       hash.data = JSON.stringify(hash.data);
+     }
 
-        if (typeof sideloadedType === 'string') {
-          sideloadedType = get(window, sideloadedType);
-        }
+     jQuery.ajax(hash);
+   },
 
-        Ember.assert("Your server returned a hash with the key " + prop + " but you have no mapping for it", !!sideloadedType);
-      }
+  // sideload: function(store, type, json, root) {
+  //   var sideloadedType, mappings, loaded = {};
 
-      this.sideloadAssociations(store, sideloadedType, json, prop, loaded);
-    }
-  },
+  //   loaded[root] = true;
 
-  sideloadAssociations: function(store, type, json, prop, loaded) {
-    loaded[prop] = true;
+  //   for (var prop in json) {
+  //     if (!json.hasOwnProperty(prop)) { continue; }
+  //     if (prop === root) { continue; }
+  //     if (prop === get(this, 'meta')) { continue; }
 
-    get(type, 'associationsByName').forEach(function(key, meta) {
-      key = meta.key || key;
-      if (meta.kind === 'belongsTo') {
-        key = this.pluralize(key);
-      }
-      if (json[key] && !loaded[key]) {
-        this.sideloadAssociations(store, meta.type, json, key, loaded);
-      }
-    }, this);
+  //     sideloadedType = type.typeForAssociation(prop);
 
-    this.loadValue(store, type, json[prop]);
-  },
+  //     if (!sideloadedType) {
+  //       mappings = get(this, 'mappings');
+  //       Ember.assert("Your server returned a hash with the key " + prop + " but you have no mappings", !!mappings);
 
-  loadValue: function(store, type, value) {
-    if (value instanceof Array) {
-      store.loadMany(type, value);
-    } else {
-      store.load(type, value);
-    }
-  },
+  //       sideloadedType = get(mappings, prop);
 
-  buildURL: function(record, suffix) {
-    var url = ["/surveyrestapi"];
+  //       if (typeof sideloadedType === 'string') {
+  //         sideloadedType = get(window, sideloadedType);
+  //       }
 
-    
+  //       Ember.assert("Your server returned a hash with the key " + prop + " but you have no mapping for it", !!sideloadedType);
+  //     }
 
-   // if (this.namespace !== undefined) {
-   //   url.push(this.namespace);
-   // }
+  //     this.sideloadAssociations(store, sideloadedType, json, prop, loaded);
+  //   }
+  // },
 
-   // url.push(this.pluralize(record));
-   // if (suffix !== undefined) {
-   //   url.push(suffix);
-   // }
-	url.push("?action=listSurveyGroups");
+  // sideloadAssociations: function(store, type, json, prop, loaded) {
+  //   loaded[prop] = true;
 
-    return url.join("");
-  }
+  //   get(type, 'associationsByName').forEach(function(key, meta) {
+  //     key = meta.key || key;
+  //     if (meta.kind === 'belongsTo') {
+  //       key = this.pluralize(key);
+  //     }
+  //     if (json[key] && !loaded[key]) {
+  //       this.sideloadAssociations(store, meta.type, json, key, loaded);
+  //     }
+  //   }, this);
+
+  //   this.loadValue(store, type, json[prop]);
+  // },
+
+  // loadValue: function(store, type, value) {
+  //   if (value instanceof Array) {
+  //     store.loadMany(type, value);
+  //   } else {
+  //     store.load(type, value);
+  //   }
+  // },
+
+   url: "",
+   buildURL: function(record, suffix) {
+     var url = [this.url];
+
+     Ember.assert("Namespace URL (" + this.namespace + ") must not start with slash", !this.namespace || this.namespace.toString().charAt(0) !== "/");
+     Ember.assert("Record URL (" + record + ") must not start with slash", !record || record.toString().charAt(0) !== "/");
+     Ember.assert("URL suffix (" + suffix + ") must not start with slash", !suffix || suffix.toString().charAt(0) !== "/");
+
+     if (this.namespace !== undefined) {
+       url.push(this.namespace);
+     }
+
+     url.push(this.pluralize(record));
+     if (suffix !== undefined) {
+       url.push(suffix);
+     }
+
+     return url.join("/");
+   },
+
+  // meta: 'meta',
+  // since: 'since',
+
+  // sinceQuery: function(since) {
+  //   var query = {};
+  //   query[get(this, 'since')] = since;
+  //   return since ? query : null;
+  // },
+
+  // extractSince: function(json) {
+  //   var meta = this.extractMeta(json);
+  //   return meta[get(this, 'since')] || null;
+  // },
+
+  // extractMeta: function(json) {
+  //   return json[get(this, 'meta')] || {};
+  // }
 });
+
