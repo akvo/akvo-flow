@@ -82,6 +82,12 @@ public class SurveySelectionDialog extends WidgetDialog implements ClickHandler 
 			languageBox.addItem(TEXT_CONSTANTS.french(), "fr");
 			languageBox.addItem(TEXT_CONSTANTS.spanish(), "es");
 			languageBox.addItem(TEXT_CONSTANTS.kinyarwanda(), "rw");
+			//Issue #3 additions:
+			languageBox.addItem(TEXT_CONSTANTS.chichewa(), "ny");
+			languageBox.addItem(TEXT_CONSTANTS.bengali(), "bn");
+			languageBox.addItem(TEXT_CONSTANTS.hindi(), "hi");
+			languageBox.addItem(TEXT_CONSTANTS.quechua(), "qu");			
+
 			if ("en".equalsIgnoreCase(locale)) {
 				languageBox.setSelectedIndex(0);
 			} else if ("fr".equalsIgnoreCase(locale)) {
