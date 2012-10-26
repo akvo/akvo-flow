@@ -148,10 +148,12 @@
                     {{/if}}                 
                     {{view.optionList}}
                 
+        
                     {{#if view.amNumberType}}
                       TODO: Number specific content
                     {{/if}} 
                     <!-- End question specific material -->
+          
                     <a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>Save Question</a>
                     <a class="standardBtn" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>Cancel</a>
                   {{else}}
@@ -180,10 +182,12 @@
           <div class="blanket"></div>
             <!-- the dialog contents -->
             <div class="confirmDialog dialog"  style="display:block;">
-              <h4>Are you sure you want to do this?</h4>
+              <h2>Are you sure you want to do this?</h2>
               <p class="dialogMsg">If we want to give a specific message this is where it can be loaded</p>
-              <div class="buttons"> <a {{action "doQGroupDelete" target="this"}} class="ok">OK</a> 
-                <a {{action "cancelQGroupDelete" target="this"}}} class="cancel">CANCEL</a> 
+              <div class="buttons menuCentre"> 
+        <ul>  
+        <li><a {{action "doQGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
+                <li><a {{action "cancelQGroupDelete" target="this"}}} class="cancel">CANCEL</a></li></ul>
               </div>
             </div>
           </div>

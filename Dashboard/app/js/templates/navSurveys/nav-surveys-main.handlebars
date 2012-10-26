@@ -7,8 +7,9 @@
     <nav>
       {{#if view.showNewGroupField}}
         {{view Ember.TextField valueBinding="view.surveyGroupName" size=30}}
-        <a {{action "saveNewSurveyGroupName" target="this"}}>{{t _save}}</a>
-        <a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a>
+                <nav class="menuCentre">
+     <ul><li><a {{action "saveNewSurveyGroupName" target="this"}} class="smallBtn">{{t _save}}</a></li>
+        <li><a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a></li></ul>
       {{/if}}    
       <ul class="menuGroup">
         {{#each sg in FLOW.surveyGroupControl.active}}
@@ -25,8 +26,11 @@
       {{#if view.oneSelected}}
         {{#if view.showEditField}}
           {{view Ember.TextField valueBinding="view.surveyGroupName" size=45}}
-          <a {{action "saveSurveyGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a>
-          <a {{action "cancelSurveyGroupNameEdit" target="this"}}>{{t _cancel}}</a>
+         <nav class="menuCentre">
+     <ul><li>
+      <a {{action "saveSurveyGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a></li>
+         <li> <a {{action "cancelSurveyGroupNameEdit" target="this"}}>{{t _cancel}}</a></li>
+     </ul></nav>
         {{else}}
           <h2>{{FLOW.selectedControl.selectedSurveyGroup.displayName}}</h2> 
           <a {{action "editSurveyGroupName" target="this"}}>{{t _edit_name}}</a>

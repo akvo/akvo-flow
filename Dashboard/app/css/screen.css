@@ -6,7 +6,6 @@ Author: 	loic@akvo.org
 /* import stylesheets and hide from ie/mac \*/
 @import url("reset.css");
 @import url("main.css");
-@import url("dialog.css");
 @import url("form.css");
 @import url("css3-support.css");
 @import url("ie.css");
