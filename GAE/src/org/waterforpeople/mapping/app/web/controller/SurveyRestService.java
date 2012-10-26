@@ -35,8 +35,9 @@ public class SurveyRestService {
 				SurveyDto dto = new SurveyDto();
 
 				dto.setName(s.getName());
-				dto.setVersion(s.getVersion() != null ? s.getVersion()
-						.toString() : "");
+				dto.setDescription(s.getDesc());
+				dto.setSurveyGroupId(s.getSurveyGroupId());
+				dto.setVersion(s.getVersion() != null ? s.getVersion().toString() : "");
 				dto.setKeyId(s.getKey().getId());
 				results.add(dto);
 			}
@@ -52,8 +53,7 @@ public class SurveyRestService {
 		if(s != null){
 			dto = new SurveyDto();
 			dto.setName(s.getName());
-			dto.setVersion(s.getVersion() != null ? s.getVersion()
-					.toString() : "");
+			dto.setVersion(s.getVersion() != null ? s.getVersion().toString() : "");
 			dto.setKeyId(s.getKey().getId());
 		}
 		return dto;

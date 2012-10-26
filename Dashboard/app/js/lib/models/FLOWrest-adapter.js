@@ -202,30 +202,30 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
   //   store.load(type, id, json[root]);
   // },
 
-  // findAll: function(store, type, since) {
-  //   var root = this.rootForType(type);
+   findAll: function(store, type, since) {
+     var root = this.rootForType(type);
 
-  //   this.ajax(this.buildURL(root), "GET", {
-  //     data: this.sinceQuery(since),
-  //     success: function(json) {
-  //       this.didFindAll(store, type, json);
-  //     }
-  //   });
-  // },
+     this.ajax(this.buildURL(root), "GET", {
+      data: this.sinceQuery(since),
+       success: function(json) {
+         this.didFindAll(store, type, json);
+       }
+     });
+   },
 
-  // didFindAll: function(store, type, json) {
-  //   var root = this.pluralize(this.rootForType(type)),
-  //       since = this.extractSince(json);
+   didFindAll: function(store, type, json) {
+     var root = this.pluralize(this.rootForType(type)),
+         since = this.extractSince(json);
 
-  //   this.sideload(store, type, json, root);
-  //   store.loadMany(type, json[root]);
+     this.sideload(store, type, json, root);
+     store.loadMany(type, json[root]);
 
-  //   // this registers the id with the store, so it will be passed
-  //   // into the next call to `findAll`
-  //   if (since) { store.sinceForType(type, since); }
+     // this registers the id with the store, so it will be passed
+     // into the next call to `findAll`
+     if (since) { store.sinceForType(type, since); }
 
-  //   store.didUpdateAll(type);
-  // },
+     store.didUpdateAll(type);
+   },
 
 ////////////// find Query //////////////
    findQuery: function(store, type, query, recordArray) {
@@ -281,7 +281,7 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
      // use the last part of the name as the URL
      var parts = type.toString().split(".");
      var name = parts[parts.length - 1];
-     return name.replace(/([A-Z])/g, '_$1').toLowerCase().slice(1);
+     return name.replace(/([A-Z])/g, '-$1').toLowerCase().slice(1);
    },
 
    ajax: function(url, type, hash) {
@@ -371,22 +371,22 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
      return url.join("/");
    },
 
-  // meta: 'meta',
-  // since: 'since',
+   meta: 'meta',
+   since: 'since',
 
-  // sinceQuery: function(since) {
-  //   var query = {};
-  //   query[get(this, 'since')] = since;
-  //   return since ? query : null;
-  // },
+   sinceQuery: function(since) {
+     var query = {};
+     query[get(this, 'since')] = since;
+     return since ? query : null;
+   },
 
-  // extractSince: function(json) {
-  //   var meta = this.extractMeta(json);
-  //   return meta[get(this, 'since')] || null;
-  // },
+   extractSince: function(json) {
+     var meta = this.extractMeta(json);
+     return meta[get(this, 'since')] || null;
+   },
 
-  // extractMeta: function(json) {
-  //   return json[get(this, 'meta')] || {};
-  // }
+   extractMeta: function(json) {
+     return json[get(this, 'meta')] || {};
+   }
 });
 
