@@ -92,7 +92,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 				"name":this.get('surveyGroupName'),
 				"displayName":this.get('surveyGroupName'),
 				"code":this.get('surveyGroupName')});
-
+			FLOW.store.commit();
 			this.set('showNewGroupField',false);
 	},
 	

@@ -38,6 +38,10 @@ FLOW.SurveyGroup = DS.Model.extend({
 
 });
 
+//DS.FLOWRESTAdapter.map('FLOW.SurveyGroup', {
+//  primaryKey: 'keyId',
+//});
+
 
 FLOW.Survey = DS.Model.extend({
 	defaultLanguageCode: DS.attr('string'),
