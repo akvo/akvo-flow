@@ -25,7 +25,7 @@ public class SurveyGroupRestService {
 	@Inject
 	private SurveyGroupDAO surveyGroupDao;
 
-	@RequestMapping(method = RequestMethod.GET, value = "/all")
+	@RequestMapping(method = RequestMethod.GET, value = "/")
 	@ResponseBody
 	public List<SurveyGroupDto> listSurveyGroups() {
 		List<SurveyGroupDto> results = new ArrayList<SurveyGroupDto>();

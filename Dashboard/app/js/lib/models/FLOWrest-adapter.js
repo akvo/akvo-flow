@@ -298,58 +298,58 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
      jQuery.ajax(hash);
    },
 
-  // sideload: function(store, type, json, root) {
-  //   var sideloadedType, mappings, loaded = {};
+   sideload: function(store, type, json, root) {
+     var sideloadedType, mappings, loaded = {};
 
-  //   loaded[root] = true;
+     loaded[root] = true;
 
-  //   for (var prop in json) {
-  //     if (!json.hasOwnProperty(prop)) { continue; }
-  //     if (prop === root) { continue; }
-  //     if (prop === get(this, 'meta')) { continue; }
+     for (var prop in json) {
+       if (!json.hasOwnProperty(prop)) { continue; }
+       if (prop === root) { continue; }
+       if (prop === get(this, 'meta')) { continue; }
 
-  //     sideloadedType = type.typeForAssociation(prop);
+       sideloadedType = type.typeForAssociation(prop);
 
-  //     if (!sideloadedType) {
-  //       mappings = get(this, 'mappings');
-  //       Ember.assert("Your server returned a hash with the key " + prop + " but you have no mappings", !!mappings);
+       if (!sideloadedType) {
+         mappings = get(this, 'mappings');
+         Ember.assert("Your server returned a hash with the key " + prop + " but you have no mappings", !!mappings);
 
-  //       sideloadedType = get(mappings, prop);
+         sideloadedType = get(mappings, prop);
 
-  //       if (typeof sideloadedType === 'string') {
-  //         sideloadedType = get(window, sideloadedType);
-  //       }
+         if (typeof sideloadedType === 'string') {
+          sideloadedType = get(window, sideloadedType);
+         }
 
-  //       Ember.assert("Your server returned a hash with the key " + prop + " but you have no mapping for it", !!sideloadedType);
-  //     }
+         Ember.assert("Your server returned a hash with the key " + prop + " but you have no mapping for it", !!sideloadedType);
+       }
 
-  //     this.sideloadAssociations(store, sideloadedType, json, prop, loaded);
-  //   }
-  // },
+       this.sideloadAssociations(store, sideloadedType, json, prop, loaded);
+     }
+   },
 
-  // sideloadAssociations: function(store, type, json, prop, loaded) {
-  //   loaded[prop] = true;
+  sideloadAssociations: function(store, type, json, prop, loaded) {
+    loaded[prop] = true;
 
-  //   get(type, 'associationsByName').forEach(function(key, meta) {
-  //     key = meta.key || key;
-  //     if (meta.kind === 'belongsTo') {
-  //       key = this.pluralize(key);
-  //     }
-  //     if (json[key] && !loaded[key]) {
-  //       this.sideloadAssociations(store, meta.type, json, key, loaded);
-  //     }
-  //   }, this);
+    get(type, 'associationsByName').forEach(function(key, meta) {
+      key = meta.key || key;
+      if (meta.kind === 'belongsTo') {
+        key = this.pluralize(key);
+      }
+      if (json[key] && !loaded[key]) {
+        this.sideloadAssociations(store, meta.type, json, key, loaded);
+      }
+    }, this);
 
-  //   this.loadValue(store, type, json[prop]);
-  // },
+    this.loadValue(store, type, json[prop]);
+  },
 
-  // loadValue: function(store, type, value) {
-  //   if (value instanceof Array) {
-  //     store.loadMany(type, value);
-  //   } else {
-  //     store.load(type, value);
-  //   }
-  // },
+  loadValue: function(store, type, value) {
+    if (value instanceof Array) {
+      store.loadMany(type, value);
+    } else {
+      store.load(type, value);
+    }
+  },
 
    url: "",
    buildURL: function(record, suffix) {
@@ -363,12 +363,12 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
        url.push(this.namespace);
      }
 
-     url.push(this.pluralize(record));
+     url.push(record);
      if (suffix !== undefined) {
        url.push(suffix);
      }
 
-     return url.join("/");
+     return url.join("/")+"/";
    },
 
    meta: 'meta',
