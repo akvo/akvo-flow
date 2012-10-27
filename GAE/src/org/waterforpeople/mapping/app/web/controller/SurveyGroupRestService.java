@@ -52,6 +52,8 @@ public class SurveyGroupRestService {
 		if(s != null){
 			dto = new SurveyGroupDto();
 			dto.setName(s.getName());
+			dto.setCode(s.getCode());
+			dto.setDescription(s.getDescription());
 			dto.setKeyId(s.getKey().getId());
 		}
 		return dto;
@@ -61,7 +63,7 @@ public class SurveyGroupRestService {
 	@RequestMapping(method = RequestMethod.POST, value="/")
 	@ResponseBody
 	public SurveyGroupDto saveSurveyGroup(@RequestBody SurveyGroupDto surveyGroupDto){
-		if(surveyGroupDto != null){
+			if(surveyGroupDto != null){
 			SurveyGroup s = new SurveyGroup();
 			BeanUtils.copyProperties(surveyGroupDto, s);
 			s = surveyGroupDao.save(s);
