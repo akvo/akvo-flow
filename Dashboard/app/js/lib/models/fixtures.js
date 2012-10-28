@@ -16,7 +16,7 @@ FLOW.SurveyGroup.FIXTURES = [{
 	keyId: 4,
 	displayName: 'Upande - SNVVERMIS'
 },{
-	id:4,
+	id:5,
 	keyId: 5,
 	displayName: 'Akvo test surveys'
 }];

@@ -3,6 +3,23 @@ var get = Ember.get, set = Ember.set;
 
 DS.FLOWRESTAdapter = DS.Adapter.extend({
   bulkCommit: false,
+  serializer:DS.Serializer.create({
+      // `post` becomes `postId`. By default, the RESTAdapter's
+      // serializer adds `_id` to the decamelized name.
+      keyForBelongsTo: function(type, name) {
+        return this.keyForAttributeName(type, name) + "Id";
+      },
+
+      // `firstName` stays as `firstName`. By default, the
+      // RESTAdapter's serializer decamelizes name.
+      keyForAttributeName: function(type, name) {
+        return name;
+      },
+
+      primaryKey: function(type) {
+        return "keyId";
+      },
+    }),
 
 ////////////// Create Record //////////////
   createRecord: function(store, type, record) {
@@ -92,7 +109,9 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
 	
     this.ajax(queryURL, "GET", {
       	success: function(json) {
+
         recordArray.load(json["dtoList"]);
+
       	}
     	});
   	},

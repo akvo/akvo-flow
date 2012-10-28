@@ -68,7 +68,8 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	saveSurveyGroupNameEdit: function() {
 			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
 			var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
-			surveyGroup.set('displayName',this.get('surveyGroupName'));
+			surveyGroup.set('code',this.get('surveyGroupName'));
+			FLOW.store.commit();
 			this.set('showEditField',false);
 	},
 	

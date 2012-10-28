@@ -1,5 +1,4 @@
-require('akvo-flow/core');
-
+//require("ember-data/core");
 //require('ember-data/system/adapter');
 //require('ember-data/serializers/rest_serializer');
 /*global jQuery*/
@@ -9,7 +8,23 @@ var get = Ember.get, set = Ember.set;
 DS.FLOWRESTAdapter = DS.Adapter.extend({
   bulkCommit: false,
 
-  //serializer: DS.Serializer,
+   serializer:DS.Serializer.create({
+      // `post` becomes `postId`. By default, the RESTAdapter's
+      // serializer adds `_id` to the decamelized name.
+      keyForBelongsTo: function(type, name) {
+        return this.keyForAttributeName(type, name) + "Id";
+      },
+
+      // `firstName` stays as `firstName`. By default, the
+      // RESTAdapter's serializer decamelizes name.
+      keyForAttributeName: function(type, name) {
+        return name;
+      },
+
+      primaryKey: function(type) {
+        return "keyId";
+      },
+    }),
 
   // shouldCommit: function(record) {
   //   if (record.isCommittingBecause('attribute') || record.isCommittingBecause('belongsTo')) {
@@ -87,28 +102,33 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
   //   this.didSaveRecords(store, records, json[root]);
   // },
 
-  // updateRecord: function(store, type, record) {
-  //   var id = get(record, 'id');
-  //   var root = this.rootForType(type);
+   updateRecord: function(store, type, record) {
+    var id = get(record, 'keyId');
+    var root = this.rootForType(type);
 
-  //   var data = {};
-  //   data[root] = this.toJSON(record);
+    var data = {};
+    data[root] = this.toJSON(record);
+    data=data["survey-group"];
 
-  //   this.ajax(this.buildURL(root, id), "PUT", {
-  //     data: data,
-  //     context: this,
-  //     success: function(json) {
-  //       this.didUpdateRecord(store, type, record, json);
-  //     }
-  //   });
-  // },
+    if (type==FLOW.SurveyGroup) {
+      delete data["displayName"];
+    }
 
-  // didUpdateRecord: function(store, type, record, json) {
-  //   var root = this.rootForType(type);
+    this.ajax("http://localhost/rest/survey-group/", "POST", {  //this.buildURL(root, id)
+      data: data,
+      context: this,
+      success: function(json) {
+        this.didUpdateRecord(store, type, record, json);
+      }
+    });
+  },
 
-  //   this.sideload(store, type, json, root);
-  //   this.didSaveRecord(store, record, json && json[root]);
-  // },
+  didUpdateRecord: function(store, type, record, json) {
+    var root = this.rootForType(type);
+
+    //this.sideload(store, type, json, root);
+    this.didSaveRecord(store, record, json && json[root]);
+  },
 
   // updateRecords: function(store, type, records) {
   //   if (get(this, 'bulkCommit') === false) {
@@ -202,130 +222,129 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
   //   store.load(type, id, json[root]);
   // },
 
-   findAll: function(store, type, since) {
-     var root = this.rootForType(type);
+  findAll: function(store, type, since) {
+    var root = this.rootForType(type);
 
-     this.ajax(this.buildURL(root), "GET", {
+    this.ajax(this.buildURL(root), "GET", {
       data: this.sinceQuery(since),
-       success: function(json) {
-         this.didFindAll(store, type, json);
-       }
-     });
-   },
+      success: function(json) {
+        this.didFindAll(store, type, json);
+      }
+    });
+  },
 
-   didFindAll: function(store, type, json) {
-     var root = this.pluralize(this.rootForType(type)),
-         since = this.extractSince(json);
+  didFindAll: function(store, type, json) {
+    var root = this.pluralize(this.rootForType(type)),
+        since = this.extractSince(json);
 
-     this.sideload(store, type, json, root);
-     store.loadMany(type, json[root]);
+    this.sideload(store, type, json, root);
+    store.loadMany(type, json[root]);
 
-     // this registers the id with the store, so it will be passed
-     // into the next call to `findAll`
-     if (since) { store.sinceForType(type, since); }
+    // this registers the id with the store, so it will be passed
+    // into the next call to `findAll`
+    if (since) { store.sinceForType(type, since); }
 
-     store.didUpdateAll(type);
-   },
+    store.didUpdateAll(type);
+  },
 
-////////////// find Query //////////////
-   findQuery: function(store, type, query, recordArray) {
-     var root = this.rootForType(type);
+  findQuery: function(store, type, query, recordArray) {
+    var root = this.rootForType(type);
 
-     this.ajax(this.buildURL(root), "GET", {
-       data: query,
-       success: function(json) {
-         this.didFindQuery(store, type, json, recordArray);
-       }
-     });
-   },
+    this.ajax(this.buildURL(root), "GET", {
+      data: query,
+      success: function(json) {
+        this.didFindQuery(store, type, json, recordArray);
+      }
+    });
+  },
 
-   didFindQuery: function(store, type, json, recordArray) {
-     var root = this.pluralize(this.rootForType(type));
+  didFindQuery: function(store, type, json, recordArray) {
+    var root = this.pluralize(this.rootForType(type));
 
-     this.sideload(store, type, json, root);
-     recordArray.load(json[root]);
-   },
+    //this.sideload(store, type, json, root);
+    recordArray.load(json);
+  },
 
-  // findMany: function(store, type, ids) {
-  //   var root = this.rootForType(type);
-  //   ids = get(this, 'serializer').serializeIds(ids);
+  findMany: function(store, type, ids) {
+    var root = this.rootForType(type);
+    ids = get(this, 'serializer').serializeIds(ids);
 
-  //   this.ajax(this.buildURL(root), "GET", {
-  //     data: {ids: ids},
-  //     success: function(json) {
-  //       this.didFindMany(store, type, json);
-  //     }
-  //   });
-  // },
+    this.ajax(this.buildURL(root), "GET", {
+      data: {ids: ids},
+      success: function(json) {
+        this.didFindMany(store, type, json);
+      }
+    });
+  },
 
-  // didFindMany: function(store, type, json) {
-  //   var root = this.pluralize(this.rootForType(type));
+  didFindMany: function(store, type, json) {
+    var root = this.pluralize(this.rootForType(type));
 
-  //   this.sideload(store, type, json, root);
-  //   store.loadMany(type, json[root]);
-  // },
+    this.sideload(store, type, json, root);
+    store.loadMany(type, json[root]);
+  },
 
-   // HELPERS ////////////////////////////////////////
+  // HELPERS
 
-   plurals: {},
+  plurals: {},
 
-   // define a plurals hash in your subclass to define
-   // special-case pluralization
-   pluralize: function(name) {
-     return this.plurals[name] || name + "s";
-   },
+  // define a plurals hash in your subclass to define
+  // special-case pluralization
+  pluralize: function(name) {
+    return this.plurals[name] || name ;
+  },
 
-   rootForType: function(type) {
-     if (type.url) { return type.url; }
+  rootForType: function(type) {
+    if (type.url) { return type.url; }
 
-     // use the last part of the name as the URL
-     var parts = type.toString().split(".");
-     var name = parts[parts.length - 1];
-     return name.replace(/([A-Z])/g, '-$1').toLowerCase().slice(1);
-   },
+    // use the last part of the name as the URL
+    var parts = type.toString().split(".");
+    var name = parts[parts.length - 1];
+    return name.replace(/([A-Z])/g, '-$1').toLowerCase().slice(1);
+  },
 
-   ajax: function(url, type, hash) {
-     hash.url = url;
-     hash.type = type;
-     hash.dataType = 'json';
-     hash.contentType = 'application/json; charset=utf-8';
-     hash.context = this;
+  ajax: function(url, type, hash) {
+    hash.url = url;
+    hash.type = type;
+    hash.dataType = 'json';
+    hash.contentType = 'application/json; charset=utf-8';
+    hash.context = this;
 
-     if (hash.data && type !== 'GET') {
-       hash.data = JSON.stringify(hash.data);
-     }
+    if (hash.data && type !== 'GET') {
+      hash.data = JSON.stringify(hash.data);
+    }
 
-     jQuery.ajax(hash);
-   },
+    jQuery.ajax(hash);
+  },
 
-   sideload: function(store, type, json, root) {
-     var sideloadedType, mappings, loaded = {};
+  sideload: function(store, type, json, root) {
+    var sideloadedType, mappings, loaded = {};
 
-     loaded[root] = true;
+    loaded[root] = true;
 
-     for (var prop in json) {
-       if (!json.hasOwnProperty(prop)) { continue; }
-       if (prop === root) { continue; }
-       if (prop === get(this, 'meta')) { continue; }
+    for (var prop in json) {
+      if (!json.hasOwnProperty(prop)) { continue; }
+      if (prop === root) { continue; }
+      if (prop === get(this, 'meta')) { continue; }
 
-       sideloadedType = type.typeForAssociation(prop);
+      sideloadedType = type.typeForAssociation(prop);
 
-       if (!sideloadedType) {
-         mappings = get(this, 'mappings');
-         Ember.assert("Your server returned a hash with the key " + prop + " but you have no mappings", !!mappings);
+      if (!sideloadedType) {
+        mappings = get(this, 'mappings');
+        Ember.assert("Your server returned a hash with the key " + prop + " but you have no mappings", !!mappings);
 
-         sideloadedType = get(mappings, prop);
+        sideloadedType = get(mappings, prop);
 
-         if (typeof sideloadedType === 'string') {
+        if (typeof sideloadedType === 'string') {
           sideloadedType = get(window, sideloadedType);
-         }
+        }
 
-         Ember.assert("Your server returned a hash with the key " + prop + " but you have no mapping for it", !!sideloadedType);
-       }
+        Ember.assert("Your server returned a hash with the key " + prop + " but you have no mapping for it", !!sideloadedType);
+      }
 
-       this.sideloadAssociations(store, sideloadedType, json, prop, loaded);
-     }
-   },
+      this.sideloadAssociations(store, sideloadedType, json, prop, loaded);
+    }
+  },
 
   sideloadAssociations: function(store, type, json, prop, loaded) {
     loaded[prop] = true;
@@ -351,42 +370,42 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
     }
   },
 
-   url: "",
-   buildURL: function(record, suffix) {
-     var url = [this.url];
+  url: "",
 
-     Ember.assert("Namespace URL (" + this.namespace + ") must not start with slash", !this.namespace || this.namespace.toString().charAt(0) !== "/");
-     Ember.assert("Record URL (" + record + ") must not start with slash", !record || record.toString().charAt(0) !== "/");
-     Ember.assert("URL suffix (" + suffix + ") must not start with slash", !suffix || suffix.toString().charAt(0) !== "/");
+  buildURL: function(record, suffix) {
+    var url = [this.url];
 
-     if (this.namespace !== undefined) {
-       url.push(this.namespace);
-     }
+    Ember.assert("Namespace URL (" + this.namespace + ") must not start with slash", !this.namespace || this.namespace.toString().charAt(0) !== "/");
+    Ember.assert("Record URL (" + record + ") must not start with slash", !record || record.toString().charAt(0) !== "/");
+    Ember.assert("URL suffix (" + suffix + ") must not start with slash", !suffix || suffix.toString().charAt(0) !== "/");
 
-     url.push(record);
-     if (suffix !== undefined) {
-       url.push(suffix);
-     }
+    if (this.namespace !== undefined) {
+      url.push(this.namespace);
+    }
 
-     return url.join("/")+"/";
-   },
+    url.push(this.pluralize(record));
+    if (suffix !== undefined) {
+      url.push(suffix);
+    }
+    return url.join("/")+"/";
+  },
 
-   meta: 'meta',
-   since: 'since',
+  meta: 'meta',
+  since: 'since',
 
-   sinceQuery: function(since) {
-     var query = {};
-     query[get(this, 'since')] = since;
-     return since ? query : null;
-   },
+  sinceQuery: function(since) {
+    var query = {};
+    query[get(this, 'since')] = since;
+    return since ? query : null;
+  },
 
-   extractSince: function(json) {
-     var meta = this.extractMeta(json);
-     return meta[get(this, 'since')] || null;
-   },
+  extractSince: function(json) {
+    var meta = this.extractMeta(json);
+    return meta[get(this, 'since')] || null;
+  },
 
-   extractMeta: function(json) {
-     return json[get(this, 'meta')] || {};
-   }
+  extractMeta: function(json) {
+    return json[get(this, 'meta')] || {};
+  }
 });
 

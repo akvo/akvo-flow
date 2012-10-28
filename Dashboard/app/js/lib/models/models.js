@@ -2,28 +2,24 @@
 //                 models and stores
 // ***********************************************//
 require('akvo-flow/core');
-DS.Model.reopen({
-	namingConvention: {
-		keyToJSONKey: function(key) {
-			return key;
-		},
+// DS.Model.reopen({
+//	namingConvention: {
+//		keyToJSONKey: function(key) {
+//			return key;
+//		},
 
-		foreignKey: function(key) {
-			return key;
-		}
-	}
-});
+//		foreignKey: function(key) {
+//			return key;
+//		}
+//	}
+// });
 
 FLOW.store = DS.Store.create({
-	revision: 4,
-	adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:"http://localhost"})
+	revision: 7,
+	adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:"http://localhost"}),
 	//adapter: DS.fixtureAdapter
-});
 
-//DS.fixtureAdapter.map('FLOW.SurveyGroup',{
-//
-//primaryKey: 'keyId'
-//	});
+});
 
 FLOW.SurveyGroup = DS.Model.extend({
 	surveyList: DS.attr('string',{defaultValue: ""}),
@@ -34,12 +30,12 @@ FLOW.SurveyGroup = DS.Model.extend({
 	code: DS.attr('string',{defaultValue: ""}),
 	displayName: DS.attr('string',{defaultValue: ""}),
 	keyId: DS.attr('number'),
-	primaryKey: 'keyId'
+	//primaryKey: 'keyId'
 
 });
 
 //DS.FLOWRESTAdapter.map('FLOW.SurveyGroup', {
-//  primaryKey: 'keyId',
+// primaryKey: 'keyId',
 //});
 
 

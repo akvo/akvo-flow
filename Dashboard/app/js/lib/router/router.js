@@ -61,7 +61,7 @@ FLOW.Router = Ember.Router.extend({
 			route: '/surveys',
 			connectOutlets: function(router, event) {
 				router.get('applicationController').connectOutlet('navSurveys');
-				//router.get('surveyGroupController').set('content', FLOW.store.find(FLOW.SurveyGroup, {}));
+				//router.get('surveyGroupController').set('content', FLOW.store.find(FLOW.SurveyGroup,{}));
 				router.set('navigationController.selected', 'navSurveys');
 			},
 

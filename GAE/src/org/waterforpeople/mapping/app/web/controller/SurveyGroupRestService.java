@@ -63,13 +63,30 @@ public class SurveyGroupRestService {
 	@RequestMapping(method = RequestMethod.POST, value="/")
 	@ResponseBody
 	public SurveyGroupDto saveSurveyGroup(@RequestBody SurveyGroupDto surveyGroupDto){
-			if(surveyGroupDto != null){
-			SurveyGroup s = new SurveyGroup();
-			BeanUtils.copyProperties(surveyGroupDto, s);
+		// if the POST data contains a valid surveyGroupDto, continue. Otherwise, server 400 Bad Request 
+		if (surveyGroupDto != null){
+			Long keyId = surveyGroupDto.getKeyId();
+			SurveyGroup s;
+			
+			// if the surveyGroupDto has a key, try to get the surveyGroup.
+			if (keyId != null) {
+				s = surveyGroupDao.getByKey(keyId);
+				// if the surveygroup doesn't exist, create a new surveyGroup
+				if (s == null) {
+					s = new SurveyGroup();
+				}
+			} else {
+				s = new SurveyGroup();
+			}
+			// copy the properties, except the createdDateTime property.
+			BeanUtils.copyProperties(surveyGroupDto, s, new String[] {"createdDateTime"});
 			s = surveyGroupDao.save(s);
+			
+			// set the generated properties on the surveyGroupDto
 			surveyGroupDto.setKeyId(s.getKey().getId());
+			surveyGroupDto.setCreatedDateTime(s.getCreatedDateTime());
+			surveyGroupDto.setLastUpdateDateTime(s.getLastUpdateDateTime());		
 		}
 		return surveyGroupDto;
 	}
-
 }
