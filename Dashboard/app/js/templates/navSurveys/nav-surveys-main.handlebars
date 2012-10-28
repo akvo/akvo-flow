@@ -14,7 +14,7 @@
       <ul class="menuGroup">
         {{#each sg in FLOW.surveyGroupControl.active}}
           {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-            <a {{action "makeSelected" target="this"}}>{{sg.id}},{{sg.code}}</a>
+            <a {{action "makeSelected" target="this"}}>{{sg.code}}</a>
           {{/view}}
         {{/each}} 
       </ul>

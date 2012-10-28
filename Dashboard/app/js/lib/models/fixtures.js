@@ -1,24 +1,24 @@
 FLOW.SurveyGroup.FIXTURES = [{
 	id:1,
 	keyId: 1,
-	displayName: 'Urban sanitation surveys'
+	code: 'Urban sanitation surveys'
 }, {
 	
 	id:2,
 	keyId: 2,
-	displayName: 'Elise Surveys'
+	code: 'Elise Surveys'
 }, {
 	id:3,
 	keyId: 3,
-	displayName: 'Test Survey group'
+	code: 'Test Survey group'
 },{
 	id:4,
 	keyId: 4,
-	displayName: 'Upande - SNVVERMIS'
+	code: 'Upande - SNVVERMIS'
 },{
 	id:5,
 	keyId: 5,
-	displayName: 'Akvo test surveys'
+	code: 'Akvo test surveys'
 }];
 
 
