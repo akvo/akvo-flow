@@ -18,7 +18,6 @@ FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 	
 	// fired when a survey group is clicked
 	makeSelected: function() {
-			console.log("selecting survey Group: "+this.content.get('keyId'));
 			FLOW.selectedControl.set('selectedSurveyGroup', this.content);
 	}
 });
@@ -47,6 +46,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	showEditField: false,
 	showNewGroupField:false,
 	surveyGroupName:null,
+	showSGDeleteDialogue:false,
 	
 	// true if at least one survey group is active
 	oneSelected: function() {
@@ -68,7 +68,6 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	saveSurveyGroupNameEdit: function() {
 			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
 			var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
-			console.log("new name:"+this.get('surveyGroupName'));
 			surveyGroup.set('code',this.get('surveyGroupName'));
 			FLOW.store.commit();
 			FLOW.selectedControl.set('selectedSurveyGroup',FLOW.store.find(FLOW.SurveyGroup, sgId));
@@ -80,6 +79,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
 			this.set('showEditField',false);
 	},
+
 	
 	// fired when 'add a group' is clicked. Displays a new group text field in the left sidebar
 	addGroup: function() {
@@ -87,13 +87,33 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 			this.set('surveyGroupName',null);
 			this.set('showNewGroupField',true);
 	},
-	
+
+    // show delete SurveyGroup dialogue
+	showSGroupDeleteDialog:function(){
+		this.set('showSGDeleteDialogue',true);
+	},
+
+	// cancel survey group delete
+	cancelSGroupDelete:function(){
+		this.set('showSGDeleteDialogue',false);
+	},
+
+	// delete survey group 
+	doSGroupDelete:function(){
+		var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
+		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
+		surveyGroup.deleteRecord();
+		FLOW.store.commit();
+
+		this.set('showSGDeleteDialogue',false);
+
+	},
+
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
 	saveNewSurveyGroupName: function() {
 			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{
 				"code":this.get('surveyGroupName')
 			});
-			console.log("trying to save new survey group name");
 			FLOW.store.commit();
 			FLOW.surveyGroupControl.set('content',FLOW.store.find(FLOW.SurveyGroup, {}));
 			this.set('showNewGroupField',false);

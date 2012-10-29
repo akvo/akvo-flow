@@ -40,7 +40,10 @@
       {{/if}}
       <nav class="menuTopbar">
         <ul class="">
-          <li><a {{action "addGroup" target="this"}} class="addGroup">{{t _add_a_group}}</a></li>
+          {{#if view.oneSelected}}
+            <li><a {{action "showSGroupDeleteDialog" target="this"}} class="addGroup">{{t _delete_this_group}}</a></li>
+          {{/if}}
+          <li><a {{action "addGroup" target="this"}} class="addGroup">{{t _add_new_group}}</a></li>
           {{#if view.oneSelected}}
             <li><a {{action "createNewSurvey" target="this"}} class="addSurvey">{{t _create_a_new_survey}}</a></li>
           {{/if}}
@@ -81,5 +84,23 @@
         {{/view}}
       {{/each}}
     </ul>
+
+ <!-- dialogues -->
+        <div {{bindAttr class="view.showSGDeleteDialogue:display :overlay"}}>
+          <div class="blanket"></div>
+            <!-- the dialog contents -->
+            <div class="confirmDialog dialog"  style="display:block;">
+              <h2>Are you sure you want to do this?</h2>
+              <p class="dialogMsg">If we want to give a specific message this is where it can be loaded</p>
+              <div class="buttons menuCentre"> 
+        <ul>  
+        <li><a {{action "doSGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
+                <li><a {{action "cancelSGroupDelete" target="this"}}} class="cancel">CANCEL</a></li></ul>
+              </div>
+            </div>
+          </div>
+    <!-- end dialogues -->
+
+    
   </section>
 {{/view}}

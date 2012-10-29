@@ -1,6 +1,6 @@
 
 Ember.STRINGS_EN = {
-  '_add_a_group': 'add a group',
+  '_add_new_group': 'add new group',
   '_add_a_question_here': 'add a question here',
   '_add_question_here': 'add question here',
   '_admin': 'admin',
@@ -14,6 +14,7 @@ Ember.STRINGS_EN = {
   '_created': 'created',
   '_data': 'data',
   '_delete': 'delete',
+  '_delete_this_group': 'delete this group',
   '_dependent': 'dependent',
   '_devices': 'devices',
   '_edit': 'edit',
