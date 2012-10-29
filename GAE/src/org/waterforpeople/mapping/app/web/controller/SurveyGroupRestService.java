@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import org.waterforpeople.mapping.app.web.controller.RestStatusDto;
 
 @Controller
 @RequestMapping("/survey-group")
@@ -24,7 +28,11 @@ public class SurveyGroupRestService {
 
 	@Inject
 	private SurveyGroupDAO surveyGroupDao;
-
+	
+	@Inject
+	private SurveyDAO surveyDao;
+	
+	// list all survey groups
 	@RequestMapping(method = RequestMethod.GET, value = "/")
 	@ResponseBody
 	public List<SurveyGroupDto> listSurveyGroups() {
@@ -44,6 +52,7 @@ public class SurveyGroupRestService {
 		return results;
 	}
 	
+	// find survey group by id
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
 	public SurveyGroupDto findSurveyGroupById(@PathVariable("id") Long id){
@@ -56,26 +65,32 @@ public class SurveyGroupRestService {
 			dto.setDescription(s.getDescription());
 			dto.setKeyId(s.getKey().getId());
 		}
-		return dto;
-		
+		return dto;	
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/del/{id}")
+	// delete survey group by id
+	@RequestMapping(method = RequestMethod.POST, value = "/del/{id}")
 	@ResponseBody
-	public SurveyGroupDto deleteSurveyGroupById(@PathVariable("id") Long id){
-		SurveyGroup s =surveyGroupDao.getByKey(id);		
-		SurveyGroupDto dto = null;
-		if(s != null){
-			dto = new SurveyGroupDto();
-			dto.setName(s.getName());
-			dto.setCode(s.getCode());
-			dto.setDescription(s.getDescription());
-			dto.setKeyId(s.getKey().getId());
+	public RestStatusDto deleteSurveyGroupById(@PathVariable("id") Long id){
+		SurveyGroup s = surveyGroupDao.getByKey(id);		
+		RestStatusDto dto = null;
+		dto = new RestStatusDto();
+		dto.setStatus("failed");
+		  
+		// check if surveyGroup exists in the datastore
+		if (s != null){
+			// only delete surveyGroups if there are no surveys in there
+			List<Survey> surveys = surveyDao.listSurveysByGroup(id);
+			if (surveys.size() == 0) {
+				// delete survey group
+				surveyGroupDao.delete(s);
+				dto.setStatus("ok");
+			}	
 		}
 		return dto;
-		
 	}
 	
+	// save survey group
 	@RequestMapping(method = RequestMethod.POST, value="/")
 	@ResponseBody
 	public SurveyGroupDto saveSurveyGroup(@RequestBody SurveyGroupDto surveyGroupDto){
