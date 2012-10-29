@@ -130,11 +130,18 @@ FLOW.deviceControl = Ember.ArrayController.create({
 FLOW.SurveyGroupController = Ember.ArrayController.extend({});
 
 FLOW.surveyGroupControl = Ember.ArrayController.create({
-	active: function() {
+	content:null,
+
+	init: function(){
+		this.set("content",FLOW.store.find(FLOW.SurveyGroup,{}));
+	}
+
+	
+//	active: function() {
 			//TODO find out how items are being loaded, difference find and findAll
 			//console.log(FLOW.store.find(FLOW.SurveyGroup,{}));
-			return FLOW.store.find(FLOW.SurveyGroup,{});
-	}.property('').cacheable()
+		//	return FLOW.store.find(FLOW.SurveyGroup,{});
+//	}.property('').cacheable()
 });
 
 

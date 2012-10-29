@@ -46,7 +46,23 @@ public class SurveyGroupRestService {
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
-	public SurveyGroupDto findSurveyGroup(@PathVariable("id") Long id){
+	public SurveyGroupDto findSurveyGroupById(@PathVariable("id") Long id){
+		SurveyGroup s =surveyGroupDao.getByKey(id);		
+		SurveyGroupDto dto = null;
+		if(s != null){
+			dto = new SurveyGroupDto();
+			dto.setName(s.getName());
+			dto.setCode(s.getCode());
+			dto.setDescription(s.getDescription());
+			dto.setKeyId(s.getKey().getId());
+		}
+		return dto;
+		
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/del/{id}")
+	@ResponseBody
+	public SurveyGroupDto deleteSurveyGroupById(@PathVariable("id") Long id){
 		SurveyGroup s =surveyGroupDao.getByKey(id);		
 		SurveyGroupDto dto = null;
 		if(s != null){
@@ -71,14 +87,14 @@ public class SurveyGroupRestService {
 			// if the surveyGroupDto has a key, try to get the surveyGroup.
 			if (keyId != null) {
 				s = surveyGroupDao.getByKey(keyId);
-				// if the surveygroup doesn't exist, create a new surveyGroup
+				// if the surveyGroup doesn't exist, create a new surveyGroup
 				if (s == null) {
 					s = new SurveyGroup();
 				}
 			} else {
 				s = new SurveyGroup();
 			}
-			// copy the properties, except the createdDateTime property.
+			// copy the properties, except the createdDateTime property, because it is set in the Dao.
 			BeanUtils.copyProperties(surveyGroupDto, s, new String[] {"createdDateTime"});
 			s = surveyGroupDao.save(s);
 			

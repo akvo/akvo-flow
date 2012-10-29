@@ -60,7 +60,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	
 	// fired when 'edit name' is clicked, shows edit field to change survey group name
 	editSurveyGroupName: function() {
-			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
+			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
 			this.set('showEditField',true);
 	},
 	
@@ -68,14 +68,16 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	saveSurveyGroupNameEdit: function() {
 			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
 			var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
+			console.log("new name:"+this.get('surveyGroupName'));
 			surveyGroup.set('code',this.get('surveyGroupName'));
 			FLOW.store.commit();
+			FLOW.selectedControl.set('selectedSurveyGroup',FLOW.store.find(FLOW.SurveyGroup, sgId));
 			this.set('showEditField',false);
 	},
 	
 	// fired when 'cancel' is clicked while showing edit group name field. Cancels the edit.
 	cancelSurveyGroupNameEdit: function() {
-			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
+			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
 			this.set('showEditField',false);
 	},
 	
@@ -89,11 +91,11 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
 	saveNewSurveyGroupName: function() {
 			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{
-				"keyId":"",
-				"name":this.get('surveyGroupName'),
-				"displayName":this.get('surveyGroupName'),
-				"code":this.get('surveyGroupName')});
+				"code":this.get('surveyGroupName')
+			});
+			console.log("trying to save new survey group name");
 			FLOW.store.commit();
+			FLOW.surveyGroupControl.set('content',FLOW.store.find(FLOW.SurveyGroup, {}));
 			this.set('showNewGroupField',false);
 	},
 	

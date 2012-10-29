@@ -32,30 +32,37 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
   //   }
   // },
 
-  // createRecord: function(store, type, record) {
-  //   var root = this.rootForType(type);
+   createRecord: function(store, type, record) {
+     var root = this.rootForType(type);
 
-  //   var data = {};
-  //   data[root] = this.toJSON(record, { includeId: true });
+     var data = {};
+     data = this.toJSON(record); //, 
+     console.log (data);
+     data["keyId"]=null;
 
-  //   this.ajax(this.buildURL(root), "POST", {
-  //     data: data,
-  //     context: this,
-  //     success: function(json) {
-  //       this.didCreateRecord(store, type, record, json);
-  //     }
-  //   });
-  // },
+     if (type==FLOW.SurveyGroup) {
+       delete data["displayName"];
+       delete data["surveyList"];
+     }
 
-  // didSaveRecord: function(store, record, hash) {
-  //   record.eachAssociation(function(name, meta) {
-  //     if (meta.kind === 'belongsTo') {
-  //       store.didUpdateRelationship(record, name);
-  //     }
-  //   });
+     this.ajax(this.buildURLPOST(root), "POST", {
+       data: data,
+       context: this,
+       success: function(json) {
+         this.didCreateRecord(store, type, record, json);
+       }
+     });
+   },
 
-  //   store.didSaveRecord(record, hash);
-  // },
+   didSaveRecord: function(store, record, hash) {
+     record.eachAssociation(function(name, meta) {
+       if (meta.kind === 'belongsTo') {
+         store.didUpdateRelationship(record, name);
+       }
+     });
+
+     store.didSaveRecord(record, hash);
+   },
 
   // didSaveRecords: function(store, records, array) {
   //   var i = 0;
@@ -65,12 +72,12 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
   //   }, this);
   // },
 
-  // didCreateRecord: function(store, type, record, json) {
-  //   var root = this.rootForType(type);
+   didCreateRecord: function(store, type, record, json) {
+     var root = this.rootForType(type);
 
-  //   this.sideload(store, type, json, root);
-  //   this.didSaveRecord(store, record, json[root]);
-  // },
+     //this.sideload(store, type, json, root);
+     this.didSaveRecord(store, record, json[root]);
+   },
 
   // createRecords: function(store, type, records) {
   //   if (get(this, 'bulkCommit') === false) {
@@ -107,14 +114,16 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
     var root = this.rootForType(type);
 
     var data = {};
-    data[root] = this.toJSON(record);
-    data=data["survey-group"];
+    data = this.toJSON(record);
+    //data=data["survey-group"];
 
     if (type==FLOW.SurveyGroup) {
       delete data["displayName"];
     }
 
-    this.ajax("http://localhost/rest/survey-group/", "POST", {  //this.buildURL(root, id)
+//"http://localhost/rest/survey-group/"
+
+    this.ajax(this.buildURLPOST(root, id), "POST", {
       data: data,
       context: this,
       success: function(json) {
@@ -383,10 +392,26 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
       url.push(this.namespace);
     }
 
-    url.push(this.pluralize(record));
+    url.push(record); //this.pluralize(record)
     if (suffix !== undefined) {
       url.push(suffix);
     }
+    return url.join("/")+"/";
+  },
+
+  buildURLPOST: function(record, suffix) {
+    var url = [this.url];
+
+    Ember.assert("Namespace URL (" + this.namespace + ") must not start with slash", !this.namespace || this.namespace.toString().charAt(0) !== "/");
+    Ember.assert("Record URL (" + record + ") must not start with slash", !record || record.toString().charAt(0) !== "/");
+    Ember.assert("URL suffix (" + suffix + ") must not start with slash", !suffix || suffix.toString().charAt(0) !== "/");
+
+    if (this.namespace !== undefined) {
+      url.push(this.namespace);
+    }
+
+    url.push(record); //this.pluralize(record)
+   
     return url.join("/")+"/";
   },
 

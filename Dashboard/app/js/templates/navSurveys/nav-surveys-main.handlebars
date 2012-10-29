@@ -5,14 +5,17 @@
     </form>
     <h2>{{t _survey_groups}}</h2>
     <nav>
+      <!-- show new group field, show when 'add a group' is selected -->
       {{#if view.showNewGroupField}}
         {{view Ember.TextField valueBinding="view.surveyGroupName" size=30}}
       <nav class="menuCentre">
     <a {{action "saveNewSurveyGroupName" target="this"}} class="smallBtn">{{t _save}}</a>
        <a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a>
       {{/if}}    
+
+      <!-- show all survey --> 
       <ul class="menuGroup">
-        {{#each sg in FLOW.surveyGroupControl.active}}
+        {{#each sg in FLOW.surveyGroupControl.content}}
           {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
             <a {{action "makeSelected" target="this"}}>{{sg.code}}</a>
           {{/view}}
@@ -30,7 +33,8 @@
       <a {{action "saveSurveyGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a></li>
        <a {{action "cancelSurveyGroupNameEdit" target="this"}}>{{t _cancel}}</a>
         {{else}}
-          <h2>{{FLOW.selectedControl.selectedSurveyGroup.displayName}}</h2> 
+          <!-- show selected survey group and edit name button --> 
+          <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2> 
           <a {{action "editSurveyGroupName" target="this"}}>{{t _edit_name}}</a>
         {{/if}}
       {{/if}}

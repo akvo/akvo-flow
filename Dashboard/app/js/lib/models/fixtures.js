@@ -3,7 +3,6 @@ FLOW.SurveyGroup.FIXTURES = [{
 	keyId: 1,
 	code: 'Urban sanitation surveys'
 }, {
-	
 	id:2,
 	keyId: 2,
 	code: 'Elise Surveys'
