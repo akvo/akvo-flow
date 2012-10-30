@@ -47,6 +47,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	showNewGroupField:false,
 	surveyGroupName:null,
 	showSGDeleteDialogue:false,
+	showSGDeleteNotPossibleDialogue:false,
 	
 	// true if at least one survey group is active
 	oneSelected: function() {
@@ -88,24 +89,40 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 			this.set('showNewGroupField',true);
 	},
 
-    // show delete SurveyGroup dialogue
+    // show delete SurveyGroup dialog
 	showSGroupDeleteDialog:function(){
-		this.set('showSGDeleteDialogue',true);
+		// check if there are surveys in the the datastore (this is also checked at the server)
+		var surveys=FLOW.store.filter(FLOW.Survey,function(data,sgId) {
+			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
+			console.log(data.get('surveyGroupId'),sgId);
+   			if (data.get('surveyGroupId') == sgId) { 
+   				return true; }
+		});
+
+		// if there are surveys in this group, display 'please remove surveys first'
+		if (surveys.get('content').length > 0) { 
+			this.set('showSGDeleteNotPossibleDialogue',true);
+		} else {
+
+			// else display 'are you sure you want to delete'
+			this.set('showSGDeleteDialogue',true);
+		}
 	},
 
 	// cancel survey group delete
 	cancelSGroupDelete:function(){
 		this.set('showSGDeleteDialogue',false);
+		this.set('showSGDeleteNotPossibleDialogue',false);
 	},
 
-	// delete survey group 
+	// delete survey group
 	doSGroupDelete:function(){
 		var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
 		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
 		surveyGroup.deleteRecord();
 		FLOW.store.commit();
-
 		this.set('showSGDeleteDialogue',false);
+		// TODO refresh list of survey groups
 
 	},
 

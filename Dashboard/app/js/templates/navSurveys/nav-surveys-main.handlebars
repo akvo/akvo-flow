@@ -13,7 +13,7 @@
        <a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a>
       {{/if}}    
 
-      <!-- show all survey --> 
+      <!-- show all survey groups --> 
       <ul class="menuGroup">
         {{#each sg in FLOW.surveyGroupControl.content}}
           {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
@@ -38,6 +38,8 @@
           <a {{action "editSurveyGroupName" target="this"}}>{{t _edit_name}}</a>
         {{/if}}
       {{/if}}
+      
+      <!-- show delete group, add new group, and create new survey buttons--> 
       <nav class="menuTopbar">
         <ul class="">
           {{#if view.oneSelected}}
@@ -51,6 +53,7 @@
       </nav>    
     </section>
 
+    <!-- show all surveys of the currently selected survey group-->
     <ul class="surveyBatch">
       {{#each survey in FLOW.surveyControl.active}} 
         {{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
@@ -85,20 +88,40 @@
       {{/each}}
     </ul>
 
- <!-- dialogues -->
-        <div {{bindAttr class="view.showSGDeleteDialogue:display :overlay"}}>
-          <div class="blanket"></div>
-            <!-- the dialog contents -->
-            <div class="confirmDialog dialog"  style="display:block;">
-              <h2>Are you sure you want to do this?</h2>
-              <p class="dialogMsg">If we want to give a specific message this is where it can be loaded</p>
-              <div class="buttons menuCentre"> 
-        <ul>  
-        <li><a {{action "doSGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
-                <li><a {{action "cancelSGroupDelete" target="this"}}} class="cancel">CANCEL</a></li></ul>
-              </div>
-            </div>
-          </div>
+    <!-- dialogues -->
+    <!-- Survey Group Delete confirmation dialog-->
+    <div {{bindAttr class="view.showSGDeleteDialogue:display :overlay"}}>
+      <div class="blanket"></div>
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog"  style="display:block;">
+          <h2>Are you sure you want to delete this surveygroup?</h2>
+          <p class="dialogMsg">This cannot be undone.</p>
+          <br/><br/>
+        <div class="buttons menuCentre"> 
+          <ul>  
+            <li><a {{action "doSGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
+            <li><a {{action "cancelSGroupDelete" target="this"}}} class="cancel">CANCEL</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Survey Group cannot delete due to existing surveys dialog-->
+    <div {{bindAttr class="view.showSGDeleteNotPossibleDialogue:display :overlay"}}>
+      <div class="blanket"></div>
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog"  style="display:block;">
+          <h2>Can't delete survey group</h2>
+          <p class="dialogMsg">You cannot delete this survey group because it contains surveys. Please delete the surveys individually first.</p>
+          <br/><br/>
+        <div class="buttons menuCentre"> 
+          <ul>  
+            <li><a {{action "doSGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
+            <li><a {{action "cancelSGroupDelete" target="this"}}} class="cancel">CANCEL</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
     <!-- end dialogues -->
 
     

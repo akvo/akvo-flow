@@ -130,11 +130,11 @@ FLOW.deviceControl = Ember.ArrayController.create({
 FLOW.SurveyGroupController = Ember.ArrayController.extend({});
 
 FLOW.surveyGroupControl = Ember.ArrayController.create({
-	content:null,
+	content:FLOW.store.findAll(FLOW.SurveyGroup)
 
-	init: function(){
-		this.set("content",FLOW.store.find(FLOW.SurveyGroup,{}));
-	}
+	//init: function(){
+//		this.set("content",FLOW.store.find(FLOW.SurveyGroup,{}));
+//	}
 
 	
 //	active: function() {
@@ -150,7 +150,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
 	active: function() {
 		if (FLOW.selectedControl.get('selectedSurveyGroup')) {
 			var id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-			return FLOW.store.find(FLOW.Survey, {surveyGroupId: id});
+			return FLOW.store.findQuery(FLOW.Survey, {surveyGroupId: id});
 		} else {
 			FLOW.selectedControl.set('selectedSurvey', null);
 			FLOW.selectedControl.set('selectedQuestionGroup', null);
@@ -167,7 +167,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 	active: function() {
 		if (FLOW.selectedControl.get('selectedSurvey')) {
 			var id = FLOW.selectedControl.selectedSurvey.get('keyId');
-			return FLOW.store.find(FLOW.QuestionGroup, {surveyId: id});
+			return FLOW.store.findQuery(FLOW.QuestionGroup, {surveyId: id});
 		} else {
 			FLOW.selectedControl.set('selectedQuestionGroup', null);
 			return null;
@@ -181,7 +181,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 		if (FLOW.selectedControl.get('selectedQuestionGroup')) {
 			var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 
-			return FLOW.store.find(FLOW.Question, {questionGroupId: id});
+			return FLOW.store.findQuery(FLOW.Question, {questionGroupId: id});
 		} else {
 			return null;
 		}

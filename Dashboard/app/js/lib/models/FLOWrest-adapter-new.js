@@ -23,7 +23,7 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
 
       primaryKey: function(type) {
         return "keyId";
-      },
+      }
     }),
 
   // shouldCommit: function(record) {
@@ -36,8 +36,7 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
      var root = this.rootForType(type);
 
      var data = {};
-     data = this.toJSON(record); //, 
-     console.log (data);
+     data = this.toJSON(record);
      data["keyId"]=null;
 
      if (type==FLOW.SurveyGroup) {
@@ -76,6 +75,7 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
      var root = this.rootForType(type);
 
      //this.sideload(store, type, json, root);
+     // TODO should this be didCreateRecord?
      this.didSaveRecord(store, record, json[root]);
    },
 
@@ -136,6 +136,7 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
     var root = this.rootForType(type);
 
     //this.sideload(store, type, json, root);
+    // TODO should this be didUpdateRecord?
     this.didSaveRecord(store, record, json && json[root]);
   },
 
@@ -169,22 +170,25 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
   //   this.didSaveRecords(store, records, json[root]);
   // },
 
-  // deleteRecord: function(store, type, record) {
-  //   var id = get(record, 'id');
-  //   var root = this.rootForType(type);
+   deleteRecord: function(store, type, record) {
+     var id = get(record, 'keyId');
+     var root = this.rootForType(type);
 
-  //   this.ajax(this.buildURL(root, id), "DELETE", {
-  //     context: this,
-  //     success: function(json) {
-  //       this.didDeleteRecord(store, type, record, json);
-  //     }
-  //   });
-  // },
+     this.ajax(this.buildURLDELETE(root, id), "DELETE", {
+       context: this,
+       success: function(json) {
+         this.didDeleteRecord(store, type, record, json);
+       }
+     });
+   },
 
-  // didDeleteRecord: function(store, type, record, json) {
-  //   if (json) { this.sideload(store, type, json); }
-  //   store.didSaveRecord(record);
-  // },
+  didDeleteRecord: function(store, type, record, json) {
+     if (json) {
+      //this.sideload(store, type, json); 
+    }
+    // TODO should this be didDeleteRecord?
+     store.didSaveRecord(record);
+   },
 
   // deleteRecords: function(store, type, records) {
   //   if (get(this, 'bulkCommit') === false) {
@@ -214,26 +218,25 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
   //   this.didSaveRecords(store, records);
   // },
 
-  // find: function(store, type, id) {
-  //   var root = this.rootForType(type);
+   find: function(store, type, id) {
+     var root = this.rootForType(type);
 
-  //   this.ajax(this.buildURL(root, id), "GET", {
-  //     success: function(json) {
-  //       this.didFindRecord(store, type, json, id);
-  //     }
-  //   });
-  // },
+     this.ajax(this.buildURL(root, id), "GET", {
+       success: function(json) {
+         this.didFindRecord(store, type, json, id);
+       }
+     });
+   },
 
-  // didFindRecord: function(store, type, json, id) {
-  //   var root = this.rootForType(type);
+   didFindRecord: function(store, type, json, id) {
+     var root = this.rootForType(type);
 
-  //   this.sideload(store, type, json, root);
-  //   store.load(type, id, json[root]);
-  // },
+     this.sideload(store, type, json, root);
+     store.load(type, id, json[root]);
+   },
 
   findAll: function(store, type, since) {
     var root = this.rootForType(type);
-
     this.ajax(this.buildURL(root), "GET", {
       data: this.sinceQuery(since),
       success: function(json) {
@@ -246,8 +249,8 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
     var root = this.pluralize(this.rootForType(type)),
         since = this.extractSince(json);
 
-    this.sideload(store, type, json, root);
-    store.loadMany(type, json[root]);
+    //this.sideload(store, type, json, root);
+    store.loadMany(type, json);
 
     // this registers the id with the store, so it will be passed
     // into the next call to `findAll`
@@ -393,6 +396,26 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
     }
 
     url.push(record); //this.pluralize(record)
+    if (suffix !== undefined) {
+      url.push(suffix);
+    }
+    return url.join("/")+"/";
+  },
+
+  buildURLDELETE: function(record, suffix) {
+    var url = [this.url];
+
+    Ember.assert("Namespace URL (" + this.namespace + ") must not start with slash", !this.namespace || this.namespace.toString().charAt(0) !== "/");
+    Ember.assert("Record URL (" + record + ") must not start with slash", !record || record.toString().charAt(0) !== "/");
+    Ember.assert("URL suffix (" + suffix + ") must not start with slash", !suffix || suffix.toString().charAt(0) !== "/");
+
+    if (this.namespace !== undefined) {
+      url.push(this.namespace);
+    }
+
+    url.push(record); //this.pluralize(record)
+    url.push("del");
+
     if (suffix !== undefined) {
       url.push(suffix);
     }

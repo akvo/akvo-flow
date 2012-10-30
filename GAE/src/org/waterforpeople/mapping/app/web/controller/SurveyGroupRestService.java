@@ -69,7 +69,7 @@ public class SurveyGroupRestService {
 	}
 	
 	// delete survey group by id
-	@RequestMapping(method = RequestMethod.POST, value = "/del/{id}")
+	@RequestMapping(method = RequestMethod.DELETE, value = "/del/{id}")
 	@ResponseBody
 	public RestStatusDto deleteSurveyGroupById(@PathVariable("id") Long id){
 		SurveyGroup s = surveyGroupDao.getByKey(id);		
