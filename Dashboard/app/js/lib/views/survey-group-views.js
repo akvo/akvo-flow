@@ -61,32 +61,32 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	
 	// fired when 'edit name' is clicked, shows edit field to change survey group name
 	editSurveyGroupName: function() {
-			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
-			this.set('showEditField',true);
+		this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
+		this.set('showEditField',true);
 	},
 	
 	// fired when 'save' is clicked while showing edit group name field. Saves the new group name
 	saveSurveyGroupNameEdit: function() {
-			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
-			var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
-			surveyGroup.set('code',this.get('surveyGroupName'));
-			FLOW.store.commit();
-			FLOW.selectedControl.set('selectedSurveyGroup',FLOW.store.find(FLOW.SurveyGroup, sgId));
-			this.set('showEditField',false);
+		var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
+		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
+		surveyGroup.set('code',this.get('surveyGroupName'));
+		FLOW.store.commit();
+		FLOW.selectedControl.set('selectedSurveyGroup',FLOW.store.find(FLOW.SurveyGroup, sgId));
+		this.set('showEditField',false);
 	},
 	
 	// fired when 'cancel' is clicked while showing edit group name field. Cancels the edit.
 	cancelSurveyGroupNameEdit: function() {
-			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
-			this.set('showEditField',false);
+		this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
+		this.set('showEditField',false);
 	},
 
 	
 	// fired when 'add a group' is clicked. Displays a new group text field in the left sidebar
 	addGroup: function() {
-			FLOW.selectedControl.set('selectedSurveyGroup',null);
-			this.set('surveyGroupName',null);
-			this.set('showNewGroupField',true);
+		FLOW.selectedControl.set('selectedSurveyGroup',null);
+		this.set('surveyGroupName',null);
+		this.set('showNewGroupField',true);
 	},
 
     // show delete SurveyGroup dialog
@@ -94,7 +94,6 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 		// check if there are surveys in the the datastore (this is also checked at the server)
 		var surveys=FLOW.store.filter(FLOW.Survey,function(data,sgId) {
 			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
-			console.log(data.get('surveyGroupId'),sgId);
    			if (data.get('surveyGroupId') == sgId) { 
    				return true; }
 		});

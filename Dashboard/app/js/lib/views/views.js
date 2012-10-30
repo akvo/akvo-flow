@@ -15,6 +15,17 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
   return Ember.String.loc(i18nKey);
 });
 
+// date format helper
+Ember.Handlebars.registerHelper("date", function(property) {
+  var d = new Date(parseInt(Ember.get(this, property),10));
+  var m_names = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+
+  var curr_date = d.getDate();
+  var curr_month = d.getMonth();
+  var curr_year = d.getFullYear();
+  return (curr_date + " " + m_names[curr_month] + " " + curr_year);
+});
+
 // ********************************************************//
 //                      main navigation
 // ********************************************************//
