@@ -54,10 +54,12 @@ public class SurveyRestService {
 		if (surveys != null) {
 			for (Survey s : surveys) {
 				SurveyDto dto = new SurveyDto();
-
+				//BeanUtils.copyProperties(s,dto); Doesn't work
 				dto.setName(s.getName());
 				dto.setDescription(s.getDesc());
 				dto.setSurveyGroupId(s.getSurveyGroupId());
+				dto.setCreatedDateTime(s.getCreatedDateTime());
+				dto.setLastUpdateDateTime(s.getLastUpdateDateTime());
 				dto.setVersion(s.getVersion() != null ? s.getVersion().toString() : "");
 				dto.setKeyId(s.getKey().getId());
 				results.add(dto);
