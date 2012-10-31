@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -25,7 +26,8 @@ public class SurveyRestService {
 
 	@Inject
 	private SurveyDAO surveyDao;
-
+	
+	// list all surveys
 	@RequestMapping(method = RequestMethod.GET, value = "/all")
 	@ResponseBody
 	public List<SurveyDto> listSurveys() {
@@ -34,18 +36,17 @@ public class SurveyRestService {
 		if (surveys != null) {
 			for (Survey s : surveys) {
 				SurveyDto dto = new SurveyDto();
-
-				dto.setName(s.getName());
+				DtoMarshaller.copyToDto(s, dto);
+				
+				// needed because of different names for description in survey and surveyDto
 				dto.setDescription(s.getDesc());
-				dto.setSurveyGroupId(s.getSurveyGroupId());
-				dto.setVersion(s.getVersion() != null ? s.getVersion().toString() : "");
-				dto.setKeyId(s.getKey().getId());
 				results.add(dto);
 			}
 		}
 		return results;
 	}
 	
+	// list surveys by surveyGroup id
 	@RequestMapping(method = RequestMethod.GET, value = "/")
 	@ResponseBody
 	public List<SurveyDto> listSurveysByGroupId(@RequestParam("surveyGroupId") Long surveyGroupId) {
@@ -54,21 +55,17 @@ public class SurveyRestService {
 		if (surveys != null) {
 			for (Survey s : surveys) {
 				SurveyDto dto = new SurveyDto();
-				//BeanUtils.copyProperties(s,dto); Doesn't work
-				dto.setName(s.getName());
+				DtoMarshaller.copyToDto(s, dto);
+				
+				// needed because of different names for description in survey and surveyDto
 				dto.setDescription(s.getDesc());
-				dto.setSurveyGroupId(s.getSurveyGroupId());
-				dto.setCreatedDateTime(s.getCreatedDateTime());
-				dto.setLastUpdateDateTime(s.getLastUpdateDateTime());
-				dto.setVersion(s.getVersion() != null ? s.getVersion().toString() : "");
-				dto.setKeyId(s.getKey().getId());
 				results.add(dto);
 			}
 		}
 		return results;
 	}
 	
-	
+	// find a single survey by the surveyId
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
 	public SurveyDto findSurvey(@PathVariable("id") Long id){
@@ -76,9 +73,11 @@ public class SurveyRestService {
 		SurveyDto dto = null;
 		if(s != null){
 			dto = new SurveyDto();
-			dto.setName(s.getName());
-			dto.setVersion(s.getVersion() != null ? s.getVersion().toString() : "");
-			dto.setKeyId(s.getKey().getId());
+			DtoMarshaller.copyToDto(s, dto);
+			
+			// needed because of different names for description in survey and surveyDto
+			dto.setDescription(s.getDesc());
+
 		}
 		return dto;
 		
@@ -87,13 +86,10 @@ public class SurveyRestService {
 	@RequestMapping(method = RequestMethod.POST, value="/")
 	@ResponseBody
 	public SurveyDto saveSurvey(@RequestBody SurveyDto surveyDto){
-		if(surveyDto != null){
-			Survey s = new Survey();
-			BeanUtils.copyProperties(surveyDto, s);
-			s = surveyDao.save(s);
-			surveyDto.setKeyId(s.getKey().getId());
-		}
+		SurveyDto dto = null;
+		
+		//TODO
+		
 		return surveyDto;
 	}
-
 }

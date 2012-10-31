@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
@@ -21,6 +22,7 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import org.waterforpeople.mapping.app.web.controller.RestStatusDto;
+
 
 @Controller
 @RequestMapping("/survey-group")
@@ -41,11 +43,7 @@ public class SurveyGroupRestService {
 		if (surveys != null) {
 			for (SurveyGroup s : surveys) {
 				SurveyGroupDto dto = new SurveyGroupDto();
-
-				dto.setName(s.getName());
-				dto.setCode(s.getCode());
-				dto.setDescription(s.getDescription());
-				dto.setKeyId(s.getKey().getId());
+				DtoMarshaller.copyToDto(s, dto);
 				results.add(dto);
 			}
 		}
@@ -60,10 +58,7 @@ public class SurveyGroupRestService {
 		SurveyGroupDto dto = null;
 		if(s != null){
 			dto = new SurveyGroupDto();
-			dto.setName(s.getName());
-			dto.setCode(s.getCode());
-			dto.setDescription(s.getDescription());
-			dto.setKeyId(s.getKey().getId());
+			DtoMarshaller.copyToDto(s, dto);
 		}
 		return dto;	
 	}
@@ -94,6 +89,8 @@ public class SurveyGroupRestService {
 	@RequestMapping(method = RequestMethod.POST, value="/")
 	@ResponseBody
 	public SurveyGroupDto saveSurveyGroup(@RequestBody SurveyGroupDto surveyGroupDto){
+		SurveyGroupDto dto = null;
+		
 		// if the POST data contains a valid surveyGroupDto, continue. Otherwise, server 400 Bad Request 
 		if (surveyGroupDto != null){
 			Long keyId = surveyGroupDto.getKeyId();
@@ -113,10 +110,8 @@ public class SurveyGroupRestService {
 			BeanUtils.copyProperties(surveyGroupDto, s, new String[] {"createdDateTime"});
 			s = surveyGroupDao.save(s);
 			
-			// set the generated properties on the surveyGroupDto
-			surveyGroupDto.setKeyId(s.getKey().getId());
-			surveyGroupDto.setCreatedDateTime(s.getCreatedDateTime());
-			surveyGroupDto.setLastUpdateDateTime(s.getLastUpdateDateTime());		
+			dto = new SurveyGroupDto();
+			DtoMarshaller.copyToDto(s, dto);
 		}
 		return surveyGroupDto;
 	}

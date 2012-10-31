@@ -6,7 +6,8 @@
 
 
 <bean id="surveyDao" class="com.gallatinsystems.survey.dao.SurveyDAO"/>    
-<bean id="surveyGroupDao" class="com.gallatinsystems.survey.dao.SurveyGroupDAO"/>    
+<bean id="surveyGroupDao" class="com.gallatinsystems.survey.dao.SurveyGroupDAO"/> 
+<bean id="questionGroupDao" class="com.gallatinsystems.survey.dao.QuestionGroupDao"/>    
 
 	<context:annotation-config/>
 </beans>
