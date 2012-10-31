@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 
 @Controller
 @RequestMapping("/survey")
@@ -88,7 +90,34 @@ public class SurveyRestService {
 	public SurveyDto saveSurvey(@RequestBody SurveyDto surveyDto){
 		SurveyDto dto = null;
 		
-		//TODO
+		// if the POST data contains a valid surveyDto, continue. Otherwise, server will respond with 400 Bad Request 
+				if (surveyDto != null){
+					Long keyId = surveyDto.getKeyId();
+					Survey s;
+					
+					// if the surveyGroupDto has a key, try to get the surveyGroup.
+					if (keyId != null) {
+						s = surveyDao.getByKey(keyId);
+						// if the surveyGroup doesn't exist, create a new surveyGroup
+						if (s == null) {
+							s = new Survey();
+						}
+					} else {
+						s = new Survey();
+					}
+					// copy the properties, except the createdDateTime property, because it is set in the Dao.
+					BeanUtils.copyProperties(surveyDto, s, new String[] {"createdDateTime"});
+					s = surveyDao.save(s);
+					
+					dto = new SurveyDto();
+					DtoMarshaller.copyToDto(s, dto);
+				}
+		
+		
+		
+		
+		
+		
 		
 		return surveyDto;
 	}

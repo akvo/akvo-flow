@@ -22,21 +22,14 @@ FLOW.store = DS.Store.create({
 });
 
 FLOW.SurveyGroup = DS.Model.extend({
-	surveyList: DS.attr('string',{defaultValue: ""}),
 	description: DS.attr('string',{defaultValue: ""}),
 	name: DS.attr('string',{defaultValue: ""}),
 	createdDateTime: DS.attr('string',{defaultValue: ""}),
 	lastUpdateDateTime: DS.attr('string',{defaultValue: ""}),
+	// the code field is used as name
 	code: DS.attr('string',{defaultValue: ""}),
-	displayName: DS.attr('string',{defaultValue: ""}),
-	keyId: DS.attr('number'),
-	//primaryKey: 'keyId'
-
+	keyId: DS.attr('number')
 });
-
-//DS.FLOWRESTAdapter.map('FLOW.SurveyGroup', {
-// primaryKey: 'keyId',
-//});
 
 
 FLOW.Survey = DS.Model.extend({
@@ -47,9 +40,7 @@ FLOW.Survey = DS.Model.extend({
 	version: DS.attr('string'),
 	description: DS.attr('string'),
 	name: DS.attr('string'),
-	path: DS.attr('string'),
 	displayName: DS.attr('string'),
-	questionGroupList: DS.attr('string'),
 	keyId: DS.attr('number'),
 	pointType: DS.attr('string'),
 	surveyGroupId: DS.attr('number'),

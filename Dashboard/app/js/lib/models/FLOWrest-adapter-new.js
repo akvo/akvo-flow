@@ -39,10 +39,12 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
      data = this.toJSON(record);
      data["keyId"]=null;
 
-     if (type==FLOW.SurveyGroup) {
-       delete data["displayName"];
-       delete data["surveyList"];
-     }
+      delete data["displayName"];
+      delete data["lastUpdateDateTime"];
+      delete data["questionGroupList"];
+     //if (type==FLOW.SurveyGroup) {
+       //
+     //}
 
      this.ajax(this.buildURLPOST(root), "POST", {
        data: data,
@@ -115,13 +117,9 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
 
     var data = {};
     data = this.toJSON(record);
-    //data=data["survey-group"];
-
-    if (type==FLOW.SurveyGroup) {
-      delete data["displayName"];
-    }
-
-//"http://localhost/rest/survey-group/"
+    delete data["displayName"];
+    delete data["lastUpdateDateTime"];
+    delete data["questionGroupList"];
 
     this.ajax(this.buildURLPOST(root, id), "POST", {
       data: data,
