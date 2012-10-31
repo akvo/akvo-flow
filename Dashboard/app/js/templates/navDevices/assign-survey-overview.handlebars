@@ -1,20 +1,24 @@
 <section class="fullWidth" id="assignSurveys">
-
-    
-    <div class="whiteBg">
+	<h1>Create a new assignment</h1>
+    <div class="">
        <form>
-          <fieldset id="assignmentDetails">
+          <fieldset id="assignmentDetails" class="stepNumber">
             <h2>Assignment Details</h2>
             <label for="assignmentName">Assignment Name:</label>
             <input type="text" id="assignmentName" name="assignmentName" title="Enter a name for this assignment" placeholder="Enter a name for this assignment" autofocus required />
             <div class="dateRange">
-             <label for="startDate">Start Date:</label>
-             <input type="text" id="startDate" class="datePicker" name="startDate">
-             <label for="endDate">Expiration Date:</label>
-             <input type="text" id="startDate" class="datePicker" name="startDate">
-            </div>
+				<div class="activeDate">
+					 <label for="startDate">Start Date:</label>
+					 <input type="text" id="startDate" class="datePicker" name="startDate">
+				</div>
+				<div class="expireDate">
+					 <label for="endDate">Expiration Date:</label>
+					 <input type="text" id="startDate" class="datePicker" name="startDate">
+				</div>
+		    </div>
           </fieldset>
-          <fieldset id="surveySelect">
+		  <div class="fieldSetWrap">
+          <fieldset id="surveySelect" class="stepNumber">
             <h2>Select Survey:</h2>
                 <div class="">
                 <label for="surveyGroup">Select Survey Group:</label>
@@ -45,8 +49,26 @@
                 </select>
                 </div>
           </fieldset>    
-          
-          <fieldset id="devicesSelect">
+ 		<fieldset id="surveyPreview" class="">
+            <h2>Preview Survey Selection:</h2>
+                <div class="">
+                <label for="surveys">Select Surveys <span>(old ctrl to select multiple)</span>:</label>
+                <select multiple="multiple"  id="surveys">
+                  <option value="Survey 01">Survey 01</option>
+                  <option value="Survey 02">Survey 02</option>
+                  <option value="Survey 03">Survey 03</option>
+                  <option value="Survey 04">Survey 04</option>
+                  <option value="Survey 05">Survey 05</option>
+                  <option value="Survey 06">Survey 06</option>
+                  <option value="Survey 07">Survey 07</option>
+                  <option value="Survey 08">Survey 08</option>
+                </select>
+                </div>
+          </fieldset>    
+          		  
+		  </div>
+		  
+          <fieldset id="devicesSelect" class="stepNumber">
             <h2>Select Devices:</h2>
                 <div class="halfWidth">
                 <label for="deviceGroup">Select Device Group:</label>

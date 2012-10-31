@@ -59,6 +59,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
 	font-weight: normal;
+	text-transform:capitalize;
 }
 h1 {
 	font-size: 2.4em;
@@ -381,6 +382,13 @@ footer > div {
 }
 .mainContent {
 	padding: 0 0 0 10px;
+}
+
+.whiteBg {
+	position: relative;
+	margin: 0.5em 0.5%;
+	width: 99%;
+	background: rgb(255,255,255);
 }
 /* .header
 --------------------------------------------- */
@@ -710,26 +718,74 @@ tfoot tr {
 	background: rgb(224,224,224);
 }
 /**************** Assign Survey to devices. **************/
+
+#assignSurveys fieldset {
+	position:relative;
+	width:97%;
+	margin:0 auto;
+	padding:1em 1% 1.5em 1%;
+	}
+	
+fieldset#assignmentDetails, fieldset#devicesSelect {
+	background:rgb(255,255,255);
+	}
+fieldset#surveySelect, fieldset#surveyPreview {
+	background:rgb(242,242,242);
+	}
+	
+#assignSurveys input {
+	padding:3px 5px;	
+	border: 1px solid rgb(158,158,158);
+	}
+	
+#assignmentDetails > input {
+	width:45%;
+	margin:0 0.5em 1em 0;
+	}
 .dateRange {
+	position:relative;
 	display: block;
+	width:100%;
 }
-.dateRange label {
+input.datePicker {
+	width:90%;
 	display: inline;
-}
-.datePicker {
-	display: inline;
-	height: 20px;
 	border-color: transparent;
-	background: url(../images/icon_cal.png) right center no-repeat;
+	background:rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
 }
-.whiteBg {
-	position: relative;
-	margin: 5px 0.5%;
-	width: 99%;
-	background: rgb(255,255,255);
+.dateRange div.activeDate, .dateRange div.expireDate{
+	width:50%;
 }
-/* 
-	Tabs Styling
+.dateRange div.activeDate {
+	float:left;
+}
+.dateRange div.expireDate {
+	float:right;
+}
+
+.fieldSetWrap {
+	position:relative;
+	width:99%;
+	margin:0 auto;
+	clear:both;
+	padding:0;
+	}
+
+#assignSurveys .fieldSetWrap fieldset {
+	width:49%;
+	margin:0;
+	padding:0 0.5%;
+	display:inline;
+	}
+#assignSurveys .fieldSetWrap fieldset#surveySelect {
+	float:left;
+	}
+#assignSurveys .fieldSetWrap fieldset#surveyPreview {
+	float:right;
+	}
+
+/*-------------------------------------------------------------------- 
+							Tabs Styling
 ----------------------------------------------------------------------*/
 #tabs div > section {
 	border: thin solid rgb(224,224,224);
@@ -738,8 +794,9 @@ tfoot tr {
 }
 #tabs div > section h1 {
 	display: block;
-	margin: 2em auto;
-	width: 50%;
+	margin:0.8em 0 0.8em 0.5em;
+	color:rgb(44, 42, 116);
+	font-size:2em;
 }
 #tabs nav.tabNav {
 	display: block;
