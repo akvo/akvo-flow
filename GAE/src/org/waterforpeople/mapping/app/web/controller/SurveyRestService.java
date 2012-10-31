@@ -91,34 +91,27 @@ public class SurveyRestService {
 		SurveyDto dto = null;
 		
 		// if the POST data contains a valid surveyDto, continue. Otherwise, server will respond with 400 Bad Request 
-				if (surveyDto != null){
-					Long keyId = surveyDto.getKeyId();
-					Survey s;
+		if (surveyDto != null){
+			Long keyId = surveyDto.getKeyId();
+			Survey s;
 					
-					// if the surveyGroupDto has a key, try to get the surveyGroup.
-					if (keyId != null) {
-						s = surveyDao.getByKey(keyId);
-						// if the surveyGroup doesn't exist, create a new surveyGroup
-						if (s == null) {
-							s = new Survey();
-						}
-					} else {
-						s = new Survey();
-					}
-					// copy the properties, except the createdDateTime property, because it is set in the Dao.
-					BeanUtils.copyProperties(surveyDto, s, new String[] {"createdDateTime"});
-					s = surveyDao.save(s);
+			// if the surveyDto has a key, try to get the surveyGroup.
+			if (keyId != null) {
+				s = surveyDao.getByKey(keyId);
+				// if the surveyGroup doesn't exist, create a new surveyGroup
+				if (s == null) {
+					s = new Survey();
+				}
+			} else {
+				s = new Survey();
+			}
+				// copy the properties, except the createdDateTime property, because it is set in the Dao.
+				BeanUtils.copyProperties(surveyDto, s, new String[] {"createdDateTime","status","version"});
+				s = surveyDao.save(s);
 					
 					dto = new SurveyDto();
 					DtoMarshaller.copyToDto(s, dto);
 				}
-		
-		
-		
-		
-		
-		
-		
 		return surveyDto;
 	}
 }
