@@ -36,9 +36,15 @@
                 </select>
                 </div>
                 <div class="">
-                <label for="surveys">Select Surveys <span>(old ctrl to select multiple)</span>:</label>
-                <select multiple="multiple"  id="surveys">
-                  <option value="Survey 01">Survey 01</option>
+				<nav>
+					<ul>
+						<li><a href="#">Select All</a></li>
+						<li><a href="#">Deselect All</a></li>
+					</ul>
+				</nav>
+                <label for="surveys">Select Surveys:</label>
+                <select multiple="multiple"  id="surveys" size="10">
+                  <option value="Survey 01" selected="selected">Survey 01</option>
                   <option value="Survey 02">Survey 02</option>
                   <option value="Survey 03">Survey 03</option>
                   <option value="Survey 04">Survey 04</option>
@@ -49,11 +55,11 @@
                 </select>
                 </div>
           </fieldset>    
- 		<fieldset id="surveyPreview" class="">
+ 		<fieldset id="surveyPreview" class="formLeftPanel">
             <h2>Preview Survey Selection:</h2>
                 <div class="">
-                <label for="surveys">Select Surveys <span>(old ctrl to select multiple)</span>:</label>
-                <select multiple="multiple"  id="surveys">
+                <label for="surveys">Select Surveys:</label>
+                <select multiple="multiple"  id="surveys"  size="10">
                   <option value="Survey 01">Survey 01</option>
                   <option value="Survey 02">Survey 02</option>
                   <option value="Survey 03">Survey 03</option>

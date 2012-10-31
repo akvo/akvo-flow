@@ -774,15 +774,40 @@ input.datePicker {
 #assignSurveys .fieldSetWrap fieldset {
 	width:49%;
 	margin:0;
-	padding:0 0.5%;
+	padding:1em 0.5% 1.5em 0.5%;
 	display:inline;
+	min-height:200px;
 	}
 #assignSurveys .fieldSetWrap fieldset#surveySelect {
 	float:left;
+	position:relative;
 	}
 #assignSurveys .fieldSetWrap fieldset#surveyPreview {
 	float:right;
 	}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel {
+	width:48%;
+	padding:1em 0.5% 1.5em 1.5%;
+	background:rgb(242,242,242) url(../images/FieldSetSep.png) left center no-repeat;
+	}
+
+#assignSurveys .fieldSetWrap fieldset#surveySelect div {
+	 display: inline;
+	 }
+#assignSurveys .fieldSetWrap fieldset#surveySelect div:nth-child(2n+1) {
+	 float:right;
+	 width:55%;
+	 }
+#assignSurveys .fieldSetWrap fieldset#surveySelect div:nth-child(2n) {
+	 float:left;
+	 width:45%;
+	 }
+#assignSurveys .fieldSetWrap fieldset#surveySelect div:nth-child(2n) select {
+	 width:90%;
+	 }
+#assignSurveys .fieldSetWrap fieldset#surveySelect div:nth-child(2n+1) select {
+	 width:90%;
+	 }
 
 /*-------------------------------------------------------------------- 
 							Tabs Styling
