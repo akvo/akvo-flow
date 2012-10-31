@@ -77,7 +77,7 @@
             </dl>
             <nav>
               <ul>              
-                <li class="editSurvey"><a {{action "doEditSurvey" survey}}>{{t _edit}}</a></li>
+                <li class="editSurvey"><a {{action "doEditSurvey" survey}}>{{t _edit}}</a></li> <!-- this hands control over to the router -->
                   <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>{{t _preview}}</a></li>
                   <li class="deleteSurvey"><a {{action "deleteSurvey" target="this"}}>{{t _delete}}</a></li>
                   <li class="inspectData"><a {{action "inspectData" target="this"}}>{{t _inspect_data}}</a></li>

@@ -1,4 +1,41 @@
 // ************************ Surveys *************************
+
+FLOW.SurveySidebarView = Ember.View.extend({
+	surveyTitle:null,
+	surveyDescription: null,
+	surveyTypeControl:null,
+	surveySectorTypeControl:null,
+
+	init: function(){
+		this._super();
+		this.set('surveyTitle',FLOW.selectedControl.selectedSurvey.get('name'));
+		this.set('surveyDescription',FLOW.selectedControl.selectedSurvey.get('description'));
+		this.set('typeTypeControl',FLOW.selectedControl.selectedSurvey.get('pointType'));
+		
+		// TODO imlement sector codes on surveys
+		//surveySectorTypeControl=FLOW.selectedControl.selectedSurvey.get('sector');
+	},
+
+	doSaveSurvey:function(){
+		var sgId=FLOW.selectedControl.selectedSurvey.get('id');
+		var survey=FLOW.store.find(FLOW.Survey, sgId);
+		survey.set('name',this.get('surveyTitle'));
+		survey.set('description',this.get('surveyDescription'));
+		survey.set('pointType',this.get('surveyTypeControl'));
+		FLOW.store.commit();
+		//FLOW.selectedControl.set('selectedSurvey',FLOW.store.find(FLOW.Survey, sgId));
+	},
+
+	doPreviewSurvey:function(){
+		console.log("TODO: implement preview survey");
+	},
+
+	doPublishSurvey:function(){
+		console.log("TODO: implement publish survey");
+	}
+});
+
+
 FLOW.QuestionGroupItemView = Ember.View.extend({
 	content: null, // question group content comes through binding in handlebars file
 	zeroItem: false,

@@ -77,8 +77,28 @@ content:[
    Ember.Object.create({label: "Video", value: "video"}),
    Ember.Object.create({label: "Date", value: "date"}),
    Ember.Object.create({label: "Barcode", value: "barcode"})
-]
-});
+]});
+
+FLOW.surveyTypeControl = Ember.Object.create({
+content:[
+	Ember.Object.create({label: "Point", value: "point"}),
+   Ember.Object.create({label: "Household", value: "household"}),
+   Ember.Object.create({label: "Public institution", value: "publicInstitution"}),
+   Ember.Object.create({label: "Community", value: "community"})
+   
+]});
+
+FLOW.surveySectorTypeControl = Ember.Object.create({
+content:[
+	Ember.Object.create({label: "Water and Sanitation", value: "waterAndSanitation"}),
+   Ember.Object.create({label: "Education", value: "education"}),
+   Ember.Object.create({label: "Economic development", value: "economicDevelopment"}),
+   Ember.Object.create({label: "Health care", value: "healthCare"}),
+   Ember.Object.create({label: "IT and Communication", value: "ItAndCommunication"}),
+   Ember.Object.create({label: "Food security", value: "foodSecurity"}),
+   Ember.Object.create({label: "Other", value: "other"})
+]});
+
 
 FLOW.selectedControl = Ember.Controller.create({
 	selectedSurveyGroup: null,
