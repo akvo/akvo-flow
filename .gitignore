@@ -7,6 +7,8 @@
 *.class
 .gwt-log
 
+Dashboard*
+
 # Specific paths
 GAE/build.properties
 GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties

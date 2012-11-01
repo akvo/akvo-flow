@@ -174,9 +174,10 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			domainList.add(answer);
 		}
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		SurveyAttributeMappingDao mappingDao = new SurveyAttributeMappingDao();
+		
 		dao.save(domainList);
 		if (isApproved && processSummaries) {
+			SurveyAttributeMappingDao mappingDao = new SurveyAttributeMappingDao();
 			// now send a change message for each item
 			Queue queue = QueueFactory.getQueue("dataUpdate");
 			for (QuestionAnswerStoreDto item : dtoList) {
