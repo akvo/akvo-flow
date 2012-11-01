@@ -2,7 +2,7 @@
   <h1>Create a new assignment</h1>
   <div class="">
     <form>
-      <fieldset id="assignmentDetails" class="stepNumber">
+      <fieldset id="assignmentDetails">
         <h2>Assignment Details</h2>
         <label for="assignmentName">Assignment Name:</label>
         <input type="text" id="assignmentName" name="assignmentName" title="Enter a name for this assignment" placeholder="Enter a name for this assignment" autofocus required />
@@ -18,7 +18,7 @@
         </div>
       </fieldset>
       <div class="fieldSetWrap">
-        <fieldset id="surveySelect" class="stepNumber">
+        <fieldset id="surveySelect" class="formLeftPanel">
           <h2>Select Survey:</h2>
           <div class="">
             <label for="surveyGroup">Select Survey Group:</label>
@@ -56,7 +56,7 @@
 			<a href="#" class="AddBtn">Add Selected Surveys</a>
           </div>
         </fieldset>
-        <fieldset id="surveyPreview" class="formLeftPanel">
+        <fieldset id="surveyPreview" class="formRightPanel">
           <h2>Preview Survey Selection:</h2>
           <div class="">
             <!-- DEVICES TABLE-->
@@ -115,16 +115,18 @@
               <!-- TABLE FOOTER-->
               <tfoot>
                 <tr>
-                  <td colspan="7"><small>This is the footer.</small></td>
+                  <td colspan="7"><a href="#">Clear All</a></td>
                 </tr>
               </tfoot>
             </table>
           </div>
         </fieldset>
       </div>
-      <fieldset id="devicesSelect" class="stepNumber">
-        <h2>Select Devices:</h2>
-        <div class="halfWidth">
+	  
+	  <div class="fieldSetWrap makeWhite">
+        <fieldset id="devicesSelect" class="formLeftPanel">
+          <h2>Select Devices:</h2>
+          <div class="">
           <label for="deviceGroup">Select Device Group:</label>
           <select id="deviceGroup">
             <option value="SDevice Group 01">Device Group 01</option>
@@ -138,10 +140,16 @@
             <option value="Device Group 09">Device Group 09</option>
             <option value="Device Group 10">Device Group 10</option>
           </select>
-        </div>
-        <div class="halfWidth">
-          <label for="Devices">Select Devices <span>(old ctrl to select multiple)</span>:</label>
-          <select multiple="multiple" id="Devices">
+          </div>
+          <div class="">
+            <nav>
+              <ul>
+                <li><a href="#">Select All</a></li>
+                <li><a href="#">Deselect All</a></li>
+              </ul>
+            </nav>
+          <label for="Devices">Select Devices:</label>
+          <select multiple="multiple" id="Devices" size="10">
             <option value="Device 01">Device 01</option>
             <option value="Device 02">Device 02</option>
             <option value="Device 03">Device 03</option>
@@ -151,8 +159,75 @@
             <option value="Device 07">Device 07</option>
             <option value="Device 08">Device 08</option>
           </select>
-        </div>
-      </fieldset>
+			<a href="#" class="AddBtn">Add Selected Devices</a>
+          </div>
+        </fieldset>
+        <fieldset id="devicesPreview" class="formRightPanel">
+          <h2>Preview Device Selection:</h2>
+          <div class="">
+            <!-- DEVICES TABLE-->
+            <table id="devicePreviewList" class="previewList" >
+              <!-- TABLE HEADER-->
+              <thead>
+                <tr>
+                  <th class="groupPreview">Device Group</th>
+                  <th class="surveyPreview">Device List</th>
+                  <th class="action"></th>
+                </tr>
+              </thead>
+              <!-- TABLE BODY: MAIN CONTENT-->
+              <tbody>
+                <tr>
+                  <td class="groupPreview">Malawi 2012</td>
+                  <td class="surveyPreview">Survey 1</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+                <tr>
+                  <td class="groupPreview">WFP</td>
+                  <td class="surveyPreview">survey 3</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+                <tr>
+                  <td class="groupPreview">WFP</td>
+                  <td class="surveyPreview">survey 4</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+                <tr>
+                  <td class="groupPreview">WFP</td>
+                  <td class="surveyPreview">survey 6</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+                <tr>
+                  <td class="groupPreview">Malawi 2010</td>
+                  <td class="surveyPreview">Survey 1</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+                <tr>
+                  <td class="groupPreview">Malawi 2010</td>
+                  <td class="surveyPreview">Survey 3</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+                <tr>
+                  <td class="groupPreview">Malawi 2010</td>
+                  <td class="surveyPreview">Survey 4</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+                <tr>
+                  <td class="groupPreview">Malawi 2010</td>
+                  <td class="surveyPreview">Survey 6</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+              </tbody>
+              <!-- TABLE FOOTER-->
+              <tfoot>
+                <tr>
+                  <td colspan="7"><a href="#">Clear All</a></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </fieldset>
+      </div>
       <div class="menuConfirm">
         <ul>
           <li><a href="#" class="standardBtn">Save Assignment</a></li>

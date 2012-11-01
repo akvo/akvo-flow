@@ -59,7 +59,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
 	font-weight: normal;
-	text-transform:capitalize;
+	text-transform: capitalize;
 }
 h1 {
 	font-size: 2.4em;
@@ -265,32 +265,34 @@ a.helpIcon {
 a.helpIcon:hover {
 	background: url(../images/helpIcon.png) center bottom no-repeat;
 }
-a.AddBtn {	
+a.AddBtn {
 	display: inline-block;
-	margin: 20px auto;
-	padding: 0.8em 1% 0.8em 15px;
-	width: 50%;
-	color:rgb(0,123,182);
-	text-align: center;
+	margin: 10px 0 0 26%;
+	padding: 1em 1% 0.8em 1.5em;
+	width: 58%;
+	color: rgb(0,123,182);
+	text-align: left;
 	text-transform: uppercase;
 	font-size: 1.1em;
-	background:url(../images/addbtn.png) left center no-repeat;
+	background: url(../images/addbtn.png) left center no-repeat;
 }
-a.AddBtn:hover {}
- 
+a.AddBtn:hover {
+}
 /*-------------------------------
 	Dialog
 -----------------------------------*/
 .overlay.display {
-	display:block;
+	display: block;
 	opacity: 1.0;
 }
-
 .overlay {
 	position: fixed;
-	top: 0; right: 0; bottom: 0; left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 	z-index: 100;
-	display:none;
+	display: none;
 	margin-right: auto;
 	margin-left: auto;
 	width: 100%;
@@ -300,9 +302,8 @@ a.AddBtn:hover {}
 	-o-transition: opacity 2s; /* Opera */
 	transition: opacity 2s;
 }
-
 .blanket {
-	position: absolute;	
+	position: absolute;
 	top: 0;
 	bottom: 0;
 	left: 0;
@@ -311,12 +312,11 @@ a.AddBtn:hover {}
 	background-color: #000000;
 	opacity: 0.8;
 }
-
 .dialog {
 	position: relative;
 	display: block;
 	margin: 100px auto;
-	padding:10px;
+	padding: 10px;
 	width: 500px;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
@@ -324,7 +324,6 @@ a.AddBtn:hover {}
 	background: white;
 	-o-border-radius: 4px;
 }
-
 /* page structure
 --------------------------------------------- */
 #pageWrap {
@@ -396,7 +395,6 @@ footer > div {
 .mainContent {
 	padding: 0 0 0 10px;
 }
-
 .whiteBg {
 	position: relative;
 	margin: 0.5em 0.5%;
@@ -733,171 +731,210 @@ tfoot tr {
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys fieldset {
-	position:relative;
-	width:97%;
-	margin:2px auto;
-	padding:1em 1% 3em 1%;
-	}
-	
-fieldset#assignmentDetails, fieldset#devicesSelect {
-	background:rgb(255,255,255);
-	}
-fieldset#surveySelect, fieldset#surveyPreview {
-	background:rgb(242,242,242);
-	}
-	
+	position: relative;
+	width: 97%;
+	margin: 3px auto;
+	padding: 1em 1% 3em 1%;
+}
+fieldset#assignmentDetails {
+	background: rgb(255,255,255);
+}
 #assignSurveys input {
-	padding:3px 5px;	
+	padding: 3px 5px;
 	border: 1px solid rgb(158,158,158);
-	}
-	
+}
 #assignmentDetails > input {
-	width:45%;
-	margin:0 0.5em 1em 0;
-	}
+	width: 45%;
+	margin: 0 0.5em 1em 0;
+}
 .dateRange {
-	position:relative;
+	position: relative;
 	display: block;
-	width:100%;
+	width: 100%;
 }
 input.datePicker {
-	width:90%;
+	width: 90%;
 	display: inline;
 	border-color: transparent;
-	background:rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
+	background: rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
 }
-.dateRange div.activeDate, .dateRange div.expireDate{
-	width:50%;
+.dateRange div.activeDate, .dateRange div.expireDate {
+	width: 50%;
 }
 .dateRange div.activeDate {
-	float:left;
+	float: left;
 }
 .dateRange div.expireDate {
-	float:right;
+	float: right;
 }
-
 .fieldSetWrap {
-	position:relative;
-	width:99%;
-	margin:0 auto;
-	clear:both;
-	padding:0;
-	background:rgb(242,242,242);
-	overflow:auto;
-	}
-
-#assignSurveys .fieldSetWrap fieldset {
-	width:49%;
-	margin:0;
-	padding:1em 0.5% 1.5em 0.5%;
-	display:inline;
-	min-height:200px;
-	}
-#assignSurveys .fieldSetWrap fieldset table {
-	width:98%;
-	margin:0 auto;
-	max-height:210px;
-	overflow:scroll;
-	}
-
-.action a {
-	display:block;
-	width:13px;
-	height:13px;
-	text-indent:-99999px;
-	background:url(../images/removeList.png) center top no-repeat;
-	}
-.action a:hover {
-	background:url(../images/removeList.png) center bottom no-repeat;
-	}
-
-#assignSurveys .fieldSetWrap fieldset table tbody{
-	border:thin solid rgb(230,230,230);
-	}
-
-#assignSurveys .fieldSetWrap fieldset table th {
-	text-align:left;
-	padding:5px 0 5px 5px;
-	cursor: pointer;
-	font-size:1.3em;
-	text-transform:capitalize;
-	color:rgb(107, 134, 141);
-	background:rgb(242,242,242);
-	}
-#assignSurveys .fieldSetWrap fieldset table tr:nth-child(2n+1) {
-	background:rgb(230,230,230);
-	} 
-#assignSurveys .fieldSetWrap fieldset table tr:nth-child(2n) {
-	background:rgb(255,255,255);
-	} 
-#assignSurveys .fieldSetWrap fieldset table td {
-	text-align:left;
-	padding:0.6em 0 0.6em 1.5%;
-	-moz-border-radius:10px;
-	-webkit-border-radius:10px;
-	-o-border-radius:10px;
-	border-radius:10px;
-	border-right:thin solid rgb(255,255,255);
-	}
-#assignSurveys .fieldSetWrap fieldset table td:last-child {
-	border-right:none;
-	}
-
-.groupPreview {width:37.5%;}
-.surveyPreview {width:48.5%;}
-th.action {width:7%;}
-#assignSurveys .fieldSetWrap fieldset table td.action {width:7%; padding:0.6em 0 0.6em 3%;
+	position: relative;
+	width: 99%;
+	margin: 0 auto;
+	clear: both;
+	padding: 0;
+	overflow: auto;
+	background: rgb(242,242,242) url(../images/FieldSetSep.png) center center no-repeat;
 }
-#assignSurveys .fieldSetWrap fieldset#surveySelect {
-	float:left;
-	position:relative;
-	}
-#assignSurveys .fieldSetWrap fieldset#surveyPreview {
-	float:right;
-	position:relative;
-	}
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel {
-	width:48%;
-	padding:1em 0.5% 1.5em 1.5%;
-	background:transparent url(../images/FieldSetSep.png) left center no-repeat;
-	height:98%;
-	}
-
-#assignSurveys .fieldSetWrap fieldset#surveySelect div {
-	position:relative;
+.fieldSetWrap.makeWhite {
+	background: rgb(255, 255, 255) url(../images/FieldSetSep.png) center center no-repeat;
+}
+#assignSurveys .fieldSetWrap fieldset {
+	width: 49%;
+	margin: 0;
+	padding: 1em 0.5% 1.5em 0.5%;
 	display: inline;
-	}
-#assignSurveys .fieldSetWrap fieldset#surveySelect div nav {
-	 position:absolute;
-	 top:0.8em;
-	 right:2.2em;
-	 display: inline;
-	 }
-#assignSurveys .fieldSetWrap fieldset#surveySelect div nav ul li {
-	 display: inline;
-	 margin:0 0 0 5px;
-	 }
-#assignSurveys .fieldSetWrap fieldset#surveySelect div nav ul li:first-child {
-	 margin:0 0 0 0;
-	 }
-#assignSurveys .fieldSetWrap fieldset#surveySelect div nav ul li a {
-	 color:rgb(0,123,182);
-	 }
-#assignSurveys .fieldSetWrap fieldset#surveySelect div:nth-child(2n+1) {
-	 float:right;
-	 width:55%;
-	 }
-#assignSurveys .fieldSetWrap fieldset#surveySelect div:nth-child(2n) {
-	 float:left;
-	 width:45%;
-	 }
-#assignSurveys .fieldSetWrap fieldset#surveySelect div:nth-child(2n) select {
-	 width:90%;
-	 }
-#assignSurveys .fieldSetWrap fieldset#surveySelect div:nth-child(2n+1) select {
-	 width:90%;
-	 }
-
+	min-height: 200px;
+}
+#assignSurveys .fieldSetWrap fieldset table {
+	width: 98%;
+	margin: 0 auto;
+	max-height: 210px;
+	overflow: scroll;
+}
+.action a {
+	display: block;
+	width: 13px;
+	height: 13px;
+	text-indent: -99999px;
+	background: url(../images/removeList.png) center top no-repeat;
+}
+.action a:hover {
+	background: url(../images/removeList.png) center bottom no-repeat;
+}
+table.previewList {
+	color: rgb(209,84,95);
+}
+#assignSurveys .fieldSetWrap fieldset table tbody {
+	border: thin solid rgb(230,230,230);
+}
+#assignSurveys .fieldSetWrap fieldset table th {
+	text-align: left;
+	padding: 5px 0 5px 5px;
+	cursor: pointer;
+	font-size: 1.3em;
+	text-transform: capitalize;
+	color: rgb(107, 134, 141);
+	background: rgb(242,242,242);
+	font-weight: normal;
+}
+#assignSurveys .fieldSetWrap fieldset table tr:nth-child(2n+1) {
+	background: rgb(230,230,230);
+}
+#assignSurveys .fieldSetWrap fieldset table tr:nth-child(2n) {
+	background: rgb(255,255,255);
+}
+#assignSurveys .fieldSetWrap fieldset table tr:last-child {
+	background: transparent;
+}
+#assignSurveys .fieldSetWrap fieldset table td {
+	text-align: left;
+	vertical-align: middle;
+	padding: 0 0 0 1.5%;
+	border-right: thin solid rgb(255,255,255);
+}
+#assignSurveys .fieldSetWrap fieldset table td:last-child {
+	border-right: none;
+}
+#assignSurveys .fieldSetWrap fieldset table tfoot tr {
+	display: table-row;
+	background: transparent;
+	vertical-align: middle;
+	height: 21px;
+}
+#assignSurveys .fieldSetWrap fieldset table tfoot td {
+	position: relative;
+	text-align: center;
+}
+#assignSurveys .fieldSetWrap fieldset table tfoot td a {
+	display: block;
+	padding: 5px 3px;
+	background: rgb(0,123,182);
+	width: 10%;
+	float: right;
+	color: rgb(255,255,255);
+	-moz-border-radius: 0 0 5px 5px;
+	-webkit-border-radius: 0 0 5px 5px;
+	-o-border-radius: 0 0 5px 5px;
+	border-radius: 0 0 5px 5px;
+	-moz-transition: background 0.5s ease-in;
+	-webkit-transition: background 0.5s ease-in;
+	-o-transition: background 0.5s ease-in;
+	transition: background 0.5s ease-in;
+}
+#assignSurveys .fieldSetWrap fieldset table tfoot td a:hover {
+	background: rgb(107, 134, 141);
+	color: rgb(255,255,255);
+}
+.groupPreview {
+	width: 37.5%;
+}
+.surveyPreview {
+	width: 48.5%;
+}
+th.action {
+	width: 7%;
+}
+#assignSurveys .fieldSetWrap fieldset table td.action {
+	width: 7%;
+	padding: 0.6em 0 0.6em 3%;
+}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel {
+	float: left;
+	position: relative;
+}
+#assignSurveys .fieldSetWrap fieldset.formRightPanel {
+	float: right;
+	position: relative;
+	width: 48%;
+	padding: 1em 0.5% 1.5em 1.5%;
+	height: 98%;
+}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div {
+	position: relative;
+	display: inline;
+}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav {
+	position: absolute;
+	top: 0.8em;
+	right: 2.2em;
+	display: inline;
+}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav ul li {
+	display: inline;
+	margin: 0 0 0 5px;
+}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav ul li:first-child {
+	margin: 0 0 0 0;
+}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav ul li a {
+	color: rgb(0,123,182);
+}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n+1) {
+	float: right;
+	width: 55%;
+}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n) {
+	float: left;
+	width: 45%;
+}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n) select {
+	width: 90%;
+}
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n+1) select {
+	width: 90%;
+}
+.menuConfirm {
+	text-align:center;
+	margin: 0 auto;
+}
+.menuConfirm ul li {
+	display: inline;
+	margin:0 15px 0 0;
+}
+.menuConfirm ul li a {
+	display: inline-block;
+}
 /*-------------------------------------------------------------------- 
 							Tabs Styling
 ----------------------------------------------------------------------*/
@@ -908,9 +945,9 @@ th.action {width:7%;}
 }
 #tabs div > section h1 {
 	display: block;
-	margin:0.8em 0 0.8em 0.5em;
-	color:rgb(44, 42, 116);
-	font-size:2em;
+	margin: 0.8em 0 0.8em 0.5em;
+	color: rgb(44, 42, 116);
+	font-size: 2em;
 }
 #tabs nav.tabNav {
 	display: block;
@@ -934,7 +971,6 @@ th.action {width:7%;}
 	background: -o-linear-gradient(top, rgb(201,201,201) 0%, rgb(223,223,223) 83%, rgb(206,206,206) 100%); /* Opera 11.10+ */
 	background: -ms-linear-gradient(top, rgb(201,201,201) 0%, rgb(223,223,223) 83%, rgb(206,206,206) 100%); /* IE10+ */
 	background: linear-gradient(to bottom, rgb(201,201,201) 0%, rgb(223,223,223) 83%, rgb(206,206,206) 100%); /* W3C */
-
 	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2M5YzljOSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjgzJSIgc3RvcC1jb2xvcj0iI2RmZGZkZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjZWNlY2UiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
 	background-clip: padding-box;
  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9c9c9', endColorstr='#cecece', GradientType=0 ); /* IE6-8 */
@@ -1731,9 +1767,7 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 	-webkit-border-radius: 0 0 10px 0;
 	-moz-border-radius: 0 0 10px 0;
 	border-radius: 0 0 10px 0;
-	background: rgb(248,248,248);/* -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
-	/* -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
-	/* box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
+	background: rgb(248,248,248);/* -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *//* -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *//* box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {
 }
