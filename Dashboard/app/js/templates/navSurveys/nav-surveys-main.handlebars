@@ -36,6 +36,7 @@
           <!-- show selected survey group and edit name button --> 
           <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2> 
           <a {{action "editSurveyGroupName" target="this"}}>{{t _edit_name}}</a>
+		  <a {{action "showSGroupDeleteDialog" target="this"}} class="addGroup">{{t _delete_this_group}}</a>
         {{/if}}
       {{/if}}
       
@@ -43,7 +44,7 @@
       <nav class="menuTopbar">
         <ul class="">
           {{#if view.oneSelected}}
-            <li><a {{action "showSGroupDeleteDialog" target="this"}} class="addGroup">{{t _delete_this_group}}</a></li>
+            <li></li>
           {{/if}}
           <li><a {{action "addGroup" target="this"}} class="addGroup">{{t _add_new_group}}</a></li>
           {{#if view.oneSelected}}
@@ -92,6 +93,7 @@
     <!-- Survey Group Delete confirmation dialog-->
     <div {{bindAttr class="view.showSGDeleteDialogue:display :overlay"}}>
       <div class="blanket"></div>
+		<div class="dialogWrap">
         <!-- the dialog contents -->
         <div class="confirmDialog dialog"  style="display:block;">
           <h2>Are you sure you want to delete this surveygroup?</h2>
@@ -109,8 +111,10 @@
     <!-- Survey Group cannot delete due to existing surveys dialog-->
     <div {{bindAttr class="view.showSGDeleteNotPossibleDialogue:display :overlay"}}>
       <div class="blanket"></div>
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialog"  style="display:block;">
+		<div class="dialogWrap">
+        	<!-- the dialog contents -->
+		
+        <div class="confirmDialog dialog">
           <h2>Can't delete survey group</h2>
           <p class="dialogMsg">You cannot delete this survey group because it contains surveys. Please delete the surveys individually first.</p>
           <br/><br/>
