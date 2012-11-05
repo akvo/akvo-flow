@@ -33,6 +33,7 @@ public class ConstantUtil {
 	 * file system constants
 	 */
 	public static final String DATA_DIR = "fieldsurvey/data/";
+	public static final String APK_DIR = "fieldsurvey/apk/";
 	public static final String SURVEYAL_DIR = "fieldsurvey/surveyal";
 	public static final String FILE_SURVEY_LOCATION_TYPE = "file";
 	public static final String ARCHIVE_SUFFIX = ".zip";
@@ -45,6 +46,11 @@ public class ConstantUtil {
 	public static final String STACKTRACE_DIR = "fieldsurvey/stacktrace/";
 	public static final String STACKTRACE_FILENAME = "err-";
 	public static final String STACKTRACE_SUFFIX = ".stacktrace";
+	
+	/**
+	 * remote dirs
+	 */
+	public static final String REMOTE_APK_DIR = "apk/";
 
 	/**
 	 * survey file locations

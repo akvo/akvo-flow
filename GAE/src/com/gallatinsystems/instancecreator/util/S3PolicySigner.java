@@ -16,6 +16,8 @@
 
 package com.gallatinsystems.instancecreator.util;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -32,13 +34,39 @@ import sun.misc.BASE64Encoder;
  */
 public class S3PolicySigner {
 
+	private String base64EncodedPolicyDocument = null;
+	
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception{
+		checkArgs(args);
+		S3PolicySigner signer = new S3PolicySigner();		
+		BufferedReader reader = new BufferedReader(new FileReader(args[0]));
+		String line = reader.readLine();
+		StringBuilder policyFile = new StringBuilder();
+		while(line != null){
+			if(policyFile.length()>0){
+				policyFile.append("\n");
+			}
+			policyFile.append(line);
+			line = reader.readLine();
+		}
+		
+		String[] output = signer.createPolicyString(policyFile.toString(), args[1]);
+		for(String val:output){
+			System.out.println(val);
+		}
+	}
+	
+	private static void checkArgs(String[] args){
+		if(args.length != 2){
+			System.err.println("Incorrect command line arguments.\nUsage:\n\tjava com.gallatinsystems.instancecreator.util.S3PolicySigner <policyDoc> <secretKey>");
+			System.exit(1);
+		}
 	}
 
-	private String base64EncodedPolicyDocument = null;
+	
 
 	public String[] createPolicyString(String policy_document,
 			String aws_secret_key) throws UnsupportedEncodingException,
