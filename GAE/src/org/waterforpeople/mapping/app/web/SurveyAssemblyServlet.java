@@ -96,6 +96,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 	private static final String SURVEY_UPLOAD_POLICY = "surveyuploadpolicy";
 	private static final String S3_ID = "aws_identifier";
 
+	private Random randomNumber = new Random();
+
 	@Override
 	protected RestRequest convertRequest() throws Exception {
 		HttpServletRequest req = getRequest();
@@ -260,7 +262,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		// Swap with proper UUID
 		SurveyDAO surveyDao = new SurveyDAO();
 		Survey s = surveyDao.getById(surveyId);
-		Long transactionId = new Random().nextLong();
+		Long transactionId = randomNumber.nextLong();
 		String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey";
 		String lang = "en";
 		if (s != null && s.getDefaultLanguageCode() != null) {
@@ -389,7 +391,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				count++;
 			}
 			count = 0;
-			Long transactionId = new Random().nextLong();
+			Long transactionId = randomNumber.nextLong();
 			sendQueueMessage(
 					SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP,
 					surveyId, builder.toString(), transactionId);
