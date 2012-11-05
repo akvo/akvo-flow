@@ -106,6 +106,7 @@ public class KMLApplet extends JApplet implements Runnable {
 			ArrayList<String> countryList = new ArrayList<String>();
 			countryList.add("BF");
 			countryList.add("MW");
+			countryList.add("NL");
 			countryList.add("RW");
 			countryList.add("BO");
 			countryList.add("PE");
