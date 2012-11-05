@@ -826,7 +826,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 		}
 		if (criteriaType.getSelectedIndex() != 4) {
 			TextBox desc = (TextBox) grid.getWidget(row, 4);
-			if (desc.getText().trim() != "") {
+			if (!desc.getText().trim().equals("")) {
 				item.setDisplayName(desc.getText().trim());
 			}
 			ListBox fields = (ListBox) grid.getWidget(row, 5);
@@ -888,7 +888,7 @@ public class StandardScoringManagerPortlet extends UserAwarePortlet implements
 			item.setEffectiveEndDate(effectiveEndDate.getValue());
 		}
 		TextBox keyBox = (TextBox) grid.getWidget(row, 10);
-		if (keyBox.getValue().trim() != "" && keyBox.getValue() != null) {
+		if (keyBox.getValue() != null && !keyBox.getValue().trim().equals("")) {
 			item.setKeyId(Long.parseLong(keyBox.getText()));
 		}
 		return item;
