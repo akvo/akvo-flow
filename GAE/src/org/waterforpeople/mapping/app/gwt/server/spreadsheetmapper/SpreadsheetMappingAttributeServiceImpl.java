@@ -367,9 +367,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								}
 							} else if (colName.toLowerCase().equals(
 									"Options".toLowerCase())
-									&& (q.getType().equals(QuestionType.OPTION) || q
-											.getType().equals(
-													QuestionType.STRENGTH))) {
+									&& (q.getType().toString().equals(QuestionType.OPTION.toString()) ||
+										q.getType().toString().equals(QuestionType.STRENGTH.toString()))) {
 								String[] splitColContents = colContents.trim()
 										.split(";");
 								int optCount = 1;
@@ -389,9 +388,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								}
 							} else if ((colName.equals("AllowOther") || colName
 									.equals("AllowMultiple"))
-									&& (q.getType().equals(QuestionType.OPTION) || q
-											.getType().equals(
-													QuestionType.STRENGTH))) {
+									&& (q.getType().toString().equals(QuestionType.OPTION.toString()) ||
+										q.getType().toString().equals(QuestionType.STRENGTH.toString()))) {
 								if (colName.equals("AllowOther")) {
 									q.setAllowOtherFlag(new Boolean(colContents
 											.toLowerCase()));
@@ -415,8 +413,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							}
 						}
 					}
-					if (q.getType().equals(QuestionType.OPTION)
-							|| q.getType().equals(QuestionType.STRENGTH)) {
+					if (q.getType().toString().equals(QuestionType.OPTION.toString())
+							|| q.getType().toString().equals(QuestionType.STRENGTH.toString())) {
 						q.setQuestionOptionMap(optionMap);
 
 					}
