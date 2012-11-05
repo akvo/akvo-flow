@@ -347,7 +347,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 						for (SurveyMetricMapping mapping : mappings) {
 							for (QuestionAnswerStore ans : answers) {
 								if (ans.getQuestionID().equals(
-										mapping.getSurveyQuestionId())) {
+										mapping.getSurveyQuestionId().toString())) {
 									instance.setCommunity(ans.getValue());
 									break;
 								}
