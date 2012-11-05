@@ -250,7 +250,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			if (apList != null) {
 				cursor = AccessPointDao.getCursor(apList);
 			}
-			for (AccessPoint ap : apList) {
+			for (AccessPoint ap : apList) { // FIXME: apList could be null?
 				apDao.save(ap);
 			}
 		} while (apList != null && apList.size() == 200);
