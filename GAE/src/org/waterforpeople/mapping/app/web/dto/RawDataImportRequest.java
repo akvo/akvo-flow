@@ -30,8 +30,12 @@ import com.gallatinsystems.framework.rest.RestRequest;
 public class RawDataImportRequest extends RestRequest {
 
 	private static final long serialVersionUID = 3792808180110794885L;
-	private static final DateFormat IN_FMT = new SimpleDateFormat(
-			"dd-MM-yyyy HH:mm:ss z");
+	private static final ThreadLocal<DateFormat> IN_FMT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+		};
+	};
 	private static final String VALUE = "value=";
 	private static final String TYPE = "type=";
 
@@ -194,7 +198,7 @@ public class RawDataImportRequest extends RestRequest {
 		}
 		if (req.getParameter(COLLECTION_DATE_PARAM) != null
 				&& req.getParameter(COLLECTION_DATE_PARAM).trim().length() > 0	) {
-			collectionDate = IN_FMT.parse(req.getParameter(
+			collectionDate = IN_FMT.get().parse(req.getParameter(
 					COLLECTION_DATE_PARAM).trim());
 		}
 		if (req.getParameter(SUBMITTER_PARAM) != null) {

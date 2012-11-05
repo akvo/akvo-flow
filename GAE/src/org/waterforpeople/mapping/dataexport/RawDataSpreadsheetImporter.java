@@ -66,8 +66,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	private List<String> errorIds;
 	private volatile int currentStep;
 
-	private static final DateFormat DATE_FMT = new SimpleDateFormat(
-			"dd-MM-yyyy HH:mm:ss z");
+	private static final ThreadLocal<DateFormat> DATE_FMT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+		};
+	};
 	private static final int SIZE_THRESHOLD = 2000*400;
 
 	static {
@@ -225,7 +229,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							}
 							if (cellVal.endsWith("UTC")) {
 								try {
-									cellVal = DATE_FMT.parse(cellVal).getTime()
+									cellVal = DATE_FMT.get().parse(cellVal).getTime()
 											+ "";
 								} catch (Exception e) {
 									System.out.println("bad date format: "
