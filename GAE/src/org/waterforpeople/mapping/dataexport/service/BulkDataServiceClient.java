@@ -100,10 +100,6 @@ public class BulkDataServiceClient {
 		String url = serverBase + action;
 
 		String response = fetchDataFromServer(url);
-		JSONObject jsonOuter = new JSONObject(response);
-		if (jsonOuter.has("cursor")) {
-			cursor = jsonOuter.getString("cursor");
-		}
 		List<AccessPointDto> apDtoList = RestAccessPointParser
 				.parseAccessPoint(response);
 		return apDtoList;
