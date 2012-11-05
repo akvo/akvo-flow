@@ -102,9 +102,6 @@ public class TextQuestionWidget extends QuestionWidget implements
 	protected void captureAnswer() {
 		if (ViewUtil.isTextPopulated(textBox)) {
 			String answerTextValue = textBox.getText().trim();
-			if (answerTextValue.contains(",")) {
-
-			}
 			getAnswer().setValue(answerTextValue);
 		}
 	}

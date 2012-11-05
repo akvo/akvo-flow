@@ -139,9 +139,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			return new String("Processed Successfully");
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not save spreadsheet", e);
-			String message = new String("Could not save spreadsheet : ");
-			message.concat(e.getMessage());
-			return message;
+			return "Could not save spreadsheet : " + e.getMessage();
 		}
 	}
 
@@ -382,7 +380,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 										String optionVal = optionParts[0]
 												.trim();
 										String text = optionParts[1].trim();
-										text.replaceAll("\\n", " ");
+										text = text.replaceAll("\\n", " ");
 										QuestionOption qo = new QuestionOption();
 										qo.setCode(optionVal);
 										qo.setText(text);
