@@ -171,7 +171,7 @@ public class DisplayContentManager extends LocationDrivenPortlet {
 			descTB.setText(null);
 			for (int i = 0; i < attributesLB.getItemCount(); i++) {
 				String itemText = attributesLB.getItemText(i);
-				if (itemText.equals(null))
+				if (itemText.equals(null)) //FIXME: Always return false?
 					attributesLB.setSelectedIndex(i);
 			}
 		}
