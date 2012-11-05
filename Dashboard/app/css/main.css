@@ -59,7 +59,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
 	font-weight: normal;
-	text-transform: capitalize;
+	text-transform:capitalize;
 }
 h1 {
 	font-size: 2.4em;
@@ -73,7 +73,6 @@ h1 {
 }
 h2 {
 	color: rgb(44, 42, 116);
-	text-transform: capitalize;
 	font-size: 1.8em;
 	line-height: 1.6em;
 }
@@ -323,7 +322,7 @@ a.AddBtn:hover {
 	display: block;
 	top: 35%;
 	left: 35%;
-	padding:2em 1em 2em 2em;
+	padding:1em 2em;
 	width: 25%;
 	border:thin solid rgb(153,153,153);
  	-webkit-border-radius: 4px;
@@ -332,6 +331,15 @@ a.AddBtn:hover {
 	background: white;
 	-o-border-radius: 4px;
 }
+.dialogWrap .menuCentre {
+	margin: 30px auto 10px auto;
+	}
+.dialogWrap p {
+	font-size:1.5em;
+	margin-top:15px; 
+	padding:1em;
+	background:rgb(242,242,242);
+	}
 /* page structure
 --------------------------------------------- */
 #pageWrap {
