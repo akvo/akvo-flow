@@ -246,7 +246,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		List<AccessPoint> apList = null;
 		do {
 			apList = apDao.listAccessPointByLocation(country, null, null, null,
-					cursor, new Integer(200));
+					cursor, 200);
 			if (apList != null) {
 				cursor = AccessPointDao.getCursor(apList);
 			}
