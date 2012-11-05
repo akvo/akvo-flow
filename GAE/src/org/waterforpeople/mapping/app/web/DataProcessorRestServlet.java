@@ -391,7 +391,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 					}
 					Long count = countMap.get(val);
 					if (count == null) {
-						count = new Long(1);
+						count = 1L;
 					} else {
 						count = count + 1;
 					}

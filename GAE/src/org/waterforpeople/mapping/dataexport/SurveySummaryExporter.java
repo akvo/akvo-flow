@@ -427,7 +427,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		private void incrementValue(String key, Map<String, Long> map) {
 			Long val = map.get(key);
 			if (val == null) {
-				val = new Long(1);
+				val = 1L;
 			} else {
 				val++;
 			}
