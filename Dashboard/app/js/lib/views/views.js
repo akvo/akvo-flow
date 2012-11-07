@@ -61,7 +61,17 @@ FLOW.ExcelExportView = Ember.View.extend({ templateName: 'navData/excel-export'}
 FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports/nav-reports'});
 
 // maps views
-FLOW.NavMapsView = Ember.View.extend({ templateName: 'navMaps/nav-maps'});
+FLOW.NavMapsView = Ember.View.extend({
+  templateName: 'navMaps/nav-maps',
+  didInsertElement: function() {
+    var center = [52.370216, 4.895168];
+    var map = L.map('map').setView(center, 13);
+    var marker1 = L.marker([38.895112, -77.036366]).addTo(map);
+    var marker2 = L.marker([51.490997, -0.109295]).addTo(map);
+    marker1.bindPopup("Hey, Caetie!");
+    marker2.bindPopup("How's it going, Paul?");
+  }
+});
 
 // users views
 FLOW.NavUsersView = Ember.View.extend({	templateName: 'navUsers/nav-users'});

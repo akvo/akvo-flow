@@ -395,3 +395,22 @@ FLOW.QuestionOption.FIXTURES = [{
 	text: 'programmer',
 	questionId: 1
 }];
+
+FLOW.Location = DS.Model.extend({
+  keyId:      DS.attr("number"),
+  label:      DS.attr("string"),
+  latitude:   DS.attr("number"),
+  longitude:  DS.attr("number")
+});
+
+FLOW.Location.FIXTURES = [{
+  keyId:      1,
+  label:      "Edinburgh",
+  latitude:   55.953252,
+  longitude:  -3.188267
+},{
+  keyId:      2,
+  label:      "Reykjavík",
+  latitude:   64.135338,
+  longitude:  -21.89521
+}];
