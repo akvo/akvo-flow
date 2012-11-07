@@ -150,10 +150,9 @@ public class QuestionListWidget extends ListBasedWidget implements ContextAware 
 		if (importQuestionsButton.getParent() != null) {
 			importQuestionsButton.removeFromParent();
 		}
-		dataGrid = new Grid(questionList.size(), 5);
-		int i = 0;
 		if (questionList != null) {
-
+			dataGrid = new Grid(questionList.size(), 5);
+			int i = 0;
 			for (QuestionDto q : questionList) {
 				Label l = createListEntry((q.getOrder() != null ? q.getOrder()
 						: "") + ": " + q.getText());

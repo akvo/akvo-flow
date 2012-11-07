@@ -91,9 +91,9 @@ public class EditorialPageListWidget extends ListBasedWidget implements
 
 	private void populateList(Collection<EditorialPageDto> pageList) {
 		toggleLoading(false);
-		Grid dataGrid = new Grid(pageList.size(), 2);
-		int i = 0;
 		if (pageList != null) {
+			Grid dataGrid = new Grid(pageList.size(), 2);
+			int i = 0;
 			for (EditorialPageDto p : pageList) {
 				Label l = createListEntry(p.getTargetFileName());
 				pageMap.put(l, p);
@@ -103,8 +103,8 @@ public class EditorialPageListWidget extends ListBasedWidget implements
 				dataGrid.setWidget(i, 0, l);
 				i++;
 			}
+			addWidget(dataGrid);
 		}
-		addWidget(dataGrid);
 	}
 
 	@Override
