@@ -2,6 +2,7 @@ APPNAME = 'akvo-flow'
 
 require 'colored'
 require 'rake-pipeline'
+require 'i18n-docs'
 
 def pipeline
   Rake::Pipeline::Project.new('Assetfile')

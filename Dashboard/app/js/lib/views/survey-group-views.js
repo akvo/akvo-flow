@@ -18,7 +18,6 @@ FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 	
 	// fired when a survey group is clicked
 	makeSelected: function() {
-			console.log("selecting survey Group: "+this.content.get('keyId'));
 			FLOW.selectedControl.set('selectedSurveyGroup', this.content);
 	}
 });
@@ -47,6 +46,8 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	showEditField: false,
 	showNewGroupField:false,
 	surveyGroupName:null,
+	showSGDeleteDialogue:false,
+	showSGDeleteNotPossibleDialogue:false,
 	
 	// true if at least one survey group is active
 	oneSelected: function() {
@@ -60,39 +61,77 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	
 	// fired when 'edit name' is clicked, shows edit field to change survey group name
 	editSurveyGroupName: function() {
-			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
-			this.set('showEditField',true);
+		this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
+		this.set('showEditField',true);
 	},
 	
 	// fired when 'save' is clicked while showing edit group name field. Saves the new group name
 	saveSurveyGroupNameEdit: function() {
-			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
-			var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
-			surveyGroup.set('displayName',this.get('surveyGroupName'));
-			this.set('showEditField',false);
+		var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
+		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
+		surveyGroup.set('code',this.get('surveyGroupName'));
+		FLOW.store.commit();
+		FLOW.selectedControl.set('selectedSurveyGroup',FLOW.store.find(FLOW.SurveyGroup, sgId));
+		this.set('showEditField',false);
 	},
 	
 	// fired when 'cancel' is clicked while showing edit group name field. Cancels the edit.
 	cancelSurveyGroupNameEdit: function() {
-			this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('displayName'));
-			this.set('showEditField',false);
+		this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
+		this.set('showEditField',false);
 	},
+
 	
 	// fired when 'add a group' is clicked. Displays a new group text field in the left sidebar
 	addGroup: function() {
-			FLOW.selectedControl.set('selectedSurveyGroup',null);
-			this.set('surveyGroupName',null);
-			this.set('showNewGroupField',true);
+		FLOW.selectedControl.set('selectedSurveyGroup',null);
+		this.set('surveyGroupName',null);
+		this.set('showNewGroupField',true);
 	},
-	
+
+    // show delete SurveyGroup dialog
+	showSGroupDeleteDialog:function(){
+		// check if there are surveys in the the datastore (this is also checked at the server)
+		var surveys=FLOW.store.filter(FLOW.Survey,function(data,sgId) {
+			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
+   			if (data.get('surveyGroupId') == sgId) { 
+   				return true; }
+		});
+
+		// if there are surveys in this group, display 'please remove surveys first'
+		if (surveys.get('content').length > 0) { 
+			this.set('showSGDeleteNotPossibleDialogue',true);
+		} else {
+
+			// else display 'are you sure you want to delete'
+			this.set('showSGDeleteDialogue',true);
+		}
+	},
+
+	// cancel survey group delete
+	cancelSGroupDelete:function(){
+		this.set('showSGDeleteDialogue',false);
+		this.set('showSGDeleteNotPossibleDialogue',false);
+	},
+
+	// delete survey group
+	doSGroupDelete:function(){
+		var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
+		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
+		surveyGroup.deleteRecord();
+		FLOW.store.commit();
+		this.set('showSGDeleteDialogue',false);
+		// TODO refresh list of survey groups
+
+	},
+
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
 	saveNewSurveyGroupName: function() {
 			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{
-				"keyId":"",
-				"name":this.get('surveyGroupName'),
-				"displayName":this.get('surveyGroupName'),
-				"code":this.get('surveyGroupName')});
-
+				"code":this.get('surveyGroupName')
+			});
+			FLOW.store.commit();
+			FLOW.surveyGroupControl.set('content',FLOW.store.find(FLOW.SurveyGroup, {}));
 			this.set('showNewGroupField',false);
 	},
 	

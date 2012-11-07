@@ -37,6 +37,9 @@ GEM
     guard-rake (0.0.5)
       guard
       rake
+    i18n-docs (0.0.4)
+      bundler
+      rake
     listen (0.4.3)
       rb-fchange (~> 0.0.5)
       rb-fsevent (~> 0.9.1)
@@ -67,6 +70,7 @@ DEPENDENCIES
   compass
   guard
   guard-rake
+  i18n-docs
   rack
   rack-rewrite
   rake-pipeline!

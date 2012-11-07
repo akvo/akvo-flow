@@ -1,8 +1,46 @@
 // ************************ Surveys *************************
+
+FLOW.SurveySidebarView = Ember.View.extend({
+	surveyTitle:null,
+	surveyDescription: null,
+	surveyTypeControl:null,
+	surveySectorTypeControl:null,
+
+	init: function(){
+		this._super();
+		this.set('surveyTitle',FLOW.selectedControl.selectedSurvey.get('name'));
+		this.set('surveyDescription',FLOW.selectedControl.selectedSurvey.get('description'));
+		this.set('typeTypeControl',FLOW.selectedControl.selectedSurvey.get('pointType'));
+		
+		// TODO imlement sector codes on surveys
+		//surveySectorTypeControl=FLOW.selectedControl.selectedSurvey.get('sector');
+	},
+
+	doSaveSurvey:function(){
+		var sgId=FLOW.selectedControl.selectedSurvey.get('id');
+		var survey=FLOW.store.find(FLOW.Survey, sgId);
+		survey.set('name',this.get('surveyTitle'));
+		survey.set('description',this.get('surveyDescription'));
+		survey.set('pointType',this.get('surveyTypeControl'));
+		FLOW.store.commit();
+		//FLOW.selectedControl.set('selectedSurvey',FLOW.store.find(FLOW.Survey, sgId));
+	},
+
+	doPreviewSurvey:function(){
+		console.log("TODO: implement preview survey");
+	},
+
+	doPublishSurvey:function(){
+		console.log("TODO: implement publish survey");
+	}
+});
+
+
 FLOW.QuestionGroupItemView = Ember.View.extend({
 	content: null, // question group content comes through binding in handlebars file
 	zeroItem: false,
 	renderView:false,
+	showQGDeleteDialogue:false,
 
 	amVisible: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestionGroup');
@@ -51,12 +89,23 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		}
 	}.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
+	
+	// show delete QGroup dialogue
+	showQGroupDeleteDialogue:function(){
+		this.set('showQGDeleteDialogue',true);
+	},
+
+	// cancel question group delete
+	cancelQGroupDelete:function(){
+		this.set('showQGDeleteDialogue',false);
+	},
+
 	// execure group delete
 	doQGroupDelete:function(){
 		// TODO show popup
 		// if cancel: remove popup, don't do anything
 		// if delete: remove question group.
-
+		this.set('showQGDeleteDialogue',false);
 		
 		var qgDeleteOrder = this.content.get('order');
 		var qgDeleteId = this.content.get('keyId');

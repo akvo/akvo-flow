@@ -43,20 +43,21 @@ form {
 input, textarea, button, select {
 	/*	-webkit-appearance:none;
 	-moz-appearance:none;
-*/	-webkit-border-radius:3px;
+	-webkit-border-radius:3px;
 	-moz-border-radius:3px;
 	-o-border-radius:3px;
-	border-radius:3px;
+	border-radius:3px;*/
 	color:rgb(102,102,102);
 	font-weight:normal;
 }
 input, textarea {
 	border: 1px solid rgb(58,58,58);
-	background: rgb(242, 240, 230);
+	background: rgb(250, 244, 230);
 	-moz-box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
 	-webkit-box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
 	-o-box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
 	box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
+	padding:3px 5px;	
 }
 textarea {
 	overflow: auto;
@@ -95,6 +96,7 @@ label {
 	margin:5px 2px;
 	text-transform:capitalize;
 	display:block;
+	color:rgb(107, 134, 141);
 }
 /*
  * 1. Correct color not inheriting in IE6/7/8/9
@@ -145,6 +147,10 @@ button[disabled], input[disabled] { cursor: default; }
 
 input[type="checkbox"], input[type="radio"] {
 	box-sizing: border-box;
+	/* MTW added */
+	-webkit-appearance: checkbox;
+	/* end MTW added */
+	
 	padding: 0;
 	width: 13px;
 	height: 13px;
@@ -209,3 +215,7 @@ input[type="submit"]:hover {
 	padding:5px 10px;
 	border:none;
 	}
+	
+/* =============================================================================
+							DEVICES TAB
+========================================================================== */

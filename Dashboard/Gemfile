@@ -12,6 +12,8 @@ gem 'rack-rewrite'
 gem 'sass'
 gem 'compass'
 
+gem 'i18n-docs'
+
 gem 'uglifier'
 gem 'yui-compressor'
 

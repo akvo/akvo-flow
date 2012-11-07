@@ -1,189 +1,207 @@
+
+<!-- we are within navSurveysEditView -->
 <section class="leftSidebar" id="newSurveyInfo">
-    <h2>Edit survey</h2>
-    <form action="#" method="get">
-        <label for="newSurveyName">Title:</label>
-        <input autofocus id="newSurveyName" name="surveyName" placeholder="Type in the name of your survey." required required title="Type in the name of your survey." type="text"/>
-        <label for="newSurveyDesc">Description:</label>
-        <textarea id="newSurveyDesc" name="surveyDesc" placeholder="Type in the description of your survey." required title="Type in the description of your survey."></textarea>
-        <label for="surveyType">Type:</label>
-        <select id="surveyType">
-            <option value="Point">Point</option>
-            <option value="Household">Household</option>
-            <option value="Public Institution">Public Institution</option>
-            <option value="Community">Community (Area)</option>
-            <option value="Create a new type">Create a new Survey type</option>
-        </select>
-        <label for="sectorFocus">Sector Focus:</label>
-        <select id="sectorFocus">
-            <option value="Water">Water</option>
-            <option value="Education">Education</option>
-            <option value="Sanitation">Sanitation</option>
-            <option value="Economic development">Economic development</option>
-            <option value="Health Care">Health Care</option>
-            <option value="IT and Commmunications">IT & Commmunications</option>
-            <option value="Food Security">Food Security</option>
-            <option value="Create a new type">Create a new Survey type</option>
-        </select>
-    </form>
-    <ul class="newSurveyInfoUl" id="">
-        <li>
-            <h3>Survey Summary</h3>
-        </li>
-        <li>Number of Question set:
-            <span id="numberQuestionSet">01</span></li>
-        <li>Number of Questions:
-            <span id="numberQuestion">00</span></li>
+  <h2>{{t _edit_survey}}</h2>
+  {{#view FLOW.SurveySidebarView}}
+  
+ 
+<form>
+    <label for="newSurveyName">Title:
+      {{view Ember.TextField valueBinding="view.surveyTitle" placeholder="Type in the name of your survey" size=30}}
+    </label>
+    <label for="newSurveyDesc">Description:
+       {{view Ember.TextArea valueBinding="view.surveyDescription" placeholder="Type in a description of your survey" size=30 rows="3" }}
+    </label>
+    <label for="surveyType">Type:
+      {{view Ember.Select 
+                      contentBinding="FLOW.surveyTypeControl.content" 
+                      optionLabelPath="content.label" 
+                      optionValuePath="content.value" 
+                      selectionBinding="view.SurveyType" 
+                      prompt="Select survey type"}}
+    </label>
+    <label for="surveyType">Sector Focus:
+      {{view Ember.Select 
+                      contentBinding="FLOW.surveySectorTypeControl.content" 
+                      optionLabelPath="content.label" 
+                      optionValuePath="content.value" 
+                      selectionBinding="view.SurveySectorType" 
+                      prompt="Select sector"}}
+    </label>
+</form>
+
+  <ul class="newSurveyInfoUl" id="">
+    <li>
+      <h3>Survey Summary</h3>
+    </li>
+    <li>Number of Question groups:
+      <span id="numberQuestionSet">01</span>
+    </li>
+    <li>Number of Questions:
+      <span id="numberQuestion">00</span>
+    </li>
+  </ul>
+  <nav class="newSurveyNav">
+    <ul>
+      <li><a {{action doSaveSurvey target="this"}} class="saveNewSurvey">Save</a></li>
+      <li><a {{action doPreviewSurvey target="this"}} class="previewNewSurvey">Preview</a></li>
+      <li><a {{action doPublishSurvey target="this"}} class="publishNewSurvey">Publish</a></li>
     </ul>
-    <nav class="newSurveyNav">
-        <ul>
-            <li><a href="#" class="saveNewSurvey">Save</a></li>
-            <li><a href="#" class="previewNewSurvey">Preview</a></li>
-            <li><a href="#" class="publishNewSurvey">Publish</a></li>
-        </ul>
-    </nav>
+  </nav>
+   {{/view }} <!-- end of FLOW.SurveyView -->
 </section>
 <section class="mainRight" id="surveyCreator">
-    <section class="topBar">
-        <nav class="menuTopbar">
-            <ul class="">
-                <li><a {{action "doSurveysMain"}} class="stepBack">Go back to survey overview</a></li>
+  <section class="topBar">
+    <nav class="menuTopbar">
+      <ul class="">
+        <li><a {{action "doSurveysMain"}} class="stepBack">Go back to survey overview</a></li>
+      </ul>
+    </nav>
+  </section>
+  <!-- Beginning Question group set  -->
+  <section id="questionSet">
+    <section class="aQuestionSet mainContent" id="setIndex-01">
+      {{#view FLOW.QuestionGroupItemView zeroItem="true"}}
+        {{#if view.oneSelectedForMove}}
+          <nav class="moveMenu">
+            <ul>
+              <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">Move page here </a></li>
+              <li><a {{action "doQGroupMoveCancel" target="this"}} class="smallBtn"> Cancel move</a></li>
             </ul>
-        </nav>
-    </section>
-    <!-- Beginning Question Set  -->
-    <section id="questionSet">
-        <section class="aQuestionSet mainContent" id="setIndex-01">
-             {{#view FLOW.QuestionGroupItemView zeroItem="true"}}
-                {{#if view.oneSelectedForMove}}
-                    <nav class="moveMenu">
-                    <ul>
-                    <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">Move page here </a></li>
-                    <li><a {{action "doQGroupMoveCancel" target="this"}} class="smallBtn"> Cancel move</a></li>
-                    </ul>
-                    </nav>
-                {{/if}}    
+          </nav>
+        {{/if}}    
+        {{#if view.oneSelectedForCopy}}
+          <nav class="copyMenu">
+            <ul>
+              <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">Paste page here </a></li>
+              <li><a {{action "doQGroupCopyCancel" target="this"}} class="smallBtn"> Cancel copy</a></li>
+            </ul>
+          </nav>
+        {{/if}}    
+      {{/view}}
 
-                {{#if view.oneSelectedForCopy}}
-                    <nav class="copyMenu">
-                    <ul>
-                    <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">Paste page here </a></li>
-                    <li><a {{action "doQGroupCopyCancel" target="this"}} class="smallBtn"> Cancel copy</a></li>
-                    </ul>
-                    </nav>
-                {{/if}}    
-            {{/view}}
+      {{#collection contentBinding="FLOW.questionGroupControl" itemViewClass="FLOW.QuestionGroupItemView"}}
 
-            {{#collection contentBinding="FLOW.questionGroupControl" itemViewClass="FLOW.QuestionGroupItemView"}}
+      <header>
+        <span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
+          <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
+          <nav class="qtnGroupMenu">
+            <ul>
+              <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{view.showHideText}} </a></li>
+              <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id="">{{t _edit_group_name}}</a></li> 
+              <li><a {{action "showQGroupDeleteDialogue" target="this"}} class="deleteQuestionGroup" id="">{{t _delete}}</a></li>
+              <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup" id="">{{t _copy}}</a></li>
+              <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup" id="">{{t _move}}</a> </li>                    
+            </ul>
+          </nav>
+          {{#if view.oneSelectedForMove}}
+            <nav class="moveMenu">
+              <ul>
+                <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_page_here}}</a></li>
+                <li><a {{action "doQGroupMoveCancel" target="this"}} class="smallBtn">{{t _cancel_move}}</a></li>
+              </ul>
+            </nav>
+          {{/if}}
+          {{#if view.oneSelectedForCopy}}
+            <nav class="copyMenu">
+              <ul>
+                <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_page_here}}</a></li>
+                <li><a {{action "doQGroupCopyCancel" target="this"}} class="smallBtn">{{t _cancel_copy}}</a></li>
+              </ul>
+            </nav>
+          {{/if}}    
 
-            <header>
-                <span class="qtnGroupHead">Group {{view.content.order}}</span>
-				<h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
-               <nav class="qtnGroupMenu">
-			   <ul>
-				<li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{view.showHideText}} </a></li>
-                <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id=""> Edit group name </a></li> 
-                <li><a {{action "doQGroupDelete" target="this"}} class="deleteQuestionGroup" id=""> Delete </a></li>
-                <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup" id=""> Copy </a></li>
-                <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup" id=""> Move </a> </li>                    
-   				</ul>
-				</nav>
-
-               {{#if view.oneSelectedForMove}}
-                    <nav class="moveMenu">
-					<ul>
-				    <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">Move page here </a></li>
-					<li><a {{action "doQGroupMoveCancel" target="this"}} class="smallBtn"> Cancel move</a></li>
-					</ul>
-					</nav>
-                {{/if}}    
-
-                {{#if view.oneSelectedForCopy}}
-                    <nav class="copyMenu">
-                    <ul>
-				    <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">Paste page here </a></li>
-					<li><a {{action "doQGroupCopyCancel" target="this"}} class="smallBtn"> Cancel copy</a></li>
-					</ul>
-					</nav>
-                {{/if}}    
-
-               <!-- <a class="editSetInfo">Edit Set Info</a> -->
-            </header>
-            {{#if view.amVisible}}
-            <div class="questionSetContent">
-                <a class="addQuestion"  href="#">Add a question here</a>
-                {{#each q in FLOW.questionControl.active}}
-                <!-- Beginning a Question  -->
-                {{#view FLOW.QuestionView contentBinding="q"}}
-                          
+           <!-- <a class="editSetInfo">Edit Set Info</a> -->
+        </header>
+        {{#if view.amVisible}}
+          <div class="questionSetContent">
+            <a class="addQuestion"  href="#">{{t _add_a_question_here}}</a>
+            {{#each q in FLOW.questionControl.active}}
+              <!-- Beginning a Question  -->
+              {{#view FLOW.QuestionView contentBinding="q"}}
                 <div class="innerContent" id="innerContent_01">
-                    {{#if view.amOpenQuestion}}
+                  {{#if view.amOpenQuestion}}
                     <h1 class="questionNbr">&nbsp;</h1>
-                    <label>Question text: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
-                    
+                    <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
                     <!-- Body of question -->
                     <label>Question type: {{view Ember.Select 
-                        contentBinding="FLOW.questionTypeControl.content" 
-                        optionLabelPath="content.label" 
-                        optionValuePath="content.value" 
-                        selectionBinding="view.selectedQuestionType" }}
+                      contentBinding="FLOW.questionTypeControl.content" 
+                      optionLabelPath="content.label" 
+                      optionValuePath="content.value" 
+                      selectionBinding="view.selectedQuestionType" }}
                     </label>
-                    <label>Question Help Tooltip:
-                        <span class="fadedText">(Optional)</span>
-                        {{view Ember.TextField valueBinding="view.questionHelpTooltip" size=100 }}
+                    <label>{{t _question_help_tooltip}}:
+                      <span class="fadedText">({{t _optional}})</span>
+                      {{view Ember.TextField valueBinding="view.questionHelpTooltip" size=100 }}
                     </label>
-                    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedMandatory"}} Mandatory</label>
-                    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedDependent"}} Dependent</label>
-                   
-                   
+                    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedMandatory"}}{{t _mandatory}}</label>
+                    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedDependent"}}{{t _dependent}}</label>
+               
                     <!-- Question specific material -->
                     {{#if view.amOptionType}}
-                        <h1 class="answerNbr">Option details: </h1>
-                        <label class="labelcheckbox">
-                            {{view Ember.Checkbox checkedBinding="view.checkedOptionMultiple"}} Allow Multiple
-                        </label>
-                        <label class="labelcheckbox">
-                            {{view Ember.Checkbox checkedBinding="view.checkedOptionOther"}} Allow Other
-                        </label>    
-        
-                        <br>
-                        <p><strong>Options:&nbsp;</strong><span class="fadedText">(Enter each choice on a separate line)</span></p>
-                            {{view Ember.TextArea valueBinding="FLOW.optionControl.editCopy" size="100" rows="7" }}  
-                    {{/if}} 
-                    
+                      <h1 class="answerNbr">{{t _option_details}}: </h1>
+                      <label class="labelcheckbox">
+                        {{view Ember.Checkbox checkedBinding="view.checkedOptionMultiple"}}{{t _allow_multiple}}
+                      </label>
+                      <label class="labelcheckbox">
+                        {{view Ember.Checkbox checkedBinding="view.checkedOptionOther"}}{{t _allow_other}}
+                      </label>
+                      <br>
+                      <p><strong>{{t _options}}:&nbsp;</strong><span class="fadedText">
+                        ({{t _enter_each_choice_on_a_separate_line}})</span>
+                      </p>
+                      {{view Ember.TextArea valueBinding="FLOW.optionControl.editCopy" size="100" rows="7" }}  
+                    {{/if}}                 
                     {{view.optionList}}
-                    
+                
+        
                     {{#if view.amNumberType}}
-                            TODO: Number specific content
+                      TODO: Number specific content
                     {{/if}} 
-
                     <!-- End question specific material -->
-                        <a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>Save Question</a>
-                        <a class="standardBtn" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>Cancel</a>
-                    {{else}}
-                    <!-- nav is only displayed if question is closed -->
-                    <nav>
-                        <ul>
-                            <li><a {{action "doDelete" target="this"}} class="deleteQuestion" id="">Delete</a></li>
-                            <li><a {{action "doCopy" target="this"}} class="copyQuestion" id="">Copy</a></li>
-                            <li><a {{action "doMove" target="this"}} class="moveQuestion" id="">Move</a></li>
-                            <li><a {{action "doEdit" target="this"}} class="editQuestion" id="">Edit</a></li>
-                        </ul>
-                    </nav>
-                    <h1 class="questionNbr"><span>{{q.order}}}: </span>{{q.displayName}}</h1>
-                    {{/if}}
-                    <!-- end body of question -->
-                </div>
-                {{/view}}
-                <!-- End of Question -->
-                <a class="addQuestion" href="#">Add question here</a>
-                {{/each}}
+          
+                    <a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>Save Question</a>
+                    <a class="standardBtn" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>Cancel</a>
+                  {{else}}
+                <!-- nav is only displayed if question is closed -->
+                <nav>
+                  <ul>
+                    <li><a {{action "doDelete" target="this"}} class="deleteQuestion" id="">{{t _delete}}</a></li>
+                    <li><a {{action "doCopy" target="this"}} class="copyQuestion" id="">{{t _copy}}</a></li>
+                    <li><a {{action "doMove" target="this"}} class="moveQuestion" id="">{{t _move}}</a></li>
+                    <li><a {{action "doEdit" target="this"}} class="editQuestion" id="">{{t _edit}}</a></li>
+                  </ul>
+                </nav>
+                <h1 class="questionNbr"><span>{{q.order}}}: </span>{{q.displayName}}</h1>
+                {{/if}}
+                <!-- end body of question -->
             </div>
-            {{/if}}
+            {{/view}}
+            <!-- End of Question -->
+            <a class="addQuestion" href="#">{{t _add_question_here}}</a>
+            {{/each}}
+        </div>
+        {{/if}}
 
+        <!-- dialogues -->
+        <div {{bindAttr class="view.showQGDeleteDialogue:display :overlay"}}>
+         <div class="blanket"></div>
+		  <div class="dialogWrap">
+            <!-- the dialog contents -->
+            <div class="confirmDialog dialog">
+              <h2>Are you sure you want to do this?</h2>
+              <p class="dialogMsg">If we want to give a specific message this is where it can be loaded</p>
+              <div class="buttons menuCentre"> 
+        <ul>  
+        <li><a {{action "doQGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
+                <li><a {{action "cancelQGroupDelete" target="this"}}} class="cancel">CANCEL</a></li></ul>
+              </div>
+            </div>
+          </div>
+          <!-- end dialogues -->
 
-            {{/collection}}
-        </section>
+      {{/collection}}
     </section>
-    <!-- End Question Set  -->
-	
+  </section>
+  <!-- End Question group Set  -->
 </section>

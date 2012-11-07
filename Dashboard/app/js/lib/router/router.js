@@ -61,7 +61,7 @@ FLOW.Router = Ember.Router.extend({
 			route: '/surveys',
 			connectOutlets: function(router, event) {
 				router.get('applicationController').connectOutlet('navSurveys');
-				router.get('surveyGroupController').set('content', FLOW.store.find(FLOW.SurveyGroup, {}));
+				//router.get('surveyGroupControl').set('content', FLOW.store.find(FLOW.SurveyGroup,{}));
 				router.set('navigationController.selected', 'navSurveys');
 			},
 
@@ -132,7 +132,7 @@ FLOW.Router = Ember.Router.extend({
 				route: '/current-devices',
 				connectOutlets: function(router, context) {
 					router.get('navDevicesController').connectOutlet('currentDevices');
-					FLOW.deviceControl.set('content', FLOW.store.findAll(FLOW.Device));
+					//FLOW.deviceControl.set('content', FLOW.store.findAll(FLOW.Device));
 					router.set('devicesSubnavController.selected', 'currentDevices');
 				}
 			}),

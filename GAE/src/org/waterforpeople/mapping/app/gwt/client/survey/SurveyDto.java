@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
@@ -35,6 +36,8 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private String pointType;
 	private String defaultLanguageCode;
 	private Boolean requireApproval;
+	private Date createdDateTime;
+	private Date lastUpdateDateTime;
 
 	public String getPath() {
 		return path;
@@ -42,6 +45,22 @@ public class SurveyDto extends BaseDto implements NamedObject {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+	
+	public Date getCreatedDateTime() {
+		return createdDateTime;
+	}
+
+	public void setCreatedDateTime(Date createdDateTime) {
+		this.createdDateTime = createdDateTime;
+	}
+
+	public Date getLastUpdateDateTime() {
+		return lastUpdateDateTime;
+	}
+
+	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
+		this.lastUpdateDateTime = lastUpdateDateTime;
 	}
 
 	public void addQuestionGroup(QuestionGroupDto questionGroup) {
