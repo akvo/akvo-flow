@@ -83,10 +83,14 @@ FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports/nav-reports'
 
 // maps views
 FLOW.NavMapsView = Ember.View.extend({
+  // L stands for Leaflet!
   templateName: 'navMaps/nav-maps',
   didInsertElement: function() {
     var center = [52.370216, 4.895168];
-    var map = L.map('map').setView(center, 13);
+    var map = L.map('map').setView(center, 3);
+    L.tileLayer(
+      'http://{s}.tile.cloudmade.com/a1029e8c8d9d42bc84e96b8a960bb42e/997/256/{z}/{x}/{y}.png',
+      {maxZoom: 18}).addTo(map);
     var marker1 = L.marker([38.895112, -77.036366]).addTo(map);
     var marker2 = L.marker([51.490997, -0.109295]).addTo(map);
     marker1.bindPopup("Hey, Caetie!");
