@@ -86,15 +86,32 @@ FLOW.NavMapsView = Ember.View.extend({
   // L stands for Leaflet!
   templateName: 'navMaps/nav-maps',
   didInsertElement: function() {
+    var cloudMade = {
+      apiKey: 'a1029e8c8d9d42bc84e96b8a960bb42e',
+      themeId: 1,
+      tileSize: 256
+    };
+    var url = 'http://{s}.tile.cloudmade.com/' +
+              cloudMade.apiKey + '/' +
+              cloudMade.themeId + '/' +
+              cloudMade.tileSize + '/' +
+              '{z}/{x}/{y}.png';
     var center = [52.370216, 4.895168];
-    var map = L.map('map').setView(center, 3);
-    L.tileLayer(
-      'http://{s}.tile.cloudmade.com/a1029e8c8d9d42bc84e96b8a960bb42e/997/256/{z}/{x}/{y}.png',
-      {maxZoom: 18}).addTo(map);
-    var marker1 = L.marker([38.895112, -77.036366]).addTo(map);
-    var marker2 = L.marker([51.490997, -0.109295]).addTo(map);
-    marker1.bindPopup("Hey, Caetie!");
-    marker2.bindPopup("How's it going, Paul?");
+    var map = L.map('map').setView(center, 4);
+    L.tileLayer(url, {
+      attribution: 'Map data &copy; Akvo FLOW',
+      maxZoom: 18
+    }).addTo(map);
+    // These should come from fixtures and then from API calls.
+    // For now we're just declaring them manually.
+    var markerMark = L.marker(center).addTo(map);
+    var markerPaul = L.marker([51.490997, -0.109295]).addTo(map);
+    var markerIvan = L.marker([42.817988, -1.644183]).addTo(map);
+    var markerLoic = L.marker([60.169845, 24.938551]).addTo(map);
+    markerMark.bindPopup("Hoi Mark!");
+    markerPaul.bindPopup("Hi, Paul!");
+    markerIvan.bindPopup("Hola Iván!");
+    markerLoic.bindPopup("Salut Loïc!");
   }
 });
 
