@@ -91,24 +91,25 @@ FLOW.NavMapsView = Ember.View.extend({
       themeId: 1,
       tileSize: 256
     };
-    var tileUrl = 'http://{s}.tile.cloudmade.com/' +
-                  cloudMadeConfig.apiKey + '/' +
-                  cloudMadeConfig.themeId + '/' +
-                  cloudMadeConfig.tileSize + '/' +
-                  '{z}/{x}/{y}.png';
-    var center = [52.370216, 4.895168];
-    var map = L.map('map').setView(center, 4);
-    L.tileLayer(tileUrl, {
+    var mapOptions = {
+      center: [0, 0],
+      zoom: 2
+    };
+    var cloudMadeUrl = 'http://{s}.tile.cloudmade.com/' +
+                       cloudMadeConfig.apiKey + '/' +
+                       cloudMadeConfig.themeId + '/' +
+                       cloudMadeConfig.tileSize + '/' +
+                       '{z}/{x}/{y}.png';
+    var map = L.map('map').setView(mapOptions.center, mapOptions.zoom);
+    L.tileLayer(cloudMadeUrl, {
       attribution: 'Map data &copy; Akvo FLOW',
       maxZoom: 18
     }).addTo(map);
     // Data should come from Ember model fixtures and then from API calls.
     // For now we're just declaring them manually for demo purposes.
-    var markerMark = L.marker(center).addTo(map);
     var markerPaul = L.marker([51.490997, -0.109295]).addTo(map);
     var markerIvan = L.marker([42.817988, -1.644183]).addTo(map);
     var markerLoic = L.marker([60.169845, 24.938551]).addTo(map);
-    markerMark.bindPopup("Hoi Mark!");
     markerPaul.bindPopup("Hi, Paul!");
     markerIvan.bindPopup("Hola Iván!");
     markerLoic.bindPopup("Salut Loïc!");
