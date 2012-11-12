@@ -1784,9 +1784,10 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 	padding: 15px 0.1%;
 	width: 99.8%;
 	border: thin dotted rgb(214,214,214);
-	-webkit-border-radius: 0 0 10px 0;
-	-moz-border-radius: 0 0 10px 0;
-	border-radius: 0 0 10px 0;
+	-webkit-border-radius: 0 0 5px 0;
+	-moz-border-radius: 0 0 5px 0;
+	-o-border-radius: 0 0 5px 0;
+	border-radius: 0 0 5px 0;
 	background: rgb(248,248,248);/* -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *//* -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *//* box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {

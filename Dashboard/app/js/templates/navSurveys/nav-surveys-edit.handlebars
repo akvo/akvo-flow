@@ -96,22 +96,6 @@
           </nav>
                     <!-- <a class="editSetInfo">Edit Set Info</a> -->
         </header>
-	 {{#if view.oneSelectedForMove}}
-				<nav class="moveMenu groupActionMenu">
-				  <ul>
-					<li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_page_here}}</a></li>
-					<li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
-				  </ul>
-				</nav>
-			  {{/if}}
-			  {{#if view.oneSelectedForCopy}}
-				<nav class="copyMenu groupActionMenu">
-				  <ul>
-					<li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_page_here}}</a></li>
-					<li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
-				  </ul>
-				</nav>
-			  {{/if}}    
 		{{#if view.amVisible}}
           <div class="questionSetContent">
             <a class="addQuestion"  href="#">{{t _add_a_question_here}}</a>
@@ -180,7 +164,24 @@
             <a class="addQuestion" href="#">{{t _add_question_here}}</a>
             {{/each}}
         </div>
+		
         {{/if}}
+	 {{#if view.oneSelectedForMove}}
+				<nav class="moveMenu groupActionMenu">
+				  <ul>
+					<li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_page_here}}</a></li>
+					<li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
+				  </ul>
+				</nav>
+			  {{/if}}
+			  {{#if view.oneSelectedForCopy}}
+				<nav class="copyMenu groupActionMenu">
+				  <ul>
+					<li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_page_here}}</a></li>
+					<li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
+				  </ul>
+				</nav>
+			  {{/if}}    
 
         <!-- dialogues -->
         <div {{bindAttr class="view.showQGDeleteDialogue:display :overlay"}}>
@@ -197,6 +198,8 @@
               </div>
             </div>
           </div>
+		 </div>
+
           <!-- end dialogues -->
 
       {{/collection}}
