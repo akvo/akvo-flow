@@ -92,18 +92,20 @@ FLOW.NavMapsView = Ember.View.extend({
       tileSize: 256
     };
     var mapOptions = {
+      attribution: 'Map data &copy; Akvo FLOW',
       center: [0, 0],
+      maxZoom: 18,
+      url: 'http://{s}.tile.cloudmade.com/' +
+           cloudMadeConfig.apiKey + '/' +
+           cloudMadeConfig.themeId + '/' +
+           cloudMadeConfig.tileSize + '/' +
+           '{z}/{x}/{y}.png',
       zoom: 2
     };
-    var cloudMadeUrl = 'http://{s}.tile.cloudmade.com/' +
-                       cloudMadeConfig.apiKey + '/' +
-                       cloudMadeConfig.themeId + '/' +
-                       cloudMadeConfig.tileSize + '/' +
-                       '{z}/{x}/{y}.png';
     var map = L.map('map').setView(mapOptions.center, mapOptions.zoom);
-    L.tileLayer(cloudMadeUrl, {
-      attribution: 'Map data &copy; Akvo FLOW',
-      maxZoom: 18
+    L.tileLayer(mapOptions.url, {
+      attribution: mapOptions.attribution,
+      maxZoom: mapOptions.maxZoom,
     }).addTo(map);
     // Data should come from Ember model fixtures and then from API calls.
     // For now we're just declaring them manually for demo purposes.
