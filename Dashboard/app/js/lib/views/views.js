@@ -86,24 +86,24 @@ FLOW.NavMapsView = Ember.View.extend({
   // L stands for Leaflet!
   templateName: 'navMaps/nav-maps',
   didInsertElement: function() {
-    var cloudMade = {
+    var cloudMadeConfig = {
       apiKey: 'a1029e8c8d9d42bc84e96b8a960bb42e',
       themeId: 1,
       tileSize: 256
     };
-    var url = 'http://{s}.tile.cloudmade.com/' +
-              cloudMade.apiKey + '/' +
-              cloudMade.themeId + '/' +
-              cloudMade.tileSize + '/' +
-              '{z}/{x}/{y}.png';
+    var tileUrl = 'http://{s}.tile.cloudmade.com/' +
+                  cloudMadeConfig.apiKey + '/' +
+                  cloudMadeConfig.themeId + '/' +
+                  cloudMadeConfig.tileSize + '/' +
+                  '{z}/{x}/{y}.png';
     var center = [52.370216, 4.895168];
     var map = L.map('map').setView(center, 4);
-    L.tileLayer(url, {
+    L.tileLayer(tileUrl, {
       attribution: 'Map data &copy; Akvo FLOW',
       maxZoom: 18
     }).addTo(map);
-    // These should come from fixtures and then from API calls.
-    // For now we're just declaring them manually.
+    // Data should come from Ember model fixtures and then from API calls.
+    // For now we're just declaring them manually for demo purposes.
     var markerMark = L.marker(center).addTo(map);
     var markerPaul = L.marker([51.490997, -0.109295]).addTo(map);
     var markerIvan = L.marker([42.817988, -1.644183]).addTo(map);
