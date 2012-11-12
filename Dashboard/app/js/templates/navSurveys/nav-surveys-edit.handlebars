@@ -48,9 +48,11 @@
       <li><a {{action doPublishSurvey target="this"}} class="publishNewSurvey">Publish</a></li>
     </ul>
   </nav>
-   {{/view }} <!-- end of FLOW.SurveyView -->
+   {{/view }} <!-- end of FLOW.SurveySideBarView -->
 </section>
+
 <section class="mainRight" id="surveyCreator">
+
   <section class="topBar">
     <nav class="menuTopbar">
       <ul class="">
@@ -58,6 +60,7 @@
       </ul>
     </nav>
   </section>
+
   <!-- Beginning Question group set  -->
   <section id="questionSet">
     <section class="aQuestionSet mainContent" id="setIndex-01">
@@ -65,23 +68,24 @@
         {{#if view.oneSelectedForMove}}
           <nav class="moveMenu groupActionMenu">
             <ul>
-              <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">Move Group here </a></li>
-              <li><a {{action "doQGroupMoveCancel" target="this"}} class=""> Cancel</a></li>
+              <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_group_here}}</a></li>
+              <li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
             </ul>
           </nav>
         {{/if}}    
         {{#if view.oneSelectedForCopy}}
           <nav class="copyMenu groupActionMenu">
             <ul>
-              <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">Paste Group here </a></li>
-              <li><a {{action "doQGroupCopyCancel" target="this"}} class=""> Cancel</a></li>
+              <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_group_here}}</a></li>
+              <li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
             </ul>
           </nav>
         {{/if}}    
       {{/view}}
 
+      <!-- start list of question groups -->
       {{#collection contentBinding="FLOW.questionGroupControl" itemViewClass="FLOW.QuestionGroupItemView"}}
-
+      <div class="questionGroupBlock">
       <header>
         <span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
           <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
@@ -95,10 +99,11 @@
             </ul>
           </nav>
                     <!-- <a class="editSetInfo">Edit Set Info</a> -->
-        </header>
-		{{#if view.amVisible}}
-          <div class="questionSetContent">
-            <a class="addQuestion"  href="#">{{t _add_a_question_here}}</a>
+      </header>
+
+		  {{#if view.amVisible}}
+        <div class="questionSetContent">
+          <a class="addQuestion"  href="#">{{t _add_a_question_here}}</a>
             {{#each q in FLOW.questionControl.active}}
               <!-- Beginning a Question  -->
               {{#view FLOW.QuestionView contentBinding="q"}}
@@ -164,43 +169,48 @@
             <a class="addQuestion" href="#">{{t _add_question_here}}</a>
             {{/each}}
         </div>
-		
         {{/if}}
-	 {{#if view.oneSelectedForMove}}
-				<nav class="moveMenu groupActionMenu">
-				  <ul>
-					<li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_page_here}}</a></li>
-					<li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
-				  </ul>
-				</nav>
-			  {{/if}}
-			  {{#if view.oneSelectedForCopy}}
-				<nav class="copyMenu groupActionMenu">
-				  <ul>
-					<li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_page_here}}</a></li>
-					<li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
-				  </ul>
-				</nav>
-			  {{/if}}    
 
         <!-- dialogues -->
         <div {{bindAttr class="view.showQGDeleteDialogue:display :overlay"}}>
-         <div class="blanket"></div>
-		  <div class="dialogWrap">
+          <div class="blanket"></div>
+		      <div class="dialogWrap">
             <!-- the dialog contents -->
             <div class="confirmDialog dialog">
               <h2>Are you sure you want to do this?</h2>
               <p class="dialogMsg">If we want to give a specific message this is where it can be loaded</p>
               <div class="buttons menuCentre"> 
-        <ul>  
-        <li><a {{action "doQGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
-                <li><a {{action "cancelQGroupDelete" target="this"}}} class="cancel">CANCEL</a></li></ul>
+                <ul>  
+                  <li><a {{action "doQGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
+                  <li><a {{action "cancelQGroupDelete" target="this"}}} class="cancel">CANCEL</a></li>
+                </ul>
               </div>
             </div>
           </div>
-		 </div>
+		    </div>
+        <!-- end dialogues -->
+        
+      <!-- end question group block -->
+      </div>
+        <!-- move and copy buttons -->
+        {{#if view.oneSelectedForMove}}
+          <nav class="moveMenu groupActionMenu">
+            <ul>
+            <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_group_here}}</a></li>
+            <li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
+            </ul>
+          </nav>
+          {{/if}}
+          {{#if view.oneSelectedForCopy}}
+          <nav class="copyMenu groupActionMenu">
+            <ul>
+              <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_group_here}}</a></li>
+              <li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
+            </ul>
+          </nav>
+        {{/if}}    
+        <!-- end move and copy buttons -->
 
-          <!-- end dialogues -->
 
       {{/collection}}
     </section>

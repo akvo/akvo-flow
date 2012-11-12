@@ -1706,7 +1706,9 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 }
 .aQuestionSet > div > div.ember-view:first-child header {
 }
-.aQuestionSet > div > div.ember-view {
+
+/* MTW change */
+.aQuestionSet > div > div.ember-view > div.questionGroupBlock {
 	margin: 30px 0 20px 0;
 	background:rgb(242,242,242);
 	border-top:thin solid rgb(230,230,230);
@@ -1715,6 +1717,9 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 .aQuestionSet > div > div.ember-view:first-child {
 	margin: 0 0 20px 0;
 }
+/* end MTW change */
+
+
 span.qtnGroupHead {
 	display: block;
 	padding-top: 5px;
