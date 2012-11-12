@@ -59,7 +59,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
 	font-weight: normal;
-	text-transform:capitalize;
+	text-transform: capitalize;
 }
 h1 {
 	font-size: 2.4em;
@@ -169,13 +169,13 @@ pre {
 ---------------------------------------------------------------*/
 
 a, a:link, a:visited {
+	color: rgb(74, 177, 207);
 	outline: none;
-	color: rgb(0,123,182);
 	text-decoration: none;
 	cursor: pointer;
 }
 a:hover {
-	color: rgb(107, 134, 141);
+	color: rgb(0,123,182);
 }
 
 /* Custom text-selection colors (remove any text shadows: twitter.com/miketaylr/status/12228805301) */
@@ -322,10 +322,10 @@ a.AddBtn:hover {
 	display: block;
 	top: 35%;
 	left: 35%;
-	padding:1em 2em;
+	padding: 1em 2em;
 	width: 25%;
-	border:thin solid rgb(153,153,153);
- 	-webkit-border-radius: 4px;
+	border: thin solid rgb(153,153,153);
+	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	background: white;
@@ -333,13 +333,13 @@ a.AddBtn:hover {
 }
 .dialogWrap .menuCentre {
 	margin: 30px auto 10px auto;
-	}
+}
 .dialogWrap p {
-	font-size:1.5em;
-	margin-top:15px; 
-	padding:1em;
-	background:rgb(242,242,242);
-	}
+	font-size: 1.5em;
+	margin-top: 15px;
+	padding: 1em;
+	background: rgb(242,242,242);
+}
 /* page structure
 --------------------------------------------- */
 #pageWrap {
@@ -1665,48 +1665,52 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	position: relative;
 	display: block;
 	margin: 0 0.75%;
-	padding: 5px 0.75%;
+	padding: 1.5em 0.75% 1em 0.75%;
 	width: 97%;
-	border-top: thin solid rgb(222,222,222);
-	border-bottom: thin solid rgb(222,222,222);
-	background: rgb(242,242,242);
+}
+.aQuestionSet .questionSetContent:before {
+	display: block;
+	margin: 0px auto 5px auto;
+	width: 100%;
+	border-top: 1px solid rgb(228, 228, 228);
+	border-bottom: 1px solid rgb(255, 255, 255);
+	content: "";
 }
 .aQuestionSet .questionSetContent a.addQuestion {
 	position: relative;
 	display: block;
 	overflow: hidden;
-	margin: 10px auto 20px auto;
+	margin: 10px 0 20px 5px;
 	padding: 0.85em 0.5em 0.75em 35px;
-	width: 12%;
-	border: thin solid rgb(214,214,214);
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	background: rgb(224,224,224) url(../images/addQuestion.png) 10px center no-repeat;
-	-webkit-box-shadow: 0 2px 0 rgb(255,255,255);
-	-moz-box-shadow: 0 2px 0 rgb(255,255,255);
-	box-shadow: 0 2px 0 rgb(255,255,255);
+	width: 15%;
+	background:url(../images/insertQuestion.png) 10px center no-repeat;
 	text-transform: uppercase;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	font-size: 0.9em;
 }
+
 .aQuestionSet .questionSetContent a.addQuestion:hover {
-	background: rgb(214,214,214) url(../images/addQuestion.png) 10px center no-repeat;
+	background:url(../images/insertQuestion.png) 10px center no-repeat;
 }
+.aQuestionSet .questionSetContent a.addQuestion:first-child {
+	margin: 20px 0 20px 5px;
+}
+
 .aQuestionSet header {
 	position: relative;
 	display: block;
 	margin: 0 0.75%;
 	padding: 0 0.75% 0 0.75%;
 	width: 97%;
-	border-top: thin dashed rgb(224,224,224);
 }
 .aQuestionSet > div > div.ember-view:first-child header {
-	border-top: none;
 }
 .aQuestionSet > div > div.ember-view {
 	margin: 30px 0 20px 0;
+	background:rgb(242,242,242);
+	border-top:thin solid rgb(230,230,230);
+	border-bottom:thin solid rgb(230,230,230);
 }
 .aQuestionSet > div > div.ember-view:first-child {
 	margin: 0 0 20px 0;
@@ -1837,9 +1841,12 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 }
 .innerContent nav {
 	position: absolute;
-	top: 17px;
-	right: 5px;
-	width: 35%;
+	top: 1px;
+	right: 1px;
+	background:rgb(230,230,230);
+	padding:0.5em 0.1em 0.5em 0.5em;
+	border-radius:0 0 0 5px;
+	box-shadow:-1px 1px 0 rgb(222,222,222);
 }
 .innerContent nav ul {
 	margin: 0;
@@ -1849,16 +1856,23 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 .innerContent nav ul li {
 	display: inline;
 	float: right;
-	margin: 0 5px 0 0;
+	margin: 0 0 0 0;
+	padding:0 0 0 5px;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	background: rgb(234,234,234);
 	text-align: right;
+	border-right: 1px solid rgb(208, 208, 208);
+	border-left: 1px solid rgb(245, 245, 245);
 }
-.innerContent nav ul li:hover {
-	background: rgb(244,244,244);
+.innerContent nav ul li:first-child {
+	border-right: 1px solid rgb(230,230,230);
 }
+
+.innerContent nav ul li:last-child {
+	border-left: 1px solid rgb(230,230,230);
+}
+
 .innerContent nav ul li a {
 	display: block;
 	padding: 5px 10px 5px 20px;
@@ -1899,16 +1913,25 @@ nav ul li a.showQuestion:hover {
 	margin: 20px 0 0 5px;
 	font-weight: bold;
 	font-size: 1.5em;
+	color: rgb(0,0,0);
 }
 .innerContent h1.questionNbr {
 	display: inline;
-	margin: 0 0 0 10px;
-	color: rgb(74, 177, 207);
+	color: rgb(0,0,0);
 	font-weight: normal;
+	
 }
 .innerContent h1.questionNbr span {
-	color: rgb(158,158,158);
-	font-weight: normal;
+	color: rgb(255,255,255);
+	font-weight: bold;
+	display:inline-block;
+	width:19px;
+	height:24px;
+	border-radius:12.5px;
+	background:rgb(0,0,0);
+	padding:1px 0 0 6px;
+	margin:-10px 5px 0 0;
+	font-size:0.9em;
 }
 .innerContent label, .innerContent input, .innerContent select {
 	display: block;
