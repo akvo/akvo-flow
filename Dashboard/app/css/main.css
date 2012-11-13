@@ -1245,7 +1245,7 @@ li.aSurvey {
 	float: left;
 	margin: 5px 1.5% 10px 1.5%;
 	padding: 0 0.5% 10px 0.5%;
-	min-height: 225px;
+	min-height: 210px;
 	width: 21%;
 	/* background: url(../images/surveySeperator.png) right center no-repeat; */
 	background: transparent;
@@ -1279,9 +1279,9 @@ li.aSurvey h2 {
 	text-transform: capitalize;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-style: italic;
 	font-size: 1.6em;
-	font-family: Georgia, "Times New Roman", Times, serif;
+	font-family:Arial, Helvetica, sans-serif;
+	letter-spacing:-0.02em;
 }
 li.aSurvey:hover h2 {
 	color: rgb(255,255,255);
@@ -1353,7 +1353,7 @@ ul.surveyInfo li.responseNumber p {
 	display: inline;
 }
 .waterPoint ul.surveyInfo li.responseNumber, li.aSurvey.waterPoint:hover h2 {
-	color: rgb(74, 177, 207);
+	color: rgb(57, 102, 128);	
 }
 .houseHold ul.surveyInfo li.responseNumber, li.aSurvey.houseHold:hover h2 {
 	color: rgb(222, 137, 41);
@@ -1365,7 +1365,7 @@ ul.surveyInfo li.responseNumber p {
 	color: rgb(119, 97, 0);
 }
 .waterPoint ul.surveyInfo li.responseNumber span {
-	background: rgb(74, 177, 207);
+	background: rgb(57, 102, 128);	
 }
 .houseHold ul.surveyInfo li.responseNumber span {
 	background: rgb(222, 137, 41);
@@ -1407,7 +1407,7 @@ ul.surveyInfo li.responseNumber p {
 	width: 67%;
 }
 .waterPoint dl dd:nth-of-type(2) {
-	color: rgb(74, 177, 207);
+	color: rgb(57, 102, 128);	
 }
 .houseHold dl dd:nth-of-type(2) {
 	color: rgb(222, 137, 41);
@@ -1438,7 +1438,7 @@ ul.surveyInfo li.responseNumber p {
 	float: left;
 	overflow: hidden;
 	margin: 2px 1% 0 0;
-	width: 50%;
+	width: 49%;
 	border-radius: 2px;
 	/* background: url(../images/aSurveyNavSep.png) right center no-repeat; */
 	background: rgb(235,235,235);
@@ -1446,31 +1446,23 @@ ul.surveyInfo li.responseNumber p {
 	white-space: nowrap;
 }
 .aSurvey nav ul li:hover {
-	background: rgb(255,255,255);
+	background: /*rgb(74,177,207)*/rgb(58,58,58);
 }
-.aSurvey nav ul li:nth-child(2n+1) {
-	width: 48%;
-}
-/* .aSurvey nav ul li:first-child {
-	width: 28%; */
-/* }
-.aSurvey nav ul li:nth-child(even) {
-	width: 36%; */
 .aSurvey nav ul li:nth-child(2n) {
-/* width: 29%; */
-/* background: none; */
-}
+	margin:2px 0 0 0;
+	}
+
 .aSurvey nav ul li a {
 	display: block;
 	overflow: hidden;
-	padding: 2px 0 5px 28%;
-	width: 72%;
+	padding: 5px 0 5px 25%;
+	width: 75%;
 	height: 8px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 .aSurvey nav ul li a:hover {
-	color: rgb(114,  205, 255);
+	color: rgb(255,255,255);
 }
 .aSurvey nav ul li.editSurvey a {
 	background: url(../images/editSurvey.png) 3px top no-repeat;
@@ -1700,17 +1692,18 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 0 0.75%;
 	padding: 0 0.75% 0 0.75%;
 	width: 97%;
+	background: rgb(240,240,240);
 }
 .aQuestionSet > div > div.ember-view:first-child header {
 }
 .aQuestionSet > div > div.ember-view > div.questionGroupBlock {
-	margin: 10px 0 ;
+	margin: 15px 0 ;
 	border-top: thin solid rgb(230,230,230);
 	border-bottom: thin solid rgb(230,230,230);
 	background: rgb(240,240,240);
 }
 .aQuestionSet > div > div.ember-view:first-child {
-	margin: 0 0 10px 0;
+	margin: 0 0 15px 0;
 }
 
 
@@ -1837,6 +1830,16 @@ nav.groupActionMenu  a:hover {
 	color: rgb(227, 27, 35);
 	text-transform: uppercase;
 }
+.aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
+	background:url(../images/shownCollapse.png) left top no-repeat;
+	padding:5px 5px 5px 15px;
+	width:95px;
+	text-align:left;
+}
+.aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
+	background:url(../images/shownCollapse.png) left bottom no-repeat;
+}
+
 .aQuestionSet header nav.qtnGroupMenu ul li:last-child {
 	margin: 0;
 }
@@ -1960,8 +1963,8 @@ nav ul li a.showQuestion:hover {
 .innerContent h1.questionNbr span {
 	display: inline-block;
 	margin: -10px 5px 0 0;
-	padding: 1px 0 0 6px;
-	width: 19px;
+	padding: 1px 0 0 5px;
+	width: 20px;
 	height: 24px;
 	border-radius: 12.5px;
 	background: rgb(0,0,0);
