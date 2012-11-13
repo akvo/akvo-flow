@@ -3,6 +3,9 @@
     	<a {{action doCurrentDevices}}>Current Devices List</a>
     {{/view}} 
     {{#view view.NavItemView item="assignSurveys" }}
-    	<a {{action doAssignSurveysOverview}}>Assign Surveys</a>
+    	<a {{action doAssignSurveysOverview}}>Current Assignments</a>
+    {{/view}} 
+    {{#view view.NavItemView item="editSurveyAssignment" }}
+    	<a {{action doEditSurveysAssignment}}>Edit Assignment</a>
     {{/view}} 
 </ul>
