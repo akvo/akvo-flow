@@ -76,7 +76,7 @@
           <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
           <nav class="qtnGroupMenu">
             <ul>
-              {{#if amVisible}}
+              {{#if view.amVisible}}
                 <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown" id="">{{t _hide_questions}} </a></li>
               {{else}}
                  <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{t _show_questions}} </a></li>
