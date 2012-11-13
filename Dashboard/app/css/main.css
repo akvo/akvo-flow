@@ -1703,17 +1703,15 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 }
 .aQuestionSet > div > div.ember-view:first-child header {
 }
-/* MTW change */
 .aQuestionSet > div > div.ember-view > div.questionGroupBlock {
 	margin: 10px 0 ;
 	border-top: thin solid rgb(230,230,230);
 	border-bottom: thin solid rgb(230,230,230);
-	background: rgb(242,242,242);
+	background: rgb(240,240,240);
 }
 .aQuestionSet > div > div.ember-view:first-child {
 	margin: 0 0 10px 0;
 }
-/* end MTW change */
 
 
 span.qtnGroupHead {
@@ -1723,6 +1721,7 @@ span.qtnGroupHead {
 	color: rgb(246, 160, 26);
 	font-style: italic;
 	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size:1.1em;
 }
 .aQuestionSet header h1.qtnGroupTitle a {
 	color: rgb(38, 8, 89);
@@ -1787,12 +1786,15 @@ nav.groupActionMenu  a.smallBtn {
 	color:rgb(255,255,255);
 	}
 nav.groupActionMenu  a.smallBtn:hover {
-	background:rgb(246, 160, 26);
+	background:rgb(58,58,58);
 	color:rgb(255,255,255);
 	}
 
 nav.groupActionMenu  a {
 	color:rgb(246, 160, 26);
+	}
+nav.groupActionMenu  a:hover {
+	color:rgb(58,58,58);
 	}
 
 /*---------------------------------------------------------------------------------
