@@ -95,15 +95,15 @@ FLOW.NavMapsView = Ember.View.extend({
       annotation: "Map data &copy; Akvo FLOW",
       center: [0, 0],
       maxZoom: 18,
-      url: "http://{s}.tile.cloudmade.com/" +
-           cloudMade.apiKey + "/" +
-           cloudMade.themeId + "/" +
-           cloudMade.tileSize + "/" +
-           "{z}/{x}/{y}.png",
+      tileUrl: "http://{s}.tile.cloudmade.com/" +
+               cloudMade.apiKey + "/" +
+               cloudMade.themeId + "/" +
+               cloudMade.tileSize + "/" +
+               "{z}/{x}/{y}.png",
       zoom: 2
     };
     var map = L.map("map").setView(config.center, config.zoom);
-    L.tileLayer(config.url, {
+    L.tileLayer(config.tileUrl, {
       attribution: config.annotation,
       maxZoom: config.maxZoom
     }).addTo(map);
