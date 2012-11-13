@@ -57,7 +57,6 @@ FLOW.QuestionGroup = DS.Model.extend({
 	description: DS.attr('string'),
 	name: DS.attr('string'),
 	path: DS.attr('string'),
-	//class: let mDS.attr('string'), //FIXME: class is a JS reserved word
 	code: DS.attr('string'),
 	surveyId: DS.attr('number'),
 	displayName: DS.attr('string'),
@@ -89,7 +88,6 @@ FLOW.Question = DS.Model.extend({
 	allowOtherFlag: DS.attr('boolean', {defaultValue: 0}),
 	allowSign: DS.attr('boolean', {defaultValue: 0}),
 	text: DS.attr('string'),
-	//class: DS.attr('string'), //FIXME: class is a JS reserved word
 	questionDependency: DS.attr('string'),
 	mandatoryFlag: DS.attr('boolean', {defaultValue: 0}),
 	questionGroupId: DS.attr('number'),
