@@ -1837,6 +1837,15 @@ nav.groupActionMenu  a:hover {
 	color: rgb(227, 27, 35);
 	text-transform: uppercase;
 }
+.aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
+	background:url(../images/shownCollapse.png) left top no-repeat;
+	padding:5px 5px 5px 15px;
+	width:95px;
+}
+.aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
+	background:url(../images/shownCollapse.png) left bottom no-repeat;
+}
+
 .aQuestionSet header nav.qtnGroupMenu ul li:last-child {
 	margin: 0;
 }
