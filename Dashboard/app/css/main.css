@@ -1516,12 +1516,11 @@ ul.surveyInfo li.responseNumber p {
 	display: block;
 }
 #newSurveyInfo form label {
-	margin: 10px 2px 2px 2px;
-	margin: 10px 0 0 0;
+	margin: 10px 2px 10px 2px;
 	color: rgb(255,255,255);
 }
 #newSurveyInfo form label:first-child {
-	margin: 0px 2px 2px 2px;
+	margin: 0px 2px 10px 2px;
 	color: rgb(255,255,255);
 }
 #newSurveyInfo form input {
@@ -1548,7 +1547,7 @@ ul.surveyInfo li.responseNumber p {
 	background: url(../images/selectArrows.png) right center no-repeat, -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
 	background: url(../images/selectArrows.png) right center no-repeat, linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
 	background-image: url(../images/selectArrows.png) right center no-repeat;
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc', GradientType=0 ); /* IE6-8 */
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc', GradientType=0 ); /* IE6-8 */
 	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
 
 	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VlZWVlZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjY2NjY2MiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
@@ -1704,16 +1703,15 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 }
 .aQuestionSet > div > div.ember-view:first-child header {
 }
-
 /* MTW change */
 .aQuestionSet > div > div.ember-view > div.questionGroupBlock {
-	margin: 30px 0 20px 0;
+	margin: 10px 0 ;
 	border-top: thin solid rgb(230,230,230);
 	border-bottom: thin solid rgb(230,230,230);
 	background: rgb(242,242,242);
 }
 .aQuestionSet > div > div.ember-view:first-child {
-	margin: 0 0 20px 0;
+	margin: 0 0 10px 0;
 }
 /* end MTW change */
 
@@ -1767,14 +1765,35 @@ span.qtnGroupHead {
 }
 nav.groupActionMenu {
 	display: block;
-	margin: 15px auto 5px auto;
-	width: 25%;
+	padding:1.5em 0;
+	margin: 5px auto;
+	width: 100%;
+	background:rgb(255,241,227);
+}
+nav.groupActionMenu ul {
+	display:block;
+	margin: 0 auto;
+	position:relative;
+	width:19%;
+	text-align:center;
 }
 nav.moveMenu ul li, nav.copyMenu ul li {
 	display: inline;
 	margin: 0 10px 0 0;
 	text-align: center;
 }
+nav.groupActionMenu  a.smallBtn {
+	background:rgb(246, 160, 26);
+	color:rgb(255,255,255);
+	}
+nav.groupActionMenu  a.smallBtn:hover {
+	background:rgb(246, 160, 26);
+	color:rgb(255,255,255);
+	}
+
+nav.groupActionMenu  a {
+	color:rgb(246, 160, 26);
+	}
 
 /*---------------------------------------------------------------------------------
 								A New Question Form
@@ -1848,7 +1867,16 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 	right: 1px;
 	padding: 0.5em 0.1em 0.5em 0.5em;
 	border-radius: 0 0 0 5px;
-	background: rgb(230,230,230);
+	background: rgb(230,230,230); /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlNWU1ZTUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(229,229,229,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0 ); /* IE6-8 */
 	box-shadow: -1px 1px 0 rgb(222,222,222);
 }
 .innerContent nav ul {
@@ -1867,13 +1895,19 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 	-moz-border-radius: 3px;
 	border-radius: 3px;
 	text-align: right;
+	background:transparent;
+	transition:background 0.4s ease-in;
 }
 .innerContent nav ul li:first-child {
-	border-right: 1px solid rgb(230,230,230);
+	border-right: none;
 }
 .innerContent nav ul li:last-child {
-	border-left: 1px solid rgb(230,230,230);
+	border-left: none;
 }
+.innerContent nav ul li:hover {
+	background:rgb(224,224,224);
+}
+
 .innerContent nav ul li a {
 	display: block;
 	padding: 5px 10px 5px 20px;

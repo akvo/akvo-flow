@@ -1,8 +1,8 @@
 
 Ember.STRINGS_EN = {
   '_add_new_group': 'add new group',
-  '_add_a_question_here': 'add a question here',
-  '_add_question_here': 'add question here',
+  '_add_a_question_here': 'insert a question',
+  '_add_question_here': 'insert a question',
   '_admin': 'admin',
   '_allow_multiple': 'allow multiple',
   '_allow_other': 'allow other',
@@ -29,10 +29,10 @@ Ember.STRINGS_EN = {
   '_mandatory': 'mandatory',
   '_maps': 'maps',
   '_move': 'move',
-  '_move_group_here': 'move group here',
+  '_move_group_here': 'move group',
   '_option_details': 'option details',
   '_optional': 'optional',
-  '_paste_group_here': 'paste group here',
+  '_paste_group_here': 'paste group',
   '_preview': 'preview',
   '_question_help_tooltip': 'question help tooltip',
   '_question_text': 'question text',
