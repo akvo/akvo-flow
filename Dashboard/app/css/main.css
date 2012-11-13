@@ -1281,7 +1281,7 @@ li.aSurvey h2 {
 	white-space: nowrap;
 	font-size: 1.6em;
 	font-family:Arial, Helvetica, sans-serif;
-	letter-spacing:-0.05em;
+	letter-spacing:-0.02em;
 }
 li.aSurvey:hover h2 {
 	color: rgb(255,255,255);
@@ -1446,7 +1446,7 @@ ul.surveyInfo li.responseNumber p {
 	white-space: nowrap;
 }
 .aSurvey nav ul li:hover {
-	background: rgb(255,255,255);
+	background: /*rgb(74,177,207)*/rgb(58,58,58);
 }
 .aSurvey nav ul li:nth-child(2n) {
 	margin:2px 0 0 0;
@@ -1462,7 +1462,7 @@ ul.surveyInfo li.responseNumber p {
 	white-space: nowrap;
 }
 .aSurvey nav ul li a:hover {
-	color: rgb(114,  205, 255);
+	color: rgb(255,255,255);
 }
 .aSurvey nav ul li.editSurvey a {
 	background: url(../images/editSurvey.png) 3px top no-repeat;
