@@ -16,7 +16,7 @@ require('akvo-flow/core');
 
 FLOW.store = DS.Store.create({
 	revision: 7,
-	//adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:"http://localhost"}),
+	//adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:"http://localhost"})
 	adapter: DS.fixtureAdapter
 
 });
@@ -57,7 +57,7 @@ FLOW.QuestionGroup = DS.Model.extend({
 	description: DS.attr('string'),
 	name: DS.attr('string'),
 	path: DS.attr('string'),
-	class: DS.attr('string'),
+	class: DS.attr('string'), //FIXME: class is a JS reserved word
 	code: DS.attr('string'),
 	surveyId: DS.attr('number'),
 	displayName: DS.attr('string'),
@@ -89,7 +89,7 @@ FLOW.Question = DS.Model.extend({
 	allowOtherFlag: DS.attr('boolean', {defaultValue: 0}),
 	allowSign: DS.attr('boolean', {defaultValue: 0}),
 	text: DS.attr('string'),
-	class: DS.attr('string'),
+	class: DS.attr('string'), //FIXME: class is a JS reserved word
 	questionDependency: DS.attr('string'),
 	mandatoryFlag: DS.attr('boolean', {defaultValue: 0}),
 	questionGroupId: DS.attr('number'),
@@ -124,12 +124,12 @@ FLOW.Device = DS.Model.extend({
 	deviceIdentifier: DS.attr('string',{defaultValue: ""}),
 	inServiceDate: DS.attr('date'),
 	outServiceDate: DS.attr('date'),
-	lastUpdate: DS.attr('string',{defaultValue: ""}),	//should be DS.attr('date'),
-	osVersion: DS.attr('string',{defaultValue: ""}),
-	lastKnownLat: DS.attr('number',{defaultValue: 0}),
-	lastKnownLong:DS.attr('number',{defaultValue: 0}),
+	lastUpdate: DS.attr('date', {defaultValue: ""}),
+	osVersion: DS.attr('string', {defaultValue: ""}),
+	lastKnownLat: DS.attr('number', {defaultValue: 0}),
+	lastKnownLong:DS.attr('number', {defaultValue: 0}),
 	lastKnownAccuracy: DS.attr('number',{defaultValue:0}),
-	lastLocationBeaconTime: DS.attr('string',{defaultValue: ""}), //should be DS.attr('date'),
+	lastLocationBeaconTime: DS.attr('date', {defaultValue: ""}),
 	deviceGroup: DS.attr('string',{defaultValue: ""}),
 	keyId: DS.attr('number'),
 	primaryKey:'keyId',
