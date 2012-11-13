@@ -38,8 +38,12 @@ FLOW.ExcelExportController = Ember.Controller.extend();
 
 FLOW.NavReportsController = Ember.Controller.extend();
 
-FLOW.NavMapsController = Ember.ArrayController.extend();
-
+FLOW.NavMapsController = Ember.ArrayController.extend({
+  content: [
+    {latitude: 0, longitude: 0, text: "We need some fixtures!"}
+  ]
+});
+      
 FLOW.NavUsersController = Ember.Controller.extend();
 
 FLOW.NavAdminController = Ember.Controller.extend();
