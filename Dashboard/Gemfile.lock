@@ -40,7 +40,7 @@ GEM
     i18n-docs (0.0.4)
       bundler
       rake
-    listen (0.4.3)
+    listen (0.4.7)
       rb-fchange (~> 0.0.5)
       rb-fsevent (~> 0.9.1)
       rb-inotify (~> 0.8.8)
