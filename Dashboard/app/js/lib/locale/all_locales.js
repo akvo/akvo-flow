@@ -24,6 +24,7 @@ Ember.STRINGS_EN = {
   '_enter_each_choice_on_a_separate_line': 'Enter each choice on a separate line',
   '_group': 'group',
   '_home': 'home',
+  '_hide_questions': 'hide questions',
   '_inspect': 'inspect',
   '_inspect_data': 'inspect data',
   '_mandatory': 'mandatory',
@@ -39,6 +40,7 @@ Ember.STRINGS_EN = {
   '_reports': 'reports',
   '_responses': 'responses',
   '_save': 'save',
+  '_show_questions': 'show questions',
   '_survey_groups': 'survey groups',
   '_surveys': 'surveys',
   '_users': 'users'

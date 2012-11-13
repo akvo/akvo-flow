@@ -61,10 +61,6 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		}
 	},
 
-	showHideText: function() {
-		return this.get('amVisible') ? 'Hide questions' : 'Show questions';
-	}.property('amVisible').cacheable(),
-
 	doQGroupNameEdit:function(){
 		console.log("TODO - group name edit");
 	},

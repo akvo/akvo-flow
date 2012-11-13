@@ -76,7 +76,11 @@
           <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
           <nav class="qtnGroupMenu">
             <ul>
-              <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{view.showHideText}} </a></li>
+              {{#if amVisible}}
+                <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown" id="">{{t _hide_questions}} </a></li>
+              {{else}}
+                 <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{t _show_questions}} </a></li>
+              {{/if}}
               <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id="">{{t _edit_group_name}}</a></li>
               <li><a {{action "showQGroupDeleteDialogue" target="this"}} class="deleteQuestionGroup" id="">{{t _delete}}</a></li>
               <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup" id="">{{t _copy}}</a></li>
