@@ -107,10 +107,16 @@ FLOW.NavMapsView = Ember.View.extend({
       attribution: config.annotation,
       maxZoom: config.maxZoom
     }).addTo(map);
-    $.each(this.controller.get("content"), function(index, point) {
-      var marker = L.marker([point.latitude, point.longitude]).addTo(map);
-      marker.bindPopup(point.text);
+    $.each(this.controller.get("content"), function(index, surveyedLocale) {
+      var marker = L.marker([surveyedLocale.latitude, surveyedLocale.longitude]).addTo(map);
+      marker.bindPopup(surveyedLocale.text);
     });
+    var legend = L.control({position: "bottomleft"});
+    legend.onAdd = function() {
+      var div = L.DomUtil.get("legend");
+      return div;
+    };
+    legend.addTo(map);
   }
 });
 
