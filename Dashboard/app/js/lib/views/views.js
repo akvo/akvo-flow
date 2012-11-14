@@ -86,12 +86,13 @@ FLOW.NavMapsView = Ember.View.extend({
   controller: FLOW.NavMapsController,
   templateName: "navMaps/nav-maps",
   didInsertElement: function() {
-    var cloudMade = {
+    var cloudMade, config, legend, map;
+    cloudMade = {
       apiKey: "a1029e8c8d9d42bc84e96b8a960bb42e",
       themeId: 1,
       tileSize: 256
     };
-    var config = {
+    config = {
       annotation: "Map data &copy; Akvo FLOW",
       center: [0, 0],
       maxZoom: 18,
@@ -102,7 +103,7 @@ FLOW.NavMapsView = Ember.View.extend({
                "{z}/{x}/{y}.png",
       zoom: 2
     };
-    var map = L.map("map").setView(config.center, config.zoom);
+    map = L.map("map").setView(config.center, config.zoom);
     L.tileLayer(config.tileUrl, {
       attribution: config.annotation,
       maxZoom: config.maxZoom
@@ -111,7 +112,7 @@ FLOW.NavMapsView = Ember.View.extend({
       var marker = L.marker([surveyedLocale.latitude, surveyedLocale.longitude]).addTo(map);
       marker.bindPopup(surveyedLocale.text);
     });
-    var legend = L.control({position: "bottomleft"});
+    legend = L.control({position: "bottomleft"});
     legend.onAdd = function() {
       var div = L.DomUtil.get("legend");
       return div;
