@@ -51,22 +51,35 @@
   <!-- Beginning Question group set  -->
   <section id="questionSet">
     <section class="aQuestionSet mainContent" id="setIndex-01"> {{#view FLOW.QuestionGroupItemView zeroItem="true"}}
+      
+       <!-- insert, move and copy buttons --> 
+      
       {{#if view.oneSelectedForMove}}
-      <nav class="moveMenu groupActionMenu">
-        <ul>
-          <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_group_here}}</a></li>
-          <li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
-        </ul>
-      </nav>
-      {{/if}}    
-      {{#if view.oneSelectedForCopy}}
-      <nav class="copyMenu groupActionMenu">
-        <ul>
-          <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_group_here}}</a></li>
-          <li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
-        </ul>
-      </nav>
-      {{/if}}    
+        <nav class="moveMenu groupActionMenu">
+          <ul>
+            <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_group_here}}</a></li>
+            <li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
+          </ul>
+        </nav>
+      {{else}}   
+        {{#if view.oneSelectedForCopy}}
+          <nav class="copyMenu groupActionMenu">
+            <ul>
+              <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_group_here}}</a></li>
+              <li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
+            </ul>
+          </nav>
+        {{else}}
+          <nav class="insertMenu groupActionMenu">
+            <ul>
+              <li><a {{action "doInsertGroupHere" target="this"}} class="smallBtn">{{t _insert_group_here}}</a></li>
+            </ul>
+          </nav>
+        {{/if}}  
+      {{/if}}
+
+       <!-- end insert, move and copy buttons --> 
+
       {{/view}} 
       
       <!-- start list of question groups --> 
@@ -163,23 +176,30 @@
         
         <!-- end question group block --> 
       </div>
-      <!-- move and copy buttons --> 
-      {{#if view.oneSelectedForMove}}
-      <nav class="moveMenu groupActionMenu">
-        <ul>
-          <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_group_here}}</a></li>
-          <li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
-        </ul>
-      </nav>
+      <!-- insert, move and copy buttons --> 
+       {{#if view.oneSelectedForMove}}
+        <nav class="moveMenu groupActionMenu">
+          <ul>
+            <li><a {{action "doQGroupMoveHere" target="this"}} class="smallBtn">{{t _move_group_here}}</a></li>
+            <li><a {{action "doQGroupMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
+          </ul>
+        </nav>
+      {{else}}   
+        {{#if view.oneSelectedForCopy}}
+          <nav class="copyMenu groupActionMenu">
+            <ul>
+              <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_group_here}}</a></li>
+              <li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
+            </ul>
+          </nav>
+        {{else}}
+          <nav class="insertMenu groupActionMenu">
+            <ul>
+              <li><a {{action "doInsertGroupHere" target="this"}} class="smallBtn">{{t _insert_group_here}}</a></li>
+            </ul>
+          </nav>
+        {{/if}}  
       {{/if}}
-      {{#if view.oneSelectedForCopy}}
-      <nav class="copyMenu groupActionMenu">
-        <ul>
-          <li><a {{action "doQGroupCopyHere" target="this"}} class="smallBtn">{{t _paste_group_here}}</a></li>
-          <li><a {{action "doQGroupCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
-        </ul>
-      </nav>
-      {{/if}} 
       <!-- end move and copy buttons --> 
       
       {{/collection}} </section>

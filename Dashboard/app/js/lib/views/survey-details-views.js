@@ -132,6 +132,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	// prepare for group copy. Shows 'copy to here' buttons
 	doQGroupCopy:function(){
 		FLOW.selectedControl.set('selectedForCopyQuestionGroup', this.content);
+		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
 	},
 
 	// cancel group copy
@@ -142,6 +143,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	// prepare for group move. Shows 'move here' buttons
 	doQGroupMove:function(){
 		FLOW.selectedControl.set('selectedForMoveQuestionGroup', this.content);
+		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
 	},
 
 	// cancel group move
