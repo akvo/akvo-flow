@@ -10,6 +10,7 @@
 
 # Specific paths
 
+Dashboard/app/test.html
 Dashboard/assets*
 Dashboard/tmp*
 Dashboard/test_assets*

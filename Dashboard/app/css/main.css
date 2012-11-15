@@ -58,8 +58,8 @@ body {
 -------------------------------------------------------------- */
 
 h1, h2, h3, h4, h5, h6 {
+	text-transform: capitalize;
 	font-weight: normal;
-	text-transform:capitalize;
 }
 h1 {
 	font-size: 2.4em;
@@ -170,12 +170,12 @@ pre {
 
 a, a:link, a:visited {
 	outline: none;
-	color: rgb(0,123,182);
+	color: rgb(74, 177, 207);
 	text-decoration: none;
 	cursor: pointer;
 }
 a:hover {
-	color: rgb(107, 134, 141);
+	color: rgb(0,123,182);
 }
 
 /* Custom text-selection colors (remove any text shadows: twitter.com/miketaylr/status/12228805301) */
@@ -269,11 +269,11 @@ a.AddBtn {
 	margin: 10px 0 0 26%;
 	padding: 1em 1% 0.8em 1.5em;
 	width: 58%;
+	background: url(../images/addbtn.png) left center no-repeat;
 	color: rgb(0,123,182);
 	text-align: left;
 	text-transform: uppercase;
 	font-size: 1.1em;
-	background: url(../images/addbtn.png) left center no-repeat;
 }
 a.AddBtn:hover {
 }
@@ -314,18 +314,18 @@ a.AddBtn:hover {
 }
 .dialogWrap {
 	position: relative;
-	Height: 100%;
 	width: 100%;
+	Height: 100%;
 }
 .dialog {
 	position: absolute;
-	display: block;
 	top: 35%;
 	left: 35%;
-	padding:1em 2em;
+	display: block;
+	padding: 1em 2em;
 	width: 25%;
-	border:thin solid rgb(153,153,153);
- 	-webkit-border-radius: 4px;
+	border: thin solid rgb(153,153,153);
+	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	background: white;
@@ -333,13 +333,13 @@ a.AddBtn:hover {
 }
 .dialogWrap .menuCentre {
 	margin: 30px auto 10px auto;
-	}
+}
 .dialogWrap p {
-	font-size:1.5em;
-	margin-top:15px; 
-	padding:1em;
-	background:rgb(242,242,242);
-	}
+	margin-top: 15px;
+	padding: 1em;
+	background: rgb(242,242,242);
+	font-size: 1.5em;
+}
 /* page structure
 --------------------------------------------- */
 #pageWrap {
@@ -748,9 +748,9 @@ tfoot tr {
 
 #assignSurveys fieldset {
 	position: relative;
-	width: 97%;
 	margin: 3px auto;
 	padding: 1em 1% 3em 1%;
+	width: 97%;
 }
 fieldset#assignmentDetails {
 	background: rgb(255,255,255);
@@ -760,8 +760,8 @@ fieldset#assignmentDetails {
 	border: 1px solid rgb(158,158,158);
 }
 #assignmentDetails > input {
-	width: 45%;
 	margin: 0 0.5em 1em 0;
+	width: 45%;
 }
 .dateRange {
 	position: relative;
@@ -769,8 +769,8 @@ fieldset#assignmentDetails {
 	width: 100%;
 }
 input.datePicker {
-	width: 90%;
 	display: inline;
+	width: 90%;
 	border-color: transparent;
 	background: rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
 }
@@ -785,35 +785,35 @@ input.datePicker {
 }
 .fieldSetWrap {
 	position: relative;
-	width: 99%;
-	margin: 3px auto;
 	clear: both;
-	padding: 0;
 	overflow: auto;
+	margin: 3px auto;
+	padding: 0;
+	width: 99%;
 	background: rgb(242,242,242) url(../images/FieldSetSep.png) center center no-repeat;
 }
 .fieldSetWrap.makeWhite {
 	background: rgb(255, 255, 255) url(../images/FieldSetSep.png) center center no-repeat;
 }
 #assignSurveys .fieldSetWrap fieldset {
-	width: 49%;
+	display: inline;
 	margin: 0;
 	padding: 1em 0.5% 1.5em 0.5%;
-	display: inline;
 	min-height: 200px;
+	width: 49%;
 }
 #assignSurveys .fieldSetWrap fieldset table {
-	width: 98%;
+	overflow: scroll;
 	margin: 0 auto;
 	max-height: 210px;
-	overflow: scroll;
+	width: 98%;
 }
 .action a {
 	display: block;
 	width: 13px;
 	height: 13px;
-	text-indent: -99999px;
 	background: url(../images/removeList.png) center top no-repeat;
+	text-indent: -99999px;
 }
 .action a:hover {
 	background: url(../images/removeList.png) center bottom no-repeat;
@@ -825,14 +825,14 @@ table.previewList {
 	border: thin solid rgb(230,230,230);
 }
 #assignSurveys .fieldSetWrap fieldset table th {
-	text-align: left;
 	padding: 5px 0 5px 5px;
-	cursor: pointer;
-	font-size: 1.3em;
-	text-transform: capitalize;
-	color: rgb(107, 134, 141);
 	background: rgb(242,242,242);
+	color: rgb(107, 134, 141);
+	text-align: left;
+	text-transform: capitalize;
 	font-weight: normal;
+	font-size: 1.3em;
+	cursor: pointer;
 }
 #assignSurveys .fieldSetWrap fieldset table tr:nth-child(2n+1) {
 	background: rgb(230,230,230);
@@ -844,19 +844,19 @@ table.previewList {
 	background: transparent;
 }
 #assignSurveys .fieldSetWrap fieldset table td {
-	text-align: left;
-	vertical-align: middle;
 	padding: 0 0 0 1.5%;
 	border-right: thin solid rgb(255,255,255);
+	vertical-align: middle;
+	text-align: left;
 }
 #assignSurveys .fieldSetWrap fieldset table td:last-child {
 	border-right: none;
 }
 #assignSurveys .fieldSetWrap fieldset table tfoot tr {
 	display: table-row;
+	height: 21px;
 	background: transparent;
 	vertical-align: middle;
-	height: 21px;
 }
 #assignSurveys .fieldSetWrap fieldset table tfoot td {
 	position: relative;
@@ -864,19 +864,19 @@ table.previewList {
 }
 #assignSurveys .fieldSetWrap fieldset table tfoot td a {
 	display: block;
-	padding: 5px 3px;
-	background: rgb(0,123,182);
-	width: 10%;
 	float: right;
-	color: rgb(255,255,255);
-	-moz-border-radius: 0 0 5px 5px;
+	padding: 5px 3px;
+	width: 10%;
 	-webkit-border-radius: 0 0 5px 5px;
-	-o-border-radius: 0 0 5px 5px;
+	-moz-border-radius: 0 0 5px 5px;
 	border-radius: 0 0 5px 5px;
-	-moz-transition: background 0.5s ease-in;
+	background: rgb(0,123,182);
+	color: rgb(255,255,255);
 	-webkit-transition: background 0.5s ease-in;
+	-moz-transition: background 0.5s ease-in;
 	-o-transition: background 0.5s ease-in;
 	transition: background 0.5s ease-in;
+	-o-border-radius: 0 0 5px 5px;
 }
 #assignSurveys .fieldSetWrap fieldset table tfoot td a:hover {
 	background: rgb(107, 134, 141);
@@ -892,18 +892,18 @@ th.action {
 	width: 7%;
 }
 #assignSurveys .fieldSetWrap fieldset table td.action {
-	width: 7%;
 	padding: 0.6em 0 0.6em 3%;
+	width: 7%;
 }
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel {
-	float: left;
 	position: relative;
+	float: left;
 }
 #assignSurveys .fieldSetWrap fieldset.formRightPanel {
-	float: right;
 	position: relative;
-	width: 48%;
+	float: right;
 	padding: 1em 0.5% 1.5em 1.5%;
+	width: 48%;
 	height: 98%;
 }
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div {
@@ -941,8 +941,8 @@ th.action {
 	width: 90%;
 }
 .menuConfirm {
-	text-align: center;
 	margin: 0 auto;
+	text-align: center;
 }
 .menuConfirm ul li {
 	display: inline;
@@ -1245,7 +1245,7 @@ li.aSurvey {
 	float: left;
 	margin: 5px 1.5% 10px 1.5%;
 	padding: 0 0.5% 10px 0.5%;
-	min-height: 225px;
+	min-height: 210px;
 	width: 21%;
 	/* background: url(../images/surveySeperator.png) right center no-repeat; */
 	background: transparent;
@@ -1279,9 +1279,9 @@ li.aSurvey h2 {
 	text-transform: capitalize;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-style: italic;
 	font-size: 1.6em;
-	font-family: Georgia, "Times New Roman", Times, serif;
+	font-family:Arial, Helvetica, sans-serif;
+	letter-spacing:-0.02em;
 }
 li.aSurvey:hover h2 {
 	color: rgb(255,255,255);
@@ -1353,7 +1353,7 @@ ul.surveyInfo li.responseNumber p {
 	display: inline;
 }
 .waterPoint ul.surveyInfo li.responseNumber, li.aSurvey.waterPoint:hover h2 {
-	color: rgb(74, 177, 207);
+	color: rgb(57, 102, 128);	
 }
 .houseHold ul.surveyInfo li.responseNumber, li.aSurvey.houseHold:hover h2 {
 	color: rgb(222, 137, 41);
@@ -1365,7 +1365,7 @@ ul.surveyInfo li.responseNumber p {
 	color: rgb(119, 97, 0);
 }
 .waterPoint ul.surveyInfo li.responseNumber span {
-	background: rgb(74, 177, 207);
+	background: rgb(57, 102, 128);	
 }
 .houseHold ul.surveyInfo li.responseNumber span {
 	background: rgb(222, 137, 41);
@@ -1407,7 +1407,7 @@ ul.surveyInfo li.responseNumber p {
 	width: 67%;
 }
 .waterPoint dl dd:nth-of-type(2) {
-	color: rgb(74, 177, 207);
+	color: rgb(57, 102, 128);	
 }
 .houseHold dl dd:nth-of-type(2) {
 	color: rgb(222, 137, 41);
@@ -1438,7 +1438,7 @@ ul.surveyInfo li.responseNumber p {
 	float: left;
 	overflow: hidden;
 	margin: 2px 1% 0 0;
-	width: 50%;
+	width: 49%;
 	border-radius: 2px;
 	/* background: url(../images/aSurveyNavSep.png) right center no-repeat; */
 	background: rgb(235,235,235);
@@ -1446,31 +1446,23 @@ ul.surveyInfo li.responseNumber p {
 	white-space: nowrap;
 }
 .aSurvey nav ul li:hover {
-	background: rgb(255,255,255);
+	background: /*rgb(74,177,207)*/rgb(58,58,58);
 }
-.aSurvey nav ul li:nth-child(2n+1) {
-	width: 48%;
-}
-/* .aSurvey nav ul li:first-child {
-	width: 28%; */
-/* }
-.aSurvey nav ul li:nth-child(even) {
-	width: 36%; */
 .aSurvey nav ul li:nth-child(2n) {
-/* width: 29%; */
-/* background: none; */
-}
+	margin:2px 0 0 0;
+	}
+
 .aSurvey nav ul li a {
 	display: block;
 	overflow: hidden;
-	padding: 2px 0 5px 28%;
-	width: 72%;
+	padding: 5px 0 5px 25%;
+	width: 75%;
 	height: 8px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 .aSurvey nav ul li a:hover {
-	color: rgb(114,  205, 255);
+	color: rgb(255,255,255);
 }
 .aSurvey nav ul li.editSurvey a {
 	background: url(../images/editSurvey.png) 3px top no-repeat;
@@ -1496,8 +1488,8 @@ ul.surveyInfo li.responseNumber p {
 .aSurvey nav ul li.inspectData a:hover {
 	background: url(../images/inspectData.png) 3px bottom no-repeat;
 }
-/*
- * Survey Creation & Editing
+/*----------------------------------------------------------------------------------------------------------------
+										 Survey Creation & Editing
 ----------------------------------------------------------------------------------------------------------------*/
 #newSurveyInfo h2 {
 	display: block;
@@ -1516,12 +1508,11 @@ ul.surveyInfo li.responseNumber p {
 	display: block;
 }
 #newSurveyInfo form label {
-	margin: 10px 2px 2px 2px;
-	margin: 10px 0 0 0;
+	margin: 10px 2px 10px 2px;
 	color: rgb(255,255,255);
 }
 #newSurveyInfo form label:first-child {
-	margin: 0px 2px 2px 2px;
+	margin: 0px 2px 10px 2px;
 	color: rgb(255,255,255);
 }
 #newSurveyInfo form input {
@@ -1665,34 +1656,35 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	position: relative;
 	display: block;
 	margin: 0 0.75%;
-	padding: 5px 0.75%;
+	padding: 1.5em 0.75% 1em 0.75%;
 	width: 97%;
-	border-top: thin solid rgb(222,222,222);
-	border-bottom: thin solid rgb(222,222,222);
-	background: rgb(242,242,242);
+}
+.aQuestionSet .questionSetContent:before {
+	display: block;
+	margin: 0px auto 5px auto;
+	width: 100%;
+	border-top: 1px solid rgb(228, 228, 228);
+	border-bottom: 1px solid rgb(255, 255, 255);
+	content: "";
 }
 .aQuestionSet .questionSetContent a.addQuestion {
 	position: relative;
 	display: block;
 	overflow: hidden;
-	margin: 10px auto 20px auto;
+	margin: 10px 0 20px 5px;
 	padding: 0.85em 0.5em 0.75em 35px;
-	width: 12%;
-	border: thin solid rgb(214,214,214);
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	background: rgb(224,224,224) url(../images/addQuestion.png) 10px center no-repeat;
-	-webkit-box-shadow: 0 2px 0 rgb(255,255,255);
-	-moz-box-shadow: 0 2px 0 rgb(255,255,255);
-	box-shadow: 0 2px 0 rgb(255,255,255);
+	width: 15%;
+	background: url(../images/insertQuestion.png) 10px center no-repeat;
 	text-transform: uppercase;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	font-size: 0.9em;
 }
 .aQuestionSet .questionSetContent a.addQuestion:hover {
-	background: rgb(214,214,214) url(../images/addQuestion.png) 10px center no-repeat;
+	background: url(../images/insertQuestion.png) 10px center no-repeat;
+}
+.aQuestionSet .questionSetContent a.addQuestion:first-child {
+	margin: 20px 0 20px 5px;
 }
 .aQuestionSet header {
 	position: relative;
@@ -1700,17 +1692,21 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	margin: 0 0.75%;
 	padding: 0 0.75% 0 0.75%;
 	width: 97%;
-	border-top: thin dashed rgb(224,224,224);
+	background: rgb(240,240,240);
 }
 .aQuestionSet > div > div.ember-view:first-child header {
-	border-top: none;
 }
-.aQuestionSet > div > div.ember-view {
-	margin: 30px 0 20px 0;
+.aQuestionSet > div > div.ember-view > div.questionGroupBlock {
+	margin: 15px 0 ;
+	border-top: thin solid rgb(230,230,230);
+	border-bottom: thin solid rgb(230,230,230);
+	background: rgb(240,240,240);
 }
 .aQuestionSet > div > div.ember-view:first-child {
-	margin: 0 0 20px 0;
+	margin: 0 0 15px 0;
 }
+
+
 span.qtnGroupHead {
 	display: block;
 	padding-top: 5px;
@@ -1718,6 +1714,7 @@ span.qtnGroupHead {
 	color: rgb(246, 160, 26);
 	font-style: italic;
 	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size:1.1em;
 }
 .aQuestionSet header h1.qtnGroupTitle a {
 	color: rgb(38, 8, 89);
@@ -1758,32 +1755,56 @@ span.qtnGroupHead {
 	background: rgb(214,214,214) url(../images/addSet.png) left center no-repeat;
 	color: rgb(227, 27, 35);
 }
-nav.moveMenu, nav.copyMenu {
+nav.groupActionMenu {
 	display: block;
-	margin: 15px auto 5px auto;
-	width: 35%;
+	padding:1.5em 0;
+	margin: 5px auto;
+	width: 100%;
+	background:rgb(255,241,227);
 }
-nav.moveMenu ul, nav.copyMenu ul {
+nav.groupActionMenu ul {
+	display:block;
+	margin: 0 auto;
+	position:relative;
+	width:19%;
+	text-align:center;
 }
 nav.moveMenu ul li, nav.copyMenu ul li {
 	display: inline;
-	margin: 0 5px 0 0;
+	margin: 0 10px 0 0;
 	text-align: center;
 }
-/*****
-		A New Question Form
-******---------------------------------------------------------------------------------*/
+nav.groupActionMenu  a.smallBtn {
+	background:rgb(246, 160, 26);
+	color:rgb(255,255,255);
+	}
+nav.groupActionMenu  a.smallBtn:hover {
+	background:rgb(58,58,58);
+	color:rgb(255,255,255);
+	}
+
+nav.groupActionMenu  a {
+	color:rgb(246, 160, 26);
+	}
+nav.groupActionMenu  a:hover {
+	color:rgb(58,58,58);
+	}
+
+/*---------------------------------------------------------------------------------
+								A New Question Form
+---------------------------------------------------------------------------------*/
 
 .aQuestionSet .questionSetContent div.innerContent {
 	position: relative;
 	margin: 20px auto;
 	padding: 15px 0.1%;
 	width: 99.8%;
-	border: thin dotted rgb(214,214,214);
-	-webkit-border-radius: 0 0 10px 0;
-	-moz-border-radius: 0 0 10px 0;
-	border-radius: 0 0 10px 0;
+	border: thin solid rgb(224,224,224);
+	-webkit-border-radius: 0 0 5px 0;
+	-moz-border-radius: 0 0 5px 0;
+	border-radius: 0 0 5px 0;
 	background: rgb(248,248,248);/* -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *//* -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *//* box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
+	-o-border-radius: 0 0 5px 0;
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {
 }
@@ -1809,6 +1830,16 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 	color: rgb(227, 27, 35);
 	text-transform: uppercase;
 }
+.aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
+	background:url(../images/shownCollapse.png) left top no-repeat;
+	padding:5px 5px 5px 15px;
+	width:95px;
+	text-align:left;
+}
+.aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
+	background:url(../images/shownCollapse.png) left bottom no-repeat;
+}
+
 .aQuestionSet header nav.qtnGroupMenu ul li:last-child {
 	margin: 0;
 }
@@ -1837,9 +1868,21 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 }
 .innerContent nav {
 	position: absolute;
-	top: 17px;
-	right: 5px;
-	width: 35%;
+	top: 1px;
+	right: 1px;
+	padding: 0.5em 0.1em 0.5em 0.5em;
+	border-radius: 0 0 0 5px;
+	background: rgb(230,230,230); /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlNWU1ZTUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(229,229,229,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0 ); /* IE6-8 */
+	box-shadow: -1px 1px 0 rgb(222,222,222);
 }
 .innerContent nav ul {
 	margin: 0;
@@ -1849,16 +1892,27 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 .innerContent nav ul li {
 	display: inline;
 	float: right;
-	margin: 0 5px 0 0;
+	margin: 0 0 0 0;
+	padding: 0 0 0 5px;
+	border-right: 1px solid rgb(208, 208, 208);
+	border-left: 1px solid rgb(245, 245, 245);
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	background: rgb(234,234,234);
 	text-align: right;
+	background:transparent;
+	transition:background 0.4s ease-in;
+}
+.innerContent nav ul li:first-child {
+	border-right: none;
+}
+.innerContent nav ul li:last-child {
+	border-left: none;
 }
 .innerContent nav ul li:hover {
-	background: rgb(244,244,244);
+	background:rgb(224,224,224);
 }
+
 .innerContent nav ul li a {
 	display: block;
 	padding: 5px 10px 5px 20px;
@@ -1897,18 +1951,26 @@ nav ul li a.showQuestion:hover {
 .innerContent h1 {
 	display: block;
 	margin: 20px 0 0 5px;
+	color: rgb(0,0,0);
 	font-weight: bold;
 	font-size: 1.5em;
 }
 .innerContent h1.questionNbr {
 	display: inline;
-	margin: 0 0 0 10px;
-	color: rgb(74, 177, 207);
+	color: rgb(0,0,0);
 	font-weight: normal;
 }
 .innerContent h1.questionNbr span {
-	color: rgb(158,158,158);
-	font-weight: normal;
+	display: inline-block;
+	margin: -10px 5px 0 0;
+	padding: 1px 0 0 5px;
+	width: 20px;
+	height: 24px;
+	border-radius: 12.5px;
+	background: rgb(0,0,0);
+	color: rgb(255,255,255);
+	font-weight: bold;
+	font-size: 0.9em;
 }
 .innerContent label, .innerContent input, .innerContent select {
 	display: block;
