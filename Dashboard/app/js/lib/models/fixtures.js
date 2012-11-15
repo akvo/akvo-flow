@@ -316,16 +316,14 @@ FLOW.SurveyLocale.FIXTURES = [{
   latitude: 52.370216,
   longitude: 4.895168,
   description: "Welkom in Amsterdam!"
-},
-{
+}, {
   keyId: 2,
   latitude: 51.507335,
   longitude: -0.127683,
   description: "Welcome to London!"
-},
-{
+}, {
   keyId: 3,
   latitude: 59.32893,
   longitude: 18.06491,
-  description: "Välkommen till Sverige!"
+  description: "Välkommen till Stockholm!"
 }];
