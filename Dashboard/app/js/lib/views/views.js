@@ -110,7 +110,7 @@ FLOW.NavMapsView = Ember.View.extend({
     }).addTo(map);
     $.each(this.controller.get("content"), function(index, surveyedLocale) {
       var marker = L.marker([locale.latitude, locale.longitude]).addTo(map);
-      marker.bindPopup(locale.text);
+      marker.bindPopup(locale.description);
     });
     legend = L.control({position: "bottomleft"});
     legend.onAdd = function() {
