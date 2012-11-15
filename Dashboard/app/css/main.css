@@ -1077,14 +1077,15 @@ th.action {
 }
 #groupBar h2, #newSurveyInfo h2 {
 	margin: 15px 0 0 10px;
-	color: rgb(5, 5, 5);
+	color:rgb(246, 160, 26);
+/*	color: rgb(5, 5, 5);
 	color: rgba(5, 5, 5, 1);
 	text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
 	font-size: 1.8em;
 	-moz-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
 	-webkit-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
 	-o-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
-}
+*/}
 .no-textshadow #groupBar h2, .no-textshadow #newSurveyInfo h2 {
 	color: rgb(125, 125, 125);
 }
@@ -1551,9 +1552,10 @@ ul.surveyInfo li.responseNumber p {
 	background: rgb(255,255,255);
 }
 .newSurveyInfoUl {
-	margin: 20px 0;
-	padding: 0;
-	width: 100%;
+	background:rgb(23,23,23);
+	margin: 20px 0 0 0;
+	padding: 15px 1%;
+	width: 98%;
 }
 .newSurveyInfoUl li {
 	position: relative;
@@ -1562,9 +1564,12 @@ ul.surveyInfo li.responseNumber p {
 	width: 85%;
 	color: rgb(153,153,153);
 }
+.newSurveyInfoUl li h3 {
+	margin-bottom:20px;
+}
 .newSurveyInfoUl li > span {
 	position: absolute;
-	right: 50px;
+	right: 5px;
 	color: rgb(227, 27, 35);
 	font-weight: bold;
 }
@@ -1572,25 +1577,24 @@ ul.surveyInfo li.responseNumber p {
 }
 .newSurveyInfoUl li > span#numberQuestion {
 }
-.newSurveyInfoUl li:first-child {
+/*.newSurveyInfoUl li:first-child {
 	padding: 20px 5px;
 	width: 90%;
 	background: url(../images/sepHorDark.png) left top repeat-x;
 	color: rgb(255,255,255);
 }
+*/
 nav.newSurveyNav {
 	margin: 0 auto;
 	padding: 0;
 	width: 98%;
 	height: 32px;
-	background: rgb(79,79,79);
 }
 nav.newSurveyNav ul {
 	margin: 0 auto;
 	padding: 0;
 	width: 100%;
 	height: 32px;
-	background: rgb(79,79,79);
 }
 nav.newSurveyNav ul li {
 	display: block;
