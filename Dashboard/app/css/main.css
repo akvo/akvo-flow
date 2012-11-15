@@ -1076,7 +1076,7 @@ th.action {
 	width: 20%;
 }
 #groupBar h2, #newSurveyInfo h2 {
-	margin: 15px 0 10px 10px;
+	margin: 15px 0 0 10px;
 	color: rgb(5, 5, 5);
 	color: rgba(5, 5, 5, 1);
 	text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
@@ -1154,9 +1154,6 @@ section.topBar h2 {
 section.topBar > a {
 	position: relative;
 	display: inline-block;
-	padding: 8px 7px 5px 7px;
-	color: rgb(114,  205, 255);
-	text-transform: uppercase;
 }
 section.topBar > a:hover {
 	color: rgb(255,255,255);
@@ -1165,15 +1162,6 @@ section.topBar > a.smallBtn {
 	margin: 0 0 0 5px;
 	color: rgb(235,  235, 235);
 }
-/* ****************** MTW added for save and cancel button ************* */
-nav > a {
-	position: relative;
-	display: inline-block;
-	margin: 0 0 0 10px;
-	color: rgb(114,  205, 255);
-}
-/* ********************  end MTW  **************************/
-
 
 nav.menuTopbar {
 	position: absolute;
@@ -1190,8 +1178,7 @@ nav.menuTopbar ul {
 nav.menuTopbar ul li {
 	display: inline;
 	float: left;
-	margin: 4px 10px 0 0;
-	text-transform: uppercase;
+	margin: 11px 10px 0 0;
 }
 nav.menuTopbar ul li:last-child {
 	display: inline;
@@ -1199,39 +1186,55 @@ nav.menuTopbar ul li:last-child {
 	margin: 4px 4px 0 0;
 	text-transform: uppercase;
 }
-nav.menuTopbar ul li a {
+a.addGroup, a.addSurvey, a.stepBack, a.editGroupName, a.deleteGroup {
 	display: block;
-	padding: 10px 10px 12px 30px;
-	height: 7px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	color: rgb(255,255,255);
+	padding: 5px 0 5px 19px;
+	height: 8px;
 	font-size: 1em;
-	-webkit-transition: background-color linear 0.1;
-	-moz-transition: background-color linear 0.1;
-	transition: background-color linear 0.1;
-	-wekit-border-radius: 3px;
+	text-transform: uppercase;
+
 }
-nav.menuTopbar ul li a.addGroup {
-	background: rgb(77,77,77) url(../images/addGroupIcn.png) left top no-repeat;
+a.editGroupName {margin:0 10px 0 0;}
+a.addGroup {
+	padding:6px 0 4px 19px;
+	margin:0 0 15px 7px;
+	}
+a.stepBack {
+	margin:5px 5px 0 0;
+	}
+a.addGroup:hover, a.addSurvey:hover, a.stepBack:hover, a.editGroupName:hover, a.deleteGroup:hover {
+	color:rgb(255,255,255);
 }
-nav.menuTopbar ul li a.addGroup:hover {
-	background: rgb(114,  205, 255) url(../images/addGroupIcn.png) left bottom no-repeat;
-	color: rgb(57, 102, 128);
+
+a.addGroup {
+	background:url(../images/addGroupIcn.png) left top no-repeat;
 }
-nav.menuTopbar ul li a.addSurvey {
-	background: rgb(77,77,77) url(../images/addSurveyIcn.png) left top no-repeat;
+a.addGroup:hover {
+	background:url(../images/addGroupIcn.png) left bottom no-repeat;
 }
-nav.menuTopbar ul li a.addSurvey:hover {
-	background: rgb(114,  205, 255) url(../images/addSurveyIcn.png) left bottom no-repeat;
-	color: rgb(57, 102, 128);
+a.addSurvey {
+	background:url(../images/addSurveyIcn.png) left top no-repeat;
 }
-nav.menuTopbar ul li a.stepBack {
+a.addSurvey:hover {
+	background:url(../images/addSurveyIcn.png) left bottom no-repeat;
+}
+a.stepBack {
 	background: transparent url(../images/backIcn.png) left top no-repeat;
 }
-nav.menuTopbar ul li a.stepBack:hover {
-	background: rgb(114,  205, 255) url(../images/backIcn.png) left bottom no-repeat;
-	color: rgb(57, 102, 128);
+a.stepBack:hover {
+	background:url(../images/backIcn.png) left bottom no-repeat;
+}
+a.editGroupName {
+	background: transparent url(../images/editSurvey.png) left top no-repeat;
+}
+a.editGroupName:hover {
+	background:url(../images/editSurvey.png) left bottom no-repeat;
+}
+a.deleteGroup {
+	background: transparent url(../images/deleteSurvey.png) left top no-repeat;
+}
+a.deleteGroup:hover {
+	background:url(../images/deleteSurvey.png) left bottom no-repeat;
 }
 /* Survey Asset
 --------------------------------------------- */
@@ -1455,8 +1458,7 @@ ul.surveyInfo li.responseNumber p {
 .aSurvey nav ul li a {
 	display: block;
 	overflow: hidden;
-	padding: 4px 0 6px 28%;
-	width: 72%;
+	padding: 4px 0 6px 22px;
 	height: 8px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -1473,8 +1475,8 @@ ul.surveyInfo li.responseNumber p {
 .aSurvey nav ul li.deleteSurvey a {
 	background: url(../images/deleteSurvey.png) 3px top no-repeat;
 }
-.aSurvey nav ul li.inspectData a {
-	background: url(../images/inspectData.png) 3px top no-repeat;
+.aSurvey nav ul li.copySurvey a {
+	background: url(../images/copySurvey.png) 3px top no-repeat;
 }
 .aSurvey nav ul li.editSurvey a:hover {
 	background: url(../images/editSurvey.png) 3px bottom no-repeat;
@@ -1485,8 +1487,8 @@ ul.surveyInfo li.responseNumber p {
 .aSurvey nav ul li.deleteSurvey a:hover {
 	background: url(../images/deleteSurvey.png) 3px bottom no-repeat;
 }
-.aSurvey nav ul li.inspectData a:hover {
-	background: url(../images/inspectData.png) 3px bottom no-repeat;
+.aSurvey nav ul li.copySurvey a:hover {
+	background: url(../images/copySurvey.png) 3px bottom no-repeat;
 }
 /*----------------------------------------------------------------------------------------------------------------
 										 Survey Creation & Editing
