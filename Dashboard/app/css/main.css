@@ -1455,8 +1455,8 @@ ul.surveyInfo li.responseNumber p {
 .aSurvey nav ul li a {
 	display: block;
 	overflow: hidden;
-	padding: 5px 0 5px 25%;
-	width: 75%;
+	padding: 4px 0 6px 28%;
+	width: 72%;
 	height: 8px;
 	text-overflow: ellipsis;
 	white-space: nowrap;

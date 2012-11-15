@@ -26,7 +26,7 @@ Ember.STRINGS_EN = {
   '_home': 'home',
   '_hide_questions': 'hide questions',
   '_inspect': 'inspect',
-  '_inspect_data': 'inspect data',
+  '_inspect_data': 'copy',
   '_mandatory': 'mandatory',
   '_maps': 'maps',
   '_move': 'move',
