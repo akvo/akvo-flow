@@ -8,7 +8,7 @@
 <bean id="surveyDao" class="com.gallatinsystems.survey.dao.SurveyDAO"/>    
 <bean id="surveyGroupDao" class="com.gallatinsystems.survey.dao.SurveyGroupDAO"/> 
 <bean id="questionGroupDao" class="com.gallatinsystems.survey.dao.QuestionGroupDao"/>  
-<bean id="deviceDao" class="com.gallatinsystems.device.dao.deviceDao"/>    
+<bean id="deviceDao" class="com.gallatinsystems.device.dao.DeviceDAO"/>    
 
 	<context:annotation-config/>
 </beans>
