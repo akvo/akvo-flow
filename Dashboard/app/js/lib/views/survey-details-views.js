@@ -41,6 +41,9 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	zeroItem: false,
 	renderView:false,
 	showQGDeleteDialogue:false,
+	showQGroupNameEditField:false,
+	questionGroupName:null,
+
 
 	amVisible: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestionGroup');
@@ -61,8 +64,24 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		}
 	},
 
-	doQGroupNameEdit:function(){
-		console.log("TODO - group name edit");
+    doQGroupNameEdit: function() {
+		this.set('questionGroupName',this.content.get('name'));
+		this.set('showQGroupNameEditField',true);
+	},
+	
+	// fired when 'save' is clicked while showing edit group name field. Saves the new group name
+	saveQuestionGroupNameEdit: function() {
+		var qgId=this.content.get('id');
+		var questionGroup=FLOW.store.find(FLOW.QuestionGroup, qgId);
+		questionGroup.set('name',this.get('questionGroupName'));
+		FLOW.store.commit();
+		this.set('showQGroupNameEditField',false);
+	},
+	
+	// fired when 'cancel' is clicked while showing edit group name field. Cancels the edit.
+	cancelQuestionGroupNameEdit: function() {
+		this.set('questionGroupName',null);
+		this.set('showQGroupNameEditField',false);
 	},
 
 	// true if one question group has been selected for Move

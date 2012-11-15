@@ -86,7 +86,22 @@
       {{#collection contentBinding="FLOW.questionGroupControl" itemViewClass="FLOW.QuestionGroupItemView"}}
       <div class="questionGroupBlock">
         <header> <span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
-          <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.displayName}}</a></h1>
+          
+
+
+
+
+        {{#if view.showQGroupNameEditField}}
+          {{view Ember.TextField valueBinding="view.questionGroupName" size=45}}
+          <a {{action "saveQuestionGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a></li>
+          <a {{action "cancelQuestionGroupNameEdit" target="this"}}>{{t _cancel}}</a>
+        {{else}}
+          <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.name}}</a></h1>
+        {{/if}}
+
+
+
+
           <nav class="qtnGroupMenu">
             <ul>
               {{#if view.amVisible}}
