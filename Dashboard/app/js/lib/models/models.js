@@ -2,6 +2,7 @@
 //                 models and stores
 // ***********************************************//
 require('akvo-flow/core');
+require('akvo-flow/models/store_def');
 // DS.Model.reopen({
 //	namingConvention: {
 //		keyToJSONKey: function(key) {
@@ -14,12 +15,6 @@ require('akvo-flow/core');
 //	}
 // });
 
-FLOW.store = DS.Store.create({
-	revision: 7,
-	//adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:"http://localhost"})
-	adapter: DS.fixtureAdapter
-
-});
 
 FLOW.SurveyGroup = DS.Model.extend({
 	description: DS.attr('string',{defaultValue: ""}),
