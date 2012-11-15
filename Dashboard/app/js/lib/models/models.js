@@ -153,9 +153,10 @@ FLOW.Device = DS.Model.extend({
 	isSelected: DS.attr('boolean', {defaultValue: false})
 });
 
-FLOW.Location = DS.Model.extend({
-  keyId:      DS.attr("number"),
-  label:      DS.attr("string"),
-  latitude:   DS.attr("number"),
-  longitude:  DS.attr("number")
+FLOW.SurveyedLocale = DS.Model.extend({
+  keyId:        DS.attr("number"),
+  label:        DS.attr("string"),
+  latitude:     DS.attr("number"),
+  longitude:    DS.attr("number"),
+  description:  DS.attr("string")
 });

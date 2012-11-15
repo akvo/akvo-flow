@@ -109,8 +109,8 @@ FLOW.NavMapsView = Ember.View.extend({
       maxZoom: config.maxZoom
     }).addTo(map);
     $.each(this.controller.get("content"), function(index, surveyedLocale) {
-      var marker = L.marker([surveyedLocale.latitude, surveyedLocale.longitude]).addTo(map);
-      marker.bindPopup(surveyedLocale.text);
+      var marker = L.marker([locale.latitude, locale.longitude]).addTo(map);
+      marker.bindPopup(locale.text);
     });
     legend = L.control({position: "bottomleft"});
     legend.onAdd = function() {
