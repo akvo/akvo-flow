@@ -38,9 +38,7 @@ FLOW.ExcelExportController = Ember.Controller.extend();
 
 FLOW.NavReportsController = Ember.Controller.extend();
 
-FLOW.NavMapsController = Ember.ArrayController.extend({
-  content: []
-});
+FLOW.NavMapsController = Ember.Controller.extend();
       
 FLOW.NavUsersController = Ember.Controller.extend();
 

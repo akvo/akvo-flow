@@ -83,10 +83,9 @@ FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports/nav-reports'
 
 // maps views
 FLOW.NavMapsView = Ember.View.extend({
-  controller: FLOW.NavMapsController,
   templateName: "navMaps/nav-maps",
   didInsertElement: function() {
-    var cloudMade, config, legend, map;
+    var cloudMade, config, legend, locales, map;
     cloudMade = {
       apiKey: "a1029e8c8d9d42bc84e96b8a960bb42e",
       themeId: 1,
@@ -108,7 +107,8 @@ FLOW.NavMapsView = Ember.View.extend({
       attribution: config.annotation,
       maxZoom: config.maxZoom
     }).addTo(map);
-    $.each(this.controller.get("content"), function(index, surveyedLocale) {
+    locales = FLOW.store.findAll(FLOW.SurveyedLocale);
+    locales.forEach(function(locale) {
       var marker = L.marker([locale.latitude, locale.longitude]).addTo(map);
       marker.bindPopup(locale.description);
     });
