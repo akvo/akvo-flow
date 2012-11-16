@@ -242,7 +242,7 @@ FLOW.Device.FIXTURES = [{
 	lastUpdate:"21 May 2012 20:30:00",
 	lastLocationBeaconTime:"22 May 2012 20:30:00",
 	lastKnownLat:23.132132321,
-	lastKnownLong:12.23232332,
+	lastKnownLong:12.23232332
 }, {
 	id:2,
 	keyId:2,
