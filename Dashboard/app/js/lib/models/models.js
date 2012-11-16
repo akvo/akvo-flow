@@ -15,11 +15,6 @@ require('akvo-flow/models/store_def');
 //	}
 // });
 
-FLOW.store = DS.Store.create({
-	revision: 7,
-	//adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:"http://localhost"})
-	adapter: DS.fixtureAdapter
-});
 
 FLOW.SurveyGroup = DS.Model.extend({
 	description: DS.attr('string',{defaultValue: ""}),
