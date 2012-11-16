@@ -82,7 +82,59 @@ FLOW.ExcelExportView = Ember.View.extend({ templateName: 'navData/excel-export'}
 FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports/nav-reports'});
 
 // maps views
-FLOW.NavMapsView = Ember.View.extend({ templateName: 'navMaps/nav-maps'});
+// L stands for Leaflet
+FLOW.NavUsersView = Ember.View.extend({ templateName: 'navUsers/nav-users'});
+
+// admin views
+// FLOW.NavAdminView = Ember.View.extend({ templateName: 'navAdmin/nav-admin'});
+//
+//
+// // ********************************************************//
+// //             Subnavigation for the Data tabs
+// // ********************************************************//
+// FLOW.DatasubnavView = Em.View.extend({
+//   templateName: 'navData/data-subnav',
+//
+FLOW.NavMapsView = Ember.View.extend({
+  templateName: "navMaps/nav-maps",
+  didInsertElement: function() {
+    var cloudMade, config, legend, locales, map;
+    cloudMade = {
+      apiKey: "a1029e8c8d9d42bc84e96b8a960bb42e",
+      themeId: 1,
+      tileSize: 256
+    };
+    config = {
+      annotation: "Map data &copy; Akvo FLOW",
+      center: [0, 0],
+      maxZoom: 18,
+      tileUrl: "http://{s}.tile.cloudmade.com/" +
+               cloudMade.apiKey + "/" +
+               cloudMade.themeId + "/" +
+               cloudMade.tileSize + "/" +
+               "{z}/{x}/{y}.png",
+      zoom: 2
+    };
+    map = L.map("flowMap").setView(config.center, config.zoom);
+    L.tileLayer(config.tileUrl, {
+      attribution: config.annotation,
+      maxZoom: config.maxZoom
+    }).addTo(map);
+    legend = L.control({position: "bottomleft"});
+    legend.onAdd = function() {
+      var div = L.DomUtil.get("flowMapLegend");
+      return div;
+    };
+    legend.addTo(map);
+    locales = FLOW.store.findAll(FLOW.SurveyedLocale);
+    locales.forEach(function(locale) {
+      var htmlContent, marker;
+      htmlContent = "<p>" + locale.description + "</p>";
+      marker = L.marker([locale.latitude, locale.longitude]).addTo(map);
+      marker.bindPopup(htmlContent);
+    });
+  }
+});
 
 // users views
 FLOW.NavUsersView = Ember.View.extend({	templateName: 'navUsers/nav-users'});

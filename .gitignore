@@ -6,9 +6,11 @@
 *.rpc
 *.class
 .gwt-log
+*.swp
 
 # Specific paths
 
+Dashboard/app/test.html
 Dashboard/assets*
 Dashboard/tmp*
 Dashboard/test_assets*
@@ -37,4 +39,3 @@ WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/BuildConfig.java
 WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
 deploy
 gwt-unitcache
-Dashboard/app/test.html

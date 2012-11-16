@@ -233,8 +233,7 @@ FLOW.DeviceGroup.FIXTURES = [
 }
 ];
 
-FLOW.Device.FIXTURES = [
-{
+FLOW.Device.FIXTURES = [{
 	id:1,
 	keyId:1,
 	phoneNumber:"3f:d4:8f:2a:8c:9f",
@@ -243,8 +242,8 @@ FLOW.Device.FIXTURES = [
 	lastUpdate:"21 May 2012 20:30:00",
 	lastLocationBeaconTime:"22 May 2012 20:30:00",
 	lastKnownLat:23.132132321,
-	lastKnownLong:12.23232332,
-},{
+	lastKnownLong:12.23232332
+}, {
 	id:2,
 	keyId:2,
 	phoneNumber:"2a:8c:9f:3f:d4:8f",
@@ -254,8 +253,7 @@ FLOW.Device.FIXTURES = [
 	lastLocationBeaconTime:"27 Feb 2012 20:30:00",
 	lastKnownLat:43.33434343,
 	lastKnownLong:-5.32332343
-},
-{
+}, {
 	id:3,
 	keyId:3,
 	phoneNumber:"31648492710",
@@ -265,8 +263,7 @@ FLOW.Device.FIXTURES = [
 	lastLocationBeaconTime:"12 Aug 2012 20:30:00",
 	lastKnownLat:34.222334234,
 	lastKnownLong:-7.44343434
-},
-{
+}, {
 	id:4,
 	keyId:4,
 	phoneNumber:"34029392833",
@@ -276,8 +273,7 @@ FLOW.Device.FIXTURES = [
 	lastLocationBeaconTime:"04 Jan 2012 20:30:00",
 	lastKnownLat:2.334343434,
 	lastKnownLong:-23.33433432
-},
-{
+}, {
 	id:5,
 	keyId:5,
 	phoneNumber:"3f:d4:8f:8b:8c:3e",
@@ -287,8 +283,7 @@ FLOW.Device.FIXTURES = [
 	lastLocationBeaconTime:"31 Oct 2012 20:30:00",
 	lastKnownLat:8.55454435,
 	lastKnownLong:54.88399473
-},
-{
+}, {
 	id:6,
 	keyId:6,
 	phoneNumber:"2a:8c:9f:3f:d4:8f",
@@ -298,8 +293,7 @@ FLOW.Device.FIXTURES = [
 	lastLocationBeaconTime:"16 Jun 2012 20:30:00",
 	lastKnownLat:23.988332,
 	lastKnownLong:-64.88399483
-},
-{
+}, {
 	id:7,
 	keyId:7,
 	phoneNumber:"3403928293",
@@ -309,4 +303,24 @@ FLOW.Device.FIXTURES = [
 	lastLocationBeaconTime:"14 Nov 2012 20:30:00",
 	lastKnownLat:23.3323432,
 	lastKnownLong:9.88873633
+}];
+
+FLOW.SurveyedLocale.FIXTURES = [{
+  description:  "Welkom in Amsterdam!",
+  keyId:        1,
+  latitude:     52.370216,
+  longitude:    4.895168,
+  typeMark:     "WATER_POINT"
+}, {
+  description:  "Welcome to London!",
+  keyId:        2,
+  latitude:     51.507335,
+  longitude:    -0.127683,
+  typeMark:     "WATER_POINT"
+}, {
+  description:  "Välkommen till Stockholm!",
+  keyId:        3,
+  latitude:     59.32893,
+  longitude:    18.06491,
+  typeMark:     "WATER_POINT"
 }];

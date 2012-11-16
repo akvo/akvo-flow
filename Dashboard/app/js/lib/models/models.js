@@ -15,6 +15,11 @@ require('akvo-flow/models/store_def');
 //	}
 // });
 
+FLOW.store = DS.Store.create({
+	revision: 7,
+	//adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:"http://localhost"})
+	adapter: DS.fixtureAdapter
+});
 
 FLOW.SurveyGroup = DS.Model.extend({
 	description: DS.attr('string',{defaultValue: ""}),
@@ -99,6 +104,23 @@ FLOW.QuestionOption = DS.Model.extend({
 	keyId: DS.attr('number')
 });
 
+FLOW.QuestionOption.FIXTURES = [{
+	keyId: 1,
+	text: 'teacher',
+	questionId: 1
+}, {
+	keyId: 2,
+	text: 'cook',
+	questionId: 1
+},{
+	keyId: 3,
+	text: 'minister',
+	questionId: 1
+},{
+	keyId: 4,
+	text: 'programmer',
+	questionId: 1
+}];
 
 FLOW.SurveyAssignment = DS.Model.extend({
 
@@ -108,7 +130,6 @@ FLOW.DeviceGroup = DS.Model.extend({
 	displayName: DS.attr('string',{defaultValue: ""}),
 	code: DS.attr('string',{defaultValue: ""})
 });
-
 
 FLOW.Device = DS.Model.extend({
 	deviceType: DS.attr('string',{defaultValue: ""}),
@@ -129,4 +150,11 @@ FLOW.Device = DS.Model.extend({
 	isSelected: DS.attr('boolean', {defaultValue: false})
 });
 
-
+FLOW.SurveyedLocale = DS.Model.extend({
+  description:  DS.attr("string", {defaultValue: ""}),
+  keyId:        DS.attr("number"),
+  latitude:     DS.attr("number"),
+  longitude:    DS.attr("number"),
+  primaryKey:   "keyId",
+  typeMark:     DS.attr("string", {defaultValue: "WATER_POINT"})
+});
