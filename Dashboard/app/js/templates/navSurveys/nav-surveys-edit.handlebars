@@ -50,7 +50,9 @@
   
   <!-- Beginning Question group set  -->
   <section id="questionSet">
-    <section class="aQuestionSet mainContent" id="setIndex-01"> {{#view FLOW.QuestionGroupItemView zeroItem="true"}}
+    <section class="aQuestionSet mainContent" id="setIndex-01"> 
+    <!-- zeroItem indicates that this is the item before the first question group -->
+    {{#view FLOW.QuestionGroupItemView zeroItem="true"}}
       
        <!-- insert, move and copy buttons --> 
       
@@ -72,7 +74,7 @@
         {{else}}
           <nav class="insertMenu groupActionMenu">
             <ul>
-              <li><a {{action "doInsertGroupHere" target="this"}} class="">{{t _insert_group_here}}</a></li>
+              <li><a {{action "doInsertQuestionGroup" target="this"}} class="smallBtn">{{t _insert_group_here}}</a></li>
             </ul>
           </nav>
         {{/if}}  
@@ -87,20 +89,13 @@
       <div class="questionGroupBlock">
         <header> <span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
           
-
-
-
-
         {{#if view.showQGroupNameEditField}}
           {{view Ember.TextField valueBinding="view.questionGroupName" size=45}}
           <a {{action "saveQuestionGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a></li>
           <a {{action "cancelQuestionGroupNameEdit" target="this"}}>{{t _cancel}}</a>
         {{else}}
-          <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.name}}</a></h1>
+          <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.code}}</a></h1>
         {{/if}}
-
-
-
 
           <nav class="qtnGroupMenu">
             <ul>
@@ -210,7 +205,7 @@
         {{else}}
           <nav class="insertMenu groupActionMenu">
             <ul>
-              <li><a {{action "doInsertGroupHere" target="this"}} class="">{{t _insert_group_here}}</a></li>
+              <li><a {{action "doInsertQuestionGroup" target="this"}} class="smallBtn">{{t _insert_group_here}}</a></li>
             </ul>
           </nav>
         {{/if}}  
