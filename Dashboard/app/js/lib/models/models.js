@@ -28,7 +28,8 @@ FLOW.SurveyGroup = DS.Model.extend({
 	lastUpdateDateTime: DS.attr('string',{defaultValue: ""}),
 	// the code field is used as name
 	code: DS.attr('string',{defaultValue: ""}),
-	keyId: DS.attr('number')
+	keyId: DS.attr('number'),
+	primaryKey: 'keyId'
 });
 
 
