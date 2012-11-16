@@ -115,7 +115,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		this.set('showQGDeleteDialogue',false);
 	},
 
-	// execure group delete
+	// execute group delete
 	doQGroupDelete:function(){
 		// TODO show popup
 		// if cancel: remove popup, don't do anything
@@ -138,14 +138,44 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			}
 		}); // end of forEach
 
-
-
 		FLOW.questionGroupControl.set('content',FLOW.store.findAll(FLOW.QuestionGroup));
-		
-		
+
 		// TODO: implement persistence
 		// TODO: solve "could not respond to event didChangeData in state rootState.deleted.saved." error.
+	},
 
+	// insert group
+	doInsertQuestionGroup: function(){
+		// create copy of QuestionGroup item in the store
+		var insertAfterOrder;
+
+        if (this.get('zeroItem')) {
+           insertAfterOrder=0;
+        } else {
+            insertAfterOrder=this.content.get('order');
+        }
+		// move up to make space
+		FLOW.questionGroupControl.get('content').forEach(function(item){
+			var currentOrder=item.get('order');
+			if (currentOrder>insertAfterOrder) {item.set('order',item.get('order')+1		);
+				console.log("upping "+currentOrder);
+			}
+		}); // end of forEach
+	
+		// create copy of QuestionGroup item in the store
+		var newRec = FLOW.store.createRecord(FLOW.QuestionGroup,{
+			"code":"New question group",
+			"order":insertAfterOrder+1});
+		
+		console.log("about to commit");
+		FLOW.store.commit();
+		
+		console.log("about to do findall");
+		FLOW.questionGroupControl.set('content',FLOW.store.findAll(FLOW.QuestionGroup)); // only loads already loaded models
+		
+		// this is wrong
+		//this.set('questionGroupName',this.content.get('name'));
+		//this.set('showQGroupNameEditField',true);
 	},
 
 	// prepare for group copy. Shows 'copy to here' buttons
@@ -154,10 +184,12 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
 	},
 
+
 	// cancel group copy
 	doQGroupCopyCancel:function(){
 		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
-	},
+    },
+
 
 	// prepare for group move. Shows 'move here' buttons
 	doQGroupMove:function(){
@@ -170,8 +202,9 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
 	},
 
+
 	// execture group move to selected location
-	doQGroupMoveHere:function(){
+    doQGroupMoveHere:function(){
 		
 		var selectedOrder = FLOW.selectedControl.selectedForMoveQuestionGroup.get('order');
 		var insertAfterOrder;
@@ -218,7 +251,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
 	},
 
-	// execure group copy to selected location
+	// execute group copy to selected location
 	doQGroupCopyHere:function(){
 		
 		var selectedOrder = FLOW.selectedControl.selectedForCopyQuestionGroup.get('order');
@@ -238,7 +271,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		var newRec = FLOW.store.createRecord(FLOW.QuestionGroup,{
 			"description": FLOW.selectedControl.selectedForCopyQuestionGroup.get('description'),
 			"order":insertAfterOrder+1,
-			"name":FLOW.selectedControl.selectedForCopyQuestionGroup.get('name'),
+			"code":FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
 			"surveyId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId'),
 			"displayName":FLOW.selectedControl.selectedForCopyQuestionGroup.get('displayName')});
 		
