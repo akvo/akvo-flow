@@ -1060,7 +1060,7 @@ th.action {
 	width: 86%;
 }
 #groupBar a.smallBtn {
-	margin: 0 0 10px 27%;
+	margin: 0 5px 10px 27%;
 }
 #groupBar nav a.smallBtn:nth-child(2n) {
 	margin: 0 0 10px 0;
@@ -1077,8 +1077,7 @@ th.action {
 }
 #groupBar h2, #newSurveyInfo h2 {
 	margin: 15px 0 0 10px;
-	color:rgb(246, 160, 26);
-/*	color: rgb(5, 5, 5);
+	color: rgb(246, 160, 26);/*	color: rgb(5, 5, 5);
 	color: rgba(5, 5, 5, 1);
 	text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
 	font-size: 1.8em;
@@ -1163,7 +1162,6 @@ section.topBar > a.smallBtn {
 	margin: 0 0 0 5px;
 	color: rgb(235,  235, 235);
 }
-
 nav.menuTopbar {
 	position: absolute;
 	right: 0;
@@ -1193,49 +1191,49 @@ a.addGroup, a.addSurvey, a.stepBack, a.editGroupName, a.deleteGroup {
 	height: 8px;
 	font-size: 1em;
 	text-transform: uppercase;
-
 }
-a.editGroupName {margin:0 10px 0 0;}
+a.editGroupName {
+	margin: 0 10px 0 0;
+}
 a.addGroup {
-	padding:6px 0 4px 19px;
-	margin:0 0 15px 7px;
-	}
+	padding: 6px 0 4px 19px;
+	margin: -5px 0 15px 7px;
+}
 a.stepBack {
-	margin:5px 5px 0 0;
-	}
-a.addGroup:hover, a.addSurvey:hover, a.stepBack:hover, a.editGroupName:hover, a.deleteGroup:hover {
-	color:rgb(255,255,255);
+	margin: 5px 5px 0 0;
 }
-
+a.addGroup:hover, a.addSurvey:hover, a.stepBack:hover, a.editGroupName:hover, a.deleteGroup:hover {
+	color: rgb(255,255,255);
+}
 a.addGroup {
-	background:url(../images/addGroupIcn.png) left top no-repeat;
+	background: url(../images/addGroupIcn.png) left top no-repeat;
 }
 a.addGroup:hover {
-	background:url(../images/addGroupIcn.png) left bottom no-repeat;
+	background: url(../images/addGroupIcn.png) left bottom no-repeat;
 }
 a.addSurvey {
-	background:url(../images/addSurveyIcn.png) left top no-repeat;
+	background: url(../images/addSurveyIcn.png) left top no-repeat;
 }
 a.addSurvey:hover {
-	background:url(../images/addSurveyIcn.png) left bottom no-repeat;
+	background: url(../images/addSurveyIcn.png) left bottom no-repeat;
 }
 a.stepBack {
 	background: transparent url(../images/backIcn.png) left top no-repeat;
 }
 a.stepBack:hover {
-	background:url(../images/backIcn.png) left bottom no-repeat;
+	background: url(../images/backIcn.png) left bottom no-repeat;
 }
 a.editGroupName {
 	background: transparent url(../images/editSurvey.png) left top no-repeat;
 }
 a.editGroupName:hover {
-	background:url(../images/editSurvey.png) left bottom no-repeat;
+	background: url(../images/editSurvey.png) left bottom no-repeat;
 }
 a.deleteGroup {
 	background: transparent url(../images/deleteSurvey.png) left top no-repeat;
 }
 a.deleteGroup:hover {
-	background:url(../images/deleteSurvey.png) left bottom no-repeat;
+	background: url(../images/deleteSurvey.png) left bottom no-repeat;
 }
 /* Survey Asset
 --------------------------------------------- */
@@ -1284,8 +1282,8 @@ li.aSurvey h2 {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	font-size: 1.6em;
-	font-family:Arial, Helvetica, sans-serif;
-	letter-spacing:-0.02em;
+	font-family: Arial, Helvetica, sans-serif;
+	letter-spacing: -0.02em;
 }
 li.aSurvey:hover h2 {
 	color: rgb(255,255,255);
@@ -1357,7 +1355,7 @@ ul.surveyInfo li.responseNumber p {
 	display: inline;
 }
 .waterPoint ul.surveyInfo li.responseNumber, li.aSurvey.waterPoint:hover h2 {
-	color: rgb(57, 102, 128);	
+	color: rgb(57, 102, 128);
 }
 .houseHold ul.surveyInfo li.responseNumber, li.aSurvey.houseHold:hover h2 {
 	color: rgb(222, 137, 41);
@@ -1369,7 +1367,7 @@ ul.surveyInfo li.responseNumber p {
 	color: rgb(119, 97, 0);
 }
 .waterPoint ul.surveyInfo li.responseNumber span {
-	background: rgb(57, 102, 128);	
+	background: rgb(57, 102, 128);
 }
 .houseHold ul.surveyInfo li.responseNumber span {
 	background: rgb(222, 137, 41);
@@ -1411,7 +1409,7 @@ ul.surveyInfo li.responseNumber p {
 	width: 67%;
 }
 .waterPoint dl dd:nth-of-type(2) {
-	color: rgb(57, 102, 128);	
+	color: rgb(57, 102, 128);
 }
 .houseHold dl dd:nth-of-type(2) {
 	color: rgb(222, 137, 41);
@@ -1453,9 +1451,8 @@ ul.surveyInfo li.responseNumber p {
 	background: /*rgb(74,177,207)*/rgb(58,58,58);
 }
 .aSurvey nav ul li:nth-child(2n) {
-	margin:2px 0 0 0;
-	}
-
+	margin: 2px 0 0 0;
+}
 .aSurvey nav ul li a {
 	display: block;
 	overflow: hidden;
@@ -1552,7 +1549,7 @@ ul.surveyInfo li.responseNumber p {
 	background: rgb(255,255,255);
 }
 .newSurveyInfoUl {
-	background:rgb(23,23,23);
+	background: rgb(23,23,23);
 	margin: 20px 0 0 0;
 	padding: 15px 1%;
 	width: 98%;
@@ -1565,7 +1562,7 @@ ul.surveyInfo li.responseNumber p {
 	color: rgb(153,153,153);
 }
 .newSurveyInfoUl li h3 {
-	margin-bottom:20px;
+	margin-bottom: 20px;
 }
 .newSurveyInfoUl li > span {
 	position: absolute;
@@ -1703,7 +1700,7 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 .aQuestionSet > div > div.ember-view:first-child header {
 }
 .aQuestionSet > div > div.ember-view > div.questionGroupBlock {
-	margin: 15px 0 ;
+	margin: 15px 0;
 	border-top: thin solid rgb(230,230,230);
 	border-bottom: thin solid rgb(230,230,230);
 	background: rgb(240,240,240);
@@ -1711,8 +1708,6 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 .aQuestionSet > div > div.ember-view:first-child {
 	margin: 0 0 15px 0;
 }
-
-
 span.qtnGroupHead {
 	display: block;
 	padding-top: 5px;
@@ -1720,8 +1715,16 @@ span.qtnGroupHead {
 	color: rgb(246, 160, 26);
 	font-style: italic;
 	font-family: Georgia, "Times New Roman", Times, serif;
-	font-size:1.1em;
+	font-size: 1.1em;
 }
+.aQuestionSet header h1.qtnGroupTitle {
+	display:inline-block;
+	width:36%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow:hidden;
+}
+
 .aQuestionSet header h1.qtnGroupTitle a {
 	color: rgb(38, 8, 89);
 }
@@ -1732,6 +1735,19 @@ span.qtnGroupHead {
 	padding: 0.75em 0.5em 0.25em 17px;
 	background: url(../images/editTinyIcon.png) left center no-repeat;
 }
+.aQuestionSet header input {
+	width:25%;
+	border:thin solid rgb(224,224,224);
+	margin:5px 0;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	-o-border-radius:3px;
+	border-radius:3px;
+	}
+.aQuestionSet header input + a.smallBtn {
+	margin:0 5px 0 0;
+	}
+	
 .aQuestionSet footer {
 	position: relative;
 	display: block;
@@ -1763,39 +1779,61 @@ span.qtnGroupHead {
 }
 nav.groupActionMenu {
 	display: block;
-	padding:1.5em 0;
+	padding: 1.5em 0;
 	margin: 5px auto;
 	width: 100%;
-	background:rgb(255,241,227);
+	background: rgb(255,248,241);
 }
 nav.groupActionMenu ul {
-	display:block;
+	display: block;
 	margin: 0 auto;
-	position:relative;
-	width:19%;
-	text-align:center;
+	position: relative;
+	width: 19%;
+	text-align: center;
 }
 nav.moveMenu ul li, nav.copyMenu ul li {
 	display: inline;
 	margin: 0 10px 0 0;
 	text-align: center;
 }
-nav.groupActionMenu  a.smallBtn {
-	background:rgb(246, 160, 26);
-	color:rgb(255,255,255);
-	}
-nav.groupActionMenu  a.smallBtn:hover {
-	background:rgb(58,58,58);
-	color:rgb(255,255,255);
-	}
-
-nav.groupActionMenu  a {
-	color:rgb(246, 160, 26);
-	}
-nav.groupActionMenu  a:hover {
-	color:rgb(58,58,58);
-	}
-
+nav.groupActionMenu a.smallBtn {
+	background: rgb(246, 160, 26);
+	color: rgb(255,255,255);
+}
+nav.groupActionMenu a.smallBtn:hover {
+	background: rgb(58,58,58);
+	color: rgb(255,255,255);
+}
+nav.groupActionMenu a {
+	color: rgb(246, 160, 26);
+}
+nav.groupActionMenu a:hover {
+	color: rgb(58,58,58);
+}
+nav.groupActionMenu.insertMenu ul {
+	display: block;
+	margin: 0 auto;
+	position: relative;
+	width: 19%;
+	text-align: left;
+}
+nav.groupActionMenu.insertMenu a {
+	display: inline-block;
+	padding: 5px 5px 5px 19px;
+	height: 8px;
+	font-size: 1em;
+	text-transform: uppercase;
+	color: rgb(246, 160, 26);
+	background: transparent url(../images/insertGroupIcn.png) left top no-repeat;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	-o-border-radius:3px;
+	border-radius:3px;
+}
+nav.groupActionMenu.insertMenu a:hover {
+	color: rgb(255,255,255);
+	background: rgb(58,58,58) url(../images/insertGroupIcn.png) left bottom no-repeat;
+}
 /*---------------------------------------------------------------------------------
 								A New Question Form
 ---------------------------------------------------------------------------------*/
@@ -1837,15 +1875,14 @@ nav.groupActionMenu  a:hover {
 	text-transform: uppercase;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
-	background:url(../images/shownCollapse.png) left top no-repeat;
-	padding:5px 5px 5px 15px;
-	width:95px;
-	text-align:left;
+	background: url(../images/shownCollapse.png) left top no-repeat;
+	padding: 5px 5px 5px 15px;
+	width: 95px;
+	text-align: left;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
-	background:url(../images/shownCollapse.png) left bottom no-repeat;
+	background: url(../images/shownCollapse.png) left bottom no-repeat;
 }
-
 .aQuestionSet header nav.qtnGroupMenu ul li:last-child {
 	margin: 0;
 }
@@ -1872,6 +1909,10 @@ nav.groupActionMenu  a:hover {
 	display: inline;
 	padding: 6px 4%;
 }
+.menuCentre ul li a.smallBtn {
+	margin:0 5px 0 0;
+	}
+
 .innerContent nav {
 	position: absolute;
 	top: 1px;
@@ -1887,7 +1928,7 @@ nav.groupActionMenu  a:hover {
 	background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* Opera 11.10+ */
 	background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* IE10+ */
 	background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0 ); /* IE6-8 */
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0 ); /* IE6-8 */
 	box-shadow: -1px 1px 0 rgb(222,222,222);
 }
 .innerContent nav ul {
@@ -1906,8 +1947,8 @@ nav.groupActionMenu  a:hover {
 	-moz-border-radius: 3px;
 	border-radius: 3px;
 	text-align: right;
-	background:transparent;
-	transition:background 0.4s ease-in;
+	background: transparent;
+	transition: background 0.4s ease-in;
 }
 .innerContent nav ul li:first-child {
 	border-right: none;
@@ -1916,9 +1957,8 @@ nav.groupActionMenu  a:hover {
 	border-left: none;
 }
 .innerContent nav ul li:hover {
-	background:rgb(224,224,224);
+	background: rgb(224,224,224);
 }
-
 .innerContent nav ul li a {
 	display: block;
 	padding: 5px 10px 5px 20px;
