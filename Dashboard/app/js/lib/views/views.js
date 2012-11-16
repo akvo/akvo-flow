@@ -82,6 +82,19 @@ FLOW.ExcelExportView = Ember.View.extend({ templateName: 'navData/excel-export'}
 FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports/nav-reports'});
 
 // maps views
+// L stands for Leaflet
+FLOW.NavUsersView = Ember.View.extend({ templateName: 'navUsers/nav-users'});
+
+// admin views
+// FLOW.NavAdminView = Ember.View.extend({ templateName: 'navAdmin/nav-admin'});
+//
+//
+// // ********************************************************//
+// //             Subnavigation for the Data tabs
+// // ********************************************************//
+// FLOW.DatasubnavView = Em.View.extend({
+//   templateName: 'navData/data-subnav',
+//
 FLOW.NavMapsView = Ember.View.extend({
   templateName: "navMaps/nav-maps",
   didInsertElement: function() {
@@ -102,22 +115,24 @@ FLOW.NavMapsView = Ember.View.extend({
                "{z}/{x}/{y}.png",
       zoom: 2
     };
-    map = L.map("map").setView(config.center, config.zoom);
+    map = L.map("flowMap").setView(config.center, config.zoom);
     L.tileLayer(config.tileUrl, {
       attribution: config.annotation,
       maxZoom: config.maxZoom
     }).addTo(map);
-    locales = FLOW.store.findAll(FLOW.SurveyedLocale);
-    locales.forEach(function(locale) {
-      var marker = L.marker([locale.latitude, locale.longitude]).addTo(map);
-      marker.bindPopup(locale.description);
-    });
     legend = L.control({position: "bottomleft"});
     legend.onAdd = function() {
-      var div = L.DomUtil.get("legend");
+      var div = L.DomUtil.get("flowMapLegend");
       return div;
     };
     legend.addTo(map);
+    locales = FLOW.store.findAll(FLOW.SurveyedLocale);
+    locales.forEach(function(locale) {
+      var htmlContent, marker;
+      htmlContent = "<p>" + locale.description + "</p>";
+      marker = L.marker([locale.latitude, locale.longitude]).addTo(map);
+      marker.bindPopup(htmlContent);
+    });
   }
 });
 

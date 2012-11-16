@@ -18,7 +18,6 @@ FLOW.store = DS.Store.create({
 	revision: 7,
 	//adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:"http://localhost"})
 	adapter: DS.fixtureAdapter
-
 });
 
 FLOW.SurveyGroup = DS.Model.extend({
@@ -131,7 +130,6 @@ FLOW.DeviceGroup = DS.Model.extend({
 	code: DS.attr('string',{defaultValue: ""})
 });
 
-
 FLOW.Device = DS.Model.extend({
 	deviceType: DS.attr('string',{defaultValue: ""}),
 	phoneNumber: DS.attr('string',{defaultValue: ""}),
@@ -152,10 +150,10 @@ FLOW.Device = DS.Model.extend({
 });
 
 FLOW.SurveyedLocale = DS.Model.extend({
-  // To be fleshed out
+  description:  DS.attr("string", {defaultValue: ""}),
   keyId:        DS.attr("number"),
   latitude:     DS.attr("number"),
   longitude:    DS.attr("number"),
-  description:  DS.attr("string", {defaultValue: ""}),
+  primaryKey:   "keyId",
   typeMark:     DS.attr("string", {defaultValue: "WATER_POINT"})
 });
