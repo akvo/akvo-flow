@@ -89,7 +89,7 @@ FLOW.QuestionGroup.FIXTURES = [{
 	surveyId:1,
 	order:1,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. ",
-	name: 'Location',
+	code: 'Location',
 	displayName: 'Location'
 
 }, {
@@ -98,7 +98,7 @@ FLOW.QuestionGroup.FIXTURES = [{
 	surveyId:1,
 	order:2,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
-	name: 'Occupation',
+	code: 'Occupation',
 	displayName: 'Occupation'
 
 }, {
@@ -107,7 +107,7 @@ FLOW.QuestionGroup.FIXTURES = [{
 	surveyId:1,
 	order:3,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
-	name: 'Water system',
+	code: 'Water system',
 	displayName: 'Water system'
 
 }, {
@@ -116,7 +116,7 @@ FLOW.QuestionGroup.FIXTURES = [{
 	surveyId:1,
 	order:4,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
-	name: 'Sanitation system',
+	code: 'Sanitation system',
 	displayName: 'Sanitation system'
 
 },
@@ -126,7 +126,7 @@ FLOW.QuestionGroup.FIXTURES = [{
 	surveyId:2,
 	order:5,
 	description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu.",
-	name: 'Something else',
+	code: 'Something else',
 	displayName: 'Something else'
 
 }

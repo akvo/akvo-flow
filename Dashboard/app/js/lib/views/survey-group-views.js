@@ -23,6 +23,7 @@ FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 });
 
 FLOW.SurveyGroupSurveyView = Ember.View.extend({
+	showDeleteSurveyDialogBool:false,
 	//doEditSurvey is defined in the Router. It transfers to the nav-surveys-edit handlebar view
 
 	// fired when 'preview survey' is clicked in the survey item display
@@ -30,15 +31,26 @@ FLOW.SurveyGroupSurveyView = Ember.View.extend({
 			console.log("TODO preview Survey");
 	},
 	
+	// show delete SurveyGroup dialog
+	showDeleteSurveyDialog:function(){
+		console.log("showing dialog");
+		this.set('showDeleteSurveyDialogBool',true);
+	},
+
+	cancelDeleteSurvey:function(){
+		this.set('showDeleteSurveyDialogBool',false);
+	},
+
 	// fired when 'delete survey' is clicked in the survey item display
-	deleteSurvey: function() {
+	doDeleteSurvey: function() {
 			console.log("TODO delete Survey");
+			this.set('showDeleteSurveyDialogBool',false);
 	},
 	
 	// fired when 'inspect data' is clicked in the survey item display
 	inspectData: function() {
 			console.log("TODO inspect Data");
-	}
+	},
 });
 
 FLOW.SurveyGroupMainView = Ember.View.extend({
@@ -46,8 +58,8 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	showEditField: false,
 	showNewGroupField:false,
 	surveyGroupName:null,
-	showSGDeleteDialogue:false,
-	showSGDeleteNotPossibleDialogue:false,
+	showSGDeleteDialog:false,
+	showSGDeleteNotPossibleDialog:false,
 	
 	// true if at least one survey group is active
 	oneSelected: function() {
@@ -91,27 +103,28 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 
     // show delete SurveyGroup dialog
 	showSGroupDeleteDialog:function(){
-		// check if there are surveys in the the datastore (this is also checked at the server)
-		var surveys=FLOW.store.filter(FLOW.Survey,function(data,sgId) {
+		// check if there are surveys in the datastore (this is also checked at the server)
+		
+		var surveys=FLOW.store.filter(FLOW.Survey,function(data) {
 			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
-   			if (data.get('surveyGroupId') == sgId) { 
-   				return true; }
+			if (data.get('surveyGroupId') == sgId) {
+				return true;
+			}
 		});
 
 		// if there are surveys in this group, display 'please remove surveys first'
-		if (surveys.get('content').length > 0) { 
-			this.set('showSGDeleteNotPossibleDialogue',true);
+		if (surveys.get('content').length > 0) {
+			this.set('showSGDeleteNotPossibleDialog',true);
 		} else {
-
 			// else display 'are you sure you want to delete'
-			this.set('showSGDeleteDialogue',true);
+			this.set('showSGDeleteDialog',true);
 		}
 	},
 
 	// cancel survey group delete
 	cancelSGroupDelete:function(){
-		this.set('showSGDeleteDialogue',false);
-		this.set('showSGDeleteNotPossibleDialogue',false);
+		this.set('showSGDeleteDialog',false);
+		this.set('showSGDeleteNotPossibleDialog',false);
 	},
 
 	// delete survey group
@@ -120,9 +133,9 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
 		surveyGroup.deleteRecord();
 		FLOW.store.commit();
-		this.set('showSGDeleteDialogue',false);
-		// TODO refresh list of survey groups
-
+		FLOW.surveyGroupControl.set('content',FLOW.store.find(FLOW.SurveyGroup));
+		FLOW.selectedControl.set('selectedSurveyGroup',null);
+		this.set('showSGDeleteDialog',false);
 	},
 
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
@@ -130,8 +143,10 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{
 				"code":this.get('surveyGroupName')
 			});
+			
 			FLOW.store.commit();
-			FLOW.surveyGroupControl.set('content',FLOW.store.find(FLOW.SurveyGroup, {}));
+			//newSG.deleteRecord();
+			FLOW.surveyGroupControl.set('content',FLOW.store.findAll(FLOW.SurveyGroup));
 			this.set('showNewGroupField',false);
 	},
 	
@@ -141,9 +156,18 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 			this.set('showNewGroupField',false);
 	},
 	
-	// fired when 'create a new survey' is clicked in the top bar. 
-	createSurvey: function() {
-			console.log("TODO create Survey");		
-	},
+	// fired when 'create a new survey' is clicked in the top bar.
+	createNewSurvey: function() {
+		var newSurvey = FLOW.store.createRecord(FLOW.Survey,{
+			"name":"New survey - please change name",
+			"defaultLanguageCode": "en",
+			"requireApproval": false,
+			"status": "NOT_PUBLISHED",
+			"surveyGroupId":FLOW.selectedControl.selectedSurveyGroup.get('keyId')});
+		FLOW.store.commit();
+
+		// trigger reload of surveys
+		FLOW.selectedControl.toggleProperty('reloadSurveys');
+	}
 	
 });

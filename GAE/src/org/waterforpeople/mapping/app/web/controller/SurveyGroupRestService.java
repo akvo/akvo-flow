@@ -106,13 +106,13 @@ public class SurveyGroupRestService {
 			} else {
 				s = new SurveyGroup();
 			}
-			// copy the properties, except the createdDateTime property, because it is set in the Dao.
-			BeanUtils.copyProperties(surveyGroupDto, s, new String[] {"createdDateTime"});
+			// copy the properties, except the properties that are set or provided by the Dao.
+			BeanUtils.copyProperties(surveyGroupDto, s, new String[] {"createdDateTime","lastUpdateDateTime","displayName","questionGroupList"});
 			s = surveyGroupDao.save(s);
 			
 			dto = new SurveyGroupDto();
 			DtoMarshaller.copyToDto(s, dto);
 		}
-		return surveyGroupDto;
+		return dto;
 	}
 }

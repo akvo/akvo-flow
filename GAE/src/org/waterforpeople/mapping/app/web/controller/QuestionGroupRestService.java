@@ -80,7 +80,7 @@ public class QuestionGroupRestService {
 		QuestionGroupDto dto = null;
 		
 		// TODO
-		return questionGroupDto;
+		return dto;
 	}
 
 }

@@ -15,11 +15,6 @@ require('akvo-flow/models/store_def');
 //	}
 // });
 
-FLOW.store = DS.Store.create({
-	revision: 7,
-	//adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:"http://localhost"})
-	adapter: DS.fixtureAdapter
-});
 
 FLOW.SurveyGroup = DS.Model.extend({
 	description: DS.attr('string',{defaultValue: ""}),
@@ -28,7 +23,8 @@ FLOW.SurveyGroup = DS.Model.extend({
 	lastUpdateDateTime: DS.attr('string',{defaultValue: ""}),
 	// the code field is used as name
 	code: DS.attr('string',{defaultValue: ""}),
-	keyId: DS.attr('number')
+	keyId: DS.attr('number'),
+	primaryKey: 'keyId'
 });
 
 
