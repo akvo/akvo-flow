@@ -14,7 +14,6 @@ Dashboard/app/test.html
 Dashboard/assets*
 Dashboard/tmp*
 Dashboard/test_assets*
-Dashboard/app/js/lib/models/store_def.js
 
 GAE/build.properties
 GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties
