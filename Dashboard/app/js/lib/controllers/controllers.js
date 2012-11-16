@@ -108,7 +108,8 @@ FLOW.selectedControl = Ember.Controller.create({
 	selectedForCopyQuestionGroup:null,
 	selectedQuestion: null,
 	selectedOption: null,
-	selectedCreateNewGroup:false
+	selectedCreateNewGroup:false,
+	reloadSurveys:false
 });
 
 FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {
@@ -150,18 +151,7 @@ FLOW.deviceControl = Ember.ArrayController.create({
 FLOW.SurveyGroupController = Ember.ArrayController.extend({});
 
 FLOW.surveyGroupControl = Ember.ArrayController.create({
-	content:FLOW.store.findAll(FLOW.SurveyGroup)
-
-	//init: function(){
-//		this.set("content",FLOW.store.find(FLOW.SurveyGroup,{}));
-//	}
-
-	
-//	active: function() {
-			//TODO find out how items are being loaded, difference find and findAll
-			//console.log(FLOW.store.find(FLOW.SurveyGroup,{}));
-		//	return FLOW.store.find(FLOW.SurveyGroup,{});
-//	}.property('').cacheable()
+	content:FLOW.store.find(FLOW.SurveyGroup)
 });
 
 
@@ -176,7 +166,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
 			FLOW.selectedControl.set('selectedQuestionGroup', null);
 			return null;
 		}
-	}.property('FLOW.selectedControl.selectedSurveyGroup').cacheable()
+	}.property('FLOW.selectedControl.selectedSurveyGroup','FLOW.selectedControl.reloadSurveys').cacheable()
 });
 
 FLOW.questionGroupControl = Ember.ArrayController.create({
