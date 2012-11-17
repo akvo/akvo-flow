@@ -95,31 +95,34 @@ FLOW.NavMapsView = Ember.View.extend({
       annotation: "Map data &copy; Akvo FLOW",
       center: [51.507335, -0.127683],
       maxZoom: 18,
-      tileUrl: _.str.sprintf("http://{s}.tile.cloudmade.com/%s/%d/%d/{z}/{x}/{y}.png",
-                             cloudMade.apiKey, cloudMade.themeId, cloudMade.tileSize),
+      url: _.string.sprintf("http://{s}.tile.cloudmade.com/%s/%d/%d/{z}/{x}/{y}.png",
+                            cloudMade.apiKey, cloudMade.themeId, cloudMade.tileSize),
       zoom: 3
     };
+    // Map Canvas
     map = L.map("flowMap").setView(config.center, config.zoom);
-    L.tileLayer(config.tileUrl, {
+    L.tileLayer(config.url, {
       attribution: config.annotation,
       maxZoom: config.maxZoom
     }).addTo(map);
+    // Map Legend
     legend = L.control({position: "bottomleft"});
     legend.onAdd = function() {
       var div = L.DomUtil.get("flowMapLegend");
       return div;
     };
     legend.addTo(map);
+    // Markers
+    /*locales = [
+      {latitude: 64.135338, longitude: -21.89521, descirption: "Reykjavík"},
+      {latitude: 55.953252, longitude: -3.188267, description: "Edinburgh"},
+      {latitude: 59.32893, longitude: 18.06491, description: "Stockholm"},
+      {latitude: 51.507335, longitude: -0.127683, description: "London"}
+    ];*/
     locales = FLOW.store.findAll(FLOW.SurveyedLocale);
-    //locales = [
-    //  {latitude: 64.135338, longitude: -21.89521, descirption: "Reykjavík"},
-    //  {latitude: 55.953252, longitude: -3.188267, description: "Edinburgh"},
-    //  {latitude: 59.32893, longitude: 18.06491, description: "Stockholm"},
-    //  {latitude: 51.507335, longitude: -0.127683, description: "London"}
-    //];
     locales.forEach(function(locale) {
       var htmlContent, marker;
-      htmlContent = "<p>" + locale.description + "</p>"; // should be populated from template
+      htmlContent = _.string.sprintf("<p>%s</p>", locale.description);
       marker = L.marker([locale.latitude, locale.longitude]).addTo(map);
       marker.bindPopup(htmlContent);
     });
