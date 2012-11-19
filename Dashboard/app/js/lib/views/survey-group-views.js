@@ -1,5 +1,4 @@
-// survey group views
-
+// displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 	content: null,
 	tagName: 'li',
@@ -22,6 +21,7 @@ FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 	}
 });
 
+// displays single survey in content area of survey group page
 FLOW.SurveyGroupSurveyView = Ember.View.extend({
 	showDeleteSurveyDialogBool:false,
 	//doEditSurvey is defined in the Router. It transfers to the nav-surveys-edit handlebar view
@@ -53,6 +53,7 @@ FLOW.SurveyGroupSurveyView = Ember.View.extend({
 	},
 });
 
+// handles all survey-group interaction elements on survey group page
 FLOW.SurveyGroupMainView = Ember.View.extend({
 	
 	showEditField: false,
