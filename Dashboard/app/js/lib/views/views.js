@@ -113,18 +113,19 @@ FLOW.NavMapsView = Ember.View.extend({
     };
     legend.addTo(map);
     // Markers
-    /*locales = [
-      {latitude: 64.135338, longitude: -21.89521, descirption: "Reykjavík"},
-      {latitude: 55.953252, longitude: -3.188267, description: "Edinburgh"},
-      {latitude: 59.32893, longitude: 18.06491, description: "Stockholm"},
-      {latitude: 51.507335, longitude: -0.127683, description: "London"}
-    ];*/
-    locales = FLOW.store.findAll(FLOW.SurveyedLocale);
-    locales.forEach(function(locale) {
-      var htmlContent, marker;
-      htmlContent = _.string.sprintf("<p>%s</p>", locale.description);
-      marker = L.marker([locale.latitude, locale.longitude]).addTo(map);
-      marker.bindPopup(htmlContent);
+    locales = Ember.ArrayController.create({
+      content: FLOW.store.findAll(FLOW.Placemark),
+      contentArrayDidChange: function (model, index) {
+        var htmlContent, marker,
+            pm = this.objectAt(index);
+
+        // this method is executed for each new record in the array
+
+        htmlContent = _.string.sprintf("<p>%s</p>", pm.get('id'));
+        marker = L.marker([pm.get('latitude'), pm.get('longitude')]).addTo(map);
+        marker.bindPopup(htmlContent);
+        return this;
+      }
     });
   }
 });

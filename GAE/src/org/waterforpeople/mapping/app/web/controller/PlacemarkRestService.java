@@ -41,10 +41,10 @@ public class PlacemarkRestService {
 	@Inject
 	SurveyedLocaleDao localeDao;
 
-	@RequestMapping(method = RequestMethod.GET, value = "")
+	@RequestMapping(method = RequestMethod.GET, value = "/")
 	@ResponseBody
 	public List<PlacemarkDto> listPlaceMarks(
-			@RequestParam("country") String country) {
+			@RequestParam(value = "country", defaultValue="KE") String country) {
 		List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
 
 		List<SurveyedLocale> slList = localeDao.listBySubLevel(country, null,

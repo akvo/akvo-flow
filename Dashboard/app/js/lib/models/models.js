@@ -154,3 +154,12 @@ FLOW.SurveyedLocale = DS.Model.extend({
   primaryKey:   "keyId",
   typeMark:     DS.attr("string", {defaultValue: "WATER_POINT"})
 });
+
+FLOW.Placemark = DS.Model.extend({
+  keyId: DS.attr("number"),
+  latitude: DS.attr("number"),
+  longitude: DS.attr("number"),
+  collectionDate: DS.attr("date"),
+  markType: DS.attr("string", {defaultValue: "WATER_POINT"}),
+  primaryKey: "keyId"
+});
