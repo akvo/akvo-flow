@@ -85,45 +85,32 @@ FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports/nav-reports'
 FLOW.NavMapsView = Ember.View.extend({
   templateName: "navMaps/nav-maps",
   didInsertElement: function() {
-    var cloudMade, config, legend, locales, map;
-    cloudMade = {
-      apiKey: "a1029e8c8d9d42bc84e96b8a960bb42e",
-      themeId: 1,
-      tileSize: 256
-    };
-    config = {
-      annotation: "Map data &copy; Akvo FLOW",
-      center: [51.507335, -0.127683],
-      maxZoom: 18,
-      url: _.string.sprintf("http://{s}.tile.cloudmade.com/%s/%d/%d/{z}/{x}/{y}.png",
-                            cloudMade.apiKey, cloudMade.themeId, cloudMade.tileSize),
-      zoom: 3
-    };
-    // Map Canvas
-    map = L.map("flowMap").setView(config.center, config.zoom);
-    L.tileLayer(config.url, {
-      attribution: config.annotation,
-      maxZoom: config.maxZoom
-    }).addTo(map);
-    // Map Legend
-    legend = L.control({position: "bottomleft"});
-    legend.onAdd = function() {
-      var div = L.DomUtil.get("flowMapLegend");
-      return div;
-    };
-    legend.addTo(map);
+    var map = new mxn.Mapstraction("flowMap", "google"),
+        latlon = new mxn.LatLonPoint(-0.703107, 36.765747);
+
+    map.setCenterAndZoom(latlon, 8);
+
+    map.addControls({
+        pan: true,
+        zoom: 'small',
+        map_type: true
+    });
+
     // Markers
     locales = Ember.ArrayController.create({
       content: FLOW.store.findAll(FLOW.Placemark),
       contentArrayDidChange: function (model, index) {
-        var htmlContent, marker,
-            pm = this.objectAt(index);
+        var htmlContent, marker, pm, point, mark;
 
-        // this method is executed for each new record in the array
+        pm = this.objectAt(index);
+        point = new mxn.LatLonPoint(pm.get('latitude'), pm.get('longitude'));
+        mark = new mxn.Marker(point);
 
-        htmlContent = _.string.sprintf("<p>%s</p>", pm.get('id'));
-        marker = L.marker([pm.get('latitude'), pm.get('longitude')]).addTo(map);
-        marker.bindPopup(htmlContent);
+        mark.setLabel(pm.get('collectionDate').toString());
+        mark.setInfoBubble(pm.get('id'));
+
+        map.addMarker(mark);
+
         return this;
       }
     });
