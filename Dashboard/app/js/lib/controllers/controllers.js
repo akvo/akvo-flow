@@ -31,7 +31,9 @@ FLOW.NavUsersController = Ember.Controller.extend();
 FLOW.NavAdminController = Ember.Controller.extend();
 
 
-// Data controllers
+// ***********************************************//
+//                Type controllers
+// ***********************************************//
 FLOW.languageControl = Ember.Object.create({
   dashboardLanguage:null,
 
@@ -89,77 +91,89 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
   selectedSurvey: null,
   selectedQuestionGroup: null,
-  selectedForMoveQuestionGroup:null,
-  selectedForCopyQuestionGroup:null,
   selectedQuestion: null,
   selectedOption: null,
+  selectedForMoveQuestionGroup:null,
+  selectedForCopyQuestionGroup:null,
   selectedCreateNewGroup:false,
+
+  // when selected survey changes, deselect selected surveys and question groups
+  deselectSurveyGroupChildren:function(){
+    FLOW.selectedControl.set('selectedSurvey', null);
+    FLOW.selectedControl.set('selectedQuestionGroup', null);
+  }.observes('this.selectedSurveyGroup'),
+
+   deselectSurveyChildren:function(){
+    FLOW.selectedControl.set('selectedQuestionGroup', null);
+  }.observes('this.selectedSurvey')
 });
 
-// when selected survey changes, deselect selected surveys and question groups
-FLOW.selectedControl.addObserver('selectedSurveyGroup', function() {
-  FLOW.selectedControl.set('selectedSurvey', null);
-  FLOW.selectedControl.set('selectedQuestionGroup', null);
 
-});
 
-//FLOW.SurveyGroupController = Ember.ArrayController.extend({});
-
-// This is initialised at the start of the program. Immediately downloads survey groups
+// ***********************************************//
+//                Data controllers
+// ***********************************************//
 FLOW.surveyGroupControl = Ember.ArrayController.create({
-  content:FLOW.store.find(FLOW.SurveyGroup)
+  content:null,
+  populate:function(){
+    console.log("populating surveygroups");    
+    this.set('content',FLOW.store.find(FLOW.SurveyGroup));
+  }
 });
+
 
 FLOW.surveyControl = Ember.ArrayController.create({
   reloadSurveys:false,
-  
-  active: function() {
+  content:null,
+  populate: function() {
+    console.log("populating surveys");
     if (FLOW.selectedControl.get('selectedSurveyGroup')) {
       var id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-      return FLOW.store.findQuery(FLOW.Survey, {surveyGroupId: id});
-    } else {
-      FLOW.selectedControl.set('selectedSurvey', null);
-      FLOW.selectedControl.set('selectedQuestionGroup', null);
-      return null;
+      this.set('content',FLOW.store.findQuery(FLOW.Survey, {surveyGroupId: id}));
     }
-  }.property('FLOW.selectedControl.selectedSurveyGroup','this.reloadSurveys').cacheable()
+  }.observes('FLOW.selectedControl.selectedSurveyGroup','this.reloadSurveys')
 });
+
 
 FLOW.questionGroupControl = Ember.ArrayController.create({
   sortProperties:['order'],
   sortAscending:true,
-
-  active: function() {
+  content:null,
+  populate: function() {
     if (FLOW.selectedControl.get('selectedSurvey')) {
       var id = FLOW.selectedControl.selectedSurvey.get('keyId');
-      return FLOW.store.findQuery(FLOW.QuestionGroup, {surveyId: id});
-    } else {
-      FLOW.selectedControl.set('selectedQuestionGroup', null);
-      return null;
+      this.set('content',FLOW.store.findQuery(FLOW.QuestionGroup, {surveyId: id}));
     }
-  }.property('FLOW.selectedControl.selectedSurvey').cacheable()
+  }.observes('FLOW.selectedControl.selectedSurvey')
 
 });
+
 
 FLOW.questionControl = Ember.ArrayController.create({
-  active: function() {
+  content:null,
+  populate: function() {
     if (FLOW.selectedControl.get('selectedQuestionGroup')) {
       var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-
-      return FLOW.store.findQuery(FLOW.Question, {questionGroupId: id});
-    } else {
-      return null;
+      this.set('content',FLOW.store.findQuery(FLOW.Question, {questionGroupId: id}));
     }
-  }.property('FLOW.selectedControl.selectedQuestionGroup', 'FLOW.selectedControl.selectedSurvey').cacheable()
+  }.observes('FLOW.selectedControl.selectedQuestionGroup')
 });
 
-FLOW.optionControl = Ember.ArrayController.create({});
+
+FLOW.optionControl = Ember.ArrayController.create({
+});
+
 
 FLOW.deviceControl = Ember.ArrayController.create({
   sortProperties:['phoneNumber'],
   pleaseShow:true,
   sortAscending:true,
   sortSelected:null,
+  content:null,
+
+  populate:function(){
+
+  },
 
   allAreSelected: function(key, value) {
     if (arguments.length === 2) {

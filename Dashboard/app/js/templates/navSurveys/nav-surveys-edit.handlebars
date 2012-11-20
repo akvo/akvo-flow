@@ -113,7 +113,7 @@
           <!-- <a class="editSetInfo">Edit Set Info</a> --> 
         </header>
         {{#if view.amVisible}}
-        <div class="questionSetContent"> <a class="addQuestion"  href="#">{{t _add_a_question_here}}</a> {{#each q in FLOW.questionControl.active}} 
+        <div class="questionSetContent"> <a class="addQuestion"  href="#">{{t _add_a_question_here}}</a> {{#each q in FLOW.questionControl.content}} 
           <!-- Beginning a Question  --> 
           {{#view FLOW.QuestionView contentBinding="q"}}
           <div class="innerContent" id="innerContent_01"> {{#if view.amOpenQuestion}}

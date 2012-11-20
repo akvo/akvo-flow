@@ -12,21 +12,21 @@
 
     <h3>For later use</h3>
   	{{view Ember.Select 
-			contentBinding="controllers.surveyGroupController.content" 
+			contentBinding="FLOW.surveyGroupControl.content" 
 			selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
 			optionLabelPath="content.displayName" 
 			optionValuePath="content.keyId" 
 			prompt="Select survey group"}} 
 
 			{{view Ember.Select 
-				contentBinding="FLOW.surveyControl.active" 
+				contentBinding="FLOW.surveyControl.content" 
 				selectionBinding="FLOW.selectedControl.selectedSurvey" 
 				optionLabelPath="content.displayName" 
 				optionValuePath="content.keyId" 
 				prompt="Select survey"}} 
 
 			{{view Ember.Select 
-				contentBinding="FLOW.questionGroupControl.active" 
+				contentBinding="FLOW.questionGroupControl.content" 
 				selectionBinding="FLOW.selectedControl.selectedQuestionGroup" 
 				optionLabelPath="content.displayName" 
 				optionValuePath="content.keyId" 

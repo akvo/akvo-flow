@@ -33,7 +33,6 @@ FLOW.SurveyGroupSurveyView = Ember.View.extend({
 	
 	// show delete SurveyGroup dialog
 	showDeleteSurveyDialog:function(){
-		console.log("showing dialog");
 		this.set('showDeleteSurveyDialogBool',true);
 	},
 
@@ -43,8 +42,11 @@ FLOW.SurveyGroupSurveyView = Ember.View.extend({
 
 	// fired when 'delete survey' is clicked in the survey item display
 	doDeleteSurvey: function() {
-			console.log("TODO delete Survey");
-			this.set('showDeleteSurveyDialogBool',false);
+		var sId=this.content.get('id');
+		var survey=FLOW.store.find(FLOW.Survey, sId);
+		survey.deleteRecord();
+		FLOW.store.commit();
+		this.set('showDeleteSurveyDialogBool',false);
 	},
 	
 	// fired when 'inspect data' is clicked in the survey item display
@@ -133,7 +135,6 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
 		surveyGroup.deleteRecord();
 		FLOW.store.commit();
-		FLOW.surveyGroupControl.set('content',FLOW.store.find(FLOW.SurveyGroup));
 		FLOW.selectedControl.set('selectedSurveyGroup',null);
 		this.set('showSGDeleteDialog',false);
 	},
@@ -143,10 +144,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{
 				"code":this.get('surveyGroupName')
 			});
-			
 			FLOW.store.commit();
-			//newSG.deleteRecord();
-			FLOW.surveyGroupControl.set('content',FLOW.store.findAll(FLOW.SurveyGroup));
 			this.set('showNewGroupField',false);
 	},
 	
@@ -165,9 +163,5 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 			"status": "NOT_PUBLISHED",
 			"surveyGroupId":FLOW.selectedControl.selectedSurveyGroup.get('keyId')});
 		FLOW.store.commit();
-
-		// trigger reload of surveys
-		FLOW.surveyControl.toggleProperty('reloadSurveys');
-	}
-	
+	}	
 });
