@@ -19,10 +19,13 @@ package org.waterforpeople.mapping.app.web.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,6 +44,9 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 @RequestMapping("/placemark")
 public class PlacemarkRestService {
 
+	private static final Logger log = Logger
+			.getLogger(PlacemarkRestService.class.getName());
+
 	@Inject
 	SurveyedLocaleDao localeDao;
 
@@ -57,8 +63,9 @@ public class PlacemarkRestService {
 
 		if (StringUtils.isEmpty(country)
 				&& StringUtils.isEmpty(surveyedLocaleId)) {
-			// FIXME: bad request, We must notify the client
-			return result;
+			final String msg = "You must pass a parameter [country] or [id]";
+			log.log(Level.SEVERE, msg);
+			throw new HttpMessageNotReadableException(msg);
 		}
 
 		if (!StringUtils.isEmpty(country)) {
