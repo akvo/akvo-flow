@@ -47,23 +47,34 @@ public class PlacemarkRestService {
 	@RequestMapping(method = RequestMethod.GET, value = { "/", "" })
 	@ResponseBody
 	public List<PlacemarkDto> listPlaceMarks(
-			@RequestParam(value = "country", defaultValue = "KE") String country,
-			@RequestParam(value = "identifier", defaultValue = "") String identifier) {
+			@RequestParam(value = "country", defaultValue = "") String country,
+			@RequestParam(value = "id", defaultValue = "") String surveyedLocaleId) {
 
-		List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
-		List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
-		boolean needDetails = !StringUtils.isEmpty(identifier);
+		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
+		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+		final boolean needDetails = !StringUtils.isEmpty(surveyedLocaleId)
+				&& StringUtils.isEmpty(country);
 
-		if (needDetails) {
-			slList = localeDao.listLocalesByCode(identifier, true);
-		} else {
-			slList = localeDao.listBySubLevel(country, null, null, null, null,
-					null, null);
+		if (StringUtils.isEmpty(country)
+				&& StringUtils.isEmpty(surveyedLocaleId)) {
+			// FIXME: bad request, We must notify the client
+			return result;
 		}
 
-		for (SurveyedLocale ap : slList) {
-			result.add(marshallDomainToDto(ap, needDetails));
+		if (!StringUtils.isEmpty(country)) {
+			slList.addAll(localeDao.listBySubLevel(country, null, null, null,
+					null, null, null));
+		} else if (!StringUtils.isEmpty(surveyedLocaleId)) {
+			slList.add(localeDao.getById(Long.valueOf(surveyedLocaleId)));
 		}
+
+		if (slList.size() > 0) {
+			for (SurveyedLocale ap : slList) {
+				result.add(marshallDomainToDto(ap, needDetails));
+			}
+
+		}
+
 		return result;
 	}
 
@@ -84,7 +95,7 @@ public class PlacemarkRestService {
 			for (SurveyalValue sv : sl.getSurveyalValues()) {
 				SurveyalValueDto svDto = new SurveyalValueDto();
 				DtoMarshaller.copyToDto(sv, svDto);
-				
+
 				if (StringUtils.isEmpty(sv.getMetricName())) {
 					svDto.setQuestionText(sv.getQuestionText());
 					svDto.setStringValue(sv.getStringValue());
