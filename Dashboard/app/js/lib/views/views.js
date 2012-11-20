@@ -88,16 +88,17 @@ FLOW.NavMapsView = Ember.View.extend({
     var map = new mxn.Mapstraction("flowMap", "google"),
         latlon = new mxn.LatLonPoint(-0.703107, 36.765747);
 
-    map.setCenterAndZoom(latlon, 8);
-
     map.addControls({
         pan: true,
         zoom: 'small',
         map_type: true
     });
 
+    map.setCenterAndZoom(latlon, 8);
+    map.enableScrollWheelZoom();
+
     // Markers
-    locales = Ember.ArrayController.create({
+    Ember.ArrayController.create({
       content: FLOW.store.findAll(FLOW.Placemark),
       contentArrayDidChange: function (model, index) {
         var htmlContent, marker, pm, point, mark;
@@ -109,7 +110,7 @@ FLOW.NavMapsView = Ember.View.extend({
         mark.setLabel(pm.get('collectionDate').toString());
         mark.setInfoBubble(pm.get('id'));
 
-        map.addMarker(mark);
+        map.addMarker(mark, true);
 
         return this;
       }
