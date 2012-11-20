@@ -55,7 +55,7 @@
 
     <!-- show all surveys of the currently selected survey group-->
     <ul class="surveyBatch">
-      {{#each survey in FLOW.surveyControl.active}} 
+      {{#each survey in FLOW.surveyControl.content}} 
         {{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
           <li class="aSurvey waterPoint">
             <h2 class="">{{survey.displayName}}</h2>

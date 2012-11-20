@@ -17,6 +17,18 @@ require('akvo-flow/models/store_def');
 
 
 FLOW.SurveyGroup = DS.Model.extend({
+    didDelete: function() {
+        FLOW.surveyGroupControl.populate();
+    },
+
+    didUpdate: function() {
+        FLOW.surveyGroupControl.populate();
+    },
+
+    didCreate: function() {
+        FLOW.surveyGroupControl.populate();
+    },
+
 	description: DS.attr('string',{defaultValue: ""}),
 	name: DS.attr('string',{defaultValue: ""}),
 	createdDateTime: DS.attr('string',{defaultValue: ""}),
@@ -29,6 +41,18 @@ FLOW.SurveyGroup = DS.Model.extend({
 
 
 FLOW.Survey = DS.Model.extend({
+	 didDelete: function() {
+        FLOW.surveyControl.populate();
+    },
+
+    didUpdate: function() {
+        FLOW.surveyControl.populate();
+    },
+
+    didCreate: function() {
+        FLOW.surveyControl.populate();
+    },
+
 	defaultLanguageCode: DS.attr('string'),
 	status: DS.attr('string'),
 	code: DS.attr('string'),

@@ -18,6 +18,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -84,6 +85,32 @@ public class SurveyRestService {
 		return dto;
 		
 	}
+	
+	// delete survey by id
+		@RequestMapping(method = RequestMethod.DELETE, value = "/del/{id}")
+		@ResponseBody
+		public RestStatusDto deleteSurveyById(@PathVariable("id") Long id){
+			Survey s = surveyDao.getByKey(id);		
+			RestStatusDto dto = null;
+			dto = new RestStatusDto();
+			dto.setStatus("failed");
+			  
+			// check if survey exists in the datastore
+			if (s != null){
+				// delete survey group
+				try {
+					surveyDao.delete(s);
+					dto.setStatus("ok");	
+				} catch (IllegalDeletionException e) {
+					dto.setStatus("failed");
+					dto.setMessage(e.getMessage());
+					// e.printStackTrace();
+				}
+			}
+			return dto;
+		}
+	
+	
 	
 	@RequestMapping(method = RequestMethod.POST, value="/")
 	@ResponseBody

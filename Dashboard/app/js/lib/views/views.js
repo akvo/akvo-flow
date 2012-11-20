@@ -1,10 +1,12 @@
 // ***********************************************//
-//                      views
+//                      Navigation views
 // ***********************************************//
 
 require('akvo-flow/core');
 require('akvo-flow/views/survey-group-views');
 require('akvo-flow/views/survey-details-views');
+require('akvo-flow/views/map-views');
+require('akvo-flow/views/devices-views');
 
 FLOW.ApplicationView = Ember.View.extend({
 	templateName: 'application'
@@ -81,43 +83,6 @@ FLOW.ExcelExportView = Ember.View.extend({ templateName: 'navData/excel-export'}
 // reports views
 FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports/nav-reports'});
 
-// maps views
-FLOW.NavMapsView = Ember.View.extend({
-  templateName: "navMaps/nav-maps",
-  didInsertElement: function() {
-    var map = new mxn.Mapstraction("flowMap", "google"),
-        latlon = new mxn.LatLonPoint(-0.703107, 36.765747);
-
-    map.addControls({
-        pan: true,
-        zoom: 'small',
-        map_type: true
-    });
-
-    map.setCenterAndZoom(latlon, 8);
-    map.enableScrollWheelZoom();
-
-    // Markers
-    Ember.ArrayController.create({
-      content: FLOW.store.findAll(FLOW.Placemark),
-      contentArrayDidChange: function (model, index) {
-        var htmlContent, marker, pm, point, mark;
-
-        pm = this.objectAt(index);
-        point = new mxn.LatLonPoint(pm.get('latitude'), pm.get('longitude'));
-        mark = new mxn.Marker(point);
-
-        mark.setLabel(pm.get('collectionDate').toString());
-        mark.setInfoBubble(pm.get('id'));
-
-        map.addMarker(mark, true);
-
-        return this;
-      }
-    });
-  }
-});
-
 // users views
 FLOW.NavUsersView = Ember.View.extend({	templateName: 'navUsers/nav-users'});
 
@@ -141,6 +106,9 @@ FLOW.DatasubnavView = Em.View.extend({
 	})
 });
 
+// ********************************************************//
+//             Subnavigation for the Device tabs
+// ********************************************************//
 FLOW.DevicesSubnavView = Em.View.extend({
 	templateName: 'navDevices/devices-subnav',
 	selectedBinding: 'controller.selected',
@@ -152,49 +120,6 @@ FLOW.DevicesSubnavView = Em.View.extend({
 			return this.get('item') === this.get('parentView.selected');
 		}.property('item', 'parentView.selected').cacheable()
 	})
-});
-
-FLOW.DevicesTableHeaderView = Em.View.extend({
-	templateName: 'navDevices/current-devices-table-header',
-	tagName:'tr',
-	//selectedBinding:'controller.selected',
-	
-	NavItemView: Ember.View.extend({
-		tagName: 'th',
-		item:null,
-		
-		classNameBindings: ['isActiveAsc:sorting_asc','isActiveDesc:sorting_desc'],
-		
-		isActiveAsc: function() {
-			return (this.get('item') === FLOW.deviceControl.get('selected'))&&(FLOW.deviceControl.get('sortAscending')===true);
-		}.property('item', 'FLOW.deviceControl.selected','FLOW.deviceControl.sortAscending').cacheable(),
-
-		isActiveDesc: function() {
-			return (this.get('item') === FLOW.deviceControl.get('selected'))&&(FLOW.deviceControl.get('sortAscending')===false);
-		}.property('item', 'FLOW.deviceControl.selected','FLOW.deviceControl.sortAscending').cacheable(),
-
-
-		sort:function(){
-			if ((this.get('isActiveAsc'))||(this.get('isActiveDesc'))) {
-				FLOW.deviceControl.toggleProperty('sortAscending');
-			}
-			else {
-				FLOW.deviceControl.set('sortProperties',[this.get('item')]);
-				FLOW.deviceControl.set('selected',this.get('item'));
-			}
-		}
-	})
-});
-
-
-FLOW.CurrentDevicesTabView = Em.View.extend({
-	showDeleteDevicesDialogue: function(){
-		console.log("show dialogue");
-	},
-
-	doDeleteDevices: function(){
-
-	}
 });
 
 
