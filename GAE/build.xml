@@ -17,7 +17,9 @@
 			<include name="shared/**/*.jar" />
 		</fileset>
 		<fileset dir="war">
-			<include name="poi-3.5-signed.jar" />
+			<include name="poi-3.7-20101029.jar" />
+			<include name="poi-ooxml-3.7-20101029.jar" />
+			<include name="poi-ooxml-schemas-3.7-20101029.jar" />
 			<include name="velocity-1.6.2-dep.jar" />
 			<include name="geoapi-2.3-M1.jar" />
 			<include name="geoapi-pending-2.3-M1.jar" />
@@ -101,7 +103,7 @@
 	</target>
 
 	<target name="runserver" depends="datanucleusenhance" description="Starts the development server.">
-		<dev_appserver war="war" />
+		<dev_appserver war="war" address="0.0.0.0" />
 	</target>
 
 
