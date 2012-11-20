@@ -55,7 +55,6 @@ FLOW.SurveyGroupSurveyView = Ember.View.extend({
 
 // handles all survey-group interaction elements on survey group page
 FLOW.SurveyGroupMainView = Ember.View.extend({
-	
 	showEditField: false,
 	showNewGroupField:false,
 	surveyGroupName:null,
@@ -168,7 +167,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 		FLOW.store.commit();
 
 		// trigger reload of surveys
-		FLOW.selectedControl.toggleProperty('reloadSurveys');
+		FLOW.surveyControl.toggleProperty('reloadSurveys');
 	}
 	
 });
