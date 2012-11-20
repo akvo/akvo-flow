@@ -28,10 +28,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyalValueDto;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 @Controller
@@ -41,22 +44,31 @@ public class PlacemarkRestService {
 	@Inject
 	SurveyedLocaleDao localeDao;
 
-	@RequestMapping(method = RequestMethod.GET, value = "/")
+	@RequestMapping(method = RequestMethod.GET, value = { "/", "" })
 	@ResponseBody
 	public List<PlacemarkDto> listPlaceMarks(
-			@RequestParam(value = "country", defaultValue="KE") String country) {
-		List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
+			@RequestParam(value = "country", defaultValue = "KE") String country,
+			@RequestParam(value = "identifier", defaultValue = "") String identifier) {
 
-		List<SurveyedLocale> slList = localeDao.listBySubLevel(country, null,
-				null, null, null, null, null);
+		List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
+		List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+		boolean needDetails = !StringUtils.isEmpty(identifier);
+
+		if (needDetails) {
+			slList = localeDao.listLocalesByCode(identifier, true);
+		} else {
+			slList = localeDao.listBySubLevel(country, null, null, null, null,
+					null, null);
+		}
 
 		for (SurveyedLocale ap : slList) {
-			result.add(marshallDomainToDto(ap));
+			result.add(marshallDomainToDto(ap, needDetails));
 		}
 		return result;
 	}
 
-	private PlacemarkDto marshallDomainToDto(SurveyedLocale sl) {
+	private PlacemarkDto marshallDomainToDto(SurveyedLocale sl,
+			boolean needDetails) {
 		final PlacemarkDto dto = new PlacemarkDto();
 		final String markType = StringUtils.isEmpty(sl.getLocaleType()) ? AccessPointType.WATER_POINT
 				.toString() : sl.getLocaleType().toUpperCase();
@@ -64,9 +76,26 @@ public class PlacemarkRestService {
 		dto.setMarkType(markType);
 		dto.setLatitude(sl.getLatitude());
 		dto.setLongitude(sl.getLongitude());
+		dto.setIdentifier(sl.getIdentifier());
 		dto.setKeyId(sl.getKey().getId());
 		dto.setCollectionDate(sl.getLastUpdateDateTime());
-
+		if (needDetails) {
+			List<SurveyalValueDto> details = new ArrayList<SurveyalValueDto>();
+			for (SurveyalValue sv : sl.getSurveyalValues()) {
+				SurveyalValueDto svDto = new SurveyalValueDto();
+				DtoMarshaller.copyToDto(sv, svDto);
+				
+				if (StringUtils.isEmpty(sv.getMetricName())) {
+					svDto.setQuestionText(sv.getQuestionText());
+					svDto.setStringValue(sv.getStringValue());
+				} else {
+					svDto.setMetricName(sv.getMetricName());
+					svDto.setStringValue(sv.getStringValue());
+				}
+				details.add(svDto);
+			}
+			dto.setDetails(details);
+		}
 		return dto;
 	}
 
@@ -77,6 +106,8 @@ public class PlacemarkRestService {
 		private Long altitude = null;
 		private String markType = null;
 		private Date collectionDate = null;
+		private String identifier = null;
+		private List<SurveyalValueDto> details = null;
 
 		public Double getLatitude() {
 			return latitude;
@@ -116,6 +147,22 @@ public class PlacemarkRestService {
 
 		public void setCollectionDate(Date collectionDate) {
 			this.collectionDate = collectionDate;
+		}
+
+		public String getIdentifier() {
+			return identifier;
+		}
+
+		public void setIdentifier(String identifier) {
+			this.identifier = identifier;
+		}
+
+		public List<SurveyalValueDto> getDetails() {
+			return details;
+		}
+
+		public void setDetails(List<SurveyalValueDto> details) {
+			this.details = details;
 		}
 	}
 }
