@@ -289,8 +289,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
 			for (SurveyedLocale ap : localeList) {
 				dtoList.add(marshallDomainToDto(ap, needDetailsFlag, display));
-				resp.setPlacemarks(dtoList);
 			}
+			resp.setPlacemarks(dtoList);
 		}
 		if (cursor != null) {
 			if (oldCursor == null || !cursor.equals(oldCursor)) {
