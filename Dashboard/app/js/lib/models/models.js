@@ -76,34 +76,29 @@ FLOW.QuestionGroup = DS.Model.extend({
 
 
 FLOW.Question = DS.Model.extend({
-	translationMap: DS.attr('string'),
-	// not sure
 	allowDecimal: DS.attr('boolean', {defaultValue: 0}),
-	optionContainerDto: DS.attr('string'),
-	//not sure
-	// type:     --- not now
-	tip: DS.attr('string'),
-	maxVal: DS.attr('number'),
-	minVal: DS.attr('number'),
-	order: DS.attr('number'),
-	isName: DS.attr('boolean', {defaultValue: 0}),
-	// questionHelpList:     --- now now
-	collabseable: DS.attr('boolean', {defaultValue: 0}),
-	path: DS.attr('string'),
 	allowMultipleFlag: DS.attr('boolean', {defaultValue: 0}),
-	immutable: DS.attr('boolean', {defaultValue: 0}),
 	allowOtherFlag: DS.attr('boolean', {defaultValue: 0}),
 	allowSign: DS.attr('boolean', {defaultValue: 0}),
-	text: DS.attr('string'),
-	questionDependency: DS.attr('string'),
+	collabseable: DS.attr('boolean', {defaultValue: 0}),
+	displayName: DS.attr('string'),
+	immutable: DS.attr('boolean', {defaultValue: 0}),
+	isName: DS.attr('boolean', {defaultValue: 0}),
+	keyId: DS.attr('number'),
 	mandatoryFlag: DS.attr('boolean', {defaultValue: 0}),
+	maxVal: DS.attr('number'),
+	minVal: DS.attr('number'),
+	optionContainerDto: DS.attr('string'),
+	order: DS.attr('number'),
+	path: DS.attr('string'),
+	questionDependency: DS.attr('string'),
 	questionGroupId: DS.attr('number'),
 	questionTypeString: DS.attr('string',{defaultValue:"freeText"}),
 	surveyId: DS.attr('number'),
-	displayName: DS.attr('string'),
-	keyId: DS.attr('number')
+	text: DS.attr('string'),
+	tip: DS.attr('string'),
+	type: DS.attr('string'),
 });
-
 
 FLOW.QuestionOption = DS.Model.extend({
 	questionId: DS.attr('number'),

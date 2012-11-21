@@ -397,7 +397,8 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
       url.push(suffix);
     }
 
-    return url.join("/")+"/";
+    // original return url.join("/")+"/";
+    return url.join("/") + "/" + (record === "placemark" ? "?country=KE" : "");
   },
 
   

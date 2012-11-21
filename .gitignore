@@ -42,3 +42,5 @@ gwt-unitcache
 # Vagrant
 .vagrant
 GAE/env
+
+Dashboard/app/js/lib/models/store_def.js

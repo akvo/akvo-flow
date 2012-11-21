@@ -58,7 +58,7 @@
       {{#each survey in FLOW.surveyControl.content}} 
         {{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
           <li class="aSurvey waterPoint">
-            <h2 class="">{{survey.displayName}}</h2>
+            <h2 class="">{{survey.name}}</h2>
             <ul class="surveyInfo floats-in">
               <li class="dateCreated"> <span>{{t created}}</span>
                 <time>{{#with survey}}{{date createdDateTime}}{{/with}}<time>
