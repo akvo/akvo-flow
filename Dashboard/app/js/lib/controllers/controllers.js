@@ -109,29 +109,24 @@ FLOW.selectedControl = Ember.Controller.create({
 });
 
 
-
 // ***********************************************//
 //                Data controllers
 // ***********************************************//
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   content:null,
   populate:function(){
-    console.log("populating surveygroups");    
     this.set('content',FLOW.store.find(FLOW.SurveyGroup));
   }
 });
 
-
 FLOW.surveyControl = Ember.ArrayController.create({
-  reloadSurveys:false,
   content:null,
   populate: function() {
-    console.log("populating surveys");
     if (FLOW.selectedControl.get('selectedSurveyGroup')) {
       var id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       this.set('content',FLOW.store.findQuery(FLOW.Survey, {surveyGroupId: id}));
     }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup','this.reloadSurveys')
+  }.observes('FLOW.selectedControl.selectedSurveyGroup')
 });
 
 
@@ -139,13 +134,25 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
   sortProperties:['order'],
   sortAscending:true,
   content:null,
+
+  // true if some items are being saved
+  allRecordsSaved:function(){
+    var allSaved=true;
+    FLOW.questionGroupControl.get('content').forEach(function(item){
+      if (item.get('isSaving')) {
+        allSaved=false;
+      }
+    });
+    console.log("all records saved status: ",allSaved);
+    if (allSaved) {return true;} else {return false;}
+  }.property('content.@each.isSaving'),
+
   populate: function() {
     if (FLOW.selectedControl.get('selectedSurvey')) {
       var id = FLOW.selectedControl.selectedSurvey.get('keyId');
       this.set('content',FLOW.store.findQuery(FLOW.QuestionGroup, {surveyId: id}));
     }
   }.observes('FLOW.selectedControl.selectedSurvey')
-
 });
 
 

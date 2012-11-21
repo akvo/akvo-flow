@@ -34,6 +34,7 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
     delete data["lastUpdateDateTime"];
     delete data["createdDateTime"];
     delete data["questionGroupList"];
+    delete data["isOpen"];
 
 
     this.ajax(this.buildURLPOST(root), "POST", {
@@ -111,6 +112,7 @@ DS.FLOWRESTAdapter = DS.Adapter.extend({
     delete data["lastUpdateDateTime"];
     delete data["createdDateTime"];
     delete data["questionGroupList"];
+    delete data["isOpen"];
 
     this.ajax(this.buildURLPOST(root, id), "POST", {
       data: data,

@@ -32,8 +32,8 @@ FLOW.DevicesTableHeaderView = Em.View.extend({
 
 
 FLOW.CurrentDevicesTabView = Em.View.extend({
-	showDeleteDevicesDialogue: function(){
-		console.log("show dialogue");
+	showDeleteDevicesdialog: function(){
+		console.log("show dialog");
 	},
 
 	doDeleteDevices: function(){
