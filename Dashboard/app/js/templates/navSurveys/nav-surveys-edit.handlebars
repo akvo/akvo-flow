@@ -52,9 +52,7 @@
     <section class="aQuestionSet mainContent" id="setIndex-01"> 
     <!-- zeroItem indicates that this is the item before the first question group -->
     {{#view FLOW.QuestionGroupItemView zeroItem="true"}}
-        Records saved:{{FLOW.questionGroupControl.allRecordsSaved}}
        <!-- insert, move and copy buttons --> 
-      
       {{#if view.oneSelectedForMove}}
       <nav class="moveMenu groupActionMenu">
         <ul>

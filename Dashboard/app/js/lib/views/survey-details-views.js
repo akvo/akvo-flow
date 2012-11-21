@@ -64,7 +64,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	},
 
     doQGroupNameEdit: function() {
-		this.set('questionGroupName',this.content.get('name'));
+		this.set('questionGroupName',this.content.get('code'));
 		this.set('showQGroupNameEditField',true);
 	},
 	

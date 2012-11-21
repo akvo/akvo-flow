@@ -143,7 +143,6 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
         allSaved=false;
       }
     });
-    console.log("all records saved status: ",allSaved);
     if (allSaved) {return true;} else {return false;}
   }.property('content.@each.isSaving'),
 
