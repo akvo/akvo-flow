@@ -1913,7 +1913,7 @@ nav.groupActionMenu.insertMenu a:hover {
 	margin:0 5px 0 0;
 	}
 
-.innerContent nav {
+.innerContent nav.smallMenu {
 	position: absolute;
 	top: 1px;
 	right: 1px;
@@ -1930,13 +1930,35 @@ nav.groupActionMenu.insertMenu a:hover {
 	background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* W3C */
  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0 ); /* IE6-8 */
 	box-shadow: -1px 1px 0 rgb(222,222,222);
+	margin:0;
+}
+.innerContent nav {
+	display: block;
+	padding: 0.5em 0;
+	margin:0 auto;
+	background:transparent;
 }
 .innerContent nav ul {
+	display: block;
+	margin: 0 auto;
+	position: relative;
+	width: 100%;
+	text-align: center;
+}
+
+.innerContent nav ul li {
+	display:inline;
+}
+.innerContent nav ul li a.standardBtn {
+	margin:20px auto 10px auto;}
+
+
+.innerContent nav.smallMenu ul {
 	margin: 0;
 	padding: 0;
 	width: 100%;
 }
-.innerContent nav ul li {
+.innerContent nav.smallMenu ul li {
 	display: inline;
 	float: right;
 	margin: 0 0 0 0;
@@ -1950,48 +1972,48 @@ nav.groupActionMenu.insertMenu a:hover {
 	background: transparent;
 	transition: background 0.4s ease-in;
 }
-.innerContent nav ul li:first-child {
+.innerContent nav.smallMenu ul li:first-child {
 	border-right: none;
 }
-.innerContent nav ul li:last-child {
+.innerContent nav.smallMenu ul li:last-child {
 	border-left: none;
 }
-.innerContent nav ul li:hover {
+.innerContent nav.smallMenu ul li:hover {
 	background: rgb(224,224,224);
 }
-.innerContent nav ul li a {
+.innerContent nav.smallMenu ul li a {
 	display: block;
 	padding: 5px 10px 5px 20px;
 	height: 10px;
 }
-nav ul li a.editQuestion {
+nav.smallMenu ul li a.editQuestion {
 	background: url(../images/editQuestion.png) left top no-repeat;
 }
-nav ul li a.deleteQuestion {
+nav.smallMenu ul li a.deleteQuestion {
 	background: url(../images/deleteQuestion.png) left top no-repeat;
 }
-nav ul li a.moveQuestion {
+nav.smallMenu ul li a.moveQuestion {
 	background: url(../images/moveQuestion.png) left top no-repeat;
 }
-nav ul li a.copyQuestion {
+nav.smallMenu ul li a.copyQuestion {
 	background: url(../images/duplicateQuestion.png) left top no-repeat;
 }
-nav ul li a.showQuestion {
+nav.smallMenu ul li a.showQuestion {
 	background: url(../images/showQuestion.png) left top no-repeat;
 }
-nav ul li a.editQuestion:hover {
+nav.smallMenu ul li a.editQuestion:hover {
 	background: url(../images/editQuestion.png) left bottom no-repeat;
 }
-nav ul li a.deleteQuestion:hover {
+nav.smallMenu ul li a.deleteQuestion:hover {
 	background: url(../images/deleteQuestion.png) left bottom no-repeat;
 }
-nav ul li a.moveQuestion:hover {
+nav.smallMenu ul li a.moveQuestion:hover {
 	background: url(../images/moveQuestion.png) left bottom no-repeat;
 }
-nav ul li a.copyQuestion:hover {
+nav.smallMenu ul li a.copyQuestion:hover {
 	background: url(../images/duplicateQuestion.png) left bottom no-repeat;
 }
-nav ul li a.showQuestion:hover {
+nav.smallMenu ul li a.showQuestion:hover {
 	background: url(../images/showQuestion.png) left bottom no-repeat;
 }
 .innerContent h1 {
