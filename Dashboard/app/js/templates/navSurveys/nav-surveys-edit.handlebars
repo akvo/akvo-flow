@@ -106,61 +106,15 @@
           <!-- <a class="editSetInfo">Edit Set Info</a> --> 
         </header>
         {{#if view.amVisible}}
-        <div class="questionSetContent"> <a class="addQuestion"  href="#">{{t _add_a_question_here}}</a> {{#each q in FLOW.questionControl.content}} 
-          <!-- Beginning a Question  --> 
-          {{#view FLOW.QuestionView contentBinding="q"}}
-          <div class="innerContent" id="innerContent_01"> {{#if view.amOpenQuestion}}
-            <h1 class="questionNbr"><span>{{q.order}}} </span>{{q.displayName}}</h1>
-            <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
-            <!-- Body of question -->
-            <label>Question type: {{view Ember.Select 
-              contentBinding="FLOW.questionTypeControl.content" 
-              optionLabelPath="content.label" 
-              optionValuePath="content.value" 
-              selectionBinding="view.selectedQuestionType" }} </label>
-            <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.questionHelpTooltip" size=100 }} </label>
-            <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedMandatory"}}{{t _mandatory}}</label>
-            <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedDependent"}}{{t _dependent}}</label>
-            
-            <!-- Question specific material --> 
-            {{#if view.amOptionType}}
-            <h1 class="answerNbr">{{t _option_details}}: </h1>
-            <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.checkedOptionMultiple"}}{{t _allow_multiple}} </label>
-            <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.checkedOptionOther"}}{{t _allow_other}} </label>
-            <br>
-            <p><strong>{{t _options}}:&nbsp;</strong><span class="fadedText"> ({{t _enter_each_choice_on_a_separate_line}})</span> </p>
-            {{view Ember.TextArea valueBinding="FLOW.optionControl.editCopy" size="100" rows="7" }}  
-            {{/if}}                 
-            {{view.optionList}}
-            
-            
-            {{#if view.amNumberType}}
-            TODO: Number specific content
-            {{/if}} 
-            <!-- End question specific material -->
-            
-            <nav>
-              <ul>
-                <li><a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>Save Question</a> </li>
-                <li><a class="" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>Cancel</a> {{else}} </li>
-              </ul>
-            </nav>
-            <!-- nav is only displayed if question is closed -->
-            <nav class="smallMenu">
-              <ul>
-                <li><a {{action "doDelete" target="this"}} class="deleteQuestion" id="">{{t _delete}}</a></li>
-                <li><a {{action "doCopy" target="this"}} class="copyQuestion" id="">{{t _copy}}</a></li>
-                <li><a {{action "doMove" target="this"}} class="moveQuestion" id="">{{t _move}}</a></li>
-                <li><a {{action "doEdit" target="this"}} class="editQuestion" id="">{{t _edit}}</a></li>
-              </ul>
-            </nav>
-            <h1 class="questionNbr"><span>{{q.order}}} </span>{{q.displayName}}</h1>
-            {{/if}} 
-            <!-- end body of question --> 
+          <div class="questionSetContent"> <a class="addQuestion"  href="#">{{t _add_a_question_here}}</a> 
+            {{#each q in FLOW.questionControl.content}} 
+             
+              <!-- Question  --> 
+              {{view FLOW.QuestionView contentBinding="q"}} 
+             
+              <a class="addQuestion" href="#">{{t _add_question_here}}</a> 
+            {{/each}} 
           </div>
-          {{/view}} 
-          <!-- End of Question --> 
-          <a class="addQuestion" href="#">{{t _add_question_here}}</a> {{/each}} </div>
         {{/if}} 
         
         <!-- dialogs -->

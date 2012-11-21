@@ -261,9 +261,8 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 }); 
 
-
-
 FLOW.QuestionView = Ember.View.extend({
+	templateName:'navSurveys/question-view',
 	content:null,
 	questionName:null,
 	checkedMandatory: false,
