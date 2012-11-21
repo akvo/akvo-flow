@@ -38,3 +38,7 @@ WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/BuildConfig.java
 WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
 deploy
 gwt-unitcache
+
+# Vagrant
+.vagrant
+GAE/env
