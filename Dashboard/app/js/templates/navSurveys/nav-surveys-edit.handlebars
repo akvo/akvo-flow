@@ -53,7 +53,7 @@
     <section class="aQuestionSet mainContent" id="setIndex-01"> 
     <!-- zeroItem indicates that this is the item before the first question group -->
     {{#view FLOW.QuestionGroupItemView zeroItem="true"}}
-      
+        Records saved:{{FLOW.questionGroupControl.allRecordsSaved}}
        <!-- insert, move and copy buttons --> 
       
       {{#if view.oneSelectedForMove}}
@@ -105,7 +105,7 @@
                  <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{t _show_questions}} </a></li>
               {{/if}}
               <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id="">{{t _edit_group_name}}</a></li>
-              <li><a {{action "showQGroupDeleteDialogue" target="this"}} class="deleteQuestionGroup" id="">{{t _delete}}</a></li>
+              <li><a {{action "showQGroupDeletedialog" target="this"}} class="deleteQuestionGroup" id="">{{t _delete}}</a></li>
               <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup" id="">{{t _copy}}</a></li>
               <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup" id="">{{t _move}}</a> </li>
             </ul>
@@ -165,8 +165,8 @@
           <a class="addQuestion" href="#">{{t _add_question_here}}</a> {{/each}} </div>
         {{/if}} 
         
-        <!-- dialogues -->
-        <div {{bindAttr class="view.showQGDeleteDialogue:display :overlay"}}>
+        <!-- dialogs -->
+        <div {{bindAttr class="view.showQGDeletedialog:display :overlay"}}>
           <div class="blanket"></div>
           <div class="dialogWrap"> 
             <!-- the dialog contents -->
@@ -182,7 +182,8 @@
             </div>
           </div>
         </div>
-        <!-- end dialogues --> 
+
+        <!-- end dialogs --> 
         
         <!-- end question group block --> 
       </div>
@@ -216,3 +217,18 @@
   </section>
   <!-- End Question group Set  --> 
 </section>
+{{#view FLOW.SavingQuestionGroupsView}}
+       <div {{bindAttr class="view.showQGSavingDialogBool:display :overlay"}}>
+          <div class="blanket"></div>
+          <div class="dialogWrap"> 
+            <!-- the dialog contents -->
+            <div class="confirmDialog dialog">
+              <h2>Saving ....</h2>
+              <p class="dialogMsg">Please wait</p>
+              <div class="buttons menuCentre">
+              
+              </div>
+            </div>
+          </div>
+        </div>
+{{/view}}

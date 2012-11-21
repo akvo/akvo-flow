@@ -17,17 +17,9 @@ require('akvo-flow/models/store_def');
 
 
 FLOW.SurveyGroup = DS.Model.extend({
-    didDelete: function() {
-        FLOW.surveyGroupControl.populate();
-    },
-
-    didUpdate: function() {
-        FLOW.surveyGroupControl.populate();
-    },
-
-    didCreate: function() {
-        FLOW.surveyGroupControl.populate();
-    },
+    didDelete: function() {FLOW.surveyGroupControl.populate();},
+    didUpdate: function() {FLOW.surveyGroupControl.populate();},
+    didCreate: function() {FLOW.surveyGroupControl.populate();},
 
 	description: DS.attr('string',{defaultValue: ""}),
 	name: DS.attr('string',{defaultValue: ""}),
@@ -41,17 +33,9 @@ FLOW.SurveyGroup = DS.Model.extend({
 
 
 FLOW.Survey = DS.Model.extend({
-	 didDelete: function() {
-        FLOW.surveyControl.populate();
-    },
-
-    didUpdate: function() {
-        FLOW.surveyControl.populate();
-    },
-
-    didCreate: function() {
-        FLOW.surveyControl.populate();
-    },
+	didDelete: function() {FLOW.surveyControl.populate();},
+    didUpdate: function() {FLOW.surveyControl.populate();},
+    didCreate: function() {FLOW.surveyControl.populate();},
 
 	defaultLanguageCode: DS.attr('string'),
 	status: DS.attr('string'),
@@ -72,8 +56,11 @@ FLOW.Survey = DS.Model.extend({
 
 
 FLOW.QuestionGroup = DS.Model.extend({
+	didDelete: function() {if (FLOW.questionGroupControl.get('allRecordsSaved')) FLOW.questionGroupControl.populate();},
+    didUpdate: function() {if (FLOW.questionGroupControl.get('allRecordsSaved')) FLOW.questionGroupControl.populate();},
+    didCreate: function() {if (FLOW.questionGroupControl.get('allRecordsSaved')) FLOW.questionGroupControl.populate();},
+
 	order: DS.attr('number'),
-	questionMap: DS.attr('string'),
 	description: DS.attr('string'),
 	name: DS.attr('string'),
 	path: DS.attr('string'),

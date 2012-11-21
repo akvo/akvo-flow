@@ -40,10 +40,9 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	content: null, // question group content comes through binding in handlebars file
 	zeroItem: false,
 	renderView:false,
-	showQGDeleteDialogue:false,
+	showQGDeletedialog:false,
 	showQGroupNameEditField:false,
 	questionGroupName:null,
-
 
 	amVisible: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestionGroup');
@@ -73,7 +72,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	saveQuestionGroupNameEdit: function() {
 		var qgId=this.content.get('id');
 		var questionGroup=FLOW.store.find(FLOW.QuestionGroup, qgId);
-		questionGroup.set('name',this.get('questionGroupName'));
+		questionGroup.set('code',this.get('questionGroupName'));
 		FLOW.store.commit();
 		this.set('showQGroupNameEditField',false);
 	},
@@ -105,48 +104,39 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	}.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
 	
-	// show delete QGroup dialogue
-	showQGroupDeleteDialogue:function(){
-		this.set('showQGDeleteDialogue',true);
+	// show delete QGroup dialog
+	showQGroupDeletedialog:function(){
+		this.set('showQGDeletedialog',true);
 	},
 
 	// cancel question group delete
 	cancelQGroupDelete:function(){
-		this.set('showQGDeleteDialogue',false);
+		this.set('showQGDeletedialog',false);
 	},
 
 	// execute group delete
 	doQGroupDelete:function(){
-		// TODO show popup
-		// if cancel: remove popup, don't do anything
-		// if delete: remove question group.
-		this.set('showQGDeleteDialogue',false);
+		this.set('showQGDeletedialog',false);
 		
 		var qgDeleteOrder = this.content.get('order');
 		var qgDeleteId = this.content.get('keyId');
-				
-		FLOW.questionGroupControl.get('content').forEach(function(item){
+
+		// move items down
+		FLOW.store.filter(FLOW.QuestionGroup,function(data){return true;}).forEach(function(item){
 			var currentOrder=item.get('order');
 			
-			if (currentOrder==qgDeleteOrder){
-				var questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
-				questionGroup.deleteRecord();
-				FLOW.store.commit();
-			}
-			else if (currentOrder>qgDeleteOrder){
+			if (currentOrder>qgDeleteOrder){
 				item.set('order',item.get('order')-1);
 			}
-		}); // end of forEach
-
-		FLOW.questionGroupControl.set('content',FLOW.store.findAll(FLOW.QuestionGroup));
-
-		// TODO: implement persistence
-		// TODO: solve "could not respond to event didChangeData in state rootState.deleted.saved." error.
+		});
+	
+		var questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
+		questionGroup.deleteRecord();
+		FLOW.store.commit();
 	},
 
 	// insert group
 	doInsertQuestionGroup: function(){
-		// create copy of QuestionGroup item in the store
 		var insertAfterOrder;
 
         if (this.get('zeroItem')) {
@@ -154,28 +144,21 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
         } else {
             insertAfterOrder=this.content.get('order');
         }
+
 		// move up to make space
-		FLOW.questionGroupControl.get('content').forEach(function(item){
+		FLOW.store.filter(FLOW.QuestionGroup,function(data){return true;}).forEach(function(item){
 			var currentOrder=item.get('order');
-			if (currentOrder>insertAfterOrder) {item.set('order',item.get('order')+1		);
-				console.log("upping "+currentOrder);
+			if (currentOrder>insertAfterOrder) {
+				item.set('order',item.get('order')+1);
 			}
-		}); // end of forEach
-	
-		// create copy of QuestionGroup item in the store
+		});
+		// create new QuestionGroup item in the store
 		var newRec = FLOW.store.createRecord(FLOW.QuestionGroup,{
-			"code":"New question group",
-			"order":insertAfterOrder+1});
+			"code":"New group - please change name",
+			"order":insertAfterOrder+1,
+			"surveyId":FLOW.selectedControl.selectedSurvey.get('keyId')});
 		
-		console.log("about to commit");
 		FLOW.store.commit();
-		
-		console.log("about to do findall");
-		FLOW.questionGroupControl.set('content',FLOW.store.findAll(FLOW.QuestionGroup)); // only loads already loaded models
-		
-		// this is wrong
-		//this.set('questionGroupName',this.content.get('name'));
-		//this.set('showQGroupNameEditField',true);
 	},
 
 	// prepare for group copy. Shows 'copy to here' buttons
@@ -212,8 +195,6 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 		if (this.get('zeroItem')) {insertAfterOrder=0;} else {insertAfterOrder=this.content.get('order');}
 
-		FLOW.questionGroupControl.propertyWillChange('content');
-
 		// moving to the same place => do nothing
 		if ((selectedOrder==insertAfterOrder)||(selectedOrder==(insertAfterOrder+1))){}
 		else {
@@ -247,7 +228,6 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		} // end of top else
 		
 		FLOW.store.commit();
-		FLOW.questionGroupControl.propertyDidChange('content');
 		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
 	},
 
@@ -258,12 +238,12 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		var insertAfterOrder;
 
 		if (this.get('zeroItem')) {insertAfterOrder=0;} else {insertAfterOrder=this.content.get('order');}
-		console.log("selected, insertAfter: "+selectedOrder+", "+insertAfterOrder);
+
 		// move up to make space
 		FLOW.questionGroupControl.get('content').forEach(function(item){
 			var currentOrder=item.get('order');
-			if (currentOrder>insertAfterOrder) {item.set('order',item.get('order')+1);
-				console.log("upping "+currentOrder);
+			if (currentOrder>insertAfterOrder) {
+				item.set('order',item.get('order')+1);
 			}
 		}); // end of forEach
 	
@@ -276,16 +256,10 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			"displayName":FLOW.selectedControl.selectedForCopyQuestionGroup.get('displayName')});
 		
 		FLOW.store.commit();
-		
-		// TODO implement commit to persistence layer
-		// TODO create copy of questions contained in QuestionGroup and insert them in the store
-
-		FLOW.questionGroupControl.set('content',FLOW.store.findAll(FLOW.QuestionGroup)); // only loads already loaded models
-		
 		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
 	}
 
-}); // end QuestionGroupItemView
+}); 
 
 
 
@@ -354,4 +328,16 @@ FLOW.QuestionView = Ember.View.extend({
 	doDelete: function() {
 			console.log("doing doDelete");
 	}
+});
+
+FLOW.SavingQuestionGroupsView = Ember.View.extend({
+	showQGSavingDialogBool:false,
+
+	showQGSavingDialog:function(){
+		if (FLOW.questionGroupControl.get('allRecordsSaved')){
+			this.set('showQGSavingDialogBool', false)
+		} else {
+			this.set('showQGSavingDialogBool', true)
+		}
+	}.observes('FLOW.questionGroupControl.allRecordsSaved')
 });
