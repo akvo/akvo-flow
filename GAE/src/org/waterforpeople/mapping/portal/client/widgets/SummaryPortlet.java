@@ -38,7 +38,10 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 
 /**
- * Displays summary information
+ * Displays summary information on:
+ *   Surveys, inside their groups
+ *   Devices, only the phone number
+ *   Users, only the name (or email address, if name is empty)
  * 
  * @author Christopher Fagiani
  * 
@@ -84,8 +87,9 @@ public class SummaryPortlet extends Portlet {
 						nl.add(result[i].getPhoneNumber());
 					}
 					Collections.sort(nl);
-					for (int i = 0; i < nl.size(); i++) {
-						TreeItem tItem = new TreeItem(nl.get(i));
+					//Add to device tree
+					for (String s:nl) {
+						TreeItem tItem = new TreeItem(s);
 						deviceRoot.addItem(tItem);
 
 					}
@@ -113,10 +117,10 @@ public class SummaryPortlet extends Portlet {
 						}
 					}
 					Collections.sort(ul);
-					for (int i = 0; i < ul.size(); i++) {
-						TreeItem tItem = new TreeItem(ul.get(i));
+					//Add to device tree
+					for (String s:ul) {
+						TreeItem tItem = new TreeItem(s);
 						userRoot.addItem(tItem);
-
 					}
 
 				}
