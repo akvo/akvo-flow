@@ -15,14 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
 import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.Survey;
 
 @Controller
 @RequestMapping("/question")
@@ -30,22 +27,6 @@ public class QuestionRestService {
 
 	@Inject
 	private QuestionDao questionDao;
-
-	// list all question groups
-	@RequestMapping(method = RequestMethod.GET, value = "/all")
-	@ResponseBody
-	public List<QuestionDto> listQuestions() {
-		List<QuestionDto> results = new ArrayList<QuestionDto>();
-		List<Question> questions = questionDao.list(Constants.ALL_RESULTS);
-		if (questions != null) {
-			for (Question sg : questions) {
-				QuestionDto dto = new QuestionDto();
-				DtoMarshaller.copyToDto(sg, dto);
-				results.add(dto);
-			}
-		}
-		return results;
-	}
 	
 	// list questions by their question group id
 	@RequestMapping(method = RequestMethod.GET, value = "/")
@@ -64,7 +45,6 @@ public class QuestionRestService {
 		return results;
 	}
 
-	
 	//TODO
 	// find a single question group by its id
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
@@ -98,7 +78,6 @@ public class QuestionRestService {
 		return dto;
 	}
 	
-	//TODO
 	// save a question
 	@RequestMapping(method = RequestMethod.POST, value="/")
 	@ResponseBody
@@ -108,27 +87,30 @@ public class QuestionRestService {
 		// if the POST data contains a valid QuestionDto, continue. Otherwise, server will respond with 400 Bad Request 
 		if (questionDto != null){
 			Long keyId = questionDto.getKeyId();
-			Question qg;
+			Question q;
 					
-			// if the questionDto has a key, try to get the surveyGroup.
+			// if the questionDto has a key, try to get the question.
 			if (keyId != null) {
-				qg = questionDao.getByKey(keyId);
+				q = questionDao.getByKey(keyId);
 				// if the question doesn't exist, create a new question
-				if (qg == null) {
-					qg = new Question();
+				if (q == null) {
+					q = new Question();
 				}
 			} else {
-				qg = new Question();
+				q = new Question();
 			}
 			
 			// copy the properties, except the createdDateTime property, because it is set in the Dao.
-			BeanUtils.copyProperties(questionDto, qg, new String[] {"createdDateTime"});
-			qg = questionDao.save(qg);
-					
+			BeanUtils.copyProperties(questionDto, q, new String[] {"createdDateTime"});
+			q = questionDao.save(q);
+			
+			// TODO 
+			//saveSurveyUpdateMessage(q.getSurveyId());
+			// code lives in SurveyServiceImpl
+			
 			dto = new QuestionDto();
-			DtoMarshaller.copyToDto(qg, dto);
+			DtoMarshaller.copyToDto(q, dto);
 		}
 		return dto;
 	}
-
 }
