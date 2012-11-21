@@ -117,7 +117,7 @@
           <!-- Beginning a Question  --> 
           {{#view FLOW.QuestionView contentBinding="q"}}
           <div class="innerContent" id="innerContent_01"> {{#if view.amOpenQuestion}}
-            <h1 class="questionNbr">&nbsp;</h1>
+            <h1 class="questionNbr"><span>{{q.order}}} </span>{{q.displayName}}</h1>
             <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
             <!-- Body of question -->
             <label>Question type: {{view Ember.Select 
