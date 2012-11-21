@@ -16,6 +16,9 @@
 
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
@@ -75,9 +78,14 @@ public class SummaryPortlet extends Portlet {
 
 			public void onSuccess(DeviceDto[] result) {
 				if (result != null) {
+					//Sort list alphabetically
+					ArrayList<String> nl = new ArrayList<String>(result.length);
 					for (int i = 0; i < result.length; i++) {
-						TreeItem tItem = new TreeItem(
-								result[i].getPhoneNumber());
+						nl.add(result[i].getPhoneNumber());
+					}
+					Collections.sort(nl);
+					for (int i = 0; i < nl.size(); i++) {
+						TreeItem tItem = new TreeItem(nl.get(i));
 						deviceRoot.addItem(tItem);
 
 					}
@@ -95,13 +103,22 @@ public class SummaryPortlet extends Portlet {
 
 			public void onSuccess(UserDto[] result) {
 				if (result != null) {
+					//Sort list alphabetically
+					ArrayList<String> ul = new ArrayList<String>(result.length);
 					for (int i = 0; i < result.length; i++) {
 						if (result[i].getUserName() != null) {
-							userRoot.addItem(result[i].getUserName());
+							ul.add(result[i].getUserName());
 						} else {
-							userRoot.addItem(result[i].getEmailAddress());
+							ul.add(result[i].getEmailAddress());
 						}
 					}
+					Collections.sort(ul);
+					for (int i = 0; i < ul.size(); i++) {
+						TreeItem tItem = new TreeItem(ul.get(i));
+						userRoot.addItem(tItem);
+
+					}
+
 				}
 			}
 		};
