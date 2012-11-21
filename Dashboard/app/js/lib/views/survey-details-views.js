@@ -23,7 +23,6 @@ FLOW.SurveySidebarView = Ember.View.extend({
 		survey.set('description',this.get('surveyDescription'));
 		survey.set('pointType',this.get('surveyTypeControl'));
 		FLOW.store.commit();
-		//FLOW.selectedControl.set('selectedSurvey',FLOW.store.find(FLOW.Survey, sgId));
 	},
 
 	doPreviewSurvey:function(){
@@ -260,74 +259,6 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	}
 
 }); 
-
-FLOW.QuestionView = Ember.View.extend({
-	templateName:'navSurveys/question-view',
-	content:null,
-	questionName:null,
-	checkedMandatory: false,
-	checkedDependent: false,
-	checkedOptionMultiple:false,
-	checkedOptionOther:false,
-	selectedQuestionType:null,
-	selectedOptionEdit:null,
-	
-	amOpenQuestion: function() {
-		var selected = FLOW.selectedControl.get('selectedQuestion');
-		if (selected) {
-
-			var isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestion.get('keyId'));
-			return isOpen;
-		} else {
-			return false;
-		}
-	}.property('FLOW.selectedControl.selectedQuestion', 'content.keyId').cacheable(),
-
-	
-	amOptionType:function() {
-		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='option') ? true : false;}
-		else {return false;}
-	}.property('this.selectedQuestionType').cacheable(),
-	
-	amNumberType:function() {
-		if (this.selectedQuestionType){ return (this.selectedQuestionType.get('value')=='number') ? true : false;}
-		else {return false;}
-	}.property('this.selectedQuestionType').cacheable(),
-		
-	doEdit: function() {
-		FLOW.selectedControl.set('selectedQuestion', this.content);
-	
-		this.set('questionName',FLOW.selectedControl.selectedQuestion.get('displayName'));
-		
-		//FLOW.optionControl.set('editCopy',FLOW.optionControl.get('questionOptionsList'));
-	
-		//TODO populate selected question type
-		//TODO populate tooltip
-		//TODO populate question options
-		//TODO populate help
-		//TODO populate translations
-	},
-	
-	doCancelEditQuestion: function() {
-		FLOW.selectedControl.set('selectedQuestion', null);
-		console.log('canceling edit');
-	},
-	
-	doSaveEditQuestion: function() {
-	},
-	
-	doCopy: function() {
-		console.log("doing doDuplicate");
-	},
-	
-	doMove: function() {
-			console.log("doing doMove");
-	},
-	
-	doDelete: function() {
-			console.log("doing doDelete");
-	}
-});
 
 FLOW.SavingQuestionGroupsView = Ember.View.extend({
 	showQGSavingDialogBool:false,
