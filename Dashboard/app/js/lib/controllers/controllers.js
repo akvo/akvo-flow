@@ -95,6 +95,8 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedOption: null,
   selectedForMoveQuestionGroup:null,
   selectedForCopyQuestionGroup:null,
+  selectedForMoveQuestion:null,
+  selectedForCopyQuestion:null,
   selectedCreateNewGroup:false,
 
   // when selected survey changes, deselect selected surveys and question groups
