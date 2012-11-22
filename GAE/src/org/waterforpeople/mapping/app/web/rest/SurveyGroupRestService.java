@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.web.controller;
+package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +24,8 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import org.waterforpeople.mapping.app.web.controller.RestStatusDto;
+
+import org.waterforpeople.mapping.app.web.rest.RestStatusDto;
 
 @Controller
 @RequestMapping("/survey_groups")

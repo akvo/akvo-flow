@@ -1,4 +1,4 @@
-package org.waterforpeople.mapping.app.web.controller;
+package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
 import java.util.List;
