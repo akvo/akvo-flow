@@ -3,15 +3,16 @@ APPNAME = 'akvo-flow'
 require 'colored'
 require 'rake-pipeline'
 require 'i18n-docs'
+require 'fileutils'
 
 def pipeline
   Rake::Pipeline::Project.new('Assetfile')
 end
 
-desc "Setup app"
-task :setup do
-  system "bundle && bundle exec rakep build"
-end
+# desc "Setup app"
+# task :setup do
+#   system "bundle && bundle exec rakep build"
+# end
 
 desc "Clean #{APPNAME}"
 task :clean do
@@ -22,6 +23,10 @@ end
 desc "Build #{APPNAME}"
 task :build => :clean do
   pipeline.invoke
+
+  unless File.exists?("app/js/lib/models/store_def.js")
+    system 'cp ../dev-env/puppet/modules/akvo-flow/templates/store_def.js_fixture.erb app/js/lib/models/store_def.js'
+  end
 end
 
 desc "Watch for changes"
