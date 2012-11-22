@@ -106,13 +106,15 @@
           <!-- <a class="editSetInfo">Edit Set Info</a> --> 
         </header>
         {{#if view.amVisible}}
-          <div class="questionSetContent"> <a class="addQuestion"  href="#">{{t _add_a_question_here}}</a> 
+          <div class="questionSetContent"> 
+
+            {{view FLOW.QuestionView zeroItem="true"}}
+
             {{#each q in FLOW.questionControl.content}} 
              
-              <!-- Question  --> 
+              <!-- Question view  --> 
               {{view FLOW.QuestionView contentBinding="q"}} 
-             
-              <a class="addQuestion" href="#">{{t _add_question_here}}</a> 
+              
             {{/each}} 
           </div>
         {{/if}} 

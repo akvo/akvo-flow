@@ -1,4 +1,6 @@
+{{#unless view.zeroItem}}
 <div class="innerContent" id="innerContent_01"> 
+  {{/unless}}
   {{#if view.amOpenQuestion}}
     <h1 class="questionNbr"><span>{{q.order}}} </span>{{q.displayName}}</h1>
     <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
@@ -34,16 +36,39 @@
       </ul>
     </nav>
   {{else}}   
+{{#unless view.zeroItem}}
     <!-- nav is only displayed if question is closed -->
     <nav class="smallMenu">
       <ul>
         <li><a {{action "doDelete" target="this"}} class="deleteQuestion" id="">{{t _delete}}</a></li>
-        <li><a {{action "doCopy" target="this"}} class="copyQuestion" id="">{{t _copy}}</a></li>
-        <li><a {{action "doMove" target="this"}} class="moveQuestion" id="">{{t _move}}</a></li>
+        <li><a {{action "doQuestionCopy" target="this"}} class="copyQuestion" id="">{{t _copy}}</a></li>
+        <li><a {{action "doQuestionMove" target="this"}} class="moveQuestion" id="">{{t _move}}</a></li>
         <li><a {{action "doEdit" target="this"}} class="editQuestion" id="">{{t _edit}}</a></li>
       </ul>
     </nav>
     <h1 class="questionNbr"><span>{{q.order}}} </span>{{q.displayName}}</h1>
-  {{/if}} 
-  <!-- end body of question --> 
 </div>
+{{/unless}}
+    {{#if view.oneSelectedForMove}}
+      <nav class="moveMenu groupActionMenu">
+        <ul>
+          <li><a {{action "doQuestionMoveHere" target="this"}} class="">{{t _move_question_here}}</a></li>
+          <li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
+        </ul>
+      </nav>
+    {{else}}   
+      {{#if view.oneSelectedForCopy}}
+        <nav class="copyMenu groupActionMenu">
+          <ul>
+            <li><a {{action "doQuestionCopyHere" target="this"}} class="">{{t _paste_question_here}}</a></li>
+            <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
+          </ul>
+        </nav>
+       {{else}} 
+         <a class="addQuestion">{{t _add_new_question_here}}</a> 
+      {{/if}}  
+    {{/if}} 
+  {{/if}} 
+
+ 
+  <!-- end body of question --> 

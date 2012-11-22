@@ -5,6 +5,7 @@
 require('akvo-flow/core');
 require('akvo-flow/views/survey-group-views');
 require('akvo-flow/views/survey-details-views');
+require('akvo-flow/views/question-view');
 require('akvo-flow/views/map-views');
 require('akvo-flow/views/devices-views');
 
