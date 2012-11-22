@@ -7,7 +7,7 @@ Vagrant::Config.run do |config|
   # please see the online documentation at vagrantup.com.
 
   config.vm.host_name = "akvo-flow.dev"
-  config.vm.box = "precise64"
+  config.vm.box = "akvo-flow_precise64_4.2.4"
   # config.vm.box_url = "http://domain.com/path/to/above.box"
 
   # config.vm.boot_mode = :gui

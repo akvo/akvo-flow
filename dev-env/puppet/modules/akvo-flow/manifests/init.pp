@@ -3,4 +3,8 @@ class akvo-flow {
     ensure  => present,
     content => template("akvo-flow/store_def.js_rest.erb")
   }
+  file { "/akvo-flow/GAE/war/WEB-INF/appengine-web.xml":
+    ensure  => present,
+    content => template("akvo-flow/appengine-web.xml.erb")
+  }
 }
