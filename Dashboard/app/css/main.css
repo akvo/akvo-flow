@@ -111,6 +111,12 @@ time {
 img, object, video, embed {
 	max-width: 100%;
 }
+
+/* Sine the map pin need no max-width */ 
+#flowMap img {
+	max-width: none;
+}
+
 .hidden {
 	display: none !important;
 }
@@ -180,9 +186,9 @@ a:hover {
 
 /* Custom text-selection colors (remove any text shadows: twitter.com/miketaylr/status/12228805301) */
 ::-moz-selection {
-background: #930;
-color: #fff;
-text-shadow: none;
+	background: #930;
+	color: #fff;
+	text-shadow: none;
 }
 ::selection {
 	background: #930;
