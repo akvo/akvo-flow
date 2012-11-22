@@ -17,8 +17,9 @@
 package org.waterforpeople.mapping.app.web.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,17 +32,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyalValueDto;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 @Controller
-@RequestMapping("/placemark")
+@RequestMapping("/placemarks")
 public class PlacemarkRestService {
 
 	private static final Logger log = Logger
@@ -50,12 +48,13 @@ public class PlacemarkRestService {
 	@Inject
 	SurveyedLocaleDao localeDao;
 
-	@RequestMapping(method = RequestMethod.GET, value = { "/", "" })
+	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public List<PlacemarkDto> listPlaceMarks(
+	public Map<String, List<? extends BaseDto>> listPlaceMarks(
 			@RequestParam(value = "country", defaultValue = "") String country,
 			@RequestParam(value = "id", defaultValue = "") String surveyedLocaleId) {
 
+		final Map<String, List<? extends BaseDto>> response = new HashMap<String, List<? extends BaseDto>>();
 		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
 		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
 		final boolean needDetails = !StringUtils.isEmpty(surveyedLocaleId)
@@ -82,7 +81,8 @@ public class PlacemarkRestService {
 
 		}
 
-		return result;
+		response.put("placemarks", result);
+		return response;
 	}
 
 	private PlacemarkDto marshallDomainToDto(SurveyedLocale sl,
@@ -94,93 +94,25 @@ public class PlacemarkRestService {
 		dto.setMarkType(markType);
 		dto.setLatitude(sl.getLatitude());
 		dto.setLongitude(sl.getLongitude());
-		dto.setIdentifier(sl.getIdentifier());
-		dto.setKeyId(sl.getKey().getId());
 		dto.setCollectionDate(sl.getLastUpdateDateTime());
-		if (needDetails) {
-			List<SurveyalValueDto> details = new ArrayList<SurveyalValueDto>();
-			for (SurveyalValue sv : sl.getSurveyalValues()) {
-				SurveyalValueDto svDto = new SurveyalValueDto();
-				DtoMarshaller.copyToDto(sv, svDto);
-
-				if (StringUtils.isEmpty(sv.getMetricName())) {
-					svDto.setQuestionText(sv.getQuestionText());
-					svDto.setStringValue(sv.getStringValue());
-				} else {
-					svDto.setMetricName(sv.getMetricName());
-					svDto.setStringValue(sv.getStringValue());
-				}
-				details.add(svDto);
-			}
-			dto.setDetails(details);
-		}
+		dto.setKeyId(sl.getKey().getId());
+		// if (needDetails) {
+		// List<SurveyalValueDto> details = new ArrayList<SurveyalValueDto>();
+		// for (SurveyalValue sv : sl.getSurveyalValues()) {
+		// SurveyalValueDto svDto = new SurveyalValueDto();
+		// DtoMarshaller.copyToDto(sv, svDto);
+		//
+		// if (StringUtils.isEmpty(sv.getMetricName())) {
+		// svDto.setQuestionText(sv.getQuestionText());
+		// svDto.setStringValue(sv.getStringValue());
+		// } else {
+		// svDto.setMetricName(sv.getMetricName());
+		// svDto.setStringValue(sv.getStringValue());
+		// }
+		// details.add(svDto);
+		// }
+		// dto.setDetails(details);
+		// }
 		return dto;
-	}
-
-	public class PlacemarkDto extends BaseDto {
-		private static final long serialVersionUID = 2520698898060952743L;
-		private Double latitude = null;
-		private Double longitude = null;
-		private Long altitude = null;
-		private String markType = null;
-		private Date collectionDate = null;
-		private String identifier = null;
-		private List<SurveyalValueDto> details = null;
-
-		public Double getLatitude() {
-			return latitude;
-		}
-
-		public void setLatitude(Double latitude) {
-			this.latitude = latitude;
-		}
-
-		public Double getLongitude() {
-			return longitude;
-		}
-
-		public void setLongitude(Double longitude) {
-			this.longitude = longitude;
-		}
-
-		public Long getAltitude() {
-			return altitude;
-		}
-
-		public void setAltitude(Long altitude) {
-			this.altitude = altitude;
-		}
-
-		public String getMarkType() {
-			return markType;
-		}
-
-		public void setMarkType(String markType) {
-			this.markType = markType;
-		}
-
-		public Date getCollectionDate() {
-			return collectionDate;
-		}
-
-		public void setCollectionDate(Date collectionDate) {
-			this.collectionDate = collectionDate;
-		}
-
-		public String getIdentifier() {
-			return identifier;
-		}
-
-		public void setIdentifier(String identifier) {
-			this.identifier = identifier;
-		}
-
-		public List<SurveyalValueDto> getDetails() {
-			return details;
-		}
-
-		public void setDetails(List<SurveyalValueDto> details) {
-			this.details = details;
-		}
 	}
 }

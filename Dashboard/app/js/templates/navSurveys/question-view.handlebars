@@ -1,8 +1,8 @@
-{{#unless view.zeroItem}}
+{{#unless view.zeroItemQuestion}}
+
 <div class="innerContent" id="innerContent_01"> 
-  {{/unless}}
   {{#if view.amOpenQuestion}}
-    <h1 class="questionNbr"><span>{{q.order}}} </span>{{q.displayName}}</h1>
+    <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.displayName}}</h1>
     <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
     <!-- Body of question -->
     <label>Question type: {{view Ember.Select 
@@ -36,7 +36,6 @@
       </ul>
     </nav>
   {{else}}   
-{{#unless view.zeroItem}}
     <!-- nav is only displayed if question is closed -->
     <nav class="smallMenu">
       <ul>
@@ -46,9 +45,13 @@
         <li><a {{action "doEdit" target="this"}} class="editQuestion" id="">{{t _edit}}</a></li>
       </ul>
     </nav>
-    <h1 class="questionNbr"><span>{{q.order}}} </span>{{q.displayName}}</h1>
-</div>
+    <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.displayName}}</h1>
+
+  {{/if}} 
+  </div>
+
 {{/unless}}
+  <div>
     {{#if view.oneSelectedForMove}}
       <nav class="moveMenu groupActionMenu">
         <ul>
@@ -68,7 +71,4 @@
          <a class="addQuestion">{{t _add_new_question_here}}</a> 
       {{/if}}  
     {{/if}} 
-  {{/if}} 
-
- 
-  <!-- end body of question --> 
+  </div>
