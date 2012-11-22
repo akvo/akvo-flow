@@ -10,7 +10,6 @@ FLOW.QuestionView = Ember.View.extend({
 	selectedOptionEdit:null,
 	oneSelectedForMove:false,
 	oneSelectedForCopy:false,
-	zeroItem:false,
 	
 	amOpenQuestion: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestion');
