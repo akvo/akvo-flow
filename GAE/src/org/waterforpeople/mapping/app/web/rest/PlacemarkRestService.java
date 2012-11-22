@@ -51,11 +51,11 @@ public class PlacemarkRestService {
 
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<? extends BaseDto>> listPlaceMarks(
+	public Map<String, List<PlacemarkDto>> listPlaceMarks(
 			@RequestParam(value = "country", defaultValue = "") String country,
 			@RequestParam(value = "id", defaultValue = "") String surveyedLocaleId) {
 
-		final Map<String, List<? extends BaseDto>> response = new HashMap<String, List<? extends BaseDto>>();
+		final Map<String, List<PlacemarkDto>> response = new HashMap<String, List<PlacemarkDto>>();
 		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
 		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
 		final boolean needDetails = !StringUtils.isEmpty(surveyedLocaleId)
