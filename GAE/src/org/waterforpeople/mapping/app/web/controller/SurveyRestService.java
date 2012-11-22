@@ -50,7 +50,7 @@ public class SurveyRestService {
 	}
 	
 	// list surveys by surveyGroup id
-	@RequestMapping(method = RequestMethod.GET, value = "/")
+	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public List<SurveyDto> listSurveysByGroupId(@RequestParam("surveyGroupId") Long surveyGroupId) {
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
@@ -112,7 +112,7 @@ public class SurveyRestService {
 	
 	
 	
-	@RequestMapping(method = RequestMethod.POST, value="/")
+	@RequestMapping(method = RequestMethod.POST, value="")
 	@ResponseBody
 	public SurveyDto saveSurvey(@RequestBody SurveyDto surveyDto){
 		SurveyDto dto = null;

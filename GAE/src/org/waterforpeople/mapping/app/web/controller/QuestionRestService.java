@@ -29,7 +29,7 @@ public class QuestionRestService {
 	private QuestionDao questionDao;
 	
 	// list questions by their question group id
-	@RequestMapping(method = RequestMethod.GET, value = "/")
+	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public List<QuestionDto> listQuestionsByQuestionGroupId(@RequestParam("questionGroupId") Long questionGroupId) {
 		TreeMap<Integer, Question> questions = questionDao.listQuestionsByQuestionGroup(questionGroupId, false);
@@ -79,7 +79,7 @@ public class QuestionRestService {
 	}
 	
 	// save a question
-	@RequestMapping(method = RequestMethod.POST, value="/")
+	@RequestMapping(method = RequestMethod.POST, value="")
 	@ResponseBody
 	public QuestionDto saveQuestion(@RequestBody QuestionDto questionDto){
 		QuestionDto dto = null;

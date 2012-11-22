@@ -47,7 +47,7 @@ public class QuestionGroupRestService {
 	}
 	
 	// list question groups by their survey group id
-	@RequestMapping(method = RequestMethod.GET, value = "/")
+	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public List<QuestionGroupDto> listQuestionGroupsBySurveyGroupId(@RequestParam("surveyId") Long surveyId) {
 		List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
@@ -94,7 +94,7 @@ public class QuestionGroupRestService {
 	}
 	
 	// save a question group
-	@RequestMapping(method = RequestMethod.POST, value="/")
+	@RequestMapping(method = RequestMethod.POST, value="")
 	@ResponseBody
 	public QuestionGroupDto saveQuestionGroup(@RequestBody QuestionGroupDto questionGroupDto){
 		QuestionGroupDto dto = null;
