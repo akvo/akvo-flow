@@ -10,11 +10,12 @@ FLOW.QuestionView = Ember.View.extend({
 	selectedOptionEdit:null,
 	oneSelectedForMove:false,
 	oneSelectedForCopy:false,
+	zeroItem:false,
 	
 	amOpenQuestion: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestion');
-		if (selected) {
 
+		if (selected && this.get('content')) {
 			var isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestion.get('keyId'));
 			return isOpen;
 		} else {
@@ -34,8 +35,7 @@ FLOW.QuestionView = Ember.View.extend({
 	}.property('this.selectedQuestionType').cacheable(),
 		
 	doEdit: function() {
-		FLOW.selectedControl.set('selectedQuestion', this.content);
-	
+		FLOW.selectedControl.set('selectedQuestion', this.get('content'));
 		this.set('questionName',FLOW.selectedControl.selectedQuestion.get('displayName'));
 		
 		//FLOW.optionControl.set('editCopy',FLOW.optionControl.get('questionOptionsList'));
