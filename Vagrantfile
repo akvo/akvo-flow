@@ -8,7 +8,7 @@ Vagrant::Config.run do |config|
 
   config.vm.host_name = "akvo-flow.dev"
   config.vm.box = "akvo-flow_precise64_4.2.4"
-  # config.vm.box_url = "http://domain.com/path/to/above.box"
+  config.vm.box_url = "https://drive.google.com/a/kardans.com/uc?export=download&confirm=no_antivirus&id=0B97PJQx6lBfWanBveGJlNDdxMjA"
 
   # config.vm.boot_mode = :gui
 
