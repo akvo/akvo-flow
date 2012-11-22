@@ -3,18 +3,6 @@
 // ***********************************************//
 require('akvo-flow/core');
 require('akvo-flow/models/store_def');
-// DS.Model.reopen({
-//	namingConvention: {
-//		keyToJSONKey: function(key) {
-//			return key;
-//		},
-
-//		foreignKey: function(key) {
-//			return key;
-//		}
-//	}
-// });
-
 
 FLOW.SurveyGroup = DS.Model.extend({
     didDelete: function() {FLOW.surveyGroupControl.populate();},
