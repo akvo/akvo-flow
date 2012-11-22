@@ -1082,7 +1082,7 @@ th.action {
 	width: 20%;
 }
 #groupBar h2, #newSurveyInfo h2 {
-	margin: 15px 0 0 10px;
+	margin: 15px 0 0 15px;
 	color: rgb(246, 160, 26);/*	color: rgb(5, 5, 5);
 	color: rgba(5, 5, 5, 1);
 	text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
@@ -1203,7 +1203,7 @@ a.editGroupName {
 }
 a.addGroup {
 	padding: 6px 0 4px 19px;
-	margin: -5px 0 15px 7px;
+	margin: -5px 0 15px 15px;
 }
 a.stepBack {
 	margin: 5px 5px 0 0;
@@ -1680,7 +1680,7 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	position: relative;
 	display: block;
 	overflow: hidden;
-	margin: 10px 0 20px 5px;
+	margin:15px 0 15px 15px;
 	padding: 0.85em 0.5em 0.75em 35px;
 	width: 15%;
 	background: url(../images/insertQuestion.png) 10px center no-repeat;
@@ -1704,6 +1704,12 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	background: rgb(240,240,240);
 }
 .aQuestionSet > div > div.ember-view:first-child header {
+}
+div.questionGroupBlock {
+	margin: 15px 0;
+	border-top: thin solid rgb(230,230,230);
+	border-bottom: thin solid rgb(230,230,230);
+	background: rgb(240,240,240);
 }
 .aQuestionSet > div > div.ember-view > div.questionGroupBlock {
 	margin: 15px 0;
@@ -1818,9 +1824,8 @@ nav.groupActionMenu a:hover {
 }
 nav.groupActionMenu.insertMenu ul {
 	display: block;
-	margin: 0 auto;
+	margin: 0 0 0 1%;
 	position: relative;
-	width: 19%;
 	text-align: left;
 }
 nav.groupActionMenu.insertMenu a {
@@ -1840,13 +1845,50 @@ nav.groupActionMenu.insertMenu a:hover {
 	color: rgb(255,255,255);
 	background: rgb(58,58,58) url(../images/insertGroupIcn.png) left bottom no-repeat;
 }
+
+
+
+
+nav.questionActionMenu {
+	display: block;
+	padding: 1.5em 0;
+	margin: 10px auto;
+	width: 100%;
+	background: rgb(211,220,222);
+}
+nav.questionActionMenu ul {
+	display: block;
+	margin: 0 auto;
+	position: relative;
+	width: 26%;
+	text-align: center;
+}
+nav.moveQMenu ul li, nav.copyQMenu ul li {
+	display: inline;
+	margin: 0 10px 0 0;
+	text-align: center;
+}
+nav.questionActionMenu a.smallBtn {
+	background: rgb(39,94,110);
+	color: rgb(255,255,255);
+}
+nav.questionActionMenu a.smallBtn:hover {
+	background: rgb(58,58,58);
+	color: rgb(255,255,255);
+}
+nav.questionActionMenu a {
+	color: rgb(39,94,110);
+}
+nav.questionActionMenu a:hover {
+	color: rgb(58,58,58);
+}
 /*---------------------------------------------------------------------------------
 								A New Question Form
 ---------------------------------------------------------------------------------*/
 
 .aQuestionSet .questionSetContent div.innerContent {
 	position: relative;
-	margin: 20px auto;
+	margin: 0 auto;
 	padding: 15px 0.1%;
 	width: 99.8%;
 	border: thin solid rgb(224,224,224);

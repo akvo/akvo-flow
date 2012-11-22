@@ -53,17 +53,17 @@
 {{/unless}}
   <div>
     {{#if view.oneSelectedForMove}}
-      <nav class="moveMenu groupActionMenu">
+      <nav class="moveQMenu questionActionMenu">
         <ul>
-          <li><a {{action "doQuestionMoveHere" target="this"}} class="">{{t _move_question_here}}</a></li>
+          <li><a {{action "doQuestionMoveHere" target="this"}} class="smallBtn">{{t _move_question_here}}</a></li>
           <li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
         </ul>
       </nav>
     {{else}}   
       {{#if view.oneSelectedForCopy}}
-        <nav class="copyMenu groupActionMenu">
+        <nav class="copyQMenu questionActionMenu">
           <ul>
-            <li><a {{action "doQuestionCopyHere" target="this"}} class="">{{t _paste_question_here}}</a></li>
+            <li><a {{action "doQuestionCopyHere" target="this"}} class="smallBtn">{{t _paste_question_here}}</a></li>
             <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
           </ul>
         </nav>
