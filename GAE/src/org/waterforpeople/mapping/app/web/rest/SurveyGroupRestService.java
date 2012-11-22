@@ -58,18 +58,16 @@ public class SurveyGroupRestService {
 	// find survey group by id
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
-	public Map<String, List<? extends BaseDto>> findSurveyGroupById(
+	public Map<String, SurveyGroupDto> findSurveyGroupById(
 			@PathVariable("id") Long id) {
-		final Map<String, List<? extends BaseDto>> response = new HashMap<String, List<? extends BaseDto>>();
-		List<SurveyGroupDto> results = new ArrayList<SurveyGroupDto>();
+		final Map<String, SurveyGroupDto> response = new HashMap<String, SurveyGroupDto>();
 		SurveyGroup s = surveyGroupDao.getByKey(id);
 		SurveyGroupDto dto = null;
 		if (s != null) {
 			dto = new SurveyGroupDto();
 			DtoMarshaller.copyToDto(s, dto);
-			results.add(dto);
 		}
-		response.put("survey_group", results);
+		response.put("survey_group", dto);
 		return response;
 	}
 

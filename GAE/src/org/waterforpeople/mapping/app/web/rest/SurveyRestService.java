@@ -1,7 +1,9 @@
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -19,12 +21,13 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
 @Controller
-@RequestMapping("/survey")
+@RequestMapping("/surveys")
 public class SurveyRestService {
 
 	@Inject
@@ -33,7 +36,8 @@ public class SurveyRestService {
 	// list all surveys
 	@RequestMapping(method = RequestMethod.GET, value = "/all")
 	@ResponseBody
-	public List<SurveyDto> listSurveys() {
+	public Map<String, List<? extends BaseDto>> listSurveys() {
+		final Map<String, List<? extends BaseDto>> response = new HashMap<String, List<? extends BaseDto>>();
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
 		List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
 		if (surveys != null) {
@@ -46,13 +50,15 @@ public class SurveyRestService {
 				results.add(dto);
 			}
 		}
-		return results;
+		response.put("surveys", results);
+		return response;
 	}
 	
 	// list surveys by surveyGroup id
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public List<SurveyDto> listSurveysByGroupId(@RequestParam("surveyGroupId") Long surveyGroupId) {
+	public Map<String, List<? extends BaseDto>> listSurveysByGroupId(@RequestParam("surveyGroupId") Long surveyGroupId) {
+		final Map<String, List<? extends BaseDto>> response = new HashMap<String, List<? extends BaseDto>>();
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
 		List<Survey> surveys = surveyDao.listSurveysByGroup(surveyGroupId);
 		if (surveys != null) {
@@ -65,29 +71,30 @@ public class SurveyRestService {
 				results.add(dto);
 			}
 		}
-		return results;
+		response.put("surveys", results);
+		return response;
 	}
 	
 	// find a single survey by the surveyId
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
-	public SurveyDto findSurvey(@PathVariable("id") Long id){
+	public Map<String, SurveyDto> findSurvey(@PathVariable("id") Long id){
+		final Map<String, SurveyDto> response = new HashMap<String, SurveyDto>();
 		Survey s =surveyDao.getByKey(id);		
 		SurveyDto dto = null;
 		if(s != null){
 			dto = new SurveyDto();
 			DtoMarshaller.copyToDto(s, dto);
-			
 			// needed because of different names for description in survey and surveyDto
 			dto.setDescription(s.getDesc());
-
 		}
-		return dto;
+		response.put("survey", dto);
+		return response;
 		
 	}
 	
 	// delete survey by id
-		@RequestMapping(method = RequestMethod.DELETE, value = "/del/{id}")
+		@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 		@ResponseBody
 		public RestStatusDto deleteSurveyById(@PathVariable("id") Long id){
 			Survey s = surveyDao.getByKey(id);		
@@ -111,7 +118,7 @@ public class SurveyRestService {
 		}
 	
 	
-	
+	//TODO
 	@RequestMapping(method = RequestMethod.POST, value="")
 	@ResponseBody
 	public SurveyDto saveSurvey(@RequestBody SurveyDto surveyDto){
