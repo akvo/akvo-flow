@@ -18,7 +18,7 @@
         <property name="supportedMediaTypes" value="application/json"/>
     </bean>
 
-    <context:component-scan base-package="org.waterforpeople.mapping.app.web.controller"/>
+    <context:component-scan base-package="org.waterforpeople.mapping.app.web.rest"/>
 
 
 </beans>
