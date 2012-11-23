@@ -101,7 +101,7 @@ public class PlacemarkRestService {
 		}
 
 		response.put("placemark", marshallDomainToDto(sl));
-		response.put("placemark_details", getPlacemarkDetails(sl));
+		response.put("details", getPlacemarkDetails(sl));
 
 		return response;
 	}
