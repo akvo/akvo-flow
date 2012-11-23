@@ -34,6 +34,7 @@ public class SurveyGroupRestService {
 	@Inject
 	private SurveyDAO surveyDao;
 
+	//TODO put in meta information?
 	// list all survey groups
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody

@@ -32,6 +32,7 @@ public class SurveyRestService {
 	@Inject
 	private SurveyDAO surveyDao;
 
+	//TODO put in meta information?
 	// list all surveys
 	@RequestMapping(method = RequestMethod.GET, value = "/all")
 	@ResponseBody
@@ -53,7 +54,8 @@ public class SurveyRestService {
 		response.put("surveys", results);
 		return response;
 	}
-
+	
+	//TODO put in meta information?
 	// list surveys by surveyGroup id
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
