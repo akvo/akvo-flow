@@ -1,8 +1,9 @@
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -16,101 +17,172 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
 
 @Controller
-@RequestMapping("/question")
+@RequestMapping("/questions")
 public class QuestionRestService {
 
 	@Inject
 	private QuestionDao questionDao;
-	
-	// list questions by their question group id
-	@RequestMapping(method = RequestMethod.GET, value = "")
-	@ResponseBody
-	public List<QuestionDto> listQuestionsByQuestionGroupId(@RequestParam("questionGroupId") Long questionGroupId) {
-		TreeMap<Integer, Question> questions = questionDao.listQuestionsByQuestionGroup(questionGroupId, false);
-		List<QuestionDto> results = new ArrayList<QuestionDto>();
 
+	// TODO put in meta information?
+	// list all questions
+	@RequestMapping(method = RequestMethod.GET, value = "/all")
+	@ResponseBody
+	public Map<String, List<QuestionDto>> listQuestions() {
+		final Map<String, List<QuestionDto>> response = new HashMap<String, List<QuestionDto>>();
+		List<QuestionDto> results = new ArrayList<QuestionDto>();
+		List<Question> questions = questionDao.list(Constants.ALL_RESULTS);
 		if (questions != null) {
-			for (Question q : questions.values()) {
+			for (Question s : questions) {
 				QuestionDto dto = new QuestionDto();
-				DtoMarshaller.copyToDto(q, dto);
+				DtoMarshaller.copyToDto(s, dto);
 				results.add(dto);
 			}
 		}
-		return results;
+		response.put("questions", results);
+		return response;
 	}
 
-	//TODO
-	// find a single question group by its id
+	// TODO put in meta information?
+	// list questions by questionGroup id
+	@RequestMapping(method = RequestMethod.GET, value = "")
+	@ResponseBody
+	public Map<String, List<QuestionDto>> listQuestionsByGroupId(
+			@RequestParam("questionGroupId") Long questionGroupId) {
+		final Map<String, List<QuestionDto>> response = new HashMap<String, List<QuestionDto>>();
+		List<QuestionDto> results = new ArrayList<QuestionDto>();
+		List<Question> questions = questionDao
+				.listQuestionsInOrderForGroup(questionGroupId);
+		if (questions != null) {
+			for (Question s : questions) {
+				QuestionDto dto = new QuestionDto();
+				DtoMarshaller.copyToDto(s, dto);
+				results.add(dto);
+			}
+		}
+		response.put("questions", results);
+		return response;
+	}
+
+	// find a single question by the questionId
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
-	public QuestionDto findQuestion(@PathVariable("id") Long id){
-		Question sg =questionDao.getByKey(id);		
+	public Map<String, QuestionDto> findQuestion(@PathVariable("id") Long id) {
+		final Map<String, QuestionDto> response = new HashMap<String, QuestionDto>();
+		Question s = questionDao.getByKey(id);
 		QuestionDto dto = null;
-		if(sg != null){
+		if (s != null) {
 			dto = new QuestionDto();
-			DtoMarshaller.copyToDto(sg, dto);
+			DtoMarshaller.copyToDto(s, dto);
 		}
-		return dto;	
+		response.put("question", dto);
+		return response;
+
 	}
-	
-	// TODO
-	// delete question group by id
-	@RequestMapping(method = RequestMethod.DELETE, value = "/del/{id}")
+
+	// delete question by id
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
-	public RestStatusDto deleteQuestionById(@PathVariable("id") Long id){
-		Question qg = questionDao.getByKey(id);		
-		RestStatusDto dto = null;
-		dto = new RestStatusDto();
-		dto.setStatus("failed");
-				  
+	public Map<String, RestStatusDto> deleteQuestionById(
+			@PathVariable("id") Long id) {
+		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+		Question s = questionDao.getByKey(id);
+		RestStatusDto statusDto = null;
+		statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
 		// check if question exists in the datastore
-		if (qg != null){
+		if (s != null) {
 			// delete question group
-			//questionDao.delete(qg);
-			dto.setStatus("ok");	
+			try {
+				questionDao.delete(s);
+				statusDto.setStatus("ok");
+			} catch (IllegalDeletionException e) {
+				statusDto.setStatus("failed");
+				statusDto.setMessage(e.getMessage());
+			}
 		}
-		return dto;
+		response.put("meta", statusDto);
+		return response;
 	}
-	
-	// save a question
-	@RequestMapping(method = RequestMethod.POST, value="")
+
+	// update existing question
+	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
-	public QuestionDto saveQuestion(@RequestBody QuestionDto questionDto){
+	public Map<String, Object> saveExistingQuestion(
+			@RequestBody QuestionPayload payLoad) {
+		final QuestionDto questionDto = payLoad.getQuestion();
+		final Map<String, Object> response = new HashMap<String, Object>();
 		QuestionDto dto = null;
-		
-		// if the POST data contains a valid QuestionDto, continue. Otherwise, server will respond with 400 Bad Request 
-		if (questionDto != null){
+
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
+		// if the POST data contains a valid questionDto, continue. Otherwise,
+		// server will respond with 400 Bad Request
+		if (questionDto != null) {
 			Long keyId = questionDto.getKeyId();
-			Question q;
-					
+			Question s;
+
 			// if the questionDto has a key, try to get the question.
 			if (keyId != null) {
-				q = questionDao.getByKey(keyId);
-				// if the question doesn't exist, create a new question
-				if (q == null) {
-					q = new Question();
+				s = questionDao.getByKey(keyId);
+				// if we find the question, update it's properties
+				if (s != null) {
+					// copy the properties, except the createdDateTime property,
+					// because it is set in the Dao.
+					BeanUtils.copyProperties(questionDto, s,
+							new String[] { "createdDateTime" });
+					s = questionDao.save(s);
+					dto = new QuestionDto();
+					DtoMarshaller.copyToDto(s, dto);
+					statusDto.setStatus("ok");
 				}
-			} else {
-				q = new Question();
 			}
-			
-			// copy the properties, except the createdDateTime property, because it is set in the Dao.
-			BeanUtils.copyProperties(questionDto, q, new String[] {"createdDateTime"});
-			q = questionDao.save(q);
-			
-			// TODO 
-			//saveSurveyUpdateMessage(q.getSurveyId());
-			// code lives in SurveyServiceImpl
-			
-			dto = new QuestionDto();
-			DtoMarshaller.copyToDto(q, dto);
 		}
-		return dto;
+		response.put("meta", statusDto);
+		response.put("question", dto);
+		return response;
 	}
+
+	// create new question
+	@RequestMapping(method = RequestMethod.POST, value = "")
+	@ResponseBody
+	public Map<String, Object> saveNewQuestion(
+			@RequestBody QuestionPayload payLoad) {
+		final QuestionDto questionDto = payLoad.getQuestion();
+		final Map<String, Object> response = new HashMap<String, Object>();
+		QuestionDto dto = null;
+
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
+		// if the POST data contains a valid questionDto, continue. Otherwise,
+		// server will respond with 400 Bad Request
+		if (questionDto != null) {
+			Question s = new Question();
+
+			// copy the properties, except the createdDateTime property, because
+			// it is set in the Dao.
+			BeanUtils.copyProperties(questionDto, s,
+					new String[] { "createdDateTime" });
+			s = questionDao.save(s);
+
+			dto = new QuestionDto();
+			DtoMarshaller.copyToDto(s, dto);
+			statusDto.setStatus("ok");
+		}
+
+		response.put("meta", statusDto);
+		response.put("question", dto);
+		return response;
+	}
+
 }
