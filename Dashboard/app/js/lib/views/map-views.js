@@ -26,6 +26,19 @@ FLOW.NavMapsView = Ember.View.extend({
         mark.setLabel(pm.get('collectionDate').toString());
         mark.setInfoBubble(pm.get('id'));
 
+        mark.click.addHandler(function(event_name, event_source, event_args) {
+          event_source.setInfoBubble('YAY');
+          console.log(event_source);
+          var pmDetails = FLOW.store.find(FLOW.Placemark, event_source.infoBubble);
+          // console.log(pmDetails);
+
+          // var pmDetails = FLOW.store.find(FLOW.PlaceMark, pm.get('id'));
+          // var details = FLOW.store.find(FLOW.SurveyedLocale, {communityCode: event_source.infoBubble});
+          // var details = FLOW.store.find(FLOW.PlaceMark, event_source.infoBubble);
+          // console.log(details);
+          // mark.setInfoBubble('YAY');
+        });
+
         map.addMarker(mark, true);
 
         return this;

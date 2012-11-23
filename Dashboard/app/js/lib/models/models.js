@@ -85,7 +85,7 @@ FLOW.Question = DS.Model.extend({
 	surveyId: DS.attr('number'),
 	text: DS.attr('string'),
 	tip: DS.attr('string'),
-	type: DS.attr('string'),
+	type: DS.attr('string')
 });
 
 FLOW.QuestionOption = DS.Model.extend({
