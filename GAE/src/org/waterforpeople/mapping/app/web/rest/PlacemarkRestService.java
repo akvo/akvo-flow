@@ -28,15 +28,18 @@ import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.rest.dto.PlacemarkDetailDto;
 import org.waterforpeople.mapping.app.web.rest.dto.PlacemarkDto;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
-import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 @Controller
@@ -51,43 +54,59 @@ public class PlacemarkRestService {
 
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<PlacemarkDto>> listPlaceMarks(
-			@RequestParam(value = "country", defaultValue = "") String country,
-			@RequestParam(value = "id", defaultValue = "") String surveyedLocaleId) {
+	public Map<String, Object> listPlaceMarks(
+			@RequestParam(value = "country", defaultValue = "") String country) {
 
-		final Map<String, List<PlacemarkDto>> response = new HashMap<String, List<PlacemarkDto>>();
+		final Map<String, Object> response = new HashMap<String, Object>();
 		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
 		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
-		final boolean needDetails = !StringUtils.isEmpty(surveyedLocaleId)
-				&& StringUtils.isEmpty(country);
 
-		if (StringUtils.isEmpty(country)
-				&& StringUtils.isEmpty(surveyedLocaleId)) {
-			final String msg = "You must pass a parameter [country] or [id]";
+		if (StringUtils.isEmpty(country)) {
+			final String msg = "You must pass a parameter [country]";
 			log.log(Level.SEVERE, msg);
 			throw new HttpMessageNotReadableException(msg);
 		}
 
-		if (!StringUtils.isEmpty(country)) {
-			slList.addAll(localeDao.listBySubLevel(country, null, null, null,
-					null, null, null));
-		} else if (!StringUtils.isEmpty(surveyedLocaleId)) {
-			slList.add(localeDao.getById(Long.valueOf(surveyedLocaleId)));
-		}
+		slList.addAll(localeDao.listBySubLevel(country, null, null, null, null,
+				null, null));
 
 		if (slList.size() > 0) {
 			for (SurveyedLocale ap : slList) {
-				result.add(marshallDomainToDto(ap, needDetails));
+				result.add(marshallDomainToDto(ap));
 			}
-
 		}
 
 		response.put("placemarks", result);
 		return response;
 	}
 
-	private PlacemarkDto marshallDomainToDto(SurveyedLocale sl,
-			boolean needDetails) {
+	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
+	@ResponseBody
+	public Map<String, Object> placeMarkDetails(@PathVariable("id") Long id) {
+
+		final Map<String, Object> response = new HashMap<String, Object>();
+		final SurveyedLocale sl = localeDao.getById(id);
+
+		if (sl == null) {
+			final RestStatusDto meta = new RestStatusDto();
+
+			meta.setMessage("Not found");
+			meta.setStatus("Error");
+
+			response.put("placemark", null);
+			response.put("placemark_details", null);
+			response.put("meta", meta);
+
+			return response;
+		}
+
+		response.put("placemark", marshallDomainToDto(sl));
+		response.put("placemark_details", getPlacemarkDetails(sl));
+
+		return response;
+	}
+
+	private PlacemarkDto marshallDomainToDto(SurveyedLocale sl) {
 		final PlacemarkDto dto = new PlacemarkDto();
 		final String markType = StringUtils.isEmpty(sl.getLocaleType()) ? AccessPointType.WATER_POINT
 				.toString() : sl.getLocaleType().toUpperCase();
@@ -97,23 +116,22 @@ public class PlacemarkRestService {
 		dto.setLongitude(sl.getLongitude());
 		dto.setCollectionDate(sl.getLastUpdateDateTime());
 		dto.setKeyId(sl.getKey().getId());
-		// if (needDetails) {
-		// List<SurveyalValueDto> details = new ArrayList<SurveyalValueDto>();
-		// for (SurveyalValue sv : sl.getSurveyalValues()) {
-		// SurveyalValueDto svDto = new SurveyalValueDto();
-		// DtoMarshaller.copyToDto(sv, svDto);
-		//
-		// if (StringUtils.isEmpty(sv.getMetricName())) {
-		// svDto.setQuestionText(sv.getQuestionText());
-		// svDto.setStringValue(sv.getStringValue());
-		// } else {
-		// svDto.setMetricName(sv.getMetricName());
-		// svDto.setStringValue(sv.getStringValue());
-		// }
-		// details.add(svDto);
-		// }
-		// dto.setDetails(details);
-		// }
 		return dto;
+	}
+
+	private List<PlacemarkDetailDto> getPlacemarkDetails(SurveyedLocale sl) {
+		final List<PlacemarkDetailDto> details = new ArrayList<PlacemarkDetailDto>();
+
+		if (sl.getSurveyalValues() == null) {
+			return details;
+		}
+
+		for (SurveyalValue sv : sl.getSurveyalValues()) {
+			PlacemarkDetailDto svDto = new PlacemarkDetailDto();
+			DtoMarshaller.copyToDto(sv, svDto);
+			details.add(svDto);
+		}
+
+		return details;
 	}
 }
