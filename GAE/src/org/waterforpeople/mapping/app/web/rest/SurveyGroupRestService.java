@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,7 +72,8 @@ public class SurveyGroupRestService {
 	// delete survey group by id
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
-	public RestStatusDto deleteSurveyGroupById(@PathVariable("id") Long id) {
+	public Map<String, RestStatusDto> deleteSurveyGroupById(@PathVariable("id") Long id) {
+		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
 		SurveyGroup s = surveyGroupDao.getByKey(id);
 		RestStatusDto dto = null;
 		dto = new RestStatusDto();
@@ -89,13 +89,14 @@ public class SurveyGroupRestService {
 				dto.setStatus("ok");
 			}
 		}
-		return dto;
+		response.put("meta", dto);
+		return response;
 	}
 
-	// save survey group
+	// Update survey group
 	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
-	public Map<String, SurveyGroupDto> saveSurveyGroup(
+	public Map<String, SurveyGroupDto> saveExistingSurveyGroup(
 			@RequestBody SurveyGroupPayload payLoad) {
 
 		final SurveyGroupDto surveyGroupDto = payLoad.getSurvey_group();
@@ -115,9 +116,38 @@ public class SurveyGroupRestService {
 				if (s == null) {
 					s = new SurveyGroup();
 				}
-			} else {
-				s = new SurveyGroup();
+
+				// copy the properties, except the properties that are set or
+				// provided by the Dao.
+				BeanUtils.copyProperties(surveyGroupDto, s, new String[] {
+						"createdDateTime", "lastUpdateDateTime", "displayName",
+						"questionGroupList" });
+				s = surveyGroupDao.save(s);
+
+				dto = new SurveyGroupDto();
+				DtoMarshaller.copyToDto(s, dto);
+				
 			}
+		}
+		response.put("survey_group", dto);
+		return response;
+	}
+
+	// Create new survey group
+	@RequestMapping(method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, SurveyGroupDto> saveNewSurveyGroup(
+			@RequestBody SurveyGroupPayload payLoad) {
+
+		final SurveyGroupDto surveyGroupDto = payLoad.getSurvey_group();
+		final Map<String, SurveyGroupDto> response = new HashMap<String, SurveyGroupDto>();
+		SurveyGroupDto dto = null;
+
+		// if the POST data contains a valid surveyGroupDto, continue.
+		// Otherwise, server 400 Bad Request
+		if (surveyGroupDto != null) {
+			SurveyGroup s = new SurveyGroup();
+
 			// copy the properties, except the properties that are set or
 			// provided by the Dao.
 			BeanUtils.copyProperties(surveyGroupDto, s, new String[] {
@@ -131,4 +161,5 @@ public class SurveyGroupRestService {
 		response.put("survey_group", dto);
 		return response;
 	}
+
 }
