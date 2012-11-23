@@ -6,7 +6,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 
 public class SurveyGroupPayload implements Serializable {
 
-	private static final long serialVersionUID = 1927125743629112187L;
+	private static final long serialVersionUID = 8812994636904876896L;
 	SurveyGroupDto survey_group = null;
 
 	public SurveyGroupDto getSurvey_group() {

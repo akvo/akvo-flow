@@ -32,7 +32,6 @@ FLOW.Survey = DS.Model.extend({
 	version: DS.attr('string'),
 	description: DS.attr('string'),
 	name: DS.attr('string'),
-	displayName: DS.attr('string'),
 	keyId: DS.attr('number'),
 	pointType: DS.attr('string'),
 	surveyGroupId: DS.attr('number'),
@@ -54,11 +53,10 @@ FLOW.QuestionGroup = DS.Model.extend({
 	path: DS.attr('string'),
 	code: DS.attr('string'),
 	surveyId: DS.attr('number'),
-	displayName: DS.attr('string'),
 	keyId: DS.attr('number'),
-	isOpen: DS.attr('boolean', {
-		defaultValue: 0
-	}),
+	//isOpen: DS.attr('boolean', {
+	//	defaultValue: 0
+	//}),
 	primaryKey: 'keyId'
 });
 
@@ -94,23 +92,6 @@ FLOW.QuestionOption = DS.Model.extend({
 	keyId: DS.attr('number')
 });
 
-FLOW.QuestionOption.FIXTURES = [{
-	keyId: 1,
-	text: 'teacher',
-	questionId: 1
-}, {
-	keyId: 2,
-	text: 'cook',
-	questionId: 1
-},{
-	keyId: 3,
-	text: 'minister',
-	questionId: 1
-},{
-	keyId: 4,
-	text: 'programmer',
-	questionId: 1
-}];
 
 FLOW.SurveyAssignment = DS.Model.extend({
 
@@ -149,11 +130,25 @@ FLOW.SurveyedLocale = DS.Model.extend({
   typeMark:     DS.attr("string", {defaultValue: "WATER_POINT"})
 });
 
+FLOW.PlacemarkDetail = DS.Model.extend({
+  keyId: DS.attr("number"),
+  collectionDate: DS.attr("date"),
+  questionText: DS.attr("string"),
+  metricName: DS.attr("string"),
+  stringValue: DS.attr("string"),
+  primaryKey: "keyId"
+});
+
 FLOW.Placemark = DS.Model.extend({
   keyId: DS.attr("number"),
   latitude: DS.attr("number"),
   longitude: DS.attr("number"),
   collectionDate: DS.attr("date"),
   markType: DS.attr("string", {defaultValue: "WATER_POINT"}),
+  details: DS.hasMany(FLOW.PlacemarkDetail),
   primaryKey: "keyId"
+});
+
+FLOW.PlacemarkDetail.reopen({
+  placemark: DS.belongsTo(FLOW.Placemark)
 });
