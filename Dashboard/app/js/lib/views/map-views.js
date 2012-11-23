@@ -1,5 +1,20 @@
 FLOW.NavMapsView = Ember.View.extend({
   templateName: "navMaps/nav-maps",
+
+  init: function () {
+    this._super();
+    FLOW.NavMapsDetailsView = Ember.View.extend({
+      templateName: 'navMaps/nav-maps-marker',
+
+      click: function(evt) {
+        if (FLOW.activeMarker.get('marker') !== null) {
+          console.log(FLOW.activeMarker.marker.id);
+        }
+      }
+
+    });
+  },
+
   didInsertElement: function() {
     var map = new mxn.Mapstraction("flowMap", "google"),
         latlon = new mxn.LatLonPoint(-0.703107, 36.765747);
@@ -14,35 +29,49 @@ FLOW.NavMapsView = Ember.View.extend({
     map.enableScrollWheelZoom();
 
     // Markers
-    Ember.ArrayController.create({
+    FLOW.placemarksController = Ember.ArrayController.create({
       content: FLOW.store.findAll(FLOW.Placemark),
+      selected: null,
+
       contentArrayDidChange: function (model, index) {
         var htmlContent, marker, pm, point, mark;
 
         pm = this.objectAt(index);
         point = new mxn.LatLonPoint(pm.get('latitude'), pm.get('longitude'));
-        mark = new mxn.Marker(point);
+        marker = new mxn.Marker(point);
+        pm.set('marker', marker);
+        
+        marker.setLabel(pm.get('collectionDate').toString());
+        marker.setInfoBubble(pm.get('id')); // Use the NavMapsDetailsView
 
-        mark.setLabel(pm.get('collectionDate').toString());
-        mark.setInfoBubble(pm.get('id'));
-
-        mark.click.addHandler(function(event_name, event_source, event_args) {
-          event_source.setInfoBubble('YAY');
-          console.log(event_source);
-          var pmDetails = FLOW.store.find(FLOW.Placemark, event_source.infoBubble);
-          // console.log(pmDetails);
-
-          // var pmDetails = FLOW.store.find(FLOW.PlaceMark, pm.get('id'));
-          // var details = FLOW.store.find(FLOW.SurveyedLocale, {communityCode: event_source.infoBubble});
-          // var details = FLOW.store.find(FLOW.PlaceMark, event_source.infoBubble);
-          // console.log(details);
-          // mark.setInfoBubble('YAY');
+        marker.click.addHandler(function(event_name, event_source, event_args) {
+          FLOW.placemarksController.set('selected', pm);
         });
-
-        map.addMarker(mark, true);
-
-        return this;
+        
+        map.addMarker(marker, true);
+        // return this;
       }
     });
+
+
+    FLOW.activeMarker = Ember.Object.create({
+      marker: null,
+      
+      init: function () {
+        this._super();
+        this.set("marker", FLOW.placemarksController.get('selected')); // obviously this does not change aything
+      },
+
+      updateMarker: function() {
+        // Swap this code to use a new find Placemark detail call
+        // var pmDetails = FLOW.store.find(FLOW.Placemark, event_source.infoBubble);
+        
+        this.set('marker', FLOW.placemarksController.get('selected'));
+        if (this.get('marker') !== null) {
+          console.log('FLOW.activeMarker: ' + this.get('marker').id);
+        }
+      }.observes('FLOW.placemarksController.selected')
+    });
+
   }
 });
