@@ -18,13 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
-import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyGroup;
 
 @Controller
 @RequestMapping("/surveys")
@@ -36,8 +35,8 @@ public class SurveyRestService {
 	// list all surveys
 	@RequestMapping(method = RequestMethod.GET, value = "/all")
 	@ResponseBody
-	public Map<String, List<? extends BaseDto>> listSurveys() {
-		final Map<String, List<? extends BaseDto>> response = new HashMap<String, List<? extends BaseDto>>();
+	public Map<String, List<SurveyDto>> listSurveys() {
+		final Map<String, List<SurveyDto>> response = new HashMap<String, List<SurveyDto>>();
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
 		List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
 		if (surveys != null) {
@@ -58,9 +57,9 @@ public class SurveyRestService {
 	// list surveys by surveyGroup id
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<? extends BaseDto>> listSurveysByGroupId(
+	public Map<String, List<SurveyDto>> listSurveysByGroupId(
 			@RequestParam("surveyGroupId") Long surveyGroupId) {
-		final Map<String, List<? extends BaseDto>> response = new HashMap<String, List<? extends BaseDto>>();
+		final Map<String, List<SurveyDto>> response = new HashMap<String, List<SurveyDto>>();
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
 		List<Survey> surveys = surveyDao.listSurveysByGroup(surveyGroupId);
 		if (surveys != null) {
@@ -104,31 +103,36 @@ public class SurveyRestService {
 			@PathVariable("id") Long id) {
 		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
 		Survey s = surveyDao.getByKey(id);
-		RestStatusDto dto = null;
-		dto = new RestStatusDto();
-		dto.setStatus("failed");
+		RestStatusDto statusDto = null;
+		statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
 
 		// check if survey exists in the datastore
 		if (s != null) {
 			// delete survey group
 			try {
 				surveyDao.delete(s);
-				dto.setStatus("ok");
+				statusDto.setStatus("ok");
 			} catch (IllegalDeletionException e) {
-				dto.setStatus("failed");
-				dto.setMessage(e.getMessage());
-				// e.printStackTrace();
+				statusDto.setStatus("failed");
+				statusDto.setMessage(e.getMessage());
 			}
 		}
-		response.put("meta", dto);
+		response.put("meta", statusDto);
 		return response;
 	}
 
-	// TODO
-	@RequestMapping(method = RequestMethod.POST, value = "")
+	// update existing survey
+	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
-	public SurveyDto saveSurvey(@RequestBody SurveyDto surveyDto) {
+	public Map<String, Object> saveExistingSurvey(
+			@RequestBody SurveyPayload payLoad) {
+		final SurveyDto surveyDto = payLoad.getSurvey();
+		final Map<String, Object> response = new HashMap<String, Object>();
 		SurveyDto dto = null;
+
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
 
 		// if the POST data contains a valid surveyDto, continue. Otherwise,
 		// server will respond with 400 Bad Request
@@ -136,16 +140,44 @@ public class SurveyRestService {
 			Long keyId = surveyDto.getKeyId();
 			Survey s;
 
-			// if the surveyDto has a key, try to get the surveyGroup.
+			// if the surveyDto has a key, try to get the survey.
 			if (keyId != null) {
 				s = surveyDao.getByKey(keyId);
-				// if the surveyGroup doesn't exist, create a new surveyGroup
-				if (s == null) {
-					s = new Survey();
+				// if we find the survey, update it's properties
+				if (s != null) {
+					// copy the properties, except the createdDateTime property,
+					// because it is set in the Dao.
+					BeanUtils.copyProperties(surveyDto, s, new String[] {
+							"createdDateTime", "status", "version",
+							"lastUpdateDateTime", "displayName",
+							"questionGroupList" });
+					s = surveyDao.save(s);
+					dto = new SurveyDto();
+					DtoMarshaller.copyToDto(s, dto);
+					statusDto.setStatus("ok");
 				}
-			} else {
-				s = new Survey();
 			}
+		}
+		response.put("meta", statusDto);
+		response.put("survey", dto);
+		return response;
+	}
+
+	// create new survey
+	@RequestMapping(method = RequestMethod.POST, value = "")
+	@ResponseBody
+	public Map<String, Object> saveNewSurvey(@RequestBody SurveyPayload payLoad) {
+		final SurveyDto surveyDto = payLoad.getSurvey();
+		final Map<String, Object> response = new HashMap<String, Object>();
+		SurveyDto dto = null;
+
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
+		// if the POST data contains a valid surveyDto, continue. Otherwise,
+		// server will respond with 400 Bad Request
+		if (surveyDto != null) {
+			Survey s = new Survey();
 
 			// copy the properties, except the createdDateTime property, because
 			// it is set in the Dao.
@@ -156,7 +188,12 @@ public class SurveyRestService {
 
 			dto = new SurveyDto();
 			DtoMarshaller.copyToDto(s, dto);
+			statusDto.setStatus("ok");
 		}
-		return dto;
+
+		response.put("meta", statusDto);
+		response.put("survey", dto);
+		return response;
 	}
+
 }
