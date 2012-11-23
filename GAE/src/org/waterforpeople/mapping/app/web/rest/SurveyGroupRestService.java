@@ -19,7 +19,6 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyGroupPayload;
 
 import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
@@ -38,8 +37,8 @@ public class SurveyGroupRestService {
 	// list all survey groups
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<? extends BaseDto>> listSurveyGroups() {
-		final Map<String, List<? extends BaseDto>> response = new HashMap<String, List<? extends BaseDto>>();
+	public Map<String, List<SurveyGroupDto>> listSurveyGroups() {
+		final Map<String, List<SurveyGroupDto>> response = new HashMap<String, List<SurveyGroupDto>>();
 		List<SurveyGroupDto> results = new ArrayList<SurveyGroupDto>();
 		List<SurveyGroup> surveys = surveyGroupDao.list(Constants.ALL_RESULTS);
 		if (surveys != null) {
@@ -72,12 +71,12 @@ public class SurveyGroupRestService {
 	// delete survey group by id
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
-	public Map<String, RestStatusDto> deleteSurveyGroupById(@PathVariable("id") Long id) {
+	public Map<String, RestStatusDto> deleteSurveyGroupById(
+			@PathVariable("id") Long id) {
 		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
 		SurveyGroup s = surveyGroupDao.getByKey(id);
-		RestStatusDto dto = null;
-		dto = new RestStatusDto();
-		dto.setStatus("failed");
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
 
 		// check if surveyGroup exists in the datastore
 		if (s != null) {
@@ -86,23 +85,26 @@ public class SurveyGroupRestService {
 			if (surveys.size() == 0) {
 				// delete survey group
 				surveyGroupDao.delete(s);
-				dto.setStatus("ok");
+				statusDto.setStatus("ok");
 			}
 		}
-		response.put("meta", dto);
+		response.put("meta", statusDto);
 		return response;
 	}
 
 	// Update survey group
 	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
-	public Map<String, SurveyGroupDto> saveExistingSurveyGroup(
+	public Map<String, Object> saveExistingSurveyGroup(
 			@RequestBody SurveyGroupPayload payLoad) {
 
 		final SurveyGroupDto surveyGroupDto = payLoad.getSurvey_group();
-		final Map<String, SurveyGroupDto> response = new HashMap<String, SurveyGroupDto>();
+		final Map<String, Object> response = new HashMap<String, Object>();
 		SurveyGroupDto dto = null;
 
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+		
 		// if the POST data contains a valid surveyGroupDto, continue.
 		// Otherwise, server 400 Bad Request
 		if (surveyGroupDto != null) {
@@ -112,23 +114,22 @@ public class SurveyGroupRestService {
 			// if the surveyGroupDto has a key, try to get the surveyGroup.
 			if (keyId != null) {
 				s = surveyGroupDao.getByKey(keyId);
-				// if the surveyGroup doesn't exist, create a new surveyGroup
-				if (s == null) {
-					s = new SurveyGroup();
+				// if we find the surveyGroup, update it's properties
+				if (s != null) {
+					// copy the properties, except the properties that are set
+					// or provided by the Dao.
+					BeanUtils.copyProperties(surveyGroupDto, s, new String[] {
+							"createdDateTime", "lastUpdateDateTime",
+							"displayName", "questionGroupList" });
+					s = surveyGroupDao.save(s);
+
+					dto = new SurveyGroupDto();
+					DtoMarshaller.copyToDto(s, dto);
+					statusDto.setStatus("ok");
 				}
-
-				// copy the properties, except the properties that are set or
-				// provided by the Dao.
-				BeanUtils.copyProperties(surveyGroupDto, s, new String[] {
-						"createdDateTime", "lastUpdateDateTime", "displayName",
-						"questionGroupList" });
-				s = surveyGroupDao.save(s);
-
-				dto = new SurveyGroupDto();
-				DtoMarshaller.copyToDto(s, dto);
-				
 			}
 		}
+		response.put("meta", statusDto);
 		response.put("survey_group", dto);
 		return response;
 	}
@@ -136,12 +137,15 @@ public class SurveyGroupRestService {
 	// Create new survey group
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, SurveyGroupDto> saveNewSurveyGroup(
+	public Map<String, Object> saveNewSurveyGroup(
 			@RequestBody SurveyGroupPayload payLoad) {
 
 		final SurveyGroupDto surveyGroupDto = payLoad.getSurvey_group();
-		final Map<String, SurveyGroupDto> response = new HashMap<String, SurveyGroupDto>();
+		final Map<String, Object> response = new HashMap<String, Object>();
 		SurveyGroupDto dto = null;
+		
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
 
 		// if the POST data contains a valid surveyGroupDto, continue.
 		// Otherwise, server 400 Bad Request
@@ -157,7 +161,9 @@ public class SurveyGroupRestService {
 
 			dto = new SurveyGroupDto();
 			DtoMarshaller.copyToDto(s, dto);
+			statusDto.setStatus("ok");
 		}
+		response.put("meta", statusDto);
 		response.put("survey_group", dto);
 		return response;
 	}
