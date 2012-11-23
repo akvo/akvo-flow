@@ -32,7 +32,6 @@ FLOW.Survey = DS.Model.extend({
 	version: DS.attr('string'),
 	description: DS.attr('string'),
 	name: DS.attr('string'),
-	displayName: DS.attr('string'),
 	keyId: DS.attr('number'),
 	pointType: DS.attr('string'),
 	surveyGroupId: DS.attr('number'),
@@ -94,23 +93,6 @@ FLOW.QuestionOption = DS.Model.extend({
 	keyId: DS.attr('number')
 });
 
-FLOW.QuestionOption.FIXTURES = [{
-	keyId: 1,
-	text: 'teacher',
-	questionId: 1
-}, {
-	keyId: 2,
-	text: 'cook',
-	questionId: 1
-},{
-	keyId: 3,
-	text: 'minister',
-	questionId: 1
-},{
-	keyId: 4,
-	text: 'programmer',
-	questionId: 1
-}];
 
 FLOW.SurveyAssignment = DS.Model.extend({
 
