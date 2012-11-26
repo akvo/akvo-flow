@@ -1,8 +1,14 @@
 <section id="main" class="mapFlow floats-in" role="main">
-  <div id="flowMap" style="height: 600px"></div>
-  <div id="flowMapLegend" style="background-color: #FFF; padding: 1em">
+  <div id="flowMap" style="height: 600px; width:800px;float:left;"></div>
+   <div style="float:left;width:300px; padding:0 0 0 20px;">
+   {{#each item in FLOW.placemarkDetailControl}}
+   	{{item.questionText}}: {{item.stringValue}}</br>
+   {{/each}}
+</div>
+
+  <div id="flowMapLegend" style="background-color: #FFF; padding: 1em;clear:both;">
     <h1 style="color: #FF0000">LEGEND</h1>
     <p>To be given some <strong>Loïc Love&copy;</strong></p>
-    {{view FLOW.NavMapsDetailsView }}
+  
   </div>
 </section>

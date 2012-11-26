@@ -167,10 +167,22 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedQuestionGroup')
 });
 
+FLOW.placemarkControl = Ember.ArrayController.create({
+  content:null,
+  populate: function() {
+      this.set('content',FLOW.store.findAll(FLOW.Placemark));
+    }
+});
+
+FLOW.placemarkDetailControl = Ember.ArrayController.create({
+  content:null,
+  populate: function(placemarkId) {
+    this.set('content',FLOW.store.find(FLOW.PlacemarkDetail,{"placemarkId":placemarkId}));
+  }
+});
 
 FLOW.optionControl = Ember.ArrayController.create({
 });
-
 
 FLOW.deviceControl = Ember.ArrayController.create({
   sortProperties:['phoneNumber'],
