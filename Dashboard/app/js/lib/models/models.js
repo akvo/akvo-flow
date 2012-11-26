@@ -54,9 +54,6 @@ FLOW.QuestionGroup = DS.Model.extend({
 	code: DS.attr('string'),
 	surveyId: DS.attr('number'),
 	keyId: DS.attr('number'),
-	//isOpen: DS.attr('boolean', {
-	//	defaultValue: 0
-	//}),
 	primaryKey: 'keyId'
 });
 
