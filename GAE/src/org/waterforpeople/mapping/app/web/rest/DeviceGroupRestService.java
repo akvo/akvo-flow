@@ -1,0 +1,165 @@
+package org.waterforpeople.mapping.app.web.rest;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceGroupDto;
+import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.rest.dto.DeviceGroupPayload;
+
+import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.device.dao.DeviceGroupDAO;
+import com.gallatinsystems.device.domain.DeviceGroup;
+
+
+@Controller
+@RequestMapping("/device_groups")
+public class DeviceGroupRestService {
+
+	@Inject
+	private DeviceGroupDAO deviceGroupDao;
+
+	// TODO put in meta information?
+	// list all deviceGroups
+	@RequestMapping(method = RequestMethod.GET, value = "")
+	@ResponseBody
+	public Map<String, List<DeviceGroupDto>> listDeviceGroups() {
+		final Map<String, List<DeviceGroupDto>> response = new HashMap<String, List<DeviceGroupDto>>();
+		List<DeviceGroupDto> results = new ArrayList<DeviceGroupDto>();
+		List<DeviceGroup> deviceGroups = deviceGroupDao
+				.list(Constants.ALL_RESULTS);
+		if (deviceGroups != null) {
+			for (DeviceGroup s : deviceGroups) {
+				DeviceGroupDto dto = new DeviceGroupDto();
+				DtoMarshaller.copyToDto(s, dto);
+
+				results.add(dto);
+			}
+		}
+		response.put("device_groups", results);
+		return response;
+	}
+
+	// find a single deviceGroup by the deviceGroupId
+	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
+	@ResponseBody
+	public Map<String, DeviceGroupDto> findDeviceGroup(
+			@PathVariable("id") Long id) {
+		final Map<String, DeviceGroupDto> response = new HashMap<String, DeviceGroupDto>();
+		DeviceGroup s = deviceGroupDao.getByKey(id);
+		DeviceGroupDto dto = null;
+		if (s != null) {
+			dto = new DeviceGroupDto();
+			DtoMarshaller.copyToDto(s, dto);
+		}
+		response.put("device_group", dto);
+		return response;
+
+	}
+
+	// delete deviceGroup by id
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+	@ResponseBody
+	public Map<String, RestStatusDto> deleteDeviceGroupById(
+			@PathVariable("id") Long id) {
+		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+		DeviceGroup s = deviceGroupDao.getByKey(id);
+		RestStatusDto statusDto = null;
+		statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
+		// check if deviceGroup exists in the datastore
+		if (s != null) {
+			// delete deviceGroup group
+			deviceGroupDao.delete(s);
+			statusDto.setStatus("ok");
+		}
+		response.put("meta", statusDto);
+		return response;
+	}
+
+	// update existing deviceGroup
+	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+	@ResponseBody
+	public Map<String, Object> saveExistingDeviceGroup(
+			@RequestBody DeviceGroupPayload payLoad) {
+		final DeviceGroupDto deviceGroupDto = payLoad.getDevice_group();
+		final Map<String, Object> response = new HashMap<String, Object>();
+		DeviceGroupDto dto = null;
+
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
+		// if the POST data contains a valid deviceGroupDto, continue.
+		// Otherwise,
+		// server will respond with 400 Bad Request
+		if (deviceGroupDto != null) {
+			Long keyId = deviceGroupDto.getKeyId();
+			DeviceGroup s;
+
+			// if the deviceGroupDto has a key, try to get the deviceGroup.
+			if (keyId != null) {
+				s = deviceGroupDao.getByKey(keyId);
+				// if we find the deviceGroup, update it's properties
+				if (s != null) {
+					// copy the properties, except the createdDateTime property,
+					// because it is set in the Dao.
+					BeanUtils.copyProperties(deviceGroupDto, s,
+							new String[] { "createdDateTime" });
+					s = deviceGroupDao.save(s);
+					dto = new DeviceGroupDto();
+					DtoMarshaller.copyToDto(s, dto);
+					statusDto.setStatus("ok");
+				}
+			}
+		}
+		response.put("meta", statusDto);
+		response.put("device_group", dto);
+		return response;
+	}
+
+	// create new deviceGroup
+	@RequestMapping(method = RequestMethod.POST, value = "")
+	@ResponseBody
+	public Map<String, Object> saveNewDeviceGroup(
+			@RequestBody DeviceGroupPayload payLoad) {
+		final DeviceGroupDto deviceGroupDto = payLoad.getDevice_group();
+		final Map<String, Object> response = new HashMap<String, Object>();
+		DeviceGroupDto dto = null;
+
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
+		// if the POST data contains a valid deviceGroupDto, continue.
+		// Otherwise,
+		// server will respond with 400 Bad Request
+		if (deviceGroupDto != null) {
+			DeviceGroup s = new DeviceGroup();
+
+			// copy the properties, except the createdDateTime property, because
+			// it is set in the Dao.
+			BeanUtils.copyProperties(deviceGroupDto, s,
+					new String[] { "createdDateTime" });
+			s = deviceGroupDao.save(s);
+
+			dto = new DeviceGroupDto();
+			DtoMarshaller.copyToDto(s, dto);
+			statusDto.setStatus("ok");
+		}
+
+		response.put("meta", statusDto);
+		response.put("device_group", dto);
+		return response;
+	}
+}
