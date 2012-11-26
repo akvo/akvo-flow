@@ -130,12 +130,15 @@ FLOW.SurveyedLocale = DS.Model.extend({
   typeMark:     DS.attr("string", {defaultValue: "WATER_POINT"})
 });
 
+// Explicitly avoid to use belongTo and hasMany as
+// Ember-Data lacks of partial loading
+// https://github.com/emberjs/data/issues/51
 FLOW.PlacemarkDetail = DS.Model.extend({
   keyId: DS.attr("number"),
-  collectionDate: DS.attr("date"),
   questionText: DS.attr("string"),
   metricName: DS.attr("string"),
   stringValue: DS.attr("string"),
+  placemarkId: DS.attr("number"),
   primaryKey: "keyId"
 });
 
@@ -145,10 +148,5 @@ FLOW.Placemark = DS.Model.extend({
   longitude: DS.attr("number"),
   collectionDate: DS.attr("date"),
   markType: DS.attr("string", {defaultValue: "WATER_POINT"}),
-  details: DS.hasMany(FLOW.PlacemarkDetail),
   primaryKey: "keyId"
-});
-
-FLOW.PlacemarkDetail.reopen({
-  placemark: DS.belongsTo(FLOW.Placemark)
 });

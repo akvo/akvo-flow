@@ -33,14 +33,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
-import org.waterforpeople.mapping.app.web.rest.dto.PlacemarkDetailDto;
 import org.waterforpeople.mapping.app.web.rest.dto.PlacemarkDto;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+
 
 @Controller
 @RequestMapping("/placemarks")
@@ -57,15 +55,25 @@ public class PlacemarkRestService {
 	public Map<String, Object> listPlaceMarks(
 			@RequestParam(value = "country", defaultValue = "") String country) {
 
-		final Map<String, Object> response = new HashMap<String, Object>();
-		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
-		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
-
 		if (StringUtils.isEmpty(country)) {
 			final String msg = "You must pass a parameter [country]";
 			log.log(Level.SEVERE, msg);
 			throw new HttpMessageNotReadableException(msg);
 		}
+
+		return getPlacemarksReponseByCountry(country);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
+	@ResponseBody
+	public Map<String, Object> placeMarkDetails(@PathVariable("id") Long id) {
+		return getPlacemarkResponseById(id);
+	}
+
+	private Map<String, Object> getPlacemarksReponseByCountry(String country) {
+		final Map<String, Object> response = new HashMap<String, Object>();
+		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
+		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
 
 		slList.addAll(localeDao.listBySubLevel(country, null, null, null, null,
 				null, null));
@@ -80,29 +88,15 @@ public class PlacemarkRestService {
 		return response;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
-	@ResponseBody
-	public Map<String, Object> placeMarkDetails(@PathVariable("id") Long id) {
-
+	private Map<String, Object> getPlacemarkResponseById(Long id) {
 		final Map<String, Object> response = new HashMap<String, Object>();
 		final SurveyedLocale sl = localeDao.getById(id);
 
 		if (sl == null) {
-			final RestStatusDto meta = new RestStatusDto();
-
-			meta.setMessage("Not found");
-			meta.setStatus("Error");
-
-			response.put("placemark", null);
-			response.put("placemark_details", null);
-			response.put("meta", meta);
-
-			return response;
+			throw new HttpMessageNotReadableException("ID not found");
 		}
 
 		response.put("placemark", marshallDomainToDto(sl));
-		response.put("placemark_details", getPlacemarkDetails(sl));
-
 		return response;
 	}
 
@@ -117,21 +111,5 @@ public class PlacemarkRestService {
 		dto.setCollectionDate(sl.getLastUpdateDateTime());
 		dto.setKeyId(sl.getKey().getId());
 		return dto;
-	}
-
-	private List<PlacemarkDetailDto> getPlacemarkDetails(SurveyedLocale sl) {
-		final List<PlacemarkDetailDto> details = new ArrayList<PlacemarkDetailDto>();
-
-		if (sl.getSurveyalValues() == null) {
-			return details;
-		}
-
-		for (SurveyalValue sv : sl.getSurveyalValues()) {
-			PlacemarkDetailDto svDto = new PlacemarkDetailDto();
-			DtoMarshaller.copyToDto(sv, svDto);
-			details.add(svDto);
-		}
-
-		return details;
 	}
 }
