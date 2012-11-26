@@ -11,6 +11,7 @@
 <bean id="questionDao" class="com.gallatinsystems.survey.dao.QuestionDao"/>  
 <bean id="deviceDao" class="com.gallatinsystems.device.dao.DeviceDAO"/>
 <bean id="localeDao" class="com.gallatinsystems.surveyal.dao.SurveyedLocaleDao" />
+<bean id="deviceGroupDao" class="com.gallatinsystems.device.dao.DeviceGroupDAO" />
 
 	<context:annotation-config/>
 </beans>
