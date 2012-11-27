@@ -241,13 +241,13 @@ FLOW.optionControl = Ember.ArrayController.create({
 
 FLOW.deviceControl = Ember.ArrayController.create({
   sortProperties: ['phoneNumber'],
-  pleaseShow: true,
   sortAscending: true,
   sortSelected: null,
   content: null,
+  oneTime: true,
 
   populate: function () {
-
+    this.set('content', FLOW.store.find(FLOW.Device));
   },
 
   allAreSelected: function (key, value) {

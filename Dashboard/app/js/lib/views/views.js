@@ -29,6 +29,33 @@ Ember.Handlebars.registerHelper("date", function(property) {
   return (curr_date + " " + m_names[curr_month] + " " + curr_year);
 });
 
+// format used in devices table
+Ember.Handlebars.registerHelper("date1", function(property) {
+  var d, curr_date,curr_month,curr_year,curr_hour,curr_min,monthString,dateString,hourString,minString;
+  if (Ember.get(this, property)!==null){
+    d = new Date(parseInt(Ember.get(this, property),10));
+    curr_date = d.getDate();
+    curr_month = d.getMonth()+1;
+    curr_year = d.getFullYear();
+    curr_hour =d.getHours();
+    curr_min =d.getMinutes();
+
+    if (curr_month<10){monthString="0"+curr_month.toString();}
+    else { monthString=curr_month.toString();}
+
+    if (curr_date<10){dateString="0"+curr_date.toString();}
+    else {dateString=curr_date.toString();}
+
+    if (curr_hour<10) {hourString="0"+curr_hour.toString();}
+    else { hourString=curr_hour.toString();}
+
+    if (curr_min<10) {minString="0"+curr_min.toString();}
+    else { minString=curr_min.toString();}
+
+    return (curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString);
+  } else {return "";}
+});
+
 // ********************************************************//
 //                      main navigation
 // ********************************************************//

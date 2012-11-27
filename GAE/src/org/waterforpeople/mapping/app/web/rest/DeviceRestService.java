@@ -37,6 +37,7 @@ public class DeviceRestService {
 			for (Device d : devices) {
 				DeviceDto deviceDto = new DeviceDto();
 				DtoMarshaller.copyToDto(d, deviceDto);
+				deviceDto.setLastPositionDate(d.getLastLocationBeaconTime());
 				deviceList.add(deviceDto);
 			}
 		}
@@ -49,12 +50,13 @@ public class DeviceRestService {
 	public Map<String, DeviceDto> findDevice(@PathVariable("id") Long id) {
 		final Map<String, DeviceDto> response = new HashMap<String, DeviceDto>();
 		final Device d = deviceDao.getByKey(id);
-		DeviceDto dto = null;
+		DeviceDto deviceDto = null;
 		if (d != null) {
-			dto = new DeviceDto();
-			DtoMarshaller.copyToDto(d, dto);
+			deviceDto = new DeviceDto();
+			DtoMarshaller.copyToDto(d, deviceDto);
+			deviceDto.setLastPositionDate(d.getLastLocationBeaconTime());
 		}
-		response.put("device", dto);
+		response.put("device", deviceDto);
 		return response;
 	}
 }

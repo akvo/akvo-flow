@@ -100,21 +100,20 @@ FLOW.DeviceGroup = DS.Model.extend({
 });
 
 FLOW.Device = DS.Model.extend({
-	deviceType: DS.attr('string',{defaultValue: ""}),
+	EMEI: DS.attr('string',{defaultValue: ""}),
+	macAddress: DS.attr('string',{defaultValue: ""}),
 	phoneNumber: DS.attr('string',{defaultValue: ""}),
-	esn: DS.attr('string',{defaultValue: ""}),
+	deviceType: DS.attr('string',{defaultValue: ""}),
 	deviceIdentifier: DS.attr('string',{defaultValue: ""}),
 	inServiceDate: DS.attr('date'),
 	outServiceDate: DS.attr('date'),
-	lastUpdate: DS.attr('date', {defaultValue: ""}),
 	osVersion: DS.attr('string', {defaultValue: ""}),
 	lastKnownLat: DS.attr('number', {defaultValue: 0}),
 	lastKnownLong:DS.attr('number', {defaultValue: 0}),
 	lastKnownAccuracy: DS.attr('number',{defaultValue:0}),
-	lastLocationBeaconTime: DS.attr('date', {defaultValue: ""}),
+	lastPositionDate: DS.attr('number', {defaultValue: ""}),
 	deviceGroup: DS.attr('string',{defaultValue: ""}),
 	keyId: DS.attr('number'),
-	primaryKey:'keyId',
 	isSelected: DS.attr('boolean', {defaultValue: false})
 });
 
@@ -136,7 +135,6 @@ FLOW.PlacemarkDetail = DS.Model.extend({
   metricName: DS.attr("string"),
   stringValue: DS.attr("string"),
   placemarkId: DS.attr("number"),
-  primaryKey: "keyId"
 });
 
 FLOW.Placemark = DS.Model.extend({
@@ -145,5 +143,4 @@ FLOW.Placemark = DS.Model.extend({
   longitude: DS.attr("number"),
   collectionDate: DS.attr("date"),
   markType: DS.attr("string", {defaultValue: "WATER_POINT"}),
-  primaryKey: "keyId"
 });
