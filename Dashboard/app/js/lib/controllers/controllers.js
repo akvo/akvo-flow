@@ -7,18 +7,18 @@
 require('akvo-flow/core');
 FLOW.ApplicationController = Ember.Controller.extend({
   init: function () {
-    Ember.STRINGS=Ember.STRINGS_EN;
+    Ember.STRINGS = Ember.STRINGS_EN;
     //this.set("dashboardLanguage","en");
   }
 });
 
 // Navigation controllers
-FLOW.NavigationController = Em.Controller.extend({ selected: null });
+FLOW.NavigationController = Em.Controller.extend({ selected: null});
 FLOW.NavHomeController = Ember.Controller.extend();
 FLOW.NavSurveysController = Ember.Controller.extend();
 FLOW.NavDevicesController = Ember.Controller.extend();
 FLOW.DevicesSubnavController = Em.Controller.extend();
-FLOW.DevicesTableHeaderController = Em.Controller.extend({ selected:null });
+FLOW.DevicesTableHeaderController = Em.Controller.extend({selected: null});
 FLOW.NavDataController = Ember.Controller.extend();
 FLOW.DatasubnavController = Em.Controller.extend();
 FLOW.InspectDataController = Ember.ArrayController.extend();
@@ -44,13 +44,13 @@ FLOW.languageControl = Ember.Object.create({
     Ember.Object.create({label: "French", value: "fr"})],
 
   changeLanguage: function () {
-    locale = this.get("dashboardLanguage.value");
-    console.log('changing language to ',locale);
-    
-    if (locale == "nl") {Ember.STRINGS=Ember.STRINGS_NL;}
-    else if (locale == "fr") {Ember.STRINGS=Ember.STRINGS_FR;}
-    else if (locale == "sp") {Ember.STRINGS=Ember.STRINGS_SP;}
-    else {Ember.STRINGS=Ember.STRINGS_EN;}
+    var locale = this.get("dashboardLanguage.value");
+    console.log('changing language to ', locale);
+
+    if (locale === "nl") {Ember.STRINGS = Ember.STRINGS_NL; }
+    else if (locale === "fr") {Ember.STRINGS = Ember.STRINGS_FR; }
+    else if (locale === "sp") {Ember.STRINGS = Ember.STRINGS_SP; }
+    else {Ember.STRINGS = Ember.STRINGS_EN; }
   }.observes('dashboardLanguage')
 });
 
@@ -59,7 +59,7 @@ FLOW.dataserverControl = Ember.Object.create({
 
   init: function () {
     this._super();
-    var dataserver_setting = localStorage["dataserver"];
+    var dataserver_setting = localStorage.dataserver;
     if (typeof dataserver_setting === "undefined") {
       this.set('dataserver', this.content.findProperty('value', 'local'));
     } else {
@@ -74,9 +74,9 @@ FLOW.dataserverControl = Ember.Object.create({
     Ember.Object.create({label: "Fixtures", value: "fixtures"})],
 
   changeServer: function () {
-    var host = "http://"+window.location.hostname,
+    var host = "http://" + window.location.hostname,
     server = this.get("dataserver.value");
-    localStorage["dataserver"] = server;
+    localStorage.dataserver = server;
 
     if (server == "local") {
       // FLOW.selectedControl.set('dataserverControl', null);
@@ -109,10 +109,9 @@ FLOW.dataserverControl = Ember.Object.create({
   }.observes('this.dataserver')
 });
 
-
 FLOW.questionTypeControl = Ember.Object.create({
-content: [
-  Ember.Object.create({label: "Free text", value: "freeText"}),
+  content: [
+    Ember.Object.create({label: "Free text", value: "freeText"}),
     Ember.Object.create({label: "Option", value: "option"}),
     Ember.Object.create({label: "Number", value: "number"}),
     Ember.Object.create({label: "Geolocation", value: "geoLoc"}),
@@ -120,28 +119,29 @@ content: [
     Ember.Object.create({label: "Video", value: "video"}),
     Ember.Object.create({label: "Date", value: "date"}),
     Ember.Object.create({label: "Barcode", value: "barcode"})
-]});
+  ]
+});
 
 FLOW.surveyTypeControl = Ember.Object.create({
-content:[
-  Ember.Object.create({label: "Point", value: "point"}),
+  content: [
+    Ember.Object.create({label: "Point", value: "point"}),
     Ember.Object.create({label: "Household", value: "household"}),
     Ember.Object.create({label: "Public institution", value: "publicInstitution"}),
     Ember.Object.create({label: "Community", value: "community"})
-   
-]});
+  ]
+});
 
 FLOW.surveySectorTypeControl = Ember.Object.create({
-content:[
-  Ember.Object.create({label: "Water and Sanitation", value: "waterAndSanitation"}),
+  content: [
+    Ember.Object.create({label: "Water and Sanitation", value: "waterAndSanitation"}),
     Ember.Object.create({label: "Education", value: "education"}),
     Ember.Object.create({label: "Economic development", value: "economicDevelopment"}),
     Ember.Object.create({label: "Health care", value: "healthCare"}),
     Ember.Object.create({label: "IT and Communication", value: "ItAndCommunication"}),
     Ember.Object.create({label: "Food security", value: "foodSecurity"}),
     Ember.Object.create({label: "Other", value: "other"})
-]});
-
+  ]
+});
 
 FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
@@ -156,12 +156,12 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedCreateNewGroup:false,
 
   // when selected survey changes, deselect selected surveys and question groups
-  deselectSurveyGroupChildren:function(){
+  deselectSurveyGroupChildren: function () {
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.selectedControl.set('selectedQuestionGroup', null);
   }.observes('this.selectedSurveyGroup'),
 
-   deselectSurveyChildren:function(){
+   deselectSurveyChildren: function () {
     FLOW.selectedControl.set('selectedQuestionGroup', null);
   }.observes('this.selectedSurvey')
 });
@@ -171,15 +171,16 @@ FLOW.selectedControl = Ember.Controller.create({
 //                Data controllers
 // ***********************************************//
 FLOW.surveyGroupControl = Ember.ArrayController.create({
-  content:null,
-  populate:function(){
+  content: null,
+
+  populate: function () {
     this.set('content',FLOW.store.find(FLOW.SurveyGroup));
   }
 });
 
 FLOW.surveyControl = Ember.ArrayController.create({
-  content:null,
-  populate: function() {
+  content: null,
+  populate: function () {
     if (FLOW.selectedControl.get('selectedSurveyGroup')) {
       var id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       this.set('content',FLOW.store.findQuery(FLOW.Survey, {surveyGroupId: id}));
@@ -187,24 +188,23 @@ FLOW.surveyControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurveyGroup')
 });
 
-
 FLOW.questionGroupControl = Ember.ArrayController.create({
-  sortProperties:['order'],
-  sortAscending:true,
-  content:null,
+  sortProperties: ['order'],
+  sortAscending: true,
+  content: null,
 
   // true if some items are being saved
-  allRecordsSaved:function(){
-    var allSaved=true;
+  allRecordsSaved: function () {
+    var allSaved = true;
     FLOW.questionGroupControl.get('content').forEach(function(item){
       if (item.get('isSaving')) {
-        allSaved=false;
+        allSaved = false;
       }
     });
     if (allSaved) {return true;} else {return false;}
   }.property('content.@each.isSaving'),
 
-  populate: function() {
+  populate: function () {
     if (FLOW.selectedControl.get('selectedSurvey')) {
       var id = FLOW.selectedControl.selectedSurvey.get('keyId');
       this.set('content',FLOW.store.findQuery(FLOW.QuestionGroup, {surveyId: id}));
@@ -212,10 +212,9 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurvey')
 });
 
-
 FLOW.questionControl = Ember.ArrayController.create({
-  content:null,
-  populate: function() {
+  content: null,
+  populate: function () {
     if (FLOW.selectedControl.get('selectedQuestionGroup')) {
       var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
       this.set('content',FLOW.store.findQuery(FLOW.Question, {questionGroupId: id}));
@@ -224,15 +223,15 @@ FLOW.questionControl = Ember.ArrayController.create({
 });
 
 FLOW.placemarkControl = Ember.ArrayController.create({
-  content:null,
+  content: null,
   populate: function() {
-      this.set('content',FLOW.store.findAll(FLOW.Placemark));
-    }
+    this.set('content',FLOW.store.findAll(FLOW.Placemark));
+  }
 });
 
 FLOW.placemarkDetailControl = Ember.ArrayController.create({
-  content:null,
-  populate: function(placemarkId) {
+  content: null,
+  populate: function (placemarkId) {
     this.set('content',FLOW.store.find(FLOW.PlacemarkDetail,{"placemarkId":placemarkId}));
   }
 });
@@ -241,17 +240,17 @@ FLOW.optionControl = Ember.ArrayController.create({
 });
 
 FLOW.deviceControl = Ember.ArrayController.create({
-  sortProperties:['phoneNumber'],
-  pleaseShow:true,
-  sortAscending:true,
-  sortSelected:null,
-  content:null,
+  sortProperties: ['phoneNumber'],
+  pleaseShow: true,
+  sortAscending: true,
+  sortSelected: null,
+  content: null,
 
-  populate:function(){
+  populate: function () {
 
   },
 
-  allAreSelected: function(key, value) {
+  allAreSelected: function (key, value) {
     if (arguments.length === 2) {
       this.setEach('isSelected', value);
       return value;
@@ -261,7 +260,7 @@ FLOW.deviceControl = Ember.ArrayController.create({
     }
   }.property('@each.isSelected'),
 
-  atLeastOneSelected: function() {
+  atLeastOneSelected: function () {
     return this.filterProperty('isSelected', true).get('length');
   }.property('@each.isSelected')
 });
