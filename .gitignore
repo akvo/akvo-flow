@@ -40,8 +40,6 @@ WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
 deploy
 gwt-unitcache
 
-Dashboard/app/js/lib/models/store_def.js
-
 # Vagrant
 .vagrant
 GAE/env
