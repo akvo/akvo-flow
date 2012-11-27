@@ -6,7 +6,7 @@
 // the application and initialized.
 require('akvo-flow/core');
 FLOW.ApplicationController = Ember.Controller.extend({
-  init:function(){
+  init: function () {
     Ember.STRINGS=Ember.STRINGS_EN;
     //this.set("dashboardLanguage","en");
   }
@@ -35,16 +35,16 @@ FLOW.NavAdminController = Ember.Controller.extend();
 //                Type controllers
 // ***********************************************//
 FLOW.languageControl = Ember.Object.create({
-  dashboardLanguage:null,
+  dashboardLanguage: null,
 
-  content:[
+  content: [
     Ember.Object.create({label: "English", value: "en"}),
     Ember.Object.create({label: "Dutch", value: "nl"}),
     Ember.Object.create({label: "Spanish", value: "sp"}),
     Ember.Object.create({label: "French", value: "fr"})],
 
-  changeLanguage:function(){
-    locale=this.get("dashboardLanguage.value");
+  changeLanguage: function () {
+    locale = this.get("dashboardLanguage.value");
     console.log('changing language to ',locale);
     
     if (locale == "nl") {Ember.STRINGS=Ember.STRINGS_NL;}
@@ -55,43 +55,52 @@ FLOW.languageControl = Ember.Object.create({
 });
 
 FLOW.dataserverControl = Ember.Object.create({
-  dataserver:null,
+  dataserver: null,
 
-  content:[
+  init: function () {
+    this._super();
+    var dataserver_setting = localStorage["dataserver"];
+    if (typeof dataserver_setting === "undefined") {
+      this.set('dataserver', this.content.findProperty('value', 'local'));
+    } else {
+      this.set('dataserver', this.content.findProperty('value', dataserver_setting));
+    }
+  },
+
+  content: [
     Ember.Object.create({label: "Localhost", value: "local"}),
     Ember.Object.create({label: "Akvo Sandbox", value: "sandbox"}),
     Ember.Object.create({label: "Local VM", value: "vm"}),
     Ember.Object.create({label: "Fixtures", value: "fixtures"})],
 
-  changeServer:function(){
+  changeServer: function () {
     var host = "http://"+window.location.hostname,
     server = this.get("dataserver.value");
-    console.log('changing dataserver to ', server);
+    localStorage["dataserver"] = server;
 
     if (server == "local") {
-      FLOW.selectedControl.set('selectedSurveyGroup',null);
+      // FLOW.selectedControl.set('dataserverControl', null);
       FLOW.store = DS.Store.create({
         revision: 8,
         adapter:DS.FLOWRESTAdapter.create({bulkCommit: false, namespace: "restlocal", url: host})
-        // adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"restlocal", url:"http://localhost"})
       });
     }
     else if (server == "vm") {
-      FLOW.selectedControl.set('selectedSurveyGroup',null);
+      // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
         revision: 8,
         adapter:DS.FLOWRESTAdapter.create({bulkCommit: false, namespace: "rest", url: host})
       });
     }
     else if (server == "sandbox") {
-      FLOW.selectedControl.set('selectedSurveyGroup',null);
+      // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
         revision: 8,
         adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"restsandbox", url:"http://localhost"})
       });
     }
     else if (server == "fixtures") {
-      FLOW.selectedControl.set('selectedSurveyGroup',null);
+      // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
         revision: 8,
         adapter: DS.fixtureAdapter
@@ -101,10 +110,8 @@ FLOW.dataserverControl = Ember.Object.create({
 });
 
 
-
-
 FLOW.questionTypeControl = Ember.Object.create({
-content:[
+content: [
   Ember.Object.create({label: "Free text", value: "freeText"}),
     Ember.Object.create({label: "Option", value: "option"}),
     Ember.Object.create({label: "Number", value: "number"}),
