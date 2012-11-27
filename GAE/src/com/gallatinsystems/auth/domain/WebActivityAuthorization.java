@@ -48,7 +48,7 @@ public class WebActivityAuthorization extends BaseDomain {
 	private String userName;
 
 	public WebActivityAuthorization() {
-		usageCount = new Long(0);
+		usageCount = 0L;
 	}
 
 	public String getUserName() {

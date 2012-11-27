@@ -341,7 +341,7 @@ public class TestHarnessServlet extends HttpServlet {
 				for (Question q : qList) {
 					Integer max = groupMaxCount.get(q.getQuestionGroupId());
 					if (max == null) {
-						max = new Integer(1);
+						max = 1;
 					} else {
 						max = max + 1;
 					}

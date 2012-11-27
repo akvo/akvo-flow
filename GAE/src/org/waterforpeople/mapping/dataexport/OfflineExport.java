@@ -55,8 +55,12 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
  */
 public class OfflineExport extends GraphicalSurveySummaryExporter {
 
-	private static final DateFormat DF = new SimpleDateFormat(
-			"MM-dd-yyyy HH:mm:ss z");
+	private static final ThreadLocal<DateFormat> DF = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("MM-dd-yyyy HH:mm:ss z");
+		};
+	};
 
 	public void export(Map<String, String> criteria, File outputFile,
 			String serverBase, Map<String, String> options) {
@@ -98,7 +102,7 @@ public class OfflineExport extends GraphicalSurveySummaryExporter {
 								r = sheet.createRow(row++);
 								lastUUID = parts[parts.length - 1];
 								createCell(r, 0, lastUUID, null);
-								createCell(r, 1, DF.format(new Date(Long
+								createCell(r, 1, DF.get().format(new Date(Long
 										.parseLong(parts[7]))), null);
 								createCell(r, 2, parts[5], null);
 							}

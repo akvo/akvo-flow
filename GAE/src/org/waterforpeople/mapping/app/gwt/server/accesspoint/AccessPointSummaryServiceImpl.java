@@ -66,12 +66,12 @@ public class AccessPointSummaryServiceImpl extends RemoteServiceServlet
 						if (curVal == null) {
 							curVal = summaries.get(i).getCount() != null ? summaries
 									.get(i).getCount()
-									: new Long(1);
+									: 1L;
 						} else {
 							curVal = curVal
 									+ (summaries.get(i).getCount() != null ? summaries
 											.get(i).getCount()
-											: new Long(1));
+											: 1L);
 						}
 						countMap.put(summaries.get(i).getStatus().toString(),
 								curVal);

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.apache.log4j.Level;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
@@ -180,25 +181,22 @@ public class ScoringHelper {
 			StandardComparisons operator) {
 
 		if (operator.equals(StandardComparisons.equal)) {
-			Boolean answer = false;
 			for (String item : valueList) {
 				if (item.trim().equalsIgnoreCase(apvalue.trim())) {
-					answer = true;
-					break;
+					return true;
 				}
 			}
-			return answer;
+			return false;
 		}else if (operator.equals(StandardComparisons.notequal)) {
-			Boolean answer = true;
 			for (String item : valueList) {
 				if (item.trim().equalsIgnoreCase(apvalue.trim())) {
-					answer = false;
-					break;
+					return false;
 				}
 			}			
-			return answer;
+			return true;
 		}
-		return null;
+		log.warning("Operator " + operator + " not implemented for a string in a list of strings (returning false)");
+		return false;
 	}
 
 	private Boolean compareDouble(

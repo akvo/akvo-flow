@@ -87,7 +87,7 @@ public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 					.asQueryResultList(fetchOptions);
 			newCursor = results.getCursor().toWebSafeString();
 
-			if (results.isEmpty() || results == null) {
+			if (results.isEmpty()) {
 				is_finished = true;
 			} else {
 				final Integer taskcount;

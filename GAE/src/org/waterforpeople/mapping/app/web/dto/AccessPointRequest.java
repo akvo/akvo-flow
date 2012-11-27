@@ -45,7 +45,12 @@ public class AccessPointRequest extends RestRequest {
 	public static final String NEARBY_ACTION = "getnearby";
 	public static final String SEARCH_ACTION = "search";
 
-	private static final DateFormat DATE_FMT = DateFormat.getDateInstance();
+	private static final ThreadLocal<DateFormat> DATE_FMT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return DateFormat.getDateInstance();
+		};
+	};
 
 	private Double lat;
 	private Double lon;
@@ -190,7 +195,7 @@ public class AccessPointRequest extends RestRequest {
 	private Date parseDate(String val) throws ParseException {
 		Date date = null;
 		if (val != null && val.trim().length() > 0) {
-			date = DATE_FMT.parse(val);
+			date = DATE_FMT.get().parse(val);
 		}
 		return date;
 	}

@@ -66,7 +66,7 @@ public class SurveyInstanceSummaryDao extends BaseDAO<SurveyInstanceSummary> {
 		SurveyInstanceSummary summary = null;
 		if (results == null || results.size() == 0) {
 			summary = new SurveyInstanceSummary();
-			summary.setCount(new Long(1));
+			summary.setCount(1L);
 			summary.setCommunityCode(community);
 			summary.setCountryCode(country);
 			summary.setCollectionDate(colDate);

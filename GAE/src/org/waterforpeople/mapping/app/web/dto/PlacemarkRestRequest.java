@@ -184,10 +184,10 @@ public class PlacemarkRestRequest extends RestRequest {
 
 		if (req.getParameter(POINT_TYPE_PARAM) != null) {
 			pointTypeString = req.getParameter(POINT_TYPE_PARAM);
-			if (AccessPoint.AccessPointType.HEALTH_POSTS
+			if (AccessPoint.AccessPointType.HEALTH_POSTS.toString()
 					.equals(pointTypeString))
 				setPointType(AccessPointType.HEALTH_POSTS);
-			else if (AccessPointType.PUBLIC_INSTITUTION.equals(pointTypeString)
+			else if (AccessPointType.PUBLIC_INSTITUTION.toString().equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_BLACK_ICON_URL
 							.equals(pointTypeString)
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_GREEN_ICON_URL
@@ -197,7 +197,7 @@ public class PlacemarkRestRequest extends RestRequest {
 					|| KMLGenerator.PUBLIC_INSTITUTION_FUNCTIONING_YELLOW_ICON_URL
 							.equals(pointTypeString))
 				setPointType(AccessPointType.PUBLIC_INSTITUTION);
-			else if (AccessPointType.SCHOOL.equals(pointTypeString)
+			else if (AccessPointType.SCHOOL.toString().equals(pointTypeString)
 					|| KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_BLACK_ICON_URL
 							.equals(pointTypeString)
 					|| KMLGenerator.SCHOOL_INSTITUTION_FUNCTIONING_GREEN_ICON_URL

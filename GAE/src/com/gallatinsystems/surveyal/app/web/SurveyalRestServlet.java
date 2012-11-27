@@ -53,7 +53,6 @@ import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -347,7 +346,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 						for (SurveyMetricMapping mapping : mappings) {
 							for (QuestionAnswerStore ans : answers) {
 								if (ans.getQuestionID().equals(
-										mapping.getSurveyQuestionId())) {
+										mapping.getSurveyQuestionId().toString())) {
 									instance.setCommunity(ans.getValue());
 									break;
 								}

@@ -54,7 +54,7 @@ public class ImageUtil {
 		String destFile = destImageDir + File.separator + image.getName();
 		File destFileObj = new File(destFile);
 		if (image.getAbsolutePath().toLowerCase().contains(".jpg")) {
-			if (image != null && image.length() > 0) {
+			if (image.length() > 0) {
 				if (!destFileObj.exists()) {
 					InputStream input;
 					try {

@@ -68,8 +68,12 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	private AccessPointDao accessPointDao;
 	private SurveyedLocaleDao localeDao;
 	private AccessPointStatusSummaryDao apSummaryDao;
-	private static final DateFormat OUT_FMT = new SimpleDateFormat(
-			"dd-MM-yyyy HH:mm:ss z");
+	private static final ThreadLocal<DateFormat> OUT_FMT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+		};
+	};
 
 	public DataBackoutServlet() {
 		setMode(PLAINTEXT_MODE);
@@ -240,7 +244,7 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 				buffer.append(result.getKey().getId());
 				if (includeDate && result.getProperty("collectionDate") != null) {
 					buffer.append("|").append(
-							OUT_FMT.format(result.getProperty("collectionDate")));
+							OUT_FMT.get().format(result.getProperty("collectionDate")));
 				}
 			}
 		}

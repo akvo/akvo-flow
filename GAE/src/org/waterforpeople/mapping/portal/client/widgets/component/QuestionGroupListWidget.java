@@ -97,9 +97,9 @@ public class QuestionGroupListWidget extends ListBasedWidget implements
 		if (dataGrid != null) {
 			dataGrid.removeFromParent();
 		}
-		dataGrid = new Grid(groupList.size(), 4);
-		int i = 0;
 		if (groupList != null) {
+			dataGrid = new Grid(groupList.size(), 4);
+			int i = 0;
 			for (QuestionGroupDto q : groupList) {
 				Label l = createListEntry(q.getDisplayName());
 				HorizontalPanel bp = new HorizontalPanel();

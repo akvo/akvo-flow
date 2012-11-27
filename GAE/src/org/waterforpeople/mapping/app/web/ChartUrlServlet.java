@@ -167,10 +167,10 @@ public class ChartUrlServlet extends AbstractRestApiServlet {
 
 	private Long nullSafeAdd(Long val1, Long val2) {
 		if (val1 == null) {
-			val1 = new Long(0);
+			val1 = 0L;
 		}
 		if (val2 == null) {
-			val2 = new Long(0);
+			val2 = 0L;
 		}
 		return val1 + val2;
 	}
