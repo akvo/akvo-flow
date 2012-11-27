@@ -8,6 +8,14 @@
       optionValuePath="content.value" 
       selectionBinding="FLOW.languageControl.dashboardLanguage" }}
    </label>
+
+
+    <label>Data server: {{view Ember.Select 
+      contentBinding="FLOW.dataserverControl.content" 
+      optionLabelPath="content.label" 
+      optionValuePath="content.value" 
+      selectionBinding="FLOW.dataserverControl.dataserver" }}
+   </label>
     
 
     <h3>For later use</h3>

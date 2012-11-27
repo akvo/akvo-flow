@@ -54,6 +54,45 @@ FLOW.languageControl = Ember.Object.create({
   }.observes('dashboardLanguage')
 });
 
+FLOW.dataserverControl = Ember.Object.create({
+  dataserver:null,
+
+  content:[
+    Ember.Object.create({label: "Localhost", value: "local"}),
+    Ember.Object.create({label: "Akvo Sandbox", value: "sandbox"}),
+    Ember.Object.create({label: "Fixtures", value: "fixtures"})],
+
+  changeServer:function(){
+    server=this.get("dataserver.value");
+    console.log('changing dataserver to ',server);
+    
+    if (server == "local") {
+      FLOW.selectedControl.set('selectedSurveyGroup',null);
+      FLOW.store = DS.Store.create({
+        revision: 8,
+        adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"restlocal", url:"http://localhost"})
+      });
+    }
+    else if (server == "sandbox") {
+      FLOW.selectedControl.set('selectedSurveyGroup',null);
+      FLOW.store = DS.Store.create({
+        revision: 8,
+        adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"restsandbox", url:"http://localhost"})
+      });
+    }
+    else if (server == "fixtures") {
+      FLOW.selectedControl.set('selectedSurveyGroup',null);
+      FLOW.store = DS.Store.create({
+        revision: 8,
+        adapter: DS.fixtureAdapter
+      });
+    }
+  }.observes('this.dataserver')
+});
+
+
+
+
 FLOW.questionTypeControl = Ember.Object.create({
 content:[
   Ember.Object.create({label: "Free text", value: "freeText"}),
