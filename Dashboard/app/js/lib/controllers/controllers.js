@@ -60,17 +60,27 @@ FLOW.dataserverControl = Ember.Object.create({
   content:[
     Ember.Object.create({label: "Localhost", value: "local"}),
     Ember.Object.create({label: "Akvo Sandbox", value: "sandbox"}),
+    Ember.Object.create({label: "Local VM", value: "vm"}),
     Ember.Object.create({label: "Fixtures", value: "fixtures"})],
 
   changeServer:function(){
-    server=this.get("dataserver.value");
-    console.log('changing dataserver to ',server);
-    
+    var host = "http://"+window.location.hostname,
+    server = this.get("dataserver.value");
+    console.log('changing dataserver to ', server);
+
     if (server == "local") {
       FLOW.selectedControl.set('selectedSurveyGroup',null);
       FLOW.store = DS.Store.create({
         revision: 8,
-        adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"restlocal", url:"http://localhost"})
+        adapter:DS.FLOWRESTAdapter.create({bulkCommit: false, namespace: "restlocal", url: host})
+        // adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"restlocal", url:"http://localhost"})
+      });
+    }
+    else if (server == "vm") {
+      FLOW.selectedControl.set('selectedSurveyGroup',null);
+      FLOW.store = DS.Store.create({
+        revision: 8,
+        adapter:DS.FLOWRESTAdapter.create({bulkCommit: false, namespace: "rest", url: host})
       });
     }
     else if (server == "sandbox") {
