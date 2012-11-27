@@ -5,7 +5,7 @@
 
       {{#view FLOW.CurrentDevicesTabView}}
 
-        <div id="devicesListTable_length" class="dataTables_length">
+    <!--     <div id="devicesListTable_length" class="dataTables_length">
             <label>
                 Show
                 <select size="1" name="deviceListTable_length">
@@ -20,10 +20,10 @@
 
             </label>
 
-        </div>
+        </div> -->
          
          {{#if FLOW.deviceControl.atLeastOneSelected}}
-            <a {{action "showDeleteDevicesdialog" target="this"}}>Delete Devices</a>
+            <a {{action "showDeleteDevicesdialog" target="this"}}>Disable Devices</a>
         {{/if}}
 
 
@@ -35,16 +35,16 @@
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
                 {{#each FLOW.deviceControl}}
-
-                <tr>
+                  <tr>
                     <td class="selection" style="text-align:left; padding:0 0 0 5px;"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
-                    <td class="phoneNumber" style="text-align:left; padding:0 0 0 5px;">{{phoneNumber}}</td>
+                    <td class="EMEI" style="text-align:left; padding:0 0 0 5px;">{{EMEI}}</td>
+                    <td class="MAC address" >{{macAddress}}</td> 
+                    <td class="phoneNumber" >{{phoneNumber}}</td>
                     <td class="deviceId" >{{deviceIdentifier}}</td>
                     <td class="deviceGroup">{{deviceGroup}}</td>
-                    <td class="lastUpdate" >{{lastUpdate}}</td>
-                    <td class="lastBeacon">{{lastLocationBeaconTime}}</td>
+                    <td class="lastBeacon">{{date1 lastPositionDate}}</td>
                     <td class="action"><a>action</a></td>
-                </tr>
+                  </tr>
                 {{/each}}
             </tbody>
             <!-- TABLE FOOTER-->

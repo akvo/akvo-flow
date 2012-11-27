@@ -1,3 +1,9 @@
+{{#view view.NavItemView item="EMEI" }}
+  <a {{action "sort" target="this"}}>EMEI</a>
+{{/view}}
+{{#view view.NavItemView item="macAddress" }}
+  <a {{action "sort" target="this"}}>MAC address</a>
+{{/view}}
 {{#view view.NavItemView item="phoneNumber" }}
   <a {{action "sort" target="this"}}>Phonenumber</a>
 {{/view}}
@@ -12,11 +18,5 @@
 {{/view}}
 {{#view view.NavItemView item="lastLocationBeaconTime" }}
    <a {{action "sort" target="this"}}>Last beacon received</a>
-{{/view}}
-{{#view view.NavItemView item="lastKnownLat" }}
-   <a {{action "sort" target="this"}}>Latest latitude</a>
-{{/view}}
-{{#view view.NavItemView item="lastKnownLong" }}
-  <a {{action "sort" target="this"}}>Latest longitude</a>
 {{/view}}
  <th> <a>Action</a></th>
