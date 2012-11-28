@@ -1,0 +1,89 @@
+<section class="fullWidth" id="currentDevices">
+
+ <section class="fullWidth " id="devicesList">
+        <!-- DEVICES TABLE-->
+
+      {{#view FLOW.CurrentDevicesTabView}}
+
+    <div id="devicesListTable_length" class="dataTables_length">
+           <!--  <label>
+                Show
+                <select size="1" name="deviceListTable_length">
+                    <option value="10" selected="selected">10</option> 
+                    <option value="20" >20</option> 
+                    <option value="50" >50</option> 
+                    <option value="100" >100</option> 
+
+                </select>
+
+                &nbsp;entries
+
+            </label> -->
+
+        </div> 
+         
+         {{#if FLOW.deviceControl.atLeastOneSelected}}
+            <a {{action "showDeleteDevicesdialog" target="this"}}>Disable Devices</a>
+        {{/if}}
+
+
+        <table class="dataTable" id="surveyDataTable">
+            <!-- TABLE HEADER-->
+            <thead>
+                <tr>
+                {{#view FLOW.ColumnView item="select" }}
+                    {{view Ember.Checkbox checkedBinding="FLOW.deviceControl.allAreSelected"}}
+                {{/view}}
+                {{#view FLOW.ColumnView item="EMEI" type="device"}}
+                    <a {{action "sort" target="this"}}>EMEI</a>
+                {{/view}}
+                {{#view FLOW.ColumnView item="macAddress" type="device"}}
+                    <a {{action "sort" target="this"}}>MAC Address</a>
+                {{/view}}
+                {{#view FLOW.ColumnView item="phoneNumber" type="device"}}
+                    <a {{action "sort" target="this"}}>Phone number</a>
+                {{/view}}
+                {{#view FLOW.ColumnView item="deviceIdentifier" type="device"}}
+                   <a {{action "sort" target="this"}}>Device ID</a>
+                {{/view}}
+                {{#view FLOW.ColumnView item="deviceGroup" type="device"}}
+                   <a {{action "sort" target="this"}}>Device group</a>
+                {{/view}}
+                {{#view FLOW.ColumnView item="lastPositionDate" type="device"}}
+                   <a {{action "sort" target="this"}}>Last Contact</a>
+                {{/view}}
+                 <th> <a>Action</a></th>
+                </tr>
+            </thead>
+            <!-- TABLE BODY: MAIN CONTENT-->
+            <tbody>
+                {{#each FLOW.deviceControl}}
+                  <tr>
+                    <td class="selection" style="text-align:left; padding:0 0 0 5px;"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
+                    <td class="EMEI" style="text-align:left; padding:0 0 0 5px;">{{EMEI}}</td>
+                    <td class="MAC address" >{{macAddress}}</td> 
+                    <td class="phoneNumber" >{{phoneNumber}}</td>
+                    <td class="deviceId" >{{deviceIdentifier}}</td>
+                    <td class="deviceGroup">{{deviceGroup}}</td>
+                    <td class="lastBeacon">{{date1 lastPositionDate}}</td>
+                    <td class="action"><a>action</a></td>
+                  </tr>
+                {{/each}}
+            </tbody>
+            <!-- TABLE FOOTER-->
+            <tfoot>
+                <tr>
+                    <td colspan="7"><small>This is the footer.</small></td>
+                </tr>
+            </tfoot>
+        </table>
+   <!--     {{#if view.showConfirmDeletedialog}}
+            <a {{action "doDelete" target="this"}}>Ok</a>
+            <a {{action "cancelDelete" target="this"}}>Cancel</a>
+        {{/if}}     -->
+
+        {{/view}}
+    </section>
+       
+
+</section>

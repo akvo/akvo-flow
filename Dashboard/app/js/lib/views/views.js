@@ -13,6 +13,10 @@ FLOW.ApplicationView = Ember.View.extend({
 	templateName: 'application'
 });
 
+// ***********************************************//
+//                      Handlebar helpers
+// ***********************************************//
+
 // localisation helper
 Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
   return Ember.String.loc(i18nKey);
@@ -96,9 +100,9 @@ FLOW.NavSurveysEditView = Ember.View.extend({ templateName: 'navSurveys/nav-surv
 
 // devices views
 FLOW.NavDevicesView = Ember.View.extend({ templateName: 'navDevices/nav-devices'});
-FLOW.CurrentDevicesView = Ember.View.extend({ templateName: 'navDevices/current-devices'});
-FLOW.AssignSurveysOverviewView = Ember.View.extend({ templateName: 'navDevices/assign-survey-overview'});
-FLOW.EditSurveyAssignmentView = Ember.View.extend({ templateName: 'navDevices/edit-survey-assignment'});
+FLOW.CurrentDevicesView = Ember.View.extend({ templateName: 'navDevices/devices-list-tab/devices-list'});
+FLOW.AssignSurveysOverviewView = Ember.View.extend({ templateName: 'navDevices/assignment-list-tab/assignment-list'});
+FLOW.EditSurveyAssignmentView = Ember.View.extend({ templateName: 'navDevices/assignment-edit-tab/assignment-edit'});
 
 
 // data views
@@ -151,3 +155,34 @@ FLOW.DevicesSubnavView = Em.View.extend({
 });
 
 
+FLOW.ColumnView = Ember.View.extend({
+	tagName: 'th',
+	item:null,
+	type:null,
+		
+	classNameBindings: ['isActiveAsc:sorting_asc','isActiveDesc:sorting_desc'],
+		
+	isActiveAsc: function() {
+		return (this.get('item') === FLOW.tableColumnControl.get('selected')) && (FLOW.tableColumnControl.get('sortAscending')===true);
+	}.property('item', 'FLOW.tableColumnControl.selected','FLOW.tableColumnControl.sortAscending').cacheable(),
+
+	isActiveDesc: function() {
+		return (this.get('item') === FLOW.tableColumnControl.get('selected'))&&(FLOW.tableColumnControl.get('sortAscending')===false);
+	}.property('item', 'FLOW.tableColumnControl.selected','FLOW.tableColumnControl.sortAscending').cacheable(),
+
+	sort:function(){
+		if ((this.get('isActiveAsc'))||(this.get('isActiveDesc'))) {
+			FLOW.tableColumnControl.toggleProperty('sortAscending');
+		} else {
+			FLOW.tableColumnControl.set('sortProperties',[this.get('item')]);
+			FLOW.tableColumnControl.set('selected',this.get('item'));
+		}
+
+		if (this.get('type') === 'device') {
+			FLOW.deviceControl.getSortInfo();
+		} else if (this.get('type') === 'assignment'){
+			FLOW.assignmentControl.getSortInfo();
+		}
+
+	}
+})
