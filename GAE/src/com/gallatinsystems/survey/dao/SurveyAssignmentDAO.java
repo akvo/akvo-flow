@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -13,30 +13,15 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+package com.gallatinsystems.survey.dao;
 
-package com.gallatinsystems.device.dao;
+import org.waterforpeople.mapping.domain.SurveyAssignment;
 
-import com.gallatinsystems.device.domain.DeviceGroup;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
-/**
- * 
- * Dao for manipulating deviceGroups
- * 
- */
-public class DeviceGroupDAO extends BaseDAO<DeviceGroup> {
+public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
 
-	public DeviceGroupDAO() {
-		super(DeviceGroup.class);
-	}
-
-	/**
-	 * finds a single device group by code
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public DeviceGroup findByDeviceGroupName(String name) {
-		return super.findByProperty("code", name, "String");
+	public SurveyAssignmentDAO() {
+		super(SurveyAssignment.class);
 	}
 }

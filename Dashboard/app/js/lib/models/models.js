@@ -108,7 +108,7 @@ FLOW.Device = FLOW.BaseModel.extend({
 });
 
 FLOW.SurveyAssignment = FLOW.BaseModel.extend({
-	name: DS.attr('name'),
+	name: DS.attr('string'),
 	startDate: DS.attr('date'),
 	endDate: DS.attr('date'),
 	devices: DS.hasMany(FLOW.Device),

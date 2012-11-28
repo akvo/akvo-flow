@@ -111,12 +111,10 @@ time {
 img, object, video, embed {
 	max-width: 100%;
 }
-
 /* Sine the map pin need no max-width */ 
 #flowMap img {
 	max-width: none;
 }
-
 .hidden {
 	display: none !important;
 }
@@ -186,9 +184,9 @@ a:hover {
 
 /* Custom text-selection colors (remove any text shadows: twitter.com/miketaylr/status/12228805301) */
 ::-moz-selection {
-	background: #930;
-	color: #fff;
-	text-shadow: none;
+ background: #930;
+ color: #fff;
+ text-shadow: none;
 }
 ::selection {
 	background: #930;
@@ -1090,7 +1088,8 @@ th.action {
 	-moz-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
 	-webkit-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
 	-o-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
-*/}
+*/
+}
 .no-textshadow #groupBar h2, .no-textshadow #newSurveyInfo h2 {
 	color: rgb(125, 125, 125);
 }
@@ -1680,7 +1679,7 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	position: relative;
 	display: block;
 	overflow: hidden;
-	margin:15px 0 15px 15px;
+	margin: 15px 0 15px 15px;
 	padding: 0.85em 0.5em 0.75em 35px;
 	width: 15%;
 	background: url(../images/insertQuestion.png) 10px center no-repeat;
@@ -1730,13 +1729,12 @@ span.qtnGroupHead {
 	font-size: 1.1em;
 }
 .aQuestionSet header h1.qtnGroupTitle {
-	display:inline-block;
-	width:36%;
+	display: inline-block;
+	width: 36%;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	overflow:hidden;
+	overflow: hidden;
 }
-
 .aQuestionSet header h1.qtnGroupTitle a {
 	color: rgb(38, 8, 89);
 }
@@ -1748,18 +1746,17 @@ span.qtnGroupHead {
 	background: url(../images/editTinyIcon.png) left center no-repeat;
 }
 .aQuestionSet header input {
-	width:25%;
-	border:thin solid rgb(224,224,224);
-	margin:5px 0;
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-	-o-border-radius:3px;
-	border-radius:3px;
-	}
+	width: 25%;
+	border: thin solid rgb(224,224,224);
+	margin: 5px 0;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px;
+}
 .aQuestionSet header input + a.smallBtn {
-	margin:0 5px 0 0;
-	}
-	
+	margin: 0 5px 0 0;
+}
 .aQuestionSet footer {
 	position: relative;
 	display: block;
@@ -1836,19 +1833,15 @@ nav.groupActionMenu.insertMenu a {
 	text-transform: uppercase;
 	color: rgb(246, 160, 26);
 	background: transparent url(../images/insertGroupIcn.png) left top no-repeat;
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-	-o-border-radius:3px;
-	border-radius:3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-o-border-radius: 3px;
+	border-radius: 3px;
 }
 nav.groupActionMenu.insertMenu a:hover {
 	color: rgb(255,255,255);
 	background: rgb(58,58,58) url(../images/insertGroupIcn.png) left bottom no-repeat;
 }
-
-
-
-
 nav.questionActionMenu {
 	display: block;
 	padding: 1.5em 0;
@@ -1958,9 +1951,8 @@ nav.questionActionMenu a:hover {
 	padding: 6px 4%;
 }
 .menuCentre ul li a.smallBtn {
-	margin:0 5px 0 0;
-	}
-
+	margin: 0 5px 0 0;
+}
 .innerContent nav.smallMenu {
 	position: absolute;
 	top: 1px;
@@ -1978,13 +1970,13 @@ nav.questionActionMenu a:hover {
 	background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* W3C */
  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0 ); /* IE6-8 */
 	box-shadow: -1px 1px 0 rgb(222,222,222);
-	margin:0;
+	margin: 0;
 }
 .innerContent nav {
 	display: block;
 	padding: 0.5em 0;
-	margin:0 auto;
-	background:transparent;
+	margin: 0 auto;
+	background: transparent;
 }
 .innerContent nav ul {
 	display: block;
@@ -1993,14 +1985,12 @@ nav.questionActionMenu a:hover {
 	width: 100%;
 	text-align: center;
 }
-
 .innerContent nav ul li {
-	display:inline;
+	display: inline;
 }
 .innerContent nav ul li a.standardBtn {
-	margin:20px auto 10px auto;}
-
-
+	margin: 20px auto 10px auto;
+}
 .innerContent nav.smallMenu ul {
 	margin: 0;
 	padding: 0;
@@ -2246,4 +2236,31 @@ nav.smallMenu ul li a.showQuestion:hover {
 .dataSection label {
 	font-weight: normal;
 	font-size: 1em;
+}
+/******************************************************************************
+									FLOW MAP
+******************************************************************************/
+#flowMap {
+	float: left;
+	width: 75%;
+	height: 600px;
+}
+#pointDetails {
+	float: right;
+	width: 23%;
+	padding: 10px 1% 0px 1%;
+	height: 590px;
+	background: rgb(234,234,234);
+	overflow-y: scroll;
+	overflow-x: none;
+}
+#pointDetails li {
+	font-size: 1.2em;
+	overflow: hidden;
+	margin: 0 0 5px 0;
+}
+#flowMapLegend {
+	width: 98%;
+	background: rgb(244,244,244);
+	padding: 5px 1%;
 }
