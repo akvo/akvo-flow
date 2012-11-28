@@ -1118,7 +1118,7 @@ public class AccessPointHelper {
 					Double distance = CoordinateUtilities.computeDistance(
 							ap.getLatitude(), ap.getLongitude(),
 							wp.getLatitude(), wp.getLongitude());
-					if (distance < minDistance || minDistance == null) {
+					if (minDistance == null || distance < minDistance) {
 						minDistance = CoordinateUtilities.computeDistance(
 								ap.getLatitude(), ap.getLongitude(),
 								wp.getLatitude(), wp.getLongitude());
@@ -1131,7 +1131,7 @@ public class AccessPointHelper {
 									.getNumberWithinAcceptableDistance() + 1);
 				} else {
 					minDistanceWaterPoint
-							.setNumberOutsideAcceptableDistance(minDistanceWaterPoint
+							.setNumberOutsideAcceptableDistance(minDistanceWaterPoint //FIXME: NPE
 									.getNumberOutsideAcceptableDistance());
 				}
 				apDao.save(minDistanceWaterPoint);

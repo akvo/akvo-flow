@@ -195,5 +195,7 @@
 	<string name="radiuslabel">Search radius for Points</string>
 	<string name="radiusprompt">Radius (km)</string>
 	<string name="addtestpoints">Add test points</string>
-	<string name="appversion">1.9.36</string>
+	<string name="updateavail">Update Available</string>
+	<string name="clicktoinstall">Click to install</string>
+	<string name="appversion">1.9.37</string>
 </resources>

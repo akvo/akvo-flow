@@ -137,7 +137,7 @@ public class HttpUtil {
 				// if the file exists, return the local version
 				bitMap = BitmapFactory.decodeFile(f.getAbsolutePath());
 				return bitMap;
-			} 
+			}
 		}
 		// if we get here, then we had a cache miss (or aren't using the cache)
 		try {
@@ -170,7 +170,8 @@ public class HttpUtil {
 	}
 
 	/**
-	 * downloads the resource at url and saves the contents to file
+	 * downloads the resource at url and saves the contents to file. This method
+	 * will close the write it binds to the fileOutputStream passed in
 	 * 
 	 * @param url
 	 * @param file
@@ -195,6 +196,7 @@ public class HttpUtil {
 					writer.write(buffer, 0, bytesRead);
 					bytesRead = reader.read(buffer);
 				}
+				writer.flush();
 			} finally {
 				if (writer != null) {
 					writer.close();
@@ -203,8 +205,9 @@ public class HttpUtil {
 					reader.close();
 				}
 			}
-		}else{
-			throw new Exception("Error performing httpGet: "+response.getStatusLine().toString());
+		} else {
+			throw new Exception("Error performing httpGet: "
+					+ response.getStatusLine().toString());
 		}
 	}
 

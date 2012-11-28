@@ -46,7 +46,7 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	public void setPath(String path) {
 		this.path = path;
 	}
-	
+
 	public Date getCreatedDateTime() {
 		return createdDateTime;
 	}

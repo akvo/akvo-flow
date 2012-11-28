@@ -105,6 +105,7 @@ import org.waterforpeople.mapping.helper.KMLHelper;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
@@ -341,7 +342,7 @@ public class TestHarnessServlet extends HttpServlet {
 				for (Question q : qList) {
 					Integer max = groupMaxCount.get(q.getQuestionGroupId());
 					if (max == null) {
-						max = new Integer(1);
+						max = 1;
 					} else {
 						max = max + 1;
 					}
@@ -1757,9 +1758,28 @@ public class TestHarnessServlet extends HttpServlet {
 				u.setSuperAdmin(true);
 			}
 
+		}else if("fixImages".equals(action)){
+			String surveyId = req.getParameter("surveyId");
+			String find = req.getParameter("find");
+			String replace = req.getParameter("replace");
+			if(surveyId != null && !surveyId.trim().isEmpty() && find!=null && !find.trim().isEmpty()){
+				fixBadImage(surveyId,find,replace);
+			}
 		}
 	}
 
+	private void fixBadImage(String surveyId, String findString, String replaceString){
+		QuestionAnswerStoreDao dao = new QuestionAnswerStoreDao();
+		String replaceVal = replaceString !=null?replaceString:"";
+		List<QuestionAnswerStore> responses = dao.listByTypeAndDate("PHOTO", new Long(surveyId), null, Constants.ALL_RESULTS, null);
+		if(responses != null){
+			for(QuestionAnswerStore resp: responses){
+				if(resp.getValue()!=null && resp.getValue().contains(findString)){
+					resp.setValue(resp.getValue().replace(findString, replaceVal));
+				}
+			}
+		}
+	}
 	private void fixNullQuestionGroupNames() {
 		QuestionGroupDao dao = new QuestionGroupDao();
 		List<QuestionGroup> groups = dao.listQuestionGroupsByName(null);

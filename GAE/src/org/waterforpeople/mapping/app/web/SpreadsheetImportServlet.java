@@ -20,6 +20,7 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +61,7 @@ public class SpreadsheetImportServlet extends AbstractRestApiServlet {
 			org.apache.commons.codec.binary.Base64 b64encoder = new org.apache.commons.codec.binary.Base64();
 			byte[] keyContents = b64encoder.decode(importReq.getKey());
 			EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyContents);
-			log.info("SessionToken: " + importReq.getSessionToken()+"Algo: " + algorithm + " key: " + importReq.getKey() + " keySpec: " + importReq.getKeySpec());
+			log.info("SessionToken: " + importReq.getSessionToken()+"Algo: " + algorithm + " key: " + Arrays.toString(importReq.getKey()) + " keySpec: " + importReq.getKeySpec());
 			PrivateKey key = keyFactory.generatePrivate(privateKeySpec);
 			
 			mappingService.processSurveySpreadsheetAsync(importReq.getSessionToken(),key,importReq.getIdentifier(),importReq.getStartRow(), importReq.getGroupId());

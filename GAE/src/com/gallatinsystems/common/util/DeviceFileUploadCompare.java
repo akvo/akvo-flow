@@ -238,7 +238,6 @@ public class DeviceFileUploadCompare {
 	}
 
 	public void compare() {
-		HashMap<S3Item, DeviceFileResponseInternalContainer> filesMap = new HashMap<S3Item, DeviceFileResponseInternalContainer>();
 		Integer iCount = 0;
 		this.writeHeader();
 		for (S3Item item : s3ItemList) {

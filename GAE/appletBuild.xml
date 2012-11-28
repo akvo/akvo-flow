@@ -1,110 +1,108 @@
 <project name="exporterApplet" default="signjar" basedir=".">
 
-	<property file="build.properties" />
-	<property name="src" location="src" />
-	<property name="build" location="appletbin" />
-	<property name="dist" location="war" />
+    <property file="build.properties" />
+    <property name="src" location="src" />
+    <property name="build" location="appletbin" />
+    <property name="dist" location="war" />
 
-	<path id="project.classpath">
-		<pathelement path="war/WEB-INF/classes" />
-		<fileset dir="war/WEB-INF/lib">
-			<include name="**/*.jar" />
-		</fileset>
-		<fileset dir="${sdk.dir}/lib">
-			<include name="shared/**/*.jar" />
-		</fileset>
-		<pathelement path="${gwtlibs.dir}/gwt-user.jar" />
-		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
-		<fileset dir="war">
-			<include name="poi-3.5-signed.jar" />
-			<include name="poi-3.7-20101029.jar" />
-			<include name="poi-ooxml-3.7-20101029.jar" />
-			<include name="poi-ooxml-schemas-3.7-20101029.jar" />
-			<include name="xbean.jar" />
-			<include name="velocity-1.6.2-dep.jar" />
-			<include name="geoapi-2.3-M1.jar" />
-			<include name="geoapi-pending-2.3-M1.jar" />
-			<include name="gt-api-2.6.5.jar" />
-			<include name="gt-main-2.6.5.jar" />
-			<include name="gt-metadata-2.6.5.jar" />
-			<include name="jts-1.11-serializable-indexes.jar" />
-			<include name="gt-api-2.6.5.jar" />
-			<include name="jcommon-1.0.16.jar" />
-			<include name="jfreechart-1.0.13.jar" />
-			<include name="gdata-core-1.0.jar" />
-		</fileset>
-		<fileset dir="gwtlibs">
-			<include name="gwt-dnd-3.0.1.jar" />
-			<include name="gwt-maps.jar" />
-			<include name="gwt-visualization.jar" />
-		</fileset>
-		<pathelement location="build" />
-		<pathelement location="src" />
-	</path>
+    <path id="project.classpath">
+        <pathelement path="war/WEB-INF/classes" />
+        <fileset dir="war/WEB-INF/lib">
+            <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${sdk.dir}/lib">
+            <include name="shared/**/*.jar" />
+        </fileset>
+        <pathelement path="${gwtlibs.dir}/gwt-user.jar" />
+        <pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
+        <fileset dir="war">
+            <include name="poi-3.5-signed.jar" />
+            <include name="poi-3.8-20120326.jar" />
+            <include name="poi-ooxml-3.8-20120326.jar" />
+            <include name="poi-ooxml-schemas-3.8-20120326.jar" />
+            <include name="xbean.jar" />
+            <include name="velocity-1.6.2-dep.jar" />
+            <include name="geoapi-2.3-M1.jar" />
+            <include name="geoapi-pending-2.3-M1.jar" />
+            <include name="gt-api-2.6.5.jar" />
+            <include name="gt-main-2.6.5.jar" />
+            <include name="gt-metadata-2.6.5.jar" />
+            <include name="jts-1.11-serializable-indexes.jar" />
+            <include name="gt-api-2.6.5.jar" />
+            <include name="jcommon-1.0.16.jar" />
+            <include name="jfreechart-1.0.13.jar" />
+            <include name="gdata-core-1.0.jar" />
+        </fileset>
+        <fileset dir="gwtlibs">
+            <include name="gwt-dnd-3.0.1.jar" />
+            <include name="gwt-maps.jar" />
+            <include name="gwt-visualization.jar" />
+        </fileset>
+        <pathelement location="build" />
+        <pathelement location="src" />
+    </path>
+
+    <target name="compile" depends="makedir">
+        <javac classpathref="project.classpath" srcdir="${src}" destdir="${build}" debug="true" source="1.5">
+            <include name="com/gallatinsystems/gis/app/**" />
+            <include name="com/gallatinsystems/framework/dataexport/**" />
+            <include name="com/gallatinsystems/framework/gwt/dto/client/**" />
+            <include name="org/waterforpeople/mapping/dataexport/**" />
+            <include name="org/waterforpeople/mapping/app/gwt/client/accesspoint/**" />
+            <include name="org/waterforpeople/mapping/app/gwt/client/survey/**" />
+            <include name="org/waterforpeople/mapping/app/gwt/client/surveyinstance/**" />
+            <include name="org/waterforpeople/mapping/app/gwt/client/location/**" />
+            <include name="org/waterforpeople/mapping/app/web/dto/**" />
+            <include name="com/gallatinsystems/framework/rest/**" />
+            <include name="com/gallatinsystems/common/util/**" />
+        </javac>
+
+    </target>
+
+    <target name="package" depends="compile">
+        <copy todir="${build}/template">
+            <fileset dir="war">
+                <include name="*.vm" />
+            </fileset>
+        </copy>
+        <jar destfile="${dist}/exporterapplet.jar" basedir="${build}">
+        </jar>
+    </target>
+
+    <target name="signjar" depends="package">
+        <signjar  jar="${dist}/exporterapplet.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+    </target>
+
+    <target name="sign3rdjar" depends="">
+        <signjar  jar="war/velocity-1.6.2-dep.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/geoapi-2.3-M1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/geoapi-pending-2.3-M1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/gt-api-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/gt-main-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/gt-metadata-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/jts-1.11-serializable-indexes.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/jdom-1.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/commons-beanutils-1.7.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/commons-logging-1.1.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/gt-shapefile-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/jcommon-1.0.16.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/jfreechart-1.0.13.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/poi-3.8-20120326.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/poi-ooxml-3.8-20120326.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/poi-ooxml-schemas-3.8-20120326.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/xbean.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/dom4j-1.6.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/gdata-core-1.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+    </target>
 
 
-	<target name="compile" depends="makedir">
-		<javac classpathref="project.classpath" srcdir="${src}" destdir="${build}" debug="true" source="1.5">
-			<include name="com/gallatinsystems/gis/app/**" />
-			<include name="com/gallatinsystems/framework/dataexport/**" />
-			<include name="com/gallatinsystems/framework/gwt/dto/client/**" />
-			<include name="org/waterforpeople/mapping/dataexport/**" />
-			<include name="org/waterforpeople/mapping/app/gwt/client/accesspoint/**" />
-			<include name="org/waterforpeople/mapping/app/gwt/client/survey/**" />
-			<include name="org/waterforpeople/mapping/app/gwt/client/surveyinstance/**" />
-			<include name="org/waterforpeople/mapping/app/gwt/client/location/**" />
-			<include name="org/waterforpeople/mapping/app/web/dto/**" />
-			<include name="com/gallatinsystems/framework/rest/**" />
-			<include name="com/gallatinsystems/common/util/**" />
-		</javac>
+    <target name="clean">
+        <delete dir="${build}" />
+        <delete file="${dist}/exporterapplet.jar" />
+    </target>
 
-	</target>
-
-
-	<target name="package" depends="compile">
-		<copy todir="${build}/template">
-			<fileset dir="war">
-				<include name="*.vm" />
-			</fileset>
-		</copy>
-		<jar destfile="${dist}/exporterapplet.jar" basedir="${build}">
-		</jar>
-	</target>
-
-	<target name="signjar" depends="package">
-		<signjar jar="${dist}/exporterapplet.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-	</target>
-	<target name="sign3rdjar" depends="">
-		<signjar jar="war/velocity-1.6.2-dep.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/geoapi-2.3-M1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/geoapi-pending-2.3-M1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/gt-api-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/gt-main-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/gt-metadata-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/jts-1.11-serializable-indexes.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/jdom-1.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/commons-beanutils-1.7.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/commons-logging-1.1.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/gt-shapefile-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/jcommon-1.0.16.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/jfreechart-1.0.13.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/poi-3.7-20101029.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/poi-ooxml-3.7-20101029.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/poi-ooxml-schemas-3.7-20101029.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/xbean.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/dom4j-1.6.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-		<signjar jar="war/gdata-core-1.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-	</target>
-
-
-	<target name="clean">
-		<delete dir="${build}" />
-		<delete file="${dist}/exporterapplet.jar" />
-	</target>
-
-	<target name="makedir">
-		<mkdir dir="${build}" />
-	</target>
-
+    <target name="makedir">
+        <mkdir dir="${build}" />
+    </target>
 
 </project>

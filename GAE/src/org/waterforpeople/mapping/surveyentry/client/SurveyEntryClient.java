@@ -221,7 +221,7 @@ public class SurveyEntryClient implements EntryPoint, CompletionListener {
 		if (currentAuth != null) {
 			Long count = currentAuth.getUsageCount();
 			if (count == null) {
-				count = new Long(1);
+				count = 1L;
 			} else {
 				count = count + 1;
 			}

@@ -70,6 +70,11 @@ public class SurveyQuestionTranslationDialog extends DialogBox {
 			put(TEXT_CONSTANTS.french(), "fr");
 			put(TEXT_CONSTANTS.spanish(), "es");
 			put(TEXT_CONSTANTS.kinyarwanda(), "rw");
+			//Issue #3, 4 more
+			put(TEXT_CONSTANTS.chichewa(), "ny");
+			put(TEXT_CONSTANTS.bengali(), "bn");
+			put(TEXT_CONSTANTS.hindi(), "hi");
+			put(TEXT_CONSTANTS.quechua(), "qu");			
 		}
 	};
 	private Map<String, String> effectiveLanguages;

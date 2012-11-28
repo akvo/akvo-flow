@@ -81,7 +81,7 @@ public class ViewUtil {
 		showConfirmDialog(titleId, textId, parentContext, false,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						if(dialog != null){
+						if (dialog != null) {
 							dialog.cancel();
 						}
 					}
@@ -104,7 +104,7 @@ public class ViewUtil {
 				listener, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						if(dialog != null){
+						if (dialog != null) {
 							dialog.dismiss();
 						}
 					}
@@ -185,6 +185,25 @@ public class ViewUtil {
 		Notification notification = new Notification(icon, headline,
 				System.currentTimeMillis());
 		Intent notificationIntent = new Intent(context, DataSyncService.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+				notificationIntent, 0);
+		notification.setLatestEventInfo(context, headline, body, contentIntent);
+		notifcationMgr.notify(id, notification);
+	}
+
+	public static void fireNotification(String headline, String body,
+			Context context, int id, Integer iconId, Intent notificationIntent,
+			boolean includeSound) {
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager notifcationMgr = (NotificationManager) context
+				.getSystemService(ns);
+		int icon = android.R.drawable.ic_dialog_info;
+		if (iconId != null) {
+			icon = iconId;
+		}
+		Notification notification = new Notification(icon, headline,
+				System.currentTimeMillis());
+		notification.defaults |= Notification.DEFAULT_SOUND;
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
 				notificationIntent, 0);
 		notification.setLatestEventInfo(context, headline, body, contentIntent);
@@ -282,7 +301,7 @@ public class ViewUtil {
 										public void onClick(
 												DialogInterface dialog,
 												int which) {
-											if(dialog != null){
+											if (dialog != null) {
 												dialog.dismiss();
 											}
 											displaySelectionDialog(context,
@@ -317,13 +336,13 @@ public class ViewUtil {
 						String val = input.getText().toString();
 						if (ConstantUtil.ADMIN_AUTH_CODE.equals(val)) {
 							listener.onAuthenticated();
-							if(dialog!=null){
+							if (dialog != null) {
 								dialog.dismiss();
 							}
 						} else {
 							showConfirmDialog(R.string.authfailed,
 									R.string.invalidpassword, parentContext);
-							if(dialog != null){
+							if (dialog != null) {
 								dialog.dismiss();
 							}
 						}
@@ -360,7 +379,7 @@ public class ViewUtil {
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						if(dialog!=null){
+						if (dialog != null) {
 							dialog.dismiss();
 						}
 					}

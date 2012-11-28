@@ -16,6 +16,9 @@
 
 package org.waterforpeople.mapping.portal.client.widgets;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceService;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceServiceAsync;
@@ -35,7 +38,10 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 
 /**
- * Displays summary information
+ * Displays summary information on:
+ *   Surveys, inside their groups
+ *   Devices, only the phone number
+ *   Users, only the name (or email address, if name is empty)
  * 
  * @author Christopher Fagiani
  * 
@@ -75,9 +81,15 @@ public class SummaryPortlet extends Portlet {
 
 			public void onSuccess(DeviceDto[] result) {
 				if (result != null) {
+					//Sort list alphabetically
+					ArrayList<String> nl = new ArrayList<String>(result.length);
 					for (int i = 0; i < result.length; i++) {
-						TreeItem tItem = new TreeItem(
-								result[i].getPhoneNumber());
+						nl.add(result[i].getPhoneNumber());
+					}
+					Collections.sort(nl);
+					//Add to device tree
+					for (String s:nl) {
+						TreeItem tItem = new TreeItem(s);
 						deviceRoot.addItem(tItem);
 
 					}
@@ -95,13 +107,22 @@ public class SummaryPortlet extends Portlet {
 
 			public void onSuccess(UserDto[] result) {
 				if (result != null) {
+					//Sort list alphabetically
+					ArrayList<String> ul = new ArrayList<String>(result.length);
 					for (int i = 0; i < result.length; i++) {
 						if (result[i].getUserName() != null) {
-							userRoot.addItem(result[i].getUserName());
+							ul.add(result[i].getUserName());
 						} else {
-							userRoot.addItem(result[i].getEmailAddress());
+							ul.add(result[i].getEmailAddress());
 						}
 					}
+					Collections.sort(ul);
+					//Add to device tree
+					for (String s:ul) {
+						TreeItem tItem = new TreeItem(s);
+						userRoot.addItem(tItem);
+					}
+
 				}
 			}
 		};

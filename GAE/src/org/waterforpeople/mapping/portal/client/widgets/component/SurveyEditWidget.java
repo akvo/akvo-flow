@@ -98,6 +98,12 @@ public class SurveyEditWidget extends Composite implements ContextAware,
 		defaultLangBox.addItem(TEXT_CONSTANTS.english(), "en");
 		defaultLangBox.addItem(TEXT_CONSTANTS.spanish(), "es");
 		defaultLangBox.addItem(TEXT_CONSTANTS.kinyarwanda(), "kw");
+		//no french? Issue #3 expansion below
+		defaultLangBox.addItem(TEXT_CONSTANTS.chichewa(), "ny");
+		defaultLangBox.addItem(TEXT_CONSTANTS.bengali(), "bn");
+		defaultLangBox.addItem(TEXT_CONSTANTS.hindi(), "hi");
+		defaultLangBox.addItem(TEXT_CONSTANTS.quechua(), "qu");			
+		
 		defaultLangBox.setSelectedIndex(0);
 		ConfigurationServiceAsync configService = GWT
 				.create(ConfigurationService.class);

@@ -160,13 +160,13 @@ public class SurveyReplicationImporter {
 			}
 			DtoMarshaller.copyToCanonical(canonical, dto);
 			if (canonical instanceof Survey) {
-				if (surveyDtoStatus.equals(Survey.Status.IMPORTED)) {
+				if (surveyDtoStatus.equals(Survey.Status.IMPORTED.toString())) {
 					((Survey) canonical).setStatus(Survey.Status.IMPORTED);
-				} else if (surveyDtoStatus.equals(Survey.Status.NOT_PUBLISHED)) {
+				} else if (surveyDtoStatus.equals(Survey.Status.NOT_PUBLISHED.toString())) {
 					((Survey) canonical).setStatus(Survey.Status.NOT_PUBLISHED);
-				} else if (surveyDtoStatus.equals(Survey.Status.PUBLISHED)) {
+				} else if (surveyDtoStatus.equals(Survey.Status.PUBLISHED.toString())) {
 					((Survey) canonical).setStatus(Survey.Status.PUBLISHED);
-				} else if (surveyDtoStatus.equals(Survey.Status.VERIFIED)) {
+				} else if (surveyDtoStatus.equals(Survey.Status.VERIFIED.toString())) {
 					((Survey) canonical).setStatus(Survey.Status.VERIFIED);
 				}
 			}

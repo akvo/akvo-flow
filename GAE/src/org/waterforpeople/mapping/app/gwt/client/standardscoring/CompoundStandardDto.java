@@ -17,7 +17,6 @@
 package org.waterforpeople.mapping.app.gwt.client.standardscoring;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.gallatinsystems.standards.domain.CompoundStandard.RuleType;
 
 public class CompoundStandardDto extends BaseDto {
 

@@ -35,8 +35,12 @@ public class RemoteExceptionRequest extends RestRequest {
 
 	private static final long serialVersionUID = 8303938931927567747L;
 	private static final String FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
-	private static final DateFormat DATE_FMT = new SimpleDateFormat(
-			FORMAT_STRING);
+	private static final ThreadLocal<DateFormat> DATE_FMT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat(FORMAT_STRING);
+		};
+	};
 
 	public static final String SAVE_TRACE_ACTION = "saveTrace";
 
@@ -115,7 +119,7 @@ public class RemoteExceptionRequest extends RestRequest {
 		if (req.getParameter(DATE_PARAM) != null
 				&& req.getParameter(DATE_PARAM).trim().length() > 0) {
 			try {
-				date = DATE_FMT.parse(req.getParameter(DATE_PARAM));
+				date = DATE_FMT.get().parse(req.getParameter(DATE_PARAM));
 			} catch (Exception e) {
 				addError(new RestError(RestError.BAD_DATATYPE_CODE,
 						RestError.BAD_DATATYPE_MESSAGE, DATE_PARAM

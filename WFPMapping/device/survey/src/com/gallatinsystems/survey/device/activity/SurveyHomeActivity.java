@@ -42,6 +42,7 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
+import com.gallatinsystems.survey.device.service.ApkUpdateService;
 import com.gallatinsystems.survey.device.service.BootstrapService;
 import com.gallatinsystems.survey.device.service.DataSyncService;
 import com.gallatinsystems.survey.device.service.ExceptionReportingService;
@@ -81,7 +82,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);		
+		super.onCreate(savedInstanceState);
 		props = new PropertyUtil(getResources());
 		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
 				.getInstance());
@@ -114,13 +115,14 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 
 		if (currentUserId == null) {
 			loadLastUser();
-		}		
+		}
 
 		startSyncService();
 		startService(SurveyDownloadService.class);
 		startService(LocationService.class);
 		startService(PrecacheService.class);
 		startService(BootstrapService.class);
+		startService(ApkUpdateService.class);
 		startService(ExceptionReportingService.class);
 	}
 
@@ -250,14 +252,14 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 					} else {
 						Log.e(TAG, "Survey for selection is null");
 					}
-				}else{
+				} else {
 					AlertDialog.Builder builder = new AlertDialog.Builder(this);
 					builder.setMessage(R.string.pleasewaitforbootstrap)
 							.setCancelable(true)
 							.setPositiveButton(R.string.okbutton,
 									new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog,
-												int id) {
+										public void onClick(
+												DialogInterface dialog, int id) {
 											dialog.cancel();
 										}
 									});

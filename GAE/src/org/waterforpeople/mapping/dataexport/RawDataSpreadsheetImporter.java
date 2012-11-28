@@ -66,8 +66,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	private List<String> errorIds;
 	private volatile int currentStep;
 
-	private static final DateFormat DATE_FMT = new SimpleDateFormat(
-			"dd-MM-yyyy HH:mm:ss z");
+	private static final ThreadLocal<DateFormat> DATE_FMT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+		};
+	};
+	private static final int SIZE_THRESHOLD = 2000*400;
 
 	static {
 		SAVING_DATA = new HashMap<String, String>();
@@ -119,6 +124,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	public void executeImport(File file, String serverBase,
 			Map<String, String> criteria) {
 		try {
+		
+			int rows = 0;
 			errorIds = new ArrayList<String>();
 			jobQueue = new LinkedBlockingQueue<Runnable>();
 			threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
@@ -130,10 +137,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			progressDialog = new ProgressDialog(sheet1.getLastRowNum(), locale);
 			progressDialog.setVisible(true);
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
+			
 			Map<String, String> typeMap = new HashMap<String, String>();
 			currentStep = 0;
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			for (Row row : sheet1) {
+				rows++;
 				digest.reset();
 				String instanceId = null;
 				String dateString = null;
@@ -220,7 +229,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							}
 							if (cellVal.endsWith("UTC")) {
 								try {
-									cellVal = DATE_FMT.parse(cellVal).getTime()
+									cellVal = DATE_FMT.get().parse(cellVal).getTime()
 											+ "";
 								} catch (Exception e) {
 									System.out.println("bad date format: "
@@ -318,10 +327,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			Thread.sleep(5000);
 			System.out.println("Updating summaries");
 			// now update the summaries
+			if((questionIDColMap.size()*rows) < SIZE_THRESHOLD){
 			invokeUrl(serverBase, "action="
 					+ RawDataImportRequest.UPDATE_SUMMARIES_ACTION + "&"
 					+ RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId,
 					true, criteria.get(KEY_PARAM));
+			}
 
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 					COMPLETE.get(locale), true));

@@ -70,9 +70,9 @@ public class MD5Util {
 			byte[] digest = mac.doFinal(content.getBytes());
 			return Base64.encode(digest);
 		} catch (NoSuchAlgorithmException e) {
-			log.severe(e.getMessage() + e.getStackTrace());
+			log.log(Level.SEVERE, e.getMessage(), e);
 		} catch (InvalidKeyException e) {
-			log.severe(e.getMessage() + e.getStackTrace());
+			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return null;
 	}

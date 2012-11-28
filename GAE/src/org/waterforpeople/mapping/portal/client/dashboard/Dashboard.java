@@ -27,7 +27,11 @@ import java.util.Set;
 import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationItemDto;
 import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationService;
 import org.waterforpeople.mapping.app.gwt.client.config.ConfigurationServiceAsync;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceApplicationDto;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceApplicationService;
+import org.waterforpeople.mapping.app.gwt.client.device.DeviceApplicationServiceAsync;
 import org.waterforpeople.mapping.app.gwt.client.util.TextConstants;
+import org.waterforpeople.mapping.app.gwt.client.util.UploadConstants;
 import org.waterforpeople.mapping.portal.client.widgets.AccessPointManagerPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.ActivityChartPortlet;
 import org.waterforpeople.mapping.portal.client.widgets.AdminWizardPortlet;
@@ -97,6 +101,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private static final String CONFIG_GROUP = "DASHBOARD";
 	private static TextConstants TEXT_CONSTANTS = GWT
 			.create(TextConstants.class);
+	private static UploadConstants UPLOAD_CONSTANTS = GWT
+			.create(UploadConstants.class);
 
 	private static final String CSS_SYSTEM_HEAD = "sys-header";
 	private static final String ADD_ICON = "images/add-icon.png";
@@ -109,6 +115,9 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 	private Image confImage;
 	private Panel menuPanel;
 	private String domainType;
+	private MenuBar menu;
+	private DeviceApplicationServiceAsync devAppService = GWT
+			.create(DeviceApplicationService.class);
 
 	public Dashboard() {
 		super(COLUMNS);
@@ -190,12 +199,8 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		userService.getCurrentUserConfig(false, userCallback);
 	}
 
-	protected void hideMenuItems() {
-
-	}
-
 	/**
-	 * populates menu optiosn and binds click listeners for addWidget button
+	 * populates menu options and binds click listeners for addWidget button
 	 * 
 	 * @param isConfigurable
 	 */
@@ -203,7 +208,7 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 		DockPanel menuDock = new DockPanel();
 		menuDock.setPixelSize(1024, 20);
 		menuDock.setStyleName(CSS_SYSTEM_HEAD);
-		MenuBar menu = new MenuBar();
+		menu = new MenuBar();
 
 		menu.addItem(TEXT_CONSTANTS.dashboard(), new Command() {
 			public void execute() {
@@ -401,6 +406,33 @@ public class Dashboard extends PortalContainer implements EntryPoint {
 			menuDock.add(confImage, DockPanel.EAST);
 		}
 		menuPanel.add(menuDock);
+		devAppService.getLatestDeviceApplication("androidPhone", "fieldSurvey",
+				new AsyncCallback<DeviceApplicationDto>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// ignore
+					}
+
+					@Override
+					public void onSuccess(final DeviceApplicationDto result) {
+						if (result != null) {
+							menu.addItem(TEXT_CONSTANTS.latestAPK() + ": "
+									+ result.getVersion(), new Command() {
+
+								@Override
+								public void execute() {
+									Window.open(UPLOAD_CONSTANTS.uploadUrl()
+											+ UPLOAD_CONSTANTS.apkS3Path()+"/"
+											+ result.getFileName(), "_blank",
+											"enabled");
+
+								}
+							});
+						}
+
+					}
+				});
 	}
 
 	/**

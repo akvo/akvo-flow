@@ -86,6 +86,7 @@ public class QuestionView extends TableLayout implements
 		this.defaultLang = defaultLangauge;
 		this.langs = langs;
 		if (colors == null) {
+			//must have enough colors for all enabled languages
 			colors = context.getResources().getStringArray(R.array.colors);
 		}
 		TableRow tr = new TableRow(context);

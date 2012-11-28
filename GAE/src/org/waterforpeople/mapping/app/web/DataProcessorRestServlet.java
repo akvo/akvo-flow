@@ -246,12 +246,13 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		List<AccessPoint> apList = null;
 		do {
 			apList = apDao.listAccessPointByLocation(country, null, null, null,
-					cursor, new Integer(200));
+					cursor, 200);
 			if (apList != null) {
 				cursor = AccessPointDao.getCursor(apList);
-			}
-			for (AccessPoint ap : apList) {
-				apDao.save(ap);
+
+				for (AccessPoint ap : apList) {
+					apDao.save(ap);
+				}
 			}
 		} while (apList != null && apList.size() == 200);
 	}
@@ -391,7 +392,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 					}
 					Long count = countMap.get(val);
 					if (count == null) {
-						count = new Long(1);
+						count = 1L;
 					} else {
 						count = count + 1;
 					}
