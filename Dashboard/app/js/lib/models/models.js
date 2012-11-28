@@ -4,7 +4,11 @@
 require('akvo-flow/core');
 require('akvo-flow/models/store_def');
 
-FLOW.SurveyGroup = DS.Model.extend({
+FLOW.BaseModel = DS.Model.extend({
+  keyId: DS.attr('number')
+});
+
+FLOW.SurveyGroup = FLOW.BaseModel.extend({
     didDelete: function() {FLOW.surveyGroupControl.populate();},
     didUpdate: function() {FLOW.surveyGroupControl.populate();},
     didCreate: function() {FLOW.surveyGroupControl.populate();},
@@ -14,13 +18,11 @@ FLOW.SurveyGroup = DS.Model.extend({
 	createdDateTime: DS.attr('string',{defaultValue: ""}),
 	lastUpdateDateTime: DS.attr('string',{defaultValue: ""}),
 	// the code field is used as name
-	code: DS.attr('string',{defaultValue: ""}),
-	keyId: DS.attr('number'),
-	primaryKey: 'keyId'
+	code: DS.attr('string',{defaultValue: ""})
 });
 
 
-FLOW.Survey = DS.Model.extend({
+FLOW.Survey = FLOW.BaseModel.extend({
 	didDelete: function() {FLOW.surveyControl.populate();},
     didUpdate: function() {FLOW.surveyControl.populate();},
     didCreate: function() {FLOW.surveyControl.populate();},
@@ -32,17 +34,14 @@ FLOW.Survey = DS.Model.extend({
 	version: DS.attr('string'),
 	description: DS.attr('string'),
 	name: DS.attr('string'),
-	keyId: DS.attr('number'),
 	pointType: DS.attr('string'),
 	surveyGroupId: DS.attr('number'),
 	createdDateTime:DS.attr('number'),
-	lastUpdateDateTime:DS.attr('number'),
-	primaryKey: 'keyId'
-
+	lastUpdateDateTime:DS.attr('number')
 });
 
 
-FLOW.QuestionGroup = DS.Model.extend({
+FLOW.QuestionGroup = FLOW.BaseModel.extend({
 	didDelete: function() {if (FLOW.questionGroupControl.get('allRecordsSaved')) FLOW.questionGroupControl.populate();},
     didUpdate: function() {if (FLOW.questionGroupControl.get('allRecordsSaved')) FLOW.questionGroupControl.populate();},
     didCreate: function() {if (FLOW.questionGroupControl.get('allRecordsSaved')) FLOW.questionGroupControl.populate();},
@@ -53,12 +52,10 @@ FLOW.QuestionGroup = DS.Model.extend({
 	path: DS.attr('string'),
 	code: DS.attr('string'),
 	surveyId: DS.attr('number'),
-	keyId: DS.attr('number'),
-	primaryKey: 'keyId'
 });
 
 
-FLOW.Question = DS.Model.extend({
+FLOW.Question = FLOW.BaseModel.extend({
 	allowDecimal: DS.attr('boolean', {defaultValue: 0}),
 	allowMultipleFlag: DS.attr('boolean', {defaultValue: 0}),
 	allowOtherFlag: DS.attr('boolean', {defaultValue: 0}),
@@ -67,7 +64,6 @@ FLOW.Question = DS.Model.extend({
 	displayName: DS.attr('string'),
 	immutable: DS.attr('boolean', {defaultValue: 0}),
 	isName: DS.attr('boolean', {defaultValue: 0}),
-	keyId: DS.attr('number'),
 	mandatoryFlag: DS.attr('boolean', {defaultValue: 0}),
 	maxVal: DS.attr('number'),
 	minVal: DS.attr('number'),
@@ -83,23 +79,18 @@ FLOW.Question = DS.Model.extend({
 	type: DS.attr('string')
 });
 
-FLOW.QuestionOption = DS.Model.extend({
+FLOW.QuestionOption = FLOW.BaseModel.extend({
 	questionId: DS.attr('number'),
 	text: DS.attr('string'),
-	keyId: DS.attr('number')
 });
 
 
-FLOW.SurveyAssignment = DS.Model.extend({
-
-});
-
-FLOW.DeviceGroup = DS.Model.extend({
+FLOW.DeviceGroup = FLOW.BaseModel.extend({
 	displayName: DS.attr('string',{defaultValue: ""}),
 	code: DS.attr('string',{defaultValue: ""})
 });
 
-FLOW.Device = DS.Model.extend({
+FLOW.Device = FLOW.BaseModel.extend({
 	EMEI: DS.attr('string',{defaultValue: ""}),
 	macAddress: DS.attr('string',{defaultValue: ""}),
 	phoneNumber: DS.attr('string',{defaultValue: ""}),
@@ -113,8 +104,15 @@ FLOW.Device = DS.Model.extend({
 	lastKnownAccuracy: DS.attr('number',{defaultValue:0}),
 	lastPositionDate: DS.attr('number', {defaultValue: ""}),
 	deviceGroup: DS.attr('string',{defaultValue: ""}),
-	keyId: DS.attr('number'),
 	isSelected: DS.attr('boolean', {defaultValue: false})
+});
+
+FLOW.SurveyAssignment = FLOW.BaseModel.extend({
+	name: DS.attr('name'),
+	startDate: DS.attr('date'),
+	endDate: DS.attr('date'),
+	devices: DS.hasMany(FLOW.Device),
+	surveys: DS.hasMany(FLOW.Survey)
 });
 
 FLOW.SurveyedLocale = DS.Model.extend({
@@ -129,16 +127,13 @@ FLOW.SurveyedLocale = DS.Model.extend({
 // Explicitly avoid to use belongTo and hasMany as
 // Ember-Data lacks of partial loading
 // https://github.com/emberjs/data/issues/51
-FLOW.PlacemarkDetail = DS.Model.extend({
-  keyId: DS.attr("number"),
+FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
   questionText: DS.attr("string"),
   metricName: DS.attr("string"),
   stringValue: DS.attr("string"),
-  placemarkId: DS.attr("number"),
 });
 
-FLOW.Placemark = DS.Model.extend({
-  keyId: DS.attr("number"),
+FLOW.Placemark = FLOW.BaseModel.extend({
   latitude: DS.attr("number"),
   longitude: DS.attr("number"),
   collectionDate: DS.attr("date"),
