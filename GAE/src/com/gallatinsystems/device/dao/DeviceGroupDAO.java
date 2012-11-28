@@ -16,11 +16,8 @@
 
 package com.gallatinsystems.device.dao;
 
-import java.util.logging.Logger;
-
-import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceGroup;
+import com.gallatinsystems.framework.dao.BaseDAO;
 
 /**
  * 
@@ -28,7 +25,6 @@ import com.gallatinsystems.device.domain.DeviceGroup;
  * 
  */
 public class DeviceGroupDAO extends BaseDAO<DeviceGroup> {
-	private DeviceDAO deviceDao;
 
 	public DeviceGroupDAO() {
 		super(DeviceGroup.class);
