@@ -13,12 +13,12 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
     didUpdate: function() {FLOW.surveyGroupControl.populate();},
     didCreate: function() {FLOW.surveyGroupControl.populate();},
 
-	description: DS.attr('string',{defaultValue: ""}),
-	name: DS.attr('string',{defaultValue: ""}),
-	createdDateTime: DS.attr('string',{defaultValue: ""}),
-	lastUpdateDateTime: DS.attr('string',{defaultValue: ""}),
+	description: DS.attr('string',{defaultValue: ''}),
+	name: DS.attr('string',{defaultValue: ''}),
+	createdDateTime: DS.attr('string',{defaultValue: ''}),
+	lastUpdateDateTime: DS.attr('string',{defaultValue: ''}),
 	// the code field is used as name
-	code: DS.attr('string',{defaultValue: ""})
+	code: DS.attr('string',{defaultValue: ''})
 });
 
 
@@ -72,7 +72,7 @@ FLOW.Question = FLOW.BaseModel.extend({
 	path: DS.attr('string'),
 	questionDependency: DS.attr('string'),
 	questionGroupId: DS.attr('number'),
-	questionTypeString: DS.attr('string',{defaultValue:"freeText"}),
+	questionTypeString: DS.attr('string',{defaultValue:'freeText'}),
 	surveyId: DS.attr('number'),
 	text: DS.attr('string'),
 	tip: DS.attr('string'),
@@ -86,24 +86,24 @@ FLOW.QuestionOption = FLOW.BaseModel.extend({
 
 
 FLOW.DeviceGroup = FLOW.BaseModel.extend({
-	displayName: DS.attr('string',{defaultValue: ""}),
-	code: DS.attr('string',{defaultValue: ""})
+	displayName: DS.attr('string',{defaultValue: ''}),
+	code: DS.attr('string',{defaultValue: ''})
 });
 
 FLOW.Device = FLOW.BaseModel.extend({
-	EMEI: DS.attr('string',{defaultValue: ""}),
-	macAddress: DS.attr('string',{defaultValue: ""}),
-	phoneNumber: DS.attr('string',{defaultValue: ""}),
-	deviceType: DS.attr('string',{defaultValue: ""}),
-	deviceIdentifier: DS.attr('string',{defaultValue: ""}),
+	EMEI: DS.attr('string',{defaultValue: ''}),
+	macAddress: DS.attr('string',{defaultValue: ''}),
+	phoneNumber: DS.attr('string',{defaultValue: ''}),
+	deviceType: DS.attr('string',{defaultValue: ''}),
+	deviceIdentifier: DS.attr('string',{defaultValue: ''}),
 	inServiceDate: DS.attr('date'),
 	outServiceDate: DS.attr('date'),
-	osVersion: DS.attr('string', {defaultValue: ""}),
+	osVersion: DS.attr('string', {defaultValue: ''}),
 	lastKnownLat: DS.attr('number', {defaultValue: 0}),
 	lastKnownLong:DS.attr('number', {defaultValue: 0}),
 	lastKnownAccuracy: DS.attr('number',{defaultValue:0}),
-	lastPositionDate: DS.attr('number', {defaultValue: ""}),
-	deviceGroup: DS.attr('string',{defaultValue: ""}),
+	lastPositionDate: DS.attr('number', {defaultValue: ''}),
+	deviceGroup: DS.attr('string',{defaultValue: ''}),
 	isSelected: DS.attr('boolean', {defaultValue: false})
 });
 
@@ -116,26 +116,26 @@ FLOW.SurveyAssignment = FLOW.BaseModel.extend({
 });
 
 FLOW.SurveyedLocale = DS.Model.extend({
-  description:  DS.attr("string", {defaultValue: ""}),
-  keyId:        DS.attr("number"),
-  latitude:     DS.attr("number"),
-  longitude:    DS.attr("number"),
-  primaryKey:   "keyId",
-  typeMark:     DS.attr("string", {defaultValue: "WATER_POINT"})
+  description:  DS.attr('string', {defaultValue: ''}),
+  keyId:        DS.attr('number'),
+  latitude:     DS.attr('number'),
+  longitude:    DS.attr('number'),
+  primaryKey:   'keyId',
+  typeMark:     DS.attr('string', {defaultValue: 'WATER_POINT'})
 });
 
 // Explicitly avoid to use belongTo and hasMany as
 // Ember-Data lacks of partial loading
 // https://github.com/emberjs/data/issues/51
 FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
-  questionText: DS.attr("string"),
-  metricName: DS.attr("string"),
-  stringValue: DS.attr("string"),
+  questionText: DS.attr('string'),
+  metricName: DS.attr('string'),
+  stringValue: DS.attr('string'),
 });
 
 FLOW.Placemark = FLOW.BaseModel.extend({
-  latitude: DS.attr("number"),
-  longitude: DS.attr("number"),
-  collectionDate: DS.attr("date"),
-  markType: DS.attr("string", {defaultValue: "WATER_POINT"}),
+  latitude: DS.attr('number'),
+  longitude: DS.attr('number'),
+  collectionDate: DS.attr('date'),
+  markType: DS.attr('string', {defaultValue: 'WATER_POINT'}),
 });
