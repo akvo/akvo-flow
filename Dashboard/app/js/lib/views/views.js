@@ -181,7 +181,7 @@ FLOW.ColumnView = Ember.View.extend({
 		if (this.get('type') === 'device') {
 			FLOW.deviceControl.getSortInfo();
 		} else if (this.get('type') === 'assignment'){
-			FLOW.assignmentControl.getSortInfo();
+			FLOW.surveyAssignmentControl.getSortInfo();
 		}
 
 	}

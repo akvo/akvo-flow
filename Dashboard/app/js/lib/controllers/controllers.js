@@ -281,13 +281,13 @@ FLOW.deviceControl = Ember.ArrayController.create({
 });
 
 
-FLOW.assignmentControl = Ember.ArrayController.create({
+FLOW.surveyAssignmentControl = Ember.ArrayController.create({
   sortProperties:null,
   sortAscending:true,
   content:null,
 
   populate:function(){
-    this.set('content', FLOW.store.find(FLOW.Assignment));
+    this.set('content', FLOW.store.find(FLOW.SurveyAssignment));
     this.set('sortProperties',['name']);
     this.set('sortAscending',true);
   },

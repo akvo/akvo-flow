@@ -140,7 +140,7 @@ FLOW.Router = Ember.Router.extend({
         route: '/assign-surveys',
         connectOutlets: function(router, context) {
           router.get('navDevicesController').connectOutlet('assignSurveysOverview');
-           FLOW.assignmentControl.populate();
+           FLOW.surveyAssignmentControl.populate();
           router.set('devicesSubnavController.selected', 'assignSurveys');
         }
       }),

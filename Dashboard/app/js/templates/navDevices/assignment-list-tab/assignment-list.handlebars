@@ -22,7 +22,7 @@
 
         </div> 
         
-         {{#if FLOW.assignmentControl.atLeastOneSelected}}
+         {{#if FLOW.surveyAssignmentControl.atLeastOneSelected}}
             <a {{action "showDeleteDevicesdialog" target="this"}}>Disable Devices</a>
         {{/if}}
 
@@ -31,7 +31,7 @@
             <thead>
                <tr>
                 {{#view FLOW.ColumnView item="select" }}
-                    {{view Ember.Checkbox checkedBinding="FLOW.deviceControl.allAreSelected"}}
+                    {{view Ember.Checkbox checkedBinding="FLOW.surveyAssignmentControl.allAreSelected"}}
                 {{/view}}
                 {{#view FLOW.ColumnView item="name" type="assignment"}}
                   <a {{action "sort" target="this"}}>Name</a>
@@ -48,7 +48,7 @@
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
-                {{#each FLOW.assignmentControl}}
+                {{#each FLOW.surveyAssignmentControl}}
                   <tr>
                     <td class="selection" style="text-align:left; padding:0 0 0 5px;"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
                     <td class="name" style="text-align:left; padding:0 0 0 5px;">{{name}}</td>
