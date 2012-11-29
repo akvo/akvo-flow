@@ -177,23 +177,14 @@ Ember.View.reopen({
 				$( "#to" ).datepicker( "option", "minDate", selectedDate );
 			}
 		});
-		$( "#to" ).datepicker({
+	$( "#to" ).datepicker({
 			defaultDate: "+1w",
 			numberOfMonths: 1,
 			onSelect: function( selectedDate ) {
 				$( "#from" ).datepicker( "option", "maxDate", selectedDate );
 			}
 		});
-		$('.dataTable').dataTable( {
-					"aaSorting": [[ 1, "desc" ]],
-					"sScrollX": "100%",
-					"sScrollXInner": "120%",
-					"bScrollCollapse": true
-					
-				} );
-		$(".dataTables_paginate").addClass("floats-in");
-		$(".dataTables_filter label > input").removeAttr("type").attr("type","search");
-    }
+   }
 })
 
 // home screen view
