@@ -147,17 +147,7 @@ Ember.View.reopen({
             $("." +selected).show();
     });
 	
-	$('#tabs > section').hide();
-	$('#tabs > section:first').show();
-	$('#tabs ul li:first').addClass('active');
-	$('#tabs ul li a').click(function(){ 
-		$('#tabs ul li').removeClass('active');
-		$(this).parent().addClass('active'); 
-		var currentTab = $(this).attr('href'); 
-		$('#tabs > section').hide();
-		$(currentTab).show();
-		return false;
-	});
+
 	$( "#from" ).datepicker({
 			defaultDate: "+1w",
 			numberOfMonths: 1,
