@@ -376,7 +376,6 @@ footer > div {
 	min-width: 916px;
 	max-width: 1188px;
 	width: 90%;
-	height: 50px;
 	color: rgb(255, 255, 255);
 }
 .leftSidebar {
@@ -623,22 +622,43 @@ footer.bottomPage {
 	margin: 0 0 20px 0;
 	padding: 0;
 	width: 100%;
-	height: 50px;
-	background: rgb(38, 8, 89);
+	background:  rgb(36, 48, 50);
 }
 footer.bottomPage small {
 	position: relative;
 	display: block;
-	margin: 20px auto;
-	padding: 20px 0 0 0;
+	margin:10px auto;
+	padding:0;
 	width: 30%;
 	color: rgb(205,205,205);
 	text-align: center;
 	font-weight: normal;
 	font-size: 1em;
+	
 }
-footer.bottomPage div#backToTop {
+footer.bottomPage nav#footerNav {
+	display:block;
+	width:100%;
+	text-align:center;
 }
+footer.bottomPage nav#footerNav ul {
+	display:inline-block;
+	margin:10px auto 0 auto;
+	text-align:center;
+}
+footer.bottomPage nav#footerNav ul li {
+	display:inline;
+	float:left;
+	margin:5px 1.5em 0 0;
+	text-align:center;
+}
+footer.bottomPage nav#footerNav ul li:last-child {
+	margin:5px 0 0 0;
+}
+footer.bottomPage nav#footerNav ul li a{
+	padding:5px 7px;
+	}
+
 footer.bottomPage a[rel="self"] {
 }
 footer.bottomPage a[rel="self"]:hover {
@@ -778,6 +798,10 @@ input.datePicker {
 	border-color: transparent;
 	background: rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
 }
+#inspectData input.datePicker {
+	width:inherit;
+}
+
 .dateRange div.activeDate, .dateRange div.expireDate {
 	width: 50%;
 }
