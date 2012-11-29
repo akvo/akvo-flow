@@ -90,6 +90,13 @@ FLOW.NavigationView = Em.View.extend({
 //                      standard views
 // ********************************************************//
 
+Ember.View.reopen({
+    didInsertElement: function() {
+        this._super();
+        tooltip();
+    }
+})
+
 // home screen view
 FLOW.NavHomeView = Ember.View.extend({ templateName: 'navHome/nav-home'});
 
