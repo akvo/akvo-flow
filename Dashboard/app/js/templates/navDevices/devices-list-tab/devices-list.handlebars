@@ -23,7 +23,8 @@
         </div> 
          
          {{#if FLOW.deviceControl.atLeastOneSelected}}
-            <a {{action "showDeleteDevicesdialog" target="this"}}>Disable Devices</a>
+            <a {{action "showDeleteDevicesDialog" target="this"}}>Disable Devices</a> | 
+            <a {{action "showAddToGroupDialog" target="this"}}>Add to Device group</a> <br/><br/>
         {{/if}}
 
 
@@ -58,7 +59,7 @@
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
                 {{#each FLOW.deviceControl}}
-                  <tr>
+                   <tr>
                     <td class="selection" style="text-align:left; padding:0 0 0 5px;"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
                     <td class="EMEI" style="text-align:left; padding:0 0 0 5px;">{{EMEI}}</td>
                     <td class="MAC address" >{{macAddress}}</td> 
@@ -81,6 +82,40 @@
             <a {{action "doDelete" target="this"}}>Ok</a>
             <a {{action "cancelDelete" target="this"}}>Cancel</a>
         {{/if}}     -->
+
+
+<!-- add to group dialog-->
+    <div {{bindAttr class="view.showAddToGroupDialogBool:display :overlay"}}>
+      <div class="blanket"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog">
+          <h2>Add devices to device group</h2>
+          <p class="dialogMsg">Choose an existing device group from the list</p>
+          <br/>
+            {{view Ember.Select 
+            contentBinding="FLOW.deviceGroupControl.content" 
+            selectionBinding="view.selectedDeviceGroup" 
+            optionLabelPath="content.code" 
+            optionValuePath="content.keyId" 
+            prompt="Select existing device group"}} 
+          <br/>
+            <p class="dialogMsg">or create a new device group in the box below</p>
+             <br/>
+              {{view Ember.TextField valueBinding="view.newDeviceGroupName" placeholder="Type new device group name" size=30}}
+          
+          <br/><br/>
+
+          <div class="buttons menuCentre"> 
+            <ul>  
+               <li><a {{action "doAddToGroup" target="this"}} class="ok smallBtn">OK</a></li>
+              <li><a {{action "cancelAddToGroup" target="this"}}} class="cancel">CANCEL</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
         {{/view}}
     </section>

@@ -7,6 +7,7 @@
 require('akvo-flow/core');
 FLOW.ApplicationController = Ember.Controller.extend({
   init: function () {
+    this._super();
     Ember.STRINGS = Ember.STRINGS_EN;
     //this.set("dashboardLanguage","en");
   }
@@ -246,6 +247,13 @@ FLOW.tableColumnControl =Ember.Object.create({
   content:null,  
 });
 
+
+FLOW.deviceGroupControl = Ember.ArrayController.create({
+  content: null,
+  populate: function () {
+    this.set('content',FLOW.store.find(FLOW.DeviceGroup));
+  }
+});
 
 FLOW.deviceControl = Ember.ArrayController.create({
   sortProperties:null,
