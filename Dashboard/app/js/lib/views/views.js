@@ -147,18 +147,6 @@ Ember.View.reopen({
             $("." +selected).show();
     });
 	
-// Function displaying the survey groups.
-	$("#main > section.surveysList").hide();
-	$("#main > section#allSurvey").show();
-	$(".menuGroup li a").click(
-		function () {
-			$(".menuGroup li a").removeClass("current");
-			$(this).addClass("current");
-			var sectionname = this.name;
-			$("#main > section.surveysList").hide();
-			$("#"+sectionname).show();
-			}
-	)
 	$('#tabs > section').hide();
 	$('#tabs > section:first').show();
 	$('#tabs ul li:first').addClass('active');
