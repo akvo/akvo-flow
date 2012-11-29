@@ -97,7 +97,7 @@ FLOW.dataserverControl = Ember.Object.create({
       // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
         revision: 8,
-        adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"restsandbox", url:"http://localhost"})
+        adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:host})
       });
     }
     else if (server == "fixtures") {
