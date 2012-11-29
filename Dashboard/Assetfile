@@ -37,10 +37,10 @@ class HandlebarsFilter < Filter
   end
 end
 
-output 'assets'
+output 'assets/flow15'
 input 'app' do
   match 'dashboard.html' do
-    copy 'dashboard.html'
+    copy '../dashboard15.html'
   end
 
   match 'js/lib/**/*.js' do
