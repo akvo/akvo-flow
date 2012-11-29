@@ -90,6 +90,10 @@ FLOW.NavigationView = Em.View.extend({
 //                      standard views
 // ********************************************************//
 
+// TODO check if doing this in View is not impacting performance, 
+// as some pages have a lot of views (all navigation elements, for example)
+// one way could be use an extended copy of view, with the didInsertElement,
+// for some of the elements, and not for others.
 Ember.View.reopen({
     didInsertElement: function() {
         this._super();
