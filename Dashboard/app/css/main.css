@@ -663,7 +663,7 @@ table.dataTable td {
 	text-align: center;
 }
 table.dataTable td:hover {
-	font-weight: bold;
+	font-weight: normal;
 }
 table.dataTable tbody tr {
 	border-bottom: thin solid rgb(255,255,255);
@@ -812,15 +812,28 @@ input.datePicker {
 	max-height: 210px;
 	width: 98%;
 }
-.action a {
-	display: block;
+.action a:first-child {
+	margin-right:5px;
+	}
+.action a.remove {
+	display: inline-block;
 	width: 13px;
 	height: 13px;
 	background: url(../images/removeList.png) center top no-repeat;
 	text-indent: -99999px;
 }
-.action a:hover {
+.action a.remove:hover {
 	background: url(../images/removeList.png) center bottom no-repeat;
+}
+.action a.edit {
+	display: inline-block;
+	width: 13px;
+	height: 13px;
+	background: url(../images/editList.png) center top no-repeat;
+	text-indent: -99999px;
+}
+.action a.edit:hover {
+	background: url(../images/editList.png) center bottom no-repeat;
 }
 table.previewList {
 	color: rgb(209,84,95);
@@ -2237,6 +2250,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 	font-weight: normal;
 	font-size: 1em;
 }
+
+
 /******************************************************************************
 									FLOW MAP
 ******************************************************************************/
