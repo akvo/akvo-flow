@@ -90,6 +90,10 @@ FLOW.NavigationView = Em.View.extend({
 //                      standard views
 // ********************************************************//
 
+// TODO check if doing this in View is not impacting performance, 
+// as some pages have a lot of views (all navigation elements, for example)
+// one way could be use an extended copy of view, with the didInsertElement,
+// for some of the elements, and not for others.
 Ember.View.reopen({
     didInsertElement: function() {
         this._super();
@@ -143,29 +147,7 @@ Ember.View.reopen({
             $("." +selected).show();
     });
 	
-// Function displaying the survey groups.
-	$("#main > section.surveysList").hide();
-	$("#main > section#allSurvey").show();
-	$(".menuGroup li a").click(
-		function () {
-			$(".menuGroup li a").removeClass("current");
-			$(this).addClass("current");
-			var sectionname = this.name;
-			$("#main > section.surveysList").hide();
-			$("#"+sectionname).show();
-			}
-	)
-	$('#tabs > section').hide();
-	$('#tabs > section:first').show();
-	$('#tabs ul li:first').addClass('active');
-	$('#tabs ul li a').click(function(){ 
-		$('#tabs ul li').removeClass('active');
-		$(this).parent().addClass('active'); 
-		var currentTab = $(this).attr('href'); 
-		$('#tabs > section').hide();
-		$(currentTab).show();
-		return false;
-	});
+
 	$( "#from" ).datepicker({
 			defaultDate: "+1w",
 			numberOfMonths: 1,
@@ -173,23 +155,14 @@ Ember.View.reopen({
 				$( "#to" ).datepicker( "option", "minDate", selectedDate );
 			}
 		});
-		$( "#to" ).datepicker({
+	$( "#to" ).datepicker({
 			defaultDate: "+1w",
 			numberOfMonths: 1,
 			onSelect: function( selectedDate ) {
 				$( "#from" ).datepicker( "option", "maxDate", selectedDate );
 			}
 		});
-		$('.dataTable').dataTable( {
-					"aaSorting": [[ 1, "desc" ]],
-					"sScrollX": "100%",
-					"sScrollXInner": "120%",
-					"bScrollCollapse": true
-					
-				} );
-		$(".dataTables_paginate").addClass("floats-in");
-		$(".dataTables_filter label > input").removeAttr("type").attr("type","search");
-    }
+   }
 })
 
 // home screen view
