@@ -38,18 +38,15 @@ FLOW.NavMapsView = Ember.View.extend({
         marker = new mxn.Marker(point);
         item.set('marker', marker);
         marker.setLabel('label');
-        // marker.setInfoBubble('content bubble');
         marker.setIcon('images/maps/blueMarker.png');
 
         marker.click.addHandler(function (event_name, event_source, event_args) {
           // Deselect marker
           
           var toggleMarker = function (placeMark, map) {
-            // var coordinate = new mxn.LatLonPoint(placeMark.get('latitude'), placeMark.get('longitude'));
-            // var newMark = new mxn.Marker(coordinate);
+            // console.log("About to toogle:");
             var newMark = new mxn.Marker(placeMark.marker.location);
             newMark.setLabel('label');
-            // newMark.setInfoBubble('bubble');
             if (placeMark.marker.iconUrl === 'images/maps/blueMarker.png') {
               newMark.setIcon('images/maps/redMarker.png');
             } else {
