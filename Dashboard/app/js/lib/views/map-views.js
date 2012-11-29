@@ -38,7 +38,7 @@ FLOW.NavMapsView = Ember.View.extend({
         marker = new mxn.Marker(point);
         item.set('marker', marker);
         marker.setLabel('label');
-        marker.setIcon('images/maps/blueMarker.png');
+        marker.setIcon('flow15/images/maps/blueMarker.png');
 
         marker.click.addHandler(function (event_name, event_source, event_args) {
           // Deselect marker
@@ -47,10 +47,10 @@ FLOW.NavMapsView = Ember.View.extend({
             // console.log("About to toogle:");
             var newMark = new mxn.Marker(placeMark.marker.location);
             newMark.setLabel('label');
-            if (placeMark.marker.iconUrl === 'images/maps/blueMarker.png') {
-              newMark.setIcon('images/maps/redMarker.png');
+            if (placeMark.marker.iconUrl === 'flow15/images/maps/blueMarker.png') {
+              newMark.setIcon('flow15/images/maps/redMarker.png');
             } else {
-              newMark.setIcon('images/maps/blueMarker.png');
+              newMark.setIcon('flow15/images/maps/blueMarker.png');
             }
             map.removeMarker(placeMark.marker);
             map.addMarker(newMark);
