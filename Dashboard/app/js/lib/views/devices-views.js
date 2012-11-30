@@ -9,8 +9,8 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 	},
 
 	doAddToGroup: function(){
-	  if (this.get('selectedDeviceGroup') !== null) {
-	  		console.log(this.get('selectedDeviceGroup'));
+		if (this.get('selectedDeviceGroup') !== null) {
+			console.log(this.get('selectedDeviceGroup'));
 			var selectedDeviceGroupId=this.selectedDeviceGroup.get('keyId');
 			var selectedDeviceGroupName=this.selectedDeviceGroup.get('code');
 			console.log(selectedDeviceGroupName);
@@ -53,9 +53,9 @@ FLOW.SavingDeviceGroupView = Ember.View.extend({
 
 	showDGSavingDialog:function(){
 		if (FLOW.DeviceGroupControl.get('allRecordsSaved')){
-			this.set('showDGSavingDialogBool', false)
+			this.set('showDGSavingDialogBool', false);
 		} else {
-			this.set('showDGSavingDialogBool', true)
+			this.set('showDGSavingDialogBool', true);
 		}
 	}.observes('FLOW.deviceGroupControl.allRecordsSaved')
 });

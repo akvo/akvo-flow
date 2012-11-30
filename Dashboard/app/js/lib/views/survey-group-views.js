@@ -52,7 +52,7 @@ FLOW.SurveyGroupSurveyView = Ember.View.extend({
 	// fired when 'inspect data' is clicked in the survey item display
 	inspectData: function() {
 			console.log("TODO inspect Data");
-	},
+	}
 });
 
 // handles all survey-group interaction elements on survey group page

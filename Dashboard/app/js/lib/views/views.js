@@ -102,8 +102,8 @@ Ember.View.reopen({
 	$("nav#topnav li.current").prev("nav#topnav li").css("background", "none");
 	$("nav#topnav li").hover( function (){
 		$(this).prev().css("background", "none");
-		})
-    // 	Adds needed classes to survey assets as nth-child selectors don't work in ie.
+		});
+	// Adds needed classes to survey assets as nth-child selectors don't work in ie.
     $('li.aSurvey:nth-child(4n+1)').addClass('firstOfRow');
     $('li.aSurvey:nth-child(4n)').addClass('endOfRow');
     $('table#devicesListTable tbody tr:nth-child(2n)').addClass('even');
@@ -134,7 +134,7 @@ Ember.View.reopen({
 					$(this).text(nQ);
 					}
 				}
-		)
+		);
 		}
 	);
 	
@@ -163,8 +163,7 @@ Ember.View.reopen({
 			}
 		});
    }
-})
-
+});
 // home screen view
 FLOW.NavHomeView = Ember.View.extend({ templateName: 'navHome/nav-home'});
 
@@ -260,4 +259,4 @@ FLOW.ColumnView = Ember.View.extend({
 		}
 
 	}
-})
+});

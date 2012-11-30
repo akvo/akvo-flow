@@ -265,9 +265,9 @@ FLOW.SavingQuestionGroupsView = Ember.View.extend({
 
 	showQGSavingDialog:function(){
 		if (FLOW.questionGroupControl.get('allRecordsSaved')){
-			this.set('showQGSavingDialogBool', false)
+			this.set('showQGSavingDialogBool', false);
 		} else {
-			this.set('showQGSavingDialogBool', true)
+			this.set('showQGSavingDialogBool', true);
 		}
 	}.observes('FLOW.questionGroupControl.allRecordsSaved')
 });

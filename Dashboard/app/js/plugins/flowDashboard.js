@@ -51,7 +51,7 @@ function makePlaceholders(){
 			if ( val == this.placeholderVal || val == ""){
 				$this.val(this.placeholderVal);
 				}
-		})
+		});
 		
 	}
 		
@@ -60,8 +60,8 @@ $(document).ready(function() {
 	$("nav#topnav li.current").prev("nav#topnav li").css("background", "none");
 	$("nav#topnav li").hover( function (){
 		$(this).prev().css("background", "none");
-		})
-    // 	Adds needed classes to survey assets as nth-child selectors don't work in ie.
+		});
+	// Adds needed classes to survey assets as nth-child selectors don't work in ie.
     $('li.aSurvey:nth-child(4n+1)').addClass('firstOfRow');
     $('li.aSurvey:nth-child(4n)').addClass('endOfRow');
     $('table#devicesListTable tbody tr:nth-child(2n)').addClass('even');
@@ -92,7 +92,7 @@ $(document).ready(function() {
 					$(this).text(nQ);
 					}
 				}
-		)
+		);
 		}
 	);
 	
@@ -116,7 +116,7 @@ $(document).ready(function() {
 			$("#main > section.surveysList").hide();
 			$("#"+sectionname).show();
 			}
-	)
+	);
 	$('#tabs > section').hide();
 	$('#tabs > section:first').show();
 	$('#tabs ul li:first').addClass('active');
@@ -151,13 +151,7 @@ $(document).ready(function() {
 				} );
 		$(".dataTables_paginate").addClass("floats-in");
 		$(".dataTables_filter label > input").removeAttr("type").attr("type","search");
-// Function displaying the action menu on surveys.
-// 	$(".aSurvey nav").hide();
-// 	$(".aSurvey").hover(
-// 		function () {
-// 			$(this).find("nav").fadeToggle(150, "linear");
-// 			}
-// 	)
+
 	tooltip();
 
 
