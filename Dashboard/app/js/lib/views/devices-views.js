@@ -12,11 +12,14 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 	  if (this.get('selectedDeviceGroup') !== null) {
 	  		console.log(this.get('selectedDeviceGroup'));
 			var selectedDeviceGroupId=this.selectedDeviceGroup.get('keyId');
+			var selectedDeviceGroupName=this.selectedDeviceGroup.get('code');
+			console.log(selectedDeviceGroupName);
 			var selectedDevices = FLOW.store.filter(FLOW.Device,function(data){
 				if (data.get('isSelected') === true) {return true;} else {return false;}
 			});
 			selectedDevices.forEach(function(item){
 				console.log('setting device group',selectedDeviceGroupId, ' on ', item.get('phoneNumber'));
+				item.set('deviceGroupName',selectedDeviceGroupName);
 				item.set('deviceGroup',selectedDeviceGroupId);
 			});
 		}

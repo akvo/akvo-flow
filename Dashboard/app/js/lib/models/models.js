@@ -99,7 +99,8 @@ FLOW.Device = FLOW.BaseModel.extend({
 	lastKnownAccuracy: DS.attr('number',{defaultValue:0}),
 	lastPositionDate: DS.attr('number', {defaultValue: ''}),
 	deviceGroup: DS.attr('string',{defaultValue: ''}),
-	isSelected: false //DS.attr('boolean', {defaultValue: false})
+	isSelected: false,
+	deviceGroupName:null,
 });
 
 FLOW.SurveyAssignment = FLOW.BaseModel.extend({
