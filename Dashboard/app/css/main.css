@@ -2238,47 +2238,59 @@ nav.smallMenu ul li a.showQuestion:hover {
 	height: 600px;
 }
 #pointDetails {
+	
 	float: right;
-	width: 24%;
-	padding: 10px 0.5% 0px 0.5%;
+	width: 24.5%;
+	padding: 10px 0.25% 0px 0.25%;
 	height: 590px;
-	background: rgb(234,234,234);
+	background: rgb(224,224,224);
 	overflow-y: scroll;
 	overflow-x: none;
+	box-shadow:-1px 0 1px rgba(0,0,0,0.2);
 }
 #pointDetails h2 {
-	margin:0 0 10px 0;
+	margin:5px 0 10px 5px;
 	line-height:inherit;
 }
 
 #pointDetails dl {
 	position:relative;
-	width:100%;
+	width:99.5%;
+	padding:0.5em 0.25%;
+	background:rgb(240,240,240);
+	font-family: Verdana, Geneva, sans-serif;
+	letter-spacing:0.05em;
+	line-height:1.3em;
 }
 #pointDetails dt {
-	width:40%;
+	width:44.75%;
 	color:rgb(124,124,124);
 	display: block;
 	overflow: hidden;
-	min-height: 20px;
+	min-height: 5.5em;
 	text-overflow:clip;
 	white-space:pre-wrap;
 	float:left;
-	padding:0 0 3px 0;
+	padding:5px 0 5px 0.25%;
+	border-top:2px solid rgb(224,224,224);
 }
 #pointDetails dd {
 	display: block;
-	width:59.75%;
+	width:54.75%;
 	color:rgb(0,0,0);
 	float:right;
 	overflow:hidden;
 	text-overflow:clip;
-	white-space:;
+	white-space:normal;
 	float:right;
-	min-height: 20px;
-	padding:0 0 3px 0.25%;
-	
+	min-height: 5.5em;
+	padding:5px 0 5px 0.25%;
+	border-top:2px solid rgb(224,224,224);
 }
+#pointDetails dl dt:nth-of-type(1), #pointDetails dl dd:nth-of-type(1){
+	border-top:none;
+	}
+
 #flowMapLegend {
 	width: 98%;
 	background: rgb(244,244,244);
