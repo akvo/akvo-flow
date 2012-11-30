@@ -162,12 +162,16 @@ pre {
 #tooltip {
 	position: absolute;
 	display: none;
-	padding: 5px;
-	max-width: 300px;
-	background: rgb(242, 240, 230);
-	box-shadow: 0 0 1px rgb(0,0,0);
-	color: #333;
-	font-size: 1.2em;
+	padding: 0.5em 1em;
+	max-width: 15%;
+	background: rgb(255,255,165);
+	-moz-box-shadow: 0 0 2px rgb(0,0,0);
+	-webkit-box-shadow: 0 0 2px rgb(0,0,0);
+	-o-box-shadow: 0 0 2px rgb(0,0,0);
+	box-shadow: 0 0 2px rgb(0,0,0);
+	font-size: 1.5em;
+	line-height:1.3em;
+	font-family:Georgia, "Times New Roman", Times, serif;
 }
 /* links 
 ---------------------------------------------------------------*/
@@ -221,13 +225,12 @@ mark {
 }
 a.standardBtn, input[type="submit"] {
 	display: block;
-	margin: 20px auto;
 	padding: 7px 1%;
 	width: 10%;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	background: rgb(0,123,182);
+	background-color: rgb(0,123,182);
 	color: rgb(235,235,235);
 	text-align: center;
 	text-transform: uppercase;
@@ -256,9 +259,6 @@ a.smallBtn:hover {
 	color: rgb(255,255,255);
 }
 a.helpIcon {
-	position: absolute;
-	top: -1px;
-	left: 290px;
 	display: inline-block;
 	width: 16px;
 	height: 16px;
@@ -282,6 +282,8 @@ a.AddBtn {
 a.AddBtn:hover {
 }
 .greyBg {
+	position:relative;
+	padding:1px 0;
 	background: rgb(230,230,230);
 	}
 /*-------------------------------
@@ -610,7 +612,7 @@ header input[type="search"]:focus {
 
 
 /*--------------------------------------------- 
-			Devices List table
+					Data Table
 -----------------------------------------------*/
 
 #devicesList {
@@ -657,7 +659,7 @@ table.dataTable thead tr {
 	background: rgb(58,58,58);
 }
 table.dataTable thead tr th {
-	padding: 10px 5px;
+	padding: 13px 1em 7px 1em;
 	border-right: thin solid rgb(12,12,12);
 	background: url(../images/sortTableArrows.png) right center no-repeat;
 	color: rgb(255, 210, 0);
@@ -673,7 +675,11 @@ table.dataTable thead tr th a, table.dataTable thead tr th a:link, table.dataTab
 }
 /* end addition MTW */
 
-
+table.dataTable thead tr th a.helpIcon{
+	position:relative;
+	top:-5px;
+	margin:0 0 0 5px; 
+	}
 table.dataTable thead tr th.sorting_desc {
 	background: rgb(23,23,23) url(../images/sortTableDown.png) right center no-repeat;
 }
@@ -709,11 +715,24 @@ tfoot tr {
 #devicesListTable .longitude {
 	width: 16%;
 }
+#usersList .userName {width:35%;}
+#usersList .emailAdr {width:35%;}
+#usersList .permLevel {width:20%;}
+#usersList .action {width:10%;}
+#usersList .permLevel.admin {color:rgb(227, 27, 35);}
+#usersList .permLevel.permUser {color:rgb(219, 135, 201);}
+#usersList .permLevel.ProjectEditor {color:rgb(119, 97, 0);}
 #inspectData {
 	border: thin solid rgb(224,224,224);
 	border-top: 1px solid rgb(255,255,255);
 	background: rgb(224,224,224);
 }
+
+.greyBg a.standardBtn {
+	margin: 20px 1.5em 20px auto;
+	background-image:url(../images/addPlus.png) left center no-repeat;
+}
+
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys fieldset {
@@ -2209,7 +2228,6 @@ nav.smallMenu ul li a.showQuestion:hover {
 	font-weight: normal;
 	font-size: 1em;
 }
-
 
 /******************************************************************************
 									FLOW MAP
