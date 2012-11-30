@@ -97,7 +97,7 @@ FLOW.dataserverControl = Ember.Object.create({
       // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
         revision: 8,
-        adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:host})
+        adapter: DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:host})
       });
     }
     else if (server == "fixtures") {
@@ -150,11 +150,11 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedQuestionGroup: null,
   selectedQuestion: null,
   selectedOption: null,
-  selectedForMoveQuestionGroup:null,
-  selectedForCopyQuestionGroup:null,
-  selectedForMoveQuestion:null,
-  selectedForCopyQuestion:null,
-  selectedCreateNewGroup:false,
+  selectedForMoveQuestionGroup: null,
+  selectedForCopyQuestionGroup: null,
+  selectedForMoveQuestion: null,
+  selectedForCopyQuestion: null,
+  selectedCreateNewGroup: false,
 
   // when selected survey changes, deselect selected surveys and question groups
   deselectSurveyGroupChildren: function () {
@@ -175,7 +175,7 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   content: null,
 
   populate: function () {
-    this.set('content',FLOW.store.find(FLOW.SurveyGroup));
+    this.set('content', FLOW.store.find(FLOW.SurveyGroup));
   }
 });
 
@@ -184,7 +184,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   populate: function () {
     if (FLOW.selectedControl.get('selectedSurveyGroup')) {
       var id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-      this.set('content',FLOW.store.findQuery(FLOW.Survey, {surveyGroupId: id}));
+      this.set('content', FLOW.store.findQuery(FLOW.Survey, {surveyGroupId: id}));
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup')
 });
@@ -197,7 +197,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
   // true if some items are being saved
   allRecordsSaved: function () {
     var allSaved = true;
-    FLOW.questionGroupControl.get('content').forEach(function(item){
+    FLOW.questionGroupControl.get('content').forEach(function (item) {
       if (item.get('isSaving')) {
         allSaved = false;
       }
@@ -208,7 +208,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
   populate: function () {
     if (FLOW.selectedControl.get('selectedSurvey')) {
       var id = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('content',FLOW.store.findQuery(FLOW.QuestionGroup, {surveyId: id}));
+      this.set('content', FLOW.store.findQuery(FLOW.QuestionGroup, {surveyId: id}));
     }
   }.observes('FLOW.selectedControl.selectedSurvey')
 });
@@ -218,15 +218,15 @@ FLOW.questionControl = Ember.ArrayController.create({
   populate: function () {
     if (FLOW.selectedControl.get('selectedQuestionGroup')) {
       var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-      this.set('content',FLOW.store.findQuery(FLOW.Question, {questionGroupId: id}));
+      this.set('content', FLOW.store.findQuery(FLOW.Question, {questionGroupId: id}));
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup')
 });
 
 FLOW.placemarkControl = Ember.ArrayController.create({
   content: null,
-  populate: function() {
-    this.set('content',FLOW.store.findAll(FLOW.Placemark));
+  populate: function () {
+    this.set('content', FLOW.store.findAll(FLOW.Placemark));
   }
 });
 
@@ -245,34 +245,34 @@ FLOW.placemarkDetailControl = Ember.ArrayController.create({
 FLOW.optionControl = Ember.ArrayController.create({
 });
 
-FLOW.tableColumnControl =Ember.Object.create({
-  sortProperties:null,
-  sortAscending:true,
-  selected:null,
-  content:null
+FLOW.tableColumnControl = Ember.Object.create({
+  sortProperties: null,
+  sortAscending: true,
+  selected: null,
+  content: null
 });
 
 
 FLOW.deviceGroupControl = Ember.ArrayController.create({
   content: null,
   populate: function () {
-    this.set('content',FLOW.store.find(FLOW.DeviceGroup));
+    this.set('content', FLOW.store.find(FLOW.DeviceGroup));
   }
 });
 
 FLOW.deviceControl = Ember.ArrayController.create({
-  sortProperties:null,
-  sortAscending:true,
-  selected:null,
-  content:null,
+  sortProperties: null,
+  sortAscending: true,
+  selected: null,
+  content: null,
 
   populate: function () {
     this.set('content', FLOW.store.find(FLOW.Device));
-    this.set('sortProperties',['phoneNumber']);
-    this.set('sortAscending',true);
+    this.set('sortProperties', ['phoneNumber']);
+    this.set('sortAscending', true);
   },
 
-  allAreSelected: function(key, value) {
+  allAreSelected: function (key, value) {
     if (arguments.length === 2) {
       this.setEach('isSelected', value);
       return value;
@@ -282,27 +282,27 @@ FLOW.deviceControl = Ember.ArrayController.create({
     }
   }.property('@each.isSelected'),
 
-  atLeastOneSelected: function() {
+  atLeastOneSelected: function () {
     return this.filterProperty('isSelected', true).get('length');
   }.property('@each.isSelected'),
 
   // fired from tableColumnView.sort
-  getSortInfo:function(){
-    this.set('sortProperties',FLOW.tableColumnControl.get('sortProperties'));
-    this.set('sortAscending',FLOW.tableColumnControl.get('sortAscending'));
+  getSortInfo: function () {
+    this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
+    this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
   }
 });
 
 
 FLOW.surveyAssignmentControl = Ember.ArrayController.create({
-  sortProperties:null,
-  sortAscending:true,
-  content:null,
+  sortProperties: null,
+  sortAscending: true,
+  content: null,
 
-  populate:function(){
+  populate: function () {
     this.set('content', FLOW.store.find(FLOW.SurveyAssignment));
-    this.set('sortProperties',['name']);
-    this.set('sortAscending',true);
+    this.set('sortProperties', ['name']);
+    this.set('sortAscending', true);
   },
 
   allAreSelected: function (key, value) {
@@ -320,9 +320,9 @@ FLOW.surveyAssignmentControl = Ember.ArrayController.create({
   }.property('@each.isSelected'),
 
   getSortInfo:function(){
-    this.set('sortProperties',FLOW.tableColumnControl.get('sortProperties'));
-    this.set('sortAscending',FLOW.tableColumnControl.get('sortAscending'));
-    this.set('selected',FLOW.tableColumnControl.get('selected'));
+    this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
+    this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
+    this.set('selected', FLOW.tableColumnControl.get('selected'));
   }
 });
 

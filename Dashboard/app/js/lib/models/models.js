@@ -51,7 +51,7 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
 	name: DS.attr('string'),
 	path: DS.attr('string'),
 	code: DS.attr('string'),
-	surveyId: DS.attr('number'),
+	surveyId: DS.attr('number')
 });
 
 
@@ -81,7 +81,7 @@ FLOW.Question = FLOW.BaseModel.extend({
 
 FLOW.QuestionOption = FLOW.BaseModel.extend({
 	questionId: DS.attr('number'),
-	text: DS.attr('string'),
+	text: DS.attr('string')
 });
 
 
@@ -130,12 +130,12 @@ FLOW.SurveyedLocale = DS.Model.extend({
 FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
   questionText: DS.attr('string'),
   metricName: DS.attr('string'),
-  stringValue: DS.attr('string'),
+  stringValue: DS.attr('string')
 });
 
 FLOW.Placemark = FLOW.BaseModel.extend({
   latitude: DS.attr('number'),
   longitude: DS.attr('number'),
   collectionDate: DS.attr('date'),
-  markType: DS.attr('string', {defaultValue: 'WATER_POINT'}),
+  markType: DS.attr('string', {defaultValue: 'WATER_POINT'})
 });
