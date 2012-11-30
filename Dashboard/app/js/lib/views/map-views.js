@@ -137,6 +137,16 @@ FLOW.NavMapsView = Ember.View.extend({
         imageURL = 'http://flowdemo.s3.amazonaws.com/images/' + imageString.slice(imageString.indexOf('wfpPhoto'));
   
         console.log(imageURL);
+
+        var containsVerticalBar = FLOW.store.filter(FLOW.PlacemarkDetail,function(data){
+          var stringVal=data.get('stringValue');
+          if (stringVal.indexOf('|') != -1) {return true;} else {return false;}
+        });
+
+        containsVerticalBar.forEach(function(item){
+          item.set('stringValue',item.get('stringValue').replace(/\|/g,' | '));
+        });
+
         // over to you Daniel!
       }
     }
