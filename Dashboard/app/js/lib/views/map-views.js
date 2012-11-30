@@ -27,48 +27,78 @@ FLOW.NavMapsView = Ember.View.extend({
     FLOW.placemarkControl.set('map', map);
   },
 
+  // Returns a marker(pin on the map) to represent the placemarker
+  createMarker: function (placemark) {
+    // Create a marker
+    var point = new mxn.LatLonPoint(placemark.get('latitude'), placemark.get('longitude')),
+      marker = new mxn.Marker(point);
+
+    marker.setIcon('flow15/images/maps/blueMarker.png');
+    marker.placemark = placemark;
+    // Add a click handler that handles what happens when marker is clicked
+    
+    placemark.toggleMarker = function (placemark) {
+      var map = FLOW.placemarkControl.get('map');
+      var point = new mxn.LatLonPoint(placemark.get('latitude'), placemark.get('longitude')),
+        newMarker = new mxn.Marker(point);
+
+      if (placemark.marker.iconUrl === 'flow15/images/maps/blueMarker.png') {
+        newMarker.iconUrl = 'flow15/images/maps/redMarker.png';
+      } else {
+        newMarker.iconUrl = 'flow15/images/maps/blueMarker.png';
+      }
+    
+      placemark.addMarkerClickHandler(newMarker, placemark);
+      map.addMarker(newMarker);
+      map.removeMarker(placemark.marker);
+      newMarker.placemark = placemark;
+      
+      placemark.set('marker', newMarker);
+    },
+
+    placemark.manageClick = function (marker) {
+      // Handle new click
+      marker.placemark.toggleMarker(marker.placemark);
+
+      // If there was a marker already selected deselect
+      var oldSelected = FLOW.placemarkControl.get('selected');
+      if (typeof oldSelected === 'undefined') {
+        console.log('No old selection');
+        FLOW.placemarkControl.set('selected', placemark);
+      } else {
+        if (this.marker === oldSelected.marker) {
+          console.log('Clicking the same marker');
+          FLOW.placemarkControl.set('selected', undefined);
+        } else {
+          console.log('Clicking new marker');
+          oldSelected.toggleMarker(oldSelected);
+          FLOW.placemarkControl.set('selected', placemark);
+        }
+      }
+
+    };
+
+    placemark.addMarkerClickHandler = function (marker, placemark) {
+      var clickHandler = function (event_name, event_source, event_args) {
+        event_source.placemark.manageClick(event_source.placemark.marker);
+      };
+      marker.click.addHandler(clickHandler);
+    };
+
+    placemark.addMarkerClickHandler(marker, placemark);
+    // Attach the new marker to the placemarker object
+    placemark.set('marker', marker);
+
+    return marker;
+  },
+
+
   putPlacemarksOnMap: function () {
-    console.log('ready to put placemarks on map');
-    var mapHandler = FLOW.placemarkControl.get('map');
-    var htmlContent, marker, pm, point, mark;
-
-    FLOW.placemarkControl.get('content').forEach(function (item) {
-        var mapHandler = FLOW.placemarkControl.get('map');
-        point = new mxn.LatLonPoint(item.get('latitude'), item.get('longitude'));
-        marker = new mxn.Marker(point);
-        item.set('marker', marker);
-        marker.setLabel('label');
-        marker.setIcon('flow15/images/maps/blueMarker.png');
-
-        marker.click.addHandler(function (event_name, event_source, event_args) {
-          // Deselect marker
-          
-          var toggleMarker = function (placeMark, map) {
-            // console.log("About to toogle:");
-            var newMark = new mxn.Marker(placeMark.marker.location);
-            newMark.setLabel('label');
-            if (placeMark.marker.iconUrl === 'flow15/images/maps/blueMarker.png') {
-              newMark.setIcon('flow15/images/maps/redMarker.png');
-            } else {
-              newMark.setIcon('flow15/images/maps/blueMarker.png');
-            }
-            map.removeMarker(placeMark.marker);
-            map.addMarker(newMark);
-            placeMark.set('marker', newMark);
-          };
-
-          var oldSelected = FLOW.placemarkControl.get('selected');
-          
-          if (typeof oldSelected != 'undefined') {
-            toggleMarker(oldSelected, mapHandler);
-          }
-
-          toggleMarker(item, mapHandler);
-          FLOW.placemarkControl.set('selected', item);
-        });
-        
-        mapHandler.addMarker(marker, false);
-    });
+    var map = FLOW.placemarkControl.get('map');
+    FLOW.placemarkControl.get('content').forEach(function (placemark) {
+      var marker = this.createMarker(placemark);
+      map.addMarker(marker);
+    }, this);
   },
 
   triggerPlacemarks: function () {
@@ -76,15 +106,22 @@ FLOW.NavMapsView = Ember.View.extend({
   }.observes('FLOW.placemarkControl.content.isUpdating'),
 
   getDetails: function () {
-    var pmId = FLOW.placemarkControl.selected.get('keyId');
-    FLOW.placemarkDetailControl.populate(pmId);
-    console.log('getting details');
+    // console.log('getting details');
+    var selected = FLOW.placemarkControl.get('selected');
+    if (typeof selected !== 'undefined') {
+      FLOW.placemarkDetailControl.populate(selected.id);
+    } else {
+      FLOW.placemarkDetailControl.populate(selected);
+    }
   }.observes('FLOW.placemarkControl.selected'),
 
   showDetails: function () {
-    if (FLOW.placemarkDetailControl.content.get('isLoaded') === true) {
-      console.log('details loaded');
-      this.set('showDetailsBool', true);
+    // console.log('details loaded');
+    var content = FLOW.placemarkDetailControl.get('content');
+    if ((typeof content !== 'undefined') && (content !== null)) {
+      if (content.get('isLoaded') === true) {
+        this.set('showDetailsBool', true);
+      }
     }
   }.observes('FLOW.placemarkDetailControl.content.isLoaded')
 

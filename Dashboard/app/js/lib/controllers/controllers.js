@@ -232,8 +232,13 @@ FLOW.placemarkControl = Ember.ArrayController.create({
 
 FLOW.placemarkDetailControl = Ember.ArrayController.create({
   content: null,
+
   populate: function (placemarkId) {
-    this.set('content',FLOW.store.find(FLOW.PlacemarkDetail,{"placemarkId":placemarkId}));
+    if (typeof placemarkId === 'undefined') {
+      this.set('content', null);
+    } else {
+      this.set('content', FLOW.store.find(FLOW.PlacemarkDetail, {"placemarkId": placemarkId}));
+    }
   }
 });
 
@@ -244,7 +249,7 @@ FLOW.tableColumnControl =Ember.Object.create({
   sortProperties:null,
   sortAscending:true,
   selected:null,
-  content:null,  
+  content:null
 });
 
 
