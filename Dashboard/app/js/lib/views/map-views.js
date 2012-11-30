@@ -122,6 +122,23 @@ FLOW.NavMapsView = Ember.View.extend({
       if (content.get('isLoaded') === true) {
         this.set('showDetailsBool', true);
       }
+
+      var imageString=null;
+      if (FLOW.placemarkDetailControl.content.get('isLoaded') === true) {
+        this.set('showDetailsBool', true);
+
+        var containsImage = FLOW.store.filter(FLOW.PlacemarkDetail,function(data){
+        var stringVal=data.get('stringValue');
+        if (stringVal.indexOf('wfpPhoto') != -1) {return true;} else {return false;}
+        });
+
+        imageObj = containsImage.get('firstObject');
+        imageString = imageObj.get('stringValue'); 
+        imageURL = 'http://flowdemo.s3.amazonaws.com/images/' + imageString.slice(imageString.indexOf('wfpPhoto'));
+  
+        console.log(imageURL);
+        // over to you Daniel!
+      }
     }
   }.observes('FLOW.placemarkDetailControl.content.isLoaded')
 
