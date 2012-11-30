@@ -24,9 +24,9 @@
          
          {{#if FLOW.deviceControl.atLeastOneSelected}}
             <a {{action "showDeleteDevicesDialog" target="this"}}>Disable Devices</a> | 
-            <a {{action "showAddToGroupDialog" target="this"}}>Add to Device group</a> <br/><br/>
+            <a {{action "showAddToGroupDialog" target="this"}}>Add to Device group</a>
         {{/if}}
-
+        <br/><br/>
 
         <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->
@@ -99,13 +99,7 @@
             optionLabelPath="content.code" 
             optionValuePath="content.keyId" 
             prompt="Select existing device group"}} 
-          <br/>
-            <p class="dialogMsg">or create a new device group in the box below</p>
-             <br/>
-              {{view Ember.TextField valueBinding="view.newDeviceGroupName" placeholder="Type new device group name" size=30}}
-          
-          <br/><br/>
-
+        
           <div class="buttons menuCentre"> 
             <ul>  
                <li><a {{action "doAddToGroup" target="this"}} class="ok smallBtn">OK</a></li>
@@ -115,10 +109,22 @@
         </div>
       </div>
     </div>
-
-
         {{/view}}
     </section>
-       
-
 </section>
+
+{{#view FLOW.SavingDeviceGroupView}}
+  <div {{bindAttr class="view.showDGSavingDialogBool:display :overlay"}}>
+      <div class="blanket"></div>
+      <div class="dialogWrap"> 
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog">
+          <h2>Saving ....</h2>
+          <p class="dialogMsg">Please wait</p>
+          <div class="buttons menuCentre">
+              
+          </div>
+        </div>
+      </div>
+  </div>
+{{/view}}

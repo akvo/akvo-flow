@@ -91,20 +91,15 @@ FLOW.DeviceGroup = FLOW.BaseModel.extend({
 });
 
 FLOW.Device = FLOW.BaseModel.extend({
-	EMEI: DS.attr('string',{defaultValue: ''}),
-	macAddress: DS.attr('string',{defaultValue: ''}),
+	esn: DS.attr('string',{defaultValue: ''}),
 	phoneNumber: DS.attr('string',{defaultValue: ''}),
-	deviceType: DS.attr('string',{defaultValue: ''}),
 	deviceIdentifier: DS.attr('string',{defaultValue: ''}),
-	inServiceDate: DS.attr('date'),
-	outServiceDate: DS.attr('date'),
-	osVersion: DS.attr('string', {defaultValue: ''}),
 	lastKnownLat: DS.attr('number', {defaultValue: 0}),
-	lastKnownLong:DS.attr('number', {defaultValue: 0}),
+	lastKnownLon:DS.attr('number', {defaultValue: 0}),
 	lastKnownAccuracy: DS.attr('number',{defaultValue:0}),
 	lastPositionDate: DS.attr('number', {defaultValue: ''}),
 	deviceGroup: DS.attr('string',{defaultValue: ''}),
-	isSelected: DS.attr('boolean', {defaultValue: false})
+	isSelected: false //DS.attr('boolean', {defaultValue: false})
 });
 
 FLOW.SurveyAssignment = FLOW.BaseModel.extend({

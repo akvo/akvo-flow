@@ -22,13 +22,16 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.rest.dto.DevicePayload;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.dao.DeviceDAO;
@@ -74,4 +77,51 @@ public class DeviceRestService {
 		response.put("device", deviceDto);
 		return response;
 	}
+
+	// update existing device
+	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+	@ResponseBody
+	public Map<String, Object> saveExistingDevice(
+			@RequestBody DevicePayload payLoad) {
+		final DeviceDto deviceDto = payLoad.getDevice();
+		final Map<String, Object> response = new HashMap<String, Object>();
+		DeviceDto dto = null;
+
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
+		// if the POST data contains a valid deviceDto, continue. Otherwise,
+		// server will respond with 400 Bad Request
+		if (deviceDto != null) {
+			Long keyId = deviceDto.getKeyId();
+			Device s;
+
+			// if the deviceDto has a key, try to get the device.
+			if (keyId != null) {
+				s = deviceDao.getByKey(keyId);
+				// if we find the device, update it's properties
+				if (s != null) {
+					// copy the properties, except the createdDateTime property,
+					// because it is set in the Dao.
+					BeanUtils.copyProperties(deviceDto, s, new String[] {
+							"createdDateTime"});
+					s = deviceDao.save(s);
+					dto = new DeviceDto();
+					DtoMarshaller.copyToDto(s, dto);
+					statusDto.setStatus("ok");
+				}
+			}
+		}
+		response.put("meta", statusDto);
+		response.put("device", dto);
+		return response;
+	}
+
+
+
+
+
+
+
+
 }

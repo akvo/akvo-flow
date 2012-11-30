@@ -9,12 +9,22 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 	},
 
 	doAddToGroup: function(){
+	  if (this.get('selectedDeviceGroup') !== null) {
+	  		console.log(this.get('selectedDeviceGroup'));
+			var selectedDeviceGroupId=this.selectedDeviceGroup.get('keyId');
+			var selectedDevices = FLOW.store.filter(FLOW.Device,function(data){
+				if (data.get('isSelected') === true) {return true;} else {return false;}
+			});
+			selectedDevices.forEach(function(item){
+				console.log('setting device group',selectedDeviceGroupId, ' on ', item.get('phoneNumber'));
+				item.set('deviceGroup',selectedDeviceGroupId);
+			});
+		}
+		FLOW.store.commit();
 		this.set('showAddToGroupDialogBool',false);
-		console.log(this.get('newDeviceGroupName'));
-		console.log(this.get('selectedDeviceGroup'));
-		//if ()
-	//	new name has preference
 	},
+
+
 
 	cancelAddToGroup: function(){
 		this.set('showAddToGroupDialogBool',false);
@@ -32,4 +42,17 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 	cancelDeleteDevices: function(){
 
 	}
+});
+
+
+FLOW.SavingDeviceGroupView = Ember.View.extend({
+	showDGSavingDialogBool:false,
+
+	showDGSavingDialog:function(){
+		if (FLOW.DeviceGroupControl.get('allRecordsSaved')){
+			this.set('showDGSavingDialogBool', false)
+		} else {
+			this.set('showDGSavingDialogBool', true)
+		}
+	}.observes('FLOW.deviceGroupControl.allRecordsSaved')
 });

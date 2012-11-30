@@ -194,7 +194,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
-  // true if some items are being saved
+  // true if all items have been saved
   allRecordsSaved: function () {
     var allSaved = true;
     FLOW.questionGroupControl.get('content').forEach(function (item) {
@@ -255,9 +255,11 @@ FLOW.tableColumnControl = Ember.Object.create({
 
 FLOW.deviceGroupControl = Ember.ArrayController.create({
   content: null,
+  
   populate: function () {
     this.set('content', FLOW.store.find(FLOW.DeviceGroup));
   }
+
 });
 
 FLOW.deviceControl = Ember.ArrayController.create({
