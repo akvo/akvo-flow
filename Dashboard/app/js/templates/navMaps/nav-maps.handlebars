@@ -1,7 +1,8 @@
 <section id="main" class="mapFlow floats-in" role="main">
 <div id="flowMap"></div>
 <div id="pointDetails">
-  <dl> {{#each item in FLOW.placemarkDetailControl}}
+<h2>Point Details:</h2>
+  <dl class="floats-in"> {{#each item in FLOW.placemarkDetailControl}}
     <dt>{{item.questionText}}:</dt> <dd>{{item.stringValue}}</dd>
     {{/each}} 
   </dl>

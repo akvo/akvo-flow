@@ -2239,17 +2239,45 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 #pointDetails {
 	float: right;
-	width: 23%;
-	padding: 10px 1% 0px 1%;
+	width: 24%;
+	padding: 10px 0.5% 0px 0.5%;
 	height: 590px;
 	background: rgb(234,234,234);
 	overflow-y: scroll;
 	overflow-x: none;
 }
-#pointDetails li {
-	font-size: 1.2em;
+#pointDetails h2 {
+	margin:0 0 10px 0;
+	line-height:inherit;
+}
+
+#pointDetails dl {
+	position:relative;
+	width:100%;
+}
+#pointDetails dt {
+	width:40%;
+	color:rgb(124,124,124);
+	display: block;
 	overflow: hidden;
-	margin: 0 0 5px 0;
+	min-height: 20px;
+	text-overflow:clip;
+	white-space:pre-wrap;
+	float:left;
+	padding:0 0 3px 0;
+}
+#pointDetails dd {
+	display: block;
+	width:59.75%;
+	color:rgb(0,0,0);
+	float:right;
+	overflow:hidden;
+	text-overflow:clip;
+	white-space:;
+	float:right;
+	min-height: 20px;
+	padding:0 0 3px 0.25%;
+	
 }
 #flowMapLegend {
 	width: 98%;
