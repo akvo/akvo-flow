@@ -281,6 +281,9 @@ a.AddBtn {
 }
 a.AddBtn:hover {
 }
+.greyBg {
+	background: rgb(230,230,230);
+	}
 /*-------------------------------
 	Dialog
 -----------------------------------*/
@@ -1535,9 +1538,9 @@ ul.surveyInfo li.responseNumber p {
 }
 .newSurveyInfoUl {
 	background: rgb(23,23,23);
-	margin: 20px 0 0 0;
-	padding: 15px 1%;
-	width: 98%;
+	margin: 20px auto 0 auto;
+	padding: 15px 0%;
+	width: 96%;
 }
 .newSurveyInfoUl li {
 	position: relative;
@@ -1555,17 +1558,6 @@ ul.surveyInfo li.responseNumber p {
 	color: rgb(227, 27, 35);
 	font-weight: bold;
 }
-.newSurveyInfoUl li > span#numberQuestionSet {
-}
-.newSurveyInfoUl li > span#numberQuestion {
-}
-/*.newSurveyInfoUl li:first-child {
-	padding: 20px 5px;
-	width: 90%;
-	background: url(../images/sepHorDark.png) left top repeat-x;
-	color: rgb(255,255,255);
-}
-*/
 nav.newSurveyNav {
 	margin: 0 auto;
 	padding: 0;
@@ -2303,11 +2295,17 @@ footer.bottomPage nav#footerNav ul li:last-child {
 	margin:5px 0 0 0;
 }
 footer.bottomPage nav#footerNav ul li a{
+	display:block;
 	padding:5px 7px;
 	text-transform:uppercase;
 	font-size:1em;
 	}
-
+footer.bottomPage nav#footerNav ul li a.akvoDotOrg {
+	margin:-1px 0 0 0; 
+	width:39px;
+	text-indent:-9999px;
+	background:url(../images/akvo.org_footer1.png) center center no-repeat;
+	}
 footer.bottomPage a[rel="self"] {
 }
 footer.bottomPage a[rel="self"]:hover {
