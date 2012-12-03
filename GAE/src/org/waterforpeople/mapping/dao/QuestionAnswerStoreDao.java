@@ -81,6 +81,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<QuestionAnswerStore> listByTypeValue(String type, String value) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);

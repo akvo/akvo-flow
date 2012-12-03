@@ -407,7 +407,6 @@ public class QuestionDao extends BaseDAO<Question> {
 				questionGroupId, "Long", "order", "asc");
 		TreeMap<Integer, Question> map = new TreeMap<Integer, Question>();
 		if (qList != null) {
-			int i = 1;
 			for (Question q : qList) {
 
 				if (needDetails) {
@@ -431,7 +430,6 @@ public class QuestionDao extends BaseDAO<Question> {
 				}
 				if (q.getOrder() == null) {
 					q.setOrder(qList.size() + 1);
-					i++;
 				} else if (allowSideEffects) {
 					if (map.size() > 0 && !(q.getOrder() > map.size())) {
 						q.setOrder(map.size() + 1);

@@ -34,12 +34,10 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 

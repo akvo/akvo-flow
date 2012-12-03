@@ -62,6 +62,7 @@ public class OfflineExport extends GraphicalSurveySummaryExporter {
 		};
 	};
 
+	@SuppressWarnings("unchecked")
 	public void export(Map<String, String> criteria, File outputFile,
 			String serverBase, Map<String, String> options) {
 		try {

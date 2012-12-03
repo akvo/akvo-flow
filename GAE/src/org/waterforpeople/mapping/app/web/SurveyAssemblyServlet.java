@@ -357,12 +357,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		StringBuilder sb = new StringBuilder("<questionGroup><heading>")
 				.append(StringEscapeUtils.escapeXml(group.getCode())).append(
 						"</heading>");
-		int count = 0;
 
 		if (questionList != null) {
 			for (Question q : questionList.values()) {
 				sb.append(marshallQuestion(q));
-				count++;
 			}
 		}
 		return sb.toString() + "</questionGroup>";
@@ -441,12 +439,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 		StringBuilder sb = new StringBuilder("<questionGroup><heading>")
 				.append(group.getCode()).append("</heading>");
-		int count = 0;
 
 		if (questionList != null) {
 			for (Question q : questionList.values()) {
 				sb.append(marshallQuestion(q));
-				count++;
 			}
 		}
 		SurveyXMLFragment sxf = new SurveyXMLFragment();

@@ -17,7 +17,6 @@
 package com.gallatinsystems.device.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.jdo.annotations.NotPersistent;

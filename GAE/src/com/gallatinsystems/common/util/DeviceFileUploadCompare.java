@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.log4j.Level;
@@ -446,11 +445,7 @@ public class DeviceFileUploadCompare {
 		BufferedInputStream bis = new BufferedInputStream(url.openStream());
 		ZipInputStream zis = new ZipInputStream(bis);
 		ArrayList<String> lines = new ArrayList<String>();
-		String line = null;
-		String surveyDataOnly = null;
-		String dataSig = null;
-		ZipEntry entry;
-		while ((entry = zis.getNextEntry()) != null) {
+		while (zis.getNextEntry() != null) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			byte[] buffer = new byte[2048];
 			int size;
