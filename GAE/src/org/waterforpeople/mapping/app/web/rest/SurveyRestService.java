@@ -46,7 +46,7 @@ public class SurveyRestService {
 	@Inject
 	private SurveyDAO surveyDao;
 
-	//TODO put in meta information?
+	// TODO put in meta information?
 	// list all surveys
 	@RequestMapping(method = RequestMethod.GET, value = "/all")
 	@ResponseBody
@@ -68,16 +68,24 @@ public class SurveyRestService {
 		response.put("surveys", results);
 		return response;
 	}
-	
-	//TODO put in meta information?
+
+	// TODO put in meta information?
 	// list surveys by surveyGroup id
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public Map<String, List<SurveyDto>> listSurveysByGroupId(
-			@RequestParam("surveyGroupId") Long surveyGroupId) {
+			@RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId,
+			@RequestParam(value = "ids[]", defaultValue = "") Long[] ids) {
 		final Map<String, List<SurveyDto>> response = new HashMap<String, List<SurveyDto>>();
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
-		List<Survey> surveys = surveyDao.listSurveysByGroup(surveyGroupId);
+		List<Survey> surveys = null;
+
+		if (surveyGroupId != null) {
+			surveys = surveyDao.listSurveysByGroup(surveyGroupId);
+		} else if (ids[0] != null) {
+			surveys = surveyDao.listByKeys(ids);
+		}
+
 		if (surveys != null) {
 			for (Survey s : surveys) {
 				SurveyDto dto = new SurveyDto();
