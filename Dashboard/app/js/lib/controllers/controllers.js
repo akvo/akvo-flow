@@ -61,7 +61,7 @@ FLOW.dataserverControl = Ember.Object.create({
     this._super();
     var dataserver_setting = localStorage.dataserver;
     if (typeof dataserver_setting === "undefined") {
-      this.set('dataserver', this.content.findProperty('value', 'local'));
+      this.set('dataserver', this.content.findProperty('value', 'sandbox'));
     } else {
       this.set('dataserver', this.content.findProperty('value', dataserver_setting));
     }
