@@ -124,7 +124,7 @@ Ember.View.reopen({
 					}
 				}
 		);
-		var nQ = parseInt($("#numberQuestion").text());
+		var nQ = parseInt($("#numberQuestion").text(), 10);
 		$("h1.questionNbr span").text(
 			function () {
 				if (nQ < 10) {
