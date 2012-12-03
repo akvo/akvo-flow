@@ -8,12 +8,9 @@ FLOW.QuestionView = Ember.View.extend({
 	checkedOptionOther:false,
 	selectedQuestionType:null,
 	selectedOptionEdit:null,
-	//oneSelectedForMove:false,
-	//oneSelectedForCopy:false,
 	
 	amOpenQuestion: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestion');
-
 		if (selected && this.get('content')) {
 			var isOpen = (this.content.get('keyId') == FLOW.selectedControl.selectedQuestion.get('keyId'));
 			return isOpen;

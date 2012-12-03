@@ -108,7 +108,7 @@ Ember.View.reopen({
     $('li.aSurvey:nth-child(4n)').addClass('endOfRow');
     $('table#devicesListTable tbody tr:nth-child(2n)').addClass('even');
     
-	$(".questionSetContent div.innerContent").hide();
+
 	var nCount = 0; 
 	$(".addQuestion").click( function () {
 		nCount++; 
