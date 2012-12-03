@@ -48,7 +48,7 @@ Ember.STRINGS_EN = {
   '_users': 'users'
 };
 
-Ember.STRINGS_SP = {
+Ember.STRINGS_ES = {
 };
 
 Ember.STRINGS_NL = {
@@ -61,5 +61,5 @@ Ember.STRINGS_NL = {
 
 
 Ember.STRINGS_FR = {
-  '_home': 'thuis',
+  '_home': 'thuis'
 };
