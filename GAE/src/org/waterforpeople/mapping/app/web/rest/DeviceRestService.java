@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
@@ -46,10 +47,17 @@ public class DeviceRestService {
 
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<DeviceDto>> listDevices() {
+	public Map<String, List<DeviceDto>> listDevices(
+			@RequestParam(value = "ids[]", defaultValue = "") Long[] ids) {
 		final Map<String, List<DeviceDto>> response = new HashMap<String, List<DeviceDto>>();
 		final List<DeviceDto> deviceList = new ArrayList<DeviceDto>();
-		final List<Device> devices = deviceDao.list(Constants.ALL_RESULTS);
+		List<Device> devices = null;
+
+		if (ids[0] == null) {
+			devices = deviceDao.list(Constants.ALL_RESULTS);
+		} else {
+			devices = deviceDao.listByKeys(ids);
+		}
 
 		if (devices != null) {
 			for (Device d : devices) {
@@ -103,8 +111,8 @@ public class DeviceRestService {
 				if (s != null) {
 					// copy the properties, except the createdDateTime property,
 					// because it is set in the Dao.
-					BeanUtils.copyProperties(deviceDto, s, new String[] {
-							"createdDateTime"});
+					BeanUtils.copyProperties(deviceDto, s,
+							new String[] { "createdDateTime" });
 					s = deviceDao.save(s);
 					dto = new DeviceDto();
 					DtoMarshaller.copyToDto(s, dto);
@@ -116,12 +124,5 @@ public class DeviceRestService {
 		response.put("device", dto);
 		return response;
 	}
-
-
-
-
-
-
-
 
 }
