@@ -1,3 +1,5 @@
+/*global mxn:false*/
+
 FLOW.NavMapsView = Ember.View.extend({
   templateName: "navMaps/nav-maps",
   showDetailsBool: false,
@@ -123,7 +125,7 @@ FLOW.NavMapsView = Ember.View.extend({
         this.set('showDetailsBool', true);
       }
 
-      var imageString=null;
+      var imageString, imageObj, imageURL;
       if (FLOW.placemarkDetailControl.content.get('isLoaded') === true) {
         this.set('showDetailsBool', true);
 
