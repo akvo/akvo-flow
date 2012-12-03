@@ -1,6 +1,8 @@
 // ***********************************************//
 //                      Navigation views
 // ***********************************************//
+/*global tooltip, makePlaceholders */
+
 
 require('akvo-flow/core');
 require('akvo-flow/views/survey-group-views');
