@@ -1349,7 +1349,6 @@ public class SurveyDbAdapter {
 		ArrayList<PointOfInterest> points = null;
 		String whereClause = null;
 		String[] whereValues; //unfortunately, length of this array must match the number of ?'s in the whereClause
-		int i;
 		//Maximum angular difference for a given radius. Must avoid problems at high latitudes....
 		double nsDegrees = radius * 360 / 40000000;
 		double ewDegrees;
@@ -1367,12 +1366,10 @@ public class SurveyDbAdapter {
 		whereClause = LAT_COL + "<? AND " + LAT_COL + ">?";
 		if (ewDegrees == 0.0d){ //degenerate case
 			whereValues = new String[2];
-			i = 2;
 		} else	{
 			whereValues = new String[4];
 			whereValues[2] = Double.toString(east); //East limit
 			whereValues[3] = Double.toString(west); //West limit
-			i = 4;
 			if (east > 180.0d){ //wrapped
 				east = east - 360.0d;
 				whereClause += " AND (" + LON_COL + "<? OR " + LON_COL + ">?)"; 
