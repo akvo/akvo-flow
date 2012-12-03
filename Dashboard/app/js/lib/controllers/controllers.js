@@ -41,7 +41,7 @@ FLOW.languageControl = Ember.Object.create({
   content: [
     Ember.Object.create({label: "English", value: "en"}),
     Ember.Object.create({label: "Dutch", value: "nl"}),
-    Ember.Object.create({label: "Spanish", value: "sp"}),
+    Ember.Object.create({label: "Spanish", value: "es"}),
     Ember.Object.create({label: "French", value: "fr"})],
 
   changeLanguage: function () {
@@ -49,7 +49,7 @@ FLOW.languageControl = Ember.Object.create({
 
     if (locale === "nl") {Ember.STRINGS = Ember.STRINGS_NL; }
     else if (locale === "fr") {Ember.STRINGS = Ember.STRINGS_FR; }
-    else if (locale === "sp") {Ember.STRINGS = Ember.STRINGS_SP; }
+    else if (locale === "es") {Ember.STRINGS = Ember.STRINGS_ES; }
     else {Ember.STRINGS = Ember.STRINGS_EN; }
   }.observes('this.dashboardLanguage')
 });
