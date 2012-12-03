@@ -48,10 +48,18 @@ Ember.STRINGS_EN = {
   '_users': 'users'
 };
 
+Ember.STRINGS_SP = {
+};
 
 Ember.STRINGS_NL = {
   '_home': 'thuis',
   '_devices':'toestellen',
   '_survey_groups':'Enquetegroepen',
   '_add_a_group':'voeg een groep toe'
+};
+
+
+
+Ember.STRINGS_FR = {
+  '_home': 'thuis',
 };
