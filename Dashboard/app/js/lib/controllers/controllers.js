@@ -9,7 +9,6 @@ FLOW.ApplicationController = Ember.Controller.extend({
   init: function () {
     this._super();
     Ember.STRINGS = Ember.STRINGS_EN;
-    //this.set("dashboardLanguage","en");
   }
 });
 
@@ -236,7 +235,7 @@ FLOW.placemarkDetailControl = Ember.ArrayController.create({
     if (typeof placemarkId === 'undefined') {
       this.set('content', null);
     } else {
-      this.set('content', null);	
+      this.set('content', null);
       this.set('content', FLOW.store.find(FLOW.PlacemarkDetail, {"placemarkId": placemarkId}));
     }
   }
@@ -293,6 +292,8 @@ FLOW.deviceControl = Ember.ArrayController.create({
     this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
     this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
   }
+
+  //TODO after initial loading, put names of devices in the device group name field.
 });
 
 

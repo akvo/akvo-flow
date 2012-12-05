@@ -24,8 +24,9 @@
          
          {{#if FLOW.deviceControl.atLeastOneSelected}}
             <a {{action "showDeleteDevicesDialog" target="this"}}>Disable Devices</a> | 
-            <a {{action "showAddToGroupDialog" target="this"}}>Add to Device group</a>
+            <a {{action "showAddToGroupDialog" target="this"}}>Add to Device group</a> | 
         {{/if}}
+          <a {{action "showManageDeviceGroupsDialog" target="this"}}>Manage device groups</a>
         <br/><br/>
 
         <table class="dataTable" id="surveyDataTable">
@@ -35,8 +36,8 @@
                 {{#view FLOW.ColumnView item="select" }}
                     {{view Ember.Checkbox checkedBinding="FLOW.deviceControl.allAreSelected"}}
                 {{/view}}
-                {{#view FLOW.ColumnView item="EMEI" type="device"}}
-                    <a {{action "sort" target="this"}}>EMEI</a>
+                {{#view FLOW.ColumnView item="IMEI" type="device"}}
+                    <a {{action "sort" target="this"}}>IMEI</a>
                 {{/view}}
                 {{#view FLOW.ColumnView item="macAddress" type="device"}}
                     <a {{action "sort" target="this"}}>MAC Address</a>
@@ -109,6 +110,37 @@
         </div>
       </div>
     </div>
+
+    <!-- manage device groups dialog-->
+    <div {{bindAttr class="view.showManageDeviceGroupsDialogBool:display :overlay"}}>
+      <div class="blanket"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog">
+          <h2>Manage device groups</h2>
+          <p class="dialogMsg">To change the name of an existing group, select it and change the name</p>
+          <br/>
+            {{view Ember.Select 
+            contentBinding="FLOW.deviceGroupControl.content" 
+            selectionBinding="view.selectedDeviceGroup" 
+            optionLabelPath="content.code" 
+            optionValuePath="content.keyId" 
+            prompt="Select device group"}} 
+
+          {{view Ember.TextField valueBinding="view.changedDeviceGroupName" size=40}}
+          
+          <p class="dialogMsg">To create a new device group, enter the name in the box below</p>
+           <label for="newDeviceGroupName">New group: {{view Ember.TextField valueBinding="view.newDeviceGroupName" size=40}}</label>
+          <div class="buttons menuCentre"> 
+            <ul>  
+               <li><a {{action "doManageDeviceGroups" target="this"}} class="ok smallBtn">SAVE</a></li>
+              <li><a {{action "cancelManageDeviceGroups" target="this"}}} class="cancel">CANCEL</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
         {{/view}}
     </section>
 </section>
