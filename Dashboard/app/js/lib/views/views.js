@@ -100,7 +100,7 @@ Ember.View.reopen({
     didInsertElement: function() {
         this._super();
         tooltip();
-		makePlaceholders();
+		//makePlaceholders();
 	$("nav#topnav li.current").prev("nav#topnav li").css("background", "none");
 	$("nav#topnav li").hover( function (){
 		$(this).prev().css("background", "none");
