@@ -86,7 +86,6 @@ FLOW.QuestionOption = FLOW.BaseModel.extend({
 
 
 FLOW.DeviceGroup = FLOW.BaseModel.extend({
-	displayName: DS.attr('string',{defaultValue: ''}),
 	code: DS.attr('string',{defaultValue: ''})
 });
 
