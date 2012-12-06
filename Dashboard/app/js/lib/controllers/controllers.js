@@ -256,8 +256,9 @@ FLOW.deviceGroupControl = Ember.ArrayController.create({
   content: null,
   
   populate: function () {
-    this.set('content', FLOW.store.find(FLOW.DeviceGroup));
+    this.set('content', FLOW.store.findQuery(FLOW.DeviceGroup,{}));
   }
+
 
 });
 
@@ -268,7 +269,7 @@ FLOW.deviceControl = Ember.ArrayController.create({
   content: null,
 
   populate: function () {
-    this.set('content', FLOW.store.find(FLOW.Device));
+    this.set('content', FLOW.store.findQuery(FLOW.Device,{}));
     this.set('sortProperties', ['phoneNumber']);
     this.set('sortAscending', true);
   },
@@ -292,8 +293,6 @@ FLOW.deviceControl = Ember.ArrayController.create({
     this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
     this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
   }
-
-  //TODO after initial loading, put names of devices in the device group name field.
 });
 
 

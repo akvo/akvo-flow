@@ -4,7 +4,6 @@
         <!-- DEVICES TABLE-->
 
       {{#view FLOW.CurrentDevicesTabView}}
-
     <div id="devicesListTable_length" class="dataTables_length">
            <!--  <label>
                 Show
@@ -25,6 +24,7 @@
          {{#if FLOW.deviceControl.atLeastOneSelected}}
             <a {{action "showDeleteDevicesDialog" target="this"}}>Disable Devices</a> | 
             <a {{action "showAddToGroupDialog" target="this"}}>Add to Device group</a> | 
+             <a {{action "showRemoveFromGroupDialog" target="this"}}>Remove from Device Group</a> | 
         {{/if}}
           <a {{action "showManageDeviceGroupsDialog" target="this"}}>Manage device groups</a>
         <br/><br/>
@@ -110,6 +110,25 @@
         </div>
       </div>
     </div>
+
+<!-- Remove from group dialog-->
+    <div {{bindAttr class="view.showRemoveFromGroupDialogBool:display :overlay"}}>
+      <div class="blanket"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog">
+          <h2>Remove devices from device group?</h2>
+        
+          <div class="buttons menuCentre"> 
+            <ul>  
+               <li><a {{action "doRemoveFromGroup" target="this"}} class="ok smallBtn">OK</a></li>
+              <li><a {{action "cancelRemoveFromGroup" target="this"}}} class="cancel">CANCEL</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- manage device groups dialog-->
     <div {{bindAttr class="view.showManageDeviceGroupsDialogBool:display :overlay"}}>

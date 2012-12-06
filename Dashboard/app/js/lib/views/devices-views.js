@@ -1,6 +1,7 @@
 FLOW.CurrentDevicesTabView = Em.View.extend({
 	showDeleteDevicesDialogBool: false,
 	showAddToGroupDialogBool: false,
+	showRemoveFromGroupDialogBool: false,
 	showManageDeviceGroupsDialogBool: false,
 	newDeviceGroupName:null, // bound to devices-list.handlebars
 	changedDeviceGroupName:null,
@@ -9,6 +10,10 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 	showAddToGroupDialog: function(){
 		this.set('selectedDeviceGroup',null);
 		this.set('showAddToGroupDialogBool',true);
+	},
+
+	showRemoveFromGroupDialog: function(){
+		this.set('showRemoveFromGroupDialogBool',true);
 	},
 
 	cancelAddToGroup: function(){
@@ -27,10 +32,19 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 	},
 	
 	assignDisplayNames:function(){
-    	if (FLOW.DeviceControl.content.get('isLoaded') === true) {
-    		//TODO
-    	}
-    }.observes('FLOW.DeviceControl.content.isLoaded'),
+		if ((FLOW.deviceControl.content.get('isLoaded') === true) && (FLOW.deviceGroupControl.content.get('isLoaded') === true)) {
+			allDevices = FLOW.store.filter(FLOW.Device,function(data){return true;});
+			allDevices.forEach(function(item){
+				var deviceId=parseInt(item.get('deviceGroup'),10);
+				var deviceGroup = FLOW.store.filter(FLOW.DeviceGroup,function(data){
+					if (data.get('keyId') === deviceId) {return true;} else {return false;}
+				});
+				if (typeof deviceGroup.get('firstObject') !== "undefined"){
+					item.set('deviceGroupName',deviceGroup.get('firstObject').get('code'));
+				}
+			});
+		}
+    }.observes('FLOW.deviceGroupControl.content.isLoaded','FLOW.deviceControl.content.isLoaded'),
 
 	doAddToGroup: function(){
 		if (this.get('selectedDeviceGroup') !== null) {
@@ -46,6 +60,24 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 		}
 		FLOW.store.commit();
 		this.set('showAddToGroupDialogBool',false);
+	},
+
+	// TODO repopulate list after update
+	doRemoveFromGroup: function(){
+		var selectedDevices = FLOW.store.filter(FLOW.Device,function(data){
+			if (data.get('isSelected') === true) {return true;} else {return false;}
+		});
+		selectedDevices.forEach(function(item){
+			item.set('deviceGroupName',null);
+			item.set('deviceGroup',null);
+		});
+
+		FLOW.store.commit();
+		this.set('showRemoveFromGroupDialogBool',false);
+	},
+
+	cancelRemoveFromGroup: function(){
+		this.set('showRemoveFromGroupDialogBool',false);
 	},
 
 	copyDeviceGroupName:function(){
@@ -69,19 +101,17 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 
 				allDevices = FLOW.store.filter(FLOW.Device,function(data){return true;});
 				allDevices.forEach(function(item){
-					console.log('hier ook?');
-					//console.log(item.get('deviceGroup'),selectedDeviceGroupId);
-					if (parseInt(item.get('deviceGroup')) == selectedDeviceGroupId){
-					  item.set('deviceGroupName',newName);
+					if (parseInt(item.get('deviceGroup'),10) == selectedDeviceGroupId){
+						item.set('deviceGroupName',newName);
 					}
-			});
-
-			}
-
-			if (this.get('newDeviceGroupName') !== null) {
-				var newDeviceGroup = FLOW.store.createRecord(FLOW.DeviceGroup,{'code':this.get('newDeviceGroupName')});
+				});
 			}
 		}
+		
+		if (this.get('newDeviceGroupName') !== null) {
+			var newDeviceGroup = FLOW.store.createRecord(FLOW.DeviceGroup,{'code':this.get('newDeviceGroupName')});
+		}
+		
 		this.set('selectedDeviceGroup',null);
 		this.set('newDeviceGroupName',null);
 		this.set('changedDeviceGroupName',null);
