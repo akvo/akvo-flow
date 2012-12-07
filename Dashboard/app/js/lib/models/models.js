@@ -123,6 +123,8 @@ FLOW.SurveyedLocale = DS.Model.extend({
 // Ember-Data lacks of partial loading
 // https://github.com/emberjs/data/issues/51
 FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
+  placemarkId:DS.attr('number'),
+  collectionDate:DS.attr('number'),
   questionText: DS.attr('string'),
   metricName: DS.attr('string'),
   stringValue: DS.attr('string')
