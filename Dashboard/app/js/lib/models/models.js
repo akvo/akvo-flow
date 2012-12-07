@@ -138,15 +138,14 @@ FLOW.Placemark = FLOW.BaseModel.extend({
 });
 
 FLOW.SurveyInstance = FLOW.BaseModel.extend({
-//	approvedFlag
-//	approximateLocationFlag
-//	collectionDate
-//	createdDateTime
-//	countryCode
-//	deviceFileId
-//	deviceIdentifier
-//	lastUpdateDateTime
-
+	approvedFlag: DS.attr('string'),
+	approximateLocationFlag: DS.attr('string'),
+	surveyId: DS.attr('number'),
+	collectionDate: DS.attr('number'),
+	createdDateTime: DS.attr('number'),
+	countryCode: DS.attr('string'),
+	deviceIdentifier: DS.attr('string'),
+	lastUpdateDateTime: DS.attr('number'),
 });
 
 
