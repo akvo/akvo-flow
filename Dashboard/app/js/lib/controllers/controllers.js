@@ -230,12 +230,12 @@ FLOW.placemarkControl = Ember.ArrayController.create({
 
 FLOW.placemarkDetailControl = Ember.ArrayController.create({
   content: null,
+  selectedDetailImage: null,
 
   populate: function (placemarkId) {
     if (typeof placemarkId === 'undefined') {
       this.set('content', null);
     } else {
-
       this.set('content', FLOW.store.find(FLOW.PlacemarkDetail, {"placemarkId": placemarkId}));
     }
   }

@@ -3,6 +3,7 @@
 FLOW.NavMapsView = Ember.View.extend({
   templateName: "navMaps/nav-maps",
   showDetailsBool: false,
+  imageURL: 'flow15/images/invisible.png',
 
   PlacemarkDetailsView:Ember.View.extend({
 
@@ -65,14 +66,14 @@ FLOW.NavMapsView = Ember.View.extend({
       // If there was a marker already selected deselect
       var oldSelected = FLOW.placemarkControl.get('selected');
       if (typeof oldSelected === 'undefined') {
-        console.log('No old selection');
+        // console.log('No old selection');
         FLOW.placemarkControl.set('selected', placemark);
       } else {
         if (this.marker === oldSelected.marker) {
-          console.log('Clicking the same marker');
+          // console.log('Clicking the same marker');
           FLOW.placemarkControl.set('selected', undefined);
         } else {
-          console.log('Clicking new marker');
+          // console.log('Clicking new marker');
           oldSelected.toggleMarker(oldSelected);
           FLOW.placemarkControl.set('selected', placemark);
         }
@@ -109,6 +110,7 @@ FLOW.NavMapsView = Ember.View.extend({
 
   getDetails: function () {
     // console.log('getting details');
+    this.set('imageURL', 'flow15/images/invisible.png');
     var selected = FLOW.placemarkControl.get('selected');
     if (typeof selected !== 'undefined') {
       FLOW.placemarkDetailControl.populate(selected.id);
@@ -118,36 +120,25 @@ FLOW.NavMapsView = Ember.View.extend({
   }.observes('FLOW.placemarkControl.selected'),
 
   showDetails: function () {
-    // console.log('details loaded');
-    var content = FLOW.placemarkDetailControl.get('content');
-    if ((typeof content !== 'undefined') && (content !== null)) {
-      if (content.get('isLoaded') === true) {
-        this.set('showDetailsBool', true);
-      }
+    var content, imageURL, selectedPlacemarkDetail, self, stringVal, undef;
 
-      var imageString, imageObj, imageURL;
-      if (FLOW.placemarkDetailControl.content.get('isLoaded') === true) {
-        this.set('showDetailsBool', true);
+    content = FLOW.placemarkDetailControl.get('content');
 
-        var containsImage = FLOW.store.filter(FLOW.PlacemarkDetail,function(data){
-        var stringVal=data.get('stringValue');
-        if (stringVal.indexOf('wfpPhoto') != -1) {return true;} else {return false;}
-        });
+    if ((typeof content !== 'undefined') && (content !== null) && (content.get('isLoaded') === true)) {
+      this.set('showDetailsBool', true);
+      selectedPlacemarkDetail = FLOW.placemarkDetailControl.get('content');
+      self = this;
 
-        imageObj = containsImage.get('firstObject');
-        imageString = imageObj.get('stringValue'); 
-        imageURL = 'http://flowdemo.s3.amazonaws.com/images/' + imageString.slice(imageString.indexOf('wfpPhoto'));
-  
-        console.log(imageURL);
-
-        var containsVerticalBar = FLOW.store.filter(FLOW.PlacemarkDetail,function(data){
-          var stringVal=data.get('stringValue');
-          if (stringVal.indexOf('|') != -1) {return true;} else {return false;}
-        });
-
-        // over to you Daniel!
-      }
+      selectedPlacemarkDetail.forEach(function (item) {
+        stringVal = item.get('stringValue');
+        if (stringVal.indexOf('wfpPhoto') != -1) {
+          imageURL = 'http://flowdemo.s3.amazonaws.com/images/' + stringVal.slice(stringVal.indexOf('wfpPhoto'));
+          self.set('imageURL', imageURL);
+        }
+      });
+      
     }
+
   }.observes('FLOW.placemarkDetailControl.content.isLoaded')
 
 });
