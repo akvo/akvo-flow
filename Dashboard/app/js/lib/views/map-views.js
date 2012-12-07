@@ -145,10 +145,6 @@ FLOW.NavMapsView = Ember.View.extend({
           if (stringVal.indexOf('|') != -1) {return true;} else {return false;}
         });
 
-        containsVerticalBar.forEach(function(item){
-          item.set('stringValue',item.get('stringValue').replace(/\|/g,' | '));
-        });
-
         // over to you Daniel!
       }
     }

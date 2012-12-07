@@ -235,7 +235,7 @@ FLOW.placemarkDetailControl = Ember.ArrayController.create({
     if (typeof placemarkId === 'undefined') {
       this.set('content', null);
     } else {
-      this.set('content', null);
+
       this.set('content', FLOW.store.find(FLOW.PlacemarkDetail, {"placemarkId": placemarkId}));
     }
   }
