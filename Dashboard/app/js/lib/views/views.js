@@ -24,6 +24,11 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
   return Ember.String.loc(i18nKey);
 });
 
+// add space to vertical bar helper
+Ember.Handlebars.registerHelper('addSpace', function(property) {
+  return Ember.get(this,property).replace(/\|/g,' | ');
+});
+
 // date format helper
 Ember.Handlebars.registerHelper("date", function(property) {
   var d = new Date(parseInt(Ember.get(this, property),10));
