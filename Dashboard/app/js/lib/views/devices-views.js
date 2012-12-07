@@ -32,6 +32,7 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 	},
 	
 	assignDisplayNames:function(){
+		var allDevices;
 		if ((FLOW.deviceControl.content.get('isLoaded') === true) && (FLOW.deviceGroupControl.content.get('isLoaded') === true)) {
 			allDevices = FLOW.store.filter(FLOW.Device,function(data){return true;});
 			allDevices.forEach(function(item){
@@ -88,6 +89,7 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 
 	// TODO update device group name in tabel.
 	doManageDeviceGroups: function(){
+		var allDevices;
 		if (this.get('selectedDeviceGroup') !== null) {
 			var selectedDeviceGroupId = this.selectedDeviceGroup.get('keyId');
 
