@@ -106,8 +106,8 @@ FLOW.SurveyAssignment = FLOW.BaseModel.extend({
 	name: DS.attr('string'),
 	startDate: DS.attr('date'),
 	endDate: DS.attr('date'),
-	devices: DS.hasMany(FLOW.Device),
-	surveys: DS.hasMany(FLOW.Survey)
+	devices: DS.attr('array'),
+	surveys: DS.attr('array')
 });
 
 FLOW.SurveyedLocale = DS.Model.extend({

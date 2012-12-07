@@ -80,28 +80,28 @@ FLOW.dataserverControl = Ember.Object.create({
     if (server == "local") {
       // FLOW.selectedControl.set('dataserverControl', null);
       FLOW.store = DS.Store.create({
-        revision: 8,
+        revision: 10,
         adapter:DS.FLOWRESTAdapter.create({bulkCommit: false, namespace: "restlocal", url: host})
       });
     }
     else if (server == "vm") {
       // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
-        revision: 8,
+        revision: 10,
         adapter:DS.FLOWRESTAdapter.create({bulkCommit: false, namespace: "rest", url: host})
       });
     }
     else if (server == "sandbox") {
       // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
-        revision: 8,
+        revision: 10,
         adapter: DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:host})
       });
     }
     else if (server == "fixtures") {
       // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
-        revision: 8,
+        revision: 10,
         adapter: DS.fixtureAdapter
       });
     }
