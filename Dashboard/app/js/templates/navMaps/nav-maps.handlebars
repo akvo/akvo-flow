@@ -3,9 +3,10 @@
 <div id="pointDetails">
 <h2>Point Details:</h2>
   <img {{bindAttr src="view.imageURL"}} alt="" />
-  
-  <dl class="floats-in"> {{#each item in FLOW.placemarkDetailControl}}
-    <dt>{{item.questionText}}:</dt> <dd>{{item.stringValue}}</dd>
+  <dl class="floats-in"> 
+  	{{#each item in FLOW.placemarkDetailControl}}
+      <dt>{{item.questionText}}:</dt> 
+      <dd>{{#with item}}{{addSpace stringValue}}{{/with}}</dd>
     {{/each}} 
   </dl>
 </div>

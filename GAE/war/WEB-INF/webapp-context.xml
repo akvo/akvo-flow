@@ -14,6 +14,7 @@
 <bean id="deviceGroupDao" class="com.gallatinsystems.device.dao.DeviceGroupDAO" />
 <bean id="surveyAssignmentDao" class="com.gallatinsystems.survey.dao.SurveyAssignmentDAO"/>
 <bean id="surveyedLocaleDao" class="com.gallatinsystems.surveyal.dao.SurveyedLocaleDao"/>
+<bean id="surveyInstanceDao" class="org.waterforpeople.mapping.dao.SurveyInstanceDAO"/>
 
 
 

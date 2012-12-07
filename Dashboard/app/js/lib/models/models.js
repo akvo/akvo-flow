@@ -123,6 +123,8 @@ FLOW.SurveyedLocale = DS.Model.extend({
 // Ember-Data lacks of partial loading
 // https://github.com/emberjs/data/issues/51
 FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
+  placemarkId:DS.attr('number'),
+  collectionDate:DS.attr('number'),
   questionText: DS.attr('string'),
   metricName: DS.attr('string'),
   stringValue: DS.attr('string')
@@ -136,15 +138,14 @@ FLOW.Placemark = FLOW.BaseModel.extend({
 });
 
 FLOW.SurveyInstance = FLOW.BaseModel.extend({
-//	approvedFlag
-//	approximateLocationFlag
-//	collectionDate
-//	createdDateTime
-//	countryCode
-//	deviceFileId
-//	deviceIdentifier
-//	lastUpdateDateTime
-
+	approvedFlag: DS.attr('string'),
+	approximateLocationFlag: DS.attr('string'),
+	surveyId: DS.attr('number'),
+	collectionDate: DS.attr('number'),
+	createdDateTime: DS.attr('number'),
+	countryCode: DS.attr('string'),
+	deviceIdentifier: DS.attr('string'),
+	lastUpdateDateTime: DS.attr('number'),
 });
 
 
