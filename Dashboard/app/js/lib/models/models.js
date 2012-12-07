@@ -134,3 +134,17 @@ FLOW.Placemark = FLOW.BaseModel.extend({
   collectionDate: DS.attr('date'),
   markType: DS.attr('string', {defaultValue: 'WATER_POINT'})
 });
+
+FLOW.SurveyInstance = FLOW.BaseModel.extend({
+//	approvedFlag
+//	approximateLocationFlag
+//	collectionDate
+//	createdDateTime
+//	countryCode
+//	deviceFileId
+//	deviceIdentifier
+//	lastUpdateDateTime
+
+});
+
+
