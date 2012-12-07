@@ -22,13 +22,18 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyAssignmentDto;
+import org.waterforpeople.mapping.app.web.rest.dto.SurveyAssignmentPayload;
 import org.waterforpeople.mapping.domain.SurveyAssignment;
 
 import com.gallatinsystems.common.Constants;
@@ -43,15 +48,63 @@ public class SurveyAssignmentRestService {
 
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<SurveyAssignmentDto>> listSurveyGroups() {
+	public Map<String, List<SurveyAssignmentDto>> listAll() {
 		final HashMap<String, List<SurveyAssignmentDto>> response = new HashMap<String, List<SurveyAssignmentDto>>();
-
 		final List<SurveyAssignmentDto> results = new ArrayList<SurveyAssignmentDto>();
+
 		for (SurveyAssignment sa : surveyAssignmentDao
 				.list(Constants.ALL_RESULTS)) {
 			results.add(marshallToDto(sa));
 		}
+
 		response.put("survey_assignments", results);
+		return response;
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
+	@ResponseBody
+	public Map<String, SurveyAssignmentDto> getById(@PathVariable("id") Long id) {
+		final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
+		final SurveyAssignment sa = surveyAssignmentDao.getByKey(id);
+
+		if (sa == null) {
+			throw new HttpMessageNotReadableException(
+					"Survey Assignment with id: " + id + " not found");
+		}
+
+		response.put("survey_assignment", marshallToDto(sa));
+		return response;
+	}
+
+	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+	@ResponseBody
+	public Map<String, SurveyAssignmentDto> updateSurveyAssignment(
+			@PathVariable("id") Long id,
+			@RequestBody SurveyAssignmentPayload payload) {
+
+		final SurveyAssignmentDto dto = payload.getSurvey_assignment();
+
+		if (!id.equals(dto.getKeyId())) {
+			throw new HttpMessageNotReadableException("Ids don't match: " + id
+					+ " <> " + dto.getKeyId());
+		}
+
+		final SurveyAssignment sa = surveyAssignmentDao
+				.getByKey(dto.getKeyId());
+
+		final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
+
+		if (sa == null) {
+			throw new HttpMessageNotReadableException(
+					"Survey Assignment with id: " + dto.getKeyId()
+							+ " not found");
+		}
+
+		BeanUtils.copyProperties(marshallToDomain(dto), sa);
+		surveyAssignmentDao.save(sa);
+
+		response.put("survey_assignment", marshallToDto(sa));
+
 		return response;
 	}
 
@@ -63,5 +116,15 @@ public class SurveyAssignmentRestService {
 		dto.setSurveys(sa.getSurveyIds());
 
 		return dto;
+	}
+
+	private SurveyAssignment marshallToDomain(SurveyAssignmentDto dto) {
+		final SurveyAssignment sa = new SurveyAssignment();
+
+		DtoMarshaller.copyToCanonical(sa, dto);
+		sa.setDeviceIds(dto.getDevices());
+		sa.setSurveyIds(dto.getSurveys());
+
+		return sa;
 	}
 }
