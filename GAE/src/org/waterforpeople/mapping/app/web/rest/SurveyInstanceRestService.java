@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
@@ -53,7 +54,10 @@ public class SurveyInstanceRestService {
 	// list all survey instances
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<SurveyInstanceDto>> listSurveyInstances() {
+	public Map<String, List<SurveyInstanceDto>> listSurveyInstances(
+			@RequestParam(value = "beginDate", defaultValue = "") Long beginDate,
+			@RequestParam(value = "endDate", defaultValue = "") Long endDate,
+			@RequestParam(value = "cursor", defaultValue = "") String cursor) {
 		final Map<String, List<SurveyInstanceDto>> response = new HashMap<String, List<SurveyInstanceDto>>();
 		List<SurveyInstanceDto> results = new ArrayList<SurveyInstanceDto>();
 		List<SurveyInstance> surveys = surveyInstanceDao.list(Constants.ALL_RESULTS);
