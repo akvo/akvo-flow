@@ -65,15 +65,13 @@ FLOW.NavMapsView = Ember.View.extend({
     ...
   **/
   handlePlacemarkDetails: function () {
-    var content, imageURL, selectedPlacemarkDetail, stringVal;
+    var details, imageURL, selectedPlacemarkDetail, stringVal;
 
-    content = FLOW.placemarkDetailControl.get('content');
+    details = FLOW.placemarkDetailControl.get('content');
 
-    if ((typeof content !== 'undefined') && (content !== null) && (content.get('isLoaded') === true)) {
+    if ((typeof details !== 'undefined') && (details !== null) && (details.get('isLoaded') === true)) {
       this.set('showDetailsBool', true);
-      selectedPlacemarkDetail = FLOW.placemarkDetailControl.get('content');
-
-      selectedPlacemarkDetail.forEach(function (item) {
+      details.forEach(function (item) {
         stringVal = item.get('stringValue');
         if (stringVal.indexOf('wfpPhoto') != -1) {
           imageURL = 'http://flowdemo.s3.amazonaws.com/images/' + stringVal.slice(stringVal.indexOf('wfpPhoto'));
@@ -114,17 +112,13 @@ FLOW.NavMapsView = Ember.View.extend({
       var oldSelected;
       marker.placemark.toggleMarker(marker.placemark);
 
-      // If there was a marker already selected deselect
       oldSelected = FLOW.placemarkControl.get('selected');
       if (typeof oldSelected === 'undefined') {
-        // console.log('No old selection');
         FLOW.placemarkControl.set('selected', placemark);
       } else {
         if (this.marker === oldSelected.marker) {
-          // console.log('Clicking the same marker');
           FLOW.placemarkControl.set('selected', undefined);
         } else {
-          // console.log('Clicking new marker');
           oldSelected.toggleMarker(oldSelected);
           FLOW.placemarkControl.set('selected', placemark);
         }
@@ -157,7 +151,6 @@ FLOW.NavMapsView = Ember.View.extend({
     placemark.addMarkerClickHandler(marker, placemark);
     // Attach the new marker to the placemarker object
     placemark.set('marker', marker);
-
     return marker;
   }
   
