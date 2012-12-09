@@ -1,18 +1,21 @@
+{{#view FLOW.inspectDataTableView}}
 <section class="fullWidth" id="inspectData">
     <div class="" id="dataFilter">
         <h3>Choose Survey Data to display:</h3>
         <form>
             {{view Ember.Select 
-				contentBinding="controllers.surveyGroupController.content" 
-				selectionBinding="controllers.selectedSurveyGroupController.selectedSurveyGroup" 
-				optionLabelPath="content.displayName" 
-				optionValuePath="content.keyId" prompt="Select survey group"}} 
-				
-			{{view Ember.Select 
-				contentBinding="controllers.surveyController.active" 
-				selectionBinding="controllers.selectedSurveyController.selectedSurvey" 
-				optionLabelPath="content.displayName" 
-				optionValuePath="content.keyId" prompt="Select survey" }}
+                contentBinding="FLOW.surveyGroupControl.content" 
+                selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
+                optionLabelPath="content.code" 
+                optionValuePath="content.keyId" 
+                prompt="Select survey group"}} 
+
+            {{view Ember.Select 
+                contentBinding="FLOW.surveyControl.content" 
+                selectionBinding="FLOW.selectedControl.selectedSurvey" 
+                optionLabelPath="content.code" 
+                optionValuePath="content.keyId" 
+                prompt="Select survey"}} 
 				
             <label for="fromDate">Collected From</label>
             <input class="datePicker" id="from" name="from" type="text">
@@ -21,28 +24,31 @@
         </form>
     </div>
     <section class="fullWidth " id="devicesList">
+        <br/><br/>
+         <a {{action "doFindSurveyInstances" target="this"}}>Find</a>
+        <br/><br/>
         <!-- DEVICES TABLE-->
         <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->
             <thead>
                 <tr>
-                    <th>Survey Group name</th>
-                    <th>Description</th>
-                    <th>Created</th>
-                    <th>Last updated</th>
-                    <th>ID</th>
+                    <th>Id</th>
+                    <th>Survey</th>
+                    <th>Submitter</th>
+                    <th>Device</th>
+                    <th>Collected</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
-                {{#each controllers.surveyGroupController.content}}
+                {{#each FLOW.surveyInstanceControl.content}}
                 <tr>
-                    <td class="surveyGroup" style="text-align:left;">{{displayName}}</td>
-                    <td class="description" style="text-align:left;">{{description}}</td>
-                    <td class="created">{{createdDateTime}}</td>
-                    <td class="lastUpdated">{{lastUpdateDateTime}}</td>
-                    <td class="ID">{{keyId}}</td>
+                    <td class="device">{{keyId}}</td>
+                    <td class="survey" style="text-align:left;">{{surveyCode}}</td>
+                    <td class="submitter" style="text-align:left;">{{submitterName}}</td>
+                    <td class="device">{{deviceIdentifier}}</td>
+                    <td class="collected">{{date1 collectionDate}}</td>
                     <td class="action"><a href="#">action</a></td>
                 </tr>
                 {{/each}}
@@ -54,5 +60,7 @@
                 </tr>
             </tfoot>
         </table>
+        &laquo; previous | next &raquo;
     </section>
 </section>
+{{/view}}

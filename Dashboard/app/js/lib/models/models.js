@@ -142,10 +142,9 @@ FLOW.SurveyInstance = FLOW.BaseModel.extend({
 	approximateLocationFlag: DS.attr('string'),
 	surveyId: DS.attr('number'),
 	collectionDate: DS.attr('number'),
-	createdDateTime: DS.attr('number'),
-	countryCode: DS.attr('string'),
-	deviceIdentifier: DS.attr('string'),
-	lastUpdateDateTime: DS.attr('number'),
+	surveyCode: DS.attr('string'),
+	submitterName: DS.attr('string'),
+	deviceIdentifier: DS.attr('string')
 });
 
 

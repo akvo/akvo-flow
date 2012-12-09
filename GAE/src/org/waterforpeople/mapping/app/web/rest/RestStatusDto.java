@@ -30,6 +30,8 @@ public class RestStatusDto implements Serializable {
 
 	private String status = "";
 	private String message = "";
+	private String since = "";
+	private Integer num;
 
 	public void setStatus(String status) {
 		this.status = status;
@@ -45,6 +47,22 @@ public class RestStatusDto implements Serializable {
 
 	public String getMessage() {
 		return message;
+	}
+	
+	public void setSince(String since) {
+		this.since = since;
+	}
+
+	public String getSince() {
+		return since;
+	}
+	
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+
+	public Integer getnum() {
+		return num;
 	}
 
 }

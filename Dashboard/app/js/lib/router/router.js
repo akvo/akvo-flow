@@ -188,7 +188,8 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function(router, context) {
           router.get('navDataController').connectOutlet('inspectData');
           router.set('datasubnavController.selected', 'inspectData');
-          router.get('surveyGroupController').set('content', FLOW.store.find(FLOW.SurveyGroup, {}));
+          FLOW.surveyGroupControl.populate();
+          FLOW.surveyInstanceControl.populate();
         }
       }),
 

@@ -16,7 +16,9 @@
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -34,10 +36,10 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDt
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyInstancePayload;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
-import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import com.gallatinsystems.survey.domain.Survey;
+
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 @Controller
@@ -47,31 +49,78 @@ public class SurveyInstanceRestService {
 	@Inject
 	private SurveyInstanceDAO surveyInstanceDao;
 
-	@Inject
-	private SurveyDAO surveyDao;
-
-	//TODO put in meta information?
-	// list all survey instances
+	// list survey instances
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<SurveyInstanceDto>> listSurveyInstances(
-			@RequestParam(value = "beginDate", defaultValue = "") Long beginDate,
-			@RequestParam(value = "endDate", defaultValue = "") Long endDate,
-			@RequestParam(value = "cursor", defaultValue = "") String cursor) {
-		final Map<String, List<SurveyInstanceDto>> response = new HashMap<String, List<SurveyInstanceDto>>();
-		List<SurveyInstanceDto> results = new ArrayList<SurveyInstanceDto>();
-		List<SurveyInstance> surveys = surveyInstanceDao.list(Constants.ALL_RESULTS);
-		if (surveys != null) {
-			for (SurveyInstance s : surveys) {
-				SurveyInstanceDto dto = new SurveyInstanceDto();
-				DtoMarshaller.copyToDto(s, dto);
-				results.add(dto);
-			}
+	public Map<String, Object> listSurveyInstances(
+			@RequestParam(value = "beginDate", defaultValue = "") Long bDate,
+			@RequestParam(value = "endDate", defaultValue = "") Long eDate,
+			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+			@RequestParam(value = "since", defaultValue = "") String since,
+			@RequestParam(value = "unapprovedOnlyFlag",defaultValue = "") Boolean unapprovedOnlyFlag,
+			@RequestParam(value = "deviceId", defaultValue = "") String deviceId) {
+		
+		// we don't want to search for empty deviceId's
+		if ("".equals(deviceId)) {
+			deviceId = null;
 		}
-		response.put("survey_instances", results);
+		
+		final Map<String, Object> response = new HashMap<String, Object>();
+		RestStatusDto statusDto = new RestStatusDto();
+		List<SurveyInstanceDto> results = new ArrayList<SurveyInstanceDto>();
+		
+		// create list of surveygroup / survey
+		SurveyDAO surveyDao = new SurveyDAO();
+		List<Survey> surveyList = surveyDao.list("all");
+		HashMap<Long, String> surveyMap = new HashMap<Long, String>();
+		for (Survey s : surveyList) {
+			surveyMap.put(s.getKey().getId(), s.getPath() + "/" + s.getCode());
+		}
+		
+		// turn params into dates
+		Date beginDate = null;
+		Date endDate = null;
+		
+		if (bDate != null) {
+			beginDate = new Date(bDate);
+		}
+		
+		if (eDate != null) {
+			endDate = new Date(eDate);
+		}
+		
+		// if no begin and end date, choose begin date 1-1-1970
+		if (beginDate == null && endDate == null) {
+			//Calendar c = Calendar.getInstance();
+			//c.add(Calendar.YEAR, -90);
+			beginDate = new Date (0); //c.getTime();
+		}
+		
+		// get survey Instances
+		List<SurveyInstance> siList = null;
+		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+		siList = dao.listByDateRange(beginDate, endDate, false,
+				surveyId, deviceId, since);
+		Integer num = siList.size();
+		String newSince = SurveyInstanceDAO.getCursor(siList);
+		
+		// put in survey group/survey names
+		ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
+		for (SurveyInstance siItem : siList) {
+			String code = surveyMap.get(siItem.getSurveyId());
+			SurveyInstanceDto dto = new SurveyInstanceDto();
+			DtoMarshaller.copyToDto(siItem, dto);
+			if (code != null) dto.setSurveyCode(code);
+			siDtoList.add(dto);
+		}
+		
+		statusDto.setSince(newSince);
+		statusDto.setNum(num);
+		response.put("meta", statusDto);
+		response.put("survey_instances", siDtoList);
 		return response;
 	}
-
+	
 	// find survey instance by id
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
