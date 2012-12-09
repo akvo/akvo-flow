@@ -7,6 +7,7 @@ FLOW.Router = Ember.Router.extend({
   enableLogging: true,
   loggedIn:false,
   location: 'none', //'hash'or 'none' for URLs
+  
   root: Ember.Route.extend({
     doNavHome: function(router, context) {
       router.transitionTo('navHome');

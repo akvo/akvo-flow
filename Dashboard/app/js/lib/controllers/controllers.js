@@ -37,14 +37,29 @@ FLOW.NavAdminController = Ember.Controller.extend();
 FLOW.languageControl = Ember.Object.create({
   dashboardLanguage: null,
 
+  init: function () {
+    var locale;
+
+    this._super();
+    locale = localStorage.locale;
+    if (typeof locale === 'undefined') {
+      this.set('dashboardLanguage', this.content.findProperty('value', 'en'));
+    } else {
+      this.set('dashboardLanguage', this.content.findProperty('value', locale));
+    }
+  },
+
   content: [
     Ember.Object.create({label: "English", value: "en"}),
     Ember.Object.create({label: "Dutch", value: "nl"}),
     Ember.Object.create({label: "Spanish", value: "es"}),
-    Ember.Object.create({label: "French", value: "fr"})],
+    Ember.Object.create({label: "French", value: "fr"})
+    ],
 
   changeLanguage: function () {
-    var locale = this.dashboardLanguage.get("value");
+    var locale;
+    locale = this.dashboardLanguage.get("value");
+    localStorage.locale = this.get('dashboardLanguage.value');
 
     if (locale === "nl") {Ember.STRINGS = Ember.STRINGS_NL; }
     else if (locale === "fr") {Ember.STRINGS = Ember.STRINGS_FR; }
@@ -57,12 +72,14 @@ FLOW.dataserverControl = Ember.Object.create({
   dataserver: null,
 
   init: function () {
+    var dataserverSetting;
+
     this._super();
-    var dataserver_setting = localStorage.dataserver;
-    if (typeof dataserver_setting === "undefined") {
+    dataserverSetting = localStorage.dataserver;
+    if (typeof dataserverSetting === "undefined") {
       this.set('dataserver', this.content.findProperty('value', 'sandbox'));
     } else {
-      this.set('dataserver', this.content.findProperty('value', dataserver_setting));
+      this.set('dataserver', this.content.findProperty('value', dataserverSetting));
     }
   },
 

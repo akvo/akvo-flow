@@ -27,6 +27,8 @@ Ember.STRINGS_EN = {
   '_insert_group_here': 'insert group here',
   '_inspect': 'inspect',
   '_inspect_data': 'copy',
+  '_login': 'login',
+  '_register': 'register',
   '_mandatory': 'mandatory',
   '_maps': 'maps',
   '_move': 'move',

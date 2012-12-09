@@ -12,7 +12,36 @@ require('akvo-flow/views/map-views');
 require('akvo-flow/views/devices-views');
 
 FLOW.ApplicationView = Ember.View.extend({
-	templateName: 'application'
+	templateName: 'application',
+
+  init: function () {
+    var locale;
+
+    this._super();
+    
+    // If available set language from local storage
+    locale = localStorage.locale;
+    if (typeof locale === 'undefined') {
+      locale = 'en';
+    }
+    switch(locale) {
+      case 'nl':
+        Ember.STRINGS = Ember.STRINGS_NL; break;
+      case 'fr':
+        Ember.STRINGS = Ember.STRINGS_FR; break;
+      case 'es':
+        Ember.STRINGS = Ember.STRINGS_ES; break;
+      default:
+        Ember.STRINGS = Ember.STRINGS_EN; break;
+    }
+  },
+
+  // We need to activate the admin tab on language change
+  onLanguageChange: function () {
+    this.rerender();
+    // FLOW.Router.transitionTo('navAdmin'); // <- this is probably wrong
+  }.observes('FLOW.languageControl.dashboardLanguage')
+
 });
 
 // ***********************************************//
@@ -75,10 +104,6 @@ FLOW.NavigationView = Em.View.extend({
 	templateName: 'navigation',
 	selectedBinding: 'controller.selected',
 
-	onLanguageChange:function(){
-		this.rerender();
-	}.observes('FLOW.languageControl.dashboardLanguage'),
-
 	NavItemView: Ember.View.extend({
 		tagName: 'li',
 		classNameBindings: 'isActive:current navItem'.w(),
@@ -97,7 +122,7 @@ FLOW.NavigationView = Em.View.extend({
 //                      standard views
 // ********************************************************//
 
-// TODO check if doing this in View is not impacting performance, 
+// TODO check if doing this in View is not impacting performance,
 // as some pages have a lot of views (all navigation elements, for example)
 // one way could be use an extended copy of view, with the didInsertElement,
 // for some of the elements, and not for others.
@@ -105,7 +130,6 @@ Ember.View.reopen({
     didInsertElement: function() {
         this._super();
         tooltip();
-		//makePlaceholders();
 	$("nav#topnav li.current").prev("nav#topnav li").css("background", "none");
 	$("nav#topnav li").hover( function (){
 		$(this).prev().css("background", "none");
@@ -116,9 +140,9 @@ Ember.View.reopen({
     $('table#devicesListTable tbody tr:nth-child(2n)').addClass('even');
     
 
-	var nCount = 0; 
+	var nCount = 0;
 	$(".addQuestion").click( function () {
-		nCount++; 
+		nCount++;
 		$(".questionSetContent div.innerContent").fadeIn().css("box-shadow","0 0 3px rgba(0,0,0,0.1)");
 		$(this).insertAfter("div.innerContent");
 		$("#numberQuestion").text(
