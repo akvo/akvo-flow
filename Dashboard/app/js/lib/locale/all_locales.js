@@ -11,7 +11,9 @@ Ember.STRINGS_EN = {
   '_copy': 'copy',
   '_create_a_new_survey': 'create a new survey',
   '_created': 'created',
+  '_dashboard_language': 'dashboard language',
   '_data': 'data',
+  '_data_server': 'data server',
   '_delete': 'delete',
   '_delete_this_group': 'delete this group',
   '_dependent': 'dependent',
@@ -20,15 +22,15 @@ Ember.STRINGS_EN = {
   '_edit_group_name': 'edit group name',
   '_edit_name': 'edit name',
   '_edit_survey': 'edit survey',
-  '_enter_each_choice_on_a_separate_line': 'Enter each choice on a separate line',
+  '_enter_each_choice_on_a_separate_line': 'enter each choice on a separate line',
+  '_for_later_use': 'for later use',
   '_group': 'group',
-  '_home': 'home',
   '_hide_questions': 'hide questions',
+  '_home': 'home',
   '_insert_group_here': 'insert group here',
   '_inspect': 'inspect',
   '_inspect_data': 'copy',
   '_login': 'login',
-  '_register': 'register',
   '_mandatory': 'mandatory',
   '_maps': 'maps',
   '_move': 'move',
@@ -39,12 +41,16 @@ Ember.STRINGS_EN = {
   '_paste_group_here': 'paste group here',
   '_paste_question_here': 'paste question here',
   '_preview': 'preview',
+  '_question_group': 'question group',
   '_question_help_tooltip': 'question help tooltip',
   '_question_text': 'question text',
+  '_register': 'register',
   '_reports': 'reports',
   '_responses': 'responses',
   '_save': 'save',
   '_show_questions': 'show questions',
+  '_survey': 'survey',
+  '_survey_group': 'survey group',
   '_survey_groups': 'survey groups',
   '_surveys': 'surveys',
   '_users': 'users'
@@ -59,8 +65,6 @@ Ember.STRINGS_NL = {
   '_survey_groups':'Enquetegroepen',
   '_add_a_group':'voeg een groep toe'
 };
-
-
 
 Ember.STRINGS_FR = {
   '_home': 'thuis'

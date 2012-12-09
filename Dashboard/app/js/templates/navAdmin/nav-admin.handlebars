@@ -1,8 +1,8 @@
  <div class="">
-        <h1>Admin</h1>
+        <h1>{{t _admin}}</h1>
      
 
-   <label>Dashboard language: {{view Ember.Select 
+   <label>{{t _dashboard_language}}: {{view Ember.Select 
       contentBinding="FLOW.languageControl.content" 
       optionLabelPath="content.label" 
       optionValuePath="content.value" 
@@ -10,7 +10,7 @@
    </label>
 
 
-    <label>Data server: {{view Ember.Select 
+    <label>{{t _data_server}}: {{view Ember.Select 
       contentBinding="FLOW.dataserverControl.content" 
       optionLabelPath="content.label" 
       optionValuePath="content.value" 
@@ -18,13 +18,13 @@
    </label>
     
 
-    <h3>For later use</h3>
+    <h3>{{t _for_later_use}}</h3>
   	{{view Ember.Select 
 			contentBinding="FLOW.surveyGroupControl.content" 
 			selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
 			optionLabelPath="content.displayName" 
 			optionValuePath="content.keyId" 
-			prompt="Select survey group"}} 
+			prompt="Select survey group"}}
 
 			{{view Ember.Select 
 				contentBinding="FLOW.surveyControl.content" 
@@ -40,9 +40,9 @@
 				optionValuePath="content.keyId" 
 				prompt="Select question group"}}<br>
 				
-				 SurveyGroup {{FLOW.selectedControl.selectedSurveyGroup.keyId}}<br>
-                  Survey {{FLOW.selectedControl.selectedSurvey.keyId}}<br>
-                  Question Group {{FLOW.selectedControl.selectedQuestionGroup.keyId}}<br><br>
+				 {{t _survey_group}} {{FLOW.selectedControl.selectedSurveyGroup.keyId}}<br>
+          {{t _survey}} {{FLOW.selectedControl.selectedSurvey.keyId}}<br>
+          {{t _question_group}} {{FLOW.selectedControl.selectedQuestionGroup.keyId}}<br><br>
 
 
 

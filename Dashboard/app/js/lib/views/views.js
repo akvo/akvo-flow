@@ -34,13 +34,12 @@ FLOW.ApplicationView = Ember.View.extend({
       default:
         Ember.STRINGS = Ember.STRINGS_EN; break;
     }
-  },
+  }
 
-  // We need to activate the admin tab on language change
-  onLanguageChange: function () {
-    this.rerender();
-    // FLOW.Router.transitionTo('navAdmin'); // <- this is probably wrong
-  }.observes('FLOW.languageControl.dashboardLanguage')
+  // For some reason if we rerender this view we loose current selection
+  // onLanguageChange: function () {
+  //   this.rerender();
+  // }.observes('FLOW.languageControl.dashboardLanguage')
 
 });
 
@@ -103,6 +102,10 @@ Ember.Handlebars.registerHelper("date1", function(property) {
 FLOW.NavigationView = Em.View.extend({
 	templateName: 'navigation',
 	selectedBinding: 'controller.selected',
+
+  onLanguageChange: function () {
+    this.rerender();
+  }.observes('FLOW.languageControl.dashboardLanguage'),
 
 	NavItemView: Ember.View.extend({
 		tagName: 'li',
@@ -196,7 +199,7 @@ Ember.View.reopen({
    }
 });
 // home screen view
-FLOW.NavHomeView = Ember.View.extend({ templateName: 'navHome/nav-home'});
+FLOW.NavHomeView = Ember.View.extend({templateName: 'navHome/nav-home'});
 
 // surveys views
 FLOW.NavSurveysView = Ember.View.extend({ templateName: 'navSurveys/nav-surveys'});
@@ -224,7 +227,13 @@ FLOW.NavReportsView = Ember.View.extend({ templateName: 'navReports/nav-reports'
 FLOW.NavUsersView = Ember.View.extend({	templateName: 'navUsers/nav-users'});
 
 // admin views
-FLOW.NavAdminView = Ember.View.extend({	templateName: 'navAdmin/nav-admin'});
+FLOW.NavAdminView = Ember.View.extend({
+  templateName: 'navAdmin/nav-admin',
+  
+  onLanguageChange: function () {
+    this.rerender();
+  }.observes('FLOW.languageControl.dashboardLanguage')
+});
 
 
 // ********************************************************//
