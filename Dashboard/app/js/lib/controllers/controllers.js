@@ -345,4 +345,80 @@ FLOW.surveyAssignmentControl = Ember.ArrayController.create({
   }
 });
 
+// set by restadapter sideLoad meta
+FLOW.metaControl = Ember.Object.create({
+  since: null,
+  num: null,
+  message: null,
+  status: null
+}),
 
+// set by javacript datepickers in views.js
+FLOW.dateControl = Ember.Object.create({
+  fromDate: null,
+  toDate: null
+}),
+
+FLOW.surveyInstanceControl = Ember.ArrayController.create({
+  sortProperties: null,
+  sortAscending: true,
+  selected: null,
+  content: null,
+  surveyId: null,
+  deviceId: null,
+  beginDate: null,
+  endDate: null,
+  since: null,
+  nextPage: null,
+  prevPage: null,
+
+  populate: function () {
+    this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance,{}));
+    this.set('sortProperties', ['collectionDate']);
+    this.set('sortAscending', true);
+  },
+
+  doNewInstanceQuery:function(){
+    this.set('beginDate',FLOW.dateControl.get('fromDate'));
+    this.set('endDate',FLOW.dateControl.get('toDate'));
+    this.set('surveyId',FLOW.selectedControl.selectedSurvey.get('keyId'));
+    
+    // TODO
+    this.set('deviceId', null);
+
+    this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance,{
+      'surveyId':this.get('surveyId'),
+      'deviceId':this.get('deviceId'),
+      'since':null,
+      'beginDate':this.get('beginDate'),
+      'endDate':this.get('endDate')}));
+  },
+
+  doNextPage:function(){
+
+  },
+
+  doPrevPage:function(){
+
+  },
+
+  allAreSelected: function (key, value) {
+    if (arguments.length === 2) {
+      this.setEach('isSelected', value);
+      return value;
+    }
+    else {
+      return !this.get('isEmpty') && this.everyProperty('isSelected', true);
+    }
+  }.property('@each.isSelected'),
+
+  atLeastOneSelected: function () {
+    return this.filterProperty('isSelected', true).get('length');
+  }.property('@each.isSelected'),
+
+  // fired from tableColumnView.sort
+  getSortInfo: function () {
+    this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
+    this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
+  }
+});

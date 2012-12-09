@@ -7,6 +7,7 @@
 require('akvo-flow/core');
 require('akvo-flow/views/survey-group-views');
 require('akvo-flow/views/survey-details-views');
+require('akvo-flow/views/inspect-data-table-views');
 require('akvo-flow/views/question-view');
 require('akvo-flow/views/map-views');
 require('akvo-flow/views/devices-views');
@@ -178,12 +179,14 @@ Ember.View.reopen({
             $("." +selected).show();
     });
 	
-
+    // datepickers
 	$( "#from" ).datepicker({
 			defaultDate: "+1w",
 			numberOfMonths: 1,
 			onSelect: function( selectedDate ) {
 				$( "#to" ).datepicker( "option", "minDate", selectedDate );
+				FLOW.dateControl.set('fromDate', Date.parse(selectedDate));
+				console.log(FLOW.dateControl.get('fromDate'));
 			}
 		});
 	$( "#to" ).datepicker({
@@ -191,6 +194,7 @@ Ember.View.reopen({
 			numberOfMonths: 1,
 			onSelect: function( selectedDate ) {
 				$( "#from" ).datepicker( "option", "maxDate", selectedDate );
+				FLOW.dateControl.set('toDate', Date.parse(selectedDate));
 			}
 		});
    }
@@ -212,7 +216,9 @@ FLOW.EditSurveyAssignmentView = Ember.View.extend({ templateName: 'navDevices/as
 
 // data views
 FLOW.NavDataView = Ember.View.extend({ templateName: 'navData/nav-data'});
+
 FLOW.InspectDataView = Ember.View.extend({ templateName: 'navData/inspect-data'});
+
 FLOW.ImportSurveyView = Ember.View.extend({ templateName: 'navData/import-survey'});
 FLOW.ExcelImportView = Ember.View.extend({ templateName: 'navData/excel-import'});
 FLOW.ExcelExportView = Ember.View.extend({ templateName: 'navData/excel-export'});
