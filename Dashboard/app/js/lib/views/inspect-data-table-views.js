@@ -17,12 +17,11 @@ FLOW.inspectDataTableView = Em.View.extend({
   doInstanceQuery:function(){
     this.set('beginDate',FLOW.dateControl.get('fromDate'));
     this.set('endDate',FLOW.dateControl.get('toDate'));
-	if (this.get('selectedSurvey')){
-      this.set('surveyId',this.selectedSurvey.get('keyId'));
+	if (FLOW.selectedControl.get('selectedSurvey')){
+      this.set('surveyId',FLOW.selectedControl.selectedSurvey.get('keyId'));
     }
     this.set('since', FLOW.metaControl.get('since'));
     FLOW.surveyInstanceControl.doInstanceQuery(this.get('surveyId'),this.get('deviceId'),this.get('since'),this.get('beginDate'),this.get('endDate'));
-    console.log(this.get('sinceArray'));
 },
 
   doNextPage: function(){
@@ -42,6 +41,7 @@ FLOW.inspectDataTableView = Em.View.extend({
     if (FLOW.metaControl.get('num') == 20) {return true;} else {return false;}
   }.property('FLOW.metaControl.num'),
 
+  // not perfect yet, sometimes previous link is shown while there are no previous pages.
   hasPrevPage:function(){
     if (this.get('sinceArray').length === 0){return false;} else {return true;}
    }.property('this.sinceArray.length')

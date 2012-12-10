@@ -189,7 +189,6 @@ Ember.View.reopen({
 			onSelect: function( selectedDate ) {
 				$( "#to" ).datepicker( "option", "minDate", selectedDate );
 				FLOW.dateControl.set('fromDate', Date.parse(selectedDate));
-				console.log(FLOW.dateControl.get('fromDate'));
 			}
 		});
 	$( "#to" ).datepicker({
