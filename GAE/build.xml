@@ -41,21 +41,56 @@
 
 	</path>
 
-	<target name="copyjars" description="Copies the App Engine JARs to the WAR.">
+	<target name="check-files">
+	    <available file="build.properties" property="properties.file.exists" />
+	</target>
+
+	<target name="init" depends="check-files">
+	    <fail message="build.properties file doesn't exist">
+	        <condition>
+	            <not>
+	                <isset property="properties.file.exists"/>
+	            </not>
+	        </condition>
+	    </fail>
+	</target>
+
+	<target name="copyconfig" depends="init" description="Copies the server configuration files">
+	    <fail message="[config] property path must be present, e.g.: ant copyconfig -Dconfig=/path/to/config/folder">
+	        <condition>
+	            <not>
+	                <isset property="config" />
+	            </not>
+	        </condition>
+	    </fail>
+	    <copy file="${config}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
+	    <copy file="${config}/appengine-web.xml" tofile="war/WEB-INF/appengine-web.xml" overwrite="true" verbose="true" />
+	    <copy file="${config}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true"/>
+	    <copy file="${config}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true"/>
+	    <copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" />
+	    <copy file="${config}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" />
+	    <copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" />
+	    <copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" />
+	    <copy file="${config}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true"/>
+	</target>
+
+	<target name="copyjars" depends="init" description="Copies the App Engine JARs to the WAR.">
 		<copy todir="war/WEB-INF/lib" flatten="true">
 			<fileset dir="${sdk.dir}/lib/user">
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
 	</target>
+
 	<target name="GWTcompile">
 		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true">
-			<jvmarg value="-Xmx256M" />
+			<jvmarg value="-Xmx512M" />
 			<arg value="org.waterforpeople.mapping.portal.portal" />
 			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
 			<arg value="org.waterforpeople.mapping.surveyentry.surveyentry" />
 		</java>
 	</target>
+
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
 		<mkdir dir="war/WEB-INF/classes" />
 		<copy todir="war/WEB-INF/classes">
@@ -66,7 +101,7 @@
 		<javac srcdir="src" destdir="war/WEB-INF/classes" classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
 
-	<target name="datanucleusenhance" depends="compile" description="Performs JDO enhancement on compiled data classes.">
+	<target name="datanucleusenhance" depends="init, compile" description="Performs JDO enhancement on compiled data classes.">
 		<enhance failonerror="true" api="JDO">
 			<classpath>
 				<pathelement path="${sdk.dir}/lib/appengine-tools-api.jar" />
