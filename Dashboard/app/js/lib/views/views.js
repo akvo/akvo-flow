@@ -13,7 +13,7 @@ require('akvo-flow/views/map-views');
 require('akvo-flow/views/devices-views');
 
 FLOW.ApplicationView = Ember.View.extend({
-	templateName: 'application',
+	templateName: 'application/application',
 
   init: function () {
     var locale;
@@ -101,7 +101,7 @@ Ember.Handlebars.registerHelper("date1", function(property) {
 // ********************************************************//
 
 FLOW.NavigationView = Em.View.extend({
-	templateName: 'navigation',
+	templateName: 'application/navigation',
 	selectedBinding: 'controller.selected',
 
   onLanguageChange: function () {
@@ -239,7 +239,22 @@ FLOW.NavAdminView = Ember.View.extend({
     this.rerender();
   }.observes('FLOW.languageControl.dashboardLanguage')
 });
+ 
+FLOW.HeaderView = Ember.View.extend({
+  templateName: 'application/header',
+  
+  onLanguageChange: function () {
+    this.rerender();
+  }.observes('FLOW.languageControl.dashboardLanguage')
+});
 
+FLOW.FooterView = Ember.View.extend({
+  templateName: 'application/footer',
+  
+  onLanguageChange: function () {
+    this.rerender();
+  }.observes('FLOW.languageControl.dashboardLanguage')
+});
 
 // ********************************************************//
 //             Subnavigation for the Data tabs

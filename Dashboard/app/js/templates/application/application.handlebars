@@ -1,0 +1,20 @@
+  <header class="floats-in top" id="header" role="banner">
+        <div>
+            <hgroup>
+                <h1>Akvo
+                    <abbr title="field level operations watch">Flow</abbr></h1>
+                <h2>field level operations watch</h2>
+            </hgroup>
+            <nav id="topnav" role="navigation">
+                {{view FLOW.NavigationView controllerBinding="controller.controllers.navigationController"}}
+            </nav>
+    
+            {{view FLOW.HeaderView}}
+            
+        </div>
+    </header>
+    <div id="pageWrap">
+        {{outlet}}
+    </div>
+   
+   {{view FLOW.FooterView}}
