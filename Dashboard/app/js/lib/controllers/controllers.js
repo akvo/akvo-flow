@@ -345,6 +345,7 @@ FLOW.surveyAssignmentControl = Ember.ArrayController.create({
   }
 });
 
+
 // set by restadapter sideLoad meta
 FLOW.metaControl = Ember.Object.create({
   since: null,
@@ -353,24 +354,21 @@ FLOW.metaControl = Ember.Object.create({
   status: null
 }),
 
+
 // set by javacript datepickers in views.js
 FLOW.dateControl = Ember.Object.create({
   fromDate: null,
   toDate: null
 }),
 
+
+
 FLOW.surveyInstanceControl = Ember.ArrayController.create({
   sortProperties: null,
   sortAscending: true,
-  selected: null,
+  selectedSurvey: null,
   content: null,
-  surveyId: null,
-  deviceId: null,
-  beginDate: null,
-  endDate: null,
-  since: null,
-  nextPage: null,
-  prevPage: null,
+ 
 
   populate: function () {
     this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance,{}));
@@ -378,28 +376,13 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
     this.set('sortAscending', true);
   },
 
-  doNewInstanceQuery:function(){
-    this.set('beginDate',FLOW.dateControl.get('fromDate'));
-    this.set('endDate',FLOW.dateControl.get('toDate'));
-    this.set('surveyId',FLOW.selectedControl.selectedSurvey.get('keyId'));
-    
-    // TODO
-    this.set('deviceId', null);
-
+  doInstanceQuery:function(surveyId, deviceId, since, beginDate, endDate){
     this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance,{
-      'surveyId':this.get('surveyId'),
-      'deviceId':this.get('deviceId'),
-      'since':null,
-      'beginDate':this.get('beginDate'),
-      'endDate':this.get('endDate')}));
-  },
-
-  doNextPage:function(){
-
-  },
-
-  doPrevPage:function(){
-
+      'surveyId':surveyId,
+      'deviceId':deviceId,
+      'since':since,
+      'beginDate':beginDate,
+      'endDate':endDate}));
   },
 
   allAreSelected: function (key, value) {

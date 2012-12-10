@@ -12,7 +12,7 @@
 
             {{view Ember.Select 
                 contentBinding="FLOW.surveyControl.content" 
-                selectionBinding="FLOW.selectedControl.selectedSurvey" 
+                selectionBinding="view.selectedSurvey" 
                 optionLabelPath="content.code" 
                 optionValuePath="content.keyId" 
                 prompt="Select survey"}} 
@@ -21,7 +21,12 @@
             <input class="datePicker" id="from" name="from" type="text">
             <label for="toDate">To</label>
             <input class="datePicker" id="to" name="to" type="text">
-        </form>
+
+            </form>            
+            <label> Device id:
+                {{view Ember.TextField valueBinding="view.deviceId" placeholder="" size=30}} 
+            </label>
+
     </div>
     <section class="fullWidth " id="devicesList">
         <br/><br/>
@@ -60,7 +65,8 @@
                 </tr>
             </tfoot>
         </table>
-        &laquo; previous | next &raquo;
+        {{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &laquo; previous | </a> {{/if}}
+        {{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>next &raquo;</a>{{/if}}
     </section>
 </section>
 {{/view}}
