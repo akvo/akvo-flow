@@ -84,14 +84,14 @@ FLOW.dataserverControl = Ember.Object.create({
   },
 
   content: [
-    Ember.Object.create({label: "Localhost", value: "local"}),
     Ember.Object.create({label: "Akvo Sandbox", value: "sandbox"}),
+    Ember.Object.create({label: "Localhost", value: "local"}),
     Ember.Object.create({label: "Local VM", value: "vm"}),
     Ember.Object.create({label: "Fixtures", value: "fixtures"})],
 
   changeServer: function () {
     var host = "http://" + window.location.hostname,
-    server = this.get("dataserver.value");
+    server = this.dataserver.get('value');
     localStorage.dataserver = server;
 
     if (server == "local") {
