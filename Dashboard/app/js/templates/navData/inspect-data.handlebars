@@ -52,14 +52,14 @@
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
-                {{#each FLOW.surveyInstanceControl.content}}
+                {{#each SI in FLOW.surveyInstanceControl}}
                 <tr>
-                    <td class="device">{{keyId}}</td>
-                    <td class="survey" style="text-align:left;">{{surveyCode}}</td>
-                    <td class="submitter" style="text-align:left;">{{submitterName}}</td>
-                    <td class="device">{{deviceIdentifier}}</td>
-                    <td class="collected">{{date1 collectionDate}}</td>
-                    <td class="action"><a href="#">action</a></td>
+                    <td class="device">{{SI.keyId}}</td>
+                    <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
+                    <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
+                    <td class="device">{{SI.deviceIdentifier}}</td>
+                    <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
+                    <td class="action"><a {{action showEditSurveyInstanceWindow SI target="this" }}>edit</a></td>
                 </tr>
                 {{/each}}
             </tbody>
@@ -73,5 +73,61 @@
         {{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &laquo; previous | </a> {{/if}}
         {{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>next &raquo;</a>{{/if}}
     </section>
+
+    <!-- edit surveyInstance popup-->
+    <div {{bindAttr class="view.showEditSurveyInstanceWindowBool:display :overlay"}}>
+      <div class="blanketWide"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialogWide">
+          <h2>Edit answers</h2>
+            <div class="buttons menuCentre"> 
+            <ul>  
+              <li><a {{action "doPreviousSI" target="this"}} class="ok smallBtn">previous</a></li>
+              <li><a {{action "doNextSI" target="this"}} class="ok smallBtn">next</a></li>
+              <li><a {{action "doCloseEditSIWindow" target="this"}} class="ok smallBtn">close window</a></li>
+              <li><a {{action "doDeleteSI" target="this"}} class="ok smallBtn">delete</a></li>
+              <li><a {{action "doSaveSI" target="this"}} class="ok smallBtn">save</a></li>
+            </ul>
+          </div>
+         
+
+ <table class="dataTable" id="surveyDataTable">
+            <!-- TABLE HEADER-->
+            <thead>
+                <tr>
+                    <th class="noArrows">Id</th>
+                    <th class="noArrows">Question</th>
+                    <th class="noArrows">Answer</th>
+          
+                </tr>
+            </thead>
+            <!-- TABLE BODY: MAIN CONTENT-->
+            <tbody>
+                {{#each QA in FLOW.questionAnswerControl}}
+                <tr>
+                    <td class="device">{{QA.keyId}}</td>
+                    <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
+                    <td class="submitter" style="text-align:left;">{{QA.value}}</td>
+          
+                </tr>
+                {{/each}}
+            </tbody>
+            <!-- TABLE FOOTER-->
+            <tfoot>
+                <tr>
+                    <td colspan="7"><small>This is the footer.</small></td>
+                </tr>
+            </tfoot>
+        </table>
+
+
+
+
+        
+        </div>
+      </div>
+    </div>
+
 </section>
 {{/view}}
