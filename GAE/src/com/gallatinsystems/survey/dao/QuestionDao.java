@@ -192,6 +192,29 @@ public class QuestionDao extends BaseDAO<Question> {
 	}
 
 	/**
+	 * list questions in order, by using question groups.
+	 * author: Mark Tiele Westra
+	 * @param surveyId
+	 * @return
+	 */
+	public List<Question> listQuestionsInOrder(Long surveyId) {
+		List<Question> orderedQuestionList = new ArrayList<Question>();
+		QuestionGroupDao qgDao = new QuestionGroupDao();
+		List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(surveyId);
+
+		// for each question group, get the questions in the right order and put them in the list
+		for (QuestionGroup qg : qgList) {
+			List<Question> qList = listByProperty("questionGroupId", qg
+					.getKey().getId(), "Long", "order", "asc");
+			for (Question q : qList) {
+				orderedQuestionList.add(q);
+			}
+
+		}
+		return orderedQuestionList;
+	}
+
+	/**
 	 * saves a question object in a transaction
 	 * 
 	 * @param q
