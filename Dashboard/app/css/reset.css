@@ -42,7 +42,6 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-input, select, textarea { -webkit-appearance: none;}
 
 img, object, embed, video {
 	max-width: 100%;

@@ -58,7 +58,6 @@ body {
 -------------------------------------------------------------- */
 
 h1, h2, h3, h4, h5, h6 {
-	text-transform: capitalize;
 	font-weight: normal;
 }
 h1 {
@@ -188,9 +187,9 @@ a:hover {
 
 /* Custom text-selection colors (remove any text shadows: twitter.com/miketaylr/status/12228805301) */
 ::-moz-selection {
- background: #930;
- color: #fff;
- text-shadow: none;
+	background: #930;
+	color: #fff;
+	text-shadow: none;
 }
 ::selection {
 	background: #930;
@@ -349,6 +348,15 @@ a.AddBtn:hover {
 	background: rgb(242,242,242);
 	font-size: 1.5em;
 }
+.dialogWrap select,.dialogWrap input {
+	display:block;
+	} 
+.dialogWrap select {
+	width:50%;
+	} 
+.dialogWrap input {
+	width:50%;
+	} 
 /* page structure
 --------------------------------------------- */
 #pageWrap {
@@ -357,8 +365,8 @@ a.AddBtn:hover {
 	padding: 0;
 	min-width: 916px;
 	max-width: 1188px;
-	width: 90%;/* border:1px sold rgb(36, 48, 50); */
-	background: transparent;/* background:url(../images/light-grain-trans.png) repeat; *//* -webkit-box-shadow:2px 0 2px rgba(200, 200, 200, 0.8), -2px 0 2px rgba(200, 200, 200, 0.8); *//* -moz-box-shadow:2px 0 2px rgba(200, 200, 200, 0.8), -2px 0 2px rgba(200, 200, 200, 0.8); *//* box-shadow:2px 0 2px rgba(200, 200, 200, 0.8), -2px 0 2px rgba(200, 200, 200, 0.8); */
+	width: 90%;
+	background: transparent;
 }
 header.top > div {
 	position: relative;
@@ -737,6 +745,22 @@ tfoot tr {
 	margin: 20px 1.5em 20px auto;
 	background-image:url(../images/addPlus.png) left center no-repeat;
 }
+
+.dataTabMenu {
+	margin:0;
+	padding:0;
+	}
+.dataTabMenu ul {
+	}
+.dataTabMenu ul li {
+	display:inline;
+	float:left;
+	margin:0 0.5em 0 0;
+	background:red;
+	}
+.dataTabMenu ul li a{
+	padding:0.5em 1em;
+	}
 
 /**************** Assign Survey to devices. **************/
 
@@ -2102,18 +2126,6 @@ nav.smallMenu ul li a.showQuestion:hover {
 	margin: 5px 0 0 5px;
 	padding: 2px 0 3px 5px;
 	width: 30%;
-	background: #eeeeee; /* Old browsers */
-	background: -moz-linear-gradient(top, #fff 0%, #ccc 100%); /* FF3.6+ */
-	background: url(../images/selectArrows.png) right center no-repeat, -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee), color-stop(100%, #cccccc)); /* Chrome,Safari4+ */
-	background: url(../images/selectArrows.png) right center no-repeat, -webkit-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Chrome10+,Safari5.1+ */
-	background: url(../images/selectArrows.png) right center no-repeat, -o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera 11.10+ */
-	background: url(../images/selectArrows.png) right center no-repeat, -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
-	background: url(../images/selectArrows.png) right center no-repeat, linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
-	background-image: url(../images/selectArrows.png) right center no-repeat;
- filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc', GradientType=0 ); /* IE6-8 */
-	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
-
-	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VlZWVlZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjY2NjY2MiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
 }
 .innerContent input[type=checkbox] {
 	display: inline-block;

@@ -12,7 +12,6 @@
                     <option value="20" >20</option> 
                     <option value="50" >50</option> 
                     <option value="100" >100</option> 
-
                 </select>
 
                 &nbsp;entries
@@ -22,13 +21,14 @@
         </div> 
          
          {{#if FLOW.deviceControl.atLeastOneSelected}}
-            <a {{action "showDeleteDevicesDialog" target="this"}}>Disable Devices</a> | 
-            <a {{action "showAddToGroupDialog" target="this"}}>Add to Device group</a> | 
-             <a {{action "showRemoveFromGroupDialog" target="this"}}>Remove from Device Group</a> | 
-        {{/if}}
-          <a {{action "showManageDeviceGroupsDialog" target="this"}}>Manage device groups</a>
-        <br/><br/>
-
+           <nav class="dataTabMenu">
+			  <ul>
+				  <li><a {{action "showDeleteDevicesDialog" target="this"}}>Disable Devices</a></li>
+				  <li><a {{action "showAddToGroupDialog" target="this"}}>Add to Device group</a></li>
+				  <li><a {{action "showRemoveFromGroupDialog" target="this"}}>Remove from Device Group</a></li>
+			  </ul>
+				  {{/if}}<a {{action "showManageDeviceGroupsDialog" target="this"}}>Manage device groups</a>
+	 	   </nav>
         <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->
             <thead>

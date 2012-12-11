@@ -41,17 +41,11 @@ form {
 	padding:0;
 }
 input, textarea, button, select {
-	/*	-webkit-appearance:none;
-	-moz-appearance:none;
-	-webkit-border-radius:3px;
-	-moz-border-radius:3px;
-	-o-border-radius:3px;
-	border-radius:3px;*/
 	color:rgb(102,102,102);
 	font-weight:normal;
 }
 input, textarea {
-	border: 1px solid rgb(58,58,58);
+	border: 1px solid rgb(235, 235, 235);
 	background: rgb(250, 244, 230);
 	-moz-box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
 	-webkit-box-shadow:0 1px 2px rgba(0, 0, 0, 0.3) inset;
@@ -105,22 +99,10 @@ label {
 select {
 	margin: 5px 0 0 5px;
 	padding: 3px 12px 3px 5px;
-	background-image: url(../images/selectArrows.png) right center no-repeat;
-	background: #eeeeee; /* Old browsers */
-	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
-
-	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VlZWVlZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjY2NjY2MiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-	background: -moz-linear-gradient(top, #fff 0%, #ccc 100%); /* FF3.6+ */
-	background: url(../images/selectArrows.png) right center no-repeat, -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee), color-stop(100%, #cccccc)); /* Chrome,Safari4+ */
-	background: url(../images/selectArrows.png) right center no-repeat, -webkit-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Chrome10+,Safari5.1+ */
-	background: url(../images/selectArrows.png) right center no-repeat, -o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera 11.10+ */
-	background: url(../images/selectArrows.png) right center no-repeat, -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
-	background: url(../images/selectArrows.png) right center no-repeat, linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
- filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc', GradientType=0 ); /* IE6-8 */
 }
 legend {
 	border: 0;
-*margin-left: -7px;
+	margin-left: -7px;
 	padding: 0;
 	white-space: normal;
 }
@@ -172,22 +154,19 @@ input[type="search"] {
 	background:url(../images/search-icon.png) no-repeat top right, -moz-linear-gradient(rgb(255,255,255), rgb(224,224,224));
 	background:url(../images/search-icon.png) no-repeat top right, -o-linear-gradient(rgb(255,255,255), rgb(224,224,224));
 	background:url(../images/search-icon.png) no-repeat top right, linear-gradient(rgb(255,255,255), rgb(224,224,224));
-/*	-moz-box-shadow:inset 0 2px 3px rgb(140,140,140), inset 0px -5px 3px #eee;
-	-webkit-box-shadow:inset 0 2px 3px rgb(140,140,140), inset 0px -5px 3px #eee;
-	-o-box-shadow:inset 0 2px 3px rgb(140,140,140), inset 0px -5px 3px #eee;
-	box-shadow:inset 0 2px 3px rgb(140,140,140), inset 0px -5px 3px #eee;
-*/}
+	}
+
 input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button {
--webkit-appearance: none;
-}
+	-webkit-appearance: none;
+	}
 
 /*
  * Remove inner padding and border in FF3/4: h5bp.com/l
  */
 
 button::-moz-focus-inner, input::-moz-focus-inner {
-border: 0;
-padding: 0;
+	border: 0;
+	padding: 0;
 }
 /*
  * 1. Remove default vertical scrollbar in IE6/7/8/9
