@@ -27,8 +27,8 @@
 				  <li><a {{action "showAddToGroupDialog" target="this"}}>Add to Device group</a></li>
 				  <li><a {{action "showRemoveFromGroupDialog" target="this"}}>Remove from Device Group</a></li>
 			  </ul>
-				  {{/if}}<a {{action "showManageDeviceGroupsDialog" target="this"}}>Manage device groups</a>
 	 	   </nav>
+		{{/if}}<a {{action "showManageDeviceGroupsDialog" target="this"}} class="standardBtn btnAboveTable">Manage device groups</a>
         <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->
             <thead>
@@ -54,15 +54,15 @@
                 {{#view FLOW.ColumnView item="lastPositionDate" type="device"}}
                    <a {{action "sort" target="this"}}>Last Contact</a>
                 {{/view}}
-                 <th> <a>Action</a></th>
+                 <th><a>Action</a></th>
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
                 {{#each FLOW.deviceControl}}
                    <tr>
-                    <td class="selection" style="text-align:left; padding:0 0 0 5px;"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
-                    <td class="EMEI" style="text-align:left; padding:0 0 0 5px;">{{EMEI}}</td>
+                    <td class="selection"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
+                    <td class="EMEI">{{EMEI}}</td>
                     <td class="MAC address" >{{macAddress}}</td> 
                     <td class="phoneNumber" >{{phoneNumber}}</td>
                     <td class="deviceId" >{{deviceIdentifier}}</td>
@@ -149,7 +149,7 @@
           {{view Ember.TextField valueBinding="view.changedDeviceGroupName" size=40}}
           
           <p class="dialogMsg">To create a new device group, enter the name in the box below</p>
-           <label for="newDeviceGroupName">New group: {{view Ember.TextField valueBinding="view.newDeviceGroupName" size=40}}</label>
+           <label for="newDeviceGroupName">New group:</label> {{view Ember.TextField valueBinding="view.newDeviceGroupName" id="newDeviceGroupName" size=40}}
           <div class="buttons menuCentre"> 
             <ul>  
                <li><a {{action "doManageDeviceGroups" target="this"}} class="ok smallBtn">SAVE</a></li>

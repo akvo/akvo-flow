@@ -1,8 +1,8 @@
 {{#view FLOW.inspectDataTableView}}
 <section class="fullWidth" id="inspectData">
-    <div class="" id="dataFilter">
+    <div class="floats-in" id="dataFilter">
         <h3>Choose Survey Data to display:</h3>
-            {{view Ember.Select 
+            <div class="chooseSurveyData">{{view Ember.Select 
                 contentBinding="FLOW.surveyGroupControl.content" 
                 selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
                 optionLabelPath="content.code" 
@@ -15,28 +15,25 @@
                 optionLabelPath="content.code" 
                 optionValuePath="content.keyId" 
                 prompt="Select survey"}} 
-				
-            <label> Collected from:
-                {{view Ember.TextField valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" size=30}} 
+			</div>
+			<div class="dataCollectedDate">
+            <label class="collectedFrom"> Collected from:
+                {{view Ember.TextField valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="Collected From" size=30}} 
             </label> 
 
-            <label> To:
-                {{view Ember.TextField valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" size=30}} 
+            <label class="collectedTo"> To:
+                {{view Ember.TextField valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="To" size=30}} 
             </label>
-
-            <label> Device id:
-                {{view Ember.TextField valueBinding="view.deviceId" placeholder="" size=30}} 
-            </label>
-             <label> Submitter name:
-                {{view Ember.TextField valueBinding="view.submitterName" placeholder="" size=30}} 
-            </label>
-
-
+			</div>
+			<div class="dataDeviceId">
+				 <label  class="devideId"> Device id:</label> {{view Ember.TextField valueBinding="view.deviceId" placeholder="Device Id" size=30}} 
+			</div>
+			<div class="dataSubmitterName">
+				 <label class="submitterName"> Submitter name:</label> {{view Ember.TextField valueBinding="view.submitterName" placeholder="Submitter Name" size=30}} 
+			</div>
+         <a {{action "doFindSurveyInstances" target="this"}} class="findData">Find</a>
     </div>
     <section class="fullWidth " id="devicesList">
-        <br/><br/>
-         <a {{action "doFindSurveyInstances" target="this"}}>Find</a>
-        <br/><br/>
         <!-- DEVICES TABLE-->
         <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->

@@ -224,7 +224,7 @@ mark {
 }
 a.standardBtn, input[type="submit"] {
 	display: block;
-	padding: 7px 1%;
+	padding: 0.5em;
 	width: 10%;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
@@ -285,6 +285,9 @@ a.AddBtn:hover {
 	padding:1px 0;
 	background: rgb(230,230,230);
 	}
+.btnAboveTable {
+	margin:-5px 1.5em 20px auto;
+	}
 /*-------------------------------
 	Dialog
 -----------------------------------*/
@@ -341,17 +344,17 @@ a.AddBtn:hover {
 }
 .dialog {
 	position: absolute;
-	top: 35%;
+	background:rgb(255,255,255);
+	top: 20%;
 	left: 35%;
 	display: block;
 	padding: 1em 2em;
 	width: 25%;
 	border: thin solid rgb(153,153,153);
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	background: white;
-	-o-border-radius: 4px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	-o-border-radius: 6px;
 }
 
 /* MTW addition */
@@ -384,11 +387,16 @@ a.AddBtn:hover {
 	display:block;
 	} 
 .dialogWrap select {
-	width:50%;
+	width:95%;
+	margin:5px auto;
 	} 
 .dialogWrap input {
-	width:50%;
-	} 
+	width:95%;
+	margin:5px auto;
+	}
+label[for=newDeviceGroupName] {
+	margin:10px 0 0 0;
+	}
 /* page structure
 --------------------------------------------- */
 #pageWrap {
@@ -699,7 +707,7 @@ table.dataTable thead tr {
 	background: rgb(58,58,58);
 }
 table.dataTable thead tr th {
-	padding: 13px 1em 7px 1em;
+	padding:5px 1em 13px 1em;
 	border-right: thin solid rgb(12,12,12);
 	background: url(../images/sortTableArrows.png) right center no-repeat;
 	color: rgb(255, 210, 0);
@@ -783,17 +791,40 @@ tfoot tr {
 	padding:0;
 	}
 .dataTabMenu ul {
+	margin:-5px 0 0 1em;
 	}
 .dataTabMenu ul li {
 	display:inline;
 	float:left;
 	margin:0 0.5em 0 0;
-	background:red;
 	}
 .dataTabMenu ul li a{
+	color:rgb(0, 123, 182);
+	background:transparent;
+	display:block;
 	padding:0.5em 1em;
+	font-size:1.1em;
+	-moz-border-radius:0;
+	-webkit-border-radius:0;
+	-o-border-radius:0;
+	border-radius:0;
+	-moz-transition:background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
+	-webkit-transition:background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
+	-o-transition:background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
+	transition:background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
 	}
-
+.dataTabMenu ul li a:hover{
+	color:rgb(255,255,255);
+	background:rgb(74, 177, 207);
+	-moz-border-radius:2px;
+	-webkit-border-radius:2px;
+	-o-border-radius:2px;
+	border-radius:2px;
+	}
+#devicesList a.standardBtn {
+	width:17%;
+	}
+	
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys fieldset {
@@ -2000,7 +2031,7 @@ nav.questionActionMenu a:hover {
 }
 .menuCentre ul li a {
 	display: inline;
-	padding: 6px 4%;
+	padding: 6px 10%;
 }
 .menuCentre ul li a.smallBtn {
 	margin: 0 5px 0 0;
@@ -2190,7 +2221,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	margin: 1px auto 0 auto;
 	padding: 15px 5px;
 	border-bottom: thin dotted rgb(225,225,225);
-	background: rgb(255,255,255) url(../images/dataPointing.png) right center no-repeat;
+	background: rgb(255,255,255);
 }
 #dataFilter h3 {
 	margin: 0 0 5px 5px;
@@ -2199,21 +2230,22 @@ nav.smallMenu ul li a.showQuestion:hover {
 	font-weight: bold;
 	font-size: 1.8em;
 }
-#dataFilter input {
+#dataFilter div.dataCollectedDate input {
+	display:inline;
 	height: 20px;
-	border-color: transparent;
 	background: url(../images/icon_cal.png) right center no-repeat;
 }
-#dataFilter label[for="fromDate"], #dataFilter label[for="toDate"] {
-	display: inline;
-}
-#dataFilter label[for="fromDate"] {
-	margin-left: 15px;
-}
-#dataFilter img.ui-datepicker-trigger {
-	display: inline;
-	margin-top: 4px;
-}
+#dataFilter label {
+	display:inline;
+	}
+#dataFilter label.collectedTo { margin:0; }
+#dataFilter div.chooseSurveyData { position:relative; width:49%; display:block; float:left;margin: 0 1% 2em 0;}
+#dataFilter div.chooseSurveyData select { width:47%; display:inline; }
+#dataFilter div.dataCollectedDate { position:relative; width:50%; display:block; float:right;margin: 0 0 2em 0;}
+#dataFilter div.dataCollectedDate label { width:48%; }
+#dataFilter div.dataCollectedDate label input { width:35%; }
+#dataFilter div.dataDeviceId {display:block;clear:both;}
+
 .dataTables_wrapper {
 	margin: 0px auto 1px auto;
 	background: rgb(235,235,235);
@@ -2277,7 +2309,22 @@ nav.smallMenu ul li a.showQuestion:hover {
 	font-weight: normal;
 	font-size: 1em;
 }
-
+#dataFilter a.findData {
+	display:inline;
+	padding:0.3em 0.6em;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	background-color: rgb(0,123,182);
+	color: rgb(235,235,235);
+	text-align: center;
+	font-size: 1.1em;
+	-o-border-radius: 3px;
+	}
+#dataFilter a.findData:hover {
+	background-color: rgb(58,58,58);
+	color: rgb(255,255,255);
+	}
 /******************************************************************************
 									FLOW MAP
 ******************************************************************************/
