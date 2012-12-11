@@ -357,17 +357,17 @@ FLOW.metaControl = Ember.Object.create({
 
 // set by javacript datepickers in views.js
 FLOW.dateControl = Ember.Object.create({
-  // filled by javacript datepicker defined in views.js and by inspect-data.handlebars 
+  // filled by javacript datepicker defined in views.js and by inspect-data.handlebars
   // binding. This makes sure we can both pick a date with the datepicker, and enter
   // a date manually
   fromDate: null,
-  toDate: null,
+  toDate: null
 }),
 
 
 FLOW.surveyInstanceControl = Ember.ArrayController.create({
-  sortProperties: null,
-  sortAscending: true,
+  sortProperties: ['collectionDate'],
+  sortAscending: false,
   selectedSurvey: null,
   content: null,
   sinceArray:[],
@@ -375,8 +375,6 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   populate: function () {
     this.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
     this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance,{}));
-    this.set('sortProperties', ['collectionDate']);
-    this.set('sortAscending', true);
   },
 
   doInstanceQuery:function(surveyId, deviceId, since, beginDate, endDate){
@@ -408,3 +406,14 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
     this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
   }
 });
+
+
+FLOW.questionAnswerControl = Ember.ArrayController.create({
+  content:null,
+
+  doQuestionAnswerQuery:function(surveyInstanceId){
+    this.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer,{
+      'surveyInstanceId':surveyInstanceId}));
+  }
+});
+

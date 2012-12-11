@@ -6,7 +6,10 @@ FLOW.inspectDataTableView = Em.View.extend({
   beginDate: null,
   endDate: null,
   since: null,
-  sinceArray:[],
+  showEditSurveyInstanceWindowBool:false,
+  selectedSurveyInstanceId: null,
+  selectedSurveyInstanceNum: null,
+
 
   // do a new query
   doFindSurveyInstances: function(){
@@ -52,5 +55,66 @@ FLOW.inspectDataTableView = Em.View.extend({
   // not perfect yet, sometimes previous link is shown while there are no previous pages.
   hasPrevPage:function(){
     if (FLOW.surveyInstanceControl.get('sinceArray').length === 1){return false;} else {return true;}
-   }.property('FLOW.surveyInstanceControl.sinceArray.length')
+   }.property('FLOW.surveyInstanceControl.sinceArray.length'),
+
+  // Survey instance edit popup window
+  showEditSurveyInstanceWindow:function(event){
+    FLOW.questionAnswerControl.doQuestionAnswerQuery(event.context.get('keyId'));
+    this.set('selectedSurveyInstanceId',event.context.get('keyId'));
+    this.set('selectedSurveyInstanceNum', event.context.clientId);
+    this.set('showEditSurveyInstanceWindowBool',true);
+
+  },
+
+  doCloseEditSIWindow:function(event){
+     this.set('showEditSurveyInstanceWindowBool',false);
+  },
+
+  doPreviousSI:function(event){
+    var currentSIlist, SIindex, nextItem, filtered;
+    currentSIList = FLOW.surveyInstanceControl.content.get('content');
+    SIindex = currentSIList.indexOf(this.get('selectedSurveyInstanceNum'));
+    
+    if (SIindex == 0) {
+      // if at the end of the list, go and get more data
+    } else {
+      nextItem = currentSIList.objectAt(SIindex-1);
+      filtered = FLOW.store.filter(FLOW.SurveyInstance,function(item){
+        if (item.clientId == nextItem) {return true;} else {return false;}
+      });
+      nextSIkeyId = filtered.objectAt(0).get('keyId');
+      this.set('selectedSurveyInstanceId',nextSIkeyId);
+      this.set('selectedSurveyInstanceNum',nextItem);
+      FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSIkeyId);
+    }
+  },
+
+  // TODO error checking
+  doNextSI:function(event){
+    var currentSIlist, SIindex, nextItem, filtered;
+    currentSIList = FLOW.surveyInstanceControl.content.get('content');
+    SIindex = currentSIList.indexOf(this.get('selectedSurveyInstanceNum'));
+    
+    if (SIindex == 19) {
+      // if at the end of the list, go and get more data
+    } else {
+      nextItem = currentSIList.objectAt(SIindex+1);
+      filtered = FLOW.store.filter(FLOW.SurveyInstance,function(item){
+        if (item.clientId == nextItem) {return true;} else {return false;}
+      });
+      nextSIkeyId = filtered.objectAt(0).get('keyId');
+      this.set('selectedSurveyInstanceId',nextSIkeyId);
+      this.set('selectedSurveyInstanceNum',nextItem);
+      FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSIkeyId);
+    }
+  },
+
+  doSaveSI:function(event){
+      this.set('showEditSurveyInstanceWindowBool',false);
+  },
+
+  doDeleteSI:function(event){
+      this.set('showEditSurveyInstanceWindowBool',false);
+  }
+   
 });
