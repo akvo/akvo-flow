@@ -18,9 +18,13 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
 
   sideload: function (store, type, json, root) {
     this._super(store, type, json, root);
-    FLOW.metaControl.set('since', this.extractMeta(json).since);
-    FLOW.metaControl.set('num', this.extractMeta(json).num);
-    FLOW.metaControl.set('message', this.extractMeta(json).message);
-    FLOW.metaControl.set('status', this.extractMeta(json).status);
+    
+    // only change metaControl info if there is actual meta info in the server response
+    if (Object.keys(this.extractMeta(json)).length !== 0) {
+      FLOW.metaControl.set('since', this.extractMeta(json).since);
+      FLOW.metaControl.set('num', this.extractMeta(json).num);
+      FLOW.metaControl.set('message', this.extractMeta(json).message);
+      FLOW.metaControl.set('status', this.extractMeta(json).status);
+    }
   }
 });
