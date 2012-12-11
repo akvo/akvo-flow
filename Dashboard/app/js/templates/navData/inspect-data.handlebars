@@ -2,7 +2,6 @@
 <section class="fullWidth" id="inspectData">
     <div class="" id="dataFilter">
         <h3>Choose Survey Data to display:</h3>
-        <form>
             {{view Ember.Select 
                 contentBinding="FLOW.surveyGroupControl.content" 
                 selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
@@ -17,15 +16,21 @@
                 optionValuePath="content.keyId" 
                 prompt="Select survey"}} 
 				
-            <label for="fromDate">Collected From</label>
-            <input class="datePicker" id="from" name="from" type="text">
-            <label for="toDate">To</label>
-            <input class="datePicker" id="to" name="to" type="text">
+            <label> Collected from:
+                {{view Ember.TextField valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" size=30}} 
+            </label> 
 
-            </form>            
+            <label> To:
+                {{view Ember.TextField valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" size=30}} 
+            </label>
+
             <label> Device id:
                 {{view Ember.TextField valueBinding="view.deviceId" placeholder="" size=30}} 
             </label>
+             <label> Submitter name:
+                {{view Ember.TextField valueBinding="view.submitterName" placeholder="" size=30}} 
+            </label>
+
 
     </div>
     <section class="fullWidth " id="devicesList">
@@ -37,12 +42,12 @@
             <!-- TABLE HEADER-->
             <thead>
                 <tr>
-                    <th>Id</th>
-                    <th>Survey</th>
-                    <th>Submitter</th>
-                    <th>Device</th>
-                    <th>Collected</th>
-                    <th>Action</th>
+                    <th class="noArrows">Id</th>
+                    <th class="noArrows">Survey</th>
+                    <th class="noArrows">Submitter</th>
+                    <th class="noArrows">Device</th>
+                    <th class="noArrows">Collected</th>
+                    <th class="noArrows">Action</th>
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->

@@ -126,6 +126,10 @@ FLOW.NavigationView = Em.View.extend({
 //                      standard views
 // ********************************************************//
 
+Ember.TextField.reopen({
+    attributeBindings: ['readonly']
+});
+
 // TODO check if doing this in View is not impacting performance,
 // as some pages have a lot of views (all navigation elements, for example)
 // one way could be use an extended copy of view, with the didInsertElement,
@@ -183,20 +187,23 @@ Ember.View.reopen({
     });
 	
     // datepickers
-	$( "#from" ).datepicker({
+	$( "#from_date" ).datepicker({
+			dateFormat: 'yy/mm/dd',
 			defaultDate: "+1w",
 			numberOfMonths: 1,
 			onSelect: function( selectedDate ) {
-				$( "#to" ).datepicker( "option", "minDate", selectedDate );
-				FLOW.dateControl.set('fromDate', Date.parse(selectedDate));
+				$( "#to_date" ).datepicker( "option", "minDate", selectedDate );
+				FLOW.dateControl.set('fromDate', selectedDate);
 			}
 		});
-	$( "#to" ).datepicker({
+
+	$( "#to_date" ).datepicker({
+			dateFormat: 'yy/mm/dd',
 			defaultDate: "+1w",
 			numberOfMonths: 1,
 			onSelect: function( selectedDate ) {
-				$( "#from" ).datepicker( "option", "maxDate", selectedDate );
-				FLOW.dateControl.set('toDate', Date.parse(selectedDate));
+				$( "#from_date" ).datepicker( "option", "maxDate", selectedDate );
+				FLOW.dateControl.set('toDate', selectedDate);
 			}
 		});
    }

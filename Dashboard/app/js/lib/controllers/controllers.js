@@ -357,10 +357,12 @@ FLOW.metaControl = Ember.Object.create({
 
 // set by javacript datepickers in views.js
 FLOW.dateControl = Ember.Object.create({
+  // filled by javacript datepicker defined in views.js and by inspect-data.handlebars 
+  // binding. This makes sure we can both pick a date with the datepicker, and enter
+  // a date manually
   fromDate: null,
-  toDate: null
+  toDate: null,
 }),
-
 
 
 FLOW.surveyInstanceControl = Ember.ArrayController.create({
@@ -368,9 +370,10 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   sortAscending: true,
   selectedSurvey: null,
   content: null,
- 
+  sinceArray:[],
 
   populate: function () {
+    this.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
     this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance,{}));
     this.set('sortProperties', ['collectionDate']);
     this.set('sortAscending', true);
