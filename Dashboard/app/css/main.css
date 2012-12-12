@@ -308,11 +308,12 @@ a.AddBtn:hover {
 .editAnswerMenu {
 	width: 100%;
 	position: relative;
+	margin:10px auto;
 }
 .editAnswerMenu ul {
 	width: 100%;
 	position: relative;
-	height: 60px;
+	height: 40px;
 }
 .editAnswerMenu ul li {
 	display:inline;
