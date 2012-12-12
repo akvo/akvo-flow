@@ -86,6 +86,7 @@ FLOW.dataserverControl = Ember.Object.create({
   content: [
     Ember.Object.create({label: "Akvo Sandbox", value: "sandbox"}),
     Ember.Object.create({label: "Localhost", value: "local"}),
+    Ember.Object.create({label: "Localhost to Sandbox", value: "local-sandbox"}),
     Ember.Object.create({label: "Local VM", value: "vm"}),
     Ember.Object.create({label: "Fixtures", value: "fixtures"})],
 
@@ -113,6 +114,13 @@ FLOW.dataserverControl = Ember.Object.create({
       FLOW.store = DS.Store.create({
         revision: 10,
         adapter: DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:host})
+      });
+    }
+     else if (server == "local-sandbox") {
+      // FLOW.selectedControl.set('dataserverControl',null);
+      FLOW.store = DS.Store.create({
+        revision: 10,
+        adapter: DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"restsandbox", url:host})
       });
     }
     else if (server == "fixtures") {
@@ -365,6 +373,35 @@ FLOW.dateControl = Ember.Object.create({
 }),
 
 
+FLOW.forceObserverControl = Ember.Object.create({
+  forceObserverBool:false
+});
+
+FLOW.savingMessageControl = Ember.Object.create({
+  areSavingBool:false,
+
+  checkSaving:function(){
+     console.log('number of inflight items: ',FLOW.store.defaultTransaction.buckets.inflight.list.length);
+     if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0){
+       this.set('areSavingBool',true);
+       console.log('setting true');
+     } else {
+       this.set('areSavingBool',false);
+       console.log('setting false');
+     }
+    
+    //console.log('number of created items: ',FLOW.store.defaultTransaction.buckets.created.list.length);
+    //console.log('number of updated items: ',FLOW.store.defaultTransaction.buckets.updated.list.length);
+    //console.log('number of deleted items: ',FLOW.store.defaultTransaction.buckets.deleted.list.length);
+    //console.log('number of clean items: ',FLOW.store.defaultTransaction.buckets.clean.list.length);
+   
+   // console.log('------------------check saving---------------------');
+  
+  }.observes('FLOW.forceObserverControl.forceObserverBool')
+
+}),
+
+
 FLOW.surveyInstanceControl = Ember.ArrayController.create({
   sortProperties: ['collectionDate'],
   sortAscending: false,
@@ -416,4 +453,5 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
       'surveyInstanceId':surveyInstanceId}));
   }
 });
+
 

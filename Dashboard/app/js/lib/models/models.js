@@ -5,7 +5,18 @@ require('akvo-flow/core');
 require('akvo-flow/models/store_def');
 
 FLOW.BaseModel = DS.Model.extend({
-  keyId: DS.attr('number')
+  keyId: DS.attr('number'),
+  savingStatus:null,
+
+  // this method calls the checkSaving method on the savingMessageControl, which
+  // checks if there are any records inflight. If yes, it sets a boolean, 
+  // so a saving message can be displayed.
+  anySaving:function(){
+    if (this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
+		FLOW.savingMessageControl.checkSaving();
+    }
+    this.set('savingStatus',(this.get('isSaving') || this.get('isDirty')));
+  }.observes('isSaving','isDirty')
 });
 
 FLOW.SurveyGroup = FLOW.BaseModel.extend({
