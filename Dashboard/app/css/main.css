@@ -169,8 +169,8 @@ pre {
 	-o-box-shadow: 0 0 2px rgb(0,0,0);
 	box-shadow: 0 0 2px rgb(0,0,0);
 	font-size: 1.5em;
-	line-height:1.3em;
-	font-family:Georgia, "Times New Roman", Times, serif;
+	line-height: 1.3em;
+	font-family: Georgia, "Times New Roman", Times, serif;
 }
 /* links 
 ---------------------------------------------------------------*/
@@ -187,9 +187,9 @@ a:hover {
 
 /* Custom text-selection colors (remove any text shadows: twitter.com/miketaylr/status/12228805301) */
 ::-moz-selection {
-	background: #930;
-	color: #fff;
-	text-shadow: none;
+ background: #930;
+ color: #fff;
+ text-shadow: none;
 }
 ::selection {
 	background: #930;
@@ -281,12 +281,82 @@ a.AddBtn {
 a.AddBtn:hover {
 }
 .greyBg {
-	position:relative;
-	padding:1px 0;
+	position: relative;
+	padding: 1px 0;
 	background: rgb(230,230,230);
-	}
+}
 .btnAboveTable {
-	margin:-5px 1.5em 20px auto;
+	margin: -5px 1.5em 20px auto;
+}
+.clodeDialog {
+	display: block;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	width: 20px;
+	height: 16px;
+	text-indent: -9999px;
+	background: url(../images/closeDialog.png) center top no-repeat;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-o-border-radius: 6px;
+	border-radius: 6px;
+}
+.clodeDialog:hover {
+	background: url(../images/closeDialog.png) center bottom no-repeat;
+}
+.editAnswerMenu {
+	width: 100%;
+	position: relative;
+}
+.editAnswerMenu ul {
+	width: 100%;
+	position: relative;
+	height: 60px;
+}
+.editAnswerMenu ul li {
+	display:inline;
+	margin: 0 0 10px 0;
+}
+.prevBtn {
+	position: absolute;
+	top:5px;
+	left: 0;
+}
+.nextBtn {
+	position: absolute;
+	top:5px;
+	right: 0;
+}
+.prevBtn a {
+	display: inline-block;
+	height: 11px;
+	background:url(../images/prevBtn.png) left top no-repeat;
+	padding: 5px 0 0 15px;
+}
+.prevBtn:hover a {
+	color:rgb(58,58,58);
+	background: url(../images/prevBtn.png) left bottom no-repeat;
+}
+.nextBtn a {
+	display: inline-block;
+	height: 11px;
+	background:url(../images/nextBtn.png) right top no-repeat;
+	padding: 5px 15px 0 0;
+}
+.nextBtn:hover a {
+	color:rgb(58,58,58);
+	background: url(../images/nextBtn.png) right bottom no-repeat;
+}
+.deleteBtn {
+	position: absolute;
+	top:5px;
+	left: 40%;
+	}
+.saveBtn {
+	position: absolute;
+	top:5px;
+	right: 40%;
 	}
 /*-------------------------------
 	Dialog
@@ -323,7 +393,6 @@ a.AddBtn:hover {
 	background-color: rgb(0,0,0);
 	opacity: 0.8;
 }
-
 /* addition MTW */
 .blanketWide {
 	position: absolute;
@@ -336,7 +405,6 @@ a.AddBtn:hover {
 	background-color: rgb(0,0,0);
 	opacity: 0.3;
 }
-
 .dialogWrap {
 	position: relative;
 	width: 100%;
@@ -344,19 +412,19 @@ a.AddBtn:hover {
 }
 .dialog {
 	position: absolute;
-	background:rgb(255,255,255);
+	background: rgb(255,255,255);
 	top: 20%;
 	left: 35%;
 	display: block;
 	padding: 1em 2em;
 	width: 25%;
+	min-width:500px;
 	border: thin solid rgb(153,153,153);
 	-webkit-border-radius: 6px;
 	-moz-border-radius: 6px;
 	border-radius: 6px;
 	-o-border-radius: 6px;
 }
-
 /* MTW addition */
 .dialogWide {
 	position: absolute;
@@ -365,15 +433,16 @@ a.AddBtn:hover {
 	display: block;
 	padding: 1em 2em;
 	width: 60%;
+	min-width:500px;
 	border: thin solid rgb(153,153,153);
+	max-height: 500px;
+	overflow-y: scroll;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	background: white;
 	-o-border-radius: 4px;
 }
-
-
 .dialogWrap .menuCentre {
 	margin: 30px auto 10px auto;
 }
@@ -383,20 +452,20 @@ a.AddBtn:hover {
 	background: rgb(242,242,242);
 	font-size: 1.5em;
 }
-.dialogWrap select,.dialogWrap input {
-	display:block;
-	} 
+.dialogWrap select, .dialogWrap input {
+	display: block;
+}
 .dialogWrap select {
-	width:95%;
-	margin:5px auto;
-	} 
+	width: 95%;
+	margin: 5px auto;
+}
 .dialogWrap input {
-	width:95%;
-	margin:5px auto;
-	}
+	width: 95%;
+	margin: 5px auto;
+}
 label[for=newDeviceGroupName] {
-	margin:10px 0 0 0;
-	}
+	margin: 10px 0 0 0;
+}
 /* page structure
 --------------------------------------------- */
 #pageWrap {
@@ -707,7 +776,7 @@ table.dataTable thead tr {
 	background: rgb(58,58,58);
 }
 table.dataTable thead tr th {
-	padding:5px 1em 13px 1em;
+	padding: 5px 1em 13px 1em;
 	border-right: thin solid rgb(12,12,12);
 	background: url(../images/sortTableArrows.png) right center no-repeat;
 	color: rgb(255, 210, 0);
@@ -716,11 +785,9 @@ table.dataTable thead tr th {
 	font-weight: normal;
 	font-size: 1.1em;
 }
-
 table.dataTable thead tr th.noArrows {
-	background:#3A3A3A;
-	}
-	
+	background: #3A3A3A;
+}
 /* Addition MTW - yellow headings in tables */
 table.dataTable thead tr th a, table.dataTable thead tr th a:link, table.dataTable thead tr th a:visited {
 	color: #FFD200;
@@ -728,11 +795,11 @@ table.dataTable thead tr th a, table.dataTable thead tr th a:link, table.dataTab
 }
 /* end addition MTW */
 
-table.dataTable thead tr th a.helpIcon{
-	position:relative;
-	top:-5px;
-	margin:0 0 0 5px; 
-	}
+table.dataTable thead tr th a.helpIcon {
+	position: relative;
+	top: -5px;
+	margin: 0 0 0 5px;
+}
 table.dataTable thead tr th.sorting_desc {
 	background: rgb(23,23,23) url(../images/sortTableDown.png) right center no-repeat;
 }
@@ -768,63 +835,74 @@ tfoot tr {
 #devicesListTable .longitude {
 	width: 16%;
 }
-#usersList .userName {width:35%;}
-#usersList .emailAdr {width:35%;}
-#usersList .permLevel {width:20%;}
-#usersList .action {width:10%;}
-#usersList .permLevel.admin {color:rgb(227, 27, 35);}
-#usersList .permLevel.permUser {color:rgb(219, 135, 201);}
-#usersList .permLevel.ProjectEditor {color:rgb(119, 97, 0);}
+#usersList .userName {
+	width: 35%;
+}
+#usersList .emailAdr {
+	width: 35%;
+}
+#usersList .permLevel {
+	width: 20%;
+}
+#usersList .action {
+	width: 10%;
+}
+#usersList .permLevel.admin {
+	color: rgb(227, 27, 35);
+}
+#usersList .permLevel.permUser {
+	color: rgb(219, 135, 201);
+}
+#usersList .permLevel.ProjectEditor {
+	color: rgb(119, 97, 0);
+}
 #inspectData {
 	border: thin solid rgb(224,224,224);
 	border-top: 1px solid rgb(255,255,255);
 	background: rgb(224,224,224);
 }
-
 .greyBg a.standardBtn {
 	margin: 20px 1.5em 20px auto;
-	background-image:url(../images/addPlus.png) left center no-repeat;
+	background-image: url(../images/addPlus.png) left center no-repeat;
 }
-
 .dataTabMenu {
-	margin:0;
-	padding:0;
-	}
+	margin: 0;
+	padding: 0;
+}
 .dataTabMenu ul {
-	margin:-5px 0 0 1em;
-	}
+	margin: -5px 0 0 1em;
+}
 .dataTabMenu ul li {
-	display:inline;
-	float:left;
-	margin:0 0.5em 0 0;
-	}
-.dataTabMenu ul li a{
-	color:rgb(0, 123, 182);
-	background:transparent;
-	display:block;
-	padding:0.5em 1em;
-	font-size:1.1em;
-	-moz-border-radius:0;
-	-webkit-border-radius:0;
-	-o-border-radius:0;
-	border-radius:0;
-	-moz-transition:background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
-	-webkit-transition:background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
-	-o-transition:background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
-	transition:background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
-	}
-.dataTabMenu ul li a:hover{
-	color:rgb(255,255,255);
-	background:rgb(74, 177, 207);
-	-moz-border-radius:2px;
-	-webkit-border-radius:2px;
-	-o-border-radius:2px;
-	border-radius:2px;
-	}
+	display: inline;
+	float: left;
+	margin: 0 0.5em 0 0;
+}
+.dataTabMenu ul li a {
+	color: rgb(0, 123, 182);
+	background: transparent;
+	display: block;
+	padding: 0.5em 1em;
+	font-size: 1.1em;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	-o-border-radius: 0;
+	border-radius: 0;
+	-moz-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
+	-webkit-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
+	-o-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
+	transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
+}
+.dataTabMenu ul li a:hover {
+	color: rgb(255,255,255);
+	background: rgb(74, 177, 207);
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	-o-border-radius: 2px;
+	border-radius: 2px;
+}
 #devicesList a.standardBtn {
-	width:17%;
-	}
-	
+	width: 17%;
+}
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys fieldset {
@@ -856,9 +934,8 @@ input.datePicker {
 	background: rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
 }
 #inspectData input.datePicker {
-	width:inherit;
+	width: inherit;
 }
-
 .dateRange div.activeDate, .dateRange div.expireDate {
 	width: 50%;
 }
@@ -894,8 +971,8 @@ input.datePicker {
 	width: 98%;
 }
 .action a:first-child {
-	margin-right:5px;
-	}
+	margin-right: 5px;
+}
 .action a.remove {
 	display: inline-block;
 	width: 13px;
@@ -2061,7 +2138,7 @@ nav.questionActionMenu a:hover {
 }
 .innerContent nav ul li a.standardBtn {
 	margin: 20px auto 10px auto;
-	width:15%;
+	width: 15%;
 }
 .innerContent nav.smallMenu ul {
 	margin: 0;
@@ -2220,21 +2297,44 @@ nav.smallMenu ul li a.showQuestion:hover {
 	font-size: 1.8em;
 }
 #dataFilter div.dataCollectedDate input {
-	display:inline;
+	display: inline;
 	height: 20px;
 	background: url(../images/icon_cal.png) right center no-repeat;
 }
 #dataFilter label {
-	display:inline;
-	}
-#dataFilter label.collectedTo { margin:0; }
-#dataFilter div.chooseSurveyData { position:relative; width:49%; display:block; float:left;margin: 0 1% 2em 0;}
-#dataFilter div.chooseSurveyData select { width:47%; display:inline; }
-#dataFilter div.dataCollectedDate { position:relative; width:50%; display:block; float:right;margin: 0 0 2em 0;}
-#dataFilter div.dataCollectedDate label { width:48%; }
-#dataFilter div.dataCollectedDate label input { width:35%; }
-#dataFilter div.dataDeviceId {display:block;clear:both;}
-
+	display: inline;
+}
+#dataFilter label.collectedTo {
+	margin: 0;
+}
+#dataFilter div.chooseSurveyData {
+	position: relative;
+	width: 49%;
+	display: block;
+	float: left;
+	margin: 0 1% 2em 0;
+}
+#dataFilter div.chooseSurveyData select {
+	width: 47%;
+	display: inline;
+}
+#dataFilter div.dataCollectedDate {
+	position: relative;
+	width: 50%;
+	display: block;
+	float: right;
+	margin: 0 0 2em 0;
+}
+#dataFilter div.dataCollectedDate label {
+	width: 48%;
+}
+#dataFilter div.dataCollectedDate label input {
+	width: 35%;
+}
+#dataFilter div.dataDeviceId {
+	display: block;
+	clear: both;
+}
 .dataTables_wrapper {
 	margin: 0px auto 1px auto;
 	background: rgb(235,235,235);
@@ -2299,8 +2399,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 	font-size: 1em;
 }
 #dataFilter a.findData {
-	display:inline;
-	padding:0.3em 0.6em;
+	display: inline;
+	padding: 0.3em 0.6em;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
@@ -2309,11 +2409,11 @@ nav.smallMenu ul li a.showQuestion:hover {
 	text-align: center;
 	font-size: 1.1em;
 	-o-border-radius: 3px;
-	}
+}
 #dataFilter a.findData:hover {
 	background-color: rgb(58,58,58);
 	color: rgb(255,255,255);
-	}
+}
 /******************************************************************************
 									FLOW MAP
 ******************************************************************************/
@@ -2323,7 +2423,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	height: 600px;
 }
 #pointDetails {
-	position:relative;
+	position: relative;
 	float: right;
 	width: 24.5%;
 	padding: 10px 0.25% 0px 0.25%;
@@ -2331,59 +2431,58 @@ nav.smallMenu ul li a.showQuestion:hover {
 	background: rgb(224,224,224);
 	overflow-y: scroll;
 	overflow-x: none;
-	box-shadow:-1px 0 1px rgba(0,0,0,0.2);
+	box-shadow: -1px 0 1px rgba(0,0,0,0.2);
 }
 #pointDetails h2 {
-	margin:5px 0 10px 5px;
-	line-height:inherit;
+	margin: 5px 0 10px 5px;
+	line-height: inherit;
 }
-
 #pointDetails dl {
-	position:relative;
-	width:99.5%;
-	padding:0.5em 0.25%;
-	background:rgb(240,240,240);
+	position: relative;
+	width: 99.5%;
+	padding: 0.5em 0.25%;
+	background: rgb(240,240,240);
 	font-family: Verdana, Geneva, sans-serif;
-	letter-spacing:0.05em;
-	line-height:1.3em;
+	letter-spacing: 0.05em;
+	line-height: 1.3em;
 }
 #pointDetails dt {
-	width:44.75%;
-	color:rgb(124,124,124);
+	width: 44.75%;
+	color: rgb(124,124,124);
 	display: block;
 	overflow: hidden;
 	min-height: 5.5em;
-	text-overflow:clip;
-	white-space:pre-wrap;
-	float:left;
-	padding:5px 0 5px 0.25%;
-	border-top:2px solid rgb(224,224,224);
+	text-overflow: clip;
+	white-space: pre-wrap;
+	float: left;
+	padding: 5px 0 5px 0.25%;
+	border-top: 2px solid rgb(224,224,224);
 }
 #pointDetails dd {
 	display: block;
-	width:54.75%;
-	color:rgb(0,0,0);
-	float:right;
-	overflow:hidden;
-	text-overflow:clip;
-	white-space:normal;
-	float:right;
+	width: 54.75%;
+	color: rgb(0,0,0);
+	float: right;
+	overflow: hidden;
+	text-overflow: clip;
+	white-space: normal;
+	float: right;
 	min-height: 5.5em;
-	padding:5px 0 5px 0.25%;
-	border-top:2px solid rgb(224,224,224);
+	padding: 5px 0 5px 0.25%;
+	border-top: 2px solid rgb(224,224,224);
 }
-#pointDetails dl dt:nth-of-type(1), #pointDetails dl dd:nth-of-type(1){
-	border-top:none;
-	}
+#pointDetails dl dt:nth-of-type(1), #pointDetails dl dd:nth-of-type(1) {
+	border-top: none;
+}
 #pointDetails div.drawHandle {
-	display:block;
-	width:15px;
-	height:20px;
-	background:red;
-	position:absolute;
-	top:50%;
-	left:0;
-	cursor:pointer;
+	display: block;
+	width: 15px;
+	height: 20px;
+	background: red;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	cursor: pointer;
 }
 #flowMapLegend {
 	width: 98%;
@@ -2398,7 +2497,7 @@ footer.bottomPage {
 	margin: 20px 0;
 	padding: 0;
 	width: 100%;
-	background:  rgb(36, 48, 50);
+	background: rgb(36, 48, 50);
 }
 footer.bottomPage div:nth-child(1n) {
 	position: relative;
@@ -2410,17 +2509,17 @@ footer.bottomPage div:nth-child(1n) {
 	color: rgb(255, 255, 255);
 }
 footer.bottomPage div:nth-child(2n) {
-	width:100%;
-	position:relative;
-	padding:1em 0;
-	background:rgb(255,255,255);
-	max-width:none;
-	min-width:inherit;
-	}
+	width: 100%;
+	position: relative;
+	padding: 1em 0;
+	background: rgb(255,255,255);
+	max-width: none;
+	min-width: inherit;
+}
 footer.bottomPage small {
 	position: relative;
 	display: block;
-	padding:0.5em 0;
+	padding: 0.5em 0;
 	width: 100%;
 	color: rgb(58,58,58);
 	text-align: center;
@@ -2428,36 +2527,36 @@ footer.bottomPage small {
 	font-size: 1em;
 }
 footer.bottomPage nav#footerNav {
-	display:block;
-	width:100%;
-	text-align:center;
+	display: block;
+	width: 100%;
+	text-align: center;
 }
 footer.bottomPage nav#footerNav ul {
-	display:inline-block;
-	margin:1em auto 1em auto;
-	text-align:center;
+	display: inline-block;
+	margin: 1em auto 1em auto;
+	text-align: center;
 }
 footer.bottomPage nav#footerNav ul li {
-	display:inline;
-	float:left;
-	margin:5px 1.5em 0 0;
-	text-align:center;
+	display: inline;
+	float: left;
+	margin: 5px 1.5em 0 0;
+	text-align: center;
 }
 footer.bottomPage nav#footerNav ul li:last-child {
-	margin:5px 0 0 0;
+	margin: 5px 0 0 0;
 }
-footer.bottomPage nav#footerNav ul li a{
-	display:block;
-	padding:5px 7px;
-	text-transform:uppercase;
-	font-size:1em;
-	}
+footer.bottomPage nav#footerNav ul li a {
+	display: block;
+	padding: 5px 7px;
+	text-transform: uppercase;
+	font-size: 1em;
+}
 footer.bottomPage nav#footerNav ul li a.akvoDotOrg {
-	margin:-1px 0 0 0; 
-	width:39px;
-	text-indent:-9999px;
-	background:url(../images/akvo.org_footer1.png) center center no-repeat;
-	}
+	margin: -1px 0 0 0;
+	width: 39px;
+	text-indent: -9999px;
+	background: url(../images/akvo.org_footer1.png) center center no-repeat;
+}
 footer.bottomPage a[rel="self"] {
 }
 footer.bottomPage a[rel="self"]:hover {

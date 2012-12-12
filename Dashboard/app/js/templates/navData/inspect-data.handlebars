@@ -77,16 +77,17 @@
           <div class="dialogWrap">
         <!-- the dialog contents -->
         <div class="confirmDialog dialogWide">
+		     <a {{action "doCloseEditSIWindow" target="this"}} class="ok clodeDialog">close window</a>
+
           <h2>Edit answers</h2>
-            <div class="buttons menuCentre"> 
+            <nav class="editAnswerMenu"> 
             <ul>  
-              <li><a {{action "doPreviousSI" target="this"}} class="ok smallBtn">previous</a></li>
-              <li><a {{action "doNextSI" target="this"}} class="ok smallBtn">next</a></li>
-              <li><a {{action "doCloseEditSIWindow" target="this"}} class="ok smallBtn">close window</a></li>
-              <li><a {{action "doDeleteSI" target="this"}} class="ok smallBtn">delete</a></li>
-              <li><a {{action "doSaveSI" target="this"}} class="ok smallBtn">save</a></li>
+              <li class="prevBtn"><a {{action "doPreviousSI" target="this"}}>previous</a></li>
+              <li class="deleteBtn"><a {{action "doDeleteSI" target="this"}} class="smallBtn">delete</a></li>
+              <li class="saveBtn"><a {{action "doSaveSI" target="this"}} class="smallBtn">save</a></li>
+              <li class="nextBtn"><a {{action "doNextSI" target="this"}}>next</a></li>
             </ul>
-          </div>
+          </nav>
          
 
  <table class="dataTable" id="surveyDataTable">
