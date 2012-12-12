@@ -191,6 +191,83 @@ FLOW.selectedControl = Ember.Controller.create({
 });
 
 
+FLOW.dialogControl = Ember.Object.create({
+  delSG:"delSG",
+  delS:"delS",
+  delQG:"delQG",
+  delQ:"delQ",
+  showDialog:false,
+  message:null,
+  header:null,
+  activeView:null,
+  activeAction:null,
+
+  confirm:function(event){
+    this.set('activeView',event.view);
+    this.set('activeAction',event.context);
+    
+    switch (this.get('activeAction')) {
+      case "delSG":
+        this.set('header',Ember.String.loc('_SG_delete_header'));
+        this.set('message',Ember.String.loc('_SG_delete_message'));
+        this.set('showDialog',true);
+        break;
+
+      case "delS":
+        this.set('header',Ember.String.loc('_S_delete_header'));
+        this.set('message',Ember.String.loc('_S_delete_message'));
+        this.set('showDialog',true);
+        break;
+
+      case "delQG":
+        this.set('header',Ember.String.loc('_S_delete_header'));
+        this.set('message',Ember.String.loc('_S_delete_message'));
+        this.set('showDialog',true);
+        break;
+
+      case "delQ":
+        this.set('header',Ember.String.loc('_S_delete_header'));
+        this.set('message',Ember.String.loc('_S_delete_message'));
+        this.set('showDialog',true);
+        break;
+
+      default:
+    }
+  },
+
+  doOK:function(event){
+    this.set('showDialog',false);
+    var view =  this.get('activeView');
+    switch (this.get('activeAction')) {
+      case "delSG":
+        this.set('showDialog',false);
+        view.deleteSurveyGroup.apply(view,arguments);
+        break;
+
+      case "delS":
+        this.set('showDialog',false);
+        view.deleteSurvey.apply(view,arguments);
+        break;
+
+      case "delQG":
+        this.set('showDialog',false);
+        view.deleteQuestionGroup.apply(view,arguments);
+        break;
+
+      case "delQ":
+        this.set('showDialog',false);
+        view.deleteQuestion.apply(view,arguments);
+        break;
+      default:
+    }
+  },
+
+  doCANCEL:function(event){
+    this.set('showDialog',false);
+  }
+
+}),
+
 // ***********************************************//
 //                Data controllers
 // ***********************************************//
@@ -382,15 +459,12 @@ FLOW.savingMessageControl = Ember.Object.create({
   areLoadingBool:false,
 
   checkSaving:function(){
-     this.toggleProperty('areSavingBool');
-     //if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0){
-     //  this.set('areSavingBool',true);
-     //} else {
-     //  this.set('areSavingBool',false);
-    // }
-
-  }.observes('FLOW.forceObserverControl.forceObserverBool')
-
+     if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0){
+       this.set('areSavingBool',true);
+     } else {
+       this.set('areSavingBool',false);
+     }
+  }
 }),
 
 

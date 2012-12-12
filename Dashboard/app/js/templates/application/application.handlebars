@@ -16,5 +16,23 @@
     <div id="pageWrap">
         {{outlet}}
     </div>
-   
+  
+    <div {{bindAttr class="FLOW.dialogControl.showDialog:display :overlay"}}>
+      <div class="blanket"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog">
+          <h2>{{FLOW.dialogControl.header}}</h2>
+          <p class="dialogMsg">{{FLOW.dialogControl.message}}</p>
+          <br/><br/>
+          <div class="buttons menuCentre"> 
+            <ul>  
+               <li><a {{action "doOK" target="FLOW.dialogControl"}} class="ok smallBtn">OK</a></li>
+               <li><a {{action "doCANCEL" target="FLOW.dialogControl"}}} class="cancel">CANCEL</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
    {{view FLOW.FooterView}}

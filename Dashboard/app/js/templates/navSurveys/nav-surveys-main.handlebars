@@ -38,7 +38,8 @@
           <!-- show selected survey group and edit name button --> 
           <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2> 
           <a {{action "editSurveyGroupName" target="this"}} class="editGroupName">{{t _edit_name}}</a>
-		  <a {{action "showSGroupDeleteDialog" target="this"}} class="deleteGroup">{{t _delete_this_group}}</a>
+		 <!-- <a {{action "showSGroupDeleteDialog" target="this"}} class="deleteGroup">{{t _delete_this_group}}</a> -->
+     <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a> 
         {{/if}}
       {{/if}}
       
@@ -109,27 +110,6 @@
         {{/view}}
       {{/each}}
     </ul>
-
-    <!-- dialogs -->
-    <!-- TODO create a method to generate all dialogs from code -->
-    <!-- Survey Group Delete confirmation dialog-->
-    <div {{bindAttr class="view.showSGDeleteDialog:display :overlay"}}>
-      <div class="blanket"></div>
-		  <div class="dialogWrap">
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialog"  style="display:block;">
-          <h2>Are you sure you want to delete this surveygroup?</h2>
-          <p class="dialogMsg">This cannot be undone.</p>
-          <br/><br/>
-          <div class="buttons menuCentre"> 
-            <ul>  
-              <li><a {{action "doSGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
-              <li><a {{action "cancelSGroupDelete" target="this"}}} class="cancel">CANCEL</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Survey Group cannot delete due to existing surveys dialog-->
     <div {{bindAttr class="view.showSGDeleteNotPossibleDialog:display :overlay"}}>

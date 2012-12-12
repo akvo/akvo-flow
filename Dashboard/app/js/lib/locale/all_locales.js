@@ -57,7 +57,9 @@ Ember.STRINGS_EN = {
   '_support':'support',
   '_News_and_Software_Updates': 'News and Software Updates',
   '_Documentation_and_User_Guides':'Documentation and user guides',
-  '_Terms_of_Service':'terms of service'
+  '_Terms_of_Service':'terms of service',
+  '_SG_delete_header':'Are you sure you want to delete this surveygroup?',
+  '_SG_delete_message':'This cannot be undone.'
 };
 
 Ember.STRINGS_ES = {
