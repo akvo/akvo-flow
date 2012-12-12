@@ -139,6 +139,16 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 		this.set('showSGDeleteDialog',false);
 	},
 
+	// new version delete survey group
+	deleteSurveyGroup:function(){
+		var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
+		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
+		surveyGroup.deleteRecord();
+		FLOW.store.commit();
+		FLOW.selectedControl.set('selectedSurveyGroup',null);
+		//this.set('showSGDeleteDialog',false);
+	},
+
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
 	saveNewSurveyGroupName: function() {
 			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{
