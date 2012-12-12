@@ -2067,7 +2067,6 @@ nav.questionActionMenu a:hover {
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
 	background: url(../images/shownCollapse.png) left top no-repeat;
 	padding: 5px 5px 5px 15px;
-	width: 95px;
 	text-align: left;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
