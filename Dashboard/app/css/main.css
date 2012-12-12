@@ -172,6 +172,28 @@ pre {
 	line-height: 1.3em;
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
+.isSaving {
+	position: fixed;
+	font-size:1.2em;
+	font-weight:bold;
+	color:rgb(252,159,0);
+	top: 75px;
+	left:49%;
+	padding:1px 0 0 20px;
+	background: url(../images/loader.gif) left center no-repeat;
+	z-index:999999;
+}
+.isLoading {
+	position: fixed;
+	font-size:1.2em;
+	font-weight:bold;
+	color:rgb(252,159,0);
+	top: 75px;
+	left:49%;
+	padding:1px 0 0 20px;
+	background: url(../images/loader.gif) left center no-repeat;
+	z-index:999999;
+}
 /* links 
 ---------------------------------------------------------------*/
 
@@ -308,7 +330,7 @@ a.AddBtn:hover {
 .editAnswerMenu {
 	width: 100%;
 	position: relative;
-	margin:10px auto;
+	margin: 10px auto;
 }
 .editAnswerMenu ul {
 	width: 100%;
@@ -316,49 +338,49 @@ a.AddBtn:hover {
 	height: 40px;
 }
 .editAnswerMenu ul li {
-	display:inline;
+	display: inline;
 	margin: 0 0 10px 0;
 }
 .prevBtn {
 	position: absolute;
-	top:5px;
+	top: 5px;
 	left: 0;
 }
 .nextBtn {
 	position: absolute;
-	top:5px;
+	top: 5px;
 	right: 0;
 }
 .prevBtn a {
 	display: inline-block;
 	height: 11px;
-	background:url(../images/prevBtn.png) left top no-repeat;
+	background: url(../images/prevBtn.png) left top no-repeat;
 	padding: 5px 0 0 15px;
 }
 .prevBtn:hover a {
-	color:rgb(58,58,58);
+	color: rgb(58,58,58);
 	background: url(../images/prevBtn.png) left bottom no-repeat;
 }
 .nextBtn a {
 	display: inline-block;
 	height: 11px;
-	background:url(../images/nextBtn.png) right top no-repeat;
+	background: url(../images/nextBtn.png) right top no-repeat;
 	padding: 5px 15px 0 0;
 }
 .nextBtn:hover a {
-	color:rgb(58,58,58);
+	color: rgb(58,58,58);
 	background: url(../images/nextBtn.png) right bottom no-repeat;
 }
 .deleteBtn {
 	position: absolute;
-	top:5px;
+	top: 5px;
 	left: 40%;
-	}
+}
 .saveBtn {
 	position: absolute;
-	top:5px;
+	top: 5px;
 	right: 40%;
-	}
+}
 /*-------------------------------
 	Dialog
 -----------------------------------*/
@@ -419,7 +441,7 @@ a.AddBtn:hover {
 	display: block;
 	padding: 1em 2em;
 	width: 25%;
-	min-width:500px;
+	min-width: 500px;
 	border: thin solid rgb(153,153,153);
 	-webkit-border-radius: 6px;
 	-moz-border-radius: 6px;
@@ -434,7 +456,7 @@ a.AddBtn:hover {
 	display: block;
 	padding: 1em 2em;
 	width: 60%;
-	min-width:500px;
+	min-width: 500px;
 	border: thin solid rgb(153,153,153);
 	max-height: 500px;
 	overflow-y: scroll;
@@ -578,8 +600,11 @@ header.top hgroup h2 {
 #userLog ul li {
 	display: inline;
 }
-.userLogin {}
-.userRegister {margin:5px 0 0 10px;}
+.userLogin {
+}
+.userRegister {
+	margin: 5px 0 0 10px;
+}
 /* #home page
 --------------------------------------------- */
 
@@ -779,7 +804,7 @@ table.dataTable thead tr {
 	background: rgb(58,58,58);
 }
 table.dataTable thead tr th {
-	padding:5px 1em 13px 1em;
+	padding: 5px 1em 13px 1em;
 	border-right: thin solid rgb(12,12,12);
 	background: url(../images/sortTableArrows.png) right center no-repeat;
 	color: rgb(255, 210, 0);
@@ -2172,7 +2197,7 @@ nav.questionActionMenu a:hover {
 }
 .innerContent nav.smallMenu ul li a {
 	display: block;
-	padding:7px 10px 3px 20px;
+	padding: 7px 10px 3px 20px;
 	height: 10px;
 }
 nav.smallMenu ul li a.editQuestion {
@@ -2315,7 +2340,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	display: block;
 	float: left;
 	margin: 0 1% 2em 0;
-	height:20px;
+	height: 20px;
 }
 #dataFilter div.chooseSurveyData select {
 	width: 47%;
@@ -2327,8 +2352,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 	display: block;
 	float: right;
 	margin: 0 0 2em 0;
-	height:20px;
-	text-align:right;
+	height: 20px;
+	text-align: right;
 }
 #dataFilter div.dataCollectedDate label {
 	width: 48%;
@@ -2337,11 +2362,11 @@ nav.smallMenu ul li a.showQuestion:hover {
 	width: 35%;
 }
 #dataFilter div.dataDeviceId {
-	display:block;
-	height:22px;
-	margin:42px 0 10px 0;
-	padding:5px 10px;
-	background:rgb(234,234,234);
+	display: block;
+	height: 22px;
+	margin: 42px 0 10px 0;
+	padding: 5px 10px;
+	background: rgb(234,234,234);
 }
 .dataTables_wrapper {
 	margin: 0px auto 1px auto;
@@ -2408,8 +2433,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 #dataFilter a.findData {
 	display: block;
-	width:10%;
-	margin:0 auto;
+	width: 10%;
+	margin: 0 auto;
 	padding: 0.5em 1em;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
@@ -2490,13 +2515,13 @@ nav.smallMenu ul li a.showQuestion:hover {
 	height: 20px;
 	background: red;
 	position: absolute;
-	z-index:99999;
+	z-index: 99999;
 	top: 50%;
 	left: 0;
 	cursor: pointer;
 }
 #pointDetails img {
-	width:98%;
+	width: 98%;
 }
 #flowMapLegend {
 	width: 98%;

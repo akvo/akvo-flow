@@ -8,7 +8,13 @@
             <nav id="topnav" role="navigation">
                 {{view FLOW.NavigationView controllerBinding="controller.controllers.navigationController"}}
             </nav>
-    
+    		<div class="loadSave">
+					{{#if FLOW.savingMessageControl.areSavingBool}}<div class="isSaving">Saving</div>
+			{{else}}
+			  {{#if FLOW.savingMessageControl.areLoadingBool}}<div class="isLoading">Loading</div>
+			  {{/if}}
+			{{/if}}
+			</div>
             {{view FLOW.HeaderView}}
             
         </div>
