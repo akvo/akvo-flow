@@ -73,7 +73,7 @@ h1 {
 h2 {
 	color: rgb(44, 42, 116);
 	font-size: 1.8em;
-	line-height: 1.6em;
+	line-height: 1.2em;
 }
 h3 {
 	font-size: 1.8em;
@@ -242,7 +242,7 @@ a.standardBtn:hover, input[type="submit"]:hover {
 }
 a.smallBtn {
 	display: inline-block;
-	padding: 5px 7px 3px 7px;
+	padding: 7px 7px 4px 7px;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
@@ -572,12 +572,14 @@ header.top hgroup h2 {
 }
 #userLog {
 	position: absolute;
-	top: 5px;
+	top: 10px;
 	right: 0;
 }
 #userLog ul li {
 	display: inline;
 }
+.userLogin {}
+.userRegister {margin:5px 0 0 10px;}
 /* #home page
 --------------------------------------------- */
 
@@ -777,7 +779,7 @@ table.dataTable thead tr {
 	background: rgb(58,58,58);
 }
 table.dataTable thead tr th {
-	padding:11px 1em 9px 1em;
+	padding:5px 1em 13px 1em;
 	border-right: thin solid rgb(12,12,12);
 	background: url(../images/sortTableArrows.png) right center no-repeat;
 	color: rgb(255, 210, 0);
@@ -1336,7 +1338,7 @@ section.topBar > a:hover {
 	color: rgb(255,255,255);
 }
 section.topBar > a.smallBtn {
-	margin: 0 0 0 5px;
+	margin: 0 10px;
 	color: rgb(235,  235, 235);
 }
 nav.menuTopbar {
@@ -1370,11 +1372,11 @@ a.addGroup, a.addSurvey, a.stepBack, a.editGroupName, a.deleteGroup {
 	text-transform: uppercase;
 }
 a.editGroupName {
-	margin: 0 10px 0 0;
+	margin: 0 10px;
 }
 a.addGroup {
 	padding: 6px 0 4px 19px;
-	margin: -5px 0 15px 15px;
+	margin: 0 0 15px 15px;
 }
 a.stepBack {
 	margin: 5px 5px 0 0;
@@ -1694,14 +1696,14 @@ ul.surveyInfo li.responseNumber p {
 }
 #newSurveyInfo form input {
 	margin: 0 auto;
-	padding: 5px 1.5%;
+	padding: 0.5em 1.5%;
 	width: 96%;
 }
 #newSurveyInfo form textarea {
 	margin: 0 auto;
-	padding: 10px 1.5%;
+	padding: 0.5em 1.5%;
 	width: 96%;
-	font-size: 1.1em;
+	font-size: 0.9em;
 	font-family: sans-serif;
 }
 #newSurveyInfo form select {
@@ -2170,7 +2172,7 @@ nav.questionActionMenu a:hover {
 }
 .innerContent nav.smallMenu ul li a {
 	display: block;
-	padding: 5px 10px 5px 20px;
+	padding:7px 10px 3px 20px;
 	height: 10px;
 }
 nav.smallMenu ul li a.editQuestion {
@@ -2488,9 +2490,13 @@ nav.smallMenu ul li a.showQuestion:hover {
 	height: 20px;
 	background: red;
 	position: absolute;
+	z-index:99999;
 	top: 50%;
 	left: 0;
 	cursor: pointer;
+}
+#pointDetails img {
+	width:98%;
 }
 #flowMapLegend {
 	width: 98%;
