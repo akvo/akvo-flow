@@ -258,6 +258,10 @@ FLOW.HeaderView = Ember.View.extend({
 FLOW.FooterView = Ember.View.extend({
   templateName: 'application/footer',
   
+  forceObserverToggle:function(){
+    FLOW.forceObserverControl.toggleProperty('forceObserverBool');
+  },
+
   onLanguageChange: function () {
     this.rerender();
   }.observes('FLOW.languageControl.dashboardLanguage')
