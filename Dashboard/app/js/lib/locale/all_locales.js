@@ -54,7 +54,10 @@ Ember.STRINGS_EN = {
   '_survey_groups': 'survey groups',
   '_surveys': 'surveys',
   '_users': 'users',
-  '_support':'support'
+  '_support':'support',
+  '_News_and_Software_Updates': 'News and Software Updates',
+  '_Documentation_and_User_Guides':'Documentation and user guides',
+  '_Terms_of_Service':'terms of service'
 };
 
 Ember.STRINGS_ES = {
