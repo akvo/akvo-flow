@@ -382,14 +382,13 @@ FLOW.savingMessageControl = Ember.Object.create({
   areLoadingBool:false,
 
   checkSaving:function(){
-     console.log('number of inflight items: ',FLOW.store.defaultTransaction.buckets.inflight.list.length);
-     if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0){
-       this.set('areSavingBool',true);
-       console.log('setting true');
-     } else {
-       this.set('areSavingBool',false);
-       console.log('setting false');
-     }
+     this.toggleProperty('areSavingBool');
+     //if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0){
+     //  this.set('areSavingBool',true);
+     //} else {
+     //  this.set('areSavingBool',false);
+    // }
+
   }.observes('FLOW.forceObserverControl.forceObserverBool')
 
 }),
