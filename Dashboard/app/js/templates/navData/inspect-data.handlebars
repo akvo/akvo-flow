@@ -29,7 +29,7 @@
 				 <label  class="devideId"> Device id:</label> {{view Ember.TextField valueBinding="view.deviceId" placeholder="Device Id" size=30}} 
 				 <label class="submitterName"> Submitter name:</label> {{view Ember.TextField valueBinding="view.submitterName" placeholder="Submitter Name" size=30}} 
 			</div>
-         <a {{action "doFindSurveyInstances" target="this"}} class="findData">Find</a>
+         <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>
     </div>
     <section class="fullWidth " id="devicesList">
         <!-- DEVICES TABLE-->

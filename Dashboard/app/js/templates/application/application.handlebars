@@ -9,9 +9,9 @@
                 {{view FLOW.NavigationView controllerBinding="controller.controllers.navigationController"}}
             </nav>
     		<div class="loadSave">
-					{{#if FLOW.savingMessageControl.areSavingBool}}<div class="isSaving">Saving</div>
+					{{#if FLOW.savingMessageControl.areSavingBool}}<div class="isSaving">{{t _Saving}}</div>
 			{{else}}
-			  {{#if FLOW.savingMessageControl.areLoadingBool}}<div class="isLoading">Loading</div>
+			  {{#if FLOW.savingMessageControl.areLoadingBool}}<div class="isLoading">{{t _Loading}}</div>
 			  {{/if}}
 			{{/if}}
 			</div>
