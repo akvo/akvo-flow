@@ -8,9 +8,14 @@
 			<li><a href="http://www.akvo.org/" title="Terms of Service" target="_blank" >{{t _Terms_of_Service}}</a></li>
 			<li><a href="http://www.akvo.org/web/terms_of_use" title="akvo.org" target="_blank" class="akvoDotOrg">akvo.org</a></li>
 			<li><a {{action forceObserverToggle target="this"}}}>force</a></li>
-			{{#if FLOW.savingMessageControl.areSavingBool}}<li>saving ...</li>{{/if}}
 
+<li>		{{#if FLOW.savingMessageControl.areSavingBool}}<div class = "isSaving">Saving ...</div>
+			{{else}}
+			  {{#if FLOW.savingMessageControl.areLoadingBool}}<div class = "isLoading">Loading ...</div>
+			  {{/if}}
+			{{/if}}</li>
 		</ul>
+
 	</nav>  
   </div>
   <div><small>Copyright &copy; 2012 akvo.org</small></div>

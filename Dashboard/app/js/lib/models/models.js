@@ -10,13 +10,16 @@ FLOW.BaseModel = DS.Model.extend({
 
   // this method calls the checkSaving method on the savingMessageControl, which
   // checks if there are any records inflight. If yes, it sets a boolean, 
-  // so a saving message can be displayed.
+  // so a saving message can be displayed. savingStatus is used to capture the 
+  // moment that nothing is being saved anymore, but in the previous event it was
+  // so we can turn off the saving message.
   anySaving:function(){
     if (this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
 		FLOW.savingMessageControl.checkSaving();
     }
     this.set('savingStatus',(this.get('isSaving') || this.get('isDirty')));
   }.observes('isSaving','isDirty')
+
 });
 
 FLOW.SurveyGroup = FLOW.BaseModel.extend({

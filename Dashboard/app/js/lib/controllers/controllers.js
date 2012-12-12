@@ -379,6 +379,7 @@ FLOW.forceObserverControl = Ember.Object.create({
 
 FLOW.savingMessageControl = Ember.Object.create({
   areSavingBool:false,
+  areLoadingBool:false,
 
   checkSaving:function(){
      console.log('number of inflight items: ',FLOW.store.defaultTransaction.buckets.inflight.list.length);
@@ -389,14 +390,6 @@ FLOW.savingMessageControl = Ember.Object.create({
        this.set('areSavingBool',false);
        console.log('setting false');
      }
-    
-    //console.log('number of created items: ',FLOW.store.defaultTransaction.buckets.created.list.length);
-    //console.log('number of updated items: ',FLOW.store.defaultTransaction.buckets.updated.list.length);
-    //console.log('number of deleted items: ',FLOW.store.defaultTransaction.buckets.deleted.list.length);
-    //console.log('number of clean items: ',FLOW.store.defaultTransaction.buckets.clean.list.length);
-   
-   // console.log('------------------check saving---------------------');
-  
   }.observes('FLOW.forceObserverControl.forceObserverBool')
 
 }),

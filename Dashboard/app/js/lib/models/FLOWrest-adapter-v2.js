@@ -26,5 +26,29 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       FLOW.metaControl.set('message', this.extractMeta(json).message);
       FLOW.metaControl.set('status', this.extractMeta(json).status);
     }
-  }
+  },
+
+ ajax: function(url, type, hash) {
+   this._super(url, type, hash);
+   if (type == "GET"){
+     FLOW.savingMessageControl.set('areLoadingBool',true);
+   }
+ },
+
+didFindRecord: function(store, type, json, id) {
+  this._super(store, type, json, id);
+  FLOW.savingMessageControl.set('areLoadingBool',false);
+},
+
+didFindAll: function(store, type, json) {
+  this._super(store, type, json);
+  FLOW.savingMessageControl.set('areLoadingBool',false);
+},
+
+didFindQuery: function(store, type, json, recordArray) {
+  this._super(store, type, json, recordArray);
+  FLOW.savingMessageControl.set('areLoadingBool',false);
+}
+
+
 });
