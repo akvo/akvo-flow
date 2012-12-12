@@ -172,18 +172,7 @@ pre {
 	line-height: 1.3em;
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
-.isSaving {
-	position: fixed;
-	font-size:1.2em;
-	font-weight:bold;
-	color:rgb(252,159,0);
-	top: 75px;
-	left:49%;
-	padding:1px 0 0 20px;
-	background: url(../images/loader.gif) left center no-repeat;
-	z-index:999999;
-}
-.isLoading {
+.isLoading, .isSaving  {
 	position: fixed;
 	font-size:1.2em;
 	font-weight:bold;
@@ -929,7 +918,7 @@ tfoot tr {
 	border-radius: 2px;
 }
 #devicesList a.standardBtn {
-	width: 17%;
+	width: 19%;
 }
 /**************** Assign Survey to devices. **************/
 
@@ -1344,11 +1333,11 @@ section.topBar {
 section.topBar h2 {
 	display: inline;
 	overflow: hidden;
-	margin-left: 10px;
-	padding-left: 15px;
+	margin-left: 0px;
+	padding-left:0px;
 	max-width: 45%;
-	background: url(../images/apostrophe.png) left -2px no-repeat;
-	color: rgb(205, 205, 205);
+/*	background: url(../images/apostrophe.png) left -2px no-repeat;
+*/	color: rgb(255,255,255);
 	text-transform: capitalize;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -1397,7 +1386,7 @@ a.addGroup, a.addSurvey, a.stepBack, a.editGroupName, a.deleteGroup {
 	text-transform: uppercase;
 }
 a.editGroupName {
-	margin: 0 10px;
+	margin:0 10px 0 20px;
 }
 a.addGroup {
 	padding: 6px 0 4px 19px;

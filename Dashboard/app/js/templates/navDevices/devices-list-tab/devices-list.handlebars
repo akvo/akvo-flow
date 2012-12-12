@@ -23,12 +23,12 @@
          {{#if FLOW.deviceControl.atLeastOneSelected}}
            <nav class="dataTabMenu">
 			  <ul>
-				  <li><a {{action "showDeleteDevicesDialog" target="this"}}>Disable Devices</a></li>
-				  <li><a {{action "showAddToGroupDialog" target="this"}}>Add to Device group</a></li>
-				  <li><a {{action "showRemoveFromGroupDialog" target="this"}}>Remove from Device Group</a></li>
+				  <li><a {{action "showDeleteDevicesDialog" target="this"}}>{{t _Disable_Devices}}</a></li>
+				  <li><a {{action "showAddToGroupDialog" target="this"}}>{{t _Add_to_Device_group}}</a></li>
+				  <li><a {{action "showRemoveFromGroupDialog" target="this"}}>{{t _Remove_from_Device_Group}}</a></li>
 			  </ul>
 	 	   </nav>
-		{{/if}}<a {{action "showManageDeviceGroupsDialog" target="this"}} class="standardBtn btnAboveTable">Manage device groups</a>
+		{{/if}}<a {{action "showManageDeviceGroupsDialog" target="this"}} class="standardBtn btnAboveTable">{{t _Manage_device_groups}}</a>
         <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->
             <thead>
