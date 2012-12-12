@@ -2061,6 +2061,7 @@ nav.questionActionMenu a:hover {
 }
 .innerContent nav ul li a.standardBtn {
 	margin: 20px auto 10px auto;
+	width:15%;
 }
 .innerContent nav.smallMenu ul {
 	margin: 0;
@@ -2176,7 +2177,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 .innerContent select {
 	margin: 5px 0 0 5px;
 	padding: 2px 0 3px 5px;
-	width: 30%;
+	width: 35%;
 }
 .innerContent input[type=checkbox] {
 	display: inline-block;
@@ -2189,7 +2190,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 /* MTW added labelcheckbox class to checkbox labels, to decrease vertical spacing */
 .innerContent .labelcheckbox input[type=checkbox]:first-child {
-	margin: 0px 0 0 5px;
+	margin: 0 5px;
 }
 /* end MTW adddition */
 
