@@ -21,13 +21,16 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	 $(".drawHandle").toggle(function(){
-		 $("#flowMap").animate({width:"97%"}, 200 );
-		 $("#pointDetails").animate({width:"2.5%"}, 200 );
+		 $("#flowMap").animate({width:"97.5%"}, 200 );
+		 $("#pointDetails").animate({width:"2%"}, 200 ).css({"overflow":"none", "margin-left":"-2px"});
+		 $("#pointDetails h2, #pointDetails dl, #pointDetails img" ).animate({opacity:"0"}, 100 );
 		 $(".drawHandle").removeClass("hideMapD").addClass("showMapD");
+		 
 	 }, function(){
 		 $("#flowMap").animate({width:"75%"}, 200 );
-		 $("#pointDetails").animate({width:"24.5%"}, 200 );
+		 $("#pointDetails").animate({width:"24.5%"}, 200 ).css({"overflow":"auto", "margin-left":"-2px"});
 		 $(".drawHandle").removeClass("showMapD").addClass("hideMapD");
+		 $("#pointDetails h2, #pointDetails dl, #pointDetails img" ).animate({opacity:"1"}, 200 );
 	 });
 });
 </script>

@@ -2445,15 +2445,16 @@ nav.smallMenu ul li a.showQuestion:hover {
 	height: 600px;
 }
 #pointDetails {
+	border-left:2px solid rgb(214,214,214);
 	position: relative;
 	float: right;
 	width: 24.5%;
+	margin-left:-2px;
 	padding: 10px 0.25% 0px 0.25%;
 	height: 590px;
 	background: rgb(241,241,241);
-	overflow-y: scroll;
+	overflow: auto;
 	overflow-x: none;
-	box-shadow: -1px 0 1px rgba(0,0,0,0.2);
 }
 #pointDetails h2 {
 	margin: 5px 0 10px 5px;
@@ -2496,27 +2497,22 @@ nav.smallMenu ul li a.showQuestion:hover {
 #pointDetails dl dt:nth-of-type(1), #pointDetails dl dd:nth-of-type(1) {
 	border-top: none;
 }
-#pointDetails div.drawHandle.hideMapD {
-	display: block;
-	width: 15px;
-	height: 28px;
-	background:url(../images/mapSlider.png) center top no-repeat;
+#pointDetails div.drawHandle {
 	position: absolute;
 	z-index: 99999;
 	top: 50%;
 	left: 0;
 	cursor: pointer;
+	display: block;
+	width: 15px;
+	height: 28px;
+	}
+	
+#pointDetails div.drawHandle.hideMapD {
+	background:url(../images/mapSlider.png) center top no-repeat;
 }
 #pointDetails div.drawHandle.showMapD {
-	display: block;
-	width: 15px;
-	height: 28px;
 	background:url(../images/mapSlider.png) center bottom no-repeat;
-	position: absolute;
-	z-index: 99999;
-	top: 50%;
-	left: 0;
-	cursor: pointer;
 }
 #pointDetails img {
 	width: 98%;
@@ -2525,8 +2521,9 @@ nav.smallMenu ul li a.showQuestion:hover {
 	display:block;
 	clear:both;
 	width: 98%;
-	background: rgb(244,244,244);
+	background: rgb(234,234,234);
 	padding: 5px 1%;
+	border-top:1px solid rgb(255,255,255);
 }
 /*--------------------------------------------- 
 					Footer
