@@ -81,6 +81,10 @@
             imageURL = 'http://flowdemo.s3.amazonaws.com/images/' + stringVal.slice(stringVal.indexOf('wfpPhoto'));
             this.set('imageURL', imageURL);
           }
+          var verticalBars = stringVal.split('|');
+          if (verticalBars.length == 4) {
+            FLOW.placemarkDetailControl.set('selectedPointCode', verticalBars[3]);
+          }
         }, this);
       }
     }.observes('FLOW.placemarkDetailControl.content.isLoaded'),
