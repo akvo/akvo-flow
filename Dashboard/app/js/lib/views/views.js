@@ -96,6 +96,51 @@ Ember.Handlebars.registerHelper("date1", function(property) {
   } else {return "";}
 });
 
+// Register a Handlebars helper that instantiates `view`.
+// The view will have its `content` property bound to the
+// helper argument.
+FLOW.registerViewHelper = function(name, view) {
+  Ember.Handlebars.registerHelper(name, function(property, options) {
+    options.hash.contentBinding = property;
+    return Ember.Handlebars.helpers.view.call(this, view, options);
+  });
+};
+
+FLOW.registerViewHelper('date2', Ember.View.extend({
+  tagName: 'span',
+
+  template: Ember.Handlebars.compile('{{view.formattedContent}}'),
+
+  formattedContent: (function() {
+    var content = this.get('content');
+
+    if (content !== null) {
+        d = new Date(parseInt(content,10));
+		curr_date = d.getDate();
+		curr_month = d.getMonth()+1;
+		curr_year = d.getFullYear();
+		curr_hour =d.getHours();
+		curr_min =d.getMinutes();
+
+		if (curr_month<10){monthString="0"+curr_month.toString();}
+		else { monthString=curr_month.toString();}
+
+		if (curr_date<10){dateString="0"+curr_date.toString();}
+		else {dateString=curr_date.toString();}
+
+		if (curr_hour<10) {hourString="0"+curr_hour.toString();}
+		else { hourString=curr_hour.toString();}
+
+		if (curr_min<10) {minString="0"+curr_min.toString();}
+		else { minString=curr_min.toString();}
+
+		return (curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString);
+    } else {
+    	return "";
+    }
+  }).property('content')
+}));
+
 // ********************************************************//
 //                      main navigation
 // ********************************************************//
