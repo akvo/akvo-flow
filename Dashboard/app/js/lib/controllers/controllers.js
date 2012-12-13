@@ -217,7 +217,7 @@ FLOW.dialogControl = Ember.Object.create({
     switch (this.get('activeAction')) {
       case "delSG":
         if (FLOW.surveyGroupControl.containsSurveys()){
-          this.set('activeAction',"delSGnp");
+          this.set('activeAction',"ignore");
           this.set('header',Ember.String.loc('_SG_delete_not_possible_header'));
           this.set('message',Ember.String.loc('_SG_delete_not_possible_message'));
           this.set('showCANCEL',false);
@@ -321,16 +321,17 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
-  // // true if all items have been saved
-  // allRecordsSaved: function () {
-  //   var allSaved = true;
-  //   FLOW.questionGroupControl.get('content').forEach(function (item) {
-  //     if (item.get('isSaving')) {
-  //       allSaved = false;
-  //     }
-  //   });
-  //   if (allSaved) {return true;} else {return false;}
-  // }.property('content.@each.isSaving'),
+  // true if all items have been saved
+  // used in models.js
+   allRecordsSaved: function () {
+     var allSaved = true;
+     FLOW.questionGroupControl.get('content').forEach(function (item) {
+       if (item.get('isSaving')) {
+         allSaved = false;
+       }
+     });
+      return allSaved;
+   }.property('content.@each.isSaving'),
 
   populate: function () {
     if (FLOW.selectedControl.get('selectedSurvey')) {
@@ -343,6 +344,19 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 
 FLOW.questionControl = Ember.ArrayController.create({
   content: null,
+
+  // true if all items have been saved
+  // used in models.js
+   allRecordsSaved: function () {
+     var allSaved = true;
+     FLOW.questionControl.get('content').forEach(function (item) {
+       if (item.get('isSaving')) {
+         allSaved = false;
+       }
+     });
+     return allSaved;
+   }.property('content.@each.isSaving'),
+
   populate: function () {
     if (FLOW.selectedControl.get('selectedQuestionGroup')) {
       var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');

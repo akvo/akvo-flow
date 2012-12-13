@@ -30,17 +30,9 @@ FLOW.QuestionView = Ember.View.extend({
 		else {return false;}
 	}.property('this.selectedQuestionType').cacheable(),
 		
-	doEdit: function() {
+	doQuestionEdit: function() {
 		FLOW.selectedControl.set('selectedQuestion', this.get('content'));
 		this.set('questionName',FLOW.selectedControl.selectedQuestion.get('displayName'));
-		
-		//FLOW.optionControl.set('editCopy',FLOW.optionControl.get('questionOptionsList'));
-	
-		//TODO populate selected question type
-		//TODO populate tooltip
-		//TODO populate question options
-		//TODO populate help
-		//TODO populate translations
 	},
 	
 	doCancelEditQuestion: function() {
@@ -49,8 +41,33 @@ FLOW.QuestionView = Ember.View.extend({
 	},
 	
 	doSaveEditQuestion: function() {
+		console.log('TODO save edit');
 	},
 	
+	//WRONG
+	deleteQuestion: function() {
+		var qDeleteOrder, qDeleteId, question, questionGroupId;
+		qDeleteOrder = this.content.get('order');
+		qDeleteId = this.content.get('keyId');
+
+		questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+		
+		// move items down
+		FLOW.store.filter(FLOW.Question,function(data){
+			return (data.get('questionGroupId') == questionGroupId);
+		}).forEach(function(item){
+			var currentOrder=item.get('order');
+			
+			if (currentOrder>qDeleteOrder){
+				item.set('order',item.get('order')-1);
+			}
+		});
+	
+		question = FLOW.store.find(FLOW.Question, qDeleteId);
+		question.deleteRecord();
+		FLOW.store.commit();
+	},
+
 	// true if one question has been selected for Move
 	oneSelectedForMove: function() {
 		var selectedForMove = FLOW.selectedControl.get('selectedForMoveQuestion');
@@ -71,33 +88,33 @@ FLOW.QuestionView = Ember.View.extend({
 		}
 	}.property('FLOW.selectedControl.selectedForCopyQuestion'),
 	
-    // prepare for group copy. Shows 'copy to here' buttons
+    // prepare for question copy. Shows 'copy to here' buttons
 	doQuestionCopy:function(){
-		FLOW.selectedControl.set('selectedForCopyQuestion', this.content);
+		FLOW.selectedControl.set('selectedForCopyQuestion', this.get('content'));
 		FLOW.selectedControl.set('selectedForMoveQuestion', null);
 	},
 
-
-	// cancel group copy
+	// cancel question copy
 	doQuestionCopyCancel:function(){
 		FLOW.selectedControl.set('selectedForCopyQuestion', null);
     },
 
 
-	// prepare for group move. Shows 'move here' buttons
+	// prepare for question move. Shows 'move here' buttons
 	doQuestionMove:function(){
-		FLOW.selectedControl.set('selectedForMoveQuestion', this.content);
+		FLOW.selectedControl.set('selectedForMoveQuestion', this.get('content'));
 		FLOW.selectedControl.set('selectedForCopyQuestion', null);
 	},
 
 	// cancel group move
 	doQuestionMoveCancel:function(){
 		FLOW.selectedControl.set('selectedForMoveQuestion', null);
-	},
-
-
-
-	doDelete: function() {
-			console.log("doing doDelete");
 	}
 });
+
+
+//doQuestionDelete
+//doQuestionMove
+//doQuestionCopy
+//doQuestionEdit
+//doInsertQuestion

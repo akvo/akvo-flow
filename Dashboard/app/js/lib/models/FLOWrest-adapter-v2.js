@@ -26,6 +26,14 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       FLOW.metaControl.set('message', this.extractMeta(json).message);
       FLOW.metaControl.set('status', this.extractMeta(json).status);
     }
+    
+    if (FLOW.metaControl.get('status') == "failed"){
+      FLOW.dialogControl.set('activeAction',"ignore");
+      FLOW.dialogControl.set('header',Ember.String.loc('_action_failed'));
+      FLOW.dialogControl.set('message',FLOW.metaControl.get('message'));
+      FLOW.dialogControl.set('showCANCEL',false);
+      FLOW.dialogControl.set('showDialog',true);
+    }
   },
 
  ajax: function(url, type, hash) {

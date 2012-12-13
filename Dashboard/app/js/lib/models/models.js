@@ -39,7 +39,7 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 FLOW.Survey = FLOW.BaseModel.extend({
 	didDelete: function() {FLOW.surveyControl.populate();},
     didUpdate: function() {FLOW.surveyControl.populate();},
-    didCreate: function() {FLOW.surveyControl.populate();},
+    didCreate: function() {FLOW.surveyControl.populate(); },
 
 	defaultLanguageCode: DS.attr('string'),
 	status: DS.attr('string'),
@@ -70,6 +70,10 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
 
 
 FLOW.Question = FLOW.BaseModel.extend({
+	didDelete: function() {if (FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.populate();},
+    didUpdate: function() {if (FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.populate();},
+    didCreate: function() {if (FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.populate();},
+
 	allowDecimal: DS.attr('boolean', {defaultValue: 0}),
 	allowMultipleFlag: DS.attr('boolean', {defaultValue: 0}),
 	allowOtherFlag: DS.attr('boolean', {defaultValue: 0}),

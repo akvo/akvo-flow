@@ -145,11 +145,11 @@ public class QuestionDao extends BaseDAO<Question> {
 				}
 			} else {
 				throw new IllegalDeletionException(
-						"Cannot delete questionId: "
+						"Cannot delete question with id "
 								+ question.getKey().getId()
-								+ " surveyCode:"
+								+ " ("
 								+ question.getText()
-								+ " because there is a QuestionAnswerStore value for this question. Please delete all survey response first");
+								+ ") because there are already survey responses stored for this question. Please delete all survey responses first.");
 			}
 		}
 	}

@@ -103,13 +103,17 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	}.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
 	// execute group delete
+	// WRONG
 	deleteQuestionGroup:function(){
-		var qgDeleteOrder, qgDeleteId, questiongroup;
+		var qgDeleteOrder, qgDeleteId, questiongroup, surveyId;
 		qgDeleteOrder = this.content.get('order');
 		qgDeleteId = this.content.get('keyId');
-
+		surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+		
 		// move items down
-		FLOW.store.filter(FLOW.QuestionGroup,function(data){return true;}).forEach(function(item){
+		FLOW.store.filter(FLOW.QuestionGroup,function(data){
+			return (data.get('surveyId') == surveyId);
+		}).forEach(function(item){
 			var currentOrder=item.get('order');
 			
 			if (currentOrder>qgDeleteOrder){
@@ -124,16 +128,20 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 	// insert group
 	doInsertQuestionGroup: function(){
-		var insertAfterOrder;
+		var insertAfterOrder,surveyId;
 
         if (this.get('zeroItem')) {
            insertAfterOrder=0;
         } else {
             insertAfterOrder=this.content.get('order');
         }
-
+        surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+        console.log('surveyId:',surveyId);
 		// move up to make space
-		FLOW.store.filter(FLOW.QuestionGroup,function(data){return true;}).forEach(function(item){
+		FLOW.store.filter(FLOW.QuestionGroup,function(data){
+			return (data.get('surveyId') == surveyId);
+		}).forEach(function(item){
+			console.log(item.get('keyId'), item.get('order'));
 			var currentOrder=item.get('order');
 			if (currentOrder>insertAfterOrder) {
 				item.set('order',item.get('order')+1);
@@ -144,7 +152,6 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			"code":"New group - please change name",
 			"order":insertAfterOrder+1,
 			"surveyId":FLOW.selectedControl.selectedSurvey.get('keyId')});
-		
 		FLOW.store.commit();
 	},
 
@@ -175,7 +182,6 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 	// execture group move to selected location
     doQGroupMoveHere:function(){
-		
 		var selectedOrder = FLOW.selectedControl.selectedForMoveQuestionGroup.get('order');
 		var insertAfterOrder;
 		var movingUp=false;

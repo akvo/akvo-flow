@@ -115,7 +115,7 @@ public class QuestionRestService {
 
 		// check if question exists in the datastore
 		if (s != null) {
-			// delete question group
+			// delete question
 			try {
 				questionDao.delete(s);
 				statusDto.setStatus("ok");

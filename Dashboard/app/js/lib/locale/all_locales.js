@@ -77,6 +77,7 @@ Ember.STRINGS_EN = {
   '_SG_delete_not_possible_message':'You cannot delete this survey group because it contains surveys. Please delete the surveys individually first.',
   '_QG_delete_header':'Are you sure you want to delete this question group, with all its containing questions?',
   '_QG_delete_message':'This cannot be undone.',
+  '_action_failed': 'Action failed'
 };
 
 Ember.STRINGS_ES = {

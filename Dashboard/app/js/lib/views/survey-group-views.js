@@ -124,5 +124,5 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 			"status": "NOT_PUBLISHED",
 			"surveyGroupId":FLOW.selectedControl.selectedSurveyGroup.get('keyId')});
 		FLOW.store.commit();
-	}	
+	}
 });
