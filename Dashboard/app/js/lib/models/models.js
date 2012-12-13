@@ -79,7 +79,6 @@ FLOW.Question = FLOW.BaseModel.extend({
 	allowOtherFlag: DS.attr('boolean', {defaultValue: 0}),
 	allowSign: DS.attr('boolean', {defaultValue: 0}),
 	collabseable: DS.attr('boolean', {defaultValue: 0}),
-	displayName: DS.attr('string'),
 	immutable: DS.attr('boolean', {defaultValue: 0}),
 	isName: DS.attr('boolean', {defaultValue: 0}),
 	mandatoryFlag: DS.attr('boolean', {defaultValue: 0}),
@@ -151,7 +150,7 @@ FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
 FLOW.Placemark = FLOW.BaseModel.extend({
   latitude: DS.attr('number'),
   longitude: DS.attr('number'),
-  collectionDate: DS.attr('date'),
+  collectionDate: DS.attr('number'),
   markType: DS.attr('string', {defaultValue: 'WATER_POINT'})
 });
 

@@ -241,17 +241,20 @@ FLOW.dialogControl = Ember.Object.create({
         this.set('showDialog',true);
         break;
 
-   //   case "delQ":
-   //     this.set('header',Ember.String.loc('_S_delete_header'));
-   //     this.set('message',Ember.String.loc('_S_delete_message'));
-   //     this.set('showDialog',true);
-   //     break;
+      case "delQ":
+        this.set('header',Ember.String.loc('_Q_delete_header'));
+        this.set('message',Ember.String.loc('_Q_delete_message'));
+        this.set('showDialog',true);
+        break;
 
       default:
     }
   },
 
   doOK:function(event){
+    this.set('header',null);
+    this.set('message',null);
+    this.set('showCANCEL',true);
     this.set('showDialog',false);
     var view =  this.get('activeView');
     switch (this.get('activeAction')) {
@@ -267,10 +270,10 @@ FLOW.dialogControl = Ember.Object.create({
         view.deleteQuestionGroup.apply(view,arguments);
         break;
 
-    //  case "delQ":
-    //    this.set('showDialog',false);
-    //    view.deleteQuestion.apply(view,arguments);
-    //    break;
+      case "delQ":
+        this.set('showDialog',false);
+        view.deleteQuestion.apply(view,arguments);
+        break;
       default:
     }
   },
@@ -278,7 +281,6 @@ FLOW.dialogControl = Ember.Object.create({
   doCANCEL:function(event){
     this.set('showDialog',false);
   }
-
 }),
 
 
@@ -368,6 +370,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 
 FLOW.placemarkControl = Ember.ArrayController.create({
   content: null,
+
   populate: function () {
     this.set('content', FLOW.store.findAll(FLOW.Placemark));
   }
@@ -377,6 +380,7 @@ FLOW.placemarkControl = Ember.ArrayController.create({
 FLOW.placemarkDetailControl = Ember.ArrayController.create({
   content: null,
   selectedDetailImage: null,
+  selectedPointCode:null,
 
   populate: function (placemarkId) {
     if (typeof placemarkId === 'undefined') {
