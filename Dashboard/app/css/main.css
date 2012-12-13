@@ -612,8 +612,8 @@ nav#topnav ul {
 nav#topnav ul li {
 	display: inline;
 	float: left;
-	margin: 2px 4px 0 0;
-	padding: 0 6px 0 0;/* background: url(../images/navSeparator.png) right center no-repeat; */
+	margin: 2px 0 0 0;
+	padding: 0 2px 0 0;/* background: url(../images/navSeparator.png) right center no-repeat; */
 }
 nav#topnav ul li:last-child, nav#topnav ul li:last-child:hover, nav#topnav ul li.current, nav#topnav ul li.current:hover {
 	background-image: none;
@@ -1333,12 +1333,10 @@ section.topBar {
 section.topBar h2 {
 	display: inline;
 	overflow: hidden;
-	margin-left: 0px;
+	margin-left: 5px;
 	padding-left:0px;
 	max-width: 45%;
-/*	background: url(../images/apostrophe.png) left -2px no-repeat;
-*/	color: rgb(255,255,255);
-	text-transform: capitalize;
+	color: rgb(255,255,255);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	font-size: 1.5em;
@@ -2452,7 +2450,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	width: 24.5%;
 	padding: 10px 0.25% 0px 0.25%;
 	height: 590px;
-	background: rgb(224,224,224);
+	background: rgb(241,241,241);
 	overflow-y: scroll;
 	overflow-x: none;
 	box-shadow: -1px 0 1px rgba(0,0,0,0.2);
@@ -2498,11 +2496,22 @@ nav.smallMenu ul li a.showQuestion:hover {
 #pointDetails dl dt:nth-of-type(1), #pointDetails dl dd:nth-of-type(1) {
 	border-top: none;
 }
-#pointDetails div.drawHandle {
+#pointDetails div.drawHandle.hideMapD {
 	display: block;
 	width: 15px;
-	height: 20px;
-	background: red;
+	height: 28px;
+	background:url(../images/mapSlider.png) center top no-repeat;
+	position: absolute;
+	z-index: 99999;
+	top: 50%;
+	left: 0;
+	cursor: pointer;
+}
+#pointDetails div.drawHandle.showMapD {
+	display: block;
+	width: 15px;
+	height: 28px;
+	background:url(../images/mapSlider.png) center bottom no-repeat;
 	position: absolute;
 	z-index: 99999;
 	top: 50%;
@@ -2513,6 +2522,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 	width: 98%;
 }
 #flowMapLegend {
+	display:block;
+	clear:both;
 	width: 98%;
 	background: rgb(244,244,244);
 	padding: 5px 1%;

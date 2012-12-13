@@ -1,7 +1,7 @@
 <section id="main" class="mapFlow floats-in" role="main">
 <div id="flowMap"></div>
 <div id="pointDetails">
-<div class="drawHandle"></div>
+<div class="drawHandle hideMapD"></div>
 <h2>Point Details:</h2>
   <img {{bindAttr src="view.imageURL"}} alt="" />
   <dl class="floats-in"> 
@@ -17,10 +17,17 @@
     <p>To be given some <strong>Loïc Love&copy;</strong></p>
   </div>
 </section>
-<script>
+
+<script type="text/javascript">
 $(document).ready(function(){
-	$(".drawHandle").click(function(){
-		
-	})
-})
+	 $(".drawHandle").toggle(function(){
+		 $("#flowMap").animate({width:"97%"}, 200 );
+		 $("#pointDetails").animate({width:"2.5%"}, 200 );
+		 $(".drawHandle").removeClass("hideMapD").addClass("showMapD");
+	 }, function(){
+		 $("#flowMap").animate({width:"75%"}, 200 );
+		 $("#pointDetails").animate({width:"24.5%"}, 200 );
+		 $(".drawHandle").removeClass("showMapD").addClass("hideMapD");
+	 });
+});
 </script>
