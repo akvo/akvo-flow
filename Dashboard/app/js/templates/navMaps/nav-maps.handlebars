@@ -1,8 +1,7 @@
 <section id="main" class="mapFlow floats-in" role="main">
+<div id="drawHandleWrap"><div class="drawHandle hideMapD">hide ›</div></div>
 <div id="flowMap"></div>
 <div id="pointDetails">
-<div class="drawHandle hideMapD"></div>
-<h2>Point Details:</h2>
   <img {{bindAttr src="view.imageURL"}} alt="" />
   <dl class="floats-in"> 
   	{{#each item in FLOW.placemarkDetailControl}}
@@ -12,7 +11,7 @@
   </dl>
 </div>
 
-  <div id="flowMapLegend">
+<div id="flowMapLegend">
     <h1>LEGEND</h1>
     <p>To be given some <strong>Loïc Love&copy;</strong></p>
   </div>
@@ -20,17 +19,20 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
+		 $("#flowMap").animate({width:"97.5%"}, 1000 );
+		 $("#pointDetails").animate({width:"2%"}, 1000 ).css({"overflow":"none", "margin-left":"-2px"});
+		 $("#pointDetails h2, #pointDetails dl, #pointDetails img" ).animate({opacity:"0"}, 100 );
+		 $(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");
 	 $(".drawHandle").toggle(function(){
+		 $("#flowMap").animate({width:"75%"}, 200 );
+		 $("#pointDetails").animate({width:"24.5%"}, 200 ).css({"overflow":"auto", "margin-left":"-2px"});
+		 $("#pointDetails h2, #pointDetails dl, #pointDetails img" ).animate({opacity:"1"}, 200 );
+		 $(".drawHandle").removeClass("showMapD").addClass("hideMapD").text("hide ›");
+	 }, function(){
 		 $("#flowMap").animate({width:"97.5%"}, 200 );
 		 $("#pointDetails").animate({width:"2%"}, 200 ).css({"overflow":"none", "margin-left":"-2px"});
 		 $("#pointDetails h2, #pointDetails dl, #pointDetails img" ).animate({opacity:"0"}, 100 );
-		 $(".drawHandle").removeClass("hideMapD").addClass("showMapD");
-		 
-	 }, function(){
-		 $("#flowMap").animate({width:"75%"}, 200 );
-		 $("#pointDetails").animate({width:"24.5%"}, 200 ).css({"overflow":"auto", "margin-left":"-2px"});
-		 $(".drawHandle").removeClass("showMapD").addClass("hideMapD");
-		 $("#pointDetails h2, #pointDetails dl, #pointDetails img" ).animate({opacity:"1"}, 200 );
+		 $(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");
 	 });
 });
 </script>
