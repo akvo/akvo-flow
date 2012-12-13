@@ -2524,7 +2524,7 @@ div.drawHandle {
 	-webkit-border-radius:5px 5px 0 0;
 	-o-border-radius:5px 5px 0 0;
 	border-radius:5px 5px 0 0;
-	background:rgb(58,58,58);
+	background:rgb(58,58,58) url(../images/mapSlider.png) left bottom repeat-x;
 	}
 	
 div.drawHandle.hideMapD {
