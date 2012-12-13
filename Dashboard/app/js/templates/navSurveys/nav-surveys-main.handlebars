@@ -38,8 +38,7 @@
           <!-- show selected survey group and edit name button --> 
           <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2> 
           <a {{action "editSurveyGroupName" target="this"}} class="editGroupName">{{t _edit_name}}</a>
-		 <!-- <a {{action "showSGroupDeleteDialog" target="this"}} class="deleteGroup">{{t _delete_this_group}}</a> -->
-     <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a> 
+          <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a> 
         {{/if}}
       {{/if}}
       
@@ -80,59 +79,13 @@
               <ul>              
                 <li class="editSurvey"><a {{action "doEditSurvey" survey}}>{{t _edit}}</a></li> <!-- this hands control over to the router -->
                   <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>{{t _preview}}</a></li>
-                  <li class="deleteSurvey"><a {{action "showDeleteSurveyDialog" target="this"}}>{{t _delete}}</a></li>
+                    <li class="deleteSurvey"> <a  {{action confirm FLOW.dialogControl.delS target="FLOW.dialogControl"}}>{{t _delete}}</a> </li>
                   <li class="copySurvey"><a {{action "copySurvey" target="this"}}>{{t _inspect_data}}</a></li>
               </ul>
             </nav>
           </li>
-
-      <!-- this shouldn't be here. it needs to be inside the view for now, but we need another solution. -->
-     <!-- Survey Delete confirmation dialog-->
-    <div {{bindAttr class="view.showDeleteSurveyDialogBool:display :overlay"}}>
-      <div class="blanket"></div>
-      <div class="dialogWrap">
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialog"  style="display:block;">
-          <h2>Are you sure you want to delete this survey, its question groups, and all related data?</h2>
-          <p class="dialogMsg">This cannot be undone.</p>
-          <br/><br/>
-          <div class="buttons menuCentre"> 
-            <ul>  
-              <li><a {{action "doDeleteSurvey" target="this"}} class="ok smallBtn">OK</a></li>
-              <li><a {{action "cancelDeleteSurvey" target="this"}}} class="cancel">CANCEL</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- end of Survey Delete confirmation dialog-->
-
         {{/view}}
       {{/each}}
-    </ul>
-
-    <!-- Survey Group cannot delete due to existing surveys dialog-->
-    <div {{bindAttr class="view.showSGDeleteNotPossibleDialog:display :overlay"}}>
-      <div class="blanket"></div>
-		  <div class="dialogWrap">
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialog">
-          <h2>Can't delete survey group</h2>
-          <p class="dialogMsg">You cannot delete this survey group because it contains surveys. Please delete the surveys individually first.</p>
-          <br/><br/>
-          <div class="buttons menuCentre"> 
-            <ul>  
-              <li><a {{action "cancelSGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-
-    <!-- end dialogs -->
-
-    
+    </ul>    
   </section>
 {{/view}}

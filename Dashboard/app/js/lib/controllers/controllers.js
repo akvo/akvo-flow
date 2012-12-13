@@ -133,6 +133,7 @@ FLOW.dataserverControl = Ember.Object.create({
   }.observes('this.dataserver')
 });
 
+
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({label: "Free text", value: "freeText"}),
@@ -146,6 +147,7 @@ FLOW.questionTypeControl = Ember.Object.create({
   ]
 });
 
+
 FLOW.surveyTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({label: "Point", value: "point"}),
@@ -154,6 +156,7 @@ FLOW.surveyTypeControl = Ember.Object.create({
     Ember.Object.create({label: "Community", value: "community"})
   ]
 });
+
 
 FLOW.surveySectorTypeControl = Ember.Object.create({
   content: [
@@ -166,6 +169,7 @@ FLOW.surveySectorTypeControl = Ember.Object.create({
     Ember.Object.create({label: "Other", value: "other"})
   ]
 });
+
 
 FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
@@ -201,16 +205,28 @@ FLOW.dialogControl = Ember.Object.create({
   header:null,
   activeView:null,
   activeAction:null,
+  showOK:true,
+  showCANCEL:true,
 
   confirm:function(event){
     this.set('activeView',event.view);
     this.set('activeAction',event.context);
-    
+    this.set('showOK',true);
+    this.set('showCANCEL',true);
+
     switch (this.get('activeAction')) {
       case "delSG":
-        this.set('header',Ember.String.loc('_SG_delete_header'));
-        this.set('message',Ember.String.loc('_SG_delete_message'));
-        this.set('showDialog',true);
+        if (FLOW.surveyGroupControl.containsSurveys()){
+          this.set('activeAction',"delSGnp");
+          this.set('header',Ember.String.loc('_SG_delete_not_possible_header'));
+          this.set('message',Ember.String.loc('_SG_delete_not_possible_message'));
+          this.set('showCANCEL',false);
+          this.set('showDialog',true);
+        } else {
+          this.set('header',Ember.String.loc('_SG_delete_header'));
+          this.set('message',Ember.String.loc('_SG_delete_message'));
+          this.set('showDialog',true);
+        }
         break;
 
       case "delS":
@@ -220,16 +236,16 @@ FLOW.dialogControl = Ember.Object.create({
         break;
 
       case "delQG":
-        this.set('header',Ember.String.loc('_S_delete_header'));
-        this.set('message',Ember.String.loc('_S_delete_message'));
+        this.set('header',Ember.String.loc('_QG_delete_header'));
+        this.set('message',Ember.String.loc('_QG_delete_message'));
         this.set('showDialog',true);
         break;
 
-      case "delQ":
-        this.set('header',Ember.String.loc('_S_delete_header'));
-        this.set('message',Ember.String.loc('_S_delete_message'));
-        this.set('showDialog',true);
-        break;
+   //   case "delQ":
+   //     this.set('header',Ember.String.loc('_S_delete_header'));
+   //     this.set('message',Ember.String.loc('_S_delete_message'));
+   //     this.set('showDialog',true);
+   //     break;
 
       default:
     }
@@ -240,24 +256,21 @@ FLOW.dialogControl = Ember.Object.create({
     var view =  this.get('activeView');
     switch (this.get('activeAction')) {
       case "delSG":
-        this.set('showDialog',false);
         view.deleteSurveyGroup.apply(view,arguments);
         break;
 
       case "delS":
-        this.set('showDialog',false);
         view.deleteSurvey.apply(view,arguments);
         break;
 
       case "delQG":
-        this.set('showDialog',false);
         view.deleteQuestionGroup.apply(view,arguments);
         break;
 
-      case "delQ":
-        this.set('showDialog',false);
-        view.deleteQuestion.apply(view,arguments);
-        break;
+    //  case "delQ":
+    //    this.set('showDialog',false);
+    //    view.deleteQuestion.apply(view,arguments);
+    //    break;
       default:
     }
   },
@@ -268,6 +281,7 @@ FLOW.dialogControl = Ember.Object.create({
 
 }),
 
+
 // ***********************************************//
 //                Data controllers
 // ***********************************************//
@@ -276,8 +290,20 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 
   populate: function () {
     this.set('content', FLOW.store.find(FLOW.SurveyGroup));
+  },
+
+  // checks if data store contains surveys within this survey group.
+  // this is also checked server side.
+  containsSurveys:function(){
+    var surveys,sgId;
+    surveys = FLOW.store.filter(FLOW.Survey,function(data) {
+      sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
+      if (data.get('surveyGroupId') == sgId) { return true; } });
+    
+    return (surveys.get('content').length > 0);
   }
 });
+
 
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,
@@ -289,21 +315,22 @@ FLOW.surveyControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurveyGroup')
 });
 
+
 FLOW.questionGroupControl = Ember.ArrayController.create({
   sortProperties: ['order'],
   sortAscending: true,
   content: null,
 
-  // true if all items have been saved
-  allRecordsSaved: function () {
-    var allSaved = true;
-    FLOW.questionGroupControl.get('content').forEach(function (item) {
-      if (item.get('isSaving')) {
-        allSaved = false;
-      }
-    });
-    if (allSaved) {return true;} else {return false;}
-  }.property('content.@each.isSaving'),
+  // // true if all items have been saved
+  // allRecordsSaved: function () {
+  //   var allSaved = true;
+  //   FLOW.questionGroupControl.get('content').forEach(function (item) {
+  //     if (item.get('isSaving')) {
+  //       allSaved = false;
+  //     }
+  //   });
+  //   if (allSaved) {return true;} else {return false;}
+  // }.property('content.@each.isSaving'),
 
   populate: function () {
     if (FLOW.selectedControl.get('selectedSurvey')) {
@@ -312,6 +339,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurvey')
 });
+
 
 FLOW.questionControl = Ember.ArrayController.create({
   content: null,
@@ -323,12 +351,14 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedQuestionGroup')
 });
 
+
 FLOW.placemarkControl = Ember.ArrayController.create({
   content: null,
   populate: function () {
     this.set('content', FLOW.store.findAll(FLOW.Placemark));
   }
 });
+
 
 FLOW.placemarkDetailControl = Ember.ArrayController.create({
   content: null,
@@ -343,8 +373,10 @@ FLOW.placemarkDetailControl = Ember.ArrayController.create({
   }
 });
 
+
 FLOW.optionControl = Ember.ArrayController.create({
 });
+
 
 FLOW.tableColumnControl = Ember.Object.create({
   sortProperties: null,
@@ -363,6 +395,7 @@ FLOW.deviceGroupControl = Ember.ArrayController.create({
 
 
 });
+
 
 FLOW.deviceControl = Ember.ArrayController.create({
   sortProperties: null,
@@ -453,6 +486,7 @@ FLOW.dateControl = Ember.Object.create({
 FLOW.forceObserverControl = Ember.Object.create({
   forceObserverBool:false
 });
+
 
 FLOW.savingMessageControl = Ember.Object.create({
   areSavingBool:false,

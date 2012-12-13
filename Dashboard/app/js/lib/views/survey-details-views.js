@@ -102,23 +102,11 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		}
 	}.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
-	
-	// show delete QGroup dialog
-	showQGroupDeletedialog:function(){
-		this.set('showQGDeletedialog',true);
-	},
-
-	// cancel question group delete
-	cancelQGroupDelete:function(){
-		this.set('showQGDeletedialog',false);
-	},
-
 	// execute group delete
-	doQGroupDelete:function(){
-		this.set('showQGDeletedialog',false);
-		
-		var qgDeleteOrder = this.content.get('order');
-		var qgDeleteId = this.content.get('keyId');
+	deleteQuestionGroup:function(){
+		var qgDeleteOrder, qgDeleteId, questiongroup;
+		qgDeleteOrder = this.content.get('order');
+		qgDeleteId = this.content.get('keyId');
 
 		// move items down
 		FLOW.store.filter(FLOW.QuestionGroup,function(data){return true;}).forEach(function(item){
@@ -129,7 +117,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			}
 		});
 	
-		var questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
+		questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
 		questionGroup.deleteRecord();
 		FLOW.store.commit();
 	},
@@ -259,15 +247,3 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	}
 
 }); 
-
-FLOW.SavingQuestionGroupsView = Ember.View.extend({
-	showQGSavingDialogBool:false,
-
-	showQGSavingDialog:function(){
-		if (FLOW.questionGroupControl.get('allRecordsSaved')){
-			this.set('showQGSavingDialogBool', false);
-		} else {
-			this.set('showQGSavingDialogBool', true);
-		}
-	}.observes('FLOW.questionGroupControl.allRecordsSaved')
-});

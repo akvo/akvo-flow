@@ -69,8 +69,14 @@ Ember.STRINGS_EN = {
   '_Loading':'Loading',
   '_Saving':'Saving',
   '_Manage_device_groups':'Manage device groups',
-   '_SG_delete_header':'Are you sure you want to delete this surveygroup?',
-  '_SG_delete_message':'This cannot be undone.'
+  '_SG_delete_header':'Are you sure you want to delete this surveygroup?',
+  '_SG_delete_message':'This cannot be undone.',
+  '_S_delete_header':'Are you sure you want to delete this survey, its question groups, and all related data?',
+  '_S_delete_message':'This cannot be undone.',
+  '_SG_delete_not_possible_header':"Can't delete survey group",
+  '_SG_delete_not_possible_message':'You cannot delete this survey group because it contains surveys. Please delete the surveys individually first.',
+  '_QG_delete_header':'Are you sure you want to delete this question group, with all its containing questions?',
+  '_QG_delete_message':'This cannot be undone.',
 };
 
 Ember.STRINGS_ES = {

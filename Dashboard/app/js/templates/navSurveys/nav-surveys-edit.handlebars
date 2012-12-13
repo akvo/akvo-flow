@@ -98,7 +98,7 @@
                     <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{t _show_questions}} </a></li>
                   {{/if}}
                   <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id="">{{t _edit_group_name}}</a></li>
-                  <li><a {{action "showQGroupDeletedialog" target="this"}} class="deleteQuestionGroup" id="">{{t _delete}}</a></li>
+                  <li> <a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a> </li>
                   <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup" id="">{{t _copy}}</a></li>
                   <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup" id="">{{t _move}}</a> </li>
                 </ul>
@@ -114,26 +114,6 @@
                 {{/each}} 
               </div>
             {{/if}} 
-        
-            <!-- TODO dialogs -->
-            <div {{bindAttr class="view.showQGDeletedialog:display :overlay"}}>
-              <div class="blanket"></div>
-              <div class="dialogWrap"> 
-                <!-- the dialog contents -->
-                <div class="confirmDialog dialog">
-                  <h2>Are you sure you want to do this?</h2>
-                  <p class="dialogMsg">If we want to give a specific message this is where it can be loaded</p>
-                    <div class="buttons menuCentre">
-                      <ul>
-                        <li><a {{action "doQGroupDelete" target="this"}} class="ok smallBtn">OK</a></li>
-                        <li><a {{action "cancelQGroupDelete" target="this"}}} class="cancel">CANCEL</a></li>
-                      </ul>
-                    </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- end dialogs --> 
         
           <!-- end question group block --> 
           </div>

@@ -17,31 +17,20 @@ FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 	
 	// fired when a survey group is clicked
 	makeSelected: function() {
-			FLOW.selectedControl.set('selectedSurveyGroup', this.content);
+		FLOW.selectedControl.set('selectedSurveyGroup', this.content);
 	}
 });
 
 // displays single survey in content area of survey group page
+// doEditSurvey is defined in the Router. It transfers to the nav-surveys-edit handlebar view
 FLOW.SurveyGroupSurveyView = Ember.View.extend({
-	showDeleteSurveyDialogBool:false,
-	//doEditSurvey is defined in the Router. It transfers to the nav-surveys-edit handlebar view
-
 	// fired when 'preview survey' is clicked in the survey item display
 	previewSurvey: function() {
 			console.log("TODO preview Survey");
 	},
 	
-	// show delete SurveyGroup dialog
-	showDeleteSurveyDialog:function(){
-		this.set('showDeleteSurveyDialogBool',true);
-	},
-
-	cancelDeleteSurvey:function(){
-		this.set('showDeleteSurveyDialogBool',false);
-	},
-
 	// fired when 'delete survey' is clicked in the survey item display
-	doDeleteSurvey: function() {
+	deleteSurvey: function() {
 		var sId=this.content.get('id');
 		var survey=FLOW.store.find(FLOW.Survey, sId);
 		survey.deleteRecord();
@@ -103,50 +92,12 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 		this.set('showNewGroupField',true);
 	},
 
-    // show delete SurveyGroup dialog
-	showSGroupDeleteDialog:function(){
-		// check if there are surveys in the datastore (this is also checked at the server)
-		
-		var surveys=FLOW.store.filter(FLOW.Survey,function(data) {
-			var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
-			if (data.get('surveyGroupId') == sgId) {
-				return true;
-			}
-		});
-
-		// if there are surveys in this group, display 'please remove surveys first'
-		if (surveys.get('content').length > 0) {
-			this.set('showSGDeleteNotPossibleDialog',true);
-		} else {
-			// else display 'are you sure you want to delete'
-			this.set('showSGDeleteDialog',true);
-		}
-	},
-
-	// cancel survey group delete
-	cancelSGroupDelete:function(){
-		this.set('showSGDeleteDialog',false);
-		this.set('showSGDeleteNotPossibleDialog',false);
-	},
-
-	// delete survey group
-	doSGroupDelete:function(){
-		var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
-		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
-		surveyGroup.deleteRecord();
-		FLOW.store.commit();
-		FLOW.selectedControl.set('selectedSurveyGroup',null);
-		this.set('showSGDeleteDialog',false);
-	},
-
-	// new version delete survey group
 	deleteSurveyGroup:function(){
 		var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
 		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
 		surveyGroup.deleteRecord();
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedSurveyGroup',null);
-		//this.set('showSGDeleteDialog',false);
 	},
 
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
