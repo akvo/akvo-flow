@@ -172,12 +172,25 @@ public class SurveyRestService {
 					// copy the properties, except the createdDateTime property,
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(surveyDto, s, new String[] {
-							"createdDateTime", "status", "version",
-							"lastUpdateDateTime", "displayName",
-							"questionGroupList" });
+							"createdDateTime", "status", "sector", "version",
+							"lastUpdateDateTime", "description" });
+
+					s.setDesc(surveyDto.getDescription());
+
+					// need to work around marshaller's inability to translate
+					// string to
+					// enumeration values.
+					if (surveyDto.getStatus() != null) {
+						s.setStatus(Survey.Status.valueOf(surveyDto.getStatus()));
+					}
+					if (surveyDto.getSector() != null) {
+						s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
+					}
+
 					s = surveyDao.save(s);
 					dto = new SurveyDto();
 					DtoMarshaller.copyToDto(s, dto);
+					dto.setDescription(s.getDesc());
 					statusDto.setStatus("ok");
 				}
 			}
@@ -206,8 +219,14 @@ public class SurveyRestService {
 			// copy the properties, except the createdDateTime property, because
 			// it is set in the Dao.
 			BeanUtils.copyProperties(surveyDto, s, new String[] {
-					"createdDateTime", "status", "version",
+					"createdDateTime", "status", "sector", "version",
 					"lastUpdateDateTime", "displayName", "questionGroupList" });
+			if (surveyDto.getStatus() != null) {
+				s.setStatus(Survey.Status.valueOf(surveyDto.getStatus()));
+			}
+			if (surveyDto.getSector() != null) {
+				s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
+			}
 			s = surveyDao.save(s);
 
 			dto = new SurveyDto();

@@ -93,6 +93,7 @@ public class DtoMarshaller {
 		ConvertUtils.register(enumConverter,QuestionHelpDto.Type.class);
 		ConvertUtils.register(enumConverter, OGRFeatureDto.FeatureType.class);
 		ConvertUtils.register(enumConverter, Survey.Status.class);
+		ConvertUtils.register(enumConverter, Survey.Sector.class);
 		
 		
 		DatastoreTextConverter textConverter = new DatastoreTextConverter();
