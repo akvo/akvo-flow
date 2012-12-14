@@ -183,6 +183,7 @@ pre {
 	background: url(../images/loader.gif) left center no-repeat;
 	z-index:999999;
 }
+.greyish {background:rgb(200,214,214);}
 /* links 
 ---------------------------------------------------------------*/
 
@@ -2471,31 +2472,23 @@ nav.smallMenu ul li a.showQuestion:hover {
 	font-family: Verdana, Geneva, sans-serif;
 	letter-spacing: 0.05em;
 	line-height: 1.3em;
+	overflow:hidden;
 }
-#pointDetails dt {
+#pointDetails dl div.defListWrap {display:table; padding:0.2em 0; width:100%;margin:2px auto;}
+#pointDetails dl div.defListWrap:nth-child(n+1) {background:transparent;}
+#pointDetails dl div.defListWrap dt {
 	width: 44.75%;
 	color: rgb(124,124,124);
-	display: block;
-	overflow: hidden;
-	min-height: 5.5em;
-	text-overflow: clip;
-	white-space: pre-wrap;
+	display: table-cell;
 	float: left;
 	padding: 5px 0 5px 0.25%;
-	border-top: 2px solid rgb(224,224,224);
 }
-#pointDetails dd {
-	display: block;
+#pointDetails dl div.defListWrap dd {
+	display: table-cell;
 	width: 54.75%;
 	color: rgb(0,0,0);
-	float: right;
-	overflow: hidden;
-	text-overflow: clip;
-	white-space: normal;
-	float: right;
-	min-height: 5.5em;
+	float: left;
 	padding: 5px 0 5px 0.25%;
-	border-top: 2px solid rgb(224,224,224);
 }
 #pointDetails dl dt:nth-of-type(1), #pointDetails dl dd:nth-of-type(1) {
 	border-top: none;
@@ -2532,7 +2525,7 @@ div.drawHandle.hideMapD {
 div.drawHandle.showMapD {
 }
 
-#pointDetails .imgContainer  { position: relative; overflow: hidden; width:62px; height:62px; margin:5px 5px 5px 1px; padding:1px; border:1px solid rgb(214,214,214);}
+#pointDetails .imgContainer  { position: relative; overflow: hidden; width:62px; height:62px; margin:10px 5px 10px 1px; padding:1px; border:1px solid rgb(214,214,214);}
 #pointDetails .imgContainer a { position: relative; display:block; width:100%; height:100%;}
 #pointDetails .imgContainer img { }
 
@@ -2546,8 +2539,9 @@ div.drawHandle.showMapD {
 	border-top:1px solid rgb(255,255,255);
 }
 .placeMarkBasicInfo {
-	width:99.5%;
-	padding:0.25%;
+	width:96%;
+	padding:1em 2%;
+	background:rgb(231,231,231);
 	}
 .placeMarkBasicInfo li {
 	display:inline;

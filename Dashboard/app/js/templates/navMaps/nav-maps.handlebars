@@ -9,8 +9,10 @@
   <div class="imgContainer"><a {{bindAttr href="view.imageURL"}} target="_blank"><img {{bindAttr src="view.imageURL"}} alt="" /></a></div>
   <dl class="floats-in"> 
   	{{#each item in FLOW.placemarkDetailControl}}
+	<div class="defListWrap">
       <dt>{{item.questionText}}:</dt> 
       <dd>{{#with item}}{{addSpace stringValue}}{{/with}}</dd>
+	 </div>
     {{/each}} 
   </dl>
 </div>
@@ -23,6 +25,7 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
+		 $("#pointDetails dl > div:nth-child(n+1)").css("background-color", "rgb(204,204,204)");
 		 $("#flowMap").animate({width:"99.25%"}, 1000 );
 		 $("#pointDetails").animate({width:"0.25%"}, 1000 ).css({"overflow":"hidden", "margin-left":"-2px"});
 		 $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails div.imgContainer, .placeMarkBasicInfo" ).css({opacity:"0"}).css({display:"none"});
@@ -38,5 +41,6 @@
 		 $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).css({opacity:"0"}).css({display:"none"});
 		 $(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");
 	 });
-  });
+
+})
 </script>
