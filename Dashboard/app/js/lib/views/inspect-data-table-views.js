@@ -71,11 +71,11 @@ FLOW.inspectDataTableView = Em.View.extend({
   },
 
   doPreviousSI:function(event){
-    var currentSIlist, SIindex, nextItem, filtered;
+    var currentSIList, SIindex, nextItem, filtered,nextSIkeyId;
     currentSIList = FLOW.surveyInstanceControl.content.get('content');
     SIindex = currentSIList.indexOf(this.get('selectedSurveyInstanceNum'));
     
-    if (SIindex == 0) {
+    if (SIindex === 0) {
       // if at the end of the list, go and get more data
     } else {
       nextItem = currentSIList.objectAt(SIindex-1);
@@ -91,7 +91,7 @@ FLOW.inspectDataTableView = Em.View.extend({
 
   // TODO error checking
   doNextSI:function(event){
-    var currentSIlist, SIindex, nextItem, filtered;
+    var currentSIList, SIindex, nextItem, filtered, nextSIkeyId;
     currentSIList = FLOW.surveyInstanceControl.content.get('content');
     SIindex = currentSIList.indexOf(this.get('selectedSurveyInstanceNum'));
     

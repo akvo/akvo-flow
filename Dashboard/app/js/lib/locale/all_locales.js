@@ -161,5 +161,5 @@ Ember.STRINGS_FR = {
   '_Find_anything_here':'Chercher tout akvoflow.org',
   '_Loading':'Chargement',
   '_Saving':'Enregistrement',
-  '_Manage_device_groups':"Organiser les groupes d'appareil",
+  '_Manage_device_groups':"Organiser les groupes d'appareil"
 };

@@ -112,7 +112,9 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
   template: Ember.Handlebars.compile('{{view.formattedContent}}'),
 
   formattedContent: (function() {
-    var content = this.get('content');
+    var content = this.get('content'),
+    curr_date, d, curr_month, curr_year, curr_hour, curr_min,
+    dateString, monthString, hourString, minString;
 
     if (content !== null) {
         d = new Date(parseInt(content,10));
@@ -135,9 +137,9 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
 		else { minString=curr_min.toString();}
 
 		return (curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString);
-    } else {
-    	return "";
     }
+
+    return "";
   }).property('content')
 }));
 

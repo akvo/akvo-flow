@@ -105,7 +105,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	// execute group delete
 	// WRONG
 	deleteQuestionGroup:function(){
-		var qgDeleteOrder, qgDeleteId, questiongroup, surveyId;
+		var qgDeleteOrder, qgDeleteId, questionGroup, surveyId;
 		qgDeleteOrder = this.content.get('order');
 		qgDeleteId = this.content.get('keyId');
 		surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
