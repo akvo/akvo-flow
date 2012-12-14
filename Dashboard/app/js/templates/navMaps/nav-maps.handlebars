@@ -2,7 +2,7 @@
 <div id="drawHandleWrap"><div class="drawHandle hideMapD">hide ›</div></div>
 <div id="flowMap"></div>
 <div id="pointDetails">
-  <img {{bindAttr src="view.imageURL"}} alt="" />
+  <div class="imgContainer"><a {{bindAttr href="view.imageURL"}} target="_blank"><img {{bindAttr src="view.imageURL"}} alt="" /></a></div>
   {{#if FLOW.placemarkControl.selected}}<div class="placeMarkCollectionDate"> {{date2 FLOW.placemarkControl.selected.collectionDate}}</div>{{/if}}
    {{#if FLOW.placemarkDetailControl.selectedPointCode}}<div class="placeMarkPointCode"> {{FLOW.placemarkDetailControl.selectedPointCode}}</div>{{/if}}
 
@@ -22,19 +22,27 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-		 $("#flowMap").animate({width:"97.5%"}, 1000 );
-		 $("#pointDetails").animate({width:"2%"}, 1000 ).css({"overflow":"hidden", "margin-left":"-2px"});
-		 $("#pointDetails h2, #pointDetails dl, #pointDetails img" ).css({opacity:"0"}).css({display:"none"});
+		$image = $('.imgContainer img');
+			width = $image.width();
+			height = $image.height();
+			
+		$image.css({
+				left: 0 - (width / 2),
+				top: 0 - (height / 2)
+			});
+		 $("#flowMap").animate({width:"99.25%"}, 1000 );
+		 $("#pointDetails").animate({width:"0.25%"}, 1000 ).css({"overflow":"hidden", "margin-left":"-2px"});
+		 $("#pointDetails h2, #pointDetails dl, #pointDetails img, .imgContainer" ).css({opacity:"0"}).css({display:"none"});
 		 $(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");
 	 $(".drawHandle").toggle(function(){
 		 $("#flowMap").animate({width:"75%"}, 200 );
 		 $("#pointDetails").animate({width:"24.5%"}, 200 ).css({"overflow":"auto", "margin-left":"-2px"});
-		 $("#pointDetails h2, #pointDetails dl, #pointDetails img" ).animate({opacity:"1"}, 200 ).css({display:"inherit"});
+		 $("#pointDetails h2, #pointDetails dl, #pointDetails img, .imgContainer" ).animate({opacity:"1"}, 200 ).css({display:"inherit"});
 		 $(".drawHandle").removeClass("showMapD").addClass("hideMapD").text("hide ›");
 	 }, function(){
-		 $("#flowMap").animate({width:"97.5%"}, 200 );
-		 $("#pointDetails").animate({width:"2%"}, 200 ).css({"overflow":"hidden", "margin-left":"-2px"});
-		 $("#pointDetails h2, #pointDetails dl, #pointDetails img" ).css({opacity:"0"}).css({display:"none"});
+		 $("#flowMap").animate({width:"99.25%"}, 200 );
+		 $("#pointDetails").animate({width:"0.25%"}, 200 ).css({"overflow":"hidden", "margin-left":"-2px"});
+		 $("#pointDetails h2, #pointDetails dl, #pointDetails img, .imgContainer" ).css({opacity:"0"}).css({display:"none"});
 		 $(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");
 	 });
   });
