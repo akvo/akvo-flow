@@ -327,6 +327,13 @@ a.AddBtn:hover {
 	position: relative;
 	height: 40px;
 }
+.prevNext {
+	display:block;
+	margin:0 auto;
+	width: 96%;
+	position: relative;
+	padding:1em 1%;
+}
 .editAnswerMenu ul li {
 	display: inline;
 	margin: 0 0 10px 0;
@@ -344,23 +351,23 @@ a.AddBtn:hover {
 .prevBtn a {
 	display: inline-block;
 	height: 11px;
-	background: url(../images/prevBtn.png) left top no-repeat;
+/*	background: url(../images/prevBtn.png) left top no-repeat;
 	padding: 5px 0 0 15px;
-}
+*/}
 .prevBtn:hover a {
 	color: rgb(58,58,58);
-	background: url(../images/prevBtn.png) left bottom no-repeat;
-}
+/*	background: url(../images/prevBtn.png) left bottom no-repeat;
+*/}
 .nextBtn a {
 	display: inline-block;
 	height: 11px;
-	background: url(../images/nextBtn.png) right top no-repeat;
+/*	background: url(../images/nextBtn.png) right top no-repeat;
 	padding: 5px 15px 0 0;
-}
+*/}
 .nextBtn:hover a {
 	color: rgb(58,58,58);
-	background: url(../images/nextBtn.png) right bottom no-repeat;
-}
+/*	background: url(../images/nextBtn.png) right bottom no-repeat;
+*/}
 .deleteBtn {
 	position: absolute;
 	top: 5px;
@@ -2452,7 +2459,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	position: relative;
 	float: right;
 	width: 24.5%;
-	padding: 10px 0.25% 0px 0.25%;
+	padding: 0.25em 0.25% 0px 0.25%;
 	height: 589px;
 	background: rgb(241,241,241);
 	overflow: auto;
@@ -2470,25 +2477,25 @@ nav.smallMenu ul li a.showQuestion:hover {
 	padding: 0.5em 0.25%;
 	background: rgb(240,240,240);
 	font-family: Verdana, Geneva, sans-serif;
-	letter-spacing: 0.05em;
-	line-height: 1.3em;
+	letter-spacing: 0em;
+	line-height: 1.2em;
 	overflow:hidden;
 }
 #pointDetails dl div.defListWrap {display:table; padding:0.2em 0; width:100%;margin:2px auto;}
-#pointDetails dl div.defListWrap:nth-child(n+1) {background:transparent;}
+#pointDetails dl div.defListWrap:nth-child(odd) {background:rgb(224,224,224);}
 #pointDetails dl div.defListWrap dt {
-	width: 44.75%;
+	width: 44.25%;
 	color: rgb(124,124,124);
 	display: table-cell;
 	float: left;
-	padding: 5px 0 5px 0.25%;
+	padding: 5px 0 5px 0.75%;
 }
 #pointDetails dl div.defListWrap dd {
 	display: table-cell;
-	width: 54.75%;
+	width: 54.25%;
 	color: rgb(0,0,0);
 	float: left;
-	padding: 5px 0 5px 0.25%;
+	padding: 5px 0 5px 0.75%;
 }
 #pointDetails dl dt:nth-of-type(1), #pointDetails dl dd:nth-of-type(1) {
 	border-top: none;
@@ -2541,7 +2548,7 @@ div.drawHandle.showMapD {
 .placeMarkBasicInfo {
 	width:96%;
 	padding:1em 2%;
-	background:rgb(231,231,231);
+	background:url(../images/mapPointDetailSep.png) center bottom no-repeat;
 	}
 .placeMarkBasicInfo li {
 	display:inline;
@@ -2556,6 +2563,7 @@ div.drawHandle.showMapD {
 	}
 .placeMarkCollectionDate {display:inline; font-weight:bold; margin:0 0 0 5px; color:rgb(227, 27, 35);}
 .placeMarkPointCode {font-weight:bold; color:rgb58,58,58); margin:0 0 0 5px; text-transform:uppercase;}
+
 /*--------------------------------------------- 
 					Footer
 -----------------------------------------------*/

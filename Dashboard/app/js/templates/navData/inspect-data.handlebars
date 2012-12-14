@@ -65,8 +65,8 @@
                 </tr>
             </tfoot>
         </table>
-        {{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &laquo; previous | </a> {{/if}}
-        {{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>next &raquo;</a>{{/if}}
+        <ul class="prevNext"><li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; previous</a> {{/if}}</li>
+        <li class="nextBtn">{{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>next &rsaquo;</a>{{/if}}</li></ul>
     </section>
 
     <!-- edit surveyInstance popup-->
@@ -80,10 +80,10 @@
           <h2>Edit answers</h2>
             <nav class="editAnswerMenu"> 
             <ul>  
-              <li class="prevBtn"><a {{action "doPreviousSI" target="this"}}>previous</a></li>
+              <li class="prevBtn"><a {{action "doPreviousSI" target="this"}}>&lsaquo; previous</a></li>
               <li class="deleteBtn"><a {{action "doDeleteSI" target="this"}} class="smallBtn">delete</a></li>
               <li class="saveBtn"><a {{action "doSaveSI" target="this"}} class="smallBtn">save</a></li>
-              <li class="nextBtn"><a {{action "doNextSI" target="this"}}>next</a></li>
+              <li class="nextBtn"><a {{action "doNextSI" target="this"}}>next &rsaquo;</a></li>
             </ul>
           </nav>
          
