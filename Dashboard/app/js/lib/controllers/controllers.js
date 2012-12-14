@@ -148,25 +148,24 @@ FLOW.questionTypeControl = Ember.Object.create({
 });
 
 
-FLOW.surveyTypeControl = Ember.Object.create({
+FLOW.surveyPointTypeControl = Ember.Object.create({
   content: [
-    Ember.Object.create({label: "Point", value: "point"}),
-    Ember.Object.create({label: "Household", value: "household"}),
-    Ember.Object.create({label: "Public institution", value: "publicInstitution"}),
-    Ember.Object.create({label: "Community", value: "community"})
+    Ember.Object.create({label: "Point", value: "Point"}),
+    Ember.Object.create({label: "Household", value: "Household"}),
+    Ember.Object.create({label: "Public institution", value: "PublicInstitution"})
   ]
 });
 
 
 FLOW.surveySectorTypeControl = Ember.Object.create({
   content: [
-    Ember.Object.create({label: "Water and Sanitation", value: "waterAndSanitation"}),
-    Ember.Object.create({label: "Education", value: "education"}),
-    Ember.Object.create({label: "Economic development", value: "economicDevelopment"}),
-    Ember.Object.create({label: "Health care", value: "healthCare"}),
-    Ember.Object.create({label: "IT and Communication", value: "ItAndCommunication"}),
-    Ember.Object.create({label: "Food security", value: "foodSecurity"}),
-    Ember.Object.create({label: "Other", value: "other"})
+    Ember.Object.create({label: "Water and Sanitation", value: "WASH"}),
+    Ember.Object.create({label: "Education", value: "EDUC"}),
+    Ember.Object.create({label: "Economic development", value: "ECONDEV"}),
+    Ember.Object.create({label: "Health care", value: "HEALTH"}),
+    Ember.Object.create({label: "IT and Communication", value: "ICT"}),
+    Ember.Object.create({label: "Food security", value: "FOODSEC"}),
+    Ember.Object.create({label: "Other", value: "OTHER"})
   ]
 });
 

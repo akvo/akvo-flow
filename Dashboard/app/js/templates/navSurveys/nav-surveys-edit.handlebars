@@ -9,17 +9,17 @@
       {{view Ember.TextArea valueBinding="view.surveyDescription" placeholder="Type in a description of your survey" size=30 rows="3" }} </label>
     <label for="surveyType">Type:
       {{view Ember.Select 
-      contentBinding="FLOW.surveyTypeControl.content" 
+      contentBinding="FLOW.surveyPointTypeControl.content" 
       optionLabelPath="content.label" 
       optionValuePath="content.value" 
-      selectionBinding="view.SurveyType" 
+      selectionBinding="view.surveyPointType" 
       prompt="Select survey type"}} </label>
     <label for="surveyType">Sector Focus:
       {{view Ember.Select 
       contentBinding="FLOW.surveySectorTypeControl.content" 
       optionLabelPath="content.label" 
       optionValuePath="content.value" 
-      selectionBinding="view.SurveySectorType" 
+      selectionBinding="view.surveySectorType" 
       prompt="Select sector"}} </label>
   </form>
   <ul class="newSurveyInfoUl" id="">

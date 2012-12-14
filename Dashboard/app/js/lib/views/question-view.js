@@ -44,7 +44,9 @@ FLOW.QuestionView = Ember.View.extend({
 		console.log('TODO save edit');
 	},
 	
-	//WRONG
+	// BROKEN
+	//TODO when questionAnswers already exist for a question, deletion should not be possible.
+	// at the moment, the deletion is fired and fails, but the order changes are also fired.
 	deleteQuestion: function() {
 		var qDeleteOrder, qDeleteId, question, questionGroupId;
 		qDeleteOrder = this.content.get('order');
@@ -66,6 +68,76 @@ FLOW.QuestionView = Ember.View.extend({
 		question = FLOW.store.find(FLOW.Question, qDeleteId);
 		question.deleteRecord();
 		FLOW.store.commit();
+	},
+
+	// move question to selected location
+    doQuestionMoveHere:function(){
+		var selectedOrder, insertAfterOrder, movingUp;
+		selectedOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
+		movingUp=false;
+
+		if (this.get('zeroItem')) {insertAfterOrder=0;} else {insertAfterOrder=this.content.get('order');}
+
+		// moving to the same place => do nothing
+		if ((selectedOrder==insertAfterOrder)||(selectedOrder==(insertAfterOrder+1))){}
+		else {
+			// determine if the item is moving up or down
+			movingUp = (selectedOrder<insertAfterOrder);
+		
+			FLOW.questionControl.get('content').forEach(function(item){
+				currentOrder=item.get('order');
+
+				// item moving up
+				if (movingUp) {
+					// if outside of change region, do not move
+					if ((currentOrder<selectedOrder) || (currentOrder>insertAfterOrder)){ }
+
+					// move moving item to right location
+					else if (currentOrder==selectedOrder) {	item.set('order',insertAfterOrder); }
+					
+					// move rest down
+					else { item.set('order',item.get('order')-1); }
+				}
+				// item moving down
+				else {
+					if ((currentOrder<=insertAfterOrder) || (currentOrder>selectedOrder)){ }
+					else if (currentOrder==selectedOrder) {	item.set('order',insertAfterOrder+1); }
+					else {	item.set('order',item.get('order')+1); }
+				}
+			}); // end of forEach
+		}
+		
+		FLOW.store.commit();
+		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
+	},
+
+	// TODO
+	// execute question copy to selected location
+	doQuestionCopyHere:function(){
+		var selectedOrder, insertAfterOrder, newRec, currentOrder;
+		selectedOrder = FLOW.selectedControl.selectedForCopyQuestion.get('order');
+	
+
+		if (this.get('zeroItem')) {insertAfterOrder=0;} else {insertAfterOrder=this.content.get('order');}
+
+		// move up to make space
+		FLOW.questionControl.get('content').forEach(function(item){
+			var currentOrder=item.get('order');
+			if (currentOrder>insertAfterOrder) {
+				item.set('order',item.get('order')+1);
+			}
+		}); // end of forEach
+	
+		// create copy of QuestionGroup item in the store
+		newRec = FLOW.store.createRecord(FLOW.Question,{
+			"description": FLOW.selectedControl.selectedForCopyQuestion.get('description'),
+			"order":insertAfterOrder+1,
+			"code":FLOW.selectedControl.selectedForCopyQuestion.get('code'),
+			"surveyId":FLOW.selectedControl.selectedForCopyQuestion.get('surveyId'),
+			"displayName":FLOW.selectedControl.selectedForCopyQuestion.get('displayName')});
+		
+		FLOW.store.commit();
+		FLOW.selectedControl.set('selectedForCopyQuestion', null);
 	},
 
 	// true if one question has been selected for Move
