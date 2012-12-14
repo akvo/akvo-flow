@@ -144,20 +144,20 @@ public class QuestionRestService {
 		// server will respond with 400 Bad Request
 		if (questionDto != null) {
 			Long keyId = questionDto.getKeyId();
-			Question s;
+			Question q;
 
 			// if the questionDto has a key, try to get the question.
 			if (keyId != null) {
-				s = questionDao.getByKey(keyId);
+				q = questionDao.getByKey(keyId);
 				// if we find the question, update it's properties
-				if (s != null) {
+				if (q != null) {
 					// copy the properties, except the createdDateTime property,
 					// because it is set in the Dao.
-					BeanUtils.copyProperties(questionDto, s,
-							new String[] { "createdDateTime" });
-					s = questionDao.save(s);
+					BeanUtils.copyProperties(questionDto, q,
+							new String[] { "createdDateTime"});
+					q = questionDao.save(q);
 					dto = new QuestionDto();
-					DtoMarshaller.copyToDto(s, dto);
+					DtoMarshaller.copyToDto(q, dto);
 					statusDto.setStatus("ok");
 				}
 			}
