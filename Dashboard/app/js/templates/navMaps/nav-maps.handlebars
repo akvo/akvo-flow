@@ -22,14 +22,6 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-		$image = $('.imgContainer img');
-			width = $image.width();
-			height = $image.height();
-			
-		$image.css({
-				left: 0 - (width / 2),
-				top: 0 - (height / 2)
-			});
 		 $("#flowMap").animate({width:"99.25%"}, 1000 );
 		 $("#pointDetails").animate({width:"0.25%"}, 1000 ).css({"overflow":"hidden", "margin-left":"-2px"});
 		 $("#pointDetails h2, #pointDetails dl, #pointDetails img, .imgContainer" ).css({opacity:"0"}).css({display:"none"});
