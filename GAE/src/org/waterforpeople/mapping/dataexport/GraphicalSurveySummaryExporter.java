@@ -135,7 +135,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		// populate all translations
 		RANGE_LABEL = new HashMap<String, String>();
 		RANGE_LABEL.put("en", "Range");
-		RANGE_LABEL.put("es", "Distribuci梟");
+		RANGE_LABEL.put("es", "Distribuci贸n");
 
 		MEAN_LABEL = new HashMap<String, String>();
 		MEAN_LABEL.put("en", "Mean");
@@ -147,15 +147,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		MEDIAN_LABEL = new HashMap<String, String>();
 		MEDIAN_LABEL.put("en", "Median");
-		MEDIAN_LABEL.put("es", "N渕ero medio");
+		MEDIAN_LABEL.put("es", "N煤mero medio");
 
 		MIN_LABEL = new HashMap<String, String>();
 		MIN_LABEL.put("en", "Min");
-		MIN_LABEL.put("es", "M抧imo");
+		MIN_LABEL.put("es", "M铆nimo");
 
 		MAX_LABEL = new HashMap<String, String>();
 		MAX_LABEL.put("en", "Max");
-		MAX_LABEL.put("es", "M噚imo");
+		MAX_LABEL.put("es", "M谩ximo");
 
 		VAR_LABEL = new HashMap<String, String>();
 		VAR_LABEL.put("en", "Variance");
@@ -163,11 +163,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		STD_D_LABEL = new HashMap<String, String>();
 		STD_D_LABEL.put("en", "Std Deviation");
-		STD_D_LABEL.put("es", "Desviaci梟 Est噉dar");
+		STD_D_LABEL.put("es", "Desviaci贸n Est谩ndar");
 
 		STD_E_LABEL = new HashMap<String, String>();
 		STD_E_LABEL.put("en", "Std Error");
-		STD_E_LABEL.put("es", "Error Est噉dar");
+		STD_E_LABEL.put("es", "Error Est谩ndar");
 
 		TOTAL_LABEL = new HashMap<String, String>();
 		TOTAL_LABEL.put("en", "Total");
@@ -199,7 +199,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		SUB_DATE_LABEL = new HashMap<String, String>();
 		SUB_DATE_LABEL.put("en", "Submission Date");
-		SUB_DATE_LABEL.put("es", "Fecha de Presentaci梟");
+		SUB_DATE_LABEL.put("es", "Fecha de Presentaci贸n");
 
 		SUBMITTER_LABEL = new HashMap<String, String>();
 		SUBMITTER_LABEL.put("en", "Submitter");
@@ -235,7 +235,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		COMPLETE = new HashMap<String, String>();
 		COMPLETE.put("en", "Export Complete");
-		COMPLETE.put("es", "Exportaci梟 Completa");
+		COMPLETE.put("es", "Exportaci贸n Completa");
 
 		LAT_LABEL = new HashMap<String, String>();
 		LAT_LABEL.put("en", "Latitude");
@@ -247,11 +247,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		ELEV_LABEL = new HashMap<String, String>();
 		ELEV_LABEL.put("en", "Elevation");
-		ELEV_LABEL.put("es", "Elevaci梟");
+		ELEV_LABEL.put("es", "Elevaci贸n");
 
 		CODE_LABEL = new HashMap<String, String>();
 		CODE_LABEL.put("en", "Geo Code");
-		CODE_LABEL.put("es", "C梔igo Geo");
+		CODE_LABEL.put("es", "C贸digo Geo");
 
 	}
 
