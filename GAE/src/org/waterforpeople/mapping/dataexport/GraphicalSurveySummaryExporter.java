@@ -131,7 +131,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		// populate all translations
 		RANGE_LABEL = new HashMap<String, String>();
 		RANGE_LABEL.put("en", "Range");
-		RANGE_LABEL.put("es", "DistribuciÃ³n");
+		RANGE_LABEL.put("es", "Distribuci—n");
 
 		MEAN_LABEL = new HashMap<String, String>();
 		MEAN_LABEL.put("en", "Mean");
@@ -143,15 +143,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		MEDIAN_LABEL = new HashMap<String, String>();
 		MEDIAN_LABEL.put("en", "Median");
-		MEDIAN_LABEL.put("es", "NÃºmero medio");
+		MEDIAN_LABEL.put("es", "Nœmero medio");
 
 		MIN_LABEL = new HashMap<String, String>();
 		MIN_LABEL.put("en", "Min");
-		MIN_LABEL.put("es", "MÃ­nimo");
+		MIN_LABEL.put("es", "M’nimo");
 
 		MAX_LABEL = new HashMap<String, String>();
 		MAX_LABEL.put("en", "Max");
-		MAX_LABEL.put("es", "MÃ¡ximo");
+		MAX_LABEL.put("es", "M‡ximo");
 
 		VAR_LABEL = new HashMap<String, String>();
 		VAR_LABEL.put("en", "Variance");
@@ -159,11 +159,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		STD_D_LABEL = new HashMap<String, String>();
 		STD_D_LABEL.put("en", "Std Deviation");
-		STD_D_LABEL.put("es", "DesviaciÃ³n EstÃ¡ndar");
+		STD_D_LABEL.put("es", "Desviaci—n Est‡ndar");
 
 		STD_E_LABEL = new HashMap<String, String>();
 		STD_E_LABEL.put("en", "Std Error");
-		STD_E_LABEL.put("es", "Error EstÃ¡ndar");
+		STD_E_LABEL.put("es", "Error Est‡ndar");
 
 		TOTAL_LABEL = new HashMap<String, String>();
 		TOTAL_LABEL.put("en", "Total");
@@ -195,7 +195,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		SUB_DATE_LABEL = new HashMap<String, String>();
 		SUB_DATE_LABEL.put("en", "Submission Date");
-		SUB_DATE_LABEL.put("es", "Fecha de presentaciÃ³n");
+		SUB_DATE_LABEL.put("es", "Fecha de Presentaci—n");
 
 		SUBMITTER_LABEL = new HashMap<String, String>();
 		SUBMITTER_LABEL.put("en", "Submitter");
@@ -231,7 +231,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		COMPLETE = new HashMap<String, String>();
 		COMPLETE.put("en", "Export Complete");
-		COMPLETE.put("es", "ExportaciÃ³n Completa");
+		COMPLETE.put("es", "Exportaci—n Completa");
 
 	}
 
