@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -45,7 +46,7 @@ public class RawDataExporter extends AbstractDataExporter {
 	private String serverBase;
 	private String surveyId;
 	public static final String SURVEY_ID = "surveyId";
-	private Map<String, String> questionMap;
+	private Map<String, QuestionDto> questionMap;
 	private List<String> keyList;
 
 	@Override
@@ -61,7 +62,7 @@ public class RawDataExporter extends AbstractDataExporter {
 					serverBase);
 			if (results != null) {
 				keyList = (List<String>) results[0];
-				questionMap = (Map<String, String>) results[1];
+				questionMap = (Map<String, QuestionDto>) results[1];
 				pw = new BufferedWriter(new OutputStreamWriter(
 						new FileOutputStream(fileName), "UTF8"));
 				writeHeader(pw, questionMap);
@@ -91,7 +92,7 @@ public class RawDataExporter extends AbstractDataExporter {
 					serverBase);
 			if (results != null) {
 				keyList = (List<String>) results[0];
-				questionMap = (Map<String, String>) results[1];
+				questionMap = (Map<String, QuestionDto>) results[1];
 				writeHeader(pw, questionMap);
 				exportInstances(pw, keyList);
 			} else {
@@ -102,14 +103,15 @@ public class RawDataExporter extends AbstractDataExporter {
 		}
 	}
 
-	private void writeHeader(Writer pw, Map<String, String> questions)
+	private void writeHeader(Writer pw, Map<String, QuestionDto> questions)
 			throws Exception {
 		pw.write("Instance\tSubmission Date\tSubmitter");
 		if (keyList != null) {
 			for (String key : keyList) {
 				pw.write("\t");
-				String questionText = questions.get(key).replaceAll("\n", " ")
+				String questionText = questions.get(key).getText().replaceAll("\n", " ")
 						.trim();
+				//if(questions.get(key).getType())
 				questionText = questionText.replaceAll("\r", " ").trim();
 				pw.write(key + "|" + questionText);
 			}
