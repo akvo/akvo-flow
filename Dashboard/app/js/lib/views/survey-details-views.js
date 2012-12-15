@@ -124,23 +124,12 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	}.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
 	// execute group delete
-	// WRONG
+	// TODO should this be allowed when questions are present?
 	deleteQuestionGroup: function() {
 		var qgDeleteOrder, qgDeleteId, questionGroup, surveyId;
 		qgDeleteOrder = this.content.get('order');
 		qgDeleteId = this.content.get('keyId');
 		surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-
-		// move items down
-		FLOW.store.filter(FLOW.QuestionGroup, function(data) {
-			return(data.get('surveyId') == surveyId);
-		}).forEach(function(item) {
-			var currentOrder = item.get('order');
-
-			if(currentOrder > qgDeleteOrder) {
-				item.set('order', item.get('order') - 1);
-			}
-		});
 
 		questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
 		questionGroup.deleteRecord();
@@ -157,21 +146,13 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			insertAfterOrder = this.content.get('order');
 		}
 		surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-		console.log('surveyId:', surveyId);
-		// move up to make space
-		FLOW.store.filter(FLOW.QuestionGroup, function(data) {
-			return(data.get('surveyId') == surveyId);
-		}).forEach(function(item) {
-			console.log(item.get('keyId'), item.get('order'));
-			var currentOrder = item.get('order');
-			if(currentOrder > insertAfterOrder) {
-				item.set('order', item.get('order') + 1);
-			}
-		});
+		
 		// create new QuestionGroup item in the store
+		// the insertAfterOrder is inserted here
+		// in the server, the proper order of all question groups is re-established
 		var newRec = FLOW.store.createRecord(FLOW.QuestionGroup, {
 			"code": "New group - please change name",
-			"order": insertAfterOrder + 1,
+			"order": insertAfterOrder,
 			"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
 		});
 		FLOW.store.commit();
@@ -204,9 +185,8 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 	// execture group move to selected location
 	doQGroupMoveHere: function() {
-		var selectedOrder = FLOW.selectedControl.selectedForMoveQuestionGroup.get('order');
-		var insertAfterOrder;
-		var movingUp = false;
+		var selectedOrder, insertAfterOrder, selectedQG;
+		selectedOrder = FLOW.selectedControl.selectedForMoveQuestionGroup.get('order');
 
 		if(this.get('zeroItem')) {
 			insertAfterOrder = 0;
@@ -214,70 +194,39 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			insertAfterOrder = this.content.get('order');
 		}
 
-		// moving to the same place => do nothing
-		if((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1))) {} else {
-			// determine if the item is moving up or down
-			movingUp = (selectedOrder < insertAfterOrder);
+		// only do something if we are not moving to the same place
+		if(!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
+			selectedQG = FLOW.store.find(FLOW.QuestionGroup, FLOW.selectedControl.selectedForMoveQuestionGroup.get('keyId'));
+			if(selectedQG !== null) {
+				// the insertAfterOrder is inserted here
+				// in the server, the proper order of all question groups is re-established
+				selectedQG.set('order',insertAfterOrder);
+				FLOW.store.commit();
+			}
+		}
 
-			FLOW.questionGroupControl.get('content').forEach(function(item) {
-				var currentOrder = item.get('order');
-
-				// item moving up
-				if(movingUp) {
-					// if outside of change region, do not move
-					if((currentOrder < selectedOrder) || (currentOrder > insertAfterOrder)) {}
-
-					// move moving item to right location
-					else if(currentOrder == selectedOrder) {
-						item.set('order', insertAfterOrder);
-					}
-
-					// move rest down
-					else {
-						item.set('order', item.get('order') - 1);
-					}
-				}
-
-				// item moving down
-				else {
-					if((currentOrder <= insertAfterOrder) || (currentOrder > selectedOrder)) {} else if(currentOrder == selectedOrder) {
-						item.set('order', insertAfterOrder + 1);
-					} else {
-						item.set('order', item.get('order') + 1);
-					}
-				}
-			}); // end of forEach
-		} // end of top else
-		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
 	},
 
 	// execute group copy to selected location
+	// TODO should this copy all questions in the group?
 	doQGroupCopyHere: function() {
-
-		var selectedOrder = FLOW.selectedControl.selectedForCopyQuestionGroup.get('order');
-		var insertAfterOrder;
+		var selectedOrder, insertAfterOrder, newRec;
+		selectedOrder = FLOW.selectedControl.selectedForCopyQuestionGroup.get('order');
 
 		if(this.get('zeroItem')) {
 			insertAfterOrder = 0;
 		} else {
 			insertAfterOrder = this.content.get('order');
 		}
-
-		// move up to make space
-		FLOW.questionGroupControl.get('content').forEach(function(item) {
-			var currentOrder = item.get('order');
-			if(currentOrder > insertAfterOrder) {
-				item.set('order', item.get('order') + 1);
-			}
-		}); // end of forEach
-		// create copy of QuestionGroup item in the store
-		var newRec = FLOW.store.createRecord(FLOW.QuestionGroup, {
+		
+		// the insertAfterOrder is inserted here
+		// in the server, the proper order of all question groups is re-established
+		newRec = FLOW.store.createRecord(FLOW.QuestionGroup, {
 			"description": FLOW.selectedControl.selectedForCopyQuestionGroup.get('description'),
-			"order": insertAfterOrder + 1,
+			"order": insertAfterOrder,
 			"code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
-			"surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId'),
-			"displayName": FLOW.selectedControl.selectedForCopyQuestionGroup.get('displayName')
+			"surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId')
 		});
 
 		FLOW.store.commit();

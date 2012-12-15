@@ -35,9 +35,10 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
-
 
 @Controller
 @RequestMapping("/question_groups")
@@ -45,6 +46,9 @@ public class QuestionGroupRestService {
 
 	@Inject
 	private QuestionGroupDao questionGroupDao;
+	
+	@Inject
+	private QuestionDao questionDao;
 
 	// TODO put in meta information?
 	// list all questionGroups
@@ -109,8 +113,7 @@ public class QuestionGroupRestService {
 			dto = new QuestionGroupDto();
 			DtoMarshaller.copyToDto(s, dto);
 			// needed because of different names for description in
-			// questionGroup and
-			// questionGroupDto
+			// questionGroup and questionGroupDto
 			dto.setDescription(s.getDesc());
 		}
 		response.put("question_group", dto);
@@ -122,18 +125,38 @@ public class QuestionGroupRestService {
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
 	public Map<String, RestStatusDto> deleteQuestionGroupById(
-			@PathVariable("id") Long id) {
+			@PathVariable("id") Long questionGroupId) {
 		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-		QuestionGroup s = questionGroupDao.getByKey(id);
+		QuestionGroup s = questionGroupDao.getByKey(questionGroupId);
 		RestStatusDto statusDto = null;
 		statusDto = new RestStatusDto();
 		statusDto.setStatus("failed");
 
 		// check if questionGroup exists in the datastore
 		if (s != null) {
-			// delete questionGroup group
-			questionGroupDao.delete(s);
-			statusDto.setStatus("ok");
+			// check if questions are in this group
+			List<Question> questions = questionDao
+					.listQuestionsInOrderForGroup(questionGroupId);
+			if (questions.size() > 0 ) {
+				statusDto.setStatus("failed");
+				statusDto.setMessage("Cannot delete question group "
+						+ "because there are questions inside. "
+						+ "Please remove the questions first.");
+			} else {
+				// delete questionGroup
+				List<QuestionGroup> questionGroups = questionGroupDao
+						.listQuestionGroupBySurvey(s.getSurveyId());
+				if (questionGroups != null) {
+					for (QuestionGroup qGroup : questionGroups) {
+						if (qGroup.getOrder() > s.getOrder()) {
+							qGroup.setOrder(qGroup.getOrder() - 1);
+							qGroup = questionGroupDao.save(qGroup);
+						}
+					}
+				}
+				questionGroupDao.delete(s);		
+				statusDto.setStatus("ok");
+			}
 		}
 		response.put("meta", statusDto);
 		return response;
@@ -156,20 +179,64 @@ public class QuestionGroupRestService {
 		// server will respond with 400 Bad Request
 		if (questionGroupDto != null) {
 			Long keyId = questionGroupDto.getKeyId();
-			QuestionGroup s;
+			QuestionGroup qg;
 
 			// if the questionGroupDto has a key, try to get the questionGroup.
 			if (keyId != null) {
-				s = questionGroupDao.getByKey(keyId);
+				qg = questionGroupDao.getByKey(keyId);
 				// if we find the questionGroup, update it's properties
-				if (s != null) {
-					// copy the properties, except the createdDateTime property,
-					// because it is set in the Dao.
-					BeanUtils.copyProperties(questionGroupDto, s,
-							new String[] { "createdDateTime" });
-					s = questionGroupDao.save(s);
+				if (qg != null) {
+					Integer origOrder = qg.getOrder();
+					BeanUtils.copyProperties(questionGroupDto, qg,
+							new String[] { "createdDateTime", "order" });
+					qg = questionGroupDao.save(qg);
+
+					// if the original order is different from the current
+					// number in the order field interpret the number as
+					// an 'afterInsert' number and adapt the order of all the
+					// question groups. If not, the order field does not need to
+					// be copied as it has not changed.
+					if (origOrder != questionGroupDto.getOrder()) {
+						Integer insertAfterOrder = questionGroupDto.getOrder();
+						Integer currentOrder;
+						Boolean movingUp = (origOrder < insertAfterOrder);
+						List<QuestionGroup> questionGroups = questionGroupDao
+								.listQuestionGroupBySurvey(qg.getSurveyId());
+						if (questionGroups != null) {
+							for (QuestionGroup qGroup : questionGroups) {
+								currentOrder = qGroup.getOrder();
+								if (movingUp) {
+									// move moving item to right location
+									if (currentOrder == origOrder) {
+										qGroup.setOrder(insertAfterOrder);
+										qGroup = questionGroupDao.save(qGroup);
+									} else if ((currentOrder > origOrder)
+											&& (currentOrder <= insertAfterOrder)) {
+										// move down
+										qGroup.setOrder(qGroup.getOrder() - 1);
+										qGroup = questionGroupDao.save(qGroup);
+									}
+								} else {
+									// Moving down
+									if (currentOrder == origOrder) {
+										qGroup.setOrder(insertAfterOrder + 1);
+										qGroup = questionGroupDao.save(qGroup);
+									} else if ((currentOrder < origOrder)
+											&& (currentOrder > insertAfterOrder)) {
+										// move up
+										qGroup.setOrder(qGroup.getOrder() + 1);
+										qGroup = questionGroupDao.save(qGroup);
+									}
+								}
+							}
+						}
+					}
+
+					// get the present question group again, as it's order may
+					// have changed
+					qg = questionGroupDao.getByKey(keyId);
 					dto = new QuestionGroupDto();
-					DtoMarshaller.copyToDto(s, dto);
+					DtoMarshaller.copyToDto(qg, dto);
 					statusDto.setStatus("ok");
 				}
 			}
@@ -192,17 +259,30 @@ public class QuestionGroupRestService {
 		statusDto.setStatus("failed");
 
 		// if the POST data contains a valid questionGroupDto, continue.
-		// Otherwise,
-		// server will respond with 400 Bad Request
+		// Otherwise, server will respond with 400 Bad Request
 		if (questionGroupDto != null) {
 			QuestionGroup s = new QuestionGroup();
 
 			// copy the properties, except the createdDateTime property, because
 			// it is set in the Dao.
-			BeanUtils.copyProperties(questionGroupDto, s,
-					new String[] { "createdDateTime" });
-			s = questionGroupDao.save(s);
+			BeanUtils.copyProperties(questionGroupDto, s, new String[] {
+					"createdDateTime", "order" });
 
+			// moke room by moving items up
+			List<QuestionGroup> questionGroups = questionGroupDao
+					.listQuestionGroupBySurvey(questionGroupDto.getSurveyId());
+			Integer insertAfterOrder = questionGroupDto.getOrder();
+			if (questionGroups != null) {
+				for (QuestionGroup qGroup : questionGroups) {
+					if (qGroup.getOrder() > insertAfterOrder) {
+						qGroup.setOrder(qGroup.getOrder() + 1);
+						qGroup = questionGroupDao.save(qGroup);
+					}
+				}
+			}
+
+			s.setOrder(insertAfterOrder + 1);
+			s = questionGroupDao.save(s);
 			dto = new QuestionGroupDto();
 			DtoMarshaller.copyToDto(s, dto);
 			statusDto.setStatus("ok");
