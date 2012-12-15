@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.dataexport;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -278,8 +279,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		jobQueue = new LinkedBlockingQueue<Runnable>();
 		threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
 				jobQueue);
-		progressDialog = new ProgressDialog(maxSteps, locale);
-		progressDialog.setVisible(true);
+		if (!GraphicsEnvironment.isHeadless()) {
+			progressDialog = new ProgressDialog(maxSteps, locale);
+			progressDialog.setVisible(true);
+		}
 		questionsById = new HashMap<Long, QuestionDto>();
 		currentStep = 1;
 		this.serverBase = serverBase;
@@ -496,11 +499,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		for (String q : questionIdList) {
 			String val = null;
+			QuestionDto qdto = questionsById.get(Long.parseLong(q));
 			if (responseMap != null) {
 				val = responseMap.get(q);
 			}
-			if (val != null) {
-				QuestionDto qdto = questionsById.get(Long.parseLong(q));
+			if (val != null) {				
 				try {
 					if (qdto != null && QuestionType.DATE == qdto.getType()) {
 						val = DATE_FMT.format(new Date(Long.parseLong(val
@@ -523,7 +526,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				}
 
 				if (qdto != null && QuestionType.GEO == qdto.getType()) {
-					String[] geoParts = val.split("|");
+					String[] geoParts = val.split("\\|");
 					int count = 0;
 					for (count = 0; count < geoParts.length; count++) {
 						createCell(row, col++, geoParts[count], null);
@@ -539,7 +542,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					digest.update(cellVal.getBytes());
 				}
 			} else {
-				createCell(row, col++, "", null);
+				if (qdto != null && QuestionType.GEO == qdto.getType()) {
+					for(int j =0; j < 4; j++){
+						createCell(row, col++, "", null);
+					}
+				} else {
+					createCell(row, col++, "", null);
+				}
 			}
 		}
 		// now add 1 more col that contains the digest
@@ -1035,6 +1044,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		return this.imagePrefix;
 	}
 
+	public static void main(String[] args) {
+		GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
+		Map<String, String> criteria = new HashMap<String, String>();
+		criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
+		exporter.export(criteria, new File(args[0]), args[1], null);
+	}
+
 	/**
 	 * Private class to handle updating of the UI thread from our worker thread
 	 */
@@ -1049,7 +1065,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		}
 
 		public void run() {
-			progressDialog.update(step, msg);
+			if (!GraphicsEnvironment.isHeadless()) {
+				progressDialog.update(step, msg);
+			}
 		}
 	}
 
@@ -1092,4 +1110,5 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		}
 
 	}
+
 }
