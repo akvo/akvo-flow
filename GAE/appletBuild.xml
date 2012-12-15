@@ -74,25 +74,25 @@
     </target>
 
     <target name="sign3rdjar" depends="">
-        <signjar  jar="war/velocity-1.6.2-dep.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/geoapi-2.3-M1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/geoapi-pending-2.3-M1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/gt-api-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/gt-main-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/gt-metadata-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/jts-1.11-serializable-indexes.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/jdom-1.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/commons-beanutils-1.7.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/commons-logging-1.1.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/gt-shapefile-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/jcommon-1.0.16.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/jfreechart-1.0.13.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/poi-3.8-20120326.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/poi-ooxml-3.8-20120326.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/poi-ooxml-schemas-3.8-20120326.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/xbean.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/dom4j-1.6.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
-        <signjar  jar="war/gdata-core-1.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" />
+        <signjar  jar="war/velocity-1.6.2-dep.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true" />
+        <signjar  jar="war/geoapi-2.3-M1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/geoapi-pending-2.3-M1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/gt-api-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/gt-main-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/gt-metadata-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/jts-1.11-serializable-indexes.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/jdom-1.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/commons-beanutils-1.7.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/commons-logging-1.1.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/gt-shapefile-2.6.5.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/jcommon-1.0.16.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/jfreechart-1.0.13.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/poi-3.8-20120326.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/poi-ooxml-3.8-20120326.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/poi-ooxml-schemas-3.8-20120326.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/xbean.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/dom4j-1.6.1.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
+        <signjar  jar="war/gdata-core-1.0.jar" alias="${keystore.alias}" keystore="${keystore.dir}" storepass="${keystore.password}" verbose="true" force="true"/>
     </target>
 
 
