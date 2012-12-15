@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -109,11 +110,18 @@ public class RawDataExporter extends AbstractDataExporter {
 		if (keyList != null) {
 			for (String key : keyList) {
 				pw.write("\t");
-				String questionText = questions.get(key).getText().replaceAll("\n", " ")
-						.trim();
-				//if(questions.get(key).getType())
-				questionText = questionText.replaceAll("\r", " ").trim();
-				pw.write(key + "|" + questionText);
+				if (questions.get(key).getType() != null
+						&& QuestionType.GEO == questions.get(key).getType()) {
+					pw.write(key
+							+ "|"
+							+ "Latitude"
+							+ "\t--GEOLON--|Longitude\t--GEOELE--|Elevation\t--GEOCODE--|Geo Code");
+				} else {
+					String questionText = questions.get(key).getText()
+							.replaceAll("\n", " ").trim();
+					questionText = questionText.replaceAll("\r", " ").trim();
+					pw.write(key + "|" + questionText);
+				}
 			}
 		}
 		pw.write("\n");
@@ -127,11 +135,11 @@ public class RawDataExporter extends AbstractDataExporter {
 			String imagePrefix = IMAGE_PREFIX;
 			try {
 				imagePrefix = PropertyUtil.getProperty("photo_url_root");
-				
+
 			} catch (Exception e) {
 				imagePrefix = IMAGE_PREFIX;
 			}
-			if(imagePrefix != null && !imagePrefix.endsWith("/")){
+			if (imagePrefix != null && !imagePrefix.endsWith("/")) {
 				imagePrefix = imagePrefix + "/";
 			}
 			int i = 0;
@@ -155,27 +163,48 @@ public class RawDataExporter extends AbstractDataExporter {
 								String name = dto.getSubmitterName();
 								if (name != null) {
 									pw.write(dto.getSubmitterName()
-											.replaceAll("\n", " ").replaceAll("\t"," ").trim());
+											.replaceAll("\n", " ")
+											.replaceAll("\t", " ").trim());
 								}
 							}
 							for (String key : idList) {
 								String val = responses.get(key);
 								pw.write("\t");
 								if (val != null) {
-									if (val.contains(SDCARD_PREFIX)) {
-										String[] photoParts = val.split("/");
-										if (photoParts.length > 1) {
-											val = imagePrefix
-													+ photoParts[photoParts.length - 1];
-										} else {
-											val = imagePrefix
-													+ val.substring(val
-															.indexOf(SDCARD_PREFIX)
-															+ SDCARD_PREFIX
-																	.length());
+									if (questionMap != null
+											&& questionMap.get(key) != null
+											&& QuestionType.GEO == questionMap
+													.get(key).getType()) {
+										String[] geoParts = val.split("|");
+										int count = 0;
+										for (count =0; count < geoParts.length; count++){
+											if(count > 0){
+												pw.write("\t");
+											}
+											pw.write(geoParts[count]);
 										}
+										//now handle any missing fields
+										for(int j =count; j < 4; j++){
+											pw.write("\t");
+										}										
+									} else {
+										if (val.contains(SDCARD_PREFIX)) {
+											String[] photoParts = val
+													.split("/");
+											if (photoParts.length > 1) {
+												val = imagePrefix
+														+ photoParts[photoParts.length - 1];
+											} else {
+												val = imagePrefix
+														+ val.substring(val
+																.indexOf(SDCARD_PREFIX)
+																+ SDCARD_PREFIX
+																		.length());
+											}
+										}
+										pw.write(val.replaceAll("\n", " ")
+												.trim());
 									}
-									pw.write(val.replaceAll("\n", " ").trim());
 								}
 							}
 
