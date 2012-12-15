@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -175,7 +176,7 @@ public class RawDataExporter extends AbstractDataExporter {
 											&& questionMap.get(key) != null
 											&& QuestionType.GEO == questionMap
 													.get(key).getType()) {
-										String[] geoParts = val.split("|");
+										String[] geoParts = val.split("\\|");
 										int count = 0;
 										for (count =0; count < geoParts.length; count++){
 											if(count > 0){
@@ -205,6 +206,8 @@ public class RawDataExporter extends AbstractDataExporter {
 										pw.write(val.replaceAll("\n", " ")
 												.trim());
 									}
+								}else{
+									
 								}
 							}
 
@@ -223,4 +226,12 @@ public class RawDataExporter extends AbstractDataExporter {
 			}
 		}
 	}
+	
+	public static void main(String[] args) {
+		RawDataExporter exporter = new RawDataExporter();
+		Map<String, String> criteria = new HashMap<String, String>();
+		criteria.put(SURVEY_ID, args[2]);
+		exporter.export(criteria, new File(args[0]), args[1], null);
+	}
+
 }
