@@ -32,7 +32,6 @@
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
         <br><br>
         <h3>{{FLOW.chartDataControl.questionText}}</h3>
-        Total number of answers: {{FLOW.chartDataControl.total}}
 
         <div id="piechart"></div>
 
@@ -61,12 +60,12 @@ function createChart(){
         .attr("width", canvasWidth) //set the width of the canvas
         .attr("height", canvasHeight) //set the height of the canvas
         .append("svg:g") //make a group to hold our pie chart
-          .attr("transform", "translate(" + 0.5*canvasWidth + "," + 0.5*canvasHeight + ")") // relocate center of pie to 'outerRadius,outerRadius'
+        .attr("transform", "translate(" + 0.5*canvasWidth + "," + 0.5*canvasHeight + ")") // relocate center of pie to 'outerRadius,outerRadius'
 
     // This will create <path> elements for us using arc data...
     var arc = d3.svg.arc()
       .outerRadius(outerRadius)
-      .innerRadius(outerRadius-60);
+      .innerRadius(outerRadius-50);
 
     var pie = d3.layout.pie() //this will create arc data for us given a list of values
       .value(function(d) { return d.magnitude; }) // Binding each value to the pie
@@ -108,6 +107,28 @@ function createChart(){
       .style("fill", "Purple")
       .style("font", "bold 12px Arial")
       .text(function(d, i) { return dataSet[i].legendLabel; }); //get the label from our original data array
+
+       // Add a legendLabel to each arc slice...
+    vis.append("svg:text")
+      .attr("text-anchor", "middle")
+      .style("fill", "Purple")
+      .style("font", "bold 12px Arial")
+      .text("Total:") //get the label from our original data array
+      .attr("transform","translate(0,-15)");
+
+    vis.append("svg:text")
+      .attr("text-anchor", "middle")
+      .style("fill", "Purple")
+      .style("font", "bold 12px Arial")
+      .text("answers") //get the label from our original data array
+      .attr("transform","translate(0,15)");
+
+    vis.append("svg:text")
+      .attr("text-anchor", "middle")
+      .style("fill", "Purple")
+      .style("font", "bold 12px Arial")
+      .text(FLOW.chartDataControl.total.toString()) //get the label from our original data array
+      .attr("transform","translate(0,0)");
 
     // Computes the angle of an arc, converting from radians to degrees.
     function angle(d) {

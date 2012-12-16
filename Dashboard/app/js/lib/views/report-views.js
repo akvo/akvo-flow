@@ -8,11 +8,17 @@ FLOW.chartView = Em.View.extend({
   },
 
   buildChart:function () {
-    var chartData = [], total = 0;
+    var chartData = [], total = 0, percentage;
     if (FLOW.surveyQuestionSummaryControl.content.get('isLoaded') === true){
       FLOW.chartDataControl.set('total',FLOW.surveyQuestionSummaryControl.content.get('length'));
       FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
-        chartData.push({"legendLabel":item.get('response'), "magnitude":item.get('count')});
+        total = total + item.get('count');
+      });
+      
+      FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
+        percentage = 100*item.get('count')/total;
+        percString = percentage.toFixed(1);
+        chartData.push({"legendLabel":(item.get('response') + "," + percString + "%"), "magnitude":item.get('count')});
         total = total + item.get('count');
       });
       FLOW.chartDataControl.set('chartData',chartData);
