@@ -224,6 +224,7 @@ FLOW.Router = Ember.Router.extend({
       route: '/reports',
       connectOutlets: function(router, context) {
         router.get('applicationController').connectOutlet('navReports');
+        FLOW.surveyGroupControl.populate();
         router.set('navigationController.selected', 'navReports');
       }
     }),

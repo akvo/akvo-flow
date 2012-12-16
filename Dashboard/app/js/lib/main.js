@@ -1,6 +1,7 @@
 
 require('akvo-flow/vendor/jquery-ui-1.8.21.custom');
 require('akvo-flow/vendor/modernizr.custom.32662');
+require('akvo-flow/vendor/d3.v2.min');
 require('akvo-flow/vendor/jquery.dataTables');
 require('akvo-flow/vendor/handlebars-1.0.rc.1');
 require('akvo-flow/vendor/ember-1.0.0.pre-2-36');

@@ -24,55 +24,55 @@ FLOW.SurveyGroup.FIXTURES = [{
 FLOW.Survey.FIXTURES = [{
     id: 1,
     keyId: 1,
-    displayName: 'Water point survey',
+    code: 'Water point survey',
     name: 'Water point survey',
     surveyGroupId: 1
 }, {
     id: 2,
     keyId: 2,
-    displayName: 'Sanitation survey',
+    code: 'Sanitation survey',
     name: 'Sanitation survey',
     surveyGroupId: 1
 }, {
     id: 3,
     keyId: 3,
-    displayName: 'Baseline WASH',
+    code: 'Baseline WASH',
     name: 'Baseline WASH',
     surveyGroupId: 1
 }, {
     id: 4,
     keyId: 4,
-    displayName: 'Akvo RSR update',
+    code: 'Akvo RSR update',
     name: 'Akvo RSR update',
     surveyGroupId: 1
 }, {
     id: 5,
     keyId: 5,
-    displayName: 'Akvo update',
+    code: 'Akvo update',
     name: 'Akvo update',
     surveyGroupId: 1
 }, {
     id: 6,
     keyId: 6,
-    displayName: 'Loics survey',
+    code: 'Loics survey',
     name: 'Loics survey',
     surveyGroupId: 1
 }, {
     id: 7,
     keyId: 7,
-    displayName: 'Farmer survey',
+    code: 'Farmer survey',
     name: 'Farmer survey',
     surveyGroupId: 1
 }, {
     id: 8,
     keyId: 8,
-    displayName: 'Rabbit',
+    code: 'Rabbit',
     name: 'Rabbit',
     surveyGroupId: 1
 }, {
     id: 9,
     keyId: 9,
-    displayName: 'Rabbit II',
+    code: 'Rabbit II',
     name: 'Rabbit II',
     surveyGroupId: 1
 }];
@@ -1163,4 +1163,34 @@ FLOW.SurveyInstance.FIXTURES = [{
     id: 732231
 }];
 
-
+FLOW.SurveyQuestionSummary.FIXTURES = [{
+    id: 1,
+    keyId: 1,
+    response:'Apples',
+    count:20
+}, {
+    id: 2,
+    keyId: 2,
+    response:'Pears',
+    count:30
+}, {
+    id: 3,
+    keyId: 3,
+    response:'Oranges',
+    count:'15'
+}, {
+    id: 4,
+    keyId: 4,
+    response:'Mangos',
+    count:'45'
+}, {
+    id: 5,
+    keyId: 5,
+    response:'Mandarins',
+    count:'80'
+},{
+    id: 5,
+    keyId: 5,
+    response:'Grapes',
+    count:'100'
+}];

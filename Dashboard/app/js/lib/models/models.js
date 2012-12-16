@@ -252,3 +252,9 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
   questionId: DS.attr('string'),
   questionText: DS.attr('string')
 });
+
+FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({
+  response: DS.attr('string'),
+  count: DS.attr('number'),
+  questionId: DS.attr('string')
+});
