@@ -414,7 +414,7 @@ public class BulkDataServiceClient {
 	public static Object[] loadQuestions(String surveyId, String serverBase)
 			throws Exception {
 		Object[] results = new Object[2];
-		Map<String, String> questions = new HashMap<String, String>();
+		Map<String, QuestionDto> questions = new HashMap<String, QuestionDto>();
 		List<QuestionGroupDto> groups = fetchQuestionGroups(serverBase,
 				surveyId);
 		List<String> keyList = new ArrayList<String>();
@@ -426,7 +426,7 @@ public class BulkDataServiceClient {
 					for (QuestionDto question : questionDtos) {
 						keyList.add(question.getKeyId().toString());
 						questions.put(question.getKeyId().toString(),
-								question.getText());
+								question);
 					}
 				}
 			}
@@ -961,7 +961,7 @@ public class BulkDataServiceClient {
 	public static String fetchDataFromServer(String baseUrl,
 			String queryString, boolean shouldSign, String key)
 			throws Exception {
-		if (shouldSign) {
+		if (shouldSign && key != null) {
 			if (queryString == null) {
 				queryString = new String();
 			} else {
