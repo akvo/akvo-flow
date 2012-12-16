@@ -961,7 +961,7 @@ public class BulkDataServiceClient {
 	public static String fetchDataFromServer(String baseUrl,
 			String queryString, boolean shouldSign, String key)
 			throws Exception {
-		if (shouldSign) {
+		if (shouldSign && key != null) {
 			if (queryString == null) {
 				queryString = new String();
 			} else {
