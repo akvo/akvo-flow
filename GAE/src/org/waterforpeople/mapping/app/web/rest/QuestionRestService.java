@@ -69,7 +69,7 @@ public class QuestionRestService {
 	// list questions by questionGroup id
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<QuestionDto>> listQuestionsByGroupId(
+	public Map<String, List<QuestionDto>> listQuestions(
 			@RequestParam("questionGroupId") Long questionGroupId) {
 		final Map<String, List<QuestionDto>> response = new HashMap<String, List<QuestionDto>>();
 		List<QuestionDto> results = new ArrayList<QuestionDto>();
