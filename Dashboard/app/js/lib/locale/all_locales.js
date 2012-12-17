@@ -80,7 +80,8 @@ Ember.STRINGS_EN = {
   '_Q_delete_header':'Are you sure you want to delete this question?',
   '_Q_delete_message':'This cannot be undone.',
   '_action_failed': 'Action failed',
-  '_build_chart':'Build chart'
+  '_build_chart':'Build chart',
+  '_raw_data_report': 'Raw Data Report'
 };
 
 Ember.STRINGS_ES = {

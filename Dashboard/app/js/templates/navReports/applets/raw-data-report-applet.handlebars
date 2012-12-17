@@ -1,0 +1,13 @@
+<applet width="100" height="30"
+  code="com.gallatinsystems.framework.dataexport.applet.DataExportAppletImpl"
+  archive="exporterapplet.jar,json.jar,jcommon-1.0.16.jar,jfreechart-1.0.13.jar,poi-3.8-20120326.jar,poi-ooxml-3.8-20120326.jar,poi-ooxml-schemas-3.8-20120326.jar,xbean.jar,dom4j-1.6.1.jar,gdata-core-1.0.jar">
+  <param name="cache-archive" value="exporterapplet.jar, json.jar">
+  <param name="cache-version" value="1.3, 1.0">
+  <param name="exportType" value="RAW_DATA">
+  <param name="java_arguments" value="-Xmx1024m">
+  <param name="factoryClass"
+    value="org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory">
+  <param name="criteria" value="surveyId:={{unbound FLOW.selectedControl.selectedSurvey.keyId}}">
+  <param name="options"
+    value="exportMode:=RAW_DATA;locale:=en;imgPrefix:=http://flowdemo.s3.amazonaws.com/images;generateTabFormat=false/">
+</applet>

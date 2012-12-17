@@ -30,6 +30,12 @@
         prompt="Select question"}}<br/><br/>
         
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
+        <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
+
+        {{#if FLOW.showRawDataReportApplet }}
+          {{view FLOW.rawDataReportApplet }}
+        {{/if}}
+
         <br><br>
         <h3>{{FLOW.chartDataControl.questionText}}</h3>
 
@@ -38,7 +44,7 @@
         </p>
     </div>
 {{/view}}
- 
+
  <script type="text/javascript">
 
 function deleteChart(){

@@ -329,6 +329,11 @@ FLOW.NavReportsView = Ember.View.extend({
   templateName: 'navReports/nav-reports'
 });
 
+// applets
+FLOW.rawDataReportApplet = Ember.View.extend({
+  templateName: 'navReports/applets/raw-data-report-applet'
+});
+
 // users views
 FLOW.NavUsersView = Ember.View.extend({
   templateName: 'navUsers/nav-users'
