@@ -810,6 +810,10 @@ table.dataTable thead tr th {
 	font-weight: normal;
 	font-size: 1.1em;
 }
+.dataSection table.dataTable thead tr th {
+	padding: 9px 1em 9px 1em;
+}
+
 table.dataTable thead tr th.noArrows {
 	background: #3A3A3A;
 }
