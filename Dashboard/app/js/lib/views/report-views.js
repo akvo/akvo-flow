@@ -10,7 +10,7 @@ FLOW.chartView = Em.View.extend({
   },
 
   buildChart:function () {
-    var chartData = [], total = 0, percentage;
+    var chartData = [], total = 0, percentage, percString;
     if (FLOW.surveyQuestionSummaryControl.content.get('isLoaded') === true){
       FLOW.chartDataControl.set('total',FLOW.surveyQuestionSummaryControl.content.get('length'));
       FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
@@ -22,6 +22,9 @@ FLOW.chartView = Em.View.extend({
         percString = percentage.toFixed(1);
         chartData.push({"legendLabel":(item.get('response') + "," + percString + "%"), "magnitude":item.get('count')});
         total = total + item.get('count');
+      });
+      chartData.sort(function(a,b){
+        return a.magnitude - b.magnitude;
       });
       FLOW.chartDataControl.set('chartData',chartData);
       FLOW.chartDataControl.set('total',total);

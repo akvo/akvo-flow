@@ -10,17 +10,10 @@
 
       {{view Ember.Select 
         contentBinding="FLOW.surveyControl.content" 
-        selectionBinding="FLOW.selectedControl.selectedSurvey" 
+        selectionBinding="FLOW.selectedControl.selectedSurveyAllQuestions" 
         optionLabelPath="content.code" 
         optionValuePath="content.keyId" 
         prompt="Select survey"}} <br/>
-
-      {{view Ember.Select 
-        contentBinding="FLOW.questionGroupControl.content" 
-        selectionBinding="FLOW.selectedControl.selectedQuestionGroup" 
-        optionLabelPath="content.code" 
-        optionValuePath="content.keyId" 
-        prompt="Select question group"}}<br/>
 
         {{view Ember.Select 
         contentBinding="FLOW.questionControl.content" 

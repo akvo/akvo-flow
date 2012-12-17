@@ -173,6 +173,7 @@ FLOW.surveySectorTypeControl = Ember.Object.create({
 FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
   selectedSurvey: null,
+  selectedSurveyAllQuestions: null,
   selectedQuestionGroup: null,
   selectedQuestion: null,
   selectedOption: null,
@@ -185,6 +186,7 @@ FLOW.selectedControl = Ember.Controller.create({
   // when selected survey changes, deselect selected surveys and question groups
   deselectSurveyGroupChildren: function () {
     FLOW.selectedControl.set('selectedSurvey', null);
+    FLOW.selectedControl.set('selectedSurveyAllQuestions', null);
     FLOW.selectedControl.set('selectedQuestionGroup', null);
   }.observes('this.selectedSurveyGroup'),
 
@@ -364,7 +366,14 @@ FLOW.questionControl = Ember.ArrayController.create({
       var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
       this.set('content', FLOW.store.findQuery(FLOW.Question, {questionGroupId: id}));
     }
-  }.observes('FLOW.selectedControl.selectedQuestionGroup')
+  }.observes('FLOW.selectedControl.selectedQuestionGroup'),
+
+  populateAllQuestions: function () {
+    if (FLOW.selectedControl.get('selectedSurveyAllQuestions')) {
+      var id = FLOW.selectedControl.selectedSurveyAllQuestions.get('keyId');
+      this.set('content', FLOW.store.findQuery(FLOW.Question, {surveyId: id,summaryOnly:"true"}));
+    }
+  }.observes('FLOW.selectedControl.selectedSurveyAllQuestions')
 });
 
 
