@@ -91,7 +91,7 @@ FLOW.dataserverControl = Ember.Object.create({
     Ember.Object.create({label: "Fixtures", value: "fixtures"})],
 
   changeServer: function () {
-    var host = "http://" + window.location.hostname,
+    var host = "http://" + window.location.host,
     server = this.dataserver.get('value');
     localStorage.dataserver = server;
 
