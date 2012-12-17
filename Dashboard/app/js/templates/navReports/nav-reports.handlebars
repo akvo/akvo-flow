@@ -30,7 +30,9 @@
         prompt="Select question"}}<br/><br/>
         
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
-        <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
+        {{#if FLOW.selectedControl.selectedSurvey }}
+          <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
+        {{/if}}
 
         {{#if FLOW.showRawDataReportApplet }}
           {{view FLOW.rawDataReportApplet }}
