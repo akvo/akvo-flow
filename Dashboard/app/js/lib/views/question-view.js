@@ -85,7 +85,7 @@ FLOW.QuestionView = Ember.View.extend({
 			movingUp = (selectedOrder<insertAfterOrder);
 		
 			FLOW.questionControl.get('content').forEach(function(item){
-				currentOrder=item.get('order');
+				var currentOrder=item.get('order');
 
 				// item moving up
 				if (movingUp) {

@@ -1,3 +1,5 @@
+/*global deleteChart, createChart */
+
 FLOW.chartView = Em.View.extend({
 
   getChartData:function () {
@@ -16,7 +18,7 @@ FLOW.chartView = Em.View.extend({
       });
       
       FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
-        percentage = 100*item.get('count')/total;
+        var percentage = 100*item.get('count')/total,
         percString = percentage.toFixed(1);
         chartData.push({"legendLabel":(item.get('response') + "," + percString + "%"), "magnitude":item.get('count')});
         total = total + item.get('count');

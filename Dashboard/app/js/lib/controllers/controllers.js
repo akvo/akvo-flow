@@ -584,6 +584,5 @@ FLOW.surveyQuestionSummaryControl = Ember.ArrayController.create({
 FLOW.chartDataControl = Ember.Object.create({
   questionText:"",
   chartData:[],
-  total:null,
-
+  total:null
 });
