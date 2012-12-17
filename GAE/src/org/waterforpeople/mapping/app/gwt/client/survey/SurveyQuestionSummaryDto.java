@@ -15,11 +15,6 @@
  */
 
 package org.waterforpeople.mapping.app.gwt.client.survey;
-
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-
-import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**

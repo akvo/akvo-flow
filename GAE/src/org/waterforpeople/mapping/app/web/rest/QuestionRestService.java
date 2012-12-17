@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 
@@ -65,23 +66,48 @@ public class QuestionRestService {
 		return response;
 	}
 
-	// TODO put in meta information?
-	// list questions by questionGroup id
+	// list questions by questionGroup or by survey. If summaryOnly is true,
+	// only NUMBER and OPTION type questions are returned
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public Map<String, List<QuestionDto>> listQuestions(
-			@RequestParam("questionGroupId") Long questionGroupId) {
+			@RequestParam(value = "questionGroupId", defaultValue = "") Long questionGroupId,
+			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+			@RequestParam(value = "summaryOnly", defaultValue = "") String summaryOnly) {
 		final Map<String, List<QuestionDto>> response = new HashMap<String, List<QuestionDto>>();
 		List<QuestionDto> results = new ArrayList<QuestionDto>();
-		List<Question> questions = questionDao
-				.listQuestionsInOrderForGroup(questionGroupId);
-		if (questions != null) {
-			for (Question s : questions) {
-				QuestionDto dto = new QuestionDto();
-				DtoMarshaller.copyToDto(s, dto);
-				results.add(dto);
+
+		if (questionGroupId != null) {
+			List<Question> questions = questionDao
+					.listQuestionsInOrderForGroup(questionGroupId);
+			if (questions != null) {
+				for (Question s : questions) {
+					QuestionDto dto = new QuestionDto();
+					DtoMarshaller.copyToDto(s, dto);
+					results.add(dto);
+				}
+			}
+		} else if (surveyId != null) {
+			List<Question> questions = questionDao
+					.listQuestionsInOrder(surveyId);
+			if (questions != null) {
+				for (Question q : questions) {
+					// if summaryOnly is not true, add all questions
+					if (!("true".equals(summaryOnly))) {
+						QuestionDto dto = new QuestionDto();
+						DtoMarshaller.copyToDto(q, dto);
+						results.add(dto);
+					
+					// if summaryOnly is true, only add if type NUMBER or OPTION	
+					} else if ((q.getType() ==Question.Type.OPTION) || (q.getType() ==Question.Type.NUMBER)) {
+						QuestionDto dto = new QuestionDto();
+						DtoMarshaller.copyToDto(q, dto);
+						results.add(dto);
+					}
+				}
 			}
 		}
+
 		response.put("questions", results);
 		return response;
 	}
@@ -154,7 +180,7 @@ public class QuestionRestService {
 					// copy the properties, except the createdDateTime property,
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(questionDto, q,
-							new String[] { "createdDateTime"});
+							new String[] { "createdDateTime" });
 					q = questionDao.save(q);
 					dto = new QuestionDto();
 					DtoMarshaller.copyToDto(q, dto);
