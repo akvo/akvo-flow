@@ -2463,8 +2463,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 	position: relative;
 	float: right;
 	width: 24.5%;
-	padding: 0.25em 0.25% 0px 0.25%;
-	height: 589px;
+	padding: 5px 0.25% 0px 0.25%;
+	height: 595px;
 	background: rgb(241,241,241);
 	overflow: auto;
 	overflow-x: none;
