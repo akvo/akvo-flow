@@ -65,7 +65,9 @@ input:hover, textarea:hover {
 	background:-o-linear-gradient(rgb(255,255,255), rgb(244,244,244));
 	background:linear-gradient(rgb(255,255,255), rgb(244,244,244));
 }
-
+.leftSidebar input, .leftSidebar textarea {
+	border:1px solid rgb(28,28,28);
+	}
 :invalid {
 }
 :valid {
@@ -73,7 +75,7 @@ input:hover, textarea:hover {
 :required {
 }
 input:focus, textarea:focus {
-	border: 1px solid rgb(235,235,235);
+	border: 1px solid rgb(135,135,135);
 	background:rgb(245,255,216);
 }
 fieldset {

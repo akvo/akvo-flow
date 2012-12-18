@@ -16,14 +16,17 @@
       {{/if}}    
 
       <!-- show all survey groups --> 
-      <ul class="menuGroup">
+	 <a href="#" class="scrollUp">up</a>
+	 <ul class="menuGroup">
         {{#each sg in FLOW.surveyGroupControl.content}}
           {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
             <a {{action "makeSelected" target="this"}}>{{sg.code}}</a>
           {{/view}}
         {{/each}} 
       </ul>
-    </nav>
+<a href="#" class="scrollDown">down</a>
+</nav>
+	
   </section>
 
   <section id="allSurvey" class="mainRight surveysList">
@@ -89,3 +92,16 @@
     </ul>    
   </section>
 {{/view}}
+
+<script>
+$(document).ready (function(){
+$('.scrollUp').click(function () {
+    scroll = $('.menuGroup').scrollTop();
+    $('.menuGroup').animate({'scrollTop': scroll-100}, 355);
+});
+$('.scrollDown').click(function () {
+    scroll = $('.menuGroup').scrollTop();
+    $('.menuGroup').animate({'scrollTop': scroll+100}, 355);
+});
+})
+</script>
