@@ -172,18 +172,20 @@ pre {
 	line-height: 1.3em;
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
-.isLoading, .isSaving  {
+.isLoading, .isSaving {
 	position: fixed;
-	font-size:1.2em;
-	font-weight:bold;
-	color:rgb(252,159,0);
+	font-size: 1.2em;
+	font-weight: bold;
+	color: rgb(252,159,0);
 	top: 80px;
-	left:46%;
-	padding:1px 0 0 20px;
+	left: 46%;
+	padding: 1px 0 0 20px;
 	background: url(../images/loader.gif) left center no-repeat;
-	z-index:999999;
+	z-index: 999999;
 }
-.greyish {background:rgb(200,214,214);}
+.greyish {
+	background: rgb(200,214,214);
+}
 /* links 
 ---------------------------------------------------------------*/
 
@@ -328,11 +330,11 @@ a.AddBtn:hover {
 	height: 40px;
 }
 .prevNext {
-	display:block;
-	margin:0 auto;
+	display: block;
+	margin: 0 auto;
 	width: 96%;
 	position: relative;
-	padding:1em 1%;
+	padding: 1em 1%;
 }
 .editAnswerMenu ul li {
 	display: inline;
@@ -350,23 +352,19 @@ a.AddBtn:hover {
 }
 .prevBtn a {
 	display: inline-block;
-	height: 11px;
-/*	background: url(../images/prevBtn.png) left top no-repeat;
+	height: 11px;/*	background: url(../images/prevBtn.png) left top no-repeat;
 	padding: 5px 0 0 15px;
 */}
 .prevBtn:hover a {
-	color: rgb(58,58,58);
-/*	background: url(../images/prevBtn.png) left bottom no-repeat;
+	color: rgb(58,58,58);/*	background: url(../images/prevBtn.png) left bottom no-repeat;
 */}
 .nextBtn a {
 	display: inline-block;
-	height: 11px;
-/*	background: url(../images/nextBtn.png) right top no-repeat;
+	height: 11px;/*	background: url(../images/nextBtn.png) right top no-repeat;
 	padding: 5px 15px 0 0;
 */}
 .nextBtn:hover a {
-	color: rgb(58,58,58);
-/*	background: url(../images/nextBtn.png) right bottom no-repeat;
+	color: rgb(58,58,58);/*	background: url(../images/nextBtn.png) right bottom no-repeat;
 */}
 .deleteBtn {
 	position: absolute;
@@ -813,7 +811,6 @@ table.dataTable thead tr th {
 .dataSection table.dataTable thead tr th {
 	padding: 9px 1em 9px 1em;
 }
-
 table.dataTable thead tr th.noArrows {
 	background: #3A3A3A;
 }
@@ -1295,8 +1292,8 @@ th.action {
 }
 nav ul.menuGroup {
 	background: rgb(58,58,58);
-	height:350px;
-	overflow-y:hidden;
+	height: 350px;
+	overflow-y: hidden;
 }
 nav ul.menuGroup li {
 	margin: 2px 1% 1px 1%;
@@ -1338,9 +1335,44 @@ nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a {
 	/* border-left: thin solid rgb(255,255,255); */	background: url(../images/selectIndictr.png) right bottom no-repeat;
 	color: rgb(246, 160, 26);
 }
-a.scrollUp {display:block; width:100%; height:15px; text-indent:-9999px; text-align:center; background:url(../images/scrollUp.png) center center no-repeat;margin:0 0 5px 0;}
-a.scrollDown {display:block; width:100%; height:15px; text-indent:-9999px; text-align:center; background:url(../images/scrollDown.png) center center no-repeat;margin:5px 0 0 0;}
-
+a.scrollUp {
+	display: block;
+	width: 50%;
+	height: 15px;
+	text-indent: -9999px;
+	text-align: center;
+	background: rgb(31,31,31) url(../images/scrollUp.png) center center no-repeat;
+	margin: 0 auto 4px auto;
+	border-radius: 5px 5px 0 0;
+	-moz-transition: background 0.4s ease-in;
+	-webkit-transition: background 0.4s ease-in;
+	-o-transition: background 0.4s ease-in;
+	transition: background 0.4s ease-in;
+}
+a.scrollFade {
+	opacity:0.1;
+	cursor:text;
+	}
+a.scrollDown {
+	display: block;
+	width: 50%;
+	height: 15px;
+	text-indent: -9999px;
+	text-align: center;
+	background: rgb(31,31,31) url(../images/scrollDown.png) center center no-repeat;
+	margin: 4px auto 0 auto;
+	border-radius: 0 0 5px 5px;
+	-moz-transition: background 0.4s ease-in;
+	-webkit-transition: background 0.4s ease-in;
+	-o-transition: background 0.4s ease-in;
+	transition: background 0.4s ease-in;
+}
+a.scrollUp:hover {
+	background: rgb(107, 134, 141) url(../images/scrollUp.png) center center no-repeat;
+}
+a.scrollDown:hover {
+	background: rgb(107, 134, 141) url(../images/scrollDown.png) center center no-repeat;
+}
 /* Survey Top Bar
 --------------------------------------------- */
 section.topBar {
@@ -1351,7 +1383,7 @@ section.topBar h2 {
 	display: inline;
 	overflow: hidden;
 	margin-left: 5px;
-	padding-left:0px;
+	padding-left: 0px;
 	max-width: 45%;
 	color: rgb(255,255,255);
 	text-overflow: ellipsis;
@@ -1401,7 +1433,7 @@ a.addGroup, a.addSurvey, a.stepBack, a.editGroupName, a.deleteGroup {
 	text-transform: uppercase;
 }
 a.editGroupName {
-	margin:0 10px 0 20px;
+	margin: 0 10px 0 20px;
 }
 a.addGroup {
 	padding: 6px 0 4px 19px;
@@ -2460,11 +2492,11 @@ nav.smallMenu ul li a.showQuestion:hover {
 	float: left;
 	width: 75%;
 	height: 600px;
-	margin:0 0 0 0;
+	margin: 0 0 0 0;
 }
 #pointDetails {
-	position:relative;
-	border-left:2px solid rgb(214,214,214);
+	position: relative;
+	border-left: 2px solid rgb(214,214,214);
 	position: relative;
 	float: right;
 	width: 24.5%;
@@ -2473,8 +2505,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 	background: rgb(241,241,241);
 	overflow: auto;
 	overflow-x: none;
-	overflow-style:marquee-line;
-	margin:0 0 0 -2px;
+	overflow-style: marquee-line;
+	margin: 0 0 0 -2px;
 }
 #pointDetails h2 {
 	margin: 5px 0 10px 5px;
@@ -2488,10 +2520,17 @@ nav.smallMenu ul li a.showQuestion:hover {
 	font-family: Verdana, Geneva, sans-serif;
 	letter-spacing: 0em;
 	line-height: 1.2em;
-	overflow:hidden;
+	overflow: hidden;
 }
-#pointDetails dl div.defListWrap {display:table; padding:0.2em 0; width:100%;margin:2px auto;}
-#pointDetails dl div.defListWrap:nth-child(odd) {background:rgb(224,224,224);}
+#pointDetails dl div.defListWrap {
+	display: table;
+	padding: 0.2em 0;
+	width: 100%;
+	margin: 2px auto;
+}
+#pointDetails dl div.defListWrap:nth-child(odd) {
+	background: rgb(224,224,224);
+}
 #pointDetails dl div.defListWrap dt {
 	width: 44.25%;
 	color: rgb(124,124,124);
@@ -2511,68 +2550,86 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 div#drawHandleWrap {
 	position: relative;
-	display:block;
+	display: block;
 	width: 100%;
 	height: 16px;
-	clear:both;
-	}
-	
+	clear: both;
+}
 div.drawHandle {
 	position: absolute;
 	z-index: 99999;
-	color:rgb(246, 160, 26);
-	font-weight:bold;
-	text-transform:uppercase;
+	color: rgb(246, 160, 26);
+	font-weight: bold;
+	text-transform: uppercase;
 	top: 0px;
 	right: 0px;
 	cursor: pointer;
 	display: block;
 	height: 3px;
-	padding:4px 7px 9px 7px;
-	-moz-border-radius:5px 5px 0 0;
-	-webkit-border-radius:5px 5px 0 0;
-	-o-border-radius:5px 5px 0 0;
-	border-radius:5px 5px 0 0;
-	background:rgb(58,58,58) url(../images/mapSlider.png) left bottom repeat-x;
-	}
-	
+	padding: 4px 7px 9px 7px;
+	-moz-border-radius: 5px 5px 0 0;
+	-webkit-border-radius: 5px 5px 0 0;
+	-o-border-radius: 5px 5px 0 0;
+	border-radius: 5px 5px 0 0;
+	background: rgb(58,58,58) url(../images/mapSlider.png) left bottom repeat-x;
+}
 div.drawHandle.hideMapD {
 }
 div.drawHandle.showMapD {
 }
-
-#pointDetails .imgContainer  { position: relative; overflow: hidden; width:62px; height:62px; margin:10px 5px 10px 1px; padding:1px; border:1px solid rgb(214,214,214);}
-#pointDetails .imgContainer a { position: relative; display:block; width:100%; height:100%;}
-#pointDetails .imgContainer img { }
-
+#pointDetails .imgContainer {
+	position: relative;
+	overflow: hidden;
+	width: 62px;
+	height: 62px;
+	margin: 10px 5px 10px 1px;
+	padding: 1px;
+	border: 1px solid rgb(214,214,214);
+}
+#pointDetails .imgContainer a {
+	position: relative;
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+#pointDetails .imgContainer img {
+}
 #flowMapLegend {
-	position:relative;
-	display:block;
-	clear:both;
+	position: relative;
+	display: block;
+	clear: both;
 	width: 98%;
 	background: rgb(234,234,234);
 	padding: 5px 1%;
-	border-top:1px solid rgb(255,255,255);
+	border-top: 1px solid rgb(255,255,255);
 }
 .placeMarkBasicInfo {
-	width:96%;
-	padding:1em 2%;
-	background:url(../images/mapPointDetailSep.png) center bottom no-repeat;
-	}
+	width: 96%;
+	padding: 1em 2%;
+	background: url(../images/mapPointDetailSep.png) center bottom no-repeat;
+}
 .placeMarkBasicInfo li {
-	display:inline;
-	float:left;
-	}
+	display: inline;
+	float: left;
+}
 .placeMarkBasicInfo li:last-child {
-	float:right;
-	}
-
+	float: right;
+}
 .placeMarkBasicInfo li span {
-	display:inline;
-	}
-.placeMarkCollectionDate {display:inline; font-weight:bold; margin:0 0 0 5px; color:rgb(227, 27, 35);}
-.placeMarkPointCode {font-weight:bold; color:rgb58,58,58); margin:0 0 0 5px; text-transform:uppercase;}
-
+	display: inline;
+}
+.placeMarkCollectionDate {
+	display: inline;
+	font-weight: bold;
+	margin: 0 0 0 5px;
+	color: rgb(227, 27, 35);
+}
+.placeMarkPointCode {
+	font-weight: bold;
+	color: rgb58, 58, 58);
+	margin: 0 0 0 5px;
+	text-transform: uppercase;
+}
 /*--------------------------------------------- 
 					Footer
 -----------------------------------------------*/
