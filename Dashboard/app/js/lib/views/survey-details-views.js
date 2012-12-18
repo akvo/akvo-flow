@@ -126,10 +126,8 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	// execute group delete
 	// TODO should this be allowed when questions are present?
 	deleteQuestionGroup: function() {
-		var qgDeleteOrder, qgDeleteId, questionGroup, surveyId;
-		qgDeleteOrder = this.content.get('order');
+		var qgDeleteId, questionGroup;
 		qgDeleteId = this.content.get('keyId');
-		surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
 
 		questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
 		questionGroup.deleteRecord();
@@ -138,19 +136,18 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 	// insert group
 	doInsertQuestionGroup: function() {
-		var insertAfterOrder, surveyId;
+		var insertAfterOrder;
 
 		if(this.get('zeroItem')) {
 			insertAfterOrder = 0;
 		} else {
 			insertAfterOrder = this.content.get('order');
 		}
-		surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
 		
 		// create new QuestionGroup item in the store
 		// the insertAfterOrder is inserted here
 		// in the server, the proper order of all question groups is re-established
-		var newRec = FLOW.store.createRecord(FLOW.QuestionGroup, {
+		FLOW.store.createRecord(FLOW.QuestionGroup, {
 			"code": "New group - please change name",
 			"order": insertAfterOrder,
 			"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
@@ -211,8 +208,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	// execute group copy to selected location
 	// TODO should this copy all questions in the group?
 	doQGroupCopyHere: function() {
-		var selectedOrder, insertAfterOrder, newRec;
-		selectedOrder = FLOW.selectedControl.selectedForCopyQuestionGroup.get('order');
+		var insertAfterOrder;
 
 		if(this.get('zeroItem')) {
 			insertAfterOrder = 0;
@@ -222,7 +218,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		
 		// the insertAfterOrder is inserted here
 		// in the server, the proper order of all question groups is re-established
-		newRec = FLOW.store.createRecord(FLOW.QuestionGroup, {
+		FLOW.store.createRecord(FLOW.QuestionGroup, {
 			"description": FLOW.selectedControl.selectedForCopyQuestionGroup.get('description'),
 			"order": insertAfterOrder,
 			"code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),

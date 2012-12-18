@@ -10,7 +10,7 @@ FLOW.chartView = Em.View.extend({
   },
 
   buildChart:function () {
-    var chartData = [], total = 0, percentage, percString;
+    var chartData = [], total = 0;
     if (FLOW.surveyQuestionSummaryControl.content.get('isLoaded') === true){
       FLOW.chartDataControl.set('total',FLOW.surveyQuestionSummaryControl.content.get('length'));
       FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {

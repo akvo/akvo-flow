@@ -94,7 +94,6 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 			var selectedDeviceGroupId = this.selectedDeviceGroup.get('keyId');
 
 			// this could have been changed in the UI
-			var selectedDeviceGroupName = this.selectedDeviceGroup.get('code');
 			var originalSelectedDeviceGroup = FLOW.store.find(FLOW.DeviceGroup,selectedDeviceGroupId);
 
 			if (originalSelectedDeviceGroup.get('code') != this.get('changedDeviceGroupName')) {
@@ -108,10 +107,6 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 					}
 				});
 			}
-		}
-		
-		if (this.get('newDeviceGroupName') !== null) {
-			var newDeviceGroup = FLOW.store.createRecord(FLOW.DeviceGroup,{'code':this.get('newDeviceGroupName')});
 		}
 		
 		this.set('selectedDeviceGroup',null);

@@ -102,7 +102,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
 	saveNewSurveyGroupName: function() {
-			var newSG = FLOW.store.createRecord(FLOW.SurveyGroup,{
+			FLOW.store.createRecord(FLOW.SurveyGroup,{
 				"code":this.get('surveyGroupName')
 			});
 			FLOW.store.commit();
@@ -117,7 +117,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	
 	// fired when 'create a new survey' is clicked in the top bar.
 	createNewSurvey: function() {
-		var newSurvey = FLOW.store.createRecord(FLOW.Survey,{
+		FLOW.store.createRecord(FLOW.Survey,{
 			"name":"New survey - please change name",
 			"defaultLanguageCode": "en",
 			"requireApproval": false,

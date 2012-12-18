@@ -114,8 +114,7 @@ FLOW.QuestionView = Ember.View.extend({
 	// TODO
 	// execute question copy to selected location
 	doQuestionCopyHere:function(){
-		var selectedOrder, insertAfterOrder, newRec, currentOrder;
-		selectedOrder = FLOW.selectedControl.selectedForCopyQuestion.get('order');
+		var insertAfterOrder;
 	
 
 		if (this.get('zeroItem')) {insertAfterOrder=0;} else {insertAfterOrder=this.content.get('order');}
@@ -129,7 +128,7 @@ FLOW.QuestionView = Ember.View.extend({
 		}); // end of forEach
 	
 		// create copy of QuestionGroup item in the store
-		newRec = FLOW.store.createRecord(FLOW.Question,{
+		FLOW.store.createRecord(FLOW.Question,{
 			"description": FLOW.selectedControl.selectedForCopyQuestion.get('description'),
 			"order":insertAfterOrder+1,
 			"code":FLOW.selectedControl.selectedForCopyQuestion.get('code'),
