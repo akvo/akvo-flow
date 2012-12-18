@@ -81,7 +81,8 @@ Ember.STRINGS_EN = {
   '_Q_delete_message':'This cannot be undone.',
   '_action_failed': 'Action failed',
   '_build_chart':'Build chart',
-  '_raw_data_report': 'Raw Data Report'
+  '_raw_data_report': 'Raw Data Report',
+  '_comprehensive_report': 'Comprehensive Report'
 };
 
 Ember.STRINGS_ES = {

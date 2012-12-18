@@ -34,9 +34,16 @@ FLOW.chartView = Em.View.extend({
   }.observes('FLOW.surveyQuestionSummaryControl.content.isLoaded'),
 
   showRawDataReport: function () {
-	if (!FLOW.selectedControl.selectedSurvey) {
-		return;
-	}
+    if (!FLOW.selectedControl.selectedSurveyAllQuestions) {
+      return;
+    }
     FLOW.set('showRawDataReportApplet', true);
+  },
+
+  showComprehensiveReport: function () {
+    if (!FLOW.selectedControl.selectedSurveyAllQuestions) {
+      return;
+    }
+    FLOW.set('showComprehensiveReportApplet', true);
   }
 });

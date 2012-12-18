@@ -334,6 +334,10 @@ FLOW.rawDataReportApplet = Ember.View.extend({
   templateName: 'navReports/applets/raw-data-report-applet'
 });
 
+FLOW.comprehensiveReportApplet = Ember.View.extend({
+  templateName: 'navReports/applets/comprehensive-report-applet'
+});
+
 // users views
 FLOW.NavUsersView = Ember.View.extend({
   templateName: 'navUsers/nav-users'

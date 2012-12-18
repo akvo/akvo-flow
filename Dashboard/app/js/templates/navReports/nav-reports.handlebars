@@ -23,12 +23,18 @@
         prompt="Select question"}}<br/><br/>
         
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
-        {{#if FLOW.selectedControl.selectedSurvey }}
+
+        {{#if FLOW.selectedControl.selectedSurveyAllQuestions }}
           <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
+          <a {{action showComprehensiveReport target="this"}} class="standardBtn"> {{t _comprehensive_report}} </a>
         {{/if}}
 
         {{#if FLOW.showRawDataReportApplet }}
           {{view FLOW.rawDataReportApplet }}
+        {{/if}}
+
+        {{#if FLOW.showComprehensiveReportApplet }}
+          {{view FLOW.comprehensiveReportApplet}}
         {{/if}}
 
         <br><br>
