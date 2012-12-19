@@ -16,9 +16,8 @@
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,12 +34,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyInstancePayload;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
-
-import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 
 @Controller
 @RequestMapping("/survey_instances")
@@ -67,7 +65,6 @@ public class SurveyInstanceRestService {
 		
 		final Map<String, Object> response = new HashMap<String, Object>();
 		RestStatusDto statusDto = new RestStatusDto();
-		List<SurveyInstanceDto> results = new ArrayList<SurveyInstanceDto>();
 		
 		// create list of surveygroup / survey
 		SurveyDAO surveyDao = new SurveyDAO();
