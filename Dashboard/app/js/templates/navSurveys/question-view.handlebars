@@ -2,26 +2,27 @@
 
 <div class="innerContent" id="innerContent_01"> 
   {{#if view.amOpenQuestion}}
-    <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.displayName}}</h1>
-    <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.questionName" size=100 }}</label>
+    <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
+    <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.text" size=100 }}</label>
     <!-- Body of question -->
     <label>Question type: {{view Ember.Select 
       contentBinding="FLOW.questionTypeControl.content" 
       optionLabelPath="content.label" 
       optionValuePath="content.value" 
-      selectionBinding="view.selectedQuestionType" }} </label>
-    <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.questionHelpTooltip" size=100 }} </label>
-    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedMandatory"}}{{t _mandatory}}</label>
-    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedDependent"}}{{t _dependent}}</label>
+      selectionBinding="view.type" }} </label>
+    <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
+    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
+    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedDependent"}}{{t _dependent}}
+    </label>
 
     <!-- Question specific material --> 
     {{#if view.amOptionType}}
       <h1 class="answerNbr">{{t _option_details}}: </h1>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.checkedOptionMultiple"}}{{t _allow_multiple}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.checkedOptionOther"}}{{t _allow_other}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowOtherFlag"}}{{t _allow_other}} </label>
       <br>
       <p><strong>{{t _options}}:&nbsp;</strong><span class="fadedText"> ({{t _enter_each_choice_on_a_separate_line}})</span> </p>
-      {{view Ember.TextArea valueBinding="FLOW.optionControl.editCopy" size="100" rows="7" }}  
+      {{view Ember.TextArea valueBinding="view.optionList" size="100" rows="7" }}  
     {{/if}}                 
     
     {{#if view.amNumberType}}

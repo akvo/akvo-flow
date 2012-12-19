@@ -196,7 +196,10 @@ public class QuestionRestService {
 					// copy the properties, except the createdDateTime property,
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(questionDto, q,
-							new String[] { "createdDateTime","order" });
+							new String[] { "createdDateTime","order" ,"type"});
+					if (questionDto.getType() != null)
+						q.setType(Question.Type.valueOf(questionDto.getType().toString()));
+				
 					q = questionDao.save(q);
 					
 					// if the original order is different from the current
@@ -273,10 +276,11 @@ public class QuestionRestService {
 			// copy the properties, except the createdDateTime property, because
 			// it is set in the Dao.
 			BeanUtils.copyProperties(questionDto, q,
-					new String[] { "createdDateTime","order" });
+					new String[] { "createdDateTime" ,"order", "type"});
+			if (questionDto.getType() != null)
+				q.setType(Question.Type.valueOf(questionDto.getType().toString()));
 			
-			
-			// moke room by moving items up
+			// make room by moving items up
 			List<Question> questions = questionDao
 					.listQuestionsInOrderForGroup(questionDto.getQuestionGroupId());		
 			Integer insertAfterOrder = questionDto.getOrder();

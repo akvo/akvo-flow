@@ -1,13 +1,17 @@
 FLOW.QuestionView = Ember.View.extend({
 	templateName: 'navSurveys/question-view',
 	content: null,
-	questionName: null,
-	checkedMandatory: false,
-	checkedDependent: false,
-	checkedOptionMultiple: false,
-	checkedOptionOther: false,
-	selectedQuestionType: null,
-	selectedOptionEdit: null,
+	text: null,
+	tip: null,
+	type: null,
+	mandatoryFlag: null,
+	minVal: null,
+	maxVal: null,
+	allowSign: null,
+	allowDecimalPoint: null,
+	allowMultipleFlag: null,
+	allowOtherFlag: null,
+	optionList: null,
 
 	amOpenQuestion: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestion');
@@ -36,9 +40,29 @@ FLOW.QuestionView = Ember.View.extend({
 		}
 	}.property('this.selectedQuestionType').cacheable(),
 
+  // TODO dependencies
+  // TODO options
 	doQuestionEdit: function() {
+		var questionType;
+
 		FLOW.selectedControl.set('selectedQuestion', this.get('content'));
-		this.set('questionName', FLOW.selectedControl.selectedQuestion.get('displayName'));
+		this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
+		this.set('tip', FLOW.selectedControl.selectedQuestion.get('tip'));
+		this.set('mandatoryFlag', FLOW.selectedControl.selectedQuestion.get('mandatoryFlag'));
+		this.set('minVal', FLOW.selectedControl.selectedQuestion.get('minVal'));
+		this.set('maxVal', FLOW.selectedControl.selectedQuestion.get('maxVal'));
+		this.set('allowSign', FLOW.selectedControl.selectedQuestion.get('allowSign'));
+		this.set('allowDecimalPoint', FLOW.selectedControl.selectedQuestion.get('allowDecimalPoint'));
+		this.set('allowMultipleFlag', FLOW.selectedControl.selectedQuestion.get('allowMultipleFlag'));
+		this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
+
+		FLOW.questionTypeControl.get('content').forEach(function(item) {
+			if(item.get('value') == FLOW.selectedControl.selectedQuestion.get('type')) {
+				questionType = item;
+			}
+		});
+
+		this.set('type', questionType);
 	},
 
 	doCancelEditQuestion: function() {
@@ -47,7 +71,17 @@ FLOW.QuestionView = Ember.View.extend({
 	},
 
 	doSaveEditQuestion: function() {
-		console.log('TODO save edit');
+		FLOW.selectedControl.selectedQuestion.set('text',this.get('text'));
+		FLOW.selectedControl.selectedQuestion.set('tip',this.get('tip'));
+		FLOW.selectedControl.selectedQuestion.set('mandatoryFlag',this.get('mandatoryFlag'));
+		FLOW.selectedControl.selectedQuestion.set('minVal',this.get('minVal'));
+		FLOW.selectedControl.selectedQuestion.set('maxVal',this.get('maxVal'));
+		FLOW.selectedControl.selectedQuestion.set('allowSign',this.get('allowSign'));
+		FLOW.selectedControl.selectedQuestion.set('allowDecimalPoint',this.get('allowDecimalPoint'));
+		FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag',this.get('allowMultipleFlag'));
+		FLOW.selectedControl.selectedQuestion.set('allowOtherFlag',this.get('allowOtherFlag'));
+		FLOW.selectedControl.selectedQuestion.set('type',this.type.get('value'));
+		FLOW.store.commit();
 	},
 
 	// BROKEN
@@ -103,7 +137,7 @@ FLOW.QuestionView = Ember.View.extend({
 		FLOW.store.createRecord(FLOW.Question, {
 			"description": FLOW.selectedControl.selectedForCopyQuestion.get('description'),
 			"order": insertAfterOrder,
-			"code": FLOW.selectedControl.selectedForCopyQuestion.get('code'),
+			"text": FLOW.selectedControl.selectedForCopyQuestion.get('text'),
 			"surveyId": FLOW.selectedControl.selectedForCopyQuestion.get('surveyId'),
 			"questionGroupId": FLOW.selectedControl.selectedForCopyQuestion.get('questionGroupId')
 		});
@@ -127,7 +161,8 @@ FLOW.QuestionView = Ember.View.extend({
 		// in the server, the proper order of all question groups is re-established
 		FLOW.store.createRecord(FLOW.Question, {
 			"order": insertAfterOrder,
-			"code": "new question - place change name",
+			"type": "FREE_TEXT",
+			"text": "new question - please change name",
 			"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId'),
 			"questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
 		});
