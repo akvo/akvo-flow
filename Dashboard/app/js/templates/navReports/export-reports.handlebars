@@ -43,5 +43,15 @@
   {{#if view.showGoogleEarthFileApplet }}
     {{view FLOW.googleEarthFileApplet}}
   {{/if}}
+
+  <h3>Export Survey Form</h3>
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. Mauris sollicitudin pretium sem eget mollis. Cras sit amet mauris turpis. Ut molestie lobortis laoreet. Fusce lectus nibh, feugiat eu adipiscing a, gravida vitae risus. Suspendisse velit lorem, molestie sed commodo non, aliquet ornare arcu. Suspendisse potenti. Pellentesque pellentesque lacus sed justo egestas et dignissim mauris placerat. 
+
+
+  <a {{action showSurveyForm target="this"}} class="standardBtn"> {{t _survey_form}} </a>
+
+  {{#if view.showSurveyFormApplet }}
+    {{view FLOW.surveyFormApplet}}
+  {{/if}}
 {{/view}}
 </section>

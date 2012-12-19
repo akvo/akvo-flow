@@ -84,6 +84,7 @@ Ember.STRINGS_EN = {
   '_raw_data_report': 'Raw Data Report',
   '_comprehensive_report': 'Comprehensive Report',
   '_google_earth_file': 'Google Earth File',
+  '_survey_form': 'Survey Form',
    '_export_reports': 'export reports',
   '_charts':'charts'
 };

@@ -2,6 +2,7 @@ FLOW.exportreportsView = Em.View.extend({
   showRawDataReportApplet:false,
   showComprehensiveReportApplet:false,
   showGoogleEarthFileApplet: false,
+  showSurveyFormApplet: false,
 
   showRawDataReport: function () {
     this.set('showRawDataReportApplet', true);
@@ -13,5 +14,9 @@ FLOW.exportreportsView = Em.View.extend({
 
   showGoogleEarthFile: function () {
     this.set('showGoogleEarthFileApplet', true);
+  },
+
+  showSurveyForm: function () {
+    this.set('showSurveyFormApplet', true);
   }
 });

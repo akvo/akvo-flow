@@ -352,6 +352,10 @@ FLOW.googleEarthFileApplet = Ember.View.extend({
   templateName: 'navReports/applets/google-earth-file-applet'
 });
 
+FLOW.surveyFormApplet = Ember.View.extend({
+  templateName: 'navReports/applets/survey-form-applet'
+});
+
 // users views
 FLOW.NavUsersView = Ember.View.extend({
   templateName: 'navUsers/nav-users'
