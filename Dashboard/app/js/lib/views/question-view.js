@@ -135,7 +135,15 @@ FLOW.QuestionView = Ember.View.extend({
 		// the insertAfterOrder is inserted here
 		// in the server, the proper order of all question groups is re-established
 		FLOW.store.createRecord(FLOW.Question, {
-			"description": FLOW.selectedControl.selectedForCopyQuestion.get('description'),
+			"tip": FLOW.selectedControl.selectedForCopyQuestion.get('tip'),
+			"mandatoryFlag": FLOW.selectedControl.selectedForCopyQuestion.get('mandatoryFlag'),
+			"allowSign": FLOW.selectedControl.selectedForCopyQuestion('allowSign'),
+			"allowDecimalPoint": FLOW.selectedControl.selectedForCopyQuestion.get('allowDecimalPoint'),
+			"allowMultipleFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowMultipleFlag'),
+			"allowOtherFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowOtherFlag'),
+			"maxVal": FLOW.selectedControl.selectedForCopyQuestion.get('maxVal'),
+			"minVal": FLOW.selectedControl.selectedForCopyQuestion.get('minVal'),
+			"type": FLOW.selectedControl.selectedForCopyQuestion.get('type'),
 			"order": insertAfterOrder,
 			"text": FLOW.selectedControl.selectedForCopyQuestion.get('text'),
 			"surveyId": FLOW.selectedControl.selectedForCopyQuestion.get('surveyId'),
@@ -215,10 +223,3 @@ FLOW.QuestionView = Ember.View.extend({
 		FLOW.selectedControl.set('selectedForMoveQuestion', null);
 	}
 });
-
-
-//doQuestionDelete
-//doQuestionMove
-//doQuestionCopy
-//doQuestionEdit
-//doInsertQuestion
