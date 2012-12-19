@@ -95,13 +95,35 @@
 
 <script>
 $(document).ready (function(){
+$('.scrollUp').addClass("FadeIt");
 $('.scrollUp').click(function () {
     scroll = $('.menuGroup').scrollTop();
 	$('.menuGroup').animate({'scrollTop': scroll-72}, 155);
+	if ( scroll < 40 ) {
+		$('.scrollUp').addClass("FadeIt");
+	} else {
+		$('.scrollUp').removeClass("FadeIt");
+	};
+	if ( scroll > 340 ) {
+		$('.scrollDown').addClass("FadeIt");
+	} else {
+		$('.scrollDown').removeClass("FadeIt");
+	};
+	
 	});
 $('.scrollDown').click(function () {
     scroll = $('.menuGroup').scrollTop();
     $('.menuGroup').animate({'scrollTop': scroll+72}, 155);
+	if ( scroll < 40 ) {
+		$('.scrollUp').addClass("FadeIt");
+	} else {
+		$('.scrollUp').removeClass("FadeIt");
+	};
+	if ( scroll > 340 ) {
+		$('.scrollDown').addClass("FadeIt");
+	} else {
+		$('.scrollDown').removeClass("FadeIt");
+	};
 });
 })
 </script>

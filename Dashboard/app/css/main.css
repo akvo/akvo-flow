@@ -1349,7 +1349,7 @@ a.scrollUp {
 	-o-transition: background 0.4s ease-in;
 	transition: background 0.4s ease-in;
 }
-a.scrollFade {
+a.FadeIt {
 	opacity:0.1;
 	cursor:text;
 	}
