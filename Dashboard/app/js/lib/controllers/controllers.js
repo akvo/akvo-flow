@@ -142,14 +142,14 @@ FLOW.dataserverControl = Ember.Object.create({
 
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
-    Ember.Object.create({label: "Free text", value: "freeText"}),
-    Ember.Object.create({label: "Option", value: "option"}),
-    Ember.Object.create({label: "Number", value: "number"}),
-    Ember.Object.create({label: "Geolocation", value: "geoLoc"}),
-    Ember.Object.create({label: "Photo", value: "photo"}),
-    Ember.Object.create({label: "Video", value: "video"}),
-    Ember.Object.create({label: "Date", value: "date"}),
-    Ember.Object.create({label: "Barcode", value: "barcode"})
+    Ember.Object.create({label: "Free text", value: "FREE_TEXT"}),
+    Ember.Object.create({label: "Option", value: "OPTION"}),
+    Ember.Object.create({label: "Number", value: "NUMBER"}),
+    Ember.Object.create({label: "Geolocation", value: "GEO"}),
+    Ember.Object.create({label: "Photo", value: "PHOTO"}),
+    Ember.Object.create({label: "Video", value: "VIDEO"}),
+    Ember.Object.create({label: "Date", value: "DATE"}),
+    Ember.Object.create({label: "Barcode", value: "BARCODE"})
   ]
 });
 
@@ -295,6 +295,8 @@ FLOW.dialogControl = Ember.Object.create({
 //                Data controllers
 // ***********************************************//
 FLOW.surveyGroupControl = Ember.ArrayController.create({
+  sortProperties: ['code'],
+  sortAscending: true,
   content: null,
 
   populate: function () {

@@ -18,7 +18,7 @@
       <!-- show all survey groups --> 
 	 <div class="scrollWrap"><a href="#" class="scrollUp">up</a></div>
 	 <ul class="menuGroup">
-        {{#each sg in FLOW.surveyGroupControl.content}}
+        {{#each sg in FLOW.surveyGroupControl.arrangedContent}}
           {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
             <a {{action "makeSelected" target="this"}}>{{sg.code}}</a>
           {{/view}}

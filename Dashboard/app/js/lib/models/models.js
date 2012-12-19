@@ -140,13 +140,10 @@ FLOW.Question = FLOW.BaseModel.extend({
   path: DS.attr('string'),
   questionDependency: DS.attr('string'),
   questionGroupId: DS.attr('number'),
-  questionTypeString: DS.attr('string', {
-    defaultValue: 'freeText'
-  }),
   surveyId: DS.attr('number'),
   text: DS.attr('string'),
   tip: DS.attr('string'),
-  type: DS.attr('string')
+  type: DS.attr('string',{defaultValue:"FREE_TEXT"})
 });
 
 

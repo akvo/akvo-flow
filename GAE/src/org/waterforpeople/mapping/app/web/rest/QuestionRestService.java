@@ -38,6 +38,7 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 
 @Controller
 @RequestMapping("/questions")
@@ -133,16 +134,30 @@ public class QuestionRestService {
 	public Map<String, RestStatusDto> deleteQuestionById(
 			@PathVariable("id") Long id) {
 		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-		Question s = questionDao.getByKey(id);
+		Question q = questionDao.getByKey(id);
 		RestStatusDto statusDto = null;
 		statusDto = new RestStatusDto();
 		statusDto.setStatus("failed");
 
 		// check if question exists in the datastore
-		if (s != null) {
+		if (q != null) {
 			// delete question
 			try {
-				questionDao.delete(s);
+				Long questionGroupId = q.getQuestionGroupId();
+				Integer order = q.getOrder();
+				// first try delete, to see if it is allowed
+				questionDao.delete(q);
+			
+				List<Question> questions = questionDao
+						.listQuestionsInOrderForGroup(questionGroupId);
+				if (questions != null) {
+					for (Question question : questions) {
+						if (question.getOrder() > order) {
+							question.setOrder(question.getOrder() - 1);
+							question = questionDao.save(question);
+						}
+					}
+				}
 				statusDto.setStatus("ok");
 			} catch (IllegalDeletionException e) {
 				statusDto.setStatus("failed");
@@ -176,11 +191,60 @@ public class QuestionRestService {
 				q = questionDao.getByKey(keyId);
 				// if we find the question, update it's properties
 				if (q != null) {
+					
+					Integer origOrder = q.getOrder();
 					// copy the properties, except the createdDateTime property,
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(questionDto, q,
-							new String[] { "createdDateTime" });
+							new String[] { "createdDateTime","order" ,"type"});
+					if (questionDto.getType() != null)
+						q.setType(Question.Type.valueOf(questionDto.getType().toString()));
+				
 					q = questionDao.save(q);
+					
+					// if the original order is different from the current
+					// number in the order field interpret the number as
+					// an 'afterInsert' number and adapt the order of all the
+					// question groups. If not, the order field does not need to
+					// be copied as it has not changed.
+					if (origOrder != questionDto.getOrder()) {
+						Integer insertAfterOrder = questionDto.getOrder();
+						Integer currentOrder;
+						Boolean movingUp = (origOrder < insertAfterOrder);
+						List<Question> questions = questionDao
+								.listQuestionsInOrderForGroup(q.getQuestionGroupId());						
+						if (questions != null) {
+							for (Question question : questions) {
+								currentOrder = question.getOrder();
+								if (movingUp) {
+									// move moving item to right location
+									if (currentOrder == origOrder) {
+										question.setOrder(insertAfterOrder);
+										question = questionDao.save(question);
+									} else if ((currentOrder > origOrder)
+											&& (currentOrder <= insertAfterOrder)) {
+										// move down
+										question.setOrder(question.getOrder() - 1);
+										question = questionDao.save(question);
+									}
+								} else {
+									// Moving down
+									if (currentOrder == origOrder) {
+										question.setOrder(insertAfterOrder + 1);
+										question = questionDao.save(question);
+									} else if ((currentOrder < origOrder)
+											&& (currentOrder > insertAfterOrder)) {
+										// move up
+										question.setOrder(question.getOrder() + 1);
+										question = questionDao.save(question);
+									}
+								}
+							}
+						}
+					}
+	
+					// get question again, as it's order might have changed
+					q = questionDao.getByKey(keyId);
 					dto = new QuestionDto();
 					DtoMarshaller.copyToDto(q, dto);
 					statusDto.setStatus("ok");
@@ -207,16 +271,33 @@ public class QuestionRestService {
 		// if the POST data contains a valid questionDto, continue. Otherwise,
 		// server will respond with 400 Bad Request
 		if (questionDto != null) {
-			Question s = new Question();
+			Question q = new Question();
 
 			// copy the properties, except the createdDateTime property, because
 			// it is set in the Dao.
-			BeanUtils.copyProperties(questionDto, s,
-					new String[] { "createdDateTime" });
-			s = questionDao.save(s);
+			BeanUtils.copyProperties(questionDto, q,
+					new String[] { "createdDateTime" ,"order", "type"});
+			if (questionDto.getType() != null)
+				q.setType(Question.Type.valueOf(questionDto.getType().toString()));
+			
+			// make room by moving items up
+			List<Question> questions = questionDao
+					.listQuestionsInOrderForGroup(questionDto.getQuestionGroupId());		
+			Integer insertAfterOrder = questionDto.getOrder();
+			if (questions != null) {
+				for (Question question : questions) {
+					if (question.getOrder() > insertAfterOrder) {
+						question.setOrder(question.getOrder() + 1);
+						question = questionDao.save(question);
+					}
+				}
+			}
+
+			q.setOrder(insertAfterOrder + 1);
+			q = questionDao.save(q);
 
 			dto = new QuestionDto();
-			DtoMarshaller.copyToDto(s, dto);
+			DtoMarshaller.copyToDto(q, dto);
 			statusDto.setStatus("ok");
 		}
 

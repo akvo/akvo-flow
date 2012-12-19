@@ -1,3 +1,8 @@
+function capitaliseFirstLetter(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 // displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 	content: null,
@@ -72,7 +77,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	saveSurveyGroupNameEdit: function() {
 		var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
 		var surveyGroup=FLOW.store.find(FLOW.SurveyGroup, sgId);
-		surveyGroup.set('code',this.get('surveyGroupName'));
+		surveyGroup.set('code',capitaliseFirstLetter(this.get('surveyGroupName')));
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedSurveyGroup',FLOW.store.find(FLOW.SurveyGroup, sgId));
 		this.set('showEditField',false);
@@ -103,7 +108,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
 	saveNewSurveyGroupName: function() {
 			FLOW.store.createRecord(FLOW.SurveyGroup,{
-				"code":this.get('surveyGroupName')
+				"code":capitaliseFirstLetter(this.get('surveyGroupName'))
 			});
 			FLOW.store.commit();
 			this.set('showNewGroupField',false);
