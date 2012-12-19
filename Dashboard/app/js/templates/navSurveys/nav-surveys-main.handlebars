@@ -81,9 +81,9 @@
             <nav>
               <ul>              
                 <li class="editSurvey"><a {{action "doEditSurvey" survey}}>{{t _edit}}</a></li> <!-- this hands control over to the router -->
-                  <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>{{t _preview}}</a></li>
-                    <li class="deleteSurvey"> <a  {{action confirm FLOW.dialogControl.delS target="FLOW.dialogControl"}}>{{t _delete}}</a> </li>
-                  <li class="copySurvey"><a {{action "copySurvey" target="this"}}>{{t _inspect_data}}</a></li>
+                <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>{{t _preview}}</a></li>
+                <li class="deleteSurvey"> <a  {{action confirm FLOW.dialogControl.delS target="FLOW.dialogControl"}}>{{t _delete}}</a> </li>
+                <li class="copySurvey"><a {{action "copySurvey" target="this"}}>{{t _inspect_data}}</a></li>
               </ul>
             </nav>
           </li>
@@ -97,11 +97,11 @@
 $(document).ready (function(){
 $('.scrollUp').click(function () {
     scroll = $('.menuGroup').scrollTop();
-	$('.menuGroup').animate({'scrollTop': scroll-100}, 355);
+	$('.menuGroup').animate({'scrollTop': scroll-72}, 155);
 	});
 $('.scrollDown').click(function () {
     scroll = $('.menuGroup').scrollTop();
-    $('.menuGroup').animate({'scrollTop': scroll+100}, 355);
+    $('.menuGroup').animate({'scrollTop': scroll+72}, 155);
 });
 })
 </script>

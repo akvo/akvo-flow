@@ -1292,7 +1292,7 @@ th.action {
 }
 nav ul.menuGroup {
 	background: rgb(58,58,58);
-	height: 350px;
+	height: 361px;
 	overflow-y: hidden;
 }
 nav ul.menuGroup li {
@@ -2087,6 +2087,7 @@ nav.questionActionMenu a {
 nav.questionActionMenu a:hover {
 	color: rgb(58,58,58);
 }
+
 /*---------------------------------------------------------------------------------
 								A New Question Form
 ---------------------------------------------------------------------------------*/
