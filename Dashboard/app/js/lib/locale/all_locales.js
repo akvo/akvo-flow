@@ -83,7 +83,9 @@ Ember.STRINGS_EN = {
   '_build_chart':'Build chart',
   '_raw_data_report': 'Raw Data Report',
   '_comprehensive_report': 'Comprehensive Report',
-  '_google_earth_file': 'Google Earth File'
+  '_google_earth_file': 'Google Earth File',
+   '_export_reports': 'export reports',
+  '_charts':'charts'
 };
 
 Ember.STRINGS_ES = {

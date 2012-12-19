@@ -1,0 +1,23 @@
+ <section class="fullWidth" id="excelImport">
+        <h1>This is the content of export reports</h1>
+
+   {{#if FLOW.selectedControl.selectedSurveyAllQuestions }}
+          <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
+          <a {{action showComprehensiveReport target="this"}} class="standardBtn"> {{t _comprehensive_report}} </a>
+        {{/if}}
+
+        <a {{action showGoogleEarthFile target="this"}} class="standardBtn"> {{t _google_earth_file}} </a>
+
+        {{#if FLOW.showRawDataReportApplet }}
+          {{view FLOW.rawDataReportApplet }}
+        {{/if}}
+
+        {{#if FLOW.showComprehensiveReportApplet }}
+          {{view FLOW.comprehensiveReportApplet}}
+        {{/if}}
+
+        {{#if FLOW.showGoogleEarthFileApplet }}
+          {{view FLOW.googleEarthFileApplet}}
+        {{/if}}
+
+    </section>

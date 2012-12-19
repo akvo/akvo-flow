@@ -5,9 +5,9 @@ require('akvo-flow/core');
 
 FLOW.Router = Ember.Router.extend({
   enableLogging: true,
-  loggedIn:false,
-  location: 'none', //'hash'or 'none' for URLs
-  
+  loggedIn: false,
+  location: 'none',
+  //'hash'or 'none' for URLs
   root: Ember.Route.extend({
     doNavHome: function(router, context) {
       router.transitionTo('navHome');
@@ -22,7 +22,7 @@ FLOW.Router = Ember.Router.extend({
       router.transitionTo('navData.index');
     },
     doNavReports: function(router, context) {
-      router.transitionTo('navReports');
+      router.transitionTo('navReports.index');
     },
     doNavMaps: function(router, context) {
       router.transitionTo('navMaps');
@@ -34,21 +34,19 @@ FLOW.Router = Ember.Router.extend({
       router.transitionTo('navAdmin');
     },
 
-// non-working code for transitioning to navHome at first entry of the app
-//    setup: function(router){
-//      router.send("goHome");
-//    },
-    
-//    goHome:function(router){
-//      router.transitionTo('navHome');
-//    },
-    
+    // non-working code for transitioning to navHome at first entry of the app
+    //    setup: function(router){
+    //      router.send("goHome");
+    //    },
+    //    goHome:function(router){
+    //      router.transitionTo('navHome');
+    //    },
     index: Ember.Route.extend({
       route: '/',
       redirectsTo: 'navHome'
     }),
 
-// ************************** HOME ROUTER **********************************
+    // ************************** HOME ROUTER **********************************
     navHome: Ember.Route.extend({
       route: '/',
       connectOutlets: function(router, event) {
@@ -57,7 +55,7 @@ FLOW.Router = Ember.Router.extend({
       }
     }),
 
-// ******************* SURVEYS ROUTER ********************
+    // ******************* SURVEYS ROUTER ********************
     navSurveys: Ember.Route.extend({
       route: '/surveys',
       connectOutlets: function(router, event) {
@@ -66,15 +64,15 @@ FLOW.Router = Ember.Router.extend({
       },
 
       doEditSurvey: function(router, event) {
-        FLOW.selectedControl.set('selectedSurvey',event.context);
+        FLOW.selectedControl.set('selectedSurvey', event.context);
         router.transitionTo('navSurveys.navSurveysEdit');
       },
-      
+
       doSurveysMain: function(router, event) {
-        FLOW.selectedControl.set('selectedQuestion',null);
+        FLOW.selectedControl.set('selectedQuestion', null);
         router.transitionTo('navSurveys.navSurveysMain');
       },
-      
+
       index: Ember.Route.extend({
         route: '/',
         redirectsTo: 'navSurveysMain'
@@ -83,27 +81,33 @@ FLOW.Router = Ember.Router.extend({
       navSurveysMain: Ember.Route.extend({
         route: '/main',
         connectOutlets: function(router, event) {
-          router.get('navSurveysController').connectOutlet({ name: 'navSurveysMain'});
+          router.get('navSurveysController').connectOutlet({
+            name: 'navSurveysMain'
+          });
           FLOW.surveyGroupControl.populate();
         }
       }),
-      
+
       navSurveysEdit: Ember.Route.extend({
         route: '/edit',
         connectOutlets: function(router, event) {
-          router.get('navSurveysController').connectOutlet({ name: 'navSurveysEdit'});
+          router.get('navSurveysController').connectOutlet({
+            name: 'navSurveysEdit'
+          });
 
           // all questions should be closed when we enter
-          FLOW.selectedControl.set('selectedQuestion',null);
+          FLOW.selectedControl.set('selectedQuestion', null);
           // moet weg
-          var sId=FLOW.selectedControl.selectedSurvey.get('keyId');
-          FLOW.questionGroupControl.set('content', FLOW.store.find(FLOW.QuestionGroup, {surveyId:sId}));
+          var sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+          FLOW.questionGroupControl.set('content', FLOW.store.find(FLOW.QuestionGroup, {
+            surveyId: sId
+          }));
         }
       })
 
     }),
 
-//********************** DEVICES ROUTER *******************
+    //********************** DEVICES ROUTER *******************
     navDevices: Ember.Route.extend({
       route: '/devices',
       connectOutlets: function(router, event) {
@@ -114,7 +118,7 @@ FLOW.Router = Ember.Router.extend({
       doCurrentDevices: function(router, event) {
         router.transitionTo('navDevices.currentDevices');
       },
-      
+
       doAssignSurveysOverview: function(router, event) {
         router.transitionTo('navDevices.assignSurveysOverview');
       },
@@ -142,7 +146,7 @@ FLOW.Router = Ember.Router.extend({
         route: '/assign-surveys',
         connectOutlets: function(router, context) {
           router.get('navDevicesController').connectOutlet('assignSurveysOverview');
-           FLOW.surveyAssignmentControl.populate();
+          FLOW.surveyAssignmentControl.populate();
           router.set('devicesSubnavController.selected', 'assignSurveys');
         }
       }),
@@ -157,7 +161,7 @@ FLOW.Router = Ember.Router.extend({
     }),
 
 
-// ******************* DATA ROUTER ***********************
+    // ******************* DATA ROUTER ***********************
     navData: Ember.Route.extend({
       route: '/data',
       connectOutlets: function(router, event) {
@@ -219,22 +223,51 @@ FLOW.Router = Ember.Router.extend({
       })
     }),
 
-// ************************** REPORTS ROUTER **********************************
+    // ************************** REPORTS ROUTER **********************************
     navReports: Ember.Route.extend({
       route: '/reports',
       connectOutlets: function(router, context) {
         router.get('applicationController').connectOutlet('navReports');
         FLOW.surveyGroupControl.populate();
+        router.set('navigationController.selected', 'navReports');
+      },
 
+      doExportReports: function(router, event) {
         FLOW.set('showRawDataReportApplet', false);
         FLOW.set('showComprehensiveReportApplet', false);
         FLOW.set('showGoogleEarthFileApplet', false);
+        router.transitionTo('navReports.exportReports');
+      },
 
-        router.set('navigationController.selected', 'navReports');
-      }
+      doChartReports: function(router, event) {
+        router.transitionTo('navReports.chartReports');
+      },
+
+      index: Ember.Route.extend({
+        route: '/',
+        redirectsTo: 'exportReports'
+      }),
+
+      exportReports: Ember.Route.extend({
+        route: '/exportreports',
+        connectOutlets: function(router, context) {
+          router.get('navReportsController').connectOutlet('exportReports');
+          router.set('reportsSubnavController.selected', 'exportReports');
+          FLOW.set('showRawDataReportApplet', true);
+        }
+      }),
+
+      chartReports: Ember.Route.extend({
+        route: '/chartreports',
+        connectOutlets: function(router, context) {
+          router.get('navReportsController').connectOutlet('chartReports');
+          router.set('reportsSubnavController.selected', 'chartReports');
+          FLOW.surveyGroupControl.populate();
+        }
+      })
     }),
 
-// ************************** MAPS ROUTER **********************************
+    // ************************** MAPS ROUTER **********************************
     navMaps: Ember.Route.extend({
       route: '/maps',
       connectOutlets: function(router, context) {
@@ -242,8 +275,8 @@ FLOW.Router = Ember.Router.extend({
         router.set('navigationController.selected', 'navMaps');
       }
     }),
-    
-// ************************** USERS ROUTER **********************************
+
+    // ************************** USERS ROUTER **********************************
     navUsers: Ember.Route.extend({
       route: '/users',
       connectOutlets: function(router, context) {
@@ -252,7 +285,7 @@ FLOW.Router = Ember.Router.extend({
       }
     }),
 
-// ************************** ADMIN ROUTER **********************************
+    // ************************** ADMIN ROUTER **********************************
     navAdmin: Ember.Route.extend({
       route: '/admin',
       connectOutlets: function(router, context) {

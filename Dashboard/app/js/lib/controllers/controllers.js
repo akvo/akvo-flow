@@ -19,13 +19,19 @@ FLOW.NavSurveysController = Ember.Controller.extend();
 FLOW.NavDevicesController = Ember.Controller.extend();
 FLOW.DevicesSubnavController = Em.Controller.extend();
 FLOW.DevicesTableHeaderController = Em.Controller.extend({selected: null});
+
 FLOW.NavDataController = Ember.Controller.extend();
 FLOW.DatasubnavController = Em.Controller.extend();
 FLOW.InspectDataController = Ember.ArrayController.extend();
 FLOW.ImportSurveyController = Ember.Controller.extend();
 FLOW.ExcelImportController = Ember.Controller.extend();
 FLOW.ExcelExportController = Ember.Controller.extend();
+
 FLOW.NavReportsController = Ember.Controller.extend();
+FLOW.ReportsSubnavController = Em.Controller.extend();
+FLOW.ExportReportsController = Ember.ArrayController.extend();
+FLOW.ChartReportsController = Ember.Controller.extend();
+
 FLOW.NavMapsController = Ember.Controller.extend();
 FLOW.NavUsersController = Ember.Controller.extend();
 FLOW.NavAdminController = Ember.Controller.extend();

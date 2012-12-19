@@ -329,6 +329,15 @@ FLOW.NavReportsView = Ember.View.extend({
   templateName: 'navReports/nav-reports'
 });
 
+FLOW.ExportReportsView = Ember.View.extend({
+  templateName: 'navReports/export-reports'
+});
+
+FLOW.ChartReportsView = Ember.View.extend({
+  templateName: 'navReports/chart-reports'
+});
+
+
 // applets
 FLOW.rawDataReportApplet = Ember.View.extend({
   templateName: 'navReports/applets/raw-data-report-applet'
@@ -397,6 +406,22 @@ FLOW.DatasubnavView = Em.View.extend({
 // ********************************************************//
 FLOW.DevicesSubnavView = Em.View.extend({
   templateName: 'navDevices/devices-subnav',
+  selectedBinding: 'controller.selected',
+  NavItemView: Ember.View.extend({
+    tagName: 'li',
+    classNameBindings: 'isActive:active'.w(),
+
+    isActive: function() {
+      return this.get('item') === this.get('parentView.selected');
+    }.property('item', 'parentView.selected').cacheable()
+  })
+});
+
+// ********************************************************//
+//             Subnavigation for the Reports tabs
+// ********************************************************//
+FLOW.ReportsSubnavView = Em.View.extend({
+  templateName: 'navReports/reports-subnav',
   selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({
     tagName: 'li',
