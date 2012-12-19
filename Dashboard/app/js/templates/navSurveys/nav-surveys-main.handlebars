@@ -14,9 +14,9 @@
           <a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a>
         </nav>
       {{/if}}    
-
+<nav>
       <!-- show all survey groups --> 
-	 <a href="#" class="scrollUp">up</a>
+	 <div class="scrollWrap"><a href="#" class="scrollUp">up</a></div>
 	 <ul class="menuGroup">
         {{#each sg in FLOW.surveyGroupControl.content}}
           {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
@@ -24,7 +24,7 @@
           {{/view}}
         {{/each}} 
       </ul>
-<a href="#" class="scrollDown">down</a>
+<div class="scrollWrap"><a href="#" class="scrollDown">down</a></div>
 </nav>
 	
   </section>

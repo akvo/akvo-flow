@@ -1335,6 +1335,12 @@ nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a {
 	/* border-left: thin solid rgb(255,255,255); */	background: url(../images/selectIndictr.png) right bottom no-repeat;
 	color: rgb(246, 160, 26);
 }
+.scrollWrap {
+	display:block;
+	width:100%;
+	height:15px;
+	margin:4px auto;
+	}
 a.scrollUp {
 	display: block;
 	width: 50%;
@@ -1342,17 +1348,13 @@ a.scrollUp {
 	text-indent: -9999px;
 	text-align: center;
 	background: rgb(31,31,31) url(../images/scrollUp.png) center center no-repeat;
-	margin: 0 auto 4px auto;
+	margin: 0 auto 0 auto;
 	border-radius: 5px 5px 0 0;
 	-moz-transition: background 0.4s ease-in;
 	-webkit-transition: background 0.4s ease-in;
 	-o-transition: background 0.4s ease-in;
 	transition: background 0.4s ease-in;
 }
-a.FadeIt {
-	opacity:0.1;
-	cursor:text;
-	}
 a.scrollDown {
 	display: block;
 	width: 50%;
@@ -1360,7 +1362,7 @@ a.scrollDown {
 	text-indent: -9999px;
 	text-align: center;
 	background: rgb(31,31,31) url(../images/scrollDown.png) center center no-repeat;
-	margin: 4px auto 0 auto;
+	margin: 0 auto 0 auto;
 	border-radius: 0 0 5px 5px;
 	-moz-transition: background 0.4s ease-in;
 	-webkit-transition: background 0.4s ease-in;
@@ -1373,6 +1375,11 @@ a.scrollUp:hover {
 a.scrollDown:hover {
 	background: rgb(107, 134, 141) url(../images/scrollDown.png) center center no-repeat;
 }
+
+a.FadeIt {
+	display:none;
+	}
+
 /* Survey Top Bar
 --------------------------------------------- */
 section.topBar {
