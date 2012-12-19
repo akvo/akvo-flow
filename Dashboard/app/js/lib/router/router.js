@@ -233,9 +233,6 @@ FLOW.Router = Ember.Router.extend({
       },
 
       doExportReports: function(router, event) {
-        FLOW.set('showRawDataReportApplet', false);
-        FLOW.set('showComprehensiveReportApplet', false);
-        FLOW.set('showGoogleEarthFileApplet', false);
         router.transitionTo('navReports.exportReports');
       },
 
@@ -253,7 +250,7 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function(router, context) {
           router.get('navReportsController').connectOutlet('exportReports');
           router.set('reportsSubnavController.selected', 'exportReports');
-          FLOW.set('showRawDataReportApplet', true);
+          FLOW.selectedControl.set('selectedSurveyGroup', null);
         }
       }),
 

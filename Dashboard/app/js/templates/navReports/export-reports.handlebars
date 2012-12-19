@@ -1,23 +1,47 @@
- <section class="fullWidth" id="excelImport">
-        <h1>This is the content of export reports</h1>
+<section class="fullWidth" id="excelImport">
+{{#view FLOW.exportreportsView}}
+  <h1>Export data</h1>
 
-   {{#if FLOW.selectedControl.selectedSurveyAllQuestions }}
-          <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
-          <a {{action showComprehensiveReport target="this"}} class="standardBtn"> {{t _comprehensive_report}} </a>
-        {{/if}}
 
-        <a {{action showGoogleEarthFile target="this"}} class="standardBtn"> {{t _google_earth_file}} </a>
+ {{view Ember.Select 
+      contentBinding="FLOW.surveyGroupControl.content" 
+      selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
+      optionLabelPath="content.code" 
+      optionValuePath="content.keyId" 
+      prompt="Select survey group"}}<br/>
 
-        {{#if FLOW.showRawDataReportApplet }}
-          {{view FLOW.rawDataReportApplet }}
-        {{/if}}
+      {{view Ember.Select 
+        contentBinding="FLOW.surveyControl.content" 
+        selectionBinding="FLOW.selectedControl.selectedSurvey" 
+        optionLabelPath="content.code" 
+        optionValuePath="content.keyId" 
+        prompt="Select survey"}} <br/>
 
-        {{#if FLOW.showComprehensiveReportApplet }}
-          {{view FLOW.comprehensiveReportApplet}}
-        {{/if}}
+  <h3>Export raw data report</h3>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. Mauris sollicitudin pretium sem eget mollis. Cras sit amet mauris turpis. Ut molestie lobortis laoreet. Fusce lectus nibh, feugiat eu adipiscing a, gravida vitae risus. Suspendisse velit lorem, molestie sed commodo non, aliquet ornare arcu. Suspendisse potenti. Pellentesque pellentesque lacus sed justo egestas et dignissim mauris placerat. 
+  <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
 
-        {{#if FLOW.showGoogleEarthFileApplet }}
-          {{view FLOW.googleEarthFileApplet}}
-        {{/if}}
+  {{#if view.showRawDataReportApplet }}
+    {{view FLOW.rawDataReportApplet }}
+  {{/if}}
 
-    </section>
+  <h3>Export comprehenive report</h3>
+   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. Mauris sollicitudin pretium sem eget mollis. Cras sit amet mauris turpis. Ut molestie lobortis laoreet. Fusce lectus nibh, feugiat eu adipiscing a, gravida vitae risus. Suspendisse velit lorem, molestie sed commodo non, aliquet ornare arcu. Suspendisse potenti. Pellentesque pellentesque lacus sed justo egestas et dignissim mauris placerat. 
+  <a {{action showComprehensiveReport target="this"}} class="standardBtn"> {{t _comprehensive_report}} </a>
+
+  {{#if view.showComprehensiveReportApplet }}
+    {{view FLOW.comprehensiveReportApplet}}
+  {{/if}}
+
+
+  <h3>Export Google Earth file</h3>
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. Mauris sollicitudin pretium sem eget mollis. Cras sit amet mauris turpis. Ut molestie lobortis laoreet. Fusce lectus nibh, feugiat eu adipiscing a, gravida vitae risus. Suspendisse velit lorem, molestie sed commodo non, aliquet ornare arcu. Suspendisse potenti. Pellentesque pellentesque lacus sed justo egestas et dignissim mauris placerat. 
+
+
+  <a {{action showGoogleEarthFile target="this"}} class="standardBtn"> {{t _google_earth_file}} </a>  
+
+  {{#if view.showGoogleEarthFileApplet }}
+    {{view FLOW.googleEarthFileApplet}}
+  {{/if}}
+{{/view}}
+</section>

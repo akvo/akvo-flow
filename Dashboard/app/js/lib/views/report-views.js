@@ -1,5 +1,4 @@
 /*global deleteChart, createChart */
-
 FLOW.chartView = Em.View.extend({
 
   getChartData:function () {
@@ -32,22 +31,4 @@ FLOW.chartView = Em.View.extend({
       createChart();
     }
   }.observes('FLOW.surveyQuestionSummaryControl.content.isLoaded'),
-
-  showRawDataReport: function () {
-    if (!FLOW.selectedControl.selectedSurveyAllQuestions) {
-      return;
-    }
-    FLOW.set('showRawDataReportApplet', true);
-  },
-
-  showComprehensiveReport: function () {
-    if (!FLOW.selectedControl.selectedSurveyAllQuestions) {
-      return;
-    }
-    FLOW.set('showComprehensiveReportApplet', true);
-  },
-
-  showGoogleEarthFile: function () {
-    FLOW.set('showGoogleEarthFileApplet', true);
-  }
 });
