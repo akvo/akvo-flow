@@ -29,12 +29,18 @@
           <a {{action showComprehensiveReport target="this"}} class="standardBtn"> {{t _comprehensive_report}} </a>
         {{/if}}
 
+        <a {{action showGoogleEarthFile target="this"}} class="standardBtn"> {{t _google_earth_file}} </a>
+
         {{#if FLOW.showRawDataReportApplet }}
           {{view FLOW.rawDataReportApplet }}
         {{/if}}
 
         {{#if FLOW.showComprehensiveReportApplet }}
           {{view FLOW.comprehensiveReportApplet}}
+        {{/if}}
+
+        {{#if FLOW.showGoogleEarthFileApplet }}
+          {{view FLOW.googleEarthFileApplet}}
         {{/if}}
 
         <br><br>

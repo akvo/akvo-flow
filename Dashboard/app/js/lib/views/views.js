@@ -338,6 +338,10 @@ FLOW.comprehensiveReportApplet = Ember.View.extend({
   templateName: 'navReports/applets/comprehensive-report-applet'
 });
 
+FLOW.googleEarthFileApplet = Ember.View.extend({
+  templateName: 'navReports/applets/google-earth-file-applet'
+});
+
 // users views
 FLOW.NavUsersView = Ember.View.extend({
   templateName: 'navUsers/nav-users'

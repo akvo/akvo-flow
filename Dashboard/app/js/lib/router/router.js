@@ -225,8 +225,11 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function(router, context) {
         router.get('applicationController').connectOutlet('navReports');
         FLOW.surveyGroupControl.populate();
+
         FLOW.set('showRawDataReportApplet', false);
         FLOW.set('showComprehensiveReportApplet', false);
+        FLOW.set('showGoogleEarthFileApplet', false);
+
         router.set('navigationController.selected', 'navReports');
       }
     }),

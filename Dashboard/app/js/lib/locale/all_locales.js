@@ -82,7 +82,8 @@ Ember.STRINGS_EN = {
   '_action_failed': 'Action failed',
   '_build_chart':'Build chart',
   '_raw_data_report': 'Raw Data Report',
-  '_comprehensive_report': 'Comprehensive Report'
+  '_comprehensive_report': 'Comprehensive Report',
+  '_google_earth_file': 'Google Earth File'
 };
 
 Ember.STRINGS_ES = {

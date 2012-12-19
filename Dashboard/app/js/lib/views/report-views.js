@@ -16,7 +16,7 @@ FLOW.chartView = Em.View.extend({
       FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
         total = total + item.get('count');
       });
-      
+
       FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
         var percentage = 100*item.get('count')/total,
         percString = percentage.toFixed(1);
@@ -45,5 +45,9 @@ FLOW.chartView = Em.View.extend({
       return;
     }
     FLOW.set('showComprehensiveReportApplet', true);
+  },
+
+  showGoogleEarthFile: function () {
+    FLOW.set('showGoogleEarthFileApplet', true);
   }
 });
