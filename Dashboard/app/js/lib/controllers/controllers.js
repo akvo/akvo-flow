@@ -295,6 +295,8 @@ FLOW.dialogControl = Ember.Object.create({
 //                Data controllers
 // ***********************************************//
 FLOW.surveyGroupControl = Ember.ArrayController.create({
+  sortProperties: ['code'],
+  sortAscending: true,
   content: null,
 
   populate: function () {
