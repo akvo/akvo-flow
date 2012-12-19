@@ -30,5 +30,5 @@ FLOW.chartView = Em.View.extend({
       deleteChart();
       createChart();
     }
-  }.observes('FLOW.surveyQuestionSummaryControl.content.isLoaded'),
+  }.observes('FLOW.surveyQuestionSummaryControl.content.isLoaded')
 });

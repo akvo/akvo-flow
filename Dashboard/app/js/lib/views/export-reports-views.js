@@ -14,5 +14,4 @@ FLOW.exportreportsView = Em.View.extend({
   showGoogleEarthFile: function () {
     this.set('showGoogleEarthFileApplet', true);
   }
-
-})
+});
