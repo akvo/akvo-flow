@@ -100,7 +100,7 @@ FLOW.QuestionView = Ember.View.extend({
 		var selectedOrder, insertAfterOrder, selectedQ;
 		selectedOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
 
-		if(this.get('zeroItem')) {
+		if(this.get('zeroItemQuestion')) {
 			insertAfterOrder = 0;
 		} else {
 			insertAfterOrder = this.content.get('order');
@@ -125,7 +125,7 @@ FLOW.QuestionView = Ember.View.extend({
 	doQuestionCopyHere: function() {
 		var insertAfterOrder;
 
-		if(this.get('zeroItem')) {
+		if(this.get('zeroItemQuestion')) {
 			insertAfterOrder = 0;
 		} else {
 			insertAfterOrder = this.content.get('order');
@@ -137,7 +137,7 @@ FLOW.QuestionView = Ember.View.extend({
 		FLOW.store.createRecord(FLOW.Question, {
 			"tip": FLOW.selectedControl.selectedForCopyQuestion.get('tip'),
 			"mandatoryFlag": FLOW.selectedControl.selectedForCopyQuestion.get('mandatoryFlag'),
-			"allowSign": FLOW.selectedControl.selectedForCopyQuestion('allowSign'),
+			"allowSign": FLOW.selectedControl.selectedForCopyQuestion.get('allowSign'),
 			"allowDecimalPoint": FLOW.selectedControl.selectedForCopyQuestion.get('allowDecimalPoint'),
 			"allowMultipleFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowMultipleFlag'),
 			"allowOtherFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowOtherFlag'),
@@ -178,7 +178,6 @@ FLOW.QuestionView = Ember.View.extend({
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedForCopyQuestion', null);
 	},
-
 
 	// true if one question has been selected for Move
 	oneSelectedForMove: function() {
