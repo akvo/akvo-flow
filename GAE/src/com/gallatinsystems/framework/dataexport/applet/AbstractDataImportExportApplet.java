@@ -16,8 +16,11 @@
 
 package com.gallatinsystems.framework.dataexport.applet;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javax.swing.JApplet;
@@ -105,6 +108,32 @@ public class AbstractDataImportExportApplet extends JApplet {
 	 * @return
 	 */
 	protected Map<String, String> getConfigCriteria() {
-		return parseCriteria(getParameter(CRITERIA_PARAM));
+		final String criteria = getParameter(CRITERIA_PARAM);
+
+		if (criteria != null && "".equals(criteria)) {
+			return parseCriteria(criteria);
+		}
+
+		System.out.println("Loading configuration from UploadConstants.properties");
+
+		final Properties uploadProperties = new Properties();
+		final InputStream is = AbstractDataImportExportApplet.class
+				.getResourceAsStream("/UploadConstants.properties");
+		try {
+			uploadProperties.load(is);
+		} catch (IOException ioe) {
+			System.err.println("Error loading upload constants");
+			return null;
+		} finally {
+			try {
+				is.close();
+			} catch (Exception e) {
+				// no-op
+			}
+		}
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		Map<String, String> config = new HashMap(System.getProperties());
+		return config;
 	}
 }

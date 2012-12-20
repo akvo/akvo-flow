@@ -356,6 +356,14 @@ FLOW.surveyFormApplet = Ember.View.extend({
   templateName: 'navReports/applets/survey-form-applet'
 });
 
+FLOW.bulkImportApplet = Ember.View.extend({
+  templateName: 'navData/applets/bulk-import-applet'
+});
+
+FLOW.rawDataImportApplet = Ember.View.extend({
+  templateName: 'navData/applets/raw-data-import-applet'
+});
+
 // users views
 FLOW.NavUsersView = Ember.View.extend({
   templateName: 'navUsers/nav-users'
