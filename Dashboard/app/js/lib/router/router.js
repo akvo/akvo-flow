@@ -43,7 +43,7 @@ FLOW.Router = Ember.Router.extend({
     //    },
     index: Ember.Route.extend({
       route: '/',
-      redirectsTo: 'navHome'
+      redirectsTo: 'navSurveys.index'
     }),
 
     // ************************** HOME ROUTER **********************************
@@ -242,7 +242,7 @@ FLOW.Router = Ember.Router.extend({
 
       index: Ember.Route.extend({
         route: '/',
-        redirectsTo: 'exportReports'
+        redirectsTo: 'chartReports'
       }),
 
       exportReports: Ember.Route.extend({

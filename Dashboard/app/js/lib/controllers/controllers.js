@@ -1,24 +1,27 @@
 // ***********************************************//
 //                 controllers
 // ***********************************************//
-
 // Define the main application controller. This is automatically picked up by
 // the application and initialized.
 require('akvo-flow/core');
 FLOW.ApplicationController = Ember.Controller.extend({
-  init: function () {
+  init: function() {
     this._super();
     Ember.STRINGS = Ember.STRINGS_EN;
   }
 });
 
 // Navigation controllers
-FLOW.NavigationController = Em.Controller.extend({ selected: null});
+FLOW.NavigationController = Em.Controller.extend({
+  selected: null
+});
 FLOW.NavHomeController = Ember.Controller.extend();
 FLOW.NavSurveysController = Ember.Controller.extend();
 FLOW.NavDevicesController = Ember.Controller.extend();
 FLOW.DevicesSubnavController = Em.Controller.extend();
-FLOW.DevicesTableHeaderController = Em.Controller.extend({selected: null});
+FLOW.DevicesTableHeaderController = Em.Controller.extend({
+  selected: null
+});
 
 FLOW.NavDataController = Ember.Controller.extend();
 FLOW.DatasubnavController = Em.Controller.extend();
@@ -43,12 +46,12 @@ FLOW.NavAdminController = Ember.Controller.extend();
 FLOW.languageControl = Ember.Object.create({
   dashboardLanguage: null,
 
-  init: function () {
+  init: function() {
     var locale;
 
     this._super();
     locale = localStorage.locale;
-    if (typeof locale === 'undefined') {
+    if(typeof locale === 'undefined') {
       this.set('dashboardLanguage', this.content.findProperty('value', 'en'));
     } else {
       this.set('dashboardLanguage', this.content.findProperty('value', locale));
@@ -56,33 +59,46 @@ FLOW.languageControl = Ember.Object.create({
   },
 
   content: [
-    Ember.Object.create({label: "English", value: "en"}),
-    Ember.Object.create({label: "Dutch", value: "nl"}),
-    Ember.Object.create({label: "Spanish", value: "es"}),
-    Ember.Object.create({label: "French", value: "fr"})
-    ],
+  Ember.Object.create({
+    label: "English",
+    value: "en"
+  }), Ember.Object.create({
+    label: "Dutch",
+    value: "nl"
+  }), Ember.Object.create({
+    label: "Spanish",
+    value: "es"
+  }), Ember.Object.create({
+    label: "French",
+    value: "fr"
+  })],
 
-  changeLanguage: function () {
+  changeLanguage: function() {
     var locale;
     locale = this.dashboardLanguage.get("value");
     localStorage.locale = this.get('dashboardLanguage.value');
 
-    if (locale === "nl") {Ember.STRINGS = Ember.STRINGS_NL; }
-    else if (locale === "fr") {Ember.STRINGS = Ember.STRINGS_FR; }
-    else if (locale === "es") {Ember.STRINGS = Ember.STRINGS_ES; }
-    else {Ember.STRINGS = Ember.STRINGS_EN; }
+    if(locale === "nl") {
+      Ember.STRINGS = Ember.STRINGS_NL;
+    } else if(locale === "fr") {
+      Ember.STRINGS = Ember.STRINGS_FR;
+    } else if(locale === "es") {
+      Ember.STRINGS = Ember.STRINGS_ES;
+    } else {
+      Ember.STRINGS = Ember.STRINGS_EN;
+    }
   }.observes('this.dashboardLanguage')
 });
 
 FLOW.dataserverControl = Ember.Object.create({
   dataserver: null,
 
-  init: function () {
+  init: function() {
     var dataserverSetting;
 
     this._super();
     dataserverSetting = localStorage.dataserver;
-    if (typeof dataserverSetting === "undefined") {
+    if(typeof dataserverSetting === "undefined") {
       this.set('dataserver', this.content.findProperty('value', 'sandbox'));
     } else {
       this.set('dataserver', this.content.findProperty('value', dataserverSetting));
@@ -90,46 +106,69 @@ FLOW.dataserverControl = Ember.Object.create({
   },
 
   content: [
-    Ember.Object.create({label: "Akvo Sandbox", value: "sandbox"}),
-    Ember.Object.create({label: "Localhost", value: "local"}),
-    Ember.Object.create({label: "Localhost to Sandbox", value: "local-sandbox"}),
-    Ember.Object.create({label: "Local VM", value: "vm"}),
-    Ember.Object.create({label: "Fixtures", value: "fixtures"})],
+  Ember.Object.create({
+    label: "Akvo Sandbox",
+    value: "sandbox"
+  }), Ember.Object.create({
+    label: "Localhost",
+    value: "local"
+  }), Ember.Object.create({
+    label: "Localhost to Sandbox",
+    value: "local-sandbox"
+  }), Ember.Object.create({
+    label: "Local VM",
+    value: "vm"
+  }), Ember.Object.create({
+    label: "Fixtures",
+    value: "fixtures"
+  })],
 
-  changeServer: function () {
+  changeServer: function() {
     var host = "http://" + window.location.host,
-    server = this.dataserver.get('value');
+      server = this.dataserver.get('value');
     localStorage.dataserver = server;
 
-    if (server == "local") {
+    if(server == "local") {
       // FLOW.selectedControl.set('dataserverControl', null);
       FLOW.store = DS.Store.create({
         revision: 10,
-        adapter:DS.FLOWRESTAdapter.create({bulkCommit: false, namespace: "restlocal", url: host})
+        adapter: DS.FLOWRESTAdapter.create({
+          bulkCommit: false,
+          namespace: "restlocal",
+          url: host
+        })
       });
-    }
-    else if (server == "vm") {
+    } else if(server == "vm") {
       // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
         revision: 10,
-        adapter:DS.FLOWRESTAdapter.create({bulkCommit: false, namespace: "rest", url: host})
+        adapter: DS.FLOWRESTAdapter.create({
+          bulkCommit: false,
+          namespace: "rest",
+          url: host
+        })
       });
-    }
-    else if (server == "sandbox") {
+    } else if(server == "sandbox") {
       // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
         revision: 10,
-        adapter: DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:host})
+        adapter: DS.FLOWRESTAdapter.create({
+          bulkCommit: false,
+          namespace: "rest",
+          url: host
+        })
       });
-    }
-     else if (server == "local-sandbox") {
+    } else if(server == "local-sandbox") {
       // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
         revision: 10,
-        adapter: DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"restsandbox", url:host})
+        adapter: DS.FLOWRESTAdapter.create({
+          bulkCommit: false,
+          namespace: "restsandbox",
+          url: host
+        })
       });
-    }
-    else if (server == "fixtures") {
+    } else if(server == "fixtures") {
       // FLOW.selectedControl.set('dataserverControl',null);
       FLOW.store = DS.Store.create({
         revision: 10,
@@ -142,37 +181,73 @@ FLOW.dataserverControl = Ember.Object.create({
 
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
-    Ember.Object.create({label: "Free text", value: "FREE_TEXT"}),
-    Ember.Object.create({label: "Option", value: "OPTION"}),
-    Ember.Object.create({label: "Number", value: "NUMBER"}),
-    Ember.Object.create({label: "Geolocation", value: "GEO"}),
-    Ember.Object.create({label: "Photo", value: "PHOTO"}),
-    Ember.Object.create({label: "Video", value: "VIDEO"}),
-    Ember.Object.create({label: "Date", value: "DATE"}),
-    Ember.Object.create({label: "Barcode", value: "BARCODE"})
-  ]
+  Ember.Object.create({
+    label: "Free text",
+    value: "FREE_TEXT"
+  }), Ember.Object.create({
+    label: "Option",
+    value: "OPTION"
+  }), Ember.Object.create({
+    label: "Number",
+    value: "NUMBER"
+  }), Ember.Object.create({
+    label: "Geolocation",
+    value: "GEO"
+  }), Ember.Object.create({
+    label: "Photo",
+    value: "PHOTO"
+  }), Ember.Object.create({
+    label: "Video",
+    value: "VIDEO"
+  }), Ember.Object.create({
+    label: "Date",
+    value: "DATE"
+  }), Ember.Object.create({
+    label: "Barcode",
+    value: "BARCODE"
+  })]
 });
 
 
 FLOW.surveyPointTypeControl = Ember.Object.create({
   content: [
-    Ember.Object.create({label: "Point", value: "Point"}),
-    Ember.Object.create({label: "Household", value: "Household"}),
-    Ember.Object.create({label: "Public institution", value: "PublicInstitution"})
-  ]
+  Ember.Object.create({
+    label: "Point",
+    value: "Point"
+  }), Ember.Object.create({
+    label: "Household",
+    value: "Household"
+  }), Ember.Object.create({
+    label: "Public institution",
+    value: "PublicInstitution"
+  })]
 });
 
 
 FLOW.surveySectorTypeControl = Ember.Object.create({
   content: [
-    Ember.Object.create({label: "Water and Sanitation", value: "WASH"}),
-    Ember.Object.create({label: "Education", value: "EDUC"}),
-    Ember.Object.create({label: "Economic development", value: "ECONDEV"}),
-    Ember.Object.create({label: "Health care", value: "HEALTH"}),
-    Ember.Object.create({label: "IT and Communication", value: "ICT"}),
-    Ember.Object.create({label: "Food security", value: "FOODSEC"}),
-    Ember.Object.create({label: "Other", value: "OTHER"})
-  ]
+  Ember.Object.create({
+    label: "Water and Sanitation",
+    value: "WASH"
+  }), Ember.Object.create({
+    label: "Education",
+    value: "EDUC"
+  }), Ember.Object.create({
+    label: "Economic development",
+    value: "ECONDEV"
+  }), Ember.Object.create({
+    label: "Health care",
+    value: "HEALTH"
+  }), Ember.Object.create({
+    label: "IT and Communication",
+    value: "ICT"
+  }), Ember.Object.create({
+    label: "Food security",
+    value: "FOODSEC"
+  }), Ember.Object.create({
+    label: "Other",
+    value: "OTHER"
+  })]
 });
 
 
@@ -180,6 +255,7 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
   selectedSurvey: null,
   selectedSurveyAllQuestions: null,
+  dependentQuestion: null,
   selectedQuestionGroup: null,
   selectedQuestion: null,
   selectedOption: null,
@@ -188,105 +264,106 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedForMoveQuestion: null,
   selectedForCopyQuestion: null,
   selectedCreateNewGroup: false,
+  selectedSurveyOPTIONandNUMBERQuestions: null,
 
   // when selected survey changes, deselect selected surveys and question groups
-  deselectSurveyGroupChildren: function () {
+  deselectSurveyGroupChildren: function() {
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.selectedControl.set('selectedSurveyAllQuestions', null);
     FLOW.selectedControl.set('selectedQuestionGroup', null);
   }.observes('this.selectedSurveyGroup'),
 
-   deselectSurveyChildren: function () {
+  deselectSurveyChildren: function() {
     FLOW.selectedControl.set('selectedQuestionGroup', null);
   }.observes('this.selectedSurvey')
 });
 
 
 FLOW.dialogControl = Ember.Object.create({
-  delSG:"delSG",
-  delS:"delS",
-  delQG:"delQG",
-  delQ:"delQ",
-  showDialog:false,
-  message:null,
-  header:null,
-  activeView:null,
-  activeAction:null,
-  showOK:true,
-  showCANCEL:true,
+  delSG: "delSG",
+  delS: "delS",
+  delQG: "delQG",
+  delQ: "delQ",
+  showDialog: false,
+  message: null,
+  header: null,
+  activeView: null,
+  activeAction: null,
+  showOK: true,
+  showCANCEL: true,
 
-  confirm:function(event){
-    this.set('activeView',event.view);
-    this.set('activeAction',event.context);
-    this.set('showOK',true);
-    this.set('showCANCEL',true);
+  confirm: function(event) {
+    this.set('activeView', event.view);
+    this.set('activeAction', event.context);
+    this.set('showOK', true);
+    this.set('showCANCEL', true);
 
-    switch (this.get('activeAction')) {
-      case "delSG":
-        if (FLOW.surveyGroupControl.containsSurveys()){
-          this.set('activeAction',"ignore");
-          this.set('header',Ember.String.loc('_SG_delete_not_possible_header'));
-          this.set('message',Ember.String.loc('_SG_delete_not_possible_message'));
-          this.set('showCANCEL',false);
-          this.set('showDialog',true);
-        } else {
-          this.set('header',Ember.String.loc('_SG_delete_header'));
-          this.set('message',Ember.String.loc('_SG_delete_message'));
-          this.set('showDialog',true);
-        }
-        break;
+    switch(this.get('activeAction')) {
+    case "delSG":
+      if(FLOW.surveyGroupControl.containsSurveys()) {
+        this.set('activeAction', "ignore");
+        this.set('header', Ember.String.loc('_SG_delete_not_possible_header'));
+        this.set('message', Ember.String.loc('_SG_delete_not_possible_message'));
+        this.set('showCANCEL', false);
+        this.set('showDialog', true);
+      } else {
+        this.set('header', Ember.String.loc('_SG_delete_header'));
+        this.set('message', Ember.String.loc('_SG_delete_message'));
+        this.set('showDialog', true);
+      }
+      break;
 
-      case "delS":
-        this.set('header',Ember.String.loc('_S_delete_header'));
-        this.set('message',Ember.String.loc('_S_delete_message'));
-        this.set('showDialog',true);
-        break;
+    case "delS":
+      this.set('header', Ember.String.loc('_S_delete_header'));
+      this.set('message', Ember.String.loc('_S_delete_message'));
+      this.set('showDialog', true);
+      break;
 
-      case "delQG":
-        this.set('header',Ember.String.loc('_QG_delete_header'));
-        this.set('message',Ember.String.loc('_QG_delete_message'));
-        this.set('showDialog',true);
-        break;
+    case "delQG":
+      this.set('header', Ember.String.loc('_QG_delete_header'));
+      this.set('message', Ember.String.loc('_QG_delete_message'));
+      this.set('showDialog', true);
+      break;
 
-      case "delQ":
-        this.set('header',Ember.String.loc('_Q_delete_header'));
-        this.set('message',Ember.String.loc('_Q_delete_message'));
-        this.set('showDialog',true);
-        break;
+    case "delQ":
+      this.set('header', Ember.String.loc('_Q_delete_header'));
+      this.set('message', Ember.String.loc('_Q_delete_message'));
+      this.set('showDialog', true);
+      break;
 
-      default:
+    default:
     }
   },
 
-  doOK:function(event){
-    this.set('header',null);
-    this.set('message',null);
-    this.set('showCANCEL',true);
-    this.set('showDialog',false);
-    var view =  this.get('activeView');
-    switch (this.get('activeAction')) {
-      case "delSG":
-        view.deleteSurveyGroup.apply(view,arguments);
-        break;
+  doOK: function(event) {
+    this.set('header', null);
+    this.set('message', null);
+    this.set('showCANCEL', true);
+    this.set('showDialog', false);
+    var view = this.get('activeView');
+    switch(this.get('activeAction')) {
+    case "delSG":
+      view.deleteSurveyGroup.apply(view, arguments);
+      break;
 
-      case "delS":
-        view.deleteSurvey.apply(view,arguments);
-        break;
+    case "delS":
+      view.deleteSurvey.apply(view, arguments);
+      break;
 
-      case "delQG":
-        view.deleteQuestionGroup.apply(view,arguments);
-        break;
+    case "delQG":
+      view.deleteQuestionGroup.apply(view, arguments);
+      break;
 
-      case "delQ":
-        this.set('showDialog',false);
-        view.deleteQuestion.apply(view,arguments);
-        break;
-      default:
+    case "delQ":
+      this.set('showDialog', false);
+      view.deleteQuestion.apply(view, arguments);
+      break;
+    default:
     }
   },
 
-  doCANCEL:function(event){
-    this.set('showDialog',false);
+  doCANCEL: function(event) {
+    this.set('showDialog', false);
   }
 }),
 
@@ -299,30 +376,35 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
-  populate: function () {
+  populate: function() {
     this.set('content', FLOW.store.find(FLOW.SurveyGroup));
   },
 
   // checks if data store contains surveys within this survey group.
   // this is also checked server side.
-  containsSurveys:function(){
-    var surveys,sgId;
-    surveys = FLOW.store.filter(FLOW.Survey,function(data) {
+  containsSurveys: function() {
+    var surveys, sgId;
+    surveys = FLOW.store.filter(FLOW.Survey, function(data) {
       sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
-      if (data.get('surveyGroupId') == sgId) { return true; } });
-    
-    return (surveys.get('content').length > 0);
+      if(data.get('surveyGroupId') == sgId) {
+        return true;
+      }
+    });
+
+    return(surveys.get('content').length > 0);
   }
 });
 
 
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,
-  populate: function () {
+  populate: function() {
     var id;
-    if (FLOW.selectedControl.get('selectedSurveyGroup')) {
+    if(FLOW.selectedControl.get('selectedSurveyGroup')) {
       id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-      this.set('content', FLOW.store.findQuery(FLOW.Survey, {surveyGroupId: id}));
+      this.set('content', FLOW.store.findQuery(FLOW.Survey, {
+        surveyGroupId: id
+      }));
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup')
 });
@@ -335,20 +417,22 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 
   // true if all items have been saved
   // used in models.js
-   allRecordsSaved: function () {
-     var allSaved = true;
-     FLOW.questionGroupControl.get('content').forEach(function (item) {
-       if (item.get('isSaving')) {
-         allSaved = false;
-       }
-     });
-      return allSaved;
-   }.property('content.@each.isSaving'),
+  allRecordsSaved: function() {
+    var allSaved = true;
+    FLOW.questionGroupControl.get('content').forEach(function(item) {
+      if(item.get('isSaving')) {
+        allSaved = false;
+      }
+    });
+    return allSaved;
+  }.property('content.@each.isSaving'),
 
-  populate: function () {
-    if (FLOW.selectedControl.get('selectedSurvey')) {
+  populate: function() {
+    if(FLOW.selectedControl.get('selectedSurvey')) {
       var id = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('content', FLOW.store.findQuery(FLOW.QuestionGroup, {surveyId: id}));
+      this.set('content', FLOW.store.findQuery(FLOW.QuestionGroup, {
+        surveyId: id
+      }));
     }
   }.observes('FLOW.selectedControl.selectedSurvey')
 });
@@ -356,39 +440,74 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 
 FLOW.questionControl = Ember.ArrayController.create({
   content: null,
+  OandNcontent: null,
+  Ocontent: null,
+
+  // used for display of dependencies: a question can only be dependent on earlier questions
+  earlierOptionQuestions: function() {
+    var optionQuestionList, qIndex;
+    optionQuestionList = this.get('Ocontent');
+    qIndex = optionQuestionList.indexOf(FLOW.selectedControl.get('selectedQuestion'));
+
+    return this.get('Ocontent').filter(function(item) {
+      return(qIndex > optionQuestionList.indexOf(item));
+    });
+  }.property('FLOW.selectedControl.selectedQuestion'),
 
   // true if all items have been saved
   // used in models.js
-   allRecordsSaved: function () {
-     var allSaved = true;
-     FLOW.questionControl.get('content').forEach(function (item) {
-       if (item.get('isSaving')) {
-         allSaved = false;
-       }
-     });
-     return allSaved;
-   }.property('content.@each.isSaving'),
+  allRecordsSaved: function() {
+    var allSaved = true;
+    FLOW.questionControl.get('content').forEach(function(item) {
+      if(item.get('isSaving')) {
+        allSaved = false;
+      }
+    });
+    return allSaved;
+  }.property('content.@each.isSaving'),
 
-  populate: function () {
-    if (FLOW.selectedControl.get('selectedQuestionGroup')) {
+  populate: function() {
+    if(FLOW.selectedControl.get('selectedQuestionGroup')) {
       var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-      this.set('content', FLOW.store.findQuery(FLOW.Question, {questionGroupId: id}));
+      this.set('content', FLOW.store.findQuery(FLOW.Question, {
+        questionGroupId: id
+      }));
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
 
-  populateAllQuestions: function () {
-    if (FLOW.selectedControl.get('selectedSurveyAllQuestions')) {
-      var id = FLOW.selectedControl.selectedSurveyAllQuestions.get('keyId');
-      this.set('content', FLOW.store.findQuery(FLOW.Question, {surveyId: id,summaryOnly:"true"}));
+  populateOPTIONandNUMBERQuestions: function() {
+    if(FLOW.selectedControl.get('selectedSurveyOPTIONandNUMBERQuestions')) {
+      var id = FLOW.selectedControl.selectedSurveyOPTIONandNUMBERQuestions.get('keyId');
+      this.set('OandNcontent', FLOW.store.findQuery(FLOW.Question, {
+        surveyId: id,
+        includeOption: "true",
+        includeNumber: "true"
+      }));
     }
-  }.observes('FLOW.selectedControl.selectedSurveyAllQuestions')
+  }.observes('FLOW.selectedControl.selectedSurveyOPTIONandNUMBERQuestions'),
+
+  // TODO make this more efficient - this is loading to many times
+  populateOPTIONQuestions: function() {
+    if(FLOW.selectedControl.get('selectedSurvey')) {
+      var id = FLOW.selectedControl.selectedSurvey.get('keyId');
+      this.set('Ocontent', FLOW.store.findQuery(FLOW.Question, {
+        surveyId: id,
+        includeOption: "true"
+      }));
+    }
+  }.observes('FLOW.selectedControl.selectedQuestionGroup')
+});
+
+
+FLOW.optionListControl = Ember.ArrayController.create({
+  content: []
 });
 
 
 FLOW.placemarkControl = Ember.ArrayController.create({
   content: null,
 
-  populate: function () {
+  populate: function() {
     this.set('content', FLOW.store.findAll(FLOW.Placemark));
   }
 });
@@ -397,21 +516,18 @@ FLOW.placemarkControl = Ember.ArrayController.create({
 FLOW.placemarkDetailControl = Ember.ArrayController.create({
   content: null,
   selectedDetailImage: null,
-  selectedPointCode:null,
+  selectedPointCode: null,
 
-  populate: function (placemarkId) {
-    if (typeof placemarkId === 'undefined') {
+  populate: function(placemarkId) {
+    if(typeof placemarkId === 'undefined') {
       this.set('content', null);
     } else {
-      this.set('content', FLOW.store.find(FLOW.PlacemarkDetail, {"placemarkId": placemarkId}));
+      this.set('content', FLOW.store.find(FLOW.PlacemarkDetail, {
+        "placemarkId": placemarkId
+      }));
     }
   }
 });
-
-
-FLOW.optionControl = Ember.ArrayController.create({
-});
-
 
 FLOW.tableColumnControl = Ember.Object.create({
   sortProperties: null,
@@ -423,9 +539,9 @@ FLOW.tableColumnControl = Ember.Object.create({
 
 FLOW.deviceGroupControl = Ember.ArrayController.create({
   content: null,
-  
-  populate: function () {
-    this.set('content', FLOW.store.findQuery(FLOW.DeviceGroup,{}));
+
+  populate: function() {
+    this.set('content', FLOW.store.findQuery(FLOW.DeviceGroup, {}));
   }
 
 
@@ -438,28 +554,27 @@ FLOW.deviceControl = Ember.ArrayController.create({
   selected: null,
   content: null,
 
-  populate: function () {
-    this.set('content', FLOW.store.findQuery(FLOW.Device,{}));
+  populate: function() {
+    this.set('content', FLOW.store.findQuery(FLOW.Device, {}));
     this.set('sortProperties', ['phoneNumber']);
     this.set('sortAscending', true);
   },
 
-  allAreSelected: function (key, value) {
-    if (arguments.length === 2) {
+  allAreSelected: function(key, value) {
+    if(arguments.length === 2) {
       this.setEach('isSelected', value);
       return value;
-    }
-    else {
+    } else {
       return !this.get('isEmpty') && this.everyProperty('isSelected', true);
     }
   }.property('@each.isSelected'),
 
-  atLeastOneSelected: function () {
+  atLeastOneSelected: function() {
     return this.filterProperty('isSelected', true).get('length');
   }.property('@each.isSelected'),
 
   // fired from tableColumnView.sort
-  getSortInfo: function () {
+  getSortInfo: function() {
     this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
     this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
   }
@@ -471,27 +586,26 @@ FLOW.surveyAssignmentControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
-  populate: function () {
+  populate: function() {
     this.set('content', FLOW.store.find(FLOW.SurveyAssignment));
     this.set('sortProperties', ['name']);
     this.set('sortAscending', true);
   },
 
-  allAreSelected: function (key, value) {
-    if (arguments.length === 2) {
+  allAreSelected: function(key, value) {
+    if(arguments.length === 2) {
       this.setEach('isSelected', value);
       return value;
-    }
-    else {
+    } else {
       return !this.get('isEmpty') && this.everyProperty('isSelected', true);
     }
   }.property('@each.isSelected'),
 
-  atLeastOneSelected: function () {
+  atLeastOneSelected: function() {
     return this.filterProperty('isSelected', true).get('length');
   }.property('@each.isSelected'),
 
-  getSortInfo:function(){
+  getSortInfo: function() {
     this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
     this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
     this.set('selected', FLOW.tableColumnControl.get('selected'));
@@ -519,20 +633,20 @@ FLOW.dateControl = Ember.Object.create({
 
 
 FLOW.forceObserverControl = Ember.Object.create({
-  forceObserverBool:false
+  forceObserverBool: false
 });
 
 
 FLOW.savingMessageControl = Ember.Object.create({
-  areSavingBool:false,
-  areLoadingBool:false,
+  areSavingBool: false,
+  areLoadingBool: false,
 
-  checkSaving:function(){
-     if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0){
-       this.set('areSavingBool',true);
-     } else {
-       this.set('areSavingBool',false);
-     }
+  checkSaving: function() {
+    if(FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0) {
+      this.set('areSavingBool', true);
+    } else {
+      this.set('areSavingBool', false);
+    }
   }
 }),
 
@@ -542,38 +656,38 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   sortAscending: false,
   selectedSurvey: null,
   content: null,
-  sinceArray:[],
+  sinceArray: [],
 
-  populate: function () {
+  populate: function() {
     this.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
-    this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance,{}));
+    this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {}));
   },
 
-  doInstanceQuery:function(surveyId, deviceId, since, beginDate, endDate){
-    this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance,{
-      'surveyId':surveyId,
-      'deviceId':deviceId,
-      'since':since,
-      'beginDate':beginDate,
-      'endDate':endDate}));
+  doInstanceQuery: function(surveyId, deviceId, since, beginDate, endDate) {
+    this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
+      'surveyId': surveyId,
+      'deviceId': deviceId,
+      'since': since,
+      'beginDate': beginDate,
+      'endDate': endDate
+    }));
   },
 
-  allAreSelected: function (key, value) {
-    if (arguments.length === 2) {
+  allAreSelected: function(key, value) {
+    if(arguments.length === 2) {
       this.setEach('isSelected', value);
       return value;
-    }
-    else {
+    } else {
       return !this.get('isEmpty') && this.everyProperty('isSelected', true);
     }
   }.property('@each.isSelected'),
 
-  atLeastOneSelected: function () {
+  atLeastOneSelected: function() {
     return this.filterProperty('isSelected', true).get('length');
   }.property('@each.isSelected'),
 
   // fired from tableColumnView.sort
-  getSortInfo: function () {
+  getSortInfo: function() {
     this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
     this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
   }
@@ -581,25 +695,27 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
 
 
 FLOW.questionAnswerControl = Ember.ArrayController.create({
-  content:null,
+  content: null,
 
-  doQuestionAnswerQuery:function(surveyInstanceId){
-    this.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer,{
-      'surveyInstanceId':surveyInstanceId}));
+  doQuestionAnswerQuery: function(surveyInstanceId) {
+    this.set('content', FLOW.store.findQuery(FLOW.QuestionAnswer, {
+      'surveyInstanceId': surveyInstanceId
+    }));
   }
 });
 
 FLOW.surveyQuestionSummaryControl = Ember.ArrayController.create({
-  content:null,
+  content: null,
 
-  doSurveyQuestionSummaryQuery:function(questionId){
-    this.set('content', FLOW.store.find(FLOW.SurveyQuestionSummary,{
-      'questionId':questionId}));
+  doSurveyQuestionSummaryQuery: function(questionId) {
+    this.set('content', FLOW.store.find(FLOW.SurveyQuestionSummary, {
+      'questionId': questionId
+    }));
   }
 });
 
 FLOW.chartDataControl = Ember.Object.create({
-  questionText:"",
-  chartData:[],
-  total:null
+  questionText: "",
+  chartData: [],
+  total: null
 });

@@ -12,6 +12,7 @@ FLOW.QuestionView = Ember.View.extend({
 	allowMultipleFlag: null,
 	allowOtherFlag: null,
 	dependentFlag: null,
+	dependentQuestion: null,
 	optionList: null,
 
 	amOpenQuestion: function() {
@@ -41,8 +42,8 @@ FLOW.QuestionView = Ember.View.extend({
 		}
 	}.property('this.type').cacheable(),
 
-  // TODO dependencies
-  // TODO options
+	// TODO dependencies
+	// TODO options
 	doQuestionEdit: function() {
 		var questionType;
 
@@ -64,30 +65,43 @@ FLOW.QuestionView = Ember.View.extend({
 				questionType = item;
 			}
 		});
-
 		this.set('type', questionType);
 	},
 
+	fillOptionList: function () {
+		var optionList,optionListArray, i, sizeList;
+		if (FLOW.selectedControl.get('dependentQuestion') !== null){
+			FLOW.optionListControl.set('content',[]);
+			optionList = FLOW.selectedControl.dependentQuestion.get('optionList');
+			optionListArray = optionList.split('\n');
+			sizeList = optionListArray.length;
+			for (i=0 ; i< sizeList ; i++){
+				FLOW.optionListControl.get('content').push(Ember.Object.create({isSelected: false, value: optionListArray[i]}));
+			}
+		}
+	}.observes('FLOW.selectedControl.dependentQuestion'),
+
 	doCancelEditQuestion: function() {
 		FLOW.selectedControl.set('selectedQuestion', null);
-		console.log('canceling edit');
 	},
 
 	doSaveEditQuestion: function() {
-		FLOW.selectedControl.selectedQuestion.set('text',this.get('text'));
-		FLOW.selectedControl.selectedQuestion.set('tip',this.get('tip'));
-		FLOW.selectedControl.selectedQuestion.set('mandatoryFlag',this.get('mandatoryFlag'));
-		FLOW.selectedControl.selectedQuestion.set('minVal',this.get('minVal'));
-		FLOW.selectedControl.selectedQuestion.set('maxVal',this.get('maxVal'));
-		FLOW.selectedControl.selectedQuestion.set('allowSign',this.get('allowSign'));
-		FLOW.selectedControl.selectedQuestion.set('allowDecimalPoint',this.get('allowDecimalPoint'));
-		FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag',this.get('allowMultipleFlag'));
-		FLOW.selectedControl.selectedQuestion.set('allowOtherFlag',this.get('allowOtherFlag'));
-		FLOW.selectedControl.selectedQuestion.set('dependentFlag',this.get('dependentFlag'));
-		FLOW.selectedControl.selectedQuestion.set('type',this.type.get('value'));
-		FLOW.selectedControl.selectedQuestion.set('optionList',this.get('optionList'));
+		FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
+		FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
+		FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
+		FLOW.selectedControl.selectedQuestion.set('minVal', this.get('minVal'));
+		FLOW.selectedControl.selectedQuestion.set('maxVal', this.get('maxVal'));
+		FLOW.selectedControl.selectedQuestion.set('allowSign', this.get('allowSign'));
+		FLOW.selectedControl.selectedQuestion.set('allowDecimalPoint', this.get('allowDecimalPoint'));
+		FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
+		FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
+		if(this.get('dependentFlag')) {
+			FLOW.selectedControl.selectedQuestion.set('dependentFlag', this.get('dependentFlag'));
+		}
+		FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
+		FLOW.selectedControl.selectedQuestion.set('optionList', this.get('optionList'));
 		FLOW.store.commit();
-		FLOW.selectedControl.set('selectedQuestion',null);
+		FLOW.selectedControl.set('selectedQuestion', null);
 	},
 
 	// BROKEN
