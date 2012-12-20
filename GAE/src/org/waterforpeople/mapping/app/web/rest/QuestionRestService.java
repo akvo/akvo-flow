@@ -37,8 +37,8 @@ import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionGroup;
 
 @Controller
 @RequestMapping("/questions")
@@ -46,8 +46,11 @@ public class QuestionRestService {
 
 	@Inject
 	private QuestionDao questionDao;
-
-	// TODO put in meta information?
+	
+	@Inject
+	private QuestionOptionDao questionOptionDao;
+	
+	// TODO put in option list
 	// list all questions
 	@RequestMapping(method = RequestMethod.GET, value = "/all")
 	@ResponseBody
@@ -59,6 +62,7 @@ public class QuestionRestService {
 			for (Question s : questions) {
 				QuestionDto dto = new QuestionDto();
 				DtoMarshaller.copyToDto(s, dto);
+				dto.setOptionList(questionOptionDao.listOptionInStringByQuestion(dto.getKeyId()));
 				results.add(dto);
 			}
 		}
@@ -84,6 +88,7 @@ public class QuestionRestService {
 				for (Question s : questions) {
 					QuestionDto dto = new QuestionDto();
 					DtoMarshaller.copyToDto(s, dto);
+					dto.setOptionList(questionOptionDao.listOptionInStringByQuestion(dto.getKeyId()));
 					results.add(dto);
 				}
 			}
@@ -96,12 +101,14 @@ public class QuestionRestService {
 					if (!("true".equals(summaryOnly))) {
 						QuestionDto dto = new QuestionDto();
 						DtoMarshaller.copyToDto(q, dto);
+						dto.setOptionList(questionOptionDao.listOptionInStringByQuestion(dto.getKeyId()));
 						results.add(dto);
 					
 					// if summaryOnly is true, only add if type NUMBER or OPTION	
 					} else if ((q.getType() ==Question.Type.OPTION) || (q.getType() ==Question.Type.NUMBER)) {
 						QuestionDto dto = new QuestionDto();
 						DtoMarshaller.copyToDto(q, dto);
+						dto.setOptionList(questionOptionDao.listOptionInStringByQuestion(dto.getKeyId()));
 						results.add(dto);
 					}
 				}
@@ -122,6 +129,7 @@ public class QuestionRestService {
 		if (s != null) {
 			dto = new QuestionDto();
 			DtoMarshaller.copyToDto(s, dto);
+			dto.setOptionList(questionOptionDao.listOptionInStringByQuestion(dto.getKeyId()));
 		}
 		response.put("question", dto);
 		return response;
@@ -147,6 +155,7 @@ public class QuestionRestService {
 				Integer order = q.getOrder();
 				// first try delete, to see if it is allowed
 				questionDao.delete(q);
+				// TODO delete options
 			
 				List<Question> questions = questionDao
 						.listQuestionsInOrderForGroup(questionGroupId);
@@ -169,6 +178,7 @@ public class QuestionRestService {
 	}
 
 	// update existing question
+	// TODO update options list
 	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
 	public Map<String, Object> saveExistingQuestion(
@@ -196,11 +206,14 @@ public class QuestionRestService {
 					// copy the properties, except the createdDateTime property,
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(questionDto, q,
-							new String[] { "createdDateTime","order" ,"type"});
+							new String[] { "createdDateTime","order" ,"type","optionList"});
 					if (questionDto.getType() != null)
 						q.setType(Question.Type.valueOf(questionDto.getType().toString()));
 				
+					questionOptionDao.saveOptionInStringByQuestion(keyId, questionDto.getOptionList());
+						
 					q = questionDao.save(q);
+					// TODO save options list
 					
 					// if the original order is different from the current
 					// number in the order field interpret the number as
@@ -247,6 +260,7 @@ public class QuestionRestService {
 					q = questionDao.getByKey(keyId);
 					dto = new QuestionDto();
 					DtoMarshaller.copyToDto(q, dto);
+					dto.setOptionList(questionOptionDao.listOptionInStringByQuestion(dto.getKeyId()));
 					statusDto.setStatus("ok");
 				}
 			}
@@ -276,7 +290,7 @@ public class QuestionRestService {
 			// copy the properties, except the createdDateTime property, because
 			// it is set in the Dao.
 			BeanUtils.copyProperties(questionDto, q,
-					new String[] { "createdDateTime" ,"order", "type"});
+					new String[] { "createdDateTime" ,"order", "type", "optionList"});
 			if (questionDto.getType() != null)
 				q.setType(Question.Type.valueOf(questionDto.getType().toString()));
 			

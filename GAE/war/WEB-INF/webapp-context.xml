@@ -8,6 +8,7 @@
 <bean id="surveyDao" class="com.gallatinsystems.survey.dao.SurveyDAO"/>    
 <bean id="surveyGroupDao" class="com.gallatinsystems.survey.dao.SurveyGroupDAO"/> 
 <bean id="questionGroupDao" class="com.gallatinsystems.survey.dao.QuestionGroupDao"/> 
+<bean id="questionOptionDao" class="com.gallatinsystems.survey.dao.QuestionOptionDao"/> 
 <bean id="questionDao" class="com.gallatinsystems.survey.dao.QuestionDao"/>  
 <bean id="deviceDao" class="com.gallatinsystems.device.dao.DeviceDAO"/>
 <bean id="localeDao" class="com.gallatinsystems.surveyal.dao.SurveyedLocaleDao" />

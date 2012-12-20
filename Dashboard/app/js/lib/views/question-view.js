@@ -26,20 +26,20 @@ FLOW.QuestionView = Ember.View.extend({
 
 
 	amOptionType: function() {
-		if(this.selectedQuestionType) {
-			return(this.selectedQuestionType.get('value') == 'option') ? true : false;
+		if(this.type) {
+			return(this.type.get('value') == 'OPTION') ? true : false;
 		} else {
 			return false;
 		}
-	}.property('this.selectedQuestionType').cacheable(),
+	}.property('this.type').cacheable(),
 
 	amNumberType: function() {
-		if(this.selectedQuestionType) {
-			return(this.selectedQuestionType.get('value') == 'number') ? true : false;
+		if(this.type) {
+			return(this.type.get('value') == 'NUMBER') ? true : false;
 		} else {
 			return false;
 		}
-	}.property('this.selectedQuestionType').cacheable(),
+	}.property('this.type').cacheable(),
 
   // TODO dependencies
   // TODO options
@@ -56,6 +56,8 @@ FLOW.QuestionView = Ember.View.extend({
 		this.set('allowDecimalPoint', FLOW.selectedControl.selectedQuestion.get('allowDecimalPoint'));
 		this.set('allowMultipleFlag', FLOW.selectedControl.selectedQuestion.get('allowMultipleFlag'));
 		this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
+		this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
+		this.set('optionList', FLOW.selectedControl.selectedQuestion.get('optionList'));
 
 		FLOW.questionTypeControl.get('content').forEach(function(item) {
 			if(item.get('value') == FLOW.selectedControl.selectedQuestion.get('type')) {
@@ -81,8 +83,11 @@ FLOW.QuestionView = Ember.View.extend({
 		FLOW.selectedControl.selectedQuestion.set('allowDecimalPoint',this.get('allowDecimalPoint'));
 		FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag',this.get('allowMultipleFlag'));
 		FLOW.selectedControl.selectedQuestion.set('allowOtherFlag',this.get('allowOtherFlag'));
+		FLOW.selectedControl.selectedQuestion.set('dependentFlag',this.get('dependentFlag'));
 		FLOW.selectedControl.selectedQuestion.set('type',this.type.get('value'));
+		FLOW.selectedControl.selectedQuestion.set('optionList',this.get('optionList'));
 		FLOW.store.commit();
+		FLOW.selectedControl.set('selectedQuestion',null);
 	},
 
 	// BROKEN
@@ -142,11 +147,13 @@ FLOW.QuestionView = Ember.View.extend({
 			"allowDecimalPoint": FLOW.selectedControl.selectedForCopyQuestion.get('allowDecimalPoint'),
 			"allowMultipleFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowMultipleFlag'),
 			"allowOtherFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowOtherFlag'),
+			"dependentFlag": false,
 			"maxVal": FLOW.selectedControl.selectedForCopyQuestion.get('maxVal'),
 			"minVal": FLOW.selectedControl.selectedForCopyQuestion.get('minVal'),
 			"type": FLOW.selectedControl.selectedForCopyQuestion.get('type'),
 			"order": insertAfterOrder,
 			"text": FLOW.selectedControl.selectedForCopyQuestion.get('text'),
+			"optionList": FLOW.selectedControl.selectedForCopyQuestion.get('optionList'),
 			"surveyId": FLOW.selectedControl.selectedForCopyQuestion.get('surveyId'),
 			"questionGroupId": FLOW.selectedControl.selectedForCopyQuestion.get('questionGroupId')
 		});

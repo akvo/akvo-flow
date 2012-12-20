@@ -37,7 +37,7 @@ Ember.STRINGS_EN = {
   '_move': 'move',
   '_move_group_here': 'move group here',
   '_move_question_here': 'move question here',
-  '_option_details': 'option details',
+  '_option_details': 'Option details',
   '_optional': 'optional',
   '_paste_group_here': 'paste group here',
   '_paste_question_here': 'paste question here',
@@ -86,7 +86,8 @@ Ember.STRINGS_EN = {
   '_google_earth_file': 'Google Earth File',
   '_survey_form': 'Survey Form',
    '_export_reports': 'export reports',
-  '_charts':'charts'
+  '_charts':'charts',
+  '_options':'Options'
 };
 
 Ember.STRINGS_ES = {
