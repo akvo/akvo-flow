@@ -42,7 +42,7 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 	}
 
 	/**
-	 * lists all options for a given quesiton id, including the translations (if
+	 * lists all options for a given question id, including the translations (if
 	 * any)
 	 * 
 	 * @param questionId

@@ -133,6 +133,11 @@ FLOW.Question = FLOW.BaseModel.extend({
   mandatoryFlag: DS.attr('boolean', {
     defaultValue: 0
   }),
+  dependentFlag: DS.attr('boolean', {
+    defaultValue: 0
+  }),
+  dependentQuestionAnswer: DS.attr('string'),
+  dependentQuestionId:DS.attr('number'),
   maxVal: DS.attr('number'),
   minVal: DS.attr('number'),
   optionContainerDto: DS.attr('string'),

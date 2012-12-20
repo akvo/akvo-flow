@@ -37,6 +37,9 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private List<QuestionHelpDto> questionHelpList;
 	private String tip = null;
 	private Boolean mandatoryFlag = null;
+	private Boolean dependentFlag = null;
+	private Long dependentQuestionId;
+	private String dependentQuestionAnswer;
 	private QuestionDependencyDto questionDependency = null;
 	private Long surveyId;
 	private Long questionGroupId;
@@ -237,6 +240,31 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		return questionDependency;
 	}
 
+	public String getDependentQuestionAnswer() {
+		return dependentQuestionAnswer;
+	}
+
+	public void setDependentQuestionAnswer(String dependentQuestionAnswer) {
+		this.dependentQuestionAnswer = dependentQuestionAnswer;
+	}
+
+	public Long getDependentQuestionId() {
+		return dependentQuestionId;
+	}
+
+	public void setDependentQuestionId(Long dependentQuestionId) {
+		this.dependentQuestionId = dependentQuestionId;
+	}
+	
+	public Boolean getDependentFlag() {
+		return dependentFlag;
+	}
+
+	public void setDependentFlag(Boolean dependentFlag) {
+		this.dependentFlag = dependentFlag;
+	}
+
+	
 	public enum QuestionType {
 		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE
 	}

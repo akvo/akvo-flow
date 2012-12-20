@@ -11,6 +11,7 @@ FLOW.QuestionView = Ember.View.extend({
 	allowDecimalPoint: null,
 	allowMultipleFlag: null,
 	allowOtherFlag: null,
+	dependentFlag: null,
 	optionList: null,
 
 	amOpenQuestion: function() {
