@@ -110,7 +110,7 @@ public class AbstractDataImportExportApplet extends JApplet {
 	protected Map<String, String> getConfigCriteria() {
 		final String criteria = getParameter(CRITERIA_PARAM);
 
-		if (criteria != null && "".equals(criteria)) {
+		if (criteria != null && !"".equals(criteria)) {
 			return parseCriteria(criteria);
 		}
 
