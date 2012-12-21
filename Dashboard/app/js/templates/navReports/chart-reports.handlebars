@@ -11,13 +11,13 @@
 
       {{view Ember.Select 
         contentBinding="FLOW.surveyControl.content" 
-        selectionBinding="FLOW.selectedControl.selectedSurveyAllQuestions" 
+        selectionBinding="FLOW.selectedControl.selectedSurveyOPTIONandNUMBERQuestions" 
         optionLabelPath="content.code" 
         optionValuePath="content.keyId" 
         prompt="Select survey"}} <br/>
 
         {{view Ember.Select 
-        contentBinding="FLOW.questionControl.content" 
+        contentBinding="FLOW.questionControl.OandNcontent" 
         selectionBinding="FLOW.selectedControl.selectedQuestion" 
         optionLabelPath="content.text" 
         optionValuePath="content.keyId" 

@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.DevicePayload;
+import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.dao.DeviceDAO;

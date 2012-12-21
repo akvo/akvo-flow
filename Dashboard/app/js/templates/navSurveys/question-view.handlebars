@@ -4,16 +4,33 @@
   {{#if view.amOpenQuestion}}
     <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
     <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.text" size=100 }}</label>
-    <!-- Body of question -->
+    <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
+
     <label>Question type: {{view Ember.Select 
       contentBinding="FLOW.questionTypeControl.content" 
       optionLabelPath="content.label" 
       optionValuePath="content.value" 
       selectionBinding="view.type" }} </label>
-    <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
+  
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
-    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.checkedDependent"}}{{t _dependent}}
+    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.dependentFlag"}}{{t _dependent}}
     </label>
+
+     {{#if view.dependentFlag}}
+     Dependent question:
+        {{view Ember.Select 
+        contentBinding="FLOW.questionControl.earlierOptionQuestions" 
+        selectionBinding="FLOW.selectedControl.dependentQuestion" 
+        optionLabelPath="content.text" 
+        optionValuePath="content.keyId" 
+        prompt="Select question"}}<br/><br/>
+    {{/if}} 
+    {{#if FLOW.selectedControl.dependentQuestion}}
+      Answer of dependent question (select one):<br>
+      {{#each FLOW.optionListControl.content}}
+        {{view Ember.Checkbox checkedBinding="isSelected"}}{{value}}<br>
+      {{/each}}
+      {{/if}}
 
     <!-- Question specific material --> 
     {{#if view.amOptionType}}
@@ -28,6 +45,8 @@
     {{#if view.amNumberType}}
       TODO: Number specific content
     {{/if}} 
+
+  
     <!-- End question specific material -->
 
     <nav>

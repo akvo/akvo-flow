@@ -13,6 +13,7 @@ require('akvo-flow/views/report-views');
 require('akvo-flow/views/export-reports-views');
 require('akvo-flow/views/map-views');
 require('akvo-flow/views/devices-views');
+require('akvo-flow/views/user-view');
 
 FLOW.ApplicationView = Ember.View.extend({
   templateName: 'application/application',

@@ -36,6 +36,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private OptionContainerDto optionContainerDto = null;
 	private List<QuestionHelpDto> questionHelpList;
 	private String tip = null;
+	private String optionList = null;
 	private Boolean mandatoryFlag = null;
 	private Boolean dependentFlag = null;
 	private Long dependentQuestionId;
@@ -88,6 +89,14 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		this.maxVal = maxVal;
 	}
 
+	public String getOptionList() {
+		return optionList;
+	}
+
+	public void setOptionList(String optionList) {
+		this.optionList = optionList;
+	}
+	
 	public Boolean getIsName() {
 		return isName;
 	}
@@ -100,12 +109,12 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		return path;
 	}
 
-	public String getQuestionTypeString() {
-		return type.toString();
-	}
-
 	public void setPath(String path) {
 		this.path = path;
+	}
+	
+	public String getQuestionTypeString() {
+		return type.toString();
 	}
 
 	public Integer getOrder() {
