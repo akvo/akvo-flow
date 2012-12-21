@@ -229,6 +229,12 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function(router, context) {
         router.get('applicationController').connectOutlet('navReports');
         FLOW.surveyGroupControl.populate();
+        FLOW.selectedControl.set('selectedSurveyGroup',null);
+        FLOW.selectedControl.set('selectedSurveyOPTIONandNUMBERQuestions',null);
+        FLOW.selectedControl.set('selectedQuestion',null);
+        FLOW.surveyControl.set('content',null);
+        FLOW.questionControl.set('OandNcontent',null);
+
         router.set('navigationController.selected', 'navReports');
       },
 
@@ -279,6 +285,7 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function(router, context) {
         router.get('applicationController').connectOutlet('navUsers');
         router.set('navigationController.selected', 'navUsers');
+        FLOW.userControl.populate();
       }
     }),
 

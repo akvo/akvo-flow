@@ -223,6 +223,20 @@ FLOW.surveyPointTypeControl = Ember.Object.create({
   })]
 });
 
+FLOW.permissionLevelControl = Ember.Object.create({
+  content: [
+  Ember.Object.create({
+    label: "User",
+    value: "USER"
+  }), Ember.Object.create({
+    label: "Project Editor",
+    value: "PROJECT_ADMIN"
+  }), Ember.Object.create({
+    label: "Administrator",
+    value: "ADMIN"
+  })]
+});
+
 
 FLOW.surveySectorTypeControl = Ember.Object.create({
   content: [
@@ -719,3 +733,23 @@ FLOW.chartDataControl = Ember.Object.create({
   chartData: [],
   total: null
 });
+
+FLOW.userControl = Ember.ArrayController.create({
+  sortProperties: null,
+  sortAscending: true,
+  content: null,
+
+  populate: function() {
+    this.set('content', FLOW.store.find(FLOW.User));
+    this.set('sortProperties', ['userName']);
+    this.set('sortAscending', true);
+  },
+
+  getSortInfo: function() {
+    this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
+    this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
+    this.set('selected', FLOW.tableColumnControl.get('selected'));
+  }
+});
+
+

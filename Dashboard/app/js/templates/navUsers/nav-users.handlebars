@@ -1,9 +1,7 @@
-<h1>Users who can access this instance</h1>
+{{#view FLOW.UserView}}
+<h1>Manage users and user rights</h1>
 <div class="greyBg">
-<p>Please see pdf design in mockup folder:</p>
-	<p>We need a select input to choose how many people you want to display on one page.</p>
-	<p>We also need a search input that would filter the data below to match what is typed in.</p>
- <a href="#" class="standardBtn btnAboveTable">Add new user</a>
+ <a {{action "showAddUserDialog" target="this"}}class="standardBtn btnAboveTable" >Add new user</a>
   <section id="" class="fullWidth usersList"> 
   	
     <!-- userS TABLE-->
@@ -11,87 +9,29 @@
       <!-- TABLE HEADER-->
       <thead>
         <tr>
-          <th class="userName">user Name</th>
-          <th class="emailAdr">Email Address</th>
-          <th class="permLevel">Permission Level <a href="#" title="There are three permission levels: user, Project Editor and Administrator. Read more on the FLOW documentation site, or contact your Administrator for details.
-" class="tooltip helpIcon">more info</a></th>
-          <th class="action">Actions</th>
+           {{#view FLOW.ColumnView item="userName" type="user"}}
+                  <a {{action "sort" target="this"}} class="userName">User Name</a>
+           {{/view}}
+           {{#view FLOW.ColumnView item="emailAddress" type="user"}}
+                  <a {{action "sort" target="this"}} class="emailAdr">Email</a>
+           {{/view}}
+            {{#view FLOW.ColumnView item="permission" type="user"}}
+                  <a {{action "sort" target="this"}} class="emailAdr">Permission level</a><a href="#" title="There are three permission levels: User, Project Editor and Administrator. Read more on the FLOW documentation site, or contact your Administrator for details.
+" class="tooltip helpIcon">more info</a>
+           {{/view}}
+          <th class="action noArrows" >Actions</th>
         </tr>
       </thead>
       <!-- TABLE BODY: MAIN CONTENT-->
       <tbody>
+        {{#each FLOW.userControl}}
         <tr>
-          <td class="userName">Mark Westra</td>
-          <td class="emailAdr">mtw@akvo.org</td>
-          <td class="permLevel admin">Administrator</td>
+          <td class="userName" style="text-align:left; padding:0 0 0 20px;">{{userName}}</td>
+          <td class="emailAdr" style="text-align:left;">{{emailAddress}}</td>
+          <td class="permLevel admin">{{permissionLevel}}</td>
           <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
         </tr>
-        <tr>
-          <td class="userName">Thomas Bjelkeman Pettersson</td>
-          <td class="emailAdr">Thomas.Bjelkeman.Pettersson@akvo.org</td>
-          <td class="permLevel admin">Administrator</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
-        <tr>
-          <td class="userName">Luuk Diphoorn</td>
-          <td class="emailAdr">LuukDiphoorn@akvo.org</td>
-          <td class="permLevel ProjectEditor">Project Editor</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
-        <tr>
-          <td class="userName">Henry Jewell</td>
-          <td class="emailAdr">HenryJewell@akvo.org</td>
-          <td class="permLevel permUser">user</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
-        <tr>
-          <td class="userName">Loic Sans</td>
-          <td class="emailAdr">loic@akvo.org</td>
-          <td class="permLevel permUser">user</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
-        <tr>
-          <td class="userName">Luuk Diphoorn</td>
-          <td class="emailAdr">LuukDiphoorn@akvo.org</td>
-          <td class="permLevel ProjectEditor">Project Editor</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
-        <tr>
-          <td class="userName">Caetie Ofiesh</td>
-          <td class="emailAdr">CaetieOfiesh@akvo.org</td>
-          <td class="permLevel permUser">user</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
-        <tr>
-          <td class="userName">Stellan Lagerstrom</td>
-          <td class="emailAdr">StellanLagerstrom@akvo.org</td>
-          <td class="permLevel permUser">user</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
-        <tr>
-          <td class="userName">Amitangshu Acharya</td>
-          <td class="emailAdr">amit@akvo.org</td>
-          <td class="permLevel ProjectEditor">Project Editor</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
-        <tr>
-          <td class="userName">Jeroen Van Den Sommen</td>
-          <td class="emailAdr">JeroenVanDenSommen@akvo.org</td>
-          <td class="permLevel permUser">user</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
-        <tr>
-          <td class="userName">Ivan Perdomo</td>
-          <td class="emailAdr">ivan@akvo.org</td>
-          <td class="permLevel admin">Administrator</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
-        <tr>
-          <td class="userName">Daniel Karlsson</td>
-          <td class="emailAdr">daniel@akvo.org</td>
-          <td class="permLevel permUser">user</td>
-          <td class="action"><a href="#" class="remove">remove</a><a href="#" class="edit">edit</a></td>
-        </tr>
+        {{/each}}
       </tbody>
       
       <!-- TABLE FOOTER-->
@@ -103,3 +43,34 @@
     </table>
   </section>
 </div>
+
+   <!-- add new user dialog-->
+    <div {{bindAttr class="view.showAddUserBool:display :overlay"}}>
+      <div class="blanket"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog">
+          <h2>Add new user</h2>
+          <p class="dialogMsg">Please provide a user name, email address and permission level below.</p>
+          
+          <label for="newUserName">Username:</label> {{view Ember.TextField valueBinding="view.newUserName" id="newUserName" size=40}}<br/>
+           <label for="newEmail">Email address:</label> {{view Ember.TextField valueBinding="view.newEmailAddress" id="newEmail" size=40}}<br/>
+          
+            {{view Ember.Select 
+            contentBinding="FLOW.permissionLevelControl.content" 
+            selectionBinding="view.newPermissionLevel" 
+            optionLabelPath="content.label" 
+            optionValuePath="content.value" 
+            prompt="Select permission level"}} 
+ 
+          <div class="buttons menuCentre"> 
+            <ul>  
+               <li><a {{action "doAddUser" target="this"}} class="ok smallBtn">SAVE</a></li>
+              <li><a {{action "cancelAddUser" target="this"}}} class="cancel">CANCEL</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{{/view}}

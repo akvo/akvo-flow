@@ -17,8 +17,7 @@
 <bean id="surveyedLocaleDao" class="com.gallatinsystems.surveyal.dao.SurveyedLocaleDao"/>
 <bean id="surveyInstanceDao" class="org.waterforpeople.mapping.dao.SurveyInstanceDAO"/>
 <bean id="surveyQuestionSummaryDao" class="org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao"/>
-
-
+<bean id="userDao" class="com.gallatinsystems.user.dao.UserDao"/>
 
 	<context:annotation-config/>
 </beans>

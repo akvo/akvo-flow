@@ -137,11 +137,11 @@ FLOW.Question = FLOW.BaseModel.extend({
     defaultValue: 0
   }),
   dependentQuestionAnswer: DS.attr('string'),
-  dependentQuestionId:DS.attr('number'),
+  dependentQuestionId: DS.attr('number'),
   maxVal: DS.attr('number'),
   minVal: DS.attr('number'),
   //optionContainerDto: DS.attr('string'),
-  optionList:DS.attr('string'),
+  optionList: DS.attr('string'),
   order: DS.attr('number'),
   path: DS.attr('string'),
   //questionDependency: DS.attr('string'),
@@ -149,7 +149,9 @@ FLOW.Question = FLOW.BaseModel.extend({
   surveyId: DS.attr('number'),
   text: DS.attr('string'),
   tip: DS.attr('string'),
-  type: DS.attr('string',{defaultValue:"FREE_TEXT"})
+  type: DS.attr('string', {
+    defaultValue: "FREE_TEXT"
+  })
 });
 
 
@@ -260,4 +262,26 @@ FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({
   response: DS.attr('string'),
   count: DS.attr('number'),
   questionId: DS.attr('string')
+});
+
+FLOW.User = FLOW.BaseModel.extend({
+   didDelete: function() {
+    FLOW.userControl.populate();
+  },
+  didUpdate: function() {
+    FLOW.userControl.populate();
+  },
+  didCreate: function() {
+    FLOW.userControl.populate();
+  },
+
+  userName: DS.attr('string'),
+  emailAddress: DS.attr('string'),
+  admin:DS.attr('boolean', {
+    defaultValue: 0
+  }),
+  superAdmin:DS.attr('boolean', {
+    defaultValue: 0
+  }),
+  permissionList: DS.attr('string')
 });
