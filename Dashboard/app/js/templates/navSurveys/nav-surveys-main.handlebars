@@ -13,10 +13,10 @@
           <a {{action "saveNewSurveyGroupName" target="this"}} class="smallBtn">{{t _save}}</a>
           <a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a>
         </nav>
-      {{/if}}    
-<nav>
+      {{/if}}   	 <div class="scrollWrap"><a href="#" class="scrollUp">up</a></div>
+ 
+<nav class="menuGroupWrap">
       <!-- show all survey groups --> 
-	 <div class="scrollWrap"><a href="#" class="scrollUp">up</a></div>
 	 <ul class="menuGroup">
         {{#each sg in FLOW.surveyGroupControl.arrangedContent}}
           {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
@@ -24,9 +24,8 @@
           {{/view}}
         {{/each}} 
       </ul>
-<div class="scrollWrap"><a href="#" class="scrollDown">down</a></div>
 </nav>
-	
+<div class="scrollWrap"><a href="#" class="scrollDown">down</a></div>
   </section>
 
   <section id="allSurvey" class="mainRight surveysList">
@@ -95,35 +94,30 @@
 
 <script>
 $(document).ready (function(){
+liHeight = $('.menuGroup').height();
+if ( liHeight < 361 ) {
+	$('.scrollDown').addClass("FadeIt");
+	$('.scrollUp').addClass("FadeIt");
+};
 $('.scrollUp').addClass("FadeIt");
-$('.scrollUp').click(function () {
-    scroll = $('.menuGroup').scrollTop();
-	$('.menuGroup').animate({'scrollTop': scroll-72}, 155);
-	if ( scroll < 40 ) {
-		$('.scrollUp').addClass("FadeIt");
-	} else {
-		$('.scrollUp').removeClass("FadeIt");
-	};
-	if ( scroll > 340 ) {
-		$('.scrollDown').addClass("FadeIt");
-	} else {
+	$('.scrollUp').click(function () {
+		menuHeight = $('.menuGroupWrap').height();
+		scroll = $('.menuGroupWrap').scrollTop();
 		$('.scrollDown').removeClass("FadeIt");
-	};
-	
-	});
-$('.scrollDown').click(function () {
-    scroll = $('.menuGroup').scrollTop();
-    $('.menuGroup').animate({'scrollTop': scroll+72}, 155);
-	if ( scroll < 40 ) {
-		$('.scrollUp').addClass("FadeIt");
-	} else {
-		$('.scrollUp').removeClass("FadeIt");
-	};
-	if ( scroll > 340 ) {
-		$('.scrollDown').addClass("FadeIt");
-	} else {
-		$('.scrollDown').removeClass("FadeIt");
-	};
+		$('.menuGroupWrap').animate({'scrollTop': scroll-72}, 155);
+		if ( scroll == 0 ) {
+			$('.scrollUp').addClass("FadeIt");
+		}
 });
+	$('.scrollDown').click(function () {
+		menuHeight = $('.menuGroupWrap').height();
+		liHeight = $('.menuGroup').height();
+		scroll = $('.menuGroupWrap').scrollTop();
+		$('.scrollUp').removeClass("FadeIt");
+		$('.menuGroupWrap').animate({'scrollTop': scroll+72}, 155);
+		if ( scroll > menuHeight ) {
+			$('.scrollDown').addClass("FadeIt");
+		}	
+	});
 })
 </script>
