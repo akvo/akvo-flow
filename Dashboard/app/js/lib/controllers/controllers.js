@@ -293,11 +293,22 @@ FLOW.selectedControl = Ember.Controller.create({
 });
 
 
+FLOW.editControl = Ember.Controller.create({
+  newPermissionLevel: null,
+  newUserName: null,
+  newEmailAddress: null,
+  editPermissionLevel: null,
+  editUserName: null,
+  editEmailAddress: null
+});
+
+
 FLOW.dialogControl = Ember.Object.create({
   delSG: "delSG",
   delS: "delS",
   delQG: "delQG",
   delQ: "delQ",
+  delUser: "delUser",
   showDialog: false,
   message: null,
   header: null,
@@ -345,6 +356,12 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', true);
       break;
 
+    case "delUser":
+      this.set('header', Ember.String.loc('_User_delete_header'));
+      this.set('message', Ember.String.loc('_User_delete_message'));
+      this.set('showDialog', true);
+      break;
+
     default:
     }
   },
@@ -372,6 +389,12 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', false);
       view.deleteQuestion.apply(view, arguments);
       break;
+
+    case "delUser":
+      this.set('showDialog', false);
+      view.deleteUser.apply(view, arguments);
+      break;
+      
     default:
     }
   },
@@ -751,5 +774,3 @@ FLOW.userControl = Ember.ArrayController.create({
     this.set('selected', FLOW.tableColumnControl.get('selected'));
   }
 });
-
-
