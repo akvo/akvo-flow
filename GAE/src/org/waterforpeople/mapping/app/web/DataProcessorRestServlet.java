@@ -368,6 +368,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private Map<String, Map<String, Long>> summarizeQuestionAnswerStore(
 			Long surveyId, Date sinceDate) {
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		QuestionDao questionDao = new QuestionDao();
+		List<Question> qList = questionDao.listQuestionByType(surveyId,
+				Question.Type.OPTION);
 		String cursor = null;
 		Map<String, Map<String, Long>> summaryMap = new HashMap<String, Map<String, Long>>();
 		List<QuestionAnswerStore> qasList = null;
@@ -377,30 +380,54 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			if (qasList != null && qasList.size() > 0) {
 				cursor = QuestionAnswerStoreDao.getCursor(qasList);
 				for (QuestionAnswerStore qas : qasList) {
-					String val = qas.getValue();
-					// skip images since the summary is meaningless in those
-					// cases
-					if (val == null
-							|| val.toLowerCase().trim().endsWith(".jpg")) {
-						continue;
+					if (isSummarizable(qas, qList)) {
+						String val = qas.getValue();
+						// skip images since the summary is meaningless in those
+						// cases
+						if (val == null
+								|| val.toLowerCase().trim().endsWith(".jpg")) {
+							continue;
+						}
+						Map<String, Long> countMap = summaryMap.get(qas
+								.getQuestionID());
+						if (countMap == null) {
+							countMap = new HashMap<String, Long>();
+							summaryMap.put(qas.getQuestionID(), countMap);
+						}
+						Long count = countMap.get(val);
+						if (count == null) {
+							count = 1L;
+						} else {
+							count = count + 1;
+						}
+						countMap.put(val, count);
 					}
-					Map<String, Long> countMap = summaryMap.get(qas
-							.getQuestionID());
-					if (countMap == null) {
-						countMap = new HashMap<String, Long>();
-						summaryMap.put(qas.getQuestionID(), countMap);
-					}
-					Long count = countMap.get(val);
-					if (count == null) {
-						count = 1L;
-					} else {
-						count = count + 1;
-					}
-					countMap.put(val, count);
 				}
 			}
 		} while (qasList != null && qasList.size() > 0);
 		return summaryMap;
+	}
+
+	/**
+	 * checks if a question is summarizable by looking for an association to an
+	 * OPTION question
+	 * 
+	 * @param qas
+	 * @param qList
+	 * @return
+	 */
+	private boolean isSummarizable(QuestionAnswerStore qas, List<Question> qList) {
+		if (qList != null && qas != null) {
+			for (Question q : qList) {
+				long id = Long.parseLong(qas.getQuestionID());
+				if (q.getKey().getId() == id) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return false;
+		}
 	}
 
 	/**
