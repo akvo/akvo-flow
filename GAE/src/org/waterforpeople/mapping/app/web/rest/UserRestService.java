@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.UserPayload;
@@ -36,6 +37,7 @@ import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.gallatinsystems.user.dao.UserDao;
+import com.google.appengine.api.users.UserServiceFactory;
 
 @Controller
 @RequestMapping("/users")
@@ -48,21 +50,38 @@ public class UserRestService {
 	// list all users
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<UserDto>> listUsers() {
+	public Map<String, List<UserDto>> listUsers(
+			@RequestParam(value = "currUser", defaultValue = "") String currUser) {
 		final Map<String, List<UserDto>> response = new HashMap<String, List<UserDto>>();
 		List<UserDto> results = new ArrayList<UserDto>();
-		List<User> users = userDao.list(Constants.ALL_RESULTS);
-		if (users != null) {
-			for (User u : users) {
+		
+		// TODO check if this part works
+		if ("true".equals(currUser)) {
+			com.google.appengine.api.users.UserService userService = UserServiceFactory
+					.getUserService();
+			com.google.appengine.api.users.User currentUser = userService
+					.getCurrentUser();
+			if (currentUser != null){
 				UserDto dto = new UserDto();
-				BeanUtils.copyProperties(u, dto, new String[] { "config" });
-				if (u.getKey() != null) {
-					dto.setKeyId(u.getKey().getId());
-				}
-
+				dto.setEmailAddress(currentUser.getEmail());
+				dto.setUserName(currentUser.getFederatedIdentity());
 				results.add(dto);
 			}
+			 
+		} else {
+			List<User> users = userDao.list(Constants.ALL_RESULTS);
+			if (users != null) {
+				for (User u : users) {
+					UserDto dto = new UserDto();
+					BeanUtils.copyProperties(u, dto, new String[] { "config" });
+					if (u.getKey() != null) {
+						dto.setKeyId(u.getKey().getId());
+					}
+					results.add(dto);
+				}
+			}
 		}
+
 		response.put("users", results);
 		return response;
 	}
