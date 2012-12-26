@@ -18,6 +18,7 @@
 <bean id="surveyInstanceDao" class="org.waterforpeople.mapping.dao.SurveyInstanceDAO"/>
 <bean id="surveyQuestionSummaryDao" class="org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao"/>
 <bean id="userDao" class="com.gallatinsystems.user.dao.UserDao"/>
+<bean id="userConfigDao" class="com.gallatinsystems.user.dao.UserConfigDao"/>
 
 	<context:annotation-config/>
 </beans>
