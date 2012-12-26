@@ -9,6 +9,7 @@ require('akvo-flow/views/survey-group-views');
 require('akvo-flow/views/survey-details-views');
 require('akvo-flow/views/inspect-data-table-views');
 require('akvo-flow/views/question-view');
+require('akvo-flow/views/question-answer-view');
 require('akvo-flow/views/report-views');
 require('akvo-flow/views/export-reports-views');
 require('akvo-flow/views/map-views');

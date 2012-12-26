@@ -257,7 +257,6 @@ FLOW.surveySectorTypeControl = Ember.Object.create({
 // ***********************************************//
 //                Data controllers
 // ***********************************************//
-
 FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
   selectedSurvey: null,
@@ -399,6 +398,12 @@ FLOW.questionControl = Ember.ArrayController.create({
       }));
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
+
+  populateAllQuestions: function(surveyId) {
+    this.set('content', FLOW.store.findQuery(FLOW.Question, {
+      surveyId: surveyId
+    }));
+  },
 
   populateOPTIONandNUMBERQuestions: function() {
     if(FLOW.selectedControl.get('selectedSurveyOPTIONandNUMBERQuestions')) {
