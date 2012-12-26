@@ -4,6 +4,8 @@
 // Define the main application controller. This is automatically picked up by
 // the application and initialized.
 require('akvo-flow/core');
+require('akvo-flow/controllers/permissions');
+
 FLOW.ApplicationController = Ember.Controller.extend({
   init: function() {
     this._super();
@@ -89,6 +91,7 @@ FLOW.languageControl = Ember.Object.create({
     }
   }.observes('this.dashboardLanguage')
 });
+
 
 FLOW.dataserverControl = Ember.Object.create({
   dataserver: null,
@@ -223,20 +226,6 @@ FLOW.surveyPointTypeControl = Ember.Object.create({
   })]
 });
 
-FLOW.permissionLevelControl = Ember.Object.create({
-  content: [
-  Ember.Object.create({
-    label: "User",
-    value: "USER"
-  }), Ember.Object.create({
-    label: "Project Editor",
-    value: "PROJECT_ADMIN"
-  }), Ember.Object.create({
-    label: "Administrator",
-    value: "ADMIN"
-  })]
-});
-
 
 FLOW.surveySectorTypeControl = Ember.Object.create({
   content: [
@@ -265,6 +254,10 @@ FLOW.surveySectorTypeControl = Ember.Object.create({
 });
 
 
+// ***********************************************//
+//                Data controllers
+// ***********************************************//
+
 FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
   selectedSurvey: null,
@@ -292,7 +285,7 @@ FLOW.selectedControl = Ember.Controller.create({
   }.observes('this.selectedSurvey')
 });
 
-
+// used in user tab
 FLOW.editControl = Ember.Controller.create({
   newPermissionLevel: null,
   newUserName: null,
@@ -303,111 +296,6 @@ FLOW.editControl = Ember.Controller.create({
 });
 
 
-FLOW.dialogControl = Ember.Object.create({
-  delSG: "delSG",
-  delS: "delS",
-  delQG: "delQG",
-  delQ: "delQ",
-  delUser: "delUser",
-  showDialog: false,
-  message: null,
-  header: null,
-  activeView: null,
-  activeAction: null,
-  showOK: true,
-  showCANCEL: true,
-
-  confirm: function(event) {
-    this.set('activeView', event.view);
-    this.set('activeAction', event.context);
-    this.set('showOK', true);
-    this.set('showCANCEL', true);
-
-    switch(this.get('activeAction')) {
-    case "delSG":
-      if(FLOW.surveyGroupControl.containsSurveys()) {
-        this.set('activeAction', "ignore");
-        this.set('header', Ember.String.loc('_SG_delete_not_possible_header'));
-        this.set('message', Ember.String.loc('_SG_delete_not_possible_message'));
-        this.set('showCANCEL', false);
-        this.set('showDialog', true);
-      } else {
-        this.set('header', Ember.String.loc('_SG_delete_header'));
-        this.set('message', Ember.String.loc('_SG_delete_message'));
-        this.set('showDialog', true);
-      }
-      break;
-
-    case "delS":
-      this.set('header', Ember.String.loc('_S_delete_header'));
-      this.set('message', Ember.String.loc('_S_delete_message'));
-      this.set('showDialog', true);
-      break;
-
-    case "delQG":
-      this.set('header', Ember.String.loc('_QG_delete_header'));
-      this.set('message', Ember.String.loc('_QG_delete_message'));
-      this.set('showDialog', true);
-      break;
-
-    case "delQ":
-      this.set('header', Ember.String.loc('_Q_delete_header'));
-      this.set('message', Ember.String.loc('_Q_delete_message'));
-      this.set('showDialog', true);
-      break;
-
-    case "delUser":
-      this.set('header', Ember.String.loc('_User_delete_header'));
-      this.set('message', Ember.String.loc('_User_delete_message'));
-      this.set('showDialog', true);
-      break;
-
-    default:
-    }
-  },
-
-  doOK: function(event) {
-    this.set('header', null);
-    this.set('message', null);
-    this.set('showCANCEL', true);
-    this.set('showDialog', false);
-    var view = this.get('activeView');
-    switch(this.get('activeAction')) {
-    case "delSG":
-      view.deleteSurveyGroup.apply(view, arguments);
-      break;
-
-    case "delS":
-      view.deleteSurvey.apply(view, arguments);
-      break;
-
-    case "delQG":
-      view.deleteQuestionGroup.apply(view, arguments);
-      break;
-
-    case "delQ":
-      this.set('showDialog', false);
-      view.deleteQuestion.apply(view, arguments);
-      break;
-
-    case "delUser":
-      this.set('showDialog', false);
-      view.deleteUser.apply(view, arguments);
-      break;
-      
-    default:
-    }
-  },
-
-  doCANCEL: function(event) {
-    this.set('showDialog', false);
-  }
-}),
-
-
-// ***********************************************//
-//                Data controllers
-// ***********************************************//
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortProperties: ['code'],
   sortAscending: true,
