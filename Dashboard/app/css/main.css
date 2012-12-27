@@ -918,6 +918,7 @@ tfoot tr {
 	-o-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
 	transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
 }
+
 .dataTabMenu ul li a:hover {
 	color: rgb(255,255,255);
 	background: rgb(74, 177, 207);
@@ -926,6 +927,17 @@ tfoot tr {
 	-o-border-radius: 2px;
 	border-radius: 2px;
 }
+
+.dataTabMenu ul li a:hover.disabled,.dataTabMenu ul li a.disabled {
+	color: grey;
+	background:transparent;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	-o-border-radius: 0;
+	border-radius: 0;
+}
+
+
 #devicesList a.standardBtn {
 	width: 19%;
 }
