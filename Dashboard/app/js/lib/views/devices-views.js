@@ -89,7 +89,7 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 
 	// TODO update device group name in tabel.
 	doManageDeviceGroups: function(){
-		var allDevices;
+		var allDevices, newDeviceGroup;
 		if (this.get('selectedDeviceGroup') !== null) {
 			var selectedDeviceGroupId = this.selectedDeviceGroup.get('keyId');
 
@@ -107,6 +107,10 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 					}
 				});
 			}
+		} else if (this.get('newDeviceGroupName') !== null){
+			newDeviceGroup = FLOW.store.createRecord(FLOW.DeviceGroup,{
+				"code":this.get('newDeviceGroupName')
+			});
 		}
 		
 		this.set('selectedDeviceGroup',null);
@@ -131,6 +135,7 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 });
 
 
+// TODO not used?
 FLOW.SavingDeviceGroupView = Ember.View.extend({
 	showDGSavingDialogBool:false,
 
