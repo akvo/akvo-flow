@@ -7,10 +7,8 @@
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
     <http use-expressions="true" entry-point-ref="gaeEntryPoint">
+		<intercept-url pattern="/currentuser.js" access="isAuthenticated()"/>
 		<intercept-url pattern="/**" access="permitAll" />
-		<!-- <intercept-url pattern="/rest/placemark**" access="permitAll" />
-		
-		<intercept-url pattern="/dashboard**" access="hasRole('USER')"/> -->
 		<custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter" />
     </http>
 

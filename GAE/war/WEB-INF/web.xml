@@ -32,6 +32,15 @@
 	</filter-mapping>
 
 	<servlet>
+		<servlet-name>CurrentUserServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.CurrentUserServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CurrentUserServlet</servlet-name>
+		<url-pattern>/currentuser.js</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>StartupServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.StartupServlet</servlet-class>
 	</servlet>
