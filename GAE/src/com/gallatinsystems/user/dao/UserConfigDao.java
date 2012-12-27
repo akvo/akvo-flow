@@ -19,7 +19,6 @@ package com.gallatinsystems.user.dao;
 import java.util.List;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.user.domain.UserConfig;
 
 /**

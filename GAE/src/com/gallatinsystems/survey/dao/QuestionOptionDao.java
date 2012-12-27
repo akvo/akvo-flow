@@ -101,8 +101,6 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 	 * @return
 	 */
 	public void saveOptionInStringByQuestion(Long questionId, String optionList) {
-		List<QuestionOption> oldOptionList = listByProperty("questionId", questionId,
-				"Long", "order", "asc");
 		String[] newOptionList = optionList.split("\n");
 		
 		QuestionOptionDao questionOptionDao = new QuestionOptionDao();
