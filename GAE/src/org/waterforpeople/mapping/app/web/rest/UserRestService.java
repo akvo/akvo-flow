@@ -30,13 +30,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.waterforpeople.mapping.app.util.DtoMarshaller;
-import org.waterforpeople.mapping.app.web.rest.dto.UserPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
-import com.gallatinsystems.user.domain.User;
+import org.waterforpeople.mapping.app.web.rest.dto.UserPayload;
+
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.user.domain.User;
 import com.google.appengine.api.users.UserServiceFactory;
 
 @Controller
