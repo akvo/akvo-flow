@@ -72,8 +72,9 @@ public class QuestionRestService {
 		return response;
 	}
 
-	// list questions by questionGroup or by survey. If summaryOnly is true,
-	// only NUMBER and OPTION type questions are returned
+	// list questions by questionGroup or by survey. If includeNumber or
+	// includeOption are true, only NUMBER and OPTION type questions are
+	// returned
 	// TODO put in dependencies
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody

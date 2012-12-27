@@ -292,3 +292,10 @@ FLOW.UserConfig = FLOW.BaseModel.extend({
   value: DS.attr('string'),
   userId: DS.attr('number')
 });
+
+FLOW.Metric = FLOW.BaseModel.extend({
+  organization: DS.attr('string'),
+  name: DS.attr('string'),
+  group: DS.attr('string'),
+  valueType: DS.attr('string')
+});
