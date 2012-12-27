@@ -1,0 +1,104 @@
+   <section class="fullWidth" id="manageAttributes">
+ 
+<br/><br/>
+
+{{#view FLOW.ManageAttributesTableView}}
+ <a {{action "showAddAttributeDialog" target="this"}} class="standardBtn btnAboveTable">{{t _Add_attribute}}</a>
+        <table class="dataTable" id="attributeDataTable">
+            <!-- TABLE HEADER-->
+            <thead>
+                <tr>
+                {{#view FLOW.ColumnView item="name" type="attribute"}}
+                   <a {{action "sort" target="this"}}>Attribute name</a>
+                {{/view}}
+                {{#view FLOW.ColumnView item="group" type="attribute"}}
+                   <a {{action "sort" target="this"}}>Group</a>
+                {{/view}}
+                {{#view FLOW.ColumnView item="valueType" type="attribute"}}
+                   <a {{action "sort" target="this"}}>Value type</a>
+                {{/view}}
+                 <th class="action noArrows">Action</th>
+                </tr>
+            </thead>
+            <!-- TABLE BODY: MAIN CONTENT-->
+            <tbody>
+                {{#each attribute in FLOW.attributeControl}}
+                   <tr>
+                    <td class="name" >{{attribute.name}}</td>
+                    <td class="group" >{{attribute.group}}</td>
+                    <td class="valueType" >{{attribute.valueType}}</td>
+
+                    <td class="action">
+                      {{#view FLOW.AttributeView contentBinding="attribute"}}
+                        <a {{action confirm FLOW.dialogControl.delAttr target="FLOW.dialogControl"}} class="remove">remove</a> {{/view}} <a {{action "showEditAttributeDialog" attribute target = "this"}} class="edit">edit</a> </td>
+                  </tr>
+                {{/each}}
+            </tbody>
+            <!-- TABLE FOOTER-->
+            <tfoot>
+                <tr>
+                    <td colspan="7"><small>This is the footer.</small></td>
+                </tr>
+            </tfoot>
+        </table>
+
+ <!-- add attribute dialog-->
+    <div {{bindAttr class="view.showAddAttributeDialogBool:display :overlay"}}>
+      <div class="blanket"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog">
+          <h2>Add attribute</h2>
+          <p class="dialogMsg">Please provide a name, an optional group, and a value type for the attribute</p>
+          <br/>
+         <label for="newAttributeName">Attribute name:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
+         <label for="newAttributeGroup">Group:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
+          <label>Value type:</label>
+             {{view Ember.Select 
+            contentBinding="FLOW.attributeTypeControl.content" 
+            selectionBinding="view.newAttributeType" 
+            optionLabelPath="content.label" 
+            optionValuePath="content.value" 
+            prompt="Select value type"}} 
+        
+          <div class="buttons menuCentre"> 
+            <ul>  
+               <li><a {{action "doAddAttribute" target="this"}} class="ok smallBtn">SAVE</a></li>
+              <li><a {{action "cancelAddAttribute" target="this"}}} class="cancel">CANCEL</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- edit existing attribute dialog-->
+    <div {{bindAttr class="view.showEditAttributeDialogBool:display :overlay"}}>
+      <div class="blanket"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog">
+          <h2>Edit Attribute</h2>
+          <p class="dialogMsg">Please edit the attribute name, group and type below.</p>
+          <label for="editAttributeName">Attribute name:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeName" id="editUserName" size=40}}<br/>
+           <label for="editAttributeGroup">Group:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeGroup" id="editEmail" size=40}}<br/>
+          
+            {{view Ember.Select 
+            contentBinding="FLOW.attributeTypeControl.content" 
+            selectionBinding="FLOW.editControl.editAttributeType" 
+            optionLabelPath="content.label" 
+            optionValuePath="content.value" 
+            prompt="Select attribute type"}} 
+ 
+          <div class="buttons menuCentre"> 
+            <ul>  
+               <li><a {{action "doEditAttribute" target="this"}} class="ok smallBtn">SAVE</a></li>
+              <li><a {{action "cancelEditAttribute" target="this"}}} class="cancel">CANCEL</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+        {{/view}}
+    </section>

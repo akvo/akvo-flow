@@ -79,6 +79,8 @@ Ember.STRINGS_EN = {
   '_QG_delete_message':'This cannot be undone.',
   '_Q_delete_header':'Are you sure you want to delete this question?',
   '_Q_delete_message':'This cannot be undone.',
+  '_Attr_delete_header':'Are you sure you want to delete this attribute?',
+  '_Attr_delete_message':'This cannot be undone.',
   '_User_delete_header':'Are you sure you want to delete this user?',
   '_User_delete_message':'This cannot be undone.',
   '_action_failed': 'Action failed',
@@ -89,7 +91,8 @@ Ember.STRINGS_EN = {
   '_survey_form': 'Survey Form',
    '_export_reports': 'export reports',
   '_charts':'charts',
-  '_options':'Options'
+  '_options':'Options',
+  '_Add_attribute':'Add new attribute'
 };
 
 Ember.STRINGS_ES = {

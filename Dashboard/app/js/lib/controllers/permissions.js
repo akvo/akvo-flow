@@ -109,6 +109,7 @@ FLOW.dialogControl = Ember.Object.create({
   delQG: "delQG",
   delQ: "delQ",
   delUser: "delUser",
+  delAttr: "delAttr",
   showDialog: false,
   message: null,
   header: null,
@@ -162,6 +163,12 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', true);
       break;
 
+    case "delAttr":
+      this.set('header', Ember.String.loc('_Attr_delete_header'));
+      this.set('message', Ember.String.loc('_Attr_delete_message'));
+      this.set('showDialog', true);
+      break;
+
     default:
     }
   },
@@ -193,6 +200,11 @@ FLOW.dialogControl = Ember.Object.create({
     case "delUser":
       this.set('showDialog', false);
       view.deleteUser.apply(view, arguments);
+      break;
+
+    case "delAttr":
+      this.set('showDialog', false);
+      view.deleteAttribute.apply(view, arguments);
       break;
 
     default:

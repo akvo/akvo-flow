@@ -226,6 +226,17 @@ FLOW.surveyPointTypeControl = Ember.Object.create({
   })]
 });
 
+FLOW.attributeTypeControl = Ember.Object.create({
+  content: [
+  Ember.Object.create({
+    label: "text",
+    value: "String"
+  }), Ember.Object.create({
+    label: "number",
+    value: "Double"
+  })]
+});
+
 
 FLOW.surveySectorTypeControl = Ember.Object.create({
   content: [
@@ -291,7 +302,12 @@ FLOW.editControl = Ember.Controller.create({
   newEmailAddress: null,
   editPermissionLevel: null,
   editUserName: null,
-  editEmailAddress: null
+  editEmailAddress: null,
+  editUserId: null,
+  editAttributeName: null,
+  editAttributeGroup: null,
+  editAttributeType: null,
+  editAttributeId: null
 });
 
 
@@ -471,12 +487,26 @@ FLOW.deviceGroupControl = Ember.ArrayController.create({
   content: null,
 
   populate: function() {
-    this.set('content', FLOW.store.findQuery(FLOW.DeviceGroup, {}));
+    this.set('content', FLOW.store.find(FLOW.DeviceGroup));
   }
-
-
 });
 
+FLOW.attributeControl = Ember.ArrayController.create({
+  sortProperties: null,
+  sortAscending: true,
+  content: null,
+
+  populate: function() {
+    this.set('sortProperties', ['name']);
+    this.set('sortAscending', true);
+    this.set('content', FLOW.store.find(FLOW.Metric));
+  },
+
+   getSortInfo: function() {
+    this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
+    this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
+  }
+});
 
 FLOW.deviceControl = Ember.ArrayController.create({
   sortProperties: null,

@@ -8,6 +8,7 @@ require('akvo-flow/core');
 require('akvo-flow/views/survey-group-views');
 require('akvo-flow/views/survey-details-views');
 require('akvo-flow/views/inspect-data-table-views');
+require('akvo-flow/views/data-attribute-views');
 require('akvo-flow/views/question-view');
 require('akvo-flow/views/question-answer-view');
 require('akvo-flow/views/report-views');
@@ -317,6 +318,10 @@ FLOW.InspectDataView = Ember.View.extend({
   templateName: 'navData/inspect-data'
 });
 
+FLOW.ManageAttributesView = Ember.View.extend({
+  templateName: 'navData/manage-attributes'
+});
+
 FLOW.ImportSurveyView = Ember.View.extend({
   templateName: 'navData/import-survey'
 });
@@ -476,6 +481,8 @@ FLOW.ColumnView = Ember.View.extend({
       FLOW.deviceControl.getSortInfo();
     } else if(this.get('type') === 'assignment') {
       FLOW.surveyAssignmentControl.getSortInfo();
+    } else if(this.get('type') === 'attribute'){
+      FLOW.attributeControl.getSortInfo();
     }
 
   }

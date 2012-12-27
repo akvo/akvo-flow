@@ -172,6 +172,9 @@ FLOW.Router = Ember.Router.extend({
       doInspectData: function(router, event) {
         router.transitionTo('navData.inspectData');
       },
+      doManageAttributes: function(router, event) {
+        router.transitionTo('navData.manageAttributes');
+      },
       doImportSurvey: function(router, event) {
         router.transitionTo('navData.importSurvey');
       },
@@ -194,6 +197,15 @@ FLOW.Router = Ember.Router.extend({
           router.set('datasubnavController.selected', 'inspectData');
           FLOW.surveyGroupControl.populate();
           FLOW.surveyInstanceControl.populate();
+        }
+      }),
+
+      manageAttributes: Ember.Route.extend({
+        route: '/importsurvey',
+        connectOutlets: function(router, context) {
+          router.get('navDataController').connectOutlet('manageAttributes');
+          router.set('datasubnavController.selected', 'manageAttributes');
+          FLOW.attributeControl.populate();
         }
       }),
 
