@@ -31,10 +31,6 @@
         <authentication-provider ref="gaeAuthenticationProvider"/>
     </authentication-manager>
 
-    <b:bean id="gaeAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.GoogleAccountsAuthenticationProvider">
-        <b:property name="userRegistry" ref="userRegistry" />
-    </b:bean>
-
-    <b:bean id="userRegistry" class="org.waterforpeople.mapping.app.web.rest.security.user.InMemoryUserRegistry" />
+    <b:bean id="gaeAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.GoogleAccountsAuthenticationProvider" />
 
 </b:beans>

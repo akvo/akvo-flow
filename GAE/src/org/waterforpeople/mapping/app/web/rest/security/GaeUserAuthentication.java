@@ -49,7 +49,7 @@ public class GaeUserAuthentication implements Authentication {
     }
 
     public String getName() {
-        return principal.getUserId();
+        return principal.getUserName();
     }
 
     @Override

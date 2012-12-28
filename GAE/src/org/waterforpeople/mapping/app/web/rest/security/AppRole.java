@@ -6,11 +6,12 @@ import org.springframework.security.core.GrantedAuthority;
  * @author Luke Taylor
  */
 public enum AppRole implements GrantedAuthority {
+    NEW_USER (-1),
     ADMIN (0),
-    NEW_USER (1),
-    USER (2);
+    PROJECT_ADMIN(2),
+    USER (3);
 
-    private final int bit;
+    private final int level;
 
     /**
      * Creates an authority with a specific bit representation. It's important that this doesn't
@@ -20,11 +21,11 @@ public enum AppRole implements GrantedAuthority {
      * @param bit the permission bit which will represent this authority in the datastore.
      */
     AppRole(int bit) {
-        this.bit = bit;
+        this.level = bit;
     }
 
-    public int getBit() {
-        return bit;
+    public int getLevel() {
+        return level;
     }
 
     public String getAuthority() {

@@ -15,11 +15,8 @@ import org.waterforpeople.mapping.app.web.rest.security.AppRole;
  */
 public class GaeUser implements Serializable {
 	private static final long serialVersionUID = -381882633758542764L;
-	private final String userId;
     private final String email;
-    private final String nickname;
-    private final String forename;
-    private final String surname;
+    private final String userName;
     private final Set<AppRole> authorities;
     private final boolean enabled;
 
@@ -28,12 +25,9 @@ public class GaeUser implements Serializable {
      *
      * Assigns the user the "NEW_USER" role only.
      */
-    public GaeUser(String userId, String nickname, String email) {
-        this.userId = userId;
-        this.nickname = nickname;
+    public GaeUser(String userName, String email) {
         this.authorities = EnumSet.of(AppRole.NEW_USER);
-        this.forename = null;
-        this.surname = null;
+        this.userName = userName;
         this.email = email;
         this.enabled = true;
     }
@@ -41,38 +35,24 @@ public class GaeUser implements Serializable {
     /**
      * Post-registration constructor
      */
-    public GaeUser(String userId, String nickname, String email, String forename, String surname, Set<AppRole> authorities, boolean enabled) {
-        this.userId = userId;
-        this.nickname = nickname;
+    public GaeUser(String userName, String email, Set<AppRole> authorities, boolean enabled) {
+        this.userName = userName;
         this.email = email;
         this.authorities = authorities;
-        this.forename = forename;
-        this.surname = surname;
-        this.enabled= enabled;
+        this.enabled = enabled;
     }
 
-    public String getUserId() {
-        return userId;
-    }
 
-    public String getNickname() {
-        return nickname;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public String getForename() {
-        return forename;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
+    public String getUserName() {
+        return userName;
     }
 
     public Collection<AppRole> getAuthorities() {
@@ -82,10 +62,7 @@ public class GaeUser implements Serializable {
     @Override
     public String toString() {
         return "GaeUser{" +
-                "userId='" + userId + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", forename='" + forename + '\'' +
-                ", surname='" + surname + '\'' +
+                ", userName='" + userName + '\'' +
                 ", authorities=" + authorities +
                 '}';
     }

@@ -1,6 +1,10 @@
 package org.waterforpeople.mapping.app.web.rest.security;
 
-import com.google.appengine.api.users.User;
+import java.util.EnumSet;
+import java.util.Set;
+
+import javax.inject.Inject;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -11,7 +15,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
-import org.waterforpeople.mapping.app.web.rest.security.user.UserRegistry;
+
+import com.gallatinsystems.user.dao.UserDao;
+import com.google.appengine.api.users.User;
 
 /**
  * A simple authentication provider which interacts with {@code User} returned by the GAE {@code UserService},
@@ -28,16 +34,17 @@ import org.waterforpeople.mapping.app.web.rest.security.user.UserRegistry;
 public class GoogleAccountsAuthenticationProvider implements AuthenticationProvider, MessageSourceAware {
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
-    private UserRegistry userRegistry;
+    @Inject
+    UserDao userDao;
 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         User googleUser = (User) authentication.getPrincipal();
 
-        GaeUser user = userRegistry.findUser(googleUser.getUserId());
+        GaeUser user = findUser(googleUser.getEmail());
 
         if (user == null) {
             // User not in registry. Needs to register
-            user = new GaeUser(googleUser.getUserId(), googleUser.getNickname(), googleUser.getEmail());
+            user = new GaeUser(googleUser.getNickname(), googleUser.getEmail());
         }
 
         if (!user.isEnabled()) {
@@ -47,6 +54,38 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
         return new GaeUserAuthentication(user, authentication.getDetails());
     }
 
+    private GaeUser findUser(String email) {
+        final com.gallatinsystems.user.domain.User user = userDao.findUserByEmail(email);
+
+        if (user == null) {
+            return null;
+        }
+
+        final int authority = getAuthorityLevel(user);
+        final Set<AppRole> roles = EnumSet.noneOf(AppRole.class);
+
+        for (AppRole r : AppRole.values()) {
+            if (authority >= r.getLevel()) {
+                roles.add(r);
+            }
+        }
+
+        return new GaeUser(user.getUserName(), user.getEmailAddress(), roles, true);
+    }
+
+    private int getAuthorityLevel(com.gallatinsystems.user.domain.User user) {
+        if(user.isSuperAdmin() != null && user.isSuperAdmin()) {
+            return AppRole.ADMIN.getLevel();
+        }
+        try {
+            final int level = Integer.parseInt(user.getPermissionList());
+            return level;
+        } catch (Exception e) {
+            //no-op
+        }
+        return AppRole.NEW_USER.getLevel();
+    }
+
     /**
      * Indicate that this provider only supports PreAuthenticatedAuthenticationToken (sub)classes.
      */
@@ -54,9 +93,6 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
         return PreAuthenticatedAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    public void setUserRegistry(UserRegistry userRegistry) {
-        this.userRegistry = userRegistry;
-    }
 
     public void setMessageSource(MessageSource messageSource) {
         this.messages = new MessageSourceAccessor(messageSource);
