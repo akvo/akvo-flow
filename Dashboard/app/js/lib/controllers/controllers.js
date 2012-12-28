@@ -13,6 +13,8 @@ FLOW.ApplicationController = Ember.Controller.extend({
   }
 });
 
+//require('akvo-flow/currentuser');
+
 // Navigation controllers
 FLOW.NavigationController = Em.Controller.extend({
   selected: null
