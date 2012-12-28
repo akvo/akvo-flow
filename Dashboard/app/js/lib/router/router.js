@@ -66,6 +66,7 @@ FLOW.Router = Ember.Router.extend({
       doEditSurvey: function(router, event) {
         FLOW.selectedControl.set('selectedSurvey', event.context);
         router.transitionTo('navSurveys.navSurveysEdit');
+        FLOW.attributeControl.populate();
       },
 
       doSurveysMain: function(router, event) {

@@ -5,6 +5,12 @@
     <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
     <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.text" size=100 }}</label>
     <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
+ 
+ <label>Attribute: {{view Ember.Select 
+      contentBinding="FLOW.attributeControl.content" 
+      optionLabelPath="content.name" 
+      optionValuePath="content.keyId" 
+      selectionBinding="view.attribute" }} </label>
 
     <label>Question type: {{view Ember.Select 
       contentBinding="FLOW.questionTypeControl.content" 
@@ -43,7 +49,12 @@
     {{/if}}                 
     
     {{#if view.amNumberType}}
-      TODO: Number specific content
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimalPoint"}}{{t _allow_decimal_point}} </label>
+
+      <label>{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label>
+      <label>{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
+
     {{/if}} 
 
   

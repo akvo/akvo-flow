@@ -92,6 +92,10 @@ Ember.STRINGS_EN = {
    '_export_reports': 'export reports',
   '_charts':'charts',
   '_options':'Options',
+  '_min_val':'minimum value',
+  '_max_val':'maximum value',
+  '_allow_decimal_point':'allow decimal point',
+  '_allow_sign':'allow sign',
   '_Add_attribute':'Add new attribute'
 };
 
