@@ -64,9 +64,13 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
         final int authority = getAuthorityLevel(user);
         final Set<AppRole> roles = EnumSet.noneOf(AppRole.class);
 
-        for (AppRole r : AppRole.values()) {
-            if (authority >= r.getLevel()) {
-                roles.add(r);
+        if (authority == AppRole.NEW_USER.getLevel()) {
+            roles.add(AppRole.NEW_USER);
+        } else {
+            for (AppRole r : AppRole.values()) {
+                if (authority <= r.getLevel()) {
+                    roles.add(r);
+                }
             }
         }
 
