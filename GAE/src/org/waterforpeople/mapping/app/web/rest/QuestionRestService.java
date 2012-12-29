@@ -157,6 +157,7 @@ public class QuestionRestService {
 
 	// delete question by id
 	// TODO delete question options
+	// TODO delete metricmappings
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
 	public Map<String, RestStatusDto> deleteQuestionById(
@@ -199,6 +200,7 @@ public class QuestionRestService {
 
 	// update existing question
 	// TODO put in dependencies
+	// TODO put in metrics
 	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
 	public Map<String, Object> saveExistingQuestion(
@@ -296,6 +298,7 @@ public class QuestionRestService {
 
 	// create new question
 	// TODO put in dependencies
+	// TODO put in metrics
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@ResponseBody
 	public Map<String, Object> saveNewQuestion(

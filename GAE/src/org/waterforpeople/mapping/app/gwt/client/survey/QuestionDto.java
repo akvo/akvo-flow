@@ -41,6 +41,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private Boolean dependentFlag = null;
 	private Long dependentQuestionId;
 	private String dependentQuestionAnswer;
+	private Long metricId;
 	private QuestionDependencyDto questionDependency = null;
 	private Long surveyId;
 	private Long questionGroupId;
@@ -263,6 +264,14 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
 	public void setDependentQuestionId(Long dependentQuestionId) {
 		this.dependentQuestionId = dependentQuestionId;
+	}
+	
+	public Long getMetricId() {
+		return metricId;
+	}
+
+	public void setMetricId(Long metricId) {
+		this.metricId = metricId;
 	}
 	
 	public Boolean getDependentFlag() {
