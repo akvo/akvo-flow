@@ -14,6 +14,7 @@ FLOW.QuestionView = Ember.View.extend({
 	dependentFlag: null,
 	dependentQuestion: null,
 	optionList: null,
+	includeInMap: null,
 
 	amOpenQuestion: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestion');
@@ -45,7 +46,7 @@ FLOW.QuestionView = Ember.View.extend({
 	// TODO dependencies
 	// TODO options
 	doQuestionEdit: function() {
-		var questionType;
+		var questionType, attribute, dependentQuestion, dependentAnswer;
 
 		FLOW.selectedControl.set('selectedQuestion', this.get('content'));
 		this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
@@ -57,9 +58,38 @@ FLOW.QuestionView = Ember.View.extend({
 		this.set('allowDecimalPoint', FLOW.selectedControl.selectedQuestion.get('allowDecimalPoint'));
 		this.set('allowMultipleFlag', FLOW.selectedControl.selectedQuestion.get('allowMultipleFlag'));
 		this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
+		this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
 		this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
 		this.set('optionList', FLOW.selectedControl.selectedQuestion.get('optionList'));
 
+		// if the dependentQuestionId is not null, get the question
+		if(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId') !== 0) {
+			dependentQuestion = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'));
+			dependentAnswer = FLOW.selectedControl.selectedQuestion.get('dependentQuestionAnswer');
+
+			// if we have found the question, fill the options
+			if(dependentQuestion.get('id') !== "0") {
+				FLOW.selectedControl.set('dependentQuestion', dependentQuestion);
+				this.fillOptionList();
+
+				// find the answer already set and set it to true in the optionlist
+				FLOW.optionListControl.get('content').forEach(function(item) {
+					if(item.get('value') == dependentAnswer) {
+						item.set('isSelected', true);
+					}
+				});
+			}
+		}
+
+		// set the attribute to the original choice
+		FLOW.attributeControl.get('content').forEach(function(item) {
+			if(item.get('keyId') == FLOW.selectedControl.selectedQuestion.get('metricId')) {
+				attribute = item;
+			}
+		});
+		this.set('attribute', attribute);
+
+		// set the type to the original choice
 		FLOW.questionTypeControl.get('content').forEach(function(item) {
 			if(item.get('value') == FLOW.selectedControl.selectedQuestion.get('type')) {
 				questionType = item;
@@ -68,15 +98,18 @@ FLOW.QuestionView = Ember.View.extend({
 		this.set('type', questionType);
 	},
 
-	fillOptionList: function () {
-		var optionList,optionListArray, i, sizeList;
-		if (FLOW.selectedControl.get('dependentQuestion') !== null){
-			FLOW.optionListControl.set('content',[]);
+	fillOptionList: function() {
+		var optionList, optionListArray, i, sizeList;
+		if(FLOW.selectedControl.get('dependentQuestion') !== null) {
+			FLOW.optionListControl.set('content', []);
 			optionList = FLOW.selectedControl.dependentQuestion.get('optionList');
 			optionListArray = optionList.split('\n');
 			sizeList = optionListArray.length;
-			for (i=0 ; i< sizeList ; i++){
-				FLOW.optionListControl.get('content').push(Ember.Object.create({isSelected: false, value: optionListArray[i]}));
+			for(i = 0; i < sizeList; i++) {
+				FLOW.optionListControl.get('content').push(Ember.Object.create({
+					isSelected: false,
+					value: optionListArray[i]
+				}));
 			}
 		}
 	}.observes('FLOW.selectedControl.dependentQuestion'),
@@ -86,6 +119,7 @@ FLOW.QuestionView = Ember.View.extend({
 	},
 
 	doSaveEditQuestion: function() {
+		console.log('saving question');
 		FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
 		FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
 		FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
@@ -95,10 +129,21 @@ FLOW.QuestionView = Ember.View.extend({
 		FLOW.selectedControl.selectedQuestion.set('allowDecimalPoint', this.get('allowDecimalPoint'));
 		FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
 		FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
+		FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
+
 		if(this.get('dependentFlag')) {
 			FLOW.selectedControl.selectedQuestion.set('dependentFlag', this.get('dependentFlag'));
+			FLOW.selectedControl.selectedQuestion.set('dependentFlag', this.get('dependentFlag'));
 		}
-		FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
+
+		if(this.get('attribute')) {
+			FLOW.selectedControl.selectedQuestion.set('metricId', this.attribute.get('keyId'));
+		}
+		
+		if(this.get('type')) {
+			FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
+		}
+
 		FLOW.selectedControl.selectedQuestion.set('optionList', this.get('optionList'));
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedQuestion', null);

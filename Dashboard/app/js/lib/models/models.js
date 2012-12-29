@@ -147,6 +147,7 @@ FLOW.Question = FLOW.BaseModel.extend({
   //questionDependency: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),
+  metricId: DS.attr('number'),
   text: DS.attr('string'),
   tip: DS.attr('string'),
   type: DS.attr('string', {
