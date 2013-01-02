@@ -5,17 +5,17 @@
 
 
 require('akvo-flow/core');
-require('akvo-flow/views/survey-group-views');
-require('akvo-flow/views/survey-details-views');
-require('akvo-flow/views/inspect-data-table-views');
-require('akvo-flow/views/data-attribute-views');
-require('akvo-flow/views/question-view');
-require('akvo-flow/views/question-answer-view');
-require('akvo-flow/views/report-views');
-require('akvo-flow/views/export-reports-views');
-require('akvo-flow/views/map-views');
-require('akvo-flow/views/devices-views');
-require('akvo-flow/views/user-view');
+require('akvo-flow/views/surveys/survey-group-views');
+require('akvo-flow/views/surveys/survey-details-views');
+require('akvo-flow/views/data/inspect-data-table-views');
+require('akvo-flow/views/data/data-attribute-views');
+require('akvo-flow/views/surveys/question-view');
+require('akvo-flow/views/surveys/question-answer-view');
+require('akvo-flow/views/reports/report-views');
+require('akvo-flow/views/reports/export-reports-views');
+require('akvo-flow/views/maps/map-views');
+require('akvo-flow/views/devices/devices-views');
+require('akvo-flow/views/users/user-view');
 
 FLOW.ApplicationView = Ember.View.extend({
   templateName: 'application/application',
@@ -395,10 +395,6 @@ FLOW.HeaderView = Ember.View.extend({
 
 FLOW.FooterView = Ember.View.extend({
   templateName: 'application/footer',
-
-  forceObserverToggle: function() {
-    FLOW.forceObserverControl.toggleProperty('forceObserverBool');
-  },
 
   onLanguageChange: function() {
     this.rerender();
