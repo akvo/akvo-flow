@@ -46,7 +46,7 @@ FLOW.QuestionView = Ember.View.extend({
 	// TODO dependencies
 	// TODO options
 	doQuestionEdit: function() {
-		var questionType, attribute, dependentQuestion, dependentAnswer;
+		var questionType = null, attribute = null, dependentQuestion, dependentAnswer;
 
 		FLOW.selectedControl.set('selectedQuestion', this.get('content'));
 		this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
@@ -147,7 +147,7 @@ FLOW.QuestionView = Ember.View.extend({
 		if(this.get('attribute')) {
 			FLOW.selectedControl.selectedQuestion.set('metricId', this.attribute.get('keyId'));
 		}
-		
+
 		if(this.get('type')) {
 			FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
 		}
@@ -160,7 +160,7 @@ FLOW.QuestionView = Ember.View.extend({
 	// BROKEN
 	//TODO when questionAnswers already exist for a question, deletion should not be possible.
 	deleteQuestion: function() {
-		var qDeleteOrder, qDeleteId, question, questionGroupId;
+		var qDeleteId, question;
 		qDeleteId = this.content.get('keyId');
 
 		question = FLOW.store.find(FLOW.Question, qDeleteId);

@@ -26,11 +26,11 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 		this.set('selectedDeviceGroup',null);
 		this.set('showManageDeviceGroupsDialogBool',true);
 	},
-	
+
 	cancelManageDeviceGroups: function(){
 		this.set('showManageDeviceGroupsDialogBool',false);
 	},
-	
+
 	assignDisplayNames:function(){
 		var allDevices;
 		if ((FLOW.deviceControl.content.get('isLoaded') === true) && (FLOW.deviceGroupControl.content.get('isLoaded') === true)) {
@@ -89,7 +89,7 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 
 	// TODO update device group name in tabel.
 	doManageDeviceGroups: function(){
-		var allDevices, newDeviceGroup;
+		var allDevices;
 		if (this.get('selectedDeviceGroup') !== null) {
 			var selectedDeviceGroupId = this.selectedDeviceGroup.get('keyId');
 
@@ -108,11 +108,11 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 				});
 			}
 		} else if (this.get('newDeviceGroupName') !== null){
-			newDeviceGroup = FLOW.store.createRecord(FLOW.DeviceGroup,{
+			FLOW.store.createRecord(FLOW.DeviceGroup,{
 				"code":this.get('newDeviceGroupName')
 			});
 		}
-		
+
 		this.set('selectedDeviceGroup',null);
 		this.set('newDeviceGroupName',null);
 		this.set('changedDeviceGroupName',null);

@@ -10,9 +10,8 @@ FLOW.ManageAttributesTableView = Em.View.extend({
   },
 
   doAddAttribute: function() {
-    var newAttribute;
     if(this.get('newAttributeName') !== null && this.get('newAttributeType') !== null) {
-      newAttribute = FLOW.store.createRecord(FLOW.Metric, {
+      FLOW.store.createRecord(FLOW.Metric, {
         "name": this.get('newAttributeName'),
         "group": this.get('newAttributeGroup'),
         "valueType": this.newAttributeType.get('value')
@@ -28,11 +27,11 @@ FLOW.ManageAttributesTableView = Em.View.extend({
 
 showEditAttributeDialog: function(event) {
     var attrType = null;
-    
+
     FLOW.editControl.set('editAttributeName', event.context.get('name'));
     FLOW.editControl.set('editAttributeGroup', event.context.get('group'));
     FLOW.editControl.set('editAttributeId', event.context.get('keyId'));
-    
+
     FLOW.attributeTypeControl.get('content').forEach(function(item) {
       console.log(item.get('value'), event.context.get('valueType'));
       if(item.get('value') == event.context.get('valueType')) {
@@ -50,7 +49,7 @@ showEditAttributeDialog: function(event) {
     attribute = FLOW.store.find(FLOW.Metric, FLOW.editControl.get('editAttributeId'));
     attribute.set('name', FLOW.editControl.get('editAttributeName'));
     attribute.set('group', FLOW.editControl.get('editAttributeGroup'));
-    
+
     if(FLOW.editControl.editAttributeType !== null) {
       attribute.set('valueType', FLOW.editControl.editAttributeType.get('value'));
     }
@@ -66,7 +65,7 @@ showEditAttributeDialog: function(event) {
 
 FLOW.AttributeView = Em.View.extend({
   tagName: 'span',
-  
+
   deleteAttribute: function() {
     var attrDeleteId, attribute;
     attrDeleteId = this.content.get('keyId');
