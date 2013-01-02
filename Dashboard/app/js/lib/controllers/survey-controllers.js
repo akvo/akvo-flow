@@ -138,7 +138,6 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 
 FLOW.questionControl = Ember.ArrayController.create({
   content: null,
-  OandNcontent: null,
   Ocontent: null,
 
   // used for display of dependencies: a question can only be dependent on earlier questions
@@ -179,27 +178,15 @@ FLOW.questionControl = Ember.ArrayController.create({
     }));
   },
 
-  populateOPTIONandNUMBERQuestions: function() {
-    if(FLOW.selectedControl.get('selectedSurveyOPTIONandNUMBERQuestions')) {
-      var id = FLOW.selectedControl.selectedSurveyOPTIONandNUMBERQuestions.get('keyId');
-      this.set('OandNcontent', FLOW.store.findQuery(FLOW.Question, {
-        surveyId: id,
-        includeOption: "true",
-        includeNumber: "true"
-      }));
-    }
-  }.observes('FLOW.selectedControl.selectedSurveyOPTIONandNUMBERQuestions'),
-
-  // TODO make this more efficient - this is loading to many times
   populateOPTIONQuestions: function() {
-    if(FLOW.selectedControl.get('selectedSurvey')) {
-      var id = FLOW.selectedControl.selectedSurvey.get('keyId');
+    if(FLOW.selectedControl.get('selectedSurveyOPTIONQuestions')) {
+      var id = FLOW.selectedControl.selectedSurveyOPTIONQuestions.get('keyId');
       this.set('Ocontent', FLOW.store.findQuery(FLOW.Question, {
         surveyId: id,
         includeOption: "true"
       }));
     }
-  }.observes('FLOW.selectedControl.selectedQuestionGroup')
+  }.observes('FLOW.selectedControl.selectedSurveyOPTIONQuestions')
 });
 
 
