@@ -41,6 +41,15 @@
 	</servlet-mapping>
 
 	<servlet>
+		<servlet-name>EnvServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.EnvServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EnvServlet</servlet-name>
+		<url-pattern>/flowenv.js</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
 		<servlet-name>StartupServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.StartupServlet</servlet-class>
 	</servlet>
@@ -735,5 +744,19 @@
     <servlet-name>SystemServiceServlet</servlet-name>
     <url-pattern>/_ah/spi/*</url-pattern>
   </servlet-mapping> -->
+
+  <servlet>
+    <servlet-name>SystemServiceServlet</servlet-name>
+    <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+    <init-param>
+      <param-name>services</param-name>
+      <param-value/>
+    </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>SystemServiceServlet</servlet-name>
+    <url-pattern>/_ah/spi/*</url-pattern>
+  </servlet-mapping>
 
 </web-app>
