@@ -11,7 +11,7 @@ FLOW.QuestionView = Ember.View.extend({
 	allowDecimalPoint: null,
 	allowMultipleFlag: null,
 	allowOtherFlag: null,
-	dependentFlag: null,
+	dependentFlag: false,
 	dependentQuestion: null,
 	optionList: null,
 	includeInMap: null,
@@ -105,6 +105,7 @@ FLOW.QuestionView = Ember.View.extend({
 			optionList = FLOW.selectedControl.dependentQuestion.get('optionList');
 			optionListArray = optionList.split('\n');
 			sizeList = optionListArray.length;
+			FLOW.optionListControl.set('currentActive',null);
 			for(i = 0; i < sizeList; i++) {
 				FLOW.optionListControl.get('content').push(Ember.Object.create({
 					isSelected: false,
@@ -119,7 +120,7 @@ FLOW.QuestionView = Ember.View.extend({
 	},
 
 	doSaveEditQuestion: function() {
-		console.log('saving question');
+		var questionAnswer;
 		FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
 		FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
 		FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
@@ -132,8 +133,15 @@ FLOW.QuestionView = Ember.View.extend({
 		FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
 
 		if(this.get('dependentFlag')) {
+			questionAnswer = null;
 			FLOW.selectedControl.selectedQuestion.set('dependentFlag', this.get('dependentFlag'));
-			FLOW.selectedControl.selectedQuestion.set('dependentFlag', this.get('dependentFlag'));
+			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', FLOW.selectedControl.dependentQuestion.get('keyId'));
+			FLOW.optionListControl.get('content').forEach(function(item) {
+					if(item.get('isSelected')) {
+						questionAnswer = item.get('value');
+					}
+				});
+			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', questionAnswer);
 		}
 
 		if(this.get('attribute')) {

@@ -109,7 +109,7 @@
             {{#if view.amVisible}}
               <div class="questionSetContent"> 
                 {{view FLOW.QuestionView zeroItemQuestion=true}}
-                {{#each question in FLOW.questionControl}} 
+                {{#each question in FLOW.questionControl.QGcontent}} 
                   {{view FLOW.QuestionView contentBinding="question" zeroItemQuestion=false}}
                 {{/each}} 
               </div>

@@ -99,12 +99,9 @@ FLOW.Router = Ember.Router.extend({
           // all questions should be closed when we enter
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.attributeControl.populate();
-          // moet weg
-          var sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-          FLOW.questionGroupControl.set('content', FLOW.store.find(FLOW.QuestionGroup, {
-            surveyId: sId
-          }));
-          FLOW.questionControl.populateAllQuestions(sId);
+
+          FLOW.questionGroupControl.populate();
+          FLOW.questionControl.populateAllQuestions();
         }
       })
 

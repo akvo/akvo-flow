@@ -96,6 +96,7 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,
+
   populate: function() {
     var id;
     if(FLOW.selectedControl.get('selectedSurveyGroup')) {
@@ -138,18 +139,52 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 
 FLOW.questionControl = Ember.ArrayController.create({
   content: null,
-  Ocontent: null,
+  OPTIONcontent: null,
+  earlierOptionQuestions: null,
+  QGcontent: null,
+
+  populate: function() {
+    if(FLOW.selectedControl.get('selectedQuestionGroup')) {
+      var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+      this.set('content', FLOW.store.findQuery(FLOW.Question, {
+        questionGroupId: id
+      }));
+    }
+  }.observes('FLOW.selectedControl.selectedQuestionGroup'),
+
+  populateAllQuestions: function() {
+    var sId;
+    sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+    this.set('content', FLOW.store.findQuery(FLOW.Question, {
+      surveyId: sId
+    }));
+  }.observes('FLOW.selectedControl.selectedSurvey'),
+
+  setSGcontent: function (){
+    if (FLOW.selectedControl.get('selectedQuestionGroup')){
+      this.set('QGcontent',FLOW.store.filter(FLOW.Question,function(item){
+        return (item.get('questionGroupId') == FLOW.selectedControl.selectedQuestionGroup.get('keyId'));
+      }));
+    }
+  }.observes('FLOW.selectedControl.selectedQuestionGroup'),
+
+  setOPTIONcontent: function (){
+    if (FLOW.selectedControl.get('selectedSurvey')){
+      this.set('OPTIONcontent',FLOW.store.filter(FLOW.Question,function(item){
+        return (item.get('type') == 'OPTION');
+      }));
+    }
+  }.observes('FLOW.selectedControl.selectedSurvey'),
 
   // used for display of dependencies: a question can only be dependent on earlier questions
-  earlierOptionQuestions: function() {
-    var optionQuestionList, qIndex;
-    optionQuestionList = this.get('Ocontent');
-    qIndex = optionQuestionList.indexOf(FLOW.selectedControl.get('selectedQuestion'));
-
-    return this.get('Ocontent').filter(function(item) {
-      return(qIndex > optionQuestionList.indexOf(item));
-    });
-  }.property('FLOW.selectedControl.selectedQuestion'),
+  setEarlierOptionQuestions: function() {
+    var QuestionList, qIndex;
+    QuestionList = this.get('content');
+    qIndex = QuestionList.indexOf(FLOW.selectedControl.get('selectedQuestion'));
+    this.set('earlierOptionQuestions',FLOW.store.filter(FLOW.Question,function(item){
+      return (qIndex > QuestionList.indexOf(item)) && (item.get('type') == 'OPTION');
+    }));
+  }.observes('FLOW.selectedControl.selectedQuestion'),
 
   // true if all items have been saved
   // used in models.js
@@ -161,35 +196,10 @@ FLOW.questionControl = Ember.ArrayController.create({
       }
     });
     return allSaved;
-  }.property('content.@each.isSaving'),
-
-  populate: function() {
-    if(FLOW.selectedControl.get('selectedQuestionGroup')) {
-      var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-      this.set('content', FLOW.store.findQuery(FLOW.Question, {
-        questionGroupId: id
-      }));
-    }
-  }.observes('FLOW.selectedControl.selectedQuestionGroup'),
-
-  populateAllQuestions: function(surveyId) {
-    this.set('content', FLOW.store.findQuery(FLOW.Question, {
-      surveyId: surveyId
-    }));
-  },
-
-  populateOPTIONQuestions: function() {
-    if(FLOW.selectedControl.get('selectedSurveyOPTIONQuestions')) {
-      var id = FLOW.selectedControl.selectedSurveyOPTIONQuestions.get('keyId');
-      this.set('Ocontent', FLOW.store.findQuery(FLOW.Question, {
-        surveyId: id,
-        includeOption: "true"
-      }));
-    }
-  }.observes('FLOW.selectedControl.selectedSurveyOPTIONQuestions')
+  }.property('content.@each.isSaving')
 });
 
-
+// TODO turn this into radio buttons
 FLOW.optionListControl = Ember.ArrayController.create({
   content: []
 });

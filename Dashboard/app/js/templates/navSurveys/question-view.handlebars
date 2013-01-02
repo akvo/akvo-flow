@@ -34,13 +34,14 @@
         optionValuePath="content.keyId" 
         prompt="Select question"}}<br/><br/>
     {{/if}} 
+     {{#if view.dependentFlag}}
     {{#if FLOW.selectedControl.dependentQuestion}}
       Answer of dependent question (select one):<br>
       {{#each FLOW.optionListControl.content}}
         {{view Ember.Checkbox checkedBinding="isSelected"}}{{value}}<br>
       {{/each}}
       {{/if}}
-
+  {{/if}}
     <!-- Question specific material --> 
     {{#if view.amOptionType}}
       <h1 class="answerNbr">{{t _option_details}}: </h1>
