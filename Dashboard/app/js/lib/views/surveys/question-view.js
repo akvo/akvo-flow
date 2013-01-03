@@ -132,16 +132,15 @@ FLOW.QuestionView = Ember.View.extend({
 		FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
 		FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
 
-		if(this.get('dependentFlag')) {
+		if(this.get('dependentFlag') && FLOW.selectedControl.radioOptions.length>0) {
 			questionAnswer = null;
 			FLOW.selectedControl.selectedQuestion.set('dependentFlag', this.get('dependentFlag'));
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', FLOW.selectedControl.dependentQuestion.get('keyId'));
-			FLOW.optionListControl.get('content').forEach(function(item) {
-					if(item.get('isSelected')) {
-						questionAnswer = item.get('value');
-					}
-				});
-			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', questionAnswer);
+			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', FLOW.selectedControl.radioOptions);
+		} else {
+			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId',null);
+			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer',null);
+			FLOW.selectedControl.selectedQuestion.set('dependentQuestionFlag',false);
 		}
 
 		if(this.get('attribute')) {

@@ -2317,7 +2317,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	display: block;
 }
 .innerContent label {
-	margin: 15px 0 0 5px;
+	margin: 0px 0 0 5px;
 	color: rgb(39,94,110);
 	font-size: 1em;
 }
@@ -2342,17 +2342,17 @@ nav.smallMenu ul li a.showQuestion:hover {
 	padding: 2px 0 3px 5px;
 	width: 35%;
 }
-.innerContent input[type=checkbox] {
+.innerContent input[type=checkbox], .innerContent input[type=radio] {
 	display: inline-block;
 	margin: 5px 0 0 5px;
 	padding: 5px 0.5%;
 	border-color: rgb(235,235,235);
 }
-.innerContent input[type=checkbox]:first-child {
-	margin: 15px 0 0 5px;
+.innerContent input[type=checkbox]:first-child, .innerContent input[type=radio]:first-child {
+	margin: 10px 0 0 5px;
 }
 /* MTW added labelcheckbox class to checkbox labels, to decrease vertical spacing */
-.innerContent .labelcheckbox input[type=checkbox]:first-child {
+.innerContent .labelcheckbox input[type=checkbox]:first-child , .innerContent .labelcheckbox input[type=radio]:first-child {
 	margin: 0 5px;
 }
 /* end MTW adddition */

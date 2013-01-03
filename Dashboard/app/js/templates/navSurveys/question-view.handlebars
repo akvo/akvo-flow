@@ -38,10 +38,11 @@
     {{#if FLOW.selectedControl.dependentQuestion}}
       Answer of dependent question (select one):<br>
       {{#each FLOW.optionListControl.content}}
-        {{view Ember.Checkbox checkedBinding="isSelected"}}{{value}}<br>
+      {{view Em.RadioButton title=this.value option=this.value group="options" checked=this.isSelected valueBinding="FLOW.selectedControl.radioOptions"}} 
       {{/each}}
       {{/if}}
   {{/if}}
+
     <!-- Question specific material --> 
     {{#if view.amOptionType}}
       <h1 class="answerNbr">{{t _option_details}}: </h1>
