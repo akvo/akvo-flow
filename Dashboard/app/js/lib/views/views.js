@@ -207,14 +207,14 @@ Ember.View.reopen({
   didInsertElement: function() {
     this._super();
     tooltip();
-    $("nav#topnav li.current").prev("nav#topnav li").css("background", "none");
-    $("nav#topnav li").hover(function() {
-      $(this).prev().css("background", "none");
-    });
+    //$("nav#topnav li.current").prev("nav#topnav li").css("background", "none");
+    //$("nav#topnav li").hover(function() {
+    //  $(this).prev().css("background", "none");
+    //});
     // Adds needed classes to survey assets as nth-child selectors don't work in ie.
-    $('li.aSurvey:nth-child(4n+1)').addClass('firstOfRow');
-    $('li.aSurvey:nth-child(4n)').addClass('endOfRow');
-    $('table#devicesListTable tbody tr:nth-child(2n)').addClass('even');
+    //$('li.aSurvey:nth-child(4n+1)').addClass('firstOfRow');
+    //$('li.aSurvey:nth-child(4n)').addClass('endOfRow');
+    //$('table#devicesListTable tbody tr:nth-child(2n)').addClass('even');
 
 
     var nCount = 0;
@@ -244,14 +244,20 @@ Ember.View.reopen({
     });
 
     // Function displaying the options depending on question type
-    $('.formElems').hide();
+    //$('.formElems').hide();
     // listener for QR type
-    $("#questionType").change(function() {
-      var selected = $("#questionType option:selected").val();
-      $('.formElems').hide();
-      $("." + selected).show();
-    });
+    //$("#questionType").change(function() {
+     // var selected = $("#questionType option:selected").val();
+     // $('.formElems').hide();
+     // $("." + selected).show();
+    //});
+  }
+});
 
+FLOW.DateField = Ember.TextField.extend({
+ didInsertElement: function() {
+    this._super();
+    
     // datepickers
     $("#from_date").datepicker({
       dateFormat: 'yy/mm/dd',
@@ -272,8 +278,13 @@ Ember.View.reopen({
         FLOW.dateControl.set('toDate', selectedDate);
       }
     });
+
+
   }
 });
+
+
+
 // home screen view
 FLOW.NavHomeView = Ember.View.extend({
   templateName: 'navHome/nav-home'
@@ -483,6 +494,8 @@ FLOW.ColumnView = Ember.View.extend({
       FLOW.surveyAssignmentControl.getSortInfo();
     } else if(this.get('type') === 'attribute'){
       FLOW.attributeControl.getSortInfo();
+    } else if(this.get('type') === 'message'){
+      FLOW.messageControl.getSortInfo();
     }
   }
 });
