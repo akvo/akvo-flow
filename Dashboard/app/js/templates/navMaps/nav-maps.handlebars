@@ -1,5 +1,5 @@
 <section id="main" class="mapFlow floats-in" role="main">
-<div id="drawHandleWrap"><div class="drawHandle hideMapD">hide &rsaquo;</div></div>
+<!-- <div id="drawHandleWrap"><div class="drawHandle hideMapD">hide &rsaquo;</div></div> -->
 <div id="flowMap"></div>
 <div id="pointDetails">
    <ul class="placeMarkBasicInfo floats-in">
@@ -31,6 +31,7 @@
 </style>
 <script type="text/javascript">
 
+  /* These functions needs to be "namespaced"! */
   var initMapDetails = function () {
     /*$("#flowMap").animate({width:"99.25%"}, 1000);*/
     /*$("#pointDetails").animate({width:"0.25%"}, 1000).css({"overflow":"hidden", "margin-left":"-2px"});*/
@@ -42,21 +43,21 @@
     $("#flowMap").animate({width:"99.25%"}, 200 );
     $("#pointDetails").animate({width:"0.25%"}, 200 ).css({"overflow":"hidden", "margin-left":"-2px"});
     $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).css({opacity:"0"}).css({display:"none"});
-    $(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");
+    /*$(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");*/
   };
 
   var showMapDetails = function () {
     $("#flowMap").animate({width:"75%"}, 200);
     $("#pointDetails").animate({width:"24.5%"}, 200).css({"overflow":"auto", "margin-left":"-2px"});
     $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).animate({opacity:"1"}, 200).css({display:"inherit"});
-    $(".drawHandle").removeClass("showMapD").addClass("hideMapD").text("hide ›");
+    /*$(".drawHandle").removeClass("showMapD").addClass("hideMapD").text("hide ›");*/
   };
 
-  $(document).ready(function () {
-    /* initMapDetails();*/
-    /* hideMapDetails();*/
-    /*$(".drawHandle").toggle(showMapDetails, hideMapDetails);*/
-  });
+  /* $(document).ready(function () {
+    initMapDetails();
+    hideMapDetails();
+    $(".drawHandle").toggle(showMapDetails, hideMapDetails);
+  }); */
 
 </script>
 

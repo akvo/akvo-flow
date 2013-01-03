@@ -7,8 +7,9 @@ Vagrant::Config.run do |config|
   # please see the online documentation at vagrantup.com.
 
   config.vm.host_name = "akvo-flow.dev"
-  config.vm.box = "akvo-flow_precise64_4.2.4"
-  config.vm.box_url = "https://drive.google.com/a/kardans.com/uc?export=download&confirm=no_antivirus&id=0B97PJQx6lBfWanBveGJlNDdxMjA"
+  config.vm.box = "akvo-flow_precise64_4.2.6"
+  config.vm.box_url = "https://docs.google.com/a/kardans.com/uc?export=download&confirm=no_antivirus&id=0B97PJQx6lBfWTEprMlRMQVA3Y1k"
+  # config.vm.box_url = "https://drive.google.com/a/kardans.com/uc?export=download&confirm=no_antivirus&id=0B97PJQx6lBfWanBveGJlNDdxMjA"
 
   # config.vm.boot_mode = :gui
 

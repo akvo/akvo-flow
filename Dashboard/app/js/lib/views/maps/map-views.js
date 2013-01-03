@@ -70,7 +70,6 @@ FLOW.NavMapsView = Ember.View.extend({
     details = FLOW.placemarkDetailControl.get('content');
     console.log(Ember.empty(details));
 
-    // if((typeof details !== 'undefined') && (details !== null) && (details.get('isLoaded') === true)) {
     if( (Ember.none(details) === false) && (Ember.empty(details) === false) && (details.get('isLoaded') === true) ) {
       window.showMapDetails();
       this.set('showDetailsBool', true);

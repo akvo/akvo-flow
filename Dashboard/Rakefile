@@ -45,8 +45,8 @@ task :make => :clean do
   system 'cp ../GAE/war/flow15/dashboard.html ../GAE/war/dashboard.html'
 end
 
-# Unused commands
 
+# Unused commands ?
 desc "Run tests with PhantomJS"
 task :test => :build do
   unless system("which phantomjs > /dev/null 2>&1")
