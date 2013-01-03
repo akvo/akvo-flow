@@ -296,7 +296,7 @@ a.AddBtn:hover {
 }
 .greyBg {
 	position: relative;
-	padding: 1px 0;
+	padding:1px 0.25%;
 	background: rgb(230,230,230);
 }
 .btnAboveTable {
@@ -411,7 +411,7 @@ a.AddBtn:hover {
 	background-color: rgb(0,0,0);
 	opacity: 0.8;
 }
-/* addition MTW */
+
 .blanketWide {
 	position: absolute;
 	top: 0;
@@ -811,6 +811,10 @@ table.dataTable thead tr th {
 .dataSection table.dataTable thead tr th {
 	padding: 9px 1em 9px 1em;
 }
+
+#usersListTable thead tr th {
+	padding: 11px 1em 7px 1em;
+}
 table.dataTable thead tr th.noArrows {
 	background: #3A3A3A;
 }
@@ -861,25 +865,25 @@ tfoot tr {
 #devicesListTable .longitude {
 	width: 16%;
 }
-#usersList .userName {
+#usersListTable .userName {
 	width: 35%;
 }
-#usersList .emailAdr {
+#usersListTable .emailAdr {
 	width: 35%;
 }
-#usersList .permLevel {
+#usersListTable .permLevel {
 	width: 20%;
 }
-#usersList .action {
+#usersListTable .action {
 	width: 10%;
 }
-#usersList .permLevel.admin {
+#usersListTable .permLevel.admin {
 	color: rgb(227, 27, 35);
 }
-#usersList .permLevel.permUser {
+#usersListTable .permLevel.permUser {
 	color: rgb(219, 135, 201);
 }
-#usersList .permLevel.ProjectEditor {
+#usersListTable .permLevel.ProjectEditor {
 	color: rgb(119, 97, 0);
 }
 #inspectData {
@@ -2327,7 +2331,11 @@ nav.smallMenu ul li a.showQuestion:hover {
 	width: 96%;
 	border-color: rgb(235,235,235);
 }
-/* Addition MTW added optiontype to input fields for options, to make them smaller */
+.qDependency {
+	display:block;
+	margin:1em 0 0 1em;
+	color:rgb(204,204,204);
+	}
 .innerContent .optiontype input[type=text] {
 	display: inline;
 	margin: 5px 0 0 5px;
@@ -2335,7 +2343,6 @@ nav.smallMenu ul li a.showQuestion:hover {
 	width: 35%;
 	border-color: rgb(235,235,235);
 }
-/* end addition MTW */
 
 .innerContent select {
 	margin: 5px 0 0 5px;

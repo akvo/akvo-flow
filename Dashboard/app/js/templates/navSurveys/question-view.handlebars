@@ -36,7 +36,7 @@
     {{/if}} 
      {{#if view.dependentFlag}}
     {{#if FLOW.selectedControl.dependentQuestion}}
-      Answer of dependent question (select one):<br>
+     <div class="qDependency">Answer of dependent question (select one):</div>
       {{#each FLOW.optionListControl.content}}
       {{view Em.RadioButton title=this.value option=this.value group="options" checked=this.isSelected valueBinding="FLOW.selectedControl.radioOptions"}} 
       {{/each}}
