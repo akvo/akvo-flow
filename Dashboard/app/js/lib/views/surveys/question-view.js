@@ -15,6 +15,10 @@ FLOW.QuestionView = Ember.View.extend({
 	dependentQuestion: null,
 	optionList: null,
 	includeInMap: null,
+	showAddAttributeDialogBool: false,
+	newAttributeName: null,
+	newAttributeGroup: null,
+	newAttributeType: null,
 
 	amOpenQuestion: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestion');
@@ -46,7 +50,9 @@ FLOW.QuestionView = Ember.View.extend({
 	// TODO dependencies
 	// TODO options
 	doQuestionEdit: function() {
-		var questionType = null, attribute = null, dependentQuestion, dependentAnswer;
+		var questionType = null,
+			attribute = null,
+			dependentQuestion, dependentAnswer;
 
 		FLOW.selectedControl.set('selectedQuestion', this.get('content'));
 		this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
@@ -105,7 +111,7 @@ FLOW.QuestionView = Ember.View.extend({
 			optionList = FLOW.selectedControl.dependentQuestion.get('optionList');
 			optionListArray = optionList.split('\n');
 			sizeList = optionListArray.length;
-			FLOW.optionListControl.set('currentActive',null);
+			FLOW.optionListControl.set('currentActive', null);
 			for(i = 0; i < sizeList; i++) {
 				FLOW.optionListControl.get('content').push(Ember.Object.create({
 					isSelected: false,
@@ -132,15 +138,15 @@ FLOW.QuestionView = Ember.View.extend({
 		FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
 		FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
 
-		if(this.get('dependentFlag') && FLOW.selectedControl.radioOptions.length>0) {
+		if(this.get('dependentFlag') && FLOW.selectedControl.radioOptions.length > 0) {
 			questionAnswer = null;
 			FLOW.selectedControl.selectedQuestion.set('dependentFlag', this.get('dependentFlag'));
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', FLOW.selectedControl.dependentQuestion.get('keyId'));
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', FLOW.selectedControl.radioOptions);
 		} else {
-			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId',null);
-			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer',null);
-			FLOW.selectedControl.selectedQuestion.set('dependentQuestionFlag',false);
+			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', null);
+			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', null);
+			FLOW.selectedControl.selectedQuestion.set('dependentQuestionFlag', false);
 		}
 
 		if(this.get('attribute')) {
@@ -294,5 +300,27 @@ FLOW.QuestionView = Ember.View.extend({
 	// cancel group move
 	doQuestionMoveCancel: function() {
 		FLOW.selectedControl.set('selectedForMoveQuestion', null);
+	},
+	showAddAttributeDialog: function() {
+		this.set('showAddAttributeDialogBool', true);
+	},
+
+	doAddAttribute: function() {
+		console.log('doing attribute save');
+		console.log(this.get('newAttributeName'));
+		if((this.get('newAttributeName') !== null) && (this.get('newAttributeType') !== null)) {
+			console.log('inside');
+		FLOW.store.createRecord(FLOW.Metric, {
+			"name": this.get('newAttributeName'),
+			"group": this.get('newAttributeGroup'),
+			"valueType": this.newAttributeType.get('value')
+		});
+		FLOW.store.commit();
 	}
+	this.set('showAddAttributeDialogBool', false);
+},
+
+cancelAddAttribute: function() {
+	this.set('showAddAttributeDialogBool', false);
+}
 });

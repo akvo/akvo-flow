@@ -296,6 +296,15 @@ FLOW.UserConfig = FLOW.BaseModel.extend({
 
 // this is called attribute in the dashboard, but metric in the backend, for historic reasons.
 FLOW.Metric = FLOW.BaseModel.extend({
+  didDelete: function() {
+    FLOW.attributeControl.populate();
+  },
+  didUpdate: function() {
+    FLOW.attributeControl.populate();
+  },
+  didCreate: function() {
+    FLOW.attributeControl.populate();
+  },
   organization: DS.attr('string'),
   name: DS.attr('string'),
   group: DS.attr('string'),
