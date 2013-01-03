@@ -154,24 +154,26 @@ FLOW.questionControl = Ember.ArrayController.create({
 
   populateAllQuestions: function() {
     var sId;
-    sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-    this.set('content', FLOW.store.findQuery(FLOW.Question, {
-      surveyId: sId
-    }));
+    if(FLOW.selectedControl.get('selectedSurvey')) {
+      sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      this.set('content', FLOW.store.findQuery(FLOW.Question, {
+        surveyId: sId
+      }));
+    }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
-  setSGcontent: function (){
-    if (FLOW.selectedControl.get('selectedQuestionGroup')){
-      this.set('QGcontent',FLOW.store.filter(FLOW.Question,function(item){
-        return (item.get('questionGroupId') == FLOW.selectedControl.selectedQuestionGroup.get('keyId'));
+  setSGcontent: function() {
+    if(FLOW.selectedControl.get('selectedQuestionGroup')) {
+      this.set('QGcontent', FLOW.store.filter(FLOW.Question, function(item) {
+        return(item.get('questionGroupId') == FLOW.selectedControl.selectedQuestionGroup.get('keyId'));
       }));
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
 
-  setOPTIONcontent: function (){
-    if (FLOW.selectedControl.get('selectedSurvey')){
-      this.set('OPTIONcontent',FLOW.store.filter(FLOW.Question,function(item){
-        return (item.get('type') == 'OPTION');
+  setOPTIONcontent: function() {
+    if(FLOW.selectedControl.get('selectedSurvey')) {
+      this.set('OPTIONcontent', FLOW.store.filter(FLOW.Question, function(item) {
+        return(item.get('type') == 'OPTION');
       }));
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
@@ -181,8 +183,8 @@ FLOW.questionControl = Ember.ArrayController.create({
     var QuestionList, qIndex;
     QuestionList = this.get('content');
     qIndex = QuestionList.indexOf(FLOW.selectedControl.get('selectedQuestion'));
-    this.set('earlierOptionQuestions',FLOW.store.filter(FLOW.Question,function(item){
-      return (qIndex > QuestionList.indexOf(item)) && (item.get('type') == 'OPTION');
+    this.set('earlierOptionQuestions', FLOW.store.filter(FLOW.Question, function(item) {
+      return(qIndex > QuestionList.indexOf(item)) && (item.get('type') == 'OPTION');
     }));
   }.observes('FLOW.selectedControl.selectedQuestion'),
 
