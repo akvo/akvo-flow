@@ -36,6 +36,7 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.metric.dao.MetricDao;
+import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.Metric;
 
 @Controller
@@ -44,6 +45,9 @@ public class MetricRestService {
 
 	@Inject
 	private MetricDao metricDao;
+	
+	@Inject
+	private SurveyMetricMappingDao surveyMetricMappingDao;
 
 	// TODO put in meta information?
 	// list all metrics
@@ -98,6 +102,9 @@ public class MetricRestService {
 		if (s != null) {
 			// delete metric group
 			metricDao.delete(s);
+			
+			// delete associated surveyMetricMappings
+			surveyMetricMappingDao.deleteMetricMappingByMetric(id);
 			statusDto.setStatus("ok");
 		}
 		response.put("meta", statusDto);

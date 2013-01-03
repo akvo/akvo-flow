@@ -37,6 +37,8 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
+import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
+import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.domain.Question;
@@ -50,6 +52,9 @@ public class QuestionRestService {
 
 	@Inject
 	private QuestionOptionDao questionOptionDao;
+
+	@Inject
+	private SurveyMetricMappingDao surveyMetricMappingDao;
 
 	// TODO put in dependencies
 	// list all questions
@@ -105,7 +110,8 @@ public class QuestionRestService {
 				// include if we are requesting questions in a survey, with non
 				// of the other parameters set
 				if (surveyId != null
-						&& ("".equals(includeNumber) && "".equals(includeOption)))
+						&& ("".equals(includeNumber) && ""
+								.equals(includeOption)))
 					includeElement = true;
 
 				// include if we request options, and the present element is an
@@ -137,7 +143,6 @@ public class QuestionRestService {
 	}
 
 	// find a single question by the questionId
-	// TODO put in dependencies
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
 	public Map<String, QuestionDto> findQuestion(@PathVariable("id") Long id) {
@@ -156,8 +161,6 @@ public class QuestionRestService {
 	}
 
 	// delete question by id
-	// TODO delete question options
-	// TODO delete metricmappings
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
 	public Map<String, RestStatusDto> deleteQuestionById(
@@ -176,8 +179,11 @@ public class QuestionRestService {
 				Integer order = q.getOrder();
 				// first try delete, to see if it is allowed
 				questionDao.delete(q);
-				// TODO delete options
 
+				// if successful, we can delete the options and metric mappings
+				// as well
+				questionOptionDao.deleteOptionsForQuestion(id);
+				surveyMetricMappingDao.deleteMetricMapping(id);
 				List<Question> questions = questionDao
 						.listQuestionsInOrderForGroup(questionGroupId);
 				if (questions != null) {
@@ -199,7 +205,6 @@ public class QuestionRestService {
 	}
 
 	// update existing question
-	// TODO put in dependencies
 	// TODO put in metrics
 	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
@@ -235,9 +240,20 @@ public class QuestionRestService {
 
 					questionOptionDao.saveOptionInStringByQuestion(keyId,
 							questionDto.getOptionList());
-
+					
+					if (questionDto.getMetricId() != null){
+						// delete existing mappings
+						surveyMetricMappingDao.deleteMetricMapping(keyId);	
+						
+						// create a new mapping
+						SurveyMetricMapping newMapping = new SurveyMetricMapping();
+						newMapping.setMetricId(questionDto.getMetricId());
+						newMapping.setQuestionGroupId(questionDto.getQuestionGroupId());
+						newMapping.setSurveyId(questionDto.getSurveyId());
+						newMapping.setSurveyQuestionId(keyId);
+						surveyMetricMappingDao.save(newMapping);
+					}
 					q = questionDao.save(q);
-					// TODO save options list
 
 					// if the original order is different from the current
 					// number in the order field interpret the number as
@@ -297,8 +313,6 @@ public class QuestionRestService {
 	}
 
 	// create new question
-	// TODO put in dependencies
-	// TODO put in metrics
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@ResponseBody
 	public Map<String, Object> saveNewQuestion(
