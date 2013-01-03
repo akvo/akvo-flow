@@ -745,6 +745,7 @@
     <url-pattern>/_ah/spi/*</url-pattern>
   </servlet-mapping> -->
 
+  <!--
   <servlet>
     <servlet-name>SystemServiceServlet</servlet-name>
     <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
@@ -758,5 +759,5 @@
     <servlet-name>SystemServiceServlet</servlet-name>
     <url-pattern>/_ah/spi/*</url-pattern>
   </servlet-mapping>
-
+	-->
 </web-app>

@@ -42,6 +42,10 @@ input 'app' do
   match 'dashboard.html' do
     copy '../dashboard15.html'
   end
+  
+  match 'dashboard.html' do
+    copy 'dashboard.html'
+  end
 
   match 'js/lib/**/*.js' do
     filter LoaderFilter,

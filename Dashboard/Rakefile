@@ -20,6 +20,7 @@ task :clean do
   system "rm -rf assets/js/vendor"
 end
 
+# Old build commands
 desc "Build #{APPNAME}"
 task :build => :clean do
   pipeline.invoke
@@ -33,6 +34,18 @@ desc "Watch for changes"
 task :watch do
   system "bundle exec guard start"
 end
+
+# New build commands
+desc "Construct #{APPNAME}"
+task :make => :clean do
+  pipeline.invoke
+
+  system 'rm -rf ../GAE/war/flow15'
+  system 'cp -rf ./assets/flow15 ../GAE/war/flow15'
+  system 'cp ../GAE/war/flow15/dashboard.html ../GAE/war/dashboard.html'
+end
+
+# Unused commands
 
 desc "Run tests with PhantomJS"
 task :test => :build do

@@ -2513,7 +2513,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 ******************************************************************************/
 #flowMap {
 	float: left;
-	width: 75%;
+	/*width: 75%;*/
+	width: 99.25%;
 	height: 600px;
 	margin: 0 0 0 0;
 }
@@ -2522,7 +2523,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 	border-left: 2px solid rgb(214,214,214);
 	position: relative;
 	float: right;
-	width: 24.5%;
+	/*width: 24.5%;*/
+	width: 0.25%;
 	padding: 5px 0.25% 0px 0.25%;
 	height: 595px;
 	background: rgb(241,241,241);

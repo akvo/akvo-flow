@@ -1,3 +1,4 @@
+
 /**
   View that handles map page.
   Definition:
@@ -67,8 +68,11 @@ FLOW.NavMapsView = Ember.View.extend({
     var details, imageURL, stringVal;
 
     details = FLOW.placemarkDetailControl.get('content');
+    console.log(Ember.empty(details));
 
-    if((typeof details !== 'undefined') && (details !== null) && (details.get('isLoaded') === true)) {
+    // if((typeof details !== 'undefined') && (details !== null) && (details.get('isLoaded') === true)) {
+    if( (Ember.none(details) === false) && (Ember.empty(details) === false) && (details.get('isLoaded') === true) ) {
+      window.showMapDetails();
       this.set('showDetailsBool', true);
       details.forEach(function(item) {
         stringVal = item.get('stringValue');
@@ -81,6 +85,8 @@ FLOW.NavMapsView = Ember.View.extend({
           FLOW.placemarkDetailControl.set('selectedPointCode', verticalBars[3]);
         }
       }, this);
+    } else {
+      hideMapDetails();
     }
   }.observes('FLOW.placemarkDetailControl.content.isLoaded'),
 
