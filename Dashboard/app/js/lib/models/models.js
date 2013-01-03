@@ -310,3 +310,12 @@ FLOW.Metric = FLOW.BaseModel.extend({
   group: DS.attr('string'),
   valueType: DS.attr('string')
 });
+
+FLOW.Message = FLOW.BaseModel.extend({
+  objectId: DS.attr('number'),
+  lastUpdateDateTime: DS.attr('date'),
+  userName: DS.attr('string'),
+  objectTitle: DS.attr('string'),
+  actionAbout: DS.attr('string'),
+  shortMessage: DS.attr('string')
+});
