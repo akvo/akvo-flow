@@ -37,7 +37,7 @@ class HandlebarsFilter < Filter
   end
 end
 
-output 'assets/flow15'
+output '../GAE/war/flow15'
 input 'app' do
   match 'dashboard.html' do
     copy '../dashboard15.html'

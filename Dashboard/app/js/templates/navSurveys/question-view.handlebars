@@ -12,7 +12,7 @@
       optionLabelPath="content.name" 
       optionValuePath="content.keyId" 
       selectionBinding="view.attribute" 
-      prompt="Select attribute"}} </label>
+      prompt="Select attribute"}} </label> <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute">add attribute</a>
       {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
 
     <label>Question type: {{view Ember.Select 
@@ -36,12 +36,13 @@
     {{/if}} 
      {{#if view.dependentFlag}}
     {{#if FLOW.selectedControl.dependentQuestion}}
-      Answer of dependent question (select one):<br>
+     <div class="qDependency">Answer of dependent question (select one):</div>
       {{#each FLOW.optionListControl.content}}
-        {{view Ember.Checkbox checkedBinding="isSelected"}}{{value}}<br>
+      {{view Em.RadioButton title=this.value option=this.value group="options" checked=this.isSelected valueBinding="FLOW.selectedControl.radioOptions"}} 
       {{/each}}
       {{/if}}
   {{/if}}
+
     <!-- Question specific material --> 
     {{#if view.amOptionType}}
       <h1 class="answerNbr">{{t _option_details}}: </h1>
@@ -60,6 +61,36 @@
       <label>{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
 
     {{/if}} 
+
+  
+<!-- add attribute dialog-->
+    <div {{bindAttr class="view.showAddAttributeDialogBool:display :overlay"}}>
+      <div class="blanket"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog">
+          <h2>Add attribute</h2>
+          <p class="dialogMsg">Please provide a name, an optional group, and a value type for the attribute</p>
+          <br/>
+         <label for="newAttributeName">Attribute name:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
+         <label for="newAttributeGroup">Group:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
+          <label>Value type:</label>
+             {{view Ember.Select 
+            contentBinding="FLOW.attributeTypeControl.content" 
+            selectionBinding="view.newAttributeType" 
+            optionLabelPath="content.label" 
+            optionValuePath="content.value" 
+            prompt="Select value type"}} 
+        
+          <div class="buttons menuCentre"> 
+            <ul>  
+               <li><a {{action "doAddAttribute" target="this"}} class="ok smallBtn">SAVE</a></li>
+              <li><a {{action "cancelAddAttribute" target="this"}}} class="cancel">CANCEL</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
 
   
     <!-- End question specific material -->
@@ -107,3 +138,6 @@
       {{/if}}  
     {{/if}} 
   </div>
+
+
+ 
