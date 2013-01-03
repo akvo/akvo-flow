@@ -18,11 +18,11 @@
 			</div>
 			<div class="dataCollectedDate">
             <label class="collectedFrom"> Collected from:
-                {{view Ember.TextField valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="Collected From" size=30}} 
+                {{view FLOW.DateField valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="Collected From" size=30}} 
             </label> 
 
             <label class="collectedTo"> To:
-                {{view Ember.TextField valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="To" size=30}} 
+                {{view Ember.DateField valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="To" size=30}} 
             </label>
 			</div>
 			<div class="dataDeviceId">

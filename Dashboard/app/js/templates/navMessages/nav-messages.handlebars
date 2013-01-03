@@ -3,7 +3,48 @@
 <div class="greyBg">
   <section id="" class="fullWidth messagesList"> 
   	
-    TODO: messages list
+    <!-- Messages TABLE-->
+    <table id="messageListTable" class="dataTable" >
+      <!-- TABLE HEADER-->
+      <thead>
+        <tr>
+           {{#view FLOW.ColumnView item="lastUpdateDateTime" type="message"}}
+                  <a {{action "sort" target="this"}} class="date">Date</a>
+           {{/view}}
+           {{#view FLOW.ColumnView item="actionAbout" type="message"}}
+                  <a {{action "sort" target="this"}} class="type">Type</a>
+           {{/view}}
+            {{#view FLOW.ColumnView item="objectTitle" type="message"}}
+                  <a {{action "sort" target="this"}} class="survey">Survey</a>
+           {{/view}}
+           {{#view FLOW.ColumnView item="shortMessage" type="message"}}
+                  <a {{action "sort" target="this"}} class="message">Message</a>
+           {{/view}}
+            {{#view FLOW.ColumnView item="userName" type="message"}}
+                  <a {{action "sort" target="this"}} class="user">User</a>
+           {{/view}}
+        </tr>
+      </thead>
+      <!-- TABLE BODY: MAIN CONTENT-->
+      <tbody>
+        {{#each mess in FLOW.messageControl}}
+          <tr>
+            <td class="date" style="text-align:left; padding:0 0 0 20px;">{{#with mess}}{{date1 lastUpdateDateTime}}{{/with}}</td>
+            <td class="actionAbout">{{unbound mess.actionAbout}}</td>
+              <td class="objectTitle">{{unbound mess.objectTitle}}</td>
+            <td class="message" style="text-align:left; padding:0 0 0 20px;">{{unbound mess.shortMessage}}</td>
+              <td class="userName">{{unbound mess.userName}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+      
+      <!-- TABLE FOOTER-->
+      <tfoot>
+        <tr>
+          <td colspan="7"><small>This is the footer.</small></td>
+        </tr>
+      </tfoot>
+    </table>
    
   </section>
 </div>

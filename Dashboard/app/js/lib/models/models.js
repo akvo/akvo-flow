@@ -313,7 +313,7 @@ FLOW.Metric = FLOW.BaseModel.extend({
 
 FLOW.Message = FLOW.BaseModel.extend({
   objectId: DS.attr('number'),
-  lastUpdateDateTime: DS.attr('date'),
+  lastUpdateDateTime: DS.attr('number'),
   userName: DS.attr('string'),
   objectTitle: DS.attr('string'),
   actionAbout: DS.attr('string'),

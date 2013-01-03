@@ -12,6 +12,7 @@ require('akvo-flow/controllers/device-controllers');
 require('akvo-flow/controllers/data-controllers');
 require('akvo-flow/controllers/reports-controllers');
 require('akvo-flow/controllers/maps-controllers');
+require('akvo-flow/controllers/messages-controllers');
 require('akvo-flow/controllers/user-controllers');
 
 FLOW.ApplicationController = Ember.Controller.extend({
