@@ -97,7 +97,8 @@ Ember.STRINGS_EN = {
   '_allow_decimal_point':'allow decimal point',
   '_allow_sign':'allow sign',
   '_Add_attribute':'Add new attribute',
-  '_include_in_map':'include in map'
+  '_include_in_map':'include in map',
+  '_messages':'messages'
 
 };
 

@@ -14,6 +14,7 @@ require('akvo-flow/views/surveys/question-answer-view');
 require('akvo-flow/views/reports/report-views');
 require('akvo-flow/views/reports/export-reports-views');
 require('akvo-flow/views/maps/map-views');
+require('akvo-flow/views/messages/message-view');
 require('akvo-flow/views/devices/devices-views');
 require('akvo-flow/views/users/user-view');
 
@@ -369,6 +370,11 @@ FLOW.rawDataImportApplet = Ember.View.extend({
 // users views
 FLOW.NavUsersView = Ember.View.extend({
   templateName: 'navUsers/nav-users'
+});
+
+// Messages views
+FLOW.NavMessagesView = Ember.View.extend({
+  templateName: 'navMessages/nav-messages'
 });
 
 // admin views

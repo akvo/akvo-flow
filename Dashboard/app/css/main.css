@@ -654,6 +654,13 @@ nav#topnav ul li.navHome a:hover {
 nav#topnav ul li.navHome.current a {
 	background: url(../images/topnavDashboards.png) center bottom no-repeat;
 }
+
+nav#topnav ul li.navMessages a {
+	background: url(../images/topnavDashboards.png) center -18px no-repeat;
+}
+nav#topnav ul li.navMessages.current a {
+	background: url(../images/topnavDashboards.png) center bottom no-repeat;
+}
 /***************** end addition MTW ************/
 
 

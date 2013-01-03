@@ -30,6 +30,9 @@ FLOW.Router = Ember.Router.extend({
     doNavUsers: function(router, context) {
       router.transitionTo('navUsers');
     },
+    doNavMessages: function(router, context) {
+      router.transitionTo('navMessages');
+    },
     doNavAdmin: function(router, context) {
       router.transitionTo('navAdmin');
     },
@@ -298,6 +301,16 @@ FLOW.Router = Ember.Router.extend({
         router.get('applicationController').connectOutlet('navUsers');
         router.set('navigationController.selected', 'navUsers');
         FLOW.userControl.populate();
+      }
+    }),
+
+    // ************************** MESSAGES ROUTER **********************************
+    navMessages: Ember.Route.extend({
+      route: '/users',
+      connectOutlets: function(router, context) {
+        router.get('applicationController').connectOutlet('navMessages');
+        router.set('navigationController.selected', 'navMessages');
+        FLOW.messageControl.populate();
       }
     }),
 
