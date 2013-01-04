@@ -66,6 +66,11 @@ public class SurveyRestService {
 				SurveyDto dto = new SurveyDto();
 				DtoMarshaller.copyToDto(s, dto);
 
+				// add surveyInstance Count
+				sis = sisDao.findBySurveyId(s.getKey().getId());
+				if (sis != null){
+					dto.setInstanceCount(sis.getCount());
+				}
 				// needed because of different names for description in survey
 				// and surveyDto
 				dto.setDescription(s.getDesc());
@@ -86,6 +91,7 @@ public class SurveyRestService {
 		final Map<String, List<SurveyDto>> response = new HashMap<String, List<SurveyDto>>();
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
 		List<Survey> surveys = null;
+		SurveyInstanceSummary sis = null;
 
 		if (surveyGroupId != null) {
 			surveys = surveyDao.listSurveysByGroup(surveyGroupId);
@@ -97,7 +103,13 @@ public class SurveyRestService {
 			for (Survey s : surveys) {
 				SurveyDto dto = new SurveyDto();
 				DtoMarshaller.copyToDto(s, dto);
-
+				
+				// add surveyInstance Count
+				sis = sisDao.findBySurveyId(s.getKey().getId());
+				if (sis != null){
+					dto.setInstanceCount(sis.getCount());
+				}
+				
 				// needed because of different names for description in survey
 				// and surveyDto
 				dto.setDescription(s.getDesc());
@@ -115,9 +127,18 @@ public class SurveyRestService {
 		final Map<String, SurveyDto> response = new HashMap<String, SurveyDto>();
 		Survey s = surveyDao.getByKey(id);
 		SurveyDto dto = null;
+		SurveyInstanceSummary sis = null;
+		
 		if (s != null) {
 			dto = new SurveyDto();
 			DtoMarshaller.copyToDto(s, dto);
+			// add surveyInstance Count
+			
+			sis = sisDao.findBySurveyId(s.getKey().getId());
+			if (sis != null){
+				dto.setInstanceCount(sis.getCount());
+			}
+			
 			// needed because of different names for description in survey and
 			// surveyDto
 			dto.setDescription(s.getDesc());
@@ -181,7 +202,7 @@ public class SurveyRestService {
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(surveyDto, s, new String[] {
 							"createdDateTime", "status", "sector", "version",
-							"lastUpdateDateTime", "description" });
+							"lastUpdateDateTime", "description", "instanceCount" });
 
 					s.setDesc(surveyDto.getDescription());
 
@@ -228,7 +249,7 @@ public class SurveyRestService {
 			// it is set in the Dao.
 			BeanUtils.copyProperties(surveyDto, s, new String[] {
 					"createdDateTime", "status", "sector", "version",
-					"lastUpdateDateTime", "displayName", "questionGroupList" });
+					"lastUpdateDateTime", "displayName", "questionGroupList", "instanceCount" });
 			if (surveyDto.getStatus() != null) {
 				s.setStatus(Survey.Status.valueOf(surveyDto.getStatus()));
 			}

@@ -65,7 +65,7 @@
               <li class="dateCreated"> <span>{{t created}}</span>
                 <time>{{#with survey}}{{date createdDateTime}}{{/with}}<time>
               </li>
-              <li class="responseNumber"><span>15</span>
+              <li class="responseNumber"><span>{{survey.instanceCount}}</span>
                 <p>{{t _responses}}</p>
               </li>
             </ul>
