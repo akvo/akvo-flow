@@ -162,7 +162,7 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
-  setSGcontent: function() {
+  setQGcontent: function() {
     if(FLOW.selectedControl.get('selectedQuestionGroup')) {
       this.set('QGcontent', FLOW.store.filter(FLOW.Question, function(item) {
         return(item.get('questionGroupId') == FLOW.selectedControl.selectedQuestionGroup.get('keyId'));
@@ -206,4 +206,8 @@ FLOW.optionListControl = Ember.ArrayController.create({
   content: []
   // changes:function(){return true;}.property('content.@each.isSelected'),
   // changed:function(){console.log('hier dan?');}.observes('this.changes')
+});
+
+FLOW.previewControl = Ember.ArrayController.create({
+  showPreviewPopup:false
 });

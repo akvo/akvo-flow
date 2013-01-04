@@ -2373,6 +2373,14 @@ nav.smallMenu ul li a.showQuestion:hover {
 	width: 96%;
 	border-color: rgb(235,235,235);
 }
+
+.previewQuestion input[type=text] {
+	margin: 5px 0 0 5px;
+	padding: 5px 1%;
+	width: 40%;
+	border-color: rgb(235,235,235);
+}
+
 .qDependency {
 	display:block;
 	margin:1em 0 0 1em;

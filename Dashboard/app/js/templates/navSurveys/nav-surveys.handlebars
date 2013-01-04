@@ -1,3 +1,15 @@
 <section id="main" class="surveySection floats-in" role="main">
   {{outlet}}
 </section>
+
+<div {{bindAttr class="FLOW.previewControl.showPreviewPopup:display :overlay"}}>
+  <div class="blanketWide"></div>
+  <div class="dialogWrap">
+     <div class="confirmDialog dialogWide">
+    <!-- the dialog contents -->
+    {{#if FLOW.previewControl.showPreviewPopup}}
+      {{view FLOW.PreviewView}}
+    {{/if}}
+  </div>
+  </div>
+</div>

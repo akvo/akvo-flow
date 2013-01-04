@@ -1,0 +1,12 @@
+<a {{action "closePreviewPopup" target="this"}} class="ok clodeDialog">close window</a>
+<h2>Survey preview</h2>
+
+{{#each QG in FLOW.questionGroupControl}}
+ <div class="questionGroupBlock">
+   <header> <span class="qtnGroupHead">{{t _group}} {{QG.order}}</span> <br/>
+     <h3 class="qtnGroupTitle">{{QG.code}}</h3><br/>
+     <div class="innerContent"> 
+       {{view FLOW.PreviewQuestionGroupView contentBinding="QG"}}
+     </div>
+ </div>    
+{{/each}}
