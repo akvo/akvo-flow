@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -46,6 +48,9 @@ public class SurveyRestService {
 
 	@Inject
 	private SurveyDAO surveyDao;
+	
+	@Inject
+	private SurveyInstanceSummaryDao sisDao;
 
 	// TODO put in meta information?
 	// list all surveys
@@ -54,6 +59,7 @@ public class SurveyRestService {
 	public Map<String, List<SurveyDto>> listSurveys() {
 		final Map<String, List<SurveyDto>> response = new HashMap<String, List<SurveyDto>>();
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
+		SurveyInstanceSummary sis = null;
 		List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
 		if (surveys != null) {
 			for (Survey s : surveys) {
@@ -122,6 +128,7 @@ public class SurveyRestService {
 	}
 
 	// delete survey by id
+	// TODO delete surveyInstances / summarizations?
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
 	public Map<String, RestStatusDto> deleteSurveyById(
