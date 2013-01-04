@@ -45,7 +45,10 @@
         </tr>
       </tfoot>
     </table>
-   
+     <ul class="prevNext">
+            <li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; previous</a> {{/if}}</li>
+        <li class="nextBtn">{{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>next &rsaquo;</a>{{/if}}</li>
+        </ul>
   </section>
 </div>
 

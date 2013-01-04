@@ -2,11 +2,22 @@ FLOW.messageControl = Ember.ArrayController.create({
   sortProperties: null,
   sortAscending: true,
   content: null,
+  sinceArray: [],
 
   populate: function() {
+    this.get('sinceArray').clear();
+    FLOW.metaControl.set('since', null);
+    // put null in as the first item
+    this.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
     this.set('content', FLOW.store.find(FLOW.Message));
     this.set('sortProperties', ['lastUpdateDateTime']);
-    this.set('sortAscending', true);
+    this.set('sortAscending', false);
+  },
+
+  doInstanceQuery: function(since) {
+    this.set('content', FLOW.store.findQuery(FLOW.Message, {
+      'since': since
+    }));
   },
 
   getSortInfo: function() {
