@@ -26,55 +26,64 @@ FLOW.Survey.FIXTURES = [{
     keyId: 1,
     code: 'Water point survey',
     name: 'Water point survey',
-    surveyGroupId: 1
+    surveyGroupId: 1,
+    instanceCount:62
 }, {
     id: 2,
     keyId: 2,
     code: 'Sanitation survey',
     name: 'Sanitation survey',
-    surveyGroupId: 1
+    surveyGroupId: 1,
+    instanceCount:1400
 }, {
     id: 3,
     keyId: 3,
     code: 'Baseline WASH',
     name: 'Baseline WASH',
-    surveyGroupId: 1
+    surveyGroupId: 1,
+    instanceCount:7
 }, {
     id: 4,
     keyId: 4,
     code: 'Akvo RSR update',
     name: 'Akvo RSR update',
-    surveyGroupId: 1
+    surveyGroupId: 1,
+    instanceCount:787
 }, {
     id: 5,
     keyId: 5,
     code: 'Akvo update',
     name: 'Akvo update',
-    surveyGroupId: 1
+    surveyGroupId: 1,
+    instanceCount:77
 }, {
     id: 6,
     keyId: 6,
     code: 'Loics survey',
     name: 'Loics survey',
-    surveyGroupId: 1
+    surveyGroupId: 1,
+    instanceCount:7
 }, {
     id: 7,
     keyId: 7,
     code: 'Farmer survey',
     name: 'Farmer survey',
-    surveyGroupId: 1
+    surveyGroupId: 1,
+    instanceCount:723
 }, {
     id: 8,
     keyId: 8,
     code: 'Rabbit',
     name: 'Rabbit',
-    surveyGroupId: 1
+    surveyGroupId: 1,
+    instanceCount:3
 }, {
     id: 9,
     keyId: 9,
     code: 'Rabbit II',
     name: 'Rabbit II',
-    surveyGroupId: 1
+    surveyGroupId: 1,
+    instanceCount:20000
 }];
 
 
@@ -1193,4 +1202,54 @@ FLOW.SurveyQuestionSummary.FIXTURES = [{
     keyId: 5,
     response:'Grapes',
     count:'100'
+}];
+
+FLOW.Message.FIXTURES = [{
+    id: 1,
+    keyId: 1,
+    lastUpdateDateTime:1352149195000,
+    userName:"m.t.westra@akvo.org",
+    shortMessage:"Published. Please check: http://flowdemo.s3.amazonaws.com/surveys/1417001.xml",
+    objectTitle:"Mars surveys/Philly Demo",
+    actionAbout:"surveyChangeComplete"
+}, {
+    id: 2,
+    keyId: 2,
+    lastUpdateDateTime:1352149195000,
+    userName:"m.t.westra@akvo.org",
+    shortMessage:"Published. Please check: http://flowdemo.s3.amazonaws.com/surveys/1417001.xml",
+    objectTitle:"Mars surveys/Philly Demo",
+     actionAbout:"surveyChangeComplete"
+}, {
+    id: 3,
+    keyId: 3,
+    lastUpdateDateTime:1352149195000,
+    userName:"m.t.westra@akvo.org",
+    shortMessage:"Published. Please check: http://flowdemo.s3.amazonaws.com/surveys/1417001.xml",
+    objectTitle:"Mars surveys/Philly Demo",
+     actionAbout:"surveyChangeComplete"
+}, {
+    id: 4,
+    keyId: 4,
+    lastUpdateDateTime:1352149195000,
+    userName:"m.t.westra@akvo.org",
+    shortMessage:"Published. Please check: http://flowdemo.s3.amazonaws.com/surveys/1417001.xml",
+    objectTitle:"Mars surveys/Philly Demo",
+     actionAbout:"surveyChangeComplete"
+}, {
+    id: 5,
+    keyId: 5,
+    lastUpdateDateTime:1352149195000,
+    userName:"m.t.westra@akvo.org",
+    shortMessage:"Published. Please check: http://flowdemo.s3.amazonaws.com/surveys/1417001.xml",
+    objectTitle:"Mars surveys/Philly Demo",
+     actionAbout:"surveyChangeComplete"
+},{
+    id: 5,
+    keyId: 5,
+    lastUpdateDateTime:1352149195000,
+    userName:"m.t.westra@akvo.org",
+    shortMessage:"Published. Please check: http://flowdemo.s3.amazonaws.com/surveys/1417001.xml",
+    objectTitle:"Mars surveys/Philly Demo",
+     actionAbout:"surveyChangeComplete"
 }];
