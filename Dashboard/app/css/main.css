@@ -144,7 +144,7 @@ a img {
 }
 .emphasized span {
 	position: absolute;
-	left: 155px;
+	left: 40%;
 	color: rgb(222, 137, 41);
 	font-weight: bold;
 }
@@ -164,28 +164,41 @@ pre {
 	padding: 0.5em 1em;
 	max-width: 15%;
 	background: rgb(255,255,165);
-	-moz-box-shadow: 0 0 2px rgb(0,0,0);
 	-webkit-box-shadow: 0 0 2px rgb(0,0,0);
-	-o-box-shadow: 0 0 2px rgb(0,0,0);
+	-moz-box-shadow: 0 0 2px rgb(0,0,0);
 	box-shadow: 0 0 2px rgb(0,0,0);
 	font-size: 1.5em;
-	line-height: 1.3em;
 	font-family: Georgia, "Times New Roman", Times, serif;
+	line-height: 1.3em;
+	-o-box-shadow: 0 0 2px rgb(0,0,0);
 }
 .isLoading, .isSaving {
 	position: fixed;
-	font-size: 1.2em;
-	font-weight: bold;
-	color: rgb(252,159,0);
 	top: 80px;
 	left: 46%;
+	z-index: 999999;
 	padding: 1px 0 0 20px;
 	background: url(../images/loader.gif) left center no-repeat;
-	z-index: 999999;
+	color: rgb(252,159,0);
+	font-weight: bold;
+	font-size: 1.2em;
 }
 .greyish {
 	background: rgb(200,214,214);
 }
+.whiteBgSeparator {
+	display:inline-block;
+	overflow:auto;
+	margin:1em 1% 0.5em 1%;
+	padding:1em 1%;
+	width:98%;
+	background:rgb(255,255,255);
+	-webkit-box-shadow:0 0 2px rgb(230,230,230);
+	-moz-box-shadow:0 0 2px rgb(230,230,230);
+	box-shadow:0 0 2px rgb(230,230,230);
+	-o-box-shadow:0 0 2px rgb(230,230,230);
+	}
+
 /* links 
 ---------------------------------------------------------------*/
 
@@ -303,38 +316,38 @@ a.AddBtn:hover {
 	margin: -5px 1.5em 20px auto;
 }
 .clodeDialog {
-	display: block;
 	position: absolute;
 	top: 10px;
 	right: 10px;
+	display: block;
 	width: 20px;
 	height: 16px;
-	text-indent: -9999px;
-	background: url(../images/closeDialog.png) center top no-repeat;
-	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
-	-o-border-radius: 6px;
+	-moz-border-radius: 6px;
 	border-radius: 6px;
+	background: url(../images/closeDialog.png) center top no-repeat;
+	text-indent: -9999px;
+	-o-border-radius: 6px;
 }
 .clodeDialog:hover {
 	background: url(../images/closeDialog.png) center bottom no-repeat;
 }
 .editAnswerMenu {
-	width: 100%;
 	position: relative;
 	margin: 10px auto;
+	width: 100%;
 }
 .editAnswerMenu ul {
-	width: 100%;
 	position: relative;
+	width: 100%;
 	height: 40px;
 }
 .prevNext {
+	position: relative;
 	display: block;
 	margin: 0 auto;
-	width: 96%;
-	position: relative;
 	padding: 1em 1%;
+	width: 96%;
 }
 .editAnswerMenu ul li {
 	display: inline;
@@ -351,21 +364,15 @@ a.AddBtn:hover {
 	right: 0;
 }
 .prevBtn a {
-	display: inline-block;
-	height: 11px;/*	background: url(../images/prevBtn.png) left top no-repeat;
-	padding: 5px 0 0 15px;
-*/}
-.prevBtn:hover a {
-	color: rgb(58,58,58);/*	background: url(../images/prevBtn.png) left bottom no-repeat;
-*/}
+	display: inline-block;/* padding: 5px 0 0 15px; */
+	height: 11px;/* background: url(../images/prevBtn.png) left top no-repeat; */}
+.prevBtn:hover a {/* background: url(../images/prevBtn.png) left bottom no-repeat; */
+	color: rgb(58,58,58);}
 .nextBtn a {
-	display: inline-block;
-	height: 11px;/*	background: url(../images/nextBtn.png) right top no-repeat;
-	padding: 5px 15px 0 0;
-*/}
-.nextBtn:hover a {
-	color: rgb(58,58,58);/*	background: url(../images/nextBtn.png) right bottom no-repeat;
-*/}
+	display: inline-block;/* padding: 5px 15px 0 0; */
+	height: 11px;/* background: url(../images/nextBtn.png) right top no-repeat; */}
+.nextBtn:hover a {/* background: url(../images/nextBtn.png) right bottom no-repeat; */
+	color: rgb(58,58,58);}
 .deleteBtn {
 	position: absolute;
 	top: 5px;
@@ -430,17 +437,17 @@ a.AddBtn:hover {
 }
 .dialog {
 	position: absolute;
-	background: rgb(255,255,255);
 	top: 20%;
 	left: 35%;
 	display: block;
 	padding: 1em 2em;
-	width: 25%;
 	min-width: 500px;
+	width: 25%;
 	border: thin solid rgb(153,153,153);
 	-webkit-border-radius: 6px;
 	-moz-border-radius: 6px;
 	border-radius: 6px;
+	background: rgb(255,255,255);
 	-o-border-radius: 6px;
 }
 /* MTW addition */
@@ -449,12 +456,12 @@ a.AddBtn:hover {
 	top: 15%;
 	left: 20%;
 	display: block;
-	padding: 1em 2em;
-	width: 60%;
-	min-width: 500px;
-	border: thin solid rgb(153,153,153);
-	max-height: 500px;
 	overflow-y: scroll;
+	padding: 1em 2em;
+	min-width: 500px;
+	max-height: 500px;
+	width: 60%;
+	border: thin solid rgb(153,153,153);
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
@@ -474,12 +481,12 @@ a.AddBtn:hover {
 	display: block;
 }
 .dialogWrap select {
-	width: 95%;
 	margin: 5px auto;
+	width: 95%;
 }
 .dialogWrap input {
-	width: 95%;
 	margin: 5px auto;
+	width: 95%;
 }
 label[for=newDeviceGroupName] {
 	margin: 10px 0 0 0;
@@ -543,7 +550,9 @@ header.top > div {
 	width: 100%;
 }
 .mainContent {
-	padding: 0 0 0 10px;
+	margin:0 auto;
+	padding: 0 0 0 0;
+	width:98%;
 }
 .whiteBg {
 	position: relative;
@@ -643,8 +652,7 @@ nav#topnav ul li a {
 }
 nav#topnav ul li a:hover, nav#topnav ul li.current a {
 	color: rgb(246, 160, 26);
-}
-/*************** addition MTW **************/
+}/*************** addition MTW **************/
 nav#topnav ul li.navHome a {
 	background: url(../images/topnavDashboards.png) center -18px no-repeat;
 }
@@ -662,7 +670,6 @@ nav#topnav ul li.navMessages.current a {
 	background: url(../images/topnavDashboards.png) center bottom no-repeat;
 }
 /***************** end addition MTW ************/
-
 
 
 nav#topnav ul li.navSurveys a {
@@ -915,37 +922,37 @@ tfoot tr {
 	margin: 0 0.5em 0 0;
 }
 .dataTabMenu ul li a {
-	color: rgb(0, 123, 182);
-	background: transparent;
 	display: block;
 	padding: 0.5em 1em;
-	font-size: 1.1em;
-	-moz-border-radius: 0;
 	-webkit-border-radius: 0;
-	-o-border-radius: 0;
+	-moz-border-radius: 0;
 	border-radius: 0;
-	-moz-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
+	background: transparent;
+	color: rgb(0, 123, 182);
+	font-size: 1.1em;
 	-webkit-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
+	-moz-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
 	-o-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
 	transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
+	-o-border-radius: 0;
 }
 
 .dataTabMenu ul li a:hover {
-	color: rgb(255,255,255);
-	background: rgb(74, 177, 207);
-	-moz-border-radius: 2px;
 	-webkit-border-radius: 2px;
-	-o-border-radius: 2px;
+	-moz-border-radius: 2px;
 	border-radius: 2px;
+	background: rgb(74, 177, 207);
+	color: rgb(255,255,255);
+	-o-border-radius: 2px;
 }
 
 .dataTabMenu ul li a:hover.disabled,.dataTabMenu ul li a.disabled {
-	color: grey;
-	background:transparent;
-	-moz-border-radius: 0;
 	-webkit-border-radius: 0;
-	-o-border-radius: 0;
+	-moz-border-radius: 0;
 	border-radius: 0;
+	background:transparent;
+	color: grey;
+	-o-border-radius: 0;
 }
 
 
@@ -1301,21 +1308,14 @@ th.action {
 }
 #groupBar h2, #newSurveyInfo h2 {
 	margin: 15px 0 0 15px;
-	color: rgb(246, 160, 26);/*	color: rgb(5, 5, 5);
-	color: rgba(5, 5, 5, 1);
-	text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
-	font-size: 1.8em;
-	-moz-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
-	-webkit-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
-	-o-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0);
-*/
+	color: rgb(246, 160, 26);/* color: rgb(5, 5, 5); *//* color: rgba(5, 5, 5, 1); *//* text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0); *//* font-size: 1.8em; *//* -moz-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0); *//* -webkit-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0); *//* -o-text-shadow: 0px 1px 0px rgb(125, 125, 125), 0px -1px 0px rgb(0,0,0); */
 }
 .no-textshadow #groupBar h2, .no-textshadow #newSurveyInfo h2 {
 	color: rgb(125, 125, 125);
 }
 nav.menuGroupWrap {
-	height: 361px;
 	overflow-y: hidden;
+	height: 361px;
 	background: rgb(58,58,58);
 
 	}
@@ -1363,35 +1363,35 @@ nav.menuGroupWrap ul.menuGroup li.current a:hover, nav.menuGroupWrap ul.menuGrou
 }
 .scrollWrap {
 	display:block;
+	margin:4px auto;
 	width:100%;
 	height:15px;
-	margin:4px auto;
 	}
 a.scrollUp {
 	display: block;
+	margin: 0 auto 0 auto;
 	width: 50%;
 	height: 15px;
-	text-indent: -9999px;
-	text-align: center;
-	background: rgb(31,31,31) url(../images/scrollUp.png) center center no-repeat;
-	margin: 0 auto 0 auto;
 	border-radius: 5px 5px 0 0;
-	-moz-transition: background 0.4s ease-in;
+	background: rgb(31,31,31) url(../images/scrollUp.png) center center no-repeat;
+	text-align: center;
+	text-indent: -9999px;
 	-webkit-transition: background 0.4s ease-in;
+	-moz-transition: background 0.4s ease-in;
 	-o-transition: background 0.4s ease-in;
 	transition: background 0.4s ease-in;
 }
 a.scrollDown {
 	display: block;
+	margin: 0 auto 0 auto;
 	width: 50%;
 	height: 15px;
-	text-indent: -9999px;
-	text-align: center;
-	background: rgb(31,31,31) url(../images/scrollDown.png) center center no-repeat;
-	margin: 0 auto 0 auto;
 	border-radius: 0 0 5px 5px;
-	-moz-transition: background 0.4s ease-in;
+	background: rgb(31,31,31) url(../images/scrollDown.png) center center no-repeat;
+	text-align: center;
+	text-indent: -9999px;
 	-webkit-transition: background 0.4s ease-in;
+	-moz-transition: background 0.4s ease-in;
 	-o-transition: background 0.4s ease-in;
 	transition: background 0.4s ease-in;
 }
@@ -1462,15 +1462,15 @@ a.addGroup, a.addSurvey, a.stepBack, a.editGroupName, a.deleteGroup {
 	display: block;
 	padding: 5px 0 5px 19px;
 	height: 8px;
-	font-size: 1em;
 	text-transform: uppercase;
+	font-size: 1em;
 }
 a.editGroupName {
 	margin: 0 10px 0 20px;
 }
 a.addGroup {
-	padding: 6px 0 4px 19px;
 	margin: 0 0 15px 15px;
+	padding: 6px 0 4px 19px;
 }
 a.stepBack {
 	margin: 5px 5px 0 0;
@@ -1554,9 +1554,9 @@ li.aSurvey h2 {
 	text-transform: capitalize;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	letter-spacing: -0.02em;
 	font-size: 1.6em;
 	font-family: Arial, Helvetica, sans-serif;
-	letter-spacing: -0.02em;
 }
 li.aSurvey:hover h2 {
 	color: rgb(255,255,255);
@@ -1810,10 +1810,10 @@ ul.surveyInfo li.responseNumber p {
 	background: rgb(255,255,255);
 }
 .newSurveyInfoUl {
-	background: rgb(23,23,23);
 	margin: 20px auto 0 auto;
 	padding: 15px 0%;
 	width: 96%;
+	background: rgb(23,23,23);
 }
 .newSurveyInfoUl li {
 	position: relative;
@@ -1883,25 +1883,6 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 	background: url(../images/publishNewSurvey.png) left bottom no-repeat;
 }
 /*****
-		NEw Survey Settings
-******---------------------------------------------------------------------------------*/
-#surveySetting p {
-	position: relative;
-	width: 90%;
-}
-#surveySetting div#notifications {
-	margin: 10px 0 0 0;
-}
-#surveySetting div#notifications h3 {
-	font-size: 1.3em;
-}
-#surveySetting form input[type="checkbox"] {
-	margin: 15px 0 0 5px;
-}
-#surveySetting select#surveyLang {
-	margin: 0;
-}
-/*****
 		A New Question Form
 ******---------------------------------------------------------------------------------*/
 
@@ -1955,6 +1936,20 @@ div.questionGroupBlock {
 	border-bottom: thin solid rgb(230,230,230);
 	background: rgb(240,240,240);
 }
+.surveySettingsBlock {
+	overflow:auto;
+	margin:0 auto;
+	padding:1em 0.25%;
+	width:98%;
+	border-top: thin solid rgb(230,230,230);
+	border-bottom: thin solid rgb(230,230,230);
+	background: rgb(240,240,240);
+	}
+.surveySettingsBlock .helpIcon {
+	position:absolute;
+	left:44%;
+	margin:-4px 0 0 0;
+	}
 .aQuestionSet > div > div.ember-view > div.questionGroupBlock {
 	margin: 15px 0;
 	border-top: thin solid rgb(230,230,230);
@@ -1970,15 +1965,15 @@ span.qtnGroupHead {
 	width: 100%;
 	color: rgb(246, 160, 26);
 	font-style: italic;
-	font-family: Georgia, "Times New Roman", Times, serif;
 	font-size: 1.1em;
+	font-family: Georgia, "Times New Roman", Times, serif;
 }
 .aQuestionSet header h1.qtnGroupTitle {
 	display: inline-block;
+	overflow: hidden;
 	width: 36%;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	overflow: hidden;
 }
 .aQuestionSet header h1.qtnGroupTitle a {
 	color: rgb(38, 8, 89);
@@ -1991,13 +1986,13 @@ span.qtnGroupHead {
 	background: url(../images/editTinyIcon.png) left center no-repeat;
 }
 .aQuestionSet header input {
+	margin: 5px 0;
 	width: 25%;
 	border: thin solid rgb(224,224,224);
-	margin: 5px 0;
-	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
-	-o-border-radius: 3px;
+	-moz-border-radius: 3px;
 	border-radius: 3px;
+	-o-border-radius: 3px;
 }
 .aQuestionSet header input + a.smallBtn {
 	margin: 0 5px 0 0;
@@ -2033,15 +2028,15 @@ span.qtnGroupHead {
 }
 nav.groupActionMenu {
 	display: block;
-	padding: 1.5em 0;
 	margin: 5px auto;
+	padding: 1.5em 0;
 	width: 100%;
 	background: rgb(255, 251, 248);
 }
 nav.groupActionMenu ul {
+	position: relative;
 	display: block;
 	margin: 0 auto;
-	position: relative;
 	width: 19%;
 	text-align: center;
 }
@@ -2065,39 +2060,39 @@ nav.groupActionMenu a:hover {
 	color: rgb(58,58,58);
 }
 nav.groupActionMenu.insertMenu ul {
+	position: relative;
 	display: block;
 	margin: 0 0 0 1%;
-	position: relative;
 	text-align: left;
 }
 nav.groupActionMenu.insertMenu a {
 	display: inline-block;
 	padding: 5px 5px 5px 19px;
 	height: 8px;
-	font-size: 1em;
-	text-transform: uppercase;
-	color: rgb(246, 160, 26);
-	background: transparent url(../images/insertGroupIcn.png) left top no-repeat;
-	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
-	-o-border-radius: 3px;
+	-moz-border-radius: 3px;
 	border-radius: 3px;
+	background: transparent url(../images/insertGroupIcn.png) left top no-repeat;
+	color: rgb(246, 160, 26);
+	text-transform: uppercase;
+	font-size: 1em;
+	-o-border-radius: 3px;
 }
 nav.groupActionMenu.insertMenu a:hover {
-	color: rgb(255,255,255);
 	background: rgb(58,58,58) url(../images/insertGroupIcn.png) left bottom no-repeat;
+	color: rgb(255,255,255);
 }
 nav.questionActionMenu {
 	display: block;
-	padding: 1.5em 0;
 	margin: 10px auto;
+	padding: 1.5em 0;
 	width: 100%;
 	background: rgb(211,220,222);
 }
 nav.questionActionMenu ul {
+	position: relative;
 	display: block;
 	margin: 0 auto;
-	position: relative;
 	width: 26%;
 	text-align: center;
 }
@@ -2162,8 +2157,8 @@ nav.questionActionMenu a:hover {
 	text-transform: uppercase;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
-	background: url(../images/shownCollapse.png) left top no-repeat;
 	padding: 5px 5px 5px 15px;
+	background: url(../images/shownCollapse.png) left top no-repeat;
 	text-align: left;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
@@ -2202,31 +2197,31 @@ nav.questionActionMenu a:hover {
 	position: absolute;
 	top: 1px;
 	right: 1px;
+	margin: 0;
 	padding: 0.5em 0.1em 0.5em 0.5em;
 	border-radius: 0 0 0 5px;
 	background: rgb(230,230,230); /* Old browsers */
-	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
-	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlNWU1ZTUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
 	background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(229,229,229,1))); /* Chrome,Safari4+ */
 	background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
 	background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* Opera 11.10+ */
 	background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* IE10+ */
 	background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(229,229,229,1) 100%); /* W3C */
- filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0 ); /* IE6-8 */
 	box-shadow: -1px 1px 0 rgb(222,222,222);
-	margin: 0;
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0 ); /* IE6-8 */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlNWU1ZTUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
 }
 .innerContent nav {
 	display: block;
-	padding: 0.5em 0;
 	margin: 0 auto;
+	padding: 0.5em 0;
 	background: transparent;
 }
 .innerContent nav ul {
+	position: relative;
 	display: block;
 	margin: 0 auto;
-	position: relative;
 	width: 100%;
 	text-align: center;
 }
@@ -2252,8 +2247,8 @@ nav.questionActionMenu a:hover {
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	text-align: right;
 	background: transparent;
+	text-align: right;
 	transition: background 0.4s ease-in;
 }
 .innerContent nav.smallMenu ul li:first-child {
@@ -2300,13 +2295,53 @@ nav.smallMenu ul li a.copyQuestion:hover {
 nav.smallMenu ul li a.showQuestion:hover {
 	background: url(../images/showQuestion.png) left bottom no-repeat;
 }
+/*****
+		NEw Survey Settings
+******---------------------------------------------------------------------------------*/
+.innerContent {
+	width:100%;
+	}
+.innerContent dl {
+	position:relative;
+	margin: 0 0 0 1%;
+	width:99%;
+	}
+.innerContent h3 {
+	margin:2em 0 0.5em 1em;
+	color: rgb(39,94,110);
+	font-size:1em;
+	}
+.innerContent dt {
+	display:table-cell;
+	float:left;
+	padding:0.5em 0;
+	width:35%;
+	color: rgb(39,94,110);
+	}
+.innerContent dd {
+	display:table-cell;
+	float:right;
+	padding:0.5em 0;
+	width:65%;
+	font-weight:bold;
+	}
+
 .innerContent h1 {
 	display: block;
-	margin: 20px 0 0 5px;
-	color: rgb(0,0,0);
+	margin: 0 0 1em 0.5em;
+	color: rgb(38,8,89);
 	font-weight: bold;
 	font-size: 1.5em;
 }
+.innerContent h1:after {
+	display: block;
+	margin: 0.5em auto 0.5em auto;
+	width: 100%;
+	border-top: 1px solid rgb(228, 228, 228);
+	border-bottom: 1px solid rgb(255, 255, 255);
+	content: "";
+}
+
 .innerContent h1.questionNbr {
 	display: inline;
 	color: rgb(0,0,0);
@@ -2328,7 +2363,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	display: block;
 }
 .innerContent label {
-	margin: 15px 0 0 5px;
+	margin: 0px;
 	color: rgb(39,94,110);
 	font-size: 1em;
 }
@@ -2358,24 +2393,139 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 .innerContent input[type=checkbox], .innerContent input[type=radio] {
 	display: inline-block;
-	margin: 15px 0 0 5px;
+	margin: 5px 0 0 1em;
 	padding: 5px 0.5%;
 	border-color: rgb(235,235,235);
 }
 .innerContent input[type=checkbox]:first-child, .innerContent input[type=radio]:first-child {
-	margin: 15px 0 0 5px;
+	margin: 10px 0 0 5px;
 }
-/* MTW added labelcheckbox class to checkbox labels, to decrease vertical spacing */
+.notificationAdd {
+	position:relative;
+	overflow:auto;
+	width:100%;
+	}
+.notificationAdd fieldset {
+	float:left;
+	padding:1em 0 0 0;
+	width:22%;
+	}
+.notificationAdd fieldset.addNotifiBtn {
+	float:left;
+	padding:1em 0;
+	width:12%;
+	}
+
+.notificationAdd fieldset select {
+	margin:0;
+	width:95%;
+	}
+.notificationAdd fieldset label {
+	margin:0 0 0.5em 0;
+	}
+.notificationAdd fieldset input {
+	margin:0;
+	width:89%;
+	}
+.notificationAdd fieldset nav {
+	display: block;
+	margin: 0.5em auto 0 auto;
+	padding: 1em 0;
+	background: transparent;
+}
+.notificationAdd fieldset nav ul {
+	position: relative;
+	display: block;
+	margin: 0 auto;
+	width: 100%;
+	text-align: right;
+}
+
+.notificationAdd fieldset nav ul a.smallBtn {
+	margin: 0 0.5em 0 0; 
+}
+
+a.addNotification {
+	margin:0 0 0 1em;
+	}
+a.addNotification span{
+	margin:0 0.2em 0 0;
+	font-weight:bold;
+	font-size:1.5em;
+	}
+
+table.dataTable.notificationTable {
+	margin:1.5em auto;
+	width: 100%;
+	border-collapse: collapse;
+	border-top:1px solid rgb(230,230,230);
+	color: #606060;
+	text-align: left;
+}
+table.dataTable.notificationTable td {
+	overflow: hidden;
+	padding: 1em 0 1em 0.5em ;
+	vertical-align: middle;
+	text-align: left;
+	font-weight:bold;
+}
+table.dataTable.notificationTable td:hover {
+	font-weight: normal;
+}
+table.dataTable.notificationTable tbody tr {
+	border-bottom: thin solid rgb(255,255,255);
+	background: rgb(255, 255, 255);
+	-webkit-transition: background-color .4s linear;
+	-moz-transition: background-color .4s linear;
+	-o-transition: background-color .4s linear;
+	transition: background-color .4s linear;
+}
+table.dataTable.notificationTable tbody tr:nth-child(2n+1), table.dataTable.notificationTable tbody tr.odd {
+	background: rgb(232, 230, 220);
+	-webkit-transition: background-color .4s linear;
+	-moz-transition: background-color .4s linear;
+	-o-transition: background-color .4s linear;
+	transition: background-color .4s linear;
+}
+table.dataTable.notificationTable tbody tr:hover, table.dataTable.notificationTable tbody tr:nth-child(2n):hover, table.dataTable.notificationTable tbody tr.even:hover {
+	background: rgb(177,214,224);
+	color: rgb(16, 28, 30);
+}
+table.dataTable.notificationTable thead tr {
+	border-bottom: none;
+	background:transparent;
+}
+table.dataTable.notificationTable thead tr th {
+	padding: 5px 1em 13px 1em;
+	border-right:none;
+	background:none;
+	color: rgb(39,94,110);
+	text-align: left;
+	text-transform: inherit;
+	font-weight: normal;
+	font-size: 1.1em;
+}
+.dataSection table.dataTable.notificationTable thead tr th {
+	padding: 9px 1em 9px 1em;
+}
+
+table.dataTable.notificationTable thead tr th.noArrows {
+	background: #3A3A3A;
+}
+table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTable thead tr th a:link, table.dataTable.notificationTable thead tr th a:visited {
+	color: #FFD200;
+	cursor: pointer;
+}
+
 .innerContent .labelcheckbox input[type=checkbox]:first-child , .innerContent .labelcheckbox input[type=radio]:first-child {
 	margin: 0 5px;
 }
-/* end MTW adddition */
 
 .innerContent p {
 	margin: 0 0 0 5px;
 	padding: 3px 0.5%;
 }
-/* change MTW: added width:35% */
+
 .innerContent textarea {
 	margin: 5px 0 0 10px;
 	width: 35%;
@@ -2409,22 +2559,22 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 #dataFilter div.chooseSurveyData {
 	position: relative;
-	width: 49%;
 	display: block;
 	float: left;
 	margin: 0 1% 2em 0;
+	width: 49%;
 	height: 20px;
 }
 #dataFilter div.chooseSurveyData select {
-	width: 47%;
 	display: inline;
+	width: 47%;
 }
 #dataFilter div.dataCollectedDate {
 	position: relative;
-	width: 50%;
 	display: block;
 	float: right;
 	margin: 0 0 2em 0;
+	width: 50%;
 	height: 20px;
 	text-align: right;
 }
@@ -2436,9 +2586,9 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 #dataFilter div.dataDeviceId {
 	display: block;
-	height: 22px;
 	margin: 42px 0 10px 0;
 	padding: 5px 10px;
+	height: 22px;
 	background: rgb(234,234,234);
 }
 .dataTables_wrapper {
@@ -2506,17 +2656,17 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 #dataFilter a.findData {
 	display: block;
-	width: 10%;
 	margin: 0 auto;
 	padding: 0.5em 1em;
+	width: 10%;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
-	-o-border-radius: 3px;
 	border-radius: 3px;
 	background-color: rgb(0,123,182);
 	color: rgb(235,235,235);
 	text-align: center;
 	font-size: 1.1em;
+	-o-border-radius: 3px;
 }
 #dataFilter a.findData:hover {
 	background-color: rgb(58,58,58);
@@ -2527,25 +2677,23 @@ nav.smallMenu ul li a.showQuestion:hover {
 ******************************************************************************/
 #flowMap {
 	float: left;
-	/*width: 75%;*/
-	width: 99.25%;
-	height: 600px;
 	margin: 0 0 0 0;
+	width: 75%;
+	height: 600px;
 }
 #pointDetails {
 	position: relative;
-	border-left: 2px solid rgb(214,214,214);
 	position: relative;
 	float: right;
-	/*width: 24.5%;*/
-	width: 0.25%;
-	padding: 5px 0.25% 0px 0.25%;
-	height: 595px;
-	background: rgb(241,241,241);
 	overflow: auto;
 	overflow-x: none;
-	overflow-style: marquee-line;
 	margin: 0 0 0 -2px;
+	padding: 5px 0.25% 0px 0.25%;
+	width: 24.5%;
+	height: 595px;
+	border-left: 2px solid rgb(214,214,214);
+	background: rgb(241,241,241);
+	overflow-style: marquee-line;
 }
 #pointDetails h2 {
 	margin: 5px 0 10px 5px;
@@ -2553,36 +2701,36 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 #pointDetails dl {
 	position: relative;
-	width: 99.5%;
-	padding: 0.5em 0.25%;
-	background: rgb(240,240,240);
-	font-family: Verdana, Geneva, sans-serif;
-	letter-spacing: 0em;
-	line-height: 1.2em;
 	overflow: hidden;
+	padding: 0.5em 0.25%;
+	width: 99.5%;
+	background: rgb(240,240,240);
+	letter-spacing: 0em;
+	font-family: Verdana, Geneva, sans-serif;
+	line-height: 1.2em;
 }
 #pointDetails dl div.defListWrap {
 	display: table;
+	margin: 2px auto;
 	padding: 0.2em 0;
 	width: 100%;
-	margin: 2px auto;
 }
 #pointDetails dl div.defListWrap:nth-child(odd) {
 	background: rgb(224,224,224);
 }
 #pointDetails dl div.defListWrap dt {
-	width: 44.25%;
-	color: rgb(124,124,124);
 	display: table-cell;
 	float: left;
 	padding: 5px 0 5px 0.75%;
+	width: 44.25%;
+	color: rgb(124,124,124);
 }
 #pointDetails dl div.defListWrap dd {
 	display: table-cell;
-	width: 54.25%;
-	color: rgb(0,0,0);
 	float: left;
 	padding: 5px 0 5px 0.75%;
+	width: 54.25%;
+	color: rgb(0,0,0);
 }
 #pointDetails dl dt:nth-of-type(1), #pointDetails dl dd:nth-of-type(1) {
 	border-top: none;
@@ -2590,27 +2738,27 @@ nav.smallMenu ul li a.showQuestion:hover {
 div#drawHandleWrap {
 	position: relative;
 	display: block;
+	clear: both;
 	width: 100%;
 	height: 16px;
-	clear: both;
 }
 div.drawHandle {
 	position: absolute;
-	z-index: 99999;
-	color: rgb(246, 160, 26);
-	font-weight: bold;
-	text-transform: uppercase;
 	top: 0px;
 	right: 0px;
-	cursor: pointer;
+	z-index: 99999;
 	display: block;
-	height: 3px;
 	padding: 4px 7px 9px 7px;
-	-moz-border-radius: 5px 5px 0 0;
+	height: 3px;
 	-webkit-border-radius: 5px 5px 0 0;
-	-o-border-radius: 5px 5px 0 0;
+	-moz-border-radius: 5px 5px 0 0;
 	border-radius: 5px 5px 0 0;
 	background: rgb(58,58,58) url(../images/mapSlider.png) left bottom repeat-x;
+	color: rgb(246, 160, 26);
+	text-transform: uppercase;
+	font-weight: bold;
+	cursor: pointer;
+	-o-border-radius: 5px 5px 0 0;
 }
 div.drawHandle.hideMapD {
 }
@@ -2619,10 +2767,10 @@ div.drawHandle.showMapD {
 #pointDetails .imgContainer {
 	position: relative;
 	overflow: hidden;
-	width: 62px;
-	height: 62px;
 	margin: 10px 5px 10px 1px;
 	padding: 1px;
+	width: 62px;
+	height: 62px;
 	border: 1px solid rgb(214,214,214);
 }
 #pointDetails .imgContainer a {
@@ -2637,14 +2785,14 @@ div.drawHandle.showMapD {
 	position: relative;
 	display: block;
 	clear: both;
-	width: 98%;
-	background: rgb(234,234,234);
 	padding: 5px 1%;
+	width: 98%;
 	border-top: 1px solid rgb(255,255,255);
+	background: rgb(234,234,234);
 }
 .placeMarkBasicInfo {
-	width: 96%;
 	padding: 1em 2%;
+	width: 96%;
 	background: url(../images/mapPointDetailSep.png) center bottom no-repeat;
 }
 .placeMarkBasicInfo li {
@@ -2659,15 +2807,15 @@ div.drawHandle.showMapD {
 }
 .placeMarkCollectionDate {
 	display: inline;
-	font-weight: bold;
 	margin: 0 0 0 5px;
 	color: rgb(227, 27, 35);
+	font-weight: bold;
 }
 .placeMarkPointCode {
-	font-weight: bold;
-	color: rgb58, 58, 58);
 	margin: 0 0 0 5px;
+	color: rgb58, 58, 58);
 	text-transform: uppercase;
+	font-weight: bold;
 }
 /*--------------------------------------------- 
 					Footer
@@ -2689,12 +2837,12 @@ footer.bottomPage div:nth-child(1n) {
 	color: rgb(255, 255, 255);
 }
 footer.bottomPage div:nth-child(2n) {
-	width: 100%;
 	position: relative;
 	padding: 1em 0;
-	background: rgb(255,255,255);
-	max-width: none;
 	min-width: inherit;
+	max-width: none;
+	width: 100%;
+	background: rgb(255,255,255);
 }
 footer.bottomPage small {
 	position: relative;
@@ -2734,8 +2882,8 @@ footer.bottomPage nav#footerNav ul li a {
 footer.bottomPage nav#footerNav ul li a.akvoDotOrg {
 	margin: -1px 0 0 0;
 	width: 39px;
-	text-indent: -9999px;
 	background: url(../images/akvo.org_footer1.png) center center no-repeat;
+	text-indent: -9999px;
 }
 footer.bottomPage a[rel="self"] {
 }
