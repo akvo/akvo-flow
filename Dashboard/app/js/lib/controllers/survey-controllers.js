@@ -203,7 +203,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 
 // TODO turn this into radio buttons
 FLOW.optionListControl = Ember.ArrayController.create({
-  content: [],
+  content: []
   // changes:function(){return true;}.property('content.@each.isSelected'),
   // changed:function(){console.log('hier dan?');}.observes('this.changes')
 });
