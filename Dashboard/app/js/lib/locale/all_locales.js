@@ -98,7 +98,8 @@ Ember.STRINGS_EN = {
   '_allow_sign':'allow sign',
   '_Add_attribute':'Add new attribute',
   '_include_in_map':'include in map',
-  '_messages':'messages'
+  '_messages':'messages',
+  '_create_new_survey':'create new survey'
 
 };
 

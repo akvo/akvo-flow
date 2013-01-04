@@ -297,6 +297,9 @@ FLOW.NavSurveysView = Ember.View.extend({
 FLOW.NavSurveysMainView = Ember.View.extend({
   templateName: 'navSurveys/nav-surveys-main'
 });
+FLOW.NavSurveysNewView = Ember.View.extend({
+  templateName: 'navSurveys/nav-surveys-new'
+});
 FLOW.NavSurveysEditView = Ember.View.extend({
   templateName: 'navSurveys/nav-surveys-edit'
 });
