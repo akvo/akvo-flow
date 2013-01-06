@@ -203,9 +203,10 @@ FLOW.questionControl = Ember.ArrayController.create({
 
 // TODO turn this into radio buttons
 FLOW.optionListControl = Ember.ArrayController.create({
-  content: []
-  // changes:function(){return true;}.property('content.@each.isSelected'),
-  // changed:function(){console.log('hier dan?');}.observes('this.changes')
+  changed:false,
+  content: [],
+  // associative array for storing option choices in the preview
+  options: {}
 });
 
 FLOW.previewControl = Ember.ArrayController.create({

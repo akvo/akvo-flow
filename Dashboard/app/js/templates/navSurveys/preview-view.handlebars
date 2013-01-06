@@ -8,33 +8,34 @@
      <div class="innerContent"> 
        {{#view FLOW.PreviewQuestionGroupView contentBinding="QG"}}
          {{#each Q in view.QGcontent}}
-          <h1 class="questionNbr"><span>{{Q.order}}} </span>{{Q.text}}</h1><br/><br/>
-           <div class="previewQuestion">
-              {{#view FLOW.PreviewQuestionView contentBinding="Q"}}
-                {{#if view.isOptionType}}
-                   {{#each view.optionsList}}
-                      {{view Em.RadioButton title=this.value option=this.value group="options" checked=this.isSelected valueBinding="this.optionChoice"}} 
-                    {{/each}}
-                {{else}}
-                  {{#if view.isNumberType}}
-                    {{view Ember.TextField valueBinding="view.numberChoice" size=10 }}
-                  {{else}}
-                    {{#if view.isTextType}}
-                      {{view Ember.TextField valueBinding="view.textChoice" size=10 }}
+           {{#view FLOW.PreviewQuestionView contentBinding="Q"}}
+             {{#if view.isVisible}}
+                <h1 class="questionNbr"><span>{{Q.order}}} </span>{{Q.text}}</h1><br/><br/>
+                <div class="previewQuestion"> 
+                    {{#if view.isOptionType}}
+                       {{#each view.optionsList}}
+                          {{view Em.RadioButton title=this.value option=this.value group="options" valueBinding="view.optionChoice"}} 
+                        {{/each}}
                     {{else}}
-                     {{#if view.isPhotoType}}
-                       The camera of the device is used here         
-                     {{else}}
-                        {{#if view.isGeoType}}
-                          The GPS of the device is used here
+                      {{#if view.isNumberType}}
+                        {{view Ember.TextField valueBinding="view.numberChoice" size=10 }}
+                      {{else}}
+                        {{#if view.isTextType}}
+                          {{view Ember.TextField valueBinding="view.textChoice" size=10 }}
+                        {{else}}
+                         {{#if view.isPhotoType}}
+                           The camera of the device is used here         
+                         {{else}}
+                            {{#if view.isGeoType}}
+                              The GPS of the device is used here
+                            {{/if}}
+                         {{/if}}
                         {{/if}}
-                     {{/if}}
-
-                    {{/if}}
-                  {{/if}}
-                {{/if}}
-              {{/view}}
-           </div>
+                      {{/if}}
+                    {{/if}}    
+                </div>
+              {{/if}}
+            {{/view}}
           {{/each}}
        {{/view}}
      </div>

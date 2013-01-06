@@ -29,7 +29,9 @@ FLOW.PreviewQuestionView = Ember.View.extend({
   isBarcodeType: false,
   isGeoType: false,
   isDateType:false,
+  isVisible:true,
   optionsList:[],
+  optionChoice:null,
 
   init: function() {
     var opList, opListArray, i, sizeList;
@@ -58,5 +60,25 @@ FLOW.PreviewQuestionView = Ember.View.extend({
         }));
       }
     }
-  }
+  },
+
+  checkVisibility: function () {
+    var options;
+    if(this.content.get('dependentFlag') && this.content.get('dependentQuestionId') !== null){
+      options = FLOW.optionListControl.get('options');
+      if (options[this.content.get('dependentQuestionId')] == this.content.get('dependentQuestionAnswer')){
+        this.set('isVisible',true);
+      } else {
+        this.set('isVisible',false);
+      }
+    }
+  }.observes('FLOW.optionListControl.changed'),
+
+
+  storeOptionChoice:function () {
+    var keyId;
+    keyId = this.content.get('keyId');
+    FLOW.optionListControl.options[keyId] = this.get('optionChoice');
+    FLOW.optionListControl.toggleProperty('changed');
+  }.observes('this.optionChoice')
 });
