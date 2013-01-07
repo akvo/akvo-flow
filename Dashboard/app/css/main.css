@@ -2475,7 +2475,7 @@ table.dataTable.notificationTable td {
 	padding: 1em 0 1em 0.5em ;
 	vertical-align: middle;
 	text-align: left;
-	font-weight:bold;
+	font-weight:normal;
 }
 table.dataTable.notificationTable td:hover {
 	font-weight: normal;
@@ -2504,13 +2504,13 @@ table.dataTable.notificationTable thead tr {
 	background:transparent;
 }
 table.dataTable.notificationTable thead tr th {
-	padding: 5px 1em 13px 1em;
+	padding: 5px 1em 0.5em 1em;
 	border-right:none;
 	background:none;
 	color: rgb(39,94,110);
 	text-align: left;
 	text-transform: inherit;
-	font-weight: normal;
+	font-weight: bold;
 	font-size: 1.1em;
 }
 .dataSection table.dataTable.notificationTable thead tr th {
