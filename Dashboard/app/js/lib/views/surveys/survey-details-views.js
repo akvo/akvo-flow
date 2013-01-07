@@ -45,7 +45,7 @@ FLOW.SurveySidebarView = Ember.View.extend({
 	},
 
 	doPreviewSurvey: function() {
-		console.log("TODO: implement preview survey");
+		FLOW.previewControl.set('showPreviewPopup',true);
 	},
 
 	doPublishSurvey: function() {

@@ -45,6 +45,8 @@ public class Survey extends BaseDomain {
 	@NotPersistent
 	private TreeMap<Integer, QuestionGroup> questionGroupMap = null;
 	private Double version = null;
+	@NotPersistent
+	private Long instanceCount;
 	private String path = null;
 	private Long surveyGroupId;
 	private String pointType;
@@ -72,6 +74,14 @@ public class Survey extends BaseDomain {
 		this.surveyGroupId = surveyGroupId;
 	}
 
+	public void setInstanceCount(Long instanceCount) {
+		this.instanceCount = instanceCount;
+	}
+
+	public Long getInstanceCount() {
+		return instanceCount;
+	}
+	
 	public HashMap<String, Translation> getTranslationMap() {
 		return translationMap;
 	}

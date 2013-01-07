@@ -1,4 +1,4 @@
-
+/*global hideMapDetails*/
 /**
   View that handles map page.
   Definition:

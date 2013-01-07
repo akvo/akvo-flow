@@ -5,6 +5,7 @@
 
 
 require('akvo-flow/core');
+require('akvo-flow/views/surveys/preview-view');
 require('akvo-flow/views/surveys/survey-group-views');
 require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/data/inspect-data-table-views');
@@ -47,6 +48,7 @@ FLOW.ApplicationView = Ember.View.extend({
     }
   }
 });
+
 
 // ***********************************************//
 //                      Handlebar helpers
@@ -296,6 +298,9 @@ FLOW.NavSurveysView = Ember.View.extend({
 });
 FLOW.NavSurveysMainView = Ember.View.extend({
   templateName: 'navSurveys/nav-surveys-main'
+});
+FLOW.NavSurveysNewView = Ember.View.extend({
+  templateName: 'navSurveys/nav-surveys-new'
 });
 FLOW.NavSurveysEditView = Ember.View.extend({
   templateName: 'navSurveys/nav-surveys-edit'

@@ -22,7 +22,7 @@
             </label> 
 
             <label class="collectedTo"> To:
-                {{view Ember.DateField valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="To" size=30}} 
+                {{view FLOW.DateField valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="To" size=30}} 
             </label>
 			</div>
 			<div class="dataDeviceId">
@@ -65,8 +65,10 @@
                 </tr>
             </tfoot>
         </table>
-        <ul class="prevNext"><li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; previous</a> {{/if}}</li>
-        <li class="nextBtn">{{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>next &rsaquo;</a>{{/if}}</li></ul>
+        <ul class="prevNext">
+            <li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; previous</a> {{/if}}</li>
+        <li class="nextBtn">{{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>next &rsaquo;</a>{{/if}}</li>
+        </ul>
     </section>
 
     <!-- edit surveyInstance popup-->

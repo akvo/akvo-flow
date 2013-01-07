@@ -22,6 +22,7 @@
 <bean id="metricDao" class="com.gallatinsystems.metric.dao.MetricDao"/>
 <bean id="surveyMetricMappingDao" class="com.gallatinsystems.metric.dao.SurveyMetricMappingDao"/>
 <bean id="messageDao" class="com.gallatinsystems.messaging.dao.MessageDao"/>
+<bean id="SurveyInstanceSummaryDao" class="org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao"/>
 
 	<context:annotation-config/>
 </beans>

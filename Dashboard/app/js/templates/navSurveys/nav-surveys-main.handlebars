@@ -49,7 +49,7 @@
         <ul class="">
       
           {{#if view.oneSelected}}
-            <li><a {{action "createNewSurvey" target="this"}} class="addSurvey">{{t _create_a_new_survey}}</a></li>
+            <li><a {{action "doNewSurvey"}} class="addSurvey">{{t _create_a_new_survey}}</a></li>
           {{/if}}
         </ul>
       </nav>    
@@ -65,7 +65,7 @@
               <li class="dateCreated"> <span>{{t created}}</span>
                 <time>{{#with survey}}{{date createdDateTime}}{{/with}}<time>
               </li>
-              <li class="responseNumber"><span>15</span>
+              <li class="responseNumber"><span>{{survey.instanceCount}}</span>
                 <p>{{t _responses}}</p>
               </li>
             </ul>

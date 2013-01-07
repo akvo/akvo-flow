@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -120,7 +122,24 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 							}
 						}
 					}
+						
 					si = save(si);
+					
+					//TODO needs checking
+					// update surveyInstanceSummary object
+					SurveyInstanceSummary sis = null;
+					SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
+					sis = sisDao.findBySurveyId(si.getSurveyId());
+	
+					if (sis == null) {
+						sis = new SurveyInstanceSummary();
+						sis.setCount(1L);
+						sis.setSurveyId(si.getSurveyId());
+					} else {
+						sis.setCount(sis.getCount() + 1);
+					}
+					sisDao.save(sis);
+
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
 							+ parts[0], e);
@@ -131,7 +150,20 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				} catch (DatastoreTimeoutException te) {
 					sleep();
 					si = save(si);
-
+					
+					// update surveyInstanceSummary object
+					SurveyInstanceSummary sis = null;
+					SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
+					sis = sisDao.findBySurveyId(si.getSurveyId());
+	
+					if (sis == null) {
+						sis = new SurveyInstanceSummary();
+						sis.setCount(1L);
+						sis.setSurveyId(si.getSurveyId());
+					} else {
+						sis.setCount(sis.getCount() + 1);
+					}
+					sisDao.save(sis);
 				}
 			}
 			qas.setSurveyId(si.getSurveyId());

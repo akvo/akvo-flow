@@ -26,10 +26,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.messaging.app.gwt.client.MessageDto;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
@@ -43,18 +44,26 @@ public class MessageRestService {
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, List<MessageDto>> listMessages() {
-		final Map<String, List<MessageDto>> response = new HashMap<String, List<MessageDto>>();
+	public Map<String, Object> listMessages(
+			@RequestParam(value = "since", defaultValue = "") String since) {
+		final Map<String, Object> response = new HashMap<String, Object>();
 		final List<MessageDto> messageList = new ArrayList<MessageDto>();
-		final List<Message> list = messageDao.list(Constants.ALL_RESULTS);
+		final List<Message> list = messageDao.listBySubject(null, null, since);
+		final RestStatusDto statusDto = new RestStatusDto();
 
 		if (list != null) {
+			final String newSince = MessageDao.getCursor(list);
+
 			for (Message m : list) {
 				final MessageDto dto = new MessageDto();
 				DtoMarshaller.copyToDto(m, dto);
 				messageList.add(dto);
 			}
+
+			statusDto.setSince(newSince);
+			statusDto.setNum(list.size());
 		}
+		response.put("meta", statusDto);
 		response.put("messages", messageList);
 		return response;
 	}

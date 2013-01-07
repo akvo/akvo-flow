@@ -1,0 +1,162 @@
+<!-- we are within navSurveysEditView -->
+<section class="leftSidebar" id="newSurveyInfo">
+  <h2>{{t _create_new_survey}}</h2>
+  {{#view FLOW.SurveySidebarView}}
+  <form>
+    <label for="newSurveyName">Title:
+      {{view Ember.TextField valueBinding="view.surveyTitle" placeholder="Type in the name of your survey" size=30}} </label>
+    <label for="newSurveyDesc">Description:
+      {{view Ember.TextArea valueBinding="view.surveyDescription" placeholder="Type in a description of your survey" size=30 rows="3" }} </label>
+    <label for="surveyType">Type:
+      {{view Ember.Select 
+      contentBinding="FLOW.surveyPointTypeControl.content" 
+      optionLabelPath="content.label" 
+      optionValuePath="content.value" 
+      selectionBinding="view.surveyPointType" 
+      prompt="Select survey type"}} </label>
+    <label for="surveyType">Sector Focus:
+      {{view Ember.Select 
+      contentBinding="FLOW.surveySectorTypeControl.content" 
+      optionLabelPath="content.label" 
+      optionValuePath="content.value" 
+      selectionBinding="view.surveySectorType" 
+      prompt="Select sector"}} </label>
+  </form>
+  <nav class="newSurveyNav">
+    <ul>
+      <li><a {{action doSaveSurvey target="this"}} class="saveNewSurvey">Save</a></li>
+    </ul>
+  </nav>
+  {{/view }} <!-- end of FLOW.SurveySideBarView --> 
+</section>
+<section class="mainRight" id="surveyCreator">
+  <section class="topBar">
+    <nav class="menuTopbar">
+      <ul class="">
+        <li><a {{action "doSurveysMain"}} class="stepBack">Go back to survey overview</a></li>
+      </ul>
+    </nav>
+  </section>
+  
+
+<div class="surveySettingsBlock">
+        <section id="surveySetting" class="mainContent mainRight">
+          <div class="innerContent">
+            <header>
+              <h1>Survey Settings:</h1>
+            </header>
+            <dl>
+              <dt>Survey Version Number:</dt>
+              <dd><span id="versionNbr"> 8.0</span><a href="#" class="helpIcon tooltip" title="Version Number helps you keep track of the number of times the survey has been revised and published. So, if the survey has been revised and published five times, it will be Version 5.0">Get Help</a></dd>
+              <dt>Survey ID Number:</dt>
+              <dd><span id="surveyIdNbr"> 3546871</span></dd>
+            </dl>
+            <div class="whiteBgSeparator">
+            <form action="#" method="post">
+              <label for="surveyLang">Choose the master language:<a href="#" class="helpIcon tooltip" title="Master Language is the base language for the survey, and can be set to any of the available languages in the dropdown when you begin, but cannot be edited once you've published the survey (?). To add additional languages, use the Edit Translations feature on the Question Details page in Surveys.">Get Help</a></label>
+              <select id="surveyLang">
+                <option value="default">Please Choose the language</option>
+                <option value="English">English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="Kinyarwanda">Kinyarwanda</option>
+              </select>
+              </div>
+              <input type="checkbox" id="requireApproval" value="requireApproval" name="requireApproval"/>
+              <label for="requireApproval" >Require Approval:</label>
+            </form>
+            <div id="notifications">
+              <h3>Manage Notifications:</h3>
+              <a href="#" class="addNotification"><span>+</span>Add Notification</a>
+              <div class="whiteBgSeparator">
+                <form class="notificationAdd">
+                  <fieldset>
+                    <label for="emailNotification">Email</label>
+                    <input id="emailNotification" placeholder="Enter user's email adress"/>
+                  </fieldset>
+                  <fieldset>
+                    <label for="eventNotification">Event</label>
+                    <select id="eventNotification">
+                      <option value="default">Raw Data Reports (Nightly)</option>
+                      <option value="surveySubmission">Survey Submission</option>
+                      <option value="surveyApproval">Survey Approval</option>
+                    </select>
+                  </fieldset>
+                  <fieldset>
+                    <label for="typeNotification">Type</label>
+                    <select id="typeNotification">
+                      <option value="attachment">Attachment</option>
+                      <option value="link">Link</option>
+                    </select>
+                  </fieldset>
+                  <fieldset>
+                    <label for="dateNotification">Expires</label>
+                    <input id="dateNotification"/>
+                  </fieldset>
+                  <fieldset class="addNotifiBtn">
+                    <nav>
+                      <ul>
+                        <li><a href="#" class="smallBtn">Add</a></li>
+                        <li><a href="#">Cancel</a></li>
+                      </ul>
+                    </nav>
+                  </fieldset>
+                </form>
+              <table class="notificationTable dataTable">
+              <!-- DEVICES TABLE--> 
+              <!-- TABLE HEADER-->
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Event</th>
+                  <th>Type</th>
+                  <th>Expires</th>
+                  <th></th>
+                </tr>
+              </thead>
+              
+              <!-- TABLE BODY: MAIN CONTENT-->
+              <tbody>
+                <tr>
+                  <td class="">caetie@akvo.org</td>
+                  <td class="">Raw data reports (nightly)</td>
+                  <td class="">attachment</td>
+                  <td class="">2013-05-31</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+                <tr>
+                  <td class="">mark@akvo.org</td>
+                  <td class="">Survey submission</td>
+                  <td class="">attachment</td>
+                  <td class="">2013-05-31</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+                <tr>
+                  <td class="">ivan@akvo.org</td>
+                  <td class="">Survey approval</td>
+                  <td class="">link</td>
+                  <td class="">2013-05-31</td>
+                  <td class="action"><a href="#">remove</a></td>
+                </tr>
+              </tbody>
+              
+              <!-- TABLE FOOTER-->
+              <tfoot>
+                <tr>
+                  <td colspan="7"><small>This is the footer.</small></td>
+                </tr>
+              </tfoot>
+              </table>
+              </div>
+            </div>
+            <nav class="">
+              <ul>
+                <li><a href="#" class="smallBtn">Save settings</a></li>
+                <li><a href="#">cancel</a></li>
+              </ul>
+            </nav>
+          </div>
+        </section>
+      </div>
+
+</section>

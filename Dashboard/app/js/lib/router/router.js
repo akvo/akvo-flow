@@ -66,10 +66,14 @@ FLOW.Router = Ember.Router.extend({
         router.set('navigationController.selected', 'navSurveys');
       },
 
+      doNewSurvey: function(router, event) {
+        router.transitionTo('navSurveys.navSurveysNew');
+      },
+
       doEditSurvey: function(router, event) {
         FLOW.selectedControl.set('selectedSurvey', event.context);
         router.transitionTo('navSurveys.navSurveysEdit');
-      
+
       },
 
       doSurveysMain: function(router, event) {
@@ -89,6 +93,25 @@ FLOW.Router = Ember.Router.extend({
             name: 'navSurveysMain'
           });
           FLOW.surveyGroupControl.populate();
+        }
+      }),
+
+      navSurveysNew: Ember.Route.extend({
+        route: '/new',
+        connectOutlets: function(router, event) {
+          var newSurvey;
+          router.get('navSurveysController').connectOutlet({
+            name: 'navSurveysNew'
+          });
+
+          newSurvey = FLOW.store.createRecord(FLOW.Survey, {
+            "name": "New survey - please change name",
+            "defaultLanguageCode": "en",
+            "requireApproval": false,
+            "status": "NOT_PUBLISHED",
+            "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId')
+          });
+          FLOW.selectedControl.set('selectedSurvey',newSurvey);
         }
       }),
 
@@ -244,11 +267,11 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function(router, context) {
         router.get('applicationController').connectOutlet('navReports');
         FLOW.surveyGroupControl.populate();
-        FLOW.selectedControl.set('selectedSurveyGroup',null);
-        FLOW.selectedControl.set('selectedSurveyOPTIONandNUMBERQuestions',null);
-        FLOW.selectedControl.set('selectedQuestion',null);
-        FLOW.surveyControl.set('content',null);
-        FLOW.questionControl.set('OandNcontent',null);
+        FLOW.selectedControl.set('selectedSurveyGroup', null);
+        FLOW.selectedControl.set('selectedSurveyOPTIONandNUMBERQuestions', null);
+        FLOW.selectedControl.set('selectedQuestion', null);
+        FLOW.surveyControl.set('content', null);
+        FLOW.questionControl.set('OandNcontent', null);
 
         router.set('navigationController.selected', 'navReports');
       },

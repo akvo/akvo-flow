@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -46,6 +48,9 @@ public class SurveyRestService {
 
 	@Inject
 	private SurveyDAO surveyDao;
+	
+	@Inject
+	private SurveyInstanceSummaryDao sisDao;
 
 	// TODO put in meta information?
 	// list all surveys
@@ -54,12 +59,18 @@ public class SurveyRestService {
 	public Map<String, List<SurveyDto>> listSurveys() {
 		final Map<String, List<SurveyDto>> response = new HashMap<String, List<SurveyDto>>();
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
+		SurveyInstanceSummary sis = null;
 		List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
 		if (surveys != null) {
 			for (Survey s : surveys) {
 				SurveyDto dto = new SurveyDto();
 				DtoMarshaller.copyToDto(s, dto);
 
+				// add surveyInstance Count
+				sis = sisDao.findBySurveyId(s.getKey().getId());
+				if (sis != null){
+					dto.setInstanceCount(sis.getCount());
+				}
 				// needed because of different names for description in survey
 				// and surveyDto
 				dto.setDescription(s.getDesc());
@@ -80,6 +91,7 @@ public class SurveyRestService {
 		final Map<String, List<SurveyDto>> response = new HashMap<String, List<SurveyDto>>();
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
 		List<Survey> surveys = null;
+		SurveyInstanceSummary sis = null;
 
 		if (surveyGroupId != null) {
 			surveys = surveyDao.listSurveysByGroup(surveyGroupId);
@@ -91,7 +103,13 @@ public class SurveyRestService {
 			for (Survey s : surveys) {
 				SurveyDto dto = new SurveyDto();
 				DtoMarshaller.copyToDto(s, dto);
-
+				
+				// add surveyInstance Count
+				sis = sisDao.findBySurveyId(s.getKey().getId());
+				if (sis != null){
+					dto.setInstanceCount(sis.getCount());
+				}
+				
 				// needed because of different names for description in survey
 				// and surveyDto
 				dto.setDescription(s.getDesc());
@@ -109,9 +127,18 @@ public class SurveyRestService {
 		final Map<String, SurveyDto> response = new HashMap<String, SurveyDto>();
 		Survey s = surveyDao.getByKey(id);
 		SurveyDto dto = null;
+		SurveyInstanceSummary sis = null;
+		
 		if (s != null) {
 			dto = new SurveyDto();
 			DtoMarshaller.copyToDto(s, dto);
+			// add surveyInstance Count
+			
+			sis = sisDao.findBySurveyId(s.getKey().getId());
+			if (sis != null){
+				dto.setInstanceCount(sis.getCount());
+			}
+			
 			// needed because of different names for description in survey and
 			// surveyDto
 			dto.setDescription(s.getDesc());
@@ -122,6 +149,7 @@ public class SurveyRestService {
 	}
 
 	// delete survey by id
+	// TODO delete surveyInstances / summarizations?
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
 	public Map<String, RestStatusDto> deleteSurveyById(
@@ -174,7 +202,7 @@ public class SurveyRestService {
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(surveyDto, s, new String[] {
 							"createdDateTime", "status", "sector", "version",
-							"lastUpdateDateTime", "description" });
+							"lastUpdateDateTime", "description", "instanceCount" });
 
 					s.setDesc(surveyDto.getDescription());
 
@@ -221,7 +249,7 @@ public class SurveyRestService {
 			// it is set in the Dao.
 			BeanUtils.copyProperties(surveyDto, s, new String[] {
 					"createdDateTime", "status", "sector", "version",
-					"lastUpdateDateTime", "displayName", "questionGroupList" });
+					"lastUpdateDateTime", "displayName", "questionGroupList", "instanceCount" });
 			if (surveyDto.getStatus() != null) {
 				s.setStatus(Survey.Status.valueOf(surveyDto.getStatus()));
 			}

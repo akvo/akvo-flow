@@ -126,7 +126,6 @@ FLOW.QuestionView = Ember.View.extend({
 	},
 
 	doSaveEditQuestion: function() {
-		var questionAnswer;
 		FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
 		FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
 		FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
@@ -139,7 +138,6 @@ FLOW.QuestionView = Ember.View.extend({
 		FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
 
 		if(this.get('dependentFlag') && FLOW.selectedControl.radioOptions.length > 0) {
-			questionAnswer = null;
 			FLOW.selectedControl.selectedQuestion.set('dependentFlag', this.get('dependentFlag'));
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', FLOW.selectedControl.dependentQuestion.get('keyId'));
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', FLOW.selectedControl.radioOptions);

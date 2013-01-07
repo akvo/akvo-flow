@@ -1,0 +1,43 @@
+<a {{action "closePreviewPopup" target="this"}} class="ok clodeDialog">close window</a>
+<h2>Survey preview</h2>
+
+{{#each QG in FLOW.questionGroupControl}}
+ <div class="questionGroupBlock">
+   <header> <span class="qtnGroupHead">{{t _group}} {{QG.order}}</span> <br/>
+     <h3 class="qtnGroupTitle">{{QG.code}}</h3><br/>
+     <div class="innerContent"> 
+       {{#view FLOW.PreviewQuestionGroupView contentBinding="QG"}}
+         {{#each Q in view.QGcontent}}
+           {{#view FLOW.PreviewQuestionView contentBinding="Q"}}
+             {{#if view.isVisible}}
+                <h1 class="questionNbr"><span>{{Q.order}}} </span>{{Q.text}}</h1><br/><br/>
+                <div class="previewQuestion"> 
+                    {{#if view.isOptionType}}
+                       {{#each view.optionsList}}
+                          {{view Em.RadioButton title=this.value option=this.value group="options" valueBinding="view.optionChoice"}} 
+                        {{/each}}
+                    {{else}}
+                      {{#if view.isNumberType}}
+                        {{view Ember.TextField valueBinding="view.numberChoice" size=10 }}
+                      {{else}}
+                        {{#if view.isTextType}}
+                          {{view Ember.TextField valueBinding="view.textChoice" size=10 }}
+                        {{else}}
+                         {{#if view.isPhotoType}}
+                           The camera of the device is used here         
+                         {{else}}
+                            {{#if view.isGeoType}}
+                              The GPS of the device is used here
+                            {{/if}}
+                         {{/if}}
+                        {{/if}}
+                      {{/if}}
+                    {{/if}}    
+                </div>
+              {{/if}}
+            {{/view}}
+          {{/each}}
+       {{/view}}
+     </div>
+ </div>    
+{{/each}}
