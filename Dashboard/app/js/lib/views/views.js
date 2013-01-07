@@ -280,8 +280,18 @@ FLOW.DateField = Ember.TextField.extend({
         FLOW.dateControl.set('toDate', selectedDate);
       }
     });
+  }
+});
 
-
+FLOW.DateField2 = Ember.TextField.extend({
+ didInsertElement: function() {
+    this._super();
+  
+    this.$().datepicker({
+      dateFormat: 'yy/mm/dd',
+      defaultDate: "+1w",
+      numberOfMonths: 1
+    });
   }
 });
 

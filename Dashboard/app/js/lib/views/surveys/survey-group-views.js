@@ -31,7 +31,10 @@ FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 FLOW.SurveyGroupSurveyView = Ember.View.extend({
 	// fired when 'preview survey' is clicked in the survey item display
 	previewSurvey: function() {
-			console.log("TODO preview Survey");
+			FLOW.selectedControl.set('selectedSurvey',this.content);
+			FLOW.questionGroupControl.populate();
+      FLOW.questionControl.populateAllQuestions();
+      FLOW.previewControl.set('showPreviewPopup',true);
 	},
 	
 	// fired when 'delete survey' is clicked in the survey item display

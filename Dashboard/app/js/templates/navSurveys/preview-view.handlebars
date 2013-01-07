@@ -18,18 +18,33 @@
                         {{/each}}
                     {{else}}
                       {{#if view.isNumberType}}
-                        {{view Ember.TextField valueBinding="view.numberChoice" size=10 }}
+                        {{view Ember.TextField valueBinding="view.answer" size=10 }}
                       {{else}}
                         {{#if view.isTextType}}
-                          {{view Ember.TextField valueBinding="view.textChoice" size=10 }}
+                          {{view Ember.TextField valueBinding="view.answer" size=10 }}
                         {{else}}
-                         {{#if view.isPhotoType}}
-                           The camera of the device is used here         
-                         {{else}}
+                          {{#if view.isDateType}} 
+                             {{view FLOW.DateField2 valueBinding="view.answer" size=30}} 
+                          {{else}}
                             {{#if view.isGeoType}}
                               The GPS of the device is used here
+                              Latitude: {{view Ember.TextField valueBinding="view.latitude" size=10 }}
+                              Longitude: {{view Ember.TextField valueBinding="view.longitude" size=10 }}
+                            {{else}}
+                              {{#if view.isBarcodeType}}
+                                The Barcode app on the device is used here
+                                {{view Ember.TextField valueBinding="view.answer" size=10 }}
+                              {{else}}
+                                {{#if view.isPhotoType}}
+                                  The camera of the device is used here
+                                {{else}}
+                                  {{#if view.isVideoType}}
+                                    The video camera of the device is used here    
+                                  {{/if}}
+                                {{/if}}
+                              {{/if}}
                             {{/if}}
-                         {{/if}}
+                          {{/if}}
                         {{/if}}
                       {{/if}}
                     {{/if}}    

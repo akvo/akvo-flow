@@ -32,6 +32,9 @@ FLOW.PreviewQuestionView = Ember.View.extend({
   isVisible:true,
   optionsList:[],
   optionChoice:null,
+  answer:null,
+  latitude:null,
+  longitude:null,
 
   init: function() {
     var opList, opListArray, i, sizeList;
@@ -63,22 +66,25 @@ FLOW.PreviewQuestionView = Ember.View.extend({
   },
 
   checkVisibility: function () {
-    var options;
     if(this.content.get('dependentFlag') && this.content.get('dependentQuestionId') !== null){
-      options = FLOW.optionListControl.get('options');
-      if (options[this.content.get('dependentQuestionId')] == this.content.get('dependentQuestionAnswer')){
+      if (FLOW.previewControl.answers[this.content.get('dependentQuestionId')] == this.content.get('dependentQuestionAnswer')){
         this.set('isVisible',true);
       } else {
         this.set('isVisible',false);
       }
     }
-  }.observes('FLOW.optionListControl.changed'),
-
+  }.observes('FLOW.previewControl.changed'),
 
   storeOptionChoice:function () {
     var keyId;
     keyId = this.content.get('keyId');
-    FLOW.optionListControl.options[keyId] = this.get('optionChoice');
-    FLOW.optionListControl.toggleProperty('changed');
-  }.observes('this.optionChoice')
+    FLOW.previewControl.answers[keyId] = this.get('optionChoice');
+    FLOW.previewControl.toggleProperty('changed');
+  }.observes('this.optionChoice'),
+
+  storeAnswer:function () {
+    var keyId;
+    keyId = this.content.get('keyId');
+    FLOW.previewControl.answers[keyId] = this.get('answer');
+  }.observes('this.answer')
 });
