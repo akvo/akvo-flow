@@ -28,6 +28,10 @@ FLOW.SurveySidebarView = Ember.View.extend({
 		this.set('surveySectorType', sectorType);
 	},
 
+	isPublished: function() {
+		return (FLOW.selectedControl.selectedSurvey.get('status') == 'PUBLISHED');
+	}.property('FLOW.selectedControl.selectedSurvey.status'),
+
 	numberQuestions: function () {
 		return FLOW.questionControl.filterContent.toArray().length;
 	}.property('FLOW.questionControl.filterContent.@each'),
