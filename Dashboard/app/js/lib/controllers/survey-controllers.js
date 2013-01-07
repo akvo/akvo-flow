@@ -153,6 +153,16 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
+  allQuestionsFilter: function() {
+    var sId;
+    if(FLOW.selectedControl.get('selectedSurvey')) {
+      sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      this.set('filterContent', FLOW.store.filter(FLOW.Question, function (item){
+        return (item.get('surveyId') == sId);
+      }));
+    }
+  }.observes('FLOW.selectedControl.selectedSurvey'),
+
   setQGcontent: function() {
     console.log('setQGcontent');
     if(FLOW.selectedControl.get('selectedQuestionGroup')) {

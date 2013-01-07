@@ -28,9 +28,16 @@ FLOW.SurveySidebarView = Ember.View.extend({
 		this.set('surveySectorType', sectorType);
 	},
 
+	numberQuestions: function () {
+		return FLOW.questionControl.filterContent.toArray().length;
+	}.property('FLOW.questionControl.filterContent.@each'),
+
+	numberQuestionGroups: function () {
+		return FLOW.questionGroupControl.content.toArray().length;
+	}.property('FLOW.questionGroupControl.content.@each'),
+
 	doSaveSurvey: function() {
 		var sgId, survey;
-		console.log(this.get('surveySectorType'));
 		sgId = FLOW.selectedControl.selectedSurvey.get('id');
 		survey = FLOW.store.find(FLOW.Survey, sgId);
 		survey.set('name', this.get('surveyTitle'));
