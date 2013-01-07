@@ -219,31 +219,31 @@ Ember.View.reopen({
     //$('table#devicesListTable tbody tr:nth-child(2n)').addClass('even');
 
 
-    var nCount = 0;
-    $(".addQuestion").click(function() {
-      nCount++;
-      $(".questionSetContent div.innerContent").fadeIn().css("box-shadow", "0 0 3px rgba(0,0,0,0.1)");
-      $(this).insertAfter("div.innerContent");
-      $("#numberQuestion").text(
+    // var nCount = 0;
+    // $(".addQuestion").click(function() {
+    //   nCount++;
+    //   $(".questionSetContent div.innerContent").fadeIn().css("box-shadow", "0 0 3px rgba(0,0,0,0.1)");
+    //   $(this).insertAfter("div.innerContent");
+    //   $("#numberQuestion").text(
 
-      function() {
-        if(nCount < 10) {
-          $(this).text("0" + nCount);
-        } else {
-          $(this).text(nCount);
-        }
-      });
-      var nQ = parseInt($("#numberQuestion").text(), 10);
-      $("h1.questionNbr span").text(
+    //   function() {
+    //     if(nCount < 10) {
+    //       $(this).text("0" + nCount);
+    //     } else {
+    //       $(this).text(nCount);
+    //     }
+    //   });
+    //   var nQ = parseInt($("#numberQuestion").text(), 10);
+    //   $("h1.questionNbr span").text(
 
-      function() {
-        if(nQ < 10) {
-          $(this).text("0" + nQ);
-        } else {
-          $(this).text(nQ);
-        }
-      });
-    });
+    //   function() {
+    //     if(nQ < 10) {
+    //       $(this).text("0" + nQ);
+    //     } else {
+    //       $(this).text(nQ);
+    //     }
+    //   });
+    // });
 
     // Function displaying the options depending on question type
     //$('.formElems').hide();
