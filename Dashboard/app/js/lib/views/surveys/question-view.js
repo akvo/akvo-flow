@@ -234,6 +234,7 @@ FLOW.QuestionView = Ember.View.extend({
 
 	// create new question
 	doInsertQuestion: function() {
+		console.log('inserting question');
 		var insertAfterOrder;
 
 		if(this.get('zeroItemQuestion')) {
@@ -254,7 +255,6 @@ FLOW.QuestionView = Ember.View.extend({
 		});
 
 		FLOW.store.commit();
-		FLOW.selectedControl.set('selectedForCopyQuestion', null);
 	},
 
 	// true if one question has been selected for Move

@@ -143,15 +143,6 @@ FLOW.questionControl = Ember.ArrayController.create({
   earlierOptionQuestions: null,
   QGcontent: null,
 
-  populate: function() {
-    if(FLOW.selectedControl.get('selectedQuestionGroup')) {
-      var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-      this.set('content', FLOW.store.findQuery(FLOW.Question, {
-        questionGroupId: id
-      }));
-    }
-  }.observes('FLOW.selectedControl.selectedQuestionGroup'),
-
   populateAllQuestions: function() {
     var sId;
     if(FLOW.selectedControl.get('selectedSurvey')) {
@@ -163,9 +154,11 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
   setQGcontent: function() {
+    console.log('setQGcontent');
     if(FLOW.selectedControl.get('selectedQuestionGroup')) {
-      this.set('QGcontent', FLOW.store.filter(FLOW.Question, function(item) {
-        return(item.get('questionGroupId') == FLOW.selectedControl.selectedQuestionGroup.get('keyId'));
+      var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+      this.set('QGcontent', FLOW.store.findQuery(FLOW.Question, {
+        questionGroupId: id
       }));
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),

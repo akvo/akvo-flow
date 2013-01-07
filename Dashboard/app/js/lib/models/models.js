@@ -101,13 +101,13 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
 
 FLOW.Question = FLOW.BaseModel.extend({
   didDelete: function() {
-    if(FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.populate();
+    if(FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.setQGcontent();
   },
   didUpdate: function() {
-    if(FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.populate();
+    if(FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.setQGcontent();
   },
   didCreate: function() {
-    if(FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.populate();
+    if(FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.setQGcontent();
   },
 
   allowDecimal: DS.attr('boolean', {
