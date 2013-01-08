@@ -7,32 +7,33 @@
     <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
  
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
-    <label>Attribute: {{view Ember.Select 
+    <label class="selectinLabel">Attribute: {{view Ember.Select 
       contentBinding="FLOW.attributeControl.content" 
       optionLabelPath="content.name" 
       optionValuePath="content.keyId" 
       selectionBinding="view.attribute" 
-      prompt="Select attribute"}} </label> <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute">add attribute</a>
+      prompt="Select attribute"}}
+	   <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>add attribute</a> </label>
       {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
 
-    <label>Question type: {{view Ember.Select 
+    <label class="selectinLabel">Question type: {{view Ember.Select 
       contentBinding="FLOW.questionTypeControl.content" 
       optionLabelPath="content.label" 
       optionValuePath="content.value" 
       selectionBinding="view.type" }} </label>
   
-
+<div class="dependencyBlock">
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.dependentFlag"}}{{t _dependent}}
     </label>
 
      {{#if view.dependentFlag}}
-     Dependent question:
+    <label class="selectinLabel dependencySelect"> Dependent question:
         {{view Ember.Select 
         contentBinding="FLOW.questionControl.earlierOptionQuestions" 
         selectionBinding="FLOW.selectedControl.dependentQuestion" 
         optionLabelPath="content.text" 
         optionValuePath="content.keyId" 
-        prompt="Select question"}}<br/><br/>
+        prompt="Select question"}}</label>
     {{/if}} 
      {{#if view.dependentFlag}}
     {{#if FLOW.selectedControl.dependentQuestion}}
@@ -42,8 +43,9 @@
       {{/each}}
       {{/if}}
   {{/if}}
-
+</div>
     <!-- Question specific material --> 
+<div class="questionOption">
     {{#if view.amOptionType}}
       <h1 class="answerNbr">{{t _option_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label>
@@ -57,11 +59,11 @@
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimalPoint"}}{{t _allow_decimal_point}} </label>
 
-      <label>{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label>
-      <label>{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
+      <label class="minValNumb">{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label>
+      <label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
 
     {{/if}} 
-
+</div>
   
 <!-- add attribute dialog-->
     <div {{bindAttr class="view.showAddAttributeDialogBool:display :overlay"}}>
@@ -91,10 +93,7 @@
         </div>
       </div>
     </div>
-
-  
     <!-- End question specific material -->
-
     <nav>
       <ul>
         <li><a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>Save Question</a> </li>

@@ -825,9 +825,11 @@ table.dataTable thead tr th {
 .dataSection table.dataTable thead tr th {
 	padding: 9px 1em 9px 1em;
 }
-
 #usersListTable thead tr th {
 	padding: 11px 1em 7px 1em;
+}
+#messageListTable thead tr th {
+	padding: 9px 1em;
 }
 table.dataTable thead tr th.noArrows {
 	background: #3A3A3A;
@@ -841,8 +843,8 @@ table.dataTable thead tr th a, table.dataTable thead tr th a:link, table.dataTab
 
 table.dataTable thead tr th a.helpIcon {
 	position: relative;
-	top: -5px;
-	margin: 0 0 0 5px;
+	top: -3px;
+	margin: 0 0 0 7px;
 }
 table.dataTable thead tr th.sorting_desc {
 	background: rgb(23,23,23) url(../images/sortTableDown.png) right center no-repeat;
@@ -1961,12 +1963,13 @@ div.questionGroupBlock {
 }
 span.qtnGroupHead {
 	display: block;
-	padding-top: 5px;
+	margin:1em 0 0.25em 0;
 	width: 100%;
 	color: rgb(246, 160, 26);
 	font-style: italic;
-	font-size: 1.1em;
+	font-size: 1.2em;
 	font-family: Georgia, "Times New Roman", Times, serif;
+	text-transform:capitalize;
 }
 .aQuestionSet header h1.qtnGroupTitle {
 	display: inline-block;
@@ -2229,7 +2232,7 @@ nav.questionActionMenu a:hover {
 	display: inline;
 }
 .innerContent nav ul li a.standardBtn {
-	margin: 20px auto 10px auto;
+	margin: 2em auto 0.5em auto;
 	width: 15%;
 }
 .innerContent nav.smallMenu ul {
@@ -2301,6 +2304,37 @@ nav.smallMenu ul li a.showQuestion:hover {
 .innerContent {
 	width:100%;
 	}
+.innerContent select {
+	position:relative;
+	margin: 5px 0 0 5px;
+	padding: 2px 0 3px 5px;
+	width: 35%;
+}
+.innerContent input[type=checkbox], .innerContent input[type=radio] {
+	display: inline-block;
+	margin: 5px 0 0 1em;
+	padding: 5px 0.5%;
+	border-color: rgb(235,235,235);
+}
+.innerContent input[type=checkbox]:first-child, .innerContent input[type=radio]:first-child {
+	margin: 10px 0 0 5px;
+}
+
+.innerContent .labelcheckbox input[type=checkbox]:first-child , .innerContent .labelcheckbox input[type=radio]:first-child {
+	margin:0 0.5em 0 0;
+}
+
+.innerContent p {
+	margin: 0 0 0 5px;
+	padding: 3px 0.5%;
+}
+
+.innerContent textarea {
+	margin: 5px 0 0 10px;
+	width: 35%;
+	border-color: white;
+}
+
 .innerContent dl {
 	position:relative;
 	margin: 0 0 0 1%;
@@ -2335,8 +2369,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 .innerContent h1:after {
 	display: block;
-	margin: 0.5em auto 0.5em auto;
-	width: 100%;
+	margin: 1em auto;
+	width: 98%;
 	border-top: 1px solid rgb(228, 228, 228);
 	border-bottom: 1px solid rgb(255, 255, 255);
 	content: "";
@@ -2359,18 +2393,56 @@ nav.smallMenu ul li a.showQuestion:hover {
 	font-weight: bold;
 	font-size: 0.9em;
 }
-.innerContent label, .innerContent input, .innerContent select {
+.innerContent input {
 	display: block;
 }
 .innerContent label {
-	margin: 0px;
+	margin: 1.5em 0 0 1em;
 	color: rgb(39,94,110);
 	font-size: 1em;
+	display:block;
 }
+
+.innerContent .labelcheckbox {
+	position:relative;
+	padding:0.5em 0;
+	display:block;
+	width:100%;
+	margin: 0.5em 0 0 1em;
+}
+.innerContent .selectinLabel{
+	position:relative;
+	margin:1.5em 0 0.5em 1em;
+	padding:0 0 0 0.25em;
+	}
+.innerContent .dependencyBlock {
+	width:97.5%;
+	margin:1.5em 0 1em 1em;
+	padding:0 0 0.25em 0;
+	background:rgb(237,237,237);
+	}
+.innerContent .selectinLabel select {
+	position:absolute;
+	left:12%;
+	top:-13px;
+	}
+.innerContent .questionOption {
+	padding:0.5em 0;
+	background:rgb(243,243,243);
+	margin:0 1%;
+	width:98;
+	
+	}
+.innerContent .minValNumb, .innerContent .maxValNumb {
+	width:50%;
+	} 
+	
+a.addAttribute {position:absolute;left:50%;}
+a.addAttribute span {font-weight:bold;margin:0 0.25em 0 0;}
 .innerContent input[type=text] {
-	margin: 5px 0 0 5px;
-	padding: 5px 1%;
-	width: 96%;
+	margin: 5px 0 0 0;
+	padding: 5px 0.5%;
+	width: 97.5%;
 	border-color: rgb(235,235,235);
 }
 
@@ -2394,20 +2466,6 @@ nav.smallMenu ul li a.showQuestion:hover {
 	border-color: rgb(235,235,235);
 }
 
-.innerContent select {
-	margin: 5px 0 0 5px;
-	padding: 2px 0 3px 5px;
-	width: 35%;
-}
-.innerContent input[type=checkbox], .innerContent input[type=radio] {
-	display: inline-block;
-	margin: 5px 0 0 1em;
-	padding: 5px 0.5%;
-	border-color: rgb(235,235,235);
-}
-.innerContent input[type=checkbox]:first-child, .innerContent input[type=radio]:first-child {
-	margin: 10px 0 0 5px;
-}
 .notificationAdd {
 	position:relative;
 	overflow:auto;
@@ -2525,20 +2583,6 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	cursor: pointer;
 }
 
-.innerContent .labelcheckbox input[type=checkbox]:first-child , .innerContent .labelcheckbox input[type=radio]:first-child {
-	margin: 0 5px;
-}
-
-.innerContent p {
-	margin: 0 0 0 5px;
-	padding: 3px 0.5%;
-}
-
-.innerContent textarea {
-	margin: 5px 0 0 10px;
-	width: 35%;
-	border-color: white;
-}
 /****** Data Page
 ****************************************************************************/
 #dataFilter {
