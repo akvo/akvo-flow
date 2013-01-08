@@ -1,0 +1,91 @@
+{{#view FLOW.NotificationsView}}
+<div class="manageNotificationsBlock">
+    <section id="manageNotifications" class="mainContent mainRight">
+        <div class="innerContent">
+            <div id="notifications">
+                <h1>
+                    Notifications
+                </h1>
+                <div class="whiteBgSeparator">
+                    <form class="notificationAdd">
+                        <fieldset>
+                            <label for="emailNotification">Email</label> 
+                            {{view Ember.TextField valueBinding="view.text" id="emailNotification" size=150 }}
+                        </fieldset>
+                        <fieldset>
+                            <label for="eventNotification">Event</label> 
+                            {{view Ember.Select 
+                            contentBinding="FLOW.notificationEventControl.content" 
+                            optionLabelPath="content.label" 
+                            optionValuePath="content.value" 
+                            selectionBinding="view.notificationEvent" 
+                            id="eventNotification" 
+                            prompt="Select event"}}
+                        </fieldset>
+                        <fieldset>
+                            <label for="typeNotification">Option</label> 
+                            {{view Ember.Select 
+                            contentBinding="FLOW.notificationOptionControl.content" 
+                            optionLabelPath="content.label" 
+                            optionValuePath="content.value" 
+                            selectionBinding="view.notificationType" 
+                            id="typeNotification" 
+                            prompt="Select option"}}
+                        </fieldset>
+                        <fieldset>
+                            <label for="dateNotification">Expires</label> {{view FLOW.DateField2 valueBinding="view.expires" id="dateNotification" size=30}}
+                        </fieldset>
+                        <fieldset class="addNotifiBtn">
+                            <nav>
+                                <ul>
+                                    <li><a {{action "addNotification" target="this"}} class="smallBtn">Add</a></li>
+                                    <li><a {{action "cancelNotification" target="this"}} >Cancel</a></li>
+                                </ul>
+                            </nav>
+                        </fieldset>
+                    </form>
+                    <table class="notificationTable dataTable">
+                        <!-- DEVICES TABLE--><!-- TABLE HEADER-->
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Type</th>
+                                <th>Option</th>
+                                <th>Expires</th>
+                                <th></th>
+                            </tr>
+                        </thead><!-- TABLE BODY: MAIN CONTENT-->
+                        <tbody>
+                          {{#each FLOW.notificationControl}}
+                            <tr>
+                                <td class="">{{notificationDestination}}</td>
+                                <td class="">{{notificationType}}</td>
+                                <td class="">{{notificationOption}}</td>
+                                <td class="">{{expireyDate}}</td>
+                                <td class="action">
+                                    <a>remove</a>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody><!-- TABLE FOOTER-->
+                        <tfoot>
+                            <tr>
+                                <td colspan="7">
+                                    <small>This is the footer.</small>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <nav class>
+                <ul>
+                    <li>
+                        <a {{action "closeNotifications" target="this"}} class="smallBtn">Close notifications</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+</div>
+{{/view}}

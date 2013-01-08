@@ -323,3 +323,14 @@ FLOW.Message = FLOW.BaseModel.extend({
 
 FLOW.Action = FLOW.BaseModel.extend({
 });
+
+
+FLOW.Notification = FLOW.BaseModel.extend({
+  notificationDestination:DS.attr('string'),
+  notificationOption:DS.attr('string'),
+  notificationMethod:DS.attr('string'),
+  notificationType:DS.attr('string'),
+  expiryDate:DS.attr('number'),
+  entityId:DS.attr('number'),
+});
+

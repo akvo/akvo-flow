@@ -6,6 +6,7 @@
 
 require('akvo-flow/core');
 require('akvo-flow/views/surveys/preview-view');
+require('akvo-flow/views/surveys/notifications-view');
 require('akvo-flow/views/surveys/survey-group-views');
 require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/data/inspect-data-table-views');
@@ -309,11 +310,17 @@ FLOW.NavSurveysView = Ember.View.extend({
 FLOW.NavSurveysMainView = Ember.View.extend({
   templateName: 'navSurveys/nav-surveys-main'
 });
-FLOW.NavSurveysNewView = Ember.View.extend({
-  templateName: 'navSurveys/nav-surveys-new'
-});
+
 FLOW.NavSurveysEditView = Ember.View.extend({
   templateName: 'navSurveys/nav-surveys-edit'
+});
+
+FLOW.ManageNotificationsView = Ember.View.extend({
+  templateName: 'navSurveys/manage-notifications'
+});
+
+FLOW.EditQuestionsView = Ember.View.extend({
+  templateName: 'navSurveys/edit-questions'
 });
 
 // devices views

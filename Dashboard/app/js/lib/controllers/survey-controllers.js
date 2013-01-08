@@ -27,6 +27,39 @@ FLOW.questionTypeControl = Ember.Object.create({
   })]
 });
 
+FLOW.notificationOptionControl = Ember.Object.create({
+  content: [
+  Ember.Object.create({
+    label: "link",
+    value: "LINK"
+  }), Ember.Object.create({
+    label: "attachement",
+    value: "ATTACHEMENT"
+  })]
+});
+
+FLOW.notificationTypeControl = Ember.Object.create({
+  content: [
+  Ember.Object.create({
+    label: "email",
+    value: "EMAIL"
+  })]
+});
+
+FLOW.notificationEventControl = Ember.Object.create({
+  content: [
+  Ember.Object.create({
+    label: "Raw data reports (nightly)",
+    value: "rawDataReport"
+  }),Ember.Object.create({
+    label: "Survey submission",
+    value: "surveySubmission"
+  }),Ember.Object.create({
+    label: "Survey approval",
+    value: "surveyApproval"
+  })]
+});
+
 FLOW.languageControl = Ember.Object.create({
   content: [
   Ember.Object.create({
@@ -152,7 +185,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
   }.property('content.@each.isSaving'),
 
   populate: function() {
-    if(FLOW.selectedControl.get('selectedSurvey')) {
+    if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       var id = FLOW.selectedControl.selectedSurvey.get('keyId');
       this.set('content', FLOW.store.findQuery(FLOW.QuestionGroup, {
         surveyId: id
@@ -167,10 +200,11 @@ FLOW.questionControl = Ember.ArrayController.create({
   OPTIONcontent: null,
   earlierOptionQuestions: null,
   QGcontent: null,
+  filterContent:null,
 
   populateAllQuestions: function() {
     var sId;
-    if(FLOW.selectedControl.get('selectedSurvey')) {
+    if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
       this.set('content', FLOW.store.findQuery(FLOW.Question, {
         surveyId: sId
@@ -180,7 +214,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 
   allQuestionsFilter: function() {
     var sId;
-    if(FLOW.selectedControl.get('selectedSurvey')) {
+    if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
       this.set('filterContent', FLOW.store.filter(FLOW.Question, function (item){
         return (item.get('surveyId') == sId);
@@ -190,7 +224,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 
   setQGcontent: function() {
     console.log('setQGcontent');
-    if(FLOW.selectedControl.get('selectedQuestionGroup')) {
+    if(FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
       this.set('QGcontent', FLOW.store.findQuery(FLOW.Question, {
         questionGroupId: id
@@ -239,4 +273,19 @@ FLOW.previewControl = Ember.ArrayController.create({
   showPreviewPopup:false,
   // associative array for answers in the preview
   answers:{}
+});
+
+
+FLOW.notificationControl = Ember.ArrayController.create({
+  content:null,
+
+  populate: function() {
+    var id;
+    if(FLOW.selectedControl.get('selectedSurvey')) {
+      id = FLOW.selectedControl.selectedSurvey.get('keyId');
+      this.set('content', FLOW.store.findQuery(FLOW.Notification, {
+        surveyId: id
+      }));
+    }
+  }
 });
