@@ -102,7 +102,9 @@ Ember.STRINGS_EN = {
   '_create_new_survey':'create new survey',
   '_published':'Published',
   '_not_published': 'Not published',
-'_Number_details':'Number Settings'
+  '_Number_details':'Number Settings',
+  '_require_approval':'require approval',
+  '_manage_notifications':'manage notifications'
 };
 
 Ember.STRINGS_ES = {

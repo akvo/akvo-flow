@@ -21,7 +21,19 @@
       optionValuePath="content.value" 
       selectionBinding="view.surveySectorType" 
       prompt="Select sector"}} </label>
+       <label for="surveyType">Language:
+      {{view Ember.Select 
+      contentBinding="FLOW.dashboardLanguageControl.content" 
+      optionLabelPath="content.label" 
+      optionValuePath="content.value" 
+      selectionBinding="view.language" 
+      prompt="Select sector"}} </label>
+       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireApproval"}}{{t _require_approval}} </label>
+       SurveyId: {{FLOW.selectedControl.selectedSurvey.keyId}}, version {{FLOW.selectedControl.selectedSurvey.version}}
   </form>
+
+ <a {{action "manageNotifications" target="this"}} class="manageNotifications">{{t _manage_notifications}}</a>
+
   <ul class="newSurveyInfoUl" id="">
     <li>
       <h3>Survey Summary</h3>
