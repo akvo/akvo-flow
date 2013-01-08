@@ -126,12 +126,12 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	// deprecated - not used
 	// fired when 'create a new survey' is clicked in the top bar.
 	// createNewSurvey: function() {
-	// 	FLOW.store.createRecord(FLOW.Survey,{
-	// 		"name":"New survey - please change name",
-	// 		"defaultLanguageCode": "en",
-	// 		"requireApproval": false,
-	// 		"status": "NOT_PUBLISHED",
-	// 		"surveyGroupId":FLOW.selectedControl.selectedSurveyGroup.get('keyId')});
-	// 	FLOW.store.commit();
+	//	FLOW.store.createRecord(FLOW.Survey,{
+	//		"name":"New survey - please change name",
+	//		"defaultLanguageCode": "en",
+	//		"requireApproval": false,
+	//		"status": "NOT_PUBLISHED",
+	//		"surveyGroupId":FLOW.selectedControl.selectedSurveyGroup.get('keyId')});
+	//	FLOW.store.commit();
 	// }
 });

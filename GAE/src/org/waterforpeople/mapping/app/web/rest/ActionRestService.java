@@ -15,7 +15,6 @@
  */
 package org.waterforpeople.mapping.app.web.rest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,7 @@ import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -40,51 +40,69 @@ import com.google.appengine.api.datastore.Entity;
 @Controller
 @RequestMapping("/actions")
 public class ActionRestService {
-	
+
 	@Inject
 	private SurveyDAO surveyDao;
-	
+
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public Map<String, Object> doAction(
-			@RequestParam(value = "action", defaultValue = "") String action) {
+			@RequestParam(value = "action", defaultValue = "") String action,
+			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId) {
+		String status = "failed";
 		final Map<String, Object> response = new HashMap<String, Object>();
 		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
 
+		// perform the required action
 		if ("recomputeSurveyInstanceSummaries".equals(action)) {
-			List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
-			if (surveys != null) {
-				SurveyInstanceSummary sis = null;
-				SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
-				for (Survey s : surveys) {
-					
-					// need to do it per page
-					Iterable<Entity> siList = null;
-					SurveyInstanceDAO dao = new SurveyInstanceDAO();
-					siList = dao.listSurveyInstanceKeysBySurveyId(s.getKey().getId());
-					
-					Long count = 0L;
-					for (Entity si : siList) {
-						count++;
-					}
-					
-					sis = sisDao.findBySurveyId(s.getKey().getId());
-	
-					if (sis == null) {
-						sis = new SurveyInstanceSummary();
-						sis.setCount(count);
-						sis.setSurveyId(s.getKey().getId());
-					} else {
-						sis.setCount(count);
-					}
-					sisDao.save(sis);
-				}
-			}
-			statusDto.setStatus("success");
+			status = recomputeSurveyInstanceSummaries();
+		} else if ("publishSurvey".equals(action) && surveyId != null) {
+			status = publishSurvey(surveyId);
 		}
 
+		statusDto.setStatus(status);
 		response.put("meta", statusDto);
 		return response;
+	}
+
+	private String recomputeSurveyInstanceSummaries() {
+		List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
+		String status = "failed";
+		if (surveys != null) {
+			SurveyInstanceSummary sis = null;
+			SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
+			for (Survey s : surveys) {
+
+				// need to do it per page
+				Iterable<Entity> siList = null;
+				SurveyInstanceDAO dao = new SurveyInstanceDAO();
+				siList = dao.listSurveyInstanceKeysBySurveyId(s.getKey()
+						.getId());
+
+				Long count = 0L;
+				for (Entity si : siList) {
+					count++;
+				}
+
+				sis = sisDao.findBySurveyId(s.getKey().getId());
+
+				if (sis == null) {
+					sis = new SurveyInstanceSummary();
+					sis.setCount(count);
+					sis.setSurveyId(s.getKey().getId());
+				} else {
+					sis.setCount(count);
+				}
+				sisDao.save(sis);
+			}
+			status = "success";
+		}
+		return status;
+	}
+
+	private String publishSurvey(Long surveyId){
+		SurveyServiceImpl surveyService = new SurveyServiceImpl();
+		surveyService.publishSurveyAsync(surveyId);
+		return "publishing requested";
 	}
 }

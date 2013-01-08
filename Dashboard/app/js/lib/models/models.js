@@ -320,3 +320,6 @@ FLOW.Message = FLOW.BaseModel.extend({
   actionAbout: DS.attr('string'),
   shortMessage: DS.attr('string')
 });
+
+FLOW.Action = FLOW.BaseModel.extend({
+});

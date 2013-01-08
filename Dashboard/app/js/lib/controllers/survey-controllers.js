@@ -105,7 +105,16 @@ FLOW.surveyControl = Ember.ArrayController.create({
         surveyGroupId: id
       }));
     }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup')
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  publishSurvey: function(){
+    var surveyId, query;
+    surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+    query = FLOW.store.findQuery(FLOW.Action, {
+        action:'publishSurvey',
+        surveyId: surveyId
+      });
+  }
 });
 
 

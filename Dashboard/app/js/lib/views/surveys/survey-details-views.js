@@ -45,6 +45,7 @@ FLOW.SurveySidebarView = Ember.View.extend({
 		sgId = FLOW.selectedControl.selectedSurvey.get('id');
 		survey = FLOW.store.find(FLOW.Survey, sgId);
 		survey.set('name', this.get('surveyTitle'));
+		survey.set('status','NOT_PUBLISHED');
 		survey.set('description', this.get('surveyDescription'));
 		if(this.get('surveyPointType') !== null) {
 			survey.set('pointType', this.surveyPointType.get('value'));
@@ -60,7 +61,7 @@ FLOW.SurveySidebarView = Ember.View.extend({
 	},
 
 	doPublishSurvey: function() {
-		console.log("TODO: implement publish survey");
+		FLOW.surveyControl.publishSurvey();
 	}
 });
 
@@ -104,6 +105,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		var qgId = this.content.get('id');
 		var questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgId);
 		questionGroup.set('code', this.get('questionGroupName'));
+		FLOW.selectedControl.selectedSurvey.set('status','NOT_PUBLISHED');
 		FLOW.store.commit();
 		this.set('showQGroupNameEditField', false);
 	},
@@ -142,6 +144,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 		questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
 		questionGroup.deleteRecord();
+		FLOW.selectedControl.selectedSurvey.set('status','NOT_PUBLISHED');
 		FLOW.store.commit();
 	},
 
@@ -163,6 +166,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			"order": insertAfterOrder,
 			"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
 		});
+		FLOW.selectedControl.selectedSurvey.set('status','NOT_PUBLISHED');
 		FLOW.store.commit();
 	},
 
@@ -209,6 +213,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 				// the insertAfterOrder is inserted here
 				// in the server, the proper order of all question groups is re-established
 				selectedQG.set('order',insertAfterOrder);
+				FLOW.selectedControl.selectedSurvey.set('status','NOT_PUBLISHED');
 				FLOW.store.commit();
 			}
 		}
@@ -235,7 +240,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			"code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
 			"surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId')
 		});
-
+		FLOW.selectedControl.selectedSurvey.set('status','NOT_PUBLISHED');
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
 	}
