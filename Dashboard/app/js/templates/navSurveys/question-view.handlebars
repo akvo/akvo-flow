@@ -45,7 +45,8 @@
   {{/if}}
 </div>
     <!-- Question specific material --> 
-<div class="questionOption">
+<div class="questionOption floats-in">
+
     {{#if view.amOptionType}}
       <h1 class="answerNbr">{{t _option_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label>
@@ -56,6 +57,7 @@
     {{/if}}                 
     
     {{#if view.amNumberType}}
+	  <h1 class="answerNbr">{{t _option_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimalPoint"}}{{t _allow_decimal_point}} </label>
 

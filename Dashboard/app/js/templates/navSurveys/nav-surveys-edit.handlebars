@@ -28,7 +28,7 @@
     </li>
     <li>Number of Question groups: <span id="numberQuestionSet">{{view.numberQuestionGroups}}</span> </li>
     <li>Number of Questions: <span id="numberQuestion">{{view.numberQuestions}}</span> </li>
-    <li>Status:  {{#if view.isPublished}} {{t _published}} {{else}} {{t _not_published}} {{/if}}</li>
+    <li>Status:  {{#if view.isPublished}} <span class="surveyPublished">{{t _published}}</span> {{else}} <span class="surveyNotPublished">{{t _not_published}}</span> {{/if}}</li>
   </ul>
   <nav class="newSurveyNav">
     <ul>
