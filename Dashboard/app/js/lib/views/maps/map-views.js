@@ -1,4 +1,5 @@
-/*global hideMapDetails*/
+/*jshint browser:true, jquery:true */
+/*global Ember, mxn, FLOW*/
 /**
   View that handles map page.
   Definition:
@@ -61,6 +62,7 @@ FLOW.NavMapsView = Ember.View.extend({
     this.set('imageURL', 'flow15/images/invisible.png');
   }.observes('FLOW.placemarkControl.selected'),
 
+
   /**
       ...
     **/
@@ -68,10 +70,13 @@ FLOW.NavMapsView = Ember.View.extend({
     var details, imageURL, stringVal;
 
     details = FLOW.placemarkDetailControl.get('content');
-    console.log(Ember.empty(details));
 
     if( (Ember.none(details) === false) && (Ember.empty(details) === false) && (details.get('isLoaded') === true) ) {
-      window.showMapDetails();
+      /* Show details pane */
+      jQuery("#flowMap").animate({width:"75%"}, 200);
+      $("#pointDetails").animate({width:"24.5%"}, 200).css({"overflow":"auto", "margin-left":"-2px"});
+      $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).animate({opacity:"1"}, 200).css({display:"inherit"});
+
       this.set('showDetailsBool', true);
       details.forEach(function(item) {
         stringVal = item.get('stringValue');
@@ -85,7 +90,10 @@ FLOW.NavMapsView = Ember.View.extend({
         }
       }, this);
     } else {
-      hideMapDetails();
+      /* hideMapDetails(); */
+      $("#flowMap").animate({width:"99.25%"}, 200 );
+      $("#pointDetails").animate({width:"0.25%"}, 200 ).css({"overflow":"hidden", "margin-left":"-2px"});
+      $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).css({opacity:"0"}).css({display:"none"});
     }
   }.observes('FLOW.placemarkDetailControl.content.isLoaded'),
 
@@ -105,8 +113,9 @@ FLOW.NavMapsView = Ember.View.extend({
       **/
     placemark.addMarkerClickHandler = function(marker) {
       var clickHandler = function(event_name, event_source, event_args) {
-          event_source.placemark.handleClick(event_source.placemark.marker);
-        };
+        event_source.placemark.handleClick(event_source.placemark.marker);
+        void(event_args); // To be around the JSHint warning
+      };
       marker.click.addHandler(clickHandler);
     };
 

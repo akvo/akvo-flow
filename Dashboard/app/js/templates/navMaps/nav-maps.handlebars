@@ -23,65 +23,8 @@
   </div>
 </section>
 
-
 <style>
   #pointDetails > dl > div.defListWrap:nth-child(odd) {
     background-color: rgb(214,214,214);
   }
 </style>
-<script type="text/javascript">
-
-  /* These functions needs to be "namespaced"! */
-  var initMapDetails = function () {
-    /*$("#flowMap").animate({width:"99.25%"}, 1000);*/
-    /*$("#pointDetails").animate({width:"0.25%"}, 1000).css({"overflow":"hidden", "margin-left":"-2px"});*/
-    /*$("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails div.imgContainer, .placeMarkBasicInfo" ).css({opacity:"0"}).css({display:"none"});*/
-    $(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");
-  };
-
-  var hideMapDetails = function () {
-    $("#flowMap").animate({width:"99.25%"}, 200 );
-    $("#pointDetails").animate({width:"0.25%"}, 200 ).css({"overflow":"hidden", "margin-left":"-2px"});
-    $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).css({opacity:"0"}).css({display:"none"});
-    /*$(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");*/
-  };
-
-  var showMapDetails = function () {
-    $("#flowMap").animate({width:"75%"}, 200);
-    $("#pointDetails").animate({width:"24.5%"}, 200).css({"overflow":"auto", "margin-left":"-2px"});
-    $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).animate({opacity:"1"}, 200).css({display:"inherit"});
-    /*$(".drawHandle").removeClass("showMapD").addClass("hideMapD").text("hide ›");*/
-  };
-
-  /* $(document).ready(function () {
-    initMapDetails();
-    hideMapDetails();
-    $(".drawHandle").toggle(showMapDetails, hideMapDetails);
-  }); */
-
-</script>
-
-
-<script type="text/javascript">
-  /*
-  $(document).ready(function () {
-	 $("#pointDetails > dl > div.defListWrap:nth-child(odd)").css("background-color", "rgb(214,214,214)");
-	 $("#flowMap").animate({width:"99.25%"}, 1000);
-		 $("#pointDetails").animate({width:"0.25%"}, 1000).css({"overflow":"hidden", "margin-left":"-2px"});
-		 $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails div.imgContainer, .placeMarkBasicInfo" ).css({opacity:"0"}).css({display:"none"});
-		 $(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");
-	 $(".drawHandle").toggle(function () {
-		 $("#flowMap").animate({width:"75%"}, 200);
-		 $("#pointDetails").animate({width:"24.5%"}, 200).css({"overflow":"auto", "margin-left":"-2px"});
-		 $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).animate({opacity:"1"}, 200).css({display:"inherit"});
-		 $(".drawHandle").removeClass("showMapD").addClass("hideMapD").text("hide ›");
-	 }, function(){
-		 $("#flowMap").animate({width:"99.25%"}, 200 );
-		 $("#pointDetails").animate({width:"0.25%"}, 200 ).css({"overflow":"hidden", "margin-left":"-2px"});
-		 $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).css({opacity:"0"}).css({display:"none"});
-		 $(".drawHandle").removeClass("hideMapD").addClass("showMapD").text("‹ show");
-	 });
-
-})
-*/
-</script>
