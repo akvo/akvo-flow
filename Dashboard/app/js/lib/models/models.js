@@ -54,14 +54,14 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 
 FLOW.Survey = FLOW.BaseModel.extend({
   didDelete: function() {
-    FLOW.surveyControl.populate();
-  },
-  didUpdate: function() {
-    FLOW.surveyControl.populate();
-  },
-  didCreate: function() {
-    FLOW.surveyControl.populate();
-  },
+     FLOW.surveyControl.populate();
+   },
+  // didUpdate: function() {
+  //   FLOW.surveyControl.populate();
+  // },
+  // didCreate: function() {
+  //   FLOW.surveyControl.populate();
+  // },
 
   defaultLanguageCode: DS.attr('string'),
   status: DS.attr('string'),
