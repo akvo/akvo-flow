@@ -182,7 +182,7 @@ FLOW.NavigationView = Em.View.extend({
 
   onLanguageChange: function() {
     this.rerender();
-  }.observes('FLOW.languageControl.dashboardLanguage'),
+  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage'),
 
   NavItemView: Ember.View.extend({
     tagName: 'li',
@@ -409,7 +409,7 @@ FLOW.NavAdminView = Ember.View.extend({
 
   onLanguageChange: function() {
     this.rerender();
-  }.observes('FLOW.languageControl.dashboardLanguage')
+  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage')
 });
 
 FLOW.HeaderView = Ember.View.extend({
@@ -417,7 +417,7 @@ FLOW.HeaderView = Ember.View.extend({
 
   onLanguageChange: function() {
     this.rerender();
-  }.observes('FLOW.languageControl.dashboardLanguage')
+  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage')
 });
 
 FLOW.FooterView = Ember.View.extend({
@@ -425,7 +425,7 @@ FLOW.FooterView = Ember.View.extend({
 
   onLanguageChange: function() {
     this.rerender();
-  }.observes('FLOW.languageControl.dashboardLanguage')
+  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage')
 });
 
 // ********************************************************//

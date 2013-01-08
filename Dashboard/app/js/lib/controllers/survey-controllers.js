@@ -27,6 +27,22 @@ FLOW.questionTypeControl = Ember.Object.create({
   })]
 });
 
+FLOW.languageControl = Ember.Object.create({
+  content: [
+  Ember.Object.create({
+    label: "English",
+    value: "en"
+  }), Ember.Object.create({
+    label: "Dutch",
+    value: "nl"
+  }), Ember.Object.create({
+    label: "Spanish",
+    value: "es"
+  }), Ember.Object.create({
+    label: "French",
+    value: "fr"
+  })]
+});
 
 FLOW.surveyPointTypeControl = Ember.Object.create({
   content: [

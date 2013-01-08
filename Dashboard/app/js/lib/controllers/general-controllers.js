@@ -1,4 +1,4 @@
-FLOW.languageControl = Ember.Object.create({
+FLOW.dashboardLanguageControl = Ember.Object.create({
   dashboardLanguage: null,
 
   init: function() {
