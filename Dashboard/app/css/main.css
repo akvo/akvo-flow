@@ -1830,9 +1830,16 @@ ul.surveyInfo li.responseNumber p {
 .newSurveyInfoUl li > span {
 	position: absolute;
 	right: 5px;
-	color: rgb(227, 27, 35);
 	font-weight: bold;
+	color: rgb(255, 255, 255);
 }
+.newSurveyInfoUl li > span.surveyNotPublished {
+	color: rgb(227, 27, 35);
+}
+.newSurveyInfoUl li > span.surveyPublished {
+	color: rgb(145, 237, 115);
+}
+
 nav.newSurveyNav {
 	margin: 0 auto;
 	padding: 0;
@@ -2427,16 +2434,20 @@ nav.smallMenu ul li a.showQuestion:hover {
 	top:-13px;
 	}
 .innerContent .questionOption {
-	padding:0.5em 0;
+	padding:0.5em 0 1em 0;
 	background:rgb(243,243,243);
 	margin:0 1%;
-	width:98;
-	
+	width:98%;
 	}
 .innerContent .minValNumb, .innerContent .maxValNumb {
-	width:50%;
+	width:48%;
 	} 
-	
+.innerContent .minValNumb {
+	float:left;
+	}
+.innerContent .maxValNumb {
+	float:right;
+	}
 a.addAttribute {position:absolute;left:50%;}
 a.addAttribute span {font-weight:bold;margin:0 0.25em 0 0;}
 .innerContent input[type=text] {
