@@ -104,7 +104,10 @@ Ember.STRINGS_EN = {
   '_not_published': 'Not published',
   '_Number_details':'Number Settings',
   '_require_approval':'require approval',
-  '_manage_notifications':'manage notifications'
+  '_manage_notifications':'manage notifications',
+  '_modified':'modified',
+  '_language':'language',
+  '_type':'type',
 };
 
 Ember.STRINGS_ES = {
@@ -128,7 +131,7 @@ Ember.STRINGS_FR = {
   '_cancel_move': 'Annuler',
   '_copy': 'Copier',
   '_create_a_new_survey': 'Créer une nouvelle enquête',
-  '_created': 'Créé',
+  '_created': 'Créée',
   '_dashboard_language': 'dashboard langue',
   '_data': 'données',
   '_data_server': 'Serveur de données',
@@ -222,5 +225,8 @@ Ember.STRINGS_FR = {
   '_not_published': 'Non Publiée',
   '_Number_details':'Options des nombre',
   '_require_approval':'Approbation Requise',
-  '_manage_notifications':'Gérer les notifications'
+  '_manage_notifications':'Gérer les notifications',
+  '_modified':'modifiée',
+  '_language':'langue',
+  '_type':'type',
 };
