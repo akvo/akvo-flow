@@ -1550,7 +1550,7 @@ li.aSurvey h2 {
 	text-transform: capitalize;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	letter-spacing: -0.02em;
+	letter-spacing: 0.02em;
 	font-size: 1.6em;
 	font-family: Arial, Helvetica, sans-serif;
 }
@@ -1572,6 +1572,7 @@ ul.surveyInfo {
 	vertical-align: middle;
 	text-transform: capitalize;
 	-o-border-radius: 3px;
+	background:rgb(250,250,250);
 }
 li.aSurvey:hover ul.surveyInfo {
 	border-top: thin dotted rgb(255,255,255);
@@ -1609,16 +1610,15 @@ ul.surveyInfo li.responseNumber {
 ul.surveyInfo li.responseNumber span {
 	display: inline-block;
 	margin: 2px 0px 0 0;
-	padding-top: 7px;
-	width: 30px;
-	height: 23px;
-	-webkit-border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
+	padding-top: 0.6em;
+	width: 2.4em;
+	height: 1.8em;
 	color: rgb(255,255,255);
 	text-align: center;
-	font-family: Georgia, "Times New Roman", Times, serif;
-	-o-border-radius: 15px;
+	-webkit-border-radius: 1.2em;
+	-moz-border-radius: 1.2em;
+	-o-border-radius: 1.2em;
+	border-radius: 1.2em;
 }
 ul.surveyInfo li.responseNumber p {
 	display: inline;
@@ -1676,6 +1676,7 @@ ul.surveyInfo li.responseNumber p {
 .aSurvey dl dd {
 	padding: 2px 0 2px 2%;
 	width: 67%;
+	text-align:right;
 }
 .waterPoint dl dd:nth-of-type(2) {
 	color: rgb(57, 102, 128);
@@ -1708,19 +1709,19 @@ ul.surveyInfo li.responseNumber p {
 	display: inline;
 	float: left;
 	overflow: hidden;
-	margin: 2px 1% 0 0;
+	margin: 0.2em 2% 0 0;
 	width: 49%;
-	border-radius: 2px;
+	border-radius: 0.2em;
 	/* background: url(../images/aSurveyNavSep.png) right center no-repeat; */
 	background: rgb(235,235,235);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 .aSurvey nav ul li:hover {
-	background: /*rgb(74,177,207)*/rgb(58,58,58);
+	background: rgb(74,177,207);
 }
 .aSurvey nav ul li:nth-child(2n) {
-	margin: 2px 0 0 0;
+	margin: 0.2em 0 0 0;
 }
 .aSurvey nav ul li a {
 	display: block;
@@ -1856,7 +1857,11 @@ a.manageNotifications span {
 	margin: 1.2em auto 0.2em auto;
 	padding: 15px 0%;
 	width: 94%;
-	background: rgb(23,23,23);
+	background: rgb(33,33,33);
+	-webkit-border-radius:0.4em;
+	-moz-border-radius:0.4em;
+	-o-border-radius:0.4em;
+	border-radius:0.4em;
 }
 .newSurveyInfoUl li {
 	position: relative;
