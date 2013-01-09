@@ -40,7 +40,7 @@ form {
 input, textarea, button, select {
 	color:rgb(102,102,102);
 	font-weight:normal;
-	font-size:1em;
+	font-size:1.1em;
 	
 }
 input, textarea {
@@ -60,10 +60,10 @@ textarea {
 input:hover, textarea:hover {
 	border: 1px solid rgb(114,205,255);
 	background:rgb(224,224,224);
-	background:-webkit-linear-gradient(rgb(255,255,255), rgb(244,244,244));
-	background:-moz-linear-gradient(rgb(255,255,255), rgb(244,244,244));
-	background:-o-linear-gradient(rgb(255,255,255), rgb(244,244,244));
-	background:linear-gradient(rgb(255,255,255), rgb(244,244,244));
+	background:-webkit-linear-gradient(rgb(245,245,245), rgb(234,234,234));
+	background:-moz-linear-gradient(rgb(245,245,245), rgb(234,234,234));
+	background:-o-linear-gradient(rgb(245,245,245), rgb(234,234,234));
+	background:linear-gradient(rgb(245,245,245), rgb(234,234,234));
 }
 .leftSidebar input, .leftSidebar textarea {
 	border:1px solid rgb(28,28,28);
@@ -186,7 +186,7 @@ input[type="submit"]:hover {
 	}
 select {
 	display:block;
-	padding:2px 0 3px 5px;
+	padding:2px 0 3px 0;
 	}
 /* =============================================================================
 							DEVICES TAB

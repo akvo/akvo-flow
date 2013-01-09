@@ -50,5 +50,7 @@ img, object, embed, video {
 .ie6 img {
 	width:100%;
 }
-
+input, select, textarea, button {
+	padding:0;
+	}
 /*

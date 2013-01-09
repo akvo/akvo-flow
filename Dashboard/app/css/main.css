@@ -1811,8 +1811,8 @@ ul.surveyInfo li.responseNumber p {
 #newSurveyInfo dl {
 	position: relative;
 	margin: 1em auto;
-	width: 94%;
-	padding: 0 1% 0.5em 1%;
+	width: 92%;
+	padding:0.2em 2% 0.7em 2%;
 	background: rgb(78,78,78);
 }
 #newSurveyInfo dt {
@@ -1853,16 +1853,16 @@ a.manageNotifications span {
 	margin: 0 0.2em 0 0;
 }
 .newSurveyInfoUl {
-	margin: 1.2em auto 0 auto;
+	margin: 1.2em auto 0.2em auto;
 	padding: 15px 0%;
-	width: 96%;
+	width: 94%;
 	background: rgb(23,23,23);
 }
 .newSurveyInfoUl li {
 	position: relative;
 	margin: 0.01em auto 0.3em auto;
-	padding: 0.01em 1%;
-	width: 85%;
+	padding: 0.01em 2%;
+	width: 88%;
 	color: rgb(153,153,153);
 }
 .newSurveyInfoUl li h3 {
@@ -2086,6 +2086,7 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 nav.groupActionMenu a.smallBtn {
 	background: rgb(246, 160, 26);
 	color: rgb(255,255,255);
+	margin:0 0 0.3em 0;
 }
 nav.groupActionMenu a.smallBtn:hover {
 	background: rgb(58,58,58);
