@@ -278,14 +278,30 @@ FLOW.previewControl = Ember.ArrayController.create({
 
 FLOW.notificationControl = Ember.ArrayController.create({
   content:null,
+  filterContent:null,
+  sortProperties: ['notificationDestination'],
+  sortAscending: true,
 
   populate: function() {
+    console.log('populate');
     var id;
     if(FLOW.selectedControl.get('selectedSurvey')) {
       id = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('content', FLOW.store.findQuery(FLOW.Notification, {
+      this.set('rawContent', FLOW.store.findQuery(FLOW.NotificationSubscription, {
         surveyId: id
       }));
     }
-  }
+  },
+
+  doFilterContent: function () {
+    console.log('filterContent');
+    var sId;
+    if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
+      sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      this.set('content', FLOW.store.filter(FLOW.NotificationSubscription, function (item){
+        return (item.get('entityId') == sId);
+      }));
+    }
+  }.observes('FLOW.selectedControl.selectedSurvey')
+
 });

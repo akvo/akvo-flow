@@ -7,33 +7,34 @@
                     Notifications
                 </h1>
                 <div class="whiteBgSeparator">
+                   
                     <form class="notificationAdd">
                         <fieldset>
-                            <label for="emailNotification">Email</label> 
-                            {{view Ember.TextField valueBinding="view.text" id="emailNotification" size=150 }}
+                            <label for="emailNotification">Email  {{#if view.destinationEmpty}} - Please provide an email address {{/if}}</label> 
+                            {{view Ember.TextField valueBinding="view.notificationDestination" id="emailNotification" size=150 }}
                         </fieldset>
                         <fieldset>
-                            <label for="eventNotification">Event</label> 
+                            <label for="eventNotification">Event  {{#if view.typeEmpty}} - Please make a choice{{/if}}</label> 
                             {{view Ember.Select 
                             contentBinding="FLOW.notificationEventControl.content" 
                             optionLabelPath="content.label" 
                             optionValuePath="content.value" 
-                            selectionBinding="view.notificationEvent" 
+                            selectionBinding="view.notificationType" 
                             id="eventNotification" 
                             prompt="Select event"}}
                         </fieldset>
                         <fieldset>
-                            <label for="typeNotification">Option</label> 
+                            <label for="typeNotification">Option  {{#if view.optionEmpty}} - Please make a choice {{/if}}</label> 
                             {{view Ember.Select 
                             contentBinding="FLOW.notificationOptionControl.content" 
                             optionLabelPath="content.label" 
                             optionValuePath="content.value" 
-                            selectionBinding="view.notificationType" 
+                            selectionBinding="view.notificationOption" 
                             id="typeNotification" 
                             prompt="Select option"}}
                         </fieldset>
                         <fieldset>
-                            <label for="dateNotification">Expires</label> {{view FLOW.DateField2 valueBinding="view.expires" id="dateNotification" size=30}}
+                            <label for="dateNotification">Expires {{#if view.dateEmpty}} - Please select a date {{/if}}</label> {{view FLOW.DateField2 valueBinding="view.expiryDate" id="dateNotification" size=30}}
                         </fieldset>
                         <fieldset class="addNotifiBtn">
                             <nav>
@@ -56,14 +57,14 @@
                             </tr>
                         </thead><!-- TABLE BODY: MAIN CONTENT-->
                         <tbody>
-                          {{#each FLOW.notificationControl}}
+                          {{#each notification in FLOW.notificationControl}}
                             <tr>
-                                <td class="">{{notificationDestination}}</td>
-                                <td class="">{{notificationType}}</td>
-                                <td class="">{{notificationOption}}</td>
-                                <td class="">{{expireyDate}}</td>
+                                <td class="">{{notification.notificationDestination}}</td>
+                                <td class="">{{notification.notificationType}}</td>
+                                <td class="">{{notification.notificationOption}}</td>
+                                <td class="">{{#with notification}}{{date3 expiryDate}}{{/with}}</td>
                                 <td class="action">
-                                    <a>remove</a>
+                                    <a {{action "removeNotification" notification target="this"}}>remove</a>
                                 </td>
                             </tr>
                             {{/each}}

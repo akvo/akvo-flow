@@ -119,6 +119,14 @@ FLOW.Router = Ember.Router.extend({
           router.get('navSurveysController').connectOutlet({
             name: 'navSurveysEdit'
           });
+           // all questions should be closed when we enter
+            FLOW.selectedControl.set('selectedQuestion', null);
+            FLOW.attributeControl.populate();
+
+            if(!Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
+              FLOW.questionGroupControl.populate();
+              FLOW.questionControl.populateAllQuestions();
+            }
         },
 
         doManageNotifications: function(router, event) {
@@ -140,7 +148,7 @@ FLOW.Router = Ember.Router.extend({
             router.get('navSurveysEditController').connectOutlet({
               name: 'manageNotifications'
             });
-            //FLOW.notificationsControl.populate();
+            FLOW.notificationControl.populate();
           }
         }),
 
@@ -150,14 +158,7 @@ FLOW.Router = Ember.Router.extend({
             router.get('navSurveysEditController').connectOutlet({
               name: 'editQuestions'
             });
-            // all questions should be closed when we enter
-            FLOW.selectedControl.set('selectedQuestion', null);
-            FLOW.attributeControl.populate();
-
-            if(!Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
-              FLOW.questionGroupControl.populate();
-              FLOW.questionControl.populateAllQuestions();
-            }
+           
           }
         })
       })

@@ -116,6 +116,33 @@ Ember.Handlebars.registerHelper("date1", function(property) {
   }
 });
 
+// format used in devices table
+Ember.Handlebars.registerHelper("date3", function(property) {
+  var d, curr_date, curr_month, curr_year, monthString, dateString;
+  if(Ember.get(this, property) !== null) {
+    d = new Date(parseInt(Ember.get(this, property), 10));
+    curr_date = d.getDate();
+    curr_month = d.getMonth() + 1;
+    curr_year = d.getFullYear();
+
+    if(curr_month < 10) {
+      monthString = "0" + curr_month.toString();
+    } else {
+      monthString = curr_month.toString();
+    }
+
+    if(curr_date < 10) {
+      dateString = "0" + curr_date.toString();
+    } else {
+      dateString = curr_date.toString();
+    }
+
+    return(curr_year + "-" + monthString + "-" + dateString);
+  } else {
+    return "";
+  }
+});
+
 // Register a Handlebars helper that instantiates `view`.
 // The view will have its `content` property bound to the
 // helper argument.
@@ -125,6 +152,7 @@ FLOW.registerViewHelper = function(name, view) {
     return Ember.Handlebars.helpers.view.call(this, view, options);
   });
 };
+
 
 FLOW.registerViewHelper('date2', Ember.View.extend({
   tagName: 'span',
@@ -173,6 +201,10 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
     return(curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString);
   }).property('content')
 }));
+
+
+
+
 
 // ********************************************************//
 //                      main navigation
@@ -295,8 +327,6 @@ FLOW.DateField2 = Ember.TextField.extend({
     });
   }
 });
-
-
 
 // home screen view
 FLOW.NavHomeView = Ember.View.extend({
