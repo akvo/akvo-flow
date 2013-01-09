@@ -44,6 +44,10 @@ import com.gallatinsystems.survey.device.view.adapter.SurveyReviewCursorAdaptor;
  * user to delete surveys from the device and to review submitted surveys in a
  * read-only mode.
  * 
+ * TODO: Split this activity in two, so that 
+ *   1. This only handles saved surveys.
+ *   2. The other handles submitted surveys, and displays the current transmission status with colored icons etc.
+ *   
  * @author Christopher Fagiani
  * 
  */
