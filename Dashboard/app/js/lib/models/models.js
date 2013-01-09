@@ -195,7 +195,8 @@ FLOW.Device = FLOW.BaseModel.extend({
     defaultValue: ''
   }),
   isSelected: false,
-  deviceGroupName: null
+  deviceGroupName: null,
+  combinedName:null
 });
 
 FLOW.SurveyAssignment = FLOW.BaseModel.extend({
@@ -203,7 +204,8 @@ FLOW.SurveyAssignment = FLOW.BaseModel.extend({
   startDate: DS.attr('date'),
   endDate: DS.attr('date'),
   devices: DS.attr('array'),
-  surveys: DS.attr('array')
+  surveys: DS.attr('array'),
+  language: DS.attr('string')
 });
 
 FLOW.SurveyedLocale = DS.Model.extend({

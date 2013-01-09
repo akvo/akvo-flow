@@ -1,38 +1,20 @@
-<section class="fullWidth" id="currentDevices">
 
- <section class="fullWidth " id="devicesList">
-        <!-- DEVICES TABLE-->
+ <section class="fullWidth " id="assignmentsList">
+        <!-- assignments TABLE-->
 
-      {{#view FLOW.CurrentDevicesTabView}}
+      {{#view FLOW.AssignmentsListTabView}}
 
-         <div id="devicesListTable_length" class="dataTables_length">
-          <!--   <label>
-                Show
-                <select size="1" name="deviceListTable_length">
-                    <option value="10" selected="selected">10</option> 
-                    <option value="20" >20</option> 
-                    <option value="50" >50</option> 
-                    <option value="100" >100</option> 
-
-                </select>
-
-                &nbsp;entries
-
-            </label> -->
-
+       <div id="devicesListTable_length" class="dataTables_length">
         </div> 
-        
-         {{#if FLOW.surveyAssignmentControl.atLeastOneSelected}}
-            <a {{action "showDeleteDevicesdialog" target="this"}}>Disable Devices</a>
-        {{/if}}
+
+       <a {{action "createNewAssignment" target="this"}} class="standardBtn btnAboveTable">{{t _create_new_assignment}}</a>
+    <div id="devicesListTable_length" class="dataTables_length">
+        </div> 
 
         <table class="dataTable" id="deviceDataTable">
             <!-- TABLE HEADER-->
             <thead>
                <tr>
-                {{#view FLOW.ColumnView item="select" }}
-                    {{view Ember.Checkbox checkedBinding="FLOW.surveyAssignmentControl.allAreSelected"}}
-                {{/view}}
                 {{#view FLOW.ColumnView item="name" type="assignment"}}
                   <a {{action "sort" target="this"}}>Name</a>
                 {{/view}}
@@ -43,18 +25,17 @@
                   <a {{action "sort" target="this"}}>End date</a>
                 {{/view}}
 
-                 <th> <a>Action</a></th>
+                 <th class="action noArrows"> <a>Action</a></th>
                </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
-                {{#each FLOW.surveyAssignmentControl}}
+                {{#each assignment in FLOW.surveyAssignmentControl}}
                   <tr>
-                    <td class="selection" style="text-align:left; padding:0 0 0 5px;"> {{view Ember.Checkbox checkedBinding="isSelected"}}</td>
-                    <td class="name" style="text-align:left; padding:0 0 0 5px;">{{name}}</td>
-                    <td class="startDate" >{{startDate}}</td>
-                    <td class="endDate" >{{endDate}}</td>
-                    <td class="action"><a>action</a></td>
+                    <td class="name" style="text-align:left; padding:0 0 0 5px;">{{assignment.name}}</td>
+                    <td class="startDate" >{{#with assignment}} {{date3 startDate}} {{/with}}</td>
+                    <td class="endDate" >{{#with assignment}} {{assignment.endDate}} {{/with}}</td>
+                    <td class="action"><a {{action "editSurveyAssignment" assignment target="this"}} class="edit">edit</a> {{#view FLOW.AssignmentView contentBinding="assignment"}}<a {{action confirm FLOW.dialogControl.delAssignment target="FLOW.dialogControl"}} class="remove">remove</a>{{/view}}
                   </tr>
                 {{/each}}
             </tbody>
@@ -65,13 +46,6 @@
                 </tr>
             </tfoot>
         </table>
-   <!--     {{#if view.showConfirmDeletedialog}}
-            <a {{action "doDelete" target="this"}}>Ok</a>
-            <a {{action "cancelDelete" target="this"}}>Cancel</a>
-        {{/if}}     -->
-
         {{/view}}
     </section>
        
-
-</section>

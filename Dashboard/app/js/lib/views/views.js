@@ -18,6 +18,8 @@ require('akvo-flow/views/reports/export-reports-views');
 require('akvo-flow/views/maps/map-views');
 require('akvo-flow/views/messages/message-view');
 require('akvo-flow/views/devices/devices-views');
+require('akvo-flow/views/devices/assignments-list-tab-view');
+require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/users/user-view');
 
 FLOW.ApplicationView = Ember.View.extend({
@@ -289,6 +291,11 @@ Ember.View.reopen({
   }
 });
 
+Ember.Select.reopen({
+  attributeBindings: ['size']
+});
+
+
 FLOW.DateField = Ember.TextField.extend({
  didInsertElement: function() {
     this._super();
@@ -357,12 +364,15 @@ FLOW.EditQuestionsView = Ember.View.extend({
 FLOW.NavDevicesView = Ember.View.extend({
   templateName: 'navDevices/nav-devices'
 });
+
 FLOW.CurrentDevicesView = Ember.View.extend({
   templateName: 'navDevices/devices-list-tab/devices-list'
 });
+
 FLOW.AssignSurveysOverviewView = Ember.View.extend({
   templateName: 'navDevices/assignment-list-tab/assignment-list'
 });
+
 FLOW.EditSurveyAssignmentView = Ember.View.extend({
   templateName: 'navDevices/assignment-edit-tab/assignment-edit'
 });

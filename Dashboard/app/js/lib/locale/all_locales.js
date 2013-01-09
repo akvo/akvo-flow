@@ -81,6 +81,8 @@ Ember.STRINGS_EN = {
   '_Q_delete_message':'This cannot be undone.',
   '_Attr_delete_header':'Are you sure you want to delete this attribute?',
   '_Attr_delete_message':'This cannot be undone.',
+  '_Assignment_delete_header':'Are you sure you want to delete this assignment?',
+  '_Assignment_delete_message':'This cannot be undone.',
   '_User_delete_header':'Are you sure you want to delete this user?',
   '_User_delete_message':'This cannot be undone.',
   '_action_failed': 'Action failed',
@@ -108,6 +110,7 @@ Ember.STRINGS_EN = {
   '_modified':'modified',
   '_language':'language',
   '_type':'type',
+  '_create_new_assignment':'create new assignment'
 };
 
 Ember.STRINGS_ES = {
