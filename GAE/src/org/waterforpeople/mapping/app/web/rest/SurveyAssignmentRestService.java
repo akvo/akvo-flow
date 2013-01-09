@@ -60,7 +60,7 @@ public class SurveyAssignmentRestService {
 		response.put("survey_assignments", results);
 		return response;
 	}
-
+	
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
 	public Map<String, SurveyAssignmentDto> getById(@PathVariable("id") Long id) {
@@ -99,6 +99,25 @@ public class SurveyAssignmentRestService {
 					"Survey Assignment with id: " + dto.getKeyId()
 							+ " not found");
 		}
+
+		BeanUtils.copyProperties(marshallToDomain(dto), sa);
+		surveyAssignmentDao.save(sa);
+
+		response.put("survey_assignment", marshallToDto(sa));
+
+		return response;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value = "")
+	@ResponseBody
+	public Map<String, SurveyAssignmentDto> updateSurveyAssignment(
+			@RequestBody SurveyAssignmentPayload payload) {
+
+		final SurveyAssignmentDto dto = payload.getSurvey_assignment();;
+
+		final SurveyAssignment sa = new SurveyAssignment();
+
+		final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
 
 		BeanUtils.copyProperties(marshallToDomain(dto), sa);
 		surveyAssignmentDao.save(sa);
