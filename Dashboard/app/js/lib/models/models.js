@@ -75,7 +75,11 @@ FLOW.Survey = FLOW.BaseModel.extend({
   surveyGroupId: DS.attr('number'),
   createdDateTime: DS.attr('number'),
   lastUpdateDateTime: DS.attr('number'),
-  instanceCount: DS.attr('number')
+  instanceCount: DS.attr('number'),
+
+  // This attribute is used for the 'Copy Survey' functionality
+  // Most of the times is `null`
+  sourceId: DS.attr('number', {defaultValue: null })
 });
 
 
