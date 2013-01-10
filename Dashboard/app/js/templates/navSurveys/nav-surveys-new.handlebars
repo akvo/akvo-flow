@@ -3,9 +3,9 @@
   <h2>{{t _create_new_survey}}</h2>
   {{#view FLOW.SurveySidebarView}}
   <form>
-    <label for="newSurveyName">Title:
+    <label for="newSurveyName">{{t _Title}}:
       {{view Ember.TextField valueBinding="view.surveyTitle" placeholder="Type in the name of your survey" size=30}} </label>
-    <label for="newSurveyDesc">Description:
+    <label for="newSurveyDesc">{{t _Description}}:
       {{view Ember.TextArea valueBinding="view.surveyDescription" placeholder="Type in a description of your survey" size=30 rows="3" }} </label>
     <label for="surveyType">Type:
       {{view Ember.Select 

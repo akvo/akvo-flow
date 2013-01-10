@@ -110,7 +110,10 @@ Ember.STRINGS_EN = {
   '_modified':'modified',
   '_language':'language',
   '_type':'type',
-  '_create_new_assignment':'create new assignment'
+  '_create_new_assignment':'create new assignment',
+  '_Title':'Title',
+  '_Description':'Description',
+  '_Sector_Focus':'Sector Focus',
 };
 
 Ember.STRINGS_ES = {
@@ -231,5 +234,9 @@ Ember.STRINGS_FR = {
   '_manage_notifications':'Gérer les notifications',
   '_modified':'modifiée',
   '_language':'langue',
-  '_type':'type'
+  '_type':'type',
+  '_create_new_assignment':'créez une nouvelle allocation',
+  '_Title':'Titre',
+  '_Description':'Description',
+  '_Sector_Focus':'Secteur',
 };
