@@ -205,8 +205,8 @@ FLOW.Device = FLOW.BaseModel.extend({
 
 FLOW.SurveyAssignment = FLOW.BaseModel.extend({
   name: DS.attr('string'),
-  startDate: DS.attr('date'),
-  endDate: DS.attr('date'),
+  startDate: DS.attr('number'),
+  endDate: DS.attr('number'),
   devices: DS.attr('array'),
   surveys: DS.attr('array'),
   language: DS.attr('string')
