@@ -5,13 +5,29 @@ upstream flow {
 server {
     listen 80 default;
 
-	location /Dashboard {
-        alias /akvo-flow/Dashboard/assets;
-		autoindex on;
-		index dashboard.html;
-	}
+    location /Dashboard.html {
+        proxy_pass       http://33.33.33.6:8080/Dashboard.html;
+        proxy_redirect   default;
+    }
 
-	location / {
+    location /admin {
+        alias /akvo-flow/GAE/war/admin;
+        autoindex on;
+        index index.html;
+    }
+
+    location /rest {
+        proxy_pass http://akvoflowsandbox.appspot.com/surveyrestapi;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location /restvm {
+        proxy_pass http://127.0.0.1:8080/rest;
+    }
+
+    location / {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $http_host;
         proxy_redirect off;
@@ -22,4 +38,3 @@ server {
         }
     }
 }
-

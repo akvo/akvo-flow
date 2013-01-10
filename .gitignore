@@ -21,6 +21,7 @@ GAE/war/WEB-INF/*.jks
 GAE/war/WEB-INF/appengine-web.xml
 GAE/war/WEB-INF/classes
 GAE/war/org.*
+GAE/war/admin*
 GAE/war/flow15*
 GAE/war/dashboard15.html
 GAE/war/WEB-INF/appengine-generated/*

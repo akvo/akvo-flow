@@ -11,7 +11,7 @@
 FLOW.NavMapsView = Ember.View.extend({
   templateName: 'navMaps/nav-maps',
   showDetailsBool: false,
-  imageURL: 'flow15/images/invisible.png',
+  imageURL: 'images/invisible.png',
 
   init: function() {
     this._super();
@@ -59,7 +59,7 @@ FLOW.NavMapsView = Ember.View.extend({
     } else {
       FLOW.placemarkDetailControl.populate(selected);
     }
-    this.set('imageURL', 'flow15/images/invisible.png');
+    this.set('imageURL', 'images/invisible.png');
   }.observes('FLOW.placemarkControl.selected'),
 
 
@@ -105,7 +105,7 @@ FLOW.NavMapsView = Ember.View.extend({
     var point = new mxn.LatLonPoint(placemark.get('latitude'), placemark.get('longitude')),
       marker = new mxn.Marker(point);
 
-    marker.setIcon('flow15/images/maps/blueMarker.png');
+    marker.setIcon('images/maps/blueMarker.png');
     marker.placemark = placemark;
     // Add a click handler that handles what happens when marker is clicked
     /**
@@ -150,10 +150,10 @@ FLOW.NavMapsView = Ember.View.extend({
       var point = new mxn.LatLonPoint(placemark.get('latitude'), placemark.get('longitude')),
         newMarker = new mxn.Marker(point);
 
-      if(placemark.marker.iconUrl === 'flow15/images/maps/blueMarker.png') {
-        newMarker.iconUrl = 'flow15/images/maps/redMarker.png';
+      if(placemark.marker.iconUrl === 'images/maps/blueMarker.png') {
+        newMarker.iconUrl = 'images/maps/redMarker.png';
       } else {
-        newMarker.iconUrl = 'flow15/images/maps/blueMarker.png';
+        newMarker.iconUrl = 'images/maps/blueMarker.png';
       }
 
       placemark.addMarkerClickHandler(newMarker);

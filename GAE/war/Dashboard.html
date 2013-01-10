@@ -1,58 +1,29 @@
-<!DOCTYPE html>
-<!--[if lt IE 7 ]><html class="ie ie6 no-js" lang="en"><![endif]-->
-<!--[if IE 7 ]><html class="ie ie7 no-js" lang="en"><![endif]-->
-<!--[if IE 8 ]><html class="ie ie8 no-js" lang="en"><![endif]-->
-<!--[if IE 9 ]><html class="ie ie9 no-js" lang="en"><![endif]-->
-<!--[if gt IE 9]><!-->
-<html class="no-js" lang="en">
-<!--<![endif]-->
-<!-- the "no-js" class is for Modernizr. -->
-  <head id="akvoFlow">
-    <meta charset="UTF-8">
-    <meta name="description" content="Akvo Flow: field level operations watch" />
-    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
-    <!-- Force latest IE rendering engine (even in intranet) & Chrome Frame -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Akvo Flow - Dashboard</title>
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <!-- enable HTML5 elements in IE7+8 -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="flow15/css/screen.css"  media="screen,projection" />
-    
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!--
+  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+
+  This file is part of Akvo FLOW.
+
+  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+  either version 3 of the License or any later version.
+
+  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Affero General Public License included below for more details.
+
+  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+-->
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="css/portal.css" />
+    <script type="text/javascript" language="javascript" src="org.waterforpeople.mapping.portal.portal/org.waterforpeople.mapping.portal.portal.nocache.js"></script>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
   </head>
+
   <body>
-  
-  <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-  <script>window.jQuery || document.write("<script src='flow15/js/vendor/jquery-1.8.2.min.js'>\x3C/script>")</script>
-
-  <!-- Additional vendor libraries -->
-  <!-- <script src="js/vendor/underscore-1.4.2.min.js"></script> -->
-  <!-- <script src="js/vendor/underscore.string-2.3.0.min.js"></script> -->
-
-  <!-- Leaflet -->
-  <!-- <script src="http://cdn.leafletjs.com/leaflet-0.4.5/leaflet.js"></script>-->
-
-  <!-- Mapstraction -->
-  <!-- Google v3 <script src="//maps.googleapis.com/maps/api/js?key=AIzaSyAiTluGJxlEM2z2xdmtXSLySdW9UBHnBEc&sensor=false"></script> -->
-  <!-- CloudMade <script src="//tile.cloudmade.com/wml/0.2/web-maps-lite.js"></script> -->
-  <!-- OpenLayers / OSM <script src="http://openlayers.org/api/OpenLayers.js"></script> -->
-
-  <!-- Google v2 (deprecated) -->
-  <script src="//maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=AIzaSyAiTluGJxlEM2z2xdmtXSLySdW9UBHnBEc"></script>
-  <script src="flow15/js/vendor/mxn/mxn.js?(google)"></script>
-
-	<script src="flow15/js/loader.js"></script>
-<!--	<script src="/currentuser.js"></script> dynamically generated javascript-->
-    <script src="/flowenv.js"></script>
-	<script src="flow15/js/app.js"></script>
-	<script>
-    var cloudmade_key = 'a1029e8c8d9d42bc84e96b8a960bb42e';
-    loader.require('akvo-flow/main');
-	</script>
-  <script src="flow15/js/flowDashboard.js"></script>
+    <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
   </body>
 </html>
