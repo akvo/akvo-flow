@@ -1826,7 +1826,7 @@ ul.surveyInfo li.responseNumber p {
 	float: left;
 	clear: left;
 	padding: 0.5em 0 0 2%;
-	width: 45%;
+	width: 52%;
 	color: rgb(204,204,204);
 }
 #newSurveyInfo dd {
@@ -1835,7 +1835,7 @@ ul.surveyInfo li.responseNumber p {
 	float: right;
 	clear: right;
 	padding: 0.5em 0 0 0;
-	width: 50%;
+	width:40%;
 	font-weight: bold;
 	color: rgb(255,255,255);
 }
@@ -2201,8 +2201,8 @@ nav.questionActionMenu a:hover {
 .aQuestionSet header nav.qtnGroupMenu ul li a {
 	display: block;
 	padding: 5px;
-	color: rgb(227, 27, 35);
-	text-transform: uppercase;
+/*	color: rgb(227, 27, 35);
+*/	text-transform: uppercase;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
 	padding: 5px 5px 5px 15px;
