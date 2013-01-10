@@ -34,6 +34,8 @@ FLOW.NavMapsView = Ember.View.extend({
     map.setCenterAndZoom(latLon, 8);
     map.enableScrollWheelZoom();
     FLOW.placemarkControl.set('map', map);
+    // var gmap = map.getMap();
+    // console.log(gmap);
   },
 
   /**

@@ -17,10 +17,7 @@ server {
     }
 
     location /rest {
-        proxy_pass http://akvoflowsandbox.appspot.com/surveyrestapi;
-        proxy_redirect off;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://akvoflowsandbox.appspot.com/rest;
     }
 
     location /restvm {
