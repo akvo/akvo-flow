@@ -40,6 +40,7 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private Boolean requireApproval;
 	private Date createdDateTime;
 	private Date lastUpdateDateTime;
+	private Long sourceId = null;
 
 	public String getPath() {
 		return path;
@@ -176,6 +177,14 @@ public class SurveyDto extends BaseDto implements NamedObject {
 
 	public Boolean getRequireApproval() {
 		return requireApproval;
+	}
+
+	public Long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(Long sourceId) {
+		this.sourceId = sourceId;
 	}
 
 }
