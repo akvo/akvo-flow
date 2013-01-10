@@ -231,5 +231,5 @@ Ember.STRINGS_FR = {
   '_manage_notifications':'Gérer les notifications',
   '_modified':'modifiée',
   '_language':'langue',
-  '_type':'type',
+  '_type':'type'
 };

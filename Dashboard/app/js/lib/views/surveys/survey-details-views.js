@@ -51,7 +51,7 @@ FLOW.SurveySidebarView = Ember.View.extend({
 	}.property('FLOW.questionGroupControl.content.@each'),
 
 	doSaveSurvey: function() {
-		var sgId, survey;
+		var survey;
 		survey = FLOW.selectedControl.get('selectedSurvey');
 		survey.set('name', this.get('surveyTitle'));
 		survey.set('status','NOT_PUBLISHED');
@@ -166,7 +166,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		} else {
 			insertAfterOrder = this.content.get('order');
 		}
-		
+
 		// create new QuestionGroup item in the store
 		// the insertAfterOrder is inserted here
 		// in the server, the proper order of all question groups is re-established
@@ -240,7 +240,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		} else {
 			insertAfterOrder = this.content.get('order');
 		}
-		
+
 		// the insertAfterOrder is inserted here
 		// in the server, the proper order of all question groups is re-established
 		FLOW.store.createRecord(FLOW.QuestionGroup, {

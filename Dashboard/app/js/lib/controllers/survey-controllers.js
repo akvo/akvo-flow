@@ -157,12 +157,12 @@ FLOW.surveyControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   publishSurvey: function(){
-    var surveyId, query;
+    var surveyId;
     surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-    query = FLOW.store.findQuery(FLOW.Action, {
-        action:'publishSurvey',
-        surveyId: surveyId
-      });
+    FLOW.store.findQuery(FLOW.Action, {
+      action:'publishSurvey',
+      surveyId: surveyId
+    });
   }
 });
 
