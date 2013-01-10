@@ -6,6 +6,7 @@
 
 require('akvo-flow/core');
 require('akvo-flow/views/surveys/preview-view');
+require('akvo-flow/views/surveys/notifications-view');
 require('akvo-flow/views/surveys/survey-group-views');
 require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/data/inspect-data-table-views');
@@ -17,6 +18,8 @@ require('akvo-flow/views/reports/export-reports-views');
 require('akvo-flow/views/maps/map-views');
 require('akvo-flow/views/messages/message-view');
 require('akvo-flow/views/devices/devices-views');
+require('akvo-flow/views/devices/assignments-list-tab-view');
+require('akvo-flow/views/devices/assignment-edit-views');
 require('akvo-flow/views/users/user-view');
 
 FLOW.ApplicationView = Ember.View.extend({
@@ -115,6 +118,33 @@ Ember.Handlebars.registerHelper("date1", function(property) {
   }
 });
 
+// format used in devices table
+Ember.Handlebars.registerHelper("date3", function(property) {
+  var d, curr_date, curr_month, curr_year, monthString, dateString;
+  if(Ember.get(this, property) !== null) {
+    d = new Date(parseInt(Ember.get(this, property), 10));
+    curr_date = d.getDate();
+    curr_month = d.getMonth() + 1;
+    curr_year = d.getFullYear();
+
+    if(curr_month < 10) {
+      monthString = "0" + curr_month.toString();
+    } else {
+      monthString = curr_month.toString();
+    }
+
+    if(curr_date < 10) {
+      dateString = "0" + curr_date.toString();
+    } else {
+      dateString = curr_date.toString();
+    }
+
+    return(curr_year + "-" + monthString + "-" + dateString);
+  } else {
+    return "";
+  }
+});
+
 // Register a Handlebars helper that instantiates `view`.
 // The view will have its `content` property bound to the
 // helper argument.
@@ -124,6 +154,7 @@ FLOW.registerViewHelper = function(name, view) {
     return Ember.Handlebars.helpers.view.call(this, view, options);
   });
 };
+
 
 FLOW.registerViewHelper('date2', Ember.View.extend({
   tagName: 'span',
@@ -173,6 +204,10 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
   }).property('content')
 }));
 
+
+
+
+
 // ********************************************************//
 //                      main navigation
 // ********************************************************//
@@ -182,7 +217,7 @@ FLOW.NavigationView = Em.View.extend({
 
   onLanguageChange: function() {
     this.rerender();
-  }.observes('FLOW.languageControl.dashboardLanguage'),
+  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage'),
 
   NavItemView: Ember.View.extend({
     tagName: 'li',
@@ -256,6 +291,11 @@ Ember.View.reopen({
   }
 });
 
+Ember.Select.reopen({
+  attributeBindings: ['size']
+});
+
+
 FLOW.DateField = Ember.TextField.extend({
  didInsertElement: function() {
     this._super();
@@ -295,8 +335,6 @@ FLOW.DateField2 = Ember.TextField.extend({
   }
 });
 
-
-
 // home screen view
 FLOW.NavHomeView = Ember.View.extend({
   templateName: 'navHome/nav-home'
@@ -309,23 +347,32 @@ FLOW.NavSurveysView = Ember.View.extend({
 FLOW.NavSurveysMainView = Ember.View.extend({
   templateName: 'navSurveys/nav-surveys-main'
 });
-FLOW.NavSurveysNewView = Ember.View.extend({
-  templateName: 'navSurveys/nav-surveys-new'
-});
+
 FLOW.NavSurveysEditView = Ember.View.extend({
   templateName: 'navSurveys/nav-surveys-edit'
+});
+
+FLOW.ManageNotificationsView = Ember.View.extend({
+  templateName: 'navSurveys/manage-notifications'
+});
+
+FLOW.EditQuestionsView = Ember.View.extend({
+  templateName: 'navSurveys/edit-questions'
 });
 
 // devices views
 FLOW.NavDevicesView = Ember.View.extend({
   templateName: 'navDevices/nav-devices'
 });
+
 FLOW.CurrentDevicesView = Ember.View.extend({
   templateName: 'navDevices/devices-list-tab/devices-list'
 });
+
 FLOW.AssignSurveysOverviewView = Ember.View.extend({
   templateName: 'navDevices/assignment-list-tab/assignment-list'
 });
+
 FLOW.EditSurveyAssignmentView = Ember.View.extend({
   templateName: 'navDevices/assignment-edit-tab/assignment-edit'
 });
@@ -409,7 +456,7 @@ FLOW.NavAdminView = Ember.View.extend({
 
   onLanguageChange: function() {
     this.rerender();
-  }.observes('FLOW.languageControl.dashboardLanguage')
+  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage')
 });
 
 FLOW.HeaderView = Ember.View.extend({
@@ -417,7 +464,7 @@ FLOW.HeaderView = Ember.View.extend({
 
   onLanguageChange: function() {
     this.rerender();
-  }.observes('FLOW.languageControl.dashboardLanguage')
+  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage')
 });
 
 FLOW.FooterView = Ember.View.extend({
@@ -425,7 +472,7 @@ FLOW.FooterView = Ember.View.extend({
 
   onLanguageChange: function() {
     this.rerender();
-  }.observes('FLOW.languageControl.dashboardLanguage')
+  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage')
 });
 
 // ********************************************************//

@@ -39,6 +39,22 @@ FLOW.deviceControl = Ember.ArrayController.create({
 });
 
 
+FLOW.devicesInGroupControl = Ember.ArrayController.create({
+  content:null,
+  sortProperties: ['phoneNumber'],
+  sortAscending: true,
+  setDevicesInGroup: function() {
+    var deviceGroupId;
+    if(FLOW.selectedControl.get('selectedDeviceGroup') && FLOW.selectedControl.selectedDeviceGroup.get('keyId') !== null) {
+      deviceGroupId = FLOW.selectedControl.selectedDeviceGroup.get('keyId');
+      this.set('content', FLOW.store.filter(FLOW.Device, function(item) {
+        return (parseInt(item.get('deviceGroup'), 10) == deviceGroupId);
+      }));
+    }
+  }.observes('FLOW.selectedControl.selectedDeviceGroup')
+});
+
+
 FLOW.surveyAssignmentControl = Ember.ArrayController.create({
   sortProperties: null,
   sortAscending: true,
@@ -49,19 +65,6 @@ FLOW.surveyAssignmentControl = Ember.ArrayController.create({
     this.set('sortProperties', ['name']);
     this.set('sortAscending', true);
   },
-
-  allAreSelected: function(key, value) {
-    if(arguments.length === 2) {
-      this.setEach('isSelected', value);
-      return value;
-    } else {
-      return !this.get('isEmpty') && this.everyProperty('isSelected', true);
-    }
-  }.property('@each.isSelected'),
-
-  atLeastOneSelected: function() {
-    return this.filterProperty('isSelected', true).get('length');
-  }.property('@each.isSelected'),
 
   getSortInfo: function() {
     this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));

@@ -73,7 +73,6 @@ h1 {
 h2 {
 	color: rgb(44, 42, 116);
 	font-size: 1.8em;
-	line-height: 1.2em;
 }
 h3 {
 	font-size: 1.8em;
@@ -187,18 +186,17 @@ pre {
 	background: rgb(200,214,214);
 }
 .whiteBgSeparator {
-	display:inline-block;
-	overflow:auto;
-	margin:1em 1% 0.5em 1%;
-	padding:1em 1%;
-	width:98%;
-	background:rgb(255,255,255);
-	-webkit-box-shadow:0 0 2px rgb(230,230,230);
-	-moz-box-shadow:0 0 2px rgb(230,230,230);
-	box-shadow:0 0 2px rgb(230,230,230);
-	-o-box-shadow:0 0 2px rgb(230,230,230);
-	}
-
+	display: inline-block;
+	overflow: auto;
+	margin: 1em 1% 0.5em 1%;
+	padding: 1em 1%;
+	width: 98%;
+	background: rgb(255,255,255);
+	-webkit-box-shadow: 0 0 2px rgb(230,230,230);
+	-moz-box-shadow: 0 0 2px rgb(230,230,230);
+	box-shadow: 0 0 2px rgb(230,230,230);
+	-o-box-shadow: 0 0 2px rgb(230,230,230);
+}
 /* links 
 ---------------------------------------------------------------*/
 
@@ -250,18 +248,17 @@ mark {
 	visibility: visible;
 }
 a.standardBtn, input[type="submit"] {
-	display: block;
+	display: inline-block;
 	padding: 0.5em;
-	width: 10%;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
+	-webkit-border-radius: 0.3em;
+	-moz-border-radius: 0.3em;
+	border-radius: 0.3em;
+	-o-border-radius: 0.3em;
 	background-color: rgb(0,123,182);
 	color: rgb(235,235,235);
 	text-align: center;
 	text-transform: uppercase;
 	font-size: 1.1em;
-	-o-border-radius: 3px;
 }
 a.standardBtn:hover, input[type="submit"]:hover {
 	background: rgb(39,94,139);
@@ -286,8 +283,8 @@ a.smallBtn:hover {
 }
 a.helpIcon {
 	display: inline-block;
-	width: 16px;
-	height: 16px;
+	width: 14px;
+	height: 14px;
 	background: url(../images/helpIcon.png) center top no-repeat;
 	text-indent: -9999px;
 }
@@ -309,7 +306,7 @@ a.AddBtn:hover {
 }
 .greyBg {
 	position: relative;
-	padding:1px 0.25%;
+	padding: 1px 0.25%;
 	background: rgb(230,230,230);
 }
 .btnAboveTable {
@@ -365,14 +362,18 @@ a.AddBtn:hover {
 }
 .prevBtn a {
 	display: inline-block;/* padding: 5px 0 0 15px; */
-	height: 11px;/* background: url(../images/prevBtn.png) left top no-repeat; */}
+	height: 11px;/* background: url(../images/prevBtn.png) left top no-repeat; */
+}
 .prevBtn:hover a {/* background: url(../images/prevBtn.png) left bottom no-repeat; */
-	color: rgb(58,58,58);}
+	color: rgb(58,58,58);
+}
 .nextBtn a {
 	display: inline-block;/* padding: 5px 15px 0 0; */
-	height: 11px;/* background: url(../images/nextBtn.png) right top no-repeat; */}
+	height: 11px;/* background: url(../images/nextBtn.png) right top no-repeat; */
+}
 .nextBtn:hover a {/* background: url(../images/nextBtn.png) right bottom no-repeat; */
-	color: rgb(58,58,58);}
+	color: rgb(58,58,58);
+}
 .deleteBtn {
 	position: absolute;
 	top: 5px;
@@ -418,7 +419,6 @@ a.AddBtn:hover {
 	background-color: rgb(0,0,0);
 	opacity: 0.8;
 }
-
 .blanketWide {
 	position: absolute;
 	top: 0;
@@ -550,9 +550,9 @@ header.top > div {
 	width: 100%;
 }
 .mainContent {
-	margin:0 auto;
+	margin: 0 auto;
 	padding: 0 0 0 0;
-	width:98%;
+	width: 98%;
 }
 .whiteBg {
 	position: relative;
@@ -662,7 +662,6 @@ nav#topnav ul li.navHome a:hover {
 nav#topnav ul li.navHome.current a {
 	background: url(../images/topnavDashboards.png) center bottom no-repeat;
 }
-
 nav#topnav ul li.navMessages a {
 	background: url(../images/topnavDashboards.png) center -18px no-repeat;
 }
@@ -769,7 +768,8 @@ header input[type="search"]:focus {
 					Data Table
 -----------------------------------------------*/
 
-#devicesList {
+#manageAttributes, #devicesList {
+	position:relative;
 }
 table.dataTable {
 	margin: 1px auto;
@@ -938,7 +938,6 @@ tfoot tr {
 	transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
 	-o-border-radius: 0;
 }
-
 .dataTabMenu ul li a:hover {
 	-webkit-border-radius: 2px;
 	-moz-border-radius: 2px;
@@ -947,19 +946,18 @@ tfoot tr {
 	color: rgb(255,255,255);
 	-o-border-radius: 2px;
 }
-
-.dataTabMenu ul li a:hover.disabled,.dataTabMenu ul li a.disabled {
+.dataTabMenu ul li a:hover.disabled, .dataTabMenu ul li a.disabled {
 	-webkit-border-radius: 0;
 	-moz-border-radius: 0;
 	border-radius: 0;
-	background:transparent;
+	background: transparent;
 	color: grey;
 	-o-border-radius: 0;
 }
+#devicesList a.standardBtn, .dataSection a.standardBtn {
 
-
-#devicesList a.standardBtn {
-	width: 19%;
+	position:absolute;
+	right:0;
 }
 /**************** Assign Survey to devices. **************/
 
@@ -1191,6 +1189,7 @@ th.action {
 	border: thin solid rgb(224,224,224);
 	border-top: 1px solid rgb(255,255,255);
 	background: rgb(230,230,230);
+	padding:3em 0 0 0;
 }
 #tabs div > section h1 {
 	display: block;
@@ -1319,8 +1318,7 @@ nav.menuGroupWrap {
 	overflow-y: hidden;
 	height: 361px;
 	background: rgb(58,58,58);
-
-	}
+}
 nav.menuGroupWrap ul.menuGroup {
 }
 nav.menuGroupWrap ul.menuGroup li {
@@ -1364,11 +1362,11 @@ nav.menuGroupWrap ul.menuGroup li.current a:hover, nav.menuGroupWrap ul.menuGrou
 	color: rgb(246, 160, 26);
 }
 .scrollWrap {
-	display:block;
-	margin:4px auto;
-	width:100%;
-	height:15px;
-	}
+	display: block;
+	margin: 4px auto;
+	width: 100%;
+	height: 15px;
+}
 a.scrollUp {
 	display: block;
 	margin: 0 auto 0 auto;
@@ -1403,11 +1401,9 @@ a.scrollUp:hover {
 a.scrollDown:hover {
 	background: rgb(107, 134, 141) url(../images/scrollDown.png) center center no-repeat;
 }
-
 a.FadeIt {
-	display:none;
-	}
-
+	display: none;
+}
 /* Survey Top Bar
 --------------------------------------------- */
 section.topBar {
@@ -1477,7 +1473,7 @@ a.addGroup {
 a.stepBack {
 	margin: 5px 5px 0 0;
 }
-a.addGroup:hover, a.addSurvey:hover, a.stepBack:hover, a.editGroupName:hover, a.deleteGroup:hover {
+a.addGroup:hover, a.addSurvey:hover, a.stepBack:hover, a.editGroupName:hover, a.deleteGroup:hover, a.manageNotifications:hover {
 	color: rgb(255,255,255);
 }
 a.addGroup {
@@ -1550,15 +1546,13 @@ li.aSurvey:nth-child(4n), li.aSurvey.endOfRow {
 li.aSurvey h2 {
 	display: inline-block;
 	overflow: hidden;
-	margin: 5px 1% 0 2%;
+	margin: 5px 0 0 1%;
 	width: 97%;
 	color: rgb(98,98,98);
 	text-transform: capitalize;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	letter-spacing: -0.02em;
-	font-size: 1.6em;
-	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1.4em;
 }
 li.aSurvey:hover h2 {
 	color: rgb(255,255,255);
@@ -1578,6 +1572,7 @@ ul.surveyInfo {
 	vertical-align: middle;
 	text-transform: capitalize;
 	-o-border-radius: 3px;
+	background:rgb(250,250,250);
 }
 li.aSurvey:hover ul.surveyInfo {
 	border-top: thin dotted rgb(255,255,255);
@@ -1614,17 +1609,16 @@ ul.surveyInfo li.responseNumber {
 }
 ul.surveyInfo li.responseNumber span {
 	display: inline-block;
-	margin: 2px 0px 0 0;
-	padding-top: 7px;
-	width: 30px;
-	height: 23px;
-	-webkit-border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
+	margin: 4px 0px 0 0;
+	padding-top: 0.7em;
+	width: 2.4em;
+	height: 1.7em;
 	color: rgb(255,255,255);
 	text-align: center;
-	font-family: Georgia, "Times New Roman", Times, serif;
-	-o-border-radius: 15px;
+	-webkit-border-radius: 1.2em;
+	-moz-border-radius: 1.2em;
+	-o-border-radius: 1.2em;
+	border-radius: 1.2em;
 }
 ul.surveyInfo li.responseNumber p {
 	display: inline;
@@ -1682,6 +1676,7 @@ ul.surveyInfo li.responseNumber p {
 .aSurvey dl dd {
 	padding: 2px 0 2px 2%;
 	width: 67%;
+	text-align:right;
 }
 .waterPoint dl dd:nth-of-type(2) {
 	color: rgb(57, 102, 128);
@@ -1714,19 +1709,19 @@ ul.surveyInfo li.responseNumber p {
 	display: inline;
 	float: left;
 	overflow: hidden;
-	margin: 2px 1% 0 0;
+	margin: 0.2em 2% 0 0;
 	width: 49%;
-	border-radius: 2px;
+	border-radius: 0.2em;
 	/* background: url(../images/aSurveyNavSep.png) right center no-repeat; */
 	background: rgb(235,235,235);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 .aSurvey nav ul li:hover {
-	background: /*rgb(74,177,207)*/rgb(58,58,58);
+	background: rgb(74,177,207);
 }
 .aSurvey nav ul li:nth-child(2n) {
-	margin: 2px 0 0 0;
+	margin: 0.2em 0 0 0;
 }
 .aSurvey nav ul li a {
 	display: block;
@@ -1769,8 +1764,8 @@ ul.surveyInfo li.responseNumber p {
 #newSurveyInfo h2 {
 	display: block;
 	overflow: hidden;
-	margin: 5px 0 5px 3%;
-	width: 97%;
+	margin: 0.5em 0 0.1em 4%;
+	width: 96%;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	font-size: 1.8em;
@@ -1779,18 +1774,24 @@ ul.surveyInfo li.responseNumber p {
 	position: relative;
 	padding: 5px 2%;
 }
-#newSurveyInfo form label, #newSurveyInfo form input, #newSurveyInfo form textarea, #newSurveyInfo form select {
+#newSurveyInfo label, #newSurveyInfo input, #newSurveyInfo textarea, #newSurveyInfo select {
 	display: block;
 }
-#newSurveyInfo form label {
-	margin: 10px 2px 10px 2px;
+#newSurveyInfo input[type=checkbox] {
+	display: inline;
+	width: 13px;
+	margin: 0 0.5em 0 0.2em;
+}
+#newSurveyInfo label {
+	margin: 0.75em 2px 0.2em 2px;
+	color: rgb(255,255,255);
+	font-size: 1em;
+}
+#newSurveyInfo label:first-child {
+	margin: 0em 2px 10px 2px;
 	color: rgb(255,255,255);
 }
-#newSurveyInfo form label:first-child {
-	margin: 0px 2px 10px 2px;
-	color: rgb(255,255,255);
-}
-#newSurveyInfo form input {
+#newSurveyInfo input {
 	margin: 0 auto;
 	padding: 0.5em 1.5%;
 	width: 96%;
@@ -1799,33 +1800,84 @@ ul.surveyInfo li.responseNumber p {
 	margin: 0 auto;
 	padding: 0.5em 1.5%;
 	width: 96%;
-	font-size: 0.9em;
-	font-family: sans-serif;
 }
 #newSurveyInfo form select {
-	margin: 0 auto;
-	padding: 2px 0 3px 5px;
+	margin: 3px auto 0 auto;
 	width: 100%;
 }
 #newSurveyInfo form select option {
 	padding: 0 1.5%;
 	background: rgb(255,255,255);
 }
+#newSurveyInfo dl {
+	position: relative;
+	margin: 1em auto;
+	width: 92%;
+	padding:0.2em 2% 0.7em 2%;
+	background: rgb(78,78,78);
+	-webkit-border-radius:0.2em;
+	-moz-border-radius:0.2em;
+	-o-border-radius:0.2em;
+	border-radius:0.2em;
+}
+#newSurveyInfo dt {
+	position: relative;
+	display: table-cell;
+	float: left;
+	clear: left;
+	padding: 0.5em 0 0 2%;
+	width: 45%;
+	color: rgb(204,204,204);
+}
+#newSurveyInfo dd {
+	position: relative;
+	display: table-cell;
+	float: right;
+	clear: right;
+	padding: 0.5em 0 0 0;
+	width: 50%;
+	font-weight: bold;
+	color: rgb(255,255,255);
+}
+#newSurveyInfo .helpIcon {
+	position: absolute;
+	right: 1%;
+	margin: -3px 0 0 0;
+}
+a.manageNotifications {
+	display: block;
+	text-align: center;
+	margin: 0.5em auto;
+	text-transform: uppercase;
+}
+a.manageNotifications span {
+	display: inline;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 1.4em;
+	margin: 0 0.2em 0 0;
+}
 .newSurveyInfoUl {
-	margin: 20px auto 0 auto;
+	margin: 1.2em auto 0.2em auto;
 	padding: 15px 0%;
-	width: 96%;
-	background: rgb(23,23,23);
+	width: 94%;
+	background: rgb(33,33,33);
+	-webkit-border-radius:0.4em;
+	-moz-border-radius:0.4em;
+	-o-border-radius:0.4em;
+	border-radius:0.4em;
 }
 .newSurveyInfoUl li {
 	position: relative;
-	margin: 1px auto;
-	padding: 1px 1%;
-	width: 85%;
+	margin: 0.01em auto 0.3em auto;
+	padding: 0.01em 2%;
+	width: 88%;
 	color: rgb(153,153,153);
 }
 .newSurveyInfoUl li h3 {
-	margin-bottom: 20px;
+	margin-bottom: 1em;
+	font-size: 1.4em;
+	color: rgb(204,204,204);
 }
 .newSurveyInfoUl li > span {
 	position: absolute;
@@ -1839,7 +1891,6 @@ ul.surveyInfo li.responseNumber p {
 .newSurveyInfoUl li > span.surveyPublished {
 	color: rgb(145, 237, 115);
 }
-
 nav.newSurveyNav {
 	margin: 0 auto;
 	padding: 0;
@@ -1945,20 +1996,6 @@ div.questionGroupBlock {
 	border-bottom: thin solid rgb(230,230,230);
 	background: rgb(240,240,240);
 }
-.surveySettingsBlock {
-	overflow:auto;
-	margin:0 auto;
-	padding:1em 0.25%;
-	width:98%;
-	border-top: thin solid rgb(230,230,230);
-	border-bottom: thin solid rgb(230,230,230);
-	background: rgb(240,240,240);
-	}
-.surveySettingsBlock .helpIcon {
-	position:absolute;
-	left:44%;
-	margin:-4px 0 0 0;
-	}
 .aQuestionSet > div > div.ember-view > div.questionGroupBlock {
 	margin: 15px 0;
 	border-top: thin solid rgb(230,230,230);
@@ -1970,13 +2007,13 @@ div.questionGroupBlock {
 }
 span.qtnGroupHead {
 	display: block;
-	margin:1em 0 0.25em 0;
+	margin: 1em 0 0.25em 0;
 	width: 100%;
 	color: rgb(246, 160, 26);
 	font-style: italic;
 	font-size: 1.2em;
 	font-family: Georgia, "Times New Roman", Times, serif;
-	text-transform:capitalize;
+	text-transform: capitalize;
 }
 .aQuestionSet header h1.qtnGroupTitle {
 	display: inline-block;
@@ -2058,6 +2095,7 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 nav.groupActionMenu a.smallBtn {
 	background: rgb(246, 160, 26);
 	color: rgb(255,255,255);
+	margin:0 0 0.3em 0;
 }
 nav.groupActionMenu a.smallBtn:hover {
 	background: rgb(58,58,58);
@@ -2077,16 +2115,17 @@ nav.groupActionMenu.insertMenu ul {
 }
 nav.groupActionMenu.insertMenu a {
 	display: inline-block;
-	padding: 5px 5px 5px 19px;
+	width:13em;
+	padding:0.5em 0.5em 0.5em 1.5em;
 	height: 8px;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
+	-webkit-border-radius:0.3em;
+	-moz-border-radius:0.3em;
+	border-radius:0.3em;
+	-o-border-radius:0.3em;
 	background: transparent url(../images/insertGroupIcn.png) left top no-repeat;
 	color: rgb(246, 160, 26);
 	text-transform: uppercase;
 	font-size: 1em;
-	-o-border-radius: 3px;
 }
 nav.groupActionMenu.insertMenu a:hover {
 	background: rgb(58,58,58) url(../images/insertGroupIcn.png) left bottom no-repeat;
@@ -2125,7 +2164,6 @@ nav.questionActionMenu a {
 nav.questionActionMenu a:hover {
 	color: rgb(58,58,58);
 }
-
 /*---------------------------------------------------------------------------------
 								A New Question Form
 ---------------------------------------------------------------------------------*/
@@ -2305,17 +2343,11 @@ nav.smallMenu ul li a.copyQuestion:hover {
 nav.smallMenu ul li a.showQuestion:hover {
 	background: url(../images/showQuestion.png) left bottom no-repeat;
 }
-/*****
-		NEw Survey Settings
-******---------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------------------------------------------------------
+											New Survey Settings
+--------------------------------------------------------------------------------------------------------------------------------*/
 .innerContent {
-	width:100%;
-	}
-.innerContent select {
-	position:relative;
-	margin: 5px 0 0 5px;
-	padding: 2px 0 3px 5px;
-	width: 35%;
+	width: 100%;
 }
 .innerContent input[type=checkbox], .innerContent input[type=radio] {
 	display: inline-block;
@@ -2326,46 +2358,58 @@ nav.smallMenu ul li a.showQuestion:hover {
 .innerContent input[type=checkbox]:first-child, .innerContent input[type=radio]:first-child {
 	margin: 10px 0 0 5px;
 }
-
-.innerContent .labelcheckbox input[type=checkbox]:first-child , .innerContent .labelcheckbox input[type=radio]:first-child {
-	margin:0 0.5em 0 0;
+.innerContent .labelcheckbox input[type=checkbox]:first-child, .innerContent .labelcheckbox input[type=radio]:first-child {
+	margin: 0 0.5em 0 0;
 }
-
 .innerContent p {
 	margin: 0 0 0 5px;
 	padding: 3px 0.5%;
 }
-
 .innerContent textarea {
 	margin: 5px 0 0 10px;
 	width: 35%;
 	border-color: white;
 }
-
-.innerContent dl {
-	position:relative;
-	margin: 0 0 0 1%;
-	width:99%;
-	}
 .innerContent h3 {
-	margin:2em 0 0.5em 1em;
+	margin: 2em 0 0.5em 1em;
 	color: rgb(39,94,110);
-	font-size:1em;
-	}
+	font-size: 1em;
+}
+/********************************************* To remove when Create new survey setting page confirmed deleted. *******************************************/	
+.innerContent dl {
+	position: relative;
+	margin: 0 0 0 1%;
+	width: 99%;
+}
 .innerContent dt {
-	display:table-cell;
-	float:left;
-	padding:0.5em 0;
-	width:35%;
+	display: table-cell;
+	float: left;
+	padding: 0.5em 0;
+	width: 35%;
 	color: rgb(39,94,110);
-	}
+}
 .innerContent dd {
-	display:table-cell;
-	float:right;
-	padding:0.5em 0;
-	width:65%;
-	font-weight:bold;
-	}
+	display: table-cell;
+	float: right;
+	padding: 0.5em 0;
+	width: 65%;
+	font-weight: bold;
+}
+.surveySettingsBlock {
+	overflow: auto;
+	margin: 0 auto;
+	padding: 1em 0.25%;
+	width: 98%;
+	border-top: thin solid rgb(230,230,230);
+	border-bottom: thin solid rgb(230,230,230);
+	background: rgb(240,240,240);
+}
+.surveySettingsBlock .helpIcon {
+	position: absolute;
+	left: 44%;
+	margin: -4px 0 0 0;
+}
+/********************************************* End: To remove when Create new survey setting page confirmed deleted. *******************************************/	
 
 .innerContent h1 {
 	display: block;
@@ -2382,23 +2426,24 @@ nav.smallMenu ul li a.showQuestion:hover {
 	border-bottom: 1px solid rgb(255, 255, 255);
 	content: "";
 }
-
 .innerContent h1.questionNbr {
 	display: inline;
 	color: rgb(0,0,0);
 	font-weight: normal;
+	text-transform:none;
 }
 .innerContent h1.questionNbr span {
 	display: inline-block;
-	margin: -10px 5px 0 0;
-	padding: 1px 0 0 5px;
-	width: 20px;
-	height: 24px;
-	border-radius: 12.5px;
-	background: rgb(0,0,0);
-	color: rgb(255,255,255);
+	margin: -10px 0.6em 0 0;
+	padding: 0.2em 0 0 0;
+	width: 2em;
+	height: 1.8em;
+	border-radius: 1em;
+	background: rgb(58,58,58);
+	color:rgb(223,223,223);
 	font-weight: bold;
-	font-size: 0.9em;
+	font-size: 0.8em;
+	text-align:center;
 }
 .innerContent input {
 	display: block;
@@ -2407,68 +2452,68 @@ nav.smallMenu ul li a.showQuestion:hover {
 	margin: 1.5em 0 0 1em;
 	color: rgb(39,94,110);
 	font-size: 1em;
-	display:block;
+	display: block;
+ vertical-align:
 }
-
 .innerContent .labelcheckbox {
-	position:relative;
-	padding:0.5em 0;
-	display:block;
-	width:100%;
+	position: relative;
+	padding: 0.5em 0;
+	display: block;
+	width: 100%;
 	margin: 0.5em 0 0 1em;
 }
-.innerContent .selectinLabel{
-	position:relative;
-	margin:1.5em 0 0.5em 1em;
-	padding:0 0 0 0.25em;
-	}
-.innerContent .dependencyBlock {
-	width:97.5%;
-	margin:1.5em 0 1em 1em;
-	padding:0 0 0.25em 0;
-	background:rgb(237,237,237);
-	}
+.innerContent .selectinLabel {
+	position: relative;
+	margin: 0.5em 0 0 1em;
+	padding: 0.5em 0 0.5em 0.25em
+}
+.innerContent .selectinLabel span {
+	display: block;
+}
 .innerContent .selectinLabel select {
-	position:absolute;
-	left:12%;
-	top:-13px;
-	}
+	width: 45%;
+	margin: 0.5em 0 0 0;
+}
+.innerContent .dependencyBlock {
+	width: 97.5%;
+	margin: 1.5em 0 1em 1em;
+	padding: 0 0 0.25em 0;
+	background: rgb(237,237,237);
+}
 .innerContent .questionOption {
-	padding:0.5em 0 1em 0;
-	background:rgb(243,243,243);
-	margin:0 1%;
-	width:98%;
-	}
+	padding: 0.5em 0 1em 0;
+	background: rgb(243,243,243);
+	margin: 0 1%;
+	width: 98%;
+}
 .innerContent .minValNumb, .innerContent .maxValNumb {
-	width:48%;
-	} 
+	width: 48%;
+}
 .innerContent .minValNumb {
-	float:left;
-	}
+	float: left;
+}
 .innerContent .maxValNumb {
-	float:right;
-	}
-a.addAttribute {position:absolute;left:50%;}
-a.addAttribute span {font-weight:bold;margin:0 0.25em 0 0;}
+	float: right;
+}
+.innerContent .selectinLabel a.addAttribute {
+	display:block;
+	margin: 0.2em 0 0 0.2em;
+}
+.innerContent .selectinLabel a.addAttribute span {
+	font-weight: bold;
+	display: inline;
+	margin: 0.2em 0.2em 0 0;
+}
 .innerContent input[type=text] {
 	margin: 5px 0 0 0;
 	padding: 5px 0.5%;
 	width: 97.5%;
-	border-color: rgb(235,235,235);
 }
-
-.previewQuestion input[type=text] {
-	margin: 5px 0 0 5px;
-	padding: 5px 1%;
-	width: 40%;
-	border-color: rgb(235,235,235);
-}
-
 .qDependency {
-	display:block;
-	margin:1em 0 0 1em;
-	color:rgb(204,204,204);
-	}
+	display: block;
+	margin: 1em 0 0 1em;
+	color: rgb(204,204,204);
+}
 .innerContent .optiontype input[type=text] {
 	display: inline;
 	margin: 5px 0 0 5px;
@@ -2476,34 +2521,32 @@ a.addAttribute span {font-weight:bold;margin:0 0.25em 0 0;}
 	width: 35%;
 	border-color: rgb(235,235,235);
 }
-
 .notificationAdd {
-	position:relative;
-	overflow:auto;
-	width:100%;
-	}
+	position: relative;
+	overflow: auto;
+	width: 100%;
+}
 .notificationAdd fieldset {
-	float:left;
-	padding:1em 0 0 0;
-	width:22%;
-	}
+	float: left;
+	padding: 1em 0 0 0;
+	width: 22%;
+}
 .notificationAdd fieldset.addNotifiBtn {
-	float:left;
-	padding:1em 0;
-	width:12%;
-	}
-
+	float: left;
+	padding: 1em 0;
+	width: 12%;
+}
 .notificationAdd fieldset select {
-	margin:0;
-	width:95%;
-	}
+	margin: 0;
+	width: 95%;
+}
 .notificationAdd fieldset label {
-	margin:0 0 0.5em 0;
-	}
+	margin: 0 0 0.5em 0;
+}
 .notificationAdd fieldset input {
-	margin:0;
-	width:89%;
-	}
+	margin: 0;
+	width: 89%;
+}
 .notificationAdd fieldset nav {
 	display: block;
 	margin: 0.5em auto 0 auto;
@@ -2517,34 +2560,31 @@ a.addAttribute span {font-weight:bold;margin:0 0.25em 0 0;}
 	width: 100%;
 	text-align: right;
 }
-
 .notificationAdd fieldset nav ul a.smallBtn {
-	margin: 0 0.5em 0 0; 
+	margin: 0 0.5em 0 0;
 }
-
 a.addNotification {
-	margin:0 0 0 1em;
-	}
-a.addNotification span{
-	margin:0 0.2em 0 0;
-	font-weight:bold;
-	font-size:1.5em;
-	}
-
+	margin: 0 0 0 1em;
+}
+a.addNotification span {
+	margin: 0 0.2em 0 0;
+	font-weight: bold;
+	font-size: 1.5em;
+}
 table.dataTable.notificationTable {
-	margin:1.5em auto;
+	margin: 1.5em auto;
 	width: 100%;
 	border-collapse: collapse;
-	border-top:1px solid rgb(230,230,230);
+	border-top: 1px solid rgb(230,230,230);
 	color: #606060;
 	text-align: left;
 }
 table.dataTable.notificationTable td {
 	overflow: hidden;
-	padding: 1em 0 1em 0.5em ;
+	padding: 1em 0 1em 0.5em;
 	vertical-align: middle;
 	text-align: left;
-	font-weight:normal;
+	font-weight: normal;
 }
 table.dataTable.notificationTable td:hover {
 	font-weight: normal;
@@ -2570,12 +2610,12 @@ table.dataTable.notificationTable tbody tr:hover, table.dataTable.notificationTa
 }
 table.dataTable.notificationTable thead tr {
 	border-bottom: none;
-	background:transparent;
+	background: transparent;
 }
 table.dataTable.notificationTable thead tr th {
 	padding: 5px 1em 0.5em 1em;
-	border-right:none;
-	background:none;
+	border-right: none;
+	background: none;
 	color: rgb(39,94,110);
 	text-align: left;
 	text-transform: inherit;
@@ -2585,7 +2625,6 @@ table.dataTable.notificationTable thead tr th {
 .dataSection table.dataTable.notificationTable thead tr th {
 	padding: 9px 1em 9px 1em;
 }
-
 table.dataTable.notificationTable thead tr th.noArrows {
 	background: #3A3A3A;
 }
@@ -2593,7 +2632,6 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	color: #FFD200;
 	cursor: pointer;
 }
-
 /****** Data Page
 ****************************************************************************/
 #dataFilter {
@@ -2951,4 +2989,50 @@ footer.bottomPage nav#footerNav ul li a.akvoDotOrg {
 footer.bottomPage a[rel="self"] {
 }
 footer.bottomPage a[rel="self"]:hover {
+}
+
+/******************************************************************************************************
+											Survey Preview
+******************************************************************************************************/
+.surveyPreviewWrap {
+	position:relative;
+	}
+.surveyPreviewWrap div.questionGroupBlock {
+	margin: 15px 0;
+	border-top: thin solid rgb(230,230,230);
+	border-bottom: thin solid rgb(230,230,230);
+	background: rgb(255,255,255);
+	}
+.surveyPreviewWrap h3.qtnGroupTitle {
+	color:rgb(44, 42, 116);
+	margin:0.2em 0 2em 0.65em;
+	}
+.surveyPreviewWrap .innerContent h1:after {
+	display: block;
+	margin: 1em auto 0 auto;
+	width: 98%;
+	border-top:none;
+	border-bottom:none;
+	content: "";
+}
+.surveyPreviewWrap input[type=text] {
+	margin:0em auto 3em auto;
+	width:96%;
+}
+.surveyPreviewWrap span.qtnGroupHead {
+	display: block;
+	margin: 1em 0 0.25em 1em;
+	width: 100%;
+	color: rgb(246, 160, 26);
+	font-style: italic;
+	font-size: 1.2em;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	text-transform: capitalize;
+}
+.surveyPreviewWrap .innerContent h1.questionNbr {
+	display: inline;
+	color: rgb(0,0,0);
+	font-weight: normal;
+	text-transform:none;
+	margin:0 0 0 1em;
 }

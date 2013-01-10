@@ -1,4 +1,4 @@
-FLOW.languageControl = Ember.Object.create({
+FLOW.dashboardLanguageControl = Ember.Object.create({
   dashboardLanguage: null,
 
   init: function() {
@@ -49,11 +49,14 @@ FLOW.languageControl = Ember.Object.create({
 FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
   selectedSurvey: null,
+  selectedSurveys:[],
   selectedSurveyAllQuestions: null,
   dependentQuestion: null,
   selectedQuestionGroup: null,
   selectedQuestion: null,
   selectedOption: null,
+  selectedDevice:null,
+  selectedDevices:[],
   selectedForMoveQuestionGroup: null,
   selectedForCopyQuestionGroup: null,
   selectedForMoveQuestion: null,

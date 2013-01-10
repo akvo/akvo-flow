@@ -62,7 +62,7 @@
           <li class="aSurvey waterPoint">
             <h2 class="">{{survey.name}}</h2>
             <ul class="surveyInfo floats-in">
-              <li class="dateCreated"> <span>{{t created}}</span>
+              <li class="dateCreated"> <span>{{t _created}}</span>
                 <time>{{#with survey}}{{date createdDateTime}}{{/with}}<time>
               </li>
               <li class="responseNumber"><span>{{survey.instanceCount}}</span>
@@ -70,11 +70,11 @@
               </li>
             </ul>
             <dl class="floats-in">
-              <dt>modified</dt>
+              <dt>{{t _modified}}</dt>
               <dd>{{#with survey}}{{date lastUpdateDateTime}}{{/with}}</dd>
-              <dt>type</dt>
+              <dt>{{t _type}}</dt>
               <dd>water point</dd>
-              <dt>language</dt>
+              <dt>{{t _language}}</dt>
               <dd>english, spanish, french, Dutch, German</dd>
             </dl>
             <nav>

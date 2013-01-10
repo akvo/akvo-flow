@@ -24,6 +24,8 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       FLOW.metaControl.set('num', this.extractMeta(json).num);
       FLOW.metaControl.set('message', this.extractMeta(json).message);
       FLOW.metaControl.set('status', this.extractMeta(json).status);
+      FLOW.savingMessageControl.set('areLoadingBool',false);
+      FLOW.savingMessageControl.set('areSavingBool',false);
    
       if (this.extractMeta(json).status == "failed"){
         FLOW.dialogControl.set('activeAction',"ignore");

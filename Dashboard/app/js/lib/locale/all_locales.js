@@ -81,6 +81,8 @@ Ember.STRINGS_EN = {
   '_Q_delete_message':'This cannot be undone.',
   '_Attr_delete_header':'Are you sure you want to delete this attribute?',
   '_Attr_delete_message':'This cannot be undone.',
+  '_Assignment_delete_header':'Are you sure you want to delete this assignment?',
+  '_Assignment_delete_message':'This cannot be undone.',
   '_User_delete_header':'Are you sure you want to delete this user?',
   '_User_delete_message':'This cannot be undone.',
   '_action_failed': 'Action failed',
@@ -102,7 +104,13 @@ Ember.STRINGS_EN = {
   '_create_new_survey':'create new survey',
   '_published':'Published',
   '_not_published': 'Not published',
-'_Number_details':'Number Settings'
+  '_Number_details':'Number Settings',
+  '_require_approval':'require approval',
+  '_manage_notifications':'manage notifications',
+  '_modified':'modified',
+  '_language':'language',
+  '_type':'type',
+  '_create_new_assignment':'create new assignment'
 };
 
 Ember.STRINGS_ES = {
@@ -125,8 +133,8 @@ Ember.STRINGS_FR = {
   '_cancel_copy': 'Annuler',
   '_cancel_move': 'Annuler',
   '_copy': 'Copier',
-  '_create_a_new_survey': 'Créer un nouveau sondage',
-  '_created': 'Créé',
+  '_create_a_new_survey': 'Créer une nouvelle enquête',
+  '_created': 'Créée',
   '_dashboard_language': 'dashboard langue',
   '_data': 'données',
   '_data_server': 'Serveur de données',
@@ -167,9 +175,9 @@ Ember.STRINGS_FR = {
   '_save': 'Enregistrer',
   '_show_questions': 'Montrer questions',
   '_survey': 'Enquête',
-  '_survey_group': 'Groupe de sondage',
-  '_survey_groups': 'Groupes de sondages',
-  '_surveys': 'Sondages',
+  '_survey_group': "Groupe d'enquête",
+  '_survey_groups': "Groupes d'enquêtes",
+  '_surveys': 'Enquêtes',
   '_users': 'Utilisateurs',
   '_News_and_Software_Updates':'Nouveautés et mises à jour',
   '_support':'Aide',
@@ -191,7 +199,7 @@ Ember.STRINGS_FR = {
   '_S_delete_message':'Ceci est definitif.',
   '_SG_delete_not_possible_header':"Ce groupe ne peut être supprimer",
   '_SG_delete_not_possible_message':"Vous ne pouvez pas supprimer ce groupe car il contient des enquêtes. Veuillez supprimer les enquêtes individuellement d'abord",
-  '_QG_delete_header':'Êtes-vous sûr de vouloir supprimer ce groupe de Sondage, et tous les sondages le contenant?',
+  '_QG_delete_header':'Êtes-vous sûr de vouloir supprimer ce groupe, et toutes les enquêtes contenues?',
   '_QG_delete_message':'Ceci ne peut etre annuler.',
   '_Q_delete_header':'Êtes-vous sûr de vouloir supprimer cette question?',
   '_Q_delete_message':'Cette action est définitive.',
@@ -218,5 +226,10 @@ Ember.STRINGS_FR = {
   '_create_new_survey':'créer nouvelle enquête',
   '_published':'Publiée',
   '_not_published': 'Non Publiée',
-  '_Number_details':'Options des nombre'
+  '_Number_details':'Options des nombre',
+  '_require_approval':'Approbation Requise',
+  '_manage_notifications':'Gérer les notifications',
+  '_modified':'modifiée',
+  '_language':'langue',
+  '_type':'type',
 };

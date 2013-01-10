@@ -30,6 +30,7 @@ FLOW.NavigationController = Em.Controller.extend({
 });
 FLOW.NavHomeController = Ember.Controller.extend();
 FLOW.NavSurveysController = Ember.Controller.extend();
+FLOW.NavSurveysEditController = Ember.Controller.extend();
 FLOW.NavDevicesController = Ember.Controller.extend();
 FLOW.DevicesSubnavController = Em.Controller.extend();
 FLOW.DevicesTableHeaderController = Em.Controller.extend({

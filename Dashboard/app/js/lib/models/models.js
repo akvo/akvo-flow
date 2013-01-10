@@ -54,14 +54,14 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 
 FLOW.Survey = FLOW.BaseModel.extend({
   didDelete: function() {
-    FLOW.surveyControl.populate();
-  },
-  didUpdate: function() {
-    FLOW.surveyControl.populate();
-  },
-  didCreate: function() {
-    FLOW.surveyControl.populate();
-  },
+     FLOW.surveyControl.populate();
+   },
+  // didUpdate: function() {
+  //   FLOW.surveyControl.populate();
+  // },
+  // didCreate: function() {
+  //   FLOW.surveyControl.populate();
+  // },
 
   defaultLanguageCode: DS.attr('string'),
   status: DS.attr('string'),
@@ -195,7 +195,8 @@ FLOW.Device = FLOW.BaseModel.extend({
     defaultValue: ''
   }),
   isSelected: false,
-  deviceGroupName: null
+  deviceGroupName: null,
+  combinedName:null
 });
 
 FLOW.SurveyAssignment = FLOW.BaseModel.extend({
@@ -203,7 +204,8 @@ FLOW.SurveyAssignment = FLOW.BaseModel.extend({
   startDate: DS.attr('date'),
   endDate: DS.attr('date'),
   devices: DS.attr('array'),
-  surveys: DS.attr('array')
+  surveys: DS.attr('array'),
+  language: DS.attr('string')
 });
 
 FLOW.SurveyedLocale = DS.Model.extend({
@@ -320,3 +322,17 @@ FLOW.Message = FLOW.BaseModel.extend({
   actionAbout: DS.attr('string'),
   shortMessage: DS.attr('string')
 });
+
+FLOW.Action = FLOW.BaseModel.extend({
+});
+
+
+FLOW.NotificationSubscription = FLOW.BaseModel.extend({
+  notificationDestination:DS.attr('string'),
+  notificationOption:DS.attr('string'),
+  notificationMethod:DS.attr('string'),
+  notificationType:DS.attr('string'),
+  expiryDate:DS.attr('number'),
+  entityId:DS.attr('number')
+});
+

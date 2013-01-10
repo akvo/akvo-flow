@@ -1,16 +1,16 @@
 <a {{action "closePreviewPopup" target="this"}} class="ok clodeDialog">close window</a>
 <h2>Survey preview</h2>
-
+<div class="surveyPreviewWrap">
 {{#each QG in FLOW.questionGroupControl}}
  <div class="questionGroupBlock">
-   <header> <span class="qtnGroupHead">{{t _group}} {{QG.order}}</span> <br/>
-     <h3 class="qtnGroupTitle">{{QG.code}}</h3><br/>
+   <header> <span class="qtnGroupHead">{{t _group}} {{QG.order}}</span>
+     <h3 class="qtnGroupTitle">{{QG.code}}</h3>
      <div class="innerContent"> 
        {{#view FLOW.PreviewQuestionGroupView contentBinding="QG"}}
          {{#each Q in view.QGcontent}}
            {{#view FLOW.PreviewQuestionView contentBinding="Q"}}
              {{#if view.isVisible}}
-                <h1 class="questionNbr"><span>{{Q.order}}} </span>{{Q.text}}</h1><br/><br/>
+                <h1 class="questionNbr"><span>{{Q.order}}} </span>{{Q.text}}</h1>
                 <div class="previewQuestion"> 
                     {{#if view.isOptionType}}
                        {{#each view.optionsList}}
@@ -56,3 +56,4 @@
      </div>
  </div>    
 {{/each}}
+</div>

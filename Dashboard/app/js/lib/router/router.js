@@ -72,8 +72,7 @@ FLOW.Router = Ember.Router.extend({
 
       doEditSurvey: function(router, event) {
         FLOW.selectedControl.set('selectedSurvey', event.context);
-        router.transitionTo('navSurveys.navSurveysEdit');
-
+        router.transitionTo('navSurveys.navSurveysEdit.index');
       },
 
       doSurveysMain: function(router, event) {
@@ -100,18 +99,17 @@ FLOW.Router = Ember.Router.extend({
         route: '/new',
         connectOutlets: function(router, event) {
           var newSurvey;
-          router.get('navSurveysController').connectOutlet({
-            name: 'navSurveysNew'
-          });
 
           newSurvey = FLOW.store.createRecord(FLOW.Survey, {
-            "name": "New survey - please change name",
+            "name": "New survey - pleace change name",
             "defaultLanguageCode": "en",
             "requireApproval": false,
             "status": "NOT_PUBLISHED",
             "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId')
           });
-          FLOW.selectedControl.set('selectedSurvey',newSurvey);
+
+          FLOW.selectedControl.set('selectedSurvey', newSurvey);
+          router.transitionTo('navSurveys.navSurveysEdit.index');
         }
       }),
 
@@ -121,16 +119,49 @@ FLOW.Router = Ember.Router.extend({
           router.get('navSurveysController').connectOutlet({
             name: 'navSurveysEdit'
           });
+           // all questions should be closed when we enter
+            FLOW.selectedControl.set('selectedQuestion', null);
+            FLOW.attributeControl.populate();
 
-          // all questions should be closed when we enter
-          FLOW.selectedControl.set('selectedQuestion', null);
-          FLOW.attributeControl.populate();
+            if(!Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
+              FLOW.questionGroupControl.populate();
+              FLOW.questionControl.populateAllQuestions();
+            }
+        },
 
-          FLOW.questionGroupControl.populate();
-          FLOW.questionControl.populateAllQuestions();
-        }
+        doManageNotifications: function(router, event) {
+          router.transitionTo('navSurveys.navSurveysEdit.manageNotifications');
+        },
+
+        doEditQuestions: function(router, event) {
+          router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
+        },
+
+        index: Ember.Route.extend({
+          route: '/',
+          redirectsTo: 'editQuestions'
+        }),
+
+        manageNotifications: Ember.Route.extend({
+          route: '/notifications',
+          connectOutlets: function(router, event) {
+            router.get('navSurveysEditController').connectOutlet({
+              name: 'manageNotifications'
+            });
+            FLOW.notificationControl.populate();
+          }
+        }),
+
+        editQuestions: Ember.Route.extend({
+          route: '/questions',
+          connectOutlets: function(router, event) {
+            router.get('navSurveysEditController').connectOutlet({
+              name: 'editQuestions'
+            });
+           
+          }
+        })
       })
-
     }),
 
     //********************** DEVICES ROUTER *******************
@@ -181,6 +212,7 @@ FLOW.Router = Ember.Router.extend({
         route: '/assign-surveys',
         connectOutlets: function(router, context) {
           router.get('navDevicesController').connectOutlet('editSurveyAssignment');
+          FLOW.deviceGroupControl.populate();
           router.set('devicesSubnavController.selected', 'editSurveyAssignment');
         }
       })
