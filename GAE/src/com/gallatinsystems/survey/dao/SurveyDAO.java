@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.xml.bind.JAXBException;
 
+import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
@@ -46,6 +47,10 @@ public class SurveyDAO extends BaseDAO<Survey> {
 	private static final Logger log = Logger.getLogger(SurveyDAO.class
 			.getName());
 	private QuestionGroupDao questionGroupDao;
+
+	private static final String[] excludedProperties = { "key",
+			"createdDateTime", "lastUpdateDateTime", "lastUpdateUserId",
+			"createUserId" };
 
 	public SurveyDAO() {
 		super(Survey.class);
@@ -277,5 +282,13 @@ public class SurveyDAO extends BaseDAO<Survey> {
 				+ Survey.class.getName());
 		List<Key> results = (List<Key>) query.execute();
 		return results;
+	}
+
+	public Survey copySurvey(Survey source) {
+		final Survey dest = new Survey();
+		BeanUtils.copyProperties(source, dest, excludedProperties);
+		dest.setCode(dest.getCode() + " <Copy>"); // FIXME: I18N
+		dest.setStatus(Survey.Status.NOT_PUBLISHED);
+		return save(dest);
 	}
 }

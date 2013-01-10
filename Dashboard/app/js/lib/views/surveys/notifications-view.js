@@ -23,7 +23,7 @@ FLOW.NotificationsView = Ember.View.extend({
     }
 
     if(this.get('optionEmpty') || this.get('typeEmpty') || this.get('destinationEmpty') || this.get('dateEmpty')) {
-      newSubscription = FLOW.store.createRecord(FLOW.NotificationSubscription, {
+      FLOW.store.createRecord(FLOW.NotificationSubscription, {
         "notificationOption": this.notificationOption.get('value'),
         "notificationType": this.notificationType.get('value'),
         "expiryDate": Date.parse(this.get('expiryDate')),

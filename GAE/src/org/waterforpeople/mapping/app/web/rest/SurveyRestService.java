@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -48,7 +48,7 @@ public class SurveyRestService {
 
 	@Inject
 	private SurveyDAO surveyDao;
-	
+
 	@Inject
 	private SurveyInstanceSummaryDao sisDao;
 
@@ -68,7 +68,7 @@ public class SurveyRestService {
 
 				// add surveyInstance Count
 				sis = sisDao.findBySurveyId(s.getKey().getId());
-				if (sis != null){
+				if (sis != null) {
 					dto.setInstanceCount(sis.getCount());
 				}
 				// needed because of different names for description in survey
@@ -103,13 +103,13 @@ public class SurveyRestService {
 			for (Survey s : surveys) {
 				SurveyDto dto = new SurveyDto();
 				DtoMarshaller.copyToDto(s, dto);
-				
+
 				// add surveyInstance Count
 				sis = sisDao.findBySurveyId(s.getKey().getId());
-				if (sis != null){
+				if (sis != null) {
 					dto.setInstanceCount(sis.getCount());
 				}
-				
+
 				// needed because of different names for description in survey
 				// and surveyDto
 				dto.setDescription(s.getDesc());
@@ -128,17 +128,17 @@ public class SurveyRestService {
 		Survey s = surveyDao.getByKey(id);
 		SurveyDto dto = null;
 		SurveyInstanceSummary sis = null;
-		
+
 		if (s != null) {
 			dto = new SurveyDto();
 			DtoMarshaller.copyToDto(s, dto);
 			// add surveyInstance Count
-			
+
 			sis = sisDao.findBySurveyId(s.getKey().getId());
-			if (sis != null){
+			if (sis != null) {
 				dto.setInstanceCount(sis.getCount());
 			}
-			
+
 			// needed because of different names for description in survey and
 			// surveyDto
 			dto.setDescription(s.getDesc());
@@ -202,7 +202,8 @@ public class SurveyRestService {
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(surveyDto, s, new String[] {
 							"createdDateTime", "status", "sector", "version",
-							"lastUpdateDateTime", "description", "instanceCount" });
+							"lastUpdateDateTime", "description",
+							"instanceCount" });
 
 					s.setDesc(surveyDto.getDescription());
 
@@ -235,37 +236,78 @@ public class SurveyRestService {
 	public Map<String, Object> saveNewSurvey(@RequestBody SurveyPayload payLoad) {
 		final SurveyDto surveyDto = payLoad.getSurvey();
 		final Map<String, Object> response = new HashMap<String, Object>();
-		SurveyDto dto = null;
-
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
 
 		// if the POST data contains a valid surveyDto, continue. Otherwise,
 		// server will respond with 400 Bad Request
-		if (surveyDto != null) {
-			Survey s = new Survey();
-
-			// copy the properties, except the createdDateTime property, because
-			// it is set in the Dao.
-			BeanUtils.copyProperties(surveyDto, s, new String[] {
-					"createdDateTime", "status", "sector", "version",
-					"lastUpdateDateTime", "displayName", "questionGroupList", "instanceCount" });
-			if (surveyDto.getStatus() != null) {
-				s.setStatus(Survey.Status.valueOf(surveyDto.getStatus()));
-			}
-			if (surveyDto.getSector() != null) {
-				s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
-			}
-			s = surveyDao.save(s);
-
-			dto = new SurveyDto();
-			DtoMarshaller.copyToDto(s, dto);
-			statusDto.setStatus("ok");
+		if (surveyDto == null) {
+			return getErrorResponse();
 		}
+
+		Survey s = null;
+
+		if (surveyDto.getSourceId() == null) {
+			s = newSurvey(surveyDto);
+		} else {
+			s = copySurvey(surveyDto);
+		}
+
+		if (s == null) {
+			return getErrorResponse();
+		}
+
+		final RestStatusDto statusDto = new RestStatusDto();
+		final SurveyDto dto = new SurveyDto();
+		DtoMarshaller.copyToDto(s, dto);
+		statusDto.setStatus("ok");
 
 		response.put("meta", statusDto);
 		response.put("survey", dto);
 		return response;
 	}
 
+	private Survey newSurvey(SurveyDto dto) {
+		final Survey result = surveyDao.save(marshallToDomain(dto));
+		return result;
+	}
+
+	private Survey copySurvey(SurveyDto dto) {
+		final Survey source = surveyDao.getById(dto.getSourceId());
+
+		if (source == null) {
+			// source survey not found, the getById already logged the problem
+			return null;
+		}
+		return surveyDao.copySurvey(source);
+	}
+
+	private Survey marshallToDomain(SurveyDto dto) {
+		final Survey s = new Survey();
+
+		// copy the properties, except the createdDateTime property, because
+		// it is set in the Dao.
+		BeanUtils.copyProperties(dto, s, new String[] { "createdDateTime",
+				"status", "sector", "version", "lastUpdateDateTime",
+				"displayName", "questionGroupList", "instanceCount" });
+
+		if (dto.getStatus() != null) {
+			s.setStatus(Survey.Status.valueOf(dto.getStatus()));
+		}
+		if (dto.getSector() != null) {
+			s.setSector(Survey.Sector.valueOf(dto.getSector()));
+		}
+
+		return s;
+	}
+
+	private Map<String, Object> getErrorResponse() {
+		final Map<String, Object> response = new HashMap<String, Object>();
+		final RestStatusDto statusDto = new RestStatusDto();
+
+		statusDto.setStatus("failed");
+
+		response.put("meta", statusDto);
+		response.put("survey", null);
+
+		return response;
+	}
 }

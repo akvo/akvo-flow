@@ -8,7 +8,7 @@ FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 	content: null,
 	tagName: 'li',
 	classNameBindings: 'amSelected:current'.w(),
-	
+
 	// true if the survey group is selected. Used to set proper display class
 	amSelected: function() {
 		var selected = FLOW.selectedControl.get('selectedSurveyGroup');
@@ -19,7 +19,7 @@ FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 			return null;
 		}
 	}.property('FLOW.selectedControl.selectedSurveyGroup', 'content').cacheable(),
-	
+
 	// fired when a survey group is clicked
 	makeSelected: function() {
 		FLOW.selectedControl.set('selectedSurveyGroup', this.content);
@@ -36,7 +36,7 @@ FLOW.SurveyGroupSurveyView = Ember.View.extend({
       FLOW.questionControl.populateAllQuestions();
       FLOW.previewControl.set('showPreviewPopup',true);
 	},
-	
+
 	// fired when 'delete survey' is clicked in the survey item display
 	deleteSurvey: function() {
 		var sId=this.content.get('id');
@@ -45,10 +45,17 @@ FLOW.SurveyGroupSurveyView = Ember.View.extend({
 		FLOW.store.commit();
 		this.set('showDeleteSurveyDialogBool',false);
 	},
-	
+
 	// fired when 'inspect data' is clicked in the survey item display
 	inspectData: function() {
 			console.log("TODO inspect Data");
+	},
+
+	copySurvey: function () {
+    FLOW.store.createRecord(FLOW.Survey, {
+      sourceId: this.content.get('id')
+    });
+    FLOW.store.commit();
 	}
 });
 
@@ -59,7 +66,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	surveyGroupName:null,
 	showSGDeleteDialog:false,
 	showSGDeleteNotPossibleDialog:false,
-	
+
 	// true if at least one survey group is active
 	oneSelected: function() {
 		var selected = FLOW.selectedControl.get('selectedSurveyGroup');
@@ -69,13 +76,13 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 			return false;
 		}
 	}.property('FLOW.selectedControl.selectedSurveyGroup'),
-	
+
 	// fired when 'edit name' is clicked, shows edit field to change survey group name
 	editSurveyGroupName: function() {
 		this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
 		this.set('showEditField',true);
 	},
-	
+
 	// fired when 'save' is clicked while showing edit group name field. Saves the new group name
 	saveSurveyGroupNameEdit: function() {
 		var sgId=FLOW.selectedControl.selectedSurveyGroup.get('id');
@@ -85,14 +92,14 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 		FLOW.selectedControl.set('selectedSurveyGroup',FLOW.store.find(FLOW.SurveyGroup, sgId));
 		this.set('showEditField',false);
 	},
-	
+
 	// fired when 'cancel' is clicked while showing edit group name field. Cancels the edit.
 	cancelSurveyGroupNameEdit: function() {
 		this.set('surveyGroupName',FLOW.selectedControl.selectedSurveyGroup.get('code'));
 		this.set('showEditField',false);
 	},
 
-	
+
 	// fired when 'add a group' is clicked. Displays a new group text field in the left sidebar
 	addGroup: function() {
 		FLOW.selectedControl.set('selectedSurveyGroup',null);
@@ -116,13 +123,13 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 			FLOW.store.commit();
 			this.set('showNewGroupField',false);
 	},
-	
+
 	// fired when 'cancel' is clicked while showing new group text field in left sidebar. Cancels the new survey group creation
 	cancelNewSurveyGroupName: function() {
 			this.set('surveyGroupName',null);
 			this.set('showNewGroupField',false);
 	}
-	
+
 	// deprecated - not used
 	// fired when 'create a new survey' is clicked in the top bar.
 	// createNewSurvey: function() {
