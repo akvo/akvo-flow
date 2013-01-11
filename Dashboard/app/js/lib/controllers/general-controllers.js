@@ -57,6 +57,8 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedOption: null,
   selectedDevice:null,
   selectedDevices:[],
+  selectedDevicesPreview: [],
+  selectedSurveysPreview: [],
   selectedForMoveQuestionGroup: null,
   selectedForCopyQuestionGroup: null,
   selectedForMoveQuestion: null,

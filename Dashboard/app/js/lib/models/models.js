@@ -79,7 +79,9 @@ FLOW.Survey = FLOW.BaseModel.extend({
 
   // This attribute is used for the 'Copy Survey' functionality
   // Most of the times is `null`
-  sourceId: DS.attr('number', {defaultValue: null })
+  sourceId: DS.attr('number', {defaultValue: null }),
+  // used in the assignment edit page, not saved to backend
+  surveyGroupName: null
 });
 
 

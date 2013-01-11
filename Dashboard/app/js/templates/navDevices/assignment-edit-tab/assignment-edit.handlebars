@@ -49,7 +49,7 @@
         optionLabelPath="content.code" 
           id="surveys"
         optionValuePath="content.keyId"}} 
-      <a href="#" class="AddBtn">Add Selected Surveys</a>
+      <a {{action addSelectedSurveys target="this"}}  class="AddBtn">Add Selected Surveys</a>
           </div>
         </fieldset>
         <fieldset id="surveyPreview" class="formRightPanel">
@@ -67,51 +67,18 @@
               </thead>
               <!-- TABLE BODY: MAIN CONTENT-->
               <tbody>
+                {{#each survey in view.surveysPreview}}
                 <tr>
-                  <td class="groupPreview">Malawi 2012</td>
-                  <td class="surveyPreview">Survey 1</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
+                  <td class="groupPreview">{{survey.surveyGroupName}}</td>
+                  <td class="surveyPreview"{{survey.name}}</td>
+                  <td class="action"><a {{action "removeSingleSurvey" survey target="this"}} class="remove">remove</a></td>
                 </tr>
-                <tr>
-                  <td class="groupPreview">WFP</td>
-                  <td class="surveyPreview">survey 3</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">WFP</td>
-                  <td class="surveyPreview">survey 4</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">WFP</td>
-                  <td class="surveyPreview">survey 6</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">Malawi 2010</td>
-                  <td class="surveyPreview">Survey 1</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">Malawi 2010</td>
-                  <td class="surveyPreview">Survey 3</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">Malawi 2010</td>
-                  <td class="surveyPreview">Survey 4</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">Malawi 2010</td>
-                  <td class="surveyPreview">Survey 6</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
+                {{/each}}
               </tbody>
               <!-- TABLE FOOTER-->
               <tfoot>
                 <tr>
-                  <td colspan="7"><a href="#">Clear All</a></td>
+                  <td colspan="7"><a {{action "removeAllSurveys" target="this"}}>Clear All</a></td>
                 </tr>
               </tfoot>
             </table>
@@ -166,18 +133,18 @@
               </thead>
               <!-- TABLE BODY: MAIN CONTENT-->
               <tbody>
-                {{#each view.selectedDevicesPreview}}
+                {{#each device in view.devicesPreview}}
                 <tr>
-                  <td class="deviceGroup">{{deviceGroupName}}</td>
-                  <td class="deviceId">{{combinedName}}</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
+                  <td class="deviceGroup">{{device.deviceGroupName}}</td>
+                  <td class="deviceId">{{device.combinedName}}</td>
+                  <td class="action"><a {{action "removeSingleDevice" device target="this"}} class="remove">remove</a></td>
                 </tr>
                 {{/each}}
               </tbody>
               <!-- TABLE FOOTER-->
               <tfoot>
                 <tr>
-                  <td colspan="7"><a href="#">Clear All</a></td>
+                  <td colspan="7"><a {{action "removeAllDevices" target="this"}}>Clear All</a></td>
                 </tr>
               </tfoot>
             </table>
