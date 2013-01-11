@@ -2,9 +2,15 @@ FLOW.AssignmentsListTabView = Em.View.extend({
 
   editSurveyAssignment: function(event) {
     FLOW.selectedControl.set('selectedSurveyAssignment',event.context);
-    FLOW.router.transitionTo('navDevices.assignSurveysOverview');
-  }
+    FLOW.router.transitionTo('navDevices.editSurveysAssignment');
+  },
 
+  createNewAssignment: function(){
+    var newAssignment;
+    newAssignment = FLOW.store.createRecord(FLOW.SurveyAssignment,{});
+    FLOW.selectedControl.set('selectedSurveyAssignment',newAssignment);
+    FLOW.router.transitionTo('navDevices.editSurveysAssignment');
+  }
 });
 
 FLOW.AssignmentView = Em.View.extend({

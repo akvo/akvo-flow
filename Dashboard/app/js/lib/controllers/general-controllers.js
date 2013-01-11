@@ -51,6 +51,7 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedSurvey: null,
   selectedSurveys:[],
   selectedSurveyAllQuestions: null,
+  selectedSurveyAssignment: null,
   dependentQuestion: null,
   selectedQuestionGroup: null,
   selectedQuestion: null,

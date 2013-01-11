@@ -33,7 +33,6 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 	},
 
 	assignDisplayNames: function() {
-		console.log('remapping');
 		var allDevices, deviceId, deviceGroup, combinedName;
 		if((FLOW.deviceControl.content.get('isLoaded') === true) && (FLOW.deviceGroupControl.content.get('isLoaded') === true)) {
 			allDevices = FLOW.store.filter(FLOW.Device, function(data) {

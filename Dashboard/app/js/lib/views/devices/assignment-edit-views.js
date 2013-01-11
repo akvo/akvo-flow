@@ -1,6 +1,5 @@
 // removes duplicate objects with a clientId from an Ember Array
 
-
 function ArrNoDupe(a) {
   var templ, i, item, gotIt, tempa;
   templ = {};
@@ -25,7 +24,41 @@ FLOW.AssignmentEditView = Em.View.extend({
   surveysPreview: Ember.A([]),
   assignmentName: null,
   startDate: null,
-  expirationDate: null,
+  endDate: null,
+  language: null,
+
+  init: function() {
+    var dId, deviceIds, previewDevices, surveyIds, previewSurveys;
+    previewDevices = Ember.A([]);
+    previewSurveys = Ember.A([]);
+    this._super();
+    this.set('assignmentName', FLOW.selectedControl.selectedSurveyAssignment.get('name'));
+    this.set('startDate', FLOW.selectedControl.selectedSurveyAssignment.get('startDate'));
+    this.set('endDate', FLOW.selectedControl.selectedSurveyAssignment.get('endDate'));
+    this.set('language', FLOW.selectedControl.selectedSurveyAssignment.get('language'));
+
+    deviceIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('devices'));
+
+    deviceIds.forEach(function(item) {
+      previewDevices.pushObjects(FLOW.store.find(FLOW.Device, item));
+    });
+    this.set('devicesPreview', previewDevices);
+
+    surveyIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('surveys'));
+
+    surveyIds.forEach(function(item) {
+      previewSurveys.pushObjects(FLOW.store.find(FLOW.Survey, item));
+    });
+    this.set('surveysPreview', previewSurveys);
+  },
+
+  saveSurveyAssignment: function() {
+
+  },
+
+  cancelEditSurveyAssignment: function() {
+    FLOW.router.transitionTo('navDevices.assignSurveysOverview');
+  },
 
   addSelectedDevices: function() {
     this.devicesPreview.pushObjects(FLOW.selectedControl.get('selectedDevices'));
@@ -92,12 +125,5 @@ FLOW.AssignmentEditView = Em.View.extend({
     this.set('devicesPreview', Ember.A([]));
   },
 
-  saveSurveyAssignment: function() {
-
-  },
-
-  cancelSurveyAssignment: function() {
-
-  }
 
 });

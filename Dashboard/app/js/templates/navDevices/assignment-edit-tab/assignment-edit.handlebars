@@ -1,6 +1,6 @@
 {{#view FLOW.AssignmentEditView}}
 <section class="fullWidth" id="assignSurveys">
-  <h1>Create a new assignment</h1>
+  <h1>Edit assignment</h1>
   <div class="">
     <form>
       <fieldset id="assignmentDetails">
@@ -153,8 +153,8 @@
       </div>
       <div class="menuConfirm">
         <ul>
-          <li><a href="#" class="standardBtn">Save Assignment</a></li>
-          <li><a href="#" class="">Cancel</a></li>
+          <li><a {{action "saveSurveyAssignment" target="this"}} class="standardBtn">Save Assignment</a></li>
+          <li><a {{action "cancelEditSurveyAssignment" target="this"}} class="">Cancel</a></li>
         </ul>
       </div>
     </form>
