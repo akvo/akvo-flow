@@ -2,19 +2,20 @@
 <section class="fullWidth" id="assignSurveys">
   <h1>Edit assignment</h1>
   <div class="">
+     <a {{action "cancelEditSurveyAssignment" target="this"}} class="stepBack">Go back to assignment list</a>
     <form>
       <fieldset id="assignmentDetails">
         <h2>Assignment Details</h2>
         <label for="assignmentName">Assignment Name:</label>
-        <input type="text" id="assignmentName" name="assignmentName" title="Enter a name for this assignment" placeholder="Enter a name for this assignment" autofocus required />
+         {{view Ember.TextField valueBinding="view.assignmentName" id="assignmentName" placeholder="Enter a name for this assignment" size=30}} 
         <div class="dateRange">
           <div class="activeDate">
             <label for="startDate">Start Date:</label>
-            <input type="text" id="from" class="datePicker" name="startDate">
+           {{view FLOW.DateField valueBinding="FLOW.dateControl.fromDate" elementId="from_date"  size=30}} 
           </div>
           <div class="expireDate">
-            <label for="endDate">Expiration Date:</label>
-            <input type="text" id="to" class="datePicker" name="startDate">
+            <label for="expireDate">Expiration Date:</label>
+           {{view FLOW.DateField valueBinding="FLOW.dateControl.toDate" elementId="to_date" size=30}} 
           </div>
         </div>
       </fieldset>
@@ -36,8 +37,8 @@
           <div class="">
             <nav>
               <ul>
-                <li><a href="#">Select All</a></li>
-                <li><a href="#">Deselect All</a></li>
+                <li><a {{action selectAllSurveys target="this"}}>Select All</a></li>
+                <li><a {{action deselectAllSurveys target="this"}}>Deselect All</a></li>
               </ul>
             </nav>
             <label for="surveys">Select Surveys:</label>
@@ -46,7 +47,7 @@
            size=10
         contentBinding="FLOW.surveyControl.content" 
         selectionBinding="FLOW.selectedControl.selectedSurveys" 
-        optionLabelPath="content.code" 
+        optionLabelPath="content.name" 
           id="surveys"
         optionValuePath="content.keyId"}} 
       <a {{action addSelectedSurveys target="this"}}  class="AddBtn">Add Selected Surveys</a>
@@ -61,7 +62,7 @@
               <thead>
                 <tr>
                   <th class="groupPreview">Survey Group</th>
-                  <th class="surveyPreview">Survey List</th>
+                  <th class="surveyPreview">Survey</th>
                   <th class="action"></th>
                 </tr>
               </thead>
@@ -127,7 +128,7 @@
               <thead>
                 <tr>
                   <th class="groupPreview">Device Group</th>
-                  <th class="surveyPreview">Device List</th>
+                  <th class="surveyPreview">Device</th>
                   <th class="action"></th>
                 </tr>
               </thead>

@@ -53,7 +53,26 @@ FLOW.AssignmentEditView = Em.View.extend({
   },
 
   saveSurveyAssignment: function() {
+    var sa, devices = [],
+      surveys = [];
+    sa = FLOW.selectedControl.get('selectedSurveyAssignment');
 
+    sa.set('name',this.get('assignmentName'));
+    sa.set('endDate', this.get('endDate'));
+    sa.set('startDate', this.get('startDate'));
+    sa.set('language', 'en');
+
+    this.get('devicesPreview').forEach(function(item) {
+      devices.push(item.get('keyId'));
+    });
+    sa.set('devices', devices);
+
+    this.get('surveysPreview').forEach(function(item) {
+      surveys.push(item.get('keyId'));
+    });
+    sa.set('surveys', surveys);
+
+    FLOW.store.commit();
   },
 
   cancelEditSurveyAssignment: function() {
@@ -78,19 +97,23 @@ FLOW.AssignmentEditView = Em.View.extend({
   },
 
   selectAllDevices: function() {
-
+    FLOW.selectedControl.set('selectedDevices', FLOW.devicesInGroupControl.get('content'));
   },
 
   deselectAllDevices: function() {
-
+    FLOW.selectedControl.set('selectedDevices', []);
   },
 
   selectAllSurveys: function() {
-
+    var selected=Ember.A([]);
+    FLOW.surveyControl.get('content').forEach(function(item){
+      selected.pushObject(item);
+    });
+    FLOW.selectedControl.set('selectedSurveys', selected);
   },
 
   deselectAllSurveys: function() {
-
+    FLOW.selectedControl.set('selectedSurveys', []);
   },
 
   removeSingleSurvey: function(event) {
@@ -123,7 +146,5 @@ FLOW.AssignmentEditView = Em.View.extend({
 
   removeAllDevices: function() {
     this.set('devicesPreview', Ember.A([]));
-  },
-
-
+  }
 });
