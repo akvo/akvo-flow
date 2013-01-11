@@ -114,6 +114,13 @@ Ember.STRINGS_EN = {
   '_Title':'Title',
   '_Description':'Description',
   '_Sector_Focus':'Sector Focus',
+  '_Language':'Language',
+  '_Version_Number':'Version Number',
+  '_ID_Number':'ID Number',
+  '_Survey_Summary':'Survey Summary',
+  '_Number_of_Question_groups':'Number of Question groups',
+  '_Number_of_Questions':'Number of Questions',
+  '_Status':'Status',
 };
 
 Ember.STRINGS_ES = {
@@ -239,4 +246,11 @@ Ember.STRINGS_FR = {
   '_Title':'Titre',
   '_Description':'Description',
   '_Sector_Focus':'Secteur',
+  '_Language':'Langue',
+  '_Version_Number':'Version',
+  '_ID_Number':'Identifiant',
+  '_Survey_Summary':"Survey Résumé de l'enquête",
+  '_Number_of_Question_groups':'Nombre de groupe de questions',
+  '_Number_of_Questions':'Nombre de questions',
+  '_Status':'Statut',
 };

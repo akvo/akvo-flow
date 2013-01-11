@@ -1517,7 +1517,7 @@ li.aSurvey {
 	display: inline-block;
 	float: left;
 	margin: 5px 1.5% 10px 1.5%;
-	padding: 0 0.5% 10px 0.5%;
+	padding: 0 0.5%;
 	min-height: 210px;
 	width: 21%;
 	/* background: url(../images/surveySeperator.png) right center no-repeat; */
@@ -1871,7 +1871,7 @@ a.manageNotifications span {
 	position: relative;
 	margin: 0.01em auto 0.3em auto;
 	padding: 0.01em 2%;
-	width: 88%;
+	width: 92%;
 	color: rgb(153,153,153);
 }
 .newSurveyInfoUl li h3 {
@@ -2180,7 +2180,7 @@ nav.questionActionMenu a:hover {
 	background: rgb(248,248,248);/* -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *//* -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *//* box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
 	-o-border-radius: 0 0 5px 0;
 }
-.aQuestionSet .questionSetContent div.innerContent:focus {
+.aQuestionSet .questionSetContent div.innerContent:focus {	
 }
 .aQuestionSet header nav.qtnGroupMenu {
 	position: absolute;
