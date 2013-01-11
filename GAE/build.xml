@@ -138,7 +138,9 @@
 	</target>
 
 	<target name="runserver" depends="datanucleusenhance" description="Starts the development server.">
-		<dev_appserver war="war" address="0.0.0.0" />
+		<dev_appserver war="war" address="0.0.0.0">
+			<args value="-Xmx1024m" />
+		</dev_appserver>
 	</target>
 
 	<target name="update" depends="datanucleusenhance" description="Uploads the application to App Engine.">
