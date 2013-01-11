@@ -97,11 +97,15 @@ FLOW.AssignmentEditView = Em.View.extend({
   },
 
   selectAllDevices: function() {
-    FLOW.selectedControl.set('selectedDevices', FLOW.devicesInGroupControl.get('content'));
+    var selected=Ember.A([]);
+    FLOW.devicesInGroupControl.get('content').forEach(function(item){
+      selected.pushObject(item);
+    });
+    FLOW.selectedControl.set('selectedDevices', selected);
   },
 
   deselectAllDevices: function() {
-    FLOW.selectedControl.set('selectedDevices', []);
+   FLOW.selectedControl.set('selectedDevices', []);
   },
 
   selectAllSurveys: function() {
