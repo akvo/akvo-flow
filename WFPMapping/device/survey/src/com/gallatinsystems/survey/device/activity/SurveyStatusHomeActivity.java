@@ -69,8 +69,6 @@ public class SurveyStatusHomeActivity extends Activity {
 
 			databaseAdapter.open();
 	        //Update the survey counts
-	        //SavedCount.setText("17");
-	        //SubmittedCount.setText("4711");
 	        SavedCount.setText(Integer.toString(databaseAdapter.countSurveyRespondents(ConstantUtil.SAVED_STATUS)));
 	        SubmittedCount.setText(Integer.toString(databaseAdapter.countSurveyRespondents(ConstantUtil.SUBMITTED_STATUS)));
 	    }
