@@ -19,22 +19,36 @@ function ArrNoDupe(a) {
   return tempa;
 }
 
+function formatDate(value) {
+  if(value > 0) {
+    return value.getFullYear() + "/" + value.getMonth() + 1 + "/" + value.getDate();
+  } else return null;
+}
+
 FLOW.AssignmentEditView = Em.View.extend({
   devicesPreview: Ember.A([]),
   surveysPreview: Ember.A([]),
   assignmentName: null,
-  startDate: null,
-  endDate: null,
   language: null,
 
   init: function() {
-    var dId, deviceIds, previewDevices, surveyIds, previewSurveys;
+    var dId, deviceIds, previewDevices, surveyIds, previewSurveys, startDate = null,
+      endDate = null;
     previewDevices = Ember.A([]);
     previewSurveys = Ember.A([]);
     this._super();
     this.set('assignmentName', FLOW.selectedControl.selectedSurveyAssignment.get('name'));
-    this.set('startDate', FLOW.selectedControl.selectedSurveyAssignment.get('startDate'));
-    this.set('endDate', FLOW.selectedControl.selectedSurveyAssignment.get('endDate'));
+    FLOW.selectedControl.get('selectedDevices', null);
+    FLOW.selectedControl.get('selectedSurveys', null);
+    if(FLOW.selectedControl.selectedSurveyAssignment.get('startDate') > 0) {
+      startDate = new Date(FLOW.selectedControl.selectedSurveyAssignment.get('startDate'));
+    }
+    if(FLOW.selectedControl.selectedSurveyAssignment.get('endDate') > 0) {
+      endDate = new Date(FLOW.selectedControl.selectedSurveyAssignment.get('endDate'));
+    }
+    FLOW.dateControl.set('fromDate', formatDate(startDate));
+    FLOW.dateControl.set('toDate', formatDate(endDate));
+
     this.set('language', FLOW.selectedControl.selectedSurveyAssignment.get('language'));
 
     deviceIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('devices'));
@@ -57,9 +71,9 @@ FLOW.AssignmentEditView = Em.View.extend({
       surveys = [];
     sa = FLOW.selectedControl.get('selectedSurveyAssignment');
 
-    sa.set('name',this.get('assignmentName'));
-    sa.set('endDate', this.get('endDate'));
-    sa.set('startDate', this.get('startDate'));
+    sa.set('name', this.get('assignmentName'));
+    sa.set('endDate', Date.parse(FLOW.dateControl.get('toDate')));
+    sa.set('startDate', Date.parse(FLOW.dateControl.get('fromDate')));
     sa.set('language', 'en');
 
     this.get('devicesPreview').forEach(function(item) {
@@ -73,9 +87,14 @@ FLOW.AssignmentEditView = Em.View.extend({
     sa.set('surveys', surveys);
 
     FLOW.store.commit();
+    FLOW.router.transitionTo('navDevices.assignSurveysOverview');
   },
 
   cancelEditSurveyAssignment: function() {
+    if(Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
+      FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
+    }
+    FLOW.selectedControl.set('selectedSurveyAssignment', null);
     FLOW.router.transitionTo('navDevices.assignSurveysOverview');
   },
 
@@ -97,20 +116,20 @@ FLOW.AssignmentEditView = Em.View.extend({
   },
 
   selectAllDevices: function() {
-    var selected=Ember.A([]);
-    FLOW.devicesInGroupControl.get('content').forEach(function(item){
+    var selected = Ember.A([]);
+    FLOW.devicesInGroupControl.get('content').forEach(function(item) {
       selected.pushObject(item);
     });
     FLOW.selectedControl.set('selectedDevices', selected);
   },
 
   deselectAllDevices: function() {
-   FLOW.selectedControl.set('selectedDevices', []);
+    FLOW.selectedControl.set('selectedDevices', []);
   },
 
   selectAllSurveys: function() {
-    var selected=Ember.A([]);
-    FLOW.surveyControl.get('content').forEach(function(item){
+    var selected = Ember.A([]);
+    FLOW.surveyControl.get('content').forEach(function(item) {
       selected.pushObject(item);
     });
     FLOW.selectedControl.set('selectedSurveys', selected);
