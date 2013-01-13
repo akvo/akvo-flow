@@ -65,17 +65,17 @@
 	    </fail>
 	    <copy file="${config}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
 	    <copy file="${config}/appengine-web.xml" tofile="war/WEB-INF/appengine-web.xml" overwrite="true" verbose="true" />
-	    <copy file="${config}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true"/>
-	    <copy file="${config}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true"/>
-	    <copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" />
-	    <copy file="${config}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" />
-	    <copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" />
-	    <copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" />
-	    <copy file="${config}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true"/>
+	    <copy file="${config}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
+	    <copy file="${config}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
+	    <copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false" />
+	    <copy file="${config}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" failonerror="false" />
+	    <copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false" />
+	    <copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" failonerror="false" />
+	    <copy file="${config}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true" failonerror="false" />
 	</target>
 
 	<target name="copyjars" depends="init" description="Copies the App Engine JARs to the WAR.">
-		<copy todir="war/WEB-INF/lib" flatten="true">
+		<copy todir="war/WEB-INF/lib" flatten="true" verbose="true">
 			<fileset dir="${sdk.dir}/lib/user">
 				<include name="**/*.jar" />
 			</fileset>
