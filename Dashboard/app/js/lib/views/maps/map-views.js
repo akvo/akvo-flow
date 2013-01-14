@@ -18,7 +18,7 @@ FLOW.NavMapsView = Ember.View.extend({
     FLOW.placemarkControl.populate();
   },
 
-  addCountryControl: function (event, map) {
+  addCountryControl: function(event, map) {
     console.log("in addCountryControl");
   },
 
@@ -37,7 +37,7 @@ FLOW.NavMapsView = Ember.View.extend({
 
     FLOW.placemarkControl.set('map', map);
   },
-  
+
   // Populate the map with markers
   populateMap: function() {
     var map;
@@ -59,22 +59,34 @@ FLOW.NavMapsView = Ember.View.extend({
     this.set('imageURL', 'images/invisible.png');
   }.observes('FLOW.placemarkControl.selected'),
 
- changePlace: function() {
-     var latLon;
-     latLon = new mxn.LatLonPoint(this.country.get('lat'), this.country.get('lon'));
-     FLOW.placemarkControl.get('map').setCenterAndZoom(latLon, 8);
-   }.observes('this.country'),
+  changePlace: function() {
+    var latLon;
+    if(!Ember.none(this.get('country'))) {
+      latLon = new mxn.LatLonPoint(this.country.get('lat'), this.country.get('lon'));
+      FLOW.placemarkControl.get('map').setCenterAndZoom(latLon, 8);
+    }
+  }.observes('this.country'),
 
   handlePlacemarkDetails: function() {
     var details, imageURL, stringVal;
-
+    console.log('in handleplacemarkdetails');
     details = FLOW.placemarkDetailControl.get('content');
 
-    if( (Ember.none(details) === false) && (Ember.empty(details) === false) && (details.get('isLoaded') === true) ) {
-      /* Show details pane */
-      jQuery("#flowMap").animate({width:"75%"}, 200);
-      $("#pointDetails").animate({width:"24.5%"}, 200).css({"overflow":"auto", "margin-left":"-2px"});
-      $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).animate({opacity:"1"}, 200).css({display:"inherit"});
+    if((Ember.none(details) === false) && (Ember.empty(details) === false) && (details.get('isLoaded') === true)) { /* Show details pane */
+      jQuery("#flowMap").animate({
+        width: "75%"
+      }, 200);
+      $("#pointDetails").animate({
+        width: "24.5%"
+      }, 200).css({
+        "overflow": "auto",
+        "margin-left": "-2px"
+      });
+      $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo").animate({
+        opacity: "1"
+      }, 200).css({
+        display: "inherit"
+      });
 
       this.set('showDetailsBool', true);
       details.forEach(function(item) {
@@ -88,11 +100,21 @@ FLOW.NavMapsView = Ember.View.extend({
           FLOW.placemarkDetailControl.set('selectedPointCode', verticalBars[3]);
         }
       }, this);
-    } else {
-      /* hideMapDetails(); */
-      $("#flowMap").animate({width:"99.25%"}, 200 );
-      $("#pointDetails").animate({width:"0.25%"}, 200 ).css({"overflow":"hidden", "margin-left":"-2px"});
-      $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo" ).css({opacity:"0"}).css({display:"none"});
+    } else { /* hideMapDetails(); */
+      $("#flowMap").animate({
+        width: "99.25%"
+      }, 200);
+      $("#pointDetails").animate({
+        width: "0.25%"
+      }, 200).css({
+        "overflow": "hidden",
+        "margin-left": "-2px"
+      });
+      $("#pointDetails h2, #pointDetails dl, #pointDetails img,#pointDetails .imgContainer, .placeMarkBasicInfo").css({
+        opacity: "0"
+      }).css({
+        display: "none"
+      });
     }
   }.observes('FLOW.placemarkDetailControl.content.isLoaded'),
 
@@ -110,8 +132,8 @@ FLOW.NavMapsView = Ember.View.extend({
     // Add a click handler that handles what happens when marker is clicked
     placemark.addMarkerClickHandler = function(marker) {
       var clickHandler = function(event_name, event_source, event_args) {
-        event_source.placemark.handleClick(event_source.placemark.marker);
-      };
+          event_source.placemark.handleClick(event_source.placemark.marker);
+        };
       marker.click.addHandler(clickHandler);
     };
 
