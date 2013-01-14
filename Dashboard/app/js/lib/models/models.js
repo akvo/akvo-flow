@@ -54,14 +54,21 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 
 FLOW.Survey = FLOW.BaseModel.extend({
   didDelete: function() {
-     FLOW.surveyControl.populate();
-   },
+    FLOW.surveyControl.populate();
+  },
   // didUpdate: function() {
   //   FLOW.surveyControl.populate();
   // },
   // didCreate: function() {
   //   FLOW.surveyControl.populate();
   // },
+  didLoad: function() {
+    // set the survey group name
+    sg = FLOW.store.find(FLOW.SurveyGroup, this.get('surveyGroupId'));
+    if(!Ember.empty(sg)) {
+      this.set('surveyGroupName', sg.get('code'));
+    }
+  },
 
   defaultLanguageCode: DS.attr('string'),
   status: DS.attr('string'),
@@ -79,7 +86,11 @@ FLOW.Survey = FLOW.BaseModel.extend({
 
   // This attribute is used for the 'Copy Survey' functionality
   // Most of the times is `null`
-  sourceId: DS.attr('number', {defaultValue: null })
+  sourceId: DS.attr('number', {
+    defaultValue: null
+  }),
+  // used in the assignment edit page, not saved to backend
+  surveyGroupName: null
 });
 
 
@@ -200,7 +211,7 @@ FLOW.Device = FLOW.BaseModel.extend({
   }),
   isSelected: false,
   deviceGroupName: null,
-  combinedName:null
+  combinedName: null
 });
 
 FLOW.SurveyAssignment = FLOW.BaseModel.extend({
@@ -273,7 +284,7 @@ FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({
 });
 
 FLOW.User = FLOW.BaseModel.extend({
-   didDelete: function() {
+  didDelete: function() {
     FLOW.userControl.populate();
   },
   didUpdate: function() {
@@ -285,10 +296,10 @@ FLOW.User = FLOW.BaseModel.extend({
 
   userName: DS.attr('string'),
   emailAddress: DS.attr('string'),
-  admin:DS.attr('boolean', {
+  admin: DS.attr('boolean', {
     defaultValue: 0
   }),
-  superAdmin:DS.attr('boolean', {
+  superAdmin: DS.attr('boolean', {
     defaultValue: 0
   }),
   permissionList: DS.attr('string')
@@ -327,16 +338,14 @@ FLOW.Message = FLOW.BaseModel.extend({
   shortMessage: DS.attr('string')
 });
 
-FLOW.Action = FLOW.BaseModel.extend({
-});
+FLOW.Action = FLOW.BaseModel.extend({});
 
 
 FLOW.NotificationSubscription = FLOW.BaseModel.extend({
-  notificationDestination:DS.attr('string'),
-  notificationOption:DS.attr('string'),
-  notificationMethod:DS.attr('string'),
-  notificationType:DS.attr('string'),
-  expiryDate:DS.attr('number'),
-  entityId:DS.attr('number')
+  notificationDestination: DS.attr('string'),
+  notificationOption: DS.attr('string'),
+  notificationMethod: DS.attr('string'),
+  notificationType: DS.attr('string'),
+  expiryDate: DS.attr('number'),
+  entityId: DS.attr('number')
 });
-

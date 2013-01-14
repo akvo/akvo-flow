@@ -1,11 +1,8 @@
 <ul>
     {{#view view.NavItemView item="currentDevices" }}
-    	<a {{action doCurrentDevices}}>{{t _Current_Devices_List}}</a>
+    	<a {{action doCurrentDevices}}>{{t _Devices_list}}</a>
     {{/view}} 
     {{#view view.NavItemView item="assignSurveys" }}
-    	<a {{action doAssignSurveysOverview}}>{{t _Current_Assignments}}</a>
-    {{/view}} 
-    {{#view view.NavItemView item="editSurveyAssignment" }}
-    	<a {{action doEditSurveysAssignment}}>{{t _Edit_Assignment}}</a>
+    	<a {{action doAssignSurveysOverview}}>{{t _Assignments_list}}</a>
     {{/view}} 
 </ul>

@@ -1,20 +1,21 @@
 {{#view FLOW.AssignmentEditView}}
 <section class="fullWidth" id="assignSurveys">
-  <h1>Create a new assignment</h1>
+  <h1>Edit assignment</h1>
   <div class="">
+     <a {{action "cancelEditSurveyAssignment" target="this"}} class="stepBack">Go back to assignment list</a>
     <form>
       <fieldset id="assignmentDetails">
         <h2>Assignment Details</h2>
         <label for="assignmentName">Assignment Name:</label>
-        <input type="text" id="assignmentName" name="assignmentName" title="Enter a name for this assignment" placeholder="Enter a name for this assignment" autofocus required />
+         {{view Ember.TextField valueBinding="view.assignmentName" id="assignmentName" placeholder="Enter a name for this assignment" size=30}} 
         <div class="dateRange">
           <div class="activeDate">
             <label for="startDate">Start Date:</label>
-            <input type="text" id="from" class="datePicker" name="startDate">
+           {{view FLOW.DateField valueBinding="FLOW.dateControl.fromDate" elementId="from_date"  size=30}} 
           </div>
           <div class="expireDate">
-            <label for="endDate">Expiration Date:</label>
-            <input type="text" id="to" class="datePicker" name="startDate">
+            <label for="expireDate">Expiration Date:</label>
+           {{view FLOW.DateField valueBinding="FLOW.dateControl.toDate" elementId="to_date" size=30}} 
           </div>
         </div>
       </fieldset>
@@ -36,8 +37,8 @@
           <div class="">
             <nav>
               <ul>
-                <li><a href="#">Select All</a></li>
-                <li><a href="#">Deselect All</a></li>
+                <li><a {{action selectAllSurveys target="this"}}>Select All</a></li>
+                <li><a {{action deselectAllSurveys target="this"}}>Deselect All</a></li>
               </ul>
             </nav>
             <label for="surveys">Select Surveys:</label>
@@ -46,10 +47,10 @@
            size=10
         contentBinding="FLOW.surveyControl.content" 
         selectionBinding="FLOW.selectedControl.selectedSurveys" 
-        optionLabelPath="content.code" 
+        optionLabelPath="content.name" 
           id="surveys"
         optionValuePath="content.keyId"}} 
-      <a href="#" class="AddBtn">Add Selected Surveys</a>
+      <a {{action addSelectedSurveys target="this"}}  class="AddBtn">Add Selected Surveys</a>
           </div>
         </fieldset>
         <fieldset id="surveyPreview" class="formRightPanel">
@@ -61,57 +62,24 @@
               <thead>
                 <tr>
                   <th class="groupPreview">Survey Group</th>
-                  <th class="surveyPreview">Survey List</th>
+                  <th class="surveyPreview">Survey</th>
                   <th class="action"></th>
                 </tr>
               </thead>
               <!-- TABLE BODY: MAIN CONTENT-->
               <tbody>
+                {{#each survey in view.surveysPreview}}
                 <tr>
-                  <td class="groupPreview">Malawi 2012</td>
-                  <td class="surveyPreview">Survey 1</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
+                  <td class="groupPreview">{{survey.surveyGroupName}}</td>
+                  <td class="surveyPreview"{{survey.name}}</td>
+                  <td class="action"><a {{action "removeSingleSurvey" survey target="this"}} class="remove">remove</a></td>
                 </tr>
-                <tr>
-                  <td class="groupPreview">WFP</td>
-                  <td class="surveyPreview">survey 3</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">WFP</td>
-                  <td class="surveyPreview">survey 4</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">WFP</td>
-                  <td class="surveyPreview">survey 6</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">Malawi 2010</td>
-                  <td class="surveyPreview">Survey 1</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">Malawi 2010</td>
-                  <td class="surveyPreview">Survey 3</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">Malawi 2010</td>
-                  <td class="surveyPreview">Survey 4</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
-                <tr>
-                  <td class="groupPreview">Malawi 2010</td>
-                  <td class="surveyPreview">Survey 6</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
-                </tr>
+                {{/each}}
               </tbody>
               <!-- TABLE FOOTER-->
               <tfoot>
                 <tr>
-                  <td colspan="7"><a href="#">Clear All</a></td>
+                  <td colspan="7"><a {{action "removeAllSurveys" target="this"}}>Clear All</a></td>
                 </tr>
               </tfoot>
             </table>
@@ -135,8 +103,8 @@
           <div class="">
             <nav>
               <ul>
-                <li><a href="#">Select All</a></li>
-                <li><a href="#">Deselect All</a></li>
+                <li><a {{action selectAllDevices target="this"}}>Select All</a></li>
+                <li><a {{action deselectAllDevices target="this"}}>Deselect All</a></li>
               </ul>
             </nav>
           <label for="devices">Select Devices:</label>
@@ -160,24 +128,24 @@
               <thead>
                 <tr>
                   <th class="groupPreview">Device Group</th>
-                  <th class="surveyPreview">Device List</th>
+                  <th class="surveyPreview">Device</th>
                   <th class="action"></th>
                 </tr>
               </thead>
               <!-- TABLE BODY: MAIN CONTENT-->
               <tbody>
-                {{#each view.selectedDevicesPreview}}
+                {{#each device in view.devicesPreview}}
                 <tr>
-                  <td class="deviceGroup">{{deviceGroupName}}</td>
-                  <td class="deviceId">{{combinedName}}</td>
-                  <td class="action"><a href="#" class="remove">remove</a></td>
+                  <td class="deviceGroup">{{device.deviceGroupName}}</td>
+                  <td class="deviceId">{{device.combinedName}}</td>
+                  <td class="action"><a {{action "removeSingleDevice" device target="this"}} class="remove">remove</a></td>
                 </tr>
                 {{/each}}
               </tbody>
               <!-- TABLE FOOTER-->
               <tfoot>
                 <tr>
-                  <td colspan="7"><a href="#">Clear All</a></td>
+                  <td colspan="7"><a {{action "removeAllDevices" target="this"}}>Clear All</a></td>
                 </tr>
               </tfoot>
             </table>
@@ -186,8 +154,8 @@
       </div>
       <div class="menuConfirm">
         <ul>
-          <li><a href="#" class="standardBtn">Save Assignment</a></li>
-          <li><a href="#" class="">Cancel</a></li>
+          <li><a {{action "saveSurveyAssignment" target="this"}} class="standardBtn">Save Assignment</a></li>
+          <li><a {{action "cancelEditSurveyAssignment" target="this"}} class="">Cancel</a></li>
         </ul>
       </div>
     </form>
