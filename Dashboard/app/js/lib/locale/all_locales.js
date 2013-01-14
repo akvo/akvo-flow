@@ -120,7 +120,7 @@ Ember.STRINGS_EN = {
   '_Survey_Summary':'Survey Summary',
   '_Number_of_Question_groups':'Number of Question groups',
   '_Number_of_Questions':'Number of Questions',
-  '_Status':'Status',
+  '_Status':'Status'
 };
 
 Ember.STRINGS_ES = {
@@ -252,5 +252,5 @@ Ember.STRINGS_FR = {
   '_Survey_Summary':"Survey Résumé de l'enquête",
   '_Number_of_Question_groups':'Nombre de groupe de questions',
   '_Number_of_Questions':'Nombre de questions',
-  '_Status':'Statut',
+  '_Status':'Statut'
 };
