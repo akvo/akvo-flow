@@ -52,3 +52,4 @@ GAE/UploadConstants.properties
 GAE/appengine-web.xml
 
 WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/R.java
+GAE/war/flowenv.js
