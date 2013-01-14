@@ -18,6 +18,10 @@ FLOW.NavMapsView = Ember.View.extend({
     FLOW.placemarkControl.populate();
   },
 
+  addCountryControl: function (event, map) {
+    console.log("in addCountryControl");
+  },
+
   /**
       ...
     **/
@@ -33,9 +37,27 @@ FLOW.NavMapsView = Ember.View.extend({
 
     map.setCenterAndZoom(latLon, 8);
     map.enableScrollWheelZoom();
-    FLOW.placemarkControl.set('map', map);
+
+    
+
+    // -----------------------------------------------------------------------
+
+    // https://github.com/mapstraction/mxn/blob/master/tests/core.html#L70
+    map.load.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
+      console.log('Map has for provider: ' + oEvtSource.api);
+    });
+
+    map.click.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
+      console.log('Map has for provider: ' + oEvtSource.api);
+    });
+
+    // This does not work since the gmap does not yet exist :-(
     // var gmap = map.getMap();
-    // console.log(gmap);
+    // google.maps.event.addListenerOnce(gmap, 'idle', function() {
+    //   alert('Map loaded');
+    // });
+
+    FLOW.placemarkControl.set('map', map);
   },
 
   /**
@@ -63,7 +85,6 @@ FLOW.NavMapsView = Ember.View.extend({
     }
     this.set('imageURL', 'images/invisible.png');
   }.observes('FLOW.placemarkControl.selected'),
-
 
   /**
       ...
@@ -111,8 +132,8 @@ FLOW.NavMapsView = Ember.View.extend({
     marker.placemark = placemark;
     // Add a click handler that handles what happens when marker is clicked
     /**
-        Adds a custom clickHandler to the markers
-      **/
+      Adds a custom clickHandler to the markers
+    **/
     placemark.addMarkerClickHandler = function(marker) {
       var clickHandler = function(event_name, event_source, event_args) {
         event_source.placemark.handleClick(event_source.placemark.marker);
