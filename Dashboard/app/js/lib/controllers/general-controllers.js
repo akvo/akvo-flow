@@ -195,7 +195,7 @@ FLOW.dataserverControl = Ember.Object.create({
         revision: 10,
         adapter: DS.FLOWRESTAdapter.create({
           bulkCommit: false,
-          namespace: "rest",
+          namespace: "restlocal",
           url: host
         })
       });

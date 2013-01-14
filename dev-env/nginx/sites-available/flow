@@ -16,11 +16,11 @@ server {
         index index.html;
     }
 
-    location /restsandbox {
+    location /rest {
         proxy_pass http://akvoflowsandbox.appspot.com/rest;
     }
 
-    location /rest {
+    location /restlocal {
         proxy_pass http://127.0.0.1:8080/rest;
     }
 
