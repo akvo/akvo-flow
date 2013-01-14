@@ -129,8 +129,9 @@ public class SurveyAssignmentRestService {
 					"Survey Assignment with id: " + dto.getKeyId()
 							+ " not found");
 		}
-		SurveyAssignment oldAssignment = sa;
-
+		final SurveyAssignment oldAssignment = surveyAssignmentDao
+				.getByKey(dto.getKeyId());
+		
 		BeanUtils.copyProperties(marshallToDomain(dto), sa);
 		surveyAssignmentDao.save(sa);
 		generateDeviceJobQueueItems(sa, oldAssignment);
