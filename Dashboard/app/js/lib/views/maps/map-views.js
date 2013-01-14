@@ -22,9 +22,6 @@ FLOW.NavMapsView = Ember.View.extend({
     console.log("in addCountryControl");
   },
 
-  /**
-      ...
-    **/
   didInsertElement: function() {
     var map = new mxn.Mapstraction('flowMap', 'google', true),
       latLon = new mxn.LatLonPoint(-0.703107, 36.765747);
@@ -38,31 +35,10 @@ FLOW.NavMapsView = Ember.View.extend({
     map.setCenterAndZoom(latLon, 8);
     map.enableScrollWheelZoom();
 
-    
-
-    // -----------------------------------------------------------------------
-
-    // https://github.com/mapstraction/mxn/blob/master/tests/core.html#L70
-    map.load.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-      console.log('Map has for provider: ' + oEvtSource.api);
-    });
-
-    map.click.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-      console.log('Map has for provider: ' + oEvtSource.api);
-    });
-
-    // This does not work since the gmap does not yet exist :-(
-    // var gmap = map.getMap();
-    // google.maps.event.addListenerOnce(gmap, 'idle', function() {
-    //   alert('Map loaded');
-    // });
-
     FLOW.placemarkControl.set('map', map);
   },
-
-  /**
-      Populate the map with markers
-    **/
+  
+  // Populate the map with markers
   populateMap: function() {
     var map;
     if(FLOW.placemarkControl.content.get('isUpdating') === false) {
@@ -73,9 +49,6 @@ FLOW.NavMapsView = Ember.View.extend({
     }
   }.observes('FLOW.placemarkControl.content.isUpdating'),
 
-  /**
-      ...
-    **/
   handlePlacemarkSelection: function() {
     var selected = FLOW.placemarkControl.get('selected');
     if(typeof selected !== 'undefined') {
@@ -86,9 +59,12 @@ FLOW.NavMapsView = Ember.View.extend({
     this.set('imageURL', 'images/invisible.png');
   }.observes('FLOW.placemarkControl.selected'),
 
-  /**
-      ...
-    **/
+ changePlace: function() {
+     var latLon;
+     latLon = new mxn.LatLonPoint(this.country.get('lat'), this.country.get('lon'));
+     FLOW.placemarkControl.get('map').setCenterAndZoom(latLon, 8);
+   }.observes('this.country'),
+
   handlePlacemarkDetails: function() {
     var details, imageURL, stringVal;
 
@@ -130,14 +106,11 @@ FLOW.NavMapsView = Ember.View.extend({
 
     marker.setIcon('images/maps/blueMarker.png');
     marker.placemark = placemark;
+
     // Add a click handler that handles what happens when marker is clicked
-    /**
-      Adds a custom clickHandler to the markers
-    **/
     placemark.addMarkerClickHandler = function(marker) {
       var clickHandler = function(event_name, event_source, event_args) {
         event_source.placemark.handleClick(event_source.placemark.marker);
-        void(event_args); // To be around the JSHint warning
       };
       marker.click.addHandler(clickHandler);
     };
@@ -152,7 +125,7 @@ FLOW.NavMapsView = Ember.View.extend({
       marker.placemark.toggleMarker(marker.placemark);
 
       oldSelected = FLOW.placemarkControl.get('selected');
-      if(typeof oldSelected === 'undefined') {
+      if(Ember.none(oldSelected)) {
         FLOW.placemarkControl.set('selected', placemark);
       } else {
         if(this.marker === oldSelected.marker) {

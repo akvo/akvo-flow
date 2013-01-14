@@ -21,3 +21,16 @@ FLOW.placemarkDetailControl = Ember.ArrayController.create({
     }
   }
 });
+
+FLOW.countryControl = Ember.Object.create({
+  content: [
+  Ember.Object.create({
+    label: "Kenya",
+    lat:0.010986,
+    lon:37.901123
+  }), Ember.Object.create({
+    label: "Netherlands",
+    lat:52.24462,
+    lon:5.651611
+  })]
+});

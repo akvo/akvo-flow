@@ -3,13 +3,24 @@
 <div id="flowMap"></div>
 <div id="pointDetails">
    <ul class="placeMarkBasicInfo floats-in">
-	<li><span>Collected on:</span>{{#if FLOW.placemarkControl.selected}}<div class="placeMarkCollectionDate"> {{date2 FLOW.placemarkControl.selected.collectionDate}}</div>{{/if}}</li>
-  	<li>{{#if FLOW.placemarkDetailControl.selectedPointCode}}<div class="placeMarkPointCode"> {{FLOW.placemarkDetailControl.selectedPointCode}}</div>{{/if}}</li>
+	<li><span>Collected on:</span>
+    {{#if FLOW.placemarkControl.selected}}
+      <div class="placeMarkCollectionDate"> 
+        {{date2 FLOW.placemarkControl.selected.collectionDate}}</div>
+    {{/if}}
+  </li>
+  	<li>
+      {{#if FLOW.placemarkDetailControl.selectedPointCode}}
+      <div class="placeMarkPointCode"> 
+        {{FLOW.placemarkDetailControl.selectedPointCode}}
+      </div>
+      {{/if}}
+    </li>
   </ul>
   <div class="imgContainer"><a {{bindAttr href="view.imageURL"}} target="_blank"><img {{bindAttr src="view.imageURL"}} alt="" /></a></div>
   <dl class="floats-in"> 
   	{{#each item in FLOW.placemarkDetailControl}}
-	<div class="defListWrap">
+	  <div class="defListWrap">
       <dt>{{item.questionText}}:</dt> 
       <dd>{{#with item}}{{addSpace stringValue}}{{/with}}</dd>
 	 </div>
@@ -17,16 +28,14 @@
   </dl>
 </div>
 <div id="dropdown-holder">
-  <div class="button-selected">Dropdown</div>
-  <div class="dropdown">
-  <div class="dropdown-item">Item 1</div>
-  <div class="dropdown-item">Item 2</div>
-  <div class="dropdown-item">Item 3</div>
-  <div class="dropdown-item">Item 4</div>
-  <div class="dropdown-item">Item 5</div>
+    <label for="country">Country:
+      {{view Ember.Select 
+      contentBinding="FLOW.countryControl.content" 
+      optionLabelPath="content.label" 
+      selectionBinding="view.country" 
+      prompt="Select country"}} </label>
   </div>
 </div>
-
 <div id="flowMapLegend">
     <h1>LEGEND</h1>
     <p>To be given some <strong>Loïc Love&copy;</strong></p>
