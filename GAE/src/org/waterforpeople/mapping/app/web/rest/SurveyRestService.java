@@ -40,6 +40,7 @@ import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
 
 @Controller
@@ -277,7 +278,7 @@ public class SurveyRestService {
 			// source survey not found, the getById already logged the problem
 			return null;
 		}
-		return surveyDao.copySurvey(source);
+		return SurveyUtils.copySurvey(source);
 	}
 
 	private Survey marshallToDomain(SurveyDto dto) {
