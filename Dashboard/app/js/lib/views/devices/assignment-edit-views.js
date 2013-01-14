@@ -38,8 +38,8 @@ FLOW.AssignmentEditView = Em.View.extend({
     previewSurveys = Ember.A([]);
     this._super();
     this.set('assignmentName', FLOW.selectedControl.selectedSurveyAssignment.get('name'));
-    FLOW.selectedControl.get('selectedDevices', null);
-    FLOW.selectedControl.get('selectedSurveys', null);
+    FLOW.selectedControl.set('selectedDevices', null);
+    FLOW.selectedControl.set('selectedSurveys', null);
     if(FLOW.selectedControl.selectedSurveyAssignment.get('startDate') > 0) {
       startDate = new Date(FLOW.selectedControl.selectedSurveyAssignment.get('startDate'));
     }
@@ -67,13 +67,26 @@ FLOW.AssignmentEditView = Em.View.extend({
   },
 
   saveSurveyAssignment: function() {
-    var sa, devices = [],
+    var sa, endDateParse, startDateParse, devices = [],
       surveys = [];
     sa = FLOW.selectedControl.get('selectedSurveyAssignment');
 
     sa.set('name', this.get('assignmentName'));
-    sa.set('endDate', Date.parse(FLOW.dateControl.get('toDate')));
-    sa.set('startDate', Date.parse(FLOW.dateControl.get('fromDate')));
+
+    if(!Ember.none(FLOW.dateControl.get('toDate'))) {
+      startDateParse = Date.parse(FLOW.dateControl.get('toDate'));
+    } else {
+      startDateParse = null;
+    }
+
+    if(!Ember.none(FLOW.dateControl.get('fromDate'))) {
+      endDateParse = Date.parse(FLOW.dateControl.get('fromDate'));
+    } else {
+      endDateParse = null;
+    }
+
+    sa.set('endDate', endDateParse);
+    sa.set('startDate', startDateParse);
     sa.set('language', 'en');
 
     this.get('devicesPreview').forEach(function(item) {
