@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -81,6 +81,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<QuestionAnswerStore> listByTypeValue(String type, String value) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
@@ -172,5 +173,29 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 				+ " where collectionDate == 5674906531303000000");
 		log.log(Level.INFO,query.toString());
 		return (List<QuestionAnswerStore>) query.execute();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<QuestionAnswerStore> listBySurveyInstance(
+			Long surveyInstanceId, Long surveyId, String questionID) {
+
+		final PersistenceManager pm = PersistenceFilter.getManager();
+		final javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+
+		final Map<String, Object> paramMap = new HashMap<String, Object>();
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+
+		appendNonNullParam("surveyInstanceId", filterString, paramString,
+				"Long", surveyInstanceId, paramMap);
+		appendNonNullParam("surveyId", filterString, paramString, "Long",
+				surveyId, paramMap);
+		appendNonNullParam("questionID", filterString, paramString, "String",
+				questionID, paramMap);
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 	}
 }

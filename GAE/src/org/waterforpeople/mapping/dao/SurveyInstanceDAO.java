@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -34,12 +34,10 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
@@ -50,11 +48,14 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
 			Long userID, List<String> unparsedLines) {
+
 		SurveyInstance si = new SurveyInstance();
 		boolean hasErrors = false;
 		si.setDeviceFile(deviceFile);
 		si.setUserID(userID);
 		String delimiter = "\t";
+
+		final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		for (String line : unparsedLines) {
@@ -116,7 +117,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 						if (uuid != null && uuid.trim().length() > 0) {
 							SurveyInstance existingSi = findByUUID(uuid);
 							if (existingSi != null) {
-								return null;
+								// SurveyInstance found, reuse it to process missing data
+								si = existingSi;
+								si.setDeviceFile(deviceFile);
 							} else {
 								si.setUuid(uuid);
 							}
@@ -133,9 +136,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				} catch (DatastoreTimeoutException te) {
 					sleep();
 					si = save(si);
-
 				}
 			}
+
+			if (qasDao.listBySurveyInstance(si.getKey().getId(),
+					si.getSurveyId(), parts[2].trim()).size() != 0) {
+				log.log(Level.INFO, "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: " + si.getKey().getId() + ", " + si.getSurveyId() + ", " + parts[2].trim());
+				continue;
+			}
+
 			qas.setSurveyId(si.getSurveyId());
 			qas.setSurveyInstanceId(si.getKey().getId());
 			qas.setArbitratyNumber(new Long(parts[1].trim()));
