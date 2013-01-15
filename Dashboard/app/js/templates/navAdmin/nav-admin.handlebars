@@ -18,33 +18,4 @@
    </label>
     
 
-    <h3>{{t _for_later_use}}</h3>
-  	{{view Ember.Select 
-			contentBinding="FLOW.surveyGroupControl.content" 
-			selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
-			optionLabelPath="content.code" 
-			optionValuePath="content.keyId" 
-			prompt="Select survey group"}}
-
-			{{view Ember.Select 
-				contentBinding="FLOW.surveyControl.content" 
-				selectionBinding="FLOW.selectedControl.selectedSurvey" 
-				optionLabelPath="content.code" 
-				optionValuePath="content.keyId" 
-				prompt="Select survey"}} 
-
-			{{view Ember.Select 
-				contentBinding="FLOW.questionGroupControl.content" 
-				selectionBinding="FLOW.selectedControl.selectedQuestionGroup" 
-				optionLabelPath="content.code" 
-				optionValuePath="content.keyId" 
-				prompt="Select question group"}}<br>
-				
-				 {{t _survey_group}} {{FLOW.selectedControl.selectedSurveyGroup.keyId}}<br>
-          {{t _survey}} {{FLOW.selectedControl.selectedSurvey.keyId}}<br>
-          {{t _question_group}} {{FLOW.selectedControl.selectedQuestionGroup.keyId}}<br><br>
-
-
-
-
     </div>

@@ -212,6 +212,13 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
+  // used for surveyInstances in data edit popup
+  doSurveyIdQuery: function (surveyId) {
+    this.set('content', FLOW.store.findQuery(FLOW.Question, {
+        surveyId: surveyId
+      }));
+  },
+
   allQuestionsFilter: function() {
     var sId;
     if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {

@@ -273,7 +273,7 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
   surveyId: DS.attr('number'),
   collectionDate: DS.attr('number'),
   surveyInstanceId: DS.attr('number'),
-  questionId: DS.attr('string'),
+  questionID: DS.attr('string'),
   questionText: DS.attr('string')
 });
 

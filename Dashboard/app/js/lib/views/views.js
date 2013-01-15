@@ -12,7 +12,7 @@ require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/data/inspect-data-table-views');
 require('akvo-flow/views/data/data-attribute-views');
 require('akvo-flow/views/surveys/question-view');
-require('akvo-flow/views/surveys/question-answer-view');
+require('akvo-flow/views/data/question-answer-view');
 require('akvo-flow/views/reports/report-views');
 require('akvo-flow/views/reports/export-reports-views');
 require('akvo-flow/views/maps/map-views');
