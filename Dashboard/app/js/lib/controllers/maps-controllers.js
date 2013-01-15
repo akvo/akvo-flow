@@ -4,12 +4,19 @@ FLOW.placemarkControl = Ember.ArrayController.create({
   populate: function() {
     this.set('content', FLOW.store.findAll(FLOW.Placemark));
   }
+
 });
 
 FLOW.placemarkDetailControl = Ember.ArrayController.create({
   content: null,
   selectedDetailImage: null,
   selectedPointCode: null,
+  imageURL: null,
+
+  init: function() {
+    this._super();
+    this.imageURL = Ember.ENV.imageroot + 'invisible.png';
+  },
 
   populate: function(placemarkId) {
     if(typeof placemarkId === 'undefined') {
@@ -23,14 +30,26 @@ FLOW.placemarkDetailControl = Ember.ArrayController.create({
 });
 
 FLOW.countryControl = Ember.Object.create({
-  content: [
-  Ember.Object.create({
-    label: "Kenya",
-    lat:0.010986,
-    lon:37.901123
-  }), Ember.Object.create({
-    label: "Netherlands",
-    lat:52.24462,
-    lon:5.651611
-  })]
+  content: [],
+  
+  init: function() {
+    this._super();
+    this.set('content', this.getContent(Ember.ENV.countries));
+  },
+
+  getContent: function (countries) {
+    var countryList = [];
+
+    for (var i = 0; i < countries.length; i++) {
+      countryList.push(
+        Ember.Object.create({
+          label: countries[i].label,
+          lat: countries[i].lat,
+          lon: countries[i].lon
+        })
+      );
+    }
+    return countryList;
+  }
+
 });

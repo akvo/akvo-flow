@@ -17,7 +17,11 @@
       {{/if}}
     </li>
   </ul>
-  <div class="imgContainer"><a {{bindAttr href="view.imageURL"}} target="_blank"><img {{bindAttr src="view.imageURL"}} alt="" /></a></div>
+  <div class="imgContainer">
+    <a {{bindAttr href="FLOW.placemarkDetailControl.imageURL"}} target="_blank">
+      <img {{bindAttr src="FLOW.placemarkDetailControl.imageURL"}} alt="" />
+    </a>
+  </div>
   <dl class="floats-in"> 
   	{{#each item in FLOW.placemarkDetailControl}}
 	  <div class="defListWrap">
@@ -27,12 +31,13 @@
     {{/each}} 
   </dl>
 </div>
+
 <div id="dropdown-holder">
     <label for="country">Country:
-      {{view Ember.Select 
-      contentBinding="FLOW.countryControl.content" 
-      optionLabelPath="content.label" 
-      selectionBinding="view.country" 
+      {{view Ember.Select
+      contentBinding="FLOW.countryControl.content"
+      optionLabelPath="content.label"
+      selectionBinding="view.country"
       prompt="Select country"}} </label>
   </div>
 </div>

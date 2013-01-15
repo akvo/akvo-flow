@@ -11,7 +11,6 @@
 FLOW.NavMapsView = Ember.View.extend({
   templateName: 'navMaps/nav-maps',
   showDetailsBool: false,
-  imageURL: 'images/invisible.png',
 
   init: function() {
     this._super();
@@ -32,7 +31,7 @@ FLOW.NavMapsView = Ember.View.extend({
       map_type: true
     });
 
-    map.setCenterAndZoom(latLon, 8);
+    map.setCenterAndZoom(latLon, 2);
     map.enableScrollWheelZoom();
 
     FLOW.placemarkControl.set('map', map);
@@ -56,14 +55,18 @@ FLOW.NavMapsView = Ember.View.extend({
     } else {
       FLOW.placemarkDetailControl.populate(selected);
     }
-    this.set('imageURL', 'images/invisible.png');
+    // this.set('imageURL', 'images/invisible.png');
+    FLOW.placemarkDetailControl.set('imageURL', Ember.ENV.imageroot + '/invisible.png');
   }.observes('FLOW.placemarkControl.selected'),
 
  changePlace: function() {
-     var latLon;
-     latLon = new mxn.LatLonPoint(this.country.get('lat'), this.country.get('lon'));
-     FLOW.placemarkControl.get('map').setCenterAndZoom(latLon, 8);
-   }.observes('this.country'),
+    var country, latLon;
+    country = this.get('country');
+    if (!Ember.none(country)) {
+      latLon = new mxn.LatLonPoint(country.get('lat'), country.get('lon'));
+      FLOW.placemarkControl.get('map').setCenterAndZoom(latLon, 8);
+    }
+  }.observes('this.country'),
 
   handlePlacemarkDetails: function() {
     var details, imageURL, stringVal;
@@ -80,8 +83,10 @@ FLOW.NavMapsView = Ember.View.extend({
       details.forEach(function(item) {
         stringVal = item.get('stringValue');
         if(stringVal.indexOf('wfpPhoto') != -1) {
-          imageURL = 'http://flowdemo.s3.amazonaws.com/images/' + stringVal.slice(stringVal.indexOf('wfpPhoto'));
-          this.set('imageURL', imageURL);
+          // imageURL = 'http://flowdemo.s3.amazonaws.com/images/' + stringVal.slice(stringVal.indexOf('wfpPhoto'));
+          // this.set('imageURL', imageURL);
+          imageURL = Ember.ENV.photo_url_root + stringVal.slice(stringVal.indexOf('wfpPhoto'));
+          FLOW.placemarkDetailControl.set('imageURL', imageURL);
         }
         var verticalBars = stringVal.split('|');
         if(verticalBars.length == 4) {
@@ -104,7 +109,7 @@ FLOW.NavMapsView = Ember.View.extend({
     var point = new mxn.LatLonPoint(placemark.get('latitude'), placemark.get('longitude')),
       marker = new mxn.Marker(point);
 
-    marker.setIcon('images/maps/blueMarker.png');
+    marker.setIcon(Ember.ENV.imageroot + 'maps/blueMarker.png');
     marker.placemark = placemark;
 
     // Add a click handler that handles what happens when marker is clicked
@@ -146,10 +151,10 @@ FLOW.NavMapsView = Ember.View.extend({
       var point = new mxn.LatLonPoint(placemark.get('latitude'), placemark.get('longitude')),
         newMarker = new mxn.Marker(point);
 
-      if(placemark.marker.iconUrl === 'images/maps/blueMarker.png') {
-        newMarker.iconUrl = 'images/maps/redMarker.png';
+      if(placemark.marker.iconUrl === (Ember.ENV.imageroot + 'maps/blueMarker.png')) {
+        newMarker.iconUrl = Ember.ENV.imageroot + 'maps/redMarker.png' ;
       } else {
-        newMarker.iconUrl = 'images/maps/blueMarker.png';
+        newMarker.iconUrl = Ember.ENV.imageroot + 'maps/blueMarker.png';
       }
 
       placemark.addMarkerClickHandler(newMarker);
