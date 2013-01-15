@@ -119,12 +119,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 							if (existingSi != null) {
 								// SurveyInstance found, reuse it to process missing data
 								si = existingSi;
+								si.setDeviceFile(deviceFile);
 							} else {
 								si.setUuid(uuid);
-								si = save(si);
 							}
 						}
 					}
+					si = save(si);
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
 							+ parts[0], e);
@@ -135,7 +136,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				} catch (DatastoreTimeoutException te) {
 					sleep();
 					si = save(si);
-
 				}
 			}
 
