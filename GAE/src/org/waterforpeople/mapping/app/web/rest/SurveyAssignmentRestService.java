@@ -129,8 +129,8 @@ public class SurveyAssignmentRestService {
 					"Survey Assignment with id: " + dto.getKeyId()
 							+ " not found");
 		}
-		final SurveyAssignment oldAssignment = surveyAssignmentDao
-				.getByKey(dto.getKeyId());
+		final SurveyAssignment oldAssignment = new SurveyAssignment();
+		BeanUtils.copyProperties(sa, oldAssignment);
 		
 		BeanUtils.copyProperties(marshallToDomain(dto), sa);
 		surveyAssignmentDao.save(sa);

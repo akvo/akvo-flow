@@ -40,6 +40,11 @@ FLOW.AssignmentEditView = Em.View.extend({
     this.set('assignmentName', FLOW.selectedControl.selectedSurveyAssignment.get('name'));
     FLOW.selectedControl.set('selectedDevices', null);
     FLOW.selectedControl.set('selectedSurveys', null);
+    FLOW.selectedControl.set('selectedSurveyGroup', null);
+    FLOW.selectedControl.set('selectedDeviceGroup', null);
+    FLOW.surveyControl.set('content',null);
+    FLOW.devicesInGroupControl.set('content',null);
+    
     if(FLOW.selectedControl.selectedSurveyAssignment.get('startDate') > 0) {
       startDate = new Date(FLOW.selectedControl.selectedSurveyAssignment.get('startDate'));
     }

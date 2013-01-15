@@ -1,5 +1,5 @@
-<a {{action "closePreviewPopup" target="this"}} class="ok clodeDialog">close window</a>
-<h2>Survey preview</h2>
+<div class="fixedMenu"><a {{action "closePreviewPopup" target="this"}} class="ok clodeDialog">close window</a>
+<h2>Survey preview</h2></div>
 <div class="surveyPreviewWrap">
 {{#each QG in FLOW.questionGroupControl}}
  <div class="questionGroupBlock">
@@ -10,8 +10,8 @@
          {{#each Q in view.QGcontent}}
            {{#view FLOW.PreviewQuestionView contentBinding="Q"}}
              {{#if view.isVisible}}
+			 <div class="previewQuestion"> 
                 <h1 class="questionNbr"><span>{{Q.order}}} </span>{{Q.text}}</h1>
-                <div class="previewQuestion"> 
                     {{#if view.isOptionType}}
                        {{#each view.optionsList}}
                           {{view Em.RadioButton title=this.value option=this.value group="options" valueBinding="view.optionChoice"}} 
@@ -27,19 +27,20 @@
                              {{view FLOW.DateField2 valueBinding="view.answer" size=30}} 
                           {{else}}
                             {{#if view.isGeoType}}
-                              The GPS of the device is used here
-                              Latitude: {{view Ember.TextField valueBinding="view.latitude" size=10 }}
-                              Longitude: {{view Ember.TextField valueBinding="view.longitude" size=10 }}
+							
+                              <h3>The GPS of the device is used here</h3>
+                              <h4>{{t _Latitude}}:</h4> {{view Ember.TextField valueBinding="view.latitude" size=10 }}
+                              <h4>{{t _Longitude}}:</h4> {{view Ember.TextField valueBinding="view.longitude" size=10 }}
                             {{else}}
                               {{#if view.isBarcodeType}}
-                                The Barcode app on the device is used here
+                                <h3>The Barcode app on the device is used here</h3>
                                 {{view Ember.TextField valueBinding="view.answer" size=10 }}
                               {{else}}
                                 {{#if view.isPhotoType}}
-                                  The camera of the device is used here
+                                  <h3>The camera of the device is used here</h3>
                                 {{else}}
                                   {{#if view.isVideoType}}
-                                    The video camera of the device is used here    
+                                    <h3>he video camera of the device is used here </h3>   
                                   {{/if}}
                                 {{/if}}
                               {{/if}}

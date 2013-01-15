@@ -121,6 +121,9 @@ Ember.STRINGS_EN = {
   '_Number_of_Question_groups':'Number of Question groups',
   '_Number_of_Questions':'Number of Questions',
   '_Status':'Status',
+  '_Required':'Required',
+  '_Latitude':'Latitude',
+  '_Longitude':'Longitude',
 };
 
 Ember.STRINGS_ES = {
@@ -253,4 +256,7 @@ Ember.STRINGS_FR = {
   '_Number_of_Question_groups':'Nombre de groupe de questions',
   '_Number_of_Questions':'Nombre de questions',
   '_Status':'Statut',
+  '_Required':'Requis',
+  '_Latitude':'Latitude',
+  '_Longitude':'Longitude',
 };
