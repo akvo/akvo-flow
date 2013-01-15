@@ -102,50 +102,42 @@
             <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
                 {{#each QA in FLOW.questionAnswerControl}}
-                    {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
+             {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
                     <tr>
                       <td class="device">{{QA.keyId}}</td>
                       <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
                     
-<td class="submitter" style="text-align:left;">
-{{#if view.inEditMode}}
-    
-  {{#if view.isOptionType}}
-   
-    {{view Ember.Select 
-      contentBinding="view.optionsList" 
-      optionLabelPath="content.value" 
-      optionValuePath="content.value" 
-      selectionBinding="view.optionChoice" 
-      prompt="Select answer"}}
-  {{else}}
-    {{#if view.isNumberType}}
-      {{view Ember.TextField valueBinding="view.answer" size=10 }}
-    {{else}}
-      {{#if view.isTextType}}
-        {{view Ember.TextField valueBinding="view.answer" size=10 }}
-      {{else}}
-        {{#if view.isDateType}} 
-          {{view FLOW.DateField2 valueBinding="view.answer" size=30}} 
-        {{else}}
-          {{#if view.isBarcodeType}}
-            The Barcode app on the device is used here
-            {{view Ember.TextField valueBinding="view.answer" size=10 }}
-          {{/if}}
-        {{/if}}
-      {{/if}}
-    {{/if}}
-  {{/if}}
-<a {{action doSave target="this"}}>save</a> <a {{action doCancel target="this"}}>cancel</a>
-{{else}}
-  <a {{action doEdit target="this"}}>{{QA.value}}</a>
-{{/if}}
-</td>
-                   
-
-
-
-
+                    <td class="submitter" style="text-align:left;">
+                    {{#if view.inEditMode}}
+                      {{#if view.isOptionType}}
+                        {{view Ember.Select
+                          contentBinding="view.optionsList"
+                          optionLabelPath="content.value"
+                          optionValuePath="content.value"
+                          selectionBinding="view.optionChoice"}}
+                        {{else}}
+                          {{#if view.isNumberType}}
+                            {{view Ember.TextField valueBinding="view.answer" size=10 }}
+                          {{else}}
+                            {{#if view.isTextType}}
+                              {{view Ember.TextField valueBinding="view.answer" size=10 }}
+                            {{else}}
+                              {{#if view.isDateType}}
+                                {{view FLOW.DateField2 valueBinding="view.answer" size=30}}
+                              {{else}}
+                                {{#if view.isBarcodeType}}
+                                  The Barcode app on the device is used here
+                                  {{view Ember.TextField valueBinding="view.answer" size=10 }}
+                                {{/if}}
+                              {{/if}}
+                            {{/if}}
+                          {{/if}}
+                        {{/if}}
+                      <a {{action doSave target="this"}}>save</a> <a {{action doCancel target="this"}}>cancel</a>
+                    {{else}}
+                      <a {{action doEdit target="this"}}>{{QA.value}}</a>
+                    {{/if}}
+                    </td>
                     </tr>
                     {{/view}}
                 {{/each}}
