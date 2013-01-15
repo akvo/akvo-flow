@@ -23,6 +23,9 @@
 		<activity android:name=".activity.NearbyItemActivity"/>
 		<activity android:name=".activity.NearbyItemDetailActivity"/>
 		<activity android:name=".activity.SurveyReviewActivity"/>
+		<activity android:name=".activity.SubmittedSurveyReviewActivity"/>
+		<activity android:name=".activity.SavedSurveyReviewActivity"/>
+		<activity android:name=".activity.SurveyStatusHomeActivity"/>
 		<activity android:name=".activity.WaterflowCalculatorActivity"/>
 		<activity android:name=".activity.PointOfInterestMapActivity"/>
 		<activity android:name=".activity.TransmissionHistoryActivity"/>

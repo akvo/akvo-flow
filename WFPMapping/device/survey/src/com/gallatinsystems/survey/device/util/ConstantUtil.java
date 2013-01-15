@@ -180,6 +180,7 @@ public class ConstantUtil {
 	public static final String IMAGE_CAPTION_LIST_KEY = "imagecaps";
 	public static final String AP_KEY = "accesspoint";
 	public static final String READONLY_KEY = "readonly";
+	public static final String SINGLE_SURVEY_KEY = "single_survey";
 	public static final String CALC_RESULT_KEY = "calcresult";
 	public static final String MODE_KEY = "mode";
 	public static final String POINTS_KEY = "points";

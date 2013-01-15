@@ -112,6 +112,7 @@ public class SurveyViewActivity extends TabActivity implements
 	private SubmitTabContentFactory submissionTab;
 	private Survey survey;
 	private boolean readOnly;
+	private boolean single;
 	private boolean isTrackRecording;
 	private TabHost tabHost;
 	private int tabCount;
@@ -128,6 +129,7 @@ public class SurveyViewActivity extends TabActivity implements
 		currentTextSize = NORMAL_TXT_SIZE;
 		missingQuestions = new HashSet<String>();
 		readOnly = false;
+		single = false;
 		hasAddedTabs = false;
 		factoryMap = new HashMap<QuestionGroup, SurveyQuestionTabContentFactory>();
 		databaseAdapter = new SurveyDbAdapter(this);
@@ -162,6 +164,11 @@ public class SurveyViewActivity extends TabActivity implements
 		if (extras != null && extras.containsKey(ConstantUtil.READONLY_KEY)) {
 			readOnly = extras.getBoolean(ConstantUtil.READONLY_KEY);
 		}
+
+		if (extras != null && extras.containsKey(ConstantUtil.SINGLE_SURVEY_KEY)) {
+			single = extras.getBoolean(ConstantUtil.SINGLE_SURVEY_KEY);
+		}		
+		
 		if (savedInstanceState != null
 				&& savedInstanceState.containsKey(ConstantUtil.READONLY_KEY)) {
 			readOnly = savedInstanceState.getBoolean(ConstantUtil.READONLY_KEY);
@@ -786,7 +793,10 @@ public class SurveyViewActivity extends TabActivity implements
 								if(dialog!=null){
 									dialog.dismiss();
 								}
-								startNewSurvey();
+								if (single)
+									finish();
+								else
+									startNewSurvey();
 
 							}
 						});
@@ -1014,6 +1024,10 @@ public class SurveyViewActivity extends TabActivity implements
 
 	public boolean isTrackRecording() {
 		return isTrackRecording;
+	}
+
+	public boolean isSingleSurvey() {
+		return single;
 	}
 
 }

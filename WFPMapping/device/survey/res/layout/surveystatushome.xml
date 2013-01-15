@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content" android:orientation="vertical">	
+
+	<LinearLayout
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:onClick="ReviewSavedPushed">
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="20dip"
+			android:text="@string/gosavedsurveyslabel" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/savedSurveysCount"
+			android:text="-"/>
+	</LinearLayout>
+	
+	<LinearLayout
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:onClick="ReviewSubmittedPushed">
+	    		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="20dip" 
+			android:text="@string/gosubmittedsurveyslabel" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/submittedSurveysCount" 
+			android:text="-"/>
+	</LinearLayout>
+
+
+</LinearLayout>

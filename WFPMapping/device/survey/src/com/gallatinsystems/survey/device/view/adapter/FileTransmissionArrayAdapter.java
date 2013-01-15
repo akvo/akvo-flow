@@ -48,7 +48,7 @@ public class FileTransmissionArrayAdapter extends
 			List<FileTransmission> objects) {
 		super(context, resourceId, objects);
 		layoutId = resourceId;
-		dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss"); //TODO: US-style date should not be hardcoded...
 
 	}
 
