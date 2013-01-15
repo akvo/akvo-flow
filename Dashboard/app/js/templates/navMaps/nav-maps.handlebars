@@ -1,5 +1,14 @@
 <section id="main" class="mapFlow floats-in" role="main">
 <!-- <div id="drawHandleWrap"><div class="drawHandle hideMapD">hide &rsaquo;</div></div> -->
+<div id="dropdown-holder">
+    <label for="country"><span class="inlined">Country:</span>
+      {{view Ember.Select 
+      contentBinding="FLOW.countryControl.content" 
+      optionLabelPath="content.label" 
+      selectionBinding="view.country" 
+      prompt="Select country"}} </label>
+  </div>
+
 <div id="flowMap"></div>
 <div id="pointDetails">
    <ul class="placeMarkBasicInfo floats-in">
@@ -27,14 +36,6 @@
     {{/each}} 
   </dl>
 </div>
-<div id="dropdown-holder">
-    <label for="country">Country:
-      {{view Ember.Select 
-      contentBinding="FLOW.countryControl.content" 
-      optionLabelPath="content.label" 
-      selectionBinding="view.country" 
-      prompt="Select country"}} </label>
-  </div>
 <div id="flowMapLegend">
     <h1>LEGEND</h1>
     <p>To be given some <strong>Loïc Love&copy;</strong></p>

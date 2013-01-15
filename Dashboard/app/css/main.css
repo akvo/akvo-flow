@@ -197,6 +197,12 @@ pre {
 	box-shadow: 0 0 2px rgb(230,230,230);
 	-o-box-shadow: 0 0 2px rgb(230,230,230);
 }
+.isRequired {
+	font-weight:normal;
+	margin:0 0 0 5px;
+	color:rgb(204,204,204);
+	}
+
 /* links 
 ---------------------------------------------------------------*/
 
@@ -384,6 +390,7 @@ a.AddBtn:hover {
 	top: 5px;
 	right: 40%;
 }
+.inline {display:inline;}
 /*-------------------------------
 	Dialog
 -----------------------------------*/
@@ -1775,26 +1782,27 @@ li.aSurvey:hover h2 {
 	margin:0.3em 0.1em 0 0.2em;
 }
 #newSurveyInfo label {
-	margin: 0.5em 2px 0.2em 2px;
+	margin:1em 2px 0.2em 2px;
 	color: rgb(255,255,255);
 	font-size: 1em;
+	text-transform:uppercase;
 }
 #newSurveyInfo label:first-child {
 	margin: 0em 2px 10px 2px;
 	color: rgb(255,255,255);
 }
 #newSurveyInfo input {
-	margin: 0 auto;
+	margin:0.2em auto 0 auto;
 	padding: 0.5em 1.5%;
 	width: 96%;
 }
-#newSurveyInfo form textarea {
-	margin: 0 auto;
+#newSurveyInfo textarea {
+	margin:0.2em auto 0 auto;
 	padding: 0.5em 1.5%;
 	width: 96%;
 }
 #newSurveyInfo form select {
-	margin: 3px auto 0 auto;
+	margin:0.2em auto 0 auto;
 	width: 100%;
 }
 #newSurveyInfo form select option {
@@ -1900,7 +1908,7 @@ nav.newSurveyNav ul li {
 	float: left;
 	margin-top: 1px;
 	padding: 0;
-	width: 33%;
+	width:33.333333333333333%;
 	height: 30px;
 	background: url(../images/topbarSeperator.png) right center no-repeat;
 }
@@ -2348,7 +2356,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	border-color: rgb(235,235,235);
 }
 .innerContent input[type=checkbox]:first-child, .innerContent input[type=radio]:first-child {
-	margin: 10px 0 0 5px;
+	margin: 1em 0 0 0.5em;
 }
 .innerContent .labelcheckbox input[type=checkbox]:first-child, .innerContent .labelcheckbox input[type=radio]:first-child {
 	margin: 0 0.5em 0 0;
@@ -2635,7 +2643,6 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 #dataFilter h3 {
 	margin: 0 0 5px 5px;
 	color: #666;
-	letter-spacing: -0.05em;
 	font-weight: bold;
 	font-size: 1.8em;
 }
@@ -2709,7 +2716,7 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	margin: 5px auto;
 	width: 20%;
 	text-align: center;
-	letter-spacing: -0.03em;
+	letter-spacing:0.1em;
 	font-size: 1.1em;
 }
 .dataTables_paginate {
@@ -2774,8 +2781,26 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	width: 75%;
 	height: 600px;
 }
-#pointDetails {
+#dropdown-holder {
 	position: relative;
+	width:97.5%;
+	height:23px;
+	background:rgb(58,58,58);
+	text-transform:capitalize;
+	padding:4px 1.25% 0 1.25%;
+	margin:0 auto;
+	clear:both;
+	}
+#dropdown-holder label {
+	color:rgb(255,255,255);
+	}
+
+#dropdown-holder select {
+	display:inline;
+	margin:0 0 0 0.5em;
+	}
+
+#pointDetails {
 	position: relative;
 	float: right;
 	overflow: auto;
@@ -2989,16 +3014,39 @@ footer.bottomPage a[rel="self"]:hover {
 .surveyPreviewWrap {
 	position:relative;
 	}
+.surveyPreviewWrap span.qtnGroupHead {
+	display: block;
+	margin: 1em 0 0.5em 0.1em;
+	width: 100%;
+	color: rgb(246, 160, 26);
+	font-style: italic;
+	font-size: 1.2em;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	text-transform: capitalize;
+}
 .surveyPreviewWrap div.questionGroupBlock {
-	margin: 15px 0;
-	border-top: thin solid rgb(230,230,230);
-	border-bottom: thin solid rgb(230,230,230);
-	background: rgb(255,255,255);
+	margin:5em auto;
+	border-top: thin solid rgb(238,238,238);
+	border-bottom:none;
+	background: rgb(246,246,246);
+	padding: 0.5em 1em 1em 1em;
 	}
 .surveyPreviewWrap h3.qtnGroupTitle {
 	color:rgb(44, 42, 116);
-	margin:0.2em 0 2em 0.65em;
+	margin:0.2em 0 2em 0.1em;
+	border-bottom: 1px solid rgb(238,238,238);
+	padding:0 0 0.5em 0;
 	}
+.surveyPreviewWrap h4 {
+	color:rgb(44, 42, 116);
+	margin:0.2em 0 0.2em 1.5em;
+	}
+.surveyPreviewWrap .innerContent h3 {
+	margin: 2em 0 1.5em 1.5em;
+	color: rgb(39,94,110);
+	font-size: 1em;
+}
+
 .surveyPreviewWrap .innerContent h1:after {
 	display: block;
 	margin: 1em auto 0 auto;
@@ -3008,23 +3056,46 @@ footer.bottomPage a[rel="self"]:hover {
 	content: "";
 }
 .surveyPreviewWrap input[type=text] {
-	margin:0em auto 3em auto;
+	margin:0.5em auto 0 auto;
 	width:96%;
 }
-.surveyPreviewWrap span.qtnGroupHead {
-	display: block;
-	margin: 1em 0 0.25em 1em;
-	width: 100%;
-	color: rgb(246, 160, 26);
-	font-style: italic;
-	font-size: 1.2em;
-	font-family: Georgia, "Times New Roman", Times, serif;
-	text-transform: capitalize;
+.surveyPreviewWrap .ember-radio-button label {
+	margin:0em 0 0 1.5em;
 }
+.surveyPreviewWrap .innerContent input[type=checkbox], .surveyPreviewWrap .innerContent input[type=radio] {
+	display: inline-block;
+	margin: 5px 0.5em 0 1em;
+}
+
 .surveyPreviewWrap .innerContent h1.questionNbr {
-	display: inline;
+	display: block;
 	color: rgb(0,0,0);
 	font-weight: normal;
 	text-transform:none;
-	margin:0 0 0 1em;
+	margin:0 0 0 0.75em;
+	line-height:inherit;
 }
+.surveyPreviewWrap .innerContent h1.questionNbr span {
+	display: inline-block;
+	margin:0.1em 0.2em 0 0;
+	padding:0 0 0 0;
+	width:inherit;
+	height:inherit;
+	-moz-border-radius:0;
+	-webkit-border-radius:0;
+	-o-border-radius:0;
+	border-radius:0;
+	background:transparent;
+	color:rgb(58,58,58);
+	font-weight: bold;
+	font-size: 1.2em;
+	text-align:center;
+}
+.surveyPreviewWrap .innerContent h1.questionNbr span:after {
+	display: inline-block;
+	content:".";
+	margin:0 0.2em 0 0;
+}
+.surveyPreviewWrap .previewQuestion {
+	margin:2.5em auto 0 auto;
+	}
