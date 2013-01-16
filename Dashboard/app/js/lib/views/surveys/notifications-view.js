@@ -9,6 +9,7 @@ FLOW.NotificationsView = Ember.View.extend({
   dateEmpty: false,
 
   addNotification: function() {
+    var date;
     if(this.get('notificationOption') === null) {
       this.set('optionEmpty', true);
     }
@@ -21,12 +22,16 @@ FLOW.NotificationsView = Ember.View.extend({
     if(this.get('expiryDate') === null) {
       this.set('dateEmpty', true);
     }
-
+    if (Ember.none(this.get('expiryDate'))){
+      date = null;
+    } else {
+      date = Date.parse(this.get('expiryDate'));
+    }
     if(this.get('optionEmpty') || this.get('typeEmpty') || this.get('destinationEmpty') || this.get('dateEmpty')) {
       FLOW.store.createRecord(FLOW.NotificationSubscription, {
         "notificationOption": this.notificationOption.get('value'),
         "notificationType": this.notificationType.get('value'),
-        "expiryDate": Date.parse(this.get('expiryDate')),
+        "expiryDate": date,
         "notificationDestination": this.get('notificationDestination'),
         "notificationMethod": "EMAIL",
         "entityId": FLOW.selectedControl.selectedSurvey.get('keyId')
