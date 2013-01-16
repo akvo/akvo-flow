@@ -81,6 +81,10 @@ public class EnvServlet extends HttpServlet {
 		final JSONArray jsonArray = new JSONArray();
 		for (Country c : countryDAO.list(Constants.ALL_RESULTS)) {
 			if (c.getCentroidLat() == null || c.getCentroidLon() == null) {
+				log.log(Level.WARNING,
+						"Skipping " + c.getName()
+								+ " from country list - Lat/Lon values: "
+								+ c.getCentroidLat() + "/" + c.getCentroidLon());
 				continue;
 			}
 			jsonArray.put(new JSONObject(c));

@@ -746,6 +746,9 @@ public class TestHarnessServlet extends HttpServlet {
 			Country c = new Country();
 			c.setIsoAlpha2Code("HN");
 			c.setName("Honduras");
+			c.setCentroidLat(14.7889035);
+			c.setCentroidLon(-86.9500379);
+			c.setZoomLevel(8);
 
 			BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
 			countryDAO.save(c);
@@ -753,6 +756,10 @@ public class TestHarnessServlet extends HttpServlet {
 			Country c2 = new Country();
 			c2.setIsoAlpha2Code("MW");
 			c2.setName("Malawi");
+			c.setCentroidLat(-13.0118377);
+			c.setCentroidLon(33.9984484);
+			c.setZoomLevel(7);
+
 			countryDAO.save(c2);
 		} else if ("testAPKml".equals(action)) {
 
