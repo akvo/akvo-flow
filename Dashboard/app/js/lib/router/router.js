@@ -101,7 +101,7 @@ FLOW.Router = Ember.Router.extend({
           var newSurvey;
 
           newSurvey = FLOW.store.createRecord(FLOW.Survey, {
-            "name": "New survey - pleace change name",
+            "name": "New survey - please change name",
             "defaultLanguageCode": "en",
             "requireApproval": false,
             "status": "NOT_PUBLISHED",

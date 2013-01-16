@@ -22,13 +22,13 @@ import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerSt
 public class QuestionAnswerStorePayload implements Serializable {
 
 	private static final long serialVersionUID = -1111440035804928338L;
-	QuestionAnswerStoreDto question_answer_store= null;
+	QuestionAnswerStoreDto question_answer= null;
 
-	public QuestionAnswerStoreDto getQuestion_answer_store() {
-		return question_answer_store;
+	public QuestionAnswerStoreDto getQuestion_answer() {
+		return question_answer;
 	}
 
-	public void setQuestion_answer_store(QuestionAnswerStoreDto question_answer_store) {
-		this.question_answer_store = question_answer_store;
+	public void setQuestion_answer(QuestionAnswerStoreDto question_answer) {
+		this.question_answer = question_answer;
 	}
 }

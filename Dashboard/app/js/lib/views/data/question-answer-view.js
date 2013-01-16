@@ -1,3 +1,11 @@
+// this function is also present in assignment-edit-views.js, we need to consolidate using moment.js
+function formatDate(value) {
+  if(!Ember.none(value)) {
+    return value.getFullYear() + "/" + (value.getMonth() + 1) + "/" + value.getDate();
+  } else return null;
+}
+
+
 FLOW.QuestionAnswerView = Ember.View.extend({
   isTextType: false,
   isOptionType: false,
@@ -7,26 +15,28 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   optionsList: [],
   content: null,
   optionChoice: null,
-  inEditMode:false,
+  inEditMode: false,
+  isNotEditable: false,
+  value: null,
+  date: null,
 
   init: function() {
     this._super();
     this.doInit();
   },
 
-  doInit:function(){
-     var opList, opListArray, i, sizeList, q, questionId, qaValue, choice;
-   
-   // TODO use filter instead: if the question is not yet there, don't do anything
-   // it will be picked up later at isLoaded.
+  setInitialValue: function() {
+    var opList, opListArray, i, sizeList, q, questionId, qaValue, choice, type,date;
+
     questionId = this.content.get('questionID');
     q = FLOW.store.find(FLOW.Question, questionId);
-    this.set('isTextType', q.get('type') == 'FREE_TEXT');
-    this.set('isOptionType', q.get('type') == 'OPTION');
-    this.set('isNumberType', q.get('type') == 'NUMBER');
-    this.set('isBarcodeType', q.get('type') == 'BARCODE');
-    this.set('isDateType', q.get('type') == 'DATE');
 
+    // set value
+    this.set('value', this.content.get('value'));
+    if(this.get('isDateType') && !Ember.none(this.content.get('value'))) {
+      date = new Date(parseInt(this.content.get('value'),10));
+      this.set('date',formatDate(date));
+    }
     // fill option list
     if(this.get('isOptionType') && q.get('optionList') !== null) {
       this.set('optionsList', []);
@@ -40,7 +50,6 @@ FLOW.QuestionAnswerView = Ember.View.extend({
           value: opListArray[i]
         }));
       }
-
       // set answer
       qaValue = this.content.get('value');
       this.get('optionsList').forEach(function(item) {
@@ -50,18 +59,46 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       });
       this.set('optionChoice', choice);
     }
+  },
+
+  doInit: function() {
+    var opList, opListArray, i, sizeList, q, questionId, qaValue, choice, type;
+
+    // TODO use filter instead: if the question is not yet there, don't do anything
+    // it will be picked up later at isLoaded.
+    questionId = this.content.get('questionID');
+    q = FLOW.store.find(FLOW.Question, questionId);
+    type = q.get('type');
+    this.set('isTextType', type == 'FREE_TEXT');
+    this.set('isOptionType', type == 'OPTION');
+    this.set('isNumberType', type == 'NUMBER');
+    this.set('isBarcodeType', type == 'BARCODE');
+    this.set('isDateType', type == 'DATE');
+    this.set('isNotEditable', (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO'));
+
+    this.setInitialValue();
   }.observes('FLOW.questionControl.content.isLoaded'),
 
-  doEdit: function (){
-    this.set('inEditMode',true);
+  doEdit: function() {
+    this.set('inEditMode', true);
   },
 
-  doSave: function (){
-    
-  },
-
-  doCancel: function (){
+  doCancel: function() {
     // revert answer
-    this.set('inEditMode',false);
+    this.setInitialValue();
+    this.set('inEditMode', false);
+  },
+
+  doSave: function() {
+    if(this.get('isDateType')){
+      this.content.set('value',Date.parse(this.get('date')));
+    } else if (this.get('isOptionType')){
+      this.content.set('value',this.optionChoice.get('value'));
+    } else {
+      this.content.set('value',this.get('value'));
+    }
+    FLOW.store.commit();
+    this.set('inEditMode', false);
   }
+
 });

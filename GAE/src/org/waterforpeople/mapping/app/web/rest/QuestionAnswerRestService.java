@@ -131,7 +131,7 @@ public class QuestionAnswerRestService {
 	public Map<String, Object> saveExistingQuestionAnswerStore(
 			@RequestBody QuestionAnswerStorePayload payLoad) {
 		final QuestionAnswerStoreDto questionAnswerStoreDto = payLoad
-				.getQuestion_answer_store();
+				.getQuestion_answer();
 		final Map<String, Object> response = new HashMap<String, Object>();
 		QuestionAnswerStoreDto dto = null;
 		QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();

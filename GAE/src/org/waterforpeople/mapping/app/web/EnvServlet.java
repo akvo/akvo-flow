@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,8 +31,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.gis.geography.domain.Country;
 
 public class EnvServlet extends HttpServlet {
 
@@ -68,7 +74,20 @@ public class EnvServlet extends HttpServlet {
 		}
 
 		final VelocityContext context = new VelocityContext();
-		context.put("env", PropertyUtil.getPropertiesMap(properties));
+		final Map<String, String> props = PropertyUtil
+				.getPropertiesMap(properties);
+
+		final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
+		final JSONArray jsonArray = new JSONArray();
+		for (Country c : countryDAO.list(Constants.ALL_RESULTS)) {
+			if (c.getCentroidLat() == null || c.getCentroidLon() == null) {
+				continue;
+			}
+			jsonArray.put(new JSONObject(c));
+		}
+		props.put("countries", jsonArray.toString());
+
+		context.put("env", props);
 
 		final StringWriter writer = new StringWriter();
 		t.merge(context, writer);

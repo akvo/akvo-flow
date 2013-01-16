@@ -20,8 +20,8 @@ function ArrNoDupe(a) {
 }
 
 function formatDate(value) {
-  if(value > 0) {
-    return value.getFullYear() + "/" + value.getMonth() + 1 + "/" + value.getDate();
+  if(!Ember.none(value)) {
+    return value.getFullYear() + "/" + (value.getMonth() + 1) + "/" + value.getDate();
   } else return null;
 }
 
