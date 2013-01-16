@@ -80,6 +80,9 @@ public class EnvServlet extends HttpServlet {
 		final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
 		final JSONArray jsonArray = new JSONArray();
 		for (Country c : countryDAO.list(Constants.ALL_RESULTS)) {
+			if (c.getCentroidLat() == null || c.getCentroidLon() == null) {
+				continue;
+			}
 			jsonArray.put(new JSONObject(c));
 		}
 		props.put("countries", jsonArray.toString());
