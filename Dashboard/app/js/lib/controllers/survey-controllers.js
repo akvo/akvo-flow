@@ -33,8 +33,8 @@ FLOW.notificationOptionControl = Ember.Object.create({
     label: "link",
     value: "LINK"
   }), Ember.Object.create({
-    label: "attachement",
-    value: "ATTACHEMENT"
+    label: "attachment",
+    value: "ATTACHMENT"
   })]
 });
 
