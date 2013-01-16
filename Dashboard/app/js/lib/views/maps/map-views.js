@@ -11,14 +11,12 @@
 FLOW.NavMapsView = Ember.View.extend({
   templateName: 'navMaps/nav-maps',
   showDetailsBool: false,
+  detailsImage: null,
 
   init: function() {
     this._super();
+    this.detailsImage = Ember.ENV.imageroot + 'invisible.png';
     FLOW.placemarkControl.populate();
-  },
-
-  addCountryControl: function(event, map) {
-    console.log("in addCountryControl");
   },
 
   didInsertElement: function() {
@@ -55,8 +53,7 @@ FLOW.NavMapsView = Ember.View.extend({
     } else {
       FLOW.placemarkDetailControl.populate(selected);
     }
-    // this.set('imageURL', 'images/invisible.png');
-    FLOW.placemarkDetailControl.set('imageURL', Ember.ENV.imageroot + '/invisible.png');
+    this.set('detailsImage', Ember.ENV.imageroot + '/invisible.png');
   }.observes('FLOW.placemarkControl.selected'),
 
   changePlace: function() {
@@ -64,13 +61,12 @@ FLOW.NavMapsView = Ember.View.extend({
     country = this.get('country');
     if (!Ember.none(country)) {
       latLon = new mxn.LatLonPoint(country.get('lat'), country.get('lon'));
-      FLOW.placemarkControl.get('map').setCenterAndZoom(latLon, 8);
+      FLOW.placemarkControl.get('map').setCenterAndZoom(latLon, country.get('zoom'));
     }
   }.observes('this.country'),
 
   handlePlacemarkDetails: function() {
     var details, imageURL, stringVal;
-    console.log('in handleplacemarkdetails');
     details = FLOW.placemarkDetailControl.get('content');
 
     if((Ember.none(details) === false) && (Ember.empty(details) === false) && (details.get('isLoaded') === true)) { /* Show details pane */
@@ -93,10 +89,8 @@ FLOW.NavMapsView = Ember.View.extend({
       details.forEach(function(item) {
         stringVal = item.get('stringValue');
         if(stringVal.indexOf('wfpPhoto') != -1) {
-          // imageURL = 'http://flowdemo.s3.amazonaws.com/images/' + stringVal.slice(stringVal.indexOf('wfpPhoto'));
-          // this.set('imageURL', imageURL);
           imageURL = Ember.ENV.photo_url_root + stringVal.slice(stringVal.indexOf('wfpPhoto'));
-          FLOW.placemarkDetailControl.set('imageURL', imageURL);
+          this.set('detailsImage', imageURL);
         }
         var verticalBars = stringVal.split('|');
         if(verticalBars.length == 4) {

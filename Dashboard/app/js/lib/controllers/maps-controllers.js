@@ -1,24 +1,23 @@
+/*jshint browser:true, jquery:true */
+/*global Ember, FLOW */
+
+
 FLOW.placemarkControl = Ember.ArrayController.create({
   content: null,
 
-  populate: function() {
+  populate: function () {
     this.set('content', FLOW.store.findAll(FLOW.Placemark));
   }
 
 });
 
+
 FLOW.placemarkDetailControl = Ember.ArrayController.create({
   content: null,
   selectedDetailImage: null,
   selectedPointCode: null,
-  imageURL: null,
 
-  init: function() {
-    this._super();
-    this.imageURL = Ember.ENV.imageroot + 'invisible.png';
-  },
-
-  populate: function(placemarkId) {
+  populate: function (placemarkId) {
     if(typeof placemarkId === 'undefined') {
       this.set('content', null);
     } else {
@@ -27,10 +26,12 @@ FLOW.placemarkDetailControl = Ember.ArrayController.create({
       }));
     }
   }
+
 });
 
+
 FLOW.countryControl = Ember.Object.create({
-  content: [],
+  content: null,
   
   init: function() {
     this._super();
@@ -45,7 +46,8 @@ FLOW.countryControl = Ember.Object.create({
         Ember.Object.create({
           label: countries[i].label,
           lat: countries[i].lat,
-          lon: countries[i].lon
+          lon: countries[i].lon,
+          zoom: countries[i].zoom
         })
       );
     }
