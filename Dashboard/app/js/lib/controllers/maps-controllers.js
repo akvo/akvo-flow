@@ -35,27 +35,37 @@ FLOW.countryControl = Ember.Object.create({
   
   init: function() {
     this._super();
-    this.set('content', this.getContent(Ember.ENV.countries));
+    if ( !Ember.none(FLOW.Env) && !Ember.none(FLOW.Env.countries) ) {
+      this.set('content', this.getContent(FLOW.Env.countries));
+    }
   },
 
   getContent: function (countries) {
     var countryList = [];
 
     countries.sort(function (a, b) {
-      if (a.label < b.label) return -1;
-      if (a.label > b.label) return 1;
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
       return 0;
     });
 
     for (var i = 0; i < countries.length; i++) {
-      countryList.push(
-        Ember.Object.create({
-          label: countries[i].label,
-          lat: countries[i].lat,
-          lon: countries[i].lon,
-          zoom: countries[i].zoom
-        })
-      );
+      if ( !Ember.none(countries[i].centroidLat) && !Ember.none(countries[i].centroidLon) ) {
+        var zoom = 8; // default zoom level
+        if (Ember.none(countries[i].zoom)) {
+          zoom = countries[i].zoom;
+        }
+        
+        countryList.push(
+          Ember.Object.create({
+            label: countries[i].name,
+            iso: countries[i].isoAlpha2Code,
+            lat: countries[i].centroidLat,
+            lon: countries[i].centroidLon,
+            zoom: zoom
+          })
+        );
+      }
     }
     return countryList;
   }

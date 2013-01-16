@@ -53,7 +53,7 @@ FLOW.NavMapsView = Ember.View.extend({
     } else {
       FLOW.placemarkDetailControl.populate(selected);
     }
-    this.set('detailsImage', Ember.ENV.imageroot + '/invisible.png');
+    this.set('detailsImage', FLOW.Env.imageroot + '/invisible.png');
   }.observes('FLOW.placemarkControl.selected'),
 
   changePlace: function() {
@@ -89,7 +89,7 @@ FLOW.NavMapsView = Ember.View.extend({
       details.forEach(function(item) {
         stringVal = item.get('stringValue');
         if(stringVal.indexOf('wfpPhoto') != -1) {
-          imageURL = Ember.ENV.photo_url_root + stringVal.slice(stringVal.indexOf('wfpPhoto'));
+          imageURL = FLOW.Env.photo_url_root + stringVal.slice(stringVal.indexOf('wfpPhoto'));
           this.set('detailsImage', imageURL);
         }
         var verticalBars = stringVal.split('|');
@@ -123,7 +123,7 @@ FLOW.NavMapsView = Ember.View.extend({
     var point = new mxn.LatLonPoint(placemark.get('latitude'), placemark.get('longitude')),
       marker = new mxn.Marker(point);
 
-    marker.setIcon(Ember.ENV.imageroot + 'maps/blueMarker.png');
+    marker.setIcon(FLOW.Env.imageroot + 'maps/blueMarker.png');
     marker.placemark = placemark;
 
     // Add a click handler that handles what happens when marker is clicked
@@ -165,10 +165,10 @@ FLOW.NavMapsView = Ember.View.extend({
       var point = new mxn.LatLonPoint(placemark.get('latitude'), placemark.get('longitude')),
         newMarker = new mxn.Marker(point);
 
-      if(placemark.marker.iconUrl === (Ember.ENV.imageroot + 'maps/blueMarker.png')) {
-        newMarker.iconUrl = Ember.ENV.imageroot + 'maps/redMarker.png' ;
+      if(placemark.marker.iconUrl === (FLOW.Env.imageroot + 'maps/blueMarker.png')) {
+        newMarker.iconUrl = FLOW.Env.imageroot + 'maps/redMarker.png' ;
       } else {
-        newMarker.iconUrl = Ember.ENV.imageroot + 'maps/blueMarker.png';
+        newMarker.iconUrl = FLOW.Env.imageroot + 'maps/blueMarker.png';
       }
 
       placemark.addMarkerClickHandler(newMarker);
