@@ -41,6 +41,12 @@ FLOW.countryControl = Ember.Object.create({
   getContent: function (countries) {
     var countryList = [];
 
+    countries.sort(function (a, b) {
+      if (a.label < b.label) return -1;
+      if (a.label > b.label) return 1;
+      return 0;
+    });
+
     for (var i = 0; i < countries.length; i++) {
       countryList.push(
         Ember.Object.create({
