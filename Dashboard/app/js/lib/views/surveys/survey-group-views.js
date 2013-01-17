@@ -169,7 +169,7 @@ FLOW.JavascriptSurveyGroupListView = Ember.View.extend({
 	checkHeight: function() {
 		var liHeight,scroll;
 		liHeight = $('.menuGroup').height();
-		if(FLOW.surveyGroupControl.get('numberItems') > 10) {
+		if(FLOW.surveyGroupControl.content.content.length > 10) {
 			scroll = $('.menuGroupWrap').scrollTop();
 			$('.scrollDown').removeClass("FadeIt");
 			if (scroll > 0) {$('.scrollUp').removeClass("FadeIt");}
