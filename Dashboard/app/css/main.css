@@ -104,6 +104,10 @@ em {
 time {
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
+p {
+	font-size:120%;
+	line-height:1.3em;
+	}
 /* misc.
 --------------------------------------------- */
 img, object, video, embed {
@@ -1231,7 +1235,7 @@ th.action {
 }
 #tabs div > section h1 {
 	display: block;
-	margin:0.8em 0 0.1em 0.5em;
+	margin:0.5em 0 0.1em 0.5em;
 	color: rgb(44, 42, 116);
 	font-size: 2em;
 }
@@ -3126,4 +3130,71 @@ footer.bottomPage a[rel="self"]:hover {
 }
 .surveyPreviewWrap .previewQuestion {
 	margin:2.5em auto 0 auto;
+	}
+	
+/********************************************************************************************************************************
+													Reports Tab
+********************************************************************************************************************************/
+
+#excelImport select {
+	display:inline;
+	width:32%;
+	float:left;
+	margin:0 0 1em 1%;
+	}
+
+#excelImport select:last-child {
+	display:inline;
+	width:30%;
+	float:left;
+	margin:0 1% 1em 1%;
+	}
+
+#excelImport a.standardBtn {
+	clear:both;
+	margin:0 0 1em 1%;
+	}
+#excelImport div.block a.standardBtn {
+	clear:both;
+	margin:0;
+	}
+
+#excelImport .chartTitle {
+	margin:0.5em auto 0 auto;
+	padding:0.5em 0 0.2em 0.5%;
+	width:97.5%;
+	}
+#excelImport div.block {
+	display:block;
+	clear:both;
+	width:96%;
+	margin:0.5em auto 1.5em auto;
+	background:rgb(242, 242, 242);
+	padding:1em 1%;
+	-moz-border-radius:0.3em;
+	-webkit-border-radius:0.3em;
+	-o-border-radius:0.3em;
+	border-radius:0.3em;
+	}
+#excelImport div.block p {
+	display:block;
+	width:100%;
+	margin:0.5em auto 1em auto;
+	color:rgb(153,153,153);
+	}
+
+#excelImport #piechart {
+	display:block;
+	clear:both;
+	width:98%;
+	margin:0 auto 1em auto;
+	background:rgb(242, 242, 242);
+	padding:1em 0;
+	}
+#excelImport #piechart p {
+	display:block;
+	width:100%;
+	text-align:center;
+	margin:0.5em auto 1em auto;
+	color:rgb(153,153,153);
 	}
