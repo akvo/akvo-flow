@@ -33,18 +33,18 @@ FLOW.SurveySidebarView = Ember.View.extend({
 	}.property('FLOW.selectedControl.selectedSurvey.keyId'),
 
 	isPublished: function() {
-		return (FLOW.selectedControl.selectedSurvey.get('status') == 'PUBLISHED');
+		return(FLOW.selectedControl.selectedSurvey.get('status') == 'PUBLISHED');
 	}.property('FLOW.selectedControl.selectedSurvey.status'),
 
-	numberQuestions: function () {
-		if (Ember.none(FLOW.questionControl.get('filterContent'))){
+	numberQuestions: function() {
+		if(Ember.none(FLOW.questionControl.get('filterContent'))) {
 			return 0;
 		}
 		return FLOW.questionControl.filterContent.toArray().length;
 	}.property('FLOW.questionControl.filterContent.@each'),
 
-	numberQuestionGroups: function () {
-		if (Ember.none(FLOW.questionGroupControl.get('content'))){
+	numberQuestionGroups: function() {
+		if(Ember.none(FLOW.questionGroupControl.get('content'))) {
 			return 0;
 		}
 		return FLOW.questionGroupControl.content.toArray().length;
@@ -54,7 +54,7 @@ FLOW.SurveySidebarView = Ember.View.extend({
 		var survey;
 		survey = FLOW.selectedControl.get('selectedSurvey');
 		survey.set('name', this.get('surveyTitle'));
-		survey.set('status','NOT_PUBLISHED');
+		survey.set('status', 'NOT_PUBLISHED');
 		survey.set('description', this.get('surveyDescription'));
 		if(this.get('surveyPointType') !== null) {
 			survey.set('pointType', this.surveyPointType.get('value'));
@@ -66,11 +66,21 @@ FLOW.SurveySidebarView = Ember.View.extend({
 	},
 
 	doPreviewSurvey: function() {
-		FLOW.previewControl.set('showPreviewPopup',true);
+		FLOW.previewControl.set('showPreviewPopup', true);
 	},
 
 	doPublishSurvey: function() {
 		FLOW.surveyControl.publishSurvey();
+	},
+
+	doSurveysMain: function () {
+		var item;
+		// if the survey does not have a keyId, it has not been saved, so delete it.
+		if (Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))){
+			item = FLOW.selectedControl.get('selectedSurvey');
+			item.deleteRecord();
+		}
+		FLOW.router.transitionTo('navSurveys.navSurveysMain');
 	}
 });
 
@@ -114,7 +124,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 		var qgId = this.content.get('id');
 		var questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgId);
 		questionGroup.set('code', this.get('questionGroupName'));
-		FLOW.selectedControl.selectedSurvey.set('status','NOT_PUBLISHED');
+		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 		this.set('showQGroupNameEditField', false);
 	},
@@ -153,7 +163,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 
 		questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
 		questionGroup.deleteRecord();
-		FLOW.selectedControl.selectedSurvey.set('status','NOT_PUBLISHED');
+		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 	},
 
@@ -161,22 +171,31 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 	doInsertQuestionGroup: function() {
 		var insertAfterOrder;
 
-		if(this.get('zeroItem')) {
-			insertAfterOrder = 0;
-		} else {
-			insertAfterOrder = this.content.get('order');
-		}
+		if(FLOW.selectedControl.selectedSurvey.get('keyId')) {
 
-		// create new QuestionGroup item in the store
-		// the insertAfterOrder is inserted here
-		// in the server, the proper order of all question groups is re-established
-		FLOW.store.createRecord(FLOW.QuestionGroup, {
-			"code": "New group - please change name",
-			"order": insertAfterOrder,
-			"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
-		});
-		FLOW.selectedControl.selectedSurvey.set('status','NOT_PUBLISHED');
-		FLOW.store.commit();
+			if(this.get('zeroItem')) {
+				insertAfterOrder = 0;
+			} else {
+				insertAfterOrder = this.content.get('order');
+			}
+
+			// create new QuestionGroup item in the store
+			// the insertAfterOrder is inserted here
+			// in the server, the proper order of all question groups is re-established
+			FLOW.store.createRecord(FLOW.QuestionGroup, {
+				"code": "New group - please change name",
+				"order": insertAfterOrder,
+				"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
+			});
+			FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
+			FLOW.store.commit();
+		} else {
+			FLOW.dialogControl.set('activeAction', "ignore");
+			FLOW.dialogControl.set('header', Ember.String.loc('_please_save_survey'));
+			FLOW.dialogControl.set('message', Ember.String.loc('_please_save_survey_text'));
+			FLOW.dialogControl.set('showCANCEL', false);
+			FLOW.dialogControl.set('showDialog', true);
+		}
 	},
 
 	// prepare for group copy. Shows 'copy to here' buttons
@@ -221,8 +240,8 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			if(selectedQG !== null) {
 				// the insertAfterOrder is inserted here
 				// in the server, the proper order of all question groups is re-established
-				selectedQG.set('order',insertAfterOrder);
-				FLOW.selectedControl.selectedSurvey.set('status','NOT_PUBLISHED');
+				selectedQG.set('order', insertAfterOrder);
+				FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 				FLOW.store.commit();
 			}
 		}
@@ -249,7 +268,7 @@ FLOW.QuestionGroupItemView = Ember.View.extend({
 			"code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
 			"surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId')
 		});
-		FLOW.selectedControl.selectedSurvey.set('status','NOT_PUBLISHED');
+		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
 	}

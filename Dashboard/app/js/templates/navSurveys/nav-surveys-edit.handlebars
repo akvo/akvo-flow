@@ -1,7 +1,8 @@
 <!-- we are within navSurveysEditView -->
+ {{#view FLOW.SurveySidebarView}}
 <section class="leftSidebar" id="newSurveyInfo">
   <h2>{{t _edit_survey}}</h2>
-  {{#view FLOW.SurveySidebarView}}
+
   <form>
     <label for="newSurveyName">{{t _Title}}<span class="isRequired">({{t _Required}})</span>:
       {{view Ember.TextField valueBinding="view.surveyTitle" placeholder="Type in the name of your survey" size=30}} </label>
@@ -46,16 +47,17 @@
       <li><a {{action doPublishSurvey target="this"}} class="publishNewSurvey">Publish</a></li>
     </ul>
   </nav>
-  {{/view }} <!-- end of FLOW.SurveySideBarView --> 
+ 
 </section>
 <section class="mainRight" id="surveyCreator">
   <section class="topBar">
     <nav class="menuTopbar">
       <ul class="">
-        <li><a {{action "doSurveysMain"}} class="stepBack">Go back to survey overview</a></li>
+        <li><a {{action "doSurveysMain" target="this"}} class="stepBack">Go back to survey overview</a></li>
       </ul>
     </nav>
   </section>
   
 {{outlet}}
 </section>
+ {{/view }} <!-- end of FLOW.SurveySideBarView --> 

@@ -124,6 +124,9 @@ Ember.STRINGS_EN = {
   '_Required':'Required',
   '_Latitude':'Latitude',
   '_Longitude':'Longitude',
+  '_please_save_survey':'Please first save survey',
+  '_please_save_survey_text':'Before you can add questions groups to a survey, you first need to save the survey. Click ok the "Save" button in the left sidebar'
+  
 };
 
 Ember.STRINGS_ES = {

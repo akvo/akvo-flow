@@ -244,14 +244,14 @@ Ember.View.reopen({
   didInsertElement: function() {
     this._super();
     tooltip();
-    //$("nav#topnav li.current").prev("nav#topnav li").css("background", "none");
-    //$("nav#topnav li").hover(function() {
+    // $("nav#topnav li.current").prev("nav#topnav li").css("background", "none");
+    // $("nav#topnav li").hover(function() {
     //  $(this).prev().css("background", "none");
-    //});
-    // Adds needed classes to survey assets as nth-child selectors don't work in ie.
-    //$('li.aSurvey:nth-child(4n+1)').addClass('firstOfRow');
-    //$('li.aSurvey:nth-child(4n)').addClass('endOfRow');
-    //$('table#devicesListTable tbody tr:nth-child(2n)').addClass('even');
+    // });
+    // //Adds needed classes to survey assets as nth-child selectors don't work in ie.
+    // $('li.aSurvey:nth-child(4n+1)').addClass('firstOfRow');
+    // $('li.aSurvey:nth-child(4n)').addClass('endOfRow');
+    // $('table#devicesListTable tbody tr:nth-child(2n)').addClass('even');
 
 
     // var nCount = 0;

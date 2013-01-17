@@ -1,36 +1,33 @@
  <section class="fullWidth" id="excelImport">
     {{#view FLOW.chartView}}
-    <div class="">
         <h1>Reports</h1>
         {{view Ember.Select 
       contentBinding="FLOW.surveyGroupControl.content" 
       selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
       optionLabelPath="content.code" 
       optionValuePath="content.keyId" 
-      prompt="Select survey group"}}<br/>
+      prompt="Select survey group"}}
 
       {{view Ember.Select 
         contentBinding="FLOW.surveyControl.content" 
         selectionBinding="FLOW.selectedControl.selectedSurvey" 
         optionLabelPath="content.code" 
         optionValuePath="content.keyId" 
-        prompt="Select survey"}} <br/>
+        prompt="Select survey"}}
 
         {{view Ember.Select 
         contentBinding="FLOW.questionControl.OPTIONcontent" 
         selectionBinding="FLOW.selectedControl.selectedQuestion" 
         optionLabelPath="content.text" 
         optionValuePath="content.keyId" 
-        prompt="Select question"}}<br/><br/>
+        prompt="Select question"}}
         
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
-        <br><br>
-        <h3>{{FLOW.chartDataControl.questionText}}</h3>
-
-        <div id="piechart"></div>
-
-        </p>
-    </div>
+		
+     	<h3 class="chartTitle">{{FLOW.chartDataControl.questionText}}</h3>
+        <div id="piechart">
+			<p>Choose a Question from above selectors.</p>
+		</div>
 {{/view}}
 
  <script type="text/javascript">

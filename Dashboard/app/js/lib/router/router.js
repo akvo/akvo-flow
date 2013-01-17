@@ -124,7 +124,7 @@ FLOW.Router = Ember.Router.extend({
             FLOW.attributeControl.populate();
 
             if(!Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
-              FLOW.questionGroupControl.populate();
+              // questionGroups are already loaded in controller automatically
               FLOW.questionControl.populateAllQuestions();
             }
         },

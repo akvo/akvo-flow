@@ -53,9 +53,9 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 
 
 FLOW.Survey = FLOW.BaseModel.extend({
-  didDelete: function() {
-    FLOW.surveyControl.populate();
-  },
+  //didDelete: function() {
+  //  FLOW.surveyControl.populate();
+  //},
   // didUpdate: function() {
   //   FLOW.surveyControl.populate();
   // },
