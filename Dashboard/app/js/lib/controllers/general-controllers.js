@@ -77,10 +77,12 @@ FLOW.selectedControl = Ember.Controller.create({
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.selectedControl.set('selectedSurveyAllQuestions', null);
     FLOW.selectedControl.set('selectedQuestionGroup', null);
+    FLOW.selectedControl.set('selectedQuestion', null);
   }.observes('this.selectedSurveyGroup'),
 
   deselectSurveyChildren: function() {
     FLOW.selectedControl.set('selectedQuestionGroup', null);
+    FLOW.selectedControl.set('selectedQuestion', null);
   }.observes('this.selectedSurvey')
 });
 

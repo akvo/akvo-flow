@@ -1,0 +1,15 @@
+<section class="fullWidth" id="reportBlocks">
+  {{#view FLOW.BulkUploadAppletView}}
+       
+ <h1>Bulk upload data</h1>
+
+  <div class="bulkUpload block">
+    <h3>Export raw data report</h3>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. Mauris sollicitudin pretium sem eget mollis. Cras sit amet mauris turpis. Ut molestie lobortis laoreet. Fusce lectus nibh, feugiat eu adipiscing a, gravida vitae risus. Suspendisse velit lorem, molestie sed commodo non, aliquet ornare arcu. Suspendisse potenti. Pellentesque pellentesque lacus sed justo egestas et dignissim mauris placerat.</p>
+    <a {{action showBulkUploadApplet target="this"}} class="standardBtn"> {{t _bulk_upload_data}} </a>
+  </div>
+  {{#if view.showBulkUploadAppletBool }}
+    {{view FLOW.bulkUploadApplet }}
+  {{/if}}
+{{/view}}
+</section>

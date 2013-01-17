@@ -1,0 +1,24 @@
+<section class="fullWidth" id="reportBlocks">
+{{#view FLOW.DataCleaningAppletView}}
+  <h1>Data cleaning</h1>
+
+  <div class="rawDataReport block">
+    <h3>Export survey data</h3>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. Mauris sollicitudin pretium sem eget mollis. Cras sit amet mauris turpis. Ut molestie lobortis laoreet. Fusce lectus nibh, feugiat eu adipiscing a, gravida vitae risus. Suspendisse velit lorem, molestie sed commodo non, aliquet ornare arcu. Suspendisse potenti. Pellentesque pellentesque lacus sed justo egestas et dignissim mauris placerat.</p>
+    <a {{action showRawDataReportApplet target="this"}} class="standardBtn"> {{t _export_raw_data}} </a>
+  </div>
+  {{#if view.showRawDataReportAppletBool }}
+    {{view FLOW.rawDataReportApplet }}
+  {{/if}}
+
+
+  <div class="rawDataReport block">
+    <h3>Import cleaned survey data</h3>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in ligula et ipsum feugiat egestas ac vel arcu. Mauris sollicitudin pretium sem eget mollis. Cras sit amet mauris turpis. Ut molestie lobortis laoreet. Fusce lectus nibh, feugiat eu adipiscing a, gravida vitae risus. Suspendisse velit lorem, molestie sed commodo non, aliquet ornare arcu. Suspendisse potenti. Pellentesque pellentesque lacus sed justo egestas et dignissim mauris placerat.</p>
+    <a {{action showRawDataImportApplet target="this"}} class="standardBtn"> {{t _import_clean_data}} </a>
+  </div>
+  {{#if view.showRawDataImportAppletBool }}
+     {{view FLOW.rawDataImportApplet }}
+  {{/if}}
+{{/view}}
+</section>

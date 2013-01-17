@@ -985,7 +985,7 @@ tfoot tr {
 	color: grey;
 	-o-border-radius: 0;
 }
-#devicesList a.standardBtn, .dataSection a.standardBtn {
+#devicesList a.standardBtn {
 	position:absolute;
 	right:0;
 	top:0.3em;
@@ -3136,35 +3136,35 @@ footer.bottomPage a[rel="self"]:hover {
 													Reports Tab
 ********************************************************************************************************************************/
 
-#excelImport select {
+#reportBlocks select {
 	display:inline;
 	width:32%;
 	float:left;
 	margin:0 0 1em 1%;
 	}
 
-#excelImport select:last-child {
+#reportBlocks select:last-child {
 	display:inline;
 	width:30%;
 	float:left;
 	margin:0 1% 1em 1%;
 	}
 
-#excelImport a.standardBtn {
+#reportBlocks a.standardBtn {
 	clear:both;
 	margin:0 0 1em 1%;
 	}
-#excelImport div.block a.standardBtn {
+#reportBlocks div.block a.standardBtn {
 	clear:both;
 	margin:0;
 	}
 
-#excelImport .chartTitle {
+#reportBlocks .chartTitle {
 	margin:0.5em auto 0 auto;
 	padding:0.5em 0 0.2em 0.5%;
 	width:97.5%;
 	}
-#excelImport div.block {
+#reportBlocks div.block {
 	display:block;
 	clear:both;
 	width:96%;
@@ -3176,14 +3176,14 @@ footer.bottomPage a[rel="self"]:hover {
 	-o-border-radius:0.3em;
 	border-radius:0.3em;
 	}
-#excelImport div.block p {
+#reportBlocks div.block p {
 	display:block;
 	width:100%;
 	margin:0.5em auto 1em auto;
 	color:rgb(153,153,153);
 	}
 
-#excelImport #piechart {
+#reportBlocks #piechart {
 	display:block;
 	clear:both;
 	width:98%;
@@ -3191,7 +3191,7 @@ footer.bottomPage a[rel="self"]:hover {
 	background:rgb(242, 242, 242);
 	padding:1em 0;
 	}
-#excelImport #piechart p {
+#reportBlocks #piechart p {
 	display:block;
 	width:100%;
 	text-align:center;

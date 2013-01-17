@@ -5,13 +5,10 @@
     {{#view view.NavItemView item="manageAttributes" }}
     <a {{action doManageAttributes}}>Manage Attributes</a>
     {{/view}} 
-    {{#view view.NavItemView item="importSurvey" }}
-    <a {{action doImportSurvey}}>Import survey data</a>
+    {{#view view.NavItemView item="bulkUpload" }}
+    <a {{action doBulkUpload}}>Bulk upload data</a>
     {{/view}} 
-    {{#view view.NavItemView item="excelExport" }}
-    <a {{action doExcelExport}}>Spreadsheet export</a>
+    {{#view view.NavItemView item="dataCleaning" }}
+    <a {{action doDataCleaning}}>Data cleaning</a>
     {{/view}} 
-    {{#view view.NavItemView item="excelImport" }}
-    <a {{action doExcelImport}}>Spreadsheet import</a>
-    {{/view}}
 </ul>

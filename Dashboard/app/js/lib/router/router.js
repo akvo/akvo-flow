@@ -232,14 +232,11 @@ FLOW.Router = Ember.Router.extend({
       doManageAttributes: function(router, event) {
         router.transitionTo('navData.manageAttributes');
       },
-      doImportSurvey: function(router, event) {
-        router.transitionTo('navData.importSurvey');
+      doBulkUpload: function(router, event) {
+        router.transitionTo('navData.bulkUpload');
       },
-      doExcelImport: function(router, event) {
-        router.transitionTo('navData.excelImport');
-      },
-      doExcelExport: function(router, event) {
-        router.transitionTo('navData.excelExport');
+      doDataCleaning: function(router, event) {
+        router.transitionTo('navData.dataCleaning');
       },
 
       index: Ember.Route.extend({
@@ -258,7 +255,7 @@ FLOW.Router = Ember.Router.extend({
       }),
 
       manageAttributes: Ember.Route.extend({
-        route: '/importsurvey',
+        route: '/manageattributes',
         connectOutlets: function(router, context) {
           router.get('navDataController').connectOutlet('manageAttributes');
           router.set('datasubnavController.selected', 'manageAttributes');
@@ -266,28 +263,19 @@ FLOW.Router = Ember.Router.extend({
         }
       }),
 
-      importSurvey: Ember.Route.extend({
-        route: '/importsurvey',
+      bulkUpload: Ember.Route.extend({
+        route: '/bulkupload',
         connectOutlets: function(router, context) {
-          router.get('navDataController').connectOutlet('importSurvey');
-          router.set('datasubnavController.selected', 'importSurvey');
+          router.get('navDataController').connectOutlet('bulkUpload');
+          router.set('datasubnavController.selected', 'bulkUpload');
         }
       }),
 
-      excelImport: Ember.Route.extend({
-        route: '/excelimport',
+      dataCleaning: Ember.Route.extend({
+        route: '/datacleaning',
         connectOutlets: function(router, context) {
-          router.get('navDataController').connectOutlet('excelImport');
-          router.set('datasubnavController.selected', 'excelImport');
-        }
-      }),
-
-      excelExport: Ember.Route.extend({
-        route: '/excelexport',
-        connectOutlets: function(router, context) {
-          router.get('navDataController').connectOutlet('excelExport');
-          router.set('datasubnavController.selected', 'excelExport');
-
+          router.get('navDataController').connectOutlet('dataCleaning');
+          router.set('datasubnavController.selected', 'dataCleaning');
         }
       })
     }),

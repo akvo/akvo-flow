@@ -125,7 +125,10 @@ Ember.STRINGS_EN = {
   '_Latitude':'Latitude',
   '_Longitude':'Longitude',
   '_please_save_survey':'Please first save survey',
-  '_please_save_survey_text':'Before you can add questions groups to a survey, you first need to save the survey. Click ok the "Save" button in the left sidebar'
+  '_please_save_survey_text':'Before you can add questions groups to a survey, you first need to save the survey. Click ok the "Save" button in the left sidebar',
+  '_bulk_upload_data':'Bulk upload data',
+  '_export_raw_data':'Export raw data',
+  '_import_clean_data':'import clean data'
   
 };
 

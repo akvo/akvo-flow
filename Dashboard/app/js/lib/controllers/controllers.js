@@ -40,9 +40,8 @@ FLOW.DevicesTableHeaderController = Em.Controller.extend({
 FLOW.NavDataController = Ember.Controller.extend();
 FLOW.DatasubnavController = Em.Controller.extend();
 FLOW.InspectDataController = Ember.ArrayController.extend();
-FLOW.ImportSurveyController = Ember.Controller.extend();
-FLOW.ExcelImportController = Ember.Controller.extend();
-FLOW.ExcelExportController = Ember.Controller.extend();
+FLOW.BulkUploadController = Ember.Controller.extend();
+FLOW.DataCleaningController = Ember.Controller.extend();
 
 FLOW.NavReportsController = Ember.Controller.extend();
 FLOW.ReportsSubnavController = Em.Controller.extend();
