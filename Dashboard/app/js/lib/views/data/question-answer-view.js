@@ -18,12 +18,32 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   inEditMode: false,
   isNotEditable: false,
   value: null,
+  numberValue:null,
   date: null,
 
   init: function() {
     this._super();
     this.doInit();
   },
+
+doInit: function() {
+    var opList, opListArray, i, sizeList, q, questionId, qaValue, choice, type;
+
+    // TODO use filter instead: if the question is not yet there, don't do anything
+    // it will be picked up later at isLoaded.
+    questionId = this.content.get('questionID');
+    q = FLOW.store.find(FLOW.Question, questionId);
+    type = q.get('type');
+    this.set('isTextType', type == 'FREE_TEXT');
+    this.set('isOptionType', type == 'OPTION');
+    this.set('isNumberType', type == 'NUMBER');
+    this.set('isBarcodeType', type == 'BARCODE');
+    this.set('isDateType', type == 'DATE');
+    this.set('isNotEditable', (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO'));
+
+    this.setInitialValue();
+  }.observes('FLOW.questionControl.content.isLoaded'),
+
 
   setInitialValue: function() {
     var opList, opListArray, i, sizeList, q, questionId, qaValue, choice, type,date;
@@ -33,6 +53,11 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
     // set value
     this.set('value', this.content.get('value'));
+
+    if(this.get('isNumberType')) {
+      this.set('numberValue',this.content.get('value'));
+    }
+    
     if(this.get('isDateType') && !Ember.none(this.content.get('value'))) {
       date = new Date(parseInt(this.content.get('value'),10));
       this.set('date',formatDate(date));
@@ -61,24 +86,6 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     }
   },
 
-  doInit: function() {
-    var opList, opListArray, i, sizeList, q, questionId, qaValue, choice, type;
-
-    // TODO use filter instead: if the question is not yet there, don't do anything
-    // it will be picked up later at isLoaded.
-    questionId = this.content.get('questionID');
-    q = FLOW.store.find(FLOW.Question, questionId);
-    type = q.get('type');
-    this.set('isTextType', type == 'FREE_TEXT');
-    this.set('isOptionType', type == 'OPTION');
-    this.set('isNumberType', type == 'NUMBER');
-    this.set('isBarcodeType', type == 'BARCODE');
-    this.set('isDateType', type == 'DATE');
-    this.set('isNotEditable', (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO'));
-
-    this.setInitialValue();
-  }.observes('FLOW.questionControl.content.isLoaded'),
-
   doEdit: function() {
     this.set('inEditMode', true);
   },
@@ -94,11 +101,18 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       this.content.set('value',Date.parse(this.get('date')));
     } else if (this.get('isOptionType')){
       this.content.set('value',this.optionChoice.get('value'));
+    } else if (this.get('isNumberType')){
+      this.content.set('value',this.get('numberValue'));
     } else {
       this.content.set('value',this.get('value'));
     }
     FLOW.store.commit();
     this.set('inEditMode', false);
-  }
+  },
+
+  doValidateNumber: function () {
+    // TODO should check for minus sign and decimal point, depending on question setting
+    this.set('numberValue',this.get('numberValue').toString().replace(/[^\d.]/g, ""));
+  }.observes('this.numberValue')
 
 });
