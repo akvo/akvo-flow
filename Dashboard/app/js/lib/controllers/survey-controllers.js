@@ -211,7 +211,6 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 
   populate: function() {
     if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
-      console.log('Doing query');
       var id = FLOW.selectedControl.selectedSurvey.get('keyId');
       FLOW.store.findQuery(FLOW.QuestionGroup, {
         surveyId: id
@@ -283,10 +282,14 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
 
   setOPTIONcontent: function() {
+    var sId;
     if(FLOW.selectedControl.get('selectedSurvey')) {
+      sId = FLOW.selectedControl.selectedSurvey.get('keyId');
       this.set('OPTIONcontent', FLOW.store.filter(FLOW.Question, function(item) {
-        return(item.get('type') == 'OPTION');
+        return(item.get('type') == 'OPTION' && item.get('surveyId') ==sId);
       }));
+    } else {
+      this.set('OPTIONcontent',null);
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
@@ -337,9 +340,9 @@ FLOW.notificationControl = Ember.ArrayController.create({
     var id;
     if(FLOW.selectedControl.get('selectedSurvey')) {
       id = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('rawContent', FLOW.store.findQuery(FLOW.NotificationSubscription, {
+      FLOW.store.findQuery(FLOW.NotificationSubscription, {
         surveyId: id
-      }));
+      });
     }
   },
 
