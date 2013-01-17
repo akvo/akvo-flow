@@ -123,9 +123,16 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
+  setFilteredContent: function() {
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function(item) {
+      return true;
+    }));
+  },
+
   // load all Survey Groups
   populate: function() {
-    this.set('content', FLOW.store.find(FLOW.SurveyGroup));
+    FLOW.store.find(FLOW.SurveyGroup);
+    this.setFilteredContent();
   },
 
   // checks if data store contains surveys within this survey group.
@@ -159,12 +166,13 @@ FLOW.surveyControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
-
   populate: function() {
-    var id,content;
+    var id;
     if(FLOW.selectedControl.get('selectedSurveyGroup')) {
       id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-      content = FLOW.store.findQuery(FLOW.Survey, {
+      // this content is actualy not used, the data ends up in the store
+      // and is accessed through the filtered content above
+      FLOW.store.findQuery(FLOW.Survey, {
         surveyGroupId: id
       });
     }
@@ -181,32 +189,52 @@ FLOW.surveyControl = Ember.ArrayController.create({
 });
 
 
-
 FLOW.questionGroupControl = Ember.ArrayController.create({
   sortProperties: ['order'],
   sortAscending: true,
   content: null,
 
+  setFilteredContent: function() {
+    var sId;
+    if(FLOW.selectedControl.get('selectedSurvey')) {
+      if(!Ember.empty(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
+        sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+        this.set('content', FLOW.store.filter(FLOW.QuestionGroup, function(item) {
+          return(item.get('surveyId') == sId);
+        }));
+      } else {
+        // this happens when we have created a new survey, which has no id yet
+        this.set('content', null);
+      }
+    }
+  },
+
+  populate: function() {
+    if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
+      console.log('Doing query');
+      var id = FLOW.selectedControl.selectedSurvey.get('keyId');
+      FLOW.store.findQuery(FLOW.QuestionGroup, {
+        surveyId: id
+      });
+    }
+    this.setFilteredContent();
+  }.observes('FLOW.selectedControl.selectedSurvey'),
+
   // true if all items have been saved
   // used in models.js
   allRecordsSaved: function() {
     var allSaved = true;
-    FLOW.questionGroupControl.get('content').forEach(function(item) {
-      if(item.get('isSaving')) {
-        allSaved = false;
-      }
-    });
-    return allSaved;
-  }.property('content.@each.isSaving'),
-
-  populate: function() {
-    if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
-      var id = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('content', FLOW.store.findQuery(FLOW.QuestionGroup, {
-        surveyId: id
-      }));
+    if(Ember.none(this.get('content'))) {
+      return true;
+    } else {
+      this.get('content').forEach(function(item) {
+        if(item.get('isSaving')) {
+          allSaved = false;
+        }
+      });
+      return allSaved;
     }
-  }.observes('FLOW.selectedControl.selectedSurvey')
+  }.property('content.@each.isSaving')
 });
 
 
@@ -316,7 +344,6 @@ FLOW.notificationControl = Ember.ArrayController.create({
   },
 
   doFilterContent: function() {
-    console.log('filterContent');
     var sId;
     if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
