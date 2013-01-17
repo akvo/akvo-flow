@@ -15,5 +15,4 @@ require('akvo-flow/views/views');
 require('akvo-flow/router/router');
 require('akvo-flow/locale/all_locales');
 
-
 FLOW.initialize();
