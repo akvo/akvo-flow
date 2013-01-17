@@ -135,9 +135,6 @@ FLOW.JavascriptSurveyGroupListView = Ember.View.extend({
 		var liHeight, menuHeight, scroll;
 		this._super();
 		liHeight = $('.menuGroup').height();
-		$('.scrollDown').addClass("FadeIt");
-		
-		// fade up button on first view, as the list starts at the top
 		$('.scrollUp').addClass("FadeIt");
 		$('.scrollUp').click(function() {
 			menuHeight = $('.menuGroupWrap').height();
@@ -146,7 +143,7 @@ FLOW.JavascriptSurveyGroupListView = Ember.View.extend({
 			$('.menuGroupWrap').animate({
 				'scrollTop': scroll - 72
 			}, 155);
-			
+
 			//the value used for scroll is the old one
 			if(scroll < 73) {
 				$('.scrollUp').addClass("FadeIt");
@@ -167,12 +164,20 @@ FLOW.JavascriptSurveyGroupListView = Ember.View.extend({
 	},
 
 	checkHeight: function() {
-		var liHeight,scroll;
+		var liHeight, scroll;
 		liHeight = $('.menuGroup').height();
-		if(FLOW.surveyGroupControl.content.content.length > 10) {
+
+		if(FLOW.surveyGroupControl.content.content.length < 10) {
+			$('.scrollDown').addClass("FadeIt");
+			$('.scrollUp').addClass("FadeIt");
+		} else {
 			scroll = $('.menuGroupWrap').scrollTop();
 			$('.scrollDown').removeClass("FadeIt");
-			if (scroll > 0) {$('.scrollUp').removeClass("FadeIt");}
+			if(scroll < 73) {
+				$('.scrollUp').addClass("FadeIt");
+			} else {
+				$('.scrollUp').removeClass("FadeIt");
+			}
 		}
 	}.observes('FLOW.surveyGroupControl.content.content.length')
 });
