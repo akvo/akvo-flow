@@ -51,10 +51,10 @@ FLOW.notificationEventControl = Ember.Object.create({
   Ember.Object.create({
     label: "Raw data reports (nightly)",
     value: "rawDataReport"
-  }),Ember.Object.create({
+  }), Ember.Object.create({
     label: "Survey submission",
     value: "surveySubmission"
-  }),Ember.Object.create({
+  }), Ember.Object.create({
     label: "Survey approval",
     value: "surveyApproval"
   })]
@@ -123,6 +123,7 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
+  // load all Survey Groups
   populate: function() {
     this.set('content', FLOW.store.find(FLOW.SurveyGroup));
   },
@@ -145,26 +146,40 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,
+  sortProperties: ['name'],
+  sortAscending: true,
 
-  populate: function() {
-    var id;
-    if(FLOW.selectedControl.get('selectedSurveyGroup')) {
-      id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-      this.set('content', FLOW.store.findQuery(FLOW.Survey, {
-        surveyGroupId: id
+  setFilteredContent: function() {
+    var sgId;
+    if(FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
+      sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+      this.set('content', FLOW.store.filter(FLOW.Survey, function(item) {
+        return(item.get('surveyGroupId') == sgId);
       }));
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
-  publishSurvey: function(){
+
+  populate: function() {
+    var id,content;
+    if(FLOW.selectedControl.get('selectedSurveyGroup')) {
+      id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+      content = FLOW.store.findQuery(FLOW.Survey, {
+        surveyGroupId: id
+      });
+    }
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  publishSurvey: function() {
     var surveyId;
     surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
     FLOW.store.findQuery(FLOW.Action, {
-      action:'publishSurvey',
+      action: 'publishSurvey',
       surveyId: surveyId
     });
   }
 });
+
 
 
 FLOW.questionGroupControl = Ember.ArrayController.create({
@@ -200,7 +215,7 @@ FLOW.questionControl = Ember.ArrayController.create({
   OPTIONcontent: null,
   earlierOptionQuestions: null,
   QGcontent: null,
-  filterContent:null,
+  filterContent: null,
 
   populateAllQuestions: function() {
     var sId;
@@ -213,18 +228,18 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
   // used for surveyInstances in data edit popup
-  doSurveyIdQuery: function (surveyId) {
+  doSurveyIdQuery: function(surveyId) {
     this.set('content', FLOW.store.findQuery(FLOW.Question, {
-        surveyId: surveyId
-      }));
+      surveyId: surveyId
+    }));
   },
 
   allQuestionsFilter: function() {
     var sId;
     if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('filterContent', FLOW.store.filter(FLOW.Question, function (item){
-        return (item.get('surveyId') == sId);
+      this.set('filterContent', FLOW.store.filter(FLOW.Question, function(item) {
+        return(item.get('surveyId') == sId);
       }));
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
@@ -276,16 +291,16 @@ FLOW.optionListControl = Ember.ArrayController.create({
 });
 
 FLOW.previewControl = Ember.ArrayController.create({
-  changed:false,
-  showPreviewPopup:false,
+  changed: false,
+  showPreviewPopup: false,
   // associative array for answers in the preview
-  answers:{}
+  answers: {}
 });
 
 
 FLOW.notificationControl = Ember.ArrayController.create({
-  content:null,
-  filterContent:null,
+  content: null,
+  filterContent: null,
   sortProperties: ['notificationDestination'],
   sortAscending: true,
 
@@ -300,13 +315,13 @@ FLOW.notificationControl = Ember.ArrayController.create({
     }
   },
 
-  doFilterContent: function () {
+  doFilterContent: function() {
     console.log('filterContent');
     var sId;
     if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('content', FLOW.store.filter(FLOW.NotificationSubscription, function (item){
-        return (item.get('entityId') == sId);
+      this.set('content', FLOW.store.filter(FLOW.NotificationSubscription, function(item) {
+        return(item.get('entityId') == sId);
       }));
     }
   }.observes('FLOW.selectedControl.selectedSurvey')
