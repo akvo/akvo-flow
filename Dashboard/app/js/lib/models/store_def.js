@@ -1,8 +1,7 @@
-var host = "http://" + window.location.hostname;
+var host = "http://" + window.location.host;
 FLOW.store = DS.Store.create({
 	revision: 10,
 	adapter:DS.FLOWRESTAdapter.create({bulkCommit:false, namespace:"rest", url:host})
-	//adapter: DS.fixtureAdapter
 });
 
 DS.JSONTransforms.array = {

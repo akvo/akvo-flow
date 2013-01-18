@@ -140,91 +140,92 @@ FLOW.savingMessageControl = Ember.Object.create({
   }
 });
 
-FLOW.dataserverControl = Ember.Object.create({
-  dataserver: null,
+// FLOW.dataserverControl = Ember.Object.create({
+//   dataserver: null,
 
-  init: function() {
-    var dataserverSetting;
+//   init: function() {
+//     var dataserverSetting;
 
-    this._super();
-    dataserverSetting = localStorage.dataserver;
-    if(typeof dataserverSetting === "undefined") {
-      this.set('dataserver', this.content.findProperty('value', 'sandbox'));
-    } else {
-      this.set('dataserver', this.content.findProperty('value', dataserverSetting));
-    }
-  },
+//     this._super();
+//     dataserverSetting = localStorage.dataserver;
+//     if(typeof dataserverSetting === "undefined") {
+//       this.set('dataserver', this.content.findProperty('value', 'sandbox'));
+//     } else {
+//       this.set('dataserver', this.content.findProperty('value', dataserverSetting));
+//     }
+//   },
 
-  content: [
-  Ember.Object.create({
-    label: "Akvo Sandbox",
-    value: "sandbox"
-  }), Ember.Object.create({
-    label: "Localhost",
-    value: "local"
-  }), Ember.Object.create({
-    label: "Localhost to Sandbox",
-    value: "local-sandbox"
-  }), Ember.Object.create({
-    label: "Local VM",
-    value: "vm"
-  }), Ember.Object.create({
-    label: "Fixtures",
-    value: "fixtures"
-  })],
+//   content: [
+//   Ember.Object.create({
+//     label: "Akvo Sandbox",
+//     value: "sandbox"
+//   }), Ember.Object.create({
+//     label: "Localhost",
+//     value: "local"
+//   }), Ember.Object.create({
+//     label: "Localhost to Sandbox",
+//     value: "local-sandbox"
+//   }), Ember.Object.create({
+//     label: "Local VM",
+//     value: "vm"
+//   }), Ember.Object.create({
+//     label: "Fixtures",
+//     value: "fixtures"
+//   })],
 
-  changeServer: function() {
-    var host = "http://" + window.location.host,
-      server = this.dataserver.get('value');
-    localStorage.dataserver = server;
 
-    if(server == "local") {
-      // FLOW.selectedControl.set('dataserverControl', null);
-      FLOW.store = DS.Store.create({
-        revision: 10,
-        adapter: DS.FLOWRESTAdapter.create({
-          bulkCommit: false,
-          namespace: "rest",
-          url: host
-        })
-      });
-    } else if(server == "vm") {
-      // FLOW.selectedControl.set('dataserverControl',null);
-      FLOW.store = DS.Store.create({
-        revision: 10,
-        adapter: DS.FLOWRESTAdapter.create({
-          bulkCommit: false,
-          namespace: "restlocal",
-          url: host
-        })
-      });
-    } else if(server == "sandbox") {
-      // FLOW.selectedControl.set('dataserverControl',null);
-      FLOW.store = DS.Store.create({
-        revision: 10,
-        adapter: DS.FLOWRESTAdapter.create({
-          bulkCommit: false,
-          namespace: "rest",
-          url: host
-        })
-      });
-    } else if(server == "local-sandbox") {
-      // FLOW.selectedControl.set('dataserverControl',null);
-      FLOW.store = DS.Store.create({
-        revision: 10,
-        adapter: DS.FLOWRESTAdapter.create({
-          bulkCommit: false,
-          namespace: "restsandbox",
-          url: host
-        })
-      });
-    } else if(server == "fixtures") {
-      // FLOW.selectedControl.set('dataserverControl',null);
-      FLOW.store = DS.Store.create({
-        revision: 10,
-        adapter: DS.fixtureAdapter
-      });
-    }
-  }.observes('this.dataserver')
-});
+//   changeServer: function() {
+//     var host = "http://" + window.location.host,
+//       server = this.dataserver.get('value');
+//     localStorage.dataserver = server;
+
+//     if(server == "local") {
+//       // FLOW.selectedControl.set('dataserverControl', null);
+//       FLOW.store = DS.Store.create({
+//         revision: 10,
+//         adapter: DS.FLOWRESTAdapter.create({
+//           bulkCommit: false,
+//           namespace: "rest",
+//           url: host
+//         })
+//       });
+//     } else if(server == "vm") {
+//       // FLOW.selectedControl.set('dataserverControl',null);
+//       FLOW.store = DS.Store.create({
+//         revision: 10,
+//         adapter: DS.FLOWRESTAdapter.create({
+//           bulkCommit: false,
+//           namespace: "restlocal",
+//           url: host
+//         })
+//       });
+//     } else if(server == "sandbox") {
+//       // FLOW.selectedControl.set('dataserverControl',null);
+//       FLOW.store = DS.Store.create({
+//         revision: 10,
+//         adapter: DS.FLOWRESTAdapter.create({
+//           bulkCommit: false,
+//           namespace: "rest",
+//           url: host
+//         })
+//       });
+//     } else if(server == "local-sandbox") {
+//       // FLOW.selectedControl.set('dataserverControl',null);
+//       FLOW.store = DS.Store.create({
+//         revision: 10,
+//         adapter: DS.FLOWRESTAdapter.create({
+//           bulkCommit: false,
+//           namespace: "restsandbox",
+//           url: host
+//         })
+//       });
+//     } else if(server == "fixtures") {
+//       // FLOW.selectedControl.set('dataserverControl',null);
+//       FLOW.store = DS.Store.create({
+//         revision: 10,
+//         adapter: DS.fixtureAdapter
+//       });
+//     }
+//   }.observes('this.dataserver')
+// });
 
