@@ -41,8 +41,12 @@
 
       <label class="minValNumb">{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label>
       <label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
-
     {{/if}} 
+
+    {{#if view.amNoOptionsType}}
+      {{t _no_options_for_this_question_type}}
+    {{/if}}
+
 </div>
 <div class="dependencyBlock">
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.dependentFlag"}}{{t _dependent}}

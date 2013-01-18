@@ -65,32 +65,47 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
 });
 
 // translates values to labels for languages
-Ember.Handlebars.registerHelper('toLanguage', function(item) {
-  var language, toL;
-  language = "";
-  toL = Ember.get(this,item);
+Ember.Handlebars.registerHelper('toLanguage', function(value) {
+  var label, valueLoc;
+  label = "";
+  valueLoc = Ember.get(this,value);
   
-  FLOW.languageControl.get('content').forEach(function(t){
-    if (t.get('value') == toL) {
-      language = t.get('label');
+  FLOW.languageControl.get('content').forEach(function(item){
+    if (item.get('value') == valueLoc) {
+      label = item.get('label');
     }
   });
-  return language;
+  return label;
 });
 
 // translates values to labels for surveyPointTypes
-Ember.Handlebars.registerHelper('toPointType', function(item) {
-  var pointType, toP;
-  pointType = "";
-  toP = Ember.get(this,item);
+Ember.Handlebars.registerHelper('toPointType', function(value) {
+  var label, valueLoc;
+  label = "";
+  valueLoc = Ember.get(this,value);
   
-  FLOW.surveyPointTypeControl.get('content').forEach(function(p){
-    if (p.get('value') == toP) {
-      pointType = p.get('label');
+  FLOW.surveyPointTypeControl.get('content').forEach(function(item){
+    if (item.get('value') == valueLoc) {
+      label = item.get('label');
     }
   });
-  return pointType;
+  return label;
 });
+
+// translates values to labels for attributeTypes
+Ember.Handlebars.registerHelper('toAttributeType', function(value) {
+  var label, valueLoc;
+  label = "";
+  valueLoc = Ember.get(this,value);
+  
+  FLOW.attributeTypeControl.get('content').forEach(function(item){
+    if (item.get('value') == valueLoc) {
+      label = item.get('label');
+    }
+  });
+  return label;
+});
+
 
 // add space to vertical bar helper
 Ember.Handlebars.registerHelper('addSpace', function(property) {
