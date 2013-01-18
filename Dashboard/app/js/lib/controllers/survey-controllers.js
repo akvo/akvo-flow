@@ -160,6 +160,8 @@ FLOW.surveyControl = Ember.ArrayController.create({
       this.set('content', FLOW.store.filter(FLOW.Survey, function(item) {
         return(item.get('surveyGroupId') == sgId);
       }));
+    } else {
+      this.set('content',null);
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
