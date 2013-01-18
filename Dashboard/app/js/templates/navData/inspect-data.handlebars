@@ -82,13 +82,13 @@
           <h2>Edit answers</h2>
             <nav class="editAnswerMenu"> 
             <ul>  
-              <li class="prevBtn"><a {{action "doPreviousSI" target="this"}}>&lsaquo; previous</a></li>
+              <li class="prevBtn"><a {{action "doPreviousSI" target="this"}}>&lsaquo; {{t _previous_record}}</a></li>
               <li class="deleteBtn"><a {{action "doDeleteSI" target="this"}} class="smallBtn">delete</a></li>
               <li class="saveBtn"><a {{action "doSaveSI" target="this"}} class="smallBtn">save</a></li>
-              <li class="nextBtn"><a {{action "doNextSI" target="this"}}>next &rsaquo;</a></li>
+              <li class="nextBtn"><a {{action "doNextSI" target="this"}}>{{t _next_record}} &rsaquo;</a></li>
             </ul>
           </nav>
-         
+        <p>{{view.siString}}</p>
 
  <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->

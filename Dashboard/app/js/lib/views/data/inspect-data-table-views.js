@@ -9,7 +9,7 @@ FLOW.inspectDataTableView = Em.View.extend({
   showEditSurveyInstanceWindowBool: false,
   selectedSurveyInstanceId: null,
   selectedSurveyInstanceNum: null,
-
+  siString: null,
 
   // do a new query
   doFindSurveyInstances: function() {
@@ -71,6 +71,12 @@ FLOW.inspectDataTableView = Em.View.extend({
     }
   }.property('FLOW.surveyInstanceControl.sinceArray.length'),
 
+  createSurveyInstanceString: function() {
+    var si;
+    si = FLOW.store.find(FLOW.SurveyInstance, this.get('selectedSurveyInstanceId'));
+    this.set('siString', si.get('surveyCode') + "/" + si.get('keyId') + "/" + si.get('submitterName'));
+  },
+
   // Survey instance edit popup window
   // TODO solve when popup is open, no new surveyIdQuery is done
   showEditSurveyInstanceWindow: function(event) {
@@ -79,6 +85,7 @@ FLOW.inspectDataTableView = Em.View.extend({
     this.set('selectedSurveyInstanceId', event.context.get('keyId'));
     this.set('selectedSurveyInstanceNum', event.context.clientId);
     this.set('showEditSurveyInstanceWindowBool', true);
+    this.createSurveyInstanceString();
   },
 
   doCloseEditSIWindow: function(event) {
@@ -104,6 +111,7 @@ FLOW.inspectDataTableView = Em.View.extend({
       nextSIkeyId = filtered.objectAt(0).get('keyId');
       this.set('selectedSurveyInstanceId', nextSIkeyId);
       this.set('selectedSurveyInstanceNum', nextItem);
+      this.createSurveyInstanceString();
       FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSIkeyId);
     }
   },
@@ -128,6 +136,7 @@ FLOW.inspectDataTableView = Em.View.extend({
       nextSIkeyId = filtered.objectAt(0).get('keyId');
       this.set('selectedSurveyInstanceId', nextSIkeyId);
       this.set('selectedSurveyInstanceNum', nextItem);
+      this.createSurveyInstanceString();
       FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSIkeyId);
     }
   },
