@@ -132,6 +132,9 @@ Ember.STRINGS_EN = {
   '_survey_intro_text':"To create a new survey, first select a survey group on the left. If you don't have survey groups yet, you can create one by clicking 'add new group' on the top left.",
   '_manual_survey_transfer':'Manual survey transfer',
   '_manual_transfer_file':'Manual transfer file',
+  '_previous_record':'previous record',
+  '_next_record':'next record',
+  '_no_options_for_this_question_type':'No options for this type of question'
   
 };
 

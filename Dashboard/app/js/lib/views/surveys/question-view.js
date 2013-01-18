@@ -33,7 +33,7 @@ FLOW.QuestionView = Ember.View.extend({
 
 	amOptionType: function() {
 		if(this.type) {
-			return(this.type.get('value') == 'OPTION') ? true : false;
+			return(this.type.get('value') == 'OPTION');
 		} else {
 			return false;
 		}
@@ -41,9 +41,17 @@ FLOW.QuestionView = Ember.View.extend({
 
 	amNumberType: function() {
 		if(this.type) {
-			return(this.type.get('value') == 'NUMBER') ? true : false;
+			return(this.type.get('value') == 'NUMBER');
 		} else {
 			return false;
+		}
+	}.property('this.type').cacheable(),
+
+	amNoOptionsType: function() {
+		var val;
+		if(!Ember.none(this.type)) {
+			val = this.type.get('value');
+			return(val == 'GEO' || val == 'FREE_TEXT' || val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE');
 		}
 	}.property('this.type').cacheable(),
 
@@ -308,17 +316,17 @@ FLOW.QuestionView = Ember.View.extend({
 		console.log(this.get('newAttributeName'));
 		if((this.get('newAttributeName') !== null) && (this.get('newAttributeType') !== null)) {
 			console.log('inside');
-		FLOW.store.createRecord(FLOW.Metric, {
-			"name": this.get('newAttributeName'),
-			"group": this.get('newAttributeGroup'),
-			"valueType": this.newAttributeType.get('value')
-		});
-		FLOW.store.commit();
-	}
-	this.set('showAddAttributeDialogBool', false);
-},
+			FLOW.store.createRecord(FLOW.Metric, {
+				"name": this.get('newAttributeName'),
+				"group": this.get('newAttributeGroup'),
+				"valueType": this.newAttributeType.get('value')
+			});
+			FLOW.store.commit();
+		}
+		this.set('showAddAttributeDialogBool', false);
+	},
 
-cancelAddAttribute: function() {
-	this.set('showAddAttributeDialogBool', false);
-}
+	cancelAddAttribute: function() {
+		this.set('showAddAttributeDialogBool', false);
+	}
 });
