@@ -300,10 +300,10 @@ FLOW.Router = Ember.Router.extend({
         router.get('applicationController').connectOutlet('navReports');
         FLOW.surveyGroupControl.populate();
         FLOW.selectedControl.set('selectedSurveyGroup', null);
-        FLOW.selectedControl.set('selectedSurveyOPTIONandNUMBERQuestions', null);
+        FLOW.selectedControl.set('selectedSurvey', null);
         FLOW.selectedControl.set('selectedQuestion', null);
         FLOW.surveyControl.set('content', null);
-        FLOW.questionControl.set('OandNcontent', null);
+        FLOW.questionControl.set('OPTIONcontent', null);
 
         router.set('navigationController.selected', 'navReports');
       },
