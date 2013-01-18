@@ -131,7 +131,7 @@ Ember.STRINGS_EN = {
   '_import_clean_data':'import clean data',
   '_survey_intro_text':"To create a new survey, first select a survey group on the left. If you don't have survey groups yet, you can create one by clicking 'add new group' on the top left.",
   '_manual_survey_transfer':'Manual survey transfer',
-  '_manual_transfer_file':'Manual transfer file'
+  '_manual_transfer_file':'Manual transfer file',
   
 };
 
@@ -268,4 +268,13 @@ Ember.STRINGS_FR = {
   '_Required':'Requis',
   '_Latitude':'Latitude',
   '_Longitude':'Longitude',
+  '_please_save_survey':"Sauvegardez l'enquête",
+  '_please_save_survey_text':"Avant de pouvoir ajouter des groupes de questions à une enquête, vous devez tout d'abord enregistrer cette enquête. Cliquez sur ok le bouton 'Sauvegarder' dans la barre latérale gauche",
+  '_bulk_upload_data':'Téléchargement des données en vrac',
+  '_export_raw_data':'Exporter les données brutes',
+  '_import_clean_data':'importer des données propres',
+  '_survey_intro_text':"Pour créer une nouvelle enquête, veuillez sélectionner un groupe d'enquête sur la gauche. Si vous n'avez pas encore de groupes, vous pouvez en créer un en cliquant sur 'ajouter un nouveau groupe' en haut à gauche.",
+  '_manual_survey_transfer':'Manual survey transfer',
+  '_manual_transfer_file':'Manual transfer file',
+  
 };

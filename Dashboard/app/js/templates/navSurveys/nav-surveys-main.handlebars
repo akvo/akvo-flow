@@ -14,7 +14,7 @@
           <a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a>
         </nav>
       {{/if}}   	 
-<div class="scrollWrap"><a href="#" class="scrollUp">up</a></div>
+<div class="scrollWrap"><a href="#scrollUpId" class="scrollUp" id="scrollUpId">up</a></div>
  
 <nav class="menuGroupWrap">
       <!-- show all survey groups --> 
@@ -28,7 +28,7 @@
         {{/view}}
       </ul>
 </nav>
-<div class="scrollWrap"><a href="#" class="scrollDown">down</a></div>
+<div class="scrollWrap"><a href="#scrollDownId" class="scrollDown" id="scrollDownId">down</a></div>
   </section>
 
   <section id="allSurvey" class="mainRight surveysList">
@@ -59,10 +59,8 @@
     </section>
 
     {{#unless view.oneSelected}}
-      <section>
-        <p>{{t _survey_intro_text}}</p>
+        <p class="surveyLandingText">{{t _survey_intro_text}}</p>
 
-      </section>
     {{/unless}}
 
     <!-- show all surveys of the currently selected survey group-->

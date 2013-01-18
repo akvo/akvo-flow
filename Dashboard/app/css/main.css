@@ -636,9 +636,17 @@ header.top hgroup h2 {
 }
 .languageSelector {
 	position:absolute;
-	top: 10px;
+	top: 2em;
 	right: 0;
 	}
+.languageSelector .labelText{
+	display:block;
+	margin:0 0 0.5em 0.3em;
+	}
+.languageSelector select{
+	display:block;
+	}
+
 /* #home page
 --------------------------------------------- */
 
@@ -682,7 +690,7 @@ nav#topnav ul li a {
 }
 nav#topnav ul li a:hover, nav#topnav ul li.current a {
 	color: rgb(246, 160, 26);
-}/*************** addition MTW **************/
+}
 nav#topnav ul li.navHome a {
 	background: url(../images/topnavDashboards.png) center -18px no-repeat;
 }
@@ -693,13 +701,11 @@ nav#topnav ul li.navHome.current a {
 	background: url(../images/topnavDashboards.png) center bottom no-repeat;
 }
 nav#topnav ul li.navMessages a {
-	background: url(../images/topnavDashboards.png) center -18px no-repeat;
+	background: url(../images/topnavMessages.png) center -18px no-repeat;
 }
 nav#topnav ul li.navMessages.current a {
-	background: url(../images/topnavDashboards.png) center bottom no-repeat;
+	background: url(../images/topnavMessages.png) center bottom no-repeat;
 }
-/***************** end addition MTW ************/
-
 
 nav#topnav ul li.navSurveys a {
 	background: url(../images/topnavSurveys.png) center -18px no-repeat;
@@ -1454,6 +1460,13 @@ a.FadeIt {
 }
 /* Survey Top Bar
 --------------------------------------------- */
+.surveyLandingText {
+	font-size:2.2em;
+	width:50%;
+	margin:5em auto 3em auto;
+	text-align:center;
+	color:rgb(204,204,204);
+	}
 section.topBar {
 	position: relative;
 	margin: 0 0 10px 0;
@@ -2395,7 +2408,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	border-color: rgb(235,235,235);
 }
 .innerContent input[type=checkbox]:first-child, .innerContent input[type=radio]:first-child {
-	margin: 1em 0 0 0.5em;
+	margin:1em 0.5em 0 0.5em;
 }
 .innerContent .labelcheckbox input[type=checkbox]:first-child, .innerContent .labelcheckbox input[type=radio]:first-child {
 	margin: 0 0.5em 0 0;
@@ -2513,17 +2526,39 @@ nav.smallMenu ul li a.showQuestion:hover {
 	width: 45%;
 }
 .innerContent .dependencyBlock {
-	margin: 1.5em 0 1em 1em;
-	padding: 0 0 0.25em 0;
+	margin: 0.5em 0 0.5em 1em;
+	padding:0.25em 0 0.75em 0;
 	width: 97.5%;
 	background: rgb(237,237,237);
 }
+.innerContent .dependencyBlock .qDependency {
+	margin:1.5em 0 0.1em 1.5em;
+	width: 97.5%;
+	color:rgb(153,51,0);
+}
+.innerContent .dependencyBlock div.ember-radio-button label {
+	margin:-0.5em 0 0 2em;
+}
+
 .innerContent .questionOption {
-	margin: 0 1%;
-	padding: 0.5em 0 1em 0;
+	margin: 1em auto;
+	padding: 1em 0 1em 0;
 	width: 98%;
 	background: rgb(243,243,243);
 }
+.innerContent .questionOption h1.answerNbr {
+	margin:0 0 0.5em 0.5em;
+	padding:0 0 0 0.5em;
+}
+.innerContent h1.answerNbr:after {
+	display: block;
+	margin: 1em auto;
+	width: 98%;
+	border-top: 1px solid rgb(228, 228, 228);
+	border-bottom: 1px solid rgb(255, 255, 255);
+	content: "";
+}
+
 .innerContent .minValNumb, .innerContent .maxValNumb {
 	width: 48%;
 }

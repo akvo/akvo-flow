@@ -22,28 +22,6 @@
       optionValuePath="content.value" 
       selectionBinding="view.type" }} </label>
   
-<div class="dependencyBlock">
-    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.dependentFlag"}}{{t _dependent}}
-    </label>
-
-     {{#if view.dependentFlag}}
-    <label class="selectinLabel dependencySelect"> Dependent question:
-        {{view Ember.Select 
-        contentBinding="FLOW.questionControl.earlierOptionQuestions" 
-        selectionBinding="FLOW.selectedControl.dependentQuestion" 
-        optionLabelPath="content.text" 
-        optionValuePath="content.keyId" 
-        prompt="Select question"}}</label>
-    {{/if}} 
-     {{#if view.dependentFlag}}
-    {{#if FLOW.selectedControl.dependentQuestion}}
-     <div class="qDependency">Answer of dependent question (select one):</div>
-      {{#each FLOW.optionListControl.content}}
-        {{view Em.RadioButton title=this.value option=this.value group="options" checked=this.isSelected valueBinding="FLOW.selectedControl.radioOptions"}} 
-      {{/each}}
-      {{/if}}
-  {{/if}}
-</div>
     <!-- Question specific material --> 
 <div class="questionOption floats-in">
 
@@ -66,7 +44,28 @@
 
     {{/if}} 
 </div>
-  
+<div class="dependencyBlock">
+    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.dependentFlag"}}{{t _dependent}}
+    </label>
+
+     {{#if view.dependentFlag}}
+    <label class="selectinLabel dependencySelect"> Dependent question:
+        {{view Ember.Select 
+        contentBinding="FLOW.questionControl.earlierOptionQuestions" 
+        selectionBinding="FLOW.selectedControl.dependentQuestion" 
+        optionLabelPath="content.text" 
+        optionValuePath="content.keyId" 
+        prompt="Select question"}}</label>
+    {{/if}} 
+     {{#if view.dependentFlag}}
+    {{#if FLOW.selectedControl.dependentQuestion}}
+     <div class="qDependency">Answer of dependent question (select one):</div>
+      {{#each FLOW.optionListControl.content}}
+        {{view Em.RadioButton title=this.value option=this.value group="options" checked=this.isSelected valueBinding="FLOW.selectedControl.radioOptions"}} 
+      {{/each}}
+      {{/if}}
+  {{/if}}
+</div>
 <!-- add attribute dialog-->
     <div {{bindAttr class="view.showAddAttributeDialogBool:display :overlay"}}>
       <div class="blanket"></div>
