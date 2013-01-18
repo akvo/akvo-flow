@@ -194,7 +194,7 @@ FLOW.QuestionView = Ember.View.extend({
 		}
 
 		FLOW.store.commit();
-		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
+		FLOW.selectedControl.set('selectedForMoveQuestion', null);
 	},
 
 	// execute question copy to selected location

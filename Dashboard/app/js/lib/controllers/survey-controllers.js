@@ -269,7 +269,6 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
   setQGcontent: function() {
-    console.log('setQGcontent');
     if(FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
       this.set('QGcontent', FLOW.store.findQuery(FLOW.Question, {
