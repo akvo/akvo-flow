@@ -105,9 +105,9 @@ time {
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
 p {
-	font-size: 120%;
-	line-height: 1.3em;
-}
+	font-size:120%;
+	line-height:1.3em;
+	}
 /* misc.
 --------------------------------------------- */
 img, object, video, embed {
@@ -202,10 +202,11 @@ pre {
 	-o-box-shadow: 0 0 2px rgb(230,230,230);
 }
 .isRequired {
-	margin: 0 0 0 5px;
-	color: rgb(204,204,204);
-	font-weight: normal;
-}
+	margin:0 0 0 5px;
+	color:rgb(204,204,204);
+	font-weight:normal;
+	}
+
 /* links 
 ---------------------------------------------------------------*/
 
@@ -275,7 +276,7 @@ a.standardBtn:hover, input[type="submit"]:hover {
 }
 a.smallBtn {
 	display: inline-block;
-	padding: 6px 7px 5px 7px;
+	padding:6px 7px 5px 7px;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
@@ -302,7 +303,7 @@ a.helpIcon:hover {
 }
 a.AddBtn {
 	display: inline-block;
-	margin: 0.05em 0 0 20%;
+	margin:0.05em 0 0 20%;
 	padding: 1em 1% 0.8em 1.5em;
 	width: 58%;
 	background: url(../images/addbtn.png) left center no-repeat;
@@ -319,7 +320,7 @@ a.AddBtn:hover {
 	background: rgb(230,230,230);
 }
 .btnAboveTable {
-	margin: 0.5em 1.5em 0.5em 0.75em;
+	margin:0.5em 1.5em 0.5em 0.75em;
 }
 .clodeDialog {
 	position: absolute;
@@ -393,9 +394,7 @@ a.AddBtn:hover {
 	top: 5px;
 	right: 40%;
 }
-.inline {
-	display: inline;
-}
+.inline {display:inline;}
 /*-------------------------------
 	Dialog
 -----------------------------------*/
@@ -469,7 +468,7 @@ a.AddBtn:hover {
 	left: 20%;
 	display: block;
 	overflow-y: scroll;
-	padding: 1em;
+	padding:1em;
 	min-width: 500px;
 	max-height: 500px;
 	width: 60%;
@@ -503,13 +502,19 @@ a.AddBtn:hover {
 label[for=newDeviceGroupName] {
 	margin: 10px 0 0 0;
 }
+
+
+
+
 .dialogWrap table.dataTable select, .dialogWrap table.dataTable input {
 }
 .dialogWrap table.dataTable select, .dialogWrap table.dataTable input {
 	display: inline;
 	margin: 5px 0.5em 0 0.1em;
-	width: 60%;
+	width: 70%;
 }
+
+
 /* page structure
 --------------------------------------------- */
 #pageWrap {
@@ -616,6 +621,7 @@ header.top hgroup h2 {
 	text-indent: -9999px;
 }
 #userLog {
+	display:none;
 	position: absolute;
 	top: 10px;
 	right: 0;
@@ -628,6 +634,11 @@ header.top hgroup h2 {
 .userRegister {
 	margin: 5px 0 0 10px;
 }
+.languageSelector {
+	position:absolute;
+	top: 10px;
+	right: 0;
+	}
 /* #home page
 --------------------------------------------- */
 
@@ -788,7 +799,7 @@ header input[type="search"]:focus {
 -----------------------------------------------*/
 
 #manageAttributes, #devicesList {
-	position: relative;
+	position:relative;
 }
 table.dataTable {
 	margin: 1px auto;
@@ -951,7 +962,7 @@ tfoot tr {
 }
 .dataTabMenu ul li a {
 	display: block;
-	padding: 0.1em 1em 1em;
+	padding:0.1em 1em 1em;
 	-webkit-border-radius: 0;
 	-moz-border-radius: 0;
 	border-radius: 0;
@@ -980,29 +991,23 @@ tfoot tr {
 	color: grey;
 	-o-border-radius: 0;
 }
-<<<<<<< Updated upstream
 #devicesList a.standardBtn {
 	position:absolute;
 	right:0;
 	top:0.3em;
-=======
-#devicesList a.standardBtn, .dataSection a.standardBtn {
-	position: absolute;
-	right: 0;
-	top: 0.3em;
->>>>>>> Stashed changes
 }
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys h2 {
-	margin: 0.1em 0 1em 0;
-}
-#assignSurveys select, #assignSurveys input {
-	margin: 0.3em 0 0 0;
-}
+	margin:0.1em 0 1em 0;
+	}
+#assignSurveys select, #assignSurveys input  {
+	margin:0.3em 0 0 0;
+	}
 #assignSurveys label {
-	margin: 0.5em 0 0 0;
-}
+	margin:0.5em 0 0 0;
+	}
+
 #assignSurveys fieldset {
 	position: relative;
 	margin: 3px auto;
@@ -1093,13 +1098,14 @@ input.hasDatepicker {
 table.previewList {
 	color: rgb(209,84,95);
 }
+
 #assignSurveys .fieldSetWrap fieldset table tbody {
-	border: thin solid rgb(230,230,230);
+	border: thin solid rgb(230,230,230);  
 }
 #assignSurveys .fieldSetWrap fieldset table th {
 	padding: 5px 0 5px 5px;
 	background: rgb(242,242,242);
-	color: rgb(107, 134, 141);
+	color: rgb(107, 134, 141); 
 	text-align: left;
 	text-transform: capitalize;
 	font-weight: normal;
@@ -1208,10 +1214,10 @@ th.action {
 }
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n) select {
 	width: 90%;
-}
+	}
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n+1) select {
 	width: 90%;
-}
+	}
 .menuConfirm {
 	margin: 1em auto;
 	text-align: center;
@@ -1223,18 +1229,19 @@ th.action {
 .menuConfirm ul li a {
 	display: inline-block;
 }
+
 /*-------------------------------------------------------------------- 
 							Tabs Styling
 ----------------------------------------------------------------------*/
 #tabs div > section {
-	padding: 0 0 0 0;
+	padding:0 0 0 0;
 	border: thin solid rgb(224,224,224);
 	border-top: 1px solid rgb(255,255,255);
 	background: rgb(230,230,230);
 }
 #tabs div > section h1 {
 	display: block;
-	margin: 0.5em 0 0.1em 0.5em;
+	margin:0.5em 0 0.1em 0.5em;
 	color: rgb(44, 42, 116);
 	font-size: 2em;
 }
@@ -1499,7 +1506,7 @@ nav.menuTopbar ul li:last-child {
 }
 a.addGroup, a.addSurvey, a.stepBack, a.editGroupName, a.deleteGroup {
 	display: block;
-	padding: 4px 0 4px 19px;
+	padding:4px 0 4px 19px;
 	height: 10px;
 	text-transform: uppercase;
 	font-size: 1em;
@@ -1509,7 +1516,7 @@ a.editGroupName {
 }
 a.addGroup {
 	margin: 0 0 15px 15px;
-	padding: 5px 0 5px 19px;
+	padding:5px 0 5px 19px;
 }
 a.stepBack {
 	margin: 5px 5px 0 0;
@@ -1558,7 +1565,7 @@ li.aSurvey {
 	display: inline-block;
 	float: left;
 	margin: 5px 1% 10px 1%;
-	padding: 0 0.5% 0.50em 0.5%;
+	padding:0 0.5% 0.50em 0.5%;
 	min-height: 210px;
 	width: 22%;
 	/* background: url(../images/surveySeperator.png) right center no-repeat; */
@@ -1571,7 +1578,8 @@ li.aSurvey {
 	transition: all 0.4s linear;
 }
 li.aSurvey:hover {
-	background: rgb(235,235,235);/* -webkit-box-shadow: 0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248); */
+	background: rgb(235,235,235);
+/* -webkit-box-shadow: 0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248); */
 /* -moz-box-shadow: 0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248); */
 /* box-shadow: 0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248); */
 /* -o-box-shadow: 0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248); */}
@@ -1584,7 +1592,7 @@ li.aSurvey h2 {
 	display: inline-block;
 	overflow: hidden;
 	margin: 0.5em 0 0 1%;
-	padding: 0.25em 0;
+	padding:0.25em 0;
 	width: 98%;
 	color: rgb(98,98,98);
 	text-transform: capitalize;
@@ -1603,7 +1611,7 @@ ul.surveyInfo {
 	height: 40px;
 	border-top: thin dotted rgb(225,225,225);
 	border-bottom: thin dotted rgb(225,225,225);
-	background: rgb(250,250,250);
+	background:rgb(250,250,250);
 	vertical-align: middle;
 	text-transform: capitalize;
 }
@@ -1636,25 +1644,25 @@ ul.surveyInfo li.dateCreated span {
 }
 ul.surveyInfo li.responseNumber {
 	float: right;
-	margin: 1.5em 1% 0 0;
+	margin:1.5em 1% 0 0;
 	width: 62%;
-	color: rgb(58,58,58);
+	color:rgb(58,58,58);
 	text-align: right;
-	font-size: 0.9em;
+	font-size:0.9em;
 }
 ul.surveyInfo li.responseNumber span {
 	display: inline;
-	overflow: hidden;
+	overflow:hidden;
 	margin: 4px 0 0 0;
 	padding-top: 0.7em;
-	width: 50%;
+	width:50%;
 	height: 1.7em;
 	color: rgb(57, 102, 128);
-	text-align: right;
+	text-align:right;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-weight: bold;
-	font-size: 1.1em;
+	font-weight:bold;
+	font-size:1.1em;
 }
 ul.surveyInfo li.responseNumber p {
 	display: inline;
@@ -1707,7 +1715,7 @@ li.aSurvey:hover h2 {
 .aSurvey dl dd {
 	padding: 2px 0 2px 2%;
 	width: 67%;
-	text-align: right;
+	text-align:right;
 }
 .waterPoint dl dd:nth-of-type(2) {
 	color: rgb(57, 102, 128);
@@ -1810,13 +1818,13 @@ li.aSurvey:hover h2 {
 }
 #newSurveyInfo input[type=checkbox] {
 	display: inline;
-	margin: 0.3em 0.1em 0 0.2em;
+	margin:0.3em 0.1em 0 0.2em;
 	width: 13px;
 }
 #newSurveyInfo label {
-	margin: 1em 2px 0.2em 2px;
+	margin:1em 2px 0.2em 2px;
 	color: rgb(255,255,255);
-	text-transform: uppercase;
+	text-transform:uppercase;
 	font-size: 1em;
 }
 #newSurveyInfo label:first-child {
@@ -1824,17 +1832,17 @@ li.aSurvey:hover h2 {
 	color: rgb(255,255,255);
 }
 #newSurveyInfo input {
-	margin: 0.2em auto 0 auto;
+	margin:0.2em auto 0 auto;
 	padding: 0.5em 1.5%;
 	width: 96%;
 }
 #newSurveyInfo textarea {
-	margin: 0.2em auto 0 auto;
+	margin:0.2em auto 0 auto;
 	padding: 0.5em 1.5%;
 	width: 96%;
 }
 #newSurveyInfo form select {
-	margin: 0.2em auto 0 auto;
+	margin:0.2em auto 0 auto;
 	width: 100%;
 }
 #newSurveyInfo form select option {
@@ -1844,13 +1852,13 @@ li.aSurvey:hover h2 {
 #newSurveyInfo dl {
 	position: relative;
 	margin: 1em auto;
-	padding: 0.2em 2% 0.7em 2%;
+	padding:0.2em 2% 0.7em 2%;
 	width: 92%;
-	-webkit-border-radius: 0.2em;
-	-moz-border-radius: 0.2em;
-	border-radius: 0.2em;
+	-webkit-border-radius:0.2em;
+	-moz-border-radius:0.2em;
+	border-radius:0.2em;
 	background: rgb(78,78,78);
-	-o-border-radius: 0.2em;
+	-o-border-radius:0.2em;
 }
 #newSurveyInfo dt {
 	position: relative;
@@ -1867,7 +1875,7 @@ li.aSurvey:hover h2 {
 	float: right;
 	clear: right;
 	padding: 0.5em 0 0 0;
-	width: 40%;
+	width:40%;
 	color: rgb(255,255,255);
 	font-weight: bold;
 }
@@ -1893,11 +1901,11 @@ a.manageNotifications span {
 	margin: 1.2em auto 0.2em auto;
 	padding: 15px 0%;
 	width: 94%;
-	-webkit-border-radius: 0.4em;
-	-moz-border-radius: 0.4em;
-	border-radius: 0.4em;
+	-webkit-border-radius:0.4em;
+	-moz-border-radius:0.4em;
+	border-radius:0.4em;
 	background: rgb(33,33,33);
-	-o-border-radius: 0.4em;
+	-o-border-radius:0.4em;
 }
 .newSurveyInfoUl li {
 	position: relative;
@@ -1940,7 +1948,7 @@ nav.newSurveyNav ul li {
 	float: left;
 	margin-top: 1px;
 	padding: 0;
-	width: 33.333333333333333%;
+	width:33.333333333333333%;
 	height: 30px;
 	background: url(../images/topbarSeperator.png) right center no-repeat;
 }
@@ -2125,7 +2133,7 @@ nav.moveMenu ul li, nav.copyMenu ul li {
 	text-align: center;
 }
 nav.groupActionMenu a.smallBtn {
-	margin: 0 0 0.3em 0;
+	margin:0 0 0.3em 0;
 	background: rgb(246, 160, 26);
 	color: rgb(255,255,255);
 }
@@ -2147,17 +2155,17 @@ nav.groupActionMenu.insertMenu ul {
 }
 nav.groupActionMenu.insertMenu a {
 	display: inline-block;
-	padding: 0.5em 0.5em 0.5em 1.5em;
-	width: 13em;
+	padding:0.5em 0.5em 0.5em 1.5em;
+	width:13em;
 	height: 8px;
-	-webkit-border-radius: 0.3em;
-	-moz-border-radius: 0.3em;
-	border-radius: 0.3em;
+	-webkit-border-radius:0.3em;
+	-moz-border-radius:0.3em;
+	border-radius:0.3em;
 	background: transparent url(../images/insertGroupIcn.png) left top no-repeat;
 	color: rgb(246, 160, 26);
 	text-transform: uppercase;
 	font-size: 1em;
-	-o-border-radius: 0.3em;
+	-o-border-radius:0.3em;
 }
 nav.groupActionMenu.insertMenu a:hover {
 	background: rgb(58,58,58) url(../images/insertGroupIcn.png) left bottom no-repeat;
@@ -2212,7 +2220,7 @@ nav.questionActionMenu a:hover {
 	background: rgb(248,248,248);/* -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *//* -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *//* box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
 	-o-border-radius: 0 0 5px 0;
 }
-.aQuestionSet .questionSetContent div.innerContent:focus {
+.aQuestionSet .questionSetContent div.innerContent:focus {	
 }
 .aQuestionSet header nav.qtnGroupMenu {
 	position: absolute;
@@ -2233,7 +2241,7 @@ nav.questionActionMenu a:hover {
 .aQuestionSet header nav.qtnGroupMenu ul li a {
 	display: block;
 	padding: 5px;
-	/* color: rgb(227, 27, 35); */	text-transform: uppercase;
+/* color: rgb(227, 27, 35); */	text-transform: uppercase;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
 	padding: 5px 5px 5px 15px;
@@ -2440,6 +2448,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	left: 44%;
 	margin: -4px 0 0 0;
 }
+
 .innerContent h1 {
 	display: block;
 	margin: 0 0 1em 0.5em;
@@ -2458,7 +2467,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 .innerContent h1.questionNbr {
 	display: inline;
 	color: rgb(0,0,0);
-	text-transform: none;
+	text-transform:none;
 	font-weight: normal;
 }
 .innerContent h1.questionNbr span {
@@ -2469,8 +2478,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 	height: 1.8em;
 	border-radius: 1em;
 	background: rgb(58,58,58);
-	color: rgb(223,223,223);
-	text-align: center;
+	color:rgb(223,223,223);
+	text-align:center;
 	font-weight: bold;
 	font-size: 0.8em;
 }
@@ -2525,7 +2534,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 	float: right;
 }
 .innerContent .selectinLabel a.addAttribute {
-	display: block;
+	display:block;
 	margin: 0.2em 0 0 0.2em;
 }
 .innerContent .selectinLabel a.addAttribute span {
@@ -2745,7 +2754,7 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	margin: 5px auto;
 	width: 20%;
 	text-align: center;
-	letter-spacing: 0.1em;
+	letter-spacing:0.1em;
 	font-size: 1.1em;
 }
 .dataTables_paginate {
@@ -2812,21 +2821,23 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 }
 #dropdown-holder {
 	position: relative;
-	clear: both;
-	margin: 0 auto;
-	padding: 4px 1.25% 0 1.25%;
-	width: 97.5%;
-	height: 23px;
-	background: rgb(58,58,58);
-	text-transform: capitalize;
-}
+	clear:both;
+	margin:0 auto;
+	padding:4px 1.25% 0 1.25%;
+	width:97.5%;
+	height:23px;
+	background:rgb(58,58,58);
+	text-transform:capitalize;
+	}
 #dropdown-holder label {
-	color: rgb(255,255,255);
-}
+	color:rgb(255,255,255);
+	}
+
 #dropdown-holder select {
-	display: inline;
-	margin: 0 0 0 0.5em;
-}
+	display:inline;
+	margin:0 0 0 0.5em;
+	}
+
 #pointDetails {
 	position: relative;
 	float: right;
@@ -3034,12 +3045,13 @@ footer.bottomPage a[rel="self"] {
 }
 footer.bottomPage a[rel="self"]:hover {
 }
+
 /******************************************************************************************************
 											Survey Preview
 ******************************************************************************************************/
 .surveyPreviewWrap {
-	position: relative;
-}
+	position:relative;
+	}
 .surveyPreviewWrap span.qtnGroupHead {
 	display: block;
 	margin: 1em 0 0.5em 0.1em;
@@ -3051,137 +3063,144 @@ footer.bottomPage a[rel="self"]:hover {
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
 .surveyPreviewWrap div.questionGroupBlock {
-	margin: 5em auto;
+	margin:5em auto;
 	padding: 0.5em 1em 1em 1em;
 	border-top: thin solid rgb(238,238,238);
-	border-bottom: none;
+	border-bottom:none;
 	background: rgb(246,246,246);
-}
+	}
 .surveyPreviewWrap h3.qtnGroupTitle {
-	margin: 0.2em 0 2em 0.1em;
-	padding: 0 0 0.5em 0;
+	margin:0.2em 0 2em 0.1em;
+	padding:0 0 0.5em 0;
 	border-bottom: 1px solid rgb(238,238,238);
-	color: rgb(44, 42, 116);
-}
+	color:rgb(44, 42, 116);
+	}
 .surveyPreviewWrap h4 {
-	margin: 0.2em 0 0.2em 1.5em;
-	color: rgb(44, 42, 116);
-}
+	margin:0.2em 0 0.2em 1.5em;
+	color:rgb(44, 42, 116);
+	}
 .surveyPreviewWrap .innerContent h3 {
 	margin: 2em 0 1.5em 1.5em;
 	color: rgb(39,94,110);
 	font-size: 1em;
 }
+
 .surveyPreviewWrap .innerContent h1:after {
 	display: block;
 	margin: 1em auto 0 auto;
 	width: 98%;
-	border-top: none;
-	border-bottom: none;
+	border-top:none;
+	border-bottom:none;
 	content: "";
 }
 .surveyPreviewWrap input[type=text] {
-	margin: 0.5em auto 0 auto;
-	width: 96%;
+	margin:0.5em auto 0 auto;
+	width:96%;
 }
 .surveyPreviewWrap .ember-radio-button label {
-	margin: 0em 0 0 1.5em;
+	margin:0em 0 0 1.5em;
 }
 .surveyPreviewWrap .innerContent input[type=checkbox], .surveyPreviewWrap .innerContent input[type=radio] {
 	display: inline-block;
 	margin: 5px 0.5em 0 1em;
 }
+
 .surveyPreviewWrap .innerContent h1.questionNbr {
 	display: block;
-	margin: 0 0 0 0.75em;
+	margin:0 0 0 0.75em;
 	color: rgb(0,0,0);
-	text-transform: none;
+	text-transform:none;
 	font-weight: normal;
-	line-height: inherit;
+	line-height:inherit;
 }
 .surveyPreviewWrap .innerContent h1.questionNbr span {
 	display: inline-block;
-	margin: 0.1em 0.2em 0 0;
-	padding: 0 0 0 0;
-	width: inherit;
-	height: inherit;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
-	border-radius: 0;
-	background: transparent;
-	color: rgb(58,58,58);
-	text-align: center;
+	margin:0.1em 0.2em 0 0;
+	padding:0 0 0 0;
+	width:inherit;
+	height:inherit;
+	-webkit-border-radius:0;
+	-moz-border-radius:0;
+	border-radius:0;
+	background:transparent;
+	color:rgb(58,58,58);
+	text-align:center;
 	font-weight: bold;
 	font-size: 1.2em;
-	-o-border-radius: 0;
+	-o-border-radius:0;
 }
 .surveyPreviewWrap .innerContent h1.questionNbr span:after {
 	display: inline-block;
-	margin: 0 0.2em 0 0;
-	content: ".";
+	margin:0 0.2em 0 0;
+	content:".";
 }
 .surveyPreviewWrap .previewQuestion {
-	margin: 2.5em auto 0 auto;
-}
+	margin:2.5em auto 0 auto;
+	}
+	
 /********************************************************************************************************************************
 													Reports Tab
 ********************************************************************************************************************************/
 
-#excelImport select {
-	display: inline;
-	width: 32%;
-	float: left;
-	margin: 0 0 1em 1%;
-}
-#excelImport select:last-child {
-	display: inline;
-	width: 32%;
-	float: left;
-	margin: 0 1% 1em 1%;
-}
-#excelImport a.standardBtn {
-	clear: both;
-	margin: 0 0 1em 1%;
-}
-#excelImport div.block a.standardBtn {
-	clear: both;
-	margin: 0;
-}
-#excelImport .chartTitle {
-	margin: 0.5em auto 0 auto;
-	padding: 0.5em 0 0.2em 0.5%;
-	width: 97.5%;
-}
-#excelImport div.block {
-	display: block;
-	clear: both;
-	width: 96%;
-	margin: 0.5em auto 1.5em auto;
-	background: rgb(242, 242, 242);
-	padding: 1em 1%;
-	-moz-border-radius: 0.3em;
-	-webkit-border-radius: 0.3em;
-	-o-border-radius: 0.3em;
-	border-radius: 0.3em;
-}
-#excelImport div.block p {
-	display: block;
-	width: 100%;
-	margin: 0.5em auto 1em auto;
-	color: rgb(153,153,153);
-}
-#excelImport #piechart {
-	display: block;
-	clear: both;
-	width: 98%;
-	margin: 0 auto 1em auto;
-	background: rgb(242, 242, 242);
-	padding: 1em 0;
-}
-#excelImport #piechart p {
-	display: block;
-	width: 100%;
-	text-align: center;
-	margin: 1em auto 1em auto;
-	color: rgb(153,153,153);
-}
+#reportBlocks select {
+	display:inline;
+	width:32%;
+	float:left;
+	margin:0 0 1em 1%;
+	}
+
+#reportBlocks select:last-child {
+	display:inline;
+	width:30%;
+	float:left;
+	margin:0 1% 1em 1%;
+	}
+
+#reportBlocks a.standardBtn {
+	clear:both;
+	margin:0 0 1em 1%;
+	}
+#reportBlocks div.block a.standardBtn {
+	clear:both;
+	margin:0;
+	}
+
+#reportBlocks .chartTitle {
+	margin:0.5em auto 0 auto;
+	padding:0.5em 0 0.2em 0.5%;
+	width:97.5%;
+	}
+#reportBlocks div.block {
+	display:block;
+	clear:both;
+	width:96%;
+	margin:0.5em auto 1.5em auto;
+	background:rgb(242, 242, 242);
+	padding:1em 1%;
+	-moz-border-radius:0.3em;
+	-webkit-border-radius:0.3em;
+	-o-border-radius:0.3em;
+	border-radius:0.3em;
+	}
+#reportBlocks div.block p {
+	display:block;
+	width:100%;
+	margin:0.5em auto 1em auto;
+	color:rgb(153,153,153);
+	}
+
+#reportBlocks #piechart {
+	display:block;
+	clear:both;
+	width:98%;
+	margin:0 auto 1em auto;
+	background:rgb(242, 242, 242);
+	padding:1em 0;
+	}
+#reportBlocks #piechart p {
+	display:block;
+	width:100%;
+	text-align:center;
+	margin:0.5em auto 1em auto;
+	color:rgb(153,153,153);
+	}

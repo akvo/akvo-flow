@@ -1,5 +1,10 @@
 <form>
-  <input type="search" placeholder="{{t _Find_anything_here}}" name="flowSearch" title="Search Akvo Flow Web"/>
+   <label class="languageSelector">{{t _dashboard_language}}: {{view Ember.Select 
+      contentBinding="FLOW.dashboardLanguageControl.content" 
+      optionLabelPath="content.label" 
+      optionValuePath="content.value" 
+      selectionBinding="FLOW.dashboardLanguageControl.dashboardLanguage" }}
+   </label>
 </form>
 <section id="userLog">
   <ul>

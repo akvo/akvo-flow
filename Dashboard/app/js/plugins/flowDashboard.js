@@ -64,7 +64,7 @@ $(document).ready(function() {
 	// Adds needed classes to survey assets as nth-child selectors don't work in ie.
     $('li.aSurvey:nth-child(4n+1)').addClass('firstOfRow');
     $('li.aSurvey:nth-child(4n)').addClass('endOfRow');
-    $('table.dataTable tr:nth-child(2n)').addClass('even');
+    $('table#devicesListTable tbody tr:nth-child(2n)').addClass('even');
     
 	$(".questionSetContent div.innerContent").hide();
 	var nCount = 0; 
