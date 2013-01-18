@@ -76,9 +76,9 @@
               <dt>{{t _modified}}</dt>
               <dd>{{#with survey}}{{date lastUpdateDateTime}}{{/with}}</dd>
               <dt>{{t _type}}</dt>
-              <dd>water point</dd>
+              <dd>{{#with survey}}{{toPointType pointType}}{{/with}}</dd>
               <dt>{{t _language}}</dt>
-              <dd>english, spanish, french, Dutch, German</dd>
+              <dd>{{#with survey}}{{toLanguage defaultLanguageCode}}{{/with}}</dd>
             </dl>
             <nav>
               <ul>              

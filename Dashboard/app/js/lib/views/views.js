@@ -63,6 +63,34 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
   return Ember.String.loc(i18nKey);
 });
 
+// translates values to labels for languages
+Ember.Handlebars.registerHelper('toLanguage', function(item) {
+  var language, toL;
+  language = "";
+  toL = Ember.get(this,item);
+  
+  FLOW.languageControl.get('content').forEach(function(t){
+    if (t.get('value') == toL) {
+      language = t.get('label');
+    }
+  });
+  return language;
+});
+
+// translates values to labels for surveyPointTypes
+Ember.Handlebars.registerHelper('toPointType', function(item) {
+  var pointType, toP;
+  pointType = "";
+  toP = Ember.get(this,item);
+  
+  FLOW.surveyPointTypeControl.get('content').forEach(function(p){
+    if (p.get('value') == toP) {
+      pointType = p.get('label');
+    }
+  });
+  return pointType;
+});
+
 // add space to vertical bar helper
 Ember.Handlebars.registerHelper('addSpace', function(property) {
   return Ember.get(this, property).replace(/\|/g, ' | ');
