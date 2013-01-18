@@ -2427,6 +2427,12 @@ nav.smallMenu ul li a.showQuestion:hover {
 	color: rgb(39,94,110);
 	font-size: 1em;
 }
+.innerContent p.noOptions {
+	margin: 0 auto;
+	padding: 0.5em 0.5%;
+	text-align:center;
+	color:rgb(153,153,153);
+}
 /********************************************* To remove when Create new survey setting page confirmed deleted. *******************************************/	
 .innerContent dl {
 	position: relative;
