@@ -10,24 +10,20 @@ FLOW.NotificationsView = Ember.View.extend({
 
   addNotification: function() {
     var date;
-    if(this.get('notificationOption') === null) {
-      this.set('optionEmpty', true);
-    }
-    if(this.get('notificationType') === null) {
-      this.set('typeEmpty', true);
-    }
-    if(this.get('notificationDestination') === null) {
-      this.set('destinationEmpty', true);
-    }
-    if(this.get('expiryDate') === null) {
-      this.set('dateEmpty', true);
-    }
-    if (Ember.none(this.get('expiryDate'))){
+
+    this.set('optionEmpty', Ember.none(this.get('notificationOption')));
+    this.set('typeEmpty', Ember.none(this.get('notificationType')));
+    this.set('destinationEmpty', Ember.none(this.get('notificationDestination')));
+    this.set('dateEmpty', Ember.none(this.get('expiryDate')));
+
+    if(Ember.none(this.get('expiryDate'))) {
       date = null;
     } else {
       date = Date.parse(this.get('expiryDate'));
     }
     if(this.get('optionEmpty') || this.get('typeEmpty') || this.get('destinationEmpty') || this.get('dateEmpty')) {
+      // do nothing
+    } else {
       FLOW.store.createRecord(FLOW.NotificationSubscription, {
         "notificationOption": this.notificationOption.get('value'),
         "notificationType": this.notificationType.get('value'),
@@ -36,6 +32,10 @@ FLOW.NotificationsView = Ember.View.extend({
         "notificationMethod": "EMAIL",
         "entityId": FLOW.selectedControl.selectedSurvey.get('keyId')
       });
+      this.set('notificationOption', null);
+      this.set('notificationType', null);
+      this.set('notificationDestination', null);
+      this.set('expiryDate', null);
       FLOW.store.commit();
     }
   },
