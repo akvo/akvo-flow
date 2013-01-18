@@ -5,19 +5,6 @@
 
       {{#view FLOW.CurrentDevicesTabView}}
     <div id="devicesListTable_length" class="dataTables_length">
-           <!--  <label>
-                Show
-                <select size="1" name="deviceListTable_length">
-                    <option value="10" selected="selected">10</option> 
-                    <option value="20" >20</option> 
-                    <option value="50" >50</option> 
-                    <option value="100" >100</option> 
-                </select>
-
-                &nbsp;entries
-
-            </label> -->
-
         </div> 
          
          {{#if FLOW.deviceControl.atLeastOneSelected}}
@@ -65,7 +52,9 @@
                 {{#view FLOW.ColumnView item="lastPositionDate" type="device"}}
                    <a {{action "sort" target="this"}}>Last Contact</a>
                 {{/view}}
-                 <th><a>Action</a></th>
+                {{#view FLOW.ColumnView item="lastPositionDate" type="device"}}
+                  <a {{action "sort" target="this"}}>Version</a>
+                 {{/view}}
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
@@ -79,7 +68,7 @@
                     <td class="deviceId" >{{deviceIdentifier}}</td>
                     <td class="deviceGroup">{{deviceGroupName}}</td>
                     <td class="lastBeacon">{{date1 lastPositionDate}}</td>
-                    <td class="action"><a>action</a></td>
+                    <td class="version">{{gallatinSoftwareManifest}}</td>
                   </tr>
                 {{/each}}
             </tbody>

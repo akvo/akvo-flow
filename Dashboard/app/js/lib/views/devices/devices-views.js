@@ -39,23 +39,24 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 				return true;
 			});
 			allDevices.forEach(function(item) {
-				if (Ember.empty(item.get('deviceIdentifier'))) {
+				if(Ember.empty(item.get('deviceIdentifier'))) {
 					combinedName = "no identifer";
-				} else
-				{
+				} else {
 					combinedName = item.get('deviceIdentifier');
 				}
-				item.set('combinedName',combinedName + " " + item.get('phoneNumber'));
+				item.set('combinedName', combinedName + " " + item.get('phoneNumber'));
 				deviceId = parseInt(item.get('deviceGroup'), 10);
 				deviceGroup = FLOW.store.filter(FLOW.DeviceGroup, function(data) {
-					return (data.get('keyId') === deviceId);
+					return(data.get('keyId') === deviceId);
 				});
 				if(typeof deviceGroup.get('firstObject') !== "undefined") {
 					item.set('deviceGroupName', deviceGroup.get('firstObject').get('code'));
+				} else {
+					item.set('deviceGroupName', 'unassigned');
 				}
 			});
 		}
-	}.observes('FLOW.deviceGroupControl.content.isLoaded', 'FLOW.deviceControl.content.isLoaded','FLOW.deviceControl.content.isUpdated'),
+	}.observes('FLOW.deviceGroupControl.content.isLoaded', 'FLOW.deviceControl.content.isLoaded', 'FLOW.deviceControl.content.isUpdated'),
 
 	doAddToGroup: function() {
 		if(this.get('selectedDeviceGroup') !== null) {
