@@ -33,6 +33,7 @@ FLOW.Router = Ember.Router.extend({
     doNavMessages: function(router, context) {
       router.transitionTo('navMessages');
     },
+    // not used at the moment
     doNavAdmin: function(router, context) {
       router.transitionTo('navAdmin');
     },
@@ -369,6 +370,7 @@ FLOW.Router = Ember.Router.extend({
     }),
 
     // ************************** ADMIN ROUTER **********************************
+    // not used at the moment
     navAdmin: Ember.Route.extend({
       route: '/admin',
       connectOutlets: function(router, context) {
