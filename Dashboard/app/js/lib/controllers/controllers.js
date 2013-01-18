@@ -4,7 +4,7 @@
 // Define the main application controller. This is automatically picked up by
 // the application and initialized.
 require('akvo-flow/core');
-//require('akvo-flow/flowenv');
+require('akvo-flow/flowenv');
 require('akvo-flow/controllers/permissions');
 require('akvo-flow/controllers/general-controllers');
 require('akvo-flow/controllers/survey-controllers');
