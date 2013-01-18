@@ -184,6 +184,10 @@ FLOW.Router = Ember.Router.extend({
         router.transitionTo('navDevices.editSurveysAssignment');
       },
 
+      doSurveyBootstrap: function(router, event) {
+        router.transitionTo('navDevices.surveyBootstrap');
+      },
+
       index: Ember.Route.extend({
         route: '/',
         redirectsTo: 'currentDevices'
@@ -213,6 +217,14 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function(router, context) {
           router.get('navDevicesController').connectOutlet('editSurveyAssignment');
           router.set('devicesSubnavController.selected', 'assignSurveys');
+        }
+      }),
+
+      surveyBootstrap: Ember.Route.extend({
+        route: '/manual-transfer',
+        connectOutlets: function(router, context) {
+          router.get('navDevicesController').connectOutlet('surveyBootstrap');
+          router.set('devicesSubnavController.selected', 'surveyBootstrap');
         }
       })
     }),

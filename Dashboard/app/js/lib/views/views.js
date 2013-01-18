@@ -22,6 +22,7 @@ require('akvo-flow/views/messages/message-view');
 require('akvo-flow/views/devices/devices-views');
 require('akvo-flow/views/devices/assignments-list-tab-view');
 require('akvo-flow/views/devices/assignment-edit-views');
+require('akvo-flow/views/devices/survey-bootstrap-view');
 require('akvo-flow/views/users/user-view');
 
 FLOW.ApplicationView = Ember.View.extend({
@@ -364,6 +365,10 @@ FLOW.EditSurveyAssignmentView = Ember.View.extend({
   templateName: 'navDevices/assignment-edit-tab/assignment-edit'
 });
 
+FLOW.SurveyBootstrapView = Ember.View.extend({
+  templateName: 'navDevices/bootstrap-tab/survey-bootstrap'
+});
+
 
 // data views
 FLOW.NavDataView = Ember.View.extend({
@@ -400,6 +405,10 @@ FLOW.ChartReportsView = Ember.View.extend({
 
 
 // applets
+FLOW.BootstrapApplet = Ember.View.extend({
+  templateName: 'navDevices/bootstrap-tab/applets/bootstrap-applet'
+});
+
 FLOW.rawDataReportApplet = Ember.View.extend({
   templateName: 'navReports/applets/raw-data-report-applet'
 });

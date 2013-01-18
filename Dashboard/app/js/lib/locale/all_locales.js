@@ -129,7 +129,9 @@ Ember.STRINGS_EN = {
   '_bulk_upload_data':'Bulk upload data',
   '_export_raw_data':'Export raw data',
   '_import_clean_data':'import clean data',
-  '_survey_intro_text':"To create a new survey, first select a survey group on the left. If you don't have survey groups yet, you can create one by clicking 'add new group' on the top left."
+  '_survey_intro_text':"To create a new survey, first select a survey group on the left. If you don't have survey groups yet, you can create one by clicking 'add new group' on the top left.",
+  '_manual_survey_transfer':'Manual survey transfer',
+  '_manual_transfer_file':'Manual transfer file'
   
 };
 
