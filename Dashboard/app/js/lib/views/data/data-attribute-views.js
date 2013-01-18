@@ -33,10 +33,8 @@ showEditAttributeDialog: function(event) {
     FLOW.editControl.set('editAttributeId', event.context.get('keyId'));
 
     FLOW.attributeTypeControl.get('content').forEach(function(item) {
-      console.log(item.get('value'), event.context.get('valueType'));
       if(item.get('value') == event.context.get('valueType')) {
         attrType = item;
-        console.log(attrType);
       }
     });
 

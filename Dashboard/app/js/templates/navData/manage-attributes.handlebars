@@ -5,11 +5,14 @@
             <!-- TABLE HEADER-->
             <thead>
                 <tr>
+                {{#view FLOW.ColumnView item="keyId" type="attribute"}}
+                   <a {{action "sort" target="this"}}>Id</a>
+                {{/view}}
                 {{#view FLOW.ColumnView item="name" type="attribute"}}
                    <a {{action "sort" target="this"}}>Attribute name</a>
                 {{/view}}
                 {{#view FLOW.ColumnView item="group" type="attribute"}}
-                   <a {{action "sort" target="this"}}>Group</a>
+                   <a {{action "sort" target="this"}}>Tag</a>
                 {{/view}}
                 {{#view FLOW.ColumnView item="valueType" type="attribute"}}
                    <a {{action "sort" target="this"}}>Value type</a>
@@ -21,9 +24,10 @@
             <tbody>
                 {{#each attribute in FLOW.attributeControl}}
                    <tr>
+                    <td class="name" >{{attribute.keyId}}</td>
                     <td class="name" >{{attribute.name}}</td>
                     <td class="group" >{{attribute.group}}</td>
-                    <td class="valueType" >{{attribute.valueType}}</td>
+                    <td class="valueType" >{{#with attribute}}{{toAttributeType valueType}}{{/with}}</td>
 
                     <td class="action">
                       {{#view FLOW.AttributeView contentBinding="attribute"}}
@@ -49,7 +53,7 @@
           <p class="dialogMsg">Please provide a name, an optional group, and a value type for the attribute</p>
           <br/>
          <label for="newAttributeName">Attribute name:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
-         <label for="newAttributeGroup">Group:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
+         <label for="newAttributeGroup">Tag:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
           <label>Value type:</label>
              {{view Ember.Select 
             contentBinding="FLOW.attributeTypeControl.content" 
@@ -77,8 +81,8 @@
           <h2>Edit Attribute</h2>
           <p class="dialogMsg">Please edit the attribute name, group and type below.</p>
           <label for="editAttributeName">Attribute name:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeName" id="editUserName" size=40}}<br/>
-           <label for="editAttributeGroup">Group:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeGroup" id="editEmail" size=40}}<br/>
-          
+           <label for="editAttributeGroup">Tag:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeGroup" id="editEmail" size=40}}<br/>
+           <label>Value type:</label>
             {{view Ember.Select 
             contentBinding="FLOW.attributeTypeControl.content" 
             selectionBinding="FLOW.editControl.editAttributeType" 
