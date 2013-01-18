@@ -194,6 +194,7 @@ FLOW.Device = FLOW.BaseModel.extend({
   deviceIdentifier: DS.attr('string', {
     defaultValue: ''
   }),
+  gallatinSoftwareManifest: DS.attr('string'),
   lastKnownLat: DS.attr('number', {
     defaultValue: 0
   }),
