@@ -58,9 +58,13 @@ FLOW.SurveySidebarView = Ember.View.extend({
 		survey.set('description', this.get('surveyDescription'));
 		if(this.get('surveyPointType') !== null) {
 			survey.set('pointType', this.surveyPointType.get('value'));
+		} else {
+			survey.set('pointType', null);
 		}
-		if(this.get('surveySectorType') !== null) {
-			survey.set('sector', this.surveySectorType.get('value'));
+		if(this.get('language') !== null) {
+			survey.set('defaultLanguageCode', this.language.get('value'));
+		} else {
+			survey.set('defaultLanguageCode', null);
 		}
 		FLOW.store.commit();
 	},
@@ -73,10 +77,10 @@ FLOW.SurveySidebarView = Ember.View.extend({
 		FLOW.surveyControl.publishSurvey();
 	},
 
-	doSurveysMain: function () {
+	doSurveysMain: function() {
 		var item;
 		// if the survey does not have a keyId, it has not been saved, so delete it.
-		if (Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))){
+		if(Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
 			item = FLOW.selectedControl.get('selectedSurvey');
 			item.deleteRecord();
 		}
