@@ -18,13 +18,10 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
     label: "English (Default)",
     value: "en"
   }), Ember.Object.create({
-    label: "Dutch",
-    value: "nl"
-  }), Ember.Object.create({
-    label: "Spanish",
+    label: "Espanol",
     value: "es"
   }), Ember.Object.create({
-    label: "French",
+    label: "Français",
     value: "fr"
   })],
 

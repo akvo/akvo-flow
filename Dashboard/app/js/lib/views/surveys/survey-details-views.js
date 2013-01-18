@@ -3,15 +3,15 @@ FLOW.SurveySidebarView = Ember.View.extend({
 	surveyTitle: null,
 	surveyDescription: null,
 	surveyPointType: null,
-	surveySectorType: null,
+	language: null,
 
 	init: function() {
 		var sectorType = null,
-			pointType = null;
+			pointType = null,
+			language = null;
 		this._super();
 		this.set('surveyTitle', FLOW.selectedControl.selectedSurvey.get('name'));
 		this.set('surveyDescription', FLOW.selectedControl.selectedSurvey.get('description'));
-		this.set('surveyType', FLOW.selectedControl.selectedSurvey.get('pointType'));
 
 		FLOW.surveyPointTypeControl.get('content').forEach(function(item) {
 			if(item.get('value') == FLOW.selectedControl.selectedSurvey.get('pointType')) {
@@ -20,12 +20,12 @@ FLOW.SurveySidebarView = Ember.View.extend({
 		});
 		this.set('surveyPointType', pointType);
 
-		FLOW.surveySectorTypeControl.get('content').forEach(function(item) {
-			if(item.get('value') == FLOW.selectedControl.selectedSurvey.get('sector')) {
-				sectorType = item;
+		FLOW.languageControl.get('content').forEach(function(item) {
+			if(item.get('value') == FLOW.selectedControl.selectedSurvey.get('defaultLanguageCode')) {
+				language = item;
 			}
 		});
-		this.set('surveySectorType', sectorType);
+		this.set('language', language);
 	},
 
 	isExistingSurvey: function() {
