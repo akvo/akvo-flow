@@ -65,14 +65,11 @@ FLOW.languageControl = Ember.Object.create({
   Ember.Object.create({
     label: "English",
     value: "en"
-  }), Ember.Object.create({
-    label: "Dutch",
-    value: "nl"
-  }), Ember.Object.create({
-    label: "Spanish",
+  }),Ember.Object.create({
+    label: "Espanol",
     value: "es"
   }), Ember.Object.create({
-    label: "French",
+    label: "Français",
     value: "fr"
   })]
 });
