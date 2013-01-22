@@ -79,7 +79,6 @@ h3 {
 	line-height: 1;
 }
 h4 {
-	margin-bottom: 1.25em;
 	font-size: 1em;
 	line-height: 1.25em;
 }
@@ -613,12 +612,6 @@ header.top hgroup h1 a {
 	display: block;
 	width: 169px;
 	height: 60px;
-	text-indent: -9999px;
-}
-header.top hgroup h2 {
-	position: absolute;
-	z-index: 0;
-	text-align: left;
 	text-indent: -9999px;
 }
 #userLog {
@@ -3263,9 +3256,9 @@ footer.bottomPage a[rel="self"]:hover {
 	display:inline;
 	width:15%;
 	float:left;
-	margin:0 0 1em 0.25%;
+	margin:0.1em 0 0 0;
 	clear:both;
 	}
 .groupChartSelect {display:inline-block; margin:0.1em 0.5em 0 1.5em}
-.groupChartSelect input {display:inline !important;}
+.chartSetting .groupChartSelect input {display:inline;}
 
