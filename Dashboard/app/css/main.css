@@ -315,12 +315,13 @@ a.AddBtn {
 a.AddBtn:hover {
 }
 .greyBg {
+	width:99.7%;
 	position: relative;
-	padding: 1px 0.25%;
+	padding: 1px 0.15%;
 	background: rgb(230,230,230);
 }
 .btnAboveTable {
-	margin:0.5em 1.5em 0.5em 0.75em;
+	margin:1.5em 1.5em 1.5em 1em;
 }
 .clodeDialog {
 	position: absolute;
@@ -952,14 +953,14 @@ tfoot tr {
 	background: rgb(224,224,224);
 }
 .greyBg a.standardBtn {
-	background-image: url(../images/addPlus.png) left center no-repeat;
+	background-image: url("../images/addPlus.png") left center no-repeat;
 }
 .dataTabMenu {
-	margin: 0;
-	padding: 0;
+	position:absolute;
+	top:1.75em;
+	right:1em;
 }
 .dataTabMenu ul {
-	margin: -5px 0 0 1em;
 }
 .dataTabMenu ul li {
 	display: inline;
@@ -968,18 +969,18 @@ tfoot tr {
 }
 .dataTabMenu ul li a {
 	display: block;
-	padding:0.1em 1em 1em;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
-	border-radius: 0;
+	padding:0.4em 0.8em;
 	background: transparent;
 	color: rgb(0, 123, 182);
 	font-size: 1.1em;
-	-webkit-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
-	-moz-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
-	-o-transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
-	transition: background 0.2s ease, border-radius 0.2s linear, color 0.2s linear;
-	-o-border-radius: 0;
+	-webkit-transition: all 0.2s ease;
+	-moz-transition: all 0.2s ease;
+	-o-transition: all 0.2s ease;
+	transition: all 0.2s ease;
+	-webkit-border-radius: 0.3em;
+	-moz-border-radius:0.3em;
+	-o-border-radius:0.3em;
+	border-radius:0.3em;
 }
 .dataTabMenu ul li a:hover {
 	-webkit-border-radius: 2px;
@@ -996,11 +997,6 @@ tfoot tr {
 	background: transparent;
 	color: grey;
 	-o-border-radius: 0;
-}
-#devicesList a.standardBtn {
-	position:absolute;
-	right:0;
-	top:0.3em;
 }
 /**************** Assign Survey to devices. **************/
 
@@ -1056,7 +1052,7 @@ input.hasDatepicker {
 .fieldSetWrap {
 	position: relative;
 	clear: both;
-	overflow: auto;
+	overflow: hidden;
 	margin: 3px auto;
 	padding: 0;
 	width: 99%;
@@ -1240,7 +1236,6 @@ th.action {
 							Tabs Styling
 ----------------------------------------------------------------------*/
 #tabs div > section {
-	padding:0 0 0 0;
 	border: thin solid rgb(224,224,224);
 	border-top: 1px solid rgb(255,255,255);
 	background: rgb(230,230,230);
@@ -1530,9 +1525,6 @@ a.editGroupName {
 a.addGroup {
 	margin: 0 0 15px 15px;
 	padding:5px 0 5px 19px;
-}
-a.stepBack {
-	margin: 5px 5px 0 0;
 }
 a.addGroup:hover, a.addSurvey:hover, a.stepBack:hover, a.editGroupName:hover, a.deleteGroup:hover, a.manageNotifications:hover {
 	color: rgb(255,255,255);
@@ -3246,8 +3238,7 @@ footer.bottomPage a[rel="self"]:hover {
 	color:rgb(153,153,153);
 	}
 
-	.axis path,
-.axis line {
+.axis path,.axis line {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
@@ -3259,3 +3250,22 @@ footer.bottomPage a[rel="self"]:hover {
 
 .x.axis path {
   display: none;
+}
+.chartSetting {
+	display:block;
+	clear:both;
+	width:98%;
+	padding:0.5em 0.5%;
+	margin:1em auto;
+	border-bottom:thin solid rgb(198, 198, 198);
+	}
+#reportBlocks .chartSetting select {
+	display:inline;
+	width:15%;
+	float:left;
+	margin:0 0 1em 0.25%;
+	clear:both;
+	}
+.groupChartSelect {display:inline-block; margin:0.1em 0.5em 0 1.5em}
+.groupChartSelect input {display:inline !important;}
+
