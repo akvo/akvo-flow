@@ -65,7 +65,7 @@ FLOW.languageControl = Ember.Object.create({
   Ember.Object.create({
     label: "English",
     value: "en"
-  }),Ember.Object.create({
+  }), Ember.Object.create({
     label: "Espanol",
     value: "es"
   }), Ember.Object.create({
@@ -161,7 +161,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
         return(item.get('surveyGroupId') == sgId);
       }));
     } else {
-      this.set('content',null);
+      this.set('content', null);
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
@@ -242,6 +242,8 @@ FLOW.questionControl = Ember.ArrayController.create({
   earlierOptionQuestions: null,
   QGcontent: null,
   filterContent: null,
+  sortProperties: ['order'],
+  sortAscending: true,
 
   populateAllQuestions: function() {
     var sId;
@@ -273,7 +275,7 @@ FLOW.questionControl = Ember.ArrayController.create({
   setQGcontent: function() {
     if(FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-      this.set('QGcontent', FLOW.store.findQuery(FLOW.Question, {
+      this.set('content', FLOW.store.findQuery(FLOW.Question, {
         questionGroupId: id
       }));
     }
@@ -284,22 +286,35 @@ FLOW.questionControl = Ember.ArrayController.create({
     if(FLOW.selectedControl.get('selectedSurvey')) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
       this.set('OPTIONcontent', FLOW.store.filter(FLOW.Question, function(item) {
-        return(item.get('type') == 'OPTION' && item.get('surveyId') ==sId);
+        return(item.get('type') == 'OPTION' && item.get('surveyId') == sId);
       }));
     } else {
-      this.set('OPTIONcontent',null);
+      this.set('OPTIONcontent', null);
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
   // used for display of dependencies: a question can only be dependent on earlier questions
   setEarlierOptionQuestions: function() {
-    var QuestionList, qIndex;
-    QuestionList = this.get('content');
-    qIndex = QuestionList.indexOf(FLOW.selectedControl.get('selectedQuestion'));
-    this.set('earlierOptionQuestions', FLOW.store.filter(FLOW.Question, function(item) {
-      return(qIndex > QuestionList.indexOf(item)) && (item.get('type') == 'OPTION');
-    }));
+    if(!Ember.none(FLOW.selectedControl.get('selectedQuestion'))) {
+      var optionQuestionList, sId, questionGroupOrder, qgOrder, qg, questionOrder;
+      sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      questionGroupOrder = FLOW.selectedControl.selectedQuestionGroup.get('order');
+      questionOrder = FLOW.selectedControl.selectedQuestion.get('order');
+      optionQuestionList = FLOW.store.filter(FLOW.Question, function(item) {
+        qg = FLOW.store.find(FLOW.QuestionGroup, item.get('questionGroupId'));
+        qgOrder = qg.get('order');
+        if(!(item.get('type') == 'OPTION' && item.get('surveyId') == sId)) return false;
+        if(qgOrder > questionGroupOrder) {return false;}
+        if(qgOrder < questionGroupOrder) {return true;}
+        // when we arrive there qgOrder = questionGroupOrder, so we have to check question order
+        return (item.get('order') < questionOrder);
+      });
+
+      this.set('earlierOptionQuestions', optionQuestionList);
+    }
   }.observes('FLOW.selectedControl.selectedQuestion'),
+
+
 
   // true if all items have been saved
   // used in models.js

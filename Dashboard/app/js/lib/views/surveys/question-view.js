@@ -242,7 +242,6 @@ FLOW.QuestionView = Ember.View.extend({
 
 	// create new question
 	doInsertQuestion: function() {
-		console.log('inserting question');
 		var insertAfterOrder;
 
 		if(this.get('zeroItemQuestion')) {
