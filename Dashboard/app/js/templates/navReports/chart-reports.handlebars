@@ -7,7 +7,7 @@
       optionLabelPath="content.code" 
       optionValuePath="content.keyId" 
       prompt="Select survey group"}}
-
+		<span class=""></span>
       {{view Ember.Select 
         contentBinding="FLOW.surveyControl.content" 
         selectionBinding="FLOW.selectedControl.selectedSurvey" 
@@ -21,8 +21,8 @@
         optionLabelPath="content.text" 
         optionValuePath="content.keyId" 
         prompt="Select question"}}
-        
-<p>Chart settings</p>
+<div class="chartSetting">       
+<h4>Chart Type:</h4>
       {{view Ember.Select 
         contentBinding="FLOW.chartTypeControl.content" 
         selectionBinding="view.chartType" 
@@ -30,13 +30,11 @@
         optionValuePath="content.value" 
         prompt="Select chart type"}}
         
-<div style="clear:both;">
 {{#if view.isDoughnut}} 
-  <label> Put smaller items together? {{view Ember.Checkbox checkedBinding="view.compactSmaller"}}</label>
+  <label class="groupChartSelect"> Put smaller items together? {{view Ember.Checkbox checkedBinding="view.compactSmaller"}}</label>
 {{/if}}
-</div>
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
-		
+</div>		
     {{#if view.noChoiceBool}}
       <p>Please choose a survey group, survey and question using the selectors above.</p>
     {{/if}}
