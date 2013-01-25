@@ -87,6 +87,7 @@ public class DataSyncService extends Service {
 	private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
 	private static final String NOTIFICATION_PN_PARAM = "&phoneNumber=";
 	private static final String CHECKSUM_PARAM = "&checksum=";
+	private static final String IMEI_PARAM = "&imei=";
 	private static final String DATA_CONTENT_TYPE = "application/zip";
 	private static final String S3_DATA_FILE_PATH = "devicezip";
 	private static final String IMAGE_CONTENT_TYPE = "image/jpeg";
@@ -301,6 +302,7 @@ public class DataSyncService extends Service {
 		try {
 			HttpUtil.httpGet(serverBase + NOTIFICATION_PATH + fileName
 					+ NOTIFICATION_PN_PARAM + StatusUtil.getPhoneNumber(this)
+					+ IMEI_PARAM + StatusUtil.getImei(this)
 					+ CHECKSUM_PARAM + checksum);
 			success = true;
 		} catch (Exception e) {
@@ -309,9 +311,13 @@ public class DataSyncService extends Service {
 		return success;
 	}
 
+	
 	/**
 	 * displays a notification in the system status bar indicating the
 	 * completion of the export/save operation
+	 * 
+	 * TODO: the notifications may not have room to display the entire error message.
+	 * Clicking them should trigger display of the full error by the Survey app
 	 * 
 	 * @param type
 	 */
@@ -325,11 +331,16 @@ public class DataSyncService extends Service {
 			tickerText = getResources().getText(R.string.uploadprogress);
 		} else if (ConstantUtil.FILE_COMPLETE.equals(type)) {
 			tickerText = getResources().getText(R.string.filecomplete);
+		} else if (ConstantUtil.ERROR.equals(type)) {
+			tickerText = getResources().getText(R.string.uploaderror);
 		} else {
-			tickerText = getResources().getText(R.string.nothingtoexport);
+			tickerText = getResources().getText(R.string.nothingtoexport);//This default is unclear to user
 		}
 		ViewUtil.fireNotification(tickerText.toString(),
-				extraText != null ? extraText : "", this, COMPLETE_ID, null);
+				extraText != null ? extraText : "",
+				this,
+				COMPLETE_ID,
+				null);
 	}
 
 	private HashSet<String>[] formZip(String fileName, boolean dataOnly) {

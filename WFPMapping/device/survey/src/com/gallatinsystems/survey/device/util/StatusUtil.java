@@ -106,4 +106,23 @@ public class StatusUtil {
 		}
 		return number;
 	}
+
+	/**
+	 * gets the device's IMEI (MEID or ESN for CDMA phone)
+	 * 
+	 * @return
+	 */
+	public static String getImei(Context context) {
+
+		TelephonyManager teleMgr = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		String number = null;
+		if (teleMgr != null) {
+			number = teleMgr.getDeviceId();
+		}
+		if (number == null){
+			number = "NO_IMEI";
+		}
+		return number;
+	}
 }
