@@ -1,61 +1,61 @@
 <section id="main" class="mapFlow floats-in" role="main">
 <!-- <div id="drawHandleWrap"><div class="drawHandle hideMapD">hide &rsaquo;</div></div> -->
-<div id="dropdown-holder">
-  {{#if FLOW.countryControl.content}}
-    <label for="country"><span class="inlined">Country:</span>
-      {{view Ember.Select 
-      contentBinding="FLOW.countryControl.content" 
-      optionLabelPath="content.label" 
-      selectionBinding="view.country" 
-      prompt="Select country"}} </label>
-  {{/if}}
-  </div>
-
-<div id="flowMap"></div>
-<div id="pointDetails">
-   <ul class="placeMarkBasicInfo floats-in">
-	<li><span>Collected on:</span>
-    {{#if FLOW.placemarkControl.selected}}
-      <div class="placeMarkCollectionDate"> 
-        {{date2 FLOW.placemarkControl.selected.collectionDate}}</div>
-    {{/if}}
-  </li>
-  	<li>
-      {{#if FLOW.placemarkDetailControl.selectedPointCode}}
-      <div class="placeMarkPointCode"> 
-        {{FLOW.placemarkDetailControl.selectedPointCode}}
-      </div>
-      {{/if}}
-    </li>
-  </ul>
-  <div class="imgContainer">
-    <a {{bindAttr href="view.detailsImage"}} target="_blank">
-      <img {{bindAttr src="view.detailsImage"}} alt="" />
-    </a>
-  </div>
-  <dl class="floats-in"> 
-  	{{#each item in FLOW.placemarkDetailControl}}
-	  <div class="defListWrap">
-      <dt>{{item.questionText}}:</dt> 
-      <dd>{{#with item}}{{addSpace stringValue}}{{/with}}</dd>
-	 </div>
-    {{/each}} 
-  </dl>
-</div>
-
-<div id="dropdown-holder">
-  {{#if FLOW.countryControl.content}}
-    <label for="country">Country:
-      {{view Ember.Select
-      contentBinding="FLOW.countryControl.content"
-      optionLabelPath="content.label"
-      selectionBinding="view.country"
-      prompt="Select country"}} </label>
+  <div id="dropdown-holder">
+    {{#if FLOW.countryControl.content}}
+      <label for="country"><span class="inlined">Country:</span>
+        {{view Ember.Select
+        contentBinding="FLOW.countryControl.content"
+        optionLabelPath="content.label"
+        selectionBinding="view.country"
+        prompt="Select country"}}
+      </label>
     {{/if}}
   </div>
-</div>
 
-<div id="flowMapLegend">
+  <div id="flowMap"></div>
+  <div id="pointDetails">
+    <ul class="placeMarkBasicInfo floats-in">
+    	<li><span>Collected on:</span>
+        {{#if FLOW.placemarkControl.selected}}
+          <div class="placeMarkCollectionDate"> 
+            {{date2 FLOW.placemarkControl.selected.collectionDate}}</div>
+        {{/if}}
+      </li>
+      <li>
+        {{#if FLOW.placemarkDetailControl.selectedPointCode}}
+          <div class="placeMarkPointCode"> 
+            {{FLOW.placemarkDetailControl.selectedPointCode}}
+          </div>
+        {{/if}}
+      </li>
+    </ul>
+    <div class="imgContainer">
+      <a {{bindAttr href="view.detailsImage"}} target="_blank">
+        <img {{bindAttr src="view.detailsImage"}} alt="" />
+      </a>
+    </div>
+    <dl class="floats-in">
+      {{#each item in FLOW.placemarkDetailControl}}
+        <div class="defListWrap">
+          <dt>{{item.questionText}}:</dt> 
+          <dd>{{#with item}}{{addSpace stringValue}}{{/with}}</dd>
+        </div>
+      {{/each}} 
+    </dl>
+  </div>
+
+  <div id="dropdown-holder">
+    {{#if FLOW.countryControl.content}}
+      <label for="country">Country:
+        {{view Ember.Select
+        contentBinding="FLOW.countryControl.content"
+        optionLabelPath="content.label"
+        selectionBinding="view.country"
+        prompt="Select country"}}</label>
+    {{/if}}
+  </div>
+
+  <div id="flowMapLegend">
     <h1>LEGEND</h1>
     <p>To be given some <strong>Loïc Love&copy;</strong></p>
   </div>
