@@ -1,6 +1,6 @@
 /*global deleteChart, createDoughnutChart, createHBarChart, createVBarChart*/
 
-FLOW.chartView = Em.View.extend({
+FLOW.chartView = FLOW.View.extend({
   noChoiceBool: false,
   chartType: null,
 

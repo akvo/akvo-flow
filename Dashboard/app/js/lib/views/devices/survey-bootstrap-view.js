@@ -1,4 +1,4 @@
-FLOW.SurveyBootstrapAppletView = Em.View.extend({
+FLOW.SurveyBootstrapAppletView = FLOW.View.extend({
   showBootstrapApplet:false,
   
   showBootstrap: function () {

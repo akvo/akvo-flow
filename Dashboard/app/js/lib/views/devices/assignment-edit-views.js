@@ -25,7 +25,7 @@ function formatDate(value) {
   } else return null;
 }
 
-FLOW.AssignmentEditView = Em.View.extend({
+FLOW.AssignmentEditView = FLOW.View.extend({
   devicesPreview: Ember.A([]),
   surveysPreview: Ember.A([]),
   assignmentName: null,

@@ -1,5 +1,5 @@
 // ************************ Surveys *************************
-FLOW.SurveySidebarView = Ember.View.extend({
+FLOW.SurveySidebarView = FLOW.View.extend({
 	surveyTitle: null,
 	surveyDescription: null,
 	surveyPointType: null,
@@ -89,7 +89,7 @@ FLOW.SurveySidebarView = Ember.View.extend({
 });
 
 
-FLOW.QuestionGroupItemView = Ember.View.extend({
+FLOW.QuestionGroupItemView = FLOW.View.extend({
 	content: null,
 	// question group content comes through binding in handlebars file
 	zeroItem: false,

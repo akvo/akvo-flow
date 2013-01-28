@@ -1,4 +1,4 @@
-FLOW.ManageAttributesTableView = Em.View.extend({
+FLOW.ManageAttributesTableView = FLOW.View.extend({
   showAddAttributeDialogBool: false,
   showEditAttributeDialogBool: false,
   newAttributeName: null,
@@ -61,7 +61,7 @@ showEditAttributeDialog: function(event) {
   }
 });
 
-FLOW.AttributeView = Em.View.extend({
+FLOW.AttributeView = FLOW.View.extend({
   tagName: 'span',
 
   deleteAttribute: function() {

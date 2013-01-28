@@ -1,4 +1,4 @@
-FLOW.QuestionView = Ember.View.extend({
+FLOW.QuestionView = FLOW.View.extend({
 	templateName: 'navSurveys/question-view',
 	content: null,
 	text: null,

@@ -1,4 +1,4 @@
-FLOW.MessagesListView = Em.View.extend({
+FLOW.MessagesListView = FLOW.View.extend({
   
    doInstanceQuery: function() {
     this.set('since', FLOW.metaControl.get('since'));

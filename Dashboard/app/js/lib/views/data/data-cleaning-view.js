@@ -1,4 +1,4 @@
-FLOW.DataCleaningAppletView = Em.View.extend({
+FLOW.DataCleaningAppletView = FLOW.View.extend({
   showRawDataReportAppletBool:false,
   showRawDataImportAppletBool:false,
 

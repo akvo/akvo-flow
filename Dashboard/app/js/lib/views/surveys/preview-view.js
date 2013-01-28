@@ -1,4 +1,4 @@
-FLOW.PreviewView = Ember.View.extend({
+FLOW.PreviewView = FLOW.View.extend({
   templateName: 'navSurveys/preview-view',
 
   closePreviewPopup: function() {
@@ -7,7 +7,7 @@ FLOW.PreviewView = Ember.View.extend({
 
 });
 
-FLOW.PreviewQuestionGroupView = Ember.View.extend({
+FLOW.PreviewQuestionGroupView = FLOW.View.extend({
   QGcontent: null,
 
   init: function() {
@@ -20,7 +20,7 @@ FLOW.PreviewQuestionGroupView = Ember.View.extend({
   }
 });
 
-FLOW.PreviewQuestionView = Ember.View.extend({
+FLOW.PreviewQuestionView = FLOW.View.extend({
   isTextType: false,
   isOptionType: false,
   isNumberType: false,

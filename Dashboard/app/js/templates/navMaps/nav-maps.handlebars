@@ -46,7 +46,7 @@
 
   <div id="dropdown-holder">
     {{#if FLOW.countryControl.content}}
-      <label for="country">Country:
+      <label for="country">{{t _country}}:
         {{view Ember.Select
         contentBinding="FLOW.countryControl.content"
         optionLabelPath="content.label"

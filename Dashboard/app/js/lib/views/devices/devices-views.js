@@ -1,4 +1,4 @@
-FLOW.CurrentDevicesTabView = Em.View.extend({
+FLOW.CurrentDevicesTabView = FLOW.View.extend({
 	showDeleteDevicesDialogBool: false,
 	showAddToGroupDialogBool: false,
 	showRemoveFromGroupDialogBool: false,
@@ -157,7 +157,7 @@ FLOW.CurrentDevicesTabView = Em.View.extend({
 
 
 // TODO not used?
-FLOW.SavingDeviceGroupView = Ember.View.extend({
+FLOW.SavingDeviceGroupView = FLOW.View.extend({
 	showDGSavingDialogBool: false,
 
 	showDGSavingDialog: function() {
