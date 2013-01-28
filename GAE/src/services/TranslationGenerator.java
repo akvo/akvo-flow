@@ -71,9 +71,9 @@ public class TranslationGenerator {
 							ui_strings.put(key, "");
 						}
 
-						trlKeys.put(key, en);
+						trlKeys.put(key, (en == null ? "" : en));
 
-						if (!"".equals(en) && !enValues.contains(en)) {
+						if (en != null && !"".equals(en) && !enValues.contains(en)) {
 							enValues.add(en);
 						}
 					}
