@@ -36,11 +36,11 @@
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
 </div>		
     {{#if view.noChoiceBool}}
-      <p>Please choose a survey group, survey and question using the selectors above.</p>
+      <p class="errorMsg">Please choose a survey group, survey and question using the selectors above.</p>
     {{/if}}
      	<h3 class="chartTitle">{{FLOW.selectedControl.selectedQuestion.text}}</h3>
         <div id="piechart">
-			<p>Choose a Question from above selectors.</p> 
+			<p>Choose a Question from above selectors.</p> 	
 		</div>
 {{/view}}
 
@@ -133,29 +133,29 @@ function createDoughnutChart(){
         // are we past the center?
         return (d.endAngle + d.startAngle)/2 > Math.PI ? "end" : "start";
       })
-      .style("fill", "Purple")
-      .style("font", "bold 12px Arial")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1em Arial")
       .text(function(d, i) { return dataSet[i].legendLabel; }); //get the label from our original data array
 
        // Add a legendLabel to each arc slice...
     vis.append("svg:text")
       .attr("text-anchor", "middle")
-      .style("fill", "Purple")
-      .style("font", "bold 12px Arial")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1em Arial")
       .text("Total:") //get the label from our original data array
       .attr("transform","translate(0,-15)");
 
     vis.append("svg:text")
       .attr("text-anchor", "middle")
-      .style("fill", "Purple")
-      .style("font", "bold 12px Arial")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1em Arial")
       .text("answers") //get the label from our original data array
       .attr("transform","translate(0,15)");
 
     vis.append("svg:text")
       .attr("text-anchor", "middle")
-      .style("fill", "Purple")
-      .style("font", "bold 12px Arial")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1em Arial")
       .text(total.toString()) 
       .attr("transform","translate(0,0)");
 
@@ -227,8 +227,8 @@ var svg = d3.select("#piechart")
       .enter()
       .append("svg:text")
       .attr("text-anchor", "left")
-      .style("fill", "Purple")
-      .style("font", "bold 12px Arial")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1em Arial")
       .text(function(d){
         return d.legendLabel;
       }) 
@@ -282,8 +282,8 @@ var svg = d3.select("#piechart")
 
  svg.append("svg:text")
       .attr("text-anchor", "left")
-      .style("fill", "Blue")
-      .style("font", "bold 12px Arial")
+      .style("fill", "rgb(21, 55, 255)")
+      .style("font", "bold 1em Arial")
       .text("Percentage") 
       .attr("transform","translate(300,0)");
 
@@ -304,8 +304,8 @@ var svg = d3.select("#piechart")
       .enter()
       .append("svg:text")
       .attr("text-anchor", "end")
-      .style("fill", "Purple")
-      .style("font", "bold 12px Arial")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1em")
       .text(function(d){
         return d.legendLabel;
       }) 
@@ -319,8 +319,8 @@ var svg = d3.select("#piechart")
       .enter()
       .append("svg:text")
       .attr("text-anchor", "left")
-      .style("fill", "Black")
-      .style("font", "12px Arial")
+      .style("fill", "rgb(0,0,0)")
+      .style("font", "1em")
       .text(function(d){
         var num = d.percentage;
         return num.toFixed(1).toString();

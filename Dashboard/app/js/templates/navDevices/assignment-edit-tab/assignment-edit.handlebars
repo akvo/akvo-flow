@@ -1,11 +1,10 @@
 {{#view FLOW.AssignmentEditView}}
 <section class="fullWidth" id="assignSurveys">
   <h1>Edit assignment</h1>
-  <div class="">
      <a {{action "cancelEditSurveyAssignment" target="this"}} class="stepBack">Go back to assignment list</a>
     <form>
       <fieldset id="assignmentDetails">
-        <h2>Assignment Details</h2>
+        <h2>01: Assignment Details</h2>
         <label for="assignmentName">Assignment Name:</label>
          {{view Ember.TextField valueBinding="view.assignmentName" id="assignmentName" placeholder="Enter a name for this assignment" size=30}} 
         <div class="dateRange">
@@ -21,7 +20,7 @@
       </fieldset>
       <div class="fieldSetWrap">
         <fieldset id="surveySelect" class="formLeftPanel">
-          <h2>Select Survey:</h2>
+          <h2>02: Select Survey:</h2>
           <div class="">
           
             <label for="surveyGroup">Select Survey Group:</label>
@@ -89,7 +88,7 @@
     
     <div class="fieldSetWrap makeWhite">
         <fieldset id="devicesSelect" class="formLeftPanel">
-          <h2>Select Devices:</h2>
+          <h2>03: Select Devices:</h2>
           <div class="">
           <label for="deviceGroup">Select Device Group:</label>
           {{view Ember.Select 
