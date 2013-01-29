@@ -150,6 +150,7 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,
+  publishedContent: null,
   sortProperties: ['name'],
   sortAscending: true,
 
@@ -162,6 +163,18 @@ FLOW.surveyControl = Ember.ArrayController.create({
       }));
     } else {
       this.set('content', null);
+    }
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  setPublishedContent: function() {
+    var sgId;
+    if(FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
+      sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
+      this.set('publishedContent', FLOW.store.filter(FLOW.Survey, function(item) {
+        return (item.get('surveyGroupId') == sgId && item.get('status') == 'PUBLISHED');
+      }));
+    } else {
+      this.set('publishedContent', null);
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
