@@ -11,7 +11,7 @@
    <!--  <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireApproval"}}{{t _require_approval}} </label> -->
 	  <dl class="floats-in">
               <dt>{{t _Version_Number}}:</dt>
-              <dd><span id="versionNbr">{{FLOW.selectedControl.selectedSurvey.version}}</span><a href="#" class="helpIcon tooltip" title="Version Number helps you keep track of the number of times the survey has been revised and published. So, if the survey has been revised and published five times, it will be Version 5.0">Get Help</a></dd>
+              <dd><span id="versionNbr">{{FLOW.selectedControl.selectedSurvey.version}}</span>{{tooltip _version_numbers_helps}}</dd>
               <dt>{{t _ID_Number}}:</dt>
               <dd><span id="surveyIdNbr">{{FLOW.selectedControl.selectedSurvey.keyId}}</span></dd>
             </dl>   
