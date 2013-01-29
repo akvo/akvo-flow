@@ -3,9 +3,16 @@ FLOW.UserListView = FLOW.View.extend({
   showEditUserBool: false,
 
   showAddUserDialog: function() {
+    var userPerm;
     FLOW.editControl.set('newUserName', null);
     FLOW.editControl.set('newEmailAddress', null);
-    FLOW.editControl.set('newPermissionLevel', null);
+    
+    FLOW.permissionLevelControl.get('content').forEach(function(item) {
+      if(item.get('value') == 'USER') {
+        userPerm = item;
+      }
+    });
+    FLOW.editControl.set('newPermissionLevel', userPerm);
     this.set('showAddUserBool', true);
   },
 
@@ -75,5 +82,14 @@ FLOW.UserView = FLOW.View.extend({
       user.deleteRecord();
       FLOW.store.commit();
     }
+  }
+});
+
+FLOW.SingleUserView = FLOW.View.extend({
+  tagName:"td",
+  permissionLevel:null,
+  init:function(){
+    this._super();
+    this.set('permissionLevel',this.content.get('permissionList'));
   }
 });
