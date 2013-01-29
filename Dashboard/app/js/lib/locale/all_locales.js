@@ -118,6 +118,7 @@ Ember.STRINGS_EN = {
   '_Sector_Focus':'Sector Focus',
   '_Language':'Language',
   '_Version_Number':'Version Number',
+  '_version_numbers_helps': 'Version Number helps you keep track of the number of times the survey has been revised and published. So, if the survey has been revised and published five times, it will be Version 5.0',
   '_ID_Number':'ID Number',
   '_Survey_Summary':'Survey Summary',
   '_Number_of_Question_groups':'Number of Question groups',

@@ -65,6 +65,18 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
   return Ember.String.loc(i18nKey);
 });
 
+Ember.Handlebars.registerHelper('tooltip', function(i18nKey) {
+  var tooltip = Ember.String.loc(i18nKey);
+
+  return new Handlebars.SafeString(
+    '<a href="#" class="helpIcon tooltip" title="' + tooltip + '">?</a>'
+  );
+
+  // return '<a href="#" class="helpIcon tooltip">?</a>';
+  // return '<a href="#" class="helpIcon tooltip" title="' + tooltip + '">Get Help</a>';
+  // <a href="#" class="helpIcon tooltip" title="Version Number helps you keep track of the number of times the survey has been revised and published. So, if the survey has been revised and published five times, it will be Version 5.0">Get Help</a>
+});
+
 // translates values to labels for languages
 Ember.Handlebars.registerHelper('toLanguage', function(value) {
   var label, valueLoc;
@@ -460,29 +472,16 @@ FLOW.NavMessagesView = Ember.View.extend({
 });
 
 // admin views
-FLOW.NavAdminView = Ember.View.extend({
-  templateName: 'navAdmin/nav-admin',
-
-  onLanguageChange: function() {
-    this.rerender();
-  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage')
+FLOW.NavAdminView = FLOW.View.extend({
+  templateName: 'navAdmin/nav-admin'
 });
 
-FLOW.HeaderView = Ember.View.extend({
-  templateName: 'application/header',
-
-  onLanguageChange: function() {
-    // this.rerender();
-    this._super
-  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage')
+FLOW.HeaderView = FLOW.View.extend({
+  templateName: 'application/header'
 });
 
-FLOW.FooterView = Ember.View.extend({
-  templateName: 'application/footer',
-
-  onLanguageChange: function() {
-    this.rerender();
-  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage')
+FLOW.FooterView = FLOW.View.extend({
+  templateName: 'application/footer'
 });
 
 // ********************************************************//
