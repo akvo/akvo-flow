@@ -105,7 +105,6 @@ public class QuestionAnswerRestService {
 		return response;
 	}
 
-	// TODO
 	// find a single questionAnswerStore by the questionAnswerStoreId
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
@@ -124,7 +123,6 @@ public class QuestionAnswerRestService {
 
 	}
 
-	// TODO
 	// update existing questionAnswerStore
 	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody

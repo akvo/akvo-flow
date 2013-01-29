@@ -136,6 +136,7 @@ public class SurveyInstanceRestService {
 	}
 
 	// delete survey instance by id
+	// TODO update counts
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
 	public Map<String, RestStatusDto> deleteSurveyInstanceById(
@@ -155,6 +156,7 @@ public class SurveyInstanceRestService {
 	}
 
 	// Update survey instance
+	// TODO update counts
 	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
 	public Map<String, Object> saveExistingSurveyInstance(
