@@ -44,17 +44,6 @@
     </dl>
   </div>
 
-  <div id="dropdown-holder">
-    {{#if FLOW.countryControl.content}}
-      <label for="country">{{t _country}}:
-        {{view Ember.Select
-        contentBinding="FLOW.countryControl.content"
-        optionLabelPath="content.label"
-        selectionBinding="view.country"
-        prompt="Select country"}}</label>
-    {{/if}}
-  </div>
-
   <div id="flowMapLegend">
     <h1>LEGEND</h1>
     <p>To be given some <strong>Loïc Love&copy;</strong></p>
