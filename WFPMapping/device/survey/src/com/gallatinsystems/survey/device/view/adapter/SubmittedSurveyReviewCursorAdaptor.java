@@ -21,15 +21,12 @@ import java.util.Date;
 
 import com.gallatinsystems.survey.device.R;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
