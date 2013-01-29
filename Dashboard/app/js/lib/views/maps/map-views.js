@@ -8,7 +8,7 @@
       a placemark counterpart.
 **/
 
-FLOW.NavMapsView = Ember.View.extend({
+FLOW.NavMapsView = FLOW.View.extend({
   templateName: 'navMaps/nav-maps',
   showDetailsBool: false,
   detailsImage: null,

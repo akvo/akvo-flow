@@ -1,4 +1,4 @@
-FLOW.AssignmentsListTabView = Em.View.extend({
+FLOW.AssignmentsListTabView = FLOW.View.extend({
 
   editSurveyAssignment: function(event) {
     FLOW.selectedControl.set('selectedSurveyAssignment',event.context);
@@ -13,7 +13,7 @@ FLOW.AssignmentsListTabView = Em.View.extend({
   }
 });
 
-FLOW.AssignmentView = Em.View.extend({
+FLOW.AssignmentView = FLOW.View.extend({
  tagName: 'span',
   deleteSurveyAssignment: function() {
     var assignment;

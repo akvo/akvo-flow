@@ -1,4 +1,4 @@
-FLOW.ExportReportsAppletView = Em.View.extend({
+FLOW.ExportReportsAppletView = FLOW.View.extend({
   showRawDataReportApplet:false,
   showComprehensiveReportApplet:false,
   showGoogleEarthFileApplet: false,
@@ -18,5 +18,5 @@ FLOW.ExportReportsAppletView = Em.View.extend({
 
   showSurveyForm: function () {
     this.set('showSurveyFormApplet', true);
-  },
+  }
 });

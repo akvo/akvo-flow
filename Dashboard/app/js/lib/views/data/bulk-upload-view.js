@@ -1,4 +1,4 @@
-FLOW.BulkUploadAppletView = Em.View.extend({
+FLOW.BulkUploadAppletView = FLOW.View.extend({
   showBulkUploadAppletBool:false,
 
   showBulkUploadApplet: function () {

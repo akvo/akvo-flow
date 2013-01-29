@@ -1,4 +1,4 @@
-FLOW.inspectDataTableView = Em.View.extend({
+FLOW.inspectDataTableView = FLOW.View.extend({
   selectedSurvey: null,
   surveyId: null,
   deviceId: null,

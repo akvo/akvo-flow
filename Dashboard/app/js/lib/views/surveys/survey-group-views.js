@@ -3,7 +3,7 @@ function capitaliseFirstLetter(string) {
 }
 
 // displays survey groups in left sidebar
-FLOW.SurveyGroupMenuItemView = Ember.View.extend({
+FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
 	content: null,
 	tagName: 'li',
 	classNameBindings: 'amSelected:current'.w(),
@@ -27,7 +27,7 @@ FLOW.SurveyGroupMenuItemView = Ember.View.extend({
 
 // displays single survey in content area of survey group page
 // doEditSurvey is defined in the Router. It transfers to the nav-surveys-edit handlebar view
-FLOW.SurveyGroupSurveyView = Ember.View.extend({
+FLOW.SurveyGroupSurveyView = FLOW.View.extend({
 	// fired when 'preview survey' is clicked in the survey item display
 	previewSurvey: function() {
 		FLOW.selectedControl.set('selectedSurvey', this.content);
@@ -59,7 +59,7 @@ FLOW.SurveyGroupSurveyView = Ember.View.extend({
 });
 
 // handles all survey-group interaction elements on survey group page
-FLOW.SurveyGroupMainView = Ember.View.extend({
+FLOW.SurveyGroupMainView = FLOW.View.extend({
 	showEditField: false,
 	showNewGroupField: false,
 	surveyGroupName: null,
@@ -130,7 +130,7 @@ FLOW.SurveyGroupMainView = Ember.View.extend({
 	}
 });
 
-FLOW.JavascriptSurveyGroupListView = Ember.View.extend({
+FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
 	didInsertElement: function() {
 		var liHeight, menuHeight, scroll;
 		this._super();

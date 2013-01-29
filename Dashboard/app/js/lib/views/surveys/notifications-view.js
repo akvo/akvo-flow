@@ -1,4 +1,4 @@
-FLOW.NotificationsView = Ember.View.extend({
+FLOW.NotificationsView = FLOW.View.extend({
   notificationOption: null,
   notificationType: null,
   expiryDate: null,

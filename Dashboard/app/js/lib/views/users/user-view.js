@@ -1,4 +1,4 @@
-FLOW.UserListView = Em.View.extend({
+FLOW.UserListView = FLOW.View.extend({
   showAddUserBool: false,
   showEditUserBool: false,
 
@@ -66,7 +66,7 @@ FLOW.UserListView = Em.View.extend({
   }
 });
 
-FLOW.UserView = Em.View.extend({
+FLOW.UserView = FLOW.View.extend({
   tagName: 'span',
   deleteUser: function() {
     var user;
