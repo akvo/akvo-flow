@@ -305,8 +305,9 @@ FLOW.DateField = Ember.TextField.extend({
     // datepickers
     $("#from_date").datepicker({
       dateFormat: 'yy/mm/dd',
-      defaultDate: "+1w",
+      defaultDate: new Date(),
       numberOfMonths: 1,
+      minDate: new Date(),
       onSelect: function(selectedDate) {
         $("#to_date").datepicker("option", "minDate", selectedDate);
         FLOW.dateControl.set('fromDate', selectedDate);
@@ -315,8 +316,9 @@ FLOW.DateField = Ember.TextField.extend({
 
     $("#to_date").datepicker({
       dateFormat: 'yy/mm/dd',
-      defaultDate: "+1w",
+      defaultDate: new Date(),
       numberOfMonths: 1,
+      minDate: new Date(),
       onSelect: function(selectedDate) {
         $("#from_date").datepicker("option", "maxDate", selectedDate);
         FLOW.dateControl.set('toDate', selectedDate);
