@@ -77,7 +77,9 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 		var survey;
 		survey = FLOW.selectedControl.get('selectedSurvey');
 		survey.set('name', this.get('surveyTitle'));
+		survey.set('code', this.get('surveyTitle'));
 		survey.set('status', 'NOT_PUBLISHED');
+		survey.set('path',FLOW.selectedControl.selectedSurveyGroup.get('code'));
 		survey.set('description', this.get('surveyDescription'));
 		if(this.get('surveyPointType') !== null) {
 			survey.set('pointType', this.surveyPointType.get('value'));
@@ -166,9 +168,14 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
 	// fired when 'save' is clicked while showing edit group name field. Saves the new group name
 	saveQuestionGroupNameEdit: function() {
-		var qgId = this.content.get('id');
-		var questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgId);
+		var path, qgId, questionGroup;
+		qgId = this.content.get('id');
+		questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgId);
+		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
 		questionGroup.set('code', this.get('questionGroupName'));
+		questionGroup.set('name', this.get('questionGroupName'));
+		questionGroup.set('path', path);
+
 		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 		this.set('showQGroupNameEditField', false);
@@ -214,7 +221,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
 	// insert group
 	doInsertQuestionGroup: function() {
-		var insertAfterOrder;
+		var insertAfterOrder,path;
+		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
 
 		if(FLOW.selectedControl.selectedSurvey.get('keyId')) {
 
@@ -229,7 +237,9 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 			// in the server, the proper order of all question groups is re-established
 			FLOW.store.createRecord(FLOW.QuestionGroup, {
 				"code": "New group - please change name",
+				"name": "New group - please change name",
 				"order": insertAfterOrder,
+				"path": path,
 				"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
 			});
 			FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
@@ -297,7 +307,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 	// execute group copy to selected location
 	// TODO should this copy all questions in the group?
 	doQGroupCopyHere: function() {
-		var insertAfterOrder;
+		var insertAfterOrder,path;
+		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
 
 		if(this.get('zeroItem')) {
 			insertAfterOrder = 0;
@@ -311,6 +322,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 			"description": FLOW.selectedControl.selectedForCopyQuestionGroup.get('description'),
 			"order": insertAfterOrder,
 			"code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
+			"name": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
+			"path": path,
 			"surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId')
 		});
 		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');

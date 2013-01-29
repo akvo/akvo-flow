@@ -87,6 +87,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 		var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
 		var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
 		surveyGroup.set('code', capitaliseFirstLetter(this.get('surveyGroupName')));
+		surveyGroup.set('name', capitaliseFirstLetter(this.get('surveyGroupName')));
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedSurveyGroup', FLOW.store.find(FLOW.SurveyGroup, sgId));
 		this.set('showEditField', false);
@@ -117,7 +118,8 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
 	saveNewSurveyGroupName: function() {
 		FLOW.store.createRecord(FLOW.SurveyGroup, {
-			"code": capitaliseFirstLetter(this.get('surveyGroupName'))
+			"code": capitaliseFirstLetter(this.get('surveyGroupName')),
+			"name": capitaliseFirstLetter(this.get('surveyGroupName'))
 		});
 		FLOW.store.commit();
 		this.set('showNewGroupField', false);

@@ -134,11 +134,14 @@ FLOW.QuestionView = FLOW.View.extend({
 	},
 
 	doSaveEditQuestion: function() {
+		var path;
+		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 		FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
 		FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
 		FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
 		FLOW.selectedControl.selectedQuestion.set('minVal', this.get('minVal'));
 		FLOW.selectedControl.selectedQuestion.set('maxVal', this.get('maxVal'));
+		FLOW.selectedControl.selectedQuestion.set('path',path);
 		FLOW.selectedControl.selectedQuestion.set('allowSign', this.get('allowSign'));
 		FLOW.selectedControl.selectedQuestion.set('allowDecimalPoint', this.get('allowDecimalPoint'));
 		FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
@@ -207,7 +210,8 @@ FLOW.QuestionView = FLOW.View.extend({
 
 	// execute question copy to selected location
 	doQuestionCopyHere: function() {
-		var insertAfterOrder;
+		var insertAfterOrder, path;
+		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
 		if(this.get('zeroItemQuestion')) {
 			insertAfterOrder = 0;
@@ -226,6 +230,7 @@ FLOW.QuestionView = FLOW.View.extend({
 			"allowMultipleFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowMultipleFlag'),
 			"allowOtherFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowOtherFlag'),
 			"dependentFlag": false,
+			"path":path,
 			"maxVal": FLOW.selectedControl.selectedForCopyQuestion.get('maxVal'),
 			"minVal": FLOW.selectedControl.selectedForCopyQuestion.get('minVal'),
 			"type": FLOW.selectedControl.selectedForCopyQuestion.get('type'),
@@ -242,7 +247,8 @@ FLOW.QuestionView = FLOW.View.extend({
 
 	// create new question
 	doInsertQuestion: function() {
-		var insertAfterOrder;
+		var insertAfterOrder,path;
+		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
 		if(this.get('zeroItemQuestion')) {
 			insertAfterOrder = 0;
@@ -256,6 +262,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		FLOW.store.createRecord(FLOW.Question, {
 			"order": insertAfterOrder,
 			"type": "FREE_TEXT",
+			"path": path,
 			"text": "new question - please change name",
 			"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId'),
 			"questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
