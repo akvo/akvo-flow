@@ -32,6 +32,7 @@
       optionValuePath="content.keyId"
       id="surveyGroup"
       prompt="Select survey group"}}
+      Can't find your survey? Perhaps it has not been published yet.
            
           </div>
           <div class="">
@@ -45,7 +46,7 @@
            {{view Ember.Select 
            multiple=true
            size=10
-        contentBinding="FLOW.surveyControl.content" 
+        contentBinding="FLOW.surveyControl.publishedContent" 
         selectionBinding="FLOW.selectedControl.selectedSurveys" 
         optionLabelPath="content.name" 
           id="surveys"
