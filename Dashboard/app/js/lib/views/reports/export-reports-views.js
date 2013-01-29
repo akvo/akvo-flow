@@ -11,4 +11,12 @@ FLOW.ExportReportsAppletView = Em.View.extend({
   showComprehensiveReport: function () {
     this.set('showComprehensiveReportApplet', true);
   },
+
+  showGoogleEarthFile: function () {
+    this.set('showGoogleEarthFileApplet', true);
+  },
+
+  showSurveyForm: function () {
+    this.set('showSurveyFormApplet', true);
+  },
 });
