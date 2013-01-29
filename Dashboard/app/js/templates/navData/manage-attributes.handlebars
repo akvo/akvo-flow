@@ -6,18 +6,18 @@
             <thead>
                 <tr>
                 {{#view FLOW.ColumnView item="keyId" type="attribute"}}
-                   <a {{action "sort" target="this"}}>Id</a>
+                   <a {{action "sort" target="this"}}>{{t _id}}</a>
                 {{/view}}
                 {{#view FLOW.ColumnView item="name" type="attribute"}}
-                   <a {{action "sort" target="this"}}>Attribute name</a>
+                   <a {{action "sort" target="this"}}>{{t _attribute_name}}</a>
                 {{/view}}
                 {{#view FLOW.ColumnView item="group" type="attribute"}}
-                   <a {{action "sort" target="this"}}>Tag</a>
+                   <a {{action "sort" target="this"}}>{{t _tag}}</a>
                 {{/view}}
                 {{#view FLOW.ColumnView item="valueType" type="attribute"}}
-                   <a {{action "sort" target="this"}}>Value type</a>
+                   <a {{action "sort" target="this"}}>{{t _value_type}}</a>
                 {{/view}}
-                 <th class="action noArrows">Action</th>
+                 <th class="action noArrows">{{t action}}</th>
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
@@ -31,7 +31,7 @@
 
                     <td class="action">
                       {{#view FLOW.AttributeView contentBinding="attribute"}}
-                        <a {{action confirm FLOW.dialogControl.delAttr target="FLOW.dialogControl"}} class="remove">remove</a> {{/view}} <a {{action "showEditAttributeDialog" attribute target = "this"}} class="edit">edit</a> </td>
+                        <a {{action confirm FLOW.dialogControl.delAttr target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a> {{/view}} <a {{action "showEditAttributeDialog" attribute target = "this"}} class="edit">{{t _edit}}</a> </td>
                   </tr>
                 {{/each}}
             </tbody>
@@ -49,12 +49,12 @@
           <div class="dialogWrap">
         <!-- the dialog contents -->
         <div class="confirmDialog dialog">
-          <h2>Add attribute</h2>
-          <p class="dialogMsg">Please provide a name, an optional group, and a value type for the attribute</p>
+          <h2>{{t _Add_attribute}}</h2>
+          <p class="dialogMsg">{{t _please_provide_a_name}}</p>
           <br/>
-         <label for="newAttributeName">Attribute name:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
-         <label for="newAttributeGroup">Tag:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
-          <label>Value type:</label>
+         <label for="newAttributeName">{{t _attribute_name}}:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
+         <label for="newAttributeGroup">{{t _tag}}:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
+          <label>{{t _value_type}}:</label>
              {{view Ember.Select 
             contentBinding="FLOW.attributeTypeControl.content" 
             selectionBinding="view.newAttributeType" 
@@ -64,8 +64,8 @@
         
           <div class="buttons menuCentre"> 
             <ul>  
-               <li><a {{action "doAddAttribute" target="this"}} class="ok smallBtn">SAVE</a></li>
-              <li><a {{action "cancelAddAttribute" target="this"}}} class="cancel">CANCEL</a></li>
+               <li><a {{action "doAddAttribute" target="this"}} class="ok smallBtn">{{t _save}}</a></li>
+              <li><a {{action "cancelAddAttribute" target="this"}}} class="cancel">{{t _cancel}}</a></li>
             </ul>
           </div>
         </div>
@@ -78,11 +78,11 @@
           <div class="dialogWrap">
         <!-- the dialog contents -->
         <div class="confirmDialog dialog">
-          <h2>Edit Attribute</h2>
-          <p class="dialogMsg">Please edit the attribute name, group and type below.</p>
-          <label for="editAttributeName">Attribute name:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeName" id="editUserName" size=40}}<br/>
+          <h2>{{t _edit_attribute}}</h2>
+          <p class="dialogMsg">{{t _please_edit_the_attribute_name}}.</p>
+          <label for="editAttributeName">{{t _attribute_name}}:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeName" id="editUserName" size=40}}<br/>
            <label for="editAttributeGroup">Tag:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeGroup" id="editEmail" size=40}}<br/>
-           <label>Value type:</label>
+           <label>{{t _value_type}}:</label>
             {{view Ember.Select 
             contentBinding="FLOW.attributeTypeControl.content" 
             selectionBinding="FLOW.editControl.editAttributeType" 
@@ -92,8 +92,8 @@
  
           <div class="buttons menuCentre"> 
             <ul>  
-               <li><a {{action "doEditAttribute" target="this"}} class="ok smallBtn">SAVE</a></li>
-              <li><a {{action "cancelEditAttribute" target="this"}}} class="cancel">CANCEL</a></li>
+               <li><a {{action "doEditAttribute" target="this"}} class="ok smallBtn">{{t _save}}</a></li>
+              <li><a {{action "cancelEditAttribute" target="this"}}} class="cancel">{{t _cancel}}</a></li>
             </ul>
           </div>
         </div>

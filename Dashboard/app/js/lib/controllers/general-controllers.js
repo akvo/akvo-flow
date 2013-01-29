@@ -14,25 +14,24 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
   },
 
   content: [
-  Ember.Object.create({
-    label: "English (Default)",
-    value: "en"
-  }), Ember.Object.create({
-    label: "Espanol",
-    value: "es"
-  }), Ember.Object.create({
-    label: "Français",
-    value: "fr"
-  })],
+    Ember.Object.create({
+      label: "English (Default)",
+      value: "en"
+    }), Ember.Object.create({
+      label: "Espanol",
+      value: "es"
+    }), Ember.Object.create({
+      label: "Français",
+      value: "fr"
+    })
+  ],
 
   changeLanguage: function() {
     var locale;
     locale = this.dashboardLanguage.get("value");
     localStorage.locale = this.get('dashboardLanguage.value');
 
-    if(locale === "nl") {
-      Ember.STRINGS = Ember.STRINGS_NL;
-    } else if(locale === "fr") {
+    if(locale === "fr") {
       Ember.STRINGS = Ember.STRINGS_FR;
     } else if(locale === "es") {
       Ember.STRINGS = Ember.STRINGS_ES;
