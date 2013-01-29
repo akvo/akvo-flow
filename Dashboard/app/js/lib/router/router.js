@@ -366,6 +366,8 @@ FLOW.Router = Ember.Router.extend({
         router.get('applicationController').connectOutlet('navMessages');
         router.set('navigationController.selected', 'navMessages');
         FLOW.messageControl.populate();
+        FLOW.selectedControl.set('selectedSurveyGroup', null);
+        FLOW.selectedControl.set('selectedSurvey', null);
       }
     }),
 
