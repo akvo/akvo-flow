@@ -1,7 +1,7 @@
 {{#view FLOW.inspectDataTableView}}
 <section class="fullWidth" id="inspectData">
     <div class="floats-in" id="dataFilter">
-        <h3>Choose Survey Data to display:</h3>
+        <h3>{{t _choose_survey_data_to_display}}:</h3>
             <div class="chooseSurveyData">{{view Ember.Select 
                 contentBinding="FLOW.surveyGroupControl.content" 
                 selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
@@ -17,17 +17,17 @@
                 prompt="Select survey"}} 
 			</div>
 			<div class="dataCollectedDate">
-            <label class="collectedFrom"> Collected from:
+            <label class="collectedFrom"> {{t _collected_from}}:
                 {{view FLOW.DateField valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="Collected From" size=30}} 
             </label> 
 
-            <label class="collectedTo"> To:
+            <label class="collectedTo"> {{t _to}}:
                 {{view FLOW.DateField valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="To" size=30}} 
             </label>
 			</div>
 			<div class="dataDeviceId">
-				 <label  class="devideId"> Device id:</label> {{view Ember.TextField valueBinding="view.deviceId" placeholder="Device Id" size=30}} 
-				 <label class="submitterName"> Submitter name:</label> {{view Ember.TextField valueBinding="view.submitterName" placeholder="Submitter Name" size=30}} 
+				 <label  class="devideId"> {{t _device_id}}:</label> {{view Ember.TextField valueBinding="view.deviceId" placeholder="Device Id" size=30}} 
+				 <label class="submitterName"> {{t _submitter_name}}:</label> {{view Ember.TextField valueBinding="view.submitterName" placeholder="Submitter Name" size=30}} 
 			</div>
          <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>
     </div>
@@ -37,12 +37,12 @@
             <!-- TABLE HEADER-->
             <thead>
                 <tr>
-                    <th class="noArrows">Id</th>
-                    <th class="noArrows">Survey</th>
-                    <th class="noArrows">Submitter</th>
-                    <th class="noArrows">Device</th>
-                    <th class="noArrows">Collected</th>
-                    <th class="noArrows">Action</th>
+                    <th class="noArrows">{{t _id}}</th>
+                    <th class="noArrows">{{t _survey}}</th>
+                    <th class="noArrows">{{t _submitter}}</th>
+                    <th class="noArrows">{{t _device}}</th>
+                    <th class="noArrows">{{t _collected}}</th>
+                    <th class="noArrows">{{t _action}}</th>
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
@@ -54,7 +54,7 @@
                     <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
                     <td class="device">{{SI.deviceIdentifier}}</td>
                     <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
-                    <td class="action"><a {{action showEditSurveyInstanceWindow SI target="this" }}>edit</a></td>
+                    <td class="action"><a {{action showEditSurveyInstanceWindow SI target="this" }}>{{t _edit}}</a></td>
                 </tr>
                 {{/each}}
             </tbody>
@@ -66,8 +66,8 @@
             </tfoot>
         </table>
         <ul class="prevNext">
-            <li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; previous</a> {{/if}}</li>
-        <li class="nextBtn">{{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>next &rsaquo;</a>{{/if}}</li>
+            <li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}</li>
+        <li class="nextBtn">{{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}</li>
         </ul>
     </section>
 
@@ -79,12 +79,12 @@
         <div class="confirmDialog dialogWide">
 		     <a {{action "doCloseEditSIWindow" target="this"}} class="ok clodeDialog">close window</a>
 
-          <h2>Edit answers</h2>
+          <h2>{{t _edit_answers}}</h2>
             <nav class="editAnswerMenu"> 
             <ul>  
               <li class="prevBtn"><a {{action "doPreviousSI" target="this"}}>&lsaquo; {{t _previous_record}}</a></li>
-              <li class="deleteBtn"><a {{action "doDeleteSI" target="this"}} class="smallBtn">delete</a></li>
-              <li class="saveBtn"><a {{action "doSaveSI" target="this"}} class="smallBtn">save</a></li>
+              <li class="deleteBtn"><a {{action "doDeleteSI" target="this"}} class="smallBtn">{{t _delete}}</a></li>
+              <li class="saveBtn"><a {{action "doSaveSI" target="this"}} class="smallBtn">{{t _save}}</a></li>
               <li class="nextBtn"><a {{action "doNextSI" target="this"}}>{{t _next_record}} &rsaquo;</a></li>
             </ul>
           </nav>
@@ -94,9 +94,9 @@
             <!-- TABLE HEADER-->
             <thead>
                 <tr>
-                    <th class="noArrows">Id</th>
-                    <th class="noArrows">Question</th>
-                    <th class="noArrows">Answer</th>                
+                    <th class="noArrows">{{t _id}}</th>
+                    <th class="noArrows">{{t _question}}</th>
+                    <th class="noArrows">{{t _answer}}</th>                
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
@@ -126,14 +126,14 @@
                                 {{view FLOW.DateField2 valueBinding="view.date" size=30}}
                               {{else}}
                                 {{#if view.isBarcodeType}}
-                                  The Barcode app on the device is used here
+                                  {{t _the_barcode_app_on_the_device_is_used_here}}
                                   {{view Ember.TextField valueBinding="view.value" size=10 }}
                                 {{/if}}
                               {{/if}}
                             {{/if}}
                           {{/if}}
                         {{/if}}
-                      <a {{action doSave target="this"}} class="smallBtn">save</a> <a {{action doCancel target="this"}}>cancel</a>
+                      <a {{action doSave target="this"}} class="smallBtn">{{t _save}}</a> <a {{action doCancel target="this"}}>{{t _cancel}}</a>
                     {{else}}
                       {{#if view.isNotEditable}}
                         {{QA.value}}
