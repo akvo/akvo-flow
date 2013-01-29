@@ -4,6 +4,7 @@ FLOW.SurveySidebarView = Ember.View.extend({
 	surveyDescription: null,
 	surveyPointType: null,
 	language: null,
+	isDirty: false,
 
 	init: function() {
 		var sectorType = null,
@@ -31,6 +32,28 @@ FLOW.SurveySidebarView = Ember.View.extend({
 	isExistingSurvey: function() {
 		return !Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'));
 	}.property('FLOW.selectedControl.selectedSurvey.keyId'),
+
+	setIsDirty: function() {
+		var isDirty, survey;
+		survey = FLOW.selectedControl.get('selectedSurvey');
+		isDirty = this.get('surveyTitle') != survey.get('name');
+		isDirty = isDirty || this.get('surveyDescription') != survey.get('surveyDescription');
+
+		if(!Ember.none(this.get('surveyPointType'))) {
+			// if we have a surveyPointType, compare them
+			isDirty = isDirty || this.surveyPointType.get('value') != survey.get('pointType');
+		} else {
+			// if we don't have one now, but we had one before, it has also changed
+			isDirty = isDirty || !Ember.empty(survey.get('pointType'));
+		}
+
+		if(!Ember.none(this.get('language'))) {
+			isDirty = isDirty || this.language.get('value') != survey.get('defaultLanguageCode');
+		} else {
+			isDirty = isDirty || !Ember.empty(survey.get('defaultLanguageCode'));
+		}
+		this.set('isDirty', isDirty);
+	}.observes('this.surveyTitle', 'this.surveyDescription', 'this.surveyPointType', 'this.language'),
 
 	isPublished: function() {
 		return(FLOW.selectedControl.selectedSurvey.get('status') == 'PUBLISHED');
@@ -67,6 +90,7 @@ FLOW.SurveySidebarView = Ember.View.extend({
 			survey.set('defaultLanguageCode', null);
 		}
 		FLOW.store.commit();
+		this.setIsDirty();
 	},
 
 	doPreviewSurvey: function() {
@@ -74,7 +98,24 @@ FLOW.SurveySidebarView = Ember.View.extend({
 	},
 
 	doPublishSurvey: function() {
-		FLOW.surveyControl.publishSurvey();
+		var survey;
+		// check if survey has unsaved changes
+		survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
+		if(!Ember.none(survey) && this.get('isDirty')) {
+			FLOW.dialogControl.set('activeAction', "ignore");
+			FLOW.dialogControl.set('header', Ember.String.loc('_save_before_publishing'));
+			FLOW.dialogControl.set('message', Ember.String.loc('_save_before_publishing_text'));
+			FLOW.dialogControl.set('showCANCEL', false);
+			FLOW.dialogControl.set('showDialog', true);
+
+		} else {
+			FLOW.surveyControl.publishSurvey();
+			FLOW.dialogControl.set('activeAction', "ignore");
+			FLOW.dialogControl.set('header', Ember.String.loc('_survey_published'));
+			FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text'));
+			FLOW.dialogControl.set('showCANCEL', false);
+			FLOW.dialogControl.set('showDialog', true);
+		}
 	},
 
 	doSurveysMain: function() {

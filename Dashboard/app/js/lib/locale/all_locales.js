@@ -106,6 +106,8 @@ Ember.STRINGS_EN = {
   '_not_published': 'Not published',
   '_survey_published':'Publishing survey',
   '_survey_published_text':'The survey has been published. Please consult the Messages tab to see if the publishing has succeeded. This may take a few minutes.',
+  '_save_before_publishing':'You have unsaved changes',
+  '_save_before_publishing_text':'Before publishing, you have to save your changes by clicking the "save" button.',
   '_Number_details':'Number Settings',
   '_require_approval':'require approval',
   '_manage_notifications':'manage notifications',
