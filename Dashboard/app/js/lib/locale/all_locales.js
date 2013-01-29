@@ -138,7 +138,14 @@ Ember.STRINGS_EN = {
   '_manual_transfer_file':'Manual transfer file',
   '_previous_record':'previous record',
   '_next_record':'next record',
-  '_no_options_for_this_question_type':'No options for this type of question'
+  '_no_options_for_this_question_type':'No options for this type of question',
+  '_upload_applet_text':'Imports all device data zip files and images stored in the selected directory.',
+  '_raw_data_report_applet_text':'Exports all submitted raw data for a single survey to an Excel spreadsheet. This report will contain all responses submitted for the survey, and must be saved as an .xls or .xlsx. Please immediately make a local copy of this file before you make any changes. (same as raw data report)',
+  '_import_raw_data_applet_text':'Imports a raw data spreadsheet after it has been exported and cleaned. This import will overwrite the existing data for that spreadsheet. Please be very carefull when cleaning data, especially when sorting data',
+  '_comprehensive_report_applet_text':'Exports all raw data along with optional summarized survey data including geographic areas and charts. Must be saved as an .xls or .xlsx. This may take a long time and generate a large report.',
+  '_google_earth_applet_text':'Exports a Google Earth file that shows the location and survey data for every surveyed point in your Dashboard. Can be opened in Google Earth, and must be saved as a .kmz file.',
+  '_survey_form_applet_text':'Generates a printable survey form in Excel that can be used to conduct a paper-based survey. Must be saved as an .xls or .xlsx.'
+
   
 };
 
