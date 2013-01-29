@@ -182,9 +182,9 @@ pre {
 	font-weight: normal;
 }
 .errorMsg {
-	color:rgb(255, 41, 12);
-	text-align:center;
-	}
+	color: rgb(255, 41, 12);
+	text-align: center;
+}
 /* links 
 ---------------------------------------------------------------*/
 
@@ -313,9 +313,9 @@ a.AddBtn:hover { }
 	position: relative;
 	display: block;
 	margin: 0 auto;
-	padding:1em 2% 1.5em 2%;
+	padding: 1em 2% 1.5em 2%;
 	width: 96%;
-	background:rgb(58,58,58);
+	background: rgb(58,58,58);
 }
 .editAnswerMenu ul li {
 	display: inline;
@@ -332,20 +332,18 @@ a.AddBtn:hover { }
 	right: 0;
 }
 .prevBtn a {
-	font-weight:bold;
-	font-size:1.2em;
+	font-weight: bold;
+	font-size: 1.2em;
 	display: inline-block;
-	padding:0.5em 1em 1em 1em;
-	/* padding: 5px 0 0 15px; */
+	padding: 0.5em 1em 1em 1em;/* padding: 5px 0 0 15px; */
 	/* background: url(../images/prevBtn.png) left top no-repeat; */
 }
 .prevBtn:hover a {/* background: url(../images/prevBtn.png) left bottom no-repeat; */ color: rgb(255,255,255); }
 .nextBtn a {
-	font-weight:bold;
-	font-size:1.2em;
+	font-weight: bold;
+	font-size: 1.2em;
 	display: inline-block;
-	padding:0.5em 1em 1em 1em;
-	/* padding: 5px 15px 0 0; */
+	padding: 0.5em 1em 1em 1em;/* padding: 5px 15px 0 0; */
 	/* background: url(../images/nextBtn.png) right top no-repeat; */
 }
 .nextBtn:hover a {/* background: url(../images/nextBtn.png) right bottom no-repeat; */ color: rgb(255,255,255); }
@@ -447,9 +445,9 @@ a.AddBtn:hover { }
 .dialogWrap .menuCentre { margin: 30px auto 10px auto; }
 .dialogWrap p {
 	margin: 1em auto;
-	padding: 1em;
+	padding: 1em 0.3em;
 	background: rgb(242,242,242);
-	font-size: 1.5em;
+	font-size: 1.2em;
 }
 .dialogWrap select, .dialogWrap input { display: block; }
 .dialogWrap select {
@@ -721,7 +719,7 @@ table.dataTable thead tr {
 	background: rgb(58,58,58);
 }
 table.dataTable thead tr th {
-	position:relative;
+	position: relative;
 	border-right: thin solid rgb(12,12,12);
 	background: url(../images/sortTableArrows.png) right center no-repeat;
 	color: rgb(255, 210, 0);
@@ -730,13 +728,10 @@ table.dataTable thead tr th {
 	font-weight: normal;
 	font-size: 1.1em;
 }
-table.dataTable thead tr th input[type="checkbox"]{
-	margin:0;
-}
-
+table.dataTable thead tr th input[type="checkbox"] { margin: 0; }
 .dataSection table.dataTable thead tr th { padding: 9px 1em 9px 1em; }
-#surveyDataTable   thead tr th { padding:9px 1em 9px 1em; }
-#deviceDataTable  thead tr th { padding: 9px 1em 9px 1em; }
+#surveyDataTable thead tr th { padding: 9px 1em 9px 1em; }
+#deviceDataTable thead tr th { padding: 9px 1em 9px 1em; }
 #usersListTable thead tr th { padding: 11px 1em 7px 1em; }
 #messageListTable thead tr th { padding: 9px 1em; }
 table.dataTable thead tr th.noArrows { background: #3A3A3A; }
@@ -1257,7 +1252,7 @@ nav.menuTopbar ul li {
 nav.menuTopbar ul li:last-child {
 	display: inline;
 	float: left;
-	margin: 4px 4px 0 0;
+	margin: 10px 15px 0 0;
 	text-transform: uppercase;
 }
 a.addGroup, a.addSurvey, a.stepBack, a.editGroupName, a.deleteGroup {
@@ -1283,9 +1278,12 @@ a.editGroupName { background: transparent url(../images/editSurvey.png) left top
 a.editGroupName:hover { background: url(../images/editSurvey.png) left bottom no-repeat; }
 a.deleteGroup { background: transparent url(../images/deleteSurvey.png) left top no-repeat; }
 a.deleteGroup:hover { background: url(../images/deleteSurvey.png) left bottom no-repeat; }
-
-#assignSurveys a.stepBack {position:absolute;top:1.5em; right:1em;}
-
+#assignSurveys a.stepBack {
+	position: absolute;
+	top: 1.5em;
+	right: 1em;
+}
+#assignSurveys a.stepBack:hover { color: rgb(58,58,58); }
 /* Survey Asset
 --------------------------------------------- */
 ul.surveyBatch {
@@ -1296,27 +1294,31 @@ li.aSurvey {
 	position: relative;
 	display: inline-block;
 	float: left;
-	margin: 5px 1% 10px 1%;
+	margin: 0.5em 1.5% 1em 1.5%;
 	padding: 0 0.5% 0.50em 0.5%;
 	min-height: 17em;
-	width: 22%;
+	width: 21%;
 	/* background: url(../images/surveySeperator.png) right center no-repeat; */
 	background: rgb(255,255,255);
 	font-size: 1.1em;
 	cursor: pointer;
+	-webkit-border-radius: 0.3em;
+	-moz-border-radius: 0.3em;
+	-o-border-radius: 0.3em;
+	border-radius: 0.3em;
 	-webkit-transition: all 0.4s linear;
 	-moz-transition: all 0.4s linear;
 	-o-transition: all 0.4s linear;
 	transition: all 0.4s linear;
 }
-li.aSurvey:hover { background: rgb(235,235,235);
-/* -webkit-box-shadow: 0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248); */
+li.aSurvey:hover { background: rgb(235,235,235);/* -webkit-box-shadow: 0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248); */
 /* -moz-box-shadow: 0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248); */
 /* box-shadow: 0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248); */
 /* -o-box-shadow: 0px -1px 0px rgb(208,208,208), 0 1px 0px rgb(248,248,248); */}
 li.aSurvey:nth-child(4n+1), li.aSurvey.firstOfRow { }
 li.aSurvey:nth-child(4n), li.aSurvey.endOfRow { background-image: none; }
 li.aSurvey h2 {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	display: inline-block;
 	overflow: hidden;
 	margin: 0.5em 0 0 1%;
@@ -1327,8 +1329,8 @@ li.aSurvey h2 {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	font-size: 1.3em;
-	font-weight:bold;
-	letter-spacing:0em;
+	/*	font-weight:bold;
+*/	letter-spacing: 0.01em;
 }
 li.aSurvey:hover h2 { color: rgb(255,255,255); }
 ul.surveyInfo {
@@ -1508,7 +1510,7 @@ li.aSurvey:hover h2 { color: rgb(57, 102, 128); }
 	font-size: 1em;
 }
 #newSurveyInfo label:first-child {
-	margin: 0em 2px 10px 2px;
+	margin: 0.5em 2px 10px 2px;
 	color: rgb(255,255,255);
 }
 #newSurveyInfo input {
@@ -1589,7 +1591,7 @@ a.manageNotifications span {
 }
 .newSurveyInfoUl li {
 	position: relative;
-	margin: 0.01em auto 0.3em auto;
+	margin:0.01em auto 0.5em auto;
 	padding: 0.01em 2%;
 	width: 92%;
 	color: rgb(153,153,153);
