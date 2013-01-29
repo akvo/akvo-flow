@@ -399,7 +399,6 @@ FLOW.SurveyBootstrapView = Ember.View.extend({
   templateName: 'navDevices/bootstrap-tab/survey-bootstrap'
 });
 
-
 // data views
 FLOW.NavDataView = Ember.View.extend({
   templateName: 'navData/nav-data'
@@ -489,7 +488,7 @@ FLOW.FooterView = FLOW.View.extend({
 // ********************************************************//
 //             Subnavigation for the Data tabs
 // ********************************************************//
-FLOW.DatasubnavView = Em.View.extend({
+FLOW.DatasubnavView = FLOW.View.extend({
   templateName: 'navData/data-subnav',
   selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({
