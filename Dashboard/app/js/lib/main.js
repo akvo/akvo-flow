@@ -13,6 +13,6 @@ require('akvo-flow/models/fixtures');
 require('akvo-flow/controllers/controllers');
 require('akvo-flow/views/views');
 require('akvo-flow/router/router');
-require('akvo-flow/locale/all_locales');
+require('akvo-flow/all_locales');
 
 FLOW.initialize();
