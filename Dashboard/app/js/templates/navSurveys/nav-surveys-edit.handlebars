@@ -8,7 +8,7 @@
       {{view Ember.TextField valueBinding="view.surveyTitle" placeholder="Type in the name of your survey" size=30}} </label>
     <label for="newSurveyDesc">{{t _Description}}:
       {{view Ember.TextArea valueBinding="view.surveyDescription" placeholder="Type in a description of your survey" size=30 rows="3" }} </label>
-    <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireApproval"}}{{t _require_approval}} </label>
+   <!--  <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireApproval"}}{{t _require_approval}} </label> -->
 	  <dl class="floats-in">
               <dt>{{t _Version_Number}}:</dt>
               <dd><span id="versionNbr">{{FLOW.selectedControl.selectedSurvey.version}}</span><a href="#" class="helpIcon tooltip" title="Version Number helps you keep track of the number of times the survey has been revised and published. So, if the survey has been revised and published five times, it will be Version 5.0">Get Help</a></dd>
