@@ -52,8 +52,8 @@ FLOW.countryControl = Ember.Object.create({
     for (var i = 0; i < countries.length; i++) {
       if ( !Ember.none(countries[i].centroidLat) && !Ember.none(countries[i].centroidLon) ) {
         var zoom = 8; // default zoom level
-        if (Ember.none(countries[i].zoom)) {
-          zoom = countries[i].zoom;
+        if (Ember.none(countries[i].zoomLevel)) {
+          zoom = countries[i].zoomLevel;
         }
         
         countryList.push(
