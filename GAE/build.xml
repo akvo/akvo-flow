@@ -1,6 +1,7 @@
 <project basedir=".">
 	<property file="build.properties" />
 	<property name="dashboard" value="../Dashboard" />
+	<property name="ui-strings" value="src/locale" />
 	<import file="${sdk.dir}/config/user/ant-macros.xml" />
 
 	<path id="project.classpath">
@@ -104,7 +105,7 @@
 
 	<target name="translate" depends="compile" description="Generates the en.properties file from handlebars template and JS files">
 		<java classname="services.TranslationGenerator" failonerror="true">
-			<arg line="${dashboard}" />
+			<arg line="${dashboard} ${ui-strings}" />
 			<classpath refid="project.classpath" />
 		</java>
 	</target>

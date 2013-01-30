@@ -1,4 +1,6 @@
-FLOW.CurrentDevicesTabView = FLOW.View.extend({
+
+FLOW.CurrentDevicesTabView = Ember.View.extend({
+// FLOW.CurrentDevicesTabView = FLOW.View.extend({
 	showDeleteDevicesDialogBool: false,
 	showAddToGroupDialogBool: false,
 	showRemoveFromGroupDialogBool: false,

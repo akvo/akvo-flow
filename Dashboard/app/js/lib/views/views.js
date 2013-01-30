@@ -383,11 +383,11 @@ FLOW.NavDevicesView = Ember.View.extend({
   templateName: 'navDevices/nav-devices'
 });
 
-FLOW.CurrentDevicesView = Ember.View.extend({
+FLOW.CurrentDevicesView = FLOW.View.extend({
   templateName: 'navDevices/devices-list-tab/devices-list'
 });
 
-FLOW.AssignSurveysOverviewView = Ember.View.extend({
+FLOW.AssignSurveysOverviewView = FLOW.View.extend({
   templateName: 'navDevices/assignment-list-tab/assignment-list'
 });
 
@@ -395,7 +395,7 @@ FLOW.EditSurveyAssignmentView = Ember.View.extend({
   templateName: 'navDevices/assignment-edit-tab/assignment-edit'
 });
 
-FLOW.SurveyBootstrapView = Ember.View.extend({
+FLOW.SurveyBootstrapView = FLOW.View.extend({
   templateName: 'navDevices/bootstrap-tab/survey-bootstrap'
 });
 
@@ -504,7 +504,7 @@ FLOW.DatasubnavView = FLOW.View.extend({
 // ********************************************************//
 //             Subnavigation for the Device tabs
 // ********************************************************//
-FLOW.DevicesSubnavView = Em.View.extend({
+FLOW.DevicesSubnavView = FLOW.View.extend({
   templateName: 'navDevices/devices-subnav',
   selectedBinding: 'controller.selected',
   NavItemView: Ember.View.extend({

@@ -25,12 +25,12 @@
       <tr> {{#view FLOW.ColumnView item="select" }}
         {{view Ember.Checkbox checkedBinding="FLOW.deviceControl.allAreSelected"}}
         {{/view}}
-        {{#view FLOW.ColumnView item="IMEI" type="device"}} <a {{action "sort" target="this"}}>IMEI</a> {{/view}}
-        {{#view FLOW.ColumnView item="phoneNumber" type="device"}} <a {{action "sort" target="this"}}>Phone number</a> {{/view}}
-        {{#view FLOW.ColumnView item="deviceIdentifier" type="device"}} <a {{action "sort" target="this"}}>Device ID</a> {{/view}}
-        {{#view FLOW.ColumnView item="deviceGroup" type="device"}} <a {{action "sort" target="this"}}>Device group</a> {{/view}}
-        {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>Last Contact</a> {{/view}}
-        {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>Version</a> {{/view}} </tr>
+        {{#view FLOW.ColumnView item="IMEI" type="device"}} <a {{action "sort" target="this"}}>{{t _imei}}</a> {{/view}}
+        {{#view FLOW.ColumnView item="phoneNumber" type="device"}} <a {{action "sort" target="this"}}>{{t _phone_number}}</a> {{/view}}
+        {{#view FLOW.ColumnView item="deviceIdentifier" type="device"}} <a {{action "sort" target="this"}}>{{t _device_id}}</a> {{/view}}
+        {{#view FLOW.ColumnView item="deviceGroup" type="device"}} <a {{action "sort" target="this"}}>{{t _device_group}}</a> {{/view}}
+        {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>{{t _last_contact}}</a> {{/view}}
+        {{#view FLOW.ColumnView item="lastPositionDate" type="device"}} <a {{action "sort" target="this"}}>{{t _version}}</a> {{/view}} </tr>
     </thead>
     <!-- TABLE BODY: MAIN CONTENT-->
     <tbody>
@@ -66,8 +66,8 @@
     <div class="dialogWrap"> 
       <!-- the dialog contents -->
       <div class="confirmDialog dialog">
-        <h2>Add devices to device group</h2>
-        <p class="dialogMsg">Choose an existing device group from the list</p>
+        <h2>{{t _add_devices_to_device_group}}</h2>
+        <p class="dialogMsg">{{t _choose_an_existing_device_group_from_the_list}}</p>
         <br/>
         {{view Ember.Select 
         contentBinding="FLOW.deviceGroupControl.content" 
@@ -77,8 +77,8 @@
         prompt="Select existing device group"}}
         <div class="buttons menuCentre">
           <ul>
-            <li><a {{action "doAddToGroup" target="this"}} class="ok smallBtn">OK</a></li>
-            <li><a {{action "cancelAddToGroup" target="this"}}} class="cancel">CANCEL</a></li>
+            <li><a {{action "doAddToGroup" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
+            <li><a {{action "cancelAddToGroup" target="this"}}} class="cancel">{{t _cancel}}</a></li>
           </ul>
         </div>
       </div>
@@ -91,11 +91,11 @@
     <div class="dialogWrap"> 
       <!-- the dialog contents -->
       <div class="confirmDialog dialog">
-        <h2>Remove devices from device group?</h2>
+        <h2>{{t _remove_devices_from_device_group}}?</h2>
         <div class="buttons menuCentre">
           <ul>
-            <li><a {{action "doRemoveFromGroup" target="this"}} class="ok smallBtn">OK</a></li>
-            <li><a {{action "cancelRemoveFromGroup" target="this"}}} class="cancel">CANCEL</a></li>
+            <li><a {{action "doRemoveFromGroup" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
+            <li><a {{action "cancelRemoveFromGroup" target="this"}}} class="cancel">{{t _cancel}}</a></li>
           </ul>
         </div>
       </div>
@@ -108,8 +108,8 @@
     <div class="dialogWrap"> 
       <!-- the dialog contents -->
       <div class="confirmDialog dialog">
-        <h2>Manage device groups</h2>
-        <p class="dialogMsg">To change the name of an existing group, select it and change the name</p>
+        <h2>{{t _manage_device_groups}}</h2>
+        <p class="dialogMsg">{{t _to_change_the_name_of_an_existing_group}}</p>
         <br/>
         {{view Ember.Select 
         contentBinding="FLOW.deviceGroupControl.content" 
@@ -119,13 +119,13 @@
         prompt="Select device group"}} 
         
         {{view Ember.TextField valueBinding="view.changedDeviceGroupName" size=40}}
-        <p class="dialogMsg">To create a new device group, enter the name in the box below</p>
-        <label for="newDeviceGroupName">New group:</label>
+        <p class="dialogMsg">{{t _to_create_a_new_device_group}}</p>
+        <label for="newDeviceGroupName">{{t _new_group}}:</label>
         {{view Ember.TextField valueBinding="view.newDeviceGroupName" id="newDeviceGroupName" size=40}}
         <div class="buttons menuCentre">
           <ul>
-            <li><a {{action "doManageDeviceGroups" target="this"}} class="ok smallBtn">SAVE</a></li>
-            <li><a {{action "cancelManageDeviceGroups" target="this"}}} class="cancel">CANCEL</a></li>
+            <li><a {{action "doManageDeviceGroups" target="this"}} class="ok smallBtn">{{t _save}}</a></li>
+            <li><a {{action "cancelManageDeviceGroups" target="this"}}} class="cancel">{{t _cancel}}</a></li>
           </ul>
         </div>
       </div>
