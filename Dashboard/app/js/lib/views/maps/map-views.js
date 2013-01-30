@@ -8,14 +8,13 @@
       a placemark counterpart.
 **/
 
-FLOW.NavMapsView = FLOW.View.extend({
+FLOW.NavMapsView = Ember.View.extend({
   templateName: 'navMaps/nav-maps',
   showDetailsBool: false,
   detailsImage: null,
 
   init: function() {
     this._super();
-    // this.detailsImage = FLOW.Env.imageroot + '/invisible.png';
     this.detailsImage = 'images/invisible.png';
     FLOW.placemarkControl.populate();
   },
@@ -124,7 +123,6 @@ FLOW.NavMapsView = FLOW.View.extend({
     var point = new mxn.LatLonPoint(placemark.get('latitude'), placemark.get('longitude')),
       marker = new mxn.Marker(point);
 
-    // marker.setIcon(FLOW.Env.imageroot + '/maps/blueMarker.png');
     marker.setIcon('images/maps/blueMarker.png');
     marker.placemark = placemark;
 
