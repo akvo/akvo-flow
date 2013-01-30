@@ -4,17 +4,17 @@
         <div class="innerContent">
             <div id="notifications">
                 <h1>
-                    Notifications
+                    {{t _notifications}}
                 </h1>
                 <div class="whiteBgSeparator">
                    
                     <form class="notificationAdd">
                         <fieldset>
-                            <label for="emailNotification">Email  {{#if view.destinationEmpty}} - Please provide an email address {{/if}}</label> 
+                            <label for="emailNotification">{{t _email}}  {{#if view.destinationEmpty}} - {{t _please_provide_an_email_address}} {{/if}}</label> 
                             {{view Ember.TextField valueBinding="view.notificationDestination" id="emailNotification" size=150 }}
                         </fieldset>
                         <fieldset>
-                            <label for="eventNotification">Event  {{#if view.typeEmpty}} - Please make a choice{{/if}}</label> 
+                            <label for="eventNotification">{{t _event}}  {{#if view.typeEmpty}} - {{t please_make_a_choice}}{{/if}}</label> 
                             {{view Ember.Select 
                             contentBinding="FLOW.notificationEventControl.content" 
                             optionLabelPath="content.label" 
@@ -24,7 +24,7 @@
                             prompt="Select event"}}
                         </fieldset>
                         <fieldset>
-                            <label for="typeNotification">Option  {{#if view.optionEmpty}} - Please make a choice {{/if}}</label> 
+                            <label for="typeNotification">{{t _option}}  {{#if view.optionEmpty}} - {{t please_make_a_choice}} {{/if}}</label> 
                             {{view Ember.Select 
                             contentBinding="FLOW.notificationOptionControl.content" 
                             optionLabelPath="content.label" 
@@ -34,13 +34,13 @@
                             prompt="Select option"}}
                         </fieldset>
                         <fieldset>
-                            <label for="dateNotification">Expires {{#if view.dateEmpty}} - Please select a date {{/if}}</label> {{view FLOW.DateField2 valueBinding="view.expiryDate" id="dateNotification" size=30}}
+                            <label for="dateNotification">{{t _expires}} {{#if view.dateEmpty}} - {{t _please_select_a_date}} {{/if}}</label> {{view FLOW.DateField2 valueBinding="view.expiryDate" id="dateNotification" size=30}}
                         </fieldset>
                         <fieldset class="addNotifiBtn">
                             <nav>
                                 <ul>
-                                    <li><a {{action "addNotification" target="this"}} class="smallBtn">Add</a></li>
-                                    <li><a {{action "cancelNotification" target="this"}} >Cancel</a></li>
+                                    <li><a {{action "addNotification" target="this"}} class="smallBtn">{{t _add}}</a></li>
+                                    <li><a {{action "cancelNotification" target="this"}} >{{t _cancel}}</a></li>
                                 </ul>
                             </nav>
                         </fieldset>
@@ -49,10 +49,10 @@
                         <!-- DEVICES TABLE--><!-- TABLE HEADER-->
                         <thead>
                             <tr>
-                                <th>Email</th>
-                                <th>Type</th>
-                                <th>Option</th>
-                                <th>Expires</th>
+                                <th>{{t _email}}</th>
+                                <th>{{t _type}}</th>
+                                <th>{{t _option}}</th>
+                                <th>{{t _expires}}</th>
                                 <th></th>
                             </tr>
                         </thead><!-- TABLE BODY: MAIN CONTENT-->
@@ -64,7 +64,7 @@
                                 <td class="">{{notification.notificationOption}}</td>
                                 <td class="">{{#with notification}}{{date3 expiryDate}}{{/with}}</td>
                                 <td class="action">
-                                    <a {{action "removeNotification" notification target="this"}}>remove</a>
+                                    <a {{action "removeNotification" notification target="this"}}>{{t _remove}}</a>
                                 </td>
                             </tr>
                             {{/each}}
@@ -82,7 +82,7 @@
             <nav class>
                 <ul>
                     <li>
-                        <a {{action "closeNotifications" target="this"}} class="smallBtn">Close notifications</a>
+                        <a {{action "closeNotifications" target="this"}} class="smallBtn">{{t _close_notifications}}</a>
                     </li>
                 </ul>
             </nav>

@@ -42,9 +42,9 @@
   </ul>
   <nav class="newSurveyNav">
     <ul>
-      <li><a {{action doSaveSurvey target="this"}} class="saveNewSurvey">Save</a></li>
-      <li><a {{action doPreviewSurvey target="this"}} class="previewNewSurvey">Preview</a></li>
-      <li><a {{action doPublishSurvey target="this"}} class="publishNewSurvey">Publish</a></li>
+      <li><a {{action doSaveSurvey target="this"}} class="saveNewSurvey">{{t _save}}</a></li>
+      <li><a {{action doPreviewSurvey target="this"}} class="previewNewSurvey">{{t _preview}}</a></li>
+      <li><a {{action doPublishSurvey target="this"}} class="publishNewSurvey">{{t _publish}}</a></li>
     </ul>
   </nav>
  
@@ -53,7 +53,7 @@
   <section class="topBar">
     <nav class="menuTopbar">
       <ul class="">
-        <li><a {{action "doSurveysMain" target="this"}} class="stepBack">Go back to survey overview</a></li>
+        <li><a {{action "doSurveysMain" target="this"}} class="stepBack">{{t _go_back_to_survey_overview}}</a></li>
       </ul>
     </nav>
   </section>
