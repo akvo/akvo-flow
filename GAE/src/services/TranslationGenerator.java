@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -35,19 +35,19 @@ public class TranslationGenerator {
 	private static final String JSCALLSUFXX = "'";
 	private static final String[] EXTS = { "handlebars", "js" };
 
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
 
-		if (args.length == 0) {
-			System.err.println("<Dashboard> directory is required");
+		if (args.length < 2) {
+			System.err.println("<Dashboard> and <output> directories are required");
 			return;
 		}
 
 		final File sources = new File(args[0]);
+		final File output = new File(args[1]);
 
 		final Properties ui_strings = new Properties();
-		ui_strings.load(new FileInputStream(new File(sources,
-				"/translations/locale/ui-strings.properties")));
+		ui_strings.load(new FileInputStream(new File(output,
+				"/ui-strings.properties")));
 
 		final Map<String, String> trlKeys = new HashMap<String, String>();
 		final List<String> enValues = new ArrayList<String>();
@@ -73,7 +73,8 @@ public class TranslationGenerator {
 
 						trlKeys.put(key, (en == null ? "" : en));
 
-						if (en != null && !"".equals(en) && !enValues.contains(en)) {
+						if (en != null && !"".equals(en)
+								&& !enValues.contains(en)) {
 							enValues.add(en);
 						}
 					}
@@ -86,8 +87,8 @@ public class TranslationGenerator {
 		for (String val : enValues) {
 			sb.append(val).append(" = ").append(val).append("\n");
 		}
-		FileUtils.writeStringToFile(new File(sources,
-				"/translations/locale/en.properties"), sb.toString(), "UTF-8");
+		FileUtils.writeStringToFile(new File(output, "/en.properties"),
+				sb.toString(), "UTF-8");
 
 		final List<String> tmp = new ArrayList<String>(trlKeys.keySet());
 		Collections.sort(tmp);
@@ -96,9 +97,8 @@ public class TranslationGenerator {
 			uisource.append(ui).append(" = ").append(trlKeys.get(ui))
 					.append("\n");
 		}
-		FileUtils.writeStringToFile(new File(sources,
-				"/translations/locale/ui-strings.properties"), uisource
-				.toString(), "UTF-8");
+		FileUtils.writeStringToFile(new File(output, "/ui-strings.properties"),
+				uisource.toString(), "UTF-8");
 	}
 
 	private static String getKey(String line) {

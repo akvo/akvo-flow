@@ -37,14 +37,21 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 		var isDirty, survey;
 		survey = FLOW.selectedControl.get('selectedSurvey');
 		isDirty = this.get('surveyTitle') != survey.get('name');
-		isDirty = isDirty || this.get('surveyDescription') != survey.get('surveyDescription');
+
+		if(!Ember.none(this.get('surveyDescription'))) {
+			isDirty = isDirty || this.get('surveyDescription') != survey.get('surveyDescription');
+		} else {
+			// if we don't have one now, but we had one before, it has also changed
+			isDirty = isDirty || !Ember.none(survey.get('surveyDescription'));
+		}
 
 		if(!Ember.none(this.get('surveyPointType'))) {
 			// if we have a surveyPointType, compare them
 			isDirty = isDirty || this.surveyPointType.get('value') != survey.get('pointType');
 		} else {
 			// if we don't have one now, but we had one before, it has also changed
-			isDirty = isDirty || !Ember.empty(survey.get('pointType'));
+			// TODO - this breaks when the pointType is an old point Type
+			//isDirty = isDirty || !Ember.none(survey.get('pointType'));
 		}
 
 		if(!Ember.none(this.get('language'))) {
@@ -53,7 +60,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 			isDirty = isDirty || !Ember.empty(survey.get('defaultLanguageCode'));
 		}
 		this.set('isDirty', isDirty);
-	}.observes('this.surveyTitle', 'this.surveyDescription', 'this.surveyPointType', 'this.language'),
+	},
 
 	isPublished: function() {
 		return(FLOW.selectedControl.selectedSurvey.get('status') == 'PUBLISHED');
@@ -79,7 +86,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 		survey.set('name', this.get('surveyTitle'));
 		survey.set('code', this.get('surveyTitle'));
 		survey.set('status', 'NOT_PUBLISHED');
-		survey.set('path',FLOW.selectedControl.selectedSurveyGroup.get('code'));
+		survey.set('path', FLOW.selectedControl.selectedSurveyGroup.get('code'));
 		survey.set('description', this.get('surveyDescription'));
 		if(this.get('surveyPointType') !== null) {
 			survey.set('pointType', this.surveyPointType.get('value'));
@@ -103,6 +110,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 		var survey;
 		// check if survey has unsaved changes
 		survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
+		this.setIsDirty();
 		if(!Ember.none(survey) && this.get('isDirty')) {
 			FLOW.dialogControl.set('activeAction', "ignore");
 			FLOW.dialogControl.set('header', Ember.String.loc('_save_before_publishing'));
@@ -221,7 +229,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
 	// insert group
 	doInsertQuestionGroup: function() {
-		var insertAfterOrder,path;
+		var insertAfterOrder, path;
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
 
 		if(FLOW.selectedControl.selectedSurvey.get('keyId')) {
@@ -307,7 +315,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 	// execute group copy to selected location
 	// TODO should this copy all questions in the group?
 	doQGroupCopyHere: function() {
-		var insertAfterOrder,path;
+		var insertAfterOrder, path;
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
 
 		if(this.get('zeroItem')) {
