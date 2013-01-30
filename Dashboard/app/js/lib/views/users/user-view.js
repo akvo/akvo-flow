@@ -18,7 +18,7 @@ FLOW.UserListView = FLOW.View.extend({
 
   doAddUser: function() {
     var value = null;
-    if(FLOW.editControl.editPermissionLevel !== null) {
+    if(FLOW.editControl.newPermissionLevel !== null) {
       value = FLOW.editControl.newPermissionLevel.get('value');
     } else {
       value = null;
@@ -27,7 +27,7 @@ FLOW.UserListView = FLOW.View.extend({
     FLOW.store.createRecord(FLOW.User, {
       "userName": FLOW.editControl.get('newUserName'),
       "emailAddress": FLOW.editControl.get('newEmailAddress'),
-      "permissionLevel": value
+      "permissionList": value
     });
 
     FLOW.store.commit();
