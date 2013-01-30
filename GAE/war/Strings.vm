@@ -1,0 +1,3 @@
+loader.register('akvo-flow/all_locales', function(require) {
+  Ember.STRINGS_EN = $en;
+});
