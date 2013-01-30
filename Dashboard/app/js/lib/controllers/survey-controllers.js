@@ -308,7 +308,8 @@ FLOW.questionControl = Ember.ArrayController.create({
 
   // used for display of dependencies: a question can only be dependent on earlier questions
   setEarlierOptionQuestions: function() {
-    if(!Ember.none(FLOW.selectedControl.get('selectedQuestion'))) {
+    
+    if(!Ember.none(FLOW.selectedControl.get('selectedQuestion')) && !Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
       var optionQuestionList, sId, questionGroupOrder, qgOrder, qg, questionOrder;
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
       questionGroupOrder = FLOW.selectedControl.selectedQuestionGroup.get('order');
