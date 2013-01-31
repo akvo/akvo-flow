@@ -1,6 +1,6 @@
  <section class="fullWidth" id="reportBlocks">
     {{#view FLOW.chartView}}
-        <h1>{{t _chart_builder}}</h1>
+        <h1>Chart builder</h1>
         {{view Ember.Select 
       contentBinding="FLOW.surveyGroupControl.content" 
       selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
@@ -22,7 +22,7 @@
         optionValuePath="content.keyId" 
         prompt="Select question"}}
 <div class="chartSetting">       
-<h4>{{t _chart_type}}:</h4>
+<h4>Chart Type:</h4>
       {{view Ember.Select 
         contentBinding="FLOW.chartTypeControl.content" 
         selectionBinding="view.chartType" 
@@ -31,16 +31,16 @@
         prompt="Select chart type"}}
         
 {{#if view.isDoughnut}} 
-  <label class="groupChartSelect"> {{t _put_smaller_items_together}}? {{view Ember.Checkbox checkedBinding="view.compactSmaller"}}</label>
+  <label class="groupChartSelect"> Put smaller items together? {{view Ember.Checkbox checkedBinding="view.compactSmaller"}}</label>
 {{/if}}
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
 </div>		
     {{#if view.noChoiceBool}}
-      <p class="errorMsg">{{t _please_choose_a_survey_group_survey_and_question_using_the_selectors_above}}.</p>
+      <p class="errorMsg">Please choose a survey group, survey and question using the selectors above.</p>
     {{/if}}
      	<h3 class="chartTitle">{{FLOW.selectedControl.selectedQuestion.text}}</h3>
         <div id="piechart">
-			<p>{{t _choose_a_question_from_above_selectors}}.</p> 	
+			<p>Choose a Question from above selectors.</p> 	
 		</div>
 {{/view}}
 
@@ -67,7 +67,7 @@ function createDoughnutChart(){
         .attr("width", canvasWidth) //set the width of the canvas
         .attr("height", canvasHeight) //set the height of the canvas
         .append("svg:g") //make a group to hold our pie chart
-        .attr("transform", "translate(" + 0.3*canvasWidth + "," + 0.5*canvasHeight + ")") // relocate center of pie
+        .attr("transform", "translate(" + 0.25*canvasWidth + "," + 0.4*canvasHeight + ")") // relocate center of pie
 
     // This will create <path> elements for us using arc data...
     var arc = d3.svg.arc()
@@ -80,8 +80,8 @@ function createDoughnutChart(){
 
       vis.append("svg:text")
       .attr("text-anchor", "left")
-      .style("fill", "Blue")
-      .style("font", "bold 12px Arial")
+      .style("fill", "rgb(246, 160, 26)")
+      .style("font", "bold 1.5em helvetica")
       .text("Smallest items:") 
       .attr("transform","translate(320,-120)");
 
@@ -91,13 +91,13 @@ function createDoughnutChart(){
       .enter()
       .append("svg:text")
       .attr("text-anchor", "left")
-      .style("fill", "Purple")
-      .style("font", "bold 12px Arial")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1.1em helvetica")
       .text(function(d){
         return d.legendLabel;
       }) 
       .attr("transform",function(d,i){
-        return "translate(350," + (-100+i*20) + ")";
+        return "translate(325," + (-100+i*20) + ")";
       })
 
     // Select all <g> elements with class slice (there aren't any yet)
@@ -134,28 +134,28 @@ function createDoughnutChart(){
         return (d.endAngle + d.startAngle)/2 > Math.PI ? "end" : "start";
       })
       .style("fill", "rgb(58,58,58)")
-      .style("font", "bold 1em Arial")
+      .style("font", "bold 1.1em helvetica")
       .text(function(d, i) { return dataSet[i].legendLabel; }); //get the label from our original data array
 
        // Add a legendLabel to each arc slice...
     vis.append("svg:text")
       .attr("text-anchor", "middle")
       .style("fill", "rgb(58,58,58)")
-      .style("font", "bold 1em Arial")
+      .style("font", "bold 1.2em helvetica")
       .text("Total:") //get the label from our original data array
       .attr("transform","translate(0,-15)");
 
     vis.append("svg:text")
       .attr("text-anchor", "middle")
       .style("fill", "rgb(58,58,58)")
-      .style("font", "bold 1em Arial")
+      .style("font", "bold 1.1em helvetica")
       .text("answers") //get the label from our original data array
       .attr("transform","translate(0,15)");
 
     vis.append("svg:text")
       .attr("text-anchor", "middle")
       .style("fill", "rgb(58,58,58)")
-      .style("font", "bold 1em Arial")
+      .style("font", "bold 1.1em helvetica")
       .text(total.toString()) 
       .attr("transform","translate(0,0)");
 
@@ -206,7 +206,7 @@ var svg = d3.select("#piechart")
       .append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
-      .attr("dy", ".71em")
+      .attr("dy", ".71.1em")
       .style("text-anchor", "end")
       .text("Percentage");
 
@@ -228,7 +228,7 @@ var svg = d3.select("#piechart")
       .append("svg:text")
       .attr("text-anchor", "left")
       .style("fill", "rgb(58,58,58)")
-      .style("font", "bold 1em Arial")
+      .style("font", "bold 1.1em helvetica")
       .text(function(d){
         return d.legendLabel;
       }) 
@@ -242,8 +242,8 @@ var svg = d3.select("#piechart")
       .enter()
       .append("svg:text")
       .attr("text-anchor", "left")
-      .style("fill", "Black")
-      .style("font", "10px Arial")
+      .style("fill", "rgb(0,0,0)")
+      .style("font", "normal 1em helvetica")
       .text(function(d){
         var num = d.percentage;
         return num.toFixed(1).toString() + "%";
@@ -282,8 +282,8 @@ var svg = d3.select("#piechart")
 
  svg.append("svg:text")
       .attr("text-anchor", "left")
-      .style("fill", "rgb(21, 55, 255)")
-      .style("font", "bold 1em Arial")
+      .style("fill", "rgb(246, 160, 26)")
+      .style("font", "bold 2em helvetica")
       .text("Percentage") 
       .attr("transform","translate(300,0)");
 
@@ -305,7 +305,7 @@ var svg = d3.select("#piechart")
       .append("svg:text")
       .attr("text-anchor", "end")
       .style("fill", "rgb(58,58,58)")
-      .style("font", "bold 1em")
+      .style("font", "bold 1.1em helvetica")
       .text(function(d){
         return d.legendLabel;
       }) 
@@ -320,7 +320,7 @@ var svg = d3.select("#piechart")
       .append("svg:text")
       .attr("text-anchor", "left")
       .style("fill", "rgb(0,0,0)")
-      .style("font", "1em")
+      .style("font", "normal 1.1em helvetica")
       .text(function(d){
         var num = d.percentage;
         return num.toFixed(1).toString();
