@@ -185,6 +185,9 @@ pre {
 	color: rgb(255, 41, 12);
 	text-align: center;
 }
+.infoText {
+	
+	}
 /* links 
 ---------------------------------------------------------------*/
 
@@ -768,9 +771,9 @@ tfoot tr {
 #usersListTable .emailAdr { width: 35%; }
 #usersListTable .permLevel { width: 20%; }
 #usersListTable .action { width: 10%; }
-#usersListTable .permLevel.admin { color: rgb(227, 27, 35); }
-#usersListTable .permLevel.permUser { color: rgb(219, 135, 201); }
-#usersListTable .permLevel.ProjectEditor { color: rgb(119, 97, 0); }
+#usersListTable .ADMIN { color: rgb(227, 27, 35); }
+#usersListTable .USER { color: rgb(219, 135, 201); }
+#usersListTable .PROJECT_EDITOR { color: rgb(119, 97, 0); }
 #inspectData {
 	border: thin solid rgb(224,224,224);
 	border-top: 1px solid rgb(255,255,255);
@@ -1634,16 +1637,17 @@ nav.newSurveyNav ul li:last-child { background: none; }
 nav.newSurveyNav ul li a {
 	display: block;
 	padding: 10px 0% 12px 40%;
-	width: 60%;
+	width: 60%; 
 	height: 8px;
+	overflow:hidden;
 }
 nav.newSurveyNav li a:hover { color: rgb(255,255,255); }
-nav.newSurveyNav ul li a.saveNewSurvey { background: url(../images/saveNewSurvey.png) left top no-repeat; }
-nav.newSurveyNav ul li a.previewNewSurvey { background: url(../images/previewNewSurvey.png) left top no-repeat; }
-nav.newSurveyNav ul li a.publishNewSurvey { background: url(../images/publishNewSurvey.png) left top no-repeat; }
-nav.newSurveyNav ul li a.saveNewSurvey:hover { background: url(../images/saveNewSurvey.png) left bottom no-repeat; }
-nav.newSurveyNav ul li a.previewNewSurvey:hover { background: url(../images/previewNewSurvey.png) left bottom no-repeat; }
-nav.newSurveyNav ul li a.publishNewSurvey:hover { background: url(../images/publishNewSurvey.png) left bottom no-repeat; }
+nav.newSurveyNav ul li a.saveNewSurvey { background: url(../images/saveNewSurvey.png) 1px top no-repeat; }
+nav.newSurveyNav ul li a.previewNewSurvey { background: url(../images/previewNewSurvey.png) -3px top no-repeat; }
+nav.newSurveyNav ul li a.publishNewSurvey { background: url(../images/publishNewSurvey.png) 1px top no-repeat; }
+nav.newSurveyNav ul li a.saveNewSurvey:hover { background: url(../images/saveNewSurvey.png) 1px bottom no-repeat; }
+nav.newSurveyNav ul li a.previewNewSurvey:hover { background: url(../images/previewNewSurvey.png) -3px bottom no-repeat; }
+nav.newSurveyNav ul li a.publishNewSurvey:hover { background: url(../images/publishNewSurvey.png) 1px bottom no-repeat; }
 /*****
 		A New Question Form
 ******---------------------------------------------------------------------------------*/
@@ -2712,7 +2716,7 @@ footer.bottomPage a[rel="self"]:hover { }
 }
 #reportBlocks a.standardBtn {
 	clear: both;
-	margin: 0 0 1em 1%;
+	margin:0.1em 0 1em 1%;
 }
 #reportBlocks div.block a.standardBtn {
 	clear: both;
