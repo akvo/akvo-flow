@@ -186,7 +186,10 @@ pre {
 	text-align: center;
 }
 .infoText {
-	
+	display:block;
+	padding:0.2em;
+	color:rgb(153,153,153);
+	width:90%;
 	}
 /* links 
 ---------------------------------------------------------------*/
@@ -1007,12 +1010,18 @@ th.action { width: 7%; }
 	border-top: 1px solid rgb(255,255,255);
 	background: rgb(230,230,230);
 }
-#tabs div > section h1 {
+#tabs div > section h1, div > section h1 {
 	display: block;
-	margin: 0.5em 0 0.5em 0.5em;
+	margin: 0.2em 0 0.5em 0.5em;
 	color: rgb(44, 42, 116);
 	font-size: 2em;
-}
+	text-transform:capitalize;
+	-moz-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+	-webkit-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+	-o-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+	text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+ }
+ 
 #tabs nav.tabNav {
 	display: block;
 	padding: 0;
@@ -2724,8 +2733,9 @@ footer.bottomPage a[rel="self"]:hover { }
 }
 #reportBlocks .chartTitle {
 	margin: 0.5em auto 0 auto;
-	padding: 0.5em 0 0.2em 0.5%;
+	padding:0.5em 0 0.3em 0;
 	width: 97.5%;
+	color:rgb(246, 160, 26);
 }
 #reportBlocks div.block {
 	display: block;
@@ -2750,7 +2760,7 @@ footer.bottomPage a[rel="self"]:hover { }
 	clear: both;
 	width: 98%;
 	margin: 0 auto 1em auto;
-	background: rgb(242, 242, 242);
+	background: rgb(249,249,249);
 	padding: 1em 0;
 }
 #reportBlocks #piechart p {
