@@ -75,6 +75,20 @@
 		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" />
 		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" />
 		<copy file="${config}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true"/>
+        <loadfile property="app.id" srcFile="war/WEB-INF/appengine-web.xml">
+            <filterchain>
+                <linecontains>
+                    <contains value="application"/>
+                </linecontains>
+                <tokenfilter>
+                    <replaceregex pattern="(&lt;|&lt;/)application&gt;" replace="" flags="gi"/>
+                    <trim/>
+                    <ignoreblank/>
+                </tokenfilter>
+                <striplinebreaks/>
+            </filterchain>
+        </loadfile>
+        <replace file="../WFPMapping/device/survey/res/values/arrays.xml" token="http://@@@@.appspot.com" value="http://${app.id}.appspot.com"/>
 	</target>
 
 	<target name="copyjars" depends="init" description="Copies the App Engine JARs to the WAR.">
