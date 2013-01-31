@@ -16,7 +16,7 @@
         optionValuePath="content.keyId" 
         prompt="Select survey"}}
 <div class="rawDataReport block">
-  <h3>Export raw data report</h3>
+  <h3>{{t _export_raw_data_report}}</h3>
     <p>{{t _raw_data_report_applet_text}}</p>
   <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
 </div>
@@ -24,7 +24,7 @@
     {{view FLOW.rawDataReportApplet }}
   {{/if}}
 <div class="comprehensiveReport block">
-  <h3>Export comprehenive report</h3>
+  <h3>{{t _export_comprehensive_report}}</h3>
    <p>{{t _comprehensive_report_applet_text}} </p>
   <a {{action showComprehensiveReport target="this"}} class="standardBtn"> {{t _comprehensive_report}} </a>
 </div>
@@ -33,7 +33,7 @@
   {{/if}}
 
 <div class="googleEarthExport block">
-  <h3>Export Google Earth file</h3>
+  <h3>{{t _export_Google_earth_file}}</h3>
  <p>{{t _google_earth_applet_text}}</p>
 
 
@@ -43,7 +43,7 @@
     {{view FLOW.googleEarthFileApplet}}
   {{/if}}
 <div class="surveyFormExport block">
-  <h3>Export Survey Form</h3>
+  <h3>{{t _export_survey_form}}</h3>
   <p>{{t _survey_form_applet_text}}</p>
   <a {{action showSurveyForm target="this"}} class="standardBtn"> {{t _survey_form}} </a>
 </div>

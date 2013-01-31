@@ -1,6 +1,6 @@
 // ************************ Surveys *************************
 // FLOW.SurveySidebarView = FLOW.View.extend({
-FLOW.SurveySidebarView = Ember.View.extend({
+FLOW.SurveySidebarView = FLOW.View.extend({
 	surveyTitle: null,
 	surveyDescription: null,
 	surveyPointType: null,
