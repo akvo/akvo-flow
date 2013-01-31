@@ -67,6 +67,7 @@
 	    </fail>
 	    <copy file="${config}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
 	    <copy file="${config}/appengine-web.xml" tofile="war/WEB-INF/appengine-web.xml" overwrite="true" verbose="true" />
+	    <copy file="${config}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>    
 	    <copy file="${config}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true"/>
 	    <copy file="${config}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true"/>
 	    <copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" />

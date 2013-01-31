@@ -156,6 +156,8 @@ public class InstanceConfigurator {
 					.buildfile("war/UploadConstants.vm");
 			ic.writeFile(localLocation, "UploadConstants.properties",
 					uploadconstantproperties);
+			String surveyproperties = ic.buildfile("war/surveyProperties.vm");
+			ic.writeFile(localLocation, "survey.properties", surveyproperties);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
