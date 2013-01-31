@@ -135,26 +135,26 @@ FLOW.dialogControl = Ember.Object.create({
         this.set('showDialog', true);
       } else {
         this.set('header', Ember.String.loc('_sg_delete_header'));
-        this.set('message', Ember.String.loc('_sg_delete_message'));
+        this.set('message', Ember.String.loc('_this_cant_be_undo'));
         this.set('showDialog', true);
       }
       break;
 
     case "delS":
       this.set('header', Ember.String.loc('_s_delete_header'));
-      this.set('message', Ember.String.loc('_s_delete_message'));
+      this.set('message', Ember.String.loc('_this_cant_be_undo'));
       this.set('showDialog', true);
       break;
 
     case "delQG":
       this.set('header', Ember.String.loc('_qg_delete_header'));
-      this.set('message', Ember.String.loc('_qg_delete_message'));
+      this.set('message', Ember.String.loc('_this_cant_be_undo'));
       this.set('showDialog', true);
       break;
 
     case "delQ":
       this.set('header', Ember.String.loc('_q_delete_header'));
-      this.set('message', Ember.String.loc('_q_delete_message'));
+      this.set('message', Ember.String.loc('_this_cant_be_undo'));
       this.set('showDialog', true);
       break;
 

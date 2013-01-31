@@ -1021,7 +1021,13 @@ th.action { width: 7%; }
 	-o-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
 	text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
  }
- 
+#tabs div > section h3 {
+	text-transform:capitalize;
+	-moz-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+	-webkit-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+	-o-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+	text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+}
 #tabs nav.tabNav {
 	display: block;
 	padding: 0;
@@ -1071,13 +1077,13 @@ th.action { width: 7%; }
 	padding: 1.1em 1.5em;
 	color: rgb(147, 145, 144);
 	text-transform: uppercase;
-	text-shadow: 1px 1px 0 rgb(235,235,235);
 	font-size: 1.1em;
 	-webkit-transition: none;
 	-moz-transition: none;
 	transition: none;
 	-webkit-text-shadow: 1px 1px 0 rgb(235,235,235);
 	-moz-text-shadow: 1px 1px 0 rgb(235,235,235);
+	text-shadow: 1px 1px 0 rgb(235,235,235);
 }
 #tabs nav.tabNav ul li.active a, #tabs nav.tabNav ul li.active a:hover {
 	color: rgb(255,255,255);
@@ -2087,6 +2093,10 @@ nav.smallMenu ul li a.showQuestion:hover { background: url(../images/showQuestio
 	color: rgb(0,0,0);
 	text-transform: none;
 	font-weight: normal;
+	-webkit-text-shadow:none;
+	-moz-text-shadow:none;
+	-o-text-shadow:none;
+	text-shadow:none;
 }
 .innerContent h1.questionNbr span {
 	display: inline-block;
@@ -2100,6 +2110,11 @@ nav.smallMenu ul li a.showQuestion:hover { background: url(../images/showQuestio
 	text-align: center;
 	font-weight: bold;
 	font-size: 0.8em;
+	-moz-box-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+	-webkit-box-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+	-o-box-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+	box-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
+
 }
 .innerContent input { display: block; }
 .innerContent label {
@@ -2331,7 +2346,7 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 #dataFilter div.dataDeviceId {
 	display: block;
 	margin: 42px 0 10px 0;
-	padding: 5px 10px;
+	padding: 0.5em 1em 8px 1em;
 	height: 22px;
 	background: rgb(234,234,234);
 }
