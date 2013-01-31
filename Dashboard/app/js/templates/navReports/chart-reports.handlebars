@@ -52,7 +52,7 @@ function deleteChart(){
 
 function createDoughnutChart(){
     var canvasWidth = 1000, //width
-      canvasHeight = 500,   //height
+      canvasHeight = 400,   //height
       outerRadius = 100,   //radius
       labelRadius = 120,   //radius
       color = d3.scale.category20(); //builtin range of colors
@@ -67,7 +67,7 @@ function createDoughnutChart(){
         .attr("width", canvasWidth) //set the width of the canvas
         .attr("height", canvasHeight) //set the height of the canvas
         .append("svg:g") //make a group to hold our pie chart
-        .attr("transform", "translate(" + 0.25*canvasWidth + "," + 0.4*canvasHeight + ")") // relocate center of pie
+        .attr("transform", "translate(" + 0.3*canvasWidth + "," + 0.4*canvasHeight + ")") // relocate center of pie
 
     // This will create <path> elements for us using arc data...
     var arc = d3.svg.arc()
