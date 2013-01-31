@@ -2812,3 +2812,44 @@ footer.bottomPage a[rel="self"]:hover { }
 	margin: 0.1em 0.5em 0 1.5em
 }
 .chartSetting .groupChartSelect input { display: inline; }
+
+
+/*---------------------------------------------
+				  Back to top
+--------------------------------------------- */
+#back-top {
+	position: fixed;
+	right: 1em;
+	bottom: 5.3em;
+}
+#back-top a {
+	display: block;
+	width: 75px;
+	color: rgb(158,158,158);
+	text-align: center;
+	text-decoration: none;
+	text-transform: uppercase;
+	font: 0.8em/100% Arial, Helvetica, sans-serif;
+	-webkit-transition: 1s;
+	-moz-transition: 1s;
+	transition: 1s;)
+}
+#back-top a:hover {
+	color: rgb(55, 146, 179);
+}
+#back-top span {
+	display: block;
+	margin: 0 auto 4px auto;
+	width: 40px;
+	height:20px;
+	-webkit-border-radius:0.3em;
+	-moz-border-radius:0.3em;
+	border-radius:0.3em;
+	background: rgb(158,158,158) url(../images/up-arrow.png) no-repeat center center;
+	-webkit-transition: 1s;
+	-moz-transition: 1s;
+	transition: 1s;
+}
+#back-top a:hover span {
+	background-color: rgb(55, 146, 179);
+}
