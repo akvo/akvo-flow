@@ -82,7 +82,7 @@ Ember.Handlebars.registerHelper('toLanguage', function(value) {
   var label, valueLoc;
   label = "";
   valueLoc = Ember.get(this,value);
-  
+
   FLOW.languageControl.get('content').forEach(function(item){
     if (item.get('value') == valueLoc) {
       label = item.get('label');
@@ -96,7 +96,7 @@ Ember.Handlebars.registerHelper('toPointType', function(value) {
   var label, valueLoc;
   label = "";
   valueLoc = Ember.get(this,value);
-  
+
   FLOW.surveyPointTypeControl.get('content').forEach(function(item){
     if (item.get('value') == valueLoc) {
       label = item.get('label');
@@ -110,7 +110,7 @@ Ember.Handlebars.registerHelper('toAttributeType', function(value) {
   var label, valueLoc;
   label = "";
   valueLoc = Ember.get(this,value);
-  
+
   FLOW.attributeTypeControl.get('content').forEach(function(item){
     if (item.get('value') == valueLoc) {
       label = item.get('label');
@@ -202,6 +202,12 @@ Ember.Handlebars.registerHelper("date3", function(property) {
   } else {
     return "";
   }
+});
+
+Ember.Handlebars.registerHelper("getServer", function () {
+  var loc = window.location.href,
+      pos = loc.indexOf("/admin");
+  return loc.substring(0, pos);
 });
 
 // Register a Handlebars helper that instantiates `view`.
@@ -314,7 +320,7 @@ Ember.Select.reopen({
 FLOW.DateField = Ember.TextField.extend({
  didInsertElement: function() {
     this._super();
-    
+
     // datepickers
     $("#from_date").datepicker({
       dateFormat: 'yy/mm/dd',
@@ -343,7 +349,7 @@ FLOW.DateField = Ember.TextField.extend({
 FLOW.DateField2 = Ember.TextField.extend({
  didInsertElement: function() {
     this._super();
-  
+
     this.$().datepicker({
       dateFormat: 'yy/mm/dd',
       defaultDate: "+1w",
@@ -588,7 +594,7 @@ Ember.RadioButton = Ember.View.extend({
        this.set("checked", true);
     }
   }.observes("value"),
-    
+
   change: function() {
     Ember.run.once(this, this._updateElementValue);
   },
