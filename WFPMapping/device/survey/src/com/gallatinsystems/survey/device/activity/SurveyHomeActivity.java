@@ -73,6 +73,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	public static final int NEARBY_ACTIVITY = 6;
 	public static final int REVIEW_ACTIVITY = 7;
 	public static final int WF_CALC_ACTIVITY = 8;
+	public static final int SURVEY_STS_HOME_ACTIVITY = 9;
 	private String currentUserId;
 	private String currentName;
 	private TextView userField;
@@ -233,8 +234,8 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			Intent i = new Intent(v.getContext(), NearbyItemActivity.class);
 			startActivityForResult(i, NEARBY_ACTIVITY);
 		} else if (selected.equals(ConstantUtil.REVIEW_OP)) {
-			Intent i = new Intent(v.getContext(), SurveyReviewActivity.class);
-			startActivityForResult(i, REVIEW_ACTIVITY);
+			Intent i = new Intent(v.getContext(), SurveyStatusHomeActivity.class);
+			startActivity(i); //No result
 		} else if (selected.equals(ConstantUtil.WATERFLOW_CALC_OP)) {
 			Intent i = new Intent(v.getContext(),
 					WaterflowCalculatorActivity.class);

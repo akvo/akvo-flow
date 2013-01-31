@@ -57,6 +57,7 @@ public class ExceptionReportingService extends Service {
 	private static final String ACTION_PARAM = "action";
 	private static final String ACTION_VALUE = "saveTrace";
 	private static final String PHONE_PARAM = "phoneNumber";
+	private static final String IMEI_PARAM = "imei";
 	private static final String VER_PARAM = "version";
 	private static final String DEV_ID_PARAM = "deviceIdentifier";
 	private static final String DATE_PARAM = "date";
@@ -73,6 +74,7 @@ public class ExceptionReportingService extends Service {
 	private String deviceId;
 	private PropertyUtil props;
 	private String phoneNumber;
+	private String imei;
 	private static volatile int uploadOption = 0;
 
 	@Override
@@ -106,6 +108,7 @@ public class ExceptionReportingService extends Service {
 			}
 			server = serverBase;
 			phoneNumber = StatusUtil.getPhoneNumber(this);
+			imei = StatusUtil.getImei(this);
 			try {
 				uploadOption = Integer.parseInt(database
 						.findPreference(ConstantUtil.UPLOAD_ERRORS));
@@ -194,6 +197,7 @@ public class ExceptionReportingService extends Service {
 							Map<String, String> params = new HashMap<String, String>();
 							params.put(ACTION_PARAM, ACTION_VALUE);
 							params.put(PHONE_PARAM, phoneNumber);
+							params.put(IMEI_PARAM, imei);
 							params.put(VER_PARAM, version);
 							params.put(DATE_PARAM,
 									DATE_FMT.format(new Date(f.lastModified())));

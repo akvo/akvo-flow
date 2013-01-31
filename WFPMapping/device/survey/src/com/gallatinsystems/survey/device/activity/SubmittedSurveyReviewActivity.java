@@ -37,30 +37,27 @@ import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
+import com.gallatinsystems.survey.device.view.adapter.SubmittedSurveyReviewCursorAdaptor;
 import com.gallatinsystems.survey.device.view.adapter.SurveyReviewCursorAdaptor;
 
 /**
- * Activity for reviewing previously saved surveys. This activity will allow the
- * user to delete surveys from the device and to review submitted surveys in a
- * read-only mode.
+ * Activity for reviewing submitted surveys. This activity will allow the
+ * user to delete, resend, see transmission history for and review (readonly) submitted surveys
  * 
- * TODO: Split this activity in two, so that 
- *   1. This only handles saved surveys.
- *   2. The other handles submitted surveys, and displays the current transmission status with colored icons etc.
+ * Displays the current transmission status with colored icons.
+ * Single touch goes to readonly review, context menu chooses between delete, resend, and see history
  *   
- * @author Christopher Fagiani
+ * @author Stellan Lagerström
  * 
  */
-public class SurveyReviewActivity extends ListActivity {
+public class SubmittedSurveyReviewActivity extends ListActivity {
 
-	private static final String TAG = "SurveyReviewActivity";
-	private static final int MODE_SELECTOR = 1;
+	private static final String TAG = "SubmittedSurveyReviewActivity";
 	private static final int DELETE_ALL = 3;
 	private static final int DELETE_ONE = 4;
 	private static final int RESEND_ALL = 5;
 	private static final int VIEW_HISTORY = 5;
 	private static final int RESEND_ONE = 6;
-	private String currentStatusMode = ConstantUtil.SAVED_STATUS;
 	private TextView viewTypeLabel;
 	private Long selectedSurvey;
 	private Cursor dataCursor;
@@ -70,15 +67,8 @@ public class SurveyReviewActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		if (savedInstanceState != null) {
-			String state = savedInstanceState
-					.getString(ConstantUtil.STATUS_KEY);
-			if (state != null) {
-				currentStatusMode = state;
-			}
-		}
 
-		setContentView(R.layout.surveyreview);
+		setContentView(R.layout.submittedsurveyreview);
 		viewTypeLabel = (TextView) findViewById(R.id.viewtypelabel);
 		databaseAdapter = new SurveyDbAdapter(this);
 
@@ -86,18 +76,12 @@ public class SurveyReviewActivity extends ListActivity {
 
 	}
 
+	
 	/**
-	 * loads the survey instances from the database. By default this will load
-	 * only unsubmitted saved surveys, but if the user changes the mode to view
-	 * submitted, it will list the submitted surveys.
+	 * loads the survey instances from the database. this will load
+	 * only submitted surveys.
 	 */
 	private void getData() {
-		String label = null;
-		if (ConstantUtil.SAVED_STATUS.equals(currentStatusMode)) {
-			label = getString(R.string.savedsurveyslabel);
-		} else {
-			label = getString(R.string.submittedsurveyslabel);
-		}
 		try{
 		if(dataCursor != null){
 			dataCursor.close();
@@ -105,12 +89,13 @@ public class SurveyReviewActivity extends ListActivity {
 		}catch(Exception e){
 			Log.w(TAG, "Could not close old cursor before reloading list",e);
 		}
-		dataCursor = databaseAdapter
-				.listSurveyRespondent(currentStatusMode);		
+		dataCursor = databaseAdapter.listSurveyRespondent(ConstantUtil.SUBMITTED_STATUS);		
 
-		SurveyReviewCursorAdaptor surveys = new SurveyReviewCursorAdaptor(this,
-				dataCursor);
+		SubmittedSurveyReviewCursorAdaptor surveys = new SubmittedSurveyReviewCursorAdaptor(this,	dataCursor);
 		setListAdapter(surveys);
+
+		String label = null;
+		label = getString(R.string.submittedsurveyslabel);
 		if (dataCursor != null) {
 			viewTypeLabel.setText(label + " (" + dataCursor.getCount() + ")");
 		} else {
@@ -118,6 +103,7 @@ public class SurveyReviewActivity extends ListActivity {
 		}
 	}
 
+	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View view,
 			ContextMenuInfo menuInfo) {
@@ -125,19 +111,21 @@ public class SurveyReviewActivity extends ListActivity {
 		selectedSurvey = getListAdapter().getItemId(
 				((AdapterView.AdapterContextMenuInfo) menuInfo).position);
 		menu.add(0, DELETE_ONE, 0, R.string.deletesurvey);
-		if (!ConstantUtil.SAVED_STATUS.equals(currentStatusMode)) {
-			menu.add(0, VIEW_HISTORY, 1, R.string.transmissionhist);
-			menu.add(0, RESEND_ONE, 1, R.string.resendone);
-		}
+		menu.add(0, VIEW_HISTORY, 1, R.string.transmissionhist);
+		menu.add(0, RESEND_ONE, 2, R.string.resendone);
 
 	}
 
+
+	@Override
 	public void onResume() {
 		super.onResume();
 		databaseAdapter.open();
 		getData();
 	}
 
+
+	@Override
 	protected void onDestroy() {
 		if (dataCursor != null) {
 			try {
@@ -152,6 +140,7 @@ public class SurveyReviewActivity extends ListActivity {
 		super.onDestroy();
 	}
 
+	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -191,11 +180,11 @@ public class SurveyReviewActivity extends ListActivity {
 							databaseAdapter.markDataUnsent(selectedSurvey);
 							Intent dataIntent = new Intent(
 									ConstantUtil.DATA_AVAILABLE_INTENT);
-							SurveyReviewActivity.this.sendBroadcast(dataIntent);
+							SubmittedSurveyReviewActivity.this.sendBroadcast(dataIntent);
 							ViewUtil.showConfirmDialog(
 									R.string.submitcompletetitle,
 									R.string.submitcompletetext,
-									SurveyReviewActivity.this);
+									SubmittedSurveyReviewActivity.this);
 						}
 					});
 			break;
@@ -203,19 +192,20 @@ public class SurveyReviewActivity extends ListActivity {
 		return true;
 	}
 
+	
 	/**
 	 * presents the survey options menu when the user presses the menu key
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, MODE_SELECTOR, 0, R.string.submittedsurveysmenu);
-		menu.add(0, DELETE_ALL, 1, R.string.deleteall);
-		menu.add(0, RESEND_ALL, 2, R.string.resendall);
-		menu.getItem(2).setVisible(false);
+//		menu.add(0, MODE_SELECTOR, 0, R.string.submittedsurveysmenu);
+		menu.add(0, DELETE_ALL, 0, R.string.deleteall);
+		menu.add(0, RESEND_ALL, 1, R.string.resendall);
 		return true;
 	}
 
+/*	
 	@Override
 	public boolean onMenuOpened(int featureId, Menu menu) {
 		super.onMenuOpened(featureId, menu);
@@ -229,7 +219,8 @@ public class SurveyReviewActivity extends ListActivity {
 		return true;
 
 	}
-
+*/
+	
 	/**
 	 * handles the menu actions. Use OptionsItemSelected instead of
 	 * onMenuItemSelected or else we'll intercept the calls to the context menu.
@@ -238,15 +229,6 @@ public class SurveyReviewActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
-		case MODE_SELECTOR:
-			if (!ConstantUtil.SAVED_STATUS.equals(currentStatusMode)) {
-				currentStatusMode = ConstantUtil.SAVED_STATUS;
-				getData();
-			} else {
-				currentStatusMode = ConstantUtil.SUBMITTED_STATUS;
-				getData();
-			}
-			return true;
 		case DELETE_ALL:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(R.string.deleteallwarning)
@@ -255,7 +237,7 @@ public class SurveyReviewActivity extends ListActivity {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									ViewUtil.showAdminAuthDialog(SurveyReviewActivity.this, new ViewUtil.AdminAuthDialogListener() {										
+									ViewUtil.showAdminAuthDialog(SubmittedSurveyReviewActivity.this, new ViewUtil.AdminAuthDialogListener() {										
 										@Override
 										public void onAuthenticated() {
 											databaseAdapter.deleteAllResponses();
@@ -281,11 +263,11 @@ public class SurveyReviewActivity extends ListActivity {
 							databaseAdapter.markDataUnsent(null);
 							Intent i = new Intent(
 									ConstantUtil.DATA_AVAILABLE_INTENT);
-							SurveyReviewActivity.this.sendBroadcast(i);
+							SubmittedSurveyReviewActivity.this.sendBroadcast(i);
 							ViewUtil.showConfirmDialog(
 									R.string.submitcompletetitle,
 									R.string.submitcompletetext,
-									SurveyReviewActivity.this);
+									SubmittedSurveyReviewActivity.this);
 
 						}
 					});
@@ -295,9 +277,10 @@ public class SurveyReviewActivity extends ListActivity {
 		return false;
 	}
 
+	
 	/**
 	 * when a list item is clicked, get the user id and name of the selected
-	 * item and return it to the calling activity.
+	 * item and open one-survey activity, readonly.
 	 */
 	@Override
 	protected void onListItemClick(ListView list, View view, int position,
@@ -312,20 +295,14 @@ public class SurveyReviewActivity extends ListActivity {
 				.getTag(SurveyReviewCursorAdaptor.SURVEY_ID_KEY)).toString());
 		i.putExtra(ConstantUtil.RESPONDENT_ID_KEY,
 				(Long) view.getTag(SurveyReviewCursorAdaptor.RESP_ID_KEY));
-		if (ConstantUtil.SUBMITTED_STATUS.equals(currentStatusMode)) {
-			i.putExtra(ConstantUtil.READONLY_KEY, true);
-		}
-		setResult(RESULT_OK, intent);
-		finish();
+		i.putExtra(ConstantUtil.READONLY_KEY, true);
+
+		//do not close us
+//		setResult(RESULT_OK, intent);
+//		finish();
 		startActivity(i);
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		if (outState != null) {
-			outState.putString(ConstantUtil.STATUS_KEY, currentStatusMode);
-		}
-	}
+	
 
 }

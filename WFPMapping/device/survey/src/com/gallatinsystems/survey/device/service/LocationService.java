@@ -52,6 +52,7 @@ public class LocationService extends Service {
 	private static final long INTERVAL = 1800000;
 	private static boolean sendBeacon = true;
 	private static final String BEACON_SERVICE_PATH = "/locationBeacon?action=beacon&phoneNumber=";
+	private static final String IMEI = "&imei=";
 	private static final String VER = "&ver=";
 	private static final String LAT = "&lat=";
 	private static final String LON = "&lon=";
@@ -144,8 +145,9 @@ public class LocationService extends Service {
 			try {
 				String phoneNumber = StatusUtil.getPhoneNumber(this);
 				if (phoneNumber != null) {
-					String url = serverBase + BEACON_SERVICE_PATH
-								+ URLEncoder.encode(phoneNumber, "UTF-8");
+					String url = serverBase
+							    + BEACON_SERVICE_PATH + URLEncoder.encode(phoneNumber, "UTF-8")
+								+ IMEI + URLEncoder.encode(StatusUtil.getImei(this), "UTF-8");
 					if (loc != null) {
 						url += LAT + loc.getLatitude() + LON + loc.getLongitude()
 						     + ACC + loc.getAccuracy();

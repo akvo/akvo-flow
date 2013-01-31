@@ -47,7 +47,7 @@
 	<string name="aboutlabel">About</string>
 	<string name="aboutdesc">Displays version information.</string>
 	<string name="abouttitle">About - FieldSurvey</string>
-	<string name="abouttext">FieldSurvey\nDeveloped By: Gallatin Systems\nCopyright 2010-2012\nVersion </string>
+	<string name="abouttext">FieldSurvey\nDeveloped By: Akvo Foundation\nCopyright © 2010-2013 Stichting Akvo\nVersion </string>
 	<string name="gpsstatuslabel">GPS Status</string>
 	<string name="gpsstatusdesc">Launches the GPS Status application if you have it installed on this device.</string>
 	<string name="nogpsstatus">GPS Status is not installed on this device. Please install it using the Android Market.</string>
@@ -117,10 +117,14 @@
 	<string name="largetxtoption">Large Text</string>
 	<string name="normaltxtoption">Normal Text</string>
 	<string name="langoption">Languages</string>
-	<string name="reviewtext">Touch a survey to view.</string>
+	<string name="reviewtext">Touch a survey to view, edit and submit.</string>
+	<string name="reviewrotext">Touch a survey to view (read only).</string>
 	<string name="savedsurveyslabel">Saved surveys</string>
-	<string name="submittedsurveyslabel">Submitted Surveys (read only)</string>
-	<string name="reviewlabel">Review Saved Surveys</string>
+	<string name="submittedsurveyslabel">Review Submitted Surveys</string>
+	<string name="reviewlabel">Survey Status</string>
+	<string name="gosavedsurveyslabel">Review Saved Surveys</string>
+	<string name="gosubmittedsurveyslabel">Review Submitted Surveys</string>
+	<string name="goclassicsurveyslabel">Review Surveys (obsolete)</string>
 	<string name="langmandatorytitle">Invalid Selection</string>
 	<string name="langmandatorytext">You must select at least one language</string>
 	<string name="pleasewait">Please wait</string>
@@ -197,5 +201,5 @@
 	<string name="addtestpoints">Add test points</string>
 	<string name="updateavail">Update Available</string>
 	<string name="clicktoinstall">Click to install</string>
-	<string name="appversion">1.9.37</string>
+	<string name="appversion">1.10.0</string>
 </resources>

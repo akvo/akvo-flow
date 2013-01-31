@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -27,8 +27,6 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
-import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -50,11 +48,14 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
 			Long userID, List<String> unparsedLines) {
+
 		SurveyInstance si = new SurveyInstance();
 		boolean hasErrors = false;
 		si.setDeviceFile(deviceFile);
 		si.setUserID(userID);
 		String delimiter = "\t";
+
+		final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		for (String line : unparsedLines) {
@@ -116,30 +117,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 						if (uuid != null && uuid.trim().length() > 0) {
 							SurveyInstance existingSi = findByUUID(uuid);
 							if (existingSi != null) {
-								return null;
+								// SurveyInstance found, reuse it to process missing data
+								si = existingSi;
+								si.setDeviceFile(deviceFile);
 							} else {
 								si.setUuid(uuid);
 							}
 						}
 					}
-						
 					si = save(si);
-					
-					//TODO needs checking
-					// update surveyInstanceSummary object
-					SurveyInstanceSummary sis = null;
-					SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
-					sis = sisDao.findBySurveyId(si.getSurveyId());
-	
-					if (sis == null) {
-						sis = new SurveyInstanceSummary();
-						sis.setCount(1L);
-						sis.setSurveyId(si.getSurveyId());
-					} else {
-						sis.setCount(sis.getCount() + 1);
-					}
-					sisDao.save(sis);
-
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
 							+ parts[0], e);
@@ -150,22 +136,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				} catch (DatastoreTimeoutException te) {
 					sleep();
 					si = save(si);
-					
-					// update surveyInstanceSummary object
-					SurveyInstanceSummary sis = null;
-					SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
-					sis = sisDao.findBySurveyId(si.getSurveyId());
-	
-					if (sis == null) {
-						sis = new SurveyInstanceSummary();
-						sis.setCount(1L);
-						sis.setSurveyId(si.getSurveyId());
-					} else {
-						sis.setCount(sis.getCount() + 1);
-					}
-					sisDao.save(sis);
 				}
 			}
+
+			if (qasDao.listBySurveyInstance(si.getKey().getId(),
+					si.getSurveyId(), parts[2].trim()).size() != 0) {
+				log.log(Level.INFO, "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: " + si.getKey().getId() + ", " + si.getSurveyId() + ", " + parts[2].trim());
+				continue;
+			}
+
 			qas.setSurveyId(si.getSurveyId());
 			qas.setSurveyInstanceId(si.getKey().getId());
 			qas.setArbitratyNumber(new Long(parts[1].trim()));
