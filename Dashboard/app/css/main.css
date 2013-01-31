@@ -92,7 +92,6 @@ h1 img, h2 img, h3 img, h4 img, h5 img, h6 img { margin: 0; }
 	font-family: Baskerville, "Goudy Old Style", "Palatino", "Book Antiqua", Georgia, serif;
 }
 em { padding-bottom: 1em; }
-time { font-family: Georgia, "Times New Roman", Times, serif; }
 p {
 	font-size: 120%;
 	line-height: 1.3em;
@@ -1012,7 +1011,7 @@ th.action { width: 7%; }
 }
 #tabs div > section h1, div > section h1 {
 	display: block;
-	margin: 0.2em 0 0.5em 0.5em;
+	margin: 0.5em 0 0.5em 0.5em;
 	color: rgb(44, 42, 116);
 	font-size: 2em;
 	text-transform:capitalize;
@@ -1389,6 +1388,7 @@ ul.surveyInfo li.dateCreated span {
 	color: rgb(153, 153, 153);
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	margin-bottom:0.2em;
 }
 ul.surveyInfo li.responseNumber {
 	float: right;
@@ -1402,10 +1402,10 @@ ul.surveyInfo li.responseNumber span {
 	display: inline;
 	overflow: hidden;
 	margin: 4px 0 0 0;
-	padding-top: 0.7em;
+	padding-top: 0.65em;
 	width: 50%;
 	height: 1.7em;
-	color: rgb(57, 102, 128);
+	color:rgb(44, 42, 116); 
 	text-align: right;
 	text-overflow: ellipsis;
 	white-space: nowrap;
