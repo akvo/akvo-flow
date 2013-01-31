@@ -39,7 +39,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
  * this adaptor can format date strings using the device's locale settings prior
  * to displaying them to the screen
  * 
- * @author Stellan Lagerström
+ * @author Stellan LagerstrÃ¶m
  * 
  */
 public class SubmittedSurveyReviewCursorAdaptor extends CursorAdapter {

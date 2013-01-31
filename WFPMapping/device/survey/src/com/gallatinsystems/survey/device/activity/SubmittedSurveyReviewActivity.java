@@ -47,7 +47,7 @@ import com.gallatinsystems.survey.device.view.adapter.SurveyReviewCursorAdaptor;
  * Displays the current transmission status with colored icons.
  * Single touch goes to readonly review, context menu chooses between delete, resend, and see history
  *   
- * @author Stellan Lagerström
+ * @author Stellan LagerstrÃ¶m
  * 
  */
 public class SubmittedSurveyReviewActivity extends ListActivity {
