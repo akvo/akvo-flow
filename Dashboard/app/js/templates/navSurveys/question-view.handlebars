@@ -35,7 +35,7 @@
     {{/if}}                 
     
     {{#if view.amNumberType}}
-	  <h1 class="answerNbr">{{t _Number_details}}: </h1>
+	  <h1 class="answerNbr">{{t _number_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimalPoint"}}{{t _allow_decimal_point}} </label>
 
@@ -128,7 +128,7 @@
       <nav class="moveQMenu questionActionMenu">
         <ul>
           <li><a {{action "doQuestionMoveHere" target="this"}} class="smallBtn">{{t _move_question_here}}</a></li>
-          <li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
+          <li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel}}</a></li>
         </ul>
       </nav>
     {{else}}   
@@ -136,11 +136,11 @@
         <nav class="copyQMenu questionActionMenu">
           <ul>
             <li><a {{action "doQuestionCopyHere" target="this"}} class="smallBtn">{{t _paste_question_here}}</a></li>
-            <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
+            <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
           </ul>
         </nav>
        {{else}} 
-         <a {{action "doInsertQuestion" target="this"}} class="addQuestion">{{t _add_new_question_here}}</a> 
+         <a {{action "doInsertQuestion" target="this"}} class="addQuestion">{{t _add_new_question}}</a> 
       {{/if}}  
     {{/if}} 
   </div>

@@ -129,50 +129,50 @@ FLOW.dialogControl = Ember.Object.create({
     case "delSG":
       if(FLOW.surveyGroupControl.containsSurveys()) {
         this.set('activeAction', "ignore");
-        this.set('header', Ember.String.loc('_SG_delete_not_possible_header'));
-        this.set('message', Ember.String.loc('_SG_delete_not_possible_message'));
+        this.set('header', Ember.String.loc('_sg_delete_not_possible_header'));
+        this.set('message', Ember.String.loc('_sg_delete_not_possible_message'));
         this.set('showCANCEL', false);
         this.set('showDialog', true);
       } else {
-        this.set('header', Ember.String.loc('_SG_delete_header'));
-        this.set('message', Ember.String.loc('_SG_delete_message'));
+        this.set('header', Ember.String.loc('_sg_delete_header'));
+        this.set('message', Ember.String.loc('_sg_delete_message'));
         this.set('showDialog', true);
       }
       break;
 
     case "delS":
-      this.set('header', Ember.String.loc('_S_delete_header'));
-      this.set('message', Ember.String.loc('_S_delete_message'));
+      this.set('header', Ember.String.loc('_s_delete_header'));
+      this.set('message', Ember.String.loc('_s_delete_message'));
       this.set('showDialog', true);
       break;
 
     case "delQG":
-      this.set('header', Ember.String.loc('_QG_delete_header'));
-      this.set('message', Ember.String.loc('_QG_delete_message'));
+      this.set('header', Ember.String.loc('_qg_delete_header'));
+      this.set('message', Ember.String.loc('_qg_delete_message'));
       this.set('showDialog', true);
       break;
 
     case "delQ":
-      this.set('header', Ember.String.loc('_Q_delete_header'));
-      this.set('message', Ember.String.loc('_Q_delete_message'));
+      this.set('header', Ember.String.loc('_q_delete_header'));
+      this.set('message', Ember.String.loc('_q_delete_message'));
       this.set('showDialog', true);
       break;
 
     case "delUser":
-      this.set('header', Ember.String.loc('_User_delete_header'));
-      this.set('message', Ember.String.loc('_User_delete_message'));
+      this.set('header', Ember.String.loc('_are_you_sure_you_want_to_delete_this_user'));
+      this.set('message', Ember.String.loc('_this_cant_be_undo'));
       this.set('showDialog', true);
       break;
 
     case "delAttr":
-      this.set('header', Ember.String.loc('_Attr_delete_header'));
-      this.set('message', Ember.String.loc('_Attr_delete_message'));
+      this.set('header', Ember.String.loc('_attr_delete_header'));
+      this.set('message', Ember.String.loc('_this_cant_be_undo'));
       this.set('showDialog', true);
       break;
 
     case "delAssignment":
-      this.set('header', Ember.String.loc('_Assignment_delete_header'));
-      this.set('message', Ember.String.loc('_Assignment_delete_message'));
+      this.set('header', Ember.String.loc('_assignment_delete_header'));
+      this.set('message', Ember.String.loc('_this_cant_be_undo'));
       this.set('showDialog', true);
       break;
 

@@ -114,16 +114,16 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 		this.setIsDirty();
 		if(!Ember.none(survey) && this.get('isDirty')) {
 			FLOW.dialogControl.set('activeAction', "ignore");
-			FLOW.dialogControl.set('header', Ember.String.loc('_save_before_publishing'));
-			FLOW.dialogControl.set('message', Ember.String.loc('_save_before_publishing_text'));
+			FLOW.dialogControl.set('header', Ember.String.loc('_you_have_unsaved_changes'));
+			FLOW.dialogControl.set('message', Ember.String.loc('_before_publishing_'));
 			FLOW.dialogControl.set('showCANCEL', false);
 			FLOW.dialogControl.set('showDialog', true);
 
 		} else {
 			FLOW.surveyControl.publishSurvey();
 			FLOW.dialogControl.set('activeAction', "ignore");
-			FLOW.dialogControl.set('header', Ember.String.loc('_survey_published'));
-			FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text'));
+			FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
+			FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
 			FLOW.dialogControl.set('showCANCEL', false);
 			FLOW.dialogControl.set('showDialog', true);
 		}

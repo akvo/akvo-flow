@@ -29,8 +29,8 @@
                             {{#if view.isGeoType}}
 							
                               <h3>{{t _the_gps_of_the_device_is_used_here}}</h3>
-                              <h4>{{t _Latitude}}:</h4> {{view Ember.TextField valueBinding="view.latitude" size=10 }}
-                              <h4>{{t _Longitude}}:</h4> {{view Ember.TextField valueBinding="view.longitude" size=10 }}
+                              <h4>{{t _latitude}}:</h4> {{view Ember.TextField valueBinding="view.latitude" size=10 }}
+                              <h4>{{t _longitude}}:</h4> {{view Ember.TextField valueBinding="view.longitude" size=10 }}
                             {{else}}
                               {{#if view.isBarcodeType}}
                                 <h3>{{t _the_barcode_app_on_the_device_is_used_here}}</h3>

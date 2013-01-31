@@ -8,9 +8,9 @@
                 {{view FLOW.NavigationView controllerBinding="controller.controllers.navigationController"}}
             </nav>
     		<div class="loadSave">
-					{{#if FLOW.savingMessageControl.areSavingBool}}<div class="isSaving">{{t _Saving}}</div>
+					{{#if FLOW.savingMessageControl.areSavingBool}}<div class="isSaving">{{t _saving}}</div>
 			{{else}}
-			  {{#if FLOW.savingMessageControl.areLoadingBool}}<div class="isLoading">{{t _Loading}}</div>
+			  {{#if FLOW.savingMessageControl.areLoadingBool}}<div class="isLoading">{{t _loading}}</div>
 			  {{/if}}
 			{{/if}}
 			</div>
@@ -32,8 +32,8 @@
           <br/><br/>
           <div class="buttons menuCentre"> 
             <ul>  
-              {{#if FLOW.dialogControl.showOK}} <li><a {{action "doOK" target="FLOW.dialogControl"}} class="ok smallBtn">{{t _OK}}</a></li>{{/if}}
-               {{#if FLOW.dialogControl.showCANCEL}} <li><a {{action "doCANCEL" target="FLOW.dialogControl"}}} class="cancel">{{t _CANCEL}}</a></li>{{/if}}
+              {{#if FLOW.dialogControl.showOK}} <li><a {{action "doOK" target="FLOW.dialogControl"}} class="ok smallBtn">{{t _ok}}</a></li>{{/if}}
+               {{#if FLOW.dialogControl.showCANCEL}} <li><a {{action "doCANCEL" target="FLOW.dialogControl"}}} class="cancel">{{t _cancel}}</a></li>{{/if}}
             </ul>
           </div>
         </div>

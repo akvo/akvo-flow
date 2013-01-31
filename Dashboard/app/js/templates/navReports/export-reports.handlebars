@@ -17,7 +17,7 @@
         prompt="Select survey"}}
 <div class="rawDataReport block">
   <h3>{{t _export_raw_data_report}}</h3>
-    <p>{{t _raw_data_report_applet_text}}</p>
+    <p>{{t _raw_data_report_applet_text_}}</p>
   <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
 </div>
   {{#if view.showRawDataReportApplet }}
@@ -25,7 +25,7 @@
   {{/if}}
 <div class="comprehensiveReport block">
   <h3>{{t _export_comprehensive_report}}</h3>
-   <p>{{t _comprehensive_report_applet_text}} </p>
+   <p>{{t _comprehensive_report_applet_text}}.</p>
   <a {{action showComprehensiveReport target="this"}} class="standardBtn"> {{t _comprehensive_report}} </a>
 </div>
   {{#if view.showComprehensiveReportApplet }}
@@ -34,7 +34,7 @@
 
 <div class="googleEarthExport block">
   <h3>{{t _export_Google_earth_file}}</h3>
- <p>{{t _google_earth_applet_text}}</p>
+ <p>{{t _google_earth_applet_text_}}</p>
 
 
   <a {{action showGoogleEarthFile target="this"}} class="standardBtn"> {{t _google_earth_file}} </a>  
@@ -44,7 +44,7 @@
   {{/if}}
 <div class="surveyFormExport block">
   <h3>{{t _export_survey_form}}</h3>
-  <p>{{t _survey_form_applet_text}}</p>
+  <p>{{t _survey_form_applet_text_}}</p>
   <a {{action showSurveyForm target="this"}} class="standardBtn"> {{t _survey_form}} </a>
 </div>
   {{#if view.showSurveyFormApplet }}
