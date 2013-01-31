@@ -51,7 +51,6 @@
       <!-- show delete group, add new group, and create new survey buttons--> 
       <nav class="menuTopbar">
         <ul class="">
-      
           {{#if view.oneSelected}}
             <li><a {{action "doNewSurvey"}} class="addSurvey">{{t _create_a_new_survey}}</a></li>
           {{/if}}
@@ -61,7 +60,6 @@
 
     {{#unless view.oneSelected}}
         <p class="surveyLandingText">{{t _survey_intro_text}}</p>
-
     {{/unless}}
 
     <!-- show all surveys of the currently selected survey group-->

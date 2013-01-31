@@ -1,5 +1,5 @@
-<div class="fixedMenu"><a {{action "closePreviewPopup" target="this"}} class="ok clodeDialog">close window</a>
-<h2>Survey preview</h2></div>
+<div class="fixedMenu"><a {{action "closePreviewPopup" target="this"}} class="ok clodeDialog">{{t _close_window}}</a>
+<h2>{{t _survey_preview}}</h2></div>
 <div class="surveyPreviewWrap">
 {{#each QG in FLOW.questionGroupControl}}
  <div class="questionGroupBlock">
@@ -28,19 +28,19 @@
                           {{else}}
                             {{#if view.isGeoType}}
 							
-                              <h3>The GPS of the device is used here</h3>
-                              <h4>{{t _Latitude}}:</h4> {{view Ember.TextField valueBinding="view.latitude" size=10 }}
-                              <h4>{{t _Longitude}}:</h4> {{view Ember.TextField valueBinding="view.longitude" size=10 }}
+                              <h3>{{t _the_gps_of_the_device_is_used_here}}</h3>
+                              <h4>{{t _latitude}}:</h4> {{view Ember.TextField valueBinding="view.latitude" size=10 }}
+                              <h4>{{t _longitude}}:</h4> {{view Ember.TextField valueBinding="view.longitude" size=10 }}
                             {{else}}
                               {{#if view.isBarcodeType}}
-                                <h3>The Barcode app on the device is used here</h3>
+                                <h3>{{t _the_barcode_app_on_the_device_is_used_here}}</h3>
                                 {{view Ember.TextField valueBinding="view.answer" size=10 }}
                               {{else}}
                                 {{#if view.isPhotoType}}
-                                  <h3>The camera of the device is used here</h3>
+                                  <h3>{{t _the_camera_of_the_device_is_used_here}}</h3>
                                 {{else}}
                                   {{#if view.isVideoType}}
-                                    <h3>he video camera of the device is used here </h3>   
+                                    <h3>{{t _the_video_camera_of_the_device_is_used_here}}</h3>   
                                   {{/if}}
                                 {{/if}}
                               {{/if}}

@@ -1,30 +1,29 @@
 {{#view FLOW.MessagesListView}}
-<h1>Messages</h1>
 <div class="greyBg">
   <section id="" class="fullWidth messagesList"> 
-  	
+<h1>{{t _messages}}</h1>
     <!-- Messages TABLE-->
     <table id="messageListTable" class="dataTable" >
       <!-- TABLE HEADER-->
       <thead>
         <tr>
            {{#view FLOW.ColumnView item="lastUpdateDateTime" type="message"}}
-                  <a {{action "sort" target="this"}} class="date">Date</a>
+                  <a {{action "sort" target="this"}} class="date">{{t _date}}</a>
            {{/view}}
            {{#view FLOW.ColumnView item="objectId" type="message"}}
-                  <a {{action "sort" target="this"}} class="objectId">Survey Id</a>
+                  <a {{action "sort" target="this"}} class="objectId">{{t _survey_id}}</a>
            {{/view}}
             {{#view FLOW.ColumnView item="objectTitle" type="message"}}
-                  <a {{action "sort" target="this"}} class="survey">Survey</a>
+                  <a {{action "sort" target="this"}} class="survey">{{t _survey}}</a>
            {{/view}}
            {{#view FLOW.ColumnView item="actionAbout" type="message"}}
-                  <a {{action "sort" target="this"}} class="type">Type</a>
+                  <a {{action "sort" target="this"}} class="type">{{t _type}}</a>
            {{/view}}
            {{#view FLOW.ColumnView item="shortMessage" type="message"}}
-                  <a {{action "sort" target="this"}} class="message">Message</a>
+                  <a {{action "sort" target="this"}} class="message">{{t _message}}</a>
            {{/view}}
             {{#view FLOW.ColumnView item="userName" type="message"}}
-                  <a {{action "sort" target="this"}} class="user">User</a>
+                  <a {{action "sort" target="this"}} class="user">{{t _user}}</a>
            {{/view}}
         </tr>
       </thead>
@@ -50,8 +49,8 @@
       </tfoot>
     </table>
      <ul class="prevNext">
-            <li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; previous</a> {{/if}}</li>
-        <li class="nextBtn">{{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>next &rsaquo;</a>{{/if}}</li>
+            <li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}</li>
+        <li class="nextBtn">{{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}</li>
         </ul>
   </section>
 </div>

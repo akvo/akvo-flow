@@ -1,22 +1,22 @@
 {{#unless view.zeroItemQuestion}}
 
-<div class="innerContent" id="innerContent_01"> 
+<div class="innerContent" id="innerContent_01">
   {{#if view.amOpenQuestion}}
     <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
     <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.text" size=100 }}</label>
     <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
  
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
-    <label class="selectinLabel"><span>Attribute:</span> {{view Ember.Select 
+    <label class="selectinLabel"><span>{{t _attribute}}:</span> {{view Ember.Select 
       contentBinding="FLOW.attributeControl.content" 
       optionLabelPath="content.name" 
       optionValuePath="content.keyId" 
       selectionBinding="view.attribute" 
       prompt="Select attribute"}}
-	   <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>add attribute</a> </label>
+	   <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _add_attribute}} </a> </label>
       {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
 
-    <label class="selectinLabel"><span>Question type:</span> {{view Ember.Select 
+    <label class="selectinLabel"><span>{{t _question_type}}:</span> {{view Ember.Select 
       contentBinding="FLOW.questionTypeControl.content" 
       optionLabelPath="content.label" 
       optionValuePath="content.value" 
@@ -35,7 +35,7 @@
     {{/if}}                 
     
     {{#if view.amNumberType}}
-	  <h1 class="answerNbr">{{t _Number_details}}: </h1>
+	  <h1 class="answerNbr">{{t _number_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimalPoint"}}{{t _allow_decimal_point}} </label>
 
@@ -128,7 +128,7 @@
       <nav class="moveQMenu questionActionMenu">
         <ul>
           <li><a {{action "doQuestionMoveHere" target="this"}} class="smallBtn">{{t _move_question_here}}</a></li>
-          <li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel_move}}</a></li>
+          <li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel}}</a></li>
         </ul>
       </nav>
     {{else}}   
@@ -136,11 +136,11 @@
         <nav class="copyQMenu questionActionMenu">
           <ul>
             <li><a {{action "doQuestionCopyHere" target="this"}} class="smallBtn">{{t _paste_question_here}}</a></li>
-            <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel_copy}}</a></li>
+            <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
           </ul>
         </nav>
        {{else}} 
-         <a {{action "doInsertQuestion" target="this"}} class="addQuestion">{{t _add_new_question_here}}</a> 
+         <a {{action "doInsertQuestion" target="this"}} class="addQuestion">{{t _add_new_question}}</a> 
       {{/if}}  
     {{/if}} 
   </div>
