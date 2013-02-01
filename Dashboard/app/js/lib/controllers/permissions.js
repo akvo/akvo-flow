@@ -3,13 +3,10 @@ FLOW.permissionLevelControl = Ember.Object.create({
   content: [
   Ember.Object.create({
     label: "User",
-    value: "USER"
-  }), Ember.Object.create({
-    label: "Project Editor",
-    value: "PROJECT_EDITOR"
+    value: "20"
   }), Ember.Object.create({
     label: "Administrator",
-    value: "ADMIN"
+    value: "10"
   })]
 });
 
