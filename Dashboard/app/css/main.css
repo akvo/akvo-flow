@@ -903,7 +903,6 @@ table.previewList { color: rgb(209,84,95); }
 	background: rgb(242,242,242);
 	color: rgb(107, 134, 141);
 	text-align: left;
-	text-transform: capitalize;
 	font-weight: normal;
 	font-size: 1em;
 	cursor: pointer;
@@ -1014,14 +1013,12 @@ th.action { width: 7%; }
 	margin: 0.5em 0 0.5em 0.5em;
 	color: rgb(44, 42, 116);
 	font-size: 2em;
-	text-transform:capitalize;
 	-moz-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
 	-webkit-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
 	-o-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
 	text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
  }
 #tabs div > section h3 {
-	text-transform:capitalize;
 	-moz-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
 	-webkit-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
 	-o-text-shadow:0 -1px 0 rgb(185,185,185),0 2px 0 rgb(255,255,255);
@@ -1162,7 +1159,6 @@ nav.menuGroupWrap ul.menuGroup li a {
 	background: url(../images/selectIndictr.png) right top no-repeat;
 	color: rgb(153,153,153);
 	color: rgba(255,255,255,0.6);
-	text-transform: capitalize;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	font-size: 1.2em;
@@ -1342,7 +1338,6 @@ li.aSurvey h2 {
 	padding: 0.25em 0;
 	width: 98%;
 	color: rgb(58,58,58);
-	text-transform: capitalize;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	font-size: 1.3em;
@@ -1360,7 +1355,6 @@ ul.surveyInfo {
 	border-bottom: thin dotted rgb(225,225,225);
 	background: rgb(250,250,250);
 	vertical-align: middle;
-	text-transform: capitalize;
 }
 li.aSurvey:hover ul.surveyInfo {
 	border-top: thin dotted rgb(255,255,255);
@@ -1724,7 +1718,6 @@ span.qtnGroupHead {
 	margin: 1em 0 0.25em 0;
 	width: 100%;
 	color: rgb(246, 160, 26);
-	text-transform: capitalize;
 	font-style: italic;
 	font-size: 1.2em;
 	font-family: Georgia, "Times New Roman", Times, serif;
@@ -2440,7 +2433,6 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	width: 97.5%;
 	height: 23px;
 	background: rgb(58,58,58);
-	text-transform: capitalize;
 }
 #dropdown-holder label { color: rgb(255,255,255); }
 #dropdown-holder select {
@@ -2648,7 +2640,6 @@ footer.bottomPage a[rel="self"]:hover { }
 	margin: 1em 0 0.5em 0.1em;
 	width: 100%;
 	color: rgb(246, 160, 26);
-	text-transform: capitalize;
 	font-style: italic;
 	font-size: 1.2em;
 	font-family: Georgia, "Times New Roman", Times, serif;
