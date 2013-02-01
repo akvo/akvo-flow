@@ -27,6 +27,7 @@ CONTRIBUTORS whom without, Akvo FLOW would not have been the same:
 - Ned Breslin
 - Maximilian Hirn
 - Keri Kugler
+- Peter van der Linde
 - Jeroen van der Sommen
 - Erin Wright
 
