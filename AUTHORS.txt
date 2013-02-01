@@ -40,5 +40,4 @@ Funding partners, without them Akvo FLOW could not have happened
 - Dutch Ministry of Foreign Affairs
 
 Many more partners, who all have greatly contributed to Akvo FLOW in
-many ways can be found at: < http://www.akvo.org/web/ngo_partners >
-and < http://www.akvo.org/web/become_a_project_partner >
+many ways can be found at: < http://www.akvo.org/web/partners >.
