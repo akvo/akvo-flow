@@ -4,7 +4,7 @@
   <h2>{{t _edit_survey}}</h2>
 
   <form>
-    <label for="newSurveyName">{{t _title}}<span class="isRequired">({{t _Required}})</span>:
+    <label for="newSurveyName">{{t _title}}<span class="isRequired">({{t _required}})</span>:
       {{view Ember.TextField valueBinding="view.surveyTitle" placeholder="Type in the name of your survey" size=30}} </label>
     <label for="newSurveyDesc">{{t _description}}:
       {{view Ember.TextArea valueBinding="view.surveyDescription" placeholder="Type in a description of your survey" size=30 rows="3" }} </label>
