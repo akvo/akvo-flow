@@ -7,9 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public enum AppRole implements GrantedAuthority {
     NEW_USER (-1),
-    ADMIN (0),
-    PROJECT_ADMIN(1),
-    USER (2);
+    SUPER_ADMIN (0),
+    ADMIN(10),
+    USER (20);
 
     private final int level;
 
