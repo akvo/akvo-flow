@@ -1,5 +1,8 @@
 <project basedir=".">
 	<property file="build.properties" />
+	<property name="dashboard" value="../Dashboard" />
+	<property name="ui-strings" value="src/locale" />
+
 	<import file="${sdk.dir}/config/user/ant-macros.xml" />
 
 	<path id="project.classpath">
@@ -115,6 +118,13 @@
 		</copy>
 		<javac srcdir="src" destdir="war/WEB-INF/classes" classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
+
+	<target name="translate" depends="compile" description="Generates the en.properties file from handlebars template and JS files">
+    <java classname="services.TranslationGenerator" failonerror="true">
+      <arg line="${dashboard} ${ui-strings}" />
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
 
 	<target name="datanucleusenhance" depends="init, compile" description="Performs JDO enhancement on compiled data classes.">
 		<enhance failonerror="true" api="JDO">
