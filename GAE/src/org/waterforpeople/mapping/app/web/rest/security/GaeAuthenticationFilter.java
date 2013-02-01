@@ -32,7 +32,7 @@ import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
  * @author Luke Taylor
  */
 public class GaeAuthenticationFilter extends GenericFilterBean {
-    private static final String REGISTRATION_URL = "/register.htm";
+    private static final String REGISTRATION_URL = "/register.html";
     private static final Logger logger = Logger.getLogger(GaeAuthenticationFilter.class.getName());
 
     private final AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> ads = new WebAuthenticationDetailsSource();
