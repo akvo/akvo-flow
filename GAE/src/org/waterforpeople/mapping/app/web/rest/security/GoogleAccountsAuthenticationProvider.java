@@ -2,6 +2,8 @@ package org.waterforpeople.mapping.app.web.rest.security;
 
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
@@ -33,6 +35,7 @@ import com.google.appengine.api.users.User;
  */
 public class GoogleAccountsAuthenticationProvider implements AuthenticationProvider, MessageSourceAware {
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+    private static final Logger log = Logger.getLogger(GoogleAccountsAuthenticationProvider.class.getName());
 
     @Inject
     UserDao userDao;
@@ -85,7 +88,7 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
             final int level = Integer.parseInt(user.getPermissionList());
             return level;
         } catch (Exception e) {
-            //no-op
+           log.log(Level.WARNING, "Error getting role level, setting NEW_USER role", e);
         }
         return AppRole.NEW_USER.getLevel();
     }
