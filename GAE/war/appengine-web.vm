@@ -32,7 +32,7 @@
 			value="$s3url/devicezip/" />
 		<property name="emailFromAddress" value="$reportsEmailAddress" />
 		<property name="recipientListString"
-			value="caetie@akvo.org;Caetie Ofiesh|m.t.westra@akvo.org;Mark Westra|stellanl@akvo.org;Stellan Lagerstrom|ivan@akvo.org;Ivan Perdomo" />
+			value="flowerrors@akvo.org;FLOW Errors List" />
 		<property name="defaultPhotoCaption" value="$defaultPhotoCaption" />
 		<property name="surveyuploadsig" value="$surveyS3Sig" />
 		<property name="surveyuploadpolicy"
