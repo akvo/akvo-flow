@@ -117,6 +117,7 @@ Ember.STRINGS_EN = {
   "_next_record": "Next record",
   "_no_options_for_this_question_type": "No options for this type of question",
   "_notifications": "Notifications",
+  "_not_published": "Not published",
   "_number_details": "Number settings",
   "_number_of_question_groups": "Number of question groups",
   "_number_of_questions": "Number of questions",
