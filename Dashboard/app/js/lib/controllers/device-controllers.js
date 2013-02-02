@@ -14,8 +14,8 @@ FLOW.deviceControl = Ember.ArrayController.create({
 
   populate: function() {
     this.set('content', FLOW.store.findQuery(FLOW.Device, {}));
-    this.set('sortProperties', ['phoneNumber']);
-    this.set('sortAscending', true);
+    this.set('sortProperties', ['lastPositionDate']);
+    this.set('sortAscending', false);
   },
 
   allAreSelected: function(key, value) {
