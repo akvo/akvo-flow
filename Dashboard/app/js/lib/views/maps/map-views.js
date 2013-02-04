@@ -33,7 +33,6 @@ FLOW.NavMapsView = Ember.View.extend({
     map.enableScrollWheelZoom();
 
     FLOW.placemarkControl.set('map', map);
-    console.log('Did insert NavMapsView');
   },
 
   handleCountrySelection: function () {
@@ -54,7 +53,6 @@ FLOW.NavMapsView = Ember.View.extend({
 
   // Populate the map with markers
   populateMap: function() {
-    console.log('country selector selected, populating map');
     var map;
     if(FLOW.placemarkControl.content.get('isUpdating') === false) {
       map = FLOW.placemarkControl.get('map');
