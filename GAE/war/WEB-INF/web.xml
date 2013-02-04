@@ -58,6 +58,15 @@
         <url-pattern>/ui-strings.js</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>org.waterforpeople.mapping.app.web.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/admin/logout.html</url-pattern>
+    </servlet-mapping>
+
 	<servlet>
 		<servlet-name>StartupServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.StartupServlet</servlet-class>
