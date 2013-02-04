@@ -11,9 +11,18 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   }),
 
   buildURL: function (record, suffix) {
-    var url = this._super(record, suffix);
-    // temporal hack
-    return url + (record === 'placemark' ? '?country=KE' : '');
+    var baseUrl, countryCode, url;
+    
+    baseUrl = this._super(record, suffix);
+    
+    if (record !== 'placemark') {
+      url = baseUrl;
+    } else {
+      countryCode = FLOW.countryControl.get('countryCode');
+      url = baseUrl + '?country=' + countryCode;
+    }
+    console.log('url: ' + url);
+    return url;
   },
 
   sideload: function (store, type, json, root) {

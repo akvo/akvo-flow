@@ -12,11 +12,11 @@ FLOW.NavMapsView = Ember.View.extend({
   templateName: 'navMaps/nav-maps',
   showDetailsBool: false,
   detailsImage: null,
+  country: null,
 
   init: function() {
     this._super();
     this.detailsImage = 'images/invisible.png';
-    FLOW.placemarkControl.populate();
   },
 
   didInsertElement: function() {
@@ -33,10 +33,28 @@ FLOW.NavMapsView = Ember.View.extend({
     map.enableScrollWheelZoom();
 
     FLOW.placemarkControl.set('map', map);
+    console.log('Did insert NavMapsView');
   },
+
+  handleCountrySelection: function () {
+    FLOW.placemarkControl.populate(this.country);
+  }.observes('this.country'),
+
+  positionMap: function() {
+    var country, latLon, map;
+    country = this.get('country');
+    map = FLOW.placemarkControl.get('map');
+    if (!Ember.none(country)) {
+      latLon = new mxn.LatLonPoint(country.get('lat'), country.get('lon'));
+      map.getMap().clearOverlays();
+      // map.removeAllMarkers();
+      map.setCenterAndZoom(latLon, country.get('zoom'));
+    }
+  }.observes('this.country'),
 
   // Populate the map with markers
   populateMap: function() {
+    console.log('country selector selected, populating map');
     var map;
     if(FLOW.placemarkControl.content.get('isUpdating') === false) {
       map = FLOW.placemarkControl.get('map');
@@ -55,15 +73,6 @@ FLOW.NavMapsView = Ember.View.extend({
     }
     this.set('detailsImage', FLOW.Env.imageroot + '/invisible.png');
   }.observes('FLOW.placemarkControl.selected'),
-
-  changePlace: function() {
-    var country, latLon;
-    country = this.get('country');
-    if (!Ember.none(country)) {
-      latLon = new mxn.LatLonPoint(country.get('lat'), country.get('lon'));
-      FLOW.placemarkControl.get('map').setCenterAndZoom(latLon, country.get('zoom'));
-    }
-  }.observes('this.country'),
 
   handlePlacemarkDetails: function() {
     var details, imageURL, stringVal;

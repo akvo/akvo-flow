@@ -5,9 +5,9 @@
       <label for="country"><span class="inlined">Country:</span>
         {{view Ember.Select
         contentBinding="FLOW.countryControl.content"
+        valueBinding="FLOW.countryControl.selected"
         optionLabelPath="content.label"
-        selectionBinding="view.country"
-        prompt="Select country"}}
+        selectionBinding="view.country"}}
       </label>
     {{/if}}
   </div>
@@ -15,7 +15,7 @@
   <div id="flowMap"></div>
   <div id="pointDetails">
     <ul class="placeMarkBasicInfo floats-in">
-    	<li><span>Collected on:</span>
+      <li><span>Collected on:</span>
         {{#if FLOW.placemarkControl.selected}}
           <div class="placeMarkCollectionDate"> 
             {{date2 FLOW.placemarkControl.selected.collectionDate}}</div>
