@@ -8,6 +8,7 @@
 
     <http use-expressions="true" entry-point-ref="gaeEntryPoint">
         <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
+        <intercept-url pattern="/_ah/admin/**" access="permitAll"/> <!-- dev environment -->
         <intercept-url pattern="/rest/**" access="hasRole('USER')"/>
         <intercept-url pattern="/admin/**" access="hasRole('USER')"/>
         <intercept-url pattern="/**" access="permitAll"/>

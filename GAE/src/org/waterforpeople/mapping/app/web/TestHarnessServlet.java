@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -73,6 +73,7 @@ import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceI
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
+import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.test.AccessPointMetricSummaryTest;
 import org.waterforpeople.mapping.app.web.test.AccessPointTest;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
@@ -1906,18 +1907,9 @@ public class TestHarnessServlet extends HttpServlet {
 		if (user == null) {
 			user = new User();
 			user.setEmailAddress("test@example.com");
-			userDao.save(user);
 		}
-		String permissionList = "";
-		int i = 0;
-		List<Permission> pList = userDao.listPermissions();
-		for (Permission p : pList) {
-			permissionList += p.getCode();
-			if (i < pList.size())
-				permissionList += ",";
-			i++;
-		}
-		user.setPermissionList(permissionList);
+		user.setSuperAdmin(true);
+		user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
 		userDao.save(user);
 	}
 
