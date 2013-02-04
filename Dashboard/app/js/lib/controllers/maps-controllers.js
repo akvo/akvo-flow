@@ -46,57 +46,31 @@ FLOW.countryControl = Ember.Object.create({
   getContent: function (countries) {
     var countryList = [];
 
-    // -------- Fixture start
-    console.log('Adding fixture countries for coutry selector');
-    countryList.push(
-      Ember.Object.create({
-        label: "Holland",
-        iso: "NL",
-        lat: 52.2500,
-        lon: 4.6670,
-        zoom: 7
-      })
-    );
+    countries.sort(function (a, b) {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
 
-    countryList.push(
-      Ember.Object.create({
-        label: "Kenya",
-        iso: "KE",
-        lat: -1.26103461,
-        lon: 36.74724467,
-        zoom: 7
-      })
-    );
-
-    return countryList;
-    // -------- Fixture end
-
-
-    // countries.sort(function (a, b) {
-    //   if (a.name < b.name) return -1;
-    //   if (a.name > b.name) return 1;
-    //   return 0;
-    // });
-
-    // for (var i = 0; i < countries.length; i++) {
-    //   if ( !Ember.none(countries[i].centroidLat) && !Ember.none(countries[i].centroidLon) ) {
-    //     var zoom = 8; // default zoom level
-    //     if (Ember.none(countries[i].zoomLevel)) {
-    //       zoom = countries[i].zoomLevel;
-    //     }
+    for (var i = 0; i < countries.length; i++) {
+      if ( !Ember.none(countries[i].centroidLat) && !Ember.none(countries[i].centroidLon) ) {
+        var zoom = 8; // default zoom level
+        if (Ember.none(countries[i].zoomLevel)) {
+          zoom = countries[i].zoomLevel;
+        }
         
-    //     countryList.push(
-    //       Ember.Object.create({
-    //         label: countries[i].name,
-    //         iso: countries[i].isoAlpha2Code,
-    //         lat: countries[i].centroidLat,
-    //         lon: countries[i].centroidLon,
-    //         zoom: zoom
-    //       })
-    //     );
-    //   }
-    // }
-    // return countryList;
+        countryList.push(
+          Ember.Object.create({
+            label: countries[i].name,
+            iso: countries[i].isoAlpha2Code,
+            lat: countries[i].centroidLat,
+            lon: countries[i].centroidLon,
+            zoom: zoom
+          })
+        );
+      }
+    }
+    return countryList;
   }
 
 });

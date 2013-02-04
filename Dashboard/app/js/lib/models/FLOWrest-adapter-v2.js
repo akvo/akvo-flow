@@ -11,17 +11,12 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   }),
 
   buildURL: function (record, suffix) {
-    var baseUrl, countryCode, url;
+    var url;
     
-    baseUrl = this._super(record, suffix);
-    
-    if (record !== 'placemark') {
-      url = baseUrl;
-    } else {
-      countryCode = FLOW.countryControl.get('countryCode');
-      url = baseUrl + '?country=' + countryCode;
+    url = this._super(record, suffix);
+    if (record === 'placemark') {
+      return  url + '?country=' + FLOW.countryControl.get('countryCode');
     }
-    console.log('url: ' + url);
     return url;
   },
 
