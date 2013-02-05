@@ -35,6 +35,7 @@ public class TranslationGenerator {
 	private static final String JSCALLSUFXX = "'";
 	private static final String[] EXTS = { "handlebars", "js" };
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
 
 		if (args.length < 2) {
@@ -85,7 +86,7 @@ public class TranslationGenerator {
 		Collections.sort(enValues);
 		StringBuffer sb = new StringBuffer();
 		for (String val : enValues) {
-			sb.append(val).append(" = ").append(val).append("\n");
+			sb.append(val.replaceAll(" ", "\\\\ ")).append(" = ").append(val).append("\n");
 		}
 		FileUtils.writeStringToFile(new File(output, "/en.properties"),
 				sb.toString(), "UTF-8");
