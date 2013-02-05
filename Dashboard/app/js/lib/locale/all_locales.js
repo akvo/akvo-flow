@@ -198,7 +198,9 @@ Ember.STRINGS_EN = {
   "_version": "Version",
   "_version_number": "Version number",
   "_you_have_unsaved_changes": "You have unsaved changes",
-  "_applet_select_survey": "You need to select a Survey to run the reports"
+  "_applet_select_survey": "You need to select a Survey to run the reports",
+  "_applet_generate_summary": "Generate Summary Sheets for each Geographic Area",
+  "_applet_omit_chars":"Omit Charts"
   };
 
 
@@ -576,7 +578,6 @@ Ember.STRINGS_FR = {
   '_title':'Titre',
   '_description':'Description',
   '_Sector_Focus':'Secteur',
-  '_language':'langue',
   '_version_number':'Version',
   '_id_number':'Identifiant',
   '_survey_summary':"Survey Résumé de l'enquête",
