@@ -25,6 +25,7 @@ CONTRIBUTORS whom without, Akvo FLOW would not have been the same:
 
 - Thomas Bjelkeman-Pettersson
 - Ned Breslin
+- Nicolas Dickinson
 - Maximilian Hirn
 - Keri Kugler
 - Peter van der Linde
