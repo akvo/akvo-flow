@@ -49,6 +49,18 @@ public class DeviceDAO extends BaseDAO<Device> {
 		return super.findByProperty("phoneNumber", phoneNumber, STRING_TYPE);
 	}
 
+
+	/**
+	 * gets a single device by imei/esn. If phone number is not unique (this
+	 * shouldn't happen), it returns the first instance found.
+	 * 
+	 * @param imei
+	 * @return
+	 */
+	public Device getByImei(String imei) {
+		return super.findByProperty("esn", imei, STRING_TYPE);
+	}
+
 	/**
 	 * updates the device's last known position
 	 * 
@@ -58,10 +70,18 @@ public class DeviceDAO extends BaseDAO<Device> {
 	 * @param accuracy
 	 * @param version
 	 * @param deviceIdentifier
+	 * @param imei
 	 */
-	public void updateDeviceLocation(String phoneNumber, Double lat,
-			Double lon, Double accuracy, String version, String deviceIdentifier) {
-		Device d = get(phoneNumber);
+	public void updateDeviceLocation(String phoneNumber,
+			Double lat,	Double lon, Double accuracy,
+			String version,
+			String deviceIdentifier,
+			String imei) {
+		Device d;
+		if (imei != null) //New Apps from 1.10.0 and on provide IMEI/ESN
+			d = getByImei(imei);
+		else
+			d = get(phoneNumber); //Fall back to less-stable ID
 		if (d == null) {
 			// if device is null, we have to create it
 			d = new Device();
@@ -76,6 +96,9 @@ public class DeviceDAO extends BaseDAO<Device> {
 		}
 		if (deviceIdentifier != null) {
 			d.setDeviceIdentifier(deviceIdentifier);
+		}
+		if (imei != null) {
+				d.setEsn(imei);
 		}
 		d.setLastLocationBeaconTime(new Date());
 		d.setGallatinSoftwareManifest(version);

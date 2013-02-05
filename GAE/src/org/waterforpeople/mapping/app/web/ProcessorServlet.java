@@ -29,6 +29,11 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
+/**
+ * 
+ * Servlet used by app to trigger processing of new survey data
+ * TODO: move parameter name strings into constants
+ */
 public class ProcessorServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = -7062679258542909086L;
@@ -41,22 +46,26 @@ public class ProcessorServlet extends HttpServlet {
 		String fileName = req.getParameter("fileName");
 		if (action != null) {
 			log.info("	ProcessorServlet->action->" + action);
-			log.info("  ProcessorServlet->action->" + fileName);
+			log.info("  ProcessorServlet->filename->" + fileName);
 			if (action.equals("submit")) {
 				if (fileName != null) {
 					String phoneNumber = req.getParameter("phoneNumber");
+					String imei = req.getParameter("imei");
 					String checksum = req.getParameter("checksum");
-					if(checksum == null){
-						checksum="null";
+					if (checksum == null) {
+						checksum = "null";
 					}
-					if(phoneNumber == null){
+					if (phoneNumber == null) {
 						phoneNumber = "null";
+					}
+					if (imei == null) {
+						imei = "null";
 					}
 					log.info("about to submit task for fileName: " + fileName);
 					// Submit the fileName for processing
 					Queue queue = QueueFactory.getDefaultQueue();
 					
-					queue.add(TaskOptions.Builder.withUrl("/app_worker/task").param("action", "processFile").param("fileName", fileName).param("phoneNumber", phoneNumber).param("checksum", checksum));
+					queue.add(TaskOptions.Builder.withUrl("/app_worker/task").param("action", "processFile").param("fileName", fileName).param("phoneNumber", phoneNumber).param("checksum", checksum).param("imei", imei));
 					log.info("submiting task for fileName: " + fileName);
 				}
 			}

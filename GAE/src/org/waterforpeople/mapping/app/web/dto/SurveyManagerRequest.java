@@ -40,6 +40,7 @@ public class SurveyManagerRequest extends RestRequest {
 	private static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
 	private static final String SURVEY_ID_PARAM = "surveyId";
 	private static final String SURVEY_DOC_PARAM = "surveyDocument";
+	private static final String IMEI_PARAM = "imei";
 	private static final String PHONE_NUM_PARAM = "devicePhoneNumber";
 	@Deprecated
 	private static final String PHONE_NUM_ALT_PARAM = "phoneNumber";
@@ -50,8 +51,17 @@ public class SurveyManagerRequest extends RestRequest {
 	private Long surveyInstanceId;
 	private String surveyDoc;
 	private String phoneNumber;
+	private String imei;
 	private Date startDate;
 	private String deviceId;
+
+	public String getImei() {
+		return imei;
+	}
+
+	public void setImei(String imei) {
+		this.imei = imei;
+	}
 
 	public String getDeviceId() {
 		return deviceId;
@@ -111,7 +121,8 @@ public class SurveyManagerRequest extends RestRequest {
 		if(phoneNumber == null || phoneNumber.trim().length()==0){
 			phoneNumber = req.getParameter(PHONE_NUM_ALT_PARAM);
 		}
-		deviceId= req.getParameter(DEVICE_ID_PARAM);
+		imei = req.getParameter(IMEI_PARAM);
+		deviceId = req.getParameter(DEVICE_ID_PARAM);
 		surveyId = parseLong(req.getParameter(SURVEY_ID_PARAM), SURVEY_ID_PARAM);
 		surveyDoc = req.getParameter(SURVEY_DOC_PARAM);
 		if (req.getParameter(FILE_START_DATE_PARAM) != null)
