@@ -197,7 +197,8 @@ Ember.STRINGS_EN = {
   "_value_type": "Value type",
   "_version": "Version",
   "_version_number": "Version number",
-  "_you_have_unsaved_changes": "You have unsaved changes"
+  "_you_have_unsaved_changes": "You have unsaved changes",
+  "_applet_select_survey": "You need to select a Survey to run the reports"
   };
 
 

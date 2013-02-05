@@ -3,20 +3,31 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveReportApplet:false,
   showGoogleEarthFileApplet: false,
   showSurveyFormApplet: false,
+  showWarning: false,
 
   showRawDataReport: function () {
-    this.set('showRawDataReportApplet', true);
+    this.renderApplet('showRawDataReportApplet');
   },
 
   showComprehensiveReport: function () {
-    this.set('showComprehensiveReportApplet', true);
+    this.renderApplet('showComprehensiveReportApplet');
   },
 
   showGoogleEarthFile: function () {
-    this.set('showGoogleEarthFileApplet', true);
+    this.renderApplet('showGoogleEarthFileApplet');
   },
 
   showSurveyForm: function () {
-    this.set('showSurveyFormApplet', true);
-  }
+    this.renderApplet('showSurveyFormApplet');
+  },
+  renderApplet: function (prop) {
+    if(!FLOW.selectedControl.selectedSurvey) {
+      this.set('showWarning', true);
+      return;
+    }
+    this.set(prop, true);
+  },
+  onSurveySelection: function () {
+    this.set('showWarning', false);
+  }.observes('FLOW.selectedControl.selectedSurvey')
 });
