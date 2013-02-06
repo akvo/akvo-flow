@@ -40,9 +40,6 @@ FLOW.ApplicationView = Ember.View.extend({
       locale = 'en';
     }
     switch(locale) {
-    case 'nl':
-      Ember.STRINGS = Ember.STRINGS_NL;
-      break;
     case 'fr':
       Ember.STRINGS = Ember.STRINGS_FR;
       break;
@@ -62,7 +59,14 @@ FLOW.ApplicationView = Ember.View.extend({
 // ***********************************************//
 // localisation helper
 Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
-  return Ember.String.loc(i18nKey);
+  var i18nValue;
+  try {
+    i18nValue = Ember.String.loc(i18nKey);
+  }
+  catch(err) {
+    i18nValue = i18nKey;
+  }
+  return i18nValue;
 });
 
 Ember.Handlebars.registerHelper('tooltip', function(i18nKey) {
