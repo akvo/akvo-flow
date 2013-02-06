@@ -3,6 +3,7 @@
 FLOW.chartView = FLOW.View.extend({
   noChoiceBool: false,
   chartType: null,
+  compactSmaller: true,
 
   isDoughnut: function() {
     return(this.chartType.get('value') == 'doughnut');

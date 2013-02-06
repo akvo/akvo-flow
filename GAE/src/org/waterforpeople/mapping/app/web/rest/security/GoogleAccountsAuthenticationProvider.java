@@ -58,7 +58,7 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     }
 
     private GaeUser findUser(String email) {
-        final com.gallatinsystems.user.domain.User user = userDao.findUserByEmail(email);
+        final com.gallatinsystems.user.domain.User user = userDao.findUserByEmail(email.toLowerCase());
 
         if (user == null) {
             return null;

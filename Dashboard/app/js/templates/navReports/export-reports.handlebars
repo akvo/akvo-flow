@@ -1,9 +1,6 @@
 <section class="fullWidth" id="reportBlocks">
 {{#view FLOW.ExportReportsAppletView}}
-  <h1>Export data</h1>
-  {{#if view.showWarning}}
-<div class="block">{{t _applet_select_survey}}</div>
-  {{/if}}
+  <h1>{{t _export_data}}</h1>
  {{view Ember.Select 
       contentBinding="FLOW.surveyGroupControl.content" 
       selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 

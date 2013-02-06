@@ -3,7 +3,6 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveReportApplet:false,
   showGoogleEarthFileApplet: false,
   showSurveyFormApplet: false,
-  showWarning: false,
 
   showRawDataReport: function () {
     this.renderApplet('showRawDataReportApplet');
@@ -22,12 +21,13 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
   renderApplet: function (prop) {
     if(!FLOW.selectedControl.selectedSurvey) {
-      this.set('showWarning', true);
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_export_data'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_applet_select_survey'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
       return;
     }
     this.set(prop, true);
-  },
-  onSurveySelection: function () {
-    this.set('showWarning', false);
-  }.observes('FLOW.selectedControl.selectedSurvey')
+  }
 });

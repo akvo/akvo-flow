@@ -44,7 +44,7 @@ import com.gallatinsystems.survey.device.view.adapter.SurveyReviewCursorAdaptor;
  * Click will resume filling out that survey.
  * Long press will give the option to delete the survey from the device.
  *   
- * @author Stellan Lagerström
+ * @author Stellan LagerstrÃ¶m
  * 
  */
 public class SavedSurveyReviewActivity extends ListActivity {

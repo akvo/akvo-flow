@@ -35,7 +35,7 @@ import com.gallatinsystems.survey.device.util.ConstantUtil;
  *  Also displays a count for each choice.
  * 
  * 
- * @author Stellan Lagerström
+ * @author Stellan LagerstrÃ¶m
  * 
  */
 public class SurveyStatusHomeActivity extends Activity {
