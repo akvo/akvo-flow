@@ -14,7 +14,7 @@
                             {{view Ember.TextField valueBinding="view.notificationDestination" id="emailNotification" size=150 }}
                         </fieldset>
                         <fieldset>
-                            <label for="eventNotification">{{t _event}}  {{#if view.typeEmpty}} - {{t please_make_a_choice}}{{/if}}</label> 
+                            <label for="eventNotification">{{t _event}}  {{#if view.typeEmpty}} - {{t _please_make_a_choice}}{{/if}}</label> 
                             {{view Ember.Select 
                             contentBinding="FLOW.notificationEventControl.content" 
                             optionLabelPath="content.label" 
@@ -24,7 +24,7 @@
                             prompt="Select event"}}
                         </fieldset>
                         <fieldset>
-                            <label for="typeNotification">{{t _option}}  {{#if view.optionEmpty}} - {{t please_make_a_choice}} {{/if}}</label> 
+                            <label for="typeNotification">{{t _option}}  {{#if view.optionEmpty}} - {{t _please_make_a_choice}} {{/if}}</label> 
                             {{view Ember.Select 
                             contentBinding="FLOW.notificationOptionControl.content" 
                             optionLabelPath="content.label" 

@@ -1,6 +1,6 @@
 <project basedir=".">
 	<property file="build.properties" />
-	<property name="dashboard" value="../Dashboard" />
+	<property name="dashboard" value="../Dashboard/app" />
 	<property name="ui-strings" value="src/locale" />
 
 	<import file="${sdk.dir}/config/user/ant-macros.xml" />
