@@ -4,7 +4,9 @@
   <h2>{{t _edit_survey}}</h2>
 
   <form>
-    <label for="newSurveyName">{{t _title}}<span class="isRequired">({{t _required}})</span>:
+    <label for="newSurveyName">{{t _title}}<span class="isRequired">(
+      {{t _required}}
+      )</span>:
       {{view Ember.TextField valueBinding="view.surveyTitle" placeholder="Type in the name of your survey" size=30}} </label>
     <label for="newSurveyDesc">{{t _description}}:
       {{view Ember.TextArea valueBinding="view.surveyDescription" placeholder="Type in a description of your survey" size=30 rows="3" }} </label>
@@ -15,7 +17,7 @@
               <dt>{{t _id_number}}:</dt>
               <dd><span id="surveyIdNbr">{{FLOW.selectedControl.selectedSurvey.keyId}}</span></dd>
             </dl>   
-    <label for="surveyType">{{t _type}}<span class="isRequired">({{t _Required}})</span>:
+    <label for="surveyType">{{t _type}}<span class="isRequired">({{t _required}})</span>:
       {{view Ember.Select 
       contentBinding="FLOW.surveyPointTypeControl.content" 
       optionLabelPath="content.label" 
@@ -38,7 +40,10 @@
     </li>
     <li>{{t _number_of_question_groups}}: <span id="numberQuestionSet">{{view.numberQuestionGroups}}</span> </li>
     <li>{{t _number_of_questions}}: <span id="numberQuestion">{{view.numberQuestions}}</span> </li>
-    <li>{{t _status}}:  {{#if view.isPublished}} <span class="surveyPublished">{{t _published}}</span> {{else}} <span class="surveyNotPublished">{{t _not_published}}</span> {{/if}}</li>
+    <li>{{t _status}}: {{#if view.isPublished}} <span class="surveyPublished">
+      {{t _published}}</span> {{else}} <span class="surveyNotPublished">
+      {{t _not_published}}</span> {{/if}}
+    </li>
   </ul>
   <nav class="newSurveyNav">
     <ul>
