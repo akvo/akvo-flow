@@ -34,7 +34,7 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
     if(locale === "fr") {
       Ember.STRINGS = Ember.STRINGS_FR;
     } else if(locale === "es") {
-      Ember.STRINGS = Ember.STRINGS_EN;
+      Ember.STRINGS = Ember.STRINGS_ES;
     } else {
       Ember.STRINGS = Ember.STRINGS_EN;
     }
