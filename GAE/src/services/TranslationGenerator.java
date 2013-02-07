@@ -30,7 +30,8 @@ import org.apache.commons.io.FileUtils;
 public class TranslationGenerator {
 
 	private static final String HPREFIX = "{{t ";
-	private static final String HSUFFX = "}}";
+	private static final String TPREFIX = "{{tooltip ";
+	private static final String HSUFIX = "}}";
 	private static final String JSCALLPREFIX = "String.loc('";
 	private static final String JSCALLSUFXX = "'";
 	private static final String[] EXTS = { "handlebars", "js" };
@@ -63,7 +64,8 @@ public class TranslationGenerator {
 			final List<String> lines = FileUtils.readLines(f, "UTF-8");
 
 			for (String line : lines) {
-				if (line.contains(HPREFIX) || line.contains(JSCALLPREFIX)) {
+				if (line.contains(HPREFIX) || line.contains(JSCALLPREFIX)
+						|| line.contains(TPREFIX)) {
 					final List<String> keys = getKeys(line);
 					if (!keys.isEmpty()) {
 						for (String k : keys) {
@@ -111,8 +113,15 @@ public class TranslationGenerator {
 	}
 
 	private static List<String> getKeys(String line) {
-		if (line.contains(HPREFIX)) {
+		if (line.contains(HPREFIX) && line.contains(TPREFIX)) {
+			final List<String> keys = new ArrayList<String>();
+			keys.addAll(getKeysFromTemplate(line));
+			keys.addAll(getKeysFromTooltipCall(line));
+			return keys;
+		} else if (line.contains(HPREFIX)) {
 			return getKeysFromTemplate(line);
+		} else if (line.contains(TPREFIX)) {
+			return getKeysFromTooltipCall(line);
 		} else if (line.contains(JSCALLPREFIX)) {
 			return getKeysFromJSCall(line);
 		}
@@ -120,11 +129,15 @@ public class TranslationGenerator {
 	}
 
 	private static List<String> getKeysFromTemplate(String line) {
-		return extractKeysFromLine(line, HPREFIX, HSUFFX);
+		return extractKeysFromLine(line, HPREFIX, HSUFIX);
 	}
 
 	private static List<String> getKeysFromJSCall(String line) {
 		return extractKeysFromLine(line, JSCALLPREFIX, JSCALLSUFXX);
+	}
+
+	private static List<String> getKeysFromTooltipCall(String line) {
+		return extractKeysFromLine(line, TPREFIX, HSUFIX);
 	}
 
 	private static List<String> extractKeysFromLine(String line, String prefix,
@@ -143,6 +156,7 @@ public class TranslationGenerator {
 			start = start + prefix.length();
 			end = line.indexOf(suffix, start);
 		}
+
 		return keys;
 	}
 
