@@ -1,16 +1,4 @@
 
-FLOW.permissionLevelControl = Ember.Object.create({
-  content: [
-  Ember.Object.create({
-    label: "User",
-    value: "20"
-  }), Ember.Object.create({
-    label: "Administrator",
-    value: "10"
-  })]
-});
-
-
 FLOW.permControl = Ember.Controller.create({
   perms: [],
 
@@ -54,7 +42,7 @@ FLOW.permControl = Ember.Controller.create({
       this.perms.findProperty('perm','setDataPrivacy').value = true;
       this.perms.findProperty('perm','runReport').value = true;
     }
-    
+
     if(user === true) {
       this.perms.findProperty('perm','createSurvey').value = true;
       this.perms.findProperty('perm','editSurvey').value = true;
@@ -69,7 +57,7 @@ FLOW.permControl = Ember.Controller.create({
       this.perms.findProperty('perm','deleteRawData').value = true;
       this.perms.findProperty('perm','approveSurvey').value = true;
     }
-    
+
     if(user === true) {
       this.perms.findProperty('perm','createSurvey').value = true;
       this.perms.findProperty('perm','editSurvey').value = true;

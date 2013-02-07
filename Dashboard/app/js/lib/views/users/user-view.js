@@ -6,22 +6,26 @@ FLOW.UserListView = FLOW.View.extend({
     var userPerm;
     FLOW.editControl.set('newUserName', null);
     FLOW.editControl.set('newEmailAddress', null);
-    
-    FLOW.permissionLevelControl.get('content').forEach(function(item) {
-      if(item.get('value') == 'USER') {
-        userPerm = item;
-      }
+
+    userPerm = FLOW.permissionLevelControl.find(function (item) {
+      return item.value == 20; // USER
     });
     FLOW.editControl.set('newPermissionLevel', userPerm);
+
     this.set('showAddUserBool', true);
   },
 
   doAddUser: function() {
-    var value = null;
+    var value = null, superAdmin = false;
     if(FLOW.editControl.newPermissionLevel !== null) {
-      value = FLOW.editControl.newPermissionLevel.get('value');
+      value = FLOW.editControl.newPermissionLevel.value;
     } else {
       value = null;
+    }
+
+    if (value === 0) {
+      value = 20; // Can't create a Super Admin from UI
+      superAdmin = true;
     }
 
     FLOW.store.createRecord(FLOW.User, {
@@ -32,6 +36,11 @@ FLOW.UserListView = FLOW.View.extend({
 
     FLOW.store.commit();
     this.set('showAddUserBool', false);
+
+    if (superAdmin) {
+      this.showRoleWarning();
+    }
+
   },
 
   cancelAddUser: function() {
@@ -44,10 +53,8 @@ FLOW.UserListView = FLOW.View.extend({
     FLOW.editControl.set('editEmailAddress', event.context.get('emailAddress'));
     FLOW.editControl.set('editUserId', event.context.get('keyId'));
 
-    FLOW.permissionLevelControl.get('content').forEach(function(item) {
-      if(item.get('value') == event.context.get('permissionList')) {
-        permission = item;
-      }
+    permission = FLOW.permissionLevelControl.find(function(item) {
+      return item.value == event.context.get('permissionList');
     });
 
     FLOW.editControl.set('editPermissionLevel', permission);
@@ -55,21 +62,38 @@ FLOW.UserListView = FLOW.View.extend({
   },
 
   doEditUser: function() {
-    var user;
+    var user, superAdmin = false;
     user = FLOW.store.find(FLOW.User, FLOW.editControl.get('editUserId'));
     user.set('userName', FLOW.editControl.get('editUserName'));
     user.set('emailAddress', FLOW.editControl.get('editEmailAddress'));
-    
+
     if(FLOW.editControl.editPermissionLevel !== null) {
-      user.set('permissionList', FLOW.editControl.editPermissionLevel.get('value'));
+      if (FLOW.editControl.editPermissionLevel.value === 0) {
+        superAdmin = true;
+        user.set('permissionList', 20); // Can't change to Super Admin
+      } else {
+        user.set('permissionList', FLOW.editControl.editPermissionLevel.value);
+      }
     }
 
     FLOW.store.commit();
     this.set('showEditUserBool', false);
+
+    if(superAdmin) {
+      this.showRoleWarning();
+    }
   },
 
   cancelEditUser: function() {
     this.set('showEditUserBool', false);
+  },
+
+  showRoleWarning: function () {
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_manage_users_and_user_rights'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_cant_set_superadmin'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
   }
 });
 
@@ -86,10 +110,16 @@ FLOW.UserView = FLOW.View.extend({
 });
 
 FLOW.SingleUserView = FLOW.View.extend({
-  tagName:"td",
+  tagName: 'td',
   permissionLevel:null,
   init:function(){
+    var role = null;
     this._super();
-    this.set('permissionLevel',this.content.get('permissionList'));
+
+    role = FLOW.permissionLevelControl.find(function (item) {
+      return item.value == this.content.get('permissionList');
+    }, this);
+
+    this.set('roleLabel', role.label);
   }
 });

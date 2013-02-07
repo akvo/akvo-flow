@@ -1,4 +1,5 @@
 {{#view FLOW.UserListView}}
+<!-- Available roles: {{t _ADMIN}} {{t _SUPER_ADMIN}} {{t _USER}} -->
 <div class="greyBg">
   <section id="" class="fullWidth usersList"> 
 	<h1>{{t _manage_users_and_user_rights}}</h1>
@@ -29,7 +30,7 @@
             <td class="userName" style="text-align:left; padding:0 0 0 20px;">{{user.userName}}</td>
             <td class="emailAdr" style="text-align:left;">{{user.emailAddress}}</td>
             {{#view FLOW.SingleUserView contentBinding="user"}}
-              <span {{bindAttr class="view.permissionLevel"}}>{{user.permissionList}}</span>
+              <span>{{view.roleLabel}}</span>
              {{/view}}
             <td class="action"> <a {{action "showEditUserDialog" user target="this"}} class="edit">{{t _edit}}</a> {{#view FLOW.UserView contentBinding="user"}}<a {{action confirm FLOW.dialogControl.delUser target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>{{/view}}
         
