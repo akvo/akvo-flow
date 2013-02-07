@@ -1,9 +1,12 @@
+<div class="block">
 <applet height="30" width="100"
 	code="com.gallatinsystems.framework.dataexport.applet.DataImportAppletImpl"
-	archive="exporterapplet.jar,gdata-core-1.0.jar">
+	archive="../exporterapplet.jar,../gdata-core-1.0.jar">
 	<param name="importType" value="BULK_SURVEY">
 	<param name="selectionMode" value="dir">
 	<param name="java_arguments" value="-Xmx1024m">
+	<param name="serverOverride" value="{{getServer}}">
 	<param name="factoryClass"
 		value="org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory">
 </applet>
+</div>

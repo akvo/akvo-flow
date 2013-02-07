@@ -1,7 +1,11 @@
 FLOW.BulkUploadAppletView = FLOW.View.extend({
-  showBulkUploadAppletBool:false,
-
+  showBulkUploadAppletBool: false,
   showBulkUploadApplet: function () {
-    this.set('showBulkUploadAppletBool', true);
+    if(this.get('showBulkUploadAppletBool')) {
+      // re-insert the applet
+      this.get('childViews')[0].rerender();
+    } else {
+      this.set('showBulkUploadAppletBool', true);
+    }
   }
 });
