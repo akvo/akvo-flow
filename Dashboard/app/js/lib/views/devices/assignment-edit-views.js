@@ -79,15 +79,15 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     sa.set('name', this.get('assignmentName'));
 
     if(!Ember.none(FLOW.dateControl.get('toDate'))) {
-      startDateParse = Date.parse(FLOW.dateControl.get('toDate'));
+      endDateParse = Date.parse(FLOW.dateControl.get('toDate'));
     } else {
-      startDateParse = null;
+      endDateParse = null;
     }
 
     if(!Ember.none(FLOW.dateControl.get('fromDate'))) {
-      endDateParse = Date.parse(FLOW.dateControl.get('fromDate'));
+      startDateParse = Date.parse(FLOW.dateControl.get('fromDate'));
     } else {
-      endDateParse = null;
+      startDateParse = null;
     }
 
     sa.set('endDate', endDateParse);
