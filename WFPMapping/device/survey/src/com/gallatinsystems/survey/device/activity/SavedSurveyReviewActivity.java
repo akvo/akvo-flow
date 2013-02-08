@@ -84,8 +84,7 @@ public class SavedSurveyReviewActivity extends ListActivity {
 		}catch(Exception e){
 			Log.w(TAG, "Could not close old cursor before reloading list",e);
 		}
-		dataCursor = databaseAdapter
-				.listSurveyRespondent(ConstantUtil.SAVED_STATUS);		
+		dataCursor = databaseAdapter.listSurveyRespondent(ConstantUtil.SAVED_STATUS, false);		
 
 		SurveyReviewCursorAdaptor surveys = new SurveyReviewCursorAdaptor(this,
 				dataCursor);

@@ -52,6 +52,7 @@ import android.graphics.BitmapFactory;
 public class HttpUtil {
 
 	private static final int BUF_SIZE = 2048;
+	private static final int PARSE_BUF_SIZE = 8192;
 
 	/**
 	 * executes an HTTP GET and returns the result as a String
@@ -248,10 +249,10 @@ public class HttpUtil {
 			if (contentEncoding != null
 					&& contentEncoding.getValue().equalsIgnoreCase("gzip")) {
 				reader = new BufferedReader(new InputStreamReader(
-						new GZIPInputStream(response.getEntity().getContent())));
+						new GZIPInputStream(response.getEntity().getContent())),PARSE_BUF_SIZE);
 			} else {
 				reader = new BufferedReader(new InputStreamReader(response
-						.getEntity().getContent()));
+						.getEntity().getContent()),PARSE_BUF_SIZE);
 			}
 			StringBuilder sb = new StringBuilder();
 			String line = null;

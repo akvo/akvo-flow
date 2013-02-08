@@ -93,12 +93,6 @@ public class SurveyStatusHomeActivity extends Activity {
 		    startActivity(intent);
 	    }
 
-	    //Transitionally, Review classic Surveys button pushed
-	    public void ReviewClassicPushed(View view){
-		    Intent intent = new Intent(this, SurveyReviewActivity.class);
-		    startActivity(intent);
-	    }
-
 
 	}
 

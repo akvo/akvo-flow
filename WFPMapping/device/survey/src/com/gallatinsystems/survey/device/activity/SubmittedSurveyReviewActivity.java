@@ -22,6 +22,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -41,7 +43,7 @@ import com.gallatinsystems.survey.device.view.adapter.SubmittedSurveyReviewCurso
 import com.gallatinsystems.survey.device.view.adapter.SurveyReviewCursorAdaptor;
 
 /**
- * Activity for reviewing submitted surveys. This activity will allow the
+ * Activity for reviewing submitted surveys. This activity allows the
  * user to delete, resend, see transmission history for and review (readonly) submitted surveys
  * 
  * Displays the current transmission status with colored icons.
@@ -58,11 +60,24 @@ public class SubmittedSurveyReviewActivity extends ListActivity {
 	private static final int RESEND_ALL = 5;
 	private static final int VIEW_HISTORY = 5;
 	private static final int RESEND_ONE = 6;
+	
+	private static final int UPDATE_INTERVAL_MS = 10000; //every ten seconds
+	
 	private TextView viewTypeLabel;
 	private Long selectedSurvey;
 	private Cursor dataCursor;
 	private SurveyDbAdapter databaseAdapter;
+	
+	private Handler mHandler = new Handler();
 
+	private Runnable mUpdateTimeTask = new Runnable() {
+		public void run() {
+			getData();
+			mHandler.postDelayed(this,UPDATE_INTERVAL_MS);
+			}
+		};
+
+		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -73,7 +88,6 @@ public class SubmittedSurveyReviewActivity extends ListActivity {
 		databaseAdapter = new SurveyDbAdapter(this);
 
 		registerForContextMenu(getListView());
-
 	}
 
 	
@@ -89,7 +103,7 @@ public class SubmittedSurveyReviewActivity extends ListActivity {
 		}catch(Exception e){
 			Log.w(TAG, "Could not close old cursor before reloading list",e);
 		}
-		dataCursor = databaseAdapter.listSurveyRespondent(ConstantUtil.SUBMITTED_STATUS);		
+		dataCursor = databaseAdapter.listSurveyRespondent(ConstantUtil.SUBMITTED_STATUS, true);		
 
 		SubmittedSurveyReviewCursorAdaptor surveys = new SubmittedSurveyReviewCursorAdaptor(this,	dataCursor);
 		setListAdapter(surveys);
@@ -122,11 +136,16 @@ public class SubmittedSurveyReviewActivity extends ListActivity {
 		super.onResume();
 		databaseAdapter.open();
 		getData();
+		mHandler.removeCallbacks(mUpdateTimeTask);
+		mHandler.postDelayed(mUpdateTimeTask, UPDATE_INTERVAL_MS);
 	}
 
 
 	@Override
 	protected void onDestroy() {
+		if (mHandler != null) {
+			mHandler.removeCallbacks(mUpdateTimeTask);
+		}
 		if (dataCursor != null) {
 			try {
 				dataCursor.close();
@@ -283,10 +302,8 @@ public class SubmittedSurveyReviewActivity extends ListActivity {
 	 * item and open one-survey activity, readonly.
 	 */
 	@Override
-	protected void onListItemClick(ListView list, View view, int position,
-			long id) {
+	protected void onListItemClick(ListView list, View view, int position, long id) {
 		super.onListItemClick(list, view, position, id);
-		Intent intent = new Intent();
 
 		Intent i = new Intent(view.getContext(), SurveyViewActivity.class);
 		i.putExtra(ConstantUtil.USER_ID_KEY, ((Long) view
@@ -298,6 +315,7 @@ public class SubmittedSurveyReviewActivity extends ListActivity {
 		i.putExtra(ConstantUtil.READONLY_KEY, true);
 
 		//do not close us
+//		Intent intent = new Intent();
 //		setResult(RESULT_OK, intent);
 //		finish();
 		startActivity(i);

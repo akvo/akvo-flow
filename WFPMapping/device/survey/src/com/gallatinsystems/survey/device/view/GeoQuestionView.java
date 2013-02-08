@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.survey.device.view;
 
+import java.text.DecimalFormat;
 import java.util.StringTokenizer;
 
 import android.content.Context;
@@ -189,6 +190,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 			if (loc != null) {
 				// if the last location is accurate, then we can use it
+				// TODO: also check if it is too old to be useful
 				if (loc.hasAccuracy() && loc.getAccuracy() < ACCURACY_THRESHOLD) {
 					populateLocation(loc);
 				}
@@ -220,7 +222,8 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		}
 		latField.setText(loc.getLatitude() + "");
 		lonField.setText(loc.getLongitude() + "");
-		elevationField.setText(loc.getAltitude() + "");
+		 //elevation is in meters, even one decimal is way more than GPS precision
+		elevationField.setText(new DecimalFormat("#.#").format(loc.getAltitude()));
 		if (generateCode) {
 			generatedCodeField.setText(generateCode(loc.getLatitude(),
 					loc.getLongitude()));
