@@ -30,7 +30,7 @@ FLOW.chartView = FLOW.View.extend({
       smallerItems = [],
       total = 0,
       max = 0,
-      maxPer, i, tot, item, copyData, percentage, totPerc;
+      maxPer, i, tot, totPerc;
 
     if(FLOW.surveyQuestionSummaryControl.content.get('isLoaded') === true) {
       FLOW.chartDataControl.set('total', FLOW.surveyQuestionSummaryControl.content.get('length'));
@@ -98,8 +98,6 @@ FLOW.chartView = FLOW.View.extend({
       } else if(this.chartType.get('value') == 'vbar') {
 
         FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
-          var percentage = 100.0 * item.get('count') / total,
-            percString = percentage.toFixed(1);
           chartData.push({
             "legendLabel": (item.get('response')),
             "percentage": 100.0 * item.get('count') / total
@@ -119,8 +117,6 @@ FLOW.chartView = FLOW.View.extend({
       } else if(this.chartType.get('value') == 'hbar') {
 
         FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
-          var percentage = 100.0 * item.get('count') / total,
-            percString = percentage.toFixed(1);
           chartData.push({
             "legendLabel": (item.get('response')),
             "percentage": 100.0 * item.get('count') / total
