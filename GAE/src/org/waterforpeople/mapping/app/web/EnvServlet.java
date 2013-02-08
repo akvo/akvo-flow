@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,6 +35,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
@@ -92,6 +95,19 @@ public class EnvServlet extends HttpServlet {
 		props.put("countries", jsonArray.toString());
 
 		context.put("env", props);
+
+		
+		final List<Map<String, String>> roles = new ArrayList<Map<String, String>>();
+		for (AppRole r : AppRole.values()) {
+			if (r.getLevel() < 0) {
+				continue; // don't expose NEW_USER
+			}
+			Map<String, String> role = new HashMap<String, String>();
+			role.put("value", String.valueOf(r.getLevel()));
+			role.put("label", "_" + r.toString());
+			roles.add(role);
+		}
+		context.put("roles", roles);
 
 		final StringWriter writer = new StringWriter();
 		t.merge(context, writer);

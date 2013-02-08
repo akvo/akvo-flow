@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.UserPayload;
+import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
@@ -54,20 +55,20 @@ public class UserRestService {
 			@RequestParam(value = "currUser", defaultValue = "") String currUser) {
 		final Map<String, List<UserDto>> response = new HashMap<String, List<UserDto>>();
 		List<UserDto> results = new ArrayList<UserDto>();
-		
+
 		// TODO check if this part works
 		if ("true".equals(currUser)) {
 			com.google.appengine.api.users.UserService userService = UserServiceFactory
 					.getUserService();
 			com.google.appengine.api.users.User currentUser = userService
 					.getCurrentUser();
-			if (currentUser != null){
+			if (currentUser != null) {
 				UserDto dto = new UserDto();
 				dto.setEmailAddress(currentUser.getEmail());
 				dto.setUserName(currentUser.getFederatedIdentity());
 				results.add(dto);
 			}
-			 
+
 		} else {
 			List<User> users = userDao.list(Constants.ALL_RESULTS);
 			if (users != null) {
@@ -151,6 +152,13 @@ public class UserRestService {
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(userDto, u, new String[] {
 							"createdDateTime", "config" });
+
+					if (u.getPermissionList().equals(
+							String.valueOf(AppRole.SUPER_ADMIN.getLevel()))) {
+						u.setPermissionList(String.valueOf(AppRole.USER
+								.getLevel()));
+					}
+
 					u = userDao.save(u);
 					dto = new UserDto();
 					BeanUtils.copyProperties(u, dto, new String[] { "config" });
@@ -186,6 +194,12 @@ public class UserRestService {
 			// it is set in the Dao.
 			BeanUtils.copyProperties(userDto, u, new String[] {
 					"createdDateTime", "config" });
+
+			if (u.getPermissionList().equals(
+					String.valueOf(AppRole.SUPER_ADMIN.getLevel()))) {
+				u.setPermissionList(String.valueOf(AppRole.USER.getLevel()));
+			}
+
 			u = userDao.save(u);
 
 			dto = new UserDto();
