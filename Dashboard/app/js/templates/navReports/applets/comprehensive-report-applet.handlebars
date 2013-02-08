@@ -12,6 +12,6 @@
     <param name="serverOverride" value="{{getServer}}">
 	<!-- FIXME locale must be configurable -->
 	<param name="options"
-		value="locale:=en;imgPrefix:=http://flowdemo.s3.amazonaws.com/images/">
+		value="locale:=en;performRollup:={{unbound FLOW.editControl.summaryPerGeoArea}};nocharts:={{unbound FLOW.editControl.summaryPerGeoArea}};imgPrefix:={{unbound FLOW.Env.imageroot}}/">
 </applet>
 </div>

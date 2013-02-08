@@ -3,12 +3,14 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveReportApplet:false,
   showGoogleEarthFileApplet: false,
   showSurveyFormApplet: false,
+  showComprehensiveDialog: false,
 
   showRawDataReport: function () {
     this.renderApplet('showRawDataReportApplet');
   },
 
   showComprehensiveReport: function () {
+    this.set('showComprehensiveDialog', false);
     this.renderApplet('showComprehensiveReportApplet');
   },
 
@@ -19,13 +21,29 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showSurveyForm: function () {
     this.renderApplet('showSurveyFormApplet');
   },
+
+  showComprehensiveOptions: function () {
+    if(!FLOW.selectedControl.selectedSurvey) {
+      this.showWarning();
+      return;
+    }
+
+    FLOW.editControl.set('summaryPerGeoArea', true);
+    FLOW.editControl.set('omitCharts', false);
+    this.set('showComprehensiveDialog', true);
+  },
+
+  showWarning: function () {
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_export_data'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_applet_select_survey'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+  },
+
   renderApplet: function (prop) {
     if(!FLOW.selectedControl.selectedSurvey) {
-      FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', Ember.String.loc('_export_data'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_applet_select_survey'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
+      this.showWarning();
       return;
     }
     switch (prop) {
