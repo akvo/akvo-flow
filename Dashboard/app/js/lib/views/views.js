@@ -63,22 +63,23 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
   try {
     i18nValue = Ember.String.loc(i18nKey);
   }
-  catch(err) {
-    i18nValue = i18nKey;
+  catch (err) {
+    return i18nKey;
   }
   return i18nValue;
 });
 
 Ember.Handlebars.registerHelper('tooltip', function(i18nKey) {
-  var tooltip = Ember.String.loc(i18nKey);
-
+  var tooltip;
+  try {
+    tooltip = Ember.String.loc(i18nKey);
+  }
+  catch (err) {
+    tooltip = i18nKey;
+  }
   return new Handlebars.SafeString(
     '<a href="#" class="helpIcon tooltip" title="' + tooltip + '">?</a>'
   );
-
-  // return '<a href="#" class="helpIcon tooltip">?</a>';
-  // return '<a href="#" class="helpIcon tooltip" title="' + tooltip + '">Get Help</a>';
-  // <a href="#" class="helpIcon tooltip" title="Version Number helps you keep track of the number of times the survey has been revised and published. So, if the survey has been revised and published five times, it will be Version 5.0">Get Help</a>
 });
 
 // translates values to labels for languages

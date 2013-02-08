@@ -24,10 +24,6 @@ end
 desc "Build #{APPNAME}"
 task :build => :clean do
   pipeline.invoke
-
-  unless File.exists?("app/js/lib/models/store_def.js")
-    system 'cp ../dev-env/puppet/modules/akvo-flow/templates/store_def.js_fixture.erb app/js/lib/models/store_def.js'
-  end
 end
 
 desc "Watch for changes"
@@ -36,14 +32,14 @@ task :watch do
 end
 
 # New build commands
-desc "Construct #{APPNAME}"
-task :make => :clean do
-  pipeline.invoke
+# desc "Construct #{APPNAME}"
+# task :make => :clean do
+#   pipeline.invoke
 
-  system 'rm -rf ../GAE/war/flow15'
-  system 'cp -rf ./assets/flow15 ../GAE/war/flow15'
-  system 'cp ../GAE/war/flow15/dashboard.html ../GAE/war/dashboard.html'
-end
+#   system 'rm -rf ../GAE/war/flow15'
+#   system 'cp -rf ./assets/flow15 ../GAE/war/flow15'
+#   system 'cp ../GAE/war/flow15/dashboard.html ../GAE/war/dashboard.html'
+# end
 
 
 # Unused commands ?
