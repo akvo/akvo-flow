@@ -15,7 +15,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showGoogleEarthFile: function () {
-    this.renderApplet('showGoogleEarthFileApplet');
+    this.renderApplet('showGoogleEarthFileApplet', true);
   },
 
   showSurveyForm: function () {
@@ -41,8 +41,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     FLOW.dialogControl.set('showDialog', true);
   },
 
-  renderApplet: function (prop) {
-    if(!FLOW.selectedControl.selectedSurvey) {
+  renderApplet: function (prop, skipSurveyCheck) {
+    if(!skipSurveyCheck && !FLOW.selectedControl.selectedSurvey) {
       this.showWarning();
       return;
     }
