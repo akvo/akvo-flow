@@ -136,15 +136,16 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		} else if (SurveyManagerRequest.GET_AVAIL_DEVICE_SURVEY_ACTION
 				.equalsIgnoreCase(req.getAction())) {
 			//Report which surveys the device should have
-			Device dev;
-			if (mgrReq.getPhoneNumber() != null || 
-				mgrReq.getImei() != null) {
+			Device dev = null;
+			if (mgrReq.getPhoneNumber() != null || mgrReq.getImei() != null) {
 				resp.setMessage(getSurveyForPhone(mgrReq.getPhoneNumber(),mgrReq.getImei()));
 				// now check to see if we need to update the device
-				if (mgrReq.getImei() != null) 
+				if (mgrReq.getImei() != null){ 
 					dev = deviceDao.getByImei(mgrReq.getImei());
-				else
+				}
+				if (dev == null){
 					dev = deviceDao.get(mgrReq.getPhoneNumber());
+				}
 				if (dev != null) {
 					if (mgrReq.getDeviceId() != null
 							&& mgrReq.getDeviceId().trim().length() > 0) {
