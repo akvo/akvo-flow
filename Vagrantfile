@@ -9,7 +9,7 @@ Vagrant::Config.run do |config|
   config.vm.host_name = "akvo-flow.dev"
   config.vm.box = "akvo-flow_precise64_4.2.6_v3"
 
-  config.vm.boot_mode = :gui
+  # config.vm.boot_mode = :gui
 
   config.vm.network :hostonly, "33.33.33.6"
   config.vm.share_folder("v-root", "/akvo-flow", ".", :nfs => true)
