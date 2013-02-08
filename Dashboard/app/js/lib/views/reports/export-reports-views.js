@@ -28,6 +28,41 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       FLOW.dialogControl.set('showDialog', true);
       return;
     }
-    this.set(prop, true);
+    switch (prop) {
+      case 'showRawDataReportApplet':
+        this.set('showRawDataReportApplet', true);
+        this.set('showComprehensiveReportApplet', false);
+        this.set('showGoogleEarthFileApplet', false);
+        this.set('showSurveyFormApplet', false);
+        break;
+      case 'showComprehensiveReportApplet':
+        this.set('showRawDataReportApplet', false);
+        this.set('showComprehensiveReportApplet', true);
+        this.set('showGoogleEarthFileApplet', false);
+        this.set('showSurveyFormApplet', false);
+        break;
+      case 'showGoogleEarthFileApplet':
+        this.set('showRawDataReportApplet', false);
+        this.set('showComprehensiveReportApplet', false);
+        this.set('showGoogleEarthFileApplet', true);
+        this.set('showSurveyFormApplet', false);
+        break;
+      case 'showSurveyFormApplet':
+        this.set('showRawDataReportApplet', false);
+        this.set('showComprehensiveReportApplet', false);
+        this.set('showGoogleEarthFileApplet', false);
+        this.set('showSurveyFormApplet', true);
+        break;
+    }
+
+    this.get('childViews').forEach(function(v) {
+      if(v.get('childViews') && v.get('childViews').length > 0) {
+        return; // skip initial select items
+      }
+
+      if(v.state === 'inDOM') {
+        v.rerender();
+      }
+    });
   }
 });
