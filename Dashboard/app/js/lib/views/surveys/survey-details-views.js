@@ -40,7 +40,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 		isDirty = this.get('surveyTitle') != survey.get('name');
 
 		if(!Ember.none(this.get('surveyDescription'))) {
-			isDirty = isDirty || this.get('surveyDescription') != survey.get('surveyDescription');
+			isDirty = isDirty || this.get('surveyDescription') != survey.get('description');
 		} else {
 			// if we don't have one now, but we had one before, it has also changed
 			isDirty = isDirty || !Ember.none(survey.get('surveyDescription'));
@@ -100,7 +100,6 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 			survey.set('defaultLanguageCode', null);
 		}
 		FLOW.store.commit();
-		this.setIsDirty();
 	},
 
 	doPreviewSurvey: function() {
