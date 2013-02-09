@@ -20,6 +20,8 @@ import java.util.Locale;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.converters.DoubleConverter;
+import org.apache.commons.beanutils.converters.LongConverter;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
@@ -94,7 +96,8 @@ public class DtoMarshaller {
 		ConvertUtils.register(enumConverter, OGRFeatureDto.FeatureType.class);
 		ConvertUtils.register(enumConverter, Survey.Status.class);
 		ConvertUtils.register(enumConverter, Survey.Sector.class);
-		
+		ConvertUtils.register(new DoubleConverter(null), Double.class);
+		ConvertUtils.register(new LongConverter(null), Long.class);
 		
 		DatastoreTextConverter textConverter = new DatastoreTextConverter();
 		ConvertUtils.register(textConverter,Text.class);				
