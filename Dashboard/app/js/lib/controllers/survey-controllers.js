@@ -282,6 +282,8 @@ FLOW.questionControl = Ember.ArrayController.create({
       this.set('filterContent', FLOW.store.filter(FLOW.Question, function(item) {
         return(item.get('surveyId') == sId);
       }));
+    } else {
+      this.set('filterContent',null);
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
