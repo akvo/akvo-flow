@@ -122,6 +122,15 @@
         <p class="dialogMsg">{{t _to_create_a_new_device_group_}}</p>
         <label for="newDeviceGroupName">{{t _new_group}}:</label>
         {{view Ember.TextField valueBinding="view.newDeviceGroupName" id="newDeviceGroupName" size=40}}
+
+         <p class="dialogMsg">{{t _to_delete_an_existing_group_}}</p>
+        {{view Ember.Select 
+        contentBinding="FLOW.deviceGroupControl.content" 
+        selectionBinding="view.selectedDeviceGroupForDelete" 
+        optionLabelPath="content.code" 
+        optionValuePath="content.keyId" 
+        prompt="Select device group"}} <a {{action confirm FLOW.dialogControl.delDeviceGroup target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>
+
         <div class="buttons menuCentre">
           <ul>
             <li><a {{action "doManageDeviceGroups" target="this"}} class="ok smallBtn">{{t _save}}</a></li>

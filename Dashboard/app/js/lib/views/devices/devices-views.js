@@ -1,6 +1,5 @@
-
 FLOW.CurrentDevicesTabView = Ember.View.extend({
-// FLOW.CurrentDevicesTabView = FLOW.View.extend({
+	// FLOW.CurrentDevicesTabView = FLOW.View.extend({
 	showDeleteDevicesDialogBool: false,
 	showAddToGroupDialogBool: false,
 	showRemoveFromGroupDialogBool: false,
@@ -9,6 +8,8 @@ FLOW.CurrentDevicesTabView = Ember.View.extend({
 	// bound to devices-list.handlebars
 	changedDeviceGroupName: null,
 	selectedDeviceGroup: null,
+	selectedDeviceGroupForDelete: null,
+
 	// bound to devices-list.handlebars
 	showAddToGroupDialog: function() {
 		this.set('selectedDeviceGroup', null);
@@ -142,16 +143,25 @@ FLOW.CurrentDevicesTabView = Ember.View.extend({
 		this.set('showManageDeviceGroupsDialogBool', false);
 	},
 
-	showDeleteDevicesDialog: function() {
-		console.log("show delete devices dialog");
-	},
+	deleteDeviceGroup: function() {
+		var dgroup, devicesInGroup;
+		dgroup = this.get('selectedDeviceGroupForDelete');
+		if(dgroup !== null) {
 
-	doDeleteDevices: function() {
+			devicesInGroup = FLOW.store.filter(FLOW.Device, function(item) {
+				return item.get('deviceGroup') == dgroup.get('keyId');
+			});
+			devicesInGroup.forEach(function(item) {
+				item.set('deviceGroupName', null);
+				item.set('deviceGroup', null);
+			});
 
-	},
+			FLOW.store.commit();
 
-	cancelDeleteDevices: function() {
-
+			dgroup.deleteRecord();
+			FLOW.store.commit();
+		}
+		this.set('showManageDeviceGroupsDialogBool', false);
 	}
 });
 
