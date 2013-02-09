@@ -12,6 +12,7 @@ FLOW.deviceGroupControl = Ember.ArrayController.create({
         code: 'all unassigned devices',
         keyId: 1
       });
+      // prevent saving of this item to the backend
       unassigned.get('stateManager').send('becameClean');
     }
     this.set('content', FLOW.store.find(FLOW.DeviceGroup));
