@@ -7,7 +7,7 @@ FLOW.UserListView = FLOW.View.extend({
     FLOW.editControl.set('newUserName', null);
     FLOW.editControl.set('newEmailAddress', null);
 
-    userPerm = FLOW.permissionLevelControl.find(function (item) {
+    userPerm = FLOW.permissionLevelControl.find(function(item) {
       return item.value == 20; // USER
     });
     FLOW.editControl.set('newPermissionLevel', userPerm);
@@ -16,14 +16,15 @@ FLOW.UserListView = FLOW.View.extend({
   },
 
   doAddUser: function() {
-    var value = null, superAdmin = false;
+    var value = null,
+      superAdmin = false;
     if(FLOW.editControl.newPermissionLevel !== null) {
       value = FLOW.editControl.newPermissionLevel.value;
     } else {
       value = null;
     }
 
-    if (value === 0) {
+    if(value === 0) {
       value = 20; // Can't create a Super Admin from UI
       superAdmin = true;
     }
@@ -37,7 +38,7 @@ FLOW.UserListView = FLOW.View.extend({
     FLOW.store.commit();
     this.set('showAddUserBool', false);
 
-    if (superAdmin) {
+    if(superAdmin) {
       this.showRoleWarning();
     }
 
@@ -68,7 +69,7 @@ FLOW.UserListView = FLOW.View.extend({
     user.set('emailAddress', FLOW.editControl.get('editEmailAddress'));
 
     if(FLOW.editControl.editPermissionLevel !== null) {
-      if (FLOW.editControl.editPermissionLevel.value === 0) {
+      if(FLOW.editControl.editPermissionLevel.value === 0) {
         superAdmin = true;
         user.set('permissionList', 20); // Can't change to Super Admin
       } else {
@@ -88,7 +89,7 @@ FLOW.UserListView = FLOW.View.extend({
     this.set('showEditUserBool', false);
   },
 
-  showRoleWarning: function () {
+  showRoleWarning: function() {
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_manage_users_and_user_rights'));
     FLOW.dialogControl.set('message', Ember.String.loc('_cant_set_superadmin'));
@@ -111,15 +112,18 @@ FLOW.UserView = FLOW.View.extend({
 
 FLOW.SingleUserView = FLOW.View.extend({
   tagName: 'td',
-  permissionLevel:null,
-  init:function(){
+  permissionLevel: null,
+  roleLabel: null,
+
+  init: function() {
     var role = null;
     this._super();
 
-    role = FLOW.permissionLevelControl.find(function (item) {
+    role = FLOW.permissionLevelControl.find(function(item) {
       return item.value == this.content.get('permissionList');
     }, this);
-
-    this.set('roleLabel', role.label);
+    if(!Ember.none(role)) {
+      this.set('roleLabel', role.label);
+    }
   }
 });
