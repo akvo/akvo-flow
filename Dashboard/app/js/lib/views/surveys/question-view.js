@@ -170,6 +170,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		FLOW.selectedControl.selectedQuestion.set('optionList', this.get('optionList'));
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedQuestion', null);
+		FLOW.selectedControl.set('dependentQuestion',null);
 	},
 
 	// BROKEN
@@ -248,7 +249,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
 	// create new question
 	doInsertQuestion: function() {
-		var insertAfterOrder,path;
+		var insertAfterOrder,path,newQ;
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
 		if(this.get('zeroItemQuestion')) {
@@ -260,7 +261,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		// create new Question item in the store
 		// the insertAfterOrder is inserted here
 		// in the server, the proper order of all question groups is re-established
-		FLOW.store.createRecord(FLOW.Question, {
+		newQ = FLOW.store.createRecord(FLOW.Question, {
 			"order": insertAfterOrder,
 			"type": "FREE_TEXT",
 			"path": path,
@@ -268,7 +269,6 @@ FLOW.QuestionView = FLOW.View.extend({
 			"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId'),
 			"questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
 		});
-
 		FLOW.store.commit();
 	},
 
