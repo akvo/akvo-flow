@@ -113,10 +113,11 @@ public class DeviceRestService {
 					// copy the properties, except the createdDateTime property,
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(deviceDto, s,
-							new String[] { "createdDateTime" });
+							new String[] { "createdDateTime", "lastPositionDate" });
 					s = deviceDao.save(s);
 					dto = new DeviceDto();
 					DtoMarshaller.copyToDto(s, dto);
+					dto.setLastPositionDate(s.getLastLocationBeaconTime());
 					statusDto.setStatus("ok");
 				}
 			}
