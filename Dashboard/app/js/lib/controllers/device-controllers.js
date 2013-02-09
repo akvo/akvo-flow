@@ -3,11 +3,18 @@ FLOW.deviceGroupControl = Ember.ArrayController.create({
 
   populate: function() {
     var unassigned;
-    this.set('content', FLOW.store.find(FLOW.DeviceGroup));
-    unassigned = FLOW.store.createRecord(FLOW.DeviceGroup, {
-      code: 'all unassigned devices',
-      keyId: '-1'
+
+    unassigned = FLOW.store.filter(FLOW.DeviceGroup, function(item) {
+      return item.get('keyId') == 1;
     });
+    if(unassigned.toArray().length === 0) {
+      unassigned = FLOW.store.createRecord(FLOW.DeviceGroup, {
+        code: 'all unassigned devices',
+        keyId: 1
+      });
+      unassigned.get('stateManager').send('becameClean');
+    }
+    this.set('content', FLOW.store.find(FLOW.DeviceGroup));
   }
 });
 
@@ -52,9 +59,10 @@ FLOW.devicesInGroupControl = Ember.ArrayController.create({
     var deviceGroupId;
     if(FLOW.selectedControl.get('selectedDeviceGroup') && FLOW.selectedControl.selectedDeviceGroup.get('keyId') !== null) {
       deviceGroupId = FLOW.selectedControl.selectedDeviceGroup.get('keyId');
-      if(deviceGroupId == -1) {
+
+      if(deviceGroupId == 1) {
         this.set('content', FLOW.store.filter(FLOW.Device, function(item) {
-          return(Ember.none(item.get('deviceGroup')));
+          return(Ember.empty(item.get('deviceGroup')));
         }));
       } else {
         this.set('content', FLOW.store.filter(FLOW.Device, function(item) {
