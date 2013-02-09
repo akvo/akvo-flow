@@ -7,13 +7,13 @@
     <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
  
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
-    <label class="selectinLabel"><span>{{t _attribute}}:</span> {{view Ember.Select 
+    <label class="selectinLabel"><span>{{t _tag}} {{tooltip _what_is_tag}}:</span> {{view Ember.Select 
       contentBinding="FLOW.attributeControl.content" 
       optionLabelPath="content.name" 
       optionValuePath="content.keyId" 
       selectionBinding="view.attribute" 
-      prompt="Select attribute"}}
-	   <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _add_attribute}} </a> </label>
+      prompt="Select tag"}}
+	   <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _add_tag}} </a> </label>
       {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
 
     <label class="selectinLabel"><span>{{t _question_type}}:</span> {{view Ember.Select 
