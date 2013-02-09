@@ -1,4 +1,3 @@
-
 FLOW.permControl = Ember.Controller.create({
   perms: [],
 
@@ -10,78 +9,132 @@ FLOW.permControl = Ember.Controller.create({
   },
 
   initPermissions: function() {
-    this.perms.push(Ember.Object.create({perm: 'createSurvey',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'editSurvey',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'uploadSurveyZipData',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'importDataReport',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'viewMessages',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'publishSurvey',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'mapData',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'setDataPrivacy',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'editRawData',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'deleteRawData',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'runReport',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'deleteSurvey',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'deleteSurveyGroup',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'addUser',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'editUser',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'deleteUser',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'approveSurvey',value: false}));
-    this.perms.push(Ember.Object.create({perm: 'editEditorialContent',value: false}));
+    this.perms.push(Ember.Object.create({
+      perm: 'createSurvey',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'editSurvey',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'uploadSurveyZipData',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'importDataReport',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'viewMessages',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'publishSurvey',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'mapData',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'setDataPrivacy',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'editRawData',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'deleteRawData',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'runReport',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'deleteSurvey',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'deleteSurveyGroup',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'addUser',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'editUser',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'deleteUser',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'approveSurvey',
+      value: false
+    }));
+    this.perms.push(Ember.Object.create({
+      perm: 'editEditorialContent',
+      value: false
+    }));
   },
 
   setUserPermissions: function() {
-    var user=true;
+    var user = true;
     if(user === true) {
-      this.perms.findProperty('perm','createSurvey').value = true;
-      this.perms.findProperty('perm','editSurvey').value = true;
-      this.perms.findProperty('perm','uploadSurveyZipData').value = true;
-      this.perms.findProperty('perm','viewMessages').value = true;
-      this.perms.findProperty('perm','publishSurvey').value = true;
-      this.perms.findProperty('perm','mapData').value = true;
-      this.perms.findProperty('perm','setDataPrivacy').value = true;
-      this.perms.findProperty('perm','runReport').value = true;
+      this.perms.findProperty('perm', 'createSurvey').value = true;
+      this.perms.findProperty('perm', 'editSurvey').value = true;
+      this.perms.findProperty('perm', 'uploadSurveyZipData').value = true;
+      this.perms.findProperty('perm', 'viewMessages').value = true;
+      this.perms.findProperty('perm', 'publishSurvey').value = true;
+      this.perms.findProperty('perm', 'mapData').value = true;
+      this.perms.findProperty('perm', 'setDataPrivacy').value = true;
+      this.perms.findProperty('perm', 'runReport').value = true;
     }
 
     if(user === true) {
-      this.perms.findProperty('perm','createSurvey').value = true;
-      this.perms.findProperty('perm','editSurvey').value = true;
-      this.perms.findProperty('perm','uploadSurveyZipData').value = true;
-      this.perms.findProperty('perm','importDataReport').value = true;
-      this.perms.findProperty('perm','viewMessages').value = true;
-      this.perms.findProperty('perm','publishSurvey').value = true;
-      this.perms.findProperty('perm','mapData').value = true;
-      this.perms.findProperty('perm','setDataPrivacy').value = true;
-      this.perms.findProperty('perm','runReport').value = true;
-      this.perms.findProperty('perm','editRawData').value = true;
-      this.perms.findProperty('perm','deleteRawData').value = true;
-      this.perms.findProperty('perm','approveSurvey').value = true;
+      this.perms.findProperty('perm', 'createSurvey').value = true;
+      this.perms.findProperty('perm', 'editSurvey').value = true;
+      this.perms.findProperty('perm', 'uploadSurveyZipData').value = true;
+      this.perms.findProperty('perm', 'importDataReport').value = true;
+      this.perms.findProperty('perm', 'viewMessages').value = true;
+      this.perms.findProperty('perm', 'publishSurvey').value = true;
+      this.perms.findProperty('perm', 'mapData').value = true;
+      this.perms.findProperty('perm', 'setDataPrivacy').value = true;
+      this.perms.findProperty('perm', 'runReport').value = true;
+      this.perms.findProperty('perm', 'editRawData').value = true;
+      this.perms.findProperty('perm', 'deleteRawData').value = true;
+      this.perms.findProperty('perm', 'approveSurvey').value = true;
     }
 
     if(user === true) {
-      this.perms.findProperty('perm','createSurvey').value = true;
-      this.perms.findProperty('perm','editSurvey').value = true;
-      this.perms.findProperty('perm','uploadSurveyZipData').value = true;
-      this.perms.findProperty('perm','importDataReport').value = true;
-      this.perms.findProperty('perm','viewMessages').value = true;
-      this.perms.findProperty('perm','publishSurvey').value = true;
-      this.perms.findProperty('perm','mapData').value = true;
-      this.perms.findProperty('perm','setDataPrivacy').value = true;
-      this.perms.findProperty('perm','runReport').value = true;
-      this.perms.findProperty('perm','editRawData').value = true;
-      this.perms.findProperty('perm','deleteRawData').value = true;
-      this.perms.findProperty('perm','approveSurvey').value = true;
-      this.perms.findProperty('perm','deleteSurvey').value = true;
-      this.perms.findProperty('perm','deleteSurveyGroup').value = true;
-      this.perms.findProperty('perm','addUser').value = true;
-      this.perms.findProperty('perm','editUser').value = true;
-      this.perms.findProperty('perm','deleteUser').value = true;
+      this.perms.findProperty('perm', 'createSurvey').value = true;
+      this.perms.findProperty('perm', 'editSurvey').value = true;
+      this.perms.findProperty('perm', 'uploadSurveyZipData').value = true;
+      this.perms.findProperty('perm', 'importDataReport').value = true;
+      this.perms.findProperty('perm', 'viewMessages').value = true;
+      this.perms.findProperty('perm', 'publishSurvey').value = true;
+      this.perms.findProperty('perm', 'mapData').value = true;
+      this.perms.findProperty('perm', 'setDataPrivacy').value = true;
+      this.perms.findProperty('perm', 'runReport').value = true;
+      this.perms.findProperty('perm', 'editRawData').value = true;
+      this.perms.findProperty('perm', 'deleteRawData').value = true;
+      this.perms.findProperty('perm', 'approveSurvey').value = true;
+      this.perms.findProperty('perm', 'deleteSurvey').value = true;
+      this.perms.findProperty('perm', 'deleteSurveyGroup').value = true;
+      this.perms.findProperty('perm', 'addUser').value = true;
+      this.perms.findProperty('perm', 'editUser').value = true;
+      this.perms.findProperty('perm', 'deleteUser').value = true;
     }
 
   },
 
-  setCurrentPermissions:function () {
-    this.perms.forEach(function(item){
+  setCurrentPermissions: function() {
+    this.perms.forEach(function(item) {
       //this.set(item.perm,item.value);
     });
   }
@@ -96,6 +149,7 @@ FLOW.dialogControl = Ember.Object.create({
   delUser: "delUser",
   delAttr: "delAttr",
   delAssignment: "delAssignment",
+  delDeviceGroup: "delDeviceGroup",
   showDialog: false,
   message: null,
   header: null,
@@ -161,6 +215,12 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', true);
       break;
 
+    case "delDeviceGroup":
+      this.set('header', Ember.String.loc('_device_group_delete_header'));
+      this.set('message', Ember.String.loc('_this_cant_be_undo'));
+      this.set('showDialog', true);
+      break;
+
     default:
     }
   },
@@ -202,6 +262,11 @@ FLOW.dialogControl = Ember.Object.create({
     case "delAssignment":
       this.set('showDialog', false);
       view.deleteSurveyAssignment.apply(view, arguments);
+      break;
+
+    case "delDeviceGroup":
+      this.set('showDialog', false);
+      view.deleteDeviceGroup.apply(view, arguments);
       break;
 
     default:
