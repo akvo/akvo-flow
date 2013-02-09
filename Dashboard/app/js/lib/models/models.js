@@ -127,36 +127,40 @@ FLOW.Question = FLOW.BaseModel.extend({
   },
 
   allowDecimal: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: false
   }),
   allowMultipleFlag: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: false
   }),
   allowOtherFlag: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: false
   }),
   allowSign: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: false
   }),
   collapseable: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: false
   }),
   immutable: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: false
   }),
   isName: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: false
   }),
   mandatoryFlag: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: false
   }),
   dependentFlag: DS.attr('boolean', {
-    defaultValue: 0
+    defaultValue: false
   }),
   dependentQuestionAnswer: DS.attr('string'),
   dependentQuestionId: DS.attr('number'),
-  maxVal: DS.attr('number'),
-  minVal: DS.attr('number'),
+  maxVal: DS.attr('number',{
+    defaultValue: null
+  }),
+  minVal: DS.attr('number',{
+    defaultValue: null
+  }),
   optionList: DS.attr('string'),
   order: DS.attr('number'),
   path: DS.attr('string'),
