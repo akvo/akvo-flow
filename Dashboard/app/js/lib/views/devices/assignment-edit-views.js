@@ -42,9 +42,9 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedSurveys', null);
     FLOW.selectedControl.set('selectedSurveyGroup', null);
     FLOW.selectedControl.set('selectedDeviceGroup', null);
-    FLOW.surveyControl.set('content',null);
-    FLOW.devicesInGroupControl.set('content',null);
-    
+    FLOW.surveyControl.set('content', null);
+    FLOW.devicesInGroupControl.set('content', null);
+
     if(FLOW.selectedControl.selectedSurveyAssignment.get('startDate') > 0) {
       startDate = new Date(FLOW.selectedControl.selectedSurveyAssignment.get('startDate'));
     }
@@ -70,6 +70,13 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     });
     this.set('surveysPreview', previewSurveys);
   },
+
+  detectChangeTab: function() {
+    if(Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
+      FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
+    }
+    FLOW.selectedControl.set('selectedSurveyAssignment', null);
+  }.observes('FLOW.router.navigationController.selected','FLOW.router.devicesSubnavController.selected'),
 
   saveSurveyAssignment: function() {
     var sa, endDateParse, startDateParse, devices = [],
