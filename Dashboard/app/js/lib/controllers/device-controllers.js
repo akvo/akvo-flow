@@ -2,7 +2,12 @@ FLOW.deviceGroupControl = Ember.ArrayController.create({
   content: null,
 
   populate: function() {
+    var unassigned;
     this.set('content', FLOW.store.find(FLOW.DeviceGroup));
+    unassigned = FLOW.store.createRecord(FLOW.DeviceGroup, {
+      code: 'all unassigned devices',
+      keyId: '-1'
+    });
   }
 });
 
@@ -40,16 +45,22 @@ FLOW.deviceControl = Ember.ArrayController.create({
 
 
 FLOW.devicesInGroupControl = Ember.ArrayController.create({
-  content:null,
+  content: null,
   sortProperties: ['phoneNumber'],
   sortAscending: true,
   setDevicesInGroup: function() {
     var deviceGroupId;
     if(FLOW.selectedControl.get('selectedDeviceGroup') && FLOW.selectedControl.selectedDeviceGroup.get('keyId') !== null) {
       deviceGroupId = FLOW.selectedControl.selectedDeviceGroup.get('keyId');
-      this.set('content', FLOW.store.filter(FLOW.Device, function(item) {
-        return (parseInt(item.get('deviceGroup'), 10) == deviceGroupId);
-      }));
+      if(deviceGroupId == -1) {
+        this.set('content', FLOW.store.filter(FLOW.Device, function(item) {
+          return(Ember.none(item.get('deviceGroup')));
+        }));
+      } else {
+        this.set('content', FLOW.store.filter(FLOW.Device, function(item) {
+          return(parseInt(item.get('deviceGroup'), 10) == deviceGroupId);
+        }));
+      }
     }
   }.observes('FLOW.selectedControl.selectedDeviceGroup')
 });

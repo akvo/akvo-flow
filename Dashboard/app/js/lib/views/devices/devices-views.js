@@ -53,8 +53,6 @@ FLOW.CurrentDevicesTabView = Ember.View.extend({
 				});
 				if(typeof deviceGroup.get('firstObject') !== "undefined") {
 					item.set('deviceGroupName', deviceGroup.get('firstObject').get('code'));
-				} else {
-					item.set('deviceGroupName', 'unassigned');
 				}
 			});
 		}
