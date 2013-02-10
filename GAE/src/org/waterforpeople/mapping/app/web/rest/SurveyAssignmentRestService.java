@@ -142,10 +142,9 @@ public class SurveyAssignmentRestService {
 
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@ResponseBody
-	public Map<String, SurveyAssignmentDto> updateSurveyAssignment(
+	public Map<String, SurveyAssignmentDto> newSurveyAssignment(
 			@RequestBody SurveyAssignmentPayload payload) {
 		final SurveyAssignmentDto dto = payload.getSurvey_assignment();
-		;
 		final SurveyAssignment sa = new SurveyAssignment();
 		final HashMap<String, SurveyAssignmentDto> response = new HashMap<String, SurveyAssignmentDto>();
 
