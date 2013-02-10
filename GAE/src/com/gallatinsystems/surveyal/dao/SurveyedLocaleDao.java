@@ -152,6 +152,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 			appendNonNullParam("sublevel" + level, filterString, paramString,
 					"String", subValue, paramMap);
 		}
+		query.setOrdering("createdDateTime desc");
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		prepareCursor(cursor, desiredResults, query);
