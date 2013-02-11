@@ -78,7 +78,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		this.set('optionList', FLOW.selectedControl.selectedQuestion.get('optionList'));
 
 		// if the dependentQuestionId is not null, get the question
-		if(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId') !== 0) {
+		if(!Ember.empty(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'))) {
 			dependentQuestion = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'));
 			dependentAnswer = FLOW.selectedControl.selectedQuestion.get('dependentQuestionAnswer');
 
