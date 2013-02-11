@@ -52,7 +52,7 @@ FLOW.NavMapsView = Ember.View.extend({
       self.handleShowHideDetails();
     });
     // Slide in detailspane after 1 sec
-    // this.hideDetailsPane(1000);
+    this.hideDetailsPane(1000);
   },
 
 
@@ -199,7 +199,7 @@ FLOW.NavMapsView = Ember.View.extend({
 
     delay = typeof delay !== 'undefined' ? delay : 0;
     button = this.$('#mapDetailsHideShow');
-    
+
     this.set('detailsPaneVisible', false);
     button.html('&lsaquo; Show');
 
