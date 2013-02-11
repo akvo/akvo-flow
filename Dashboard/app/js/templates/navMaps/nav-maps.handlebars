@@ -1,5 +1,5 @@
 <section id="main" class="mapFlow floats-in" role="main">
-<!-- <div id="drawHandleWrap"><div class="drawHandle hideMapD">hide &rsaquo;</div></div> -->
+  {{! <div id="drawHandleWrap"></div>}}
   <div id="dropdown-holder">
     {{#if FLOW.countryControl.content}}
       <label for="country"><span class="inlined">Country:</span>
@@ -10,38 +10,44 @@
         selectionBinding="view.country"}}
       </label>
     {{/if}}
+    <div id="mapDetailsHideShow" class="drawHandle hideMapD">{{t _hide}} &rsaquo;</div>
   </div>
 
   <div id="flowMap"></div>
   <div id="pointDetails">
-    <ul class="placeMarkBasicInfo floats-in">
-      <li><span>Collected on:</span>
-        {{#if FLOW.placemarkControl.selected}}
-          <div class="placeMarkCollectionDate"> 
-            {{date2 FLOW.placemarkControl.selected.collectionDate}}</div>
-        {{/if}}
-      </li>
-      <li>
-        {{#if FLOW.placemarkDetailControl.selectedPointCode}}
-          <div class="placeMarkPointCode"> 
-            {{FLOW.placemarkDetailControl.selectedPointCode}}
+    {{#if FLOW.placemarkDetailControl.content}}
+      <ul class="placeMarkBasicInfo floats-in">
+        <li><span>Collected on:</span>
+          {{#if FLOW.placemarkControl.selected}}
+            <div class="placeMarkCollectionDate"> 
+              {{date2 FLOW.placemarkControl.selected.collectionDate}}</div>
+          {{/if}}
+        </li>
+        <li>
+          {{#if FLOW.placemarkDetailControl.selectedPointCode}}
+            <div class="placeMarkPointCode"> 
+              {{FLOW.placemarkDetailControl.selectedPointCode}}
+            </div>
+          {{/if}}
+        </li>
+      </ul>
+      <div class="imgContainer">
+        <a {{bindAttr href="view.detailsImage"}} target="_blank">
+          <img {{bindAttr src="view.detailsImage"}} alt="" />
+        </a>
+      </div>
+      <dl class="floats-in">
+        {{#each item in FLOW.placemarkDetailControl}}
+          <div class="defListWrap">
+            <dt>{{item.questionText}}:</dt> 
+            <dd>{{#with item}}{{addSpace stringValue}}{{/with}}</dd>
           </div>
-        {{/if}}
-      </li>
-    </ul>
-    <div class="imgContainer">
-      <a {{bindAttr href="view.detailsImage"}} target="_blank">
-        <img {{bindAttr src="view.detailsImage"}} alt="" />
-      </a>
-    </div>
-    <dl class="floats-in">
-      {{#each item in FLOW.placemarkDetailControl}}
-        <div class="defListWrap">
-          <dt>{{item.questionText}}:</dt> 
-          <dd>{{#with item}}{{addSpace stringValue}}{{/with}}</dd>
-        </div>
-      {{/each}} 
-    </dl>
+        {{/each}} 
+      </dl>
+    {{else}}
+      <p>{{t _no_details}}</p>
+    {{/if}}
+
   </div>
 
   <div id="flowMapLegend">
