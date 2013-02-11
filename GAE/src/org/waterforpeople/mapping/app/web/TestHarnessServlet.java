@@ -771,6 +771,15 @@ public class TestHarnessServlet extends HttpServlet {
 			c3.setZoomLevel(7);
 			
 			countryDAO.save(c3);
+
+			Country c4 = new Country();
+			c4.setIsoAlpha2Code("KE");
+			c4.setName("Kenya");
+			c4.setCentroidLat(-1.26103461);
+			c4.setCentroidLon(36.74724467);
+			c4.setZoomLevel(7);
+			
+			countryDAO.save(c4);
 		} else if ("testAPKml".equals(action)) {
 
 			MapFragmentDao mfDao = new MapFragmentDao();
