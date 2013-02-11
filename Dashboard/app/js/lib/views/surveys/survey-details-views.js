@@ -8,8 +8,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 	isDirty: false,
 
 	init: function() {
-		var sectorType = null,
-			pointType = null,
+		var pointType = null,
 			language = null;
 		this._super();
 		this.set('surveyTitle', FLOW.selectedControl.selectedSurvey.get('name'));

@@ -27,7 +27,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   },
 
 doInit: function() {
-    var opList, opListArray, i, sizeList, q, questionId, qaValue, choice, type;
+    var q, questionId, type;
 
     // TODO use filter instead: if the question is not yet there, don't do anything
     // it will be picked up later at isLoaded.
@@ -46,7 +46,7 @@ doInit: function() {
 
 
   setInitialValue: function() {
-    var opList, opListArray, i, sizeList, q, questionId, qaValue, choice, type,date;
+    var opList, opListArray, i, sizeList, q, questionId, qaValue, choice = null, date;
 
     questionId = this.content.get('questionID');
     q = FLOW.store.find(FLOW.Question, questionId);
@@ -57,7 +57,7 @@ doInit: function() {
     if(this.get('isNumberType')) {
       this.set('numberValue',this.content.get('value'));
     }
-    
+
     if(this.get('isDateType') && !Ember.none(this.content.get('value'))) {
       date = new Date(parseInt(this.content.get('value'),10));
       this.set('date',formatDate(date));

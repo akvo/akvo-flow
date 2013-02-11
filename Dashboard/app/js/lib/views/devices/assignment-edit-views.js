@@ -32,7 +32,7 @@ FLOW.AssignmentEditView = FLOW.View.extend({
   language: null,
 
   init: function() {
-    var dId, deviceIds, previewDevices, surveyIds, previewSurveys, startDate = null,
+    var deviceIds, previewDevices, surveyIds, previewSurveys, startDate = null,
       endDate = null;
     previewDevices = Ember.A([]);
     previewSurveys = Ember.A([]);

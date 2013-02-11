@@ -249,7 +249,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
 	// create new question
 	doInsertQuestion: function() {
-		var insertAfterOrder,path,newQ;
+		var insertAfterOrder,path;
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
 		if(this.get('zeroItemQuestion')) {
@@ -261,7 +261,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		// create new Question item in the store
 		// the insertAfterOrder is inserted here
 		// in the server, the proper order of all question groups is re-established
-		newQ = FLOW.store.createRecord(FLOW.Question, {
+		FLOW.store.createRecord(FLOW.Question, {
 			"order": insertAfterOrder,
 			"type": "FREE_TEXT",
 			"path": path,

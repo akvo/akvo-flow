@@ -134,9 +134,8 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 
 FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
 	didInsertElement: function() {
-		var liHeight, menuHeight, scroll;
+		var menuHeight, scroll;
 		this._super();
-		liHeight = $('.menuGroup').height();
 		$('.scrollUp').addClass("FadeIt");
 		$('.scrollUp').click(function() {
 			menuHeight = $('.menuGroupWrap').height();
@@ -153,7 +152,6 @@ FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
 		});
 		$('.scrollDown').click(function() {
 			menuHeight = $('.menuGroupWrap').height();
-			liHeight = $('.menuGroup').height();
 			scroll = $('.menuGroupWrap').scrollTop();
 			$('.scrollUp').removeClass("FadeIt");
 			$('.menuGroupWrap').animate({
@@ -166,8 +164,7 @@ FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
 	},
 
 	checkHeight: function() {
-		var liHeight, scroll;
-		liHeight = $('.menuGroup').height();
+		var scroll;
 
 		if(FLOW.surveyGroupControl.content.content.length < 10) {
 			$('.scrollDown').addClass("FadeIt");
