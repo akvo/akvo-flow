@@ -7,6 +7,7 @@
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
     <http use-expressions="true" entry-point-ref="gaeEntryPoint">
+        <intercept-url pattern="/remote_api**" access="permitAll"/>
         <intercept-url pattern="/admin/logout.html" access="permitAll"/>
         <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
         <intercept-url pattern="/_ah/admin/**" access="permitAll"/> <!-- dev environment -->
