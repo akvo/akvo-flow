@@ -61,6 +61,7 @@ public class ActionRestService {
 		}
 
 		statusDto.setStatus(status);
+		response.put("actions", "[]");
 		response.put("meta", statusDto);
 		return response;
 	}
