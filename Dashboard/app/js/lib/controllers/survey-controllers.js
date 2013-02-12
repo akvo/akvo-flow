@@ -1,29 +1,29 @@
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
   Ember.Object.create({
-    label: "Free text",
-    value: "FREE_TEXT"
+    label: Ember.String.loc('_free_text'),
+    value: 'FREE_TEXT'
   }), Ember.Object.create({
-    label: "Option",
-    value: "OPTION"
+    label: Ember.String.loc('_option'),
+    value: 'OPTION'
   }), Ember.Object.create({
-    label: "Number",
-    value: "NUMBER"
+    label: Ember.String.loc('_number'),
+    value: 'NUMBER'
   }), Ember.Object.create({
-    label: "Geolocation",
-    value: "GEO"
+    label: Ember.String.loc('_gelocation'),
+    value: 'GEO'
   }), Ember.Object.create({
-    label: "Photo",
-    value: "PHOTO"
+    label: Ember.String.loc('_photo'),
+    value: 'PHOTO'
   }), Ember.Object.create({
-    label: "Video",
-    value: "VIDEO"
+    label: Ember.String.loc('_video'),
+    value: 'VIDEO'
   }), Ember.Object.create({
-    label: "Date",
-    value: "DATE"
+    label: Ember.String.loc('_date'),
+    value: 'DATE'
   }), Ember.Object.create({
-    label: "Barcode",
-    value: "BARCODE"
+    label: Ember.String.loc('_barcode'),
+    value: 'SCAN'
   })]
 });
 
@@ -66,7 +66,7 @@ FLOW.languageControl = Ember.Object.create({
     label: "English",
     value: "en"
   }), Ember.Object.create({
-    label: "Espanol",
+    label: "Español",
     value: "es"
   }), Ember.Object.create({
     label: "Français",
@@ -310,7 +310,7 @@ FLOW.questionControl = Ember.ArrayController.create({
 
   // used for display of dependencies: a question can only be dependent on earlier questions
   setEarlierOptionQuestions: function() {
-    
+
     if(!Ember.none(FLOW.selectedControl.get('selectedQuestion')) && !Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
       var optionQuestionList, sId, questionGroupOrder, qgOrder, qg, questionOrder;
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');

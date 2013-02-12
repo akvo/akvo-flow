@@ -1,7 +1,7 @@
 // removes duplicate objects with a clientId from an Ember Array
 
 function ArrNoDupe(a) {
-  var templ, i, item, gotIt, tempa;
+  var templ, i, item = null, gotIt, tempa;
   templ = {};
   tempa = Ember.A([]);
   for(i = 0; i < a.length; i++) {
