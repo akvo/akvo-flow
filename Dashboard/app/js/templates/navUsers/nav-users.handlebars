@@ -30,7 +30,7 @@
             <td class="userName" style="text-align:left; padding:0 0 0 20px;">{{user.userName}}</td>
             <td class="emailAdr" style="text-align:left;">{{user.emailAddress}}</td>
             {{#view FLOW.SingleUserView contentBinding="user"}}
-              <span>{{view.roleLabel}}</span>
+              <span {{bindAttr class="view.roleClass"}}>{{view.roleLabel}}</span>
              {{/view}}
             <td class="action"> <a {{action "showEditUserDialog" user target="this"}} class="edit">{{t _edit}}</a> {{#view FLOW.UserView contentBinding="user"}}<a {{action confirm FLOW.dialogControl.delUser target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>{{/view}}
         
