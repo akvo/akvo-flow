@@ -186,6 +186,7 @@ pre {
 }
 .infoText {
 	display:block;
+	margin:0.5em 0 0 0;
 	padding:0.2em;
 	color:rgb(153,153,153);
 	width:90%;
@@ -262,6 +263,9 @@ a.smallBtn:hover {
 	background: rgb(39,94,139);
 	color: rgb(255,255,255);
 }
+.selectinLabel a.helpIcon {
+	line-height:1.5em;
+}
 a.helpIcon {
 	display: inline-block;
 	width: 14px;
@@ -308,11 +312,12 @@ a.AddBtn:hover { }
 	position: relative;
 	margin: 10px auto;
 	width: 100%;
+	background:rgb(205,205,205);
 }
 .editAnswerMenu ul {
 	position: relative;
 	width: 100%;
-	height: 40px;
+	padding:1.5em 0.5em;
 }
 .prevNext {
 	position: relative;
@@ -326,6 +331,7 @@ a.AddBtn:hover { }
 	display: inline;
 	margin: 0 0 10px 0;
 }
+
 .prevBtn {
 	position: absolute;
 	top: 0;
@@ -343,7 +349,7 @@ a.AddBtn:hover { }
 	padding: 0.5em 1em 1em 1em;/* padding: 5px 0 0 15px; */
 	/* background: url(../images/prevBtn.png) left top no-repeat; */
 }
-.prevBtn:hover a {/* background: url(../images/prevBtn.png) left bottom no-repeat; */ color: rgb(255,255,255); }
+.prevBtn:hover a {/* background: url(../images/prevBtn.png) left bottom no-repeat;  color: rgb(255,255,255);*/ }
 .nextBtn a {
 	font-weight: bold;
 	font-size: 1.2em;
@@ -351,7 +357,7 @@ a.AddBtn:hover { }
 	padding: 0.5em 1em 1em 1em;/* padding: 5px 15px 0 0; */
 	/* background: url(../images/nextBtn.png) right top no-repeat; */
 }
-.nextBtn:hover a {/* background: url(../images/nextBtn.png) right bottom no-repeat; */ color: rgb(255,255,255); }
+.nextBtn:hover a {/* background: url(../images/nextBtn.png) right bottom no-repeat; color: rgb(255,255,255);*/  }
 .deleteBtn {
 	position: absolute;
 	top: 5px;
@@ -450,7 +456,7 @@ a.AddBtn:hover { }
 .dialogWrap .menuCentre { margin: 30px auto 10px auto; }
 .dialogWrap p {
 	margin: 1em auto;
-	padding: 1em 0.3em;
+	padding: 1em 1.3em;
 	background: rgb(242,242,242);
 	font-size: 1.2em;
 }
@@ -773,9 +779,9 @@ tfoot tr {
 #usersListTable .emailAdr { width: 35%; }
 #usersListTable .permLevel { width: 20%; }
 #usersListTable .action { width: 10%; }
-#usersListTable .ADMIN { color: rgb(227, 27, 35); }
-#usersListTable .USER { color: rgb(219, 135, 201); }
-#usersListTable .PROJECT_EDITOR { color: rgb(119, 97, 0); }
+#usersListTable .SuperAdmin { color: rgb(227, 27, 35); }
+#usersListTable .Admin { color: rgb(219, 135, 201); }
+#usersListTable .User { color: rgb(119, 97, 0); }
 #inspectData {
 	border: thin solid rgb(224,224,224);
 	border-top: 1px solid rgb(255,255,255);
@@ -1727,7 +1733,7 @@ span.qtnGroupHead {
 	overflow: hidden;
 	width: 36%;
 	text-overflow: ellipsis;
-	white-space: nowrap;
+	white-space: pre-wrap;
 }
 .aQuestionSet header h1.qtnGroupTitle a { color: rgb(38, 8, 89); }
 .aQuestionSet header h1 + a.editSetInfo {
@@ -2013,7 +2019,7 @@ nav.smallMenu ul li a.showQuestion:hover { background: url(../images/showQuestio
 .innerContent input[type=checkbox]:first-child, .innerContent input[type=radio]:first-child { margin: 1em 0.5em 0 0.5em; }
 .innerContent .labelcheckbox input[type=checkbox]:first-child, .innerContent .labelcheckbox input[type=radio]:first-child { margin: 0 0.5em 0 0; }
 .innerContent p {
-	margin: 0 0 0 5px;
+	margin:0.5em auto 0 auto;
 	padding: 3px 0.5%;
 }
 .innerContent textarea {
@@ -2075,10 +2081,8 @@ nav.smallMenu ul li a.showQuestion:hover { background: url(../images/showQuestio
 }
 .innerContent h1:after {
 	display: block;
-	margin: 1em auto;
+	margin: 0.1em auto;
 	width: 98%;
-	border-top: 1px solid rgb(228, 228, 228);
-	border-bottom: 1px solid rgb(255, 255, 255);
 	content: "";
 }
 .innerContent h1.questionNbr {
@@ -2338,9 +2342,8 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 #dataFilter div.dataCollectedDate label input { width: 35%; }
 #dataFilter div.dataDeviceId {
 	display: block;
-	margin: 42px 0 10px 0;
+	margin: 45px 0 10px 0;
 	padding: 0.5em 1em 8px 1em;
-	height: 22px;
 	background: rgb(234,234,234);
 }
 .dataTables_wrapper {
