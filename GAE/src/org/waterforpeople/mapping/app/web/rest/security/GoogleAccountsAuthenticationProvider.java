@@ -88,9 +88,9 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
             final int level = Integer.parseInt(user.getPermissionList());
             return level;
         } catch (Exception e) {
-           log.log(Level.WARNING, "Error getting role level, setting NEW_USER role", e);
+           log.log(Level.WARNING, "Error getting role level, setting USER role", e);
         }
-        return AppRole.NEW_USER.getLevel();
+        return AppRole.USER.getLevel();
     }
 
     /**

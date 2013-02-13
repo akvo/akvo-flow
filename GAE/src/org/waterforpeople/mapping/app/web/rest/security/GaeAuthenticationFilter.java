@@ -42,6 +42,7 @@ public class GaeAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User googleUser = UserServiceFactory.getUserService().getCurrentUser();
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         if (authentication != null && !loggedInUserMatchesGaeUser(authentication, googleUser)) {
             SecurityContextHolder.clearContext();
@@ -60,11 +61,11 @@ public class GaeAuthenticationFilter extends GenericFilterBean {
                 try {
                     authentication = authenticationManager.authenticate(token);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                    String logoutUrl = UserServiceFactory.getUserService().createLogoutURL("");
 
-                    if (authentication.getAuthorities().contains(AppRole.NEW_USER)) {
+                    if (authentication.getAuthorities().contains(AppRole.NEW_USER) && !logoutUrl.startsWith(httpRequest.getRequestURI())) {
                     	logger.log(Level.INFO, "New user authenticated. Redirecting to registration page");
                         ((HttpServletResponse) response).sendRedirect(REGISTRATION_URL);
-
                         return;
                     }
 
