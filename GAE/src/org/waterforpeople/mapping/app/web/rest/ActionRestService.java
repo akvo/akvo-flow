@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
+import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
@@ -36,6 +37,9 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 @Controller
 @RequestMapping("/actions")
@@ -48,7 +52,8 @@ public class ActionRestService {
 	@ResponseBody
 	public Map<String, Object> doAction(
 			@RequestParam(value = "action", defaultValue = "") String action,
-			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId) {
+			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+			@RequestParam(value = "surveyIds[]", defaultValue = "") Long[] surveyIds) {
 		String status = "failed";
 		final Map<String, Object> response = new HashMap<String, Object>();
 		RestStatusDto statusDto = new RestStatusDto();
@@ -58,6 +63,8 @@ public class ActionRestService {
 			status = recomputeSurveyInstanceSummaries();
 		} else if ("publishSurvey".equals(action) && surveyId != null) {
 			status = publishSurvey(surveyId);
+		} else if ("generateBootstrapFile".equals(action) && surveyIds != null) {
+			status = generateBootstrapFile(surveyIds, "", "ivan.perdomo.hn@gmail.com");
 		}
 
 		statusDto.setStatus(status);
@@ -66,6 +73,7 @@ public class ActionRestService {
 		return response;
 	}
 
+	@SuppressWarnings("unused")
 	private String recomputeSurveyInstanceSummaries() {
 		List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
 		String status = "failed";
@@ -101,9 +109,36 @@ public class ActionRestService {
 		return status;
 	}
 
-	private String publishSurvey(Long surveyId){
+	private String publishSurvey(Long surveyId) {
 		SurveyServiceImpl surveyService = new SurveyServiceImpl();
 		surveyService.publishSurveyAsync(surveyId);
 		return "publishing requested";
+	}
+
+	private String generateBootstrapFile(Long[] surveyIdList,
+			String dbInstructions, String notificationEmail) {
+
+		StringBuilder buf = new StringBuilder();
+
+		if (surveyIdList != null) {
+			for (int i = 0; i < surveyIdList.length; i++) {
+				if (i > 0) {
+					buf.append(BootstrapGeneratorRequest.DELMITER);
+				}
+				buf.append(String.valueOf(surveyIdList[i]));
+			}
+		}
+
+		Queue queue = QueueFactory.getQueue("background-processing");
+		queue.add(TaskOptions.Builder
+				.withUrl("/app_worker/bootstrapgen")
+				.param(BootstrapGeneratorRequest.ACTION_PARAM,
+						BootstrapGeneratorRequest.GEN_ACTION)
+				.param(BootstrapGeneratorRequest.SURVEY_ID_LIST_PARAM,
+						buf.toString())
+				.param(BootstrapGeneratorRequest.EMAIL_PARAM, notificationEmail)
+				.param(BootstrapGeneratorRequest.DB_PARAM,
+						dbInstructions != null ? dbInstructions : ""));
+		return "";
 	}
 }
