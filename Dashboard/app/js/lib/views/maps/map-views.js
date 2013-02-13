@@ -206,13 +206,13 @@ FLOW.NavMapsView = Ember.View.extend({
     this.$('#flowMap').delay(delay).animate({
       width: '99.25%'
     }, 200);
-    this.$('#pointDetails').animate({
+    this.$('#pointDetails').delay(delay).animate({
       width: '0.25%'
     }, 200).css({
       overflow: 'hidden',
       marginLeft: '-2px'
     });
-    this.$(this.detailsPaneElements, '#pointDetails').css({
+    this.$(this.detailsPaneElements, '#pointDetails').delay(delay).css({
       opacity: '0'
     }).css({
       display: 'none'
