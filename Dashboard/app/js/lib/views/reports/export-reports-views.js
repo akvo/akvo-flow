@@ -4,6 +4,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showGoogleEarthFileApplet: false,
   showSurveyFormApplet: false,
   showComprehensiveDialog: false,
+  showRawDataImportApplet: false,
 
   showRawDataReport: function () {
     this.renderApplet('showRawDataReportApplet');
@@ -20,6 +21,10 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
 
   showSurveyForm: function () {
     this.renderApplet('showSurveyFormApplet');
+  },
+
+  showImportApplet: function () {
+    this.renderApplet('showRawDataImportApplet', true);
   },
 
   showComprehensiveOptions: function () {
@@ -52,24 +57,35 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
         this.set('showComprehensiveReportApplet', false);
         this.set('showGoogleEarthFileApplet', false);
         this.set('showSurveyFormApplet', false);
+        this.set('showRawDataImportApplet', false);
         break;
       case 'showComprehensiveReportApplet':
         this.set('showRawDataReportApplet', false);
         this.set('showComprehensiveReportApplet', true);
         this.set('showGoogleEarthFileApplet', false);
         this.set('showSurveyFormApplet', false);
+        this.set('showRawDataImportApplet', false);
         break;
       case 'showGoogleEarthFileApplet':
         this.set('showRawDataReportApplet', false);
         this.set('showComprehensiveReportApplet', false);
         this.set('showGoogleEarthFileApplet', true);
         this.set('showSurveyFormApplet', false);
+        this.set('showRawDataImportApplet', false);
         break;
       case 'showSurveyFormApplet':
         this.set('showRawDataReportApplet', false);
         this.set('showComprehensiveReportApplet', false);
         this.set('showGoogleEarthFileApplet', false);
         this.set('showSurveyFormApplet', true);
+        this.set('showRawDataImportApplet', false);
+        break;
+      case 'showRawDataImportApplet':
+        this.set('showRawDataReportApplet', false);
+        this.set('showComprehensiveReportApplet', false);
+        this.set('showGoogleEarthFileApplet', false);
+        this.set('showSurveyFormApplet', true);
+        this.set('showRawDataImportApplet', true);
         break;
     }
 

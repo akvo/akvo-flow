@@ -1,13 +1,27 @@
 <section class="fullWidth" id="reportBlocks">
-{{#view FLOW.DataCleaningAppletView}}
+{{#view FLOW.ExportReportsAppletView}}
   <h1>{{t _data_cleaning}}</h1>
 
-  <div class="rawDataReport block">
-    <h3>{{t _export_survey_data}}</h3>
-    <p>{{t _raw_data_report_cleaning_applet_text_}}</p>
-    <a {{action showRawDataReportApplet target="this"}} class="standardBtn"> {{t _export_raw_data}} </a>
-  </div>
-  {{#if view.showRawDataReportAppletBool }}
+{{view Ember.Select
+      contentBinding="FLOW.surveyGroupControl.content"
+      selectionBinding="FLOW.selectedControl.selectedSurveyGroup"
+      optionLabelPath="content.code"
+      optionValuePath="content.keyId"
+      prompt="Select survey group"}}
+
+      {{view Ember.Select
+        contentBinding="FLOW.surveyControl.content"
+        selectionBinding="FLOW.selectedControl.selectedSurvey"
+        optionLabelPath="content.code"
+        optionValuePath="content.keyId"
+        prompt="Select survey"}}
+
+<div class="rawDataReport block">
+  <h3>{{t _export_raw_data_report}}</h3>
+    <p>{{t _raw_data_report_applet_text_}}</p>
+  <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
+</div>
+  {{#if view.showRawDataReportApplet }}
     {{view FLOW.rawDataReportApplet }}
   {{/if}}
 
@@ -15,9 +29,9 @@
   <div class="rawDataReport block">
     <h3>{{t _import_cleaned_survey_data}}</h3>
     <p>{{t _import_raw_data_applet_text_}}</p>
-    <a {{action showRawDataImportApplet target="this"}} class="standardBtn"> {{t _import_clean_data}} </a>
+    <a {{action showImportApplet target="this"}} class="standardBtn"> {{t _import_clean_data}} </a>
   </div>
-  {{#if view.showRawDataImportAppletBool }}
+  {{#if view.showRawDataImportApplet }}
      {{view FLOW.rawDataImportApplet }}
   {{/if}}
 {{/view}}
