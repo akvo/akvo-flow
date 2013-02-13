@@ -2428,6 +2428,7 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	margin: 0 0 0 0;
 	width: 75%;
 	height: 600px;
+	border-bottom:2px solid rgb(158, 158, 158);
 }
 #dropdown-holder {
 	position: relative;
@@ -2455,6 +2456,7 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	border-left: 2px solid rgb(214,214,214);
 	background: rgb(241,241,241);
 	overflow-style: marquee-line;
+	border-bottom:2px solid rgb(158, 158, 158);
 }
 #pointDetails h2 {
 	margin: 5px 0 10px 5px;
