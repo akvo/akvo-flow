@@ -1,6 +1,6 @@
  <section class="fullWidth" id="reportBlocks">
     {{#view FLOW.chartView}}
-        <h1>Chart builder</h1>
+        <h1>{{t _chart_builder}}</h1>
         {{view Ember.Select 
       contentBinding="FLOW.surveyGroupControl.content" 
       selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
@@ -22,7 +22,7 @@
         optionValuePath="content.keyId" 
         prompt="Select question"}}
 <div class="chartSetting">       
-<h4>Chart Type:</h4>
+<h4>{{t _chart_type}}:</h4>
       {{view Ember.Select 
         contentBinding="FLOW.chartTypeControl.content" 
         selectionBinding="view.chartType" 
