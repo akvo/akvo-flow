@@ -29,11 +29,15 @@ import org.apache.commons.io.FileUtils;
 
 public class TranslationGenerator {
 
-	private static final String HPREFIX = "{{t ";
-	private static final String TPREFIX = "{{tooltip ";
-	private static final String HSUFIX = "}}";
-	private static final String JSCALLPREFIX = "String.loc('";
-	private static final String JSCALLSUFXX = "'";
+	private static final Map<String, String> PATTERNS = new HashMap<String, String>();
+
+	static {
+		PATTERNS.put("{{t ", "}}");
+		PATTERNS.put("{{tooltip ", "}}");
+		PATTERNS.put("promptBinding=\"Ember.STRINGS.", "\"");
+		PATTERNS.put("String.loc('", "'");
+	}
+
 	private static final String[] EXTS = { "handlebars", "js" };
 
 	@SuppressWarnings("unchecked")
@@ -64,8 +68,7 @@ public class TranslationGenerator {
 			final List<String> lines = FileUtils.readLines(f, "UTF-8");
 
 			for (String line : lines) {
-				if (line.contains(HPREFIX) || line.contains(JSCALLPREFIX)
-						|| line.contains(TPREFIX)) {
+				if (containsTranslatableKeys(line)) {
 					final List<String> keys = getKeys(line);
 					if (!keys.isEmpty()) {
 						for (String k : keys) {
@@ -112,40 +115,41 @@ public class TranslationGenerator {
 				uisource.toString(), "UTF-8");
 	}
 
-	private static List<String> getKeys(String line) {
-		if (line.contains(HPREFIX) && line.contains(TPREFIX)) {
-			final List<String> keys = new ArrayList<String>();
-			keys.addAll(getKeysFromTemplate(line));
-			keys.addAll(getKeysFromTooltipCall(line));
-			return keys;
-		} else if (line.contains(HPREFIX)) {
-			return getKeysFromTemplate(line);
-		} else if (line.contains(TPREFIX)) {
-			return getKeysFromTooltipCall(line);
-		} else if (line.contains(JSCALLPREFIX)) {
-			return getKeysFromJSCall(line);
+	private static boolean containsTranslatableKeys(String line) {
+		for (String pattern : PATTERNS.keySet()) {
+			if (line.contains(pattern)) {
+				return true;
+			}
 		}
-		return Collections.emptyList();
+		return false;
 	}
 
-	private static List<String> getKeysFromTemplate(String line) {
-		return extractKeysFromLine(line, HPREFIX, HSUFIX);
+	private static List<String> getKeys(String line) {
+
+		if (!containsTranslatableKeys(line)) {
+			return Collections.emptyList();
+		}
+
+		final List<String> keys = new ArrayList<String>();
+		for (String pattern : PATTERNS.keySet()) {
+			keys.addAll(getKeysFromLine(line, pattern, PATTERNS.get(pattern)));
+		}
+
+		return keys;
 	}
 
-	private static List<String> getKeysFromJSCall(String line) {
-		return extractKeysFromLine(line, JSCALLPREFIX, JSCALLSUFXX);
-	}
-
-	private static List<String> getKeysFromTooltipCall(String line) {
-		return extractKeysFromLine(line, TPREFIX, HSUFIX);
-	}
-
-	private static List<String> extractKeysFromLine(String line, String prefix,
+	private static List<String> getKeysFromLine(String line, String prefix,
 			String suffix) {
+
 		final List<String> keys = new ArrayList<String>();
 
-		int start = line.indexOf(prefix) + prefix.length();
-		int end = line.indexOf(suffix, start);
+		int start = line.indexOf(prefix);
+		int end = -1;
+
+		if (start != -1) {
+			start += prefix.length();
+			end = line.indexOf(suffix, start);
+		}
 
 		while (start > 0 && end > 0) {
 			keys.add(line.substring(start, end));
