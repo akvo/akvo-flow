@@ -53,7 +53,9 @@ public class ActionRestService {
 	public Map<String, Object> doAction(
 			@RequestParam(value = "action", defaultValue = "") String action,
 			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
-			@RequestParam(value = "surveyIds[]", defaultValue = "") Long[] surveyIds) {
+			@RequestParam(value = "surveyIds[]", defaultValue = "") Long[] surveyIds,
+			@RequestParam(value = "email", defaultValue = "") String email,
+			@RequestParam(value = "dbInstructions", defaultValue = "") String dbInstructions) {
 		String status = "failed";
 		final Map<String, Object> response = new HashMap<String, Object>();
 		RestStatusDto statusDto = new RestStatusDto();
@@ -63,8 +65,9 @@ public class ActionRestService {
 			status = recomputeSurveyInstanceSummaries();
 		} else if ("publishSurvey".equals(action) && surveyId != null) {
 			status = publishSurvey(surveyId);
-		} else if ("generateBootstrapFile".equals(action) && surveyIds != null) {
-			status = generateBootstrapFile(surveyIds, "", "ivan.perdomo.hn@gmail.com");
+		} else if ("generateBootstrapFile".equals(action) && surveyIds != null
+				&& email != null) {
+			status = generateBootstrapFile(surveyIds, dbInstructions, email);
 		}
 
 		statusDto.setStatus(status);
