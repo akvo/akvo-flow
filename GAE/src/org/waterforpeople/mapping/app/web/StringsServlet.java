@@ -65,7 +65,7 @@ public class StringsServlet extends HttpServlet {
 		strings.load(is_strings);
 		en.load(is_en);
 		es.load(is_es);
-		en.load(is_fr);
+		fr.load(is_fr);
 
 		final VelocityEngine engine = new VelocityEngine();
 		engine.setProperty("runtime.log.logsystem.class",
