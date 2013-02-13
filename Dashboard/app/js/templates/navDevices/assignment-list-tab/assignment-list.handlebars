@@ -7,9 +7,9 @@
   <table class="dataTable" id="deviceDataTable">
     <!-- TABLE HEADER-->
     <thead>
-      <tr> {{#view FLOW.ColumnView item="name" type="assignment"}} <a {{action "sort" target="this"}}>Name</a> {{/view}}
-        {{#view FLOW.ColumnView item="startDate" type="assignment"}} <a {{action "sort" target="this"}}>Start date</a> {{/view}}
-        {{#view FLOW.ColumnView item="endDate" type="assignment"}} <a {{action "sort" target="this"}}>End date</a> {{/view}}
+      <tr> {{#view FLOW.ColumnView item="name" type="assignment"}} <a {{action "sort" target="this"}}>{{t _name}}</a> {{/view}}
+        {{#view FLOW.ColumnView item="startDate" type="assignment"}} <a {{action "sort" target="this"}}>{{t _start_date}}</a> {{/view}}
+        {{#view FLOW.ColumnView item="endDate" type="assignment"}} <a {{action "sort" target="this"}}>{{t _end_date}}</a> {{/view}}
         <th class="action noArrows"> <a>Action</a></th>
       </tr>
     </thead>
