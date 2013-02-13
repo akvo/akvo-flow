@@ -1,6 +1,6 @@
 // removes duplicate objects with a clientId from an Ember Array
 
-function ArrNoDupe(a) {
+FLOW.ArrNoDupe = function (a) {
   var templ, i, item = null, gotIt, tempa;
   templ = {};
   tempa = Ember.A([]);
@@ -17,13 +17,13 @@ function ArrNoDupe(a) {
     }
   }
   return tempa;
-}
+};
 
-function formatDate(value) {
+FLOW.formatDate = function (value) {
   if(!Ember.none(value)) {
     return value.getFullYear() + "/" + (value.getMonth() + 1) + "/" + value.getDate();
   } else return null;
-}
+};
 
 FLOW.AssignmentEditView = FLOW.View.extend({
   devicesPreview: Ember.A([]),
@@ -51,8 +51,8 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     if(FLOW.selectedControl.selectedSurveyAssignment.get('endDate') > 0) {
       endDate = new Date(FLOW.selectedControl.selectedSurveyAssignment.get('endDate'));
     }
-    FLOW.dateControl.set('fromDate', formatDate(startDate));
-    FLOW.dateControl.set('toDate', formatDate(endDate));
+    FLOW.dateControl.set('fromDate', FLOW.formatDate(startDate));
+    FLOW.dateControl.set('toDate', FLOW.formatDate(endDate));
 
     this.set('language', FLOW.selectedControl.selectedSurveyAssignment.get('language'));
 
@@ -126,7 +126,7 @@ FLOW.AssignmentEditView = FLOW.View.extend({
   addSelectedDevices: function() {
     this.devicesPreview.pushObjects(FLOW.selectedControl.get('selectedDevices'));
     // delete duplicates
-    this.set('devicesPreview', ArrNoDupe(this.get('devicesPreview')));
+    this.set('devicesPreview', FLOW.ArrNoDupe(this.get('devicesPreview')));
   },
 
   addSelectedSurveys: function() {
@@ -137,7 +137,7 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     });
     this.surveysPreview.pushObjects(FLOW.selectedControl.get('selectedSurveys'));
     // delete duplicates
-    this.set('surveysPreview', ArrNoDupe(this.get('surveysPreview')));
+    this.set('surveysPreview', FLOW.ArrNoDupe(this.get('surveysPreview')));
   },
 
   selectAllDevices: function() {
