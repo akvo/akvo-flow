@@ -293,6 +293,7 @@ a.AddBtn:hover { }
 	background: rgb(230,230,230);
 }
 .btnAboveTable { margin: 1.5em 1.5em 1.5em 1em; }
+.usersList .btnAboveTable { margin: 0; position:absolute; top:5px; right:5px; }
 .clodeDialog {
 	position: absolute;
 	top: 10px;
@@ -2500,22 +2501,32 @@ div#drawHandleWrap {
 }
 div.drawHandle {
 	position: absolute;
-	top: 0px;
-	right: 0px;
+	top: 5px;
+	right: 5px;
 	z-index: 99999;
 	display: block;
 	padding: 4px 7px 9px 7px;
 	height: 3px;
-	-webkit-border-radius: 5px 5px 0 0;
-	-moz-border-radius: 5px 5px 0 0;
-	border-radius: 5px 5px 0 0;
-	background: rgb(58,58,58) url(../images/mapSlider.png) left bottom repeat-x;
+	background: rgb(98,98,98);
 	color: rgb(246, 160, 26);
 	text-transform: uppercase;
 	font-weight: bold;
 	cursor: pointer;
-	-o-border-radius: 5px 5px 0 0;
+	-webkit-border-radius:0.2em;
+	-moz-border-radius:0.2em;
+	-o-border-radius:0.2em;
+	border-radius:0.2em;
 }
+.noDetails {
+	margin:2em auto;
+	text-align:center;
+	font-size: 2em;
+	color:rgb(147, 145, 144);
+	-webkit-text-shadow:2px 2px 0 rgb(255, 255, 255);
+	-moz-text-shadow:2px 2px 0 rgb(255, 255, 255);
+	-o-text-shadow:2px 2px 0 rgb(255, 255, 255);
+	text-shadow:2px 2px 0 rgb(255, 255, 255);
+	}
 div.drawHandle.hideMapD { }
 div.drawHandle.showMapD { }
 #pointDetails .imgContainer {
@@ -2536,7 +2547,7 @@ div.drawHandle.showMapD { }
 #pointDetails .imgContainer img { }
 #flowMapLegend {
 	position: relative;
-	display: block;
+	display: none /*block*/;
 	clear: both;
 	padding: 5px 1%;
 	width: 98%;
