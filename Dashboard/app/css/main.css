@@ -557,6 +557,8 @@ header.top {
 	padding: 0;
 	width: 100%;
 	height: 80px;/* background: rgb(58,58,58); */
+	border-bottom:1px solid rgb(240,240,240);
+	background:rgb(248,248,248);
 }
 header.top > div { }
 header.top hgroup h1 {
@@ -631,36 +633,39 @@ nav#topnav ul li a {
 	-o-transition: background-color .4s linear;
 	transition: background-color .4s linear;
 }
+nav#topnav ul li.current a {
+	box-shadow:0 0 1px rgba(0,0,0,0.1);
+	}
 nav#topnav ul li a:hover, nav#topnav ul li.current a { color: rgb(246, 160, 26); }
 nav#topnav ul li.navHome a { background: url(../images/topnavDashboards.png) center -18px no-repeat; }
-nav#topnav ul li.navHome a:hover { background: rgb(237, 237, 237) url(../images/topnavDashboards.png) center -18px no-repeat; }
-nav#topnav ul li.navHome.current a { background: url(../images/topnavDashboards.png) center bottom no-repeat; }
+nav#topnav ul li.navHome a:hover { background: rgb(232, 232, 232) url(../images/topnavDashboards.png) center -18px no-repeat; }
+nav#topnav ul li.navHome.current a { background: rgb(245,245,245) url(../images/topnavDashboards.png) center bottom no-repeat; }
 nav#topnav ul li.navMessages a { background: url(../images/topnavMessages.png) center -18px no-repeat; }
-nav#topnav ul li.navMessages.current a { background: url(../images/topnavMessages.png) center bottom no-repeat; }
+nav#topnav ul li.navMessages.current a { background:rgb(245,245,245) url(../images/topnavMessages.png) center bottom no-repeat; }
 nav#topnav ul li.navSurveys a { background: url(../images/topnavSurveys.png) center -18px no-repeat; }
-nav#topnav ul li.navSurveys a:hover { background: rgb(237, 237, 237) url(../images/topnavSurveys.png) center -18px no-repeat; }
-nav#topnav ul li.navSurveys.current a { background: url(../images/topnavSurveys.png) center bottom no-repeat; }
+nav#topnav ul li.navSurveys a:hover { background: rgb(232, 232, 232) url(../images/topnavSurveys.png) center -18px no-repeat; }
+nav#topnav ul li.navSurveys.current a { background:rgb(245,245,245) url(../images/topnavSurveys.png) center bottom no-repeat; }
 nav#topnav ul li.navData a { background: url(../images/topnavData.png) center -18px no-repeat; }
-nav#topnav ul li.navData a:hover { background: rgb(237, 237, 237) url(../images/topnavData.png) center -18px no-repeat; }
-nav#topnav ul li.navData.current a { background: url(../images/topnavData.png) center bottom no-repeat; }
+nav#topnav ul li.navData a:hover { background: rgb(232, 232, 232) url(../images/topnavData.png) center -18px no-repeat; }
+nav#topnav ul li.navData.current a { background: rgb(245,245,245)url(../images/topnavData.png) center bottom no-repeat; }
 nav#topnav ul li.navDashboards a { background: url(../images/topnavDashboards.png) center -18px no-repeat; }
-nav#topnav ul li.navDashboards a:hover { background: rgb(237, 237, 237) url(../images/topnavDashboards.png) center -18px no-repeat; }
-nav#topnav ul li.navDashboards.current a { background: url(../images/topnavDashboards.png) center bottom no-repeat; }
+nav#topnav ul li.navDashboards a:hover { background: rgb(232, 232, 232) url(../images/topnavDashboards.png) center -18px no-repeat; }
+nav#topnav ul li.navDashboards.current a { background:rgb(245,245,245) url(../images/topnavDashboards.png) center bottom no-repeat; }
 nav#topnav ul li.navMaps a { background: url(../images/topnavMaps.png) center -18px no-repeat; }
-nav#topnav ul li.navMaps a:hover { background: rgb(237, 237, 237) url(../images/topnavMaps.png) center -18px no-repeat; }
-nav#topnav ul li.navMaps.current a { background: url(../images/topnavMaps.png) center bottom no-repeat; }
+nav#topnav ul li.navMaps a:hover { background: rgb(232, 232, 232) url(../images/topnavMaps.png) center -18px no-repeat; }
+nav#topnav ul li.navMaps.current a { background:rgb(245,245,245) url(../images/topnavMaps.png) center bottom no-repeat; }
 nav#topnav ul li.navDevices a { background: url(../images/topnavDevices.png) center -18px no-repeat; }
-nav#topnav ul li.navDevices a:hover { background: rgb(237, 237, 237) url(../images/topnavDevices.png) center -18px no-repeat; }
-nav#topnav ul li.navDevices.current a { background: url(../images/topnavDevices.png) center bottom no-repeat; }
+nav#topnav ul li.navDevices a:hover { background: rgb(232, 232, 232) url(../images/topnavDevices.png) center -18px no-repeat; }
+nav#topnav ul li.navDevices.current a { background:rgb(245,245,245) url(../images/topnavDevices.png) center bottom no-repeat; }
 nav#topnav ul li.navUsers a { background: url(../images/topnavUsers.png) center -18px no-repeat; }
-nav#topnav ul li.navUsers a:hover { background: rgb(237, 237, 237) url(../images/topnavUsers.png) center -18px no-repeat; }
-nav#topnav ul li.navUsers.current a { background: url(../images/topnavUsers.png) center bottom no-repeat; }
+nav#topnav ul li.navUsers a:hover { background: rgb(232, 232, 232) url(../images/topnavUsers.png) center -18px no-repeat; }
+nav#topnav ul li.navUsers.current a { background:rgb(245,245,245) url(../images/topnavUsers.png) center bottom no-repeat; }
 nav#topnav ul li.navReports a { background: url(../images/topnavReports.png) center -18px no-repeat; }
-nav#topnav ul li.navReports a:hover { background: rgb(237, 237, 237) url(../images/topnavReports.png) center -18px no-repeat; }
-nav#topnav ul li.navReports.current a { background: url(../images/topnavReports.png) center bottom no-repeat; }
-nav#topnav ul li.navAdmin a { background: url(../images/topnavAdmin.png) center -18px no-repeat; }
-nav#topnav ul li.navAdmin a:hover { background: rgb(237, 237, 237) url(../images/topnavAdmin.png) center -18px no-repeat; }
-nav#topnav ul li.navAdmin.current a { background: url(../images/topnavAdmin.png) center bottom no-repeat; }
+nav#topnav ul li.navReports a:hover { background: rgb(232, 232, 232) url(../images/topnavReports.png) center -18px no-repeat; }
+nav#topnav ul li.navReports.current a { background: rgb(245,245,245)  url(../images/topnavReports.png) center bottom no-repeat; }
+nav#topnav ul li.navAdmin a { background:  url(../images/topnavAdmin.png) center -18px no-repeat; }
+nav#topnav ul li.navAdmin a:hover { background: rgb(232, 232, 232) url(../images/topnavAdmin.png) center -18px no-repeat; }
+nav#topnav ul li.navAdmin.current a { background:rgb(245,245,245)  url(../images/topnavAdmin.png) center bottom no-repeat; }
 /*--------------------------------------------- 
 			Top Header Search input
 --------------------------------------------- */
