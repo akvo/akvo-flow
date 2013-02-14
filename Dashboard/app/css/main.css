@@ -152,7 +152,7 @@ pre {
 }
 .isLoading, .isSaving {
 	position: fixed;
-	top: 88px;
+	top: 85px;
 	left: 46%;
 	z-index: 999999;
 	padding: 1px 0 0 20px;
@@ -292,7 +292,7 @@ a.AddBtn:hover { }
 	width: 99.7%;
 	position: relative;
 	padding: 1px 0.15%;
-	background: rgb(240,240,240);
+	background: rgb(230,230,230);
 }
 .btnAboveTable { margin: 1.5em 1.5em 1.5em 1em; }
 .usersList .btnAboveTable { margin: 0; position:absolute; top:0px; right:5px; }
@@ -593,8 +593,7 @@ header.top hgroup h1 a {
 }
 .languageSelector .labelText {
 	display: block;
-	font-size:1.2em;
-	margin: 0 0 0.5em 0em;
+	margin: 0 0 0.5em 0.3em;
 }
 .languageSelector select { display: block; }
 /* #home page
@@ -689,7 +688,6 @@ header input[type="search"]:focus { width: 14%; }
 
 #manageAttributes, #devicesList { position: relative; }
 table.dataTable {
-	font-size:1.1em;
 	margin: 1px auto;
 	width: 100%;
 	border-collapse: collapse;
@@ -877,6 +875,7 @@ fieldset#assignmentDetails { background: rgb(255,255,255); }
 input.hasDatepicker {
 	display: inline;
 	width: 95%;
+	border-color: transparent;
 	background: rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
 }
 #inspectData input.hasDatepicker { width: inherit; }
@@ -1038,7 +1037,7 @@ th.action { width: 7%; }
 #tabs div > section {
 	border: thin solid rgb(224,224,224);
 	border-top: 1px solid rgb(255,255,255);
-	background: rgb(240, 240, 240);
+	background: rgb(230,230,230);
 }
 #tabs div > section h1, div > section h1 {
 	display: block;
