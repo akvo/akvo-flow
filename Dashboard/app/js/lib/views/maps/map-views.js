@@ -19,12 +19,13 @@ FLOW.NavMapsView = Ember.View.extend({
 
   init: function() {
     this._super();
-    this.detailsImage = 'images/invisible.png';
+    // this.detailsImage = 'images/invisible.png';
     this.detailsPaneElements = "#pointDetails h2" +
       ", #pointDetails dl" +
       ", #pointDetails img" +
       ", #pointDetails .imgContainer" +
-      ", .placeMarkBasicInfo";
+      ", .placeMarkBasicInfo" +
+      ", .noDetails";
     this.detailsPaneVisible = true;
   },
 
@@ -117,10 +118,10 @@ FLOW.NavMapsView = Ember.View.extend({
       FLOW.placemarkDetailControl.populate(selected.id);
     } else {
       FLOW.placemarkDetailControl.populate(selected);
-      this.hideDetailsPane();
+      // this.hideDetailsPane();
     }
-    // this.set('detailsImage', FLOW.Env.imageroot + '/invisible.png');
-    this.set('detailsImage', 'images/invisible.png');
+    // this.set('detailsImage', 'images/invisible.png');
+    this.set('detailsImage', null);
   }.observes('FLOW.placemarkControl.selected'),
 
 
@@ -132,13 +133,11 @@ FLOW.NavMapsView = Ember.View.extend({
 
     details = FLOW.placemarkDetailControl.get('content');
 
+    if (!this.detailsPaneVisible) {
+      this.showDetailsPane();
+    }
     if (!Ember.empty(details) && details.get('isLoaded')) {
-      if (!this.detailsPaneVisible) {
-        this.showDetailsPane();
-      }
       this.populateDetailsPane(details);
-    } else {
-      this.hideDetailsPane();
     }
   }.observes('FLOW.placemarkDetailControl.content.isLoaded'),
 
@@ -212,11 +211,12 @@ FLOW.NavMapsView = Ember.View.extend({
       overflow: 'scroll-y',
       marginLeft: '-2px'
     });
-    this.$(this.detailsPaneElements, '#pointDetails').delay(delay).css({
-      opacity: '0'
-    }).css({
+    this.$(this.detailsPaneElements, '#pointDetails').delay(delay).animate({
+      opacity: '0',
       display: 'none'
-    });
+    });//.css({
+      
+    //});
   },
 
 
