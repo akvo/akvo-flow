@@ -1,7 +1,12 @@
+// I18N
+// Ember.String.loc('_request_submitted_email_will_be_sent');
+
 FLOW.SurveyBootstrap = FLOW.View.extend({
   surveysPreview: Ember.A([]),
   includeDBInstructions: false,
   dbInstructions: '',
+  notificationEmail: '',
+
   init: function () {
     this._super();
     FLOW.selectedControl.set('selectedSurveys', null);
@@ -48,15 +53,29 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
   },
 
   sendSurveys: function () {
-    var surveyIds = [], payload = {action: 'generateBootstrapFile'};
+    var surveyIds, payload;
+
+    if (this.get('surveysPreview').length === 0 && !this.get('includeDBInstructions')) {
+      this.showMessage(Ember.String.loc('_survey_or_db_instructions_required'));
+      return;
+    }
+
+    if(this.get('includeDBInstructions') && this.get('dbInstructions') === '') {
+      this.showMessage(Ember.String.loc('_missing_db_instructions'));
+      return;
+    }
 
     if(!this.get('notificationEmail')) {
+      this.showMessage(Ember.String.loc('_notification_email_required'));
       return;
     }
 
-    if (this.get('surveysPreview').length === 0) {
-      return;
-    }
+    payload = {
+      action: 'generateBootstrapFile',
+      email: this.get('notificationEmail')
+    };
+
+    surveyIds = [];
 
     this.get('surveysPreview').forEach(function (item) {
       surveyIds.push(item.get('keyId'));
@@ -73,10 +92,19 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
     this.reset();
   },
 
+  showMessage: function (msg) {
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_manual_survey_transfer'));
+    FLOW.dialogControl.set('message', msg);
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+  },
+
   reset: function () {
-    this.deselectAllSurveys();
     this.removeAllSurveys();
+    this.deselectAllSurveys();
     this.set('dbInstructions', '');
     this.set('includeDBInstructions', false);
+    this.set('notificationEmail', '');
   }
 });

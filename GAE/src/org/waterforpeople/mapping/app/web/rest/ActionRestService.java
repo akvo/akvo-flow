@@ -57,6 +57,7 @@ public class ActionRestService {
 			@RequestParam(value = "email", defaultValue = "") String email,
 			@RequestParam(value = "dbInstructions", defaultValue = "") String dbInstructions) {
 		String status = "failed";
+		String message = "";
 		final Map<String, Object> response = new HashMap<String, Object>();
 		RestStatusDto statusDto = new RestStatusDto();
 
@@ -67,7 +68,9 @@ public class ActionRestService {
 			status = publishSurvey(surveyId);
 		} else if ("generateBootstrapFile".equals(action) && surveyIds != null
 				&& email != null) {
-			status = generateBootstrapFile(surveyIds, dbInstructions, email);
+			message = generateBootstrapFile(surveyIds, dbInstructions, email);
+			status = "ok";
+			statusDto.setMessage(message);
 		}
 
 		statusDto.setStatus(status);
@@ -123,7 +126,7 @@ public class ActionRestService {
 
 		StringBuilder buf = new StringBuilder();
 
-		if (surveyIdList != null) {
+		if (surveyIdList != null && surveyIdList[0] != null) {
 			for (int i = 0; i < surveyIdList.length; i++) {
 				if (i > 0) {
 					buf.append(BootstrapGeneratorRequest.DELMITER);
@@ -142,6 +145,6 @@ public class ActionRestService {
 				.param(BootstrapGeneratorRequest.EMAIL_PARAM, notificationEmail)
 				.param(BootstrapGeneratorRequest.DB_PARAM,
 						dbInstructions != null ? dbInstructions : ""));
-		return "";
+		return "_request_submitted_email_will_be_sent";
 	}
 }
