@@ -46,11 +46,11 @@ input, textarea, button, select {
 input, textarea {
 	border: thin solid rgb(245, 245, 245);
 	background: rgb(250, 244, 230);
-	-moz-box-shadow:0 0 1px rgba(0, 0, 0, 0.3) inset;
+/*	-moz-box-shadow:0 0 1px rgba(0, 0, 0, 0.3) inset;
 	-webkit-box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
 	-o-box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
 	box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
-	padding:3px 5px;	
+*/	padding:3px 5px;	
 }
 textarea {
 	overflow: auto;

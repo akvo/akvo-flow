@@ -621,7 +621,7 @@ nav#topnav ul li:last-child, nav#topnav ul li:last-child:hover, nav#topnav ul li
 nav#topnav ul li:hover { background: none; }
 nav#topnav ul li a {
 	display: block;
-	padding: 46px 6px 23px 6px;
+	padding: 46px 8px 23px 8px;
 	color: rgb(74, 177, 207);
 	vertical-align: bottom;
 	vertical-align: middle;
@@ -860,6 +860,7 @@ fieldset#assignmentDetails { background: rgb(255,255,255); }
 #assignSurveys.manualTransfer textarea {
 	width:98%;
 	margin:0.2em 0;
+	border: 1px solid rgb(158,158,158);
 }
 
 #assignSurveys.manualTransfer  input[type="checkbox"] {
