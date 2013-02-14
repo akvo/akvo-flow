@@ -152,7 +152,7 @@ pre {
 }
 .isLoading, .isSaving {
 	position: fixed;
-	top: 80px;
+	top: 85px;
 	left: 46%;
 	z-index: 999999;
 	padding: 1px 0 0 20px;
@@ -621,7 +621,7 @@ nav#topnav ul li:last-child, nav#topnav ul li:last-child:hover, nav#topnav ul li
 nav#topnav ul li:hover { background: none; }
 nav#topnav ul li a {
 	display: block;
-	padding: 46px 6px 24px 6px;
+	padding: 46px 6px 23px 6px;
 	color: rgb(74, 177, 207);
 	vertical-align: bottom;
 	vertical-align: middle;
@@ -633,9 +633,6 @@ nav#topnav ul li a {
 	-o-transition: background-color .4s linear;
 	transition: background-color .4s linear;
 }
-nav#topnav ul li.current a {
-	box-shadow:0 0 1px rgba(0,0,0,0.1);
-	}
 nav#topnav ul li a:hover, nav#topnav ul li.current a { color: rgb(246, 160, 26); }
 nav#topnav ul li.navHome a { background: url(../images/topnavDashboards.png) center -18px no-repeat; }
 nav#topnav ul li.navHome a:hover { background: rgb(232, 232, 232) url(../images/topnavDashboards.png) center -18px no-repeat; }
