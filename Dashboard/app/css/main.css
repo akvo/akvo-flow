@@ -190,6 +190,9 @@ pre {
 	color:rgb(153,153,153);
 	width:90%;
 	}
+.noBG {
+	background-image:none !important;
+	}
 /* links 
 ---------------------------------------------------------------*/
 
@@ -833,7 +836,7 @@ tfoot tr {
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys h2 { margin: 0.1em 0 1em 0; }
-#assignSurveys select, #assignSurveys input { margin: 0.3em 0 0 0; }
+#assignSurveys select, #assignSurveys input { margin: 0.3em 0 0.2em 0; }
 #assignSurveys label { margin: 0.5em 0 0 0; }
 #assignSurveys fieldset {
 	position: relative;
@@ -845,6 +848,20 @@ fieldset#assignmentDetails { background: rgb(255,255,255); }
 #assignSurveys input {
 	padding: 3px 5px;
 	border: 1px solid rgb(158,158,158);
+}
+#assignSurveys.manualTransfer input {
+	padding: 3px 5px;
+	border: 1px solid rgb(158,158,158);
+	width:48%;
+	margin-bottom:
+}
+#assignSurveys.manualTransfer textarea {
+	width:98%;
+	margin:0.2em 0;
+}
+
+#assignSurveys.manualTransfer  input[type="checkbox"] {
+	width:inherit;
 }
 #assignmentDetails > input { width: 47.5%; }
 .dateRange {
@@ -879,6 +896,11 @@ input.hasDatepicker {
 	min-height: 200px;
 	width: 49%;
 }
+#assignSurveys.manualTransfer .fieldSetWrap fieldset.fullWidth {
+	min-height:inherit;
+	width:100%;
+}
+
 #assignSurveys .fieldSetWrap fieldset table {
 	overflow: scroll;
 	margin: 0 auto;
