@@ -67,8 +67,13 @@ public class DataExportAppletImpl extends AbstractDataImportExportApplet {
 		final JFileChooser chooser = new JFileChooser();
 		final String surveyId = criteriaMap.containsKey("surveyId") ? criteriaMap
 				.get("surveyId") : null;
+		String exportType = criteriaMap.get("exportType");
+		String ext = ".xlsx";
+		if (exportType != null && exportType.equalsIgnoreCase("SURVEY_FORM")) {
+			ext = ".xls";
+		}
 		final String fileName = type + (surveyId != null ? "-" + surveyId : "")
-				+ ".xls";
+				+ ext;
 
 		chooser.setSelectedFile(new File(fileName));
 		chooser.showSaveDialog(this);
