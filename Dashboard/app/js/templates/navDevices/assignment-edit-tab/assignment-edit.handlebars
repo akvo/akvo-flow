@@ -6,7 +6,12 @@
       <fieldset id="assignmentDetails">
         <h2>01. {{t _assignment_details}}</h2>
         <label for="assignmentName">{{t _assignment_name}}:</label>
-         {{view Ember.TextField valueBinding="view.assignmentName" id="assignmentName" placeholder="Enter a name for this assignment" size=30}} 
+          {{view Ember.TextField 
+            valueBinding="view.assignmentName" 
+            id="assignmentName" 
+            placeholder=""
+            placeholderBinding="Ember.STRINGS._enter_a_name_for_this_assignment"
+            size=30}} 
         <div class="dateRange">
           <div class="activeDate">
             <label for="startDate">{{t _start_date}}:</label>

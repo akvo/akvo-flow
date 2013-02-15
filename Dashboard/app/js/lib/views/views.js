@@ -53,6 +53,18 @@ FLOW.ApplicationView = Ember.View.extend({
 });
 
 
+FLOW.locale = function(i18nKey) {
+  return 'Ember.STRINGS._select_survey_group';
+  // var i18nValue;
+  // try {
+  //   i18nValue = Ember.String.loc(i18nKey);
+  // }
+  // catch (err) {
+  //   return i18nKey;
+  // }
+  // return i18nValue;
+};
+
 // ***********************************************//
 //                      Handlebar helpers
 // ***********************************************//

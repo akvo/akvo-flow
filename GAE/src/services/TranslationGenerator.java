@@ -35,6 +35,7 @@ public class TranslationGenerator {
 		PATTERNS.put("{{t ", "}}");
 		PATTERNS.put("{{tooltip ", "}}");
 		PATTERNS.put("promptBinding=\"Ember.STRINGS.", "\"");
+		PATTERNS.put("placeholderBinding=\"Ember.STRINGS.", "\"");
 		PATTERNS.put("String.loc('", "'");
 	}
 

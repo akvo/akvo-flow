@@ -24,7 +24,8 @@
           {{view FLOW.DateField
             valueBinding="FLOW.dateControl.fromDate"
             elementId="from_date"
-            placeholder="Collected From"
+            placeholder="Collected from"
+            placeholderBinding="Ember.STRINGS._collected_from"
             size=30}}
         </label>
 
@@ -33,6 +34,7 @@
             valueBinding="FLOW.dateControl.toDate"
             elementId="to_date"
             placeholder="To"
+            placeholderBinding="Ember.STRINGS._to"
             size=30}}
         </label>
 			</div>
@@ -40,12 +42,14 @@
         <label  class="devideId"> {{t _device_id}}:</label> 
         {{view Ember.TextField 
           valueBinding="view.deviceId" 
-          placeholder="Device Id" 
+          placeholder=""
+          placeholderBinding="Ember.STRINGS._device_id"
           size=30}} 
         <label class="submitterName"> {{t _submitter_name}}:</label> 
         {{view Ember.TextField 
           valueBinding="view.submitterName"
-          placeholder="Submitter Name"
+          placeholder=""
+          placeholderBinding="Ember.STRINGS._submitter_name"
           size=30}}
 			</div>
       <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>

@@ -31,13 +31,21 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
     locale = this.dashboardLanguage.get("value");
     localStorage.locale = this.get('dashboardLanguage.value');
 
-    if(locale === "fr") {
-      Ember.STRINGS = Ember.STRINGS_FR;
-    } else if(locale === "es") {
-      Ember.STRINGS = Ember.STRINGS_ES;
+    if (locale === 'fr') {
+      Ember.set('Ember.STRINGS', Ember.STRINGS_FR);
+    } else if (locale === 'es') {
+      Ember.set('Ember.STRINGS', Ember.STRINGS_ES);
     } else {
-      Ember.STRINGS = Ember.STRINGS_EN;
+      Ember.set('Ember.STRINGS', Ember.STRINGS_EN);
     }
+
+    // if(locale === "fr") {
+    //   Ember.STRINGS = Ember.STRINGS_FR;
+    // } else if(locale === "es") {
+    //   Ember.STRINGS = Ember.STRINGS_ES;
+    // } else {
+    //   Ember.STRINGS = Ember.STRINGS_EN;
+    // }
   }.observes('this.dashboardLanguage')
 });
 
