@@ -292,7 +292,7 @@ a.AddBtn:hover { }
 	width: 99.7%;
 	position: relative;
 	padding: 1px 0.15%;
-	background: rgb(240,240,240);
+	background: rgb(230,230,230);
 }
 .btnAboveTable { margin: 1.5em 1.5em 1.5em 1em; }
 .usersList .btnAboveTable { margin: 0; position:absolute; top:0px; right:5px; }
@@ -634,6 +634,12 @@ nav#topnav ul li a {
 	-o-transition: background-color .4s linear;
 	transition: background-color .4s linear;
 }
+nav#topnav ul li.current a {
+	-webkit-box-shadow:0 0 2px rgba(20,20,20,0.1);
+	-moz-box-shadow:0 0 2px rgba(20,20,20,0.1);
+	-o-box-shadow:0 0 2px rgba(20,20,20,0.1);
+	box-shadow:0 0 2px rgba(20,20,20,0.1);
+	}
 nav#topnav ul li a:hover, nav#topnav ul li.current a { color: rgb(246, 160, 26); }
 nav#topnav ul li.navHome a { background: url(../images/topnavDashboards.png) center -18px no-repeat; }
 nav#topnav ul li.navHome a:hover { background: rgb(232, 232, 232) url(../images/topnavDashboards.png) center -18px no-repeat; }
@@ -1038,7 +1044,7 @@ th.action { width: 7%; }
 #tabs div > section {
 	border: thin solid rgb(224,224,224);
 	border-top: 1px solid rgb(255,255,255);
-	background: rgb(240,240,240);
+	background: rgb(230,230,230);
 }
 #tabs div > section h1, div > section h1 {
 	display: block;
@@ -2793,7 +2799,7 @@ footer.bottomPage a[rel="self"]:hover { }
 	clear: both;
 	width: 96%;
 	margin: 0.5em auto 1.5em auto;
-	background: rgb(250, 250, 250);
+	background: rgb(240, 240, 240);
 	padding: 1em 1%;
 	-moz-border-radius: 0.3em;
 	-webkit-border-radius: 0.3em;
