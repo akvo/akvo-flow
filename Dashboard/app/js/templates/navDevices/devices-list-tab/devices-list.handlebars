@@ -73,8 +73,9 @@
         contentBinding="FLOW.deviceGroupControl.content" 
         selectionBinding="view.selectedDeviceGroup" 
         optionLabelPath="content.code" 
-        optionValuePath="content.keyId" 
-        prompt="Select existing device group"}}
+        optionValuePath="content.keyId"
+        prompt=""
+        promptBinding="Ember.STRINGS._select_existing_device_group"}}
         <div class="buttons menuCentre">
           <ul>
             <li><a {{action "doAddToGroup" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
@@ -115,8 +116,9 @@
         contentBinding="FLOW.deviceGroupControl.content" 
         selectionBinding="view.selectedDeviceGroup" 
         optionLabelPath="content.code" 
-        optionValuePath="content.keyId" 
-        prompt="Select device group"}} 
+        optionValuePath="content.keyId"
+        prompt=""
+        promptBinding="Ember.STRINGS._select_device_group"}}
         
         {{view Ember.TextField valueBinding="view.changedDeviceGroupName" size=40}}
         <p class="dialogMsg">{{t _to_create_a_new_device_group_}}</p>
@@ -129,7 +131,9 @@
         selectionBinding="view.selectedDeviceGroupForDelete" 
         optionLabelPath="content.code" 
         optionValuePath="content.keyId" 
-        prompt="Select device group"}} <a {{action confirm FLOW.dialogControl.delDeviceGroup target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>
+        prompt=""
+        promptBinding="Ember.STRINGS._select_device_group"}}
+        <a {{action confirm FLOW.dialogControl.delDeviceGroup target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>
 
         <div class="buttons menuCentre">
           <ul>

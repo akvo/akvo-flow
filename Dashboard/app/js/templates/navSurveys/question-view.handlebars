@@ -11,8 +11,9 @@
       contentBinding="FLOW.attributeControl.content" 
       optionLabelPath="content.name" 
       optionValuePath="content.keyId" 
-      selectionBinding="view.attribute" 
-      prompt="Select tag"}}
+      selectionBinding="view.attribute"
+      prompt=""
+      promptBinding="Ember.STRINGS._select_tag"}}
 	   <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _add_tag}} </a> </label>
       {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
 
@@ -88,8 +89,9 @@
             contentBinding="FLOW.attributeTypeControl.content" 
             selectionBinding="view.newAttributeType" 
             optionLabelPath="content.label" 
-            optionValuePath="content.value" 
-            prompt="Select value type"}} 
+            optionValuePath="content.value"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_value_type"}}
         
           <div class="buttons menuCentre"> 
             <ul>  

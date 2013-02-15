@@ -23,7 +23,9 @@
           <h2>02. {{t _select_survey}}:</h2>
           <div class="">
             <label for="surveyGroup">{{t _select_survey_group}}:</label>
-            {{view Ember.Select contentBinding="FLOW.surveyGroupControl.content" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.code" optionValuePath="content.keyId" id="surveyGroup" prompt="Select survey group"}}
+            {{view Ember.Select contentBinding="FLOW.surveyGroupControl.content" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.code" optionValuePath="content.keyId" id="surveyGroup" 
+            prompt=""
+            promptBinding="Ember.STRINGS._select_survey_group"}}
 			<span class="infoText">{{t _cant_find_your_survey_}}</span>
 			</div>
           <div class="">
@@ -90,7 +92,8 @@
       optionLabelPath="content.code" 
       optionValuePath="content.keyId"
       id="deviceGroup"
-      prompt="Select device group"}}
+      prompt=""
+      promptBinding="Ember.STRINGS._select_device_group"}}
           </div>
           <div class="">
             <nav>

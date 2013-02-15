@@ -21,7 +21,8 @@
       optionLabelPath="content.label" 
       optionValuePath="content.value" 
       selectionBinding="view.surveyPointType" 
-      prompt="Select survey type"}}
+      prompt=""
+      promptBinding="Ember.STRINGS._select_survey_type"}}
     </label>
     
     <label for="surveyLanguage">{{t _language}}:
@@ -30,7 +31,9 @@
       optionLabelPath="content.label" 
       optionValuePath="content.value" 
       selectionBinding="view.language" 
-      prompt="Select language"}} </label>
+      prompt=""
+      promptBinding="Ember.STRINGS._select_language"}}
+    </label>
   </form>
   <a {{action "doManageNotifications"}} class="manageNotifications"><span>+</span>{{t _manage_notifications}}</a>
   <ul class="newSurveyInfoUl" id="">

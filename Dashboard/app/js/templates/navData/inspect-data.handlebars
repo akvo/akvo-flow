@@ -1,74 +1,97 @@
 {{#view FLOW.inspectDataTableView}}
-<section class="fullWidth" id="inspectData">
+  <section class="fullWidth" id="inspectData">
     <div class="floats-in" id="dataFilter">
-        <h1>{{t _choose_survey_data_to_display}}:</h1>
-            <div class="chooseSurveyData">{{view Ember.Select 
-                contentBinding="FLOW.surveyGroupControl.content" 
-                selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
-                optionLabelPath="content.code" 
-                optionValuePath="content.keyId"
-                prompt="Select survey group"}}
+      <h1>{{t _choose_survey_data_to_display}}:</h1>
+      <div class="chooseSurveyData">
+        {{view Ember.Select 
+          contentBinding="FLOW.surveyGroupControl.content" 
+          selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
+          optionLabelPath="content.code" 
+          optionValuePath="content.keyId"
+          prompt=""
+          promptBinding="Ember.STRINGS._select_survey_group"}}
 
-            {{view Ember.Select 
-                contentBinding="FLOW.surveyControl.content" 
-                selectionBinding="FLOW.selectedControl.selectedSurvey" 
-                optionLabelPath="content.code" 
-                optionValuePath="content.keyId" 
-                prompt="Select survey"}} 
+        {{view Ember.Select 
+          contentBinding="FLOW.surveyControl.content" 
+          selectionBinding="FLOW.selectedControl.selectedSurvey" 
+          optionLabelPath="content.code" 
+          optionValuePath="content.keyId"
+          prompt=""
+          promptBinding="Ember.STRINGS._select_survey"}}
 			</div>
 			<div class="dataCollectedDate">
-            <label class="collectedFrom"> {{t _collected_from}}:
-                {{view FLOW.DateField valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="Collected From" size=30}} 
-            </label> 
+        <label class="collectedFrom"> {{t _collected_from}}:
+          {{view FLOW.DateField
+            valueBinding="FLOW.dateControl.fromDate"
+            elementId="from_date"
+            placeholder="Collected From"
+            size=30}}
+        </label>
 
-            <label class="collectedTo"> {{t _to}}:
-                {{view FLOW.DateField valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="To" size=30}} 
-            </label>
+        <label class="collectedTo"> {{t _to}}:
+          {{view FLOW.DateField
+            valueBinding="FLOW.dateControl.toDate"
+            elementId="to_date"
+            placeholder="To"
+            size=30}}
+        </label>
 			</div>
 			<div class="dataDeviceId">
-				 <label  class="devideId"> {{t _device_id}}:</label> {{view Ember.TextField valueBinding="view.deviceId" placeholder="Device Id" size=30}} 
-				 <label class="submitterName"> {{t _submitter_name}}:</label> {{view Ember.TextField valueBinding="view.submitterName" placeholder="Submitter Name" size=30}} 
+        <label  class="devideId"> {{t _device_id}}:</label> 
+        {{view Ember.TextField 
+          valueBinding="view.deviceId" 
+          placeholder="Device Id" 
+          size=30}} 
+        <label class="submitterName"> {{t _submitter_name}}:</label> 
+        {{view Ember.TextField 
+          valueBinding="view.submitterName"
+          placeholder="Submitter Name"
+          size=30}}
 			</div>
-         <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>
+      <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>
     </div>
     <section class="fullWidth " id="devicesList">
-        <!-- DEVICES TABLE-->
-        <table class="dataTable" id="surveyDataTable">
-            <!-- TABLE HEADER-->
-            <thead>
-                <tr>
-                    <th class="noArrows">{{t _id}}</th>
-                    <th class="noArrows">{{t _survey}}</th>
-                    <th class="noArrows">{{t _submitter}}</th>
-                    <th class="noArrows">{{t _device}}</th>
-                    <th class="noArrows">{{t _collected}}</th>
-                    <th class="noArrows">{{t _action}}</th>
-                </tr>
-            </thead>
-            <!-- TABLE BODY: MAIN CONTENT-->
-            <tbody>
-                {{#each SI in FLOW.surveyInstanceControl}}
-                <tr>
-                    <td class="device">{{SI.keyId}}</td>
-                    <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
-                    <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
-                    <td class="device">{{SI.deviceIdentifier}}</td>
-                    <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
-                    <td class="action"><a {{action showEditSurveyInstanceWindow SI target="this" }}>{{t _edit}}</a></td>
-                </tr>
-                {{/each}}
-            </tbody>
-            <!-- TABLE FOOTER-->
-            <tfoot>
-                <tr>
-                    <td colspan="7"><small>This is the footer.</small></td>
-                </tr>
-            </tfoot>
-        </table>
-        <ul class="prevNext">
-            <li class="prevBtn">{{#if view.hasPrevPage}}<a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}</li>
-        <li class="nextBtn">{{#if view.hasNextPage}}<a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}</li>
-        </ul>
+      <table class="dataTable" id="surveyDataTable">
+        <thead>
+          <tr>
+              <th class="noArrows">{{t _id}}</th>
+              <th class="noArrows">{{t _survey}}</th>
+              <th class="noArrows">{{t _submitter}}</th>
+              <th class="noArrows">{{t _device}}</th>
+              <th class="noArrows">{{t _collected}}</th>
+              <th class="noArrows">{{t _action}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each SI in FLOW.surveyInstanceControl}}
+            <tr>
+              <td class="device">{{SI.keyId}}</td>
+              <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
+              <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
+              <td class="device">{{SI.deviceIdentifier}}</td>
+              <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
+              <td class="action">
+                <a {{action showEditSurveyInstanceWindow SI target="this" }}>
+                  {{t _edit}}
+                </a>
+              </td>
+            </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="7"><small>This is the footer.</small></td>
+          </tr>
+        </tfoot>
+      </table>
+      <ul class="prevNext">
+        <li class="prevBtn">{{#if view.hasPrevPage}}
+          <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
+        </li>
+        <li class="nextBtn">{{#if view.hasNextPage}}
+          <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
+        </li>
+      </ul>
     </section>
 
     <!-- edit surveyInstance popup-->

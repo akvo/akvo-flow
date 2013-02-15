@@ -6,16 +6,18 @@
       contentBinding="FLOW.surveyGroupControl.content" 
       selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
       optionLabelPath="content.code" 
-      optionValuePath="content.keyId" 
-      prompt="Select survey group"}}
+      optionValuePath="content.keyId"
+      prompt=""
+      promptBinding="Ember.STRINGS._select_survey_group"}}
 
       {{view Ember.Select 
         contentBinding="FLOW.surveyControl.content" 
         selectionBinding="FLOW.selectedControl.selectedSurvey" 
         optionLabelPath="content.code" 
         optionValuePath="content.keyId" 
-        prompt="Select survey"}}
-
+        prompt=""
+        promptBinding="Ember.STRINGS._select_survey"}}
+        
 <div class="rawDataReport block">
   <h3>{{t _export_raw_data_report}}</h3>
     <p>{{t _raw_data_report_applet_text_}}</p>

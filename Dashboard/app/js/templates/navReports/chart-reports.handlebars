@@ -5,30 +5,34 @@
       contentBinding="FLOW.surveyGroupControl.content" 
       selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
       optionLabelPath="content.code" 
-      optionValuePath="content.keyId" 
-      prompt="Select survey group"}}
+      optionValuePath="content.keyId"
+      prompt=""
+      promptBinding="Ember.STRINGS._select_survey_group"}}
 		<span class=""></span>
       {{view Ember.Select 
         contentBinding="FLOW.surveyControl.content" 
         selectionBinding="FLOW.selectedControl.selectedSurvey" 
         optionLabelPath="content.name" 
-        optionValuePath="content.keyId" 
-        prompt="Select survey"}}
+        optionValuePath="content.keyId"
+        prompt=""
+        promptBinding="Ember.STRINGS._select_survey"}}
 
         {{view Ember.Select 
         contentBinding="FLOW.questionControl.OPTIONcontent" 
         selectionBinding="FLOW.selectedControl.selectedQuestion" 
         optionLabelPath="content.text" 
         optionValuePath="content.keyId" 
-        prompt="Select question"}}
+        prompt=""
+        promptBinding="Ember.STRINGS._select_question"}}
 <div class="chartSetting">       
 <h4>{{t _chart_type}}:</h4>
       {{view Ember.Select 
         contentBinding="FLOW.chartTypeControl.content" 
         selectionBinding="view.chartType" 
         optionLabelPath="content.label" 
-        optionValuePath="content.value" 
-        prompt="Select chart type"}}
+        optionValuePath="content.value"
+        prompt=""
+        promptBinding="Ember.STRINGS._select_chart_type"}}
         
 {{#if view.isDoughnut}} 
   <label class="groupChartSelect"> {{t _put_smaller_items_together}} {{view Ember.Checkbox checkedBinding="view.compactSmaller"}}</label>

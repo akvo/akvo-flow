@@ -20,8 +20,9 @@
                             optionLabelPath="content.label" 
                             optionValuePath="content.value" 
                             selectionBinding="view.notificationType" 
-                            id="eventNotification" 
-                            prompt="Select event"}}
+                            id="eventNotification"
+                            prompt=""
+                            promptBinding="Ember.STRINGS._select_event"}}
                         </fieldset>
                         <fieldset>
                             <label for="typeNotification">{{t _option}}  {{#if view.optionEmpty}} - {{t _please_make_a_choice}} {{/if}}</label> 
@@ -30,8 +31,9 @@
                             optionLabelPath="content.label" 
                             optionValuePath="content.value" 
                             selectionBinding="view.notificationOption" 
-                            id="typeNotification" 
-                            prompt="Select option"}}
+                            id="typeNotification"
+                            prompt=""
+                            promptBinding="Ember.STRINGS._select_option"}}
                         </fieldset>
                         <fieldset>
                             <label for="dateNotification">{{t _expires}} {{#if view.dateEmpty}} - {{t _please_select_a_date}} {{/if}}</label> {{view FLOW.DateField2 valueBinding="view.expiryDate" id="dateNotification" size=30}}
