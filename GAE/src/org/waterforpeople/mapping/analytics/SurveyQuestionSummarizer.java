@@ -42,7 +42,7 @@ public class SurveyQuestionSummarizer implements DataSummarizer {
 		if (key != null) {
 			SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
 			List<QuestionAnswerStore> answers = instanceDao
-					.listQuestionAnswerStore(new Long(key), "VALUE", null);
+					.listQuestionAnswerStoreByType(new Long(key), "VALUE");
 			if (answers != null && answers.size() > 0) {
 				QuestionDao questionDao = new QuestionDao();
 				List<Question> qList = questionDao.listQuestionByType(answers
