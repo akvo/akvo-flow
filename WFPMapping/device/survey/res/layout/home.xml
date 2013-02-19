@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="fill_parent"
-	android:layout_height="wrap_content" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical">	
-		<TableLayout android:layout_width="wrap_content"
-			android:layout_height="wrap_content">
-			<TableRow android:layout_width="fill_parent">
-				<TextView android:text="@string/currentuser"
-					android:layout_width="fill_parent" android:padding="5dip" />
-				<TextView android:id="@+id/currentUserField"
-					android:layout_width="fill_parent" android:src="@string/unknown" />
-			</TableRow>
-		</TableLayout>
-		
-		<GridView xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/gridview" android:layout_width="fill_parent"
-			android:layout_height="fill_parent" android:numColumns="auto_fit"
-			android:verticalSpacing="10dp" android:horizontalSpacing="10dp"
-			android:columnWidth="90dp" android:stretchMode="columnWidth"
-			android:gravity="center">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+	
+		<LinearLayout android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">	
+			<TextView android:text="@string/currentuser"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="5dip" />
+			<TextView android:id="@+id/currentUserField"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/unknown" />
+		</LinearLayout>
+		
+		<GridView
+		    android:id="@+id/gridview"
+		    android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"
+		    android:columnWidth="90dp"
+		    android:gravity="top|center_horizontal"
+		    android:horizontalSpacing="10dp"
+		    android:numColumns="auto_fit"
+		    android:stretchMode="columnWidth"
+		    android:verticalSpacing="10dp" >
+
 		</GridView>	
 </LinearLayout>
