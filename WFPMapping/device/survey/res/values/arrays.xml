@@ -42,22 +42,9 @@
 		<item>Never</item>
 	</string-array>
 	<string-array name="servers">
-		<item>http://akvoflow-1.appspot.com</item>
-<!--    <item>http://watermapmonitordev.appspot.com</item>
-		<item>http://flowliberia.appspot.com</item>
-   		<item>http://flowaglimmerofhope.appspot.com</item>	 
-		<item>http://flowdemoenvironment.appspot.com</item>
-	    <item>http://akvoflowsandbox.appspot.com</item>
-		<item>http://flowachildsright.appspot.com</item>
-  	    <item>http://flowcongo.appspot.com</item>
-		<item>http://flowamidc.appspot.com</item> 
-		<item>http://flowcrs.appspot.com</item>
-		<item>http://flowakvo.appspot.com</item>
-		<item>http://flowcommunitysciences.appspot.com</item>
-		<item>http://watermapmonitordev.appspot.com</item>
-		<item>http://flowliberia.appspot.com</item>
-		<item>http://watermappingmonitoring.appspot.com</item> -->
-		<item>http://192.168.1.107:8888</item>
+	    <!-- NOTE: The value @@@@ is replaced by the `ant copyconfig` task with the proper instance id -->
+	    <!-- Example value: http://akvoflow-1.appspot.com -->
+	    <item>http://@@@@.appspot.com</item>
 	</string-array>
 	<string-array name="lengthmetric">
 		<item>millimeters</item>

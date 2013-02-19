@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -73,6 +73,7 @@ import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceI
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
+import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.test.AccessPointMetricSummaryTest;
 import org.waterforpeople.mapping.app.web.test.AccessPointTest;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
@@ -746,6 +747,9 @@ public class TestHarnessServlet extends HttpServlet {
 			Country c = new Country();
 			c.setIsoAlpha2Code("HN");
 			c.setName("Honduras");
+			c.setCentroidLat(14.7889035);
+			c.setCentroidLon(-86.9500379);
+			c.setZoomLevel(8);
 
 			BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
 			countryDAO.save(c);
@@ -753,7 +757,29 @@ public class TestHarnessServlet extends HttpServlet {
 			Country c2 = new Country();
 			c2.setIsoAlpha2Code("MW");
 			c2.setName("Malawi");
+			c2.setCentroidLat(-13.0118377);
+			c2.setCentroidLon(33.9984484);
+			c2.setZoomLevel(7);
+			
 			countryDAO.save(c2);
+			
+			Country c3 = new Country();
+			c3.setIsoAlpha2Code("UG");
+			c3.setName("Uganda");
+			c3.setCentroidLat(1.1027);
+			c3.setCentroidLon(32.3968);
+			c3.setZoomLevel(7);
+			
+			countryDAO.save(c3);
+
+			Country c4 = new Country();
+			c4.setIsoAlpha2Code("KE");
+			c4.setName("Kenya");
+			c4.setCentroidLat(-1.26103461);
+			c4.setCentroidLon(36.74724467);
+			c4.setZoomLevel(7);
+			
+			countryDAO.save(c4);
 		} else if ("testAPKml".equals(action)) {
 
 			MapFragmentDao mfDao = new MapFragmentDao();
@@ -1899,18 +1925,9 @@ public class TestHarnessServlet extends HttpServlet {
 		if (user == null) {
 			user = new User();
 			user.setEmailAddress("test@example.com");
-			userDao.save(user);
 		}
-		String permissionList = "";
-		int i = 0;
-		List<Permission> pList = userDao.listPermissions();
-		for (Permission p : pList) {
-			permissionList += p.getCode();
-			if (i < pList.size())
-				permissionList += ",";
-			i++;
-		}
-		user.setPermissionList(permissionList);
+		user.setSuperAdmin(true);
+		user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
 		userDao.save(user);
 	}
 

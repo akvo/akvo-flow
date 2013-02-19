@@ -524,7 +524,6 @@ public class OptionQuestionView extends QuestionView {
 								&& getResponse().getValue() != null) {
 							// if we support multiple, we need to append the
 							// answer
-							QuestionResponse r = getResponse();
 							String responseText = getMultipleSelections();
 							
 							setResponse(new QuestionResponse(responseText,

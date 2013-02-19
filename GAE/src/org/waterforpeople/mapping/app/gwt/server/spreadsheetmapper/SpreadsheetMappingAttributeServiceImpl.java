@@ -480,7 +480,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		// HashMap<Question, QuestionDependency>();
 		List<Question> questionsWithDependencies = new ArrayList<Question>();
 		ArrayList<Question> spreadsheetQuestions = new ArrayList<Question>();
-		int rowIdx = 0;
 		for (RowContainer row : sc.getRowContainerList()) {
 			Question q = new Question();
 			for (ColumnContainer cc : row.getColumnContainersList()) {
@@ -516,7 +515,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				}
 			}
 			spreadsheetQuestions.add(q);
-			rowIdx++;
 		}
 		// now interate over the dependencies and update the keys from the
 		// reference id to the datastore id

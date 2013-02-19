@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.framework.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -292,6 +293,25 @@ public class BaseDAO<T extends BaseDomain> {
 			result = results.get(0);
 		}
 		return result;
+	}
+
+	/**
+	 * gets a List of object by key where the key is represented as a Long
+	 * @param ids Array of Long representing the keys of objects
+	 * @return null if ids is null, otherwise a list of objects
+	 */
+	public List<T> listByKeys(Long[] ids) {
+		if (ids == null) {
+			return null;
+		}
+		final List<T> list = new ArrayList<T>();
+		for (Long id : ids) {
+			final T obj = getByKey(id);
+			if (obj != null) {
+				list.add(obj);
+			}
+		}
+		return list;
 	}
 
 	/**

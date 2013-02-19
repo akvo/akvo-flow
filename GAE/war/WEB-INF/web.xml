@@ -1,4 +1,72 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<context-param>
+        <param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/webapp-context.xml /WEB-INF/webapp-security.xml</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    
+
+    <servlet>
+        <servlet-name>rest</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>rest</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<servlet>
+		<servlet-name>CurrentUserServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.CurrentUserServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CurrentUserServlet</servlet-name>
+		<url-pattern>/currentuser.js</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>EnvServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.EnvServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EnvServlet</servlet-name>
+		<url-pattern>/flowenv.js</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+        <servlet-name>StringsServlet</servlet-name>
+        <servlet-class>org.waterforpeople.mapping.app.web.StringsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StringsServlet</servlet-name>
+        <url-pattern>/ui-strings.js</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>org.waterforpeople.mapping.app.web.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/admin/logout.html</url-pattern>
+    </servlet-mapping>
+
 	<servlet>
 		<servlet-name>StartupServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.StartupServlet</servlet-class>
@@ -431,14 +499,6 @@
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/devicerpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>DeviceAppRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.device.DeviceApplicationServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DeviceAppRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/deviceapprpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>UserRpcServlet</servlet-name>
 		<servlet-class>com.gallatinsystems.user.app.gwt.server.UserServiceImpl</servlet-class>
 	</servlet>
@@ -535,14 +595,6 @@
 	<servlet-mapping>
 		<servlet-name>SurveyRestApi</servlet-name>
 		<url-pattern>/surveyrestapi</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>DeviceAppRestApi</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.DeviceApplicationRestService</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DeviceAppRestApi</servlet-name>
-		<url-pattern>/deviceapprest</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DeviceFilesRestApi</servlet-name>
@@ -685,7 +737,7 @@
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
- <!-- <servlet>
+<!-- <servlet>
   <servlet-name>SystemServiceServlet</servlet-name>
   <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
   <init-param>
@@ -697,6 +749,21 @@
   <servlet-name>SystemServiceServlet</servlet-name>
   <url-pattern>/_ah/spi/*</url-pattern>
  </servlet-mapping> -->
+  <!-- <servlet>
+    <servlet-name>SystemServiceServlet</servlet-name>
+    <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+    <init-param>
+      <param-name>services</param-name>
+      <param-value/>
+    </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>SystemServiceServlet</servlet-name>
+    <url-pattern>/_ah/spi/*</url-pattern>
+  </servlet-mapping> -->
+
+  <!--
   <servlet>
     <servlet-name>SystemServiceServlet</servlet-name>
     <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
@@ -710,5 +777,5 @@
     <servlet-name>SystemServiceServlet</servlet-name>
     <url-pattern>/_ah/spi/*</url-pattern>
   </servlet-mapping>
-
+	-->
 </web-app>

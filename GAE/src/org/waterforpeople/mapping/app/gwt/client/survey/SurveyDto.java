@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.gwt.client.survey;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
@@ -29,12 +30,17 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private String version;
 	private String description;
 	private String status;
+	private String sector;
 	private List<QuestionGroupDto> questionGroupList;
 	private String path;
 	private Long surveyGroupId = null;
+	private Long instanceCount;
 	private String pointType;
 	private String defaultLanguageCode;
 	private Boolean requireApproval;
+	private Date createdDateTime;
+	private Date lastUpdateDateTime;
+	private Long sourceId = null;
 
 	public String getPath() {
 		return path;
@@ -42,6 +48,22 @@ public class SurveyDto extends BaseDto implements NamedObject {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public Date getCreatedDateTime() {
+		return createdDateTime;
+	}
+
+	public void setCreatedDateTime(Date createdDateTime) {
+		this.createdDateTime = createdDateTime;
+	}
+
+	public Date getLastUpdateDateTime() {
+		return lastUpdateDateTime;
+	}
+
+	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
+		this.lastUpdateDateTime = lastUpdateDateTime;
 	}
 
 	public void addQuestionGroup(QuestionGroupDto questionGroup) {
@@ -90,6 +112,14 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	public String getSector() {
+		return sector;
+	}
+
+	public void setSector(String sector) {
+		this.sector = sector;
+	}
 
 	@Override
 	public String getDisplayName() {
@@ -109,6 +139,14 @@ public class SurveyDto extends BaseDto implements NamedObject {
 		return surveyGroupId;
 	}
 
+	public void setInstanceCount(Long instanceCount) {
+		this.instanceCount = instanceCount;
+	}
+
+	public Long getInstanceCount() {
+		return instanceCount;
+	}
+	
 	public void setCode(String code) {
 		this.code = code;
 	}
@@ -139,6 +177,14 @@ public class SurveyDto extends BaseDto implements NamedObject {
 
 	public Boolean getRequireApproval() {
 		return requireApproval;
+	}
+
+	public Long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(Long sourceId) {
+		this.sourceId = sourceId;
 	}
 
 }

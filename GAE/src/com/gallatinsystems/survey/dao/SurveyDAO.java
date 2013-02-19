@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -278,4 +278,5 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		List<Key> results = (List<Key>) query.execute();
 		return results;
 	}
+
 }

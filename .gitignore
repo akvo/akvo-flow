@@ -6,16 +6,24 @@
 *.rpc
 *.class
 .gwt-log
-
-Dashboard*
+*.swp
 
 # Specific paths
+
+Dashboard/app/test.html
+Dashboard/assets*
+Dashboard/tmp*
+Dashboard/test_assets*
+
 GAE/build.properties
 GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties
 GAE/war/WEB-INF/*.jks
 GAE/war/WEB-INF/appengine-web.xml
 GAE/war/WEB-INF/classes
 GAE/war/org.*
+GAE/war/admin*
+GAE/war/flow15*
+GAE/war/dashboard15.html
 GAE/war/WEB-INF/appengine-generated/*
 GAE/war/WEB-INF/lib/appengine*
 GAE/war/WEB-INF/lib/datanucleus*
@@ -34,6 +42,16 @@ WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/BuildConfig.java
 WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
 deploy
 gwt-unitcache
-GAE/UploadConstants.properties
 
+# Vagrant
+.vagrant
+GAE/env
+
+
+GAE/UploadConstants.properties
 GAE/appengine-web.xml
+
+WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/R.java
+GAE/war/flowenv.js
+
+GAE/src/services/DataIssues.java

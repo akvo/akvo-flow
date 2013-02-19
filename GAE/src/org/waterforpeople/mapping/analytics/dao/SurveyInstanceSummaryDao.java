@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.DateUtil;
@@ -110,4 +111,15 @@ public class SurveyInstanceSummaryDao extends BaseDAO<SurveyInstanceSummary> {
 		return results;
 	}
 
+	/**
+	 * 
+	 * Returns a surveyInstanceSummary based on surveyId
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public SurveyInstanceSummary findBySurveyId(Long surveyId) {
+		return findByProperty("surveyId", surveyId, "Long");
+	}
+	
 }

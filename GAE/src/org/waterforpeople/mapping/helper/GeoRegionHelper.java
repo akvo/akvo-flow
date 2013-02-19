@@ -37,7 +37,6 @@ public class GeoRegionHelper {
 		int iCurrRow = 1;
 		UUID currentUUID = UUID.randomUUID();
 		MappingSummarizationHelper mappingHelper = new MappingSummarizationHelper();
-		int pointsInPoly = 1;
 		for (String s : regionLines) {
 			GeoRegion gr = new GeoRegion();
 			String[] contents = s.split(",");
@@ -60,7 +59,6 @@ public class GeoRegionHelper {
 			// gr.setCreateDateTime(new Date(contents[5]));
 			Key key = (grDAO.save(gr)).getKey();
 			iCurrRow++;
-			pointsInPoly++;
 			log.info("Saved RegionRow: " + key.toString());
 		}
 	

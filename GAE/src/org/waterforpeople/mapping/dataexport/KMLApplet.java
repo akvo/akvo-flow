@@ -23,7 +23,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -229,7 +232,11 @@ public class KMLApplet extends JApplet implements Runnable {
 	}
 
 	private String promptForFile() {
-		JFileChooser fc = new JFileChooser();
+		final JFileChooser fc = new JFileChooser();
+		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		final String fileName = "GoogleEarth-" + df.format(new Date()) + ".kmz";
+		fc.setSelectedFile(new File(fileName));
+
 		int returnVal = fc.showSaveDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			return fc.getSelectedFile().getAbsolutePath();

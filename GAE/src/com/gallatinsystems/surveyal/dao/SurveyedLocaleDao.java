@@ -152,6 +152,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 			appendNonNullParam("sublevel" + level, filterString, paramString,
 					"String", subValue, paramMap);
 		}
+		query.setOrdering("createdDateTime desc");
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		prepareCursor(cursor, desiredResults, query);
@@ -283,17 +284,27 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 							.getLastSurveyalInstanceId()));
 				} else {
 					// get the most recent instance and use its id
-					SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
-					List<SurveyInstance> instList = instanceDao
-							.listInstancesByLocale(l.getKey().getId(), null,
-									null, 1, null);
-					if (instList != null && instList.size() > 0) {
-						l.setSurveyalValues(listSurveyalValuesByInstance(instList
-								.get(0).getKey().getId()));
-					}
+					l.setSurveyalValues(getSurveyalValues(l.getKey().getId()));
 				}
 			}
 		}
 		return locales;
+	}
+
+	public SurveyedLocale getById(Long id) {
+		final SurveyedLocale sl = getByKey(id);
+		sl.setSurveyalValues(getSurveyalValues(id));
+		return sl;
+	}
+
+	private List<SurveyalValue> getSurveyalValues(Long id) {
+		SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
+		List<SurveyInstance> instList = instanceDao.listInstancesByLocale(id,
+				null, null, 1, null);
+		if (instList != null && instList.size() > 0) {
+			return listSurveyalValuesByInstance(instList.get(0).getKey()
+					.getId());
+		}
+		return null;
 	}
 }

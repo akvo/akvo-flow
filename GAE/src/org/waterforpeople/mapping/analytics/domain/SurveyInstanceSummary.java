@@ -36,6 +36,8 @@ public class SurveyInstanceSummary extends BaseDomain {
 	@Persistent
 	private Date collectionDate;
 	@Persistent
+	private Long surveyId;
+	@Persistent
 	private String countryCode;
 	@Persistent
 	private String communityCode;
@@ -66,6 +68,15 @@ public class SurveyInstanceSummary extends BaseDomain {
 		this.count = count;
 	}
 
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+
+	
 	public Date getCollectionDate() {
 		return collectionDate;
 	}

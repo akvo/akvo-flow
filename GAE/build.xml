@@ -1,5 +1,8 @@
 <project basedir=".">
 	<property file="build.properties" />
+	<property name="dashboard" value="../Dashboard/app" />
+	<property name="ui-strings" value="src/locale" />
+
 	<import file="${sdk.dir}/config/user/ant-macros.xml" />
 
 	<path id="project.classpath">
@@ -56,22 +59,37 @@
 	</target>
 
 	<target name="copyconfig" depends="init" description="Copies the server configuration files">
-	    <fail message="[config] property path must be present, e.g.: ant copyconfig -Dconfig=/path/to/config/folder">
-	        <condition>
-	            <not>
-	                <isset property="config" />
-	            </not>
-	        </condition>
-	    </fail>
-	    <copy file="${config}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
-	    <copy file="${config}/appengine-web.xml" tofile="war/WEB-INF/appengine-web.xml" overwrite="true" verbose="true" />
-	    <copy file="${config}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
-	    <copy file="${config}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
-	    <copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false" />
-	    <copy file="${config}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" failonerror="false" />
-	    <copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false" />
-	    <copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" failonerror="false" />
-	    <copy file="${config}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true" failonerror="false" />
+		<fail message="[config] property path must be present, e.g.: ant copyconfig -Dconfig=/path/to/config/folder">
+			<condition>
+				<not>
+					<isset property="config" />
+				</not>
+			</condition>
+		</fail>
+		<copy file="${config}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
+		<copy file="${config}/appengine-web.xml" tofile="war/WEB-INF/appengine-web.xml" overwrite="true" verbose="true" />
+		<copy file="${config}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>
+		<copy file="${config}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${config}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${config}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${config}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true" failonerror="false"/>
+		<loadfile property="app.id" srcFile="war/WEB-INF/appengine-web.xml">
+			<filterchain>
+				<linecontains>
+					<contains value="application"/>
+                		</linecontains>
+				<tokenfilter>
+				<replaceregex pattern="(&lt;|&lt;/)application&gt;" replace="" flags="gi"/>
+				<trim/>
+				<ignoreblank/>
+				</tokenfilter>
+				<striplinebreaks/>
+			</filterchain>
+		</loadfile>
+		<replace file="../WFPMapping/device/survey/res/values/arrays.xml" token="http://@@@@.appspot.com" value="http://${app.id}.appspot.com"/>
 	</target>
 
 	<target name="copyjars" depends="init" description="Copies the App Engine JARs to the WAR.">
@@ -100,6 +118,13 @@
 		</copy>
 		<javac srcdir="src" destdir="war/WEB-INF/classes" classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
+
+	<target name="translate" depends="compile" description="Generates the en.properties file from handlebars template and JS files">
+    <java classname="services.TranslationGenerator" failonerror="true">
+      <arg line="${dashboard} ${ui-strings}" />
+      <classpath refid="project.classpath" />
+    </java>
+  </target>
 
 	<target name="datanucleusenhance" depends="init, compile" description="Performs JDO enhancement on compiled data classes.">
 		<enhance failonerror="true" api="JDO">
@@ -142,14 +167,6 @@
 	</target>
 
 	<target name="update" depends="datanucleusenhance" description="Uploads the application to App Engine.">
-		<fail message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt">
-			<condition>
-				<not>
-					<isset property="pwd" />
-				</not>
-			</condition>
-		</fail>
-
 		<delete failonerror="false">
 			<fileset dir="war/WEB-INF/deploy" includes="**/*.symbolMap"/>
 		</delete>
@@ -158,7 +175,7 @@
 
 		<exec dir="." executable="sh">
 		    <arg value="-c" />
-		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} --passin &lt; ${pwd} update war" />
+		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} update war" />
 		</exec>
 	</target>
 

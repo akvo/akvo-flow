@@ -65,8 +65,8 @@
                 <include name="*.vm" />
             </fileset>
         </copy>
-        <jar destfile="${dist}/exporterapplet.jar" basedir="${build}">
-        </jar>
+        <copy file="${src}/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" tofile="${build}/UploadConstants.properties" overwrite="true" verbose="true" />
+        <jar destfile="${dist}/exporterapplet.jar" basedir="${build}" />
     </target>
 
     <target name="signjar" depends="package">

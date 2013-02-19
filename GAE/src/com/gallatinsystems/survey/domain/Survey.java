@@ -41,9 +41,12 @@ public class Survey extends BaseDomain {
 	private String name = null;
 	private String desc = null;
 	private Status status = null;
+	private Sector sector = null;
 	@NotPersistent
 	private TreeMap<Integer, QuestionGroup> questionGroupMap = null;
 	private Double version = null;
+	@NotPersistent
+	private Long instanceCount;
 	private String path = null;
 	private Long surveyGroupId;
 	private String pointType;
@@ -52,6 +55,10 @@ public class Survey extends BaseDomain {
 
 	public enum Status {
 		PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED
+	};
+	
+	public enum Sector {
+		WASH, EDUC, ECONDEV, HEALTH, ICT, FOODSEC, OTHER
 	};
 
 	public Survey() {
@@ -67,6 +74,14 @@ public class Survey extends BaseDomain {
 		this.surveyGroupId = surveyGroupId;
 	}
 
+	public void setInstanceCount(Long instanceCount) {
+		this.instanceCount = instanceCount;
+	}
+
+	public Long getInstanceCount() {
+		return instanceCount;
+	}
+	
 	public HashMap<String, Translation> getTranslationMap() {
 		return translationMap;
 	}
@@ -105,6 +120,14 @@ public class Survey extends BaseDomain {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+	
+	public Sector getSector() {
+		return sector;
+	}
+
+	public void setSector(Sector sector) {
+		this.sector = sector;
 	}
 
 	public Double getVersion() {
