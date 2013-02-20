@@ -1,0 +1,65 @@
+<section id="main" class="mapFlow floats-in" role="main">
+  {{! <div id="drawHandleWrap"></div>}}
+  <div id="dropdown-holder">
+    {{#if FLOW.countryControl.content}}
+      <label for="country"><span class="inlined">Country:</span>
+        {{view Ember.Select
+        contentBinding="FLOW.countryControl.content"
+        valueBinding="FLOW.countryControl.selected"
+        optionLabelPath="content.label"
+        selectionBinding="view.country"}}
+      </label>
+    {{/if}}
+    <div id="mapDetailsHideShow" class="drawHandle hideMapD">{{t _hide}} &rsaquo;</div>
+  </div>
+
+  <div id="flowMap"></div>
+  <div id="pointDetails">
+    {{#if FLOW.placemarkDetailControl.content}}
+      <ul class="placeMarkBasicInfo floats-in">
+        <li><span>Collected on:</span>
+          {{#if FLOW.placemarkControl.selected}}
+            <div class="placeMarkCollectionDate"> 
+              {{date2 FLOW.placemarkControl.selected.collectionDate}}</div>
+          {{/if}}
+        </li>
+        <li>
+          {{#if FLOW.placemarkDetailControl.selectedPointCode}}
+            <div class="placeMarkPointCode"> 
+              {{FLOW.placemarkDetailControl.selectedPointCode}}
+            </div>
+          {{/if}}
+        </li>
+      </ul>
+      {{#if view.detailsImage}}
+        <div class="imgContainer">
+          <a {{bindAttr href="view.detailsImage"}} target="_blank">
+            <img {{bindAttr src="view.detailsImage"}} alt="" />
+          </a>
+        </div>
+      {{/if}}
+      <dl class="floats-in">
+        {{#each item in FLOW.placemarkDetailControl}}
+          <div class="defListWrap">
+            <dt>{{item.questionText}}:</dt> 
+            <dd>{{#with item}}{{addSpace stringValue}}{{/with}}</dd>
+          </div>
+        {{else}}
+          <p class="noDetails">{{t _no_details}}</p>    
+        {{/each}}
+      </dl>
+    {{else}}
+      <p class="noDetails">{{t _no_details}}</p>
+    {{/if}}
+  </div>
+
+  <div id="flowMapLegend">
+    <h1>LEGEND</h1>
+  </div>
+</section>
+
+<style>
+  #pointDetails > dl > div.defListWrap:nth-child(odd) {
+    background-color: rgb(204,214,214);
+  }
+</style>

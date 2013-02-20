@@ -365,33 +365,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		return (List<QuestionAnswerStore>) q.execute(instanceId);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<QuestionAnswerStore> listQuestionAnswerStore(Long instanceId,
-			String type, Integer count) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		Query query = pm.newQuery(QuestionAnswerStore.class);
-
-		Map<String, Object> paramMap = null;
-
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
-
-		appendNonNullParam("surveyInstanceId", filterString, paramString,
-				"Long", instanceId, paramMap);
-
-		appendNonNullParam("type", filterString, paramString, "String", type,
-				paramMap);
-
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-
-		if (count != null) {
-			query.setRange(0, count);
-		}
-		return (List<QuestionAnswerStore>) query.execute(instanceId);
-	}
-
 	/**
 	 * lists all questionAnswerStore objects for a specific question
 	 * 

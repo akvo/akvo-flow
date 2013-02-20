@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.framework.dataexport.applet;
 
+import java.io.File;
 import java.util.Map;
 
 import javax.swing.JFileChooser;
@@ -63,9 +64,20 @@ public class DataExportAppletImpl extends AbstractDataImportExportApplet {
 	 */
 	public void doExport(String type, Map<String, String> criteriaMap,
 			String serverBase, Map<String, String> options) {
-		JFileChooser chooser = new JFileChooser();
+		final JFileChooser chooser = new JFileChooser();
+		final String surveyId = criteriaMap.containsKey("surveyId") ? criteriaMap
+				.get("surveyId") : null;
+		String exportType = criteriaMap.get("exportType");
+		String ext = ".xlsx";
+		if (exportType != null && exportType.equalsIgnoreCase("SURVEY_FORM")) {
+			ext = ".xls";
+		}
+		final String fileName = type + (surveyId != null ? "-" + surveyId : "")
+				+ ext;
 
+		chooser.setSelectedFile(new File(fileName));
 		chooser.showSaveDialog(this);
+
 		if (chooser.getSelectedFile() != null) {
 			DataExporter exporter = dataExporterFactory.getExporter(type);
 			statusLabel.setText("Exporting...");

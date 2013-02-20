@@ -112,6 +112,16 @@ public class SurveyMetricMappingDao extends BaseDAO<SurveyMetricMapping> {
 	public List<SurveyMetricMapping> listMappingsByQuestion(Long questionId) {
 		return listByProperty("surveyQuestionId", questionId, "Long");
 	}
+	
+	/**
+	 * lists all mappings for a single metric
+	 * 
+	 * @param metricId
+	 * @return
+	 */
+	public List<SurveyMetricMapping> listMappingsByMetric(Long metricId) {
+		return listByProperty("metricId", metricId, "Long");
+	}
 
 	/**
 	 * deletes all mappings for a given questionGroupId
@@ -124,4 +134,27 @@ public class SurveyMetricMappingDao extends BaseDAO<SurveyMetricMapping> {
 			delete(mappings);
 		}
 	}
+	
+	/**
+	 * deletes all mappings for a single question
+	 * 
+	 */
+	public void deleteMetricMapping(Long questionId) {
+		List<SurveyMetricMapping> mappings = listMappingsByQuestion(questionId);
+		if (mappings != null && mappings.size() > 0) {
+			delete(mappings);
+		}
+	}
+	
+	/**
+	 * deletes all mappings for a single metric
+	 * 
+	 */
+	public void deleteMetricMappingByMetric(Long metricId) {
+		List<SurveyMetricMapping> mappings = listMappingsByMetric(metricId);
+		if (mappings != null && mappings.size() > 0) {
+			delete(mappings);
+		}
+	}
+	
 }

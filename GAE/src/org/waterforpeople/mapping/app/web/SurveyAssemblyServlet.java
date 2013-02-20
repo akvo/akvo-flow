@@ -46,6 +46,7 @@ import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
@@ -54,6 +55,7 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.ScoringRule;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment.FRAGMENT_TYPE;
 import com.gallatinsystems.survey.domain.Translation;
@@ -228,12 +230,12 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			// CONSTANTS.surveyPublishErrorMessage();
 			String messageText = "Failed to publish: " + surveyId + "\n";
 			message.setTransactionUUID(transactionId.toString());
-			message.setMessage(messageText);
+			message.setShortMessage(messageText);
 			MessageDao messageDao = new MessageDao();
 			messageDao.save(message);
 		}
 	}
-
+	
 	/**
 	 * deletes fragments for the survey
 	 *
@@ -262,6 +264,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		// Swap with proper UUID
 		SurveyDAO surveyDao = new SurveyDAO();
 		Survey s = surveyDao.getById(surveyId);
+		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
+		SurveyGroup sg = surveyGroupDao.getByKey(s.getSurveyGroupId());
 		Long transactionId = randomNumber.nextLong();
 		String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey";
 		String lang = "en";
@@ -289,12 +293,15 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			Message message = new Message();
 			message.setActionAbout("surveyAssembly");
 			message.setObjectId(surveyId);
+			message.setObjectTitle(sg.getCode() + " / " + s.getName());
 			// String messageText = CONSTANTS.surveyPublishOkMessage() + " "
 			// + url;
 			if (uc.getUploadedFile() && uc.getUploadedZip()) {
 				// increment the version so devices know to pick up the changes
 				log.warn("Finishing assembly of " + surveyId);
 				surveyDao.incrementVersion(surveyId);
+				s.setStatus(Survey.Status.PUBLISHED);
+				surveyDao.save(s);
 				String messageText = "Published.  Please check: " + uc.getUrl();
 				message.setShortMessage(messageText);
 				if (qgList != null && qgList.size() > 0) {
@@ -314,7 +321,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				String messageText = "Failed to publish: " + surveyId + "\n"
 						+ uc.getMessage();
 				message.setTransactionUUID(transactionId.toString());
-				message.setMessage(messageText);
+				message.setShortMessage(messageText);
 				MessageDao messageDao = new MessageDao();
 				messageDao.save(message);
 			}
@@ -357,12 +364,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		StringBuilder sb = new StringBuilder("<questionGroup><heading>")
 				.append(StringEscapeUtils.escapeXml(group.getCode())).append(
 						"</heading>");
-		int count = 0;
 
 		if (questionList != null) {
 			for (Question q : questionList.values()) {
 				sb.append(marshallQuestion(q));
-				count++;
 			}
 		}
 		return sb.toString() + "</questionGroup>";
@@ -441,12 +446,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 		StringBuilder sb = new StringBuilder("<questionGroup><heading>")
 				.append(group.getCode()).append("</heading>");
-		int count = 0;
 
 		if (questionList != null) {
 			for (Question q : questionList.values()) {
 				sb.append(marshallQuestion(q));
-				count++;
 			}
 		}
 		SurveyXMLFragment sxf = new SurveyXMLFragment();

@@ -1,0 +1,338 @@
+ <section class="fullWidth" id="reportBlocks">
+    {{#view FLOW.chartView}}
+        <h1>{{t _chart_builder}}</h1>
+        {{view Ember.Select 
+      contentBinding="FLOW.surveyGroupControl.content" 
+      selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
+      optionLabelPath="content.code" 
+      optionValuePath="content.keyId"
+      prompt=""
+      promptBinding="Ember.STRINGS._select_survey_group"}}
+		<span class=""></span>
+      {{view Ember.Select 
+        contentBinding="FLOW.surveyControl.content" 
+        selectionBinding="FLOW.selectedControl.selectedSurvey" 
+        optionLabelPath="content.name" 
+        optionValuePath="content.keyId"
+        prompt=""
+        promptBinding="Ember.STRINGS._select_survey"}}
+
+        {{view Ember.Select 
+        contentBinding="FLOW.questionControl.OPTIONcontent" 
+        selectionBinding="FLOW.selectedControl.selectedQuestion" 
+        optionLabelPath="content.text" 
+        optionValuePath="content.keyId" 
+        prompt=""
+        promptBinding="Ember.STRINGS._select_question"}}
+<div class="chartSetting">       
+<h4>{{t _chart_type}}:</h4>
+      {{view Ember.Select 
+        contentBinding="FLOW.chartTypeControl.content" 
+        selectionBinding="view.chartType" 
+        optionLabelPath="content.label" 
+        optionValuePath="content.value"
+        prompt=""
+        promptBinding="Ember.STRINGS._select_chart_type"}}
+        
+{{#if view.isDoughnut}} 
+  <label class="groupChartSelect"> {{t _put_smaller_items_together}} {{view Ember.Checkbox checkedBinding="view.compactSmaller"}}</label>
+{{/if}}
+        <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
+</div>		
+    {{#if view.noChoiceBool}}
+      <p class="errorMsg">Please choose a survey group, survey and question using the selectors above.</p>
+    {{/if}}
+     	<h3 class="chartTitle">{{FLOW.selectedControl.selectedQuestion.text}}</h3>
+        <div id="piechart">
+			<p>Choose a Question from above selectors.</p> 	
+		</div>
+{{/view}}
+
+ <script type="text/javascript">
+
+function deleteChart(){
+  $('#piechart').empty();
+}
+
+function createDoughnutChart(){
+    var canvasWidth = 1000, //width
+      canvasHeight = 400,   //height
+      outerRadius = 100,   //radius
+      labelRadius = 120,   //radius
+      color = d3.scale.category20(); //builtin range of colors
+
+    var dataSet = FLOW.chartDataControl.get('chartData');
+    var smallerItems = FLOW.chartDataControl.get('smallerItems');
+    var total = FLOW.chartDataControl.get('total');
+
+    var vis = d3.select("#piechart")
+      .append("svg:svg") //create the SVG element inside the <body>
+        .data([dataSet]) //associate our data with the document
+        .attr("width", canvasWidth) //set the width of the canvas
+        .attr("height", canvasHeight) //set the height of the canvas
+        .append("svg:g") //make a group to hold our pie chart
+        .attr("transform", "translate(" + 0.3*canvasWidth + "," + 0.4*canvasHeight + ")") // relocate center of pie
+
+    // This will create <path> elements for us using arc data...
+    var arc = d3.svg.arc()
+      .outerRadius(outerRadius)
+      .innerRadius(outerRadius-50);
+
+    var pie = d3.layout.pie() //this will create arc data for us given a list of values
+      .value(function(d) { return d.percentage; }) // Binding each value to the pie
+      .sort( function(d) { return null; } );
+
+      vis.append("svg:text")
+      .attr("text-anchor", "left")
+      .style("fill", "rgb(246, 160, 26)")
+      .style("font", "bold 1.5em helvetica")
+      .text("Smallest items:") 
+      .attr("transform","translate(320,-120)");
+
+
+      vis.selectAll("p")
+      .data(smallerItems)
+      .enter()
+      .append("svg:text")
+      .attr("text-anchor", "left")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1.1em helvetica")
+      .text(function(d){
+        return d.legendLabel;
+      }) 
+      .attr("transform",function(d,i){
+        return "translate(325," + (-100+i*20) + ")";
+      })
+
+    // Select all <g> elements with class slice (there aren't any yet)
+    var arcs = vis.selectAll("g.slice")
+      // Associate the generated pie data (an array of arcs, each having startAngle,
+      // endAngle and value properties) 
+      .data(pie)
+      // This will create <g> elements for every "extra" data element that should be associated
+      // with a selection. The result is creating a <g> for every object in the data array
+      .enter()
+      // Create a group to hold each slice (we will have a <path> and a <text>
+      // element associated with each slice)
+      .append("svg:g")
+      .attr("class", "slice");    //allow us to style things in the slices (like text)
+
+    arcs.append("svg:path")
+      //set the color for each slice to be chosen from the color function defined above
+      .attr("fill", function(d, i) { return color(i); } )
+      //this creates the actual SVG path using the associated data (pie) with the arc drawing function
+      .attr("d", arc);
+
+    // Add a legendLabel to each arc slice...
+    arcs.append("svg:text")
+      .attr("transform", function(d) {
+        var c = arc.centroid(d),
+          x = c[0],
+          y = c[1],
+          // pythagorean theorem for hypotenuse
+          h = Math.sqrt(x*x + y*y);
+          return "translate(" + (x/h * labelRadius) +  ',' + (y/h * labelRadius) +  ")"; 
+        })
+      .attr("text-anchor", function(d) {
+        // are we past the center?
+        return (d.endAngle + d.startAngle)/2 > Math.PI ? "end" : "start";
+      })
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1.1em helvetica")
+      .text(function(d, i) { return dataSet[i].legendLabel; }); //get the label from our original data array
+
+       // Add a legendLabel to each arc slice...
+    vis.append("svg:text")
+      .attr("text-anchor", "middle")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1.2em helvetica")
+      .text("Total:") //get the label from our original data array
+      .attr("transform","translate(0,-15)");
+
+    vis.append("svg:text")
+      .attr("text-anchor", "middle")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1.1em helvetica")
+      .text("answers") //get the label from our original data array
+      .attr("transform","translate(0,15)");
+
+    vis.append("svg:text")
+      .attr("text-anchor", "middle")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1.1em helvetica")
+      .text(total.toString()) 
+      .attr("transform","translate(0,0)");
+
+    // Computes the angle of an arc, converting from radians to degrees.
+    function angle(d) {
+      var a = (d.startAngle + d.endAngle) * 90 / Math.PI - 90;
+      return a > 90 ? a - 180 : a;
+    }
+}
+
+function createVBarChart(){
+// as in http://bl.ocks.org/3885304
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 700 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+ var dataSet = FLOW.chartDataControl.get('chartData');
+ var maxPer = FLOW.chartDataControl.get('maxPer');
+
+var formatPercent = d3.format(".0%");
+
+// create linear scale for y axis
+var yScaleMax = maxPer/100 + 0.1;
+if (yScaleMax > 1) yScaleMax = 1;
+var y = d3.scale.linear()
+    .domain([0,yScaleMax])
+    .range([height*0.6,0]);
+
+// y axis
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(formatPercent);
+
+// add svg canvas to DOM
+var svg = d3.select("#piechart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+  // y axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71.1em")
+      .style("text-anchor", "end")
+      .text("Percentage");
+
+  // add bars
+  svg.selectAll(".bar")
+      .data(dataSet)
+      .enter()
+      .append("svg:rect")
+      .attr("class", "bar")
+      .attr("x", function(d,i){return 20+i*40;})
+      .attr("width", 20)
+      .attr("y",function(d){return y(d.percentage/100);})
+      .attr("height",function(d){return height*0.6-y(d.percentage/100);})
+      
+  // add labels
+  svg.selectAll("p")
+      .data(dataSet)
+      .enter()
+      .append("svg:text")
+      .attr("text-anchor", "left")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1.1em helvetica")
+      .text(function(d){
+        return d.legendLabel;
+      }) 
+    .attr("transform",function(d,i){
+         return "translate(" + (25+i*40) + "," + (0.6*height + 10) +") rotate(45) ";
+       })
+
+    // add numbers on top of bars
+    svg.selectAll("num")
+      .data(dataSet)
+      .enter()
+      .append("svg:text")
+      .attr("text-anchor", "left")
+      .style("fill", "rgb(0,0,0)")
+      .style("font", "normal 1em helvetica")
+      .text(function(d){
+        var num = d.percentage;
+        return num.toFixed(1).toString() + "%";
+      }) 
+      .attr("transform",function(d,i){
+        return "translate(" + (20+i*40) + "," + (y(d.percentage/100)-5) + ")";
+      })
+  }
+
+
+  function createHBarChart(){
+// as in http://bl.ocks.org/3885304
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 700 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+ var dataSet = FLOW.chartDataControl.get('chartData');
+ var maxPer = FLOW.chartDataControl.get('maxPer');
+
+var formatPercent = d3.format(".0%");
+
+// create linear scale for y axis
+var yScaleMax = maxPer/100 + 0.1;
+if (yScaleMax > 1) yScaleMax = 1;
+var y = d3.scale.linear()
+    .domain([0,yScaleMax])
+    .range([0,width*0.6]);
+
+// add svg canvas to DOM
+var svg = d3.select("#piechart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+ svg.append("svg:text")
+      .attr("text-anchor", "left")
+      .style("fill", "rgb(246, 160, 26)")
+      .style("font", "bold 2em helvetica")
+      .text("Percentage") 
+      .attr("transform","translate(300,0)");
+
+  // add bars
+  svg.selectAll(".bar")
+      .data(dataSet)
+      .enter()
+      .append("svg:rect")
+      .attr("class", "bar")
+      .attr("y", function(d,i){return 20+i*40;})
+      .attr("height", 20)
+      .attr("x",function(d){return 300;})
+      .attr("width",function(d){return y(d.percentage/100);})
+      
+  // add labels
+  svg.selectAll("p")
+      .data(dataSet)
+      .enter()
+      .append("svg:text")
+      .attr("text-anchor", "end")
+      .style("fill", "rgb(58,58,58)")
+      .style("font", "bold 1.1em helvetica")
+      .text(function(d){
+        return d.legendLabel;
+      }) 
+    .attr("transform",function(d,i){
+         return "translate(280," + (35+i*40) +")";
+       })
+
+    // add numbers on top of bars
+    svg.selectAll("num")
+      .data(dataSet)
+      .enter()
+      .append("svg:text")
+      .attr("text-anchor", "left")
+      .style("fill", "rgb(0,0,0)")
+      .style("font", "normal 1.1em helvetica")
+      .text(function(d){
+        var num = d.percentage;
+        return num.toFixed(1).toString();
+      }) 
+      .attr("transform",function(d,i){
+        return "translate(" + (305+y(d.percentage/100)) + "," + (35+i*40) + ")";
+      })
+  }
+        
+    </script>
+    </section>

@@ -18,6 +18,8 @@ package com.gallatinsystems.user.app.gwt.client;
 
 import java.io.Serializable;
 
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+
 /**
  * Dto for returning userConfig values to the client. Used for representing
  * things like the position of portal widgets.
@@ -25,12 +27,13 @@ import java.io.Serializable;
  * @author Christopher Fagiani
  * 
  */
-public class UserConfigDto implements Serializable {
+public class UserConfigDto extends BaseDto implements Serializable {
 	private static final long serialVersionUID = 4515497143926759239L;
 
 	private String group;
 	private String name;
 	private String value;
+	private Long userId;
 
 	public String getGroup() {
 		return group;
@@ -38,6 +41,14 @@ public class UserConfigDto implements Serializable {
 
 	public void setGroup(String group) {
 		this.group = group;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public String getName() {

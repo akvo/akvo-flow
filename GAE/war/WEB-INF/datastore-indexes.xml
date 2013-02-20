@@ -450,6 +450,10 @@
         <property name="localeType" direction="asc"/>
         <property name="lastSurveyedDate" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="countryCode" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
+    </datastore-index>
      <datastore-index kind="SurveyedLocale" ancestor="false">
         <property name="localeType" direction="asc"/>
         <property name="identifier" direction="asc"/>

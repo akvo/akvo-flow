@@ -81,7 +81,6 @@ public class DeviceSurveyJobQueueUpdater implements DataSummarizer {
 						for (DeviceSurveyJobQueue job : queueItems) {
 							if (job.getDevicePhoneNumber().equals(nums[i])) {
 								itemsToDelete.add(job);
-								break;
 							}
 						}
 					}
@@ -99,7 +98,6 @@ public class DeviceSurveyJobQueueUpdater implements DataSummarizer {
 						for (DeviceSurveyJobQueue job : queueItems) {
 							if (job.getSurveyID().toString().equals(ids[i])) {
 								itemsToDelete.add(job);
-								break;
 							}
 						}
 					}

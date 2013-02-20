@@ -1,0 +1,6 @@
+loader.register('akvo-flow/currentuser', function(require) {
+  FLOW.CurrentUser = Ember.Object.create({
+    email: '$user.email',
+    nickname: '$user.nickname'
+  });
+});
