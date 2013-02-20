@@ -16,7 +16,7 @@
 				android:layout_height="wrap_content"
 				android:text="@string/unknown" />
 		</LinearLayout>
-		
+		
 		<GridView
 		    android:id="@+id/gridview"
 		    android:layout_width="fill_parent"

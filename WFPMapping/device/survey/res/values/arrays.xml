@@ -42,7 +42,7 @@
 		<item>Never</item>
 	</string-array>
 	<string-array name="servers">
-		<item>http://akvoflow-1.appspot.com</item>
+		<item>http://akvoflow-3.appspot.com</item>
 <!--    <item>http://watermapmonitordev.appspot.com</item>
 		<item>http://flowliberia.appspot.com</item>
    		<item>http://flowaglimmerofhope.appspot.com</item>	 
