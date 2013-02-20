@@ -14,7 +14,7 @@ FLOW.placemarkController = Ember.ArrayController.create({
 });
 
 
-FLOW.placemarkDetailControl = Ember.ArrayController.create({
+FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: null,
   selectedDetailImage: null,
   selectedPointCode: null,

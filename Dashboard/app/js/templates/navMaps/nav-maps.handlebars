@@ -15,7 +15,7 @@
 
   <div id="flowMap"></div>
   <div id="pointDetails">
-    {{#if FLOW.placemarkDetailControl.content}}
+    {{#if FLOW.placemarkDetailController.content}}
       <ul class="placeMarkBasicInfo floats-in">
         <li><span>Collected on:</span>
           {{#if FLOW.placemarkController.selected}}
@@ -24,9 +24,9 @@
           {{/if}}
         </li>
         <li>
-          {{#if FLOW.placemarkDetailControl.selectedPointCode}}
+          {{#if FLOW.placemarkDetailController.selectedPointCode}}
             <div class="placeMarkPointCode"> 
-              {{FLOW.placemarkDetailControl.selectedPointCode}}
+              {{FLOW.placemarkDetailController.selectedPointCode}}
             </div>
           {{/if}}
         </li>
@@ -39,7 +39,7 @@
         </div>
       {{/if}}
       <dl class="floats-in">
-        {{#each item in FLOW.placemarkDetailControl}}
+        {{#each item in FLOW.placemarkDetailController}}
           <div class="defListWrap">
             <dt>{{item.questionText}}:</dt> 
             <dd>{{#with item}}{{addSpace stringValue}}{{/with}}</dd>
