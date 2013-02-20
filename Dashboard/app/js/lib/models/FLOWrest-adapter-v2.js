@@ -15,7 +15,7 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
 
     url = this._super(record, suffix);
     if (record === 'placemark') {
-      return  url + '?country=' + FLOW.countryControl.get('countryCode');
+      return  url + '?country=' + FLOW.countryController.get('countryCode');
     }
     return url;
   },

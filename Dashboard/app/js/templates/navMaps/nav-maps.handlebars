@@ -1,11 +1,11 @@
 <section id="main" class="mapFlow floats-in" role="main">
   {{! <div id="drawHandleWrap"></div>}}
   <div id="dropdown-holder">
-    {{#if FLOW.countryControl.content}}
+    {{#if FLOW.countryController.content}}
       <label for="country"><span class="inlined">Country:</span>
         {{view Ember.Select
-        contentBinding="FLOW.countryControl.content"
-        valueBinding="FLOW.countryControl.selected"
+        contentBinding="FLOW.countryController.content"
+        valueBinding="FLOW.countryController.selected"
         optionLabelPath="content.label"
         selectionBinding="view.country"}}
       </label>

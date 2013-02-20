@@ -7,7 +7,7 @@ FLOW.placemarkController = Ember.ArrayController.create({
   countryCode: null,
 
   populate: function (country) {
-    FLOW.countryControl.set('countryCode', country.get('iso'));
+    FLOW.countryController.set('countryCode', country.get('iso'));
     this.set('content', FLOW.store.findAll(FLOW.Placemark));
   }
 
@@ -32,7 +32,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 });
 
 
-FLOW.countryControl = Ember.Object.create({
+FLOW.countryController = Ember.Object.create({
   content: null,
   country: null,
   
