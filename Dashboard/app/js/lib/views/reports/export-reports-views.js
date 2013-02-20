@@ -5,6 +5,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showSurveyFormApplet: false,
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
+  showGoogleEarthButton: false,
 
   showRawDataReport: function () {
     this.renderApplet('showRawDataReportApplet');

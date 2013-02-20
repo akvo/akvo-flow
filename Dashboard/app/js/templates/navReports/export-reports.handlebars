@@ -35,6 +35,7 @@
     {{view FLOW.comprehensiveReportApplet}}
   {{/if}}
 
+{{#if view.showGoogleEarthButton }}
 <div class="googleEarthExport block">
   <h3>{{t _export_google_earth_file}}</h3>
  <p>{{t _google_earth_applet_text_}}</p>
@@ -45,6 +46,8 @@
   {{#if view.showGoogleEarthFileApplet }}
     {{view FLOW.googleEarthFileApplet}}
   {{/if}}
+{{/if}}
+
 <div class="surveyFormExport block">
   <h3>{{t _export_survey_form}}</h3>
   <p>{{t _survey_form_applet_text_}}</p>
