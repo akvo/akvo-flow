@@ -31,6 +31,7 @@
           {{/if}}
         </li>
       </ul>
+
       {{#if view.detailsImage}}
         <div class="imgContainer">
           <a {{bindAttr href="view.detailsImage"}} target="_blank">
@@ -38,12 +39,10 @@
           </a>
         </div>
       {{/if}}
+      
       <dl class="floats-in">
-        {{#each item in FLOW.placemarkDetailController}}
-          <div class="defListWrap">
-            <dt>{{item.questionText}}:</dt> 
-            <dd>{{#with item}}{{addSpace stringValue}}{{/with}}</dd>
-          </div>
+        {{#each FLOW.placemarkDetailController}}
+          {{placemarkDetail}}
         {{else}}
           <p class="noDetails">{{t _no_details}}</p>    
         {{/each}}

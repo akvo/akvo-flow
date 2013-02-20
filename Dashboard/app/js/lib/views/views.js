@@ -93,6 +93,20 @@ Ember.Handlebars.registerHelper('tooltip', function(i18nKey) {
   );
 });
 
+Ember.Handlebars.registerHelper('placemarkDetail', function () {
+  var answer, markup, question;
+
+  question = Ember.get(this, 'questionText');
+  answer = Ember.get(this, 'stringValue').replace(/\|/g, ' | ');
+
+  markup = '<div class="defListWrap"><dt>' +
+    question + ':</dt><dd>' +
+    answer + '</dd></div>';
+
+  return new Handlebars.SafeString(markup);
+});
+
+
 // translates values to labels for languages
 Ember.Handlebars.registerHelper('toLanguage', function(value) {
   var label, valueLoc;

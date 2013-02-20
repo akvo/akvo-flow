@@ -19,7 +19,6 @@ FLOW.NavMapsView = Ember.View.extend({
 
   init: function() {
     this._super();
-    // this.detailsImage = 'images/invisible.png';
     this.detailsPaneElements = "#pointDetails h2" +
       ", #pointDetails dl" +
       ", #pointDetails img" +
@@ -178,9 +177,12 @@ FLOW.NavMapsView = Ember.View.extend({
     this.set('showDetailsBool', true);
     details.forEach(function(item) {
       rawImagePath = item.get('stringValue');
+      // console.log('rawImagePath: ' + rawImagePath);
       if (rawImagePath.indexOf('wfpPhoto') != -1) {
-        this.set('detailsImage', FLOW.Env.photo_url_root
-          + rawImagePath.slice(rawImagePath.indexOf('wfpPhoto')));
+        var detailsImage = FLOW.Env.photo_url_root
+          + rawImagePath.slice(rawImagePath.indexOf('wfpPhoto'));
+        // console.log('detailsImage: ' + detailsImage);
+        this.set('detailsImage', detailsImage);
       }
       verticalBars = rawImagePath.split('|');
       if (verticalBars.length === 4) {
