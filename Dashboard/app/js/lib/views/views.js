@@ -80,6 +80,7 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
   return i18nValue;
 });
 
+
 Ember.Handlebars.registerHelper('tooltip', function(i18nKey) {
   var tooltip;
   try {
@@ -92,6 +93,7 @@ Ember.Handlebars.registerHelper('tooltip', function(i18nKey) {
     '<a href="#" class="helpIcon tooltip" title="' + tooltip + '">?</a>'
   );
 });
+
 
 Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question;

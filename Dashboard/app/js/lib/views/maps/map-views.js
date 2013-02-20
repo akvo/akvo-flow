@@ -300,3 +300,5 @@ FLOW.NavMapsView = Ember.View.extend({
   }
 
 });
+
+FLOW.placemarkDetailView = Ember.View.extend({});

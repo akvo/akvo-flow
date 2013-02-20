@@ -16,8 +16,8 @@ FLOW.placemarkController = Ember.ArrayController.create({
 
 FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: null,
-  selectedDetailImage: null,
   selectedPointCode: null,
+  photo: null,
 
   populate: function (placemarkId) {
     if(typeof placemarkId === 'undefined') {
@@ -27,6 +27,32 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
         "placemarkId": placemarkId
       }));
     }
+  },
+
+  contentDidChange: function() {
+    if (this.get('content') && this.get('content').isLoaded) {
+      if (Ember.empty(this.get('content'))) {
+        this.set('photo', null);
+      } else {
+        this.set('photo', this.getPhotoUrl());
+      }
+    }
+  }.observes('content.isLoaded'),
+
+  getPhotoUrl: function() {
+    var photoDetails, photoUrl, rawPhotoUrl;
+
+    // filter out details with images
+    photoDetails = this.get('content').filter(function (detail) {
+      return detail.get('stringValue').match( /(.jpeg|.JPEG|.jpg|.JPG|.png|.PNG|.gif|.GIF)/ );
+    });
+    // We can only handle one image
+    rawPhotoUrl = photoDetails[0].get('stringValue');
+    // Since photos have a leading path from devices that we need to trim
+    photoUrl = FLOW.Env.photo_url_root +
+      rawPhotoUrl.slice(rawPhotoUrl.indexOf('wfpPhoto'));
+
+    return photoUrl;
   }
 
 });

@@ -14,44 +14,42 @@
   </div>
 
   <div id="flowMap"></div>
-  <div id="pointDetails">
-    {{#if FLOW.placemarkDetailController.content}}
-      <ul class="placeMarkBasicInfo floats-in">
-        <li><span>Collected on:</span>
-          {{#if FLOW.placemarkController.selected}}
+  {{#view FLOW.placemarkDetailView controllerBinding="FLOW.placemarkDetailController"}}
+    <div id="pointDetails">
+      {{#if content}}
+        <ul class="placeMarkBasicInfo floats-in">
+          <li>
+            <span>{{t _collected_on}}:</span>
             <div class="placeMarkCollectionDate"> 
-              {{date2 FLOW.placemarkController.selected.collectionDate}}</div>
-          {{/if}}
-        </li>
-        <li>
-          {{#if FLOW.placemarkDetailController.selectedPointCode}}
+              {{date2 FLOW.placemarkController.selected.collectionDate}}
+            </div>
+          </li>
+          <li>
             <div class="placeMarkPointCode"> 
               {{FLOW.placemarkDetailController.selectedPointCode}}
             </div>
-          {{/if}}
-        </li>
-      </ul>
-
-      {{#if view.detailsImage}}
-        <div class="imgContainer">
-          <a {{bindAttr href="view.detailsImage"}} target="_blank">
-            <img {{bindAttr src="view.detailsImage"}} alt="" />
-          </a>
-        </div>
+          </li>
+        </ul>
+        {{#if photo}}
+          <div class="imgContainer">
+            <a {{bindAttr href="photo"}} target="_blank">
+              <img {{bindAttr src="photo"}} alt="">
+            </a>
+          </div>
+        {{/if}}
+        <dl class="floats-in">
+          {{#each content}}
+            {{placemarkDetail}}
+          {{else}}
+            <p class="noDetails">{{t _no_details}}</p>    
+          {{/each}}
+        </dl>
+      {{else}}
+        <p class="noDetails">{{t _no_details}}</p>
       {{/if}}
       
-      <dl class="floats-in">
-        {{#each FLOW.placemarkDetailController}}
-          {{placemarkDetail}}
-        {{else}}
-          <p class="noDetails">{{t _no_details}}</p>    
-        {{/each}}
-      </dl>
-    {{else}}
-      <p class="noDetails">{{t _no_details}}</p>
-    {{/if}}
-  </div>
-
+    </div>
+  {{/view}}
   <div id="flowMapLegend">
     <h1>LEGEND</h1>
   </div>
