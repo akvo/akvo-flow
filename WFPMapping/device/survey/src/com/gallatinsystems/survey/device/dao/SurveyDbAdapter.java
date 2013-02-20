@@ -1045,13 +1045,21 @@ public class SurveyDbAdapter {
 	}
 
 	/**
-	 * lists all survey respondents by status
+	 * lists all survey respondents with specified status
+	 * sorted by creation order (primary key)
+	 * or delivered date
 	 * 
 	 * @param status
 	 * @return
 	 */
-	public Cursor listSurveyRespondent(String status) {
+	public Cursor listSurveyRespondent(String status, boolean byDelivered) {
 		String[] whereParams = { status };
+		String sortBy;
+		if (byDelivered){
+			sortBy = "case when " + DELIVERED_DATE_COL + " is null then 0 else 1 end, " + DELIVERED_DATE_COL + " desc"; 
+		} else {
+			sortBy = RESPONDENT_TABLE + "." + PK_ID_COL + " desc";
+		}
 		Cursor cursor = database.query(RESPONDENT_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
 				SAVED_DATE_COL, SURVEY_FK_COL, USER_FK_COL, SUBMITTED_DATE_COL,
@@ -1059,7 +1067,7 @@ public class SurveyDbAdapter {
 				"status = ?", whereParams,
 				null,
 				null,
-				RESPONDENT_TABLE + "." + PK_ID_COL + " desc");
+				sortBy);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -1078,8 +1086,9 @@ public class SurveyDbAdapter {
 		Cursor cursor = database.rawQuery("SELECT COUNT(*) as theCount FROM survey_respondent WHERE status = ?",
 				whereParams);
 		if (cursor != null) {
-			if (cursor.moveToFirst())
+			if (cursor.moveToFirst()) {
 				i = cursor.getInt(0);
+			}
 			cursor.close();
 		}
 		return i;
@@ -1373,6 +1382,8 @@ public class SurveyDbAdapter {
 		ArrayList<PointOfInterest> points = null;
 		String whereClause = null;
 		String[] whereValues; //unfortunately, length of this array must match the number of ?'s in the whereClause
+		@SuppressWarnings("unused")
+		int i;
 		//Maximum angular difference for a given radius. Must avoid problems at high latitudes....
 		double nsDegrees = radius * 360 / 40000000;
 		double ewDegrees;
@@ -1390,10 +1401,12 @@ public class SurveyDbAdapter {
 		whereClause = LAT_COL + "<? AND " + LAT_COL + ">?";
 		if (ewDegrees == 0.0d){ //degenerate case
 			whereValues = new String[2];
+			i = 2;
 		} else	{
 			whereValues = new String[4];
 			whereValues[2] = Double.toString(east); //East limit
 			whereValues[3] = Double.toString(west); //West limit
+			i = 4;
 			if (east > 180.0d){ //wrapped
 				east = east - 360.0d;
 				whereClause += " AND (" + LON_COL + "<? OR " + LON_COL + ">?)"; 
