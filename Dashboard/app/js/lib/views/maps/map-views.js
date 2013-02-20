@@ -46,7 +46,7 @@ FLOW.NavMapsView = Ember.View.extend({
 
     map.setCenterAndZoom(latLon, 2);
     map.enableScrollWheelZoom();
-    FLOW.placemarkControl.set('map', map);
+    FLOW.placemarkController.set('map', map);
 
     self = this;
     this.$('#mapDetailsHideShow').click(function () {
@@ -61,7 +61,7 @@ FLOW.NavMapsView = Ember.View.extend({
     
   */
   handleCountrySelection: function () {
-    FLOW.placemarkControl.populate(this.country);
+    FLOW.placemarkController.populate(this.country);
   }.observes('this.country'),
 
 
@@ -72,7 +72,7 @@ FLOW.NavMapsView = Ember.View.extend({
     var country, latLon, map;
 
     country = this.get('country');
-    map = FLOW.placemarkControl.get('map');
+    map = FLOW.placemarkController.get('map');
     if (!Ember.none(country)) {
       latLon = new mxn.LatLonPoint(country.get('lat'), country.get('lon'));
       map.getMap().clearOverlays();
@@ -87,13 +87,13 @@ FLOW.NavMapsView = Ember.View.extend({
   populateMap: function() {
     var map;
 
-    if(FLOW.placemarkControl.content.get('isUpdating') === false) {
-      map = FLOW.placemarkControl.get('map');
-      FLOW.placemarkControl.get('content').forEach(function(placemark) {
+    if(FLOW.placemarkController.content.get('isUpdating') === false) {
+      map = FLOW.placemarkController.get('map');
+      FLOW.placemarkController.get('content').forEach(function(placemark) {
         map.addMarker(this.createMarker(placemark));
       }, this);
     }
-  }.observes('FLOW.placemarkControl.content.isUpdating'),
+  }.observes('FLOW.placemarkController.content.isUpdating'),
 
 
   /**
@@ -112,7 +112,7 @@ FLOW.NavMapsView = Ember.View.extend({
     
   */
   handlePlacemarkSelection: function() {
-    var selected = FLOW.placemarkControl.get('selected');
+    var selected = FLOW.placemarkController.get('selected');
 
     if(typeof selected !== 'undefined') {
       FLOW.placemarkDetailControl.populate(selected.id);
@@ -122,7 +122,7 @@ FLOW.NavMapsView = Ember.View.extend({
     }
     // this.set('detailsImage', 'images/invisible.png');
     this.set('detailsImage', null);
-  }.observes('FLOW.placemarkControl.selected'),
+  }.observes('FLOW.placemarkController.selected'),
 
 
   /**
@@ -253,15 +253,15 @@ FLOW.NavMapsView = Ember.View.extend({
 
       marker.placemark.toggleMarker(marker.placemark);
 
-      oldSelected = FLOW.placemarkControl.get('selected');
+      oldSelected = FLOW.placemarkController.get('selected');
       if(Ember.none(oldSelected)) {
-        FLOW.placemarkControl.set('selected', placemark);
+        FLOW.placemarkController.set('selected', placemark);
       } else {
         if(this.marker === oldSelected.marker) {
-          FLOW.placemarkControl.set('selected', undefined);
+          FLOW.placemarkController.set('selected', undefined);
         } else {
           oldSelected.toggleMarker(oldSelected);
-          FLOW.placemarkControl.set('selected', placemark);
+          FLOW.placemarkController.set('selected', placemark);
         }
       }
     };
@@ -272,7 +272,7 @@ FLOW.NavMapsView = Ember.View.extend({
         In reality there is no toggle but delete and create
       **/
     placemark.toggleMarker = function(placemark) {
-      var map = FLOW.placemarkControl.get('map');
+      var map = FLOW.placemarkController.get('map');
       var point = new mxn.LatLonPoint(placemark.get('latitude'),
                                       placemark.get('longitude')),
         newMarker = new mxn.Marker(point);

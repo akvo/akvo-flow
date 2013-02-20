@@ -2,7 +2,7 @@
 /*global Ember, FLOW */
 
 
-FLOW.placemarkControl = Ember.ArrayController.create({
+FLOW.placemarkController = Ember.ArrayController.create({
   content: null,
   countryCode: null,
 
