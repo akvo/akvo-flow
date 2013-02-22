@@ -112,7 +112,6 @@ FLOW.NavMapsView = Ember.View.extend({
   */
   handlePlacemarkSelection: function() {
     var selected = FLOW.placemarkController.get('selected');
-
     if(typeof selected !== 'undefined') {
       FLOW.placemarkDetailController.populate(selected.id);
     } else {
