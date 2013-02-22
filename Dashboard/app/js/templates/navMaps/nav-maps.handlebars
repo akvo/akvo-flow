@@ -1,20 +1,22 @@
 <section id="main" class="mapFlow floats-in" role="main">
   {{! <div id="drawHandleWrap"></div>}}
   <div id="dropdown-holder">
-    {{#if FLOW.countryController.content}}
-      <label for="country"><span class="inlined">Country:</span>
-        {{view Ember.Select
-        contentBinding="FLOW.countryController.content"
-        valueBinding="FLOW.countryController.selected"
-        optionLabelPath="content.label"
-        selectionBinding="view.country"}}
-      </label>
-    {{/if}}
+    {{#view FLOW.countryView controllerBinding="FLOW.countryController"}}
+      {{#if FLOW.countryController.content}}
+        <label for="country"><span class="inlined">Country:</span>
+          {{view Ember.Select
+          contentBinding="FLOW.countryController.content"
+          valueBinding="FLOW.countryController.selected"
+          optionLabelPath="content.label"
+          selectionBinding="FLOW.countryController.country"}}
+        </label>
+      {{/if}}
+    {{/view}}
     <div id="mapDetailsHideShow" class="drawHandle hideMapD">{{t _hide}} &rsaquo;</div>
   </div>
 
   <div id="flowMap"></div>
-  {{#view FLOW.placemarkDetailView controllerBinding="FLOW.placemarkDetailController"}}
+  {{#view FLOW.PlacemarkDetailView controllerBinding="FLOW.placemarkDetailController"}}
     <div id="pointDetails">
       {{#if content}}
         <ul class="placeMarkBasicInfo floats-in">
@@ -30,18 +32,20 @@
             </div>
           </li>
         </ul>
-        {{#if photo}}
-          <div class="imgContainer">
-            <a {{bindAttr href="photo"}} target="_blank">
-              <img {{bindAttr src="photo"}} alt="">
-            </a>
-          </div>
-        {{/if}}
+        {{#view FLOW.PlacemarkDetailPhotoView controllerBinding="FLOW.placemarkDetailPhotoController"}}
+          {{#if photo}}
+            <div class="imgContainer">
+              <a {{bindAttr href="photo"}} target="_blank">
+                <img {{bindAttr src="photo"}} alt="">
+              </a>
+            </div>
+          {{/if}}
+        {{/view}}
         <dl class="floats-in">
           {{#each content}}
             {{placemarkDetail}}
           {{else}}
-            <p class="noDetails">{{t _no_details}}</p>    
+            <p class="noDetails">{{t _no_details}}</p>
           {{/each}}
         </dl>
       {{else}}

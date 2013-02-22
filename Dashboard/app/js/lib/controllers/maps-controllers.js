@@ -4,20 +4,18 @@
 
 FLOW.placemarkController = Ember.ArrayController.create({
   content: null,
-  countryCode: null,
 
   populate: function (country) {
     FLOW.countryController.set('countryCode', country.get('iso'));
     this.set('content', FLOW.store.findAll(FLOW.Placemark));
   }
-
 });
 
 
 FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: null,
   selectedPointCode: null,
-  photo: null,
+  // photo: null,
 
   populate: function (placemarkId) {
     if(typeof placemarkId === 'undefined') {
@@ -32,9 +30,11 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   contentDidChange: function() {
     if (this.get('content') && this.get('content').isLoaded) {
       if (Ember.empty(this.get('content'))) {
-        this.set('photo', null);
+        FLOW.placemarkDetailPhotoController.set('photo', null);
+        this.set('photo', 'images/invisible.png');
       } else {
-        this.set('photo', this.getPhotoUrl());
+        FLOW.placemarkDetailPhotoController.set('photo', this.getPhotoUrl());
+      this.set('photo', this.getPhotoUrl());
       }
     }
   }.observes('content.isLoaded'),
@@ -46,21 +46,25 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
     photoDetails = this.get('content').filter(function (detail) {
       return detail.get('stringValue').match( /(.jpeg|.JPEG|.jpg|.JPG|.png|.PNG|.gif|.GIF)/ );
     });
-    // We can only handle one image
+    // We only care for the first image
     rawPhotoUrl = photoDetails[0].get('stringValue');
     // Since photos have a leading path from devices that we need to trim
-    photoUrl = FLOW.Env.photo_url_root +
-      rawPhotoUrl.slice(rawPhotoUrl.indexOf('wfpPhoto'));
+    photoUrl = FLOW.Env.photo_url_root + rawPhotoUrl.split('/').pop();
 
     return photoUrl;
   }
 
 });
 
+FLOW.placemarkDetailPhotoController = Ember.ObjectController.create({
+  photo: null
+});
 
-FLOW.countryController = Ember.Object.create({
-  content: null,
+
+FLOW.countryController = Ember.ArrayController.create({
+  content: [],
   country: null,
+  countryCode: null,
   
   init: function() {
     this._super();
@@ -68,6 +72,15 @@ FLOW.countryController = Ember.Object.create({
       this.set('content', this.getContent(FLOW.Env.countries));
     }
   },
+
+
+  /**
+    
+  */
+  handleCountrySelection: function () {
+    FLOW.placemarkController.populate(this.country);
+  }.observes('this.country'),
+
 
   getContent: function (countries) {
     var countryList = [];

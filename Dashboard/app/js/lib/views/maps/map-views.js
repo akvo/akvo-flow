@@ -11,8 +11,6 @@
 FLOW.NavMapsView = Ember.View.extend({
   templateName: 'navMaps/nav-maps',
   showDetailsBool: false,
-  detailsImage: null,
-  country: null,
   detailsPaneElements: null,
   detailsPaneVisible: null,
 
@@ -55,29 +53,21 @@ FLOW.NavMapsView = Ember.View.extend({
     this.hideDetailsPane(1000);
   },
 
-
-  /**
-    
-  */
-  handleCountrySelection: function () {
-    FLOW.placemarkController.populate(this.country);
-  }.observes('this.country'),
-
-
+  
   /**
 
   */
   positionMap: function() {
     var country, latLon, map;
 
-    country = this.get('country');
+    country = FLOW.countryController.get('country');
     map = FLOW.placemarkController.get('map');
     if (!Ember.none(country)) {
       latLon = new mxn.LatLonPoint(country.get('lat'), country.get('lon'));
       map.getMap().clearOverlays();
       map.setCenterAndZoom(latLon, country.get('zoom'));
     }
-  }.observes('this.country'),
+  }.observes('FLOW.countryController.country'),
 
 
   /**
@@ -116,10 +106,7 @@ FLOW.NavMapsView = Ember.View.extend({
       FLOW.placemarkDetailController.populate(selected.id);
     } else {
       FLOW.placemarkDetailController.populate(selected);
-      // this.hideDetailsPane();
     }
-    // this.set('detailsImage', 'images/invisible.png');
-    this.set('detailsImage', null);
   }.observes('FLOW.placemarkController.selected'),
 
 
@@ -176,12 +163,9 @@ FLOW.NavMapsView = Ember.View.extend({
     this.set('showDetailsBool', true);
     details.forEach(function(item) {
       rawImagePath = item.get('stringValue');
-      // console.log('rawImagePath: ' + rawImagePath);
-      if (rawImagePath.indexOf('wfpPhoto') != -1) {
-        var detailsImage = FLOW.Env.photo_url_root
-          + rawImagePath.slice(rawImagePath.indexOf('wfpPhoto'));
-        // console.log('detailsImage: ' + detailsImage);
-        this.set('detailsImage', detailsImage);
+      if (rawImagePath.match( /(.jpeg|.JPEG|.jpg|.JPG|.png|.PNG|.gif|.GIF)/ )) {
+        var photoUrl = FLOW.Env.photo_url_root + rawImagePath.split('/').pop();
+        item.set('stringValue', photoUrl);
       }
       verticalBars = rawImagePath.split('|');
       if (verticalBars.length === 4) {
@@ -300,4 +284,10 @@ FLOW.NavMapsView = Ember.View.extend({
 
 });
 
-FLOW.placemarkDetailView = Ember.View.extend({});
+FLOW.countryView = Ember.View.extend({
+  // country: null
+});
+
+FLOW.PlacemarkDetailView = Ember.View.extend({});
+FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
+
