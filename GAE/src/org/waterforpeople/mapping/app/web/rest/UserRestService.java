@@ -73,6 +73,10 @@ public class UserRestService {
 			List<User> users = userDao.list(Constants.ALL_RESULTS);
 			if (users != null) {
 				for (User u : users) {
+					if ("0".equals(u.getPermissionList())
+							|| Boolean.TRUE.equals(u.isSuperAdmin())) {
+						continue;
+					}
 					UserDto dto = new UserDto();
 					BeanUtils.copyProperties(u, dto, new String[] { "config" });
 					if (u.getKey() != null) {

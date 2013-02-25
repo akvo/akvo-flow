@@ -99,8 +99,8 @@ public class EnvServlet extends HttpServlet {
 		
 		final List<Map<String, String>> roles = new ArrayList<Map<String, String>>();
 		for (AppRole r : AppRole.values()) {
-			if (r.getLevel() < 0) {
-				continue; // don't expose NEW_USER
+			if (r.getLevel() < 10) {
+				continue; // don't expose NEW_USER, nor SUPER_USER
 			}
 			Map<String, String> role = new HashMap<String, String>();
 			role.put("value", String.valueOf(r.getLevel()));

@@ -792,7 +792,7 @@ tfoot tr {
 #usersListTable .emailAdr { width: 35%; }
 #usersListTable .permLevel { width: 20%; }
 #usersListTable .action { width: 10%; }
-#usersListTable .SuperAdmin { color: rgb(227, 27, 35); }
+#usersListTable .notFound { color: rgb(227, 27, 35); }
 #usersListTable .Admin { color: rgb(219, 135, 201); }
 #usersListTable .User { color: rgb(119, 97, 0); }
 #inspectData {
