@@ -86,7 +86,6 @@ fieldset {
 /* Indicate that 'label' will shift focus to the associated form element */
 label {
 	cursor: pointer;
-	text-transform:capitalize;
 	display:block;
 	color:rgb(107, 134, 141);
 }
