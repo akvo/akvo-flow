@@ -19,7 +19,6 @@ package org.waterforpeople.mapping.analytics;
 import java.util.List;
 
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 

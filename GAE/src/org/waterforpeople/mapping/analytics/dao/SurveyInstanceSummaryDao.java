@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
-import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.DateUtil;

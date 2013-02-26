@@ -57,6 +57,7 @@ public class S3PolicySigner {
 		for(String val:output){
 			System.out.println(val);
 		}
+		reader.close();
 	}
 	
 	private static void checkArgs(String[] args){
