@@ -101,21 +101,25 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 	 * @return
 	 */
 	public void saveOptionInStringByQuestion(Long questionId, String optionList) {
-		if (optionList != null) {
-			String[] newOptionList = optionList.split("\n");
-
-			QuestionOptionDao questionOptionDao = new QuestionOptionDao();
-			deleteOptionsForQuestion(questionId);
-			Integer i = 1;
-			for (String option : newOptionList) {
-				QuestionOption Qo = new QuestionOption();
-				Qo.setText(option);
-				Qo.setOrder(i);
-				Qo.setQuestionId(questionId);
-				questionOptionDao.save(Qo);
-				i++;
-			}
+		if (questionId == null || optionList == null) {
+			return;
 		}
+
+		final String[] newOptionList = optionList.replaceAll("\\n+", "\n")
+				.split("\n");
+
+		QuestionOptionDao questionOptionDao = new QuestionOptionDao();
+		deleteOptionsForQuestion(questionId);
+		Integer i = 1;
+		for (String option : newOptionList) {
+			QuestionOption Qo = new QuestionOption();
+			Qo.setText(option);
+			Qo.setOrder(i);
+			Qo.setQuestionId(questionId);
+			questionOptionDao.save(Qo);
+			i++;
+		}
+
 	}
 
 	/**
