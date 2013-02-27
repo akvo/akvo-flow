@@ -53,7 +53,7 @@ FLOW.NavMapsView = Ember.View.extend({
     this.hideDetailsPane(1000);
   },
 
-  
+
   /**
 
   */
@@ -86,7 +86,7 @@ FLOW.NavMapsView = Ember.View.extend({
 
 
   /**
-    
+
   */
   handleShowHideDetails: function () {
     if (this.detailsPaneVisible) {
@@ -98,7 +98,7 @@ FLOW.NavMapsView = Ember.View.extend({
 
 
   /**
-    
+
   */
   handlePlacemarkSelection: function() {
     var selected = FLOW.placemarkController.get('selected');
@@ -163,10 +163,6 @@ FLOW.NavMapsView = Ember.View.extend({
     this.set('showDetailsBool', true);
     details.forEach(function(item) {
       rawImagePath = item.get('stringValue');
-      if (rawImagePath.match( /(.jpeg|.JPEG|.jpg|.JPG|.png|.PNG|.gif|.GIF)/ )) {
-        var photoUrl = FLOW.Env.photo_url_root + rawImagePath.split('/').pop();
-        item.set('stringValue', photoUrl);
-      }
       verticalBars = rawImagePath.split('|');
       if (verticalBars.length === 4) {
         FLOW.placemarkDetailController.set('selectedPointCode', verticalBars[3]);
@@ -200,7 +196,7 @@ FLOW.NavMapsView = Ember.View.extend({
       opacity: '0',
       display: 'none'
     });//.css({
-      
+
     //});
   },
 

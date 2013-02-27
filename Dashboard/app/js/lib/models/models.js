@@ -248,7 +248,8 @@ FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
   collectionDate: DS.attr('number'),
   questionText: DS.attr('string'),
   metricName: DS.attr('string'),
-  stringValue: DS.attr('string')
+  stringValue: DS.attr('string'),
+  questionType: DS.attr('string')
 });
 
 FLOW.Placemark = FLOW.BaseModel.extend({

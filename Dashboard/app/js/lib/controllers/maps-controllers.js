@@ -13,46 +13,41 @@ FLOW.placemarkController = Ember.ArrayController.create({
 
 
 FLOW.placemarkDetailController = Ember.ArrayController.create({
-  content: null,
+  content: Ember.A(),
   selectedPointCode: null,
-  // photo: null,
 
   populate: function (placemarkId) {
     if(typeof placemarkId === 'undefined') {
-      this.set('content', null);
+      this.set('content', Ember.A());
     } else {
       this.set('content', FLOW.store.find(FLOW.PlacemarkDetail, {
-        "placemarkId": placemarkId
+        placemarkId: placemarkId
       }));
     }
   },
 
-  contentDidChange: function() {
-    if (this.get('content') && this.get('content').isLoaded) {
-      if (Ember.empty(this.get('content'))) {
-        FLOW.placemarkDetailPhotoController.set('photo', null);
-        this.set('photo', 'images/invisible.png');
-      } else {
-        FLOW.placemarkDetailPhotoController.set('photo', this.getPhotoUrl());
-      this.set('photo', this.getPhotoUrl());
-      }
-    }
-  }.observes('content.isLoaded'),
-
-  getPhotoUrl: function() {
+  photoUrl: function() {
     var photoDetails, photoUrl, rawPhotoUrl;
+
+    if(!this.get('content').get('isLoaded')) {
+      return 'images/invisible.png';
+    }
 
     // filter out details with images
     photoDetails = this.get('content').filter(function (detail) {
-      return detail.get('stringValue').match( /(.jpeg|.JPEG|.jpg|.JPG|.png|.PNG|.gif|.GIF)/ );
+      return detail.get('questionType') === 'PHOTO';
     });
+
+    if(Ember.empty(photoDetails)) {
+      return 'images/invisible.png';
+    }
     // We only care for the first image
     rawPhotoUrl = photoDetails[0].get('stringValue');
     // Since photos have a leading path from devices that we need to trim
     photoUrl = FLOW.Env.photo_url_root + rawPhotoUrl.split('/').pop();
 
     return photoUrl;
-  }
+  }.property('content.isLoaded')
 
 });
 
@@ -65,7 +60,7 @@ FLOW.countryController = Ember.ArrayController.create({
   content: [],
   country: null,
   countryCode: null,
-  
+
   init: function() {
     this._super();
     if ( !Ember.none(FLOW.Env) && !Ember.none(FLOW.Env.countries) ) {
@@ -75,7 +70,7 @@ FLOW.countryController = Ember.ArrayController.create({
 
 
   /**
-    
+
   */
   handleCountrySelection: function () {
     FLOW.placemarkController.populate(this.country);
@@ -97,7 +92,7 @@ FLOW.countryController = Ember.ArrayController.create({
         if (!Ember.none(countries[i].zoomLevel)) {
           zoom = countries[i].zoomLevel;
         }
-        
+
         countryList.push(
           Ember.Object.create({
             label: countries[i].name,

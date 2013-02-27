@@ -27,6 +27,7 @@ public class PlacemarkDetailDto extends BaseDto {
 	private String metricName;
 	private String stringValue;
 	private Long placemarkId;
+	private String questionType;
 
 	public Date getCollectionDate() {
 		return collectionDate;
@@ -66,5 +67,13 @@ public class PlacemarkDetailDto extends BaseDto {
 
 	public void setPlacemarkId(Long placemarkId) {
 		this.placemarkId = placemarkId;
+	}
+
+	public String getQuestionType() {
+		return questionType;
+	}
+
+	public void setQuestionType(String questionType) {
+		this.questionType = questionType;
 	}
 }

@@ -32,15 +32,11 @@
             </div>
           </li>
         </ul>
-        {{#view FLOW.PlacemarkDetailPhotoView controllerBinding="FLOW.placemarkDetailPhotoController"}}
-          {{#if photo}}
             <div class="imgContainer">
-              <a {{bindAttr href="photo"}} target="_blank">
-                <img {{bindAttr src="photo"}} alt="">
+              <a {{bindAttr href="photoUrl"}} target="_blank">
+                <img {{bindAttr src="photoUrl"}} alt="">
               </a>
             </div>
-          {{/if}}
-        {{/view}}
         <dl class="floats-in">
           {{#each content}}
             {{placemarkDetail}}
