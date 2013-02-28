@@ -22,7 +22,6 @@ FLOW.placemarkController = Ember.ArrayController.create({
 FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: Ember.A(),
   selectedPointCode: null,
-  photoVisible: 'hidden',
 
   populate: function (placemarkId) {
     if(typeof placemarkId === 'undefined') {
@@ -39,22 +38,18 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 
 
     if(!this.get('content').get('isLoaded')) {
-      // this.set('photoVisible', 'hidden');
-      return 'images/invisible.png';
-    } else {
-      this.set('photoVisible', 'shown');
+      return null;
     }
-    
+
     // filter out details with images
     photoDetails = this.get('content').filter(function (detail) {
       return detail.get('questionType') === 'PHOTO';
     });
 
     if(Ember.empty(photoDetails)) {
-      this.set('photoVisible', 'hidden');
-      return 'images/invisible.png';
+      return null;
     }
-    
+
     // We only care for the first image
     rawPhotoUrl = photoDetails[0].get('stringValue');
     // Since photos have a leading path from devices that we need to trim

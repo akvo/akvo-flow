@@ -32,7 +32,7 @@
             </div>
           </li>
         </ul>
-        <div class="imgContainer" {{bindAttr class="photoVisible"}}>
+        <div {{bindAttr class=":imgContainer photoUrl:shown:hidden"}}>
           <a {{bindAttr href="photoUrl"}} target="_blank">
             <img {{bindAttr src="photoUrl"}} alt="">
           </a>
