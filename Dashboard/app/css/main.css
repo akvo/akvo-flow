@@ -2600,7 +2600,7 @@ div.drawHandle.showMapD { }
 	display: inline;
 	float: left;
 }
-.placeMarkBasicInfo li:last-child { float: right; }
+.placeMarkBasicInfo li:last-child { float: right; width:50px; }
 .placeMarkBasicInfo li span { display: inline; }
 .placeMarkCollectionDate {
 	display: inline;
