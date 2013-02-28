@@ -22,21 +22,21 @@
         <ul class="placeMarkBasicInfo floats-in">
           <li>
             <span>{{t _collected_on}}:</span>
-            <div class="placeMarkCollectionDate"> 
+            <div class="placeMarkCollectionDate">
               {{date2 FLOW.placemarkController.selected.collectionDate}}
             </div>
           </li>
-          <li>
+          <li style="width: 50px">
             <div class="placeMarkPointCode"> 
               {{FLOW.placemarkDetailController.selectedPointCode}}
             </div>
           </li>
         </ul>
-            <div class="imgContainer">
-              <a {{bindAttr href="photoUrl"}} target="_blank">
-                <img {{bindAttr src="photoUrl"}} alt="">
-              </a>
-            </div>
+        <div class="imgContainer" {{bindAttr class="photoVisible"}}>
+          <a {{bindAttr href="photoUrl"}} target="_blank">
+            <img {{bindAttr src="photoUrl"}} alt="">
+          </a>
+        </div>
         <dl class="floats-in">
           {{#each content}}
             {{placemarkDetail}}

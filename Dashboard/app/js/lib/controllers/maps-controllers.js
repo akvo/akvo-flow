@@ -5,6 +5,13 @@
 FLOW.placemarkController = Ember.ArrayController.create({
   content: null,
 
+  // We might be able to remove the buildURL in the REST adapter
+  // and use this populate().
+  // populate: function (country) {
+  //   this.set('content', FLOW.store.findQuery(FLOW.Placemark,
+  //     {country: country.get('iso')}));
+  // }
+
   populate: function (country) {
     FLOW.countryController.set('countryCode', country.get('iso'));
     this.set('content', FLOW.store.findAll(FLOW.Placemark));
@@ -15,6 +22,7 @@ FLOW.placemarkController = Ember.ArrayController.create({
 FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: Ember.A(),
   selectedPointCode: null,
+  photoVisible: 'hidden',
 
   populate: function (placemarkId) {
     if(typeof placemarkId === 'undefined') {
@@ -30,7 +38,10 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
     var photoDetails, photoUrl, rawPhotoUrl;
 
     if(!this.get('content').get('isLoaded')) {
+      this.set('photoVisible', 'hidden');
       return 'images/invisible.png';
+    } else {
+      this.set('photoVisible', 'shown');
     }
 
     // filter out details with images
@@ -39,6 +50,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
     });
 
     if(Ember.empty(photoDetails)) {
+      this.set('photoVisible', 'hidden');
       return 'images/invisible.png';
     }
     // We only care for the first image
