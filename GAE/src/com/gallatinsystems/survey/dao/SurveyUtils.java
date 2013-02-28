@@ -32,6 +32,7 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyUtils {
 
@@ -48,6 +49,7 @@ public class SurveyUtils {
 		tmp.setCode(tmp.getCode() + " <Copy>"); // FIXME: I18N
 		tmp.setName(tmp.getName() + " <Copy>"); // FIXME: I18N
 		tmp.setStatus(Survey.Status.NOT_PUBLISHED);
+		tmp.setPath(getPath(tmp));
 
 		log.log(Level.INFO, "Copying `Survey` " + source.getKey().getId());
 		final Survey newSurvey = sDao.save(tmp);
@@ -190,6 +192,21 @@ public class SurveyUtils {
 				+ newQuestionOption.getKey().getId());
 
 		return newQuestionOption;
+	}
+
+	private static String getPath(Survey s) {
+		if (s == null) {
+			return null;
+		}
+
+		final SurveyGroupDAO dao = new SurveyGroupDAO();
+		final SurveyGroup sg = dao.getByKey(s.getSurveyGroupId());
+
+		if (sg == null) {
+			return null;
+		}
+
+		return sg.getName() + "/" + s.getName();
 	}
 
 }
