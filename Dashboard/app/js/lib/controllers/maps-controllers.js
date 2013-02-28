@@ -37,13 +37,14 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   photoUrl: function() {
     var photoDetails, photoUrl, rawPhotoUrl;
 
+
     if(!this.get('content').get('isLoaded')) {
-      this.set('photoVisible', 'hidden');
+      // this.set('photoVisible', 'hidden');
       return 'images/invisible.png';
     } else {
       this.set('photoVisible', 'shown');
     }
-
+    
     // filter out details with images
     photoDetails = this.get('content').filter(function (detail) {
       return detail.get('questionType') === 'PHOTO';
@@ -53,6 +54,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
       this.set('photoVisible', 'hidden');
       return 'images/invisible.png';
     }
+    
     // We only care for the first image
     rawPhotoUrl = photoDetails[0].get('stringValue');
     // Since photos have a leading path from devices that we need to trim
