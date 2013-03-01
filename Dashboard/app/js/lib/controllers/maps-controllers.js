@@ -23,15 +23,21 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: Ember.A(),
   selectedPointCode: null,
 
-  populate: function (placemarkId) {
-    if(typeof placemarkId === 'undefined') {
-      this.set('content', Ember.A());
-    } else {
+  populate: function (placemark) {
+    if (placemark && placemark.id) {
       this.set('content', FLOW.store.find(FLOW.PlacemarkDetail, {
-        placemarkId: placemarkId
+        placemarkId: placemark.id
       }));
+    } else {
+      this.set('content', Ember.A());
     }
   },
+
+  handlePlacemarkSelection: function() {
+    var selected = FLOW.placemarkController.get('selected');
+
+    this.populate(selected);
+  }.observes('FLOW.placemarkController.selected'),
 
   photoUrl: function() {
     var photoDetails, photoUrl, rawPhotoUrl;
