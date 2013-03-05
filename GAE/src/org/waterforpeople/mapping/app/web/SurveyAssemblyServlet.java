@@ -272,7 +272,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		if (s != null && s.getDefaultLanguageCode() != null) {
 			lang = s.getDefaultLanguageCode();
 		}
-		surveyHeader += " defaultLanguageCode='" + lang + "'>";
+		surveyHeader += " defaultLanguageCode='" + lang + "' version='" + s.getVersion() + "'>";
 		String surveyFooter = "</survey>";
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		TreeMap<Integer, QuestionGroup> qgList = qgDao
