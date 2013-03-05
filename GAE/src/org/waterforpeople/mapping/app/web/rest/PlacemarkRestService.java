@@ -76,7 +76,7 @@ public class PlacemarkRestService {
 		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
 
 		slList.addAll(localeDao.listBySubLevel(country, null, null, null, null,
-				null, null));
+				null, 200));
 
 		if (slList.size() > 0) {
 			for (SurveyedLocale ap : slList) {
