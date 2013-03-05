@@ -3,7 +3,7 @@
   :url "https://github.com/akvo/akvo-flow"
   :license {:name "GNU Affero General Public License"
             :url "https://www.gnu.org/licenses/agpl"}
-  :dependencies [[org.clojure/clojure "1.4.0"]
+  :dependencies [[org.clojure/clojure "1.5.0"]
                  [ring "1.1.8"]
                  [compojure "1.1.5"]
                  [org.apache.poi/poi "3.8"]
