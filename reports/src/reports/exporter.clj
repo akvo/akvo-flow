@@ -30,7 +30,7 @@
 ;; options = nil
 
 (defn- getfile []
-  (io/file "/tmp/"  (str (.toString (UUID/randomUUID)) ".xlsx")))
+  (io/file (format "/tmp/%s.xlsx" (UUID/randomUUID)))
 
 
 (defn doexport [type base id opts]
