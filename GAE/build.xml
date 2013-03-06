@@ -97,6 +97,9 @@
 			<fileset dir="${sdk.dir}/lib/user">
 				<include name="**/*.jar" />
 			</fileset>
+			<fileset dir="${sdk.dir}/lib/opt/user/appengine-endpoints">
+				<include name="**/*.jar" />
+			</fileset>
 		</copy>
 	</target>
 
