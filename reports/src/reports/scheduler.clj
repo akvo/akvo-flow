@@ -13,7 +13,7 @@
          opts "opts"} (qc/from-job-data ctx)]
     (exp/doexport exportType base-url sid opts)))
 
-(defn running-jobs []
+(defn get-executing-jobs []
   "Returns a list of executing jobs in form of JobExecutionContext"
   (.getCurrentlyExecutingJobs @qs/*scheduler*))
 
@@ -24,9 +24,8 @@
     (j/key (str k))
     k))
 
-
-(defn job-running? [k]
+(defn job-executing? [k]
   "Returns true if there is a running job for that particular `job key`"
   (let [jkey (get-job-key k)]
-    (> 0 (count
-           (filter #(= (.getKey (.getJobDetail %)) jkey) running-jobs)))))
+    (= 1 (count
+           (filter #(= (.getKey (.getJobDetail %)) jkey) (get-executing-jobs))))))
