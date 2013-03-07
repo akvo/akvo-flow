@@ -217,20 +217,31 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 	// execute group delete
 	// TODO should this be allowed when questions are present?
 	deleteQuestionGroup: function() {
-		var qgDeleteId, questionGroup;
+		var qgDeleteId, questionGroup, questionsGroupsInSurvey, sId, qgOrder;
 		qgDeleteId = this.content.get('keyId');
-
+		sId = this.content.get('surveyId');
 		questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
+		qgOrder = questionGroup.get('order');
 		questionGroup.deleteRecord();
+		// restore order
+		questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function(item) {
+	        return(item.get('surveyId') == sId);
+	      });
+		
+		questionGroupsInSurvey.forEach(function(item) {
+			if (item.get('order') > qgOrder) {
+				item.set('order',item.get('order')-1);
+			}
+		});
+		
 		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 	},
 
 	// insert group
 	doInsertQuestionGroup: function() {
-		var insertAfterOrder, path;
+		var insertAfterOrder, path, sId, questionGroupsInSurvey;
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
-
 		if(FLOW.selectedControl.selectedSurvey.get('keyId')) {
 
 			if(this.get('zeroItem')) {
@@ -238,19 +249,32 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 			} else {
 				insertAfterOrder = this.content.get('order');
 			}
-
+			
+			// restore order
+			sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+			questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function(item) {
+		        return(item.get('surveyId') == sId);
+		      });
+			
+			// move items up to make space
+			questionGroupsInSurvey.forEach(function(item) {
+				if (item.get('order') > insertAfterOrder) {
+					item.set('order',item.get('order') + 1);
+				}
+			});
+			
 			// create new QuestionGroup item in the store
-			// the insertAfterOrder is inserted here
-			// in the server, the proper order of all question groups is re-established
 			FLOW.store.createRecord(FLOW.QuestionGroup, {
 				"code": "New group - please change name",
 				"name": "New group - please change name",
-				"order": insertAfterOrder,
+				"order": insertAfterOrder+1,
 				"path": path,
 				"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
 			});
+			
 			FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 			FLOW.store.commit();
+			FLOW.questionGroupControl.setFilteredContent();
 		} else {
 			FLOW.dialogControl.set('activeAction', "ignore");
 			FLOW.dialogControl.set('header', Ember.String.loc('_please_save_survey'));
@@ -284,10 +308,9 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 		FLOW.selectedControl.set('selectedForMoveQuestionGroup', null);
 	},
 
-
-	// execture group move to selected location
+	// execute group move to selected location
 	doQGroupMoveHere: function() {
-		var selectedOrder, insertAfterOrder, selectedQG;
+		var selectedOrder, insertAfterOrder, selectedQG, sId, questionGroupsInSurvey, origOrder, movingUp;
 		selectedOrder = FLOW.selectedControl.selectedForMoveQuestionGroup.get('order');
 
 		if(this.get('zeroItem')) {
@@ -300,9 +323,39 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 		if(!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
 			selectedQG = FLOW.store.find(FLOW.QuestionGroup, FLOW.selectedControl.selectedForMoveQuestionGroup.get('keyId'));
 			if(selectedQG !== null) {
-				// the insertAfterOrder is inserted here
-				// in the server, the proper order of all question groups is re-established
-				selectedQG.set('order', insertAfterOrder);
+				
+				// selectedQG.set('order', insertAfterOrder + 1);
+				// restore order
+				sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+				questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function(item) {
+			        return(item.get('surveyId') == sId);
+			      });
+				
+				origOrder = FLOW.selectedControl.selectedForMoveQuestionGroup.get('order');
+				movingUp = origOrder < insertAfterOrder;
+				
+				questionGroupsInSurvey.forEach(function(item) {
+					currentOrder = item.get('order');
+					if (movingUp){
+						if (currentOrder == origOrder){
+							// move moving item to right location
+							selectedQG.set('order', insertAfterOrder);
+						} else if ((currentOrder > origOrder) && (currentOrder <= insertAfterOrder)){
+							// move item down
+							item.set('order',item.get('order') - 1);
+						}
+					} else {
+						// Moving down
+						if (currentOrder == origOrder){
+							// move moving item to right location
+							selectedQG.set('order', insertAfterOrder + 1);
+						} else if ((currentOrder < origOrder) && (currentOrder > insertAfterOrder)) {
+							// move item up
+							item.set('order',item.get('order') + 1);
+						}
+					}	
+				});
+				
 				FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 				FLOW.store.commit();
 			}
@@ -314,7 +367,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 	// execute group copy to selected location
 	// TODO should this copy all questions in the group?
 	doQGroupCopyHere: function() {
-		var insertAfterOrder, path;
+		var insertAfterOrder, path, sId, questionGroupsInSurvey;
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name');
 
 		if(this.get('zeroItem')) {
@@ -323,16 +376,27 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 			insertAfterOrder = this.content.get('order');
 		}
 
-		// the insertAfterOrder is inserted here
-		// in the server, the proper order of all question groups is re-established
+		sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+		questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function(item) {
+	        return(item.get('surveyId') == sId);
+	      });
+		
+		// restore order - move items up to make space
+		questionGroupsInSurvey.forEach(function(item) {
+			if (item.get('order') > insertAfterOrder) {
+				item.set('order',item.get('order') + 1);
+			}
+		});
+		
 		FLOW.store.createRecord(FLOW.QuestionGroup, {
 			"description": FLOW.selectedControl.selectedForCopyQuestionGroup.get('description'),
-			"order": insertAfterOrder,
+			"order": insertAfterOrder + 1,
 			"code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
 			"name": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
 			"path": path,
 			"surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId')
 		});
+
 		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
