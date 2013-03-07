@@ -1,0 +1,18 @@
+<form>
+   <label class="languageSelector"><span class="labelText">{{t _dashboard_language}}:</span> {{view Ember.Select 
+      contentBinding="FLOW.dashboardLanguageControl.content" 
+      optionLabelPath="content.label" 
+      optionValuePath="content.value" 
+      selectionBinding="FLOW.dashboardLanguageControl.dashboardLanguage" }}
+   </label>
+</form>
+<section id="userLog">
+  <ul>
+    <li class="userLogin"><a href="#">{{t _login}}</a></li>
+    <li class="userRegister"><a href="#">{{t _register}}</a></li>
+  </ul>
+  <ul>
+    <li></li>
+    <li></li>
+  </ul>
+</section>

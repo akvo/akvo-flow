@@ -3,11 +3,12 @@
 // ***********************************************//
 /*global tooltip, makePlaceholders */
 
+require('akvo-flow/core-public');
+require('akvo-flow/views/maps/map-views-public');
 
-require('akvo-flow/views/maps/map-views');
 
 FLOW.ApplicationView = Ember.View.extend({
-  templateName: 'application/application',
+  templateName: 'application/application-public',
 
   init: function() {
     var locale;
@@ -159,7 +160,7 @@ FLOW.registerViewHelper = function(name, view) {
 //                      main navigation
 // ********************************************************//
 FLOW.NavigationView = Em.View.extend({
-  templateName: 'application/navigation',
+  templateName: 'application/navigation-public',
   selectedBinding: 'controller.selected',
 
   onLanguageChange: function() {
@@ -200,9 +201,9 @@ Ember.Select.reopen({
 
 
 FLOW.HeaderView = FLOW.View.extend({
-  templateName: 'application/header'
+  templateName: 'application/header-public'
 });
 
 FLOW.FooterView = FLOW.View.extend({
-  templateName: 'application/footer'
+  templateName: 'application/footer-public'
 });
