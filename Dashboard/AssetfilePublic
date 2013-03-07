@@ -98,9 +98,10 @@ input 'app' do
   end
 
   # To public lib
-  match "js/lib/vendor/**/*" do
+  match "js/vendor/**/*" do
     concat do |input|
-      input.sub(/js\/lib\/vendor\//, '/js/vendor/')
+      input
+      # input.sub(/js\/vendor\//, '/js/vendor/')
     end
   end
 
