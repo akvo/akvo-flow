@@ -66,7 +66,7 @@ input 'app' do
     end
   end
 
-  match 'js/templates/**/*public.handlebars' do
+  match 'js/templates/**/*-public.handlebars' do
     filter HandlebarsFilter
     filter LoaderFilter,
       :module_id_generator => proc { |input|
@@ -97,6 +97,12 @@ input 'app' do
     end
   end
 
+  # To public lib
+  match "js/lib/vendor/**/*" do
+    concat do |input|
+      input.sub(/js\/lib\/vendor\//, '/js/vendor/')
+    end
+  end
 
 end
 

@@ -10,7 +10,7 @@ FLOW.Router = Ember.Router.extend({
     },
     index: Ember.Route.extend({
       route: '/',
-      redirectsTo: 'navMaps.index'
+      redirectsTo: 'navMaps'
     }),
 
     // ************************** MAPS ROUTER **********************************
