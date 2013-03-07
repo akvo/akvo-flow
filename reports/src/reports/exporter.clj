@@ -3,8 +3,6 @@
   (:import java.util.UUID
            org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory))
 
-(set! *warn-on-reflection* true)
-
 ;; Raw Data Report
 ;; exportType = "RAW_DATA"
 ;; factoryClass = org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory
@@ -30,7 +28,7 @@
 ;; options = nil
 
 (defn- getfile []
-  (io/file (format "/tmp/%s.xlsx" (UUID/randomUUID)))
+  (io/file (format "/tmp/%s.xlsx" (UUID/randomUUID))))
 
 
 (defn doexport [type base id opts]

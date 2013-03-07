@@ -4,8 +4,6 @@
         ring.util.response
         ring.adapter.jetty))
 
-(set! *warn-on-reflection* true)
-
 (def custom-mime-type {:xlsx "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
 
 (def base-url "http://localhost:8888")
