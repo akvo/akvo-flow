@@ -11,11 +11,10 @@
     {:status 400
      :body {"message" "BAD REQUEST"
             "sample_payload" {"baseURL" "http://localhost:8888"
-                      "surveyId" "123"
-                      "exportType" "RAW_DATA"
-                      "locale" "en"
-                      "imgPrefix" "http://sample.s3.amazonaws.com/images"
-                      "opts" {}}}}))
+                              "surveyId" "123"
+                              "opts" {"exportType" "RAW_DATA"
+                                      "locale" "en"
+                                      "imgPrefix" "http://sample.s3.amazonaws.com/images"}}}}))
 
 (def app
   (-> #'handler
