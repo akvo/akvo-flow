@@ -3,7 +3,7 @@
   <div id="dropdown-holder">
     {{#view FLOW.countryView controllerBinding="FLOW.countryController"}}
       {{#if FLOW.countryController.content}}
-        <label for="country"><span class="inlined">Country:</span>
+        <label for="country"><span class="inlined">{{t _country}}:</span>
           {{view Ember.Select
           contentBinding="FLOW.countryController.content"
           valueBinding="FLOW.countryController.selected"

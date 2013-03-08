@@ -7,7 +7,7 @@ return Ember.Handlebars.compile("  <header class=\"floats-in top\" id=\"header\"
 
 loader.register('akvo-flow/templates/application/footer-public', function(require) {
 
-return Ember.Handlebars.compile(" <footer class=\"floats-in bottomPage\" role=\"contentinfo\">\n    <div>\n\t  <nav id=\"footerNav\" class=\"floats-in\">\n\t\t<ul>\n\t\t\t<li><a href=\"http://www.akvo.org/blog/?cat=30\" title=\"Go to News and Software Updates\" target=\"_blank\" > {{t _news_and_software_updates}}</a></li>\n\t\t\t<li><a href=\"http://flowhelp.akvo.org\" title=\"Support\" target=\"_blank\" > {{t _support}}</a></li>\n\t\t\t<li><a href=\"http://flow.readthedocs.org/en/latest/index.html\" title=\"Documentation and User Guides\" target=\"_blank\" >{{t _documentation_and_user_guides}}</a></li>\n\t\t\t<li><a href=\"http://www.akvo.org/web/terms_of_use \" title=\"Terms of Service\" target=\"_blank\" >{{t _terms_of_service}}</a></li>\n\t\t\t<li><a href=\"http://www.akvo.org\" title=\"akvo.org\" target=\"_blank\" class=\"akvoDotOrg\">akvo.org</a></li>\n            <li><a href=\"/admin/logout.html\">{{t _log_out}}</a></li>\n\t\t</ul>\n\t</nav>  \n  </div>\n  <div><small>{{t _copyright}} &copy; 2013 akvo.org</small></div>\n  <p id=\"back-top\"> <a href=\"#header\"><span></span>Back to Top</a> </p>\n</footer>\n");
+return Ember.Handlebars.compile(" <footer class=\"floats-in bottomPage\" role=\"contentinfo\">\n    <div>\n\t  <nav id=\"footerNav\" class=\"floats-in\">\n\t\t<ul>\n\t\t\t<li><a href=\"http://www.akvo.org/blog/?cat=30\" title=\"Go to News and Software Updates\" target=\"_blank\" > {{t _news_and_software_updates}}</a></li>\n\t\t\t<li><a href=\"http://flowhelp.akvo.org\" title=\"Support\" target=\"_blank\" > {{t _support}}</a></li>\n\t\t\t<li><a href=\"http://flow.readthedocs.org/en/latest/index.html\" title=\"Documentation and User Guides\" target=\"_blank\" >{{t _documentation_and_user_guides}}</a></li>\n\t\t\t<li><a href=\"http://www.akvo.org/web/terms_of_use \" title=\"Terms of Service\" target=\"_blank\" >{{t _terms_of_service}}</a></li>\n\t\t\t<li><a href=\"http://www.akvo.org\" title=\"akvo.org\" target=\"_blank\" class=\"akvoDotOrg\">akvo.org</a></li>\n      <li><a href=\"/admin/\">{{t _log_in}}</a></li>\n\t\t</ul>\n\t</nav>  \n  </div>\n  <div><small>{{t _copyright}} &copy; 2013 akvo.org</small></div>\n  <p id=\"back-top\"> <a href=\"#header\"><span></span>Back to Top</a> </p>\n</footer>\n");
 
 });
 
@@ -19,7 +19,7 @@ return Ember.Handlebars.compile("<form>\n   <label class=\"languageSelector\"><s
 
 loader.register('akvo-flow/templates/navMaps/nav-maps-public', function(require) {
 
-return Ember.Handlebars.compile("<section id=\"main\" class=\"mapFlow floats-in\" role=\"main\">\n  {{! <div id=\"drawHandleWrap\"></div>}}\n  <div id=\"dropdown-holder\">\n    {{#view FLOW.countryView controllerBinding=\"FLOW.countryController\"}}\n      {{#if FLOW.countryController.content}}\n        <label for=\"country\"><span class=\"inlined\">Country:</span>\n          {{view Ember.Select\n          contentBinding=\"FLOW.countryController.content\"\n          valueBinding=\"FLOW.countryController.selected\"\n          optionLabelPath=\"content.label\"\n          selectionBinding=\"FLOW.countryController.country\"}}\n        </label>\n      {{/if}}\n    {{/view}}\n    <div id=\"mapDetailsHideShow\" class=\"drawHandle hideMapD\">{{t _hide}} &rsaquo;</div>\n  </div>\n\n  <div id=\"flowMap\"></div>\n  {{#view FLOW.PlacemarkDetailView controllerBinding=\"FLOW.placemarkDetailController\"}}\n    <div id=\"pointDetails\">\n      {{#if content}}\n        <ul class=\"placeMarkBasicInfo floats-in\">\n          <li>\n            <span>{{t _collected_on}}:</span>\n            <div class=\"placeMarkCollectionDate\">\n              {{date2 FLOW.placemarkController.selected.collectionDate}}\n            </div>\n          </li>\n          <li>\n            <div class=\"placeMarkPointCode\"> \n              {{FLOW.placemarkDetailController.selectedPointCode}}\n            </div>\n          </li>\n        </ul>\n        <div {{bindAttr class=\":imgContainer photoUrl:shown:hidden\"}}>\n          <a {{bindAttr href=\"photoUrl\"}} target=\"_blank\">\n            <img {{bindAttr src=\"photoUrl\"}} alt=\"\">\n          </a>\n        </div>\n        <dl class=\"floats-in\">\n          {{#each content}}\n            {{placemarkDetail}}\n          {{else}}\n            <p class=\"noDetails\">{{t _no_details}}</p>\n          {{/each}}\n        </dl>\n      {{else}}\n        <p class=\"noDetails\">{{t _no_details}}</p>\n      {{/if}}\n      \n    </div>\n  {{/view}}\n  <div id=\"flowMapLegend\">\n    <h1>LEGEND</h1>\n  </div>\n</section>\n\n<style>\n  #pointDetails > dl > div.defListWrap:nth-child(odd) {\n    background-color: rgb(204,214,214);\n  }\n</style>");
+return Ember.Handlebars.compile("<section id=\"main\" class=\"mapFlow floats-in\" role=\"main\">\n  {{! <div id=\"drawHandleWrap\"></div>}}\n  <div id=\"dropdown-holder\">\n    {{#view FLOW.countryView controllerBinding=\"FLOW.countryController\"}}\n      {{#if FLOW.countryController.content}}\n        <label for=\"country\"><span class=\"inlined\">{{t _country}}:</span>\n          {{view Ember.Select\n          contentBinding=\"FLOW.countryController.content\"\n          valueBinding=\"FLOW.countryController.selected\"\n          optionLabelPath=\"content.label\"\n          selectionBinding=\"FLOW.countryController.country\"}}\n        </label>\n      {{/if}}\n    {{/view}}\n    <div id=\"mapDetailsHideShow\" class=\"drawHandle hideMapD\">{{t _hide}} &rsaquo;</div>\n  </div>\n\n  <div id=\"flowMap\"></div>\n  {{#view FLOW.PlacemarkDetailView controllerBinding=\"FLOW.placemarkDetailController\"}}\n    <div id=\"pointDetails\">\n      {{#if content}}\n        <ul class=\"placeMarkBasicInfo floats-in\">\n          <li>\n            <span>{{t _collected_on}}:</span>\n            <div class=\"placeMarkCollectionDate\">\n              {{date2 FLOW.placemarkController.selected.collectionDate}}\n            </div>\n          </li>\n          <li>\n            <div class=\"placeMarkPointCode\"> \n              {{FLOW.placemarkDetailController.selectedPointCode}}\n            </div>\n          </li>\n        </ul>\n        <div {{bindAttr class=\":imgContainer photoUrl:shown:hidden\"}}>\n          <a {{bindAttr href=\"photoUrl\"}} target=\"_blank\">\n            <img {{bindAttr src=\"photoUrl\"}} alt=\"\">\n          </a>\n        </div>\n        <dl class=\"floats-in\">\n          {{#each content}}\n            {{placemarkDetail}}\n          {{else}}\n            <p class=\"noDetails\">{{t _no_details}}</p>\n          {{/each}}\n        </dl>\n      {{else}}\n        <p class=\"noDetails\">{{t _no_details}}</p>\n      {{/if}}\n      \n    </div>\n  {{/view}}\n  <div id=\"flowMapLegend\">\n    <h1>LEGEND</h1>\n  </div>\n</section>\n\n<style>\n  #pointDetails > dl > div.defListWrap:nth-child(odd) {\n    background-color: rgb(204,214,214);\n  }\n</style>");
 
 });
 
@@ -518,7 +518,8 @@ loader.register('akvo-flow/views/maps/map-views-public', function(require) {
       a placemark counterpart.
 **/
 
-FLOW.NavMapsView = Ember.View.extend({
+
+FLOW.NavMapsView = FLOW.View.extend({
   templateName: 'navMaps/nav-maps-public',
   showDetailsBool: false,
   detailsPaneElements: null,
@@ -707,7 +708,7 @@ FLOW.NavMapsView = Ember.View.extend({
                                     placemark.get('longitude')),
       marker = new mxn.Marker(point);
 
-    marker.setIcon('images/maps/blueMarker.png');
+    marker.setIcon('/images/maps/blueMarker.png');
     marker.placemark = placemark;
 
     // Add a click handler that handles what happens when marker is clicked
@@ -755,10 +756,10 @@ FLOW.NavMapsView = Ember.View.extend({
                                       placemark.get('longitude')),
         newMarker = new mxn.Marker(point);
 
-      if(placemark.marker.iconUrl === ('images/maps/blueMarker.png')) {
-        newMarker.iconUrl = 'images/maps/redMarker.png' ;
+      if(placemark.marker.iconUrl === ('/images/maps/blueMarker.png')) {
+        newMarker.iconUrl = '/images/maps/redMarker.png' ;
       } else {
-        newMarker.iconUrl = 'images/maps/blueMarker.png';
+        newMarker.iconUrl = '/images/maps/blueMarker.png';
       }
 
       placemark.addMarkerClickHandler(newMarker);
@@ -777,9 +778,9 @@ FLOW.NavMapsView = Ember.View.extend({
 
 });
 
-FLOW.countryView = Ember.View.extend({
-  // country: null
-});
+
+FLOW.countryView = FLOW.View.extend({});
+
 
 FLOW.PlacemarkDetailView = Ember.View.extend({});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
@@ -944,6 +945,55 @@ FLOW.registerViewHelper = function(name, view) {
     return Ember.Handlebars.helpers.view.call(this, view, options);
   });
 };
+
+
+FLOW.registerViewHelper('date2', Ember.View.extend({
+  tagName: 'span',
+
+  template: Ember.Handlebars.compile('{{view.formattedContent}}'),
+
+  formattedContent: (function() {
+    var content, d, curr_date, curr_month, curr_year, curr_hour, curr_min, monthString, dateString, hourString, minString;
+    content = this.get('content');
+
+    if(content === null) {
+      return "";
+    }
+
+    d = new Date(parseInt(content, 10));
+    curr_date = d.getDate();
+    curr_month = d.getMonth() + 1;
+    curr_year = d.getFullYear();
+    curr_hour = d.getHours();
+    curr_min = d.getMinutes();
+
+    if(curr_month < 10) {
+      monthString = "0" + curr_month.toString();
+    } else {
+      monthString = curr_month.toString();
+    }
+
+    if(curr_date < 10) {
+      dateString = "0" + curr_date.toString();
+    } else {
+      dateString = curr_date.toString();
+    }
+
+    if(curr_hour < 10) {
+      hourString = "0" + curr_hour.toString();
+    } else {
+      hourString = curr_hour.toString();
+    }
+
+    if(curr_min < 10) {
+      minString = "0" + curr_min.toString();
+    } else {
+      minString = curr_min.toString();
+    }
+
+    return(curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString);
+  }).property('content')
+}));
 
 
 // ********************************************************//

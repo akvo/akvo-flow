@@ -197,7 +197,7 @@ FLOW.NavMapsView = Ember.View.extend({
                                     placemark.get('longitude')),
       marker = new mxn.Marker(point);
 
-    marker.setIcon('images/maps/blueMarker.png');
+    marker.setIcon('/images/maps/blueMarker.png');
     marker.placemark = placemark;
 
     // Add a click handler that handles what happens when marker is clicked
@@ -245,10 +245,10 @@ FLOW.NavMapsView = Ember.View.extend({
                                       placemark.get('longitude')),
         newMarker = new mxn.Marker(point);
 
-      if(placemark.marker.iconUrl === ('images/maps/blueMarker.png')) {
-        newMarker.iconUrl = 'images/maps/redMarker.png' ;
+      if(placemark.marker.iconUrl === ('/images/maps/blueMarker.png')) {
+        newMarker.iconUrl = '/images/maps/redMarker.png' ;
       } else {
-        newMarker.iconUrl = 'images/maps/blueMarker.png';
+        newMarker.iconUrl = '/images/maps/blueMarker.png';
       }
 
       placemark.addMarkerClickHandler(newMarker);

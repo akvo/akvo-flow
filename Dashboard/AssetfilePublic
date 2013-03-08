@@ -97,14 +97,6 @@ input 'app' do
     end
   end
 
-  # To public lib
-  match "js/vendor/**/*" do
-    concat do |input|
-      input
-      # input.sub(/js\/vendor\//, '/js/vendor/')
-    end
-  end
-
 end
 
 # vim: filetype=ruby
