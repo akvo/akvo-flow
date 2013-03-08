@@ -222,7 +222,7 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
   },
 
   populate: function() {
-    if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
+	if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       var id = FLOW.selectedControl.selectedSurvey.get('keyId');
       FLOW.store.findQuery(FLOW.QuestionGroup, {
         surveyId: id
@@ -287,15 +287,27 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
+// original setQGcontent function - superseded by the one below, which just sets a filter. So no new questions are loaded.
+// this works because all the questions are loaded at the selection of the survey.
+//  setQGcontent: function() {
+//    if(FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
+//      var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+//      this.set('content', FLOW.store.findQuery(FLOW.Question, {
+//        questionGroupId: id
+//      }));
+//    }
+//  }.observes('FLOW.selectedControl.selectedQuestionGroup'),
+  
   setQGcontent: function() {
+	  var qId
     if(FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
-      var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-      this.set('content', FLOW.store.findQuery(FLOW.Question, {
-        questionGroupId: id
+      var qId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+      this.set('content', FLOW.store.filter(FLOW.Question, function(item) {
+    	  return(item.get('questionGroupId') == qId);
       }));
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
-
+   
   setOPTIONcontent: function() {
     var sId;
     if(FLOW.selectedControl.get('selectedSurvey')) {

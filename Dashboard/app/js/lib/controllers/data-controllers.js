@@ -14,10 +14,18 @@ FLOW.attributeControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
+ setFilteredContent: function() {
+    this.set('content', FLOW.store.filter(FLOW.Metric, function(item) {
+      return true;
+    }));
+  },
+
+  // load all Survey Groups
   populate: function() {
+    FLOW.store.find(FLOW.Metric);
+    this.setFilteredContent();
     this.set('sortProperties', ['name']);
     this.set('sortAscending', true);
-    this.set('content', FLOW.store.find(FLOW.Metric));
   },
 
    getSortInfo: function() {

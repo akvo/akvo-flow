@@ -1,5 +1,4 @@
 FLOW.QuestionView = FLOW.View.extend({
-// FLOW.QuestionView = Ember.View.extend({
 	templateName: 'navSurveys/question-view',
 	content: null,
 	text: null,
@@ -174,13 +173,25 @@ FLOW.QuestionView = FLOW.View.extend({
 	},
 
 	// BROKEN
-	//TODO when questionAnswers already exist for a question, deletion should not be possible.
+	//TODO when questionAnswers already exist for a question, deletion should not be possible
 	deleteQuestion: function() {
-		var qDeleteId, question;
+		var qDeleteId, question, questionsInGroup, qgId;
 		qDeleteId = this.content.get('keyId');
-
+		qgId = this.content.get('questionGroupId');
 		question = FLOW.store.find(FLOW.Question, qDeleteId);
+		qOrder = question.get('order');
 		question.deleteRecord();
+		
+		// restore order
+		questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
+	        return(item.get('questionGroupId') == qgId);
+	      });
+		
+		questionsInGroup.forEach(function(item) {
+			if (item.get('order') > qOrder) {
+				item.set('order',item.get('order') - 1);
+			}
+		});
 		FLOW.store.commit();
 	},
 
@@ -199,9 +210,38 @@ FLOW.QuestionView = FLOW.View.extend({
 		if(!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
 			selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
 			if(selectedQ !== null) {
-				// the insertAfterOrder is inserted here
-				// in the server, the proper order of all question groups is re-established
-				selectedQ.set('order', insertAfterOrder);
+				// restore order
+				qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+				questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
+			        return(item.get('questionGroupId') == qgId);
+			      });
+				
+				origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
+				movingUp = origOrder < insertAfterOrder;
+				
+				questionsInGroup.forEach(function(item) {
+					currentOrder = item.get('order');
+					if (movingUp){
+						if (currentOrder == origOrder){
+							// move moving item to right location
+							selectedQ.set('order', insertAfterOrder);
+						} else if ((currentOrder > origOrder) && (currentOrder <= insertAfterOrder)){
+							// move item down
+							item.set('order',item.get('order') - 1);
+						}
+					} else {
+						// Moving down
+						if (currentOrder == origOrder){
+							// move moving item to right location
+							selectedQ.set('order', insertAfterOrder + 1);
+						} else if ((currentOrder < origOrder) && (currentOrder > insertAfterOrder)) {
+							// move item up
+							item.set('order',item.get('order') + 1);
+						}
+					}	
+				});
+				
+				FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 				FLOW.store.commit();
 			}
 		}
@@ -212,7 +252,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
 	// execute question copy to selected location
 	doQuestionCopyHere: function() {
-		var insertAfterOrder, path;
+		var insertAfterOrder, path, qgId, questionsInGroup;
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
 		if(this.get('zeroItemQuestion')) {
@@ -221,9 +261,21 @@ FLOW.QuestionView = FLOW.View.extend({
 			insertAfterOrder = this.content.get('order');
 		}
 
+		
+		// restore order
+		qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+		questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
+	        return(item.get('questionGroupId') == qgId);
+	      });
+		
+		// move items up to make space
+		questionsInGroup.forEach(function(item) {
+			if (item.get('order') > insertAfterOrder) {
+				item.set('order',item.get('order') + 1);
+			}
+		});
+		
 		// create copy of Question item in the store
-		// the insertAfterOrder is inserted here
-		// in the server, the proper order of all question groups is re-established
 		FLOW.store.createRecord(FLOW.Question, {
 			"tip": FLOW.selectedControl.selectedForCopyQuestion.get('tip'),
 			"mandatoryFlag": FLOW.selectedControl.selectedForCopyQuestion.get('mandatoryFlag'),
@@ -236,20 +288,21 @@ FLOW.QuestionView = FLOW.View.extend({
 			"maxVal": FLOW.selectedControl.selectedForCopyQuestion.get('maxVal'),
 			"minVal": FLOW.selectedControl.selectedForCopyQuestion.get('minVal'),
 			"type": FLOW.selectedControl.selectedForCopyQuestion.get('type'),
-			"order": insertAfterOrder,
+			"order": insertAfterOrder + 1,
 			"text": FLOW.selectedControl.selectedForCopyQuestion.get('text'),
 			"optionList": FLOW.selectedControl.selectedForCopyQuestion.get('optionList'),
 			"surveyId": FLOW.selectedControl.selectedForCopyQuestion.get('surveyId'),
 			"questionGroupId": FLOW.selectedControl.selectedForCopyQuestion.get('questionGroupId')
 		});
 
+		// restore order
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedForCopyQuestion', null);
 	},
 
 	// create new question
 	doInsertQuestion: function() {
-		var insertAfterOrder,path;
+		var insertAfterOrder, path, qgId, questionsInGroup;
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
 		if(this.get('zeroItemQuestion')) {
@@ -258,17 +311,29 @@ FLOW.QuestionView = FLOW.View.extend({
 			insertAfterOrder = this.content.get('order');
 		}
 
+		// restore order
+		qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+		questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
+	        return(item.get('questionGroupId') == qgId);
+	      });
+		
+		// move items up to make space
+		questionsInGroup.forEach(function(item) {
+			if (item.get('order') > insertAfterOrder) {
+				item.set('order',item.get('order') + 1);
+			}
+		});
+		
 		// create new Question item in the store
-		// the insertAfterOrder is inserted here
-		// in the server, the proper order of all question groups is re-established
 		FLOW.store.createRecord(FLOW.Question, {
-			"order": insertAfterOrder,
+			"order": insertAfterOrder + 1,
 			"type": "FREE_TEXT",
 			"path": path,
 			"text": "new question - please change name",
 			"surveyId": FLOW.selectedControl.selectedSurvey.get('keyId'),
 			"questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
 		});
+
 		FLOW.store.commit();
 	},
 
@@ -319,10 +384,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	},
 
 	doAddAttribute: function() {
-		console.log('doing attribute save');
-		console.log(this.get('newAttributeName'));
 		if((this.get('newAttributeName') !== null) && (this.get('newAttributeType') !== null)) {
-			console.log('inside');
 			FLOW.store.createRecord(FLOW.Metric, {
 				"name": this.get('newAttributeName'),
 				"group": this.get('newAttributeGroup'),
