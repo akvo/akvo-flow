@@ -7,7 +7,7 @@
 
 (defn handler [{params :json-params}]
   (if params
-    (response (sch/schedule-job params))
+    (response (sch/run-report params))
     {:status 400
      :body {"message" "BAD REQUEST"
             "sample_payload" {"baseURL" "http://localhost:8888"
