@@ -7,15 +7,11 @@
 
 (j/defjob ExportJob
   [ctx]
-  (let [{base-url "base-url"
+  (let [{base-url "baseURL"
          exportType "exportType"
-         sid "sid"
+         sid "surveyId"
          opts "opts"} (qc/from-job-data ctx)]
     (exp/doexport exportType base-url sid opts)))
-
-(defn get-executing-jobs []
-  "Returns a list of executing jobs in form of JobExecutionContext"
-  (.getCurrentlyExecutingJobs @qs/*scheduler*))
 
 
 (defn get-job-key [k]
@@ -24,8 +20,28 @@
     (j/key (str k))
     k))
 
-(defn job-executing? [k]
-  "Returns true if there is a running job for that particular `job key`"
+(defn get-executing-jobs []
+  "Returns a list of executing jobs in form of JobExecutionContext"
+    (.getCurrentlyExecutingJobs @qs/*scheduler*))
+
+(defn filter-executing-jobs [k]
+  "Filter the list of executing jobs by key (usually just 1 occurrence)"
   (let [jkey (get-job-key k)]
-    (= 1 (count
-           (filter #(= (.getKey (.getJobDetail %)) jkey) (get-executing-jobs))))))
+    (filter #(= (.getKey (.getJobDetail %)) jkey) (get-executing-jobs))))
+
+(defn job-executing? [k]
+  "Returns true if there is a running job for that particular key"
+  (if (empty? (filter-executing-jobs k))
+      false true))
+
+
+(defn schedule-job [params]
+  (let [job (j/build
+              (j/of-type ExportJob)
+              (j/using-job-data params)
+              (j/with-identity
+                (j/key "job1")))
+        trigger (t/build
+                  (t/start-now))
+        execution (qs/schedule job trigger)]
+    {"execution" (str execution)}))

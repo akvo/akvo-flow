@@ -5,6 +5,7 @@
             :url "https://www.gnu.org/licenses/agpl"}
   :dependencies [[org.clojure/clojure "1.5.0"]
                  [ring "1.1.8"]
+                 [ring/ring-json "0.2.0"]
                  [clojurewerkz/quartzite "1.0.1"]
                  [org.apache.poi/poi "3.8"]
                  [org.apache.poi/poi-ooxml "3.8"]

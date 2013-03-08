@@ -1,16 +1,29 @@
 (ns reports.http
-  (:require [reports.exporter :as exp])
-  (:use ring.middleware.params
+  (:require [reports.scheduler :as sch])
+  (:use ring.middleware.json
+        ring.middleware.reload
         ring.util.response
         ring.adapter.jetty))
 
-(def custom-mime-type {:xlsx "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})
+(defn handler [{params :json-params}]
+  (if params
+    (response (sch/schedule-job params))
+    {:status 400
+     :body {"message" "BAD REQUEST"
+            "sample_payload" {"baseURL" "http://localhost:8888"
+                      "surveyId" "123"
+                      "exportType" "RAW_DATA"
+                      "locale" "en"
+                      "imgPrefix" "http://sample.s3.amazonaws.com/images"
+                      "opts" {}}}}))
 
-(def base-url "http://localhost:8888")
- 
-(defn export-handler [{{surveyId "surveyId" rtype "reportType"} :params}]
-  (-> (response (exp/doexport rtype base-url surveyId nil))
-      (content-type (:xlsx custom-mime-type))))
+(def app
+  (-> #'handler
+    (wrap-reload '(reports.http))
+    (wrap-json-body)
+    (wrap-json-params)
+    (wrap-json-response)))
 
-(def app 
-  (-> export-handler wrap-params))
+(defn boot []
+  (run-jetty #'app {:port 8000 :join? false}))
+

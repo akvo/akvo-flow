@@ -1,7 +1,7 @@
 (ns reports.core-test
   (:use clojure.test
-        reports.core))
+        reports.scheduler))
 
 (deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+  (testing "Testing keys"
+    (is (= (org.quartz.JobKey. "job1") (get-job-key "job1")))))
