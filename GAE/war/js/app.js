@@ -19,7 +19,7 @@ return Ember.Handlebars.compile("<form>\n   <label class=\"languageSelector\"><s
 
 loader.register('akvo-flow/templates/navMaps/nav-maps-public', function(require) {
 
-return Ember.Handlebars.compile("<section id=\"main\" class=\"mapFlow floats-in\" role=\"main\">\n  {{! <div id=\"drawHandleWrap\"></div>}}\n  <div id=\"dropdown-holder\">\n    {{#view FLOW.countryView controllerBinding=\"FLOW.countryController\"}}\n      {{#if FLOW.countryController.content}}\n        <label for=\"country\"><span class=\"inlined\">Country:</span>\n          {{view Ember.Select\n          contentBinding=\"FLOW.countryController.content\"\n          valueBinding=\"FLOW.countryController.selected\"\n          optionLabelPath=\"content.label\"\n          selectionBinding=\"FLOW.countryController.country\"}}\n        </label>\n      {{/if}}\n    {{/view}}\n    <div id=\"mapDetailsHideShow\" class=\"drawHandle hideMapD\">{{t _hide}} &rsaquo;</div>\n  </div>\n\n  <div id=\"flowMap\"></div>\n  {{#view FLOW.PlacemarkDetailView controllerBinding=\"FLOW.placemarkDetailController\"}}\n    <div id=\"pointDetails\">\n      {{#if content}}\n        <ul class=\"placeMarkBasicInfo floats-in\">\n          <li>\n            <span>{{t _collected_on}}:</span>\n            <div class=\"placeMarkCollectionDate\">\n              {{date2 FLOW.placemarkController.selected.collectionDate}}\n            </div>\n          </li>\n          <li>\n            <div class=\"placeMarkPointCode\"> \n              {{FLOW.placemarkDetailController.selectedPointCode}}\n            </div>\n          </li>\n        </ul>\n        <div {{bindAttr class=\":imgContainer photoUrl:shown:hidden\"}}>\n          <a {{bindAttr href=\"photoUrl\"}} target=\"_blank\">\n            <img {{bindAttr src=\"photoUrl\"}} alt=\"\">\n          </a>\n        </div>\n        <dl class=\"floats-in\">\n          {{#each content}}\n            {{placemarkDetail}}\n          {{else}}\n            <p class=\"noDetails\">{{t _no_details}}</p>\n          {{/each}}\n        </dl>\n      {{else}}\n        <p class=\"noDetails\">{{t _no_details}}</p>\n      {{/if}}\n      \n    </div>\n  {{/view}}\n  <div id=\"flowMapLegend\">\n    <h1>LEGEND</h1>\n  </div>\n</section>\n\n<style>\n  #pointDetails > dl > div.defListWrap:nth-child(odd) {\n    background-color: rgb(204,214,214);\n  }\n</style>");
+return Ember.Handlebars.compile("<section id=\"main\" class=\"mapFlow floats-in\" role=\"main\">\n  {{! <div id=\"drawHandleWrap\"></div>}}\n  <div id=\"dropdown-holder\">\n    {{#view FLOW.countryView controllerBinding=\"FLOW.countryController\"}}\n      {{#if FLOW.countryController.content}}\n        <label for=\"country\"><span class=\"inlined\">{{t _country}}:</span>\n          {{view Ember.Select\n          contentBinding=\"FLOW.countryController.content\"\n          valueBinding=\"FLOW.countryController.selected\"\n          optionLabelPath=\"content.label\"\n          selectionBinding=\"FLOW.countryController.country\"}}\n        </label>\n      {{/if}}\n    {{/view}}\n    <div id=\"mapDetailsHideShow\" class=\"drawHandle hideMapD\">{{t _hide}} &rsaquo;</div>\n  </div>\n\n  <div id=\"flowMap\"></div>\n  {{#view FLOW.PlacemarkDetailView controllerBinding=\"FLOW.placemarkDetailController\"}}\n    <div id=\"pointDetails\">\n      {{#if content}}\n        <ul class=\"placeMarkBasicInfo floats-in\">\n          <li>\n            <span>{{t _collected_on}}:</span>\n            <div class=\"placeMarkCollectionDate\">\n              {{date2 FLOW.placemarkController.selected.collectionDate}}\n            </div>\n          </li>\n          <li>\n            <div class=\"placeMarkPointCode\"> \n              {{FLOW.placemarkDetailController.selectedPointCode}}\n            </div>\n          </li>\n        </ul>\n        <div {{bindAttr class=\":imgContainer photoUrl:shown:hidden\"}}>\n          <a {{bindAttr href=\"photoUrl\"}} target=\"_blank\">\n            <img {{bindAttr src=\"photoUrl\"}} alt=\"\">\n          </a>\n        </div>\n        <dl class=\"floats-in\">\n          {{#each content}}\n            {{placemarkDetail}}\n          {{else}}\n            <p class=\"noDetails\">{{t _no_details}}</p>\n          {{/each}}\n        </dl>\n      {{else}}\n        <p class=\"noDetails\">{{t _no_details}}</p>\n      {{/if}}\n      \n    </div>\n  {{/view}}\n  <div id=\"flowMapLegend\">\n    <h1>LEGEND</h1>\n  </div>\n</section>\n\n<style>\n  #pointDetails > dl > div.defListWrap:nth-child(odd) {\n    background-color: rgb(204,214,214);\n  }\n</style>");
 
 });
 
@@ -265,10 +265,6 @@ FLOW.View = Ember.View.extend({
 });
 
 loader.register('akvo-flow/main-public', function(require) {
-
-// require('akvo-flow/vendor/handlebars-1.0.rc.1');
-// require('akvo-flow/vendor/ember-1.0.0.pre-2-36');
-// require('akvo-flow/vendor/ember-data-rev10');
 
 require('akvo-flow/all_locales');
 require('akvo-flow/models/FLOWrest-adapter-v2-public');
@@ -522,7 +518,8 @@ loader.register('akvo-flow/views/maps/map-views-public', function(require) {
       a placemark counterpart.
 **/
 
-FLOW.NavMapsView = Ember.View.extend({
+// FLOW.NavMapsView = Ember.View.extend({
+FLOW.NavMapsView = FLOW.View.extend({
   templateName: 'navMaps/nav-maps-public',
   showDetailsBool: false,
   detailsPaneElements: null,
@@ -781,9 +778,11 @@ FLOW.NavMapsView = Ember.View.extend({
 
 });
 
-FLOW.countryView = Ember.View.extend({
-  // country: null
-});
+FLOW.countryView = FLOW.View.extend({});
+
+// FLOW.countryView = Ember.View.extend({
+//   // country: null
+// });
 
 FLOW.PlacemarkDetailView = Ember.View.extend({});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
@@ -949,6 +948,54 @@ FLOW.registerViewHelper = function(name, view) {
   });
 };
 
+
+FLOW.registerViewHelper('date2', Ember.View.extend({
+  tagName: 'span',
+
+  template: Ember.Handlebars.compile('{{view.formattedContent}}'),
+
+  formattedContent: (function() {
+    var content, d, curr_date, curr_month, curr_year, curr_hour, curr_min, monthString, dateString, hourString, minString;
+    content = this.get('content');
+
+    if(content === null) {
+      return "";
+    }
+
+    d = new Date(parseInt(content, 10));
+    curr_date = d.getDate();
+    curr_month = d.getMonth() + 1;
+    curr_year = d.getFullYear();
+    curr_hour = d.getHours();
+    curr_min = d.getMinutes();
+
+    if(curr_month < 10) {
+      monthString = "0" + curr_month.toString();
+    } else {
+      monthString = curr_month.toString();
+    }
+
+    if(curr_date < 10) {
+      dateString = "0" + curr_date.toString();
+    } else {
+      dateString = curr_date.toString();
+    }
+
+    if(curr_hour < 10) {
+      hourString = "0" + curr_hour.toString();
+    } else {
+      hourString = curr_hour.toString();
+    }
+
+    if(curr_min < 10) {
+      minString = "0" + curr_min.toString();
+    } else {
+      minString = curr_min.toString();
+    }
+
+    return(curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString);
+  }).property('content')
+}));
 
 // ********************************************************//
 //                      main navigation
