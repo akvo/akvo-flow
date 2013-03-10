@@ -41,6 +41,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONObject;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -53,6 +54,7 @@ import org.waterforpeople.mapping.helper.SurveyEventHelper;
 
 import services.S3Driver;
 
+import com.gallatinsystems.common.util.HttpUtil;
 import com.gallatinsystems.common.util.MailUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.domain.DeviceFiles;
@@ -83,6 +85,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private SurveyInstanceDAO siDao;
 	private final static String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
 	private TreeMap<String, String> recepientList = null;
+	private String reportService;
 
 	public TaskServlet() {
 		DEVICE_FILE_PATH = com.gallatinsystems.common.util.PropertyUtil
@@ -92,7 +95,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 		aph = new AccessPointHelper();
 		siDao = new SurveyInstanceDAO();
 		recepientList = MailUtil.loadRecipientList();
-
+		reportService = com.gallatinsystems.common.util.PropertyUtil.getProperty("reportService");
 	}
 
 	private ArrayList<SurveyInstance> processFile(String fileName,
@@ -457,6 +460,21 @@ public class TaskServlet extends AbstractRestApiServlet {
 							SurveyalRestRequest.INGEST_INSTANCE_ACTION).param(
 							SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
 							instance.getKey().getId() + ""));
+				}
+			}
+
+			if (reportService != null && !"".equals(reportService)) {
+				try {
+					final JSONObject payload = new JSONObject();
+					payload.put("surveyIds", surveyMap.keySet());
+					log.log(Level.INFO, "Sending notification for surveys: "
+							+ surveyMap.keySet());
+					final String response = new String(HttpUtil.doPost(
+							reportService, payload.toString(),
+							"application/json"), "UTF-8");
+					log.log(Level.INFO, "Response from server: " + response);
+				} catch (Exception e) {
+					// no-op
 				}
 			}
 		}
