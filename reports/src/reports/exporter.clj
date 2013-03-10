@@ -27,11 +27,16 @@
 ;; criteria = {"surveyId" id}
 ;; options = nil
 
-(defn- getfile []
-  (io/file (format "/tmp/%s.xlsx" (UUID/randomUUID))))
+(defonce base-path
+  (.getAbsolutePath (io/file (System/getProperty "user.home"))))
+
+(defn- getfile [et id]
+  (let [path (format "%s/tmp/%s" base-path (UUID/randomUUID))
+        _ (.mkdir (io/file path))]
+    (io/file (format "%s/%s-%s.xlsx" path et id))))
 
 
 (defn doexport [type base id opts]
   (let [exp (.getExporter (SurveyDataImportExportFactory.) type)
-        f (getfile)]
+        f (getfile type id)]
     (.export exp {"surveyId" id} f base opts) f))
