@@ -42,7 +42,8 @@ public class HttpUtil {
 	 * @param urlParameters
 	 * @return
 	 */
-	public static byte[] doPost(String targetURL, String urlParameters,  String contentType) {
+	public static byte[] doPost(String targetURL, String urlParameters,
+			String contentType) {
 		URL url;
 		HttpURLConnection connection = null;
 		try {
@@ -85,6 +86,7 @@ public class HttpUtil {
 	}
 
 	public static byte[] doPost(String targetURL, String urlParameters) {
-		return doPost(targetURL, urlParameters, "application/x-www-form-urlencoded");
+		return doPost(targetURL, urlParameters,
+				"application/x-www-form-urlencoded");
 	}
 }
