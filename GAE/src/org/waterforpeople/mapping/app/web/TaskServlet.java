@@ -474,7 +474,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 							"application/json"), "UTF-8");
 					log.log(Level.INFO, "Response from server: " + response);
 				} catch (Exception e) {
-					// no-op
+					log.log(Level.SEVERE, "Error notifying the report service: " + e.getMessage(), e);
 				}
 			}
 		}
