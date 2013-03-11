@@ -3,7 +3,8 @@
             [clojurewerkz.quartzite.triggers :as t]
             [clojurewerkz.quartzite.jobs :as j]
             [clojurewerkz.quartzite.conversion :as qc]
-            [reports.exporter :as exp]))
+            [reports.exporter :as exp]
+            [clojure.string :as s :only (split join)]))
 
 (def cache (ref {}))
 
@@ -14,9 +15,11 @@
          sid "surveyId"
          opts "opts"
          reportId "reportId"} (qc/from-job-data ctx)
-        reportPath (exp/doexport exportType baseURL sid opts)]
+         report (exp/doexport exportType baseURL sid opts)
+         path (s/join "/" (take-last 2 (s/split (.getAbsolutePath report) #"/")))]
     (dosync
-      (alter cache conj {reportId reportPath}))))
+      (alter cache conj {reportId path}))
+    (qs/delete-job (j/key reportId))))
 
 
 (defn- get-executing-jobs []
@@ -34,9 +37,12 @@
       false true))
 
 (defn- report-id [m]
-  (str (hash (str m))))
+  "Returns the `id` plus hashCode of a 'stringified' version of a map"
+  (format "id%s" (hash (str m))))
 
 (defn- schedule-job [params]
+  "Schedule a report for generation. For concurrent requests only schedules the report
+   once."
   (let [id (report-id params)
         jkey (j/key id)
         job (j/build
@@ -47,9 +53,17 @@
                   (t/with-identity (t/key id))
                   (t/start-now))]
     (qs/maybe-schedule job trigger)
-    {"status" "OK"}))
+    {"status" "OK"
+     "message" "PROCESSING"}))
 
-(defn run-report [params]
- (if-let [f (@cache (report-id params))]
-   {"filename" (.getName f)}
+(defn generate-report [params]
+  "Returns the cached report for the given parameters, or schedules the report for execution"
+  (if-let [f (@cache (report-id params))]
+   {"status" "OK"
+    "file" f}
    (schedule-job params)))
+
+
+(defn invalidate-cache [params]
+  "Invalidates (remove) a given file from the cache"
+  params)
