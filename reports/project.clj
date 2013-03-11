@@ -16,4 +16,5 @@
                  [org.json/json "20090211"]
                  [jfree/jfreechart "1.0.13"]]
   :warn-on-reflection true
-  :resource-paths ["src/resource"])
+  :resource-paths ["src/resource"]
+  :main reports.server)
