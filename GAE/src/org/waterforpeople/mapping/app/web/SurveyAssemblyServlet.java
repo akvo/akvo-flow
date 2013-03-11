@@ -47,6 +47,7 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
@@ -151,6 +152,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				// assembleSurvey(importReq.getSurveyId());
 				assembleSurveyOnePass(importReq.getSurveyId());
 			}
+
+			List<Long> ids = new ArrayList<Long>();
+			ids.add(importReq.getSurveyId());
+			SurveyUtils.notifyReportService(ids, "invalidate");
+
 		} else if (SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP
 				.equalsIgnoreCase(importReq.getAction())) {
 			this.dispatchAssembleQuestionGroup(importReq.getSurveyId(),

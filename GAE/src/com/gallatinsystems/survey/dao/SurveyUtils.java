@@ -17,6 +17,7 @@
 package com.gallatinsystems.survey.dao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +26,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.common.util.HttpUtil;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -207,6 +211,34 @@ public class SurveyUtils {
 		}
 
 		return sg.getName() + "/" + s.getName();
+	}
+
+	public static String notifyReportService(Collection<Long> surveyIds,
+			String action) {
+		final String reportServiceURL = PropertyUtil
+				.getProperty("reportService");
+
+		if (reportServiceURL == null || "".equals(reportServiceURL)) {
+			log.log(Level.SEVERE,
+					"Error trying to notify server. It's not configured, check `reportService` property");
+			return null;
+		}
+
+		try {
+			final JSONObject payload = new JSONObject();
+			payload.put("surveyIds", surveyIds);
+			log.log(Level.INFO, "Sending notification (" + action
+					+ ") for surveys: " + surveyIds);
+			final String response = new String(HttpUtil.doPost(reportServiceURL
+					+ "/" + action, payload.toString(), "application/json"),
+					"UTF-8");
+			log.log(Level.INFO, "Response from server: " + response);
+			return response;
+		} catch (Exception e) {
+			log.log(Level.SEVERE,
+					"Error notifying the report service: " + e.getMessage(), e);
+		}
+		return null;
 	}
 
 }
