@@ -18,7 +18,9 @@
          report (exp/doexport exportType baseURL sid opts)
          path (s/join "/" (take-last 2 (s/split (.getAbsolutePath report) #"/")))]
     (dosync
-      (alter cache conj {reportId path}))
+      (alter cache conj {{:id reportId
+                          :surveyId sid
+                          :baseURL baseURL} path}))
     (qs/delete-job (j/key reportId))))
 
 
@@ -37,7 +39,7 @@
       false true))
 
 (defn- report-id [m]
-  "Returns the `id` plus hashCode of a 'stringified' version of a map"
+  "Generates a unique identifier based on the map"
   (format "id%s" (hash (str m))))
 
 (defn- schedule-job [params]
@@ -56,9 +58,15 @@
     {"status" "OK"
      "message" "PROCESSING"}))
 
+(defn- get-report-by-id [rid]
+  (let [found (filter #(= rid (:id %)) (keys @cache))]
+    (if (empty? found)
+      nil
+      (@cache (nth found 0)))))
+
 (defn generate-report [params]
   "Returns the cached report for the given parameters, or schedules the report for execution"
-  (if-let [f (@cache (report-id params))]
+  (if-let [f (get-report-by-id (report-id params))]
    {"status" "OK"
     "file" f}
    (schedule-job params)))
@@ -66,4 +74,9 @@
 
 (defn invalidate-cache [params]
   "Invalidates (remove) a given file from the cache"
-  params)
+  (let [baseURL (params "baseURL")]
+    (doseq [sid (params "surveyIds")]
+    (dosync
+      (doseq [k (keys @cache) :when (and (= (k :baseURL) baseURL) (= (str sid) (k :surveyId)))]
+      (alter cache dissoc k))))
+    {"status" "OK"}))
