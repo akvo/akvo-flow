@@ -1,7 +1,7 @@
 
 loader.register('akvo-flow/templates/application/application-public', function(require) {
 
-return Ember.Handlebars.compile("  <header class=\"floats-in top\" id=\"header\" role=\"banner\">\n        <div>\n            <hgroup>\n                <h1>Akvo\n                    <abbr title=\"field level operations watch\">Flow</abbr></h1>\n            </hgroup>\n            <nav id=\"topnav\" role=\"navigation\">\n                {{!view FLOW.NavigationView controllerBinding=\"controller.controllers.navigationController\"}}\n            </nav>\n    \t\t<div class=\"loadSave\">\n\t\t\t\t\t{{#if FLOW.savingMessageControl.areSavingBool}}<div class=\"isSaving\">{{t _saving}}</div>\n\t\t\t{{else}}\n\t\t\t  {{#if FLOW.savingMessageControl.areLoadingBool}}<div class=\"isLoading\">{{t _loading}}</div>\n\t\t\t  {{/if}}\n\t\t\t{{/if}}\n\t\t\t</div>\n            {{view FLOW.HeaderView}}\n            \n        </div>\n    </header>\n    <div id=\"pageWrap\">\n        {{outlet}}\n    </div>\n  \n    <div {{bindAttr class=\"FLOW.dialogControl.showDialog:display :overlay\"}}>\n      <div class=\"blanket\"></div>\n          <div class=\"dialogWrap\">\n        <!-- the dialog contents -->\n        <div class=\"confirmDialog dialog\">\n          <h2>{{FLOW.dialogControl.header}}</h2>\n          <p class=\"dialogMsg\">{{FLOW.dialogControl.message}}</p>\n          <br/><br/>\n          <div class=\"buttons menuCentre\"> \n            <ul>  \n              {{#if FLOW.dialogControl.showOK}} <li><a {{action \"doOK\" target=\"FLOW.dialogControl\"}} class=\"ok smallBtn\">{{t _ok}}</a></li>{{/if}}\n               {{#if FLOW.dialogControl.showCANCEL}} <li><a {{action \"doCANCEL\" target=\"FLOW.dialogControl\"}}} class=\"cancel\">{{t _cancel}}</a></li>{{/if}}\n            </ul>\n          </div>\n        </div>\n      </div>\n    </div>\n\n   {{view FLOW.FooterView}}");
+return Ember.Handlebars.compile("  <header class=\"floats-in top\" id=\"header\" role=\"banner\">\n        <div>\n            <hgroup>\n                <h1>Akvo\n                    <abbr title=\"field level operations watch\">Flow</abbr></h1>\n            </hgroup>\n            <nav id=\"topnav\" role=\"navigation\">\n                {{!view FLOW.NavigationView controllerBinding=\"controller.controllers.navigationController\"}}\n            </nav>\n    \t\t<div class=\"loadSave\">\n\t\t\t\t\t{{#if FLOW.savingMessageControl.areSavingBool}}<div class=\"isSaving\">{{t _saving}}</div>\n\t\t\t{{else}}\n\t\t\t  {{#if FLOW.savingMessageControl.areLoadingBool}}<div class=\"isLoading\">{{t _loading}}</div>\n\t\t\t  {{/if}}\n\t\t\t{{/if}}\n\t\t\t</div>\n        {{view FLOW.HeaderView}}  \n      </div>\n    </header>\n    <div id=\"pageWrap\">\n        {{outlet}}\n    </div>\n  \n    <div {{bindAttr class=\"FLOW.dialogControl.showDialog:display :overlay\"}}>\n      <div class=\"blanket\"></div>\n          <div class=\"dialogWrap\">\n        <!-- the dialog contents -->\n        <div class=\"confirmDialog dialog\">\n          <h2>{{FLOW.dialogControl.header}}</h2>\n          <p class=\"dialogMsg\">{{FLOW.dialogControl.message}}</p>\n          <br/><br/>\n          <div class=\"buttons menuCentre\"> \n            <ul>  \n              {{#if FLOW.dialogControl.showOK}} <li><a {{action \"doOK\" target=\"FLOW.dialogControl\"}} class=\"ok smallBtn\">{{t _ok}}</a></li>{{/if}}\n               {{#if FLOW.dialogControl.showCANCEL}} <li><a {{action \"doCANCEL\" target=\"FLOW.dialogControl\"}}} class=\"cancel\">{{t _cancel}}</a></li>{{/if}}\n            </ul>\n          </div>\n        </div>\n      </div>\n    </div>\n\n   {{view FLOW.FooterView}}");
 
 });
 
@@ -11,47 +11,19 @@ return Ember.Handlebars.compile(" <footer class=\"floats-in bottomPage\" role=\"
 
 });
 
-loader.register('akvo-flow/templates/application/header-public', function(require) {
+loader.register('akvo-flow/templates/application/header-common', function(require) {
 
 return Ember.Handlebars.compile("<form>\n   <label class=\"languageSelector\"><span class=\"labelText\">{{t _dashboard_language}}:</span> {{view Ember.Select \n      contentBinding=\"FLOW.dashboardLanguageControl.content\" \n      optionLabelPath=\"content.label\" \n      optionValuePath=\"content.value\" \n      selectionBinding=\"FLOW.dashboardLanguageControl.dashboardLanguage\" }}\n   </label>\n</form>\n<section id=\"userLog\">\n  <ul>\n    <li class=\"userLogin\"><a href=\"#\">{{t _login}}</a></li>\n    <li class=\"userRegister\"><a href=\"#\">{{t _register}}</a></li>\n  </ul>\n  <ul>\n    <li></li>\n    <li></li>\n  </ul>\n</section>");
 
 });
 
-loader.register('akvo-flow/templates/navMaps/nav-maps-public', function(require) {
+loader.register('akvo-flow/templates/navMaps/nav-maps-common', function(require) {
 
 return Ember.Handlebars.compile("<section id=\"main\" class=\"mapFlow floats-in\" role=\"main\">\n  {{! <div id=\"drawHandleWrap\"></div>}}\n  <div id=\"dropdown-holder\">\n    {{#view FLOW.countryView controllerBinding=\"FLOW.countryController\"}}\n      {{#if FLOW.countryController.content}}\n        <label for=\"country\"><span class=\"inlined\">{{t _country}}:</span>\n          {{view Ember.Select\n          contentBinding=\"FLOW.countryController.content\"\n          valueBinding=\"FLOW.countryController.selected\"\n          optionLabelPath=\"content.label\"\n          selectionBinding=\"FLOW.countryController.country\"}}\n        </label>\n      {{/if}}\n    {{/view}}\n    <div id=\"mapDetailsHideShow\" class=\"drawHandle hideMapD\">{{t _hide}} &rsaquo;</div>\n  </div>\n\n  <div id=\"flowMap\"></div>\n  {{#view FLOW.PlacemarkDetailView controllerBinding=\"FLOW.placemarkDetailController\"}}\n    <div id=\"pointDetails\">\n      {{#if content}}\n        <ul class=\"placeMarkBasicInfo floats-in\">\n          <li>\n            <span>{{t _collected_on}}:</span>\n            <div class=\"placeMarkCollectionDate\">\n              {{date2 FLOW.placemarkController.selected.collectionDate}}\n            </div>\n          </li>\n          <li>\n            <div class=\"placeMarkPointCode\"> \n              {{FLOW.placemarkDetailController.selectedPointCode}}\n            </div>\n          </li>\n        </ul>\n        <div {{bindAttr class=\":imgContainer photoUrl:shown:hidden\"}}>\n          <a {{bindAttr href=\"photoUrl\"}} target=\"_blank\">\n            <img {{bindAttr src=\"photoUrl\"}} alt=\"\">\n          </a>\n        </div>\n        <dl class=\"floats-in\">\n          {{#each content}}\n            {{placemarkDetail}}\n          {{else}}\n            <p class=\"noDetails\">{{t _no_details}}</p>\n          {{/each}}\n        </dl>\n      {{else}}\n        <p class=\"noDetails\">{{t _no_details}}</p>\n      {{/if}}\n      \n    </div>\n  {{/view}}\n  <div id=\"flowMapLegend\">\n    <h1>LEGEND</h1>\n  </div>\n</section>\n\n<style>\n  #pointDetails > dl > div.defListWrap:nth-child(odd) {\n    background-color: rgb(204,214,214);\n  }\n</style>");
 
 });
 
-loader.register('akvo-flow/controllers/controllers-public', function(require) {
-// ***********************************************//
-//                 controllers
-// ***********************************************//
-// Define the main application controller. This is automatically picked up by
-// the application and initialized.
-require('akvo-flow/core-public');
-require('akvo-flow/flowenv');
-require('akvo-flow/controllers/maps-controllers-public');
-require('akvo-flow/controllers/general-controllers-public');
-
-FLOW.ApplicationController = Ember.Controller.extend({
-  init: function() {
-    this._super();
-    Ember.STRINGS = Ember.STRINGS_EN;
-  }
-});
-
-
-// Navigation controllers
-FLOW.NavigationController = Em.Controller.extend({
-  selected: null
-});
-
-FLOW.NavMapsController = Ember.Controller.extend();
-
-});
-
-loader.register('akvo-flow/controllers/general-controllers-public', function(require) {
+loader.register('akvo-flow/controllers/general-controllers-common', function(require) {
 FLOW.dashboardLanguageControl = Ember.Object.create({
   dashboardLanguage: null,
 
@@ -103,6 +75,91 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
   }.observes('this.dashboardLanguage')
 });
 
+
+FLOW.selectedControl = Ember.Controller.create({
+  selectedSurveyGroup: null,
+  selectedSurvey: null,
+  selectedSurveys:[],
+  selectedSurveyAllQuestions: null,
+  selectedSurveyAssignment: null,
+  dependentQuestion: null,
+  selectedQuestionGroup: null,
+  selectedQuestion: null,
+  selectedOption: null,
+  selectedDevice:null,
+  selectedDevices:[],
+  selectedDevicesPreview: [],
+  selectedSurveysPreview: [],
+  selectedForMoveQuestionGroup: null,
+  selectedForCopyQuestionGroup: null,
+  selectedForMoveQuestion: null,
+  selectedForCopyQuestion: null,
+  selectedCreateNewGroup: false,
+  selectedSurveyOPTIONQuestions: null,
+  radioOptions: "",
+
+  // OptionQuestions:function (){
+  //   console.log('optionquestions 1');
+  // }.observes('this.selectedSurveyOPTIONQuestions'),
+
+  // when selected survey changes, deselect selected surveys and question groups
+  deselectSurveyGroupChildren: function() {
+    FLOW.selectedControl.set('selectedSurvey', null);
+    FLOW.selectedControl.set('selectedSurveyAllQuestions', null);
+    FLOW.selectedControl.set('selectedQuestionGroup', null);
+    FLOW.selectedControl.set('selectedQuestion', null);
+  }.observes('this.selectedSurveyGroup'),
+
+  deselectSurveyChildren: function() {
+    FLOW.selectedControl.set('selectedQuestionGroup', null);
+    FLOW.selectedControl.set('selectedQuestion', null);
+  }.observes('this.selectedSurvey')
+});
+
+
+// used in user tab
+FLOW.editControl = Ember.Controller.create({
+  newPermissionLevel: null,
+  newUserName: null,
+  newEmailAddress: null,
+  editPermissionLevel: null,
+  editUserName: null,
+  editEmailAddress: null,
+  editUserId: null,
+  editAttributeName: null,
+  editAttributeGroup: null,
+  editAttributeType: null,
+  editAttributeId: null
+});
+
+
+FLOW.tableColumnControl = Ember.Object.create({
+  sortProperties: null,
+  sortAscending: true,
+  selected: null,
+  content: null
+});
+
+
+// set by restadapter sideLoad meta
+FLOW.metaControl = Ember.Object.create({
+  since: null,
+  num: null,
+  message: null,
+  status: null
+}),
+
+
+// set by javacript datepickers in views.js
+FLOW.dateControl = Ember.Object.create({
+  // filled by javacript datepicker defined in views.js and by inspect-data.handlebars
+  // binding. This makes sure we can both pick a date with the datepicker, and enter
+  // a date manually
+  fromDate: null,
+  toDate: null
+});
+
+
 FLOW.savingMessageControl = Ember.Object.create({
   areSavingBool: false,
   areLoadingBool: false,
@@ -119,7 +176,7 @@ FLOW.savingMessageControl = Ember.Object.create({
 
 });
 
-loader.register('akvo-flow/controllers/maps-controllers-public', function(require) {
+loader.register('akvo-flow/controllers/maps-controllers-common', function(require) {
 /*jshint browser:true, jquery:true */
 /*global Ember, FLOW */
 
@@ -247,8 +304,8 @@ FLOW.countryController = Ember.ArrayController.create({
 });
 });
 
-loader.register('akvo-flow/core-public', function(require) {
-require('akvo-flow/templ-public');
+loader.register('akvo-flow/core-common', function(require) {
+require('akvo-flow/templ-common');
 // Ember.LOG_BINDINGS = true;
 // Create the application
 window.FLOW = Ember.Application.create({
@@ -264,25 +321,7 @@ FLOW.View = Ember.View.extend({
 
 });
 
-loader.register('akvo-flow/main-public', function(require) {
-
-require('akvo-flow/all_locales');
-require('akvo-flow/models/FLOWrest-adapter-v2-public');
-require('akvo-flow/models/models-public');
-
-require('akvo-flow/core-public');
-require('akvo-flow/flowenv');
-
-// require('akvo-flow/controllers/controllers/maps-controller-public');
-require('akvo-flow/controllers/controllers-public');
-require('akvo-flow/views/views-public');
-require('akvo-flow/router/router-public');
-
-FLOW.initialize();
-
-});
-
-loader.register('akvo-flow/models/FLOWrest-adapter-v2-public', function(require) {
+loader.register('akvo-flow/models/FLOWrest-adapter-v2-common', function(require) {
 /*global DS*/
 
 DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
@@ -359,85 +398,7 @@ didFindQuery: function(store, type, json, recordArray) {
 });
 });
 
-loader.register('akvo-flow/models/models-public', function(require) {
-// ***********************************************//
-//                 models and stores
-// ***********************************************//
-require('akvo-flow/core-public');
-require('akvo-flow/models/store_def-public');
-
-FLOW.BaseModel = DS.Model.extend({
-  keyId: DS.attr('number'),
-  savingStatus: null,
-
-  // this method calls the checkSaving method on the savingMessageControl, which
-  // checks if there are any records inflight. If yes, it sets a boolean,
-  // so a saving message can be displayed. savingStatus is used to capture the
-  // moment that nothing is being saved anymore, but in the previous event it was
-  // so we can turn off the saving message.
-  anySaving: function() {
-    if(this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
-      FLOW.savingMessageControl.checkSaving();
-    }
-    this.set('savingStatus', (this.get('isSaving') || this.get('isDirty')));
-  }.observes('isSaving', 'isDirty')
-
-});
-
-FLOW.SurveyGroup = FLOW.BaseModel.extend({
-  didDelete: function() {
-    FLOW.surveyGroupControl.populate();
-  },
-  didUpdate: function() {
-    FLOW.surveyGroupControl.populate();
-  },
-  didCreate: function() {
-    FLOW.surveyGroupControl.populate();
-  },
-
-  description: DS.attr('string', {
-    defaultValue: ''
-  }),
-  name: DS.attr('string', {
-    defaultValue: ''
-  }),
-  createdDateTime: DS.attr('string', {
-    defaultValue: ''
-  }),
-  lastUpdateDateTime: DS.attr('string', {
-    defaultValue: ''
-  }),
-  // the code field is used as name
-  code: DS.attr('string', {
-    defaultValue: ''
-  })
-});
-
-
-// Explicitly avoid to use belongTo and hasMany as
-// Ember-Data lacks of partial loading
-// https://github.com/emberjs/data/issues/51
-FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
-  placemarkId: DS.attr('number'),
-  collectionDate: DS.attr('number'),
-  questionText: DS.attr('string'),
-  metricName: DS.attr('string'),
-  stringValue: DS.attr('string'),
-  questionType: DS.attr('string')
-});
-
-FLOW.Placemark = FLOW.BaseModel.extend({
-  latitude: DS.attr('number'),
-  longitude: DS.attr('number'),
-  collectionDate: DS.attr('number'),
-  markType: DS.attr('string', {
-    defaultValue: 'WATER_POINT'
-  })
-});
-
-});
-
-loader.register('akvo-flow/models/store_def-public', function(require) {
+loader.register('akvo-flow/models/store_def-common', function(require) {
 var host = "http://" + window.location.host;
 FLOW.store = DS.Store.create({
 	revision: 10,
@@ -455,35 +416,7 @@ DS.JSONTransforms.array = {
 };
 });
 
-loader.register('akvo-flow/router/router-public', function(require) {
-require('akvo-flow/core-public');
-
-FLOW.Router = Ember.Router.extend({
-  enableLogging: true,
-  loggedIn: false,
-  location: 'none',
-  root: Ember.Route.extend({
-    doNavMaps: function(router, context) {
-      router.transitionTo('navMaps');
-    },
-    index: Ember.Route.extend({
-      route: '/',
-      redirectsTo: 'navMaps'
-    }),
-
-    // ************************** MAPS ROUTER **********************************
-    navMaps: Ember.Route.extend({
-      route: '/maps',
-      connectOutlets: function(router, context) {
-        router.get('applicationController').connectOutlet('navMaps');
-        router.set('navigationController.selected', 'navMaps');
-      }
-    })
-  })
-});
-});
-
-loader.register('akvo-flow/templ-public', function(require) {
+loader.register('akvo-flow/templ-common', function(require) {
 var get = Ember.get, fmt = Ember.String.fmt;
 
 Ember.View.reopen({
@@ -507,7 +440,7 @@ Ember.View.reopen({
 
 });
 
-loader.register('akvo-flow/views/maps/map-views-public', function(require) {
+loader.register('akvo-flow/views/maps/map-views-common', function(require) {
 /*jshint browser:true, jquery:true, laxbreak:true */
 /*global Ember, mxn, FLOW*/
 /**
@@ -520,7 +453,8 @@ loader.register('akvo-flow/views/maps/map-views-public', function(require) {
 
 
 FLOW.NavMapsView = FLOW.View.extend({
-  templateName: 'navMaps/nav-maps-public',
+  // templateName: 'navMaps/nav-maps',
+  templateName: 'navMaps/nav-maps-common',
   showDetailsBool: false,
   detailsPaneElements: null,
   detailsPaneVisible: null,
@@ -781,11 +715,155 @@ FLOW.NavMapsView = FLOW.View.extend({
 
 FLOW.countryView = FLOW.View.extend({});
 
-
 FLOW.PlacemarkDetailView = Ember.View.extend({});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
 
+});
 
+loader.register('akvo-flow/controllers/controllers-public', function(require) {
+// ***********************************************//
+//                 controllers
+// ***********************************************//
+// Define the main application controller. This is automatically picked up by
+// the application and initialized.
+require('akvo-flow/core-common');
+require('akvo-flow/flowenv');
+require('akvo-flow/controllers/general-controllers-common');
+require('akvo-flow/controllers/maps-controllers-common');
+
+FLOW.ApplicationController = Ember.Controller.extend({
+  init: function() {
+    this._super();
+    Ember.STRINGS = Ember.STRINGS_EN;
+  }
+});
+
+
+// Navigation controllers
+FLOW.NavigationController = Em.Controller.extend({
+  selected: null
+});
+
+FLOW.NavMapsController = Ember.Controller.extend();
+
+});
+
+loader.register('akvo-flow/main-public', function(require) {
+require('akvo-flow/all_locales');
+require('akvo-flow/models/FLOWrest-adapter-v2-common');
+require('akvo-flow/models/models-public');
+require('akvo-flow/flowenv');
+require('akvo-flow/controllers/controllers-public');
+require('akvo-flow/views/views-public');
+require('akvo-flow/router/router-public');
+
+FLOW.initialize();
+});
+
+loader.register('akvo-flow/models/models-public', function(require) {
+// ***********************************************//
+//                 models and stores
+// ***********************************************//
+require('akvo-flow/core-common');
+require('akvo-flow/models/store_def-common');
+
+FLOW.BaseModel = DS.Model.extend({
+  keyId: DS.attr('number'),
+  savingStatus: null,
+
+  // this method calls the checkSaving method on the savingMessageControl, which
+  // checks if there are any records inflight. If yes, it sets a boolean,
+  // so a saving message can be displayed. savingStatus is used to capture the
+  // moment that nothing is being saved anymore, but in the previous event it was
+  // so we can turn off the saving message.
+  anySaving: function() {
+    if(this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
+      FLOW.savingMessageControl.checkSaving();
+    }
+    this.set('savingStatus', (this.get('isSaving') || this.get('isDirty')));
+  }.observes('isSaving', 'isDirty')
+
+});
+
+FLOW.SurveyGroup = FLOW.BaseModel.extend({
+  didDelete: function() {
+    FLOW.surveyGroupControl.populate();
+  },
+  didUpdate: function() {
+    FLOW.surveyGroupControl.populate();
+  },
+  didCreate: function() {
+    FLOW.surveyGroupControl.populate();
+  },
+
+  description: DS.attr('string', {
+    defaultValue: ''
+  }),
+  name: DS.attr('string', {
+    defaultValue: ''
+  }),
+  createdDateTime: DS.attr('string', {
+    defaultValue: ''
+  }),
+  lastUpdateDateTime: DS.attr('string', {
+    defaultValue: ''
+  }),
+  // the code field is used as name
+  code: DS.attr('string', {
+    defaultValue: ''
+  })
+});
+
+
+// Explicitly avoid to use belongTo and hasMany as
+// Ember-Data lacks of partial loading
+// https://github.com/emberjs/data/issues/51
+FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
+  placemarkId: DS.attr('number'),
+  collectionDate: DS.attr('number'),
+  questionText: DS.attr('string'),
+  metricName: DS.attr('string'),
+  stringValue: DS.attr('string'),
+  questionType: DS.attr('string')
+});
+
+FLOW.Placemark = FLOW.BaseModel.extend({
+  latitude: DS.attr('number'),
+  longitude: DS.attr('number'),
+  collectionDate: DS.attr('number'),
+  markType: DS.attr('string', {
+    defaultValue: 'WATER_POINT'
+  })
+});
+
+});
+
+loader.register('akvo-flow/router/router-public', function(require) {
+require('akvo-flow/core-common');
+
+FLOW.Router = Ember.Router.extend({
+  enableLogging: true,
+  loggedIn: false,
+  location: 'none',
+  root: Ember.Route.extend({
+    doNavMaps: function(router, context) {
+      router.transitionTo('navMaps');
+    },
+    index: Ember.Route.extend({
+      route: '/',
+      redirectsTo: 'navMaps'
+    }),
+
+    // ************************** MAPS ROUTER **********************************
+    navMaps: Ember.Route.extend({
+      route: '/maps',
+      connectOutlets: function(router, context) {
+        router.get('applicationController').connectOutlet('navMaps');
+        router.set('navigationController.selected', 'navMaps');
+      }
+    })
+  })
+});
 });
 
 loader.register('akvo-flow/views/views-public', function(require) {
@@ -794,8 +872,8 @@ loader.register('akvo-flow/views/views-public', function(require) {
 // ***********************************************//
 /*global tooltip, makePlaceholders */
 
-require('akvo-flow/core-public');
-require('akvo-flow/views/maps/map-views-public');
+require('akvo-flow/core-common');
+require('akvo-flow/views/maps/map-views-common');
 
 
 FLOW.ApplicationView = Ember.View.extend({
@@ -1041,7 +1119,7 @@ Ember.Select.reopen({
 
 
 FLOW.HeaderView = FLOW.View.extend({
-  templateName: 'application/header-public'
+  templateName: 'application/header-common'
 });
 
 FLOW.FooterView = FLOW.View.extend({

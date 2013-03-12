@@ -8,8 +8,10 @@
       a placemark counterpart.
 **/
 
-FLOW.NavMapsView = Ember.View.extend({
-  templateName: 'navMaps/nav-maps',
+
+FLOW.NavMapsView = FLOW.View.extend({
+  // templateName: 'navMaps/nav-maps',
+  templateName: 'navMaps/nav-maps-common',
   showDetailsBool: false,
   detailsPaneElements: null,
   detailsPaneVisible: null,
@@ -267,10 +269,8 @@ FLOW.NavMapsView = Ember.View.extend({
 
 });
 
-FLOW.countryView = Ember.View.extend({
-  // country: null
-});
+
+FLOW.countryView = FLOW.View.extend({});
 
 FLOW.PlacemarkDetailView = Ember.View.extend({});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
-

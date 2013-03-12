@@ -1,4 +1,4 @@
-require('akvo-flow/core-public');
+require('akvo-flow/core-common');
 
 FLOW.Router = Ember.Router.extend({
   enableLogging: true,

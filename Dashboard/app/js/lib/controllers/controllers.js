@@ -3,15 +3,15 @@
 // ***********************************************//
 // Define the main application controller. This is automatically picked up by
 // the application and initialized.
-require('akvo-flow/core');
+require('akvo-flow/core-common');
 require('akvo-flow/flowenv');
 require('akvo-flow/controllers/permissions');
-require('akvo-flow/controllers/general-controllers');
+require('akvo-flow/controllers/general-controllers-common');
 require('akvo-flow/controllers/survey-controllers');
 require('akvo-flow/controllers/device-controllers');
 require('akvo-flow/controllers/data-controllers');
 require('akvo-flow/controllers/reports-controllers');
-require('akvo-flow/controllers/maps-controllers-public');
+require('akvo-flow/controllers/maps-controllers-common');
 require('akvo-flow/controllers/messages-controllers');
 require('akvo-flow/controllers/user-controllers');
 

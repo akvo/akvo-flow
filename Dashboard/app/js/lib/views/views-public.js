@@ -3,8 +3,8 @@
 // ***********************************************//
 /*global tooltip, makePlaceholders */
 
-require('akvo-flow/core-public');
-require('akvo-flow/views/maps/map-views-public');
+require('akvo-flow/core-common');
+require('akvo-flow/views/maps/map-views-common');
 
 
 FLOW.ApplicationView = Ember.View.extend({
@@ -250,7 +250,7 @@ Ember.Select.reopen({
 
 
 FLOW.HeaderView = FLOW.View.extend({
-  templateName: 'application/header-public'
+  templateName: 'application/header-common'
 });
 
 FLOW.FooterView = FLOW.View.extend({

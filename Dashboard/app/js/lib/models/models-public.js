@@ -1,8 +1,8 @@
 // ***********************************************//
 //                 models and stores
 // ***********************************************//
-require('akvo-flow/core-public');
-require('akvo-flow/models/store_def-public');
+require('akvo-flow/core-common');
+require('akvo-flow/models/store_def-common');
 
 FLOW.BaseModel = DS.Model.extend({
   keyId: DS.attr('number'),
