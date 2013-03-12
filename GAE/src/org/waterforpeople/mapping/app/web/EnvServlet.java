@@ -53,6 +53,7 @@ public class EnvServlet extends HttpServlet {
 	static {
 		properties.add("photo_url_root");
 		properties.add("imageroot");
+		properties.add("reportService");
 	}
 
 	@Override
