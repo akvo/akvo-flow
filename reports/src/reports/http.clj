@@ -1,8 +1,9 @@
 (ns reports.http
   (:use compojure.core
-        [ring.middleware json reload]
+        [ring.middleware params reload]
         ring.util.response)
-  (:require [reports.scheduler :as sch]
+  (:require [clojure.data.json :as json]
+            [reports.scheduler :as sch]
             [compojure.route :as route]
             [compojure.handler :as handler]))
 
@@ -18,9 +19,12 @@
    "surveyIds" [123 456 789]})
 
 (defn generate-report [params]
-  (if (empty? params)
-    {:status 400 :body {"sample" generate-sample}}
-    (response (sch/generate-report params))))
+  (let [criteria (json/read-str (params :criteria)) ;; TODO: needs validation
+        callback (params :callback)
+        resp (sch/generate-report criteria)]
+    (-> (response (format "%s(%s);" callback (json/write-str resp)))
+      (content-type "text/javascript")
+      (charset "UTF-8"))))
 
 (defn invalidate-cache [params]
   (if (empty? params)
@@ -28,10 +32,10 @@
     (response (sch/invalidate-cache params))))
 
 (defroutes main-routes
-  (POST "/generate" [:as {params :json-params}]
+  (GET "/generate" [:as {params :params}]
         (generate-report params))
 
-  (POST "/invalidate" [:as {params :json-params}]
+  (POST "/invalidate" [:as {params :params}]
         (invalidate-cache params))
 
   (route/not-found "Page not found"))
@@ -39,5 +43,4 @@
 (def app
   (-> (handler/site main-routes)
     (wrap-reload '(reports.http reports.scheduler))
-    (wrap-json-params)
-    (wrap-json-response)))
+    (wrap-params)))
