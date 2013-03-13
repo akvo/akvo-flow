@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -213,10 +214,27 @@ public class SurveyUtils {
 		return sg.getName() + "/" + s.getName();
 	}
 
+	/**
+	 * Sends a POST request of a collection of surveyIds to a server defined by
+	 * the `reportService` property
+	 * 
+	 * The property `alias` define the baseURL property that is sent in the
+	 * request
+	 * 
+	 * @param surveyIds
+	 *            Collection of ids (Long) that requires processing
+	 * @param action
+	 *            A string indicating the action that will be used, this string
+	 *            is used for building the URL, with the `reportService`
+	 *            property + / + action
+	 * @return The response from the server or null when `reportService` is not
+	 *         defined, or an error in the request happens
+	 */
 	public static String notifyReportService(Collection<Long> surveyIds,
 			String action) {
 		final String reportServiceURL = PropertyUtil
 				.getProperty("reportService");
+		final String baseURL = PropertyUtil.getProperty("alias");
 
 		if (reportServiceURL == null || "".equals(reportServiceURL)) {
 			log.log(Level.SEVERE,
@@ -225,14 +243,21 @@ public class SurveyUtils {
 		}
 
 		try {
+
 			final JSONObject payload = new JSONObject();
 			payload.put("surveyIds", surveyIds);
+			payload.put("baseURL", (baseURL.startsWith("http") ? baseURL
+					: "http://" + baseURL));
+
 			log.log(Level.INFO, "Sending notification (" + action
 					+ ") for surveys: " + surveyIds);
+
 			final String response = new String(HttpUtil.doPost(reportServiceURL
-					+ "/" + action, payload.toString(), "application/json"),
-					"UTF-8");
+					+ "/" + action, URLEncoder.encode(
+					"criteria=" + payload.toString(), "UTF-8")));
+
 			log.log(Level.INFO, "Response from server: " + response);
+
 			return response;
 		} catch (Exception e) {
 			log.log(Level.SEVERE,
@@ -240,5 +265,4 @@ public class SurveyUtils {
 		}
 		return null;
 	}
-
 }
