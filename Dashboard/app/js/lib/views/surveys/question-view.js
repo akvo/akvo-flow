@@ -197,6 +197,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		}
 
 		FLOW.selectedControl.selectedQuestion.set('optionList', this.get('optionList'));
+		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedQuestion', null);
 		FLOW.selectedControl.set('dependentQuestion',null);
@@ -325,7 +326,7 @@ FLOW.QuestionView = FLOW.View.extend({
 			"questionGroupId": FLOW.selectedControl.selectedForCopyQuestion.get('questionGroupId')
 		});
 
-		// restore order
+		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedForCopyQuestion', null);
 	},
