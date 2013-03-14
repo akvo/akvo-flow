@@ -252,9 +252,13 @@ public class SurveyUtils {
 			log.log(Level.INFO, "Sending notification (" + action
 					+ ") for surveys: " + surveyIds);
 
+			final String postString = "criteria="
+					+ URLEncoder.encode(payload.toString(), "UTF-8");
+
+			log.log(Level.FINE, "POST string: " + postString);
+
 			final String response = new String(HttpUtil.doPost(reportServiceURL
-					+ "/" + action, URLEncoder.encode(
-					"criteria=" + payload.toString(), "UTF-8")));
+					+ "/" + action, postString), "UTF-8");
 
 			log.log(Level.INFO, "Response from server: " + response);
 
