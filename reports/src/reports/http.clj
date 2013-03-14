@@ -7,17 +7,6 @@
             [compojure.route :as route]
             [compojure.handler :as handler]))
 
-(def generate-sample
-  {"baseURL" "http://instance.akvoflow.org"
-   "surveyId" "123"
-   "opts" {"exportType" "RAW_DATA"
-           "locale" "en"
-           "imgPrefix" "http://instance.s3.amazonaws.com/images"}})
-
-(def invalidate-sample
-  {"baseURL" "http://instance.akvoflow.org"
-   "surveyIds" [123 456 789]})
-
 (defn generate-report [params]
   (let [criteria (json/read-str (params :criteria)) ;; TODO: needs validation
         callback (params :callback)
@@ -27,9 +16,8 @@
       (charset "UTF-8"))))
 
 (defn invalidate-cache [params]
-  (if (empty? params)
-    {:status 400 :body {"sample" invalidate-sample}}
-    (response (sch/invalidate-cache params))))
+  (let [criteria (json/read-str (params :criteria))] ;; TODO: validation
+    (response (sch/invalidate-cache criteria))))
 
 (defroutes main-routes
   (GET "/generate" [:as {params :params}]
@@ -41,6 +29,5 @@
   (route/not-found "Page not found"))
 
 (def app
-  (-> (handler/site main-routes)
-    (wrap-reload '(reports.http reports.scheduler))
-    (wrap-params)))
+  (-> (handler/api main-routes)
+    (wrap-reload '(reports.http reports.scheduler))))
