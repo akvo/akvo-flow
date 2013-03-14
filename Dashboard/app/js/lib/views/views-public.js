@@ -105,35 +105,6 @@ Ember.Handlebars.registerHelper('toLanguage', function(value) {
   return label;
 });
 
-// translates values to labels for surveyPointTypes
-Ember.Handlebars.registerHelper('toPointType', function(value) {
-  var label, valueLoc;
-  label = "";
-  valueLoc = Ember.get(this,value);
-
-  FLOW.surveyPointTypeControl.get('content').forEach(function(item){
-    if (item.get('value') == valueLoc) {
-      label = item.get('label');
-    }
-  });
-  return label;
-});
-
-// translates values to labels for attributeTypes
-Ember.Handlebars.registerHelper('toAttributeType', function(value) {
-  var label, valueLoc;
-  label = "";
-  valueLoc = Ember.get(this,value);
-
-  FLOW.attributeTypeControl.get('content').forEach(function(item){
-    if (item.get('value') == valueLoc) {
-      label = item.get('label');
-    }
-  });
-  return label;
-});
-
-
 // add space to vertical bar helper
 Ember.Handlebars.registerHelper('addSpace', function(property) {
   return Ember.get(this, property).replace(/\|/g, ' | ');
@@ -204,31 +175,6 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
   }).property('content')
 }));
 
-
-// ********************************************************//
-//                      main navigation
-// ********************************************************//
-FLOW.NavigationView = Em.View.extend({
-  templateName: 'application/navigation-public',
-  selectedBinding: 'controller.selected',
-
-  onLanguageChange: function() {
-    this.rerender();
-  }.observes('FLOW.dashboardLanguageControl.dashboardLanguage'),
-
-  NavItemView: Ember.View.extend({
-    tagName: 'li',
-    classNameBindings: 'isActive:current navItem'.w(),
-
-    navItem: function() {
-      return this.get('item');
-    }.property('item').cacheable(),
-
-    isActive: function() {
-      return this.get('item') === this.get('parentView.selected');
-    }.property('item', 'parentView.selected').cacheable()
-  })
-});
 
 // ********************************************************//
 //                      standard views
