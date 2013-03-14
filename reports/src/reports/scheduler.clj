@@ -42,30 +42,38 @@
   "Generates a unique identifier based on the map"
   (format "id%s" (hash (str m))))
 
+(defn- get-job [jtype id params]
+  "Returns a Job specification for the given parameters"
+  (j/build
+      (j/of-type jtype)
+      (j/using-job-data (conj params {"reportId" id} ))
+      (j/with-identity (j/key id))))
+
+(defn- get-trigger [id]
+  "Returns a Trigger to be executed now"
+  (t/build
+    (t/with-identity (t/key id))
+    (t/start-now)))
+
 (defn- schedule-job [params]
   "Schedule a report for generation. For concurrent requests only schedules the report
    once."
   (let [id (report-id params)
-        jkey (j/key id)
-        job (j/build
-              (j/of-type ExportJob)
-              (j/using-job-data (conj params {"reportId" id} ))
-              (j/with-identity jkey))
-        trigger (t/build
-                  (t/with-identity (t/key id))
-                  (t/start-now))]
+        job (get-job ExportJob id params)
+        trigger (get-trigger id)]
     (qs/maybe-schedule job trigger)
     {"status" "OK"
      "message" "PROCESSING"}))
 
-(defn- get-report-by-id [rid]
-  (let [found (filter #(= rid (:id %)) (keys @cache))]
+(defn- get-report-by-id [id]
+  "Returns a report from the cache or nil if not found"
+  (let [found (filter #(= id (:id %)) (keys @cache))]
     (if (empty? found)
       nil
       (@cache (nth found 0)))))
 
 (defn generate-report [params]
-  "Returns the cached report for the given parameters, or schedules the report for execution"
+  "Returns the cached report for the given parameters, or schedules the report for generation"
   (if-let [f (get-report-by-id (report-id params))]
    {"status" "OK"
     "file" f}
@@ -73,10 +81,10 @@
 
 
 (defn invalidate-cache [params]
-  "Invalidates (remove) a given file from the cache"
+  "Invalidates (removes) a given file from the cache"
   (let [baseURL (params "baseURL")]
     (doseq [sid (params "surveyIds")]
     (dosync
       (doseq [k (keys @cache) :when (and (= (k :baseURL) baseURL) (= (str sid) (k :surveyId)))]
       (alter cache dissoc k))))
-    {"status" "OK"}))
+    "OK"))
