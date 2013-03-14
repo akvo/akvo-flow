@@ -1,0 +1,45 @@
+AUTHORS.txt v1.0, 1 February 2013, tbp 
+
+AUTHORS of Akvo FLOW
+
+The PRIMARY AUTHORS are (and/or have been):
+
+- Dru Borden
+- Paul Burt
+- Christopher Fagiani
+- Oliver Galloway-Lunn
+- Daniel Karlsson
+- Stellan Lagerström
+- Caetie Ofiesh
+- Iván Perdomo
+- Loïc Sans
+- Mark Tiele Westra
+
+Translation support by:
+
+- Iván Perdomo
+- Loïc Sans
+
+Contributors, here is an inevitably incomplete list of MUCH APPRECIATED
+CONTRIBUTORS whom without, Akvo FLOW would not have been the same:
+
+- Thomas Bjelkeman-Pettersson
+- Ned Breslin
+- Nicolas Dickinson
+- Maximilian Hirn
+- Keri Kugler
+- Peter van der Linde
+- Jeroen van der Sommen
+- Erin Wright
+
+Further team members can be found at < http://www.akvo.org/web/team >
+
+Funding partners, without them Akvo FLOW could not have happened
+
+- Water for People
+- Cisco Foundation
+- Conrad F. Hilton Foundation
+- Dutch Ministry of Foreign Affairs
+
+Many more partners, who all have greatly contributed to Akvo FLOW in
+many ways can be found at: < http://www.akvo.org/web/partners >.

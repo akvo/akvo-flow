@@ -35,11 +35,11 @@ public class Country extends BaseDomain {
 	private String isoAlpha2Code = null;
 	private String isoAlpha3Code = null;
 	private Integer isoNumeric3Code = null;
-	private Boolean includeInKMZ;
-	private Boolean includeInExternal;
-	private Double centroidLat;
-	private Double centroidLon;
-	private Integer zoomLevel;
+	private Boolean includeInKMZ = false;
+	private Boolean includeInExternal = false;
+	private Double centroidLat = 0.0d;
+	private Double centroidLon = 0.0d;
+	private Integer zoomLevel = 7;
 	
 
 	public Boolean getIncludeInKMZ() {

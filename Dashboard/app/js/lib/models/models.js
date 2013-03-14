@@ -23,16 +23,6 @@ FLOW.BaseModel = DS.Model.extend({
 });
 
 FLOW.SurveyGroup = FLOW.BaseModel.extend({
-  didDelete: function() {
-    FLOW.surveyGroupControl.populate();
-  },
-  didUpdate: function() {
-    FLOW.surveyGroupControl.populate();
-  },
-  didCreate: function() {
-    FLOW.surveyGroupControl.populate();
-  },
-
   description: DS.attr('string', {
     defaultValue: ''
   }),
@@ -53,15 +43,6 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 
 
 FLOW.Survey = FLOW.BaseModel.extend({
-  //didDelete: function() {
-  //  FLOW.surveyControl.populate();
-  //},
-  // didUpdate: function() {
-  //   FLOW.surveyControl.populate();
-  // },
-  // didCreate: function() {
-  //   FLOW.surveyControl.populate();
-  // },
   didLoad: function() {
     // set the survey group name
     var sg = FLOW.store.find(FLOW.SurveyGroup, this.get('surveyGroupId'));
@@ -96,16 +77,6 @@ FLOW.Survey = FLOW.BaseModel.extend({
 
 
 FLOW.QuestionGroup = FLOW.BaseModel.extend({
-  didDelete: function() {
-    if(FLOW.questionGroupControl.get('allRecordsSaved')) FLOW.questionGroupControl.populate();
-  },
-  didUpdate: function() {
-    if(FLOW.questionGroupControl.get('allRecordsSaved')) FLOW.questionGroupControl.populate();
-  },
-  didCreate: function() {
-    if(FLOW.questionGroupControl.get('allRecordsSaved')) FLOW.questionGroupControl.populate();
-  },
-
   order: DS.attr('number'),
   description: DS.attr('string'),
   name: DS.attr('string'),
@@ -116,16 +87,6 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
 
 
 FLOW.Question = FLOW.BaseModel.extend({
-  didDelete: function() {
-    if(FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.setQGcontent();
-  },
-  didUpdate: function() {
-    if(FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.setQGcontent();
-  },
-  didCreate: function() {
-    if(FLOW.questionControl.get('allRecordsSaved')) FLOW.questionControl.setQGcontent();
-  },
-
   allowDecimal: DS.attr('boolean', {
     defaultValue: false
   }),
@@ -289,16 +250,6 @@ FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({
 });
 
 FLOW.User = FLOW.BaseModel.extend({
-  didDelete: function() {
-    FLOW.userControl.populate();
-  },
-  didUpdate: function() {
-    FLOW.userControl.populate();
-  },
-  didCreate: function() {
-    FLOW.userControl.populate();
-  },
-
   userName: DS.attr('string'),
   emailAddress: DS.attr('string'),
   admin: DS.attr('boolean', {
@@ -319,15 +270,6 @@ FLOW.UserConfig = FLOW.BaseModel.extend({
 
 // this is called attribute in the dashboard, but metric in the backend, for historic reasons.
 FLOW.Metric = FLOW.BaseModel.extend({
-  didDelete: function() {
-    FLOW.attributeControl.populate();
-  },
-  didUpdate: function() {
-    FLOW.attributeControl.populate();
-  },
-  didCreate: function() {
-    FLOW.attributeControl.populate();
-  },
   organization: DS.attr('string'),
   name: DS.attr('string'),
   group: DS.attr('string'),

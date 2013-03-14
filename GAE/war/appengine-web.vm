@@ -33,7 +33,7 @@
 		<property name="emailFromAddress" value="$reportsEmailAddress" />
 		<property name="recipientListString"
 			value="flowerrors@akvo.org;FLOW Errors List" />
-		<property name="defaultPhotoCaption" value="$defaultPhotoCaption" />
+		<property name="defaultPhotoCaption" value="$organization" />
 		<property name="surveyuploadsig" value="$surveyS3Sig" />
 		<property name="surveyuploadpolicy"
 			value="$surveyPolicy"/>
@@ -51,17 +51,17 @@
 		<property name="organization" value="$organization"/>
 		<property name="signingKey" value="$signingKey" />
 		<property name="allowUnsignedData" value="true" />
-		<property name="defaultOrg" value="$defaultOrg" />
-		<property name="domainType" value="accessPoint" />
+		<property name="defaultOrg" value="$organization" />
+		<property name="domainType" value="locale" />
 		<property name="exportedProperties" value="defaultOrg,domainType,pointTypes" />
 		<property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution"/>
 		<property name="optionRenderMode" value="radio"/>
 		<property name="backendpublish" value="false"/>
 		<property name="cacheExpirySeconds" value="3600"/>
-		<property name="useLongDates" value="false"/>
+		<property name="useLongDates" value="true"/>
 		<property name="statusQuestionText" value="water available on the day;Yes=FUNCTIONING_HIGH;No=BROKEN_DOWN;DEFAULT=BROKEN_DOWN"/>
-		<property name="mergeNearbyLocales" value="true"/>
-		<property name="scoreAPDynamicFlag" value="true"/>
+		<property name="mergeNearbyLocales" value="false"/>
+		<property name="scoreAPDynamicFlag" value="false"/>
 		<property name="asyncTaskTimeout" value="16384"/>
 		<property name="enableRestSecurity" value="false"/>
 		<property name="restPrivateKey" value="test"/>
