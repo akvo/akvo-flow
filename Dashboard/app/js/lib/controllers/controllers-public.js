@@ -15,10 +15,4 @@ FLOW.ApplicationController = Ember.Controller.extend({
   }
 });
 
-
-// Navigation controllers
-FLOW.NavigationController = Em.Controller.extend({
-  selected: null
-});
-
 FLOW.NavMapsController = Ember.Controller.extend();

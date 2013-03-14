@@ -18,7 +18,6 @@ FLOW.Router = Ember.Router.extend({
       route: '/maps',
       connectOutlets: function(router, context) {
         router.get('applicationController').connectOutlet('navMaps');
-        router.set('navigationController.selected', 'navMaps');
       }
     })
   })
