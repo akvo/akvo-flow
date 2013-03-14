@@ -165,7 +165,7 @@ public class SurveyBulkUploader implements DataImporter {
 						}
 					} else {
 						if (processZip) {
-							UploadUtil.upload(FileUtil.readFileBytes(fx),
+							boolean success = UploadUtil.upload(FileUtil.readFileBytes(fx),
 									fx.getName(), "devicezip",
 									criteria.get(UPLOAD_BASE_KEY),
 									criteria.get(AWS_ID_KEY),
@@ -173,9 +173,13 @@ public class SurveyBulkUploader implements DataImporter {
 									criteria.get(DATA_SIG_KEY),
 									"application/zip", null);
 
-							// now notify the server that a new file is there
-							// for processing
-							sendFileNotification(serverBase, fx.getName());
+							if (success) {
+								// now notify the server that a new file is there
+								// for processing
+								sendFileNotification(serverBase, fx.getName());
+							} else {
+								System.err.println("Error uploading file");
+							}
 							// delete the merged zip
 							fx.delete();
 						}
