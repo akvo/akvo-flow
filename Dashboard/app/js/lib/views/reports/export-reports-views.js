@@ -93,7 +93,11 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     showGoogleEarthButton: false,
 
     showRawDataReport: function () {
-        FLOW.ReportLoader.load('RAW_DATA', FLOW.selectedControl.selectedSurvey.get('id'));
+      if (!FLOW.selectedControl.selectedSurvey) {
+        this.showWarning();
+        return;
+      }
+      FLOW.ReportLoader.load('RAW_DATA', FLOW.selectedControl.selectedSurvey.get('id'));
     },
 
     showComprehensiveReport: function () {
@@ -107,11 +111,19 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     },
 
     showGoogleEarthFile: function () {
-        this.renderApplet('showGoogleEarthFileApplet', true);
+      if (!FLOW.selectedControl.selectedSurvey) {
+        this.showWarning();
+        return;
+      }
+      this.renderApplet('showGoogleEarthFileApplet', true);
     },
 
     showSurveyForm: function () {
-        FLOW.ReportLoader.load('SURVEY_FORM', FLOW.selectedControl.selectedSurvey.get('id'));
+      if (!FLOW.selectedControl.selectedSurvey) {
+        this.showWarning();
+        return;
+      }
+      FLOW.ReportLoader.load('SURVEY_FORM', FLOW.selectedControl.selectedSurvey.get('id'));
     },
 
     showImportApplet: function () {
