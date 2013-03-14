@@ -56,7 +56,7 @@
     </label>
 
      {{#if view.dependentFlag}}
-    <label class="selectinLabel dependencySelect"> Dependent question:
+    <label class="selectinLabel dependencySelect"> {{t _dependent_question}}:
         {{view Ember.Select 
         contentBinding="FLOW.questionControl.earlierOptionQuestions" 
         selectionBinding="FLOW.selectedControl.dependentQuestion" 
@@ -66,9 +66,9 @@
     {{/if}} 
      {{#if view.dependentFlag}}
     {{#if FLOW.selectedControl.dependentQuestion}}
-     <div class="qDependency">Answer of dependent question (select one):</div>
-      {{#each FLOW.optionListControl.content}}
-        {{view Em.RadioButton title=this.value option=this.value group="options" checked=this.isSelected valueBinding="FLOW.selectedControl.radioOptions"}} 
+     <div class="qDependency">{{t _answer_of_dependent_question}}:</div>
+      {{#each item in FLOW.optionListControl.content}}
+        <label>{{view Ember.Checkbox checkedBinding="item.isSelected"}}{{item.value}}</label>
       {{/each}}
       {{/if}}
   {{/if}}

@@ -14,6 +14,7 @@
                 <h1 class="questionNbr"><span>{{Q.order}}} </span>{{Q.text}}</h1>
                     {{#if view.isOptionType}}
                        {{#each view.optionsList}}
+                       <!-- FIXME this should be checkbuttons if Allow Multiple is true -->
                           {{view Em.RadioButton title=this.value option=this.value group="options" valueBinding="view.optionChoice"}} 
                         {{/each}}
                     {{else}}
