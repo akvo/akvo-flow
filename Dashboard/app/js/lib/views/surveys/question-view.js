@@ -183,9 +183,9 @@ FLOW.QuestionView = FLOW.View.extend({
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', FLOW.selectedControl.dependentQuestion.get('keyId'));
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', dependentQuestionAnswer);
 		} else {
+			FLOW.selectedControl.selectedQuestion.set('dependentFlag', false);
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', null);
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', null);
-			FLOW.selectedControl.selectedQuestion.set('dependentQuestionFlag', false);
 		}
 
 		if(this.get('attribute')) {
