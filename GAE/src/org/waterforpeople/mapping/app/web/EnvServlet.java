@@ -93,7 +93,7 @@ public class EnvServlet extends HttpServlet {
 								+ " was configured to show in the map, but doesn't have proper centroids");
 				continue;
 			}
-			if (c.getIncludeInExternal()) {
+			if (c.getIncludeInExternal() != null && c.getIncludeInExternal()) {
 				jsonArray.put(new JSONObject(c));
 			}
 		}
