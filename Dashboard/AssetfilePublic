@@ -37,11 +37,11 @@ class HandlebarsFilter < Filter
   end
 end
 
-output '../GAE/war'
+output '../GAE/war/publicmap'
 input 'app' do
   
   match 'public.html' do
-    copy 'index.html'
+    copy '../index.html'
   end
 
   match 'js/lib/**/*public.js' do
