@@ -116,11 +116,11 @@ input 'app' do
     end
   end
 
-  match "js/vendor/**/*.js" do
-    concat do |input|
-      input
-    end
-  end
+  # match "js/vendor/**/*.js" do
+  #  concat do |input|
+  #    input
+  #  end
+  # end
 
 end
 

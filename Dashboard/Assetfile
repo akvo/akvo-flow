@@ -104,13 +104,21 @@ input 'app' do
     end
   end
 
+ # match "js/vendor/**/*.js" do
+ #   concat do |input|
+ #     input
+ #   end
+ # end
+
+end
+
+output '../GAE/war/vendorjs'
+input 'app' do
   match "js/vendor/**/*.js" do
     concat do |input|
       input
     end
   end
-
-
 end
 
 output 'test_assets'
