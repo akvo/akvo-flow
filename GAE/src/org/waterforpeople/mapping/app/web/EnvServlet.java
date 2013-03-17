@@ -94,7 +94,9 @@ public class EnvServlet extends HttpServlet {
 								+ " was configured to show in the map, but doesn't have proper centroids");
 				continue;
 			}
-			jsonArray.put(new JSONObject(c));
+			if (c.getIncludeInExternal()) {
+				jsonArray.put(new JSONObject(c));
+			}
 		}
 		props.put("countries", jsonArray.toString());
 

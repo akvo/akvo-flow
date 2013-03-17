@@ -285,6 +285,8 @@ public class OGRFeatureDao extends BaseDAO<OGRFeature> {
 				country = new Country();
 				country.setName(item.getName());
 				country.setDisplayName(item.getName());
+				country.setCentroidLat(item.getCentroidLat());
+				country.setCentroidLon(item.getCentroidLon());
 				country.setIsoAlpha2Code(item.getCountryCode());
 				countryDao.save(country);
 			}else if(country.getName()==null || country.getDisplayName()==null){
