@@ -22,6 +22,8 @@ GAE/war/WEB-INF/appengine-web.xml
 GAE/war/WEB-INF/classes
 GAE/war/org.*
 GAE/war/admin*
+GAE/war/publicmap*
+GAE/war/vendorjs*
 GAE/war/WEB-INF/appengine-generated/*
 GAE/war/WEB-INF/lib/appengine*
 GAE/war/WEB-INF/lib/datanucleus*

@@ -59,7 +59,6 @@ import com.gallatinsystems.instancecreator.util.S3PolicySigner;
  * keypass - password for the certificate key in the keystore for signing the applet jar
  * alias - certificate alias in the keystore for signing the applet jar
  * reportsEmailAddress - email address the system should use as the "from" address when sending notifications. NOTE: this address must be a gmail account that has been set up as an instance developer in the appengine console)
- * defaultPhotoCaption - text to use if no photo caption exists on public maps
  * scoreAPFlag - either true or false (depending on whether the instance should use the scoring module or not)
  * organization - name to use for the organization (this will be auto populated on some fields and can show up on the public map)
  * localLocation - directory on the local file system that will store the output of running this utililty
@@ -106,15 +105,14 @@ public class InstanceConfigurator {
 		ic.addAttribute("alias", args[8]);
 		ic.addAttribute("alais", args[8]);
 		ic.addAttribute("reportsEmailAddress", args[9]);
-		ic.addAttribute("defaultPhotoCaption", args[10]);
-		ic.addAttribute("scoreAPFlag", args[11]);
-		ic.addAttribute("organization", args[12]);
+		ic.addAttribute("scoreAPFlag", args[10]);
+		ic.addAttribute("organization", args[11]);
 		 ic.addAttribute("s3Url", "http://" + instanceName + ".s3.amazonaws.com");
 		 ic.addAttribute("s3url", "http://" + instanceName + ".s3.amazonaws.com");
-		String localLocation = args[13];
-		ic.addAttribute("keystore", args[14]);
-		ic.addAttribute("mapsApiKey", args[15]);
-		ic.addAttribute("restApiKey",args[16]);		
+		String localLocation = args[12];
+		ic.addAttribute("keystore", args[13]);
+		ic.addAttribute("mapsApiKey", args[14]);
+		ic.addAttribute("restApiKey",args[15]);		
 
 		localLocation = ic.createLocalDeployDir(localLocation, args[2]);
 
@@ -172,9 +170,9 @@ public class InstanceConfigurator {
 	}
 
 	private static void checkUsage(String[] args) {
-		if (args.length != 17) {
+		if (args.length != 16) {
 			System.out
-					.println("Bad command line arguments. Usage:\n\t java com.gallatinsystems.instancecreator.app.InstanceConfigurator <awsSecretKey> <awsIdentifier> <instanceName> <s3Bucket> <directories> <s3policyFileTemplateName> <signingKey> <dataUploadUrl> <serverBase> <storepass> <keypass> <alias> <reportsEmailAddress> <defaultPhotoCaption> <scoreAPFlag> <organization> <localLocation> <keystore> <mapsApiKey> <restApiKey>");
+					.println("Bad command line arguments. Usage:\n\t java com.gallatinsystems.instancecreator.app.InstanceConfigurator <awsSecretKey> <awsIdentifier> <instanceName> <s3Bucket> <directories> <s3policyFileTemplateName> <signingKey> <dataUploadUrl> <serverBase> <storepass> <keypass> <alias> <reportsEmailAddress> <scoreAPFlag> <organization> <localLocation> <keystore> <mapsApiKey> <restApiKey>");
 			System.exit(1);
 		}
 	}

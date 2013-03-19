@@ -66,8 +66,10 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
   },
 
   checkVisibility: function () {
+    var dependentAnswerArray;
     if(this.content.get('dependentFlag') && this.content.get('dependentQuestionId') !== null){
-      if (FLOW.previewControl.answers[this.content.get('dependentQuestionId')] == this.content.get('dependentQuestionAnswer')){
+      dependentAnswerArray = this.content.get('dependentQuestionAnswer').split('|');
+      if(dependentAnswerArray.indexOf(FLOW.previewControl.answers[this.content.get('dependentQuestionId')]) > -1){
         this.set('isVisible',true);
       } else {
         this.set('isVisible',false);

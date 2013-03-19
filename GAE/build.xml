@@ -173,7 +173,17 @@
 		</dev_appserver>
 	</target>
 
-	<target name="update" depends="datanucleusenhance" description="Uploads the application to App Engine.">
+	<target name="validate.constants">
+		<unzip src="war/exporterapplet.jar" dest="${java.io.tmpdir}">
+			<patternset>
+				<include name="UploadConstants.properties" />
+			</patternset>
+		</unzip>
+		<checksum file="${basedir}/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" property="md5" />
+		<checksum file="${java.io.tmpdir}/UploadConstants.properties" property="${md5}" verifyproperty="md5OK" />
+	</target>
+
+	<target name="update" depends="datanucleusenhance,validate.constants" description="Uploads the application to App Engine.">
 		<fail message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt">
 			<condition>
 				<not>
@@ -181,6 +191,8 @@
 				</not>
 			</condition>
 		</fail>
+
+		<fail message="You need to rebuild the applet jar before updating an instance, e.g.: ant -f appletBuild.xml clean compile package signjar" unless="${md5OK}"/>
 
 		<delete failonerror="false">
 			<fileset dir="war/WEB-INF/deploy" includes="**/*.symbolMap"/>

@@ -1,7 +1,7 @@
 // ***********************************************//
 //                 Router
 // ***********************************************//
-require('akvo-flow/core');
+require('akvo-flow/core-common');
 
 FLOW.Router = Ember.Router.extend({
   enableLogging: true,
@@ -9,9 +9,6 @@ FLOW.Router = Ember.Router.extend({
   location: 'none',
   //'hash'or 'none' for URLs
   root: Ember.Route.extend({
-    doNavHome: function(router, context) {
-      router.transitionTo('navHome');
-    },
     doNavSurveys: function(router, context) {
       router.transitionTo('navSurveys.index');
     },
@@ -48,15 +45,6 @@ FLOW.Router = Ember.Router.extend({
     index: Ember.Route.extend({
       route: '/',
       redirectsTo: 'navSurveys.index'
-    }),
-
-    // ************************** HOME ROUTER **********************************
-    navHome: Ember.Route.extend({
-      route: '/',
-      connectOutlets: function(router, event) {
-        router.get('applicationController').connectOutlet('navHome');
-        router.set('navigationController.selected', 'navHome');
-      }
     }),
 
     // ******************* SURVEYS ROUTER ********************
