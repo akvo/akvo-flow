@@ -27,7 +27,9 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     if (Object.keys(this.extractMeta(json)).length !== 0) {
       FLOW.metaControl.set('since', this.extractMeta(json).since);
       FLOW.metaControl.set('num', this.extractMeta(json).num);
-
+      if (type == 'FLOW.SurveyInstance') {
+        FLOW.metaControl.set('numSILoaded', this.extractMeta(json).num);
+      }
       msg = this.extractMeta(json).message;
       if (msg.indexOf('_') === 0) { // Response is a translatable message
         msg = Ember.String.loc(msg);
