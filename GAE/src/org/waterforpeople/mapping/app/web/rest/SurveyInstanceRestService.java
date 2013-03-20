@@ -148,7 +148,7 @@ public class SurveyInstanceRestService {
 
 		// check if surveyInstance exists in the datastore
 		if (s != null) {
-			surveyInstanceDao.delete(s);
+			surveyInstanceDao.deleteSurveyInstance(s);
 			statusDto.setStatus("ok");
 		}
 		response.put("meta", statusDto);
@@ -156,7 +156,7 @@ public class SurveyInstanceRestService {
 	}
 
 	// Update survey instance
-	// TODO update counts
+	// TODO: question - when is this used?
 	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
 	public Map<String, Object> saveExistingSurveyInstance(
