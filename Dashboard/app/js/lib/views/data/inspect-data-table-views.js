@@ -55,12 +55,12 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   // If the number of items in the previous call was 20 (a full page) we assume that there are more.
   // This is not foolproof, but will only lead to an empty next page in 1/20 of the cases
   hasNextPage: function() {
-    if(FLOW.metaControl.get('num') == 20) {
+    if(FLOW.metaControl.get('numSILoaded') == 20) {
       return true;
     } else {
       return false;
     }
-  }.property('FLOW.metaControl.num'),
+  }.property('FLOW.metaControl.numSILoaded'),
 
   // not perfect yet, sometimes previous link is shown while there are no previous pages.
   hasPrevPage: function() {
@@ -123,7 +123,8 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     SIindex = currentSIList.indexOf(this.get('selectedSurveyInstanceNum'));
 
     if(SIindex == 19) {
-      // if at the end of the list, go and get more data
+      // TODO get more data 
+      // if at the end of the list, we should first go back and get more data
     } else {
       nextItem = currentSIList.objectAt(SIindex + 1);
       filtered = FLOW.store.filter(FLOW.SurveyInstance, function(item) {
@@ -141,12 +142,37 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     }
   },
 
-  doSaveSI: function(event) {
-    this.set('showEditSurveyInstanceWindowBool', false);
+  // doSaveSI: function(event) {
+  //   this.set('showEditSurveyInstanceWindowBool', false);
+  // },
+
+  doShowDeleteSIDialog: function(event) {
+    FLOW.dialogControl.set('activeAction', 'delSI');
+    FLOW.dialogControl.set('showCANCEL', true);
+    FLOW.dialogControl.set('showDialog', true);
   },
 
-  doDeleteSI: function(event) {
+  deleteSI: function(event) {
+    var SI,SIid;
+    SIid = this.get('selectedSurveyInstanceId');
+    SI = FLOW.store.find(FLOW.SurveyInstance, SIid);
+    if(SI !== null) {
+      // remove from displayed content
+      SI.deleteRecord();
+      FLOW.store.commit();
+    }
     this.set('showEditSurveyInstanceWindowBool', false);
   }
+});
 
+FLOW.DataItemView = FLOW.View.extend({
+  tagName: 'span',
+  deleteSI: function() {
+    var SI;
+    SI = FLOW.store.find(FLOW.SurveyInstance, this.content.get('keyId'));
+    if(SI !== null) {
+      SI.deleteRecord();
+      FLOW.store.commit();
+    }
+  }
 });

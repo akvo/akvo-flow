@@ -150,6 +150,8 @@ FLOW.dialogControl = Ember.Object.create({
   delAttr: "delAttr",
   delAssignment: "delAssignment",
   delDeviceGroup: "delDeviceGroup",
+  delSI: "delSI",
+  delSI2: "delSI2",
   showDialog: false,
   message: null,
   header: null,
@@ -221,6 +223,18 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', true);
       break;
 
+    case "delSI":
+      this.set('header', Ember.String.loc('_delete_record_header'));
+      this.set('message', Ember.String.loc('_are_you_sure_delete_this_data_record'));
+      this.set('showDialog', true);
+      break;
+
+    case "delSI2":
+      this.set('header', Ember.String.loc('_delete_record_header'));
+      this.set('message', Ember.String.loc('_are_you_sure_delete_this_data_record'));
+      this.set('showDialog', true);
+      break;
+
     default:
     }
   },
@@ -267,6 +281,16 @@ FLOW.dialogControl = Ember.Object.create({
     case "delDeviceGroup":
       this.set('showDialog', false);
       view.deleteDeviceGroup.apply(view, arguments);
+      break;
+
+    case "delSI":
+      this.set('showDialog', false);
+      view.deleteSI.apply(view, arguments);
+      break;
+
+    case "delSI2":
+      this.set('showDialog', false);
+      view.deleteSI.apply(view, arguments);
       break;
 
     default:
