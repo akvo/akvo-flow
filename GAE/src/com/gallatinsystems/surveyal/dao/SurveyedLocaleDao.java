@@ -249,9 +249,37 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 		query.declareParameters(paramString.toString());
 		prepareCursor(cursor, pageSize, query);
 		return (List<SurveyalValue>) query.executeWithMap(paramMap);
-
 	}
 
+	
+	/**
+	 * returns all the SurveyalValues corresponding to the surveyInstanceId and questionId passed in.
+	 * This uniquely identifies the surveyalValue corresponding to a single questionAnswerStore object
+	 * 
+	 * @param surveyInstanceId
+	 * @param questionId
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<SurveyalValue> listSVByQuestionAndSurveyInstance(Long surveyInstanceId,
+			Long surveyQuestionId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("surveyInstanceId", filterString, paramString, "Long",
+				surveyInstanceId, paramMap);
+
+		appendNonNullParam("surveyQuestionId", filterString, paramString, "String",
+				surveyQuestionId, paramMap);
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		return (List<SurveyalValue>) query.executeWithMap(paramMap);
+	}
+	
+	
 	/**
 	 * lists all values for a given survey instance
 	 * 
