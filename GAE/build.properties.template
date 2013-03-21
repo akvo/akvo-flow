@@ -1,9 +1,6 @@
-sdk.dir=somepath/appengine-java-sdk-1.7.0
-email.address=user@example.com
-gwt.entrypoint.class=
-gwtlibs.dir=somepath/eclipse/plugins/com.google.gwt.eclipse.sdkbundle_2.4.0.v201206290132-rel-r42/gwt-2.4.0
-keystore.password=password
-keystore.alias=alias
-keystore.dir=somepath/filename.keystore
-appengine.sdk.home=somepath/appengine-java-sdk-1.7.0
-
+sdk.dir=/usr/local/sdk/gae/java-sdk-1.7.6
+email.address=some_user@gmail.com
+gwtlibs.dir=/usr/local/sdk/gwt/2.5.1
+keystore.password=[some_password]
+keystore.alias=fieldsurvey
+keystore.dir=/path/to/flow/fieldsurvey-release.keystore
