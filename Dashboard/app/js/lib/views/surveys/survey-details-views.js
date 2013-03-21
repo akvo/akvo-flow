@@ -49,6 +49,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 			// if we have a surveyPointType, compare them
 			isDirty = isDirty || this.surveyPointType.get('value') != survey.get('pointType');
 		} else {
+			isDirty = isDirty || this.get('surveyPointType') === null;
 			// if we don't have one now, but we had one before, it has also changed
 			// TODO - this breaks when the pointType is an old point Type
 			//isDirty = isDirty || !Ember.none(survey.get('pointType'));
@@ -82,6 +83,16 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 
 	doSaveSurvey: function() {
 		var survey;
+		// validation
+		if (this.get('surveyPointType') === null){
+			FLOW.dialogControl.set('activeAction', 'ignore');
+			FLOW.dialogControl.set('header', Ember.String.loc('_survey_type_not_set'));
+			FLOW.dialogControl.set('message', Ember.String.loc('_survey_type_not_set_text'));
+			FLOW.dialogControl.set('showCANCEL', false);
+			FLOW.dialogControl.set('showDialog', true);
+			return;
+		}
+
 		survey = FLOW.selectedControl.get('selectedSurvey');
 		survey.set('name', this.get('surveyTitle'));
 		survey.set('code', this.get('surveyTitle'));
@@ -107,6 +118,16 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 
 	doPublishSurvey: function() {
 		var survey;
+		// validation
+		if (this.get('surveyPointType') === null){
+			FLOW.dialogControl.set('activeAction', 'ignore');
+			FLOW.dialogControl.set('header', Ember.String.loc('_survey_type_not_set'));
+			FLOW.dialogControl.set('message', Ember.String.loc('_survey_type_not_set_text'));
+			FLOW.dialogControl.set('showCANCEL', false);
+			FLOW.dialogControl.set('showDialog', true);
+			return;
+		}
+
 		// check if survey has unsaved changes
 		survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
 		this.setIsDirty();
