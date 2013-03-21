@@ -21,7 +21,7 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   },
 
   sideload: function (store, type, json, root) {
-    var msg;
+    var msg,status;
     this._super(store, type, json, root);
     // only change metaControl info if there is actual meta info in the server response
     if (Object.keys(this.extractMeta(json)).length !== 0) {
@@ -31,14 +31,31 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         FLOW.metaControl.set('numSILoaded', this.extractMeta(json).num);
       }
       msg = this.extractMeta(json).message;
+      status = this.extractMeta(json).status;
+      keyId = this.extractMeta(json).keyId;
+
       if (msg.indexOf('_') === 0) { // Response is a translatable message
         msg = Ember.String.loc(msg);
       }
       FLOW.metaControl.set('message', msg);
-
-      FLOW.metaControl.set('status', this.extractMeta(json).status);
+      FLOW.metaControl.set('status', status);
+      FLOW.metaControl.set('keyId', keyId);
       FLOW.savingMessageControl.set('areLoadingBool', false);
       FLOW.savingMessageControl.set('areSavingBool', false);
+
+      if (status === 'preflight-delete'){
+        if (msg === 'can_delete'){
+          // do deletion
+          FLOW.questionControl.deleteQuestion(keyId);
+        } else {
+          FLOW.dialogControl.set('activeAction', 'ignore');
+          FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_question'));
+          FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_question_text'));
+          FLOW.dialogControl.set('showCANCEL', false);
+          FLOW.dialogControl.set('showDialog', true);
+        }
+        return;
+      }
 
       if (this.extractMeta(json).status === 'failed' || FLOW.metaControl.get('message') !== ''){
         FLOW.dialogControl.set('activeAction', 'ignore');

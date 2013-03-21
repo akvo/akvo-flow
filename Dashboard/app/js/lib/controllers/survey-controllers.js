@@ -257,6 +257,7 @@ FLOW.questionControl = Ember.ArrayController.create({
   filterContent: null,
   sortProperties: ['order'],
   sortAscending: true,
+  preflightQId:null,
 
   populateAllQuestions: function() {
     var sId;
@@ -275,6 +276,26 @@ FLOW.questionControl = Ember.ArrayController.create({
     }));
   },
 
+  deleteQuestion: function(questionId){
+    qgId = this.content.get('questionGroupId');
+    question = FLOW.store.find(FLOW.Question, questionId);
+    qgId = question.get('questionGroupId');
+    qOrder = question.get('order');
+    question.deleteRecord();
+
+    // restore order
+    questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
+          return(item.get('questionGroupId') == qgId);
+        });
+
+    questionsInGroup.forEach(function(item) {
+     if (item.get('order') > qOrder) {
+       item.set('order',item.get('order') - 1);
+     }
+    });
+    FLOW.store.commit();
+  },
+
   allQuestionsFilter: function() {
     var sId;
     if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
@@ -287,17 +308,6 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
-// original setQGcontent function - superseded by the one below, which just sets a filter. So no new questions are loaded.
-// this works because all the questions are loaded at the selection of the survey.
-//  setQGcontent: function() {
-//    if(FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
-//      var id = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-//      this.set('content', FLOW.store.findQuery(FLOW.Question, {
-//        questionGroupId: id
-//      }));
-//    }
-//  }.observes('FLOW.selectedControl.selectedQuestionGroup'),
-  
   setQGcontent: function() {
 	  var qId
     if(FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {

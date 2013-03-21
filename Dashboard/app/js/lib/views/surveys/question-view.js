@@ -220,27 +220,16 @@ FLOW.QuestionView = FLOW.View.extend({
 		FLOW.selectedControl.set('dependentQuestion',null);
 	},
 
-	// BROKEN
-	//TODO when questionAnswers already exist for a question, deletion should not be possible
 	deleteQuestion: function() {
-		var qDeleteId, question, questionsInGroup, qgId;
+		var qDeleteId;
 		qDeleteId = this.content.get('keyId');
-		qgId = this.content.get('questionGroupId');
-		question = FLOW.store.find(FLOW.Question, qDeleteId);
-		qOrder = question.get('order');
-		question.deleteRecord();
-		
-		// restore order
-		questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-	        return(item.get('questionGroupId') == qgId);
-	      });
-		
-		questionsInGroup.forEach(function(item) {
-			if (item.get('order') > qOrder) {
-				item.set('order',item.get('order') - 1);
-			}
-		});
-		FLOW.store.commit();
+
+		// check if deleting this question is allowed
+		// if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
+		FLOW.store.findQuery(FLOW.Question, {
+      preflight: 'delete',
+      questionId: qDeleteId
+    });
 	},
 
 	// move question to selected location
