@@ -1,13 +1,16 @@
 # Globally ignored files
 .DS_Store
-.classpath
 .gradle
 .gwt-log
-.project
-.settings
 *.rpc
 *.class
 *.swp
+
+# Eclipse files
+.classpath
+.externalToolBuilders
+.project
+.settings
 
 # Specific paths
 
