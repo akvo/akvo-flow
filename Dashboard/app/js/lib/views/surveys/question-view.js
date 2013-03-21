@@ -25,7 +25,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	minVal: null,
 	maxVal: null,
 	allowSign: null,
-	allowDecimalPoint: null,
+	allowDecimal: null,
 	allowMultipleFlag: null,
 	allowOtherFlag: null,
 	dependentFlag: false,
@@ -86,7 +86,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		this.set('minVal', FLOW.selectedControl.selectedQuestion.get('minVal'));
 		this.set('maxVal', FLOW.selectedControl.selectedQuestion.get('maxVal'));
 		this.set('allowSign', FLOW.selectedControl.selectedQuestion.get('allowSign'));
-		this.set('allowDecimalPoint', FLOW.selectedControl.selectedQuestion.get('allowDecimalPoint'));
+		this.set('allowDecimal', FLOW.selectedControl.selectedQuestion.get('allowDecimal'));
 		this.set('allowMultipleFlag', FLOW.selectedControl.selectedQuestion.get('allowMultipleFlag'));
 		this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
 		this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
@@ -179,7 +179,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
 		FLOW.selectedControl.selectedQuestion.set('path',path);
 		FLOW.selectedControl.selectedQuestion.set('allowSign', this.get('allowSign'));
-		FLOW.selectedControl.selectedQuestion.set('allowDecimalPoint', this.get('allowDecimalPoint'));
+		FLOW.selectedControl.selectedQuestion.set('allowDecimal', this.get('allowDecimal'));
 		FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
 		FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
 		FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
@@ -328,7 +328,7 @@ FLOW.QuestionView = FLOW.View.extend({
 			"tip": FLOW.selectedControl.selectedForCopyQuestion.get('tip'),
 			"mandatoryFlag": FLOW.selectedControl.selectedForCopyQuestion.get('mandatoryFlag'),
 			"allowSign": FLOW.selectedControl.selectedForCopyQuestion.get('allowSign'),
-			"allowDecimalPoint": FLOW.selectedControl.selectedForCopyQuestion.get('allowDecimalPoint'),
+			"allowDecimal": FLOW.selectedControl.selectedForCopyQuestion.get('allowDecimal'),
 			"allowMultipleFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowMultipleFlag'),
 			"allowOtherFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowOtherFlag'),
 			"dependentFlag": false,
