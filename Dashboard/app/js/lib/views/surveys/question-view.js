@@ -153,13 +153,30 @@ FLOW.QuestionView = FLOW.View.extend({
 	},
 
 	doSaveEditQuestion: function() {
-		var path, anyActive, first, dependentQuestionAnswer;
+		var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal;
+
+		// validation
+		if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))  ){
+			if (this.get('minVal') >= this.get('maxVal')){
+				FLOW.dialogControl.set('activeAction', 'ignore');
+				FLOW.dialogControl.set('header', Ember.String.loc('_min_max_not_correct'));
+				FLOW.dialogControl.set('message', Ember.String.loc('_min_larger_than_max_or_equal'));
+				FLOW.dialogControl.set('showCANCEL', false);
+				FLOW.dialogControl.set('showDialog', true);
+				return;
+			}
+		}
+
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 		FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
 		FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
 		FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
-		FLOW.selectedControl.selectedQuestion.set('minVal', this.get('minVal'));
-		FLOW.selectedControl.selectedQuestion.set('maxVal', this.get('maxVal'));
+
+		minVal = (Ember.empty(this.get('minVal'))) ? null : this.get('minVal');
+		maxVal = (Ember.empty(this.get('maxVal'))) ? null : this.get('maxVal');
+		FLOW.selectedControl.selectedQuestion.set('minVal', minVal);
+		FLOW.selectedControl.selectedQuestion.set('maxVal', maxVal);
+
 		FLOW.selectedControl.selectedQuestion.set('path',path);
 		FLOW.selectedControl.selectedQuestion.set('allowSign', this.get('allowSign'));
 		FLOW.selectedControl.selectedQuestion.set('allowDecimalPoint', this.get('allowDecimalPoint'));
@@ -169,7 +186,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
 		dependentQuestionAnswer = "";
 		first = true;
-		
+
 		FLOW.optionListControl.get('content').forEach(function(item){
 			if (item.isSelected) {
 				if (!first) {dependentQuestionAnswer += "|";}
