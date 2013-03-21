@@ -35,30 +35,6 @@ FLOW.CurrentDevicesTabView = Ember.View.extend({
 		this.set('showManageDeviceGroupsDialogBool', false);
 	},
 
-	assignDisplayNames: function() {
-		var allDevices, deviceId, deviceGroup, combinedName;
-		if((FLOW.deviceControl.content.get('isLoaded') === true) && (FLOW.deviceGroupControl.content.get('isLoaded') === true)) {
-			allDevices = FLOW.store.filter(FLOW.Device, function(data) {
-				return true;
-			});
-			allDevices.forEach(function(item) {
-				if(Ember.empty(item.get('deviceIdentifier'))) {
-					combinedName = "no identifer";
-				} else {
-					combinedName = item.get('deviceIdentifier');
-				}
-				item.set('combinedName', combinedName + " " + item.get('phoneNumber'));
-				deviceId = parseInt(item.get('deviceGroup'), 10);
-				deviceGroup = FLOW.store.filter(FLOW.DeviceGroup, function(data) {
-					return(data.get('keyId') === deviceId);
-				});
-				if(typeof deviceGroup.get('firstObject') !== "undefined") {
-					item.set('deviceGroupName', deviceGroup.get('firstObject').get('code'));
-				}
-			});
-		}
-	}.observes('FLOW.deviceGroupControl.content.isLoaded', 'FLOW.deviceControl.content.isLoaded', 'FLOW.deviceControl.content.isUpdated'),
-
 	doAddToGroup: function() {
 		if(this.get('selectedDeviceGroup') !== null) {
 			var selectedDeviceGroupId = this.selectedDeviceGroup.get('keyId');

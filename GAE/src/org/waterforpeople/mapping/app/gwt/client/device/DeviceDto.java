@@ -31,6 +31,7 @@ public class DeviceDto extends BaseDto {
 	private Date lastPositionDate;
 	private String gallatinSoftwareManifest;
 	private String deviceGroup;
+	private String deviceGroupName;
 	private String deviceIdentifier;
 
 	public String getGallatinSoftwareManifest() {
@@ -103,5 +104,13 @@ public class DeviceDto extends BaseDto {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	public void setDeviceGroupName(String deviceGroupName) {
+		this.deviceGroupName = deviceGroupName;
+	}
+
+	public String getDeviceGroupName() {
+		return deviceGroupName;
 	}
 }

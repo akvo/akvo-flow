@@ -70,7 +70,7 @@
         <p class="dialogMsg">{{t _choose_an_existing_device_group_from_the_list}}</p>
         <br/>
         {{view Ember.Select 
-        contentBinding="FLOW.deviceGroupControl.content" 
+        contentBinding="FLOW.deviceGroupControl.contentNoUnassigned" 
         selectionBinding="view.selectedDeviceGroup" 
         optionLabelPath="content.code" 
         optionValuePath="content.keyId"
@@ -113,7 +113,7 @@
         <p class="dialogMsg">{{t _to_change_the_name_of_an_existing_group_}}</p>
         <br/>
         {{view Ember.Select 
-        contentBinding="FLOW.deviceGroupControl.content" 
+        contentBinding="FLOW.deviceGroupControl.contentNoUnassigned" 
         selectionBinding="view.selectedDeviceGroup" 
         optionLabelPath="content.code" 
         optionValuePath="content.keyId"
@@ -127,7 +127,7 @@
 
          <p class="dialogMsg">{{t _to_delete_an_existing_group_}}</p>
         {{view Ember.Select 
-        contentBinding="FLOW.deviceGroupControl.content" 
+        contentBinding="FLOW.deviceGroupControl.contentNoUnassigned" 
         selectionBinding="view.selectedDeviceGroupForDelete" 
         optionLabelPath="content.code" 
         optionValuePath="content.keyId" 
