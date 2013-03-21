@@ -127,7 +127,7 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-		<javac srcdir="src" destdir="war/WEB-INF/classes" classpathref="project.classpath" debug="on" includeantruntime="false" />
+		<javac source="1.6" target="1.6" encoding="UTF8" srcdir="src" destdir="war/WEB-INF/classes" classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
 
 	<target name="translate" depends="compile" description="Generates the en.properties file from handlebars template and JS files">
