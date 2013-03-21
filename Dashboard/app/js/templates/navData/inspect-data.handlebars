@@ -168,7 +168,11 @@
                       <a {{action doSave target="this"}} class="smallBtn">{{t _save}}</a> <a {{action doCancel target="this"}}>{{t _cancel}}</a>
                     {{else}}
                       {{#if view.isNotEditable}}
-                        {{QA.value}}
+                        {{#if view.isPhotoType}}
+                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open photo</a> 
+                        {{else}}
+                          {{QA.value}}
+                        {{/if}}
                       {{else}}
                         {{#if view.isDateType}}
                         <a {{action doEdit target="this"}}>{{#with QA}}{{date3 value}}{{/with}}</a>
