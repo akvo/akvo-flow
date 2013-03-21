@@ -1,12 +1,66 @@
-Last changed: 10 July 2012 co
+Last changed: 21 March 2013 co
 
 Akvo FLOW (Field Level Operations Watch) is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
 
 Read more about [Akvo FLOW](http://www.akvo.org/blog/?p=4836).
 Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
-Akvo FLOW Field Survey app ver 1.9.36 release notes
+Akvo FLOW Dashboard release notes
 ----
+
+This set of notes captures the weekly status of FLOW features and fixes to keep our colleagues and partners better informed about the status of the software as we concentrate on roll-out of 1.5.
+
+Completed + Live means the feature/fix has been tested and deployed to all active FLOW Dashboards.
+Completed + Pending means the feature/fix has been done and is either in testing or waiting for deployment.
+In Progress means the team is working on it this week.
+Other Known Issues means we've heard from you that it's a request or a problem, but we haven't worked it into the priority list yet.
+Backburner means we know about it, but have put it aside for the moment while we work on higher priority issues.
+
+19 March 2013, co
+
+12 March 2013, co
+
+05 March 2013, co
+---
+
+Completed + Live
+---
+* Increased map placemarks so that 200 load instead of 20, to address Amit's issue that all points aren't showing on the map (training.akvoflow.org)
+* Bootstrap file doesn't contain version info (training.akvoflow.org)
+
+Completed + Pending
+---
+* deployment of 1.5 to salone.akvoflow.org (still waiting for apk)
+* Option questions saving with blank options
+* Device home screen layout issues
+* Extra lines between options when a user presses return when entering options
+
+In Progress
+---
+* Options and dependencies not saving (mwa.akvoflow.org)
+* Deployments of 1.5 to FXB and Congo dashboards
+* Display FLOW map in public URL
+* Adjust geolocation service to improve display of points close to country boundaries on maps
+* Device IDs not consistently showing in DEVICES tab (mwa.akvoflow.org, others)
+* New service to get rid of Java applets (will help with slow report running)
+
+Other Known Issues
+---
+* Transmission of photos - we know about this and will spend more time scoping out some adjustments later this week
+* After deleting survey assignment from the Dashboard, the survey still shows in the Field Survey app even after survey reload
+* Totals on Chart Builder not reflecting number of submitted surveys
+* Orange "Loading" icon persists even if load fails (or is really slow)
+
+Backburner
+---
+* Max value not saving in Question edit screen for number questions
+* Implementing survey translations on Dashboard (leftover from FLOW Classic)
+* Implement multiple dependencies for survey questions (leftover from FLOW Classic)
+* Implement ability to delete a single raw data record (leftover from FLOW Classic)
+
+
+Akvo FLOW Field Survey app ver 1.9.36 release notes
+---
 8 July 2012, co
 
 Overview
