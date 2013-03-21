@@ -58,6 +58,14 @@
 	    </fail>
 	</target>
 
+	<target name="checkForBuiltFiles" description="Checks for any compiled files">
+		<available file="war/WEB-INF/classes" type="dir" property="built_classes_exist" />
+	</target>
+
+    <target name="clean" depends="checkForBuiltFiles" if="built_classes_exist" description="Clears any compiled files">
+    	<delete dir="war/WEB-INF/classes" />
+    </target>
+
 	<target name="copyconfig" depends="init" description="Copies the server configuration files">
 		<fail message="[config] property path must be present, e.g.: ant copyconfig -Dconfig=/path/to/config/folder">
 			<condition>
