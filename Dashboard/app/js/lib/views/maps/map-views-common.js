@@ -8,8 +8,10 @@
       a placemark counterpart.
 **/
 
-FLOW.NavMapsView = Ember.View.extend({
-  templateName: 'navMaps/nav-maps',
+
+FLOW.NavMapsView = FLOW.View.extend({
+  // templateName: 'navMaps/nav-maps',
+  templateName: 'navMaps/nav-maps-common',
   showDetailsBool: false,
   detailsPaneElements: null,
   detailsPaneVisible: null,
@@ -197,7 +199,7 @@ FLOW.NavMapsView = Ember.View.extend({
                                     placemark.get('longitude')),
       marker = new mxn.Marker(point);
 
-    marker.setIcon('images/maps/blueMarker.png');
+    marker.setIcon('/images/maps/blueMarker.png');
     marker.placemark = placemark;
 
     // Add a click handler that handles what happens when marker is clicked
@@ -245,10 +247,10 @@ FLOW.NavMapsView = Ember.View.extend({
                                       placemark.get('longitude')),
         newMarker = new mxn.Marker(point);
 
-      if(placemark.marker.iconUrl === ('images/maps/blueMarker.png')) {
-        newMarker.iconUrl = 'images/maps/redMarker.png' ;
+      if(placemark.marker.iconUrl === ('/images/maps/blueMarker.png')) {
+        newMarker.iconUrl = '/images/maps/redMarker.png' ;
       } else {
-        newMarker.iconUrl = 'images/maps/blueMarker.png';
+        newMarker.iconUrl = '/images/maps/blueMarker.png';
       }
 
       placemark.addMarkerClickHandler(newMarker);
@@ -267,10 +269,8 @@ FLOW.NavMapsView = Ember.View.extend({
 
 });
 
-FLOW.countryView = Ember.View.extend({
-  // country: null
-});
+
+FLOW.countryView = FLOW.View.extend({});
 
 FLOW.PlacemarkDetailView = Ember.View.extend({});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
-

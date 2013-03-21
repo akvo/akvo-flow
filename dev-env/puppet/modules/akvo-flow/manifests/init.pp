@@ -21,7 +21,7 @@ class akvo-flow {
 
   file { '/akvo-flow/GAE/war/WEB-INF/appengine-generated/local_db.bin':
     ensure => 'link',
-    target => '/akvo-flow-env/local_db_org.bin',
+    target => '/akvo-flow-env/local_db.bin',
     require => File["/akvo-flow/GAE/war/WEB-INF/appengine-generated/"]
   }
 

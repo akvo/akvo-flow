@@ -3,8 +3,7 @@
 // ***********************************************//
 /*global tooltip, makePlaceholders */
 
-
-require('akvo-flow/core');
+require('akvo-flow/core-common');
 require('akvo-flow/views/surveys/preview-view');
 require('akvo-flow/views/surveys/notifications-view');
 require('akvo-flow/views/surveys/survey-group-views');
@@ -16,7 +15,7 @@ require('akvo-flow/views/surveys/question-view');
 require('akvo-flow/views/data/question-answer-view');
 require('akvo-flow/views/reports/report-views');
 require('akvo-flow/views/reports/export-reports-views');
-require('akvo-flow/views/maps/map-views');
+require('akvo-flow/views/maps/map-views-common');
 require('akvo-flow/views/messages/message-view');
 require('akvo-flow/views/devices/devices-views');
 require('akvo-flow/views/devices/assignments-list-tab-view');
@@ -516,7 +515,7 @@ FLOW.NavAdminView = FLOW.View.extend({
 });
 
 FLOW.HeaderView = FLOW.View.extend({
-  templateName: 'application/header'
+  templateName: 'application/header-common'
 });
 
 FLOW.FooterView = FLOW.View.extend({

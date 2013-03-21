@@ -44,6 +44,7 @@ public class SurveyUtils {
 		final SurveyDAO sDao = new SurveyDAO();
 		final Survey tmp = new Survey();
 		final QuestionGroupDao qgDao = new QuestionGroupDao();
+		final Map<Long, Long> qMap = new HashMap<Long, Long>();
 
 		BeanUtils.copyProperties(source, tmp, Constants.EXCLUDED_PROPERTIES);
 		tmp.setCode(tmp.getCode() + " <Copy>"); // FIXME: I18N
@@ -67,14 +68,14 @@ public class SurveyUtils {
 		int qgOrder = 1;
 		for (final QuestionGroup sourceQG : qgList) {
 			SurveyUtils.copyQuestionGroup(sourceQG, newSurvey.getKey().getId(),
-					qgOrder++);
+					qgOrder++, qMap);
 		}
 
 		return newSurvey;
 	}
 
 	public static QuestionGroup copyQuestionGroup(QuestionGroup source,
-			Long newSurveyId, Integer order) {
+			Long newSurveyId, Integer order, Map<Long, Long> qMap) {
 
 		final QuestionGroupDao qgDao = new QuestionGroupDao();
 		final QuestionDao qDao = new QuestionDao();
@@ -102,29 +103,28 @@ public class SurveyUtils {
 
 		log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
 
-		final Map<Long, Long> qMap = new HashMap<Long, Long>();
-		final List<Question> newQuestionList = new ArrayList<Question>();
+		final List<Question> dependentQuestionList = new ArrayList<Question>();
 
 		int qCount = 1;
 		for (Question q : qList) {
 			final Question qTmp = SurveyUtils.copyQuestion(q, newQuestionGroup
 					.getKey().getId(), qCount++);
+			qMap.put(q.getKey().getId(), qTmp.getKey().getId());
 			if (qTmp.getDependentFlag()) {
-				qMap.put(q.getKey().getId(), qTmp.getKey().getId());
-				newQuestionList.add(qTmp);
+				dependentQuestionList.add(qTmp);
 			}
 		}
 
 		// fixing dependencies
 
-		log.log(Level.INFO, "Fixing dependencies for " + newQuestionList.size()
+		log.log(Level.INFO, "Fixing dependencies for " + dependentQuestionList.size()
 				+ " `Question`");
 
-		for (Question nQ : newQuestionList) {
+		for (Question nQ : dependentQuestionList) {
 			nQ.setDependentQuestionId(qMap.get(nQ.getDependentQuestionId()));
 		}
 
-		qDao.save(newQuestionList);
+		qDao.save(dependentQuestionList);
 
 		return newQuestionGroup;
 	}

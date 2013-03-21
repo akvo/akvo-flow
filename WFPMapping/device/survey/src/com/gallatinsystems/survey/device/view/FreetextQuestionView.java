@@ -177,6 +177,7 @@ public class FreetextQuestionView extends QuestionView implements
 									}
 								});
 						builder.show();
+						resetQuestion(false); //Enforce validation by clearing field
 					}
 				} else {
 					captureResponse();

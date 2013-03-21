@@ -1,3 +1,20 @@
+// make indexOf work for IE8 
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function (obj, fromIndex) {
+        if (fromIndex == null) {
+            fromIndex = 0;
+        } else if (fromIndex < 0) {
+            fromIndex = Math.max(0, this.length + fromIndex);
+        }
+        for (var i = fromIndex, j = this.length; i < j; i++) {
+            if (this[i] === obj)
+                return i;
+        }
+        return -1;
+    };
+}
+
+
 FLOW.QuestionView = FLOW.View.extend({
 	templateName: 'navSurveys/question-view',
 	content: null,
@@ -60,7 +77,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	doQuestionEdit: function() {
 		var questionType = null,
 			attribute = null,
-			dependentQuestion, dependentAnswer;
+			dependentQuestion, dependentAnswer, dependentAnswerArray;
 
 		FLOW.selectedControl.set('selectedQuestion', this.get('content'));
 		this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
@@ -75,6 +92,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
 		this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
 		this.set('optionList', FLOW.selectedControl.selectedQuestion.get('optionList'));
+		FLOW.optionListControl.set('content',[]);
 
 		// if the dependentQuestionId is not null, get the question
 		if(!Ember.empty(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'))) {
@@ -86,9 +104,10 @@ FLOW.QuestionView = FLOW.View.extend({
 				FLOW.selectedControl.set('dependentQuestion', dependentQuestion);
 				this.fillOptionList();
 
+				dependentAnswerArray = dependentAnswer.split('|');
 				// find the answer already set and set it to true in the optionlist
 				FLOW.optionListControl.get('content').forEach(function(item) {
-					if(item.get('value') == dependentAnswer) {
+					if(dependentAnswerArray.indexOf(item.get('value')) > -1) {
 						item.set('isSelected', true);
 					}
 				});
@@ -134,7 +153,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	},
 
 	doSaveEditQuestion: function() {
-		var path;
+		var path, anyActive, first, dependentQuestionAnswer;
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 		FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
 		FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
@@ -148,14 +167,25 @@ FLOW.QuestionView = FLOW.View.extend({
 		FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
 		FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
 
-		if(this.get('dependentFlag') && FLOW.selectedControl.radioOptions.length > 0) {
+		dependentQuestionAnswer = "";
+		first = true;
+		
+		FLOW.optionListControl.get('content').forEach(function(item){
+			if (item.isSelected) {
+				if (!first) {dependentQuestionAnswer += "|";}
+				first = false;
+				dependentQuestionAnswer += item.value;
+			}
+		});
+
+		if(this.get('dependentFlag') && dependentQuestionAnswer !== "") {
 			FLOW.selectedControl.selectedQuestion.set('dependentFlag', this.get('dependentFlag'));
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', FLOW.selectedControl.dependentQuestion.get('keyId'));
-			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', FLOW.selectedControl.radioOptions);
+			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', dependentQuestionAnswer);
 		} else {
+			FLOW.selectedControl.selectedQuestion.set('dependentFlag', false);
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionId', null);
 			FLOW.selectedControl.selectedQuestion.set('dependentQuestionAnswer', null);
-			FLOW.selectedControl.selectedQuestion.set('dependentQuestionFlag', false);
 		}
 
 		if(this.get('attribute')) {
@@ -167,6 +197,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		}
 
 		FLOW.selectedControl.selectedQuestion.set('optionList', this.get('optionList'));
+		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedQuestion', null);
 		FLOW.selectedControl.set('dependentQuestion',null);
@@ -295,7 +326,7 @@ FLOW.QuestionView = FLOW.View.extend({
 			"questionGroupId": FLOW.selectedControl.selectedForCopyQuestion.get('questionGroupId')
 		});
 
-		// restore order
+		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedForCopyQuestion', null);
 	},

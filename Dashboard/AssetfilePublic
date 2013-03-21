@@ -37,14 +37,14 @@ class HandlebarsFilter < Filter
   end
 end
 
-output '../GAE/war/admin'
+output '../GAE/war/publicmap'
 input 'app' do
   
-  match 'dashboard.html' do
-    copy 'index.html'
+  match 'public.html' do
+    copy '../index.html'
   end
 
-  match 'js/lib/**/*.js' do
+  match 'js/lib/**/*public.js' do
     filter LoaderFilter,
       :module_id_generator => proc { |input|
         input.path.sub(/^js\/lib\//, "#{APPNAME}/").sub(/\.js$/, '')
@@ -57,18 +57,18 @@ input 'app' do
     concat 'js/app.js'
   end
 
-  # match 'js/vendor/**/*.js' do
-  #   filter LoaderFilter,
-  #     :module_id_generator => proc { |input|
-  #       input.path.sub(/^js\/vendor\//, "vendor/").sub(/\.js$/, '')
-  #     }
+  match 'js/lib/**/*common.js' do
+    filter LoaderFilter,
+      :module_id_generator => proc { |input|
+        input.path.sub(/^js\/lib\//, "#{APPNAME}/").sub(/\.js$/, '')
+      }
 
-  #   if ENV['RAKEP_MODE'] == 'production'
-  #     filter EmberAssertFilter
-  #     uglify {|input| input}
-  #   end
-  #   concat 'js/app.js'
-  # end
+    if ENV['RAKEP_MODE'] == 'production'
+      filter EmberAssertFilter
+      uglify {|input| input}
+    end
+    concat 'js/app.js'
+  end
 
   match 'js/plugins/**/*.js' do
     if ENV['RAKEP_MODE'] == 'production'
@@ -79,7 +79,19 @@ input 'app' do
     end
   end
 
-  match 'js/templates/**/*.handlebars' do
+  match 'js/templates/**/*-common.handlebars' do
+    filter HandlebarsFilter
+    filter LoaderFilter,
+      :module_id_generator => proc { |input|
+        input.path.sub(/^js\/templates\//, "#{APPNAME}/templates/").sub(/\.handlebars$/, '')
+      }
+    if ENV['RAKEP_MODE'] == 'production'
+      uglify {|input| input}
+    end
+    concat 'js/app.js'
+  end
+
+  match 'js/templates/**/*-public.handlebars' do
     filter HandlebarsFilter
     filter LoaderFilter,
       :module_id_generator => proc { |input|
@@ -104,32 +116,12 @@ input 'app' do
     end
   end
 
- # match "js/vendor/**/*.js" do
- #   concat do |input|
- #     input
- #   end
- # end
+  # match "js/vendor/**/*.js" do
+  #  concat do |input|
+  #    input
+  #  end
+  # end
 
-end
-
-output '../GAE/war/vendorjs'
-input 'app' do
-  match "js/vendor/**/*.js" do
-    concat do |input|
-      input
-    end
-  end
-end
-
-output 'test_assets'
-input 'app' do
-  match 'tests/**/*.js' do
-    filter LoaderFilter,
-      :module_id_generator => proc { |input|
-        input.path.sub(/^lib\//, "#{APPNAME}/").sub(/\.js$/, '')
-      }
-    concat 'app-tests.js'
-  end
 end
 
 # vim: filetype=ruby
