@@ -2,18 +2,21 @@
 	<property file="build.properties" />
 	<property name="dashboard" value="../Dashboard/app" />
 	<property name="ui-strings" value="src/locale" />
+	<property name="app_dir" location="war/WEB-INF" />
+	<property name="app_classes_dir" location="${app_dir}/classes" />
+	<property name="app_lib_dir" location="${app_dir}/lib" />
 
 	<import file="${sdk.dir}/config/user/ant-macros.xml" />
 
 	<path id="project.classpath">
 		<pathelement location="src" />
-		<pathelement path="war/WEB-INF/classes" />
+		<pathelement path="${app_classes_dir}" />
 
 		<pathelement path="${gwtlibs.dir}/gwt-user.jar" />
 		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
 		<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA-sources.jar" />
 		<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA.jar" />
-		<fileset dir="war/WEB-INF/lib">
+		<fileset dir="${app_lib_dir}">
 			<include name="**/*.jar" />
 		</fileset>
 		<fileset dir="${sdk.dir}/lib">
@@ -58,6 +61,14 @@
 	    </fail>
 	</target>
 
+	<target name="checkForBuiltFiles" description="Checks for any compiled files">
+		<available file="${app_classes_dir}" type="dir" property="built_classes_exist" />
+	</target>
+
+    <target name="clean" depends="checkForBuiltFiles" if="built_classes_exist" description="Clears any compiled files">
+    	<delete dir="${app_classes_dir}" />
+    </target>
+
 	<target name="copyconfig" depends="init" description="Copies the server configuration files">
 		<fail message="[config] property path must be present, e.g.: ant copyconfig -Dconfig=/path/to/config/folder">
 			<condition>
@@ -67,7 +78,7 @@
 			</condition>
 		</fail>
 		<copy file="${config}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
-		<copy file="${config}/appengine-web.xml" tofile="war/WEB-INF/appengine-web.xml" overwrite="true" verbose="true" />
+		<copy file="${config}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
 		<copy file="${config}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>
 		<copy file="${config}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
 		<copy file="${config}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
@@ -76,7 +87,7 @@
 		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false"/>
 		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" failonerror="false"/>
 		<copy file="${config}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true" failonerror="false"/>
-		<loadfile property="app.id" srcFile="war/WEB-INF/appengine-web.xml">
+		<loadfile property="app.id" srcFile="${app_dir}/appengine-web.xml">
 			<filterchain>
 				<linecontains>
 					<contains value="application"/>
@@ -93,7 +104,7 @@
 	</target>
 
 	<target name="copyjars" depends="init" description="Copies the App Engine JARs to the WAR.">
-		<copy todir="war/WEB-INF/lib" flatten="true" verbose="true">
+		<copy todir="${app_lib_dir}" flatten="true" verbose="true">
 			<fileset dir="${sdk.dir}/lib/user">
 				<include name="**/*.jar" />
 			</fileset>
@@ -113,13 +124,14 @@
 	</target>
 
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
-		<mkdir dir="war/WEB-INF/classes" />
-		<copy todir="war/WEB-INF/classes">
+		<mkdir dir="${app_classes_dir}" />
+		<copy todir="${app_classes_dir}">
 			<fileset dir="src">
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-		<javac srcdir="src" destdir="war/WEB-INF/classes" classpathref="project.classpath" debug="on" includeantruntime="false" />
+		<javac source="1.6" target="1.6" encoding="UTF8" srcdir="src" destdir="${app_classes_dir}"
+			   classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
 
 	<target name="translate" depends="compile" description="Generates the en.properties file from handlebars template and JS files">
@@ -133,35 +145,11 @@
 		<enhance failonerror="true" api="JDO">
 			<classpath>
 				<pathelement path="${sdk.dir}/lib/appengine-tools-api.jar" />
-				<pathelement path="war/WEB-INF/classes" />
-				<fileset dir="war/WEB-INF/lib" includes="*.jar" />
+				<pathelement path="${app_classes_dir}" />
+				<fileset dir="${app_lib_dir}" includes="*.jar" />
 			</classpath>
-			<!--<fileset dir="war/WEB-INF/classes" includes="**/*.class" />-->
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/device/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/framework/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/gis/geography/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/survey/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/task/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/user/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/weightsmeasures/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/dataentry/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/gis/map/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/sms/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/diagnostics/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/editorial/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/notification/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/operations/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/auth/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/messaging/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/common/data/spreadsheet/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/standards/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/surveyal/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="com/gallatinsystems/metric/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/analytics/domain/*.class" />
-			<fileset dir="war/WEB-INF/classes" includes="org/waterforpeople/mapping/domain/*.class" />
-
-
+			<fileset dir="${app_classes_dir}/com/gallatinsystems" includes="**/domain/*.class" />
+			<fileset dir="${app_classes_dir}/org/waterforpeople/mapping" includes="**/domain/*.class" />
 		</enhance>
 	</target>
 
@@ -195,7 +183,7 @@
 		<fail message="You need to rebuild the applet jar before updating an instance, e.g.: ant -f appletBuild.xml clean compile package signjar" unless="${md5OK}"/>
 
 		<delete failonerror="false">
-			<fileset dir="war/WEB-INF/deploy" includes="**/*.symbolMap"/>
+			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
 		</delete>
 
 		<delete file="war/PlacemarksNewLook.vm" failonerror="false" />
