@@ -224,6 +224,16 @@ FLOW.QuestionView = FLOW.View.extend({
 		var qDeleteId;
 		qDeleteId = this.content.get('keyId');
 
+		//are we saving / loading anything?
+		if (FLOW.savingMessageControl.get('areLoadingBool') || FLOW.savingMessageControl.get('areSavingBool')){
+				FLOW.dialogControl.set('activeAction', 'ignore');
+				FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
+				FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
+				FLOW.dialogControl.set('showCANCEL', false);
+				FLOW.dialogControl.set('showDialog', true);
+			return;
+		}
+
 		// check if deleting this question is allowed
 		// if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
 		FLOW.store.findQuery(FLOW.Question, {
