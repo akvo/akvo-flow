@@ -142,8 +142,15 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
         return true;
       }
     });
-
     return(surveys.get('content').length > 0);
+  },
+
+  deleteSurveyGroup: function(keyId){
+    var surveyGroup;
+    surveyGroup = FLOW.store.find(FLOW.SurveyGroup, keyId);
+    surveyGroup.deleteRecord();
+    FLOW.store.commit();
+    FLOW.selectedControl.set('selectedSurveyGroup', null);
   }
 });
 
@@ -197,6 +204,13 @@ FLOW.surveyControl = Ember.ArrayController.create({
       action: 'publishSurvey',
       surveyId: surveyId
     });
+  },
+
+  deleteSurvey: function(keyId){
+    var survey;
+    survey = FLOW.store.find(FLOW.Survey, keyId);
+    survey.deleteRecord();
+    FLOW.store.commit();
   }
 });
 

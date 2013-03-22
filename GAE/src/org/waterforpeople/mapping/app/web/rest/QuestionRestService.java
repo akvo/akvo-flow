@@ -102,7 +102,7 @@ public class QuestionRestService {
 		if (preflight != null && preflight.equals("delete")
 				&& questionId != null) {
 			QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-			statusDto.setStatus("preflight-delete");
+			statusDto.setStatus("preflight-delete-question");
 			statusDto.setMessage("cannot_delete");
 			
 			if (qasDao.listByQuestion(questionId).size() == 0) {

@@ -43,7 +43,7 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       FLOW.savingMessageControl.set('areLoadingBool', false);
       FLOW.savingMessageControl.set('areSavingBool', false);
 
-      if (status === 'preflight-delete'){
+      if (status === 'preflight-delete-question'){
         if (msg === 'can_delete'){
           // do deletion
           FLOW.questionControl.deleteQuestion(keyId);
@@ -51,6 +51,34 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
           FLOW.dialogControl.set('activeAction', 'ignore');
           FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_question'));
           FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_question_text'));
+          FLOW.dialogControl.set('showCANCEL', false);
+          FLOW.dialogControl.set('showDialog', true);
+        }
+        return;
+      }
+
+      if (status === 'preflight-delete-survey'){
+        if (msg === 'can_delete'){
+          // do deletion
+          FLOW.surveyControl.deleteSurvey(keyId);
+        } else {
+          FLOW.dialogControl.set('activeAction', 'ignore');
+          FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_survey'));
+          FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_survey_text'));
+          FLOW.dialogControl.set('showCANCEL', false);
+          FLOW.dialogControl.set('showDialog', true);
+        }
+        return;
+      }
+
+      if (status === 'preflight-delete-surveygroup'){
+        if (msg === 'can_delete'){
+          // do deletion
+          FLOW.surveyGroupControl.deleteSurveyGroup(keyId);
+        } else {
+          FLOW.dialogControl.set('activeAction', 'ignore');
+          FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_surveygroup'));
+          FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_surveygroup_text'));
           FLOW.dialogControl.set('showCANCEL', false);
           FLOW.dialogControl.set('showDialog', true);
         }

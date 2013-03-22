@@ -168,17 +168,9 @@ FLOW.dialogControl = Ember.Object.create({
 
     switch(this.get('activeAction')) {
     case "delSG":
-      if(FLOW.surveyGroupControl.containsSurveys()) {
-        this.set('activeAction', "ignore");
-        this.set('header', Ember.String.loc('_sg_delete_not_possible_header'));
-        this.set('message', Ember.String.loc('_sg_delete_not_possible_message'));
-        this.set('showCANCEL', false);
-        this.set('showDialog', true);
-      } else {
         this.set('header', Ember.String.loc('_sg_delete_header'));
         this.set('message', Ember.String.loc('_this_cant_be_undo'));
         this.set('showDialog', true);
-      }
       break;
 
     case "delS":
