@@ -115,8 +115,7 @@
 	</target>
 
 	<target name="GWTcompile" depends="copyjars,compile">
-		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true">
-			<jvmarg value="-Xmx512M" />
+		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true" maxmemory="512m">
 			<arg value="org.waterforpeople.mapping.portal.portal" />
 			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
 			<arg value="org.waterforpeople.mapping.surveyentry.surveyentry" />
