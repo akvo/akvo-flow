@@ -21,6 +21,12 @@ if [ -n "$1" ]; then
     BUILD_MODE="$1"
 fi
 
+echo ">> Java compiler:"
+java -version
+
+echo ">> Ant runner:"
+ant -version
+
 PROJECT_HOME="$(cd `dirname "$THIS_SCRIPT"`/.. && pwd)"
 
 cd "$PROJECT_HOME"
