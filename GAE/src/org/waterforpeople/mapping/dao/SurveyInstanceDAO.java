@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -34,6 +35,11 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
@@ -380,6 +386,62 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		q.declareParameters("String qidParam");
 		prepareCursor(cursorString, q);
 		return (List<QuestionAnswerStore>) q.execute(questionId);
+	}
+
+	/**
+	 * Deletes a surveyInstance and all its related questionAnswerStore objects
+	 * Based on the version in DataBackoutServlet
+	 * 
+	 * @param item
+	 * @return
+	 */
+	// TODO update lastSurveyalInstanceId in surveydLocale objects
+	public void deleteSurveyInstance(SurveyInstance item) {
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
+		QuestionDao qDao = new QuestionDao();
+		Long surveyInstanceId = item.getKey().getId();
+
+		List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStore(
+				surveyInstanceId, null);
+
+		if (qasList != null && qasList.size() > 0) {
+			// update the questionAnswerSummary counts
+			for (QuestionAnswerStore qasItem : qasList) {
+				// if the questionAnswerStore item belongs to an OPTION type,
+				// update the count
+				Question q = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
+				if (q != null && Question.Type.OPTION.equals(q.getType())) {
+					SurveyQuestionSummaryDao.incrementCount(qasItem, -1);
+				}
+			}
+
+			// delete the questionAnswerStore objects in a single datastore
+			// operation
+			siDao.delete(qasList);
+		}
+
+		// delete the surveyInstance
+		SurveyInstance instance = siDao.getByKey(item.getKey());
+		if (instance != null) {
+			siDao.delete(instance);
+		}
+
+		// delete surveyalValue items
+		List<SurveyalValue> vals = localeDao
+				.listSurveyalValuesByInstance(surveyInstanceId);
+		if (vals != null && vals.size() > 0) {
+			Long localeId = vals.get(0).getSurveyedLocaleId();
+			localeDao.delete(vals);
+			// now see if there are any other values for the same locale
+			List<SurveyalValue> otherVals = localeDao
+					.listValuesByLocale(localeId);
+			if (otherVals == null || otherVals.size() == 0) {
+				// if there are no other values, delete the locale
+				SurveyedLocale l = localeDao.getByKey(localeId);
+				localeDao.delete(l);
+			}
+		}
 	}
 
 	/**

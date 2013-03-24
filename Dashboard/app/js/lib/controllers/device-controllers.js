@@ -1,9 +1,18 @@
 FLOW.deviceGroupControl = Ember.ArrayController.create({
   content: null,
+  contentNoUnassigned:null,
+
+  filterDevices: function (){
+    this.set('contentNoUnassigned',FLOW.store.filter(FLOW.DeviceGroup, function(item) {
+          return (item.get('keyId') == 1) ? false : true;
+        }));
+  },
 
   populate: function() {
     var unassigned;
 
+    // create a special record, which will to be saved to the datastore
+    // to represent all devices unassigned to a device group.
     unassigned = FLOW.store.filter(FLOW.DeviceGroup, function(item) {
       return item.get('keyId') == 1;
     });
@@ -16,6 +25,7 @@ FLOW.deviceGroupControl = Ember.ArrayController.create({
       unassigned.get('stateManager').send('becameClean');
     }
     this.set('content', FLOW.store.find(FLOW.DeviceGroup));
+    this.filterDevices();
   }
 });
 
@@ -61,6 +71,7 @@ FLOW.devicesInGroupControl = Ember.ArrayController.create({
     if(FLOW.selectedControl.get('selectedDeviceGroup') && FLOW.selectedControl.selectedDeviceGroup.get('keyId') !== null) {
       deviceGroupId = FLOW.selectedControl.selectedDeviceGroup.get('keyId');
 
+      // 1 means all unassigned devices
       if(deviceGroupId == 1) {
         this.set('content', FLOW.store.filter(FLOW.Device, function(item) {
           return(Ember.empty(item.get('deviceGroup')));

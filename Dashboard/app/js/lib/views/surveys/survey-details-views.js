@@ -49,6 +49,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 			// if we have a surveyPointType, compare them
 			isDirty = isDirty || this.surveyPointType.get('value') != survey.get('pointType');
 		} else {
+			isDirty = isDirty || this.get('surveyPointType') === null;
 			// if we don't have one now, but we had one before, it has also changed
 			// TODO - this breaks when the pointType is an old point Type
 			//isDirty = isDirty || !Ember.none(survey.get('pointType'));
@@ -82,6 +83,16 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 
 	doSaveSurvey: function() {
 		var survey;
+		// validation
+		if (this.get('surveyPointType') === null){
+			FLOW.dialogControl.set('activeAction', 'ignore');
+			FLOW.dialogControl.set('header', Ember.String.loc('_survey_type_not_set'));
+			FLOW.dialogControl.set('message', Ember.String.loc('_survey_type_not_set_text'));
+			FLOW.dialogControl.set('showCANCEL', false);
+			FLOW.dialogControl.set('showDialog', true);
+			return;
+		}
+
 		survey = FLOW.selectedControl.get('selectedSurvey');
 		survey.set('name', this.get('surveyTitle'));
 		survey.set('code', this.get('surveyTitle'));
@@ -107,6 +118,16 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 
 	doPublishSurvey: function() {
 		var survey;
+		// validation
+		if (this.get('surveyPointType') === null){
+			FLOW.dialogControl.set('activeAction', 'ignore');
+			FLOW.dialogControl.set('header', Ember.String.loc('_survey_type_not_set'));
+			FLOW.dialogControl.set('message', Ember.String.loc('_survey_type_not_set_text'));
+			FLOW.dialogControl.set('showCANCEL', false);
+			FLOW.dialogControl.set('showDialog', true);
+			return;
+		}
+
 		// check if survey has unsaved changes
 		survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
 		this.setIsDirty();
@@ -215,27 +236,41 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 	}.property('FLOW.selectedControl.selectedForCopyQuestionGroup'),
 
 	// execute group delete
-	// TODO should this be allowed when questions are present?
 	deleteQuestionGroup: function() {
-		var qgDeleteId, questionGroup, questionsGroupsInSurvey, sId, qgOrder;
+		var qgDeleteId, questionGroup, questionsGroupsInSurvey, sId, qgOrder, questionsInGroup;
 		qgDeleteId = this.content.get('keyId');
 		sId = this.content.get('surveyId');
 		questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
 		qgOrder = questionGroup.get('order');
+		questionsInGroup = FLOW.store.filter(FLOW.Question,function (item){
+			return(item.get('questionGroupId') == qgDeleteId);
+		});
+
+		if (questionsInGroup.get('content').length > 0){
+			FLOW.dialogControl.set('activeAction', "ignore");
+			FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_questiongroup'));
+			FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_questiongroup_text'));
+			FLOW.dialogControl.set('showCANCEL', false);
+			FLOW.dialogControl.set('showDialog', true);
+			return;
+		}
+
+		// if we are here, we can safely delete
 		questionGroup.deleteRecord();
 		// restore order
 		questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function(item) {
-	        return(item.get('surveyId') == sId);
-	      });
-		
+			return(item.get('surveyId') == sId);
+		});
+
 		questionGroupsInSurvey.forEach(function(item) {
 			if (item.get('order') > qgOrder) {
 				item.set('order',item.get('order')-1);
 			}
 		});
-		
+
 		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
+	
 	},
 
 	// insert group

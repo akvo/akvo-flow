@@ -40,9 +40,13 @@ FLOW.SurveyGroupSurveyView = FLOW.View.extend({
 	deleteSurvey: function() {
 		var sId = this.content.get('id');
 		var survey = FLOW.store.find(FLOW.Survey, sId);
-		survey.deleteRecord();
-		FLOW.store.commit();
-		this.set('showDeleteSurveyDialogBool', false);
+
+		// do preflight check if deleting this survey is allowed
+		// if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
+		FLOW.store.findQuery(FLOW.Survey, {
+      preflight: 'delete',
+      surveyId: sId
+    });
 	},
 
 	// fired when 'inspect data' is clicked in the survey item display
@@ -110,9 +114,13 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 	deleteSurveyGroup: function() {
 		var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
 		var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
-		surveyGroup.deleteRecord();
-		FLOW.store.commit();
-		FLOW.selectedControl.set('selectedSurveyGroup', null);
+		
+		// do preflight check if deleting this survey is allowed
+		// if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
+		FLOW.store.findQuery(FLOW.SurveyGroup, {
+      preflight: 'delete',
+      surveyGroupId: sgId
+    });
 	},
 
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store

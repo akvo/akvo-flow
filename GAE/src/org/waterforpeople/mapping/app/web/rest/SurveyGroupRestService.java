@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
@@ -35,6 +36,7 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyGroupPayload;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
@@ -50,13 +52,36 @@ public class SurveyGroupRestService {
 	@Inject
 	private SurveyDAO surveyDao;
 
-	//TODO put in meta information?
+	// TODO put in meta information?
 	// list all survey groups
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<SurveyGroupDto>> listSurveyGroups() {
-		final Map<String, List<SurveyGroupDto>> response = new HashMap<String, List<SurveyGroupDto>>();
+	public Map<String, Object> listSurveyGroups(
+			@RequestParam(value = "preflight", defaultValue = "") String preflight,
+			@RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId) {
+		final Map<String, Object> response = new HashMap<String, Object>();
 		List<SurveyGroupDto> results = new ArrayList<SurveyGroupDto>();
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("");
+		statusDto.setMessage("");
+
+		// if this is a pre-flight delete check, handle that
+		if (preflight != null && preflight.equals("delete") && surveyGroupId != null) {
+			SurveyDAO sDao = new SurveyDAO();
+			statusDto.setStatus("preflight-delete-surveygroup");
+			statusDto.setMessage("cannot_delete");
+
+			if (sDao.listSurveysByGroup(surveyGroupId).size() == 0) {
+				statusDto.setMessage("can_delete");
+				statusDto.setKeyId(surveyGroupId);
+			}
+
+			response.put("survey_groups", results);
+			response.put("meta", statusDto);
+			return response;
+		}
+
+		// if we are here, it is a regular request
 		List<SurveyGroup> surveys = surveyGroupDao.list(Constants.ALL_RESULTS);
 		if (surveys != null) {
 			for (SurveyGroup s : surveys) {
@@ -121,7 +146,7 @@ public class SurveyGroupRestService {
 
 		RestStatusDto statusDto = new RestStatusDto();
 		statusDto.setStatus("failed");
-		
+
 		// if the POST data contains a valid surveyGroupDto, continue.
 		// Otherwise, server 400 Bad Request
 		if (surveyGroupDto != null) {
@@ -160,7 +185,7 @@ public class SurveyGroupRestService {
 		final SurveyGroupDto surveyGroupDto = payLoad.getSurvey_group();
 		final Map<String, Object> response = new HashMap<String, Object>();
 		SurveyGroupDto dto = null;
-		
+
 		RestStatusDto statusDto = new RestStatusDto();
 		statusDto.setStatus("failed");
 

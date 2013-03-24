@@ -58,6 +58,7 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 			answers = new String[] { answerText };
 		}
 		for (int i = 0; i < answers.length; i++) {
+			// find surveyQuestionSummary objects with the right question id and answer text
 			javax.jdo.Query query = pm.newQuery(SurveyQuestionSummary.class);
 			query
 					.setFilter("questionId == questionIdParam && response == answerParam");
@@ -67,22 +68,24 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 					answers[i]);
 			SurveyQuestionSummary summary = null;
 			if ((results == null || results.size() == 0) && unit > 0) {
+				// no previous surveyQuestionSummary for this answer, make a new one
 				summary = new SurveyQuestionSummary();
 				summary.setCount(new Long(unit));
 				summary.setQuestionId(answer.getQuestionID());
 				summary.setResponse(answers[i]);
 			} else if (results != null && results.size() > 0) {
+				// update an existing questionAnswerSummary
 				summary = (SurveyQuestionSummary) results.get(0);
 				summary.setCount(summary.getCount() + unit);
 			}
 			if (summary != null) {
+				// if we have updated or created a surveyQuestionSummary, save it
 				SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
 				if (summary.getCount() > 0) {
 					summaryDao.save(summary);
 				} else if (summary.getKey() != null) {
 					// if count has been decremented to 0 and the object is
-					// already
-					// persisted, delete it
+					// already persisted, delete it
 					summaryDao.delete(summary);
 				}
 			}

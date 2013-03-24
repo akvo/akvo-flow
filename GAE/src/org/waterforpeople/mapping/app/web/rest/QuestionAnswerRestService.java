@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.QuestionAnswerStoreDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionAnswerStorePayload;
@@ -40,6 +41,9 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+
 
 @Controller
 @RequestMapping("/question_answers")
@@ -107,6 +111,7 @@ public class QuestionAnswerRestService {
 	}
 
 	// find a single questionAnswerStore by the questionAnswerStoreId
+	// TODO include question text in dto
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
 	public Map<String, QuestionAnswerStoreDto> findQuestionAnswerStore(
@@ -143,23 +148,52 @@ public class QuestionAnswerRestService {
 		// server will respond with 400 Bad Request
 		if (questionAnswerStoreDto != null) {
 			Long keyId = questionAnswerStoreDto.getKeyId();
-			QuestionAnswerStore s;
+			QuestionAnswerStore qa;
 
 			// if the questionAnswerStoreDto has a key, try to get the
 			// questionAnswerStore.
 			if (keyId != null) {
-				s = qaDao.getByKey(keyId);
+				qa = qaDao.getByKey(keyId);
 				// if we find the questionAnswerStore, update it's properties
-				if (s != null) {
+				if (qa != null) {
+					//Before updating the properties, fix the questionAnswerSummary counts if it is an OPTION question
+					QuestionDao qDao = new QuestionDao();
+					Question q = qDao.getByKey(Long.parseLong(qa.getQuestionID()));
+					if (q != null && Question.Type.OPTION.equals(q.getType())) {
+						// decrease count of current item
+						SurveyQuestionSummaryDao.incrementCount(qa, -1);
+						
+						// increase count of new item
+						String newVal = questionAnswerStoreDto.getValue();
+						if (newVal != null && newVal.trim().length() > 0){
+							SurveyQuestionSummaryDao.incrementCount(constructQAS(qa.getQuestionID(),newVal),1);
+						}		
+					}					
 					// copy the properties, except the createdDateTime property,
 					// because it is set in the Dao.
-					BeanUtils.copyProperties(questionAnswerStoreDto, s,
+					BeanUtils.copyProperties(questionAnswerStoreDto, qa,
 							new String[] { "createdDateTime", "status",
 									"version", "lastUpdateDateTime",
-									"displayName", "questionGroupList" });
-					s = qaDao.save(s);
+									"displayName", "questionGroupList", "questionText" });
+					qa = qaDao.save(qa);
+					
+					// next, update the corresponding surveyalValue object
+					// find surveyalValue based on surveyInstanceId and questionId
+					Long surveyInstanceId = qa.getSurveyInstanceId();
+					String questionId = qa.getQuestionID();
+					SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+					List<SurveyalValue> svals = slDao.listSVByQuestionAndSurveyInstance(surveyInstanceId,Long.parseLong(questionId)); 
+					if (svals != null && svals.size() > 0){
+						SurveyalValue sval = svals.get(0);
+						sval.setStringValue(qa.getValue());
+						slDao.save(sval);
+					}
+					
+					// return result to the Dashboard
 					dto = new QuestionAnswerStoreDto();
-					DtoMarshaller.copyToDto(s, dto);
+					DtoMarshaller.copyToDto(qa, dto);
+					// give back the question text as we received it
+					dto.setQuestionText(questionAnswerStoreDto.getQuestionText());
 					statusDto.setStatus("ok");
 
 					try {
@@ -181,4 +215,20 @@ public class QuestionAnswerRestService {
 		return response;
 	}
 
+	
+	/**
+	 * helper method to create a new QuestionAnswerStore object using the values
+	 * passed in.
+	 * Same method as in SurveyQuestionSummaryUpdater
+	 * @param id
+	 * @param value
+	 * @return
+	 */
+	private QuestionAnswerStore constructQAS(String id, String value) {
+		QuestionAnswerStore qas = new QuestionAnswerStore();
+		qas.setQuestionID(id);
+		qas.setValue(value);
+		return qas;
+	}
+	
 }

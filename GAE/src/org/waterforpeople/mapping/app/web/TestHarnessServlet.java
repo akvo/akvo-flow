@@ -747,6 +747,7 @@ public class TestHarnessServlet extends HttpServlet {
 			Country c = new Country();
 			c.setIsoAlpha2Code("HN");
 			c.setName("Honduras");
+			c.setIncludeInExternal(true);
 			c.setCentroidLat(14.7889035);
 			c.setCentroidLon(-86.9500379);
 			c.setZoomLevel(8);
@@ -757,6 +758,7 @@ public class TestHarnessServlet extends HttpServlet {
 			Country c2 = new Country();
 			c2.setIsoAlpha2Code("MW");
 			c2.setName("Malawi");
+			c2.setIncludeInExternal(true);
 			c2.setCentroidLat(-13.0118377);
 			c2.setCentroidLon(33.9984484);
 			c2.setZoomLevel(7);
@@ -766,6 +768,7 @@ public class TestHarnessServlet extends HttpServlet {
 			Country c3 = new Country();
 			c3.setIsoAlpha2Code("UG");
 			c3.setName("Uganda");
+			c3.setIncludeInExternal(true);
 			c3.setCentroidLat(1.1027);
 			c3.setCentroidLon(32.3968);
 			c3.setZoomLevel(7);
@@ -775,6 +778,7 @@ public class TestHarnessServlet extends HttpServlet {
 			Country c4 = new Country();
 			c4.setIsoAlpha2Code("KE");
 			c4.setName("Kenya");
+			c4.setIncludeInExternal(true);
 			c4.setCentroidLat(-1.26103461);
 			c4.setCentroidLon(36.74724467);
 			c4.setZoomLevel(7);

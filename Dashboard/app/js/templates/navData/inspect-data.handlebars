@@ -68,6 +68,7 @@
         </thead>
         <tbody>
           {{#each SI in FLOW.surveyInstanceControl}}
+            {{#unless SI.isDeleted}}
             <tr>
               <td class="device">{{SI.keyId}}</td>
               <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
@@ -78,8 +79,12 @@
                 <a {{action showEditSurveyInstanceWindow SI target="this" }}>
                   {{t _edit}}
                 </a>
+                {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl"}} >
+                  {{t _delete}}
+                </a>{{/view}}
               </td>
             </tr>
+            {{/unless}}
             {{/each}}
         </tbody>
         <tfoot>
@@ -110,8 +115,8 @@
             <nav class="editAnswerMenu"> 
             <ul>  
               <li class="prevBtn"><a {{action "doPreviousSI" target="this"}}>&lsaquo; {{t _previous_record}}</a></li>
-              <li class="deleteBtn"><a {{action "doDeleteSI" target="this"}} class="smallBtn">{{t _delete}}</a></li>
-              <li class="saveBtn"><a {{action "doSaveSI" target="this"}} class="smallBtn">{{t _save}}</a></li>
+              <li class="deleteBtn"><a {{action confirm FLOW.dialogControl.delSI target="FLOW.dialogControl"}} class="smallBtn">{{t _delete}}</a></li>
+             <!--  <li class="saveBtn"><a {{action "doSaveSI" target="this"}} class="smallBtn">{{t _save}}</a></li> -->
               <li class="nextBtn"><a {{action "doNextSI" target="this"}}>{{t _next_record}} &rsaquo;</a></li>
             </ul>
           </nav>
@@ -163,7 +168,11 @@
                       <a {{action doSave target="this"}} class="smallBtn">{{t _save}}</a> <a {{action doCancel target="this"}}>{{t _cancel}}</a>
                     {{else}}
                       {{#if view.isNotEditable}}
-                        {{QA.value}}
+                        {{#if view.isPhotoType}}
+                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open photo</a> 
+                        {{else}}
+                          {{QA.value}}
+                        {{/if}}
                       {{else}}
                         {{#if view.isDateType}}
                         <a {{action doEdit target="this"}}>{{#with QA}}{{date3 value}}{{/with}}</a>

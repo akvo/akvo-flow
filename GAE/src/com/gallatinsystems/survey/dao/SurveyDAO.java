@@ -261,7 +261,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 							+ item.getKey().getId()
 							+ " surveyCode:"
 							+ item.getCode()
-							+ " because there is a QuestionAnswerStore value for this survey. Please delete all survey response first");
+							+ " because there are already survey responses for this survey. Please delete all survey responses first");
 		}
 	}
 
