@@ -112,6 +112,18 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				hasErrors = true;
 			}
 
+			if (parts.length > 5) {
+				if (si.getSubmitterName() == null
+						|| si.getSubmitterName().trim().length() == 0) {
+					si.setSubmitterName(parts[5].trim());
+				}
+			}
+			if (parts.length >= 9) {
+				if (si.getDeviceIdentifier() == null) {
+					si.setDeviceIdentifier(parts[8].trim());
+				}
+			}
+			
 			if (si.getSurveyId() == null) {
 				try {
 					if (collDate != null) {
@@ -160,17 +172,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 			if (parts.length > 4) {
 				qas.setValue(parts[4].trim());
-			}
-			if (parts.length > 5) {
-				if (si.getSubmitterName() == null
-						|| si.getSubmitterName().trim().length() == 0) {
-					si.setSubmitterName(parts[5].trim());
-				}
-			}
-			if (parts.length >= 9) {
-				if (si.getDeviceIdentifier() == null) {
-					si.setDeviceIdentifier(parts[8].trim());
-				}
 			}
 			if (parts.length >= 10) {
 				qas.setScoredValue(parts[9].trim());

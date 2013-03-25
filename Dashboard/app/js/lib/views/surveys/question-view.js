@@ -156,17 +156,24 @@ FLOW.QuestionView = FLOW.View.extend({
 		var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal;
 
 		// validation
-		if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))  ){
-			if (this.get('minVal') >= this.get('maxVal')){
-				FLOW.dialogControl.set('activeAction', 'ignore');
-				FLOW.dialogControl.set('header', Ember.String.loc('_min_max_not_correct'));
-				FLOW.dialogControl.set('message', Ember.String.loc('_min_larger_than_max_or_equal'));
-				FLOW.dialogControl.set('showCANCEL', false);
-				FLOW.dialogControl.set('showDialog', true);
-				return;
+		if (this.type.get('value') == 'NUMBER'){
+			if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))  ){
+				if (this.get('minVal') >= this.get('maxVal')){
+					FLOW.dialogControl.set('activeAction', 'ignore');
+					FLOW.dialogControl.set('header', Ember.String.loc('_min_max_not_correct'));
+					FLOW.dialogControl.set('message', Ember.String.loc('_min_larger_than_max_or_equal'));
+					FLOW.dialogControl.set('showCANCEL', false);
+					FLOW.dialogControl.set('showDialog', true);
+					return;
+				}
 			}
 		}
-
+		if (this.type.get('value') !== 'NUMBER'){
+			this.set('minVal', null);
+			this.set('maxVal', null);
+			this.set('allowSign',false);
+			this.set('allowDecimal',false);
+		}
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 		FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
 		FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
