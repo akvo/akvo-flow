@@ -16,27 +16,18 @@
 
 THIS_SCRIPT="$0"
 INSTANCE_NAME="$1"
-BUILD_MODE="dev"
+BUILD_PROPERTIES_DIR="$2"
 
 function display_usage_and_exit
 {
-    printf "Usage: `basename $THIS_SCRIPT` <instance_name> [build_mode]\n"
-    printf "       where [build_mode] is ether 'dev' or 'ci' -- default is 'dev'\n"
+    printf "Usage: `basename $THIS_SCRIPT` <instance_name> [build_properties_directory]\n"
+    printf "       where [build_properties_directory] contains an external build.properties file to use\n"
     exit -1
 }
 
-function exit_if_instance_name_parameter_is_missing
-{
-    if [[ -z "$INSTANCE_NAME" ]]; then
-        echo "## Missing parameter: <instance_name>"
-        display_usage_and_exit
-    fi
-}
-
-exit_if_instance_name_parameter_is_missing
-
-if [[ -n "$2" ]]; then
-    BUILD_MODE="$2"
+if [[ -z "$INSTANCE_NAME" ]]; then
+    echo "## Missing parameter: <instance_name>"
+    display_usage_and_exit
 fi
 
 echo ">> Java compiler:"
@@ -44,11 +35,17 @@ java -version
 
 printf "\n>> Ant runner:\n"
 ant -version
+printf "\n"
 
 SCRIPTS_HOME="$(cd `dirname "$THIS_SCRIPT"` && pwd)"
 PROJECT_HOME="$(cd "$SCRIPTS_HOME"/.. && pwd)"
 
-"$SCRIPTS_HOME"/exit_if_build_properties_missing.sh "$BUILD_MODE"
+cd "$PROJECT_HOME"
+
+if [[ -n "$BUILD_PROPERTIES_DIR" ]]; then
+    printf ">> Linking build.properties from $BUILD_PROPERTIES_DIR\n\n"
+    ln -s "$BUILD_PROPERTIES_DIR/build.properties"
+fi
 
 if [ $? -eq 0 ]; then
     cd "$PROJECT_HOME"
