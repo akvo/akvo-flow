@@ -15,24 +15,21 @@
 #   The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
 
 THIS_SCRIPT="$0"
-BUILD_MODE="dev"
+BUILD_MODE="$1"
 
-if [ -n "$1" ]; then
-    BUILD_MODE="$1"
-fi
+PROJECT_HOME="$(cd `dirname "$THIS_SCRIPT"`/.. && pwd)"
 
-echo ">> Java compiler:"
-java -version
+cd "$PROJECT_HOME"
+printf "\n>> Building from `pwd`\n"
 
-printf "\n>> Ant runner:\n"
-ant -version
-
-SCRIPTS_HOME="$(cd `dirname "$THIS_SCRIPT"` && pwd)"
-PROJECT_HOME="$(cd "$SCRIPTS_HOME"/.. && pwd)"
-
-"$SCRIPTS_HOME"/exit_if_build_properties_missing.sh "$BUILD_MODE"
-
-if [ $? -eq 0 ]; then
-    cd "$PROJECT_HOME"
-    ant clean compile datanucleusenhance GWTcompile
+if [ -e "build.properties" ]; then
+    printf ">> Found expected build.properties file in $PROJECT_HOME\n\n"
+else
+    if [ $BUILD_MODE = "ci" ]; then
+        printf ">> Linking build properties for CI build\n\n"
+        ln -s /usr/local/etc/akvo/build/flow/server/build.properties
+    else
+        printf "## Missing build.properties file in $PROJECT_HOME\n\n"
+        exit -1
+    fi
 fi

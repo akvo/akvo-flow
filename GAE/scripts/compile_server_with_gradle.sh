@@ -14,18 +14,14 @@
 #
 #   The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
 
-THIS_SCRIPT="$0"
+THIS_SCRIPT=$0
 BUILD_MODE="dev"
 
 if [ -n "$1" ]; then
     BUILD_MODE="$1"
 fi
 
-echo ">> Java compiler:"
-java -version
-
-printf "\n>> Ant runner:\n"
-ant -version
+gradle -version
 
 SCRIPTS_HOME="$(cd `dirname "$THIS_SCRIPT"` && pwd)"
 PROJECT_HOME="$(cd "$SCRIPTS_HOME"/.. && pwd)"
@@ -34,5 +30,5 @@ PROJECT_HOME="$(cd "$SCRIPTS_HOME"/.. && pwd)"
 
 if [ $? -eq 0 ]; then
     cd "$PROJECT_HOME"
-    ant clean compile datanucleusenhance GWTcompile
+    gradle
 fi
