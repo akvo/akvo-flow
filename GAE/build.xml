@@ -47,18 +47,9 @@
 
 	</path>
 
-	<target name="check-files">
-	    <available file="build.properties" property="properties.file.exists" />
-	</target>
-
-	<target name="init" depends="check-files">
-	    <fail message="build.properties file doesn't exist">
-	        <condition>
-	            <not>
-	                <isset property="properties.file.exists"/>
-	            </not>
-	        </condition>
-	    </fail>
+	<target name="verifyBuildProperties">
+		<available file="build.properties" property="properties_file_exists" />
+	    <fail unless="properties_file_exists" message="Missing build.properties file in ${basedir}" />
 	</target>
 
 	<target name="checkForBuiltFiles" description="Checks for any compiled files">
@@ -70,14 +61,14 @@
     </target>
 
     <target name="verifyInstanceConfig" description="Fails the build if instance config details are missing or invalid">
-		<fail unless="config.home" message="[config.home] path must be present in build.properties" />
+		<fail unless="config.home" message="[config.home] path must be present in build.properties file" />
 		<fail unless="instance.name" message="[instance.name] must be specified, e.g. ant copyconfig -Dinstance.name=some-flow-instance" />
 		<property name="instance.config.dir" location="${config.home}/${instance.name}" />
 		<available file="${instance.config.dir}" type="dir" property="instance_config_exists" />
 		<fail unless="instance_config_exists" message="Instance config directory not found: ${instance.config.dir}" />
     </target>
 
-	<target name="copyconfig" depends="init, verifyInstanceConfig" description="Copies the server configuration files">
+	<target name="copyconfig" depends="verifyBuildProperties, verifyInstanceConfig" description="Copies the server configuration files">
 		<property name="instance.config.dir" location="${config.home}/${instance.name}" />
 		<copy file="${instance.config.dir}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
 		<copy file="${instance.config.dir}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
@@ -105,7 +96,7 @@
 		<replace file="../WFPMapping/device/survey/res/values/arrays.xml" token="http://@@@@.appspot.com" value="http://${app.id}.appspot.com"/>
 	</target>
 
-	<target name="copyjars" depends="init" description="Copies the App Engine JARs to the WAR.">
+	<target name="copyjars" depends="verifyBuildProperties" description="Copies the App Engine JARs to the WAR.">
 		<copy todir="${app_lib_dir}" flatten="true" verbose="true">
 			<fileset dir="${sdk.dir}/lib/user">
 				<include name="**/*.jar" />
@@ -142,7 +133,7 @@
     </java>
   </target>
 
-	<target name="datanucleusenhance" depends="init, compile" description="Performs JDO enhancement on compiled data classes.">
+	<target name="datanucleusenhance" depends="verifyBuildProperties, compile" description="Performs JDO enhancement on compiled data classes.">
 		<enhance failonerror="true" api="JDO">
 			<classpath>
 				<pathelement path="${sdk.dir}/lib/appengine-tools-api.jar" />
