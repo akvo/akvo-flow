@@ -15,10 +15,28 @@
 #   The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
 
 THIS_SCRIPT="$0"
+INSTANCE_NAME="$1"
 BUILD_MODE="dev"
 
-if [ -n "$1" ]; then
-    BUILD_MODE="$1"
+function display_usage_and_exit
+{
+    printf "Usage: `basename $THIS_SCRIPT` <instance_name> [build_mode]\n"
+    printf "       where [build_mode] is ether 'dev' or 'ci' -- default is 'dev'\n"
+    exit -1
+}
+
+function exit_if_instance_name_parameter_is_missing
+{
+    if [[ -z "$INSTANCE_NAME" ]]; then
+        echo "## Missing parameter: <instance_name>"
+        display_usage_and_exit
+    fi
+}
+
+exit_if_instance_name_parameter_is_missing
+
+if [[ -n "$2" ]]; then
+    BUILD_MODE="$2"
 fi
 
 echo ">> Java compiler:"
@@ -34,5 +52,5 @@ PROJECT_HOME="$(cd "$SCRIPTS_HOME"/.. && pwd)"
 
 if [ $? -eq 0 ]; then
     cd "$PROJECT_HOME"
-    ant clean compile datanucleusenhance GWTcompile
+    ant -Dinstance.name=$INSTANCE_NAME clean copyconfig compile datanucleusenhance GWTcompile
 fi

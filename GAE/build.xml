@@ -69,29 +69,31 @@
     	<delete dir="${app_classes_dir}" />
     </target>
 
-	<target name="copyconfig" depends="init" description="Copies the server configuration files">
-		<fail message="[config] property path must be present, e.g.: ant copyconfig -Dconfig=/path/to/config/folder">
-			<condition>
-				<not>
-					<isset property="config" />
-				</not>
-			</condition>
-		</fail>
-		<copy file="${config}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
-		<copy file="${config}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
-		<copy file="${config}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>
-		<copy file="${config}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true" failonerror="false"/>
+    <target name="verifyInstanceConfig" description="Fails the build if instance config details are missing or invalid">
+		<fail unless="config.home" message="[config.home] path must be present in build.properties" />
+		<fail unless="instance.name" message="[instance.name] must be specified, e.g. ant copyconfig -Dinstance.name=some-flow-instance" />
+		<property name="instance.config.dir" location="${config.home}/${instance.name}" />
+		<available file="${instance.config.dir}" type="dir" property="instance_config_exists" />
+		<fail unless="instance_config_exists" message="Instance config directory not found: ${instance.config.dir}" />
+    </target>
+
+	<target name="copyconfig" depends="init, verifyInstanceConfig" description="Copies the server configuration files">
+		<property name="instance.config.dir" location="${config.home}/${instance.name}" />
+		<copy file="${instance.config.dir}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
+		<copy file="${instance.config.dir}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
+		<copy file="${instance.config.dir}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>
+		<copy file="${instance.config.dir}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${instance.config.dir}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${instance.config.dir}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${instance.config.dir}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${instance.config.dir}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${instance.config.dir}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${instance.config.dir}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true" failonerror="false"/>
 		<loadfile property="app.id" srcFile="${app_dir}/appengine-web.xml">
 			<filterchain>
 				<linecontains>
 					<contains value="application"/>
-                		</linecontains>
+                </linecontains>
 				<tokenfilter>
 				<replaceregex pattern="(&lt;|&lt;/)application&gt;" replace="" flags="gi"/>
 				<trim/>
@@ -114,7 +116,7 @@
 		</copy>
 	</target>
 
-	<target name="GWTcompile" depends="copyjars,compile">
+	<target name="GWTcompile" depends="copyjars, compile">
 		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true" maxmemory="512m">
 			<arg value="org.waterforpeople.mapping.portal.portal" />
 			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
@@ -170,7 +172,7 @@
 		<checksum file="${java.io.tmpdir}/UploadConstants.properties" property="${md5}" verifyproperty="md5OK" />
 	</target>
 
-	<target name="update" depends="datanucleusenhance,validate.constants" description="Uploads the application to App Engine.">
+	<target name="update" depends="datanucleusenhance, validate.constants" description="Uploads the application to App Engine.">
 		<fail message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt">
 			<condition>
 				<not>
