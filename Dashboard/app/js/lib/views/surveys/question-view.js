@@ -25,7 +25,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	minVal: null,
 	maxVal: null,
 	allowSign: null,
-	allowDecimalPoint: null,
+	allowDecimal: null,
 	allowMultipleFlag: null,
 	allowOtherFlag: null,
 	dependentFlag: false,
@@ -86,7 +86,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		this.set('minVal', FLOW.selectedControl.selectedQuestion.get('minVal'));
 		this.set('maxVal', FLOW.selectedControl.selectedQuestion.get('maxVal'));
 		this.set('allowSign', FLOW.selectedControl.selectedQuestion.get('allowSign'));
-		this.set('allowDecimalPoint', FLOW.selectedControl.selectedQuestion.get('allowDecimalPoint'));
+		this.set('allowDecimal', FLOW.selectedControl.selectedQuestion.get('allowDecimal'));
 		this.set('allowMultipleFlag', FLOW.selectedControl.selectedQuestion.get('allowMultipleFlag'));
 		this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
 		this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
@@ -153,23 +153,40 @@ FLOW.QuestionView = FLOW.View.extend({
 	},
 
 	doSaveEditQuestion: function() {
-		var path, anyActive, first, dependentQuestionAnswer;
+		var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal;
+
+		// validation
+		if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))  ){
+			if (this.get('minVal') >= this.get('maxVal')){
+				FLOW.dialogControl.set('activeAction', 'ignore');
+				FLOW.dialogControl.set('header', Ember.String.loc('_min_max_not_correct'));
+				FLOW.dialogControl.set('message', Ember.String.loc('_min_larger_than_max_or_equal'));
+				FLOW.dialogControl.set('showCANCEL', false);
+				FLOW.dialogControl.set('showDialog', true);
+				return;
+			}
+		}
+
 		path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 		FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
 		FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
 		FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
-		FLOW.selectedControl.selectedQuestion.set('minVal', this.get('minVal'));
-		FLOW.selectedControl.selectedQuestion.set('maxVal', this.get('maxVal'));
+
+		minVal = (Ember.empty(this.get('minVal'))) ? null : this.get('minVal');
+		maxVal = (Ember.empty(this.get('maxVal'))) ? null : this.get('maxVal');
+		FLOW.selectedControl.selectedQuestion.set('minVal', minVal);
+		FLOW.selectedControl.selectedQuestion.set('maxVal', maxVal);
+
 		FLOW.selectedControl.selectedQuestion.set('path',path);
 		FLOW.selectedControl.selectedQuestion.set('allowSign', this.get('allowSign'));
-		FLOW.selectedControl.selectedQuestion.set('allowDecimalPoint', this.get('allowDecimalPoint'));
+		FLOW.selectedControl.selectedQuestion.set('allowDecimal', this.get('allowDecimal'));
 		FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
 		FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
 		FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
 
 		dependentQuestionAnswer = "";
 		first = true;
-		
+
 		FLOW.optionListControl.get('content').forEach(function(item){
 			if (item.isSelected) {
 				if (!first) {dependentQuestionAnswer += "|";}
@@ -203,27 +220,26 @@ FLOW.QuestionView = FLOW.View.extend({
 		FLOW.selectedControl.set('dependentQuestion',null);
 	},
 
-	// BROKEN
-	//TODO when questionAnswers already exist for a question, deletion should not be possible
 	deleteQuestion: function() {
-		var qDeleteId, question, questionsInGroup, qgId;
+		var qDeleteId;
 		qDeleteId = this.content.get('keyId');
-		qgId = this.content.get('questionGroupId');
-		question = FLOW.store.find(FLOW.Question, qDeleteId);
-		qOrder = question.get('order');
-		question.deleteRecord();
-		
-		// restore order
-		questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-	        return(item.get('questionGroupId') == qgId);
-	      });
-		
-		questionsInGroup.forEach(function(item) {
-			if (item.get('order') > qOrder) {
-				item.set('order',item.get('order') - 1);
-			}
-		});
-		FLOW.store.commit();
+
+		//are we saving / loading anything?
+		if (FLOW.savingMessageControl.get('areLoadingBool') || FLOW.savingMessageControl.get('areSavingBool')){
+				FLOW.dialogControl.set('activeAction', 'ignore');
+				FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
+				FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
+				FLOW.dialogControl.set('showCANCEL', false);
+				FLOW.dialogControl.set('showDialog', true);
+			return;
+		}
+
+		// check if deleting this question is allowed
+		// if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
+		FLOW.store.findQuery(FLOW.Question, {
+      preflight: 'delete',
+      questionId: qDeleteId
+    });
 	},
 
 	// move question to selected location
@@ -311,7 +327,7 @@ FLOW.QuestionView = FLOW.View.extend({
 			"tip": FLOW.selectedControl.selectedForCopyQuestion.get('tip'),
 			"mandatoryFlag": FLOW.selectedControl.selectedForCopyQuestion.get('mandatoryFlag'),
 			"allowSign": FLOW.selectedControl.selectedForCopyQuestion.get('allowSign'),
-			"allowDecimalPoint": FLOW.selectedControl.selectedForCopyQuestion.get('allowDecimalPoint'),
+			"allowDecimal": FLOW.selectedControl.selectedForCopyQuestion.get('allowDecimal'),
 			"allowMultipleFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowMultipleFlag'),
 			"allowOtherFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowOtherFlag'),
 			"dependentFlag": false,

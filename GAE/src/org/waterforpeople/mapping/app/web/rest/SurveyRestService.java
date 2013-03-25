@@ -36,9 +36,11 @@ import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
+import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
@@ -86,14 +88,36 @@ public class SurveyRestService {
 	// list surveys by surveyGroup id
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<SurveyDto>> listSurveysByGroupId(
+	public Map<String, Object> listSurveysByGroupId(
 			@RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId,
-			@RequestParam(value = "ids[]", defaultValue = "") Long[] ids) {
-		final Map<String, List<SurveyDto>> response = new HashMap<String, List<SurveyDto>>();
+			@RequestParam(value = "ids[]", defaultValue = "") Long[] ids,
+			@RequestParam(value = "preflight", defaultValue = "") String preflight,
+			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId) {
+		final Map<String, Object> response = new HashMap<String, Object>();
 		List<SurveyDto> results = new ArrayList<SurveyDto>();
 		List<Survey> surveys = null;
 		SurveyInstanceSummary sis = null;
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("");
+		statusDto.setMessage("");
 
+		// if this is a pre-flight delete check, handle that
+		if (preflight != null && preflight.equals("delete") && surveyId != null) {
+			QuestionDao qDao = new QuestionDao();
+			statusDto.setStatus("preflight-delete-survey");
+			statusDto.setMessage("cannot_delete");
+
+			if (qDao.listQuestionsBySurvey(surveyId).size() == 0) {
+				statusDto.setMessage("can_delete");
+				statusDto.setKeyId(surveyId);
+			}
+			
+			response.put("surveys", results);
+			response.put("meta",statusDto);
+			return response;
+		}
+
+		// if we are here, it is a regular request and not preflight
 		if (surveyGroupId != null) {
 			surveys = surveyDao.listSurveysByGroup(surveyGroupId);
 		} else if (ids[0] != null) {
@@ -150,7 +174,6 @@ public class SurveyRestService {
 	}
 
 	// delete survey by id
-	// TODO delete surveyInstances / summarizations?
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
 	public Map<String, RestStatusDto> deleteSurveyById(

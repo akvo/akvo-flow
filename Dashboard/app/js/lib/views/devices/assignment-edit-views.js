@@ -66,7 +66,9 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     surveyIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('surveys'));
 
     surveyIds.forEach(function(item) {
-      previewSurveys.pushObjects(FLOW.store.find(FLOW.Survey, item));
+      if (item !== null){
+        previewSurveys.pushObjects(FLOW.store.find(FLOW.Survey, item));
+      }
     });
     this.set('surveysPreview', previewSurveys);
   },

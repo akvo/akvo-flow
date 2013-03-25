@@ -149,6 +149,15 @@ FLOW.DeviceGroup = FLOW.BaseModel.extend({
 });
 
 FLOW.Device = FLOW.BaseModel.extend({
+  didLoad: function(){
+    var combinedName;
+      if(Ember.empty(this.get('deviceIdentifier'))) {
+          combinedName = "no identifer";
+        } else {
+          combinedName = this.get('deviceIdentifier');
+        }
+        this.set('combinedName', combinedName + " " + this.get('phoneNumber'));
+  },
   esn: DS.attr('string', {
     defaultValue: ''
   }),
@@ -174,8 +183,10 @@ FLOW.Device = FLOW.BaseModel.extend({
   deviceGroup: DS.attr('string', {
     defaultValue: ''
   }),
+  deviceGroupName: DS.attr('string',{
+    defaultValue:''
+  }),
   isSelected: false,
-  deviceGroupName: null,
   combinedName: null
 });
 

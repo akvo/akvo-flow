@@ -117,6 +117,7 @@ FLOW.tableColumnControl = Ember.Object.create({
 
 // set by restadapter sideLoad meta
 FLOW.metaControl = Ember.Object.create({
+  numSILoaded:null, // used by data tab nextPage method
   since: null,
   num: null,
   message: null,
