@@ -6,6 +6,9 @@
 	<property name="app_classes_dir" location="${app_dir}/classes" />
 	<property name="app_lib_dir" location="${app_dir}/lib" />
 
+	<available file="build.properties" property="properties_file_exists" />
+    <fail unless="properties_file_exists" message="Expected build.properties file not found in ${basedir}" />
+
 	<import file="${sdk.dir}/config/user/ant-macros.xml" />
 
 	<path id="project.classpath">
@@ -47,11 +50,6 @@
 
 	</path>
 
-	<target name="verifyBuildProperties">
-		<available file="build.properties" property="properties_file_exists" />
-	    <fail unless="properties_file_exists" message="Missing build.properties file in ${basedir}" />
-	</target>
-
 	<target name="checkForBuiltFiles" description="Checks for any compiled files">
 		<available file="${app_classes_dir}" type="dir" property="built_classes_exist" />
 	</target>
@@ -68,7 +66,7 @@
 		<fail unless="instance_config_exists" message="Instance config directory not found: ${instance.config.dir}" />
     </target>
 
-	<target name="copyconfig" depends="verifyBuildProperties, verifyInstanceConfig" description="Copies the server configuration files">
+	<target name="copyconfig" depends="verifyInstanceConfig" description="Copies the server configuration files">
 		<property name="instance.config.dir" location="${config.home}/${instance.name}" />
 		<copy file="${instance.config.dir}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
 		<copy file="${instance.config.dir}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
@@ -96,7 +94,7 @@
 		<replace file="../WFPMapping/device/survey/res/values/arrays.xml" token="http://@@@@.appspot.com" value="http://${app.id}.appspot.com"/>
 	</target>
 
-	<target name="copyjars" depends="verifyBuildProperties" description="Copies the App Engine JARs to the WAR.">
+	<target name="copyjars" description="Copies the App Engine JARs to the WAR.">
 		<copy todir="${app_lib_dir}" flatten="true" verbose="true">
 			<fileset dir="${sdk.dir}/lib/user">
 				<include name="**/*.jar" />
@@ -105,14 +103,6 @@
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
-	</target>
-
-	<target name="GWTcompile" depends="copyjars, compile">
-		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true" maxmemory="512m">
-			<arg value="org.waterforpeople.mapping.portal.portal" />
-			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
-			<arg value="org.waterforpeople.mapping.surveyentry.surveyentry" />
-		</java>
 	</target>
 
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
@@ -126,6 +116,14 @@
 			   classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
 
+	<target name="GWTcompile" depends="copyjars, compile">
+		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true" maxmemory="512m">
+			<arg value="org.waterforpeople.mapping.portal.portal" />
+			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
+			<arg value="org.waterforpeople.mapping.surveyentry.surveyentry" />
+		</java>
+	</target>
+
 	<target name="translate" depends="compile" description="Generates the en.properties file from handlebars template and JS files">
     <java classname="services.TranslationGenerator" failonerror="true">
       <arg line="${dashboard} ${ui-strings}" />
@@ -133,7 +131,7 @@
     </java>
   </target>
 
-	<target name="datanucleusenhance" depends="verifyBuildProperties, compile" description="Performs JDO enhancement on compiled data classes.">
+	<target name="datanucleusenhance" depends="compile" description="Performs JDO enhancement on compiled data classes.">
 		<enhance failonerror="true" api="JDO">
 			<classpath>
 				<pathelement path="${sdk.dir}/lib/appengine-tools-api.jar" />
@@ -164,15 +162,8 @@
 	</target>
 
 	<target name="update" depends="datanucleusenhance, validate.constants" description="Uploads the application to App Engine.">
-		<fail message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt">
-			<condition>
-				<not>
-					<isset property="pwd" />
-				</not>
-			</condition>
-		</fail>
-
-		<fail message="You need to rebuild the applet jar before updating an instance, e.g.: ant -f appletBuild.xml clean compile package signjar" unless="${md5OK}"/>
+		<fail unless="pwd" message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt" />
+		<fail unless="${md5OK}" message="You need to rebuild the applet jar before updating an instance, e.g.: ant -f appletBuild.xml clean compile package signjar" />
 
 		<delete failonerror="false">
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
