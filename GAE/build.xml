@@ -158,12 +158,12 @@
 			</patternset>
 		</unzip>
 		<checksum file="${basedir}/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" property="md5" />
-		<checksum file="${java.io.tmpdir}/UploadConstants.properties" property="${md5}" verifyproperty="md5OK" />
+		<checksum file="${java.io.tmpdir}/UploadConstants.properties" property="${md5}" verifyproperty="md5_is_ok" />
 	</target>
 
 	<target name="update" depends="datanucleusenhance, validate.constants" description="Uploads the application to App Engine.">
 		<fail unless="pwd" message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt" />
-		<fail unless="${md5OK}" message="You need to rebuild the applet jar before updating an instance, e.g.: ant -f appletBuild.xml clean compile package signjar" />
+		<fail unless="${md5_is_ok}" message="You need to rebuild the applet jar before updating an instance, e.g.: ant -f appletBuild.xml clean compile package signjar" />
 
 		<delete failonerror="false">
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>

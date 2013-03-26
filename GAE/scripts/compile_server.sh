@@ -18,35 +18,12 @@ THIS_SCRIPT="$0"
 INSTANCE_NAME="$1"
 BUILD_PROPERTIES_DIR="$2"
 
-function display_usage_and_exit
-{
-    printf "Usage: `basename $THIS_SCRIPT` <instance_name> [build_properties_directory]\n"
-    printf "       where [build_properties_directory] contains an external build.properties file to use\n"
-    exit -1
-}
-
-if [[ -z "$INSTANCE_NAME" ]]; then
-    echo "## Missing parameter: <instance_name>"
-    display_usage_and_exit
-fi
-
-echo ">> Java compiler:"
-java -version
-
-printf "\n>> Ant runner:\n"
-ant -version
-printf "\n"
-
 SCRIPTS_HOME="$(cd `dirname "$THIS_SCRIPT"` && pwd)"
 PROJECT_HOME="$(cd "$SCRIPTS_HOME"/.. && pwd)"
 
-cd "$PROJECT_HOME"
+"$SCRIPTS_HOME"/verify_build_properties.sh `basename "$THIS_SCRIPT"` "$INSTANCE_NAME" "$BUILD_PROPERTIES_DIR"
 
-if [[ -n "$BUILD_PROPERTIES_DIR" ]]; then
-    printf ">> Linking build.properties from $BUILD_PROPERTIES_DIR\n\n"
-    ln -s "$BUILD_PROPERTIES_DIR/build.properties"
-fi
-
+# continue with build if no errors were found
 if [ $? -eq 0 ]; then
     cd "$PROJECT_HOME"
     ant -Dinstance.name=$INSTANCE_NAME clean copyconfig compile datanucleusenhance GWTcompile
