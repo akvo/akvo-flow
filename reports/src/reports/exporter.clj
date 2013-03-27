@@ -3,18 +3,15 @@
   (:import java.util.UUID
            org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory))
 
-(defonce base-path
-  (.getAbsolutePath (io/file (System/getProperty "java.io.tmpdir"))))
-
 (defn- get-ext [t]
   (if (= t "SURVEY_FORM")
     "xls"
     "xlsx"))
 
 (defn- getfile [et id]
-  (let [path (format "%s/akvo-flow-reports/%s" base-path (UUID/randomUUID))]
+  (let [path (str "/var/tmp/akvo/flow/reports/" (UUID/randomUUID))]
     (do
-      (.mkdir (io/file path))
+      (.mkdirs (io/file path))
       (io/file (format "%s/%s-%s.%s" path et id (get-ext et))))))
 
 
