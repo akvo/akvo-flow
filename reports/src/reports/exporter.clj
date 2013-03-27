@@ -12,9 +12,10 @@
     "xlsx"))
 
 (defn- getfile [et id]
-  (let [path (format "%s/tmp/%s" base-path (UUID/randomUUID))
-        _ (.mkdir (io/file path))]
-    (io/file (format "%s/%s-%s.%s" path et id (get-ext et)))))
+  (let [path (format "%s/tmp/%s" base-path (UUID/randomUUID))]
+    (do
+      (.mkdir (io/file path))
+      (io/file (format "%s/%s-%s.%s" path et id (get-ext et))))))
 
 
 (defn doexport [type base id opts]

@@ -11,7 +11,7 @@ A HTTP layer on top of existing `applet` functionality:
   this needs to be added in your local [Maven](https://maven.apache.org/) cache
 
 ````
-mvn install:install-file -Dfile=path/to/exporterapplet.jar \
+mvn install:install-file -Dfile=../GAE/war/exporterapplet.jar \
     -DartifactId=exporterapplet \
     -Dversion=1.0.0 \
     -DgroupId=exporterapplet \
