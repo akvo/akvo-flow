@@ -1,22 +1,11 @@
-# reports
+# Akvo FLOW Reports
 
-A HTTP layer on top of existing `applet` functionality:
+An HTTP layer on top of the existing Akvo FLOW applet functionality for:
 
-* Generating reports
-* Importing data.
+* generating reports
+* importing data
 
-## Dependencies
-
-* The `project.clj` file defines a dependency to `[exporterapplet "1.0.0"]`
-  this needs to be added in your local [Maven](https://maven.apache.org/) cache
-
-````
-mvn install:install-file -Dfile=../GAE/war/exporterapplet.jar \
-    -DartifactId=exporterapplet \
-    -Dversion=1.0.0 \
-    -DgroupId=exporterapplet \
-    -Dpackaging=jar
-````
+Please read the [installation notes](doc/InstallationNotes.md) and the [deployment notes](doc/DeploymentNotes.md).
 
 ## License
 
