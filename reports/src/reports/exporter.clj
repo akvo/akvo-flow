@@ -4,7 +4,7 @@
            org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory))
 
 (defonce base-path
-  (.getAbsolutePath (io/file (System/getProperty "user.home"))))
+  (.getAbsolutePath (io/file (System/getProperty "java.io.tmpdir"))))
 
 (defn- get-ext [t]
   (if (= t "SURVEY_FORM")
@@ -12,7 +12,7 @@
     "xlsx"))
 
 (defn- getfile [et id]
-  (let [path (format "%s/tmp/%s" base-path (UUID/randomUUID))]
+  (let [path (format "%s/akvo-flow-reports/%s" base-path (UUID/randomUUID))]
     (do
       (.mkdir (io/file path))
       (io/file (format "%s/%s-%s.%s" path et id (get-ext et))))))
