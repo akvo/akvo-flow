@@ -34,5 +34,4 @@
   (quartzite-scheduler/initialize)
   (quartzite-scheduler/start))
 
-(def app
-  (-> (handler/api endpoints)))
+(def app (handler/api endpoints))
