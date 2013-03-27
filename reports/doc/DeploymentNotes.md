@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Although The `reports` application is written in [Clojure](http://clojure.org/), it is intended to be deployed as a standard JVM WAR file.
+Although the `reports` application is written in [Clojure](http://clojure.org/), it is intended to be deployed as a standard JVM WAR file.
 
 This document describes how to generate and deploy such a WAR file.
 
