@@ -6,11 +6,11 @@ Although the `reports` application is written in [Clojure](http://clojure.org/),
 
 This document describes how to generate and deploy such a WAR file.
 
-It is assumed that you have [Leiningen](http://leiningen.org/) version 2 installed.
+It is assumed that you have [Leiningen](http://leiningen.org/) version 2.x installed.
 
 ## Generating the WAR file
 
-To generate a deployable WAR file for the `reports` application, run the following command:
+To generate a deployable WAR file for the `reports` application, run the following `lein` command:
 
     lein ring uberwar reports.war
 

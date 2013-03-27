@@ -15,7 +15,9 @@
                  [org.apache.poi/poi-ooxml "3.8"]
                  [exporterapplet "1.0.0"]
                  [org.json/json "20090211"]
-                 [jfree/jfreechart "1.0.13"]]
+                 [jfree/jfreechart "1.0.13"]
+                 [org.slf4j/slf4j-api "1.7.3"]
+                 [org.slf4j/slf4j-simple "1.7.3"]]
   :plugins [[lein-ring "0.8.3"]]
   :resource-paths ["src/resource"]
   :ring {:handler reports.core/app
