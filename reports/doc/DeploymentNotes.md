@@ -1,4 +1,4 @@
-# How do I deploy this?
+# Deployment Notes
 
 ## Introduction
 
