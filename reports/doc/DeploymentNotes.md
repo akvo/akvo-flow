@@ -52,3 +52,7 @@ The following commands are useful for checking on the status of a running Jetty 
 
     sudo /etc/init.d/jetty status       # Reports the status of a running service
     sudo /etc/init.d/jetty check        # Checks the arguments the running service was run with
+
+## Configuring Nginx
+
+
