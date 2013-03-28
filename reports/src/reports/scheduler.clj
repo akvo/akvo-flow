@@ -74,7 +74,6 @@
     "file" f}
    (schedule-job params)))
 
-
 (defn invalidate-cache [params]
   "Invalidates (removes) a given file from the cache"
   (let [baseURL (params "baseURL")]
