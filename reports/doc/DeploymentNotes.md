@@ -46,9 +46,9 @@ Jetty can now be managed as a regular Unix System V system service:
 
     sudo /etc/init.d/jetty start        # Starts the service
     sudo /etc/init.d/jetty stop         # Stops the service
-    sudo /etc/init.d/jetty try-restart  # Restarts an existing service or starts a new one
+    sudo /etc/init.d/jetty restart      # Restarts the service
 
 The following commands are useful for checking on the status of a running Jetty service:
 
     sudo /etc/init.d/jetty status       # Reports the status of a running service
-    sudo /etc/init.d/jetty check        # Checks the arguments the service was run with
+    sudo /etc/init.d/jetty check        # Checks the arguments the running service was run with
