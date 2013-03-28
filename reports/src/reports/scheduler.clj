@@ -8,20 +8,15 @@
 
 (def cache (ref {}))
 
-(j/defjob ExportJob
-  [ctx]
-  (let [{baseURL "baseURL"
-         exportType "exportType"
-         sid "surveyId"
-         opts "opts"
-         reportId "reportId"} (qc/from-job-data ctx)
-         report (exp/doexport exportType baseURL sid opts)
-         path (s/join "/" (take-last 2 (s/split (.getAbsolutePath report) #"/")))]
+(j/defjob ExportJob [context]
+  (let [{:strs [baseURL exportType surveyId opts reportId]} (qc/from-job-data context)
+        report (exp/doexport exportType baseURL surveyId opts)
+        path (s/join "/" (take-last 2 (s/split (.getAbsolutePath report) #"/")))]
     (dosync
       (alter cache conj {{:id reportId
-                          :surveyId sid
+                          :surveyId surveyId
                           :baseURL baseURL} path}))
-    (qs/delete-job (j/key reportId))))
+    (qs/delete-job (j/key report-id))))
 
 
 (defn- get-executing-jobs []
