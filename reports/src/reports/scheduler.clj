@@ -77,7 +77,7 @@
   "Invalidates (removes) a given file from the cache"
   (let [baseURL (params "baseURL")]
     (doseq [sid (params "surveyIds")]
-    (dosync
-      (doseq [k (keys @cache) :when (and (= (k :baseURL) baseURL) (= (str sid) (k :surveyId)))]
-      (alter cache dissoc k))))
+      (dosync
+        (doseq [k (keys @cache) :when (and (= (k :baseURL) baseURL) (= (str sid) (k :surveyId)))]
+        (alter cache dissoc k))))
     "OK"))
