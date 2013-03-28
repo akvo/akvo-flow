@@ -55,4 +55,10 @@ The following commands are useful for checking on the status of a running Jetty 
 
 ## Configuring Nginx
 
+The Akvo FLOW Dashboard app depends on being able to fetch generated reports from the URL `/report` and the reports app generates these reports at `/var/tmp/akvo/flow/reports`. Consequently, Nginx must be configured accordingly, for example:
 
+    location /report/ {
+        alias /var/tmp/akvo/flow/reports/;
+        autoindex off;
+        allow all;
+    }
