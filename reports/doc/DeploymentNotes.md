@@ -40,6 +40,15 @@ In the following example we symlink the WAR file we generated to the `webapps` d
 
     sudo ln -s /path/to/akvo-flow/reports/target/root.war /var/lib/jetty/webapps/
 
-Jetty can now be started as a regular Debian system service:
+### Managing the Jetty application container
 
-    sudo /etc/init.d/jetty start    # restart and stop are also available
+Jetty can now be managed as a regular Unix System V system service:
+
+    sudo /etc/init.d/jetty start        # Starts the service
+    sudo /etc/init.d/jetty stop         # Stops the service
+    sudo /etc/init.d/jetty try-restart  # Restarts an existing service or starts a new one
+
+The following commands are useful for checking on the status of a running Jetty service:
+
+    sudo /etc/init.d/jetty status       # Reports the status of a running service
+    sudo /etc/init.d/jetty check        # Checks the arguments the service was run with
