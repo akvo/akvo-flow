@@ -58,7 +58,7 @@ The following commands are useful for checking on the status of a running Jetty 
 [Nginx](http://wiki.nginx.org/) should be configured to proxy through to the Jetty application server running on port 8000. Configuring Nginx is beyond the scope of this document, but the following serves as an example:
 
     location / {
-        proxy_pass         http://127.0.0.1:8000/;
+        proxy_pass http://127.0.0.1:8000/;
         ...
     }
 
