@@ -16,8 +16,7 @@
       (alter cache conj {{:id reportId
                           :surveyId surveyId
                           :baseURL baseURL} path}))
-    (qs/delete-job (j/key report-id))))
-
+    (qs/delete-job (j/key reportId))))
 
 (defn- get-executing-jobs []
   "Returns a list of executing jobs in form of JobExecutionContext"
