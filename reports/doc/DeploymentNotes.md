@@ -55,7 +55,14 @@ The following commands are useful for checking on the status of a running Jetty 
 
 ## Configuring Nginx
 
-The Akvo FLOW Dashboard app depends on being able to fetch generated reports from the URL `/report` and the reports app generates these reports at `/var/tmp/akvo/flow/reports`. Consequently, Nginx must be configured accordingly, for example:
+[Nginx](http://wiki.nginx.org/) should be configured to proxy through to the Jetty application server running on port 8000. Configuring Nginx is beyond the scope of this document, but the following serves as an example:
+
+    location / {
+        proxy_pass         http://127.0.0.1:8000/;
+        ...
+    }
+
+The Akvo FLOW Dashboard app explicitl depends on being able to fetch generated reports from the hardcoded URL `/report` and the reports app generates these reports at the hardcoded path `/var/tmp/akvo/flow/reports`. Consequently, Nginx **must** be configured accordingly:
 
     location /report/ {
         alias /var/tmp/akvo/flow/reports/;
