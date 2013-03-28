@@ -6,18 +6,20 @@
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/tools.logging "0.2.6"]
+                 [cheshire "5.0.2"]
+                 [compojure "1.1.5"]
+                 [clojurewerkz/quartzite "1.0.1"]
                  [ring/ring-core "1.1.8"]
                  [ring/ring-servlet "1.1.8"]
-                 [compojure "1.1.5"]
-                 [cheshire "5.0.2"]
-                 [clojurewerkz/quartzite "1.0.1"]
+                 ; Java libraries
+                 [jfree/jfreechart "1.0.13"]
                  [org.apache.poi/poi "3.8"]
                  [org.apache.poi/poi-ooxml "3.8"]
-                 [exporterapplet "1.0.0"]
-                 [org.json/json "20090211"]
-                 [jfree/jfreechart "1.0.13"]
                  [org.slf4j/slf4j-api "1.7.3"]
-                 [org.slf4j/slf4j-simple "1.7.3"]]
+                 [org.slf4j/slf4j-simple "1.7.3"]
+                 ; Akvo FLOW dependencies
+                 [exporterapplet "1.0.0"]
+                 [org.json/json "20090211"]]
   :plugins [[lein-ring "0.8.3"]]
   :ring {:handler reports.core/app
          :init reports.core/init})

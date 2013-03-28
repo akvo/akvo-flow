@@ -12,9 +12,9 @@ It is assumed that you have [Leiningen](http://leiningen.org/) version 2.x insta
 
 To generate a deployable WAR file for the `reports` application, run the following `lein` command:
 
-    lein ring uberwar reports.war
+    lein ring uberwar root.war
 
-This will generate a file called `reports.war` in the `target` directory of the project.
+This will generate a file called `root.war` in the `target` directory of the project.
 
 A new WAR file must be generated every time the application code changes.
 
@@ -36,10 +36,9 @@ Configuring Jetty is beyond the scope of this document, but you should probably 
 
 By default, Jetty looks for web apps in `/var/lib/jetty/webapps` on a Debian or Ubuntu system. The default `root` folder should be moved aside and the WAR file you generated earlier should be copied or symlinked into this directory as `root.war`. The filename is important!
 
-In the following example we copy the generated WAR file to the `webapps` directory:
+In the following example we symlink the WAR file we generated to the `webapps` directory:
 
-    sudo cp target/reports.war /var/lib/jetty/webapps/root.war
-    sudo chown jetty:adm /var/lib/jetty/webapps/root.war
+    sudo ln -s /path/to/akvo-flow/reports/target/root.war /var/lib/jetty/webapps/
 
 Jetty can now be started as a regular Debian system service:
 

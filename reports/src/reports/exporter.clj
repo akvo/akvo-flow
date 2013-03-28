@@ -14,7 +14,6 @@
       (.mkdirs (io/file path))
       (io/file (format "%s/%s-%s.%s" path et id (get-ext et))))))
 
-
 (defn doexport [type base id opts]
   (let [exp (.getExporter (SurveyDataImportExportFactory.) type)
         f (getfile type id)]
