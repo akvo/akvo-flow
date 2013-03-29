@@ -1,19 +1,18 @@
 (ns reports.scheduler
   (:refer-clojure :exclude [key])
-  (:import java.io.File
-           org.quartz.Scheduler)
+  (:import [org.quartz Scheduler])
   (:require [clojure.string :as string :only (split join)]
             [clojurewerkz.quartzite [conversion :as conversion]
                                     [jobs :as jobs]
                                     [scheduler :as scheduler]
-                                    [triggers :as triggers]]
-            [reports.exporter :as exporter]))
+                                    [triggers :as triggers]])
+  (:use [reports.exporter :only (export-report)]))
 
 (def cache (ref {}))
 
 (jobs/defjob ExportJob [context]
   (let [{:strs [baseURL exportType surveyId opts reportId]} (conversion/from-job-data context)
-        ^File report (exporter/doexport exportType baseURL surveyId opts)
+        report (export-report exportType baseURL surveyId opts)
         path (string/join "/" (take-last 2 (string/split (.getAbsolutePath report) #"/")))]
     (dosync
       (alter cache conj {{:id reportId

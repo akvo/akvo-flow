@@ -1,20 +1,21 @@
 (ns reports.exporter
   (:require [clojure.java.io :as io])
-  (:import java.util.UUID
+  (:import java.io.File
+           java.util.UUID
            org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory))
 
-(defn- get-ext [t]
+(defn- get-file-extension [t]
   (if (= t "SURVEY_FORM")
     "xls"
     "xlsx"))
 
-(defn- getfile [et id]
+(defn- get-file [et id]
   (let [path (str "/var/tmp/akvo/flow/reports/" (UUID/randomUUID))]
     (do
       (.mkdirs (io/file path))
-      (io/file (format "%s/%s-%s.%s" path et id (get-ext et))))))
+      (io/file (format "%s/%s-%s.%s" path et id (get-file-extension et))))))
 
-(defn doexport [type base id opts]
-  (let [exp (.getExporter (SurveyDataImportExportFactory.) type)
-        f (getfile type id)]
-    (.export exp {"surveyId" id} f base opts) f))
+(defn ^File export-report [type base id options]
+  (let [exporter (.getExporter (SurveyDataImportExportFactory.) type)
+        file (get-file type id)]
+    (.export exporter {"surveyId" id} file base options) file))
