@@ -1,7 +1,7 @@
 (ns reports.scheduler
   (:refer-clojure :exclude [key])
   (:import java.io.File
-           [org.quartz JobDetail JobExecutionContext JobKey])
+           org.quartz.Scheduler)
   (:require [clojure.string :as string :only (split join)]
             [clojurewerkz.quartzite [conversion :as conversion]
                                     [jobs :as jobs]
@@ -21,13 +21,13 @@
                           :baseURL baseURL} path}))
     (scheduler/delete-job (jobs/key reportId))))
 
-(defn- ^JobExecutionContext get-executing-jobs []
+(defn- get-executing-jobs []
   "Returns a list of executing jobs in the form of ^org.quartz.JobExecutionContext"
-  (.getCurrentlyExecutingJobs @scheduler/*scheduler*))
+  (.getCurrentlyExecutingJobs ^Scheduler @scheduler/*scheduler*))
 
 (defn- filter-executing-jobs [key]
   "Filter the list of executing jobs by key (usually returns just 1 job)"
-  (filter #(= (.. % ^JobDetail (getJobDetail) ^JobKey (getKey)) (jobs/key key))
+  (filter #(= (.. % (getJobDetail) (getKey)) (jobs/key key))
           (get-executing-jobs)))
 
 (defn- job-executing? [key]
@@ -38,10 +38,10 @@
   "Generates a unique identifier based on the map"
   (format "id%s" (hash (str m))))
 
-(defn- get-job [jtype id params]
+(defn- get-job [job-type id params]
   "Returns a Job specification for the given parameters"
   (jobs/build
-    (jobs/of-type jtype)
+    (jobs/of-type job-type)
     (jobs/using-job-data (conj params {"reportId" id} ))
     (jobs/with-identity (jobs/key id))))
 
