@@ -1,6 +1,6 @@
 (ns reports.scheduler
   (:refer-clojure :exclude [key])
-  (:import [org.quartz Scheduler])
+  (:import [org.quartz JobExecutionContext Scheduler])
   (:require [clojure.string :as string :only (split join)]
             [clojurewerkz.quartzite [conversion :as conversion]
                                     [jobs :as jobs]
@@ -10,8 +10,8 @@
 
 (def cache (ref {}))
 
-(jobs/defjob ExportJob [context]
-  (let [{:strs [baseURL exportType surveyId opts reportId]} (conversion/from-job-data context)
+(jobs/defjob ExportJob [job-data]
+  (let [{:strs [baseURL exportType surveyId opts reportId]} (conversion/from-job-data job-data)
         report (export-report exportType baseURL surveyId opts)
         path (string/join "/" (take-last 2 (string/split (.getAbsolutePath report) #"/")))]
     (dosync
@@ -26,7 +26,7 @@
 
 (defn- filter-executing-jobs [key]
   "Filter the list of executing jobs by key (usually returns just 1 job)"
-  (filter #(= (.. % (getJobDetail) (getKey)) (jobs/key key))
+  (filter #(= (.. ^JobExecutionContext % (getJobDetail) (getKey)) (jobs/key key))
           (get-executing-jobs)))
 
 (defn- job-executing? [key]
