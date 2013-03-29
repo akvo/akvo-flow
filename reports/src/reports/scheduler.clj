@@ -20,18 +20,14 @@
                           :baseURL baseURL} path}))
     (scheduler/delete-job (jobs/key reportId))))
 
-(defn- get-executing-jobs []
-  "Returns a list of executing jobs in the form of ^org.quartz.JobExecutionContext"
-  (.getCurrentlyExecutingJobs ^Scheduler @scheduler/*scheduler*))
-
-(defn- filter-executing-jobs [key]
-  "Filter the list of executing jobs by key (usually returns just 1 job)"
+(defn- get-executing-jobs-by-key [key]
+  "Get a list of executing jobs by key (usually returns just 1 job)"
   (filter #(= (.. ^JobExecutionContext % (getJobDetail) (getKey)) (jobs/key key))
-          (get-executing-jobs)))
+          (.getCurrentlyExecutingJobs ^Scheduler @scheduler/*scheduler*)))
 
 (defn- job-executing? [key]
   "Returns true if there is a running job for that particular key"
-  (if (empty? (filter-executing-jobs key)) false true))
+  (if (empty? (get-executing-jobs-by-key key)) false true))
 
 (defn- report-id [m]
   "Generates a unique identifier based on the map"
