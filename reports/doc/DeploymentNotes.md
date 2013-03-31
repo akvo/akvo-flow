@@ -12,7 +12,7 @@ It is assumed that you have [Leiningen](http://leiningen.org/) version 2.x insta
 
 To generate a deployable WAR file for the `reports` application, run the following `lein` command:
 
-    lein ring uberwar root.war
+    $ lein ring uberwar root.war
 
 This will generate a file called `root.war` in the `target` directory of the project.
 
@@ -24,7 +24,7 @@ The `reports` app should be deployed using [Jetty](http://jetty.codehaus.org/jet
 
 Jetty can be installed on Debian systems as follows:
 
-    sudo apt-get install jetty
+    $ sudo apt-get install jetty
 
 Configuring Jetty is beyond the scope of this document, but you should probably set the following environment variables in `/etc/defaults/jetty` at a minimum:
 
@@ -34,24 +34,24 @@ Configuring Jetty is beyond the scope of this document, but you should probably 
 
 ## Deploying the WAR file
 
-By default, Jetty looks for web apps in `/var/lib/jetty/webapps` on a Debian or Ubuntu system. The default `root` folder should be moved aside and the WAR file you generated earlier should be copied or symlinked into this directory as `root.war`. The filename is important!
+By default, Jetty looks for web apps in `/var/lib/jetty/webapps` on Debian/Ubuntu systems. Any pre-existing `root` folders or `root.war` files should be moved aside and the WAR file you generated earlier should be copied or symlinked into this directory as `root.war`. The filename is important!
 
 In the following example we symlink the WAR file we generated to the `webapps` directory:
 
-    sudo ln -s /path/to/akvo-flow/reports/target/root.war /var/lib/jetty/webapps/
+    $ sudo ln -s /path/to/akvo-flow/reports/target/root.war /var/lib/jetty/webapps/
 
 ### Managing the Jetty application container
 
 Jetty can now be managed as a regular Unix System V system service:
 
-    sudo /etc/init.d/jetty start        # Starts the service
-    sudo /etc/init.d/jetty stop         # Stops the service
-    sudo /etc/init.d/jetty restart      # Restarts the service
+    $ sudo /etc/init.d/jetty start        # Starts the service
+    $ sudo /etc/init.d/jetty stop         # Stops the service
+    $ sudo /etc/init.d/jetty restart      # Restarts the service
 
 The following commands are useful for checking on the status of a running Jetty service:
 
-    sudo /etc/init.d/jetty status       # Reports the status of a running service
-    sudo /etc/init.d/jetty check        # Checks the arguments the running service was run with
+    $ sudo /etc/init.d/jetty status       # Reports the status of a running service
+    $ sudo /etc/init.d/jetty check        # Checks the arguments the running service was run with
 
 ## Configuring Nginx
 
