@@ -27,7 +27,7 @@
 
 (defn- job-executing? [key]
   "Returns true if there is a running job for that particular key"
-  (if (empty? (get-executing-jobs-by-key key)) false true))
+  (if (seq (get-executing-jobs-by-key key)) true false))
 
 (defn- report-id [m]
   "Generates a unique identifier based on the map"
@@ -59,8 +59,7 @@
 (defn- get-report-by-id [id]
   "Returns a report from the cache or nil if not found"
   (let [found (filter #(= id (:id %)) (keys @cache))]
-    (if (empty? found)
-      nil
+    (if (seq found)
       (@cache (nth found 0)))))
 
 (defn generate-report [params]
