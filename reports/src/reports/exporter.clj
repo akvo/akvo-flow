@@ -11,9 +11,8 @@
 
 (defn- get-file [et id]
   (let [path (str "/var/tmp/akvo/flow/reports/" (UUID/randomUUID))]
-    (do
-      (.mkdirs (io/file path))
-      (io/file (format "%s/%s-%s.%s" path et id (get-file-extension et))))))
+    (.mkdirs (io/file path))
+    (io/file (format "%s/%s-%s.%s" path et id (get-file-extension et)))))
 
 (defn ^File export-report [type base id options]
   (let [exporter (.getExporter (SurveyDataImportExportFactory.) type)
