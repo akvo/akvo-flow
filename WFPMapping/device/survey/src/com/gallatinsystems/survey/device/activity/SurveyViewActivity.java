@@ -341,11 +341,19 @@ public class SurveyViewActivity extends TabActivity implements
 
 					File f = new File(Environment.getExternalStorageDirectory()
 							.getAbsolutePath() + File.separator+filePrefix + fileSuffix);
+					//see if we need to complain about size
+					if (f.length() > ConstantUtil.BIG_PHOTO_FILE) {
+						//TODO let user click a "stop bugging me" button
+						ViewUtil.showConfirmDialog(R.string.tooBigPhotoTitle,R.string.tooBigPhotoMsg,this);
+					}
+					
 					String newFilename = filePrefix+System.nanoTime()+fileSuffix;
 					String newPath = FileUtil.getStorageDirectory(ConstantUtil.SURVEYAL_DIR,newFilename,props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE));
 					FileUtil.findOrCreateDir(newPath);
 					String absoluteFile = newPath+File.separator+newFilename;
-					f.renameTo(new File(absoluteFile));
+					if (!f.renameTo(new File(absoluteFile))){ //must check return value to know if it failed!
+						Log.e(ACTIVITY_NAME,"Media file rename failed");
+					}
 					try {
 						Bundle photoData = new Bundle();
 						photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
