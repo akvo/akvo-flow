@@ -26,5 +26,5 @@ PROJECT_HOME="$(cd "$SCRIPTS_HOME"/.. && pwd)"
 # continue with build if no errors were found
 if [ $? -eq 0 ]; then
     cd "$PROJECT_HOME"
-    ant -Dinstance.name=$INSTANCE_NAME clean copyconfig compile datanucleusenhance GWTcompile
+    ant -Dinstance.name=$INSTANCE_NAME clean copyconfig datanucleusenhance GWTcompile
 fi
