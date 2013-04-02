@@ -20,7 +20,7 @@ They also sometimes contain a head note highlighting something we are working on
 
 Numbers in parantheses indicate the github issue number related to the item.
 
-26 March 2013, co
+2 April 2013, co
 ---
 
 Some of you will be interested to know that we've been able to diagnose the photo transmission problem that has been bothering many of our users -- photos were not making it to the server although the data were. It came down to a connectivity issue. Essentially, connectivity can appear to be ok, but may actually be inconsistent. The zip files containing the data are fairly small and can slip through, but the photos take a more consistent connection to successfully transmit. It may be entertaining for you to know that Stellan recreated this issue by submitting data from a device he placed inside an antistatic bag. So, as part of issues 182 and 183, we are making some changes to how the app handles photos, and communicates success or failure to the device user which we hope is helpful.
