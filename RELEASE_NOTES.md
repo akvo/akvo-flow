@@ -1,4 +1,4 @@
-Last changed: 21 March 2013 co
+Last changed: 26 March 2013 co
 
 Akvo FLOW (Field Level Operations Watch) is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
 
@@ -19,6 +19,42 @@ This set of notes captures the weekly status of FLOW features and fixes to keep 
 They also sometimes contain a head note highlighting something we are working on or a solution to a problem that might be of interest to everyone.
 
 Numbers in parantheses indicate the github issue number related to the item.
+
+26 March 2013, co
+---
+
+Completed + Live
+---
+* Ability to delete single data records from Inspect Data (122)
+* Improvements to the way the interface handles mix/max values, decimal points for number questions (166, 168, 169, 175)
+* Added link to image in Edit data window that user can open in a new window (165)
+* Fixed, Device IDs and submitter names were sometimes not showing in DEVICES tab (131)
+* Fixed, user could create a new survey without making the required 'Type' selection (128)
+* Fixed, survey questions and question groups were not deleting properly, affecting multiple dependencies and question order (171)
+* Fixed, Device list was not loading in Create Assignment selection boxes (173)
+
+Completed + Pending 
+---
+* New reporting service is in first rounds of testing, for EXPORTING data only (the beginning of the end of the applets!) 
+
+In Progress
+---
+* Survey translations - implementation of user interface design (177)
+* Investigating photo transmission (172)
+* Updating data summaries (chart builder totals; 158)
+* Improvements to the way we load countries to the maps, making it easier to add a new country (161, 139)
+* We have made some improvements and fixed some bugs (159, 160) related to the Bulk Upload tool, but beware if you are using this that some users are still having difficulties, and we are working on those (170)
+* Upgrading our user interface framework to the newest version
+
+Other Known Issues
+---
+* Reporting service errors (164)
+* Household data are showing on public map when they shouldn't be (176)
+
+Backburner
+---
+* Orange "Loading" icon persists even if load fails (or is really slow)
+* After deleting survey assignment from the Dashboard, the survey still shows in the Field Survey app even after survey reload
 
 19 March 2013, co
 ---

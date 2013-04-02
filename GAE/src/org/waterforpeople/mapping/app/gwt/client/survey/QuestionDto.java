@@ -58,6 +58,12 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private Double maxVal;
 	private Boolean isName;
 
+	
+	@Override
+	public Long getKeyId(){
+		return super.getKeyId();
+	}
+	
 	public Boolean getAllowDecimal() {
 		return allowDecimal;
 	}

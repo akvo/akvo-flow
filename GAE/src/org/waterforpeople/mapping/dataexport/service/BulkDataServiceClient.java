@@ -299,7 +299,7 @@ public class BulkDataServiceClient {
 				+ DATA_SERVLET_PATH + DataBackoutRequest.LIST_INSTANCE_ACTION
 				+ "&" + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId
 				+ "&" + DataBackoutRequest.INCLUDE_DATE_PARAM + "=true");
-		if (instanceString != null) {
+		if (instanceString != null && instanceString.length()!=0) {
 			StringTokenizer strTok = new StringTokenizer(instanceString, ",");
 			while (strTok.hasMoreTokens()) {
 				String instanceId = strTok.nextToken();
