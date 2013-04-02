@@ -25,6 +25,7 @@ GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.propertie
 GAE/war/WEB-INF/*.jks
 GAE/war/WEB-INF/appengine-web.xml
 GAE/war/WEB-INF/classes
+GAE/war/exporterapplet.jar
 GAE/war/org.*
 GAE/war/admin*
 GAE/war/publicmap*
