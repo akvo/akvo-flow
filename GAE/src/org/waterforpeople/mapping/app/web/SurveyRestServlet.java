@@ -270,7 +270,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
-		getResponse().getWriter().println(new JSONObject(resp).toString());
+		getResponse().getWriter().println(new JSONObject(resp, true).toString());
 	}
 
 	/**
