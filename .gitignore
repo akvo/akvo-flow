@@ -1,7 +1,5 @@
 # Globally ignored files
 .DS_Store
-.gradle
-.gwt-log
 *.rpc
 *.class
 *.swp
@@ -12,53 +10,58 @@
 .project
 .settings
 
-# Specific paths
+# Build output paths
+.gradle
+.gwt-log
 
-Dashboard/app/test.html
-Dashboard/assets*
-Dashboard/tmp*
-Dashboard/test_assets*
-
-GAE/build
-GAE/build.properties
-GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties
-GAE/war/WEB-INF/*.jks
-GAE/war/WEB-INF/appengine-web.xml
-GAE/war/WEB-INF/classes
-GAE/war/exporterapplet.jar
-GAE/war/org.*
-GAE/war/admin*
-GAE/war/publicmap*
-GAE/war/vendorjs*
-GAE/war/WEB-INF/appengine-generated/*
-GAE/war/WEB-INF/lib/appengine*
-GAE/war/WEB-INF/lib/datanucleus*
-GAE/war/WEB-INF/lib/geronimo*
-GAE/war/WEB-INF/lib/jdo2-api*
-GAE/war/WEB-INF/lib/jsr107*
-GAE/war/com.gallatinsystems.framework.gwt.PortletFramework/*
-GAE/gwt-unitCache/*
-
-WFPMapping/device/debugcert
-WFPMapping/device/survey/res/raw/survey.properties
-WFPMapping/device/survey_test/bin/*
-WFPMapping/device/survey/bin/*
-WFPMapping/device/calabash/.calabash_settings
-WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/BuildConfig.java
-
-WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
-deploy
-gwt-unitcache
+# Testing
+.calabash_settings
 
 # Vagrant
 .vagrant
 GAE/env
 
+# Dashboard paths
+Dashboard/app/test.html
+Dashboard/assets*
+Dashboard/tmp*
+Dashboard/test_assets*
 
-GAE/UploadConstants.properties
+# Server paths
 GAE/appengine-web.xml
+GAE/appletbin
+GAE/build
+GAE/build.properties
+GAE/gwt-unitCache
+GAE/UploadConstants.properties
 
-WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/R.java
-GAE/war/flowenv.js
-
+GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties
 GAE/src/services/DataIssues.java
+
+GAE/war/admin*
+GAE/war/com.gallatinsystems.framework.gwt.PortletFramework/*
+GAE/war/exporterapplet.jar
+GAE/war/flowenv.js
+GAE/war/org.*
+GAE/war/publicmap*
+GAE/war/vendorjs*
+
+GAE/war/WEB-INF/*.jks
+GAE/war/WEB-INF/appengine-generated/*
+GAE/war/WEB-INF/appengine-web.xml
+GAE/war/WEB-INF/classes
+GAE/war/WEB-INF/deploy
+GAE/war/WEB-INF/lib/appengine*
+GAE/war/WEB-INF/lib/datanucleus*
+GAE/war/WEB-INF/lib/geronimo*
+GAE/war/WEB-INF/lib/jdo2-api*
+GAE/war/WEB-INF/lib/jsr107*
+
+# APK paths
+WFPMapping/device/debugcert
+WFPMapping/device/survey/bin/*
+WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/BuildConfig.java
+WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/R.java
+WFPMapping/device/survey/res/raw/survey.properties
+WFPMapping/device/survey_test/bin/*
+WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
