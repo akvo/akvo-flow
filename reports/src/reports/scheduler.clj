@@ -1,6 +1,7 @@
 (ns reports.scheduler
   (:refer-clojure :exclude [key])
-  (:import [org.quartz JobExecutionContext Scheduler])
+  (:import [org.quartz JobExecutionContext Scheduler]
+           java.io.File)
   (:require [clojure.string :as string :only (split join)]
             [clojurewerkz.quartzite [conversion :as conversion]
                                     [jobs :as jobs]
@@ -10,10 +11,22 @@
 
 (def cache (ref {}))
 
+(defn- valid-report? [report-path]
+  "Returns if a File is a valid one (exists and non zero length)"
+  (if (and (.exists ^File report-path)
+           (> 0 (.length ^File report-path)))
+    true false))
+
+(defn- get-path [report-file]
+  "Returns the path to the report or `INVALID_PATH` if not valid File"
+  (if (valid-report? report-file)
+    (string/join "/" (take-last 2 (string/split (.getAbsolutePath ^File report-file) #"/")))
+    "INVALID_PATH"))
+
 (jobs/defjob ExportJob [job-data]
   (let [{:strs [baseURL exportType surveyId opts reportId]} (conversion/from-job-data job-data)
         report (export-report exportType baseURL surveyId opts)
-        path (string/join "/" (take-last 2 (string/split (.getAbsolutePath report) #"/")))]
+        path (get-path report)]
     (dosync
       (alter cache conj {{:id reportId
                           :surveyId surveyId
@@ -62,13 +75,6 @@
     (if (seq found)
       (@cache (nth found 0)))))
 
-(defn generate-report [params]
-  "Returns the cached report for the given parameters, or schedules the report for generation"
-  (if-let [file (get-report-by-id (report-id params))]
-   {"status" "OK"
-    "file" file}
-   (schedule-job params)))
-
 (defn invalidate-cache [params]
   "Invalidates (removes) a given file from the cache"
   (let [baseURL (params "baseURL")]
@@ -77,3 +83,16 @@
         (doseq [key (keys @cache) :when (and (= (:baseURL key) baseURL) (= (str sid) (:surveyId key)))]
         (alter cache dissoc key))))
     "OK"))
+
+(defn generate-report [params]
+  "Returns the cached report for the given parameters, or schedules the report for generation"
+  (if-let [file (get-report-by-id (report-id params))]
+    (if (= file "INVALID_PATH")
+      (do
+        (invalidate-cache {"baseURL" (params "baseURL")
+                           "surveyIds" [(params "surveyId")]})
+        {"status" "ERROR"
+         "message" "_error_generating_report"})
+      {"status" "OK"
+       "file" file})
+    (schedule-job params)))
