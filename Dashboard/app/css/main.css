@@ -2117,7 +2117,7 @@ nav.smallMenu ul li a.showQuestion:hover { background: url(../images/showQuestio
 	width: 98%;
 	content: "";
 }
-.innerContent h1.questionNbr {
+.questionNbr {
 	display: inline;
 	color: rgb(0,0,0);
 	text-transform: none;
@@ -2127,7 +2127,7 @@ nav.smallMenu ul li a.showQuestion:hover { background: url(../images/showQuestio
 	-o-text-shadow:none;
 	text-shadow:none;
 }
-.innerContent h1.questionNbr span {
+.questionNbr span {
 	display: inline-block;
 	margin: -10px 0.6em 0 0;
 	padding: 0.2em 0 0 0;
@@ -2895,3 +2895,163 @@ footer.bottomPage a[rel="self"]:hover { }
 #back-top a:hover span {
 	background-color: rgb(55, 146, 179);
 }
+
+
+/* ------------------------------------------------------------------------------------------
+									 .Translate Surveys
+------------------------------------------------------------------------------------------ */
+
+.bottomPg {width:90%; text-align: center; margin:30px auto; }
+.bottomPg .standardBtn {margin:0.5em auto;}
+.twoColumns {
+	position: relative;
+	margin: 1px auto 0 auto;
+}
+.twoColumns > div, .twoColumns > section {
+	position: relative;
+	padding: 0.5% 0;
+	width: 49%;
+	background:rgb(255,255,255);
+}
+.twoColumns > div:first-child , .twoColumns > section:first-child { margin: 0 0.25% 0 0.75%; float:left; }
+.twoColumns > div:last-child , .twoColumns > section:last-child { margin: 0 0.75% 0 0.25%; float:right; }
+#defaultLanguage section , #targetLanguage section {
+	padding:0.5% 1% 2em 1%;
+	border-bottom:3px solid rgb(230,230,230);
+	}	
+#defaultLanguage section:last-child , #targetLanguage section:last-child {
+	border-bottom:none;
+	}
+
+table#languageOption {
+	width:98.5%;
+	margin:1em 0.75% 0.5% 0.75%;
+	text-align:left;
+	background:rgb(242,242,242);
+	-webkit-border-radius:0.25em;
+	-moz-border-radius:0.25em;
+	-o-border-radius:0.25em;
+	border-radius:0.25em;
+	}
+table#languageOption th {
+	font-size:1.1em;
+	text-transform:uppercase;
+	color: rgb(39,94,110);
+	padding:1em 0.75% 0.5em 0.75%;
+	}
+
+table#languageOption td {
+	font-size:1.2em;
+	padding:0.25em 0.75%;
+	height:30px;
+	}
+table#languageOption td select {
+	margin:0;
+	display:inline;
+	font-size:1em;
+	}
+table#languageOption td li {
+	display:inline;
+	margin:0 0.5em 0 0;
+	}
+
+table#languageOption td.formTitle {
+	font-size:1.4em;
+	color:rgb(123,123,123);
+	border-top:1px solid rgb(230,230,230);
+	text-align:center;
+	width:98%;
+	vertical-align:middle;
+	height:60px;
+	}
+#defaultLanguage section, #targetLanguage section {
+	}
+.groupSection {
+	}
+#defaultLanguage section h3, #targetLanguage section h3 {
+	border-bottom:1px solid rgb(230,230,230);
+	padding:0.5em 0 0.75em 0.25em;
+	}
+#defaultLanguage section label , #targetLanguage section label {
+	font-weight:bold;
+	margin:1em 0 0.5em 0;
+	}
+#defaultLanguage section ul , #targetLanguage section ul {
+	padding:0 0.5em;
+	}
+#defaultLanguage section ul li , #targetLanguage section ul li {
+	padding:1.5em 0.25em;
+	border-bottom:1px solid rgb(230,230,230);
+	font-size:1.1em;
+	min-height:140px;
+	}
+#defaultLanguage section ul li ul li, #targetLanguage section ul li ul li{
+	padding:0.5em 0.25em;
+	border-bottom:none;
+	margin-top:0.5em;
+	min-height:inherit;
+	}
+
+#defaultLanguage section ul li:last-child , #targetLanguage section ul li:last-child  {
+	border-bottom:none;
+	}
+
+#defaultLanguage section ul p, #targetLanguage section ul p {
+	padding:0 0.25em;
+	}
+#defaultLanguage section ul input , #targetLanguage section ul input {
+	width:90%;
+	}
+#defaultLanguage section ul textarea , #targetLanguage section ul textarea {
+	width:90%;
+	margin:0.5em 0 0 25px;
+	}
+.surveyDetails {
+	min-height:300px;
+	}
+section.surveyDetails ul textarea {
+	margin:0 0 0 0 !important;
+	}
+.groupSection h1 {
+	margin:0.5em 0 0.5em 0;
+	}
+#defaultLanguage section.groupSection h3, #targetLanguage section.groupSection h3 {
+	font-size:1.4em;
+	display:block;
+	margin:1em 0 0.5em 0;
+	border-bottom:none;
+	border-top:1px solid rgb(230,230,230);
+	padding:1em 0 0.25em 0.25em;
+	}
+#defaultLanguage section ul li .questionNbr, #targetLanguage section ul li .questionNbr{
+    color:inherit;
+    font-weight: bold;
+	}
+#defaultLanguage section ul li .questionNbr span , #targetLanguage section ul li .questionNbr span {
+	background:transparent;
+    -webkit-border-radius:inherit;
+    -moz-border-radius:inherit;
+    -o-border-radius:inherit;
+    border-radius:inherit;
+    box-shadow:none;
+    color:inherit;
+    display: inline-block;
+    font-weight: bold;
+    height:inherit;
+    margin:0 5px 0 0;
+    padding:inherit;
+    text-align: center;
+    width:inherit;
+	font-size:14px;
+	width:20px;
+}
+#defaultLanguage section ul li select , #targetLanguage section ul li select {
+    margin:0.5em 0;
+	width:90%;
+	}
+#targetLanguage .qHelpTooltip {margin-left:25px;}
+#defaultLanguage .qHelpTooltip {margin-left:10px;}
+#defaultLanguage .qHelpTooltip p {margin:0; padding:0;}
+#defaultLanguage section .qHelpTooltip label {
+	margin:0.5em 0 0em 0;
+	}
