@@ -1,7 +1,8 @@
 (ns reports.core
   (:use compojure.core
         ring.middleware.params
-        ring.util.response)
+        ring.util.response
+        ring.adapter.jetty)
   (:require [cheshire.core :as json]
             [compojure [handler :as handler] [route :as route]]
             [clojurewerkz.quartzite.scheduler :as quartzite-scheduler]
@@ -35,3 +36,7 @@
   (quartzite-scheduler/start))
 
 (def app (handler/api endpoints))
+
+(defn -main [& args]
+  (init)
+  (run-jetty #'app {:port 8080 :join? false}))
