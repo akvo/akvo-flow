@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,9 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.rest.dto.PlacemarkDto;
+import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
@@ -60,8 +65,15 @@ public class PlacemarkRestService {
 			log.log(Level.SEVERE, msg);
 			throw new HttpMessageNotReadableException(msg);
 		}
-
-		return getPlacemarksReponseByCountry(country);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null){
+			Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
+			if (auths.contains(AppRole.USER) || auths.contains(AppRole.ADMIN) || auths.contains(AppRole.SUPER_ADMIN)){
+				return getPlacemarksReponseByCountry(country);
+			}			
+		}
+		
+		return getPlacemarksReponseByCountryPublic(country);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
@@ -88,6 +100,29 @@ public class PlacemarkRestService {
 		return response;
 	}
 
+	private Map<String, Object> getPlacemarksReponseByCountryPublic(String country) {
+		final Map<String, Object> response = new HashMap<String, Object>();
+		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
+		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+
+		// exclude Household data
+		slList.addAll(localeDao.listBySubLevel(country, null, null,"Point", null,
+				null, 200));
+		slList.addAll(localeDao.listBySubLevel(country, null, null,"PublicInstitution", null,
+				null, 200));
+
+		if (slList.size() > 0) {
+			for (SurveyedLocale ap : slList) {
+				result.add(marshallDomainToDto(ap));
+			}
+		}
+
+		response.put("placemarks", result);
+		return response;
+	}
+
+	
+	
 	private Map<String, Object> getPlacemarkResponseById(Long id) {
 		final Map<String, Object> response = new HashMap<String, Object>();
 		final SurveyedLocale sl = localeDao.getById(id);
