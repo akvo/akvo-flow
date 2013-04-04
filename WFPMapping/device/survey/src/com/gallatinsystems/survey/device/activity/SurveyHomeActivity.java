@@ -220,6 +220,8 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			Intent i = new Intent(v.getContext(), ListUserActivity.class);
 			startActivityForResult(i, LIST_USER_ACTIVITY);
 		} else if (selected.equals(ConstantUtil.PANIC_OP)) {
+			//ViewUtil.showConfirmDialog(R.string.tooBigPhotoTitle,R.string.tooBigPhotoMsg,this);
+
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(R.string.dontPanicMsg)
 					.setCancelable(true)

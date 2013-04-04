@@ -213,6 +213,9 @@ public class ConstantUtil {
 	public static final String CHECK_FOR_SURVEYS = "survey.checkforupdates";
 	public static final String UPLOAD_ERRORS = "remoteexception.upload";
 	public static final String NEARBY_RADIUS = "nearby.points.radius";
+	public static final String PHOTO_SIZE_REMINDER_KEY = "survey.media.photo.sizereminder";
+	public static final String SHRINK_PHOTOS_KEY = "survey.media.photo.shrink";
+	
 	
 
 	/**

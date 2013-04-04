@@ -17,7 +17,10 @@
 	<string name="dontPaniclabel">Don\'t Panic</string>
 	<string name="dontPanicMsg">Just make sure you know where your towel is!</string>
 	<string name="tooBigPhotoTitle">Large File Size</string>
-	<string name="tooBigPhotoMsg">The photo file is very large. If you set the camera to take smaller pictures, they will be more likely to upload successfully.</string>
+	<string name="tooBigPhotoMsg">The photo file is very large. If you set the camera to take smaller pictures, they will be more likely to upload successfully. Visit the camera settings on your device to reduce the picture resolution.</string>
+	<string name="photosizereminderlabel">Remind user of large photo size</string>
+	<string name="giveitarestbutton">Stop reminding me</string>	
+	<string name="shrinkphotoslabel">Shrink large photos</string>
 	<string name="wplabel">Community Waterpoint Survey</string>
 	<string name="hhlabel">Household Survey</string>
 	<string name="publabel">Public Institution Survey</string>

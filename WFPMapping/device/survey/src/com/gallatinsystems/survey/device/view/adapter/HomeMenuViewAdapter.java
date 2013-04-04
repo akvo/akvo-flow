@@ -235,8 +235,11 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 * @return
 	 */
 	public Survey getSelectedSurvey(int idx) {
-		if (idx - preSurveyButtons.length < surveys.size()) {
-			return surveys.get(idx - preSurveyButtons.length);
+		int surveysStart = preSurveyButtons.length;
+		if (easterEgg)
+			surveysStart++;
+		if (idx - surveysStart < surveys.size()) {
+			return surveys.get(idx - surveysStart);
 		} else {
 			Log.e(TAG, "Selected item exceeds survey list size");
 			return null;

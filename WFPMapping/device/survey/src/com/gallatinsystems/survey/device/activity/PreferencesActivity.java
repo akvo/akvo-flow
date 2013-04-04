@@ -57,6 +57,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	private CheckBox saveUserCheckbox;
 	private CheckBox beaconCheckbox;
 	private CheckBox screenOnCheckbox;
+	private CheckBox photoSizeReminderCheckbox;
+	private CheckBox shrinkPhotosCheckbox;
 	private TextView uploadOptionTextView;
 	private TextView languageTextView;
 	private TextView precacheHelpTextView;
@@ -83,6 +85,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		saveUserCheckbox = (CheckBox) findViewById(R.id.lastusercheckbox);
 		beaconCheckbox = (CheckBox) findViewById(R.id.beaconcheckbox);
 		screenOnCheckbox = (CheckBox) findViewById(R.id.screenoptcheckbox);
+		photoSizeReminderCheckbox = (CheckBox) findViewById(R.id.photosizeremindercheckbox);
+		shrinkPhotosCheckbox = (CheckBox) findViewById(R.id.shrinkphotoscheckbox);
 
 		uploadOptionTextView = (TextView) findViewById(R.id.uploadoptionvalue);
 		languageTextView = (TextView) findViewById(R.id.surveylangvalue);
@@ -127,6 +131,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		} else {
 			beaconCheckbox.setChecked(false);
 		}
+
+		val = settings.get(ConstantUtil.PHOTO_SIZE_REMINDER_KEY);
+		photoSizeReminderCheckbox.setChecked(val != null && Boolean.parseBoolean(val));
+
+		val = settings.get(ConstantUtil.SHRINK_PHOTOS_KEY);
+		shrinkPhotosCheckbox.setChecked(val != null && Boolean.parseBoolean(val));
 
 		val = settings.get(ConstantUtil.CELL_UPLOAD_SETTING_KEY);
 		if (val != null) {
@@ -197,6 +207,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		saveUserCheckbox.setOnCheckedChangeListener(this);
 		beaconCheckbox.setOnCheckedChangeListener(this);
 		screenOnCheckbox.setOnCheckedChangeListener(this);
+		photoSizeReminderCheckbox.setOnCheckedChangeListener(this);
+		shrinkPhotosCheckbox.setOnCheckedChangeListener(this);
 		((ImageButton) findViewById(R.id.uploadoptionbutton))
 				.setOnClickListener(this);
 		((ImageButton) findViewById(R.id.surveylangbutton))
@@ -440,6 +452,10 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 			}
 		} else if (buttonView == screenOnCheckbox) {
 			database.savePreference(ConstantUtil.SCREEN_ON_KEY, "" + isChecked);
+		} else if (buttonView == photoSizeReminderCheckbox) {
+			database.savePreference(ConstantUtil.PHOTO_SIZE_REMINDER_KEY, "" + isChecked);
+		} else if (buttonView == shrinkPhotosCheckbox) {
+			database.savePreference(ConstantUtil.SHRINK_PHOTOS_KEY, "" + isChecked);
 		}
 	}
 }
