@@ -24,8 +24,9 @@ GAE/env
 # Dashboard paths
 Dashboard/app/test.html
 Dashboard/assets*
-Dashboard/tmp*
+Dashboard/node_modules
 Dashboard/test_assets*
+Dashboard/tmp*
 
 # Server paths
 GAE/appengine-web.xml
