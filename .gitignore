@@ -13,7 +13,7 @@
 .settings
 
 # Specific paths
-
+Dashboard/node_modules
 Dashboard/app/test.html
 Dashboard/assets*
 Dashboard/tmp*
