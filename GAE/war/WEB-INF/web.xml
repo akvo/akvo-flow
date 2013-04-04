@@ -1,10 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	version="2.5"
-	>
+<?xml version="1.0" encoding="utf-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 	<servlet>
 		<servlet-name>StartupServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.StartupServlet</servlet-class>
@@ -191,6 +185,14 @@
 	<servlet-mapping>
 		<servlet-name>TestHarness</servlet-name>
 		<url-pattern>/webapp/testharness</url-pattern>
+	</servlet-mapping>
+	<servlet>
+	<servlet-name>PublishSurvey</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.PublishSurveyServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PublishSurvey</servlet-name>
+		<url-pattern>/publishsurvey</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>AccessPointServlet</servlet-name>
