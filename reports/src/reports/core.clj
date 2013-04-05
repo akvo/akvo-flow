@@ -6,7 +6,8 @@
   (:require [cheshire.core :as json]
             [compojure [handler :as handler] [route :as route]]
             [clojurewerkz.quartzite.scheduler :as quartzite-scheduler]
-            [reports.scheduler :as scheduler]))
+            [reports.scheduler :as scheduler])
+  (:gen-class))
 
 (defn- generate-report [params]
   (let [criteria (json/parse-string (:criteria params)) ; TODO: validation
