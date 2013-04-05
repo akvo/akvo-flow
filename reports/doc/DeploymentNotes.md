@@ -76,7 +76,7 @@ It should return `OK`.
         ...
     }
 
-The Akvo FLOW Dashboard app explicitl depends on being able to fetch generated reports from the hardcoded URL `/report` and the reports app generates these reports at the hardcoded path `/var/tmp/akvo/flow/reports`. Consequently, Nginx **must** be configured accordingly:
+The Akvo FLOW Dashboard app explicitl depends on being able to fetch generated reports from the hardcoded URL `/report` and the reports app generates these reports at the hardcoded path `/tmp/akvo/flow/reports`. Consequently, Nginx **must** be configured accordingly:
 
     location /report/ {
         alias /tmp/akvo/flow/reports/;
