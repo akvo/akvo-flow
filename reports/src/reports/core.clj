@@ -37,6 +37,7 @@
 
 (def app (handler/api endpoints))
 
-(defn -main [& args]
+(defn -main [& [port]]
   (init)
-  (run-jetty #'app {:port 8080 :join? false}))
+  (run-jetty #'app {:join? false
+                    :port (if port (Integer/valueOf port) 8080)}))
