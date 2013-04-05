@@ -51,9 +51,7 @@ Here you have an example of `/etc/init/report-service.conf` file:
     start on runlevel [2345]
     stop on runlevel [!2345]
     
-    env JVM_OPTS="-Xmx1024m"
-    
-    exec /usr/bin/java -jar /opt/reports/reports-0.1.0-SNAPSHOT-standalone.jar
+    exec /usr/bin/java -Xmx1024m -jar /opt/reports/reports-0.1.0-SNAPSHOT-standalone.jar
 
 
 Ater defining the `report-service.conf` the application will start in the server boot process.
