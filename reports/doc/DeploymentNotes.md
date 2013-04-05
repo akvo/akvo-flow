@@ -2,70 +2,84 @@
 
 ## Introduction
 
-Although the `reports` application is written in [Clojure](http://clojure.org/), it is intended to be deployed as a standard JVM WAR file.
+Although the `reports` application is written in [Clojure](http://clojure.org/), it is intended to be deployed as a standard [JAR](https://en.wikipedia.org/wiki/JAR_file) file.
 
-This document describes how to generate and deploy such a WAR file.
+This document describes how to generate a JAR file.
 
 It is assumed that you have [Leiningen](http://leiningen.org/) version 2.x installed.
 
-## Generating the WAR file
+## Generating the JAR file
 
-To generate a deployable WAR file for the `reports` application, run the following `lein` command:
+To generate a JAR file for the `reports` application, run the following `lein` command:
 
-    $ lein ring uberwar root.war
+    $ lein uberjar
 
-This will generate a file called `root.war` in the `target` directory of the project.
+This will generate a file called `reports-0.1.0-SNAPSHOT-standalone.jar` in the `target` directory of the project.
 
-A new WAR file must be generated every time the application code changes.
+A new JAR file must be generated every time the application code changes.
 
-## Installing and configuring Jetty
+## Running the application
 
-The `reports` app should be deployed using [Jetty](http://jetty.codehaus.org/jetty/).
+You only need to use the `java` binary to run the JAR file:
 
-Jetty can be installed on Debian systems as follows:
+    java -jar reports-0.1.0-SNAPSHOT-standalone.jar
 
-    $ sudo apt-get install jetty
 
-Configuring Jetty is beyond the scope of this document, but you should probably set the following environment variables in `/etc/defaults/jetty` at a minimum:
+You might want to define the port number on which the HTTP service will run, e.g.
 
-    NO_START=0              # Set Jetty to start automatically
-    JETTY_PORT=8000         # The port Jetty should run on
-    JAVA_HOME=/path/to/jdk  # The path to your installed JDK
 
-## Deploying the WAR file
+    java -jar reports-0.1.0-SNAPSHOT-standalone.jar 3000
 
-By default, Jetty looks for web apps in `/var/lib/jetty/webapps` on Debian/Ubuntu systems. Any pre-existing `root` folders or `root.war` files should be moved aside and the WAR file you generated earlier should be copied or symlinked into this directory as `root.war`. The filename is important!
 
-In the following example we symlink the WAR file we generated to the `webapps` directory:
+This will start the HTTP service in the port 3000. The __default port__ is __8080__ if no argument is used.
 
-    $ sudo ln -s /path/to/akvo-flow/reports/target/root.war /var/lib/jetty/webapps/
+## Configuring the application to run as a service
 
-### Managing the Jetty application container
+The `reports-0.1.0-standalone.jar` file should be deployed to the `/opt/reports/` path on your server.
 
-Jetty can now be managed as a regular Unix System V system service:
+You can use [Upstart](http://upstart.ubuntu.com/cookbook/) on Ubuntu based systems for configuring a service that will run on startup.
 
-    $ sudo /etc/init.d/jetty start        # Starts the service
-    $ sudo /etc/init.d/jetty stop         # Stops the service
-    $ sudo /etc/init.d/jetty restart      # Restarts the service
+### Defining an Upstart Job
 
-The following commands are useful for checking on the status of a running Jetty service:
+Here you have an example of `/etc/init/report-service.conf` file:
 
-    $ sudo /etc/init.d/jetty status       # Reports the status of a running service
-    $ sudo /etc/init.d/jetty check        # Checks the arguments the running service was run with
+    # report-service - Upstart conf for report-service
+    #
+    
+    description     "Simple conf for starting the report service automatically"
+    
+    start on runlevel [2345]
+    stop on runlevel [!2345]
+    
+    env JVM_OPTS="-Xmx1024m"
+    
+    exec /usr/bin/java -jar /opt/reports/reports-0.1.0-SNAPSHOT-standalone.jar
+
+
+Ater defining the `report-service.conf` the application will start in the server boot process.
+
+### Testing the service
+
+You can query the service by making a HTTP to the app, e.g.
+
+    curl -L http://localhost:8080
+
+It should return `OK`.
+
 
 ## Configuring Nginx
 
-[Nginx](http://wiki.nginx.org/) should be configured to proxy through to the Jetty application server running on port 8000. Configuring Nginx is beyond the scope of this document, but the following serves as an example:
+[Nginx](http://wiki.nginx.org/) should be configured to proxy through to the Jetty application server running on port 8080. Configuring Nginx is beyond the scope of this document, but the following serves as an example:
 
     location / {
-        proxy_pass http://127.0.0.1:8000/;
+        proxy_pass http://127.0.0.1:8080/;
         ...
     }
 
 The Akvo FLOW Dashboard app explicitl depends on being able to fetch generated reports from the hardcoded URL `/report` and the reports app generates these reports at the hardcoded path `/var/tmp/akvo/flow/reports`. Consequently, Nginx **must** be configured accordingly:
 
     location /report/ {
-        alias /var/tmp/akvo/flow/reports/;
+        alias /tmp/akvo/flow/reports/;
         autoindex off;
         allow all;
     }
