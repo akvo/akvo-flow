@@ -21,7 +21,9 @@
                  ; Akvo FLOW dependencies
                  [exporterapplet "1.0.0"]
                  [org.json/json "20090211"]]
+
   :main reports.core
+  :aot [reports.core]
   :plugins [[lein-ring "0.8.3"]]
   :ring {:handler reports.core/app
          :init reports.core/init})

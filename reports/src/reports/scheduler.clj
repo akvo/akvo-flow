@@ -14,7 +14,7 @@
 (defn- valid-report? [report-path]
   "Returns if a File is a valid one (exists and non zero length)"
   (if (and (.exists ^File report-path)
-           (> 0 (.length ^File report-path)))
+           (> (.length ^File report-path) 0))
     true false))
 
 (defn- get-path [report-file]
