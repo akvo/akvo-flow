@@ -778,7 +778,8 @@ public class DataSyncService extends Service {
 	 * @return
 	 */
 	private String createFileName(boolean isAll) {
-		String fileName =TEMP_FILE_NAME + System.nanoTime() + ".zip"; 
+		//TODO move zip file extension to constantutil
+		String fileName = TEMP_FILE_NAME + System.nanoTime() + ".zip"; 
 		String dir = FileUtil.getStorageDirectory(ConstantUtil.SURVEYAL_DIR,
 				fileName,
 				props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE));
