@@ -301,7 +301,7 @@ public class SurveyRestService {
 			// source survey not found, the getById already logged the problem
 			return null;
 		}
-		return SurveyUtils.copySurvey(source);
+		return SurveyUtils.copySurvey(source,dto);
 	}
 
 	private Survey marshallToDomain(SurveyDto dto) {
