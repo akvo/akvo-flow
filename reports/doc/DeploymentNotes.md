@@ -39,22 +39,9 @@ The `reports-0.1.0-standalone.jar` file should be deployed to the `/opt/reports/
 
 You can use [Upstart](http://upstart.ubuntu.com/cookbook/) on Ubuntu based systems for configuring a service that will run on startup.
 
-### Defining an Upstart Job
+### Upstart job definition
 
-Here you have an example of `/etc/init/report-service.conf` file:
-
-    # report-service - Upstart conf for report-service
-    #
-    
-    description     "Simple conf for starting the report service automatically"
-    
-    start on runlevel [2345]
-    stop on runlevel [!2345]
-    
-    exec /usr/bin/java -Xmx1024m -jar /opt/reports/reports-0.1.0-SNAPSHOT-standalone.jar
-
-
-Ater defining the `report-service.conf` the application will start in the server boot process.
+See [reports/config/server/etc/init/flow-reports.conf](reports/config/server/etc/init/flow-reports.conf)
 
 ### Testing the service
 
