@@ -41,7 +41,7 @@ You can use [Upstart](http://upstart.ubuntu.com/cookbook/) on Ubuntu based syste
 
 ### Upstart job definition
 
-See [reports/config/server/etc/init/flow-reports.conf](reports/config/server/etc/init/flow-reports.conf)
+See [reports/config/server/etc/init/flow-reports.conf](/reports/config/server/etc/init/flow-reports.conf)
 
 ### Testing the service
 
