@@ -93,30 +93,48 @@ public class SubmittedSurveyReviewCursorAdaptor extends CursorAdapter {
 	}
 	
 	/**
-	 * Gets status of latest non-zip transmission for this respondent, or DETAIL_NONE if none can be found.
+	 * Gets any non-sent status of any non-zip transmission for this respondent, or DETAIL_NONE if all succeeded/none can be found.
+	 * We need to ignore any files that have been successful at any time
 	 */
-	int getMediaTransmissionStatus(Long respondId) {
+	int getWorstMediaTransmissionStatus(Long respondId) {
 		databaseAdapter.open();
-		//get file transmissions, most recent first
-		ArrayList<FileTransmission> transList =	databaseAdapter.listFileTransmission(respondId, null, true);
+		//get file transmissions, most recent first, including successes
+		ArrayList<FileTransmission> transList =	databaseAdapter.listFileTransmission(respondId, null, false);
 		int sts = DETAIL_NONE;
 		if (transList != null) {
-			for (int i = 0; i < transList.size(); i++) { 
+			//first pass - mark any files that have been successful at any time as successful
+			for (int i = 0; i < transList.size(); i++) {
+				//need to remember all non-zip files 
 				String fn = transList.get(i).getFileName();
-				if (!fn.endsWith(".zip")){
+				if (!fn.endsWith(".zip")) {
+					String stsTxt = transList.get(i).getStatus();
+					if (stsTxt != null) {
+						if (ConstantUtil.SENT_STATUS.equals(stsTxt)) {
+							for (int j = 0; j < transList.size(); j++) {
+								if (i != j && fn.equals(transList.get(j).getFileName() ) ) {
+									transList.get(j).setStatus(ConstantUtil.SENT_STATUS);
+								}
+							}
+						}
+					}
+				}
+			}
+			//second pass - find any files that were not successful
+			for (int i = 0; i < transList.size(); i++) {
+				String fn = transList.get(i).getFileName();
+				if (!fn.endsWith(".zip")) {
 					String stsTxt = transList.get(i).getStatus();
 					if (stsTxt != null) {
 						if (ConstantUtil.QUEUED_STATUS.equals(stsTxt)) {
-							sts=DETAIL_QUEUED;
+							sts = DETAIL_QUEUED;
 							break;
 						} else if (ConstantUtil.IN_PROGRESS_STATUS.equals(stsTxt)) {
-							sts=DETAIL_INPROG;
+							sts = DETAIL_INPROG;
 							break;
 						} else if (ConstantUtil.FAILED_STATUS.equals(stsTxt)) {
-							sts=DETAIL_FAILED;
+							sts = DETAIL_FAILED;
 							break;
 						}
-						//COMPLETE_STATUS records should not be returned
 					}
 				}
 			}
@@ -135,7 +153,7 @@ public class SubmittedSurveyReviewCursorAdaptor extends CursorAdapter {
 		long millis = cursor.getLong(cursor.getColumnIndex(SurveyDbAdapter.DELIVERED_DATE_COL));
 		if (millis != 0) {
 			//sent, see how the media files did
-			int detail = getMediaTransmissionStatus(cursor.getLong(cursor
+			int detail = getWorstMediaTransmissionStatus(cursor.getLong(cursor
 					.getColumnIndex(SurveyDbAdapter.PK_ID_COL)));
 			if (detail != DETAIL_NONE) { //problems
 				icon = R.drawable.checkmark_exclam;
