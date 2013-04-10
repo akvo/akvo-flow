@@ -1,4 +1,4 @@
-Last changed: 26 March 2013 co
+Last changed: 2 April 2013 co
 
 Akvo FLOW (Field Level Operations Watch) is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
 
@@ -19,6 +19,42 @@ This set of notes captures the weekly status of FLOW features and fixes to keep 
 They also sometimes contain a head note highlighting something we are working on or a solution to a problem that might be of interest to everyone.
 
 Numbers in parantheses indicate the github issue number related to the item.
+
+2 April 2013, co
+---
+
+Some of you will be interested to know that we've been able to diagnose the photo transmission problem that has been bothering many of our users -- photos were not making it to the server although the data were. It came down to a connectivity issue. Essentially, connectivity can appear to be ok, but may actually be inconsistent. The zip files containing the data are fairly small and can slip through, but the photos take a more consistent connection to successfully transmit. It may be entertaining for you to know that Stellan recreated this issue by submitting data from a device he placed inside an antistatic bag. So, as part of issues 182 and 183, we are making some changes to how the app handles photos, and communicates success or failure to the device user which we hope is helpful.
+
+Completed + Live
+---
+* Nothing new since last week
+
+Completed + Pending 
+---
+* Improvements to the way we load countries to the maps, making it easier to add a new country (161, 139)
+
+In Progress
+---
+* New 1.5 Dashboards for ICCO and Mars
+* Addressing an issue where Water For People is having trouble publishing surveys from their Dashboard, related to the Google App Engine environment (186)
+* New reporting service for data export is receiving further improvements after user testing on the MWA Dashboard, preparing for wider rollout next (164, 179, 181, 184)
+* Survey translations - implementation of user interface design (177)
+* Updating data summaries (chart builder totals; 158, 185)
+* Improvements to Bulk Upload tool (185, 170)
+* Improvements to photo transmission from device (182, 183)
+* Upgrading our user interface framework to the newest version (154)
+
+Other Known Issues
+---
+* Household data are showing on public map when they shouldn't be (176)
+* Date conflict on Inspect Data filters (178)
+
+Backburner
+---
+* copying surveys between survey groups (140)
+* supporting newer devices with dual or no SD cards
+* Orange "Loading" icon persists even if load fails (or is really slow)
+* After deleting survey assignment from the Dashboard, the survey still shows in the Field Survey app even after survey reload
 
 26 March 2013, co
 ---
