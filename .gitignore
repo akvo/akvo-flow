@@ -1,20 +1,26 @@
 # Globally ignored files
 .DS_Store
-.classpath
-.project
-.settings
+.gradle
+.gwt-log
 *.rpc
 *.class
-.gwt-log
 *.swp
 
-# Specific paths
+# Eclipse files
+.classpath
+.externalToolBuilders
+.project
+.settings
 
+# Specific paths
+Dashboard/node_modules
 Dashboard/app/test.html
 Dashboard/assets*
 Dashboard/tmp*
 Dashboard/test_assets*
 
+GAE/appletbin
+GAE/build
 GAE/build.properties
 GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties
 GAE/war/WEB-INF/*.jks

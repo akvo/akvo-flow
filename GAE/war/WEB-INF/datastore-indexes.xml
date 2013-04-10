@@ -427,6 +427,18 @@
 		<property name="localeType" direction="asc" />
 		<property name="latitude" direction="asc" />
 	</datastore-index>
+	
+	 <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="countryCode" direction="asc"/>
+        <property name="localeType" direction="asc"/>
+    </datastore-index>
+	
+	 <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="countryCode" direction="asc"/>
+        <property name="localeType" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
+    </datastore-index>
+    
 	  <datastore-index kind="SurveyInstance" ancestor="false" >
         <property name="surveyId" direction="asc"/>
         <property name="collectionDate" direction="desc"/>

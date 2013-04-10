@@ -40,23 +40,24 @@ FLOW.SurveyGroupSurveyView = FLOW.View.extend({
 	deleteSurvey: function() {
 		var sId = this.content.get('id');
 		var survey = FLOW.store.find(FLOW.Survey, sId);
-		survey.deleteRecord();
-		FLOW.store.commit();
-		this.set('showDeleteSurveyDialogBool', false);
+
+		// do preflight check if deleting this survey is allowed
+		// if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
+		FLOW.store.findQuery(FLOW.Survey, {
+      preflight: 'delete',
+      surveyId: sId
+    });
 	},
 
 	// fired when 'inspect data' is clicked in the survey item display
 	inspectData: function() {
 		console.log("TODO inspect Data");
-	},
-
-	copySurvey: function() {
-		FLOW.store.createRecord(FLOW.Survey, {
-			sourceId: this.content.get('id')
-		});
-		FLOW.store.commit();
 	}
+
 });
+
+
+
 
 // handles all survey-group interaction elements on survey group page
 FLOW.SurveyGroupMainView = FLOW.View.extend({
@@ -65,6 +66,8 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 	surveyGroupName: null,
 	showSGDeleteDialog: false,
 	showSGDeleteNotPossibleDialog: false,
+	showCopySurveyDialogBool:false,
+	newSurveyName:null,
 
 	// true if at least one survey group is active
 	oneSelected: function() {
@@ -110,9 +113,13 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 	deleteSurveyGroup: function() {
 		var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
 		var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
-		surveyGroup.deleteRecord();
-		FLOW.store.commit();
-		FLOW.selectedControl.set('selectedSurveyGroup', null);
+		
+		// do preflight check if deleting this survey is allowed
+		// if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
+		FLOW.store.findQuery(FLOW.SurveyGroup, {
+      preflight: 'delete',
+      surveyGroupId: sgId
+    });
 	},
 
 	// fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
@@ -129,7 +136,34 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 	cancelNewSurveyGroupName: function() {
 		this.set('surveyGroupName', null);
 		this.set('showNewGroupField', false);
+	},
+
+	showCopySurveyDialog: function(event){
+		FLOW.selectedControl.set('selectedForCopySurvey',event.context);
+		this.set('showCopySurveyDialogBool',true);
+		this.set('newSurveyName',event.context.get('name') + " (copy)");
+		this.set('selectedSurveyGroup',FLOW.selectedControl.get('selectedSurveyGroup'));
+	},
+
+	copySurvey: function() {
+		FLOW.store.createRecord(FLOW.Survey, {
+			sourceId: FLOW.selectedControl.selectedForCopySurvey.get('id'),
+			surveyGroupId: this.selectedSurveyGroup.get('keyId'),
+			code: this.get('newSurveyName'),
+			name: this.get('newSurveyName')
+		});
+		FLOW.store.commit();
+		FLOW.selectedControl.set('selectedForCopySurvey',null);
+		this.set('showCopySurveyDialogBool',false);
+	},
+
+	cancelMoveSurvey: function(){
+		FLOW.selectedControl.set('selectedForCopySurvey',null);
+		this.set('showCopySurveyDialogBool',false);
 	}
+
+
+
 });
 
 FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({

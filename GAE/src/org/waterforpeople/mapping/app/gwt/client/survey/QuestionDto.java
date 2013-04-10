@@ -58,6 +58,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private Double maxVal;
 	private Boolean isName;
 
+	
 	public Boolean getAllowDecimal() {
 		return allowDecimal;
 	}

@@ -34,7 +34,9 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
@@ -47,6 +49,9 @@ public class ActionRestService {
 
 	@Inject
 	private SurveyDAO surveyDao;
+
+	@Inject
+	private QuestionDao questionDao;
 
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
@@ -71,12 +76,36 @@ public class ActionRestService {
 			message = generateBootstrapFile(surveyIds, dbInstructions, email);
 			status = "ok";
 			statusDto.setMessage(message);
+		} else if ("removeZeroValues".equals(action)) {
+			status = removeZeroMinMaxValues();
 		}
 
 		statusDto.setStatus(status);
 		response.put("actions", "[]");
 		response.put("meta", statusDto);
 		return response;
+	}
+
+	// remove zero minVal and maxVal values
+	// that were the result of a previous bug
+	private String removeZeroMinMaxValues() {
+		List<Question> questions = questionDao.list(Constants.ALL_RESULTS);
+		int counter = 0;
+		if (questions != null) {
+			Double epsilon = 0.000001;
+			for (Question q : questions) {
+				if (q.getMinVal() != null && q.getMaxVal() != null) {
+					if (Math.abs(q.getMinVal()) < epsilon
+							&& Math.abs(q.getMaxVal()) < epsilon) {
+						q.setMinVal(null);
+						q.setMaxVal(null);
+						questionDao.save(q);
+						counter +=1;
+					}
+				}
+			}
+		}
+		return "updated " + counter + " questions";
 	}
 
 	@SuppressWarnings("unused")
