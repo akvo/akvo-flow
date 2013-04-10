@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.ArrayUtils;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.HttpUtil;
@@ -44,7 +45,7 @@ public class SurveyUtils {
 	private static final Logger log = Logger.getLogger(SurveyUtils.class
 			.getName());
 
-	public static Survey copySurvey(Survey source) {
+	public static Survey copySurvey(Survey source, SurveyDto dto) {
 
 		final SurveyDAO sDao = new SurveyDAO();
 		final Survey tmp = new Survey();
@@ -52,8 +53,11 @@ public class SurveyUtils {
 		final Map<Long, Long> qMap = new HashMap<Long, Long>();
 
 		BeanUtils.copyProperties(source, tmp, Constants.EXCLUDED_PROPERTIES);
-		tmp.setCode(tmp.getCode() + " <Copy>"); // FIXME: I18N
-		tmp.setName(tmp.getName() + " <Copy>"); // FIXME: I18N
+		// set name and surveyGroupId to values we got from the dashboard
+		tmp.setCode(dto.getCode()); 
+		tmp.setName(dto.getName()); 
+		tmp.setSurveyGroupId(dto.getSurveyGroupId());
+		
 		tmp.setStatus(Survey.Status.NOT_PUBLISHED);
 		tmp.setPath(getPath(tmp));
 
