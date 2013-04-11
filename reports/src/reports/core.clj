@@ -1,12 +1,13 @@
 (ns reports.core
   (:use compojure.core
         ring.middleware.params
+        ring.middleware.multipart-params
         ring.util.response
         ring.adapter.jetty)
   (:require [cheshire.core :as json]
             [compojure [handler :as handler] [route :as route]]
             [clojurewerkz.quartzite.scheduler :as quartzite-scheduler]
-            [reports.scheduler :as scheduler])
+            [reports [scheduler :as scheduler] [uploader :as uploader]])
   (:gen-class))
 
 (defn- generate-report [params]
@@ -29,6 +30,14 @@
 
   (POST "/invalidate" [:as {params :params}]
         (invalidate-cache params))
+  
+  (POST "/upload" [:as {params :params}]
+        (-> (response (uploader/save-file params))
+            (header "Access-Control-Allow-Origin" "*")))
+  
+  (OPTIONS "/upload" [:as {params :params}] 
+        (-> (response "OK")
+            (header "Access-Control-Allow-Origin" "*")))
 
   (route/not-found "Page not found"))
 
@@ -36,7 +45,7 @@
   (quartzite-scheduler/initialize)
   (quartzite-scheduler/start))
 
-(def app (handler/api endpoints))
+(def app (handler/site endpoints))
 
 (defn -main [& [port]]
   (init)
