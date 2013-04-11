@@ -35,7 +35,7 @@ This will start the HTTP service in the port 3000. The __default port__ is __808
 
 ## Configuring the application to run as a service
 
-The `reports-0.1.0-standalone.jar` file should be deployed to the `/opt/reports/` path on your server.
+The `reports-0.1.0-standalone.jar` file should be deployed to the `/opt/akvo/flow/services/` path on your server.
 
 You can use [Upstart](http://upstart.ubuntu.com/cookbook/) on Ubuntu based systems for configuring a service that will run on startup.
 
@@ -61,10 +61,14 @@ It should return `OK`.
         ...
     }
 
-The Akvo FLOW Dashboard app explicitl depends on being able to fetch generated reports from the hardcoded URL `/report` and the reports app generates these reports at the hardcoded path `/tmp/akvo/flow/reports`. Consequently, Nginx **must** be configured accordingly:
+Note that the root (/) location should be the last location definition in the Nginx config as it will handle any top level requests that don't match other more specific location definitions.
+
+The Akvo FLOW Dashboard app explicitly depends on being able to fetch generated reports from the hardcoded URL `/report` and the reports app generates these reports at the hardcoded path `/tmp/akvo/flow/reports`. Consequently, Nginx **must** be configured accordingly:
 
     location /report/ {
         alias /tmp/akvo/flow/reports/;
         autoindex off;
         allow all;
     }
+
+Full Nginx configuration for the service is available at [reports/config/server/etc/nginx/sites-enabled/flow-reports.conf](/reports/config/server/etc/nginx/sites-enabled/flow-reports.conf)
