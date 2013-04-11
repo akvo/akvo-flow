@@ -54,8 +54,7 @@ FLOW.ReportLoader = Ember.Object.create({
 
     handleResponse: function (resp) {
         if (!resp || resp.status !== 'OK') {
-            this.set('criteria', null);
-            this.handleError(arguments);
+          this.handleError();
         }
 
         if (resp.message === 'PROCESSING') {
@@ -71,24 +70,19 @@ FLOW.ReportLoader = Ember.Object.create({
 
     requestReport: function () {
         FLOW.savingMessageControl.set('areLoadingBool', true);
-        $.jsonp({
-          url: FLOW.Env.reportService + '/generate',
-          context: FLOW.ReportLoader,
-          data: {
-              criteria: JSON.stringify(this.get('criteria'))
-          },
-          callback: 'FLOW.ReportLoader.handleResponse',
-          callbackParameter: 'callback',
-          dataType: 'jsonp',
-          timeout: 5000,
-          error: function (xhr, textStatus) {
-            this.set('criteria', null);
-            this.handleError(arguments);
-          }
+        $.ajax({
+            url: FLOW.Env.reportService + '/generate',
+            data: {
+                criteria: JSON.stringify(this.get('criteria'))
+            },
+            jsonpCallback: 'FLOW.ReportLoader.handleResponse',
+            dataType: 'jsonp'
         });
     },
+
     handleError: function () {
       FLOW.savingMessageControl.set('areLoadingBool', false);
+      this.set('criteria', null);
       FLOW.dialogControl.set('activeAction', 'ignore');
       FLOW.dialogControl.set('header', Ember.String.loc('_error_generating_report'));
       FLOW.dialogControl.set('message', Ember.String.loc('_error_generating_report_try_later'));
