@@ -78,6 +78,7 @@ FLOW.ReportLoader = Ember.Object.create({
               criteria: JSON.stringify(this.get('criteria'))
           },
           callback: 'FLOW.ReportLoader.handleResponse',
+          callbackParameter: 'callback',
           dataType: 'jsonp',
           timeout: 5000,
           error: function (xhr, textStatus) {
