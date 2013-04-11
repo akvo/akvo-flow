@@ -1,16 +1,5 @@
-/*jshint browser:true, jquery:true, laxbreak:true */
-/*global Ember, mxn, FLOW*/
-/**
-  View that handles map page.
-  Definition:
-    "placemark" is an FLOW object that represents a single survey point.
-    "marker" is a map object that is rendered as a pin. Each marker have
-      a placemark counterpart.
-**/
-
 
 FLOW.NavMapsView = FLOW.View.extend({
-  // templateName: 'navMaps/nav-maps',
   templateName: 'navMaps/nav-maps-common',
   showDetailsBool: false,
   detailsPaneElements: null,
@@ -30,21 +19,18 @@ FLOW.NavMapsView = FLOW.View.extend({
 
 
   /**
-    Create the map once in DOM
+    Once the view is in the DOM create the map
   */
   didInsertElement: function() {
-    var map = new mxn.Mapstraction('flowMap', 'google', true),
-      latLon = new mxn.LatLonPoint(-0.703107, 36.765747),
-      self;
+    var map, mapOptions, self;
+    
+    mapOptions = {
+      center: new google.maps.LatLng(-0.703107, 36.765747),
+      zoom: 2,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    map = new google.maps.Map(document.getElementById("flowMap"), mapOptions);
 
-    map.addControls({
-      pan: true,
-      zoom: 'small',
-      map_type: true
-    });
-
-    map.setCenterAndZoom(latLon, 2);
-    map.enableScrollWheelZoom();
     FLOW.placemarkController.set('map', map);
 
     self = this;
@@ -57,38 +43,7 @@ FLOW.NavMapsView = FLOW.View.extend({
 
 
   /**
-
-  */
-  positionMap: function() {
-    var country, latLon, map;
-
-    country = FLOW.countryController.get('country');
-    map = FLOW.placemarkController.get('map');
-    if (!Ember.none(country)) {
-      latLon = new mxn.LatLonPoint(country.get('lat'), country.get('lon'));
-      map.getMap().clearOverlays();
-      map.setCenterAndZoom(latLon, country.get('zoom'));
-    }
-  }.observes('FLOW.countryController.country'),
-
-
-  /**
-    Populate the map with markers
-  */
-  populateMap: function() {
-    var map;
-
-    if(FLOW.placemarkController.content.get('isUpdating') === false) {
-      map = FLOW.placemarkController.get('map');
-      FLOW.placemarkController.get('content').forEach(function(placemark) {
-        map.addMarker(this.createMarker(placemark));
-      }, this);
-    }
-  }.observes('FLOW.placemarkController.content.isUpdating'),
-
-
-  /**
-
+    Helper function to dispatch to either hide or show details pane
   */
   handleShowHideDetails: function () {
     if (this.detailsPaneVisible) {
@@ -97,24 +52,6 @@ FLOW.NavMapsView = FLOW.View.extend({
       this.showDetailsPane();
     }
   },
-
-
-  /**
-    Handle placemark selection
-  */
-  handlePlacemarkDetails: function() {
-    var details;
-
-    details = FLOW.placemarkDetailController.get('content');
-
-    if (!this.detailsPaneVisible) {
-      this.showDetailsPane();
-    }
-    if (!Ember.empty(details) && details.get('isLoaded')) {
-      this.populateDetailsPane(details);
-    }
-  }.observes('FLOW.placemarkDetailController.content.isLoaded'),
-
 
   /**
     Slide in the details pane
@@ -126,37 +63,14 @@ FLOW.NavMapsView = FLOW.View.extend({
     button.html('Hide &rsaquo;');
     this.set('detailsPaneVisible', true);
 
-    this.$('#flowMap').animate({
-      width: '75%'
-    }, 200);
-    this.$('#pointDetails').animate({
-      width: '24.5%'
-    }, 200).css({
+    this.$('#flowMap').animate({width: '75%'}, 200);
+    this.$('#pointDetails').animate({width: '24.5%'}, 200).css({
       overflow: 'auto',
       marginLeft: '-2px'
     });
     this.$(this.detailsPaneElements, '#pointDetails').animate({
       opacity: '1'
-    }, 200).css({
-      display: 'inherit'
-    });
-  },
-
-
-  /**
-    Populates the details pane with data from a placemark
-  */
-  populateDetailsPane: function (details) {
-    var rawImagePath, verticalBars;
-
-    this.set('showDetailsBool', true);
-    details.forEach(function(item) {
-      rawImagePath = item.get('stringValue');
-      verticalBars = rawImagePath.split('|');
-      if (verticalBars.length === 4) {
-        FLOW.placemarkDetailController.set('selectedPointCode', verticalBars[3]);
-      }
-    }, this);
+    }, 200).css({display: 'inherit'});
   },
 
 
@@ -184,93 +98,48 @@ FLOW.NavMapsView = FLOW.View.extend({
     this.$(this.detailsPaneElements, '#pointDetails').delay(delay).animate({
       opacity: '0',
       display: 'none'
-    });//.css({
-
-    //});
+    });
   },
 
 
   /**
-       Returns a marker(pin on the map) to represent the placemarker
-    **/
-  createMarker: function(placemark) {
-    // Create a marker
-    var point = new mxn.LatLonPoint(placemark.get('latitude'),
-                                    placemark.get('longitude')),
-      marker = new mxn.Marker(point);
+    If a placemark is selected and the details pane is hidden make sure to
+    slide out
+  */
+  handlePlacemarkDetails: function() {
+    var details;
 
-    marker.setIcon('/images/maps/blueMarker.png');
-    marker.placemark = placemark;
+    details = FLOW.placemarkDetailController.get('content');
 
-    // Add a click handler that handles what happens when marker is clicked
-    placemark.addMarkerClickHandler = function(marker) {
-      var clickHandler = function(event_name, event_source, event_args) {
-        /*jshint unused: true*/
-        event_source.placemark.handleClick(event_source.placemark.marker);
-        void(event_args); // Until unused:true is honored by JSHint
-      };
-      marker.click.addHandler(clickHandler);
-    };
+    if (!this.detailsPaneVisible) {
+      this.showDetailsPane();
+    }
+    if (!Ember.empty(details) && details.get('isLoaded')) {
+      this.populateDetailsPane(details);
+    }
+  }.observes('FLOW.placemarkDetailController.content.isLoaded'),
 
 
-    /**
-        When a marker is clicked we do different thing depending on
-        the state of the map. E.g. if the same marker is clicked we deselect
-        that marker and no marker is selected.
-      **/
-    placemark.handleClick = function(marker) {
-      var oldSelected;
+  /**
+    Populates the details pane with data from a placemark
+  */
+  populateDetailsPane: function (details) {
+    var rawImagePath, verticalBars;
 
-      marker.placemark.toggleMarker(marker.placemark);
-
-      oldSelected = FLOW.placemarkController.get('selected');
-      if(Ember.none(oldSelected)) {
-        FLOW.placemarkController.set('selected', placemark);
-      } else {
-        if(this.marker === oldSelected.marker) {
-          FLOW.placemarkController.set('selected', undefined);
-        } else {
-          oldSelected.toggleMarker(oldSelected);
-          FLOW.placemarkController.set('selected', placemark);
-        }
+    this.set('showDetailsBool', true);
+    details.forEach(function(item) {
+      rawImagePath = item.get('stringValue');
+      verticalBars = rawImagePath.split('|');
+      if (verticalBars.length === 4) {
+        FLOW.placemarkDetailController.set('selectedPointCode',
+          verticalBars[3]);
       }
-    };
-
-
-    /**
-        Toggle between selected and deselected marker.
-        In reality there is no toggle but delete and create
-      **/
-    placemark.toggleMarker = function(placemark) {
-      var map = FLOW.placemarkController.get('map');
-      var point = new mxn.LatLonPoint(placemark.get('latitude'),
-                                      placemark.get('longitude')),
-        newMarker = new mxn.Marker(point);
-
-      if(placemark.marker.iconUrl === ('/images/maps/blueMarker.png')) {
-        newMarker.iconUrl = '/images/maps/redMarker.png' ;
-      } else {
-        newMarker.iconUrl = '/images/maps/blueMarker.png';
-      }
-
-      placemark.addMarkerClickHandler(newMarker);
-      map.addMarker(newMarker);
-      map.removeMarker(placemark.marker);
-      newMarker.placemark = placemark;
-
-      placemark.set('marker', newMarker);
-    },
-
-    placemark.addMarkerClickHandler(marker, placemark);
-    // Attach the new marker to the placemarker object
-    placemark.set('marker', marker);
-    return marker;
+    }, this);
   }
 
 });
 
 
 FLOW.countryView = FLOW.View.extend({});
-
 FLOW.PlacemarkDetailView = Ember.View.extend({});
 FLOW.PlacemarkDetailPhotoView = Ember.View.extend({});
