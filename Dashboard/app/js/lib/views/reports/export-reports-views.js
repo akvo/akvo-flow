@@ -59,6 +59,7 @@ FLOW.ReportLoader = Ember.Object.create({
     handleResponse: function (resp) {
         if (!resp || resp.status !== 'OK') {
           this.showError();
+          return;
         }
 
         if (resp.message === 'PROCESSING') {
