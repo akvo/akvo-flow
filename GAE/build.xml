@@ -68,7 +68,8 @@
 	</target>
 
     <target name="clean" depends="checkForBuiltFiles" if="built_classes_exist" description="Clears any compiled files">
-    	<delete dir="${app_classes_dir}" />
+	<delete dir="${app_classes_dir}" />
+	<delete dir="gwt-unitCache" />
     </target>
 
 	<target name="copyconfig" depends="init" description="Copies the server configuration files">
