@@ -12,13 +12,15 @@
 		<pathelement location="src" />
 		<pathelement path="${app_classes_dir}" />
 
+		<fileset dir="${app_lib_dir}">
+			<include name="**/*.jar" />
+		</fileset>
+
 		<pathelement path="${gwtlibs.dir}/gwt-user.jar" />
 		<pathelement path="${gwtlibs.dir}/gwt-dev.jar" />
 		<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA-sources.jar" />
 		<pathelement path="${gwtlibs.dir}/validation-api-1.0.0.GA.jar" />
-		<fileset dir="${app_lib_dir}">
-			<include name="**/*.jar" />
-		</fileset>
+
 		<fileset dir="${sdk.dir}/lib">
 			<include name="shared/**/*.jar" />
 		</fileset>
