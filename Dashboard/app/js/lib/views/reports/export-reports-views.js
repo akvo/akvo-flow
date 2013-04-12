@@ -1,5 +1,9 @@
+/*global Ember, $, FLOW */
+
 FLOW.ReportLoader = Ember.Object.create({
     criteria: null,
+    timeout: 6000,
+    requestInterval: 3000,
 
     payloads: {
         RAW_DATA: {
@@ -54,22 +58,23 @@ FLOW.ReportLoader = Ember.Object.create({
 
     handleResponse: function (resp) {
         if (!resp || resp.status !== 'OK') {
-          this.handleError();
+          this.showError();
         }
 
         if (resp.message === 'PROCESSING') {
-            setTimeout(function () {
-                FLOW.ReportLoader.requestReport();
-            }, 3000);
+          this.set('processing', false);
+          Ember.run.later(this, this.requestReport, this.requestInterval);
         } else if (resp.file) {
-            FLOW.savingMessageControl.set('areLoadingBool', false);
-            this.set('criteria', null);
-            $('#downloader').attr('src',  FLOW.Env.reportService +'/report/' + resp.file);
+          FLOW.savingMessageControl.set('areLoadingBool', false);
+          this.set('processing', false);
+          this.set('criteria', null);
+          $('#downloader').attr('src',  FLOW.Env.reportService +'/report/' + resp.file);
         }
     },
 
     requestReport: function () {
         FLOW.savingMessageControl.set('areLoadingBool', true);
+        this.set('processing', true);
         $.ajax({
             url: FLOW.Env.reportService + '/generate',
             data: {
@@ -78,10 +83,19 @@ FLOW.ReportLoader = Ember.Object.create({
             jsonpCallback: 'FLOW.ReportLoader.handleResponse',
             dataType: 'jsonp'
         });
+
+        Ember.run.later(this, this.handleError, this.timeout);
     },
 
     handleError: function () {
+      if(this.get('processing')) {
+        this.showError();
+      }
+    },
+
+    showError: function () {
       FLOW.savingMessageControl.set('areLoadingBool', false);
+      this.set('processing', false);
       this.set('criteria', null);
       FLOW.dialogControl.set('activeAction', 'ignore');
       FLOW.dialogControl.set('header', Ember.String.loc('_error_generating_report'));
