@@ -345,17 +345,17 @@ public class SurveyViewActivity extends TabActivity implements
 			//Get image size
 			BitmapFactory.Options bmo = new BitmapFactory.Options();
 			bmo.inJustDecodeBounds = true;
-			BitmapFactory.decodeFile(f.getAbsolutePath(),bmo);
-			if (Math.max(bmo.outWidth,bmo.outWidth) > 320) { //If file is unreadable, both are -1
+			BitmapFactory.decodeFile(f.getAbsolutePath(), bmo);
+			if (Math.max(bmo.outWidth,bmo.outHeight) > 320) { //If file is unreadable, both are -1
 				bmo.inJustDecodeBounds = false;
-				bmo.inSampleSize = Math.max(bmo.outWidth,bmo.outWidth) / 320;
+				bmo.inSampleSize = Math.max(bmo.outWidth, bmo.outHeight) / 320; //6 for a 3MP image; will be rounded down to to 4
 				Bitmap bm =	BitmapFactory.decodeFile(f.getAbsolutePath(),bmo);
-				if (bm != null) {
+				if (bm != null && bm.getHeight() > 0 && bm.getWidth() > 0) { //sometimes get bm width and height as -1
 					try {
 						OutputStream out = null;
 						try {
-	//						out = new BufferedOutputStream(new FileOutputStream(file));
-							out = new FileOutputStream(f);
+							out = new BufferedOutputStream(new FileOutputStream(f));
+	//						out = new FileOutputStream(f);
 							if (bm.compress(CompressFormat.JPEG, 50, out)) {
 								return true;
 							}
