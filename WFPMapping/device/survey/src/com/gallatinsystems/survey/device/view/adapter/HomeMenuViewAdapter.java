@@ -68,7 +68,7 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	private ArrayList<Survey> surveys;
 	private ArrayList<String> operations;
 	private LayoutInflater inflater;
-	private boolean easterEgg = true;
+	private boolean easterEgg = false;
 	private boolean includeOptional;
 
 	/**
