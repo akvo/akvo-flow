@@ -2,8 +2,8 @@
 
 FLOW.uploader = Ember.Object.create({
   r: new Resumable({
-    target: 'http://192.168.10.140:8080/upload',
-    chunkSize: 1*1024*1024,
+    target: FLOW.Env.reportService + '/upload',
+    chunkSize: 512*1024,
     simultaneousUploads: 4,
     testChunks: false,
     throttleProgressCallbacks: 1
@@ -60,6 +60,16 @@ FLOW.uploader = Ember.Object.create({
     r.on('fileSuccess', function(file,message){
         // Reflect that the file upload has completed
         $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-progress').html('(completed)');
+        $.ajax({
+          url: this.opts.target,
+          cache: false,
+          type: 'POST',
+          data: {
+            uniqueIdentifier: file.uniqueIdentifier,
+            filename: file.fileName,
+            baseURL: location.protocol + '//' + location.host
+          }
+        });
       });
 
     r.on('fileError', function(file, message){
