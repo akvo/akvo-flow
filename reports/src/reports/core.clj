@@ -32,8 +32,11 @@
         (invalidate-cache params))
   
   (POST "/upload" [:as {params :params}]
-        (-> (response (uploader/save-file params))
-            (header "Access-Control-Allow-Origin" "*")))
+        (if (contains? params :file)
+          (-> (response (uploader/save-chunk params))
+            (header "Access-Control-Allow-Origin" "*"))
+          (-> (response (uploader/combine-and-upload params))
+            (header "Access-Control-Allow-Origin" "*"))))
   
   (OPTIONS "/upload" [:as {params :params}] 
         (-> (response "OK")
