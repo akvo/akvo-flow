@@ -37,6 +37,7 @@ public class TaskRequest extends RestRequest {
 	private static final String FILE_NAME_PARAM = "fileName";
 	private static final String SURVEY_ID_PARAM = "surveyId";
 	private static final String PHONE_NUM_PARAM = "phoneNumber";
+	private static final String IMEI_PARAM = "imei";
 	private static final String CHECKSUM_PARAM = "checksum";
 	public static final String OFFSET_PARAM = "offset";
 	public static final String ACCESS_POINT_ID_PARAM = "accessPointId";
@@ -44,6 +45,7 @@ public class TaskRequest extends RestRequest {
 	private String fileName;
 	private Long surveyId;
 	private String phoneNumber;
+	private String imei;
 	private String checksum;
 	private Integer offset = 0;
 	private Long accessPointId = null;
@@ -72,6 +74,14 @@ public class TaskRequest extends RestRequest {
 		this.phoneNumber = phoneNumber;
 	}
 
+	public String getImei() {
+		return imei;
+	}
+
+	public void setImei(String imei) {
+		this.imei = imei;
+	}
+
 	public String getFileName() {
 		return fileName;
 	}
@@ -92,6 +102,7 @@ public class TaskRequest extends RestRequest {
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		fileName = req.getParameter(FILE_NAME_PARAM);
 		phoneNumber = req.getParameter(PHONE_NUM_PARAM);
+		imei = req.getParameter(IMEI_PARAM);
 		checksum = req.getParameter(CHECKSUM_PARAM);
 		if(req.getParameter(ACCESS_POINT_ID_PARAM)!=null){
 			setAccessPointId(Long.parseLong(req.getParameter(ACCESS_POINT_ID_PARAM)));
