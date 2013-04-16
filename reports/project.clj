@@ -1,4 +1,4 @@
-(defproject reports "0.1.0-SNAPSHOT"
+(defproject reports "0.2.0-SNAPSHOT"
   :description "HTTP layer to applets functionality"
   :url "https://github.com/akvo/akvo-flow"
   :license {:name "GNU Affero General Public License"
