@@ -349,31 +349,56 @@ Ember.Select.reopen({
 
 
 FLOW.DateField = Ember.TextField.extend({
+ minDate: true,
+
  didInsertElement: function() {
     this._super();
 
-    // datepickers
-    $("#from_date").datepicker({
-      dateFormat: 'yy/mm/dd',
-      defaultDate: new Date(),
-      numberOfMonths: 1,
-      minDate: new Date(),
-      onSelect: function(selectedDate) {
-        $("#to_date").datepicker("option", "minDate", selectedDate);
-        FLOW.dateControl.set('fromDate', selectedDate);
-      }
-    });
+    if (this.get('minDate')){
+      // datepickers with only future dates
+      $("#from_date").datepicker({
+        dateFormat: 'yy/mm/dd',
+        defaultDate: new Date(),
+        numberOfMonths: 1,
+        minDate: new Date(),
+        onSelect: function(selectedDate) {
+          $("#to_date").datepicker("option", "minDate", selectedDate);
+          FLOW.dateControl.set('fromDate', selectedDate);
+        }
+      });
 
-    $("#to_date").datepicker({
-      dateFormat: 'yy/mm/dd',
-      defaultDate: new Date(),
-      numberOfMonths: 1,
-      minDate: new Date(),
-      onSelect: function(selectedDate) {
-        $("#from_date").datepicker("option", "maxDate", selectedDate);
-        FLOW.dateControl.set('toDate', selectedDate);
-      }
-    });
+      $("#to_date").datepicker({
+        dateFormat: 'yy/mm/dd',
+        defaultDate: new Date(),
+        numberOfMonths: 1,
+        minDate: new Date(),
+        onSelect: function(selectedDate) {
+          $("#from_date").datepicker("option", "maxDate", selectedDate);
+          FLOW.dateControl.set('toDate', selectedDate);
+        }
+      });
+    } else {
+      // datepickers with all dates
+      $("#from_date").datepicker({
+        dateFormat: 'yy/mm/dd',
+        defaultDate: new Date(),
+        numberOfMonths: 1,
+        onSelect: function(selectedDate) {
+          $("#to_date").datepicker("option", "minDate", selectedDate);
+          FLOW.dateControl.set('fromDate', selectedDate);
+        }
+      });
+
+      $("#to_date").datepicker({
+        dateFormat: 'yy/mm/dd',
+        defaultDate: new Date(),
+        numberOfMonths: 1,
+        onSelect: function(selectedDate) {
+          $("#from_date").datepicker("option", "maxDate", selectedDate);
+          FLOW.dateControl.set('toDate', selectedDate);
+        }
+      });
+    }
   }
 });
 

@@ -89,12 +89,44 @@
                 <li class="editSurvey"><a {{action "doEditSurvey" survey}}>{{t _edit}}</a></li> <!-- this hands control over to the router -->
                 <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>{{t _preview}}</a></li>
                 <li class="deleteSurvey"> <a  {{action confirm FLOW.dialogControl.delS target="FLOW.dialogControl"}}>{{t _delete}}</a> </li>
-                <li class="copySurvey"><a {{action "copySurvey" target="this"}}>{{t _copy}}</a></li>
+                <li class="copySurvey"><a {{action "showCopySurveyDialog" survey target="view.parentView"}}>{{t _copy}}</a></li>
               </ul>
             </nav>
           </li>
         {{/view}}
       {{/each}}
-    </ul>    
+    </ul>   
+
+ <!-- Copy survey dialog-->
+   <div {{bindAttr class="view.showCopySurveyDialogBool:display :overlay"}}>
+     <div class="blanket"></div>
+     <div class="dialogWrap"> 
+       <!-- the dialog contents -->
+       <div class="confirmDialog dialog">
+         <h2>{{t _copy_a_survey}}</h2>
+         <p class="dialogMsg">{{t _new_surveyName}}: {{view Ember.TextField valueBinding="view.newSurveyName" size=30}}</p>
+         <p class="dialogMsg">{{t _choose_the_destination_survey_group}}</p>
+         <br/>
+         {{view Ember.Select 
+         contentBinding="FLOW.surveyGroupControl.content" 
+         selectionBinding="view.selectedSurveyGroup" 
+         optionLabelPath="content.code" 
+         optionValuePath="content.keyId"
+         prompt=""
+         promptBinding="Ember.STRINGS._select_survey_group"}}
+         <div class="buttons menuCentre">
+           <ul>
+             <li><a {{action "copySurvey" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
+             <li><a {{action "cancelMoveSurvey" target="this"}}} class="cancel">{{t _cancel}}</a></li>
+           </ul>
+         </div>
+       </div>
+     </div>
+   </div> 
+
+
+
+
+
   </section>
 {{/view}}

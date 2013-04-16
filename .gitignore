@@ -1,7 +1,7 @@
 # Globally ignored files
 .DS_Store
-*.rpc
 *.class
+*.rpc
 *.swp
 
 # Eclipse files

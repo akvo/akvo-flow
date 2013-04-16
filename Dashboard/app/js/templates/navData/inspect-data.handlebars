@@ -22,6 +22,7 @@
 			<div class="dataCollectedDate">
         <label class="collectedFrom"> {{t _collected_from}}:
           {{view FLOW.DateField
+            minDate=false
             valueBinding="FLOW.dateControl.fromDate"
             elementId="from_date"
             placeholder="Collected from"
@@ -31,6 +32,7 @@
 
         <label class="collectedTo"> {{t _to}}:
           {{view FLOW.DateField
+            minDate=false
             valueBinding="FLOW.dateControl.toDate"
             elementId="to_date"
             placeholder="To"

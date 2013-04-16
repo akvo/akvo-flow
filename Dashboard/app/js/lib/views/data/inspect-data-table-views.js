@@ -11,6 +11,14 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   selectedSurveyInstanceNum: null,
   siString: null,
 
+  init: function(){
+     this._super();
+     FLOW.selectedControl.set('selectedSurveyGroup',null);
+     FLOW.selectedControl.set('selectedSurvey',null);
+     FLOW.dateControl.set('toDate',null);
+     FLOW.dateControl.set('fromDate',null);
+   },
+
   // do a new query
   doFindSurveyInstances: function() {
     FLOW.surveyInstanceControl.get('sinceArray').clear();
