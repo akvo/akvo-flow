@@ -1,13 +1,15 @@
 (ns reports.scheduler
   (:refer-clojure :exclude [key])
   (:import [org.quartz JobExecutionContext Scheduler]
-           java.io.File)
+           java.io.File
+           java.util.UUID)
   (:require [clojure.string :as string :only (split join)]
             [clojurewerkz.quartzite [conversion :as conversion]
                                     [jobs :as jobs]
                                     [scheduler :as scheduler]
                                     [triggers :as triggers]])
-  (:use [reports.exporter :only (export-report)]))
+  (:use [reports.exporter :only (export-report)]
+        [reports.uploader :only (bulk-upload)]))
 
 (def cache (ref {}))
 
@@ -24,14 +26,20 @@
     "INVALID_PATH"))
 
 (jobs/defjob ExportJob [job-data]
-  (let [{:strs [baseURL exportType surveyId opts reportId]} (conversion/from-job-data job-data)
+  (let [{:strs [baseURL exportType surveyId opts id]} (conversion/from-job-data job-data)
         report (export-report exportType baseURL surveyId opts)
         path (get-path report)]
     (dosync
-      (alter cache conj {{:id reportId
+      (alter cache conj {{:id id
                           :surveyId surveyId
                           :baseURL baseURL} path}))
-    (scheduler/delete-job (jobs/key reportId))))
+    (scheduler/delete-job (jobs/key id))))
+
+
+(jobs/defjob BulkUploadJob [job-data]
+  (let [{:strs [baseURL uniqueIdentifier filename id]} (conversion/from-job-data job-data)]
+    (bulk-upload baseURL uniqueIdentifier filename)
+    (scheduler/delete-job (jobs/key id))))
 
 (defn- get-executing-jobs-by-key [key]
   "Get a list of executing jobs by key (usually returns just 1 job)"
@@ -46,11 +54,15 @@
   "Generates a unique identifier based on the map"
   (format "id%s" (hash (str m))))
 
+(defn- get-random-id []
+  "Generates a unique identifier UUID"
+  (str (UUID/randomUUID)))
+
 (defn- get-job [job-type id params]
   "Returns a Job specification for the given parameters"
   (jobs/build
     (jobs/of-type job-type)
-    (jobs/using-job-data (conj params {"reportId" id} ))
+    (jobs/using-job-data (conj params {"id" id} ))
     (jobs/with-identity (jobs/key id))))
 
 (defn- get-trigger [id]
@@ -59,11 +71,10 @@
     (triggers/with-identity (triggers/key id))
     (triggers/start-now)))
 
-(defn- schedule-job [params]
+(defn- schedule-job [job-type id params]
   "Schedule a report for generation. For concurrent requests only schedules the report
    once."
-  (let [id (report-id params)
-        job (get-job ExportJob id params)
+  (let [job (get-job job-type id params)
         trigger (get-trigger id)]
     (scheduler/maybe-schedule job trigger)
     {"status" "OK"
@@ -95,4 +106,7 @@
          "message" "_error_generating_report"})
       {"status" "OK"
        "file" file})
-    (schedule-job params)))
+    (schedule-job ExportJob (report-id params) params)))
+
+(defn process-and-upload [params]
+  (schedule-job BulkUploadJob (get-random-id) params))

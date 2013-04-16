@@ -1,10 +1,10 @@
 (ns reports.uploader
-  (:require [clojure.java.io :as io]
-            [clojure.pprint :as pprint])
   (:import java.io.File
            org.apache.commons.io.FileUtils
            org.apache.ant.compress.taskdefs.Unzip
-           org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory))
+           org.waterforpeople.mapping.dataexport.SurveyDataImportExportFactory)
+  (:require [clojure.java.io :as io]
+            [clojure.pprint :as pprint]))
 
 (def criteria {"uploadBase" "http://akvoflowsandbox.s3.amazonaws.com"
                "awsId" ""
@@ -18,18 +18,18 @@
 
 (defn save-chunk [params]
   "Saves the current produced ring temp file in a different folder.
-   The expected `params` is a ring map containing a :file part o the multipart request."
-  (let [identifier (format "%s/%s" (get-path) (params :resumableIdentifier))
+   The expected `params` is a ring map containing a `file` part o the multipart request."
+  (let [identifier (format "%s/%s" (get-path) (params "resumableIdentifier"))
         path (io/file identifier)
-        tempfile (params :file)]
+        tempfile (params "file")]
     (if-not (.exists ^File path)
       (.mkdirs path))
     (io/copy (tempfile :tempfile)
-             (io/file (format "%s/%s.%s" identifier (params :resumableFilename) (params :resumableChunkNumber))))
+             (io/file (format "%s/%s.%s" identifier (params "resumableFilename") (params "resumableChunkNumber"))))
     "OK"))
 
 (defn- combine [directory filename no-parts]
-  "Combine parts of a file into a whole, e.g. file1.zip.1 file1.zip.2 -> file1.zip
+  "Combine parts of a file into a whole, e.g. file1.zip.1, file1.zip.2 -> file1.zip
    The produced output will be in the same folder where the parts are located"
   (let [f (io/file (format "%s/%s" directory filename))]
     (doseq [idx (range 1 (+ 1 no-parts))]
@@ -51,10 +51,9 @@
   (let [importer (.getImporter (SurveyDataImportExportFactory.) "BULK_SURVEY")]
     (.executeImport importer directory baseURL criteria)))
 
-(defn combine-and-upload [params]
-  (let [path (format "%s/%s" (get-path) (params :uniqueIdentifier))
-        filename (params :filename)
+(defn bulk-upload [baseURL uniqueIdentifier filename]
+  "Combines the parts, extracts and uploads the content of a zip file"
+  (let [path (format "%s/%s" (get-path) uniqueIdentifier)
         no-parts (count (seq (FileUtils/listFiles (io/file path) nil false)))]
     (combine path filename no-parts)
-    (future (upload (unzip-file path filename) "http://localhost:8888"))
-    "OK"))
+    (upload (unzip-file path filename) baseURL)))

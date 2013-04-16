@@ -11,31 +11,38 @@
   (:gen-class))
 
 (defn- generate-report [params]
-  (let [criteria (json/parse-string (:criteria params)) ; TODO: validation
-        callback (:callback params)
+  (let [criteria (json/parse-string (params "criteria")) ; TODO: validation
+        callback (params "callback")
         resp (scheduler/generate-report criteria)]
     (-> (response (format "%s(%s);" callback (json/generate-string resp)))
         (content-type "text/javascript")
         (charset "UTF-8"))))
 
 (defn- invalidate-cache [params]
-  (let [criteria (json/parse-string (:criteria params))] ; TODO: validation
+  (let [criteria (json/parse-string (params "criteria"))] ; TODO: validation
     (response (scheduler/invalidate-cache criteria))))
+
+(defn- transform-map [orig]
+  "Returns a new map transforming keyword based keys into strings
+   This is required to avoid cast exceptions in Quartz"
+  (into {}
+        (for [[k v] orig]
+          [(name k) v])))
 
 (defroutes ^:private endpoints
   (GET "/" [] "OK")
 
   (GET "/generate" [:as {params :params}]
-        (generate-report params))
+        (generate-report (transform-map params)))
 
   (POST "/invalidate" [:as {params :params}]
-        (invalidate-cache params))
+        (invalidate-cache (transform-map params)))
   
   (POST "/upload" [:as {params :params}]
         (if (contains? params :file)
-          (-> (response (uploader/save-chunk params))
+          (-> (response (uploader/save-chunk (transform-map params)))
             (header "Access-Control-Allow-Origin" "*"))
-          (-> (response (uploader/combine-and-upload params))
+          (-> (response (get (scheduler/process-and-upload (transform-map params)) "status"))
             (header "Access-Control-Allow-Origin" "*"))))
   
   (OPTIONS "/upload" [:as {params :params}] 
