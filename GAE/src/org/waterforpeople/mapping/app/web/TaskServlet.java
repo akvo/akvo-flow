@@ -62,6 +62,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.image.GAEImageAdapter;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.taskqueue.Queue;
@@ -92,7 +93,6 @@ public class TaskServlet extends AbstractRestApiServlet {
 		aph = new AccessPointHelper();
 		siDao = new SurveyInstanceDAO();
 		recepientList = MailUtil.loadRecipientList();
-
 	}
 
 	/**
@@ -483,6 +483,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 							instance.getKey().getId() + ""));
 				}
 			}
+			SurveyUtils.notifyReportService(surveyMap.keySet(), "invalidate");
 		}
 	}
 
