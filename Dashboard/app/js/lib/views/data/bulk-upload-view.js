@@ -3,6 +3,7 @@
 FLOW.uploader = Ember.Object.create({
   r: new Resumable({
     target: FLOW.Env.reportService + '/upload',
+    uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
     chunkSize: 512*1024,
     simultaneousUploads: 4,
     testChunks: false,
@@ -67,7 +68,8 @@ FLOW.uploader = Ember.Object.create({
           data: {
             uniqueIdentifier: file.uniqueIdentifier,
             filename: file.fileName,
-            baseURL: location.protocol + '//' + location.host
+            baseURL: location.protocol + '//' + location.host,
+            uploadDomain: this.opts.uploadDomain
           }
         });
       });
