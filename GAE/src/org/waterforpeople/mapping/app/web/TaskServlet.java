@@ -95,8 +95,21 @@ public class TaskServlet extends AbstractRestApiServlet {
 		recepientList = MailUtil.loadRecipientList();
 	}
 
-	private ArrayList<SurveyInstance> processFile(String fileName,
-			String phoneNumber, String checksum, Integer offset) {
+	/**
+	 * Retrieve the file from S3 storage and persist the data to the data store
+	 * 
+	 * @param fileName
+	 * @param phoneNumber
+	 * @param imei
+	 * @param checksum
+	 * @param offset
+	 */
+	private ArrayList<SurveyInstance> processFile(
+			String fileName,
+			String phoneNumber,
+			String imei,
+			String checksum,
+			Integer offset) {
 		ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
 
 		try {
@@ -107,22 +120,30 @@ public class TaskServlet extends AbstractRestApiServlet {
 			List<DeviceFiles> dfList = null;
 			DeviceFiles deviceFile = null;
 			dfList = dfDao.listByUri(url.toURI().toString());
-			if (dfList != null && dfList.size()>0)
+			if (dfList != null && dfList.size()>0) {
 				deviceFile = dfList.get(0);
+			}
 			if (deviceFile == null) {
 				deviceFile = new DeviceFiles();
 			}
 			deviceFile.setProcessDate(getNowDateTimeFormatted());
 			deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
 			deviceFile.setURI(url.toURI().toString());
-			if (phoneNumber == null || phoneNumber.equals("null"))
+			if (phoneNumber == null || phoneNumber.equals("null")) {
 				deviceFile.setPhoneNumber(null);
-			else
+			} else {
 				deviceFile.setPhoneNumber(phoneNumber);
-			if (checksum == null || checksum.equals("null"))
+			}
+			if (imei == null || imei.equals("null")) {
+				deviceFile.setImei(null);
+			} else {
+				deviceFile.setImei(imei);
+			}
+			if (checksum == null || checksum.equals("null")) {
 				deviceFile.setChecksum(null);
-			else
+			} else {
 				deviceFile.setChecksum(checksum);
+			}
 			deviceFile.setUploadDateTime(new Date());
 			Date collectionDate = new Date();
 
@@ -419,7 +440,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 		if (req.getFileName() != null) {
 			log.info("	Task->processFile");
 			ArrayList<SurveyInstance> surveyInstances = processFile(
-					req.getFileName(), req.getPhoneNumber(), req.getChecksum(),
+					req.getFileName(),
+					req.getPhoneNumber(),
+					req.getImei(),
+					req.getChecksum(),
 					req.getOffset());
 			Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
 			SurveyDAO surveyDao = new SurveyDAO();

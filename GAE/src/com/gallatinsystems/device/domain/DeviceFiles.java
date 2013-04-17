@@ -54,6 +54,7 @@ public class DeviceFiles extends BaseDomain {
 
 	private String phoneNumber;
 	private String checksum;
+	private String imei;
 
 	public String getChecksum() {
 		return checksum;
@@ -69,6 +70,14 @@ public class DeviceFiles extends BaseDomain {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	public String getImei() {
+		return imei;
+	}
+
+	public void setImei(String imei) {
+		this.imei = imei;
 	}
 
 	public String getURI() {

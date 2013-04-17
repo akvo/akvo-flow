@@ -51,9 +51,8 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 */
 	private static final Integer[] preSurveyButtons = { R.drawable.users };
 	private static final Integer[] preSurveyLabels = { R.string.userlabel };
-	private static final Integer[] postSurveyButtons = { R.drawable.disk,R.drawable.settings };
-	private static final Integer[] postSurveyLabels = { R.string.reviewlabel,
-			R.string.settingslabel };
+	private static final Integer[] postSurveyButtons = { R.drawable.disk, R.drawable.settings };
+	private static final Integer[] postSurveyLabels = { R.string.reviewlabel, R.string.settingslabel };
 	
 	private static final Integer[] optionalButtons = { R.drawable.plotting,
 			R.drawable.infoactivity, R.drawable.calc };
@@ -69,6 +68,7 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	private ArrayList<Survey> surveys;
 	private ArrayList<String> operations;
 	private LayoutInflater inflater;
+	private boolean easterEgg = false;
 	private boolean includeOptional;
 
 	/**
@@ -100,54 +100,60 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	private void initializeValues() {
 		operations = new ArrayList<String>();
 		
-		int arraySize = surveys.size() + preSurveyButtons.length
-		+ postSurveyButtons.length;
-		if(includeOptional){
+		int arraySize = surveys.size() + preSurveyButtons.length + postSurveyButtons.length;
+		if (includeOptional){
 			arraySize += optionalButtons.length;
+		}
+		if (easterEgg){
+			arraySize += 1;
 		}
 		
 		buttonImages = new Integer[arraySize];
-		
 		buttonLabels = new Object[arraySize];
-		ArrayUtil.combineArrays(buttonImages, preSurveyButtons, 0);		
-		ArrayUtil.combineArrays(buttonLabels, preSurveyLabels, 0);		
+		
+		int p = 0;
+		
+		if (easterEgg){
+			buttonImages[p]=R.drawable.dont_panic;
+			buttonLabels[p]=R.string.dontPaniclabel;
+			operations.add(ConstantUtil.PANIC_OP);
+			p++;
+		}
 
+		
+		ArrayUtil.combineArrays(buttonImages, preSurveyButtons, p);		
+		ArrayUtil.combineArrays(buttonLabels, preSurveyLabels, p);		
 		operations.add(ConstantUtil.USER_OP);
+		p++;
 
 		for (int i = 0; i < surveys.size(); i++) {
-			if (ConstantUtil.SURVEY_TYPE.equalsIgnoreCase(surveys.get(i)
-					.getType())) {
-				buttonImages[preSurveyButtons.length + i] = R.drawable.checklist;
+			if (ConstantUtil.SURVEY_TYPE.equalsIgnoreCase(surveys.get(i).getType())) {
+				buttonImages[p + i] = R.drawable.checklist;
 			} else {
-				buttonImages[preSurveyButtons.length + i] = R.drawable.map;
+				buttonImages[p + i] = R.drawable.map;
 			}
-			buttonLabels[preSurveyLabels.length + i] = surveys.get(i).getName()
+			buttonLabels[p + i] = surveys.get(i).getName()
 					+ " v. "
 					+ (surveys.get(i).getVersion() != 0.0d ? surveys.get(i)
 							.getVersion() : "1.0");
 			operations.add(ConstantUtil.SURVEY_OP);
 		}
+		p += surveys.size();
 
-		ArrayUtil.combineArrays(buttonImages, postSurveyButtons,
-				preSurveyButtons.length + surveys.size());
-		ArrayUtil.combineArrays(buttonLabels, postSurveyLabels,
-				preSurveyButtons.length + surveys.size());
-		
-		if(includeOptional){
-			ArrayUtil.combineArrays(buttonImages, optionalButtons,
-					preSurveyButtons.length + surveys.size()+postSurveyButtons.length);
-			ArrayUtil.combineArrays(buttonLabels, optionalLabels,
-					preSurveyButtons.length + surveys.size()+postSurveyLabels.length);
-			
-		}
-
+		ArrayUtil.combineArrays(buttonImages, postSurveyButtons,p);
+		ArrayUtil.combineArrays(buttonLabels, postSurveyLabels,p);
 		operations.add(ConstantUtil.REVIEW_OP);
 		operations.add(ConstantUtil.CONF_OP);
-		if(includeOptional){
-			for(int i =0; i < optionalOperations.length;i++){
+		p += postSurveyButtons.length;
+
+		if (includeOptional){
+			ArrayUtil.combineArrays(buttonImages, optionalButtons,p);
+			ArrayUtil.combineArrays(buttonLabels, optionalLabels,p);			
+			for(int i = 0; i < optionalOperations.length; i++){
 				operations.add(optionalOperations[i]);
 			}
 		}				
+		p += optionalButtons.length;
 
 		notifyDataSetChanged();
 	}
@@ -229,8 +235,11 @@ public class HomeMenuViewAdapter extends BaseAdapter {
 	 * @return
 	 */
 	public Survey getSelectedSurvey(int idx) {
-		if (idx - preSurveyButtons.length < surveys.size()) {
-			return surveys.get(idx - preSurveyButtons.length);
+		int surveysStart = preSurveyButtons.length;
+		if (easterEgg)
+			surveysStart++;
+		if (idx - surveysStart < surveys.size()) {
+			return surveys.get(idx - surveysStart);
 		} else {
 			Log.e(TAG, "Selected item exceeds survey list size");
 			return null;
