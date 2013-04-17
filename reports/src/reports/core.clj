@@ -7,7 +7,7 @@
   (:require [cheshire.core :as json]
             [compojure [handler :as handler] [route :as route]]
             [clojurewerkz.quartzite.scheduler :as quartzite-scheduler]
-            [reports [scheduler :as scheduler] [uploader :as uploader]])
+            [reports [scheduler :as scheduler] [uploader :as uploader] [config :as config]])
   (:gen-class))
 
 (defn- generate-report [params]
@@ -57,7 +57,8 @@
 
 (def app (handler/site endpoints))
 
-(defn -main [& [port]]
+(defn -main [& [config-folder port]]
+  (uploader/set-config! (config/load-settings config-folder))
   (init)
   (run-jetty #'app {:join? false
                     :port (if port (Integer/valueOf port) 8080)}))

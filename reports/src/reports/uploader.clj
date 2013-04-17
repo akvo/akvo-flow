@@ -6,12 +6,11 @@
   (:require [clojure.java.io :as io]
             [clojure.pprint :as pprint]))
 
-(def criteria {"uploadBase" "http://akvoflowsandbox.s3.amazonaws.com"
-               "awsId" ""
-               "dataPolicy" ""
-               "dataSig" ""
-               "imagePolicy" ""
-               "imageSig" ""})
+
+(def configs (atom {}))
+
+(defn set-config! [configs-map]
+  (swap! configs into configs-map))
 
 (defn- get-path []
   (format "%s/%s" (System/getProperty "java.io.tmpdir") "akvo/flow/uploads"))
@@ -46,14 +45,23 @@
       (.execute))
     dest))
 
-(defn- upload [directory baseURL]
+(defn get-criteria [upload-domain]
+  (let [config (@configs upload-domain)]
+    {"uploadBase" (config "uploadUrl")
+     "awsId" (config "s3Id")
+     "dataPolicy" (config "surveyDataS3Policy")
+     "dataSig" (config "surveyDataS3Sig")
+     "imagePolicy" (config "imageS3Policy")
+     "imageSig" (config "imageS3Sig")}))
+
+(defn- upload [directory base-url upload-domain]
   "Upload the content to S3 and notifies the server"
   (let [importer (.getImporter (SurveyDataImportExportFactory.) "BULK_SURVEY")]
-    (.executeImport importer directory baseURL criteria)))
+    (.executeImport importer directory base-url (get-criteria upload-domain))))
 
-(defn bulk-upload [baseURL uniqueIdentifier filename]
+(defn bulk-upload [base-url unique-identifier filename upload-domain]
   "Combines the parts, extracts and uploads the content of a zip file"
-  (let [path (format "%s/%s" (get-path) uniqueIdentifier)
+  (let [path (format "%s/%s" (get-path) unique-identifier)
         no-parts (count (seq (FileUtils/listFiles (io/file path) nil false)))]
     (combine path filename no-parts)
-    (upload (unzip-file path filename) baseURL)))
+    (upload (unzip-file path filename) base-url upload-domain)))

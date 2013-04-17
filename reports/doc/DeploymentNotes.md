@@ -22,13 +22,13 @@ A new JAR file must be generated every time the application code changes.
 
 You only need to use the `java` binary to run the JAR file:
 
-    java -jar reports-0.1.0-SNAPSHOT-standalone.jar
+    java -jar reports-0.x.x-standalone.jar /path/to/akvo-flow-server-config
 
 
 You might want to define the port number on which the HTTP service will run, e.g.
 
 
-    java -jar reports-0.1.0-SNAPSHOT-standalone.jar 3000
+    java -jar reports-0.x.x-standalone.jar /path/to/akvo-flow-server-config 3000
 
 
 This will start the HTTP service in the port 3000. The __default port__ is __8080__ if no argument is used.
@@ -47,7 +47,7 @@ See [reports/config/server/etc/init/flow-reports.conf](/reports/config/server/et
 
 You can query the service by making a HTTP to the app, e.g.
 
-    curl -L http://localhost:8080
+    curl -L http://localhost:3000
 
 It should return `OK`.
 
@@ -57,7 +57,7 @@ It should return `OK`.
 [Nginx](http://wiki.nginx.org/) should be configured to proxy through to the Jetty application server running on port 8080. Configuring Nginx is beyond the scope of this document, but the following serves as an example:
 
     location / {
-        proxy_pass http://127.0.0.1:8080/;
+        proxy_pass http://127.0.0.1:3000/;
         ...
     }
 

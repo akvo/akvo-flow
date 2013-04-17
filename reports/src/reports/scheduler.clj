@@ -37,8 +37,8 @@
 
 
 (jobs/defjob BulkUploadJob [job-data]
-  (let [{:strs [baseURL uniqueIdentifier filename id]} (conversion/from-job-data job-data)]
-    (bulk-upload baseURL uniqueIdentifier filename)
+  (let [{:strs [baseURL uniqueIdentifier filename uploadDomain id]} (conversion/from-job-data job-data)]
+    (bulk-upload baseURL uniqueIdentifier filename uploadDomain)
     (scheduler/delete-job (jobs/key id))))
 
 (defn- get-executing-jobs-by-key [key]
