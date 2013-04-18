@@ -220,7 +220,7 @@ public class SurveyUtils {
 
 	/**
 	 * Sends a POST request of a collection of surveyIds to a server defined by
-	 * the `reportService` property
+	 * the `flowServices` property
 	 * 
 	 * The property `alias` define the baseURL property that is sent in the
 	 * request
@@ -229,20 +229,20 @@ public class SurveyUtils {
 	 *            Collection of ids (Long) that requires processing
 	 * @param action
 	 *            A string indicating the action that will be used, this string
-	 *            is used for building the URL, with the `reportService`
+	 *            is used for building the URL, with the `flowServices`
 	 *            property + / + action
-	 * @return The response from the server or null when `reportService` is not
+	 * @return The response from the server or null when `flowServices` is not
 	 *         defined, or an error in the request happens
 	 */
 	public static String notifyReportService(Collection<Long> surveyIds,
 			String action) {
-		final String reportServiceURL = PropertyUtil
-				.getProperty("reportService");
+		final String flowServiceURL = PropertyUtil
+				.getProperty("flowServices");
 		final String baseURL = PropertyUtil.getProperty("alias");
 
-		if (reportServiceURL == null || "".equals(reportServiceURL)) {
+		if (flowServiceURL == null || "".equals(flowServiceURL)) {
 			log.log(Level.SEVERE,
-					"Error trying to notify server. It's not configured, check `reportService` property");
+					"Error trying to notify server. It's not configured, check `flowServices` property");
 			return null;
 		}
 
@@ -261,7 +261,7 @@ public class SurveyUtils {
 
 			log.log(Level.FINE, "POST string: " + postString);
 
-			final String response = new String(HttpUtil.doPost(reportServiceURL
+			final String response = new String(HttpUtil.doPost(flowServiceURL
 					+ "/" + action, postString), "UTF-8");
 
 			log.log(Level.INFO, "Response from server: " + response);

@@ -2,7 +2,7 @@
 
 FLOW.uploader = Ember.Object.create({
   r: new Resumable({
-    target: FLOW.Env.reportService + '/upload',
+    target: FLOW.Env.flowServices + '/upload',
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
     chunkSize: 512*1024,
     simultaneousUploads: 4,

@@ -69,7 +69,7 @@ FLOW.ReportLoader = Ember.Object.create({
           FLOW.savingMessageControl.set('areLoadingBool', false);
           this.set('processing', false);
           this.set('criteria', null);
-          $('#downloader').attr('src',  FLOW.Env.reportService +'/report/' + resp.file);
+          $('#downloader').attr('src',  FLOW.Env.flowServices +'/report/' + resp.file);
         }
     },
 
@@ -77,7 +77,7 @@ FLOW.ReportLoader = Ember.Object.create({
         FLOW.savingMessageControl.set('areLoadingBool', true);
         this.set('processing', true);
         $.ajax({
-            url: FLOW.Env.reportService + '/generate',
+            url: FLOW.Env.flowServices + '/generate',
             data: {
                 criteria: JSON.stringify(this.get('criteria'))
             },
