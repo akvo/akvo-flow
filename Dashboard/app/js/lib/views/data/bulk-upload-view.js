@@ -95,3 +95,13 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
     FLOW.uploader.registerEvents();
   }
 });
+
+window.onbeforeunload = function (e) {
+  var confirmationMessage = Ember.String.loc('_upload_in_progress'),
+      r = FLOW.uploader.r;
+
+  if(r.files.length > 0 && r.progress() < 1) {
+    (e || window.event).returnValue = confirmationMessage;
+    return confirmationMessage;
+  }
+};
