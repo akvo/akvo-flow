@@ -4,10 +4,10 @@ FLOW.uploader = Ember.Object.create({
   r: new Resumable({
     target: FLOW.Env.flowServices + '/upload',
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
-    chunkSize: 512*1024,
     simultaneousUploads: 4,
     testChunks: false,
-    throttleProgressCallbacks: 1
+    throttleProgressCallbacks: 1, // 1s
+    chunkRetryInterval: 1000 // 1s
   }),
 
   assignDrop: function (el) {
@@ -38,8 +38,8 @@ FLOW.uploader = Ember.Object.create({
         // Show progress pabr
         $('.resumable-progress, .resumable-list').show();
         // Show pause, hide resume
-        $('.resumable-progress .progress-resume-link').hide();
-        $('.resumable-progress .progress-pause-link').show();
+        // $('.resumable-progress .progress-resume-link').hide();
+        // $('.resumable-progress .progress-pause-link').show();
         // Add the file to the list
         $('.resumable-list').append('<li class="resumable-file-'+file.uniqueIdentifier+'">Uploading <span class="resumable-file-name"></span> <span class="resumable-file-progress"></span>');
         $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-name').html(file.fileName);
