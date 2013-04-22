@@ -43,6 +43,7 @@ FLOW.uploader = Ember.Object.create({
         // Add the file to the list
         $('.resumable-list').append('<li class="resumable-file-'+file.uniqueIdentifier+'">Uploading <span class="resumable-file-name"></span> <span class="resumable-file-progress"></span>');
         $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-name').html(file.fileName);
+        $('.progress-bar').css({width: '0%'});
         // Actually start the upload
         r.upload();
       });
