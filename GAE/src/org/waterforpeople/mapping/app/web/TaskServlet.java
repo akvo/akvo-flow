@@ -494,7 +494,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 			if(surveyMap.keySet().size() == 1) {
 				Survey s = surveyMap.values().iterator().next();
 				message.setObjectId(s.getKey().getId());
-				message.setObjectTitle(s.getPath());
+				message.setObjectTitle(s.getPath() + "/" + s.getName());
 			}
 			msgDao.save(message);
 		}
