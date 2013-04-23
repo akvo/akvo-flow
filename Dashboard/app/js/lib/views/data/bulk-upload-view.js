@@ -30,6 +30,14 @@ FLOW.uploader = Ember.Object.create({
     return this.get('r').pause();
   },
 
+  isUploading: function () {
+    return this.get('r').isUploading();
+  },
+
+  cancel: function () {
+    return this.get('r').cancel();
+  },
+
   registerEvents: function () {
     var r = this.get('r');
 
@@ -85,6 +93,15 @@ FLOW.uploader = Ember.Object.create({
         $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-progress').html(Math.floor(file.progress()*100) + '%');
         $('.progress-bar').css({width:Math.floor(r.progress()*100) + '%'});
       });
+  },
+  uploadInProgress: function () {
+    if(this.isUploading()) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_upload_cancelled'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_upload_cancelled_due_to_navigation'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+    }
   }
 });
 
@@ -93,14 +110,19 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
     FLOW.uploader.assignDrop($('.resumable-drop')[0]);
     FLOW.uploader.assignBrowse($('.resumable-browse')[0]);
     FLOW.uploader.registerEvents();
+    FLOW.router.location.addObserver('path', FLOW.uploader, 'uploadInProgress');
+  },
+  willDestroyElement: function () {
+    FLOW.uploader.cancel();
+    this._super();
   }
 });
 
+/* Show warning when trying to close the tab/window with an upload process in progress */
 window.onbeforeunload = function (e) {
-  var confirmationMessage = Ember.String.loc('_upload_in_progress'),
-      r = FLOW.uploader.r;
+  var confirmationMessage = Ember.String.loc('_upload_in_progress');
 
-  if(r.files.length > 0 && r.progress() < 1) {
+  if(FLOW.uploader.isUploading()) {
     (e || window.event).returnValue = confirmationMessage;
     return confirmationMessage;
   }
