@@ -61,6 +61,8 @@ import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.image.GAEImageAdapter;
+import com.gallatinsystems.messaging.dao.MessageDao;
+import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
@@ -484,6 +486,11 @@ public class TaskServlet extends AbstractRestApiServlet {
 				}
 			}
 			SurveyUtils.notifyReportService(surveyMap.keySet(), "invalidate");
+
+			MessageDao msgDao = new MessageDao();
+			Message message = new Message();
+			message.setShortMessage(req.getFileName() + " processed - Surveys: " + surveyMap.keySet());
+			msgDao.save(message);
 		}
 	}
 
