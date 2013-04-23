@@ -7,7 +7,8 @@ FLOW.uploader = Ember.Object.create({
     simultaneousUploads: 4,
     testChunks: false,
     throttleProgressCallbacks: 1, // 1s
-    chunkRetryInterval: 1000 // 1s
+    chunkRetryInterval: 1000, // 1s
+    chunkSize: 512*1024 // 512KB
   }),
 
   assignDrop: function (el) {
