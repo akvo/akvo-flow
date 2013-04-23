@@ -490,6 +490,12 @@ public class TaskServlet extends AbstractRestApiServlet {
 			MessageDao msgDao = new MessageDao();
 			Message message = new Message();
 			message.setShortMessage(req.getFileName() + " processed - Surveys: " + surveyMap.keySet());
+			message.setActionAbout("fileProcessed");
+			if(surveyMap.keySet().size() == 1) {
+				Survey s = surveyMap.values().iterator().next();
+				message.setObjectId(s.getKey().getId());
+				message.setObjectTitle(s.getPath());
+			}
 			msgDao.save(message);
 		}
 	}
