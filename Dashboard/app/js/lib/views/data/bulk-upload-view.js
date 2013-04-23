@@ -70,6 +70,7 @@ FLOW.uploader = Ember.Object.create({
     r.on('complete', function(){
         // Hide pause/resume when the upload has completed
         $('.resumable-progress .progress-resume-link, .resumable-progress .progress-pause-link').hide();
+        FLOW.uploader.showCompleteMessage();
       });
 
     r.on('fileSuccess', function(file,message){
@@ -107,6 +108,13 @@ FLOW.uploader = Ember.Object.create({
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showDialog', true);
     }
+  },
+  showCompleteMessage: function () {
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_upload_complete'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_upload_complete_message'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
   }
 });
 
