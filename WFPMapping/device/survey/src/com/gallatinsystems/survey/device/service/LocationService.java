@@ -154,8 +154,7 @@ public class LocationService extends Service {
 						     + ACC + loc.getAccuracy();
 					}
 					url += VER + version;
-					url += OS_VERSION + android.os.Build.VERSION.RELEASE;
-					//TODO os version
+					url += OS_VERSION + URLEncoder.encode("Android " + android.os.Build.VERSION.RELEASE);
 					if (deviceId != null) {
 						url += DEV_ID + URLEncoder.encode(deviceId, "UTF-8");
 					}
