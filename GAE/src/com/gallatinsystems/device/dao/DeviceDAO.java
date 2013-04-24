@@ -73,7 +73,7 @@ public class DeviceDAO extends BaseDAO<Device> {
 	 */
 	public void updateDeviceLocation(String phoneNumber, Double lat,
 			Double lon, Double accuracy, String version,
-			String deviceIdentifier, String imei) {
+			String deviceIdentifier, String imei, String osVersion) {
 		Device d = null;
 		if (imei != null) { // New Apps from 1.10.0 and on provide IMEI/ESN
 			d = getByImei(imei);
@@ -99,6 +99,9 @@ public class DeviceDAO extends BaseDAO<Device> {
 		}
 		if (imei != null) {
 			d.setEsn(imei);
+		}
+		if (osVersion != null) {
+			d.setOsVersion(osVersion);
 		}
 		d.setLastLocationBeaconTime(new Date());
 		d.setGallatinSoftwareManifest(version);

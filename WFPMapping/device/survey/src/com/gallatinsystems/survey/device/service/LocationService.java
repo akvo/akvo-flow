@@ -58,6 +58,7 @@ public class LocationService extends Service {
 	private static final String LON = "&lon=";
 	private static final String ACC = "&acc=";
 	private static final String DEV_ID = "&devId=";
+	private static final String OS_VERSION = "&osVersion=";
 	private static final String TAG = "LocationService";
 	private static String version;
 	private static String deviceId;
@@ -153,6 +154,8 @@ public class LocationService extends Service {
 						     + ACC + loc.getAccuracy();
 					}
 					url += VER + version;
+					url += OS_VERSION + android.os.Build.VERSION.RELEASE;
+					//TODO os version
 					if (deviceId != null) {
 						url += DEV_ID + URLEncoder.encode(deviceId, "UTF-8");
 					}
