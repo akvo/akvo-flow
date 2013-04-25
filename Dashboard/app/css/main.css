@@ -2922,11 +2922,12 @@ footer.bottomPage a[rel="self"]:hover { }
 #defaultLanguage section:last-child , #targetLanguage section:last-child {
 	border-bottom:none;
 	}
-
-table#languageOption {
+.surveyTranslation table {
 	width:98.5%;
-	margin:1em 0.75% 0.5% 0.75%;
+	margin:0.5% 0.75% 0.1% 0.75%;
 	text-align:left;
+	}
+table#languageOption {
 	background:rgb(242,242,242);
 	-webkit-border-radius:0.25em;
 	-moz-border-radius:0.25em;
@@ -2964,70 +2965,50 @@ table#languageOption td.formTitle {
 	vertical-align:middle;
 	height:60px;
 	}
-#defaultLanguage section, #targetLanguage section {
+
+table.surveyTranslate {
+	-webkit-border-radius:0.25em;
+	-moz-border-radius:0.25em;
+	-o-border-radius:0.25em;
+	border-radius:0.25em;
+	background:rgb(255,255,255) url(../images/borderMiddle.png) center top repeat-y;
 	}
-.groupSection {
+table.surveyTranslate td {
+	position: relative;
+	padding:1.75em 0.75% 1.5em;
+	width: 48%;
 	}
-#defaultLanguage section h3, #targetLanguage section h3 {
+
+table.surveyTranslate th {
+	position: relative;
+	padding:0.25em 0.75% 1em 0.75%;
+	width: 48%;
+	}
+table.surveyTranslate tr {
 	border-bottom:1px solid rgb(230,230,230);
-	padding:0.5em 0 0.75em 0.25em;
 	}
-#defaultLanguage section label , #targetLanguage section label {
+table.surveyTranslate th h3 {
+	padding:1em 0 1em 0.5em;
+	}
+
+table.surveyTranslate label {
 	font-weight:bold;
-	margin:1em 0 0.5em 0;
+	margin:1em 0 0.75em 0;
 	}
-#defaultLanguage section ul , #targetLanguage section ul {
-	padding:0 0.5em;
-	}
-#defaultLanguage section ul li , #targetLanguage section ul li {
-	padding:1.5em 0.25em;
-	border-bottom:1px solid rgb(230,230,230);
-	font-size:1.1em;
-	min-height:140px;
-	}
-#defaultLanguage section ul li ul li, #targetLanguage section ul li ul li{
-	padding:0.5em 0.25em;
-	border-bottom:none;
-	margin-top:0.5em;
-	min-height:inherit;
-	}
-
-#defaultLanguage section ul li:last-child , #targetLanguage section ul li:last-child  {
-	border-bottom:none;
-	}
-
-#defaultLanguage section ul p, #targetLanguage section ul p {
+table.surveyTranslate p {
 	padding:0 0.25em;
 	}
-#defaultLanguage section ul input , #targetLanguage section ul input {
+table.surveyTranslate textarea {
+	width:90%;
+	margin:0.5em 0 0 0;
+	}
+table.surveyTranslate input {
 	width:90%;
 	}
-#defaultLanguage section ul textarea , #targetLanguage section ul textarea {
-	width:90%;
-	margin:0.5em 0 0 25px;
-	}
-.surveyDetails {
-	min-height:300px;
-	}
-section.surveyDetails ul textarea {
-	margin:0 0 0 0 !important;
-	}
-.groupSection h1 {
+.qtnGroupTitle {	
 	margin:0.5em 0 0.5em 0;
-	}
-#defaultLanguage section.groupSection h3, #targetLanguage section.groupSection h3 {
-	font-size:1.4em;
-	display:block;
-	margin:1em 0 0.5em 0;
-	border-bottom:none;
-	border-top:1px solid rgb(230,230,230);
-	padding:1em 0 0.25em 0.25em;
-	}
-#defaultLanguage section ul li .questionNbr, #targetLanguage section ul li .questionNbr{
-    color:inherit;
-    font-weight: bold;
-	}
-#defaultLanguage section ul li .questionNbr span , #targetLanguage section ul li .questionNbr span {
+}
+table.surveyTranslate .questionNbr span {
 	background:transparent;
     -webkit-border-radius:inherit;
     -moz-border-radius:inherit;
@@ -3045,17 +3026,43 @@ section.surveyDetails ul textarea {
 	font-size:14px;
 	width:20px;
 }
-#defaultLanguage section ul li select , #targetLanguage section ul li select {
-    margin:0.5em 0;
+table.surveyTranslate textarea {
+	width:90%;
+	margin:0.5em 0 0 25px;
+	}
+table.surveyTranslate.surveyDetails textarea {
+	width:90%;
+	margin:0.5em 0 0 0;
+	}
+
+table.surveyTranslate select {
+    margin:0.5em 0 0 5px;
 	width:90%;
 	}
-#targetLanguage .qHelpTooltip {margin-left:25px;}
-#defaultLanguage .qHelpTooltip {margin-left:10px;}
-#defaultLanguage .qHelpTooltip p {margin:0; padding:0;}
-#defaultLanguage section .qHelpTooltip label {
+table.surveyTranslate  ul {
+	padding:0 0.5em;
+	}
+table.surveyTranslate ul li {
+	padding:0.5em 0.25em;
+	border-bottom:none;
+	margin:0.5em 0 0 15px;
+	min-height:inherit;
+	}
+table.surveyTranslate .qHelpTooltip {margin-left:25px;}
+table.surveyTranslate .qHelpTooltip p {margin:0; padding:0;}
+table.surveyTranslate .qHelpTooltip label {
 	margin:0.5em 0 0em 0;
 	}
-	
+.surveyDetails {
+	min-height:300px;
+	}
+.surveyDetails ul textarea {
+	margin:0 0 0 0 !important;
+	}
+.groupSection h1 {
+	margin:0.5em 0 0.5em 0;
+	}
+
 .fullWidth: {width: 100%;}
 /* Uploader: Drag & Drop */
 .resumable-error {font-size:14px; font-style:italic;}
