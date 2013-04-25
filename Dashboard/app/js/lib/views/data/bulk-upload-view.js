@@ -45,6 +45,9 @@ FLOW.uploader = Ember.Object.create({
  // Handle file add event
     r.on('fileAdded', function(file){
         var li;
+
+        FLOW.uploader.set('cancelled', false);
+
         // Show progress pabr
         $('.resumable-progress, .resumable-list').show();
         // Show pause, hide resume
@@ -70,7 +73,9 @@ FLOW.uploader = Ember.Object.create({
     r.on('complete', function(){
         // Hide pause/resume when the upload has completed
         $('.resumable-progress .progress-resume-link, .resumable-progress .progress-pause-link').hide();
-        FLOW.uploader.showCompleteMessage();
+        if(!FLOW.uploader.get('cancelled')) {
+          FLOW.uploader.showCompleteMessage();
+        }
       });
 
     r.on('fileSuccess', function(file,message){
@@ -99,15 +104,18 @@ FLOW.uploader = Ember.Object.create({
         $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-progress').html(Math.floor(file.progress()*100) + '%');
         $('.progress-bar').css({width:Math.floor(r.progress()*100) + '%'});
       });
+
+    r.on('cancel', function () {
+      FLOW.uploader.set('cancelled', true);
+      FLOW.uploader.showCancelledMessage();
+    });
   },
-  uploadInProgress: function () {
-    if(this.isUploading()) {
-      FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', Ember.String.loc('_upload_cancelled'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_upload_cancelled_due_to_navigation'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-    }
+  showCancelledMessage: function () {
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_upload_cancelled'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_upload_cancelled_due_to_navigation'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
   },
   showCompleteMessage: function () {
     FLOW.dialogControl.set('activeAction', 'ignore');
@@ -123,7 +131,6 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
     FLOW.uploader.assignDrop($('.resumable-drop')[0]);
     FLOW.uploader.assignBrowse($('.resumable-browse')[0]);
     FLOW.uploader.registerEvents();
-    FLOW.router.location.addObserver('path', FLOW.uploader, 'uploadInProgress');
   },
   willDestroyElement: function () {
     FLOW.uploader.cancel();
