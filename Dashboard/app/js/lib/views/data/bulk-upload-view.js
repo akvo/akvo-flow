@@ -105,10 +105,6 @@ FLOW.uploader = Ember.Object.create({
         $('.progress-bar').css({width:Math.floor(r.progress()*100) + '%'});
       });
 
-    r.on('cancel', function () {
-      FLOW.uploader.set('cancelled', true);
-      FLOW.uploader.showCancelledMessage();
-    });
   },
   showCancelledMessage: function () {
     FLOW.dialogControl.set('activeAction', 'ignore');
@@ -133,6 +129,7 @@ FLOW.BulkUploadAppletView = FLOW.View.extend({
     FLOW.uploader.registerEvents();
   },
   willDestroyElement: function () {
+    FLOW.uploader.set('cancelled', FLOW.uploader.isUploading());
     FLOW.uploader.cancel();
     this._super();
   }
