@@ -115,6 +115,10 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     showRawDataImportApplet: false,
     showGoogleEarthButton: false,
 
+    didInsertElement: function () {
+      FLOW.uploader.registerEvents();
+    },
+
     showRawDataReport: function () {
       if (!FLOW.selectedControl.selectedSurvey) {
         this.showWarning();
@@ -149,8 +153,13 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       FLOW.ReportLoader.load('SURVEY_FORM', FLOW.selectedControl.selectedSurvey.get('id'));
     },
 
-    showImportApplet: function () {
-        this.renderApplet('showRawDataImportApplet', true);
+    importFile: function () {
+      if (!FLOW.selectedControl.selectedSurvey) {
+        this.showImportWarning();
+        return;
+      }
+      FLOW.uploader.addFile($('#raw-data-import-file')[0].files[0]);
+      FLOW.uploader.upload();
     },
 
     showComprehensiveOptions: function () {
@@ -172,28 +181,11 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
         FLOW.dialogControl.set('showDialog', true);
     },
 
-    renderApplet: function (prop, skipSurveyCheck) {
-        if (!skipSurveyCheck && !FLOW.selectedControl.selectedSurvey) {
-            this.showWarning();
-            return;
-        }
-
-        if (prop === 'showRawDataImportApplet') {
-          this.set('showRawDataReportApplet', false);
-          this.set('showComprehensiveReportApplet', false);
-          this.set('showGoogleEarthFileApplet', false);
-          this.set('showSurveyFormApplet', true);
-          this.set('showRawDataImportApplet', true);
-        }
-
-        this.get('childViews').forEach(function (v) {
-            if (v.get('childViews') && v.get('childViews').length > 0) {
-                return; // skip initial select items
-            }
-
-            if (v.state === 'inDOM') {
-                v.rerender();
-            }
-        });
+    showImportWarning: function () {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_import_clean_data'));
+      FLOW.dialogControl.set('message', Ember.String.loc('_import_select_survey'));
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
     }
 });

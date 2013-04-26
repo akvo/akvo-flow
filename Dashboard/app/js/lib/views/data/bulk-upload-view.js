@@ -39,6 +39,10 @@ FLOW.uploader = Ember.Object.create({
     return this.get('r').cancel();
   },
 
+  addFile: function (file) {
+    return this.get('r').addFile(file);
+  },
+
   registerEvents: function () {
     var r = this.get('r');
 
@@ -79,18 +83,24 @@ FLOW.uploader = Ember.Object.create({
       });
 
     r.on('fileSuccess', function(file,message){
+        var data = {
+          uniqueIdentifier: file.uniqueIdentifier,
+          filename: file.fileName,
+          baseURL: location.protocol + '//' + location.host,
+          uploadDomain: this.opts.uploadDomain
+        };
+
+        if (file.fileName.toUpperCase().indexOf('.XLSX') !== -1) {
+          data.surveyId = FLOW.selectedControl.selectedSurvey.get('id');
+        }
+
         // Reflect that the file upload has completed
         $('.resumable-file-'+file.uniqueIdentifier+' .resumable-file-progress').html('(completed)');
         $.ajax({
           url: this.opts.target,
           cache: false,
           type: 'POST',
-          data: {
-            uniqueIdentifier: file.uniqueIdentifier,
-            filename: file.fileName,
-            baseURL: location.protocol + '//' + location.host,
-            uploadDomain: this.opts.uploadDomain
-          }
+          data: data
         });
       });
 
