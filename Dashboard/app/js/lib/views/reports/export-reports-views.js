@@ -154,11 +154,20 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     },
 
     importFile: function () {
+      var file;
       if (!FLOW.selectedControl.selectedSurvey) {
-        this.showImportWarning();
+        this.showImportWarning(Ember.String.loc('_import_select_survey'));
         return;
       }
-      FLOW.uploader.addFile($('#raw-data-import-file')[0].files[0]);
+
+      file = $('#raw-data-import-file')[0];
+
+      if (!file || file.files.length === 0) {
+        this.showImportWarning(Ember.String.loc('_import_select_file'));
+        return;
+      }
+
+      FLOW.uploader.addFile(file.files[0]);
       FLOW.uploader.upload();
     },
 
@@ -181,10 +190,10 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
         FLOW.dialogControl.set('showDialog', true);
     },
 
-    showImportWarning: function () {
+    showImportWarning: function (msg) {
       FLOW.dialogControl.set('activeAction', 'ignore');
       FLOW.dialogControl.set('header', Ember.String.loc('_import_clean_data'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_import_select_survey'));
+      FLOW.dialogControl.set('message', msg);
       FLOW.dialogControl.set('showCANCEL', false);
       FLOW.dialogControl.set('showDialog', true);
     }
