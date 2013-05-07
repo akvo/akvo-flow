@@ -378,6 +378,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 								+ "=" + surveyId, true, criteria.get(KEY_PARAM));
 			}
 
+			invokeUrl(serverBase, "action"
+					+ RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
+					+ RawDataImportRequest.SURVEY_ID_PARAM + "= " + surveyId,
+					true, criteria.get(KEY_PARAM));
+
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 					COMPLETE.get(locale), true));
 		} catch (Exception e) {

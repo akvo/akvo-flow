@@ -38,7 +38,10 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.messaging.dao.MessageDao;
+import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Question.Type;
 import com.google.appengine.api.backends.BackendServiceFactory;
@@ -209,6 +212,20 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				SurveyServiceImpl ssi = new SurveyServiceImpl();
 				ssi.rerunAPMappings(surveyId);
 			}
+		} else if (RawDataImportRequest.SAVE_MESSAGE_ACTION
+				.equalsIgnoreCase(importReq.getAction())) {
+
+			MessageDao mdao = new MessageDao();
+			Message msg = new Message();
+			msg.setShortMessage("Spreadsheet processed");
+			msg.setObjectId(importReq.getSurveyId());
+			msg.setActionAbout("spreadsheetProcessed");
+			mdao.save(msg);
+
+			List<Long> ids = new ArrayList<Long>();
+			ids.add(importReq.getSurveyId());
+			SurveyUtils.notifyReportService(ids, "invalidate");
+
 		}
 		return null;
 	}

@@ -51,6 +51,7 @@ public class RawDataImportRequest extends RestRequest {
 	public static final String RESET_SURVEY_INSTANCE_ACTION = "resetSurveyInstance";
 	public static final String SAVE_FIXED_FIELD_SURVEY_INSTANCE_ACTION = "ingestFixedFormat";
 	public static final String UPDATE_SUMMARIES_ACTION = "updateSummaries";
+	public static final String SAVE_MESSAGE_ACTION = "saveMessage";
 
 	public static final String FIELD_VAL_DELIMITER = ";;";
 
