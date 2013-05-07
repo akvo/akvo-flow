@@ -215,16 +215,16 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 		} else if (RawDataImportRequest.SAVE_MESSAGE_ACTION
 				.equalsIgnoreCase(importReq.getAction())) {
 
+			List<Long> ids = new ArrayList<Long>();
+			ids.add(importReq.getSurveyId());
+			SurveyUtils.notifyReportService(ids, "invalidate");
+
 			MessageDao mdao = new MessageDao();
 			Message msg = new Message();
 			msg.setShortMessage("Spreadsheet processed");
 			msg.setObjectId(importReq.getSurveyId());
 			msg.setActionAbout("spreadsheetProcessed");
 			mdao.save(msg);
-
-			List<Long> ids = new ArrayList<Long>();
-			ids.add(importReq.getSurveyId());
-			SurveyUtils.notifyReportService(ids, "invalidate");
 
 		}
 		return null;
