@@ -122,6 +122,10 @@ FLOW.Router = Ember.Router.extend({
           router.transitionTo('navSurveys.navSurveysEdit.manageNotifications');
         },
 
+        doManageTranslations: function(router, event) {
+          router.transitionTo('navSurveys.navSurveysEdit.manageTranslations');
+        },
+
         doEditQuestions: function(router, event) {
           router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
         },
@@ -138,6 +142,16 @@ FLOW.Router = Ember.Router.extend({
               name: 'manageNotifications'
             });
             FLOW.notificationControl.populate();
+          }
+        }),
+
+        manageTranslations: Ember.Route.extend({
+          route: '/translations',
+          connectOutlets: function(router, event) {
+            router.get('navSurveysEditController').connectOutlet({
+              name: 'manageTranslations'
+            });
+            FLOW.translationControl.populate();
           }
         }),
 
