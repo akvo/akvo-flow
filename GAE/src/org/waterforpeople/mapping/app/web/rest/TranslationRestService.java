@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
+import org.waterforpeople.mapping.app.web.rest.dto.TranslationBulkDeletePayload;
 import org.waterforpeople.mapping.app.web.rest.dto.TranslationBulkPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.TranslationPayload;
 
@@ -345,13 +346,14 @@ public class TranslationRestService {
 	@RequestMapping(method = RequestMethod.DELETE, value = "/bulk")
 	@ResponseBody
 	public Map<String, RestStatusDto> bulkDeleteTranslationById(
-			@RequestBody Map<String, List<Long>> payLoad) {
+			@RequestBody TranslationBulkDeletePayload payLoad) {
 		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+		final List<Long> tIds = payLoad
+				.getTranslations();
 		RestStatusDto statusDto = null;
 		Translation t = null;
 		statusDto = new RestStatusDto();
 		statusDto.setStatus("ok");
-		List<Long> tIds = payLoad.get("translations");
 		if (tIds != null && tIds.size() > 0) {
 			for (int i = 0; i < tIds.size(); i++) {
 				Number temp = tIds.get(i);
