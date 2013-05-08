@@ -37,6 +37,37 @@ FLOW.QuestionView = FLOW.View.extend({
 	newAttributeGroup: null,
 	newAttributeType: null,
 
+	init: function(){
+		var self, qoList,i;
+		qoList = "";
+		this._super();
+		self = this;
+		if(this.content && this.content.get('type') == 'OPTION'){
+			options = FLOW.store.filter(FLOW.QuestionOption,function(item){
+				if (!Ember.none(self.content)){
+					return item.get('questionId') == self.content.get('keyId');
+				} else {
+					return false;
+				}
+			});
+			i = 0;
+			optionArray = options.toArray();
+			optionArray.sort(function(a, b) {
+          return(a.order >= b.order);
+        });
+
+			optionArray.forEach(function(item){
+				if (i === 0) {
+					qoList += item.get('text');
+				} else {
+					qoList += "\n" + item.get('text');
+				}
+				i++;
+			});
+			self.content.set('questionOptionList',qoList);
+		}
+	},
+
 	amOpenQuestion: function() {
 		var selected = FLOW.selectedControl.get('selectedQuestion');
 		if(selected && this.get('content')) {
@@ -49,6 +80,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
 
 	amOptionType: function() {
+		var options;
 		if(this.type) {
 			return(this.type.get('value') == 'OPTION');
 		} else {
@@ -91,7 +123,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
 		this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
 		this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
-		this.set('optionList', FLOW.selectedControl.selectedQuestion.get('optionList'));
+		this.set('optionList', FLOW.selectedControl.selectedQuestion.get('questionOptionList'));
 		FLOW.optionListControl.set('content',[]);
 
 		// if the dependentQuestionId is not null, get the question
@@ -135,16 +167,27 @@ FLOW.QuestionView = FLOW.View.extend({
 		var optionList, optionListArray, i, sizeList;
 		if(FLOW.selectedControl.get('dependentQuestion') !== null) {
 			FLOW.optionListControl.set('content', []);
-			optionList = FLOW.selectedControl.dependentQuestion.get('optionList');
-			optionListArray = optionList.split('\n');
-			sizeList = optionListArray.length;
 			FLOW.optionListControl.set('currentActive', null);
-			for(i = 0; i < sizeList; i++) {
+
+			options = FLOW.store.filter(FLOW.QuestionOption,function(item){
+				if (!Ember.none(FLOW.selectedControl.selectedQuestion)){
+					return item.get('questionId') == FLOW.selectedControl.dependentQuestion.get('keyId');
+				} else {
+					return false;
+				}
+			});
+
+			optionArray = options.toArray();
+			optionArray.sort(function(a, b) {
+          return(a.order >= b.order);
+        });
+
+			optionArray.forEach(function(item){
 				FLOW.optionListControl.get('content').push(Ember.Object.create({
 					isSelected: false,
-					value: optionListArray[i]
+					value: item.get('text')
 				}));
-			}
+			});
 		}
 	}.observes('FLOW.selectedControl.dependentQuestion'),
 
@@ -153,7 +196,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	},
 
 	doSaveEditQuestion: function() {
-		var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal;
+		var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal,options,found, optionsToDelete;
 
 		// validation
 		if (this.type.get('value') == 'NUMBER'){
@@ -220,7 +263,60 @@ FLOW.QuestionView = FLOW.View.extend({
 			FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
 		}
 
-		FLOW.selectedControl.selectedQuestion.set('optionList', this.get('optionList'));
+
+		// deal with saving options
+		if (FLOW.selectedControl.selectedQuestion.get('questionOptionList') != this.get('optionList')){
+			options = FLOW.store.filter(FLOW.QuestionOption,function(item){
+				if (!Ember.none(FLOW.selectedControl.selectedQuestion)){
+					return item.get('questionId') == FLOW.selectedControl.selectedQuestion.get('keyId');
+				} else {
+					return false;
+				}
+			});
+			newOptionStringArray = this.get('optionList').split('\n');
+			optionsToDelete=[];
+
+			options.forEach(function(item){
+				optionsToDelete.push(item.get('keyId'));
+			});
+
+			order = 1;
+			newOptionStringArray.forEach(function(item){
+				found = false;
+				// skip empty lines
+				if (!Ember.empty(item)){
+					// if there is an existing option with this value, use it and change order if neccessary
+					options.forEach(function(optionItem){
+						if (item == optionItem.get('text')) {
+							found = true;
+							// adapt order if necessary
+							if (optionItem.get('order') != order) {
+								optionItem.set('order',order);
+							}
+							// don't delete this one
+							optionsToDelete.splice(optionsToDelete.indexOf(optionItem.get('keyId')), 1 );
+						}
+					});
+					if (!found) {
+						// create new one
+						FLOW.store.createRecord(FLOW.QuestionOption,{
+							text: item,
+							questionId: FLOW.selectedControl.selectedQuestion.get('keyId'),
+							order: order
+						});
+					}
+					order++;
+				}
+			});
+
+			// delete unused questionOptions
+			for (ii = 0; ii < optionsToDelete.length ; ii++){
+				opToDel = FLOW.store.find(FLOW.QuestionOption,optionsToDelete[ii]);
+				opToDel.deleteRecord();
+			}
+			FLOW.selectedControl.selectedQuestion.set('questionOptionList',this.get('optionList'));
+		}
+
 		FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedQuestion', null);
