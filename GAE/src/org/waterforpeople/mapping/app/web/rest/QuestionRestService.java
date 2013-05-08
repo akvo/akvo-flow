@@ -129,7 +129,7 @@ public class QuestionRestService {
 						includeElement = true;
 
 					// include if we are requesting questions in a survey, with
-					// non of the other parameters set
+					// none of the other parameters set
 					if (surveyId != null
 							&& ("".equals(includeNumber) && ""
 									.equals(includeOption)))

@@ -1,7 +1,7 @@
 // make indexOf work for IE8 
 if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (obj, fromIndex) {
-        if (fromIndex == null) {
+        if (fromIndex === null) {
             fromIndex = 0;
         } else if (fromIndex < 0) {
             fromIndex = Math.max(0, this.length + fromIndex);
@@ -267,12 +267,12 @@ FLOW.QuestionView = FLOW.View.extend({
 				// restore order
 				qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 				questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-			        return(item.get('questionGroupId') == qgId);
-			      });
-				
+					return(item.get('questionGroupId') == qgId);
+				});
+
 				origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
 				movingUp = origOrder < insertAfterOrder;
-				
+
 				questionsInGroup.forEach(function(item) {
 					currentOrder = item.get('order');
 					if (movingUp){
@@ -292,9 +292,9 @@ FLOW.QuestionView = FLOW.View.extend({
 							// move item up
 							item.set('order',item.get('order') + 1);
 						}
-					}	
+					}
 				});
-				
+
 				FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
 				FLOW.store.commit();
 			}
@@ -315,20 +315,19 @@ FLOW.QuestionView = FLOW.View.extend({
 			insertAfterOrder = this.content.get('order');
 		}
 
-		
 		// restore order
 		qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 		questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-	        return(item.get('questionGroupId') == qgId);
-	      });
-		
+			return(item.get('questionGroupId') == qgId);
+		});
+
 		// move items up to make space
 		questionsInGroup.forEach(function(item) {
 			if (item.get('order') > insertAfterOrder) {
 				item.set('order',item.get('order') + 1);
 			}
 		});
-		
+
 		// create copy of Question item in the store
 		FLOW.store.createRecord(FLOW.Question, {
 			"tip": FLOW.selectedControl.selectedForCopyQuestion.get('tip'),

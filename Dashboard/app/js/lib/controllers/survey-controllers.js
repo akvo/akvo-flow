@@ -323,15 +323,15 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
   setQGcontent: function() {
-	  var qId
+    var qId;
     if(FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
-      var qId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+      qId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
       this.set('content', FLOW.store.filter(FLOW.Question, function(item) {
-    	  return(item.get('questionGroupId') == qId);
+      return(item.get('questionGroupId') == qId);
       }));
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
-   
+
   setOPTIONcontent: function() {
     var sId;
     if(FLOW.selectedControl.get('selectedSurvey')) {
@@ -401,7 +401,6 @@ FLOW.notificationControl = Ember.ArrayController.create({
   sortAscending: true,
 
   populate: function() {
-    console.log('populate');
     var id;
     if(FLOW.selectedControl.get('selectedSurvey')) {
       id = FLOW.selectedControl.selectedSurvey.get('keyId');
