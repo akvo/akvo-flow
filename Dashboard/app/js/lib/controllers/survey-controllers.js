@@ -480,6 +480,7 @@ FLOW.translationControl = Ember.ArrayController.create({
         this.set('currentTranslation',this.get('translations')[0].value);
         this.set('currentTranslationName',this.get('translations')[0].label);
         this.putTranslationsInList();
+        this.set('noTransSelected',false);
       } else {
         this.set('noTransSelected',true);
       }
