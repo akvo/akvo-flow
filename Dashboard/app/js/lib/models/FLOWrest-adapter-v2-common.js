@@ -1,4 +1,5 @@
 /*global DS*/
+var get = Ember.get, set = Ember.set;
 
 DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   serializer: DS.RESTSerializer.extend({
@@ -115,7 +116,34 @@ didFindAll: function(store, type, json) {
 didFindQuery: function(store, type, json, recordArray) {
   this._super(store, type, json, recordArray);
   FLOW.savingMessageControl.set('areLoadingBool',false);
-}
+},
+
+// adapted from standard ember rest_adapter
+// includes 'bulk' in the POST call, to allign
+// with updateRecords and deleteRecords behaviour.
+createRecords: function(store, type, records) {
+    if (get(this, 'bulkCommit') === false) {
+      return this._super(store, type, records);
+    }
+
+    var root = this.rootForType(type),
+        plural = this.pluralize(root);
+
+    var data = {};
+    data[plural] = [];
+    records.forEach(function(record) {
+      data[plural].push(this.serialize(record, { includeId: true }));
+    }, this);
+
+    this.ajax(this.buildURL(root, 'bulk'), "POST", {
+      data: data,
+      context: this,
+      success: function(json) {
+        this.didCreateRecords(store, type, records, json);
+      }
+    });
+  },
+
 
 
 });
