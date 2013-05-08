@@ -301,6 +301,14 @@ FLOW.Message = FLOW.BaseModel.extend({
 
 FLOW.Action = FLOW.BaseModel.extend({});
 
+FLOW.Translation = FLOW.BaseModel.extend({
+  parentType: DS.attr('string'),
+  parentId: DS.attr('string'),
+  text: DS.attr('string'),
+  langCode: DS.attr('string'),
+  surveyId: null
+});
+
 
 FLOW.NotificationSubscription = FLOW.BaseModel.extend({
   notificationDestination: DS.attr('string'),

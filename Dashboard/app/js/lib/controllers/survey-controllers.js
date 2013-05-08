@@ -419,5 +419,397 @@ FLOW.notificationControl = Ember.ArrayController.create({
       }));
     }
   }.observes('FLOW.selectedControl.selectedSurvey')
+});
+
+
+
+
+FLOW.translationControl = Ember.ArrayController.create({
+  itemArray: [],
+  itemDict:{},
+  translations: [],
+  isoLangs: null,
+  questionGroups: null,
+  currentTranslation: null,
+  currentTranslationName: null,
+  defaultLang: null,
+  selectedLanguage: null,
+  noTransSelected:true,
+
+  init: function(){
+    this._super();
+    this.createIsoLangs();
+  },
+
+  createIsoLangs: function(){
+    var tempArray = [];
+    for (var key in FLOW.isoLanguagesDict) {
+      tempArray.push(Ember.Object.create({
+        value: key,
+        labelShort: FLOW.isoLanguagesDict[key].name,
+        labelLong: FLOW.isoLanguagesDict[key].name + " - " + FLOW.isoLanguagesDict[key].nativeName
+      }));
+    }
+    this.set('isoLangs',tempArray);
+  },
+
+  populate: function(){
+    var id;
+    id = FLOW.selectedControl.selectedSurvey.get('keyId');
+    if (!Ember.none(id)){}
+      this.set('content',FLOW.store.findQuery(FLOW.Translation,{
+        surveyId:id
+    }));
+    this.set('translations',[]);
+    this.set('currentTranslation', null);
+    this.set('currentTranslationName',null);
+
+    // this creates the internal structure that we use to display all the items for translation
+    // the translation items are put in here when they arrive from the backend
+    this.createItemList(id);
+    this.set('defaultLang',FLOW.isoLanguagesDict[FLOW.selectedControl.selectedSurvey.get('defaultLanguageCode')].name);
+  },
+
+  //when the translations arrive, put them in the internal data structure
+  initiateData: function(){
+    if (this.get('content').content.length > 0){
+      this.addSurveyIdField();
+      this.determineAvailableTranslations();
+      this.resetTranslationFields();
+      if (this.get('translations').length > 0) {
+        this.set('currentTranslation',this.get('translations')[0].value);
+        this.set('currentTranslationName',this.get('translations')[0].label);
+        this.putTranslationsInList();
+      } else {
+        this.set('noTransSelected',true);
+      }
+    }
+  }.observes('content.isLoaded'),
+
+  resetTranslationFields: function(){
+    this.get('itemArray').forEach(function(item){
+      switch (item.get('type')) {
+        case "S":
+          item.set('surveyTextTrans',null);
+          item.set('surveyTextTransId',null);
+          item.set('sDescTextTrans',null);
+          item.set('sDescTextTransId',null);
+        break;
+
+        case "QG":
+          item.set('qgTextTrans',null);
+          item.set('qgTextTransId',null);
+        break;
+
+        case "Q":
+          item.set('qTextTrans',null);
+          item.set('qTextTransId',null);
+          item.set('qTipTextTrans',null);
+          item.set('qTipTextTransId',null);
+        break;
+
+        case "QO":
+          item.set('qoTextTrans',null);
+          item.set('qoTextTransId',null);
+        break;
+
+        default:
+
+      }
+    });
+  },
+
+
+  // add surveyId as a non-persistant field to the translation objects in the store
+  addSurveyIdField: function(){
+    this.get('content').forEach(function(item){
+      item.surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+     });
+  },
+
+  // determine which languages are present in the translation objects, 
+  // so we can show the proper items
+  determineAvailableTranslations: function(){
+    var tempDict = {};
+    this.get('content').forEach(function(item){
+      tempDict[item.get('langCode')] = item.get('langCode');
+    });
+    for (var key in tempDict) this.translations.pushObject(Ember.Object.create({
+      value: key,
+      label: FLOW.isoLanguagesDict[key].name
+    }));
+  },
+
+  addTranslation: function(){
+    var found = false, newLang = null;
+    newLang = this.get('selectedLanguage');
+    if (!Ember.none(newLang)){
+      this.get('translations').forEach(function(item){
+        found = found || (newLang.value == item.value);
+      });
+      if (!found){
+        this.resetTranslationFields();
+        this.translations.pushObject(Ember.Object.create({
+          value: this.get('selectedLanguage').value,
+          label: FLOW.isoLanguagesDict[this.get('selectedLanguage').value].name
+        }));
+        this.set('currentTranslation',this.get('selectedLanguage').value);
+        this.set('currentTranslationName',FLOW.isoLanguagesDict[this.get('selectedLanguage').value].name);
+        this.set('noTransSelected',false);
+      }
+    }
+  },
+
+  switchTranslation: function(event){
+    if (event.context.value != this.get('currentTranslation')){
+      this.saveTranslations();
+      this.resetTranslationFields();
+      this.set('currentTranslation',event.context.value);
+      this.set('currentTranslationName',FLOW.isoLanguagesDict[event.context.value].name);
+      this.set('noTransSelected',false);
+      this.putTranslationsInList();
+    }
+  },
+
+  createItemList: function(id){
+    var tempArray, tempHashDict, questionGroup, qgOrder;
+    tempArray = [];
+    tempHashDict = {};
+
+    // put in survey stuff
+    survey = FLOW.selectedControl.get('selectedSurvey');
+    tempArray.push(Ember.Object.create({
+      keyId: survey.get('keyId'),
+      type: "S",
+      order: 0,
+      surveyText: survey.get('name'),
+      sDescText: survey.get('description'),
+      isSurvey: true
+    }));
+
+    // put in question groups
+    questionGroups = FLOW.store.filter(FLOW.QuestionGroup, function(item) {
+      return item.get('surveyId') == id;
+    });
+    questionGroups.forEach(function(item) {
+      tempArray.push(Ember.Object.create({
+        keyId: item.get('keyId'),
+        type: "QG",
+        order: 1000000 * parseInt(item.get('order'),10),
+        displayOrder:item.get('order'),
+        qgText: item.get('name'),
+        isQG: true
+      }));
+    });
+
+    // put in questions
+    questions = FLOW.store.filter(FLOW.Question, function(item) {
+      return item.get('surveyId') == id;
+    });
+    questions.forEach(function(item) {
+      questionGroup = FLOW.store.find(FLOW.QuestionGroup,item.get('questionGroupId'));
+      qgOrder = parseInt(questionGroup.get('order'),10);
+      qId = item.get('keyId');
+
+      tempArray.push(Ember.Object.create({
+        keyId : item.get('keyId'),
+        type: "Q",
+        order: 1000000*qgOrder + 1000*parseInt(item.get('order'),10),
+        qText : item.get('text'),
+        displayOrder:item.get('order'),
+        qTipText : item.get('tip'),
+        isQ: true,
+        hasTooltip:!Ember.empty(item.get('tip'))
+      }));
+      // for each question, put in question options
+      options = FLOW.store.filter(FLOW.QuestionOption,function(optionItem){
+          return optionItem.get('questionId') == qId;
+      });
+
+      qOrder = parseInt(item.get('order'),10);
+      options.forEach(function(item){
+        tempArray.push(Ember.Object.create({
+          keyId : item.get('keyId'),
+          type: "QO",
+          order: 1000000*qgOrder + 1000*qOrder + parseInt(item.get('order'),10),
+          displayOrder:item.get('order'),
+          qoText : item.get('text'),
+          isQO: true
+        }));
+      });
+    });
+
+    // put all the items in the right order
+    tempArray.sort(function(a, b) {
+      a = a.order;
+      b = b.order;
+      return a < b ? -1 : (a > b ? 1 : 0);
+    });
+
+    i = 0;
+    tempArray.forEach(function(item){
+      tempHashDict[item.get('type') + item.get('keyId')] = i;
+      i++;
+    });
+
+    this.set('itemDict',tempHashDict);
+    this.set('itemArray',tempArray);
+  },
+
+  putTranslationsInList: function(){
+    var currLang;
+    _self = this;
+    currTrans = this.get('currentTranslation');
+
+    // only proceed if we have a language selected
+    if (!Ember.none(currTrans)){
+      // get the translations with the right surveyId and the right language code
+      translations = FLOW.store.filter(FLOW.Translation,function(item){
+        return (item.surveyId == FLOW.selectedControl.selectedSurvey.get('keyId') && item.get('langCode') == currTrans);
+      });
+
+      translations.forEach(function(item){
+        switch (item.get('parentType')) {
+          case "SURVEY_NAME":
+            existingItemPos = _self.get('itemDict')["S" + item.get('parentId')];
+            if (!Ember.none(existingItemPos)){
+              _self.get('itemArray')[existingItemPos].set('surveyTextTrans', item.get('text'));
+              _self.get('itemArray')[existingItemPos].set('surveyTextTransId', item.get('keyId'));
+            }
+          break;
+
+          case "SURVEY_DESC":
+            existingItemPos = _self.get('itemDict')["S" + item.get('parentId')];
+            if (!Ember.none(existingItemPos)){
+              _self.get('itemArray')[existingItemPos].set('sDescTextTrans', item.get('text'));
+              _self.get('itemArray')[existingItemPos].set('sDescTextTransId', item.get('keyId'));
+            }
+          break;
+
+         case "QUESTION_GROUP_NAME":
+            existingItemPos = _self.get('itemDict')["QG" + item.get('parentId')];
+            if (!Ember.none(existingItemPos)){
+              _self.get('itemArray')[existingItemPos].set('qgTextTrans', item.get('text'));
+              _self.get('itemArray')[existingItemPos].set('qgTextTransId', item.get('keyId'));
+            }
+          break;
+
+          case "QUESTION_TEXT":
+            existingItemPos = _self.get('itemDict')["Q" + item.get('parentId')];
+            if (!Ember.none(existingItemPos)){
+              _self.get('itemArray')[existingItemPos].set('qTextTrans', item.get('text'));
+              _self.get('itemArray')[existingItemPos].set('qTextTransId', item.get('keyId'));
+            }
+          break;
+
+          case "QUESTION_TIP":
+            existingItemPos = _self.get('itemDict')["Q" + item.get('parentId')];
+            if (!Ember.none(existingItemPos)){
+              _self.get('itemArray')[existingItemPos].set('qTipTextTrans', item.get('text'));
+              _self.get('itemArray')[existingItemPos].set('qTipTextTransId', item.get('keyId'));
+            }
+          break;
+
+          case "QUESTION_OPTION":
+            existingItemPos = _self.get('itemDict')["QO" + item.get('parentId')];
+            if (!Ember.none(existingItemPos)){
+              _self.get('itemArray')[existingItemPos].set('qoTextTrans', item.get('text'));
+              _self.get('itemArray')[existingItemPos].set('qoTextTransId', item.get('keyId'));
+            }
+          break;
+
+          default:
+        }
+      });
+    }
+  },
+
+  // delete a translation record by its Id. Committing is done in saveTranslations method
+  deleteRecord: function(transId){
+    var candidates, existingTrans;
+    candidates = FLOW.store.filter(FLOW.Translation,function(item){
+        return item.get('keyId') == transId;
+      });
+
+      if (candidates.get('content').length > 0){
+        existingTrans = candidates.objectAt(0);
+        existingTrans.deleteRecord();
+      }
+  },
+
+  createUpdateOrDeleteRecord: function(type, parentId, origText, translationText, lan, transId){
+    if (!Ember.none(origText) && origText.length > 0) {
+      // we have an original text
+      if (!Ember.none(translationText) && translationText.length > 0){
+        // we have a translation text
+        if (Ember.none(transId)){
+          // we don't have an existing translation, so create it
+          FLOW.store.createRecord(FLOW.Translation,{
+            parentType: type,
+            parentId: parentId,
+            text: translationText,
+            langCode: lan
+          });
+        } else {
+          // we have an existing translation, so update it, if the text has changed
+          if (origText != translationText){
+            candidates = FLOW.store.filter(FLOW.Translation,function(item){
+              return item.get('keyId') == transId;
+            });
+
+            if (candidates.get('content').length > 0){
+              existingTrans = candidates.objectAt(0);
+              existingTrans.set('text',translationText);
+            }
+          }
+        }
+     } else {
+      // we don't have a translation text. If there is an existing translation, delete it
+       if (!Ember.none(transId)) {
+        this.deleteRecord(transId);
+      }
+     }
+    } else {
+      // we don't have an original text. If there is an existing translation, delete it
+      if (!Ember.none(transId)) {
+        this.deleteRecord(transId);
+      }
+    }
+  },
+
+  saveTranslationsAndClose: function(){
+    this.saveTranslations();
+    FLOW.router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
+  },
+
+ closeTranslations: function(router, event) {
+    FLOW.router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
+  },
+
+  saveTranslations: function(){
+    var type, parentId, lan, transId, _self;
+    _self = this;
+    FLOW.store.adapter.set('bulkCommit',true);
+    this.get('itemArray').forEach(function(item){
+      type = item.type;
+      parentId = item.keyId;
+      lan = _self.get('currentTranslation');
+      if (type == 'S'){
+        _self.createUpdateOrDeleteRecord("SURVEY_NAME",parentId,item.surveyText,item.surveyTextTrans,lan,item.surveyTextTransId);
+        _self.createUpdateOrDeleteRecord("SURVEY_DESC",parentId,item.sDescText,item.sDescTextTrans,lan,item.sDescTextTransId);
+      } else if (type == 'QG') {
+        _self.createUpdateOrDeleteRecord("QUESTION_GROUP_NAME",parentId,item.qgText,item.qgTextTrans,lan,item.qgTextTransId);
+      } else if (type == 'Q'){
+        _self.createUpdateOrDeleteRecord("QUESTION_TEXT",parentId,item.qText,item.qTextTrans,lan,item.qTextTransId);
+        _self.createUpdateOrDeleteRecord("QUESTION_TIP",parentId,item.qTipText,item.qTipTextTrans,lan,item.qTipTextTransId);
+      } else if (type == 'QO'){
+        _self.createUpdateOrDeleteRecord("QUESTION_OPTION",parentId,item.qoText,item.qoTextTrans,lan,item.qoTextTransId);
+      }
+    });
+    FLOW.store.commit();
+    FLOW.store.adapter.set('bulkCommit',false);
+  }
 
 });
+
+
