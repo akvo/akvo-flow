@@ -41,9 +41,11 @@ import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Question.Type;
+import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -221,8 +223,12 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 
 			MessageDao mdao = new MessageDao();
 			Message msg = new Message();
+			SurveyDAO sdao = new SurveyDAO();
+			Survey s = sdao.getById(importReq.getSurveyId());
+
 			msg.setShortMessage("Spreadsheet processed");
 			msg.setObjectId(importReq.getSurveyId());
+			msg.setObjectTitle(s.getPath() + "/" + s.getName());
 			msg.setActionAbout("spreadsheetProcessed");
 			mdao.save(msg);
 
