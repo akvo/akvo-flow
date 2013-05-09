@@ -52,6 +52,15 @@ input, textarea {
 	box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
 */	padding:3px 5px;	
 }
+input[disabled="disabled"], textarea[disabled="disabled"] {
+	border: thin solid rgb(235, 235, 235);
+	background: rgb(235, 235, 235);
+/*	-moz-box-shadow:0 0 1px rgba(0, 0, 0, 0.3) inset;
+	-webkit-box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
+	-o-box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
+	box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
+*/	padding:3px 5px;	
+}
 textarea {
 	overflow: auto;
 	resize: vertical;
@@ -65,6 +74,11 @@ input:hover, textarea:hover {
 	background:-o-linear-gradient(rgb(245,245,245), rgb(234,234,234));
 	background:linear-gradient(rgb(245,245,245), rgb(234,234,234));
 }
+input[disabled="disabled"]:hover, textarea[disabled="disabled"]:hover {
+	border: 1px solid rgb(235, 235, 235);
+	background:rgb(235, 235, 235);
+}
+
 .leftSidebar input, .leftSidebar textarea {
 	border:1px solid rgb(28,28,28);
 	}
@@ -77,6 +91,10 @@ input:hover, textarea:hover {
 input:focus, textarea:focus {
 	border: 1px solid rgb(205,205,205);
 	background:rgb(245,255,216);
+}
+input[disabled="disabled"]:focus, textarea[disabled="disabled"]:focus {
+	border: 1px solid rgb(235, 235, 235);
+	background:rgb(235, 235, 235);
 }
 fieldset {
 	border: 0;
