@@ -289,6 +289,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									cellVal += "|"
 											+ (nextVal != null ? nextVal : "");
 								}
+								// if there was no geo information, get rid of the empty bars
+								if (cellVal.equals("|||")){
+									cellVal = "";
+									}
 								sb.append(cellVal != null ? URLEncoder.encode(
 										cellVal, "UTF-8") : "");
 							} else {
