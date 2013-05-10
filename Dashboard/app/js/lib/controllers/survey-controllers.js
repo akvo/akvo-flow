@@ -422,8 +422,6 @@ FLOW.notificationControl = Ember.ArrayController.create({
 });
 
 
-
-
 FLOW.translationControl = Ember.ArrayController.create({
   itemArray: [],
   itemDict:{},
@@ -435,6 +433,7 @@ FLOW.translationControl = Ember.ArrayController.create({
   defaultLang: null,
   selectedLanguage: null,
   noTransSelected:true,
+  toBeDeletedTranslations:[],
 
   init: function(){
     this._super();
@@ -767,13 +766,15 @@ FLOW.translationControl = Ember.ArrayController.create({
      } else {
       // we don't have a translation text. If there is an existing translation, delete it
        if (!Ember.none(transId)) {
-        this.deleteRecord(transId);
+        // add this id to the list of to be deleted items
+        this.toBeDeletedTranslations.pushObject(transId);
       }
      }
     } else {
       // we don't have an original text. If there is an existing translation, delete it
       if (!Ember.none(transId)) {
-        this.deleteRecord(transId);
+        // add this to the list of to be deleted items
+        this.toBeDeletedTranslations.pushObject(transId);
       }
     }
   },
@@ -809,8 +810,15 @@ FLOW.translationControl = Ember.ArrayController.create({
     });
     FLOW.store.commit();
     FLOW.store.adapter.set('bulkCommit',false);
-  }
 
+    // delete items individually, as a body in a DELETE request is not accepted by GAE
+    this.get('toBeDeletedTranslations').forEach(function(item){
+      _self.deleteRecord(item);
+    });
+    FLOW.store.commit();
+    this.putTranslationsInList();
+    this.set('toBeDeletedTranslations',[]);
+  }
 });
 
 
