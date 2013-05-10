@@ -245,6 +245,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 	 */
 	private SurveyInstance createInstance(RawDataImportRequest importReq) {
 		SurveyInstance inst = new SurveyInstance();
+		inst.setUserID(1L);
 		inst.setSurveyId(importReq.getSurveyId());
 		inst.setCollectionDate(importReq.getCollectionDate() != null ? importReq
 				.getCollectionDate() : new Date());
