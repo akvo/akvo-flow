@@ -348,7 +348,7 @@ public class TranslationRestService {
 	public Map<String, RestStatusDto> bulkDeleteTranslationById(
 			@RequestBody TranslationBulkDeletePayload payLoad) {
 		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-		final List<Integer> tIds = payLoad
+		final List<Number> tIds = payLoad
 				.getTranslations();
 		RestStatusDto statusDto = null;
 		Translation t = null;

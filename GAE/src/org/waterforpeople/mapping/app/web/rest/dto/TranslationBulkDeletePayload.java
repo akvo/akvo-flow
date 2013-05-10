@@ -21,13 +21,13 @@ import java.util.List;
 public class TranslationBulkDeletePayload implements Serializable {
 
 	private static final long serialVersionUID = 19271574362911287L;
-	List<Integer> translations = null;
+	List<Number> translations = null;
 
-	public List<Integer> getTranslations() {
+	public List<Number> getTranslations() {
 		return translations;
 	}
 
-	public void setTranslations(List<Integer> translations) {
+	public void setTranslations(List<Number> translations) {
 		this.translations = translations;
 	}
 }
