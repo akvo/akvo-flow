@@ -289,8 +289,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									cellVal += "|"
 											+ (nextVal != null ? nextVal : "");
 								}
-								// if there was no geo information, get rid of the empty bars
-								if (cellVal.equals("|||")){
+								// if the length of the cellVal is too small, which means there is no valid info, skip.
+								if (cellVal.length() < 5){
 									cellVal = "";
 									}
 								sb.append(cellVal != null ? URLEncoder.encode(
