@@ -157,7 +157,14 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			log.log(Level.INFO,
 					"Reprocessing SurveyInstanceId: "
 							+ sReq.getSurveyInstanceId());
-			ingestSurveyInstance(sReq.getSurveyInstanceId());
+			try {
+				ingestSurveyInstance(sReq.getSurveyInstanceId());
+			} catch (RuntimeException e) {
+				log.log(Level.SEVERE,
+						"Could not process instance: "
+								+ sReq.getSurveyInstanceId() + ": "
+								+ e.getMessage());
+			}
 		}
 		return resp;
 	}
