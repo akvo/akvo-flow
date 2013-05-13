@@ -52,6 +52,7 @@ import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
 	private static final String SERVLET_URL = "/rawdatarestapi";
@@ -362,6 +363,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							SAVING_DATA.get(locale)));
 				}
 			}
+			// invalidate report
+			List<Long> ids = new ArrayList<Long>();
+			ids.add(getSurveyId());
+			SurveyUtils.notifyReportService(ids, "invalidate");
+			
 			while (!jobQueue.isEmpty() && threadPool.getActiveCount() > 0) {
 				Thread.sleep(5000);
 			}
