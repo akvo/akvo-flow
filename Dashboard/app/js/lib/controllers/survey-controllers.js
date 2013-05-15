@@ -472,7 +472,6 @@ FLOW.translationControl = Ember.ArrayController.create({
   //when the translations arrive, put them in the internal data structure
   initiateData: function(){
     if (this.get('content').content.length > 0){
-      this.addSurveyIdField();
       this.determineAvailableTranslations();
       this.resetTranslationFields();
       if (this.get('translations').length > 0) {
@@ -485,6 +484,7 @@ FLOW.translationControl = Ember.ArrayController.create({
       }
     }
   }.observes('content.isLoaded'),
+
 
   resetTranslationFields: function(){
     this.get('itemArray').forEach(function(item){
@@ -517,14 +517,6 @@ FLOW.translationControl = Ember.ArrayController.create({
 
       }
     });
-  },
-
-
-  // add surveyId as a non-persistant field to the translation objects in the store
-  addSurveyIdField: function(){
-    this.get('content').forEach(function(item){
-      item.surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
-     });
   },
 
   // determine which languages are present in the translation objects, 
@@ -656,70 +648,82 @@ FLOW.translationControl = Ember.ArrayController.create({
     this.set('itemArray',tempArray);
   },
 
-  putTranslationsInList: function(){
-    var currLang;
-    _self = this;
-    currTrans = this.get('currentTranslation');
-
-    // only proceed if we have a language selected
-    if (!Ember.none(currTrans)){
-      // get the translations with the right surveyId and the right language code
-      translations = FLOW.store.filter(FLOW.Translation,function(item){
-        return (item.surveyId == FLOW.selectedControl.selectedSurvey.get('keyId') && item.get('langCode') == currTrans);
-      });
-
-      translations.forEach(function(item){
-        switch (item.get('parentType')) {
+  // if deleteItem is true, the translation information is deleted
+  putSingleTranslationInList: function (parentType, parentId, text, keyId, deleteItem){
+     var existingItemPos, itemText, itemKeyId;
+     if (deleteItem){
+      itemText = text;
+      itemKeyId = null;
+     } else {
+      itemText = text;
+      itemKeyId = keyId;
+     }
+     switch (parentType) {
           case "SURVEY_NAME":
-            existingItemPos = _self.get('itemDict')["S" + item.get('parentId')];
+            existingItemPos = this.get('itemDict')["S" + parentId];
             if (!Ember.none(existingItemPos)){
-              _self.get('itemArray')[existingItemPos].set('surveyTextTrans', item.get('text'));
-              _self.get('itemArray')[existingItemPos].set('surveyTextTransId', item.get('keyId'));
+              this.get('itemArray')[existingItemPos].set('surveyTextTrans', itemText);
+              this.get('itemArray')[existingItemPos].set('surveyTextTransId', itemKeyId);
             }
           break;
 
           case "SURVEY_DESC":
-            existingItemPos = _self.get('itemDict')["S" + item.get('parentId')];
+            existingItemPos = this.get('itemDict')["S" + parentId];
             if (!Ember.none(existingItemPos)){
-              _self.get('itemArray')[existingItemPos].set('sDescTextTrans', item.get('text'));
-              _self.get('itemArray')[existingItemPos].set('sDescTextTransId', item.get('keyId'));
+              this.get('itemArray')[existingItemPos].set('sDescTextTrans', itemText);
+              this.get('itemArray')[existingItemPos].set('sDescTextTransId', itemKeyId);
             }
           break;
 
          case "QUESTION_GROUP_NAME":
-            existingItemPos = _self.get('itemDict')["QG" + item.get('parentId')];
+            existingItemPos = this.get('itemDict')["QG" + parentId];
             if (!Ember.none(existingItemPos)){
-              _self.get('itemArray')[existingItemPos].set('qgTextTrans', item.get('text'));
-              _self.get('itemArray')[existingItemPos].set('qgTextTransId', item.get('keyId'));
+              this.get('itemArray')[existingItemPos].set('qgTextTrans', itemText);
+              this.get('itemArray')[existingItemPos].set('qgTextTransId', itemKeyId);
             }
           break;
 
           case "QUESTION_TEXT":
-            existingItemPos = _self.get('itemDict')["Q" + item.get('parentId')];
+            existingItemPos = this.get('itemDict')["Q" + parentId];
             if (!Ember.none(existingItemPos)){
-              _self.get('itemArray')[existingItemPos].set('qTextTrans', item.get('text'));
-              _self.get('itemArray')[existingItemPos].set('qTextTransId', item.get('keyId'));
+              this.get('itemArray')[existingItemPos].set('qTextTrans', itemText);
+              this.get('itemArray')[existingItemPos].set('qTextTransId', itemKeyId);
             }
           break;
 
           case "QUESTION_TIP":
-            existingItemPos = _self.get('itemDict')["Q" + item.get('parentId')];
+            existingItemPos = this.get('itemDict')["Q" + parentId];
             if (!Ember.none(existingItemPos)){
-              _self.get('itemArray')[existingItemPos].set('qTipTextTrans', item.get('text'));
-              _self.get('itemArray')[existingItemPos].set('qTipTextTransId', item.get('keyId'));
+              this.get('itemArray')[existingItemPos].set('qTipTextTrans', itemText);
+              this.get('itemArray')[existingItemPos].set('qTipTextTransId', itemKeyId);
             }
           break;
 
           case "QUESTION_OPTION":
-            existingItemPos = _self.get('itemDict')["QO" + item.get('parentId')];
+            existingItemPos = this.get('itemDict')["QO" + parentId];
             if (!Ember.none(existingItemPos)){
-              _self.get('itemArray')[existingItemPos].set('qoTextTrans', item.get('text'));
-              _self.get('itemArray')[existingItemPos].set('qoTextTransId', item.get('keyId'));
+              this.get('itemArray')[existingItemPos].set('qoTextTrans', itemText);
+              this.get('itemArray')[existingItemPos].set('qoTextTransId', itemKeyId);
             }
           break;
 
           default:
         }
+  },
+
+
+  putTranslationsInList: function(){
+    var currLang, _self;
+    _self = this;
+    currTrans = this.get('currentTranslation');
+    // only proceed if we have a language selected
+    if (!Ember.none(currTrans)){
+      // get the translations with the right surveyId and the right language code
+      translations = FLOW.store.filter(FLOW.Translation,function(item){
+        return (item.get('surveyId') == FLOW.selectedControl.selectedSurvey.get('keyId') && item.get('langCode') == currTrans);
+      });
+      translations.forEach(function(item){
+        _self.putSingleTranslationInList(item.get('parentType'),item.get('parentId'), item.get('text'), item.get('keyId'), false);
       });
     }
   },
@@ -737,7 +741,7 @@ FLOW.translationControl = Ember.ArrayController.create({
       }
   },
 
-  createUpdateOrDeleteRecord: function(type, parentId, origText, translationText, lan, transId){
+  createUpdateOrDeleteRecord: function(surveyId, type, parentId, origText, translationText, lan, transId){
     if (!Ember.none(origText) && origText.length > 0) {
       // we have an original text
       if (!Ember.none(translationText) && translationText.length > 0){
@@ -747,6 +751,7 @@ FLOW.translationControl = Ember.ArrayController.create({
           FLOW.store.createRecord(FLOW.Translation,{
             parentType: type,
             parentId: parentId,
+            surveyId: surveyId,
             text: translationText,
             langCode: lan
           });
@@ -788,6 +793,7 @@ FLOW.translationControl = Ember.ArrayController.create({
     FLOW.router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
   },
 
+  // after saving is complete, records insert themselves back into the translation item list
   saveTranslations: function(){
     var type, parentId, lan, transId, _self;
     _self = this;
@@ -795,17 +801,18 @@ FLOW.translationControl = Ember.ArrayController.create({
     this.get('itemArray').forEach(function(item){
       type = item.type;
       parentId = item.keyId;
+      surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
       lan = _self.get('currentTranslation');
       if (type == 'S'){
-        _self.createUpdateOrDeleteRecord("SURVEY_NAME",parentId,item.surveyText,item.surveyTextTrans,lan,item.surveyTextTransId);
-        _self.createUpdateOrDeleteRecord("SURVEY_DESC",parentId,item.sDescText,item.sDescTextTrans,lan,item.sDescTextTransId);
+        _self.createUpdateOrDeleteRecord(surveyId,"SURVEY_NAME",parentId,item.surveyText,item.surveyTextTrans,lan,item.surveyTextTransId);
+        _self.createUpdateOrDeleteRecord(surveyId,"SURVEY_DESC",parentId,item.sDescText,item.sDescTextTrans,lan,item.sDescTextTransId);
       } else if (type == 'QG') {
-        _self.createUpdateOrDeleteRecord("QUESTION_GROUP_NAME",parentId,item.qgText,item.qgTextTrans,lan,item.qgTextTransId);
+        _self.createUpdateOrDeleteRecord(surveyId,"QUESTION_GROUP_NAME",parentId,item.qgText,item.qgTextTrans,lan,item.qgTextTransId);
       } else if (type == 'Q'){
-        _self.createUpdateOrDeleteRecord("QUESTION_TEXT",parentId,item.qText,item.qTextTrans,lan,item.qTextTransId);
-        _self.createUpdateOrDeleteRecord("QUESTION_TIP",parentId,item.qTipText,item.qTipTextTrans,lan,item.qTipTextTransId);
+        _self.createUpdateOrDeleteRecord(surveyId,"QUESTION_TEXT",parentId,item.qText,item.qTextTrans,lan,item.qTextTransId);
+        _self.createUpdateOrDeleteRecord(surveyId,"QUESTION_TIP",parentId,item.qTipText,item.qTipTextTrans,lan,item.qTipTextTransId);
       } else if (type == 'QO'){
-        _self.createUpdateOrDeleteRecord("QUESTION_OPTION",parentId,item.qoText,item.qoTextTrans,lan,item.qoTextTransId);
+        _self.createUpdateOrDeleteRecord(surveyId,"QUESTION_OPTION",parentId,item.qoText,item.qoTextTrans,lan,item.qoTextTransId);
       }
     });
     FLOW.store.commit();
@@ -816,7 +823,6 @@ FLOW.translationControl = Ember.ArrayController.create({
       _self.deleteRecord(item);
     });
     FLOW.store.commit();
-    this.putTranslationsInList();
     this.set('toBeDeletedTranslations',[]);
   }
 });
