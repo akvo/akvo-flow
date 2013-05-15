@@ -46,7 +46,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     if(FLOW.selectedControl.get('selectedSurvey')) {
       FLOW.questionControl.populateAllQuestions(FLOW.selectedControl.selectedSurvey.get('keyId'));
     }
-    FLOW.surveyInstanceControl.doInstanceQuery(this.get('surveyId'), this.get('deviceId'), this.get('since'), this.get('beginDate'), this.get('endDate'));
+    FLOW.surveyInstanceControl.doInstanceQuery(this.get('surveyId'), this.get('deviceId'), this.get('since'), this.get('beginDate'), this.get('endDate'), this.get('submitterName'));
   },
 
   doNextPage: function() {

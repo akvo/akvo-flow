@@ -57,11 +57,15 @@ public class SurveyInstanceRestService {
 			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
 			@RequestParam(value = "since", defaultValue = "") String since,
 			@RequestParam(value = "unapprovedOnlyFlag",defaultValue = "") Boolean unapprovedOnlyFlag,
-			@RequestParam(value = "deviceId", defaultValue = "") String deviceId) {
+			@RequestParam(value = "deviceId", defaultValue = "") String deviceId,
+			@RequestParam(value = "submitterName", defaultValue = "") String submitterName) {
 		
-		// we don't want to search for empty deviceId's
+		// we don't want to search for empty deviceId's and submitter names
 		if ("".equals(deviceId)) {
 			deviceId = null;
+		}
+		if ("".equals(submitterName)) {
+			submitterName = null;
 		}
 		
 		final Map<String, Object> response = new HashMap<String, Object>();
@@ -97,8 +101,8 @@ public class SurveyInstanceRestService {
 		// get survey Instances
 		List<SurveyInstance> siList = null;
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		siList = dao.listByDateRange(beginDate, endDate, false,
-				surveyId, deviceId, since);
+		siList = dao.listByDateRangeAndSubmitter(beginDate, endDate, false,
+				surveyId, deviceId, submitterName, since);
 		Integer num = siList.size();
 		String newSince = SurveyInstanceDAO.getCursor(siList);
 		
