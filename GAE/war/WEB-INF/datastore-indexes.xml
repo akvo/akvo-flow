@@ -491,4 +491,10 @@
         <property name="organization" direction="asc"/>
         <property name="name" direction="asc"/>
     </datastore-index>
+     <datastore-index kind="SurveyInstance" ancestor="false" source="manual">
+        <property name="deviceIdentifier" direction="asc"/>
+        <property name="submitterName" direction="asc"/>
+        <property name="surveyId" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
 </datastore-indexes>
