@@ -85,9 +85,9 @@ public class TranslationRestService {
 			Survey survey = sDao.getById(surveyId);
 			if (survey != null) {
 				addTranslations(Translation.ParentType.SURVEY_NAME, survey
-						.getKey().getId(), results);
+						.getKey().getId(), surveyId, results);
 				addTranslations(Translation.ParentType.SURVEY_DESC, survey
-						.getKey().getId(), results);
+						.getKey().getId(),surveyId, results);
 
 				// get question group translations
 				List<QuestionGroup> qGroups = qgDao
@@ -96,7 +96,7 @@ public class TranslationRestService {
 					for (QuestionGroup qgroup : qGroups) {
 						addTranslations(
 								Translation.ParentType.QUESTION_GROUP_NAME,
-								qgroup.getKey().getId(), results);
+								qgroup.getKey().getId(),surveyId, results);
 					}
 					// get question translations
 					questions = qDao.listQuestionsBySurvey(surveyId);
@@ -104,10 +104,10 @@ public class TranslationRestService {
 						for (Question question : questions) {
 							addTranslations(
 									Translation.ParentType.QUESTION_TEXT,
-									question.getKey().getId(), results);
+									question.getKey().getId(),surveyId, results);
 							addTranslations(
 									Translation.ParentType.QUESTION_TIP,
-									question.getKey().getId(), results);
+									question.getKey().getId(),surveyId, results);
 
 							// if the question is of OPTION type, get the option
 							// translations
@@ -121,7 +121,7 @@ public class TranslationRestService {
 											.values()) {
 										addTranslations(
 												Translation.ParentType.QUESTION_OPTION,
-												qOption.getKey().getId(),
+												qOption.getKey().getId(),surveyId,
 												results);
 									}
 								}
@@ -136,7 +136,7 @@ public class TranslationRestService {
 		return response;
 	}
 
-	private void addTranslations(ParentType parentType, long id,
+	private void addTranslations(ParentType parentType, long id, long surveyId,
 			List<TranslationDto> results) {
 		Map<String, Translation> translations = tDao.findTranslations(
 				parentType, id);
@@ -144,6 +144,7 @@ public class TranslationRestService {
 			TranslationDto tDto = new TranslationDto();
 			DtoMarshaller.copyToDto(t, tDto);
 			tDto.setLangCode(t.getLanguageCode());
+			tDto.setSurveyId(surveyId);
 			results.add(tDto);
 		}
 	}
@@ -211,7 +212,7 @@ public class TranslationRestService {
 	private TranslationDto createTranslation(TranslationDto translationDto) {
 		Translation t = new Translation();
 		BeanUtils.copyProperties(translationDto, t, new String[] {
-				"createdDateTime", "parentType", "langCode" });
+				"createdDateTime", "parentType", "langCode", "surveyId" });
 		t.setLanguageCode(translationDto.getLangCode());
 		if (translationDto.getParentType() != null) {
 			t.setParentType(Translation.ParentType.valueOf(translationDto
@@ -222,6 +223,9 @@ public class TranslationRestService {
 		TranslationDto tDto = new TranslationDto();
 		DtoMarshaller.copyToDto(t, tDto);
 		tDto.setLangCode(t.getLanguageCode());
+		// the surveyId is taken directly from the input dto 
+		// as it is not stored on the object
+		tDto.setSurveyId(translationDto.getSurveyId());
 		
 		return tDto;
 	}
@@ -292,7 +296,7 @@ public class TranslationRestService {
 				// copy the properties, except the createdDateTime property,
 				// because it is set in the Dao.
 				BeanUtils.copyProperties(tDto, t, new String[] {
-						"createdDateTime", "parentType", "langCode" });
+						"createdDateTime", "parentType", "langCode", "surveyId" });
 
 				t.setLanguageCode(tDto.getLangCode());
 				if (tDto.getParentType() != null) {
@@ -313,6 +317,11 @@ public class TranslationRestService {
 				if (t.getKey() != null) {
 					dto.setKeyId(t.getKey().getId());
 				}
+				
+				// the surveyId is taken directly from the input dto 
+				// as it is not stored on the object
+				dto.setSurveyId(tDto.getSurveyId());
+				
 				return dto;
 			}
 		}
