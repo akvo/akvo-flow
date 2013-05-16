@@ -40,6 +40,8 @@ FLOW.inspectDataTableView = FLOW.View.extend({
 
     if(FLOW.selectedControl.get('selectedSurvey')) {
       this.set('surveyId', FLOW.selectedControl.selectedSurvey.get('keyId'));
+    } else {
+      this.set('surveyId',null);
     }
 
     this.set('since', FLOW.metaControl.get('since'));
