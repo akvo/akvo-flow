@@ -415,6 +415,7 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 		GeoPlace gp = manualLookup(lat, lon,
 				OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
 		// if we don't find the sub_country, try the country
+		// This is also already tried in the manualLookup method
 		if (gp == null) {
 			gp = manualLookup(lat, lon);
 		}
