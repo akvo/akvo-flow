@@ -331,6 +331,13 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 						+ " has a null geometry");
 			}
 		}
+		// if we are trying to find the subcountry, and can't find it
+		// try the country
+		if (place == null && type.equals(OGRFeature.FeatureType.SUB_COUNTRY_OTHER)) {
+			place = manualLookup(latStr,lonStr,OGRFeature.FeatureType.COUNTRY);
+		}
+			
+		// if we can't find the country, search on bounding box
 		if (place == null) {
 			place = primitiveLookup(latStr, lonStr);
 		}
