@@ -433,7 +433,7 @@ public class SurveyViewActivity extends TabActivity implements
 						try {
 							out = new BufferedOutputStream(new FileOutputStream(outputFileName));
 	//						out = new FileOutputStream(f);
-							if (bm.compress(CompressFormat.JPEG, 50, out)) {
+							if (bm.compress(CompressFormat.JPEG, 75, out)) {
 								Log.i(ACTIVITY_NAME,"Media file resized");
 								return true;
 							}
