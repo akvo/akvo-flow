@@ -163,6 +163,57 @@ public class ViewUtil {
 	}
 
 	/**
+	 * displays a simple dialog box with a single positive button and an
+	 * optional (based on a flag) cancel button using the resource id of the
+	 * string passed in for the title, and a String parameter for the text.
+	 * users can install listeners for both the positive and negative buttons
+	 * 
+	 * @param titleId
+	 * @param text
+	 * @param parentContext
+	 * @param includeNegative
+	 * @param positiveListener
+	 *            - if includeNegative is false, this will also be bound to the
+	 *            cancel handler
+	 * @param negativeListener
+	 *            - only used if includeNegative is true - if the negative
+	 *            listener is non-null, it will also be bound to the cancel
+	 *            listener so pressing back to dismiss the dialog will have the
+	 *            same effect as clicking the negative button.
+	 */
+	public static void showConfirmDialog(int titleId, String text,
+			Context parentContext, boolean includeNegative,
+			final DialogInterface.OnClickListener positiveListener,
+			final DialogInterface.OnClickListener negativeListener) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
+		TextView tipText = new TextView(parentContext);
+		builder.setTitle(titleId);
+		tipText.setText(text);
+		builder.setView(tipText);
+		builder.setPositiveButton(R.string.okbutton, positiveListener);
+		if (includeNegative) {
+			builder.setNegativeButton(R.string.cancelbutton, negativeListener);
+			if (negativeListener != null) {
+				builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						negativeListener.onClick(dialog, -1);
+					}
+				});
+			}
+		} else if (positiveListener != null) {
+			builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					positiveListener.onClick(dialog, -1);
+				}
+			});
+		}
+
+		builder.show();
+	}
+
+	/**
 	 * displays a notification in the system status bar
 	 * 
 	 * @param headline

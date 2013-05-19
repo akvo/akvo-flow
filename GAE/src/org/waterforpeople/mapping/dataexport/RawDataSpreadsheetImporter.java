@@ -52,6 +52,7 @@ import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
 	private static final String SERVLET_URL = "/rawdatarestapi";
@@ -289,6 +290,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									cellVal += "|"
 											+ (nextVal != null ? nextVal : "");
 								}
+								// if the length of the cellVal is too small, which means there is no valid info, skip.
+								if (cellVal.length() < 5){
+									cellVal = "";
+									}
 								sb.append(cellVal != null ? URLEncoder.encode(
 										cellVal, "UTF-8") : "");
 							} else {
@@ -358,6 +363,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							SAVING_DATA.get(locale)));
 				}
 			}
+			// invalidate report
+			List<Long> ids = new ArrayList<Long>();
+			ids.add(getSurveyId());
+			SurveyUtils.notifyReportService(ids, "invalidate");
+			
 			while (!jobQueue.isEmpty() && threadPool.getActiveCount() > 0) {
 				Thread.sleep(5000);
 			}
@@ -378,9 +388,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 								+ "=" + surveyId, true, criteria.get(KEY_PARAM));
 			}
 
-			invokeUrl(serverBase, "action"
+			invokeUrl(serverBase, "action="
 					+ RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
-					+ RawDataImportRequest.SURVEY_ID_PARAM + "= " + surveyId,
+					+ RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId,
 					true, criteria.get(KEY_PARAM));
 
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,

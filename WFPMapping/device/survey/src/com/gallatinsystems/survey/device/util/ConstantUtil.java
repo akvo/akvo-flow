@@ -62,6 +62,8 @@ public class ConstantUtil {
 	 * size limits
 	 */
 	public static final long BIG_PHOTO_FILE = 100000; //Bytes
+	public static final String SPACE_WARNING_MB_LEVELS = "100, 50, 25, 10, 5, 1";
+
 	
 		/**
 	 * status related constants
