@@ -96,6 +96,7 @@ public class InstanceConfigurator {
 		s3policyFileTemplateName = args[4];
 		ic.addAttribute("s3Id", args[1]);
 		ic.addAttribute("signingKey", args[5]);
+		ic.addAttribute("instanceName", instanceName);
 		ic.addAttribute("dataUploadUrl", "http://" + instanceName + ".s3.amazonaws.com");
 		ic.addAttribute("serverBase", "http://" + instanceName + ".appspot.com");
 		ic.addAttribute("surveyS3Url", "http://" + instanceName + ".s3.amazonaws.com/surveys");
