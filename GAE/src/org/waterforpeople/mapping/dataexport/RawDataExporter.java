@@ -47,6 +47,8 @@ public class RawDataExporter extends AbstractDataExporter {
 
 	private String serverBase;
 	private String surveyId;
+	private String imgPrefix = null;
+
 	public static final String SURVEY_ID = "surveyId";
 	private Map<String, QuestionDto> questionMap;
 	private List<String> keyList;
@@ -57,6 +59,8 @@ public class RawDataExporter extends AbstractDataExporter {
 			String serverBase, Map<String, String> options) {
 		this.serverBase = serverBase;
 		surveyId = criteria.get(SURVEY_ID);
+		imgPrefix = options.get("imagePrefix");
+
 		Writer pw = null;
 		System.out.println("In CSV exporter");
 		try {
@@ -133,16 +137,12 @@ public class RawDataExporter extends AbstractDataExporter {
 		Map<String, String> instances = BulkDataServiceClient.fetchInstanceIds(
 				surveyId, serverBase);
 		if (instances != null) {
-			String imagePrefix = IMAGE_PREFIX;
-			try {
-				imagePrefix = PropertyUtil.getProperty("photo_url_root");
+			String imagePrefix = imgPrefix != null ? imgPrefix : IMAGE_PREFIX;
 
-			} catch (Exception e) {
-				imagePrefix = IMAGE_PREFIX;
-			}
 			if (imagePrefix != null && !imagePrefix.endsWith("/")) {
 				imagePrefix = imagePrefix + "/";
 			}
+
 			int i = 0;
 			for (Entry<String, String> instanceEntry : instances.entrySet()) {
 				String instanceId = instanceEntry.getKey();
