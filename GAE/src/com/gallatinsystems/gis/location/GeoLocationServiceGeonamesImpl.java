@@ -278,10 +278,13 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				+ lonStr + ":" + type.toString());
 		GeoPlace place = null;
 		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+		
+		// create a list of candidates, based on a bounding box search
 		List<OGRFeature> ogrList = ogrFeatureDao.listByExtentAndType(
 				Double.parseDouble(lonStr), Double.parseDouble(latStr), type,
 				"x1", "asc", "all");
 		String countryCode = null;
+		// now we have to check if one of the candidates is the one by looking at the real GIS data
 		for (OGRFeature item : ogrList) {
 			Geometry geo = item.getGeometry();
 			GeometryFactory geometryFactory = new GeometryFactory();
@@ -303,7 +306,10 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				Boolean containsFlag = false;
 				if (shape != null) {
 
+					// we iterate over the number of geometries in the shape, 
+					// as their might be disjoined items such as islands
 					for (int i = 0; i < shape.getNumGeometries(); i++) {
+						// this is where we check if the point actually lies in the geometry
 						if (shape.getGeometryN(i).contains(point)) {
 							containsFlag = true;
 						}
