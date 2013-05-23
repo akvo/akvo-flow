@@ -307,3 +307,12 @@ FLOW.NotificationSubscription = FLOW.BaseModel.extend({
   expiryDate: DS.attr('number'),
   entityId: DS.attr('number')
 });
+
+FLOW.SubCountry = FLOW.BaseModel.extend({
+  countryCode: DS.attr('string'),
+  level:DS.attr('number'),
+  name: DS.attr('string'),
+  parentKey:DS.attr('number'),
+  parentName: DS.attr('string')
+});
+
