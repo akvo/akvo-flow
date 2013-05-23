@@ -6,6 +6,9 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   beginDate: null,
   endDate: null,
   since: null,
+  selectedCountryCode: null,
+  selectedLevel1: null,
+  selectedLevel2: null,
   showEditSurveyInstanceWindowBool: false,
   selectedSurveyInstanceId: null,
   selectedSurveyInstanceNum: null,
@@ -17,6 +20,8 @@ FLOW.inspectDataTableView = FLOW.View.extend({
      FLOW.selectedControl.set('selectedSurvey',null);
      FLOW.dateControl.set('toDate',null);
      FLOW.dateControl.set('fromDate',null);
+     FLOW.locationControl.set('selectedLevel1',null);
+     FLOW.locationControl.set('selectedLevel2',null);
    },
 
   // do a new query
@@ -48,7 +53,26 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     if(FLOW.selectedControl.get('selectedSurvey')) {
       FLOW.questionControl.populateAllQuestions(FLOW.selectedControl.selectedSurvey.get('keyId'));
     }
-    FLOW.surveyInstanceControl.doInstanceQuery(this.get('surveyId'), this.get('deviceId'), this.get('since'), this.get('beginDate'), this.get('endDate'), this.get('submitterName'));
+
+    if (!Ember.none(FLOW.locationControl.get('selectedCountry'))) {
+      this.set('selectedCountryCode',FLOW.locationControl.selectedCountry.get('iso'));
+    } else {
+      this.set('selectedCountryCode',null);
+    }
+
+    if (!Ember.none(FLOW.locationControl.get('selectedLevel1'))) {
+      this.set('selectedLevel1',FLOW.locationControl.selectedLevel1.get('name'));
+    } else {
+      this.set('selectedLevel1',null);
+    }
+
+    if (!Ember.none(FLOW.locationControl.get('selectedLevel2'))) {
+      this.set('selectedLevel2',FLOW.locationControl.selectedLevel2.get('name'));
+    } else {
+      this.set('selectedLevel2',null);
+    }
+
+    FLOW.surveyInstanceControl.doInstanceQuery(this.get('surveyId'), this.get('deviceId'),this.get('since'), this.get('beginDate'), this.get('endDate'), this.get('submitterName'),this.get('selectedCountryCode'), this.get('selectedLevel1'), this.get('selectedLevel2'));
   },
 
   doNextPage: function() {
