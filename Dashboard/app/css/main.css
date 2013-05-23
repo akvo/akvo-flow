@@ -2346,9 +2346,24 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	width: 49%;
 	height: 20px;
 }
+
+#dataFilter div.chooseLocationData {
+	position: relative;
+	display: block;
+	float: left;
+	margin: 0 1% 2em 0;
+	width: 100%;
+	height: 15px;
+}
+
 #dataFilter div.chooseSurveyData select {
 	display: inline;
 	width: 47%;
+}
+
+#dataFilter div.chooseLocationData select {
+	display: inline;
+	width: 15%;
 }
 #dataFilter div.dataCollectedDate {
 	position: relative;
@@ -2367,6 +2382,14 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	padding: 0.5em 1em 8px 1em;
 	background: rgb(234,234,234);
 }
+
+#dataFilter div.dataLocation {
+	display: block;
+	margin: 5px 0 10px 0;
+	padding: 0.5em 1em 8px 1em;
+	background: rgb(234,234,234);
+}
+
 .dataTables_wrapper {
 	margin: 0px auto 1px auto;
 	background: rgb(235,235,235);
