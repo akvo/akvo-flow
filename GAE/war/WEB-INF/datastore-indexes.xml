@@ -456,6 +456,19 @@
         <property name="collectionDate" direction="desc"/>
     </datastore-index>
     
+      <datastore-index kind="SurveyInstance" ancestor="false">
+        <property name="countryCode" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
+     <datastore-index kind="SurveyInstance" ancestor="false">
+        <property name="sublevel1" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
+     <datastore-index kind="SurveyInstance" ancestor="false">
+        <property name="sublevel2" direction="asc"/>
+        <property name="collectionDate" direction="desc"/>
+    </datastore-index>
+    
     
  	<datastore-index kind="SurveyedLocale" ancestor="false">
         <property name="localeType" direction="asc"/>
