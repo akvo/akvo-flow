@@ -273,8 +273,13 @@ public class QuestionRestService {
 
 					dto = new QuestionDto();
 					DtoMarshaller.copyToDto(q, dto);
-					dto.setOptionList(questionOptionDao
-							.listOptionInStringByQuestion(dto.getKeyId()));
+					// this doesn't work because sometimes deleted options are asked for.
+					// this happens because we delete and then recreate the items in an earlier call
+					// if we then ask for them here, sometimes it gives 'cannot read field in deleted item'
+					// dto.setOptionList(questionOptionDao
+					//		.listOptionInStringByQuestion(dto.getKeyId()));
+					// instead, return the string itself.
+					dto.setOptionList(questionDto.getOptionList());
 					statusDto.setStatus("ok");
 					statusDto.setMessage("");
 				}
