@@ -494,6 +494,10 @@ FLOW.ChartReportsView = Ember.View.extend({
   templateName: 'navReports/chart-reports'
 });
 
+FLOW.StatisticsView = Ember.View.extend({
+  templateName: 'navReports/statistics'
+});
+
 
 // applets
 FLOW.BootstrapApplet = Ember.View.extend({
