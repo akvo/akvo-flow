@@ -1,5 +1,19 @@
 /*global deleteChart, createDoughnutChart, createHBarChart, createVBarChart*/
 
+
+FLOW.StatisticsMetricView = FLOW.View.extend({
+  answers: null,
+
+  fillAnswers: function(){
+    var qId = this.content.get('questionId');
+    QA = FLOW.store.filter(FLOW.SurveyQuestionSummary,function(item){
+      return (item.get('questionId') == qId);
+    });
+    this.set('answers',QA);
+  }.observes('FLOW.statisticsControl.QAcontent.content.isLoaded')
+}),
+
+
 FLOW.chartView = FLOW.View.extend({
   noChoiceBool: false,
   chartType: null,

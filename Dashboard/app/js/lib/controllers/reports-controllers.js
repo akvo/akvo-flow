@@ -31,3 +31,34 @@ FLOW.chartTypeControl = Ember.Object.create({
     value: "hbar"
   })]
 });
+
+FLOW.statisticsControl = Ember.ArrayController.create({
+  selectedSurvey: null,
+  allreadyTriggered: false,
+  content:null,
+  QAcontent:null,
+  sortProperties: ['name'],
+  sortAscending: true,
+
+  getMetrics: function(){
+    if (!Ember.none(this.get('selectedSurvey'))){
+      this.set('alreadyTriggered',false);
+      this.set('content',FLOW.store.findQuery(FLOW.Metric,{
+        surveyId: this.selectedSurvey.get('keyId')
+      }));
+    }
+  }.observes('this.selectedSurvey'),
+
+  getQA: function(){
+    if (!Ember.none(this.get('content') && !this.get('allreadyTriggered'))){
+      // for each metric, get all the QuestionAnswerSummery objects of the questions
+      // this could be a single call: give me all he QA summ for questions with a metric.
+      this.set('QAcontent',FLOW.store.findQuery(FLOW.SurveyQuestionSummary,{
+        surveyId:this.selectedSurvey.get('keyId'),
+        metricOnly:"true"
+      }));
+      allreadyTriggered = true;
+    }
+  }.observes('this.content.isLoaded')
+
+});
