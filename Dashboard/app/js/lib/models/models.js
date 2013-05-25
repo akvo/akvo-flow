@@ -284,7 +284,8 @@ FLOW.Metric = FLOW.BaseModel.extend({
   organization: DS.attr('string'),
   name: DS.attr('string'),
   group: DS.attr('string'),
-  valueType: DS.attr('string')
+  valueType: DS.attr('string'),
+  questionId: DS.attr('number')
 });
 
 FLOW.Message = FLOW.BaseModel.extend({
