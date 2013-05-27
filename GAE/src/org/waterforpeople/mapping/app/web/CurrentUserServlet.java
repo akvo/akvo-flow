@@ -30,6 +30,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import com.gallatinsystems.user.dao.UserDao;
 import com.google.appengine.api.users.UserServiceFactory;
 
 public class CurrentUserServlet extends HttpServlet {
@@ -60,9 +61,10 @@ public class CurrentUserServlet extends HttpServlet {
 		}
 
 		final VelocityContext context = new VelocityContext();
-		// TODO: Change the CurrentUser with a UserDao?
-		context.put("user", UserServiceFactory.getUserService()
-				.getCurrentUser());
+		final UserDao uDao = new UserDao();
+
+		context.put("user", uDao.findUserByEmail(UserServiceFactory.getUserService()
+				.getCurrentUser().getEmail().toLowerCase()));
 
 		final StringWriter writer = new StringWriter();
 		t.merge(context, writer);
