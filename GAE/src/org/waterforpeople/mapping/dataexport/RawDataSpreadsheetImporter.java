@@ -289,6 +289,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									cellVal += "|"
 											+ (nextVal != null ? nextVal : "");
 								}
+								// if the length of the cellVal is too small, which means there is no valid info, skip.
+								if (cellVal.length() < 5){
+									cellVal = "";
+									}
 								sb.append(cellVal != null ? URLEncoder.encode(
 										cellVal, "UTF-8") : "");
 							} else {
@@ -377,6 +381,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 								+ "&" + RawDataImportRequest.SURVEY_ID_PARAM
 								+ "=" + surveyId, true, criteria.get(KEY_PARAM));
 			}
+
+			invokeUrl(serverBase, "action="
+					+ RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
+					+ RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId,
+					true, criteria.get(KEY_PARAM));
 
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 					COMPLETE.get(locale), true));

@@ -278,10 +278,13 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				+ lonStr + ":" + type.toString());
 		GeoPlace place = null;
 		OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+		
+		// create a list of candidates, based on a bounding box search
 		List<OGRFeature> ogrList = ogrFeatureDao.listByExtentAndType(
 				Double.parseDouble(lonStr), Double.parseDouble(latStr), type,
 				"x1", "asc", "all");
 		String countryCode = null;
+		// now we have to check if one of the candidates is the one by looking at the real GIS data
 		for (OGRFeature item : ogrList) {
 			Geometry geo = item.getGeometry();
 			GeometryFactory geometryFactory = new GeometryFactory();
@@ -303,7 +306,10 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 				Boolean containsFlag = false;
 				if (shape != null) {
 
+					// we iterate over the number of geometries in the shape, 
+					// as their might be disjoined items such as islands
 					for (int i = 0; i < shape.getNumGeometries(); i++) {
+						// this is where we check if the point actually lies in the geometry
 						if (shape.getGeometryN(i).contains(point)) {
 							containsFlag = true;
 						}
@@ -331,6 +337,13 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 						+ " has a null geometry");
 			}
 		}
+		// if we are trying to find the subcountry, and can't find it
+		// try the country
+		if (place == null && type.equals(OGRFeature.FeatureType.SUB_COUNTRY_OTHER)) {
+			place = manualLookup(latStr,lonStr,OGRFeature.FeatureType.COUNTRY);
+		}
+			
+		// if we can't find the country, search on bounding box
 		if (place == null) {
 			place = primitiveLookup(latStr, lonStr);
 		}
@@ -408,6 +421,7 @@ public class GeoLocationServiceGeonamesImpl implements GeoLocationService {
 		GeoPlace gp = manualLookup(lat, lon,
 				OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
 		// if we don't find the sub_country, try the country
+		// This is also already tried in the manualLookup method
 		if (gp == null) {
 			gp = manualLookup(lat, lon);
 		}

@@ -34,6 +34,7 @@ import javax.jdo.annotations.PrimaryKey;
 public class DeviceSurveyJobQueue {
 
 	private String devicePhoneNumber;
+	private String imei;
 	private Long surveyID;
 	private Date effectiveStartDate;
 	private Date effectiveEndDate;
@@ -78,6 +79,14 @@ public class DeviceSurveyJobQueue {
 
 	public void setDevicePhoneNumber(String devicePhoneNumber) {
 		this.devicePhoneNumber = devicePhoneNumber;
+	}
+
+	public String getImei() {
+		return imei;
+	}
+
+	public void setImei(String imei) {
+		this.imei= imei;
 	}
 
 	public Long getSurveyID() {

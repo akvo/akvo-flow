@@ -113,7 +113,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 	deleteSurveyGroup: function() {
 		var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
 		var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
-		
+
 		// do preflight check if deleting this survey is allowed
 		// if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
 		FLOW.store.findQuery(FLOW.SurveyGroup, {
@@ -146,12 +146,20 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 	},
 
 	copySurvey: function() {
-		FLOW.store.createRecord(FLOW.Survey, {
-			sourceId: FLOW.selectedControl.selectedForCopySurvey.get('id'),
-			surveyGroupId: this.selectedSurveyGroup.get('keyId'),
-			code: this.get('newSurveyName'),
-			name: this.get('newSurveyName')
-		});
+	  var source = FLOW.selectedControl.selectedForCopySurvey;
+
+    FLOW.store.createRecord(FLOW.Survey, {
+      sourceId: source.get('id'),
+      surveyGroupId: this.selectedSurveyGroup.get('keyId'),
+      code: this.get('newSurveyName'),
+      name: this.get('newSurveyName'),
+      createdDateTime: source.get('createdDateTime'),
+      lastUpdateDateTime: source.get('lastUpdateDateTime'),
+      pointType: source.get('pointType'),
+      defaultLanguageCode: source.get('defaultLanguageCode'),
+      instanceCount: 0
+    });
+
 		FLOW.store.commit();
 		FLOW.selectedControl.set('selectedForCopySurvey',null);
 		this.set('showCopySurveyDialogBool',false);

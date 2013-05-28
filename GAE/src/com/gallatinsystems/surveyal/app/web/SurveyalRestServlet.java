@@ -157,7 +157,14 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			log.log(Level.INFO,
 					"Reprocessing SurveyInstanceId: "
 							+ sReq.getSurveyInstanceId());
-			ingestSurveyInstance(sReq.getSurveyInstanceId());
+			try {
+				ingestSurveyInstance(sReq.getSurveyInstanceId());
+			} catch (RuntimeException e) {
+				log.log(Level.SEVERE,
+						"Could not process instance: "
+								+ sReq.getSurveyInstanceId() + ": "
+								+ e.getMessage());
+			}
 		}
 		return resp;
 	}
@@ -257,8 +264,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			}
 			GeoPlace geoPlace = null;
 
-			// only create a "locale" if we have a geographic question
-			if (geoQ != null && geoQ.getValue() != null) {
+			// only create a "locale" if we have a valid geographic question
+			if (geoQ != null && geoQ.getValue() != null && geoQ.getValue().length() > 0) {
 				double lat = UNSET_VAL;
 				double lon = UNSET_VAL;
 				boolean ambiguousFlag = false;

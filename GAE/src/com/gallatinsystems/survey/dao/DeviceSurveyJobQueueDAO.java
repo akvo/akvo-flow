@@ -32,19 +32,30 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 public class DeviceSurveyJobQueueDAO {
 
 	/**
-	 * lists all objects for a given phoneNumber
+	 * lists all objects for a given imei or phoneNumber
 	 * 
 	 * @param devicePhoneNumber
+	 * @param imei
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<DeviceSurveyJobQueue> get(String devicePhoneNumber) {
+	public List<DeviceSurveyJobQueue> get(String devicePhoneNumber, String imei) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
-		query.setFilter("devicePhoneNumber == devicePhoneNumberParam");
-		query.declareParameters("String devicePhoneNumberParam");
-		List<DeviceSurveyJobQueue> results = (List<DeviceSurveyJobQueue>) query
-				.execute(devicePhoneNumber);
+
+		List<DeviceSurveyJobQueue> results = null;
+		//lookup by imei first
+		if (imei != null) {
+			query.setFilter("imei == imeiParam");
+			query.declareParameters("String imeiParam");
+			results = (List<DeviceSurveyJobQueue>) query.execute(imei);
+		}
+		if (results == null || results.size()==0) {
+			//fall back to phonenumber
+			query.setFilter("devicePhoneNumber == devicePhoneNumberParam");
+			query.declareParameters("String devicePhoneNumberParam");
+			results = (List<DeviceSurveyJobQueue>) query.execute(devicePhoneNumber);
+		}
 		return results;
 	}
 

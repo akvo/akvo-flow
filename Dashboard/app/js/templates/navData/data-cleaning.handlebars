@@ -23,18 +23,23 @@
       <p>{{t _raw_data_report_applet_text_}}</p>
       <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
     </div>
-    {{#if view.showRawDataReportApplet }}
-      {{view FLOW.rawDataReportApplet }}
-    {{/if}}
-
 
     <div class="rawDataReport block">
       <h3>{{t _import_cleaned_survey_data}}</h3>
       <p>{{t _import_raw_data_applet_text_}}</p>
-      <a {{action showImportApplet target="this"}} class="standardBtn"> {{t _import_clean_data}} </a>
+      {{#if FLOW.uploader.support}}
+        <p><input id="raw-data-import-file" type="file"/></p>
+        <a {{action importFile target="this"}} class="standardBtn"> {{t _import_clean_data}}</a>
+        <div class="resumable-progress">
+          <h5>{{t _progress}}</h5>
+          <div class="progress-container"><div class="progress-bar"></div></div>
+        </div>
+        <ul class="resumable-list"></ul>
+      {{else}}
+       <div class="resumable-error">
+        {{t _bulk_upload_unsupported_browser}}
+       </div>
+      {{/if}}
     </div>
-    {{#if view.showRawDataImportApplet }}
-       {{view FLOW.rawDataImportApplet }}
-    {{/if}}
   {{/view}}
 </section>

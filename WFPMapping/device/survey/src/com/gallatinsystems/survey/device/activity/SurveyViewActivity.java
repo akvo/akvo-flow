@@ -16,23 +16,34 @@
 
 package com.gallatinsystems.survey.device.activity;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StatFs;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -192,7 +203,80 @@ public class SurveyViewActivity extends TabActivity implements
 			eventSourceQuestionId = savedInstanceState
 					.getString(ConstantUtil.QUESTION_ID_KEY);
 		}
+		
+		spaceLeftOnCard();
 
+	}
+	
+
+	/*
+	 * Check SD card space.
+	 * Warn by dialog popup if it is getting low.
+	 * Return to home screen if completely full. 
+	 */
+	public void spaceLeftOnCard() {
+		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			//TODO: more specific warning if card not mounted?
+			
+		}
+		//compute space left
+		StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+		double sdAvailSize = (double)stat.getAvailableBlocks()
+		                   * (double)stat.getBlockSize();
+		//One binary gigabyte equals 1,073,741,824 bytes.
+		//double gigaAvailable = sdAvailSize / 1073741824;
+		//One binary megabyte equals 1 048 576 bytes.
+		long megaAvailable = (long)Math.floor(sdAvailSize / 1048576.0);
+		
+		//keep track of changes
+		SharedPreferences settings = getPreferences(MODE_PRIVATE);
+		long lastMegaAvailable = settings.getLong("cardMBAvaliable", 101L);//assume we had space before
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putLong("cardMBAvaliable", megaAvailable);
+		// Commit the edits!
+		editor.commit();
+
+		if (megaAvailable <= 0L) {//All out, OR media not mounted
+			//Bounce user
+			ViewUtil.showConfirmDialog(R.string.nocardspacetitle,
+					R.string.nocardspacedialog, this, false,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog,
+								int which) {
+							if(dialog!=null){
+								dialog.dismiss();
+							}
+							finish();
+						}
+					});
+			return;
+		}
+
+		//just issue a warning if we just descended to or past a number on the list 
+		if (megaAvailable < lastMegaAvailable) {
+			for (long l = megaAvailable; l < lastMegaAvailable; l++)
+				if (ConstantUtil.SPACE_WARNING_MB_LEVELS.contains(Long.toString(l))) {
+					//display how much space is left
+					String s = getResources().getString(R.string.lowcardspacedialog);
+					s = s.replace("%%%", Long.toString(megaAvailable));
+					ViewUtil.showConfirmDialog(
+							R.string.lowcardspacetitle,
+							s,
+							this,
+							false,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,	int which) {
+									if(dialog!=null) {
+										dialog.dismiss();
+									}
+								}
+							},
+							null);
+					return; // only one warning per survey, even of we passed >1 limit
+				}
+			}
 	}
 
 	/**
@@ -295,6 +379,84 @@ public class SurveyViewActivity extends TabActivity implements
 		pendingResultCode = resultCode;
 	}
 
+	private void sizeReminder(long len) {
+		//see if we need to complain about size
+		if (len > ConstantUtil.BIG_PHOTO_FILE){
+			String val = databaseAdapter.findPreference(ConstantUtil.PHOTO_SIZE_REMINDER_KEY);
+			if (val != null && Boolean.parseBoolean(val)) {
+				//let user click a "stop bugging me" button
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setMessage(R.string.tooBigPhotoMsg)
+						.setCancelable(true)
+						.setPositiveButton(R.string.okbutton,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int id) {
+										dialog.cancel();
+									}
+								})
+						.setNegativeButton(R.string.giveitarestbutton,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,	int id) {
+										//now clear the setting in the db
+										databaseAdapter.savePreference(ConstantUtil.PHOTO_SIZE_REMINDER_KEY, Boolean.valueOf(false).toString());
+										dialog.cancel();
+									}
+								});
+				builder.show();
+
+			}
+		}
+
+		
+	}
+	
+	
+	
+	/**
+	 * this handles resizing a too-large image file from the camera
+	 * return true if file was re
+	 */
+	private boolean resizedToNewFile(File f, String outputFileName) {
+		String val = databaseAdapter.findPreference(ConstantUtil.SHRINK_PHOTOS_KEY);
+		if (val != null && Boolean.parseBoolean(val)) {
+			//Get image size
+			BitmapFactory.Options bmo = new BitmapFactory.Options();
+			bmo.inJustDecodeBounds = true;
+			BitmapFactory.decodeFile(f.getAbsolutePath(), bmo);
+			if (Math.max(bmo.outWidth,bmo.outHeight) > 320) { //If file is unreadable, both are -1
+				bmo.inJustDecodeBounds = false;
+				bmo.inSampleSize = Math.max(bmo.outWidth, bmo.outHeight) / 320; //6 for a 3MP image; will be rounded down to to 4
+				Bitmap bm =	BitmapFactory.decodeFile(f.getAbsolutePath(),bmo);
+				if (bm != null && bm.getHeight() > 0 && bm.getWidth() > 0) { //sometimes get bm width and height as -1
+					try {
+						OutputStream out = null;
+						try {
+							out = new BufferedOutputStream(new FileOutputStream(outputFileName));
+	//						out = new FileOutputStream(f);
+							if (bm.compress(CompressFormat.JPEG, 75, out)) {
+								Log.i(ACTIVITY_NAME,"Media file resized");
+								return true;
+							}
+						}
+						finally {
+							if (out != null) {
+									out.close();
+							}
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+					}
+
+				}
+					
+				
+			}
+		}
+		return false;
+	}
+	
+		
+	
 	/**
 	 * this handles the data returned from other activities. Right now the only
 	 * activity we care about is the media (photo/video/audio) activity (when
@@ -340,16 +502,29 @@ public class SurveyViewActivity extends TabActivity implements
 					}
 
 					File f = new File(Environment.getExternalStorageDirectory()
-							.getAbsolutePath() + File.separator+filePrefix + fileSuffix);
-					String newFilename = filePrefix+System.nanoTime()+fileSuffix;
-					String newPath = FileUtil.getStorageDirectory(ConstantUtil.SURVEYAL_DIR,newFilename,props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE));
+							.getAbsolutePath() + File.separator + filePrefix + fileSuffix);
+
+					sizeReminder(f.length());
+					
+					String newFilename = filePrefix + System.nanoTime() + fileSuffix;
+					String newPath = FileUtil.getStorageDirectory(ConstantUtil.SURVEYAL_DIR,
+							newFilename,
+							props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE));
 					FileUtil.findOrCreateDir(newPath);
-					String absoluteFile = newPath+File.separator+newFilename;
-					f.renameTo(new File(absoluteFile));
+					String absoluteFile = newPath + File.separator + newFilename;
+					
+					if (resizedToNewFile(f, absoluteFile)) {
+						if (!f.delete()) { //must check return value to know if it failed
+							Log.e(ACTIVITY_NAME,"Media file delete failed");
+						}
+					} else {//just move it to the correct place
+						if (!f.renameTo(new File(absoluteFile))){ //must check return value to know if it failed!
+							Log.e(ACTIVITY_NAME,"Media file rename failed");
+						}
+					}
 					try {
 						Bundle photoData = new Bundle();
-						photoData.putString(ConstantUtil.MEDIA_FILE_KEY,
-								absoluteFile);
+						photoData.putString(ConstantUtil.MEDIA_FILE_KEY, absoluteFile);
 						if (eventQuestionSource != null) {
 							eventQuestionSource.questionComplete(photoData);
 						} else if (eventSourceQuestionId != null) {
@@ -363,8 +538,7 @@ public class SurveyViewActivity extends TabActivity implements
 									eventSourceQuestionId);
 
 						} else {
-							Log.e(ACTIVITY_NAME,
-									"Both the source object and source question id are null");
+							Log.e(ACTIVITY_NAME, "Both the source object and source question id are null");
 						}
 					} catch (Exception e) {
 						Log.e(ACTIVITY_NAME, e.getMessage());
@@ -372,8 +546,7 @@ public class SurveyViewActivity extends TabActivity implements
 						eventQuestionSource = null;
 					}
 				} else {
-					Log.e(ACTIVITY_NAME, "Result of camera op was not ok: "
-							+ resultCode);
+					Log.e(ACTIVITY_NAME, "Result of camera op was not ok: "	+ resultCode);
 				}
 			} else if (requestCode == SCAN_ACTIVITY_REQUEST) {
 				if (resultCode == RESULT_OK) {
@@ -582,13 +755,11 @@ public class SurveyViewActivity extends TabActivity implements
 				.getEventType())) {
 			Intent intent = new Intent(ConstantUtil.BARCODE_SCAN_INTENT);
 			try {
-
 				startActivityForResult(intent, SCAN_ACTIVITY_REQUEST);
 				if (event.getSource() != null) {
 					eventQuestionSource = event.getSource();
 				} else {
-					Log.e(ACTIVITY_NAME,
-							"Question source was null in the event");
+					Log.e(ACTIVITY_NAME, "Question source was null in the event");
 				}
 			} catch (ActivityNotFoundException ex) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -827,6 +998,7 @@ public class SurveyViewActivity extends TabActivity implements
 		setRespondentId(databaseAdapter
 				.createSurveyRespondent(surveyId, userId));
 		resetAllQuestions();
+		spaceLeftOnCard();
 	}
 
 	/**

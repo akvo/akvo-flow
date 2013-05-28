@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.dataexport;
 
+import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -126,8 +127,10 @@ public class SurveyBulkUploader implements DataImporter {
 		List<List<File>> filesInDir = addFilesInDirectory(sourceDirectory,
 				processedList, true);
 
-		progressDialog = new ProgressDialog(filesInDir.size(), locale);
-		progressDialog.setVisible(true);
+		if (!GraphicsEnvironment.isHeadless()) {
+			progressDialog = new ProgressDialog(filesInDir.size(), locale);
+			progressDialog.setVisible(true);
+		}
 
 		filesToUpload = filesInDir.get(0);
 		if (UPLOAD_IMAGE_MODE.equalsIgnoreCase(criteria.get(MODE_KEY))) {
@@ -369,7 +372,9 @@ public class SurveyBulkUploader implements DataImporter {
 		}
 
 		public void run() {
-			progressDialog.update(step, msg, isComplete);
+			if (!GraphicsEnvironment.isHeadless()) {
+				progressDialog.update(step, msg, isComplete);
+			}
 		}
 	}
 }

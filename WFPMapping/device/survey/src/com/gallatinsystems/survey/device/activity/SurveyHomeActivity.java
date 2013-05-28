@@ -219,6 +219,20 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		if (selected.equals(ConstantUtil.USER_OP)) {
 			Intent i = new Intent(v.getContext(), ListUserActivity.class);
 			startActivityForResult(i, LIST_USER_ACTIVITY);
+		} else if (selected.equals(ConstantUtil.PANIC_OP)) {
+			//ViewUtil.showConfirmDialog(R.string.tooBigPhotoTitle,R.string.tooBigPhotoMsg,this);
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.dontPanicMsg)
+					.setCancelable(true)
+					.setPositiveButton(R.string.okbutton,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+			builder.show();
 		} else if (selected.equals(ConstantUtil.CONF_OP)) {
 			Intent i = new Intent(v.getContext(), SettingsActivity.class);
 			startActivityForResult(i, SETTINGS_ACTIVITY);
@@ -240,7 +254,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 			Intent i = new Intent(v.getContext(),
 					WaterflowCalculatorActivity.class);
 			startActivityForResult(i, WF_CALC_ACTIVITY);
-		} else {
+		} else { //Implicit SURVEY_OP
 			if (currentUserId != null) {
 				if (!BootstrapService.isProcessing) {
 					Survey survey = menuViewAdapter.getSelectedSurvey(position);

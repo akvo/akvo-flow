@@ -257,6 +257,53 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	}
 
+	// same as listByDateRange, but adds sumbitterName as search field
+	// @Author: M.T.Westra
+	@SuppressWarnings("unchecked")
+	public List<SurveyInstance> listByDateRangeAndSubmitter(Date beginDate, Date endDate,
+			boolean unapprovedOnlyFlag, Long surveyId, String deviceIdentifier, String submitterName,
+			String cursorString) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
+
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("surveyId", filterString, paramString, "Long",
+				surveyId, paramMap);
+		appendNonNullParam("deviceIdentifier", filterString, paramString,
+				"String", deviceIdentifier, paramMap);
+		appendNonNullParam("submitterName", filterString, paramString,
+				"String", submitterName, paramMap);
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				beginDate, paramMap, GTE_OP);
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				endDate, paramMap, LTE_OP);
+		if (unapprovedOnlyFlag) {
+			appendNonNullParam("approvedFlag", filterString, paramString,
+					"String", "False", paramMap);
+		}
+		if (beginDate != null || endDate != null) {
+			query.declareImports("import java.util.Date");
+		}
+
+		query.setOrdering("collectionDate desc");
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		prepareCursor(cursorString, query);
+
+		return (List<SurveyInstance>) query.executeWithMap(paramMap);
+
+	}
+
+	
+	
+	
 	/***********************
 	 * returns raw entities
 	 * 

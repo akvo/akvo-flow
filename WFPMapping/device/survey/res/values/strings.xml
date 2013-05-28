@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">Field Survey</string>
-	<string name="takephoto">Take Photo</string>
+	<string name="appversion">1.10.5</string>
+    <string name="app_name">Field Survey</string>
+    <string name="nocardspacetitle">No Storage Space</string>
+    <string name="lowcardspacetitle">Low Storage Space</string>
+    <string name="nocardspacedialog">The SD card on this device is full and you can no longer collect data. You must clear space on the SD card in order to continue.</string>
+    <string name="lowcardspacedialog">You have %%% MB of storage space left on this device\'s SD card. Once the SD card is full, you will no longer be able to collect data.</string>
+    <string name="takephoto">Take Photo</string>
 	<string name="takevideo">Take Video</string>
 	<string name="getgeo">Check Geo Location</string>
 	<string name="lat">Lat</string>
@@ -14,6 +19,13 @@
 	<string name="currentuser">Current User:</string>
 	<string name="lastsync">Last Sync:</string>
 	<string name="userlabel">Manage Users</string>
+	<string name="dontPaniclabel">Don\'t Panic</string>
+	<string name="dontPanicMsg">Just make sure you know where your towel is!</string>
+	<string name="tooBigPhotoTitle">Large File Size</string>
+	<string name="tooBigPhotoMsg">The photo file is very large. If you set the camera to take smaller pictures, they will be more likely to upload successfully. Visit the camera settings on your device to reduce the picture resolution.</string>
+	<string name="photosizereminderlabel">Remind user of large photo size</string>
+	<string name="giveitarestbutton">Stop reminding me</string>	
+	<string name="shrinkphotoslabel">Shrink large photos</string>
 	<string name="wplabel">Community Waterpoint Survey</string>
 	<string name="hhlabel">Household Survey</string>
 	<string name="publabel">Public Institution Survey</string>
@@ -201,5 +213,4 @@
 	<string name="addtestpoints">Add test points</string>
 	<string name="updateavail">Update Available</string>
 	<string name="clicktoinstall">Click to install</string>
-	<string name="appversion">1.10.1</string>
 </resources>

@@ -38,6 +38,10 @@ GAE/war/WEB-INF/lib/jdo2-api*
 GAE/war/WEB-INF/lib/jsr107*
 GAE/war/com.gallatinsystems.framework.gwt.PortletFramework/*
 GAE/gwt-unitCache/*
+GAE/src/services/DataIssues.java
+GAE/UploadConstants.properties
+GAE/appengine-web.xml
+GAE/env
 
 WFPMapping/device/debugcert
 WFPMapping/device/survey/res/raw/survey.properties
@@ -45,20 +49,19 @@ WFPMapping/device/survey_test/bin/*
 WFPMapping/device/survey/bin/*
 WFPMapping/device/calabash/.calabash_settings
 WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/BuildConfig.java
-
 WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
+WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/R.java
+
 deploy
 gwt-unitcache
 
+# Reports service
+reports/.externalToolBuilders/*
+reports/.lein-failures
+reports/.lein-repl-history
+reports/bin/*
+reports/target/*
+
+
 # Vagrant
 .vagrant
-GAE/env
-
-
-GAE/UploadConstants.properties
-GAE/appengine-web.xml
-
-WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/R.java
-GAE/war/flowenv.js
-
-GAE/src/services/DataIssues.java

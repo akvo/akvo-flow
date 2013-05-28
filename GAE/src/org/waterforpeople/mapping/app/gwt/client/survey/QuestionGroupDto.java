@@ -97,6 +97,11 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 		return getCode();
 	}
 
+	@Override
+	public Long getKeyId(){
+		return super.getKeyId();
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}

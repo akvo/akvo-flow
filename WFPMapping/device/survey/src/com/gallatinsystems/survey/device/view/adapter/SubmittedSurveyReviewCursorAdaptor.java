@@ -109,10 +109,10 @@ public class SubmittedSurveyReviewCursorAdaptor extends CursorAdapter {
 				if (!fn.endsWith(".zip")) {
 					String stsTxt = transList.get(i).getStatus();
 					if (stsTxt != null) {
-						if (ConstantUtil.SENT_STATUS.equals(stsTxt)) {
+						if (ConstantUtil.COMPLETE_STATUS.equals(stsTxt)) {
 							for (int j = 0; j < transList.size(); j++) {
 								if (i != j && fn.equals(transList.get(j).getFileName() ) ) {
-									transList.get(j).setStatus(ConstantUtil.SENT_STATUS);
+									transList.get(j).setStatus(ConstantUtil.COMPLETE_STATUS);
 								}
 							}
 						}

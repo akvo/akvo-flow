@@ -59,6 +59,13 @@ public class ConstantUtil {
 	public static final String FILE_LOCATION = "sdcard";
 
 	/**
+	 * size limits
+	 */
+	public static final long BIG_PHOTO_FILE = 100000; //Bytes
+	public static final String SPACE_WARNING_MB_LEVELS = "100, 50, 25, 10, 5, 1";
+
+	
+		/**
 	 * status related constants
 	 */
 	public static final String COMPLETE_STATUS = "Complete";
@@ -139,8 +146,9 @@ public class ConstantUtil {
 	/**
 	 * operation types
 	 */
-	public static final String USER_OP = "USER";
 	public static final String SURVEY_OP = "SURVEY";
+	public static final String USER_OP = "USER";
+	public static final String PANIC_OP = "PANIC";
 	public static final String CONF_OP = "CONF";
 	public static final String PLOT_OP = "PLOT";
 	public static final String NEARBY_OP = "NEARBY";
@@ -207,6 +215,9 @@ public class ConstantUtil {
 	public static final String CHECK_FOR_SURVEYS = "survey.checkforupdates";
 	public static final String UPLOAD_ERRORS = "remoteexception.upload";
 	public static final String NEARBY_RADIUS = "nearby.points.radius";
+	public static final String PHOTO_SIZE_REMINDER_KEY = "survey.media.photo.sizereminder";
+	public static final String SHRINK_PHOTOS_KEY = "survey.media.photo.shrink";
+	
 	
 
 	/**
@@ -214,6 +225,8 @@ public class ConstantUtil {
 	 */
 	public static final String LARGE_TXT = "LARGE";
 	public static final String NORMAL_TXT = "NORMAL";
+	
+	
 	/**
 	 * index values into string arrays
 	 */
