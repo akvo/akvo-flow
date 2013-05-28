@@ -85,7 +85,10 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 						ViewUtil.showConfirmDialog(
 								R.string.submitcompletetitle,
 								R.string.submitcompletetext, context);
-						startNewSurvey();
+						if (context.isSingleSurvey())
+							context.finish();
+						else
+							startNewSurvey();
 					}
 				});
 		TableLayout table = new TableLayout(context);
@@ -165,6 +168,7 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 		context.setRespondentId(databaseAdaptor.createSurveyRespondent(
 				context.getSurveyId(), context.getUserId()));
 		context.resetAllQuestions();
+		context.spaceLeftOnCard();
 	}
 
 }

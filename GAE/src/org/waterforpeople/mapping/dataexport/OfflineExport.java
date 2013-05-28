@@ -55,9 +55,14 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
  */
 public class OfflineExport extends GraphicalSurveySummaryExporter {
 
-	private static final DateFormat DF = new SimpleDateFormat(
-			"MM-dd-yyyy HH:mm:ss z");
+	private static final ThreadLocal<DateFormat> DF = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("MM-dd-yyyy HH:mm:ss z");
+		};
+	};
 
+	@SuppressWarnings("unchecked")
 	public void export(Map<String, String> criteria, File outputFile,
 			String serverBase, Map<String, String> options) {
 		try {
@@ -92,25 +97,34 @@ public class OfflineExport extends GraphicalSurveySummaryExporter {
 						while (strTok.hasMoreTokens()) {
 							line = strTok.nextToken();
 							String[] parts = line.split("\t");
-							if (!lastUUID.equals(parts[parts.length - 1])) {
-								// this is the first row of new instance so
-								// write the response row
-								r = sheet.createRow(row++);
-								lastUUID = parts[parts.length - 1];
-								createCell(r, 0, lastUUID, null);
-								createCell(r, 1, DF.format(new Date(Long
-										.parseLong(parts[7]))), null);
-								createCell(r, 2, parts[5], null);
-							}
-							int idx = questionIds.indexOf(parts[2]) + 3;
-							if (idx >= 3) {
-								String val = parts[4];
-								if (val != null) {
-									if ("IMAGE".equals(parts[3])) {
-										val = val.replace("/mnt/sdcard",
-												getImagePrefix());
+							boolean isForThisSurvey = (parts.length > 2 && questionIds
+									.contains(parts[2]));
+							if (isForThisSurvey) {
+								if (!lastUUID.equals(parts[parts.length - 1])) {
+									// this is the first row of new instance so
+									// write the response row
+									r = sheet.createRow(row++);
+									lastUUID = parts[parts.length - 1];
+									createCell(r, 0, lastUUID, null);
+									createCell(
+											r,
+											1,
+											DF.get()
+													.format(new Date(
+															Long.parseLong(parts[7]))),
+											null);
+									createCell(r, 2, parts[5], null);
+								}
+								int idx = questionIds.indexOf(parts[2]) + 3;
+								if (idx >= 3) {
+									String val = parts[4];
+									if (val != null) {
+										if ("IMAGE".equals(parts[3])) {
+											val = val.replace("/mnt/sdcard",
+													getImagePrefix());
+										}
+										createCell(r, idx, val, null);
 									}
-									createCell(r, idx, val, null);
 								}
 							}
 						}

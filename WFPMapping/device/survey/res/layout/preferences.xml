@@ -151,5 +151,25 @@
 				android:layout_height="wrap_content" android:id="@+id/identvalue"
 				android:layout_below="@id/identlabel" />
 		</RelativeLayout>
+		<RelativeLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content">
+			<CheckBox android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/photosizeremindercheckbox"
+				android:layout_alignParentRight="true" />
+			<TextView android:textSize="20dip" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/photosizereminderlabel"
+				android:text="@string/photosizereminderlabel"
+				android:layout_toLeftOf="@id/photosizeremindercheckbox" />
+		</RelativeLayout>
+		<RelativeLayout android:layout_width="fill_parent"
+			android:layout_height="wrap_content">
+			<CheckBox android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/shrinkphotoscheckbox"
+				android:layout_alignParentRight="true" />
+			<TextView android:textSize="20dip" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:id="@+id/shrinkphotoslabel"
+				android:text="@string/shrinkphotoslabel"
+				android:layout_toLeftOf="@id/shrinkphotoscheckbox" />
+		</RelativeLayout>		
 	</LinearLayout>
 </ScrollView>

@@ -245,8 +245,7 @@ public class UploadUtil {
 			logger.log(Level.SEVERE, "Could not send upload" + e.getMessage(),
 					e);
 			if (uc != null) {
-				uc.setMessage("Could not send upload" + e.getMessage() + " "
-						+ e.getStackTrace());
+				uc.setMessage("Could not send upload: " + e.getMessage());
 			}
 			return false;
 		}

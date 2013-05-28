@@ -50,8 +50,14 @@ public class LocationBeaconServlet extends AbstractRestApiServlet {
 		RestResponse resp = new RestResponse();
 		LocationBeaconRequest lbReq = (LocationBeaconRequest) req;
 		DeviceDAO deviceDao = new DeviceDAO();
-		deviceDao.updateDeviceLocation(lbReq.getPhoneNumber(), lbReq.getLat(),
-				lbReq.getLon(), lbReq.getAccuracy(), lbReq.getAppVersion(), lbReq.getDeviceIdentifier());
+		deviceDao.updateDeviceLocation(lbReq.getPhoneNumber(),
+				lbReq.getLat(),
+				lbReq.getLon(),
+				lbReq.getAccuracy(),
+				lbReq.getAppVersion(),
+				lbReq.getDeviceIdentifier(),
+				lbReq.getImei(),
+				lbReq.getOsVersion());
 		return resp;
 	}
 

@@ -100,10 +100,6 @@ public class BulkDataServiceClient {
 		String url = serverBase + action;
 
 		String response = fetchDataFromServer(url);
-		JSONObject jsonOuter = new JSONObject(response);
-		if (jsonOuter.has("cursor")) {
-			cursor = jsonOuter.getString("cursor");
-		}
 		List<AccessPointDto> apDtoList = RestAccessPointParser
 				.parseAccessPoint(response);
 		return apDtoList;
@@ -199,44 +195,43 @@ public class BulkDataServiceClient {
 	private static List<PlacemarkDto> parsePlacemarks(String response)
 			throws Exception {
 		JSONArray arr = null;
-		if (response.startsWith("{")) {
+		if (response != null && response.startsWith("{")) {
 			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
-			if (response != null) {
-				JSONObject json = new JSONObject(response);
-				if (json != null) {
-					if (json.has("placemarks")) {
-						try {
-							if (!json.getString("placemarks").equals("null"))
-								arr = json.getJSONArray("placemarks");
-						} catch (Exception ex) {
-							ex.printStackTrace();
-							arr = null;
-						}
-					} else
-						return null;
-				}
+
+			JSONObject json = new JSONObject(response);
+			if (json != null) {
+				if (json.has("placemarks")) {
+					try {
+						if (!json.getString("placemarks").equals("null"))
+							arr = json.getJSONArray("placemarks");
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						arr = null;
+					}
+				} else
+					return null;
 			}
 
-			if (arr != null) {
 
+			if (arr != null) {
 				for (int i = 0; i < arr.length(); i++) {
 					PlacemarkDto dto = new PlacemarkDto();
-					JSONObject json = arr.getJSONObject(i);
-					if (json != null) {
-						if (json.has("communityCode")) {
-							String x = json.getString("communityCode");
+					JSONObject jsonMark = arr.getJSONObject(i);
+					if (jsonMark != null) {
+						if (jsonMark.has("communityCode")) {
+							String x = jsonMark.getString("communityCode");
 							dto.setCommunityCode(x);
 						}
-						if (json.has("markType")) {
-							String x = json.getString("markType");
+						if (jsonMark.has("markType")) {
+							String x = jsonMark.getString("markType");
 							dto.setMarkType(x);
 						}
-						if (json.has("iconUrl")) {
-							String x = json.getString("iconUrl");
+						if (jsonMark.has("iconUrl")) {
+							String x = jsonMark.getString("iconUrl");
 							dto.setIconUrl(x);
 						}
-						if (json.has("longitude")) {
-							String x = json.getString("longitude");
+						if (jsonMark.has("longitude")) {
+							String x = jsonMark.getString("longitude");
 							try {
 								dto.setLongitude(new Double(x));
 							} catch (NumberFormatException nex) {
@@ -246,8 +241,8 @@ public class BulkDataServiceClient {
 								dto.setLongitude(null);
 							}
 						}
-						if (json.has("latitude")) {
-							String x = json.getString("latitude");
+						if (jsonMark.has("latitude")) {
+							String x = jsonMark.getString("latitude");
 							try {
 								dto.setLatitude(new Double(x));
 							} catch (NumberFormatException nex) {
@@ -257,8 +252,8 @@ public class BulkDataServiceClient {
 								dto.setLatitude(null);
 							}
 						}
-						if (json.has("collectionDate")) {
-							String x = json.getString("collectionDate");
+						if (jsonMark.has("collectionDate")) {
+							String x = jsonMark.getString("collectionDate");
 							if (x != null) {
 								try {
 									dto.setCollectionDate(new Date(x));
@@ -271,12 +266,12 @@ public class BulkDataServiceClient {
 								}
 							}
 						}
-						if (json.has("placemarkContents")) {
-							String x = json.getString("placemarkContents");
+						if (jsonMark.has("placemarkContents")) {
+							String x = jsonMark.getString("placemarkContents");
 							dto.setPlacemarkContents(x);
 						}
-						if (json.has("pinStyle")) {
-							dto.setPinStyle(json.getString("pinStyle"));
+						if (jsonMark.has("pinStyle")) {
+							dto.setPinStyle(jsonMark.getString("pinStyle"));
 						}
 					}
 					dtoList.add(dto);
@@ -304,7 +299,7 @@ public class BulkDataServiceClient {
 				+ DATA_SERVLET_PATH + DataBackoutRequest.LIST_INSTANCE_ACTION
 				+ "&" + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId
 				+ "&" + DataBackoutRequest.INCLUDE_DATE_PARAM + "=true");
-		if (instanceString != null) {
+		if (instanceString != null && instanceString.trim().length() != 0) {
 			StringTokenizer strTok = new StringTokenizer(instanceString, ",");
 			while (strTok.hasMoreTokens()) {
 				String instanceId = strTok.nextToken();
@@ -419,7 +414,7 @@ public class BulkDataServiceClient {
 	public static Object[] loadQuestions(String surveyId, String serverBase)
 			throws Exception {
 		Object[] results = new Object[2];
-		Map<String, String> questions = new HashMap<String, String>();
+		Map<String, QuestionDto> questions = new HashMap<String, QuestionDto>();
 		List<QuestionGroupDto> groups = fetchQuestionGroups(serverBase,
 				surveyId);
 		List<String> keyList = new ArrayList<String>();
@@ -431,7 +426,7 @@ public class BulkDataServiceClient {
 					for (QuestionDto question : questionDtos) {
 						keyList.add(question.getKeyId().toString());
 						questions.put(question.getKeyId().toString(),
-								question.getText());
+								question);
 					}
 				}
 			}
@@ -966,7 +961,7 @@ public class BulkDataServiceClient {
 	public static String fetchDataFromServer(String baseUrl,
 			String queryString, boolean shouldSign, String key)
 			throws Exception {
-		if (shouldSign) {
+		if (shouldSign && key != null) {
 			if (queryString == null) {
 				queryString = new String();
 			} else {

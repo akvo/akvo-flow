@@ -1,4 +1,4 @@
-{"expiration": "2013-10-02T00:00:00Z",
+{"expiration": "2025-10-02T00:00:00Z",
   "conditions": [ 
     {"bucket": "$s3bucket"}, 
     ["starts-with", "$key", "$directory/"],

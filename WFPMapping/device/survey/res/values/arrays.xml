@@ -10,18 +10,31 @@
 		<item>French</item>
 		<item>Spanish</item>
 		<item>Kinyarwanda</item>
-	</string-array>
+		<item>Chichewa</item>
+		<item>Bengali</item>
+		<item>Hindi</item>
+		<item>Quechua</item>
+		</string-array>
 	<string-array name="languagecodes">
 		<item>en</item>
 		<item>fr</item>
 		<item>es</item>
 		<item>rw</item>
+		<item>ny</item>
+		<item>bn</item>
+		<item>hi</item>
+		<item>qu</item>		
 	</string-array>
+	<!-- must have enough colors for all languages -->
 	<string-array name="colors">
 		<item>white</item>
 		<item>red</item>
 		<item>blue</item>
 		<item>yellow</item>
+		<item>green</item>
+		<item>#ff8800</item>
+		<item>#00ffff</item>
+		<item>purple</item>
 	</string-array>
 	<string-array name="precachehelpoptions">
 		<item>Always</item>
@@ -29,21 +42,9 @@
 		<item>Never</item>
 	</string-array>
 	<string-array name="servers">
-	    <item>http://flowakvo.appspot.com</item>
-	<!--    <item>http://watermapmonitordev.appspot.com</item>
-	<item>http://flowachildsright.appspot.com</item>
-	 <item>http://flowakvo.appspot.com</item>
-	<item>http://flowaglimmerofhope.appspot.com</item>	 
-		<item>http://flowamidc.appspot.com</item> 
-		<item>http://flowcrs.appspot.com</item>
-		<item>http://flowcongo.appspot.com</item>
-		<item>http://flowakvo.appspot.com</item>
-		 <item>http://flowdemoenvironment.appspot.com</item>
-		<item>http://flowcommunitysciences.appspot.com</item>
-		<item>http://watermapmonitordev.appspot.com</item>
-		<item>http://flowliberia.appspot.com</item>
-		<item>http://watermappingmonitoring.appspot.com</item> -->
-		<item>http://192.168.0.100:8888</item>
+	    <!-- NOTE: The value @@@@ is replaced by the `ant copyconfig` task with the proper instance id -->
+	    <!-- Example value: http://akvoflow-1.appspot.com -->
+	    <item>http://@@@@.appspot.com</item>
 	</string-array>
 	<string-array name="lengthmetric">
 		<item>millimeters</item>

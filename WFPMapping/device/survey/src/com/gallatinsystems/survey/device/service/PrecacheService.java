@@ -50,7 +50,7 @@ public class PrecacheService extends Service {
 	private static final int DEFAULT_LIMIT = 200;
 
 	private SurveyDbAdapter databaseAdapter;
-	private String serverBase;	
+	private String serverBase;
 
 	private Thread thread;
 	private static Semaphore lock = new Semaphore(1);
@@ -75,9 +75,8 @@ public class PrecacheService extends Service {
 						databaseAdapter = new SurveyDbAdapter(
 								PrecacheService.this);
 						databaseAdapter.open();
-						int precacheOption = Integer
-								.parseInt(databaseAdapter
-										.findPreference(ConstantUtil.PRECACHE_SETTING_KEY));
+						int precacheOption = Integer.parseInt(databaseAdapter
+								.findPreference(ConstantUtil.PRECACHE_SETTING_KEY));
 						serverBase = databaseAdapter
 								.findPreference(ConstantUtil.SERVER_SETTING_KEY);
 						if (serverBase != null
@@ -90,7 +89,7 @@ public class PrecacheService extends Service {
 									.getProperty(ConstantUtil.SERVER_BASE);
 						}
 						String pointCountries = databaseAdapter
-								.findPreference(ConstantUtil.PRECACHE_POINT_COUNTRY_KEY);						
+								.findPreference(ConstantUtil.PRECACHE_POINT_COUNTRY_KEY);
 						if (pointCountries != null
 								&& pointCountries.trim().length() > 0
 								&& canDownload(precacheOption)) {
@@ -134,11 +133,13 @@ public class PrecacheService extends Service {
 		String[] countryList = countries.split(",");
 		for (int i = 0; i < countryList.length; i++) {
 			String countryName = countryList[i];
-			try{
+			try {
 				int countryIdx = Integer.parseInt(countryName);
 				countryName = countryArray[countryIdx];
-			}catch(Exception e){}
-			PointOfInterestService pointOfInterestService = new PointOfInterestService(serverBase);
+			} catch (Exception e) {
+			}
+			PointOfInterestService pointOfInterestService = new PointOfInterestService(
+					serverBase);
 			int count = 0;
 			do {
 				ArrayList<PointOfInterest> points = pointOfInterestService
@@ -158,7 +159,8 @@ public class PrecacheService extends Service {
 
 	public void onCreate() {
 		super.onCreate();
-		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler.getInstance());
+		Thread.setDefaultUncaughtExceptionHandler(PersistentUncaughtExceptionHandler
+				.getInstance());
 		props = new PropertyUtil(getResources());
 	}
 
@@ -180,4 +182,5 @@ public class PrecacheService extends Service {
 		return ok;
 	}
 
+	
 }

@@ -53,7 +53,6 @@ import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -158,7 +157,14 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			log.log(Level.INFO,
 					"Reprocessing SurveyInstanceId: "
 							+ sReq.getSurveyInstanceId());
-			ingestSurveyInstance(sReq.getSurveyInstanceId());
+			try {
+				ingestSurveyInstance(sReq.getSurveyInstanceId());
+			} catch (RuntimeException e) {
+				log.log(Level.SEVERE,
+						"Could not process instance: "
+								+ sReq.getSurveyInstanceId() + ": "
+								+ e.getMessage());
+			}
 		}
 		return resp;
 	}
@@ -258,8 +264,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			}
 			GeoPlace geoPlace = null;
 
-			// only create a "locale" if we have a geographic question
-			if (geoQ != null && geoQ.getValue() != null) {
+			// only create a "locale" if we have a valid geographic question
+			if (geoQ != null && geoQ.getValue() != null && geoQ.getValue().length() > 0) {
 				double lat = UNSET_VAL;
 				double lon = UNSET_VAL;
 				boolean ambiguousFlag = false;
@@ -347,7 +353,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 						for (SurveyMetricMapping mapping : mappings) {
 							for (QuestionAnswerStore ans : answers) {
 								if (ans.getQuestionID().equals(
-										mapping.getSurveyQuestionId())) {
+										mapping.getSurveyQuestionId().toString())) {
 									instance.setCommunity(ans.getValue());
 									break;
 								}

@@ -963,11 +963,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 							hasValidation = true;
 						}
 
-						if (q.getType().equals(QuestionType.FREE_TEXT))
+						if (q.getType().toString().equals(QuestionType.FREE_TEXT.toString()))
 							qXML.setType(FREE_QUESTION_TYPE);
-						else if (q.getType().equals(QuestionType.GEO))
+						else if (q.getType().toString().equals(QuestionType.GEO.toString()))
 							qXML.setType(GEO_QUESTION_TYPE);
-						else if (q.getType().equals(QuestionType.NUMBER)) {
+						else if (q.getType().toString().equals(QuestionType.NUMBER.toString())) {
 							qXML.setType(FREE_QUESTION_TYPE);
 							if (!hasValidation) {
 								ValidationRule vrule = new ValidationRule();
@@ -975,15 +975,15 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 								vrule.setSigned("false");
 								qXML.setValidationRule(vrule);
 							}
-						} else if (q.getType().equals(QuestionType.OPTION)) {
+						} else if (q.getType().toString().equals(QuestionType.OPTION.toString())) {
 							qXML.setType(OPTION_QUESTION_TYPE);
-						} else if (q.getType().equals(QuestionType.STRENGTH)) {
+						} else if (q.getType().toString().equals(QuestionType.STRENGTH.toString())) {
 							qXML.setType(STRENGTH_QUESTION_TYPE);
-						} else if (q.getType().equals(QuestionType.PHOTO))
+						} else if (q.getType().toString().equals(QuestionType.PHOTO.toString()))
 							qXML.setType(PHOTO_QUESTION_TYPE);
-						else if (q.getType().equals(QuestionType.VIDEO))
+						else if (q.getType().toString().equals(QuestionType.VIDEO.toString()))
 							qXML.setType(VIDEO_QUESTION_TYPE);
-						else if (q.getType().equals(QuestionType.SCAN))
+						else if (q.getType().toString().equals(QuestionType.SCAN.toString()))
 							qXML.setType(SCAN_QUESTION_TYPE);
 
 						if (qEntry.getKey() != null)

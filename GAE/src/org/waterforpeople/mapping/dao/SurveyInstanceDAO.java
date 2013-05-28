@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -34,6 +35,11 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
@@ -106,6 +112,18 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				hasErrors = true;
 			}
 
+			if (parts.length > 5) {
+				if (si.getSubmitterName() == null
+						|| si.getSubmitterName().trim().length() == 0) {
+					si.setSubmitterName(parts[5].trim());
+				}
+			}
+			if (parts.length >= 9) {
+				if (si.getDeviceIdentifier() == null) {
+					si.setDeviceIdentifier(parts[8].trim());
+				}
+			}
+			
 			if (si.getSurveyId() == null) {
 				try {
 					if (collDate != null) {
@@ -154,17 +172,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 			if (parts.length > 4) {
 				qas.setValue(parts[4].trim());
-			}
-			if (parts.length > 5) {
-				if (si.getSubmitterName() == null
-						|| si.getSubmitterName().trim().length() == 0) {
-					si.setSubmitterName(parts[5].trim());
-				}
-			}
-			if (parts.length >= 9) {
-				if (si.getDeviceIdentifier() == null) {
-					si.setDeviceIdentifier(parts[8].trim());
-				}
 			}
 			if (parts.length >= 10) {
 				qas.setScoredValue(parts[9].trim());
@@ -250,9 +257,56 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	}
 
+	// same as listByDateRange, but adds sumbitterName as search field
+	// @Author: M.T.Westra
+	@SuppressWarnings("unchecked")
+	public List<SurveyInstance> listByDateRangeAndSubmitter(Date beginDate, Date endDate,
+			boolean unapprovedOnlyFlag, Long surveyId, String deviceIdentifier, String submitterName,
+			String cursorString) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
+
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("surveyId", filterString, paramString, "Long",
+				surveyId, paramMap);
+		appendNonNullParam("deviceIdentifier", filterString, paramString,
+				"String", deviceIdentifier, paramMap);
+		appendNonNullParam("submitterName", filterString, paramString,
+				"String", submitterName, paramMap);
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				beginDate, paramMap, GTE_OP);
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				endDate, paramMap, LTE_OP);
+		if (unapprovedOnlyFlag) {
+			appendNonNullParam("approvedFlag", filterString, paramString,
+					"String", "False", paramMap);
+		}
+		if (beginDate != null || endDate != null) {
+			query.declareImports("import java.util.Date");
+		}
+
+		query.setOrdering("collectionDate desc");
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		prepareCursor(cursorString, query);
+
+		return (List<SurveyInstance>) query.executeWithMap(paramMap);
+
+	}
+
+	
+	
 	
 	/***********************
 	 * returns raw entities
+	 * 
 	 * @param returnKeysOnly
 	 * @param beginDate
 	 * @param endDate
@@ -380,6 +434,62 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		q.declareParameters("String qidParam");
 		prepareCursor(cursorString, q);
 		return (List<QuestionAnswerStore>) q.execute(questionId);
+	}
+
+	/**
+	 * Deletes a surveyInstance and all its related questionAnswerStore objects
+	 * Based on the version in DataBackoutServlet
+	 * 
+	 * @param item
+	 * @return
+	 */
+	// TODO update lastSurveyalInstanceId in surveydLocale objects
+	public void deleteSurveyInstance(SurveyInstance item) {
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
+		QuestionDao qDao = new QuestionDao();
+		Long surveyInstanceId = item.getKey().getId();
+
+		List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStore(
+				surveyInstanceId, null);
+
+		if (qasList != null && qasList.size() > 0) {
+			// update the questionAnswerSummary counts
+			for (QuestionAnswerStore qasItem : qasList) {
+				// if the questionAnswerStore item belongs to an OPTION type,
+				// update the count
+				Question q = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
+				if (q != null && Question.Type.OPTION.equals(q.getType())) {
+					SurveyQuestionSummaryDao.incrementCount(qasItem, -1);
+				}
+			}
+
+			// delete the questionAnswerStore objects in a single datastore
+			// operation
+			siDao.delete(qasList);
+		}
+
+		// delete the surveyInstance
+		SurveyInstance instance = siDao.getByKey(item.getKey());
+		if (instance != null) {
+			siDao.delete(instance);
+		}
+
+		// delete surveyalValue items
+		List<SurveyalValue> vals = localeDao
+				.listSurveyalValuesByInstance(surveyInstanceId);
+		if (vals != null && vals.size() > 0) {
+			Long localeId = vals.get(0).getSurveyedLocaleId();
+			localeDao.delete(vals);
+			// now see if there are any other values for the same locale
+			List<SurveyalValue> otherVals = localeDao
+					.listValuesByLocale(localeId);
+			if (otherVals == null || otherVals.size() == 0) {
+				// if there are no other values, delete the locale
+				SurveyedLocale l = localeDao.getByKey(localeId);
+				localeDao.delete(l);
+			}
+		}
 	}
 
 	/**

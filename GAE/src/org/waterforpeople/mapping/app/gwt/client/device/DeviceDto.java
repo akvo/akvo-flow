@@ -29,9 +29,19 @@ public class DeviceDto extends BaseDto {
 	private Double lastKnownLon;
 	private Double lastKnownAccuracy;
 	private Date lastPositionDate;
+	private String gallatinSoftwareManifest;
 	private String deviceGroup;
+	private String deviceGroupName;
 	private String deviceIdentifier;
 
+	public String getGallatinSoftwareManifest() {
+		return gallatinSoftwareManifest;
+	}
+
+	public void setGallatinSoftwareManifest(String gallatinSoftwareManifest) {
+		this.gallatinSoftwareManifest = gallatinSoftwareManifest;
+	}
+	
 	public String getDeviceIdentifier() {
 		return deviceIdentifier;
 	}
@@ -94,5 +104,13 @@ public class DeviceDto extends BaseDto {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	public void setDeviceGroupName(String deviceGroupName) {
+		this.deviceGroupName = deviceGroupName;
+	}
+
+	public String getDeviceGroupName() {
+		return deviceGroupName;
 	}
 }

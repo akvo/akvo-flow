@@ -152,6 +152,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 			appendNonNullParam("sublevel" + level, filterString, paramString,
 					"String", subValue, paramMap);
 		}
+		query.setOrdering("createdDateTime desc");
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		prepareCursor(cursor, desiredResults, query);
@@ -248,9 +249,37 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 		query.declareParameters(paramString.toString());
 		prepareCursor(cursor, pageSize, query);
 		return (List<SurveyalValue>) query.executeWithMap(paramMap);
-
 	}
 
+	
+	/**
+	 * returns all the SurveyalValues corresponding to the surveyInstanceId and questionId passed in.
+	 * This uniquely identifies the surveyalValue corresponding to a single questionAnswerStore object
+	 * 
+	 * @param surveyInstanceId
+	 * @param questionId
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<SurveyalValue> listSVByQuestionAndSurveyInstance(Long surveyInstanceId,
+			Long surveyQuestionId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("surveyInstanceId", filterString, paramString, "Long",
+				surveyInstanceId, paramMap);
+
+		appendNonNullParam("surveyQuestionId", filterString, paramString, "String",
+				surveyQuestionId, paramMap);
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		return (List<SurveyalValue>) query.executeWithMap(paramMap);
+	}
+	
+	
 	/**
 	 * lists all values for a given survey instance
 	 * 
@@ -283,17 +312,27 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 							.getLastSurveyalInstanceId()));
 				} else {
 					// get the most recent instance and use its id
-					SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
-					List<SurveyInstance> instList = instanceDao
-							.listInstancesByLocale(l.getKey().getId(), null,
-									null, 1, null);
-					if (instList != null && instList.size() > 0) {
-						l.setSurveyalValues(listSurveyalValuesByInstance(instList
-								.get(0).getKey().getId()));
-					}
+					l.setSurveyalValues(getSurveyalValues(l.getKey().getId()));
 				}
 			}
 		}
 		return locales;
+	}
+
+	public SurveyedLocale getById(Long id) {
+		final SurveyedLocale sl = getByKey(id);
+		sl.setSurveyalValues(getSurveyalValues(id));
+		return sl;
+	}
+
+	private List<SurveyalValue> getSurveyalValues(Long id) {
+		SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
+		List<SurveyInstance> instList = instanceDao.listInstancesByLocale(id,
+				null, null, 1, null);
+		if (instList != null && instList.size() > 0) {
+			return listSurveyalValuesByInstance(instList.get(0).getKey()
+					.getId());
+		}
+		return null;
 	}
 }

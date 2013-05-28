@@ -121,7 +121,7 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 		boolean foundGroup = false;
 		if (survey.getQuestionGroupList() != null) {
 			for (QuestionGroupDto g : survey.getQuestionGroupList()) {
-				if (g.getOrder() == curOrder) {
+				if (g.getOrder().equals(curOrder)) {
 					foundGroup = true;
 					if (temp != null) {
 						prevGroup = temp;
@@ -159,7 +159,7 @@ public class SurveyNavigationWidget extends Composite implements ClickHandler {
 		boolean foundQ = false;
 		if (questionGroup.getQuestionMap() != null) {
 			for (QuestionDto q : questionGroup.getQuestionMap().values()) {
-				if (q.getOrder() == curOrder) {
+				if (q.getOrder().equals(curOrder)) {
 					foundQ = true;
 					if (temp != null) {
 						prevQuestion = temp;

@@ -164,11 +164,9 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 								.getPayload();
 						surveyGroupListbox.addItem("", "");
 						if (result != null) {
-							int i = 0;
 							for (SurveyGroupDto dto : result) {
 								surveyGroupListbox.addItem(dto.getCode(), dto
 										.getKeyId().toString());
-								i++;
 							}
 						}
 						toggleLoading(false);
@@ -237,7 +235,6 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 	private void populateSurveyList(List<SurveyDto> surveyItems) {
 		surveyListbox.clear();
 		if (surveyItems != null) {
-			int i = 0;
 			surveyListbox.addItem("", "");
 			for (SurveyDto survey : surveyItems) {
 				surveyListbox.addItem(
@@ -246,7 +243,6 @@ public class SurveySelectionWidget extends Composite implements ChangeHandler {
 										+ survey.getKeyId().toString(), survey
 								.getKeyId().toString());
 
-				i++;
 			}
 		}
 	}

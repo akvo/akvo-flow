@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.dataexport;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -43,6 +44,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.web.dto.RawDataImportRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -66,8 +69,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	private List<String> errorIds;
 	private volatile int currentStep;
 
-	private static final DateFormat DATE_FMT = new SimpleDateFormat(
-			"dd-MM-yyyy HH:mm:ss z");
+	private static final ThreadLocal<DateFormat> DATE_FMT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+		};
+	};
+	private static final int SIZE_THRESHOLD = 2000 * 400;
 
 	static {
 		SAVING_DATA = new HashMap<String, String>();
@@ -115,10 +123,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void executeImport(File file, String serverBase,
 			Map<String, String> criteria) {
 		try {
+
+			int rows = 0;
 			errorIds = new ArrayList<String>();
 			jobQueue = new LinkedBlockingQueue<Runnable>();
 			threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
@@ -127,13 +138,25 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			setSurveyId(criteria);
 
 			Sheet sheet1 = getDataSheet(file);
-			progressDialog = new ProgressDialog(sheet1.getLastRowNum(), locale);
-			progressDialog.setVisible(true);
+			if (!GraphicsEnvironment.isHeadless()) {
+				progressDialog = new ProgressDialog(sheet1.getLastRowNum(),
+						locale);
+				progressDialog.setVisible(true);
+			}
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
-			Map<String, String> typeMap = new HashMap<String, String>();
+			Object[] results = BulkDataServiceClient.loadQuestions(
+					getSurveyId().toString(), serverBase);
+			Map<String, QuestionDto> questionMap = null;
+
+			if (results != null) {
+				questionMap = (Map<String, QuestionDto>) results[1];
+
+			}
+
 			currentStep = 0;
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			for (Row row : sheet1) {
+				rows++;
 				digest.reset();
 				String instanceId = null;
 				String dateString = null;
@@ -145,20 +168,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						+ "&" + RawDataImportRequest.SURVEY_ID_PARAM + "="
 						+ getSurveyId() + "&");
 				boolean needUpload = true;
-				for (Cell cell : row) {
-					String type = null;
+
+				for (Cell cell : row) {					
 					if (row.getRowNum() == 0 && cell.getColumnIndex() > 1) {
 						// load questionIds
 						String[] parts = cell.getStringCellValue().split("\\|");
 						questionIDColMap.put(cell.getColumnIndex(), parts[0]);
-
-						if (parts.length > 1) {
-							if ("lat/lon".equalsIgnoreCase(parts[1].trim())
-									|| "location".equalsIgnoreCase(parts[1]
-											.trim())) {
-								typeMap.put(parts[0], "GEO");
-							}
-						}
 					}
 					if (cell.getColumnIndex() == 0 && cell.getRowIndex() > 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -201,6 +216,23 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					if (cell.getRowIndex() > 0
 							&& cell.getColumnIndex() > 2
 							&& questionIDColMap.get(cell.getColumnIndex()) != null) {
+						QuestionDto question = questionMap.get(questionIDColMap
+								.get(cell.getColumnIndex()));
+						QuestionType type = null;
+						String typeString = "VALUE";
+						if (question != null) {
+							type = question.getType();
+							typeString = type.toString();
+							if (QuestionType.GEO == type
+									|| QuestionType.PHOTO == type
+									|| QuestionType.VIDEO == type) {
+								typeString = type.toString();
+							}
+						} else if (questionIDColMap.get(cell.getColumnIndex())
+								.startsWith("--")) {
+							continue;
+						}
+						
 						String cellVal = parseCellAsString(cell);
 						if (cellVal != null) {
 							cellVal = cellVal.trim();
@@ -211,7 +243,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 								cellVal = cellVal.replaceAll("\\|", "^^");
 							}
 							if (cellVal.endsWith(".jpg")) {
-								type = "PHOTO";
 								if (cellVal.contains("/")) {
 									cellVal = cellVal.substring(cellVal
 											.lastIndexOf("/"));
@@ -220,7 +251,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							}
 							if (cellVal.endsWith("UTC")) {
 								try {
-									cellVal = DATE_FMT.parse(cellVal).getTime()
+									cellVal = DATE_FMT.get().parse(cellVal)
+											.getTime()
 											+ "";
 								} catch (Exception e) {
 									System.out.println("bad date format: "
@@ -228,7 +260,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 								}
 							}
 						}
-						if (cellVal != null && cellVal.trim().length() > 0) {
+						if (cellVal == null) {
+							cellVal = "";
+						}
+
+						if (type != QuestionType.GEO) {
 							hasValue = true;
 							sb.append(
 									"questionId="
@@ -237,16 +273,36 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 											+ "|value=").append(
 									cellVal != null ? URLEncoder.encode(
 											cellVal, "UTF-8") : "");
+						} else {
+							hasValue = true;
+							sb.append("questionId="
+									+ questionIDColMap.get(cell
+											.getColumnIndex()) + "|value=");
+							if (questionIDColMap.get(cell.getColumnIndex() + 1) != null
+									&& questionIDColMap.get(
+											cell.getColumnIndex() + 1)
+											.startsWith("--")) {
 
+								for (int i = 1; i < 4; i++) {
+									String nextVal = parseCellAsString(row
+											.getCell(cell.getColumnIndex() + i));
+									cellVal += "|"
+											+ (nextVal != null ? nextVal : "");
+								}
+								// if the length of the cellVal is too small, which means there is no valid info, skip.
+								if (cellVal.length() < 5){
+									cellVal = "";
+									}
+								sb.append(cellVal != null ? URLEncoder.encode(
+										cellVal, "UTF-8") : "");
+							} else {
+								sb.append(cellVal != null ? URLEncoder.encode(
+										cellVal, "UTF-8") : "");
+							}
 						}
-						type = typeMap.get(questionIDColMap.get(cell
-								.getColumnIndex()));
 
-						if (type == null) {
-							type = "VALUE";
-						}
 						if (hasValue) {
-							sb.append("|type=").append(type).append("&");
+							sb.append("|type=").append(typeString).append("&");
 						}
 					} else if (cell.getRowIndex() > 0
 							&& cell.getColumnIndex() > 2) {
@@ -318,8 +374,16 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			Thread.sleep(5000);
 			System.out.println("Updating summaries");
 			// now update the summaries
+			if ((questionIDColMap.size() * rows) < SIZE_THRESHOLD) {
+				invokeUrl(serverBase,
+						"action="
+								+ RawDataImportRequest.UPDATE_SUMMARIES_ACTION
+								+ "&" + RawDataImportRequest.SURVEY_ID_PARAM
+								+ "=" + surveyId, true, criteria.get(KEY_PARAM));
+			}
+
 			invokeUrl(serverBase, "action="
-					+ RawDataImportRequest.UPDATE_SUMMARIES_ACTION + "&"
+					+ RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
 					+ RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId,
 					true, criteria.get(KEY_PARAM));
 
@@ -442,7 +506,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		}
 
 		public void run() {
-			progressDialog.update(step, msg, isComplete);
+			if (progressDialog != null) {
+				progressDialog.update(step, msg, isComplete);
+			}
 		}
 	}
 

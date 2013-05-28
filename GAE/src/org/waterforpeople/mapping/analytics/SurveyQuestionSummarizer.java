@@ -23,6 +23,8 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
 
 /**
  * This class will summarize survey information by updating counts by response
@@ -39,8 +41,11 @@ public class SurveyQuestionSummarizer implements DataSummarizer {
 		if (key != null) {
 			SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
 			List<QuestionAnswerStore> answers = instanceDao
-					.listQuestionAnswerStore(new Long(key), null);
-			if (answers != null) {
+					.listQuestionAnswerStoreByType(new Long(key), "VALUE");
+			if (answers != null && answers.size() > 0) {
+				QuestionDao questionDao = new QuestionDao();
+				List<Question> qList = questionDao.listQuestionByType(answers
+						.get(0).getSurveyId(), Question.Type.OPTION);
 				int i = 0;
 				if (offset != null) {
 					i = offset;
@@ -49,7 +54,10 @@ public class SurveyQuestionSummarizer implements DataSummarizer {
 				}
 				// process BATCH_SIZE items
 				while (i < answers.size() && i < offset + BATCH_SIZE) {
-					SurveyQuestionSummaryDao.incrementCount(answers.get(i),1);
+					if (isSummarizable(answers.get(i), qList)) {
+						SurveyQuestionSummaryDao.incrementCount(answers.get(i),
+								1);
+					}
 					i++;
 				}
 				// if we still have more answers to process, return false
@@ -59,6 +67,27 @@ public class SurveyQuestionSummarizer implements DataSummarizer {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * returns true if the question type for the answer object is an OPTION type
+	 * @param answer
+	 * @param questions
+	 * @return
+	 */
+	private boolean isSummarizable(QuestionAnswerStore answer,
+			List<Question> questions) {
+		if (questions != null && answer != null) {
+			long id = Long.parseLong(answer.getQuestionID());
+			for (Question q : questions) {
+				if (q.getKey().getId() == id) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

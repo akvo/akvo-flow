@@ -1,0 +1,127 @@
+APPNAME = 'akvo-flow'
+
+require 'json'
+require 'rake-pipeline-web-filters'
+
+WebFilters = Rake::Pipeline::Web::Filters
+
+class LoaderFilter < WebFilters::MinispadeFilter
+  def generate_output(inputs, output)
+    inputs.each do |input|
+      code = input.read
+      module_id = @module_id_generator.call(input)
+      contents = "function(require) {\n#{code}\n}"
+      ret = "\nloader.register('#{module_id}', #{contents});\n"
+      output.write ret
+    end
+  end
+end
+
+class EmberAssertFilter < Filter
+  def generate_output(inputs, output)
+    inputs.each do |input|
+      result = input.read
+      result.gsub!(/ember_assert\((.*)\);/, '')
+      output.write(result)
+    end
+  end
+end
+
+class HandlebarsFilter < Filter
+  def generate_output(inputs, output)
+    inputs.each do |input|
+      code = input.read.to_json
+      name = File.basename(input.path, '.handlebars')
+      output.write "\nreturn Ember.Handlebars.compile(#{code});\n"
+    end
+  end
+end
+
+output '../GAE/war/publicmap'
+input 'app' do
+  
+  match 'public.html' do
+    copy '../index.html'
+  end
+
+  match 'js/lib/**/*public.js' do
+    filter LoaderFilter,
+      :module_id_generator => proc { |input|
+        input.path.sub(/^js\/lib\//, "#{APPNAME}/").sub(/\.js$/, '')
+      }
+
+    if ENV['RAKEP_MODE'] == 'production'
+      filter EmberAssertFilter
+      uglify {|input| input}
+    end
+    concat 'js/app.js'
+  end
+
+  match 'js/lib/**/*common.js' do
+    filter LoaderFilter,
+      :module_id_generator => proc { |input|
+        input.path.sub(/^js\/lib\//, "#{APPNAME}/").sub(/\.js$/, '')
+      }
+
+    if ENV['RAKEP_MODE'] == 'production'
+      filter EmberAssertFilter
+      uglify {|input| input}
+    end
+    concat 'js/app.js'
+  end
+
+  match 'js/plugins/**/*.js' do
+    if ENV['RAKEP_MODE'] == 'production'
+      uglify {|input| input}
+    end
+    concat do |input|
+      input.sub(/plugins\//, '')
+    end
+  end
+
+  match 'js/templates/**/*-common.handlebars' do
+    filter HandlebarsFilter
+    filter LoaderFilter,
+      :module_id_generator => proc { |input|
+        input.path.sub(/^js\/templates\//, "#{APPNAME}/templates/").sub(/\.handlebars$/, '')
+      }
+    if ENV['RAKEP_MODE'] == 'production'
+      uglify {|input| input}
+    end
+    concat 'js/app.js'
+  end
+
+  match 'js/templates/**/*-public.handlebars' do
+    filter HandlebarsFilter
+    filter LoaderFilter,
+      :module_id_generator => proc { |input|
+        input.path.sub(/^js\/templates\//, "#{APPNAME}/templates/").sub(/\.handlebars$/, '')
+      }
+    if ENV['RAKEP_MODE'] == 'production'
+      uglify {|input| input}
+    end
+    concat 'js/app.js'
+  end
+
+
+  match "static/**/*" do
+    concat do |input|
+      input.sub(/static\//, '')
+    end
+  end
+
+  match "css/**/*" do
+    concat do |input|
+      input
+    end
+  end
+
+  # match "js/vendor/**/*.js" do
+  #  concat do |input|
+  #    input
+  #  end
+  # end
+
+end
+
+# vim: filetype=ruby

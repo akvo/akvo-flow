@@ -94,8 +94,12 @@ public class KMLGenerator {
 	public static final String ORGANIZATION_KEY = "organization";
 	public static final String ORGANIZATION = PropertyUtil
 			.getProperty("organization");
-	private static final DateFormat LONG_DATE_FORMAT = new SimpleDateFormat(
-			"dd-MM-yyyy HH:mm:ss z");
+	private static final ThreadLocal<DateFormat> LONG_DATE_FORMAT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss z");
+		};
+	};
 
 	private static final Map<String, String> ICON_TYPE_MAPPING;
 	private static final Map<String, String> ICON_COLOR_MAPPING;
@@ -560,7 +564,7 @@ public class KMLGenerator {
 					DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 			String formattedDate = null;
 			if ("true".equals(useLongDates)) {
-				formattedDate = LONG_DATE_FORMAT.format(ap
+				formattedDate = LONG_DATE_FORMAT.get().format(ap
 						.getLastSurveyedDate());
 			} else {
 				formattedDate = DateFormat.getDateInstance(DateFormat.SHORT)
@@ -577,7 +581,7 @@ public class KMLGenerator {
 					DateFormatUtils.ISO_DATE_FORMAT.getPattern());
 			String formattedDate = null;
 			if ("true".equals(useLongDates)) {
-				formattedDate = LONG_DATE_FORMAT
+				formattedDate = LONG_DATE_FORMAT.get()
 						.format(ap.getCreatedDateTime());
 			} else {
 				formattedDate = DateFormat.getDateInstance(DateFormat.SHORT)

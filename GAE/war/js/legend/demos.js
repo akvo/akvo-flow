@@ -1,4 +1,4 @@
-﻿function loadDemo(path) {
+function loadDemo(path) {
 
 	resetDemos();
 

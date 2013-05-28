@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.dataexport;
 
+import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -126,8 +127,10 @@ public class SurveyBulkUploader implements DataImporter {
 		List<List<File>> filesInDir = addFilesInDirectory(sourceDirectory,
 				processedList, true);
 
-		progressDialog = new ProgressDialog(filesInDir.size(), locale);
-		progressDialog.setVisible(true);
+		if (!GraphicsEnvironment.isHeadless()) {
+			progressDialog = new ProgressDialog(filesInDir.size(), locale);
+			progressDialog.setVisible(true);
+		}
 
 		filesToUpload = filesInDir.get(0);
 		if (UPLOAD_IMAGE_MODE.equalsIgnoreCase(criteria.get(MODE_KEY))) {
@@ -165,7 +168,7 @@ public class SurveyBulkUploader implements DataImporter {
 						}
 					} else {
 						if (processZip) {
-							UploadUtil.upload(FileUtil.readFileBytes(fx),
+							boolean success = UploadUtil.upload(FileUtil.readFileBytes(fx),
 									fx.getName(), "devicezip",
 									criteria.get(UPLOAD_BASE_KEY),
 									criteria.get(AWS_ID_KEY),
@@ -173,9 +176,13 @@ public class SurveyBulkUploader implements DataImporter {
 									criteria.get(DATA_SIG_KEY),
 									"application/zip", null);
 
-							// now notify the server that a new file is there
-							// for processing
-							sendFileNotification(serverBase, fx.getName());
+							if (success) {
+								// now notify the server that a new file is there
+								// for processing
+								sendFileNotification(serverBase, fx.getName());
+							} else {
+								System.err.println("Error uploading file");
+							}
 							// delete the merged zip
 							fx.delete();
 						}
@@ -365,7 +372,9 @@ public class SurveyBulkUploader implements DataImporter {
 		}
 
 		public void run() {
-			progressDialog.update(step, msg, isComplete);
+			if (!GraphicsEnvironment.isHeadless()) {
+				progressDialog.update(step, msg, isComplete);
+			}
 		}
 	}
 }

@@ -1,0 +1,94 @@
+{{#view FLOW.NotificationsView}}
+<div class="manageNotificationsBlock">
+    <section id="manageNotifications" class="mainContent mainRight">
+        <div class="innerContent">
+            <div id="notifications">
+                <h1>
+                    {{t _notifications}}
+                </h1>
+                <div class="whiteBgSeparator">
+                   
+                    <form class="notificationAdd">
+                        <fieldset>
+                            <label for="emailNotification">{{t _email}}  {{#if view.destinationEmpty}} - {{t _please_provide_an_email_address}} {{/if}}</label> 
+                            {{view Ember.TextField valueBinding="view.notificationDestination" id="emailNotification" size=150 }}
+                        </fieldset>
+                        <fieldset>
+                            <label for="eventNotification">{{t _event}}  {{#if view.typeEmpty}} - {{t _please_make_a_choice}}{{/if}}</label> 
+                            {{view Ember.Select 
+                            contentBinding="FLOW.notificationEventControl.content" 
+                            optionLabelPath="content.label" 
+                            optionValuePath="content.value" 
+                            selectionBinding="view.notificationType" 
+                            id="eventNotification"
+                            prompt=""
+                            promptBinding="Ember.STRINGS._select_event"}}
+                        </fieldset>
+                        <fieldset>
+                            <label for="typeNotification">{{t _option}}  {{#if view.optionEmpty}} - {{t _please_make_a_choice}} {{/if}}</label> 
+                            {{view Ember.Select 
+                            contentBinding="FLOW.notificationOptionControl.content" 
+                            optionLabelPath="content.label" 
+                            optionValuePath="content.value" 
+                            selectionBinding="view.notificationOption" 
+                            id="typeNotification"
+                            prompt=""
+                            promptBinding="Ember.STRINGS._select_option"}}
+                        </fieldset>
+                        <fieldset>
+                            <label for="dateNotification">{{t _expires}} {{#if view.dateEmpty}} - {{t _please_select_a_date}} {{/if}}</label> {{view FLOW.DateField2 valueBinding="view.expiryDate" id="dateNotification" size=30}}
+                        </fieldset>
+                        <fieldset class="addNotifiBtn">
+                            <nav>
+                                <ul>
+                                    <li><a {{action "addNotification" target="this"}} class="smallBtn">{{t _add}}</a></li>
+                                    <li><a {{action "cancelNotification" target="this"}} >{{t _cancel}}</a></li>
+                                </ul>
+                            </nav>
+                        </fieldset>
+                    </form>
+                    <table class="notificationTable dataTable">
+                        <!-- DEVICES TABLE--><!-- TABLE HEADER-->
+                        <thead>
+                            <tr>
+                                <th>{{t _email}}</th>
+                                <th>{{t _type}}</th>
+                                <th>{{t _option}}</th>
+                                <th>{{t _expires}}</th>
+                                <th></th>
+                            </tr>
+                        </thead><!-- TABLE BODY: MAIN CONTENT-->
+                        <tbody>
+                          {{#each notification in FLOW.notificationControl}}
+                            <tr>
+                                <td class="">{{notification.notificationDestination}}</td>
+                                <td class="">{{notification.notificationType}}</td>
+                                <td class="">{{notification.notificationOption}}</td>
+                                <td class="">{{#with notification}}{{date3 expiryDate}}{{/with}}</td>
+                                <td class="action">
+                                    <a {{action "removeNotification" notification target="this"}}>{{t _remove}}</a>
+                                </td>
+                            </tr>
+                            {{/each}}
+                        </tbody><!-- TABLE FOOTER-->
+                        <tfoot>
+                            <tr>
+                                <td colspan="7">
+                                    <small>This is the footer.</small>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <nav class>
+                <ul>
+                    <li>
+                        <a {{action "closeNotifications" target="this"}} class="smallBtn">{{t _close_notifications}}</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+</div>
+{{/view}}

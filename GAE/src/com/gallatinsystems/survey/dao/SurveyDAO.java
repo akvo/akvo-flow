@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -261,7 +261,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 							+ item.getKey().getId()
 							+ " surveyCode:"
 							+ item.getCode()
-							+ " because there is a QuestionAnswerStore value for this survey. Please delete all survey response first");
+							+ " because there are already survey responses for this survey. Please delete all survey responses first");
 		}
 	}
 
@@ -278,4 +278,5 @@ public class SurveyDAO extends BaseDAO<Survey> {
 		List<Key> results = (List<Key>) query.execute();
 		return results;
 	}
+
 }

@@ -139,9 +139,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 			return new String("Processed Successfully");
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Could not save spreadsheet", e);
-			String message = new String("Could not save spreadsheet : ");
-			message.concat(e.getMessage());
-			return message;
+			return "Could not save spreadsheet : " + e.getMessage();
 		}
 	}
 
@@ -369,9 +367,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								}
 							} else if (colName.toLowerCase().equals(
 									"Options".toLowerCase())
-									&& (q.getType().equals(QuestionType.OPTION) || q
-											.getType().equals(
-													QuestionType.STRENGTH))) {
+									&& (q.getType().toString().equals(QuestionType.OPTION.toString()) ||
+										q.getType().toString().equals(QuestionType.STRENGTH.toString()))) {
 								String[] splitColContents = colContents.trim()
 										.split(";");
 								int optCount = 1;
@@ -382,7 +379,7 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 										String optionVal = optionParts[0]
 												.trim();
 										String text = optionParts[1].trim();
-										text.replaceAll("\\n", " ");
+										text = text.replaceAll("\\n", " ");
 										QuestionOption qo = new QuestionOption();
 										qo.setCode(optionVal);
 										qo.setText(text);
@@ -391,9 +388,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 								}
 							} else if ((colName.equals("AllowOther") || colName
 									.equals("AllowMultiple"))
-									&& (q.getType().equals(QuestionType.OPTION) || q
-											.getType().equals(
-													QuestionType.STRENGTH))) {
+									&& (q.getType().toString().equals(QuestionType.OPTION.toString()) ||
+										q.getType().toString().equals(QuestionType.STRENGTH.toString()))) {
 								if (colName.equals("AllowOther")) {
 									q.setAllowOtherFlag(new Boolean(colContents
 											.toLowerCase()));
@@ -417,8 +413,8 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 							}
 						}
 					}
-					if (q.getType().equals(QuestionType.OPTION)
-							|| q.getType().equals(QuestionType.STRENGTH)) {
+					if (q.getType().toString().equals(QuestionType.OPTION.toString())
+							|| q.getType().toString().equals(QuestionType.STRENGTH.toString())) {
 						q.setQuestionOptionMap(optionMap);
 
 					}
@@ -484,7 +480,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 		// HashMap<Question, QuestionDependency>();
 		List<Question> questionsWithDependencies = new ArrayList<Question>();
 		ArrayList<Question> spreadsheetQuestions = new ArrayList<Question>();
-		int rowIdx = 0;
 		for (RowContainer row : sc.getRowContainerList()) {
 			Question q = new Question();
 			for (ColumnContainer cc : row.getColumnContainersList()) {
@@ -520,7 +515,6 @@ public class SpreadsheetMappingAttributeServiceImpl extends
 				}
 			}
 			spreadsheetQuestions.add(q);
-			rowIdx++;
 		}
 		// now interate over the dependencies and update the keys from the
 		// reference id to the datastore id

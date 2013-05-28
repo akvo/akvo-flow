@@ -73,7 +73,7 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
  */
 public class DataSyncService extends Service {
 
-	private static final String TAG = "DATA_SYNC_ACTIVITY";
+	private static final String TAG = "DATA_SYNC_SERVICE";
 	private static final String NOTHING = "NADA";
 	private static final String DELIMITER = "\t";
 
@@ -87,6 +87,7 @@ public class DataSyncService extends Service {
 	private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
 	private static final String NOTIFICATION_PN_PARAM = "&phoneNumber=";
 	private static final String CHECKSUM_PARAM = "&checksum=";
+	private static final String IMEI_PARAM = "&imei=";
 	private static final String DATA_CONTENT_TYPE = "application/zip";
 	private static final String S3_DATA_FILE_PATH = "devicezip";
 	private static final String IMAGE_CONTENT_TYPE = "image/jpeg";
@@ -98,7 +99,7 @@ public class DataSyncService extends Service {
 			.getPercentInstance();
 
 	private SurveyDbAdapter databaseAdaptor;
-	private static final String TEMP_FILE_NAME = "/wfp";
+	private static final String TEMP_FILE_NAME = "wfp"; //used to have an extra slash. Semantically harmless, but made the DB lookup fail
 	private static final String ZIP_IMAGE_DIR = "images/";
 	private static final String SURVEY_DATA_FILE = "data.txt";
 	private static final String SIG_FILE_NAME = ".sig";
@@ -109,6 +110,8 @@ public class DataSyncService extends Service {
 	private static Semaphore lock = new Semaphore(1);
 	private static int counter = 0;
 	private PropertyUtil props;
+	
+	private boolean debugFailMedia = false;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -155,6 +158,9 @@ public class DataSyncService extends Service {
 	 * 
 	 * @param type
 	 *            - either SYNC or EXPORT
+	 * 
+	 * @param forceFlag
+	 *            - true to send regardless of history
 	 */
 	private void runSync(String type, boolean forceFlag) {
 		try {
@@ -179,8 +185,7 @@ public class DataSyncService extends Service {
 
 			counter++;
 			if (isAbleToRun(type, uploadIndex)) {
-				String fileName = createFileName(ConstantUtil.EXPORT
-						.equals(type));
+				String fileName = createFileName(ConstantUtil.EXPORT.equals(type));
 				HashSet<String>[] idList = formZip(fileName,
 						(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex));
 				String destName = fileName;
@@ -201,7 +206,8 @@ public class DataSyncService extends Service {
 						if (idList[0] != null) {
 							for (String id : idList[0]) {
 								databaseAdaptor.updateTransmissionHistory(
-										new Long(id), fileName,
+										Long.valueOf(id),
+										fileName,
 										ConstantUtil.IN_PROGRESS_STATUS);
 							}
 						}
@@ -210,23 +216,20 @@ public class DataSyncService extends Service {
 								props.getProperty(ConstantUtil.DATA_S3_SIG),
 								DATA_CONTENT_TYPE);
 						if (isOk) {
-							if (sendProcessingNotification(serverBase,
-									destName, checksum)) {
+							//Notify GAE back-end that data is available
+							if (sendProcessingNotification(serverBase, destName, checksum)) {
+								//Mark everything completed
 								if (idList[0].size() > 0) {
-									databaseAdaptor
-											.markDataAsSent(
-													idList[0],
-													""
-															+ StatusUtil
-																	.hasDataConnection(
-																			this,
-																			(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex)));
-									// update the transmission history records
-									// too
+									databaseAdaptor.markDataAsSent(
+											idList[0],
+											"" + StatusUtil.hasDataConnection(
+													this,
+													(ConstantUtil.UPLOAD_DATA_ONLY_IDX == uploadIndex)));
+									// update the transmission history records too
 									for (String id : idList[0]) {
 										databaseAdaptor
 												.updateTransmissionHistory(
-														new Long(id),
+														Long.valueOf(id),
 														fileName,
 														ConstantUtil.COMPLETE_STATUS);
 									}
@@ -240,7 +243,25 @@ public class DataSyncService extends Service {
 							} else {
 								Log.e(TAG,
 										"Could not update send status of data in the database. It will be resent on next execution of the service");
+								//Notification failed, update transmission history
+								//TODO this could be a different "failed" status
+								for (String id : idList[0]) {
+									databaseAdaptor.updateTransmissionHistory(
+											Long.valueOf(id),
+											fileName,
+											ConstantUtil.FAILED_STATUS);
+								}
+
 							}
+						} else {
+							//S3 upload failed, update transmission history
+							for (String id : idList[0]) {
+								databaseAdaptor.updateTransmissionHistory(
+										Long.valueOf(id),
+										fileName,
+										ConstantUtil.FAILED_STATUS);
+							}
+
 						}
 					} else {
 						fireNotification(ConstantUtil.EXPORT, destName);
@@ -283,6 +304,7 @@ public class DataSyncService extends Service {
 		try {
 			HttpUtil.httpGet(serverBase + NOTIFICATION_PATH + fileName
 					+ NOTIFICATION_PN_PARAM + StatusUtil.getPhoneNumber(this)
+					+ IMEI_PARAM + StatusUtil.getImei(this)
 					+ CHECKSUM_PARAM + checksum);
 			success = true;
 		} catch (Exception e) {
@@ -291,9 +313,13 @@ public class DataSyncService extends Service {
 		return success;
 	}
 
+	
 	/**
 	 * displays a notification in the system status bar indicating the
 	 * completion of the export/save operation
+	 * 
+	 * TODO: the notifications may not have room to display the entire error message.
+	 * Clicking them should trigger display of the full error by the Survey app
 	 * 
 	 * @param type
 	 */
@@ -307,11 +333,16 @@ public class DataSyncService extends Service {
 			tickerText = getResources().getText(R.string.uploadprogress);
 		} else if (ConstantUtil.FILE_COMPLETE.equals(type)) {
 			tickerText = getResources().getText(R.string.filecomplete);
+		} else if (ConstantUtil.ERROR.equals(type)) {
+			tickerText = getResources().getText(R.string.uploaderror);
 		} else {
-			tickerText = getResources().getText(R.string.nothingtoexport);
+			tickerText = getResources().getText(R.string.nothingtoexport);//This default is unclear to user
 		}
 		ViewUtil.fireNotification(tickerText.toString(),
-				extraText != null ? extraText : "", this, COMPLETE_ID, null);
+				extraText != null ? extraText : "",
+				this,
+				COMPLETE_ID,
+				null);
 	}
 
 	private HashSet<String>[] formZip(String fileName, boolean dataOnly) {
@@ -320,8 +351,12 @@ public class DataSyncService extends Service {
 
 	/**
 	 * create a zip file containing all the submitted data and images
+	 * Upload or include images unless dataOnly is set
 	 * 
-	 * @return
+	 * @return three sets of strings
+	 *   [0] respondent ids
+	 *   [1] region ids
+	 *   [2] zip checksum
 	 */
 	@SuppressWarnings("unchecked")
 	private HashSet<String>[] formZip(String fileName, boolean dataOnly,
@@ -344,7 +379,7 @@ public class DataSyncService extends Service {
 			// now write the data
 			if (idsToUpdate[0].size() > 0 || idsToUpdate[1].size() > 0) {
 				File zipFile = new File(fileName);
-				fileName = zipFile.getAbsolutePath();
+				fileName = zipFile.getAbsolutePath();//Will normalize filename. 
 				Log.i(TAG, "Creating zip file: " + fileName);
 				FileOutputStream fout = new FileOutputStream(zipFile);
 				CheckedOutputStream checkedOutStream = new CheckedOutputStream(
@@ -370,39 +405,38 @@ public class DataSyncService extends Service {
 						String encodedHmac = Base64.encodeBytes(hmac);
 						writeTextToZip(zos, encodedHmac, SIG_FILE_NAME);
 					}
+					// create "queued" status records for the zip file
+					//TODO: this does not always work!
 					for (String id : idsToUpdate[0]) {
-						databaseAdaptor.createTransmissionHistory(new Long(id),
+						databaseAdaptor.createTransmissionHistory(Long.valueOf(id),
 								fileName, null);
 					}
 				}
+				
+				// write region data
 				if (idsToUpdate[1].size() > 0) {
 					writeTextToZip(zos, regionBuf.toString(), REGION_DATA_FILE);
 				}
 
-				// write images if enabled
+				// write or upload images if enabled
 				if (!dataOnly) {
 					byte[] buffer = new byte[BUF_SIZE];
 					for (Entry<String, ArrayList<String>> paths : imagePaths
 							.entrySet()) {
 
 						for (int i = 0; i < paths.getValue().size(); i++) {
+							String ifn = paths.getValue().get(i);
+							
 							if (INCLUDE_IMAGES_IN_ZIP) {
 								try {
 									BufferedInputStream bin = new BufferedInputStream(
-											new FileInputStream(paths
-													.getValue().get(i)));
+											new FileInputStream(ifn));
 									String name = ZIP_IMAGE_DIR;
-									if (imagePaths.get(i).contains("/")) {
+									if (ifn.contains("/")) {
 										name = name
-												+ paths.getValue()
-														.get(i)
-														.substring(
-																paths.getValue()
-																		.get(i)
-																		.lastIndexOf(
-																				"/") + 1);
+												+ ifn.substring(ifn.lastIndexOf("/") + 1);
 									} else {
-										name = name + imagePaths.get(i);
+										name = name + ifn;
 									}
 									zos.putNextEntry(new ZipEntry(name));
 									int bytesRead = bin.read(buffer);
@@ -414,41 +448,45 @@ public class DataSyncService extends Service {
 									zos.closeEntry();
 								} catch (Exception e) {
 									Log.e(TAG, "Could not add image "
-											+ imagePaths.get(i) + " to zip: "
+											+ ifn + " to zip: "
 											+ e.getMessage());
 								}
 							} else {
+								//Upload image files separately
 								try {
 									databaseAdaptor.createTransmissionHistory(
-											new Long(paths.getKey()), paths
-													.getValue().get(i),
+											Long.valueOf(paths.getKey()),
+											ifn,
 											ConstantUtil.IN_PROGRESS_STATUS);
-									boolean isOk = sendFile(
-											paths.getValue().get(i),
+									
+									boolean isOk;
+									if (debugFailMedia)
+										isOk = false;
+									else
+										isOk = sendFile(
+											ifn,
 											S3_IMAGE_FILE_PATH,
 											props.getProperty(ConstantUtil.IMAGE_S3_POLICY),
 											props.getProperty(ConstantUtil.IMAGE_S3_SIG),
 											IMAGE_CONTENT_TYPE);
 									if (isOk) {
-										databaseAdaptor
-												.updateTransmissionHistory(
-														new Long(paths.getKey()),
-														paths.getValue().get(i),
-														ConstantUtil.COMPLETE_STATUS);
+										databaseAdaptor.updateTransmissionHistory(
+												Long.valueOf(paths.getKey()),
+												ifn,
+												ConstantUtil.COMPLETE_STATUS);
 									} else {
-										databaseAdaptor
-												.updateTransmissionHistory(
-														new Long(paths.getKey()),
-														paths.getValue().get(i),
-														ConstantUtil.FAILED_STATUS);
+										databaseAdaptor.updateTransmissionHistory(
+												Long.valueOf(paths.getKey()),
+												ifn,
+												ConstantUtil.FAILED_STATUS);
 									}
 								} catch (Exception e) {
-									Log.e(TAG, "Could not add image "
-											+ imagePaths.get(i) + " to zip: "
+									Log.e(TAG, "Could not upload image "
+											+ ifn + " to server: "
 											+ e.getMessage());
 									databaseAdaptor.updateTransmissionHistory(
-											new Long(paths.getKey()), paths
-													.getValue().get(i),
+											Long.valueOf(paths.getKey()),
+											ifn,
 											ConstantUtil.FAILED_STATUS);
 								}
 							}
@@ -684,7 +722,7 @@ public class DataSyncService extends Service {
 			String fileName = fileAbsolutePath;
 			if (fileName.contains(File.separator)) {
 				fileName = fileName.substring(fileName
-						.lastIndexOf(File.separator));
+						.lastIndexOf(File.separator)); //TODO: Why show separator?
 			}
 			final String fileNameForNotification = fileName;
 			fireNotification(ConstantUtil.PROGRESS, fileName);
@@ -747,7 +785,8 @@ public class DataSyncService extends Service {
 	 * @return
 	 */
 	private String createFileName(boolean isAll) {
-		String fileName =TEMP_FILE_NAME + System.nanoTime() + ".zip"; 
+		//TODO move zip file extension to constantutil
+		String fileName = TEMP_FILE_NAME + System.nanoTime() + ".zip"; 
 		String dir = FileUtil.getStorageDirectory(ConstantUtil.SURVEYAL_DIR,
 				fileName,
 				props.getProperty(ConstantUtil.USE_INTERNAL_STORAGE));

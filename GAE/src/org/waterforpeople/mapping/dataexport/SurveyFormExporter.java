@@ -88,7 +88,7 @@ public class SurveyFormExporter implements DataExporter {
 		questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
 		idToNumberMap = new HashMap<Long, Long>();
 		if (groupList != null) {
-			Long count = new Long(1);
+			Long count = 1L;
 			for (QuestionGroupDto group : groupList) {
 				List<QuestionDto> questions = BulkDataServiceClient
 						.fetchQuestions(serverBase, group.getKeyId());
@@ -148,7 +148,7 @@ public class SurveyFormExporter implements DataExporter {
 		createCell(row, 0, QUESTION_HEADER, headerStyle);
 		createCell(row, 1, RESPONSE_HEADER, headerStyle);
 
-		Long count = new Long(1);
+		Long count = 1L;
 		if (questions != null) {
 			for (int i = 0; i < groupList.size(); i++) {
 				HSSFRow groupHeaderRow = sheet.createRow(curRow++);

@@ -151,7 +151,7 @@ public class SurveyListWidget extends ListBasedWidget implements ContextAware {
 			}
 		}
 		if (idx != null && idx >= 0) {
-			surveyGroup.getSurveyList().remove(idx);
+			surveyGroup.getSurveyList().remove(surveyGroup.getSurveyList().get(idx));
 			final MessageDialog dia = new MessageDialog(
 					TEXT_CONSTANTS.deleting(), TEXT_CONSTANTS.pleaseWait(),
 					true);

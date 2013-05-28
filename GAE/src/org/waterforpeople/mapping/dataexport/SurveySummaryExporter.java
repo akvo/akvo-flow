@@ -427,7 +427,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		private void incrementValue(String key, Map<String, Long> map) {
 			Long val = map.get(key);
 			if (val == null) {
-				val = new Long(1);
+				val = 1L;
 			} else {
 				val++;
 			}
@@ -552,7 +552,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	}
 
 	protected class DescriptiveStats {
-		private double total;
 		private double max;
 		private double min;
 		private double mean;
@@ -562,7 +561,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		private boolean isSorted;
 
 		public DescriptiveStats() {
-			total = 0d;
 			mean = 0d;
 			sampleCount = 0;
 			sumSqMean = 0d;
@@ -584,7 +582,6 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 				return;
 			}
 			sampleCount++;
-			total += val;
 			if (val > max) {
 				max = val;
 			}

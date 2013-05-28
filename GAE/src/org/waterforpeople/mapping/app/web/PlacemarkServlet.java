@@ -289,8 +289,8 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 			List<PlacemarkDto> dtoList = new ArrayList<PlacemarkDto>();
 			for (SurveyedLocale ap : localeList) {
 				dtoList.add(marshallDomainToDto(ap, needDetailsFlag, display));
-				resp.setPlacemarks(dtoList);
 			}
+			resp.setPlacemarks(dtoList);
 		}
 		if (cursor != null) {
 			if (oldCursor == null || !cursor.equals(oldCursor)) {
@@ -369,7 +369,7 @@ public class PlacemarkServlet extends AbstractRestApiServlet {
 	private String getUrlFromStatus(Status status,
 			AccessPoint.AccessPointType pointType) {
 		if (pointType
-				.equals(AccessPoint.AccessPointType.WATER_POINT.toString())
+				.equals(AccessPoint.AccessPointType.WATER_POINT)
 				&& status == null) {
 			return KMLGenerator.WATER_POINT_FUNCTIONING_BLACK_ICON_URL;
 		}

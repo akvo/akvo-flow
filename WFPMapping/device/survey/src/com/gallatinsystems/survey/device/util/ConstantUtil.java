@@ -33,6 +33,7 @@ public class ConstantUtil {
 	 * file system constants
 	 */
 	public static final String DATA_DIR = "fieldsurvey/data/";
+	public static final String APK_DIR = "fieldsurvey/apk/";
 	public static final String SURVEYAL_DIR = "fieldsurvey/surveyal";
 	public static final String FILE_SURVEY_LOCATION_TYPE = "file";
 	public static final String ARCHIVE_SUFFIX = ".zip";
@@ -45,6 +46,11 @@ public class ConstantUtil {
 	public static final String STACKTRACE_DIR = "fieldsurvey/stacktrace/";
 	public static final String STACKTRACE_FILENAME = "err-";
 	public static final String STACKTRACE_SUFFIX = ".stacktrace";
+	
+	/**
+	 * remote dirs
+	 */
+	public static final String REMOTE_APK_DIR = "apk/";
 
 	/**
 	 * survey file locations
@@ -53,6 +59,13 @@ public class ConstantUtil {
 	public static final String FILE_LOCATION = "sdcard";
 
 	/**
+	 * size limits
+	 */
+	public static final long BIG_PHOTO_FILE = 100000; //Bytes
+	public static final String SPACE_WARNING_MB_LEVELS = "100, 50, 25, 10, 5, 1";
+
+	
+		/**
 	 * status related constants
 	 */
 	public static final String COMPLETE_STATUS = "Complete";
@@ -133,8 +146,9 @@ public class ConstantUtil {
 	/**
 	 * operation types
 	 */
-	public static final String USER_OP = "USER";
 	public static final String SURVEY_OP = "SURVEY";
+	public static final String USER_OP = "USER";
+	public static final String PANIC_OP = "PANIC";
 	public static final String CONF_OP = "CONF";
 	public static final String PLOT_OP = "PLOT";
 	public static final String NEARBY_OP = "NEARBY";
@@ -174,6 +188,7 @@ public class ConstantUtil {
 	public static final String IMAGE_CAPTION_LIST_KEY = "imagecaps";
 	public static final String AP_KEY = "accesspoint";
 	public static final String READONLY_KEY = "readonly";
+	public static final String SINGLE_SURVEY_KEY = "single_survey";
 	public static final String CALC_RESULT_KEY = "calcresult";
 	public static final String MODE_KEY = "mode";
 	public static final String POINTS_KEY = "points";
@@ -200,6 +215,9 @@ public class ConstantUtil {
 	public static final String CHECK_FOR_SURVEYS = "survey.checkforupdates";
 	public static final String UPLOAD_ERRORS = "remoteexception.upload";
 	public static final String NEARBY_RADIUS = "nearby.points.radius";
+	public static final String PHOTO_SIZE_REMINDER_KEY = "survey.media.photo.sizereminder";
+	public static final String SHRINK_PHOTOS_KEY = "survey.media.photo.shrink";
+	
 	
 
 	/**
@@ -207,6 +225,8 @@ public class ConstantUtil {
 	 */
 	public static final String LARGE_TXT = "LARGE";
 	public static final String NORMAL_TXT = "NORMAL";
+	
+	
 	/**
 	 * index values into string arrays
 	 */

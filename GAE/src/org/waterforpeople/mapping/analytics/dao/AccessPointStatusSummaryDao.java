@@ -74,7 +74,7 @@ public class AccessPointStatusSummaryDao extends
 		AccessPointStatusSummary summary = null;
 		if ((results == null || results.size() == 0) && unit > 0) {
 			summary = new AccessPointStatusSummary();
-			summary.setCount(new Long(1));
+			summary.setCount(1L);
 			summary.setYear(yearString);
 			summary.setStatus(ap.getPointStatus());
 			if (ap.getCountryCode() != null) {

@@ -32,17 +32,21 @@ public class LocationBeaconRequest extends RestRequest {
 
 	private static final String PHONE_PARAM = "phoneNumber";
 	private static final String LAT_PARAM = "lat";
+	private static final String IMEI_PARAM = "imei";
 	private static final String LON_PARAM = "lon";
 	private static final String ACC_PARAM = "acc";
 	private static final String VER_PARAM = "ver";
 	private static final String DEV_ID_PARAM = "devId";
+	private static final String OSVERSION_PARAM = "osVersion";
 	private static final long serialVersionUID = 4549010911554976717L;
 	private String phoneNumber;
+	private String imei;
 	private Double lat;
 	private Double lon;
 	private Double accuracy;
 	private String appVersion;
 	private String deviceIdentifier;
+	private String osVersion;
 
 	public String getDeviceIdentifier() {
 		return deviceIdentifier;
@@ -66,6 +70,22 @@ public class LocationBeaconRequest extends RestRequest {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	public String getImei() {
+		return imei;
+	}
+
+	public void setImei(String imei) {
+		this.imei = imei;
+	}
+
+	public String getOsVersion() {
+		return osVersion;
+	}
+
+	public void setOsVersion(String osVersion) {
+		this.osVersion = osVersion;
 	}
 
 	public Double getLat() {
@@ -116,6 +136,8 @@ public class LocationBeaconRequest extends RestRequest {
 		phoneNumber = req.getParameter(PHONE_PARAM);
 		appVersion = req.getParameter(VER_PARAM);
 		deviceIdentifier = req.getParameter(DEV_ID_PARAM);
+		imei = req.getParameter(IMEI_PARAM);
+		osVersion = req.getParameter(OSVERSION_PARAM);
 		try {
 			if (req.getParameter(LAT_PARAM) != null) {
 				lat = Double.parseDouble(req.getParameter(LAT_PARAM));

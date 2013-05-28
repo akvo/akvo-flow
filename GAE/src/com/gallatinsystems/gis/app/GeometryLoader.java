@@ -407,7 +407,7 @@ public class GeometryLoader extends JApplet implements Runnable {
 					if (entry.getKey().equalsIgnoreCase(
 							prop.getName().toString())) {
 						if (entry.getKey().equals("ADM0")
-								|| prop.getName().equals("CLNAME")) {
+								|| prop.getName().toString().equals("CLNAME")) {
 							valuesMap.put(entry.getValue(),
 									countryMap.get(prop.getValue().toString()));
 

@@ -111,6 +111,7 @@ public class SurveyAssignmentServiceImpl extends RemoteServiceServlet implements
 	 * 
 	 * @param assignment
 	 */
+	// MTW - has been moved to SurveyAssignmentRestService.java
 	private void generateDeviceJobQueueItems(SurveyAssignment assignment,
 			SurveyAssignment oldAssignment) {
 		List<Long> surveyIdsToSave = new ArrayList<Long>(

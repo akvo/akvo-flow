@@ -77,16 +77,16 @@ public class SettingsActivity extends ListActivity {
 				resources.getString(R.string.sendoptdesc)));
 		list.add(createMap(resources.getString(R.string.exportoptlabel),
 				resources.getString(R.string.exportoptdesc)));
+		list.add(createMap(resources.getString(R.string.reloadsurveyslabel),
+				resources.getString(R.string.reloadsurveysdesc)));
+		list.add(createMap(resources.getString(R.string.downloadsurveylabel),
+				resources.getString(R.string.downloadsurveydesc)));
 		list.add(createMap(resources.getString(R.string.poweroptlabel),
 				resources.getString(R.string.poweroptdesc)));
 		list.add(createMap(resources.getString(R.string.gpsstatuslabel),
 				resources.getString(R.string.gpsstatusdesc)));
-		list.add(createMap(resources.getString(R.string.reloadsurveyslabel),
-				resources.getString(R.string.reloadsurveysdesc)));
 		list.add(createMap(resources.getString(R.string.flushpointslabel),
 				resources.getString(R.string.flushpointsdesc)));
-		list.add(createMap(resources.getString(R.string.downloadsurveylabel),
-				resources.getString(R.string.downloadsurveydesc)));
 		list.add(createMap(resources.getString(R.string.resetall),
 				resources.getString(R.string.resetalldesc)));
 		list.add(createMap(resources.getString(R.string.checksd),

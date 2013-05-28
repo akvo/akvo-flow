@@ -42,7 +42,7 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 	}
 
 	/**
-	 * lists all options for a given quesiton id, including the translations (if
+	 * lists all options for a given question id, including the translations (if
 	 * any)
 	 * 
 	 * @param questionId
@@ -63,6 +63,63 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 			}
 		}
 		return map;
+	}
+
+	/**
+	 * lists all options for a given question id, packed in a string with
+	 * newlines
+	 * 
+	 * @author Mark Tiele Westra
+	 * @param questionId
+	 * @return
+	 */
+	public String listOptionInStringByQuestion(Long questionId) {
+		List<QuestionOption> oList = listByProperty("questionId", questionId,
+				"Long", "order", "asc");
+		String response = "";
+		if (oList != null) {
+			Boolean first = true;
+			for (QuestionOption o : oList) {
+				if (first) {
+					response += o.getText();
+					first = false;
+				} else {
+					response += "\n" + o.getText();
+				}
+			}
+		}
+		return response;
+	}
+
+	/**
+	 * saves all options for a given question id, packed in a string with
+	 * newlines
+	 * 
+	 * @author Mark Tiele Westra
+	 * @param questionId
+	 * @param optionString
+	 * @return
+	 */
+	public void saveOptionInStringByQuestion(Long questionId, String optionList) {
+		if (questionId == null || optionList == null) {
+			return;
+		}
+
+		final String[] newOptionList = optionList.replaceAll("\\n+", "\n")
+				.split("\n");
+
+		QuestionOptionDao questionOptionDao = new QuestionOptionDao();
+		deleteOptionsForQuestion(questionId);
+		Integer i = 1;
+		for (String option : newOptionList) {
+			QuestionOption Qo = new QuestionOption();
+			Qo.setText(option);
+			Qo.setOrder(i);
+			Qo.setQuestionId(questionId);
+			questionOptionDao.save(Qo);
+			i++;
+		}
+
 	}
 
 	/**

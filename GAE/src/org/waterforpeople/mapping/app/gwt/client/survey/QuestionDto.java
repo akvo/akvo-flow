@@ -36,7 +36,12 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private OptionContainerDto optionContainerDto = null;
 	private List<QuestionHelpDto> questionHelpList;
 	private String tip = null;
+	private String optionList = null;
 	private Boolean mandatoryFlag = null;
+	private Boolean dependentFlag = null;
+	private Long dependentQuestionId;
+	private String dependentQuestionAnswer;
+	private Long metricId;
 	private QuestionDependencyDto questionDependency = null;
 	private Long surveyId;
 	private Long questionGroupId;
@@ -53,6 +58,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private Double maxVal;
 	private Boolean isName;
 
+	
 	public Boolean getAllowDecimal() {
 		return allowDecimal;
 	}
@@ -85,6 +91,14 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		this.maxVal = maxVal;
 	}
 
+	public String getOptionList() {
+		return optionList;
+	}
+
+	public void setOptionList(String optionList) {
+		this.optionList = optionList;
+	}
+	
 	public Boolean getIsName() {
 		return isName;
 	}
@@ -97,12 +111,12 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		return path;
 	}
 
-	public String getQuestionTypeString() {
-		return type.toString();
-	}
-
 	public void setPath(String path) {
 		this.path = path;
+	}
+	
+	public String getQuestionTypeString() {
+		return type.toString();
 	}
 
 	public Integer getOrder() {
@@ -237,6 +251,39 @@ public class QuestionDto extends BaseDto implements NamedObject {
 		return questionDependency;
 	}
 
+	public String getDependentQuestionAnswer() {
+		return dependentQuestionAnswer;
+	}
+
+	public void setDependentQuestionAnswer(String dependentQuestionAnswer) {
+		this.dependentQuestionAnswer = dependentQuestionAnswer;
+	}
+
+	public Long getDependentQuestionId() {
+		return dependentQuestionId;
+	}
+
+	public void setDependentQuestionId(Long dependentQuestionId) {
+		this.dependentQuestionId = dependentQuestionId;
+	}
+	
+	public Long getMetricId() {
+		return metricId;
+	}
+
+	public void setMetricId(Long metricId) {
+		this.metricId = metricId;
+	}
+	
+	public Boolean getDependentFlag() {
+		return dependentFlag;
+	}
+
+	public void setDependentFlag(Boolean dependentFlag) {
+		this.dependentFlag = dependentFlag;
+	}
+
+	
 	public enum QuestionType {
 		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE
 	}

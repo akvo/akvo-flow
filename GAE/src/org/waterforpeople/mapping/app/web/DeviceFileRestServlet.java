@@ -86,7 +86,7 @@ public class DeviceFileRestServlet extends AbstractRestApiServlet {
 				.equals(importReq.getAction())) {
 			String deviceFileFullPath = importReq.getDeviceFullPath().trim();
 			Boolean foundFlag = false;
-			if (deviceFileFullPath != "" && deviceFileFullPath != null) {
+			if (deviceFileFullPath != null && !deviceFileFullPath.equals("")) {
 				DeviceFiles df = dfDao.findByUri(deviceFileFullPath);
 				DeviceFileFindRestResponse response = new DeviceFileFindRestResponse();
 				DeviceFilesDto dto=null;
@@ -106,8 +106,7 @@ public class DeviceFileRestServlet extends AbstractRestApiServlet {
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
-		JSONObject obj = new JSONObject(resp, true);
-		getResponse().getWriter().println(obj.toString());
+		getResponse().getWriter().println(new JSONObject(resp).toString());
 	}
 
 }

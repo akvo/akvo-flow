@@ -94,9 +94,15 @@ public interface TextConstants extends Constants{
 	public String question();
 	public String savingDetailsForGroup();
 	public String editTranslations();
+	public String language();
+	public String english();
 	public String kinyarwanda();
 	public String french();
 	public String spanish();
+	public String chichewa();
+	public String bengali();
+	public String hindi();
+	public String quechua();
 	public String text();
 	public String selectSurvey();
 	public String selectCoordinateSystem();
@@ -423,8 +429,6 @@ public interface TextConstants extends Constants{
 	public String clear();
 	public String deleteSelected();
 	public String event();
-	public String language();
-	public String english();
 	public String availableSurveys();
 	public String availableDevices();
 	public String assignedSurveys();
@@ -609,5 +613,9 @@ public interface TextConstants extends Constants{
 	public String includeInPublic();
 	public String countryManagerPortletTitle();
 	public String manageCountries();
+	public String uploadApp();
+	public String uploadAppDescription();
+	public String versionMandatory();
+	public String latestAPK();
 }
 

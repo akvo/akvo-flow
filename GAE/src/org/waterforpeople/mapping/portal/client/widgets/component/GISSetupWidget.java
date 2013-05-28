@@ -224,7 +224,7 @@ public class GISSetupWidget extends Composite implements ChangeHandler {
 	public Double getCentralMeridian() {
 		if (centralMeridian.getText() != null
 				&& centralMeridian.getText().trim().length() > 0
-				&& centralMeridian.getText().trim() != "")
+				&& !centralMeridian.getText().trim().equals(""))
 			return Double.parseDouble(centralMeridian.getText());
 		else
 			return null;

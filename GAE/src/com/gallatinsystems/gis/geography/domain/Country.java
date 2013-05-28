@@ -35,11 +35,11 @@ public class Country extends BaseDomain {
 	private String isoAlpha2Code = null;
 	private String isoAlpha3Code = null;
 	private Integer isoNumeric3Code = null;
-	private Boolean includeInKMZ;
-	private Boolean includeInExternal;
-	private Double centroidLat;
-	private Double centroidLon;
-	
+	private Boolean includeInKMZ = false;
+	private Boolean includeInExternal = false;
+	private Double centroidLat = 0.0d;
+	private Double centroidLon = 0.0d;
+	private Integer zoomLevel = 7;
 	
 
 	public Boolean getIncludeInKMZ() {
@@ -112,6 +112,14 @@ public class Country extends BaseDomain {
 
 	public void setIsoNumeric3Code(Integer isoNumeric3Code) {
 		this.isoNumeric3Code = isoNumeric3Code;
+	}
+
+	public Integer getZoomLevel() {
+		return zoomLevel;
+	}
+
+	public void setZoomLevel(Integer zoomLevel) {
+		this.zoomLevel = zoomLevel;
 	}
 
 }

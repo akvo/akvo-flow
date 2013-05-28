@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -73,6 +73,7 @@ import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceI
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
+import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.test.AccessPointMetricSummaryTest;
 import org.waterforpeople.mapping.app.web.test.AccessPointTest;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
@@ -342,7 +343,7 @@ public class TestHarnessServlet extends HttpServlet {
 				for (Question q : qList) {
 					Integer max = groupMaxCount.get(q.getQuestionGroupId());
 					if (max == null) {
-						max = new Integer(1);
+						max = 1;
 					} else {
 						max = max + 1;
 					}
@@ -373,6 +374,35 @@ public class TestHarnessServlet extends HttpServlet {
 			String lat = req.getParameter("lat");
 			String lon = req.getParameter("lon");
 			GeoPlace geoPlace = gs.manualLookup(lat, lon);
+			try {
+				if (geoPlace != null) {
+					resp.getWriter().println(
+							"Found: " + geoPlace.getCountryName() + ":"
+									+ geoPlace.getCountryCode() + " for " + lat
+									+ ", " + lon);
+					geoPlace = gs.resolveSubCountry(lat, lon,
+							geoPlace.getCountryCode());
+				}
+				if (geoPlace != null)
+					resp.getWriter().println(
+							"Found: " + geoPlace.getCountryCode() + ":"
+									+ geoPlace.getSub1() + ":"
+									+ geoPlace.getSub2() + ":"
+									+ geoPlace.getSub3() + ":"
+									+ geoPlace.getSub4() + ":"
+									+ geoPlace.getSub5() + ":"
+									+ geoPlace.getSub6() + " for " + lat + ", "
+									+ lon);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if ("testDetailedGeoLocation".equals(action)) {
+			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+			GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
+			String lat = req.getParameter("lat");
+			String lon = req.getParameter("lon");
+			GeoPlace geoPlace = gs.manualLookup(lat, lon, OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
 			try {
 				if (geoPlace != null) {
 					resp.getWriter().println(
@@ -746,6 +776,10 @@ public class TestHarnessServlet extends HttpServlet {
 			Country c = new Country();
 			c.setIsoAlpha2Code("HN");
 			c.setName("Honduras");
+			c.setIncludeInExternal(true);
+			c.setCentroidLat(14.7889035);
+			c.setCentroidLon(-86.9500379);
+			c.setZoomLevel(8);
 
 			BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
 			countryDAO.save(c);
@@ -753,7 +787,32 @@ public class TestHarnessServlet extends HttpServlet {
 			Country c2 = new Country();
 			c2.setIsoAlpha2Code("MW");
 			c2.setName("Malawi");
+			c2.setIncludeInExternal(true);
+			c2.setCentroidLat(-13.0118377);
+			c2.setCentroidLon(33.9984484);
+			c2.setZoomLevel(7);
+			
 			countryDAO.save(c2);
+			
+			Country c3 = new Country();
+			c3.setIsoAlpha2Code("UG");
+			c3.setName("Uganda");
+			c3.setIncludeInExternal(true);
+			c3.setCentroidLat(1.1027);
+			c3.setCentroidLon(32.3968);
+			c3.setZoomLevel(7);
+			
+			countryDAO.save(c3);
+
+			Country c4 = new Country();
+			c4.setIsoAlpha2Code("KE");
+			c4.setName("Kenya");
+			c4.setIncludeInExternal(true);
+			c4.setCentroidLat(-1.26103461);
+			c4.setCentroidLon(36.74724467);
+			c4.setZoomLevel(7);
+			
+			countryDAO.save(c4);
 		} else if ("testAPKml".equals(action)) {
 
 			MapFragmentDao mfDao = new MapFragmentDao();
@@ -1761,13 +1820,13 @@ public class TestHarnessServlet extends HttpServlet {
 		}else if("fixImages".equals(action)){
 			String surveyId = req.getParameter("surveyId");
 			String find = req.getParameter("find");
-			String replace = req.getParameter("replace");	
+			String replace = req.getParameter("replace");
 			if(surveyId != null && !surveyId.trim().isEmpty() && find!=null && !find.trim().isEmpty()){
-				fixBadImage(surveyId,find,replace);				
+				fixBadImage(surveyId,find,replace);
 			}
 		}
 	}
-	
+
 	private void fixBadImage(String surveyId, String findString, String replaceString){
 		QuestionAnswerStoreDao dao = new QuestionAnswerStoreDao();
 		String replaceVal = replaceString !=null?replaceString:"";
@@ -1899,18 +1958,9 @@ public class TestHarnessServlet extends HttpServlet {
 		if (user == null) {
 			user = new User();
 			user.setEmailAddress("test@example.com");
-			userDao.save(user);
 		}
-		String permissionList = "";
-		int i = 0;
-		List<Permission> pList = userDao.listPermissions();
-		for (Permission p : pList) {
-			permissionList += p.getCode();
-			if (i < pList.size())
-				permissionList += ",";
-			i++;
-		}
-		user.setPermissionList(permissionList);
+		user.setSuperAdmin(true);
+		user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
 		userDao.save(user);
 	}
 

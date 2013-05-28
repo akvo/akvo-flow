@@ -61,12 +61,14 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		setMode(AbstractRestApiServlet.XML_MODE);
 	}
 
-	private String getSurveyForPhone(String devicePhoneNumber) {
+	//Return a list all the surveys the device needs
+	//use imei or phone number for lookup
+	private String getSurveyForPhone(String devicePhoneNumber, String imei) {
 		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
 		Map<Long, Double> versionMap = new HashMap<Long, Double>();
 		StringBuilder sb = new StringBuilder();
-		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber)) {
+		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
 			Double ver = versionMap.get(dsjq.getSurveyID());
 			if (ver == null) {
 				Survey s = surveyDao.getById(dsjq.getSurveyID());
@@ -133,10 +135,17 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 
 		} else if (SurveyManagerRequest.GET_AVAIL_DEVICE_SURVEY_ACTION
 				.equalsIgnoreCase(req.getAction())) {
-			if (mgrReq.getPhoneNumber() != null) {
-				resp.setMessage(getSurveyForPhone(mgrReq.getPhoneNumber()));
+			//Report which surveys the device should have
+			Device dev = null;
+			if (mgrReq.getPhoneNumber() != null || mgrReq.getImei() != null) {
+				resp.setMessage(getSurveyForPhone(mgrReq.getPhoneNumber(), mgrReq.getImei()));
 				// now check to see if we need to update the device
-				Device dev = deviceDao.get(mgrReq.getPhoneNumber());
+				if (mgrReq.getImei() != null){ 
+					dev = deviceDao.getByImei(mgrReq.getImei());
+				}
+				if (dev == null){
+					dev = deviceDao.get(mgrReq.getPhoneNumber());
+				}
 				if (dev != null) {
 					if (mgrReq.getDeviceId() != null
 							&& mgrReq.getDeviceId().trim().length() > 0) {
@@ -146,6 +155,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 					// we need to create the device since we haven't seen it
 					// before
 					dev = new Device();
+					dev.setEsn(mgrReq.getImei());
 					dev.setPhoneNumber(mgrReq.getPhoneNumber());
 					dev.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
 					dev.setDeviceIdentifier(mgrReq.getDeviceId());

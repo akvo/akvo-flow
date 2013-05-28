@@ -81,7 +81,7 @@ public class ViewUtil {
 		showConfirmDialog(titleId, textId, parentContext, false,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						if(dialog != null){
+						if (dialog != null) {
 							dialog.cancel();
 						}
 					}
@@ -104,7 +104,7 @@ public class ViewUtil {
 				listener, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						if(dialog != null){
+						if (dialog != null) {
 							dialog.dismiss();
 						}
 					}
@@ -163,6 +163,57 @@ public class ViewUtil {
 	}
 
 	/**
+	 * displays a simple dialog box with a single positive button and an
+	 * optional (based on a flag) cancel button using the resource id of the
+	 * string passed in for the title, and a String parameter for the text.
+	 * users can install listeners for both the positive and negative buttons
+	 * 
+	 * @param titleId
+	 * @param text
+	 * @param parentContext
+	 * @param includeNegative
+	 * @param positiveListener
+	 *            - if includeNegative is false, this will also be bound to the
+	 *            cancel handler
+	 * @param negativeListener
+	 *            - only used if includeNegative is true - if the negative
+	 *            listener is non-null, it will also be bound to the cancel
+	 *            listener so pressing back to dismiss the dialog will have the
+	 *            same effect as clicking the negative button.
+	 */
+	public static void showConfirmDialog(int titleId, String text,
+			Context parentContext, boolean includeNegative,
+			final DialogInterface.OnClickListener positiveListener,
+			final DialogInterface.OnClickListener negativeListener) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(parentContext);
+		TextView tipText = new TextView(parentContext);
+		builder.setTitle(titleId);
+		tipText.setText(text);
+		builder.setView(tipText);
+		builder.setPositiveButton(R.string.okbutton, positiveListener);
+		if (includeNegative) {
+			builder.setNegativeButton(R.string.cancelbutton, negativeListener);
+			if (negativeListener != null) {
+				builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						negativeListener.onClick(dialog, -1);
+					}
+				});
+			}
+		} else if (positiveListener != null) {
+			builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					positiveListener.onClick(dialog, -1);
+				}
+			});
+		}
+
+		builder.show();
+	}
+
+	/**
 	 * displays a notification in the system status bar
 	 * 
 	 * @param headline
@@ -185,6 +236,25 @@ public class ViewUtil {
 		Notification notification = new Notification(icon, headline,
 				System.currentTimeMillis());
 		Intent notificationIntent = new Intent(context, DataSyncService.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+				notificationIntent, 0);
+		notification.setLatestEventInfo(context, headline, body, contentIntent);
+		notifcationMgr.notify(id, notification);
+	}
+
+	public static void fireNotification(String headline, String body,
+			Context context, int id, Integer iconId, Intent notificationIntent,
+			boolean includeSound) {
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager notifcationMgr = (NotificationManager) context
+				.getSystemService(ns);
+		int icon = android.R.drawable.ic_dialog_info;
+		if (iconId != null) {
+			icon = iconId;
+		}
+		Notification notification = new Notification(icon, headline,
+				System.currentTimeMillis());
+		notification.defaults |= Notification.DEFAULT_SOUND;
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
 				notificationIntent, 0);
 		notification.setLatestEventInfo(context, headline, body, contentIntent);
@@ -282,7 +352,7 @@ public class ViewUtil {
 										public void onClick(
 												DialogInterface dialog,
 												int which) {
-											if(dialog != null){
+											if (dialog != null) {
 												dialog.dismiss();
 											}
 											displaySelectionDialog(context,
@@ -317,13 +387,13 @@ public class ViewUtil {
 						String val = input.getText().toString();
 						if (ConstantUtil.ADMIN_AUTH_CODE.equals(val)) {
 							listener.onAuthenticated();
-							if(dialog!=null){
+							if (dialog != null) {
 								dialog.dismiss();
 							}
 						} else {
 							showConfirmDialog(R.string.authfailed,
 									R.string.invalidpassword, parentContext);
-							if(dialog != null){
+							if (dialog != null) {
 								dialog.dismiss();
 							}
 						}
@@ -360,7 +430,7 @@ public class ViewUtil {
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						if(dialog!=null){
+						if (dialog != null) {
 							dialog.dismiss();
 						}
 					}

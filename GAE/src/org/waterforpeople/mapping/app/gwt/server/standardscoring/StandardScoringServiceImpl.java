@@ -261,14 +261,14 @@ public class StandardScoringServiceImpl extends RemoteServiceServlet implements
 		// criteriaType.addItem("Number", "Number");
 		// criteriaType.addItem("True/False", "Boolean");
 		// criteriaType.addItem("Distance", "Distance");
-		StandardValueType apAttrType = null;
-		if (item.getCriteriaType().equalsIgnoreCase("Number")) {
-			apAttrType = StandardValueType.Number;
-		} else if (item.getCriteriaType().equalsIgnoreCase("STRING")) {
-			apAttrType = StandardValueType.String;
-		} else if (item.getCriteriaType().equalsIgnoreCase("BOOLEAN")) {
-			apAttrType = StandardValueType.Boolean;
-		}
+//		StandardValueType apAttrType = null;
+//		if (item.getCriteriaType().equalsIgnoreCase("Number")) {
+//			apAttrType = StandardValueType.Number;
+//		} else if (item.getCriteriaType().equalsIgnoreCase("STRING")) {
+//			apAttrType = StandardValueType.String;
+//		} else if (item.getCriteriaType().equalsIgnoreCase("BOOLEAN")) {
+//			apAttrType = StandardValueType.Boolean;
+//		}
 		standard.setEffectiveStartDate(item.getEffectiveStartDate());
 		standard.setEffectiveEndDate(item.getEffectiveEndDate());
 		standard.setStandardDescription(item.getDisplayName());

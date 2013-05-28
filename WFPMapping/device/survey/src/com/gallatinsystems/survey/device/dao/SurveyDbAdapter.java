@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -102,7 +103,7 @@ public class SurveyDbAdapter {
 			+ "display_name text not null, version real, type text, location text, filename text, language, help_downloaded_flag text, deleted_flag text);";
 
 	private static final String SURVEY_RESPONDENT_CREATE = "create table survey_respondent (_id integer primary key autoincrement, "
-			+ "survey_id integer not null, submitted_flag text, submitted_date text,delivered_date text, user_id integer, media_sent_flag text, status text, saved_date long, exported_flag text, uuid text);";
+			+ "survey_id integer not null, submitted_flag text, submitted_date text, delivered_date text, user_id integer, media_sent_flag text, status text, saved_date long, exported_flag text, uuid text);";
 
 	private static final String SURVEY_RESPONSE_CREATE = "create table survey_response (survey_response_id integer primary key autoincrement, "
 			+ " survey_respondent_id integer not null, question_id text not null, answer_value text not null, answer_type text not null, include_flag text not null, scored_val text, strength text);";
@@ -175,6 +176,7 @@ public class SurveyDbAdapter {
 	static class DatabaseHelper extends SQLiteOpenHelper {
 
 		private static SQLiteDatabase database;
+		@SuppressLint("UseValueOf")
 		private static volatile Long LOCK_OBJ = new Long(1);
 		private volatile static int instanceCount = 0;
 		private Context context;
@@ -1043,24 +1045,55 @@ public class SurveyDbAdapter {
 	}
 
 	/**
-	 * lists all survey respondents by status
+	 * lists all survey respondents with specified status
+	 * sorted by creation order (primary key)
+	 * or delivered date
 	 * 
 	 * @param status
 	 * @return
 	 */
-	public Cursor listSurveyRespondent(String status) {
+	public Cursor listSurveyRespondent(String status, boolean byDelivered) {
 		String[] whereParams = { status };
+		String sortBy;
+		if (byDelivered){
+			sortBy = "case when " + DELIVERED_DATE_COL + " is null then 0 else 1 end, " + DELIVERED_DATE_COL + " desc"; 
+		} else {
+			sortBy = RESPONDENT_TABLE + "." + PK_ID_COL + " desc";
+		}
 		Cursor cursor = database.query(RESPONDENT_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
 				SAVED_DATE_COL, SURVEY_FK_COL, USER_FK_COL, SUBMITTED_DATE_COL,
-				DELIVERED_DATE_COL, UUID_COL }, "status = ?", whereParams,
-				null, null, null);
+				DELIVERED_DATE_COL, UUID_COL },
+				"status = ?", whereParams,
+				null,
+				null,
+				sortBy);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
 		return cursor;
 	}
 
+	/**
+	 * count survey respondents by status
+	 * 
+	 * @param status
+	 * @return
+	 */
+	public int countSurveyRespondents(String status) {
+		String[] whereParams = { status };
+		int i = 0;
+		Cursor cursor = database.rawQuery("SELECT COUNT(*) as theCount FROM survey_respondent WHERE status = ?",
+				whereParams);
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				i = cursor.getInt(0);
+			}
+			cursor.close();
+		}
+		return i;
+	}
+	
 	/**
 	 * Lists all non-deleted surveys from the database
 	 */
@@ -1349,6 +1382,7 @@ public class SurveyDbAdapter {
 		ArrayList<PointOfInterest> points = null;
 		String whereClause = null;
 		String[] whereValues; //unfortunately, length of this array must match the number of ?'s in the whereClause
+		@SuppressWarnings("unused")
 		int i;
 		//Maximum angular difference for a given radius. Must avoid problems at high latitudes....
 		double nsDegrees = radius * 360 / 40000000;
@@ -1434,7 +1468,7 @@ public class SurveyDbAdapter {
 											 point.getLatitude(),point.getLongitude(),
 											 distance);
 					if (distance[0] < radius){//now keep only those within actual distance
-						point.setDistance(new Double(distance[0]));
+						point.setDistance(Double.valueOf(distance[0]));
 						points.add(point);
 					}
 				} while (cursor.moveToNext());
@@ -1444,12 +1478,14 @@ public class SurveyDbAdapter {
 		return points;
 	}
 
+	
 	/**
 	 * inserts a transmissionHistory row into the db
 	 * 
 	 * @param respId
 	 * @param fileName
-	 * @return
+	 * @param status
+	 * @return uid of created record
 	 */
 	public Long createTransmissionHistory(Long respId, String fileName,
 			String status) {
@@ -1472,18 +1508,18 @@ public class SurveyDbAdapter {
 		return idVal;
 	}
 
+	
 	/**
-	 * updates the transmisson history record with the status passed in. If the
-	 * status == Completed, the completion date is updated.
+	 * updates the first matching transmission history record with the status passed in.
+	 * If the status == Completed, the completion date is updated.
+	 * If the status == In Progress, the start date is updated.
 	 * 
 	 * @param respondId
 	 * @param fileName
 	 * @param status
 	 */
-	public void updateTransmissionHistory(Long respondId, String fileName,
-			String status) {
-		ArrayList<FileTransmission> transList = listFileTransmission(respondId,
-				fileName, true);
+	public void updateTransmissionHistory(Long respondId, String fileName, String status) {
+		ArrayList<FileTransmission> transList = listFileTransmission(respondId,	fileName, true);
 		Long idVal = null;
 		if (transList != null && transList.size() > 0) {
 			idVal = transList.get(0).getId();
@@ -1499,9 +1535,17 @@ public class SurveyDbAdapter {
 				database.update(TRANSMISSION_HISTORY_TABLE, vals, PK_ID_COL
 						+ " = ?", new String[] { idVal.toString() });
 			}
+			else //it should have been found
+				Log.e(TAG,
+						"Could not update transmission history record for respondent_id "
+								+ respondId
+								+ " filename "
+								+ fileName);
+
 		}
 	}
 
+	
 	/**
 	 * lists all the file transmissions for the values passed in.
 	 * 

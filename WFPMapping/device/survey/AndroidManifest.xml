@@ -2,8 +2,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.gallatinsystems.survey.device" android:versionCode="1"
 	android:versionName="1.0">
+	<uses-sdk android:minSdkVersion="6" android:targetSdkVersion="7" />
+	<uses-permission android:name="android.permission.CAMERA" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+	
+	<uses-feature android:name="android.hardware.camera" />
+
 	<application android:icon="@drawable/acrlogo"
-		android:label="@string/app_name" android:debuggable="false">
+		android:label="@string/app_name" android:hasCode="true">
 		
 		<activity android:name=".activity.SurveyHomeActivity" android:label="@string/app_name">
 			<intent-filter>
@@ -11,7 +24,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".activity.SurveyViewActivity" />
+		<activity android:name=".activity.SurveyViewActivity" android:configChanges="keyboardHidden|orientation"/>
 		<activity android:name=".activity.ListUserActivity" />
 		<activity android:name=".activity.UserEditActivity" />
 		<activity android:name=".activity.SettingsActivity" />
@@ -23,6 +36,9 @@
 		<activity android:name=".activity.NearbyItemActivity"/>
 		<activity android:name=".activity.NearbyItemDetailActivity"/>
 		<activity android:name=".activity.SurveyReviewActivity"/>
+		<activity android:name=".activity.SubmittedSurveyReviewActivity"/>
+		<activity android:name=".activity.SavedSurveyReviewActivity"/>
+		<activity android:name=".activity.SurveyStatusHomeActivity"/>
 		<activity android:name=".activity.WaterflowCalculatorActivity"/>
 		<activity android:name=".activity.PointOfInterestMapActivity"/>
 		<activity android:name=".activity.TransmissionHistoryActivity"/>
@@ -35,6 +51,7 @@
 		<service android:name=".service.PrecacheService" />
 		<service android:name=".service.BootstrapService" />
 		<service android:name=".service.ExceptionReportingService" />
+		<service android:name=".service.ApkUpdateService"/>
 
 		<receiver android:name=".broadcast.BroadcastDispatcher" >
 			<intent-filter>
@@ -47,17 +64,6 @@
 		<uses-library android:name="com.google.android.maps" />
 	</application>
 
-	<uses-sdk android:minSdkVersion="6" />
 
-	<uses-permission android:name="android.permission.CAMERA" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
-	<uses-feature android:name="android.hardware.camera" />
 
 </manifest> 

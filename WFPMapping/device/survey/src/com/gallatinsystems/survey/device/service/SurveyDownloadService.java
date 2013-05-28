@@ -74,6 +74,7 @@ public class SurveyDownloadService extends Service {
 	private static final String SURVEY_LIST_SERVICE_PATH = "/surveymanager?action=getAvailableSurveysDevice&devicePhoneNumber=";
 	private static final String SURVEY_HEADER_SERVICE_PATH = "/surveymanager?action=getSurveyHeader&surveyId=";
 	private static final String DEV_ID_PARAM = "&devId=";
+	private static final String IMEI_PARAM = "&imei=";
 	@SuppressWarnings("unused")
 	private static final String SURVEY_SERVICE_SERVICE_PATH = "/surveymanager?surveyId=";
 	private static final String SD_LOC = "sdcard";
@@ -453,8 +454,9 @@ public class SurveyDownloadService extends Service {
 		String response = null;
 		ArrayList<Survey> surveys = new ArrayList<Survey>();
 		try {
-			response = HttpUtil.httpGet(serverBase + SURVEY_LIST_SERVICE_PATH
-					+ StatusUtil.getPhoneNumber(this)
+			response = HttpUtil.httpGet(serverBase
+					+ SURVEY_LIST_SERVICE_PATH + URLEncoder.encode(StatusUtil.getPhoneNumber(this), "UTF-8")
+					+ IMEI_PARAM + URLEncoder.encode(StatusUtil.getImei(this), "UTF-8")
 					+ (deviceId != null ? DEV_ID_PARAM + URLEncoder.encode(deviceId, "UTF-8") : ""));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");

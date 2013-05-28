@@ -145,11 +145,11 @@ public class QuestionDao extends BaseDAO<Question> {
 				}
 			} else {
 				throw new IllegalDeletionException(
-						"Cannot delete questionId: "
+						"Cannot delete question with id "
 								+ question.getKey().getId()
-								+ " surveyCode:"
+								+ " ("
 								+ question.getText()
-								+ " because there is a QuestionAnswerStore value for this question. Please delete all survey response first");
+								+ ") because there are already survey responses stored for this question. Please delete all survey responses first.");
 			}
 		}
 	}
@@ -187,6 +187,29 @@ public class QuestionDao extends BaseDAO<Question> {
 					orderedQuestionList.add(q);
 				}
 			}
+		}
+		return orderedQuestionList;
+	}
+
+	/**
+	 * list questions in order, by using question groups.
+	 * author: Mark Tiele Westra
+	 * @param surveyId
+	 * @return
+	 */
+	public List<Question> listQuestionsInOrder(Long surveyId) {
+		List<Question> orderedQuestionList = new ArrayList<Question>();
+		QuestionGroupDao qgDao = new QuestionGroupDao();
+		List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(surveyId);
+
+		// for each question group, get the questions in the right order and put them in the list
+		for (QuestionGroup qg : qgList) {
+			List<Question> qList = listByProperty("questionGroupId", qg
+					.getKey().getId(), "Long", "order", "asc");
+			for (Question q : qList) {
+				orderedQuestionList.add(q);
+			}
+
 		}
 		return orderedQuestionList;
 	}
@@ -407,7 +430,6 @@ public class QuestionDao extends BaseDAO<Question> {
 				questionGroupId, "Long", "order", "asc");
 		TreeMap<Integer, Question> map = new TreeMap<Integer, Question>();
 		if (qList != null) {
-			int i = 1;
 			for (Question q : qList) {
 
 				if (needDetails) {
@@ -431,7 +453,6 @@ public class QuestionDao extends BaseDAO<Question> {
 				}
 				if (q.getOrder() == null) {
 					q.setOrder(qList.size() + 1);
-					i++;
 				} else if (allowSideEffects) {
 					if (map.size() > 0 && !(q.getOrder() > map.size())) {
 						q.setOrder(map.size() + 1);

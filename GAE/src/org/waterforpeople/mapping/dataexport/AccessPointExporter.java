@@ -49,9 +49,18 @@ public class AccessPointExporter extends AbstractDataExporter {
 	private static final String RESPONSE_KEY = "accessPointDto";
 	private static final String NULL_STR = "null";
 	private List<String> headers;
-	private static final DateFormat DATE_FMT = DateFormat.getDateInstance();
-	private static final DateFormat IN_DATE_FMT = new SimpleDateFormat(
-			"EEE MMM dd HH:mm:ss zzz yyyy");
+	private static final ThreadLocal<DateFormat> DATE_FMT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return DateFormat.getDateInstance();
+		};
+	};
+	private static final ThreadLocal<DateFormat> IN_DATE_FMT = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+		};
+	};
 
 	/**
 	 * Executes the export. It will fetch data from the server in a loop until
@@ -150,7 +159,7 @@ public class AccessPointExporter extends AbstractDataExporter {
 							if (dateString != null
 									&& !NULL_STR.equalsIgnoreCase(dateString
 											.trim())) {
-								field.set(point, IN_DATE_FMT.parse(json
+								field.set(point, IN_DATE_FMT.get().parse(json
 										.getString(header)));
 							}
 						} else if (field.getType() == Double.class) {
@@ -247,7 +256,7 @@ public class AccessPointExporter extends AbstractDataExporter {
 				if (field.getType() == Date.class) {
 					Date temp = (Date) field.get(dto);
 					if (temp != null) {
-						pw.write(DATE_FMT.format(temp));
+						pw.write(DATE_FMT.get().format(temp));
 					}
 				} else if (field.getType() == String.class) {
 					String temp = (String) field.get(dto);

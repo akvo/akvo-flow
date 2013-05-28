@@ -19,6 +19,7 @@
 		<property name="storepass" value="$storepass" />
 		<property name="keypass" value="$keypass" />
 		<property name="alias" value="$alias" />
+		<property name="flowServices" value="http://services.akvoflow.org" />
 		<property name="google_spreadsheet_url"
 			value="http://spreadsheets.google.com/feeds/spreadsheets/private/full" />
 		<property name="next_url"
@@ -32,8 +33,8 @@
 			value="$s3url/devicezip/" />
 		<property name="emailFromAddress" value="$reportsEmailAddress" />
 		<property name="recipientListString"
-			value="dru.borden@gmail.com;Dru Borden|caetie@akvo.org;Caetie Ofiesh|m.t.westra@akvo.org;Mark Westra|stellanl@akvo.org;Stellan Lagerstrom" />
-		<property name="defaultPhotoCaption" value="$defaultPhotoCaption" />
+			value="flowerrors@akvo.org;FLOW Errors List" />
+		<property name="defaultPhotoCaption" value="$organization" />
 		<property name="surveyuploadsig" value="$surveyS3Sig" />
 		<property name="surveyuploadpolicy"
 			value="$surveyPolicy"/>
@@ -51,17 +52,17 @@
 		<property name="organization" value="$organization"/>
 		<property name="signingKey" value="$signingKey" />
 		<property name="allowUnsignedData" value="true" />
-		<property name="defaultOrg" value="$defaultOrg" />
-		<property name="domainType" value="accessPoint" />
+		<property name="defaultOrg" value="$organization" />
+		<property name="domainType" value="locale" />
 		<property name="exportedProperties" value="defaultOrg,domainType,pointTypes" />
 		<property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution"/>
 		<property name="optionRenderMode" value="radio"/>
 		<property name="backendpublish" value="false"/>
 		<property name="cacheExpirySeconds" value="3600"/>
-		<property name="useLongDates" value="false"/>
+		<property name="useLongDates" value="true"/>
 		<property name="statusQuestionText" value="water available on the day;Yes=FUNCTIONING_HIGH;No=BROKEN_DOWN;DEFAULT=BROKEN_DOWN"/>
-		<property name="mergeNearbyLocales" value="true"/>
-		<property name="scoreAPDynamicFlag" value="true"/>
+		<property name="mergeNearbyLocales" value="false"/>
+		<property name="scoreAPDynamicFlag" value="false"/>
 		<property name="asyncTaskTimeout" value="16384"/>
 		<property name="enableRestSecurity" value="false"/>
 		<property name="restPrivateKey" value="test"/>

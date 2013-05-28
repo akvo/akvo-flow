@@ -1,0 +1,221 @@
+/*
+ *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *
+ *  This file is part of Akvo FLOW.
+ *
+ *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+ *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+ *  either version 3 of the License or any later version.
+ *
+ *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License included below for more details.
+ *
+ *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+ */
+package org.waterforpeople.mapping.app.web.rest;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
+import org.waterforpeople.mapping.app.web.rest.dto.UserPayload;
+import org.waterforpeople.mapping.app.web.rest.security.AppRole;
+
+import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.user.app.gwt.client.UserDto;
+import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.user.domain.User;
+import com.google.appengine.api.users.UserServiceFactory;
+
+@Controller
+@RequestMapping("/users")
+public class UserRestService {
+
+	@Inject
+	private UserDao userDao;
+
+	// TODO put in meta information?
+	// list all users
+	@RequestMapping(method = RequestMethod.GET, value = "")
+	@ResponseBody
+	public Map<String, List<UserDto>> listUsers(
+			@RequestParam(value = "currUser", defaultValue = "") String currUser) {
+		final Map<String, List<UserDto>> response = new HashMap<String, List<UserDto>>();
+		List<UserDto> results = new ArrayList<UserDto>();
+
+		// TODO check if this part works
+		if ("true".equals(currUser)) {
+			com.google.appengine.api.users.UserService userService = UserServiceFactory
+					.getUserService();
+			com.google.appengine.api.users.User currentUser = userService
+					.getCurrentUser();
+			if (currentUser != null) {
+				UserDto dto = new UserDto();
+				dto.setEmailAddress(currentUser.getEmail());
+				dto.setUserName(currentUser.getFederatedIdentity());
+				results.add(dto);
+			}
+
+		} else {
+			List<User> users = userDao.list(Constants.ALL_RESULTS);
+			if (users != null) {
+				for (User u : users) {
+					if ("0".equals(u.getPermissionList())
+							|| Boolean.TRUE.equals(u.isSuperAdmin())) {
+						continue;
+					}
+					UserDto dto = new UserDto();
+					BeanUtils.copyProperties(u, dto, new String[] { "config" });
+					if (u.getKey() != null) {
+						dto.setKeyId(u.getKey().getId());
+					}
+					results.add(dto);
+				}
+			}
+		}
+
+		response.put("users", results);
+		return response;
+	}
+
+	// find a single user by the userId
+	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
+	@ResponseBody
+	public Map<String, UserDto> findUser(@PathVariable("id") Long id) {
+		final Map<String, UserDto> response = new HashMap<String, UserDto>();
+		User u = userDao.getByKey(id);
+		UserDto dto = null;
+		if (u != null) {
+			dto = new UserDto();
+			BeanUtils.copyProperties(u, dto, new String[] { "config" });
+			if (u.getKey() != null) {
+				dto.setKeyId(u.getKey().getId());
+			}
+		}
+		response.put("user", dto);
+		return response;
+
+	}
+
+	// delete user by id
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+	@ResponseBody
+	public Map<String, RestStatusDto> deleteUserById(@PathVariable("id") Long id) {
+		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+		User u = userDao.getByKey(id);
+		RestStatusDto statusDto = null;
+		statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
+		// check if user exists in the datastore
+		if (u != null) {
+			// delete user group
+			userDao.delete(u);
+			statusDto.setStatus("ok");
+		}
+		response.put("meta", statusDto);
+		return response;
+	}
+
+	// update existing user
+	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+	@ResponseBody
+	public Map<String, Object> saveExistingUser(@RequestBody UserPayload payLoad) {
+		final UserDto userDto = payLoad.getUser();
+		final Map<String, Object> response = new HashMap<String, Object>();
+		UserDto dto = null;
+
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
+		// if the POST data contains a valid userDto, continue.
+		// Otherwise, server will respond with 400 Bad Request
+		if (userDto != null) {
+			Long keyId = userDto.getKeyId();
+			User u;
+
+			// if the userDto has a key, try to get the user.
+			if (keyId != null) {
+				u = userDao.getByKey(keyId);
+				// if we find the user, update it's properties
+				if (u != null) {
+					// copy the properties, except the createdDateTime property,
+					// because it is set in the Dao.
+					BeanUtils.copyProperties(userDto, u, new String[] {
+							"createdDateTime", "config" });
+
+					if (u.getPermissionList().equals(
+							String.valueOf(AppRole.SUPER_ADMIN.getLevel()))) {
+						u.setPermissionList(String.valueOf(AppRole.USER
+								.getLevel()));
+					}
+
+					u = userDao.save(u);
+					dto = new UserDto();
+					BeanUtils.copyProperties(u, dto, new String[] { "config" });
+					if (u.getKey() != null) {
+						dto.setKeyId(u.getKey().getId());
+					}
+					statusDto.setStatus("ok");
+				}
+			}
+		}
+		response.put("meta", statusDto);
+		response.put("user", dto);
+		return response;
+	}
+
+	// create new user
+	@RequestMapping(method = RequestMethod.POST, value = "")
+	@ResponseBody
+	public Map<String, Object> saveNewUser(@RequestBody UserPayload payLoad) {
+		final UserDto userDto = payLoad.getUser();
+		final Map<String, Object> response = new HashMap<String, Object>();
+		UserDto dto = null;
+
+		RestStatusDto statusDto = new RestStatusDto();
+		statusDto.setStatus("failed");
+
+		// if the POST data contains a valid userDto, continue.
+		// Otherwise, server will respond with 400 Bad Request
+		if (userDto != null) {
+			User u = new User();
+
+			// copy the properties, except the createdDateTime property, because
+			// it is set in the Dao.
+			BeanUtils.copyProperties(userDto, u, new String[] {
+					"createdDateTime", "config" });
+
+			if (u.getPermissionList().equals(
+					String.valueOf(AppRole.SUPER_ADMIN.getLevel()))) {
+				u.setPermissionList(String.valueOf(AppRole.USER.getLevel()));
+			}
+
+			u = userDao.save(u);
+
+			dto = new UserDto();
+			BeanUtils.copyProperties(u, dto, new String[] { "config" });
+			if (u.getKey() != null) {
+				dto.setKeyId(u.getKey().getId());
+			}
+			statusDto.setStatus("ok");
+		}
+
+		response.put("meta", statusDto);
+		response.put("user", dto);
+		return response;
+	}
+}

@@ -21,6 +21,8 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
 
 /**
  * handles updates to questionSummary objects
@@ -48,15 +50,19 @@ public class SurveyQuestionSummaryUpdater implements DataSummarizer {
 			Integer offset, String cursor) {
 
 		DataChangeRecord changeRecord = new DataChangeRecord(value);
-		SurveyQuestionSummaryDao.incrementCount(
-				constructQAS(changeRecord.getId(), changeRecord.getOldVal()),
-				-1);
-		if (changeRecord.getNewVal() != null
-				&& changeRecord.getNewVal().trim().length() > 0) {
+		QuestionDao qDao = new QuestionDao();
+		Question q = qDao.getByKey(new Long(changeRecord.getId()));
+		if (q != null && Question.Type.OPTION.equals(q.getType())) {
 			SurveyQuestionSummaryDao
 					.incrementCount(
 							constructQAS(changeRecord.getId(),
-									changeRecord.getNewVal()), 1);
+									changeRecord.getOldVal()), -1);
+			if (changeRecord.getNewVal() != null
+					&& changeRecord.getNewVal().trim().length() > 0) {
+				SurveyQuestionSummaryDao.incrementCount(
+						constructQAS(changeRecord.getId(),
+								changeRecord.getNewVal()), 1);
+			}
 		}
 
 		return true;

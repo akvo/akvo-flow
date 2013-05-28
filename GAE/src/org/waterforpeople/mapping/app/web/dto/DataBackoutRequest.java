@@ -50,7 +50,12 @@ public class DataBackoutRequest extends RestRequest {
 	public static final String DATE_PARAM = "date";
 	public static final String INCLUDE_DATE_PARAM = "includeDate";
 
-	private static final DateFormat inFmt = new SimpleDateFormat("yyyy-MM-dd");
+	private static final ThreadLocal<DateFormat> inFmt = new ThreadLocal<DateFormat>() {
+		@Override
+		protected DateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd");
+		};
+	};
 
 	private Long surveyId;
 	private Long surveyInstanceId;
@@ -122,7 +127,7 @@ public class DataBackoutRequest extends RestRequest {
 			surveyInstanceId = Long.parseLong(instanceId.trim());
 		}
 		if (req.getParameter(DATE_PARAM) != null) {
-			date = inFmt.parse(req.getParameter(DATE_PARAM));
+			date = inFmt.get().parse(req.getParameter(DATE_PARAM));
 		}
 		if (req.getParameter(INCLUDE_DATE_PARAM) != null) {
 			includeDate = Boolean.parseBoolean(req
