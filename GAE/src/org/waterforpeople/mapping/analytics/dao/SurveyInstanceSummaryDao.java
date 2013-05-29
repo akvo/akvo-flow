@@ -62,7 +62,8 @@ public class SurveyInstanceSummaryDao extends BaseDAO<SurveyInstanceSummary> {
 				.declareParameters("String countryCodeParam, String communityCodeParam, Date collectionDateParam");
 		// have to import the date class before we can use it
 		query.declareImports("import java.util.Date");
-		List results = (List) query.execute(community, country, colDate);
+		List results = (List) query.execute(country,community, colDate);
+	
 		SurveyInstanceSummary summary = null;
 		if (results == null || results.size() == 0) {
 			summary = new SurveyInstanceSummary();
