@@ -257,6 +257,7 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
 FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({
   response: DS.attr('string'),
   count: DS.attr('number'),
+  percentage: null,
   questionId: DS.attr('string')
 });
 

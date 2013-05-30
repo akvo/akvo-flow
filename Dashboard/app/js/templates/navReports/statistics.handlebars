@@ -31,7 +31,7 @@
         <tbody>
             <tr>
               <td class="metric" style="text-align:left;"><strong>Respondents</strong></td>
-              <td class="metricValue" style="text-align:left;">value</td>
+              <td class="metricValue" style="text-align:left;">{{FLOW.statisticsControl.total}}</td>
             </tr>
           {{#each metric in FLOW.statisticsControl.arrangedContent}}
             <tr>
@@ -40,7 +40,7 @@
             </tr>
            {{#view FLOW.StatisticsMetricView contentBinding="metric"}}
             {{#each answer in view.answers}}
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{answer.response}}:&nbsp;&nbsp;&nbsp;{{answer.count}}<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{answer.response}}: &nbsp;&nbsp;&nbsp; {{answer.count}} &nbsp;&nbsp;&nbsp;({{answer.percentage}}%)<br>
               {{/each}}
            {{/view}}
           {{/each}}

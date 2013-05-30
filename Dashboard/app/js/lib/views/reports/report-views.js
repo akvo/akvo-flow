@@ -5,11 +5,22 @@ FLOW.StatisticsMetricView = FLOW.View.extend({
   answers: null,
 
   fillAnswers: function(){
-    var qId = this.content.get('questionId');
-    QA = FLOW.store.filter(FLOW.SurveyQuestionSummary,function(item){
+    var qId, total, percentage;
+    qId = this.content.get('questionId');
+    SQS = FLOW.store.filter(FLOW.SurveyQuestionSummary,function(item){
       return (item.get('questionId') == qId);
     });
-    this.set('answers',QA);
+    this.set('answers',SQS);
+    total = 0;
+    SQS.forEach(function(item){
+      total += item.get('count');
+    });
+    SQS.forEach(function(item){
+      percentage = 100 * item.get('count')/total
+      item.set('percentage',percentage.toFixed(1));
+    });
+    FLOW.statisticsControl.get('totalsSurveys').push(total);
+    FLOW.statisticsControl.computeTotal();
   }.observes('FLOW.statisticsControl.QAcontent.content.isLoaded')
 }),
 

@@ -39,6 +39,12 @@ FLOW.statisticsControl = Ember.ArrayController.create({
   QAcontent:null,
   sortProperties: ['name'],
   sortAscending: true,
+  totalsSurveys:[],
+  total:null,
+
+  computeTotal: function(){
+    this.set('total',Math.max.apply(Math, this.get('totalsSurveys')));
+  },
 
   getMetrics: function(){
     if (!Ember.none(this.get('selectedSurvey'))){
