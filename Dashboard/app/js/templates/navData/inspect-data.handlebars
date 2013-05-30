@@ -60,6 +60,7 @@
       <table class="dataTable" id="surveyDataTable">
         <thead>
           <tr>
+              <th class="noArrows"></th>
               <th class="noArrows">{{t _id}}</th>
               <th class="noArrows">{{t _survey}}</th>
               <th class="noArrows">{{t _submitter}}</th>
@@ -72,6 +73,7 @@
           {{#each SI in FLOW.surveyInstanceControl}}
             {{#unless SI.isDeleted}}
             <tr>
+              <td class="device">{{#view FLOW.DataNumView contentBinding="SI"}}{{view.rownum}}{{/view}}</td>
               <td class="device">{{SI.keyId}}</td>
               <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
               <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
