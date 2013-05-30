@@ -73,7 +73,7 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
  */
 public class DataSyncService extends Service {
 
-	private static final String TAG = "DATA_SYNC_ACTIVITY";
+	private static final String TAG = "DATA_SYNC_SERVICE";
 	private static final String NOTHING = "NADA";
 	private static final String DELIMITER = "\t";
 
@@ -110,6 +110,8 @@ public class DataSyncService extends Service {
 	private static Semaphore lock = new Semaphore(1);
 	private static int counter = 0;
 	private PropertyUtil props;
+	
+	private boolean debugFailMedia = false;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -456,7 +458,12 @@ public class DataSyncService extends Service {
 											Long.valueOf(paths.getKey()),
 											ifn,
 											ConstantUtil.IN_PROGRESS_STATUS);
-									boolean isOk = sendFile(
+									
+									boolean isOk;
+									if (debugFailMedia)
+										isOk = false;
+									else
+										isOk = sendFile(
 											ifn,
 											S3_IMAGE_FILE_PATH,
 											props.getProperty(ConstantUtil.IMAGE_S3_POLICY),
