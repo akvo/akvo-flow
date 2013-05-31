@@ -48,6 +48,8 @@ FLOW.statisticsControl = Ember.ArrayController.create({
 
   getMetrics: function(){
     if (!Ember.none(this.get('selectedSurvey'))){
+      this.set('totalsSurveys',[]);
+      this.set('total',null);
       this.set('alreadyTriggered',false);
       this.set('content',FLOW.store.findQuery(FLOW.Metric,{
         surveyId: this.selectedSurvey.get('keyId')
@@ -55,8 +57,14 @@ FLOW.statisticsControl = Ember.ArrayController.create({
     }
   }.observes('this.selectedSurvey'),
 
+  resetSurvey: function(){
+    this.set('selectedSurvey',null);
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
   getQA: function(){
     if (!Ember.none(this.get('content') && !this.get('allreadyTriggered'))){
+      this.set('totalsSurveys',[]);
+      this.set('total',null);
       // for each metric, get all the QuestionAnswerSummery objects of the questions
       // this could be a single call: give me all he QA summ for questions with a metric.
       this.set('QAcontent',FLOW.store.findQuery(FLOW.SurveyQuestionSummary,{
