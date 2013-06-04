@@ -21,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.text.DateFormat;
@@ -86,6 +87,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 	private SurveyInstanceDAO siDao;
 	private final static String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
 	private TreeMap<String, String> recepientList = null;
+	private static final int CONNECTION_TIMEOUT = 5 * 60 * 1000; // 5min
 
 	public TaskServlet() {
 		DEVICE_FILE_PATH = com.gallatinsystems.common.util.PropertyUtil
@@ -116,8 +118,13 @@ public class TaskServlet extends AbstractRestApiServlet {
 
 		try {
 			DeviceFilesDao dfDao = new DeviceFilesDao();
+
 			URL url = new URL(DEVICE_FILE_PATH + fileName);
-			BufferedInputStream bis = new BufferedInputStream(url.openStream());
+			URLConnection conn = url.openConnection();
+			conn.setConnectTimeout(CONNECTION_TIMEOUT);
+			conn.setReadTimeout(CONNECTION_TIMEOUT);
+
+			BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
 			ZipInputStream zis = new ZipInputStream(bis);
 			List<DeviceFiles> dfList = null;
 			DeviceFiles deviceFile = null;
