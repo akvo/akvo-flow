@@ -17,7 +17,103 @@ FLOW.SurveyGroup.FIXTURES = [{
 }, {
     id: 5,
     keyId: 5,
-    code: 'Akvo test surveys'
+    code: '1 Akvo test surveys'
+}, {
+    id: 6,
+    keyId: 6,
+    code: '2 Akvo test surveys'
+}, {
+    id: 7,
+    keyId: 7,
+    code: '3 Akvo test surveys'
+}, {
+    id: 8,
+    keyId: 8,
+    code: '4 Akvo test surveys'
+}, {
+    id: 9,
+    keyId: 9,
+    code: '5 Akvo test surveys'
+}, {
+    id: 10,
+    keyId:11,
+    code: '6 Akvo test surveys'
+}, {
+    id: 12,
+    keyId: 12,
+    code: '7 Akvo test surveys'
+}, {
+    id: 13,
+    keyId: 14,
+    code: '8 Akvo test surveys'
+}, {
+    id: 15,
+    keyId: 15,
+    code: '9 Akvo test surveys'
+}, {
+    id: 16,
+    keyId: 16,
+    code: '10 Akvo test surveys'
+}, {
+    id: 17,
+    keyId: 17,
+    code: '11 Akvo test surveys'
+}, {
+    id: 18,
+    keyId: 18,
+    code: '12 Akvo test surveys'
+}, {
+    id: 19,
+    keyId: 19,
+    code: '13 Akvo test surveys'
+}, {
+    id: 21,
+    keyId: 21,
+    code: '14 Akvo test surveys'
+}, {
+    id: 22,
+    keyId:22,
+    code: '15 Akvo test surveys'
+}, {
+    id: 23,
+    keyId: 23,
+    code: '16 Akvo test surveys'
+}, {
+    id: 24,
+    keyId: 24,
+    code: '17 Akvo test surveys'
+}, {
+    id: 25,
+    keyId: 25,
+    code: '18 Akvo test surveys'
+}, {
+    id: 26,
+    keyId: 26,
+    code: '19 Akvo test surveys'
+}, {
+    id: 27,
+    keyId: 27,
+    code: '20 Akvo test surveys'
+}, {
+    id: 28,
+    keyId: 28,
+    code: '21 Akvo test surveys'
+}, {
+    id: 29,
+    keyId: 29,
+    code: '22 Akvo test surveys'
+}, {
+    id: 30,
+    keyId: 30,
+    code: '23 Akvo test surveys'
+}, {
+    id: 31,
+    keyId: 31,
+    code: '24 Akvo test surveys'
+}, {
+    id: 32,
+    keyId: 32,
+    code: '25 Akvo test surveys'
 }];
 
 
