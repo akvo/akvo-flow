@@ -199,9 +199,6 @@ FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
 			$('.menuGroupWrap').animate({
 				'scrollTop': scroll + 72
 			}, 155);
-			if(scroll > menuHeight) {
-				$('.scrollDown').addClass("FadeIt");
-			}
 		});
 	},
 
