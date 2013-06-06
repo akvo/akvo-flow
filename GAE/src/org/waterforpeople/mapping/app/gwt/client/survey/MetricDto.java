@@ -30,7 +30,8 @@ public class MetricDto extends BaseDto {
 	private String name;
 	private String group;
 	private String valueType;
-	
+	// this value is populated when the metrics are requested for a certain survey
+	private Long questionId;
 	
 
 	public String getValueType() {
@@ -63,6 +64,14 @@ public class MetricDto extends BaseDto {
 
 	public void setGroup(String group) {
 		this.group = group;
+	}
+
+	public Long getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(Long questionId) {
+		this.questionId = questionId;
 	}
 
 }

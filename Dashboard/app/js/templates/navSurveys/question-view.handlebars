@@ -14,7 +14,7 @@
       selectionBinding="view.attribute"
       prompt=""
       promptBinding="Ember.STRINGS._select_tag"}}
-	   <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _add_tag}} </a> </label>
+	   <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _create_new_tag}} </a> </label>
       {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
 
     <label class="selectinLabel"><span>{{t _question_type}}:</span> {{view Ember.Select 

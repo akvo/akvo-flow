@@ -257,6 +257,7 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
 FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({
   response: DS.attr('string'),
   count: DS.attr('number'),
+  percentage: null,
   questionId: DS.attr('string')
 });
 
@@ -284,7 +285,8 @@ FLOW.Metric = FLOW.BaseModel.extend({
   organization: DS.attr('string'),
   name: DS.attr('string'),
   group: DS.attr('string'),
-  valueType: DS.attr('string')
+  valueType: DS.attr('string'),
+  questionId: DS.attr('number')
 });
 
 FLOW.Message = FLOW.BaseModel.extend({
@@ -315,4 +317,3 @@ FLOW.SubCountry = FLOW.BaseModel.extend({
   parentKey:DS.attr('number'),
   parentName: DS.attr('string')
 });
-

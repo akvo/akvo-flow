@@ -751,6 +751,7 @@ table.dataTable thead tr th {
 table.dataTable thead tr th input[type="checkbox"] { margin: 0; }
 .dataSection table.dataTable thead tr th { padding: 9px 1em 9px 1em; }
 #surveyDataTable thead tr th { padding: 9px 1em 9px 1em; }
+#statisticsDataTable thead tr th { padding: 9px 1em 9px 1em; }
 #deviceDataTable thead tr th { padding: 9px 1em 9px 1em; }
 #usersListTable thead tr th { padding: 11px 1em 7px 1em; }
 #messageListTable thead tr th { padding: 9px 1em; }
@@ -759,6 +760,9 @@ table.dataTable thead tr th.noArrows { background: #3A3A3A; }
 table.dataTable thead tr th a, table.dataTable thead tr th a:link, table.dataTable thead tr th a:visited {
 	color: #FFD200;
 	cursor: pointer;
+}
+#statisticsDataTable {
+	width:400px;
 }
 /* end addition MTW */
 
