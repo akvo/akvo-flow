@@ -80,6 +80,12 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
 });
 
 
+Ember.Handlebars.registerHelper('if_blank', function(item) {
+  var text;
+  text = Ember.get(this,item);
+  return (text && text.replace(/\s/g,"").length) ? new Handlebars.SafeString('') : new Handlebars.SafeString('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+});
+
 Ember.Handlebars.registerHelper('tooltip', function(i18nKey) {
   var tooltip;
   try {
