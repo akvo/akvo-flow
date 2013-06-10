@@ -206,7 +206,7 @@
                         {{#if view.isDateType}}
                         <a {{action doEdit target="this"}}>{{#with QA}}{{date3 value}}{{/with}}</a>
                         {{else}}
-                          <a {{action doEdit target="this"}}>{{QA.value}}</a>
+                          <a {{action doEdit target="this"}}>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</a>
                         {{/if}}
                       {{/if}}
                     {{/if}}

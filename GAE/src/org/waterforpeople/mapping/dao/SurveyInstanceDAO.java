@@ -482,19 +482,20 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		}
 
 		// delete surveyalValue items
-		List<SurveyalValue> vals = localeDao
+		List<SurveyalValue> valsForInstance = localeDao
 				.listSurveyalValuesByInstance(surveyInstanceId);
-		if (vals != null && vals.size() > 0) {
-			Long localeId = vals.get(0).getSurveyedLocaleId();
-			localeDao.delete(vals);
-			// now see if there are any other values for the same locale
-			List<SurveyalValue> otherVals = localeDao
+		if (valsForInstance != null && valsForInstance.size() > 0) {
+			Long localeId = valsForInstance.get(0).getSurveyedLocaleId();
+			List<SurveyalValue> valsForLocale = localeDao
 					.listValuesByLocale(localeId);
-			if (otherVals == null || otherVals.size() == 0) {
+
+			// now see if there are any other values for the same locale
+			if (valsForLocale != null && valsForLocale.size() <= valsForInstance.size()) {
 				// if there are no other values, delete the locale
 				SurveyedLocale l = localeDao.getByKey(localeId);
 				localeDao.delete(l);
 			}
+			localeDao.delete(valsForInstance);		
 		}
 	}
 
