@@ -139,7 +139,7 @@ public class SurveyDbAdapter {
 			"insert into preferences values('user.lastuser.id','')",
 			"insert into preferences values('location.sendbeacon','true')",
 			"insert into preferences values('survey.precachehelp','1')",
-			"insert into preferences values('upload.server','0')",
+			"insert into preferences values('backend.server','')",
 			"insert into preferences values('screen.keepon','true')",
 			"insert into preferences values('precache.points.countries','2')",
 			"insert into preferences values('precache.points.limit','200')",

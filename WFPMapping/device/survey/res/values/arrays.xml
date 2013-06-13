@@ -42,10 +42,10 @@
 		<item>Never</item>
 	</string-array>
 	<string-array name="servers">
-	    <!-- NOTE: The value @@@@ is replaced by the `ant copyconfig` task with the proper instance id -->
-	    <!-- Example value: http://akvoflow-1.appspot.com -->
-	    <item>http://@@@@.appspot.com</item>
-	</string-array>
+	    <!-- extra servers for debugging or special circumstances. survey.properties:serverBase is always an option -->
+	    <item>http://192.168.1.100</item>
+	    <item>http://127.0.0.1</item>
+	    	</string-array>
 	<string-array name="lengthmetric">
 		<item>millimeters</item>
 		<item>centimeters</item>
