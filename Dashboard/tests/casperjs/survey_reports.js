@@ -9,9 +9,23 @@ var casper = require('casper').create({
 verbose: true,
 logLevel: 'debug',
 waitTimeout: 50000,
-// clientScripts: ["includes/jquery.min.js"],
-
+clientScripts: ["includes/jquery.min.js"],
+remoteScripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'
+	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/handlebars-1.0.rc.1.js',
+	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/ember-1.0.0.pre-2-36.min.js',
+	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/ember-data-rev10.min.js',
+	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/jquery-ui-1.8.21.custom.js',
+	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/jquery.dataTables.js',
+	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/d3.v2.min.js',
+	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/resumable.min.js',
+	'http://akvoflowsandbox.appspot.com/js/loader.js',
+	'http://akvoflowsandbox.appspot.com/ui-strings.js',
+	'http://akvoflowsandbox.appspot.com/flowenv.js',
+	'http://akvoflowsandbox.appspot.com/currentuser.js',
+	'http://akvoflowsandbox.appspot.com/js/app.js',
+	'http://akvoflowsandbox.appspot.com/js/flowDashboard.js']
 PageSettings: {
+	javascriptEnabled: true,
 	loadImages:	true,		// WebPage instance will use these settings
 	laodPlugins: false,		// use these settings
 	userAgent:	'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36'
@@ -72,16 +86,6 @@ casper.then(function() {
 	
 });
 
-// casper.then(function() {
-  //  this.click('//*[@id="ember819"]')
-
-
-//
-//   	//*[@id="ember819"]/a
-//   	//*[@id="ember819"]
-//   	this.waitForResource("topnavData.png"); 
-//	this.echo('topnavData.png has been loaded.');	
-//	this.click("[data-ember-action='1']");
 
 
 
@@ -111,7 +115,7 @@ casper.then(function () {
 
     this.echo('TabNav Test Block END');
 	
-    this.capture('pageWrap.png', {
+    this.capture('shots/pageWrap.png', {
 		top: 0,
 		left: 0,
 		width: 1280,
@@ -119,15 +123,16 @@ casper.then(function () {
 	});
 
 });
-    // var ids = $("#dataSection").children().map(function(n,i) {
-      //  return n.id;
-	//  this.echo('Nav class Exists');
-    // if (this.test.assertVisible('.tabNav%20floats-in')) {
 
-    //}
-
-	// {return __utils__.getElementByXPath("//a[text()="Data Cleaning"]");
-    
+//casper.then(function() {
+//     var ids = $('//*[@id="main"]').children().map(function(n,i) {
+//       return n.id;
+ //    this.echo('Return set of IDs under #datasection');
+  //   });
+   //  if (this.test.assertVisible('.tabNav%20floats-in') {
+  //  return document.getElementByXPath("//a[text()="Data Cleaning"]");
+   //  });
+//});
     // },
   //  function then() {
    // 	console.log("element : ", this.evaluate(function ()
@@ -145,8 +150,8 @@ casper.then(function () {
     // //a[text()="Data cleaning"
 	
 	
-	//	return this.evaluate(function	
-	//	return document.querySelectorAll('#ember1965 > a:nth-child(1)').length > 0;
+   // return this.evaluate(function	
+	// return document.querySelectorAll('#ember1965 > a:nth-child(1)').length > 0;
 
 	// step to execute when check is ok
 	// this.test.assertExists('#ember1965 > a:nth-child(1)','Cleaning data Tab exists');
@@ -158,8 +163,8 @@ casper.then(function () {
 // Table Listing Test
 
 casper.then(function() {
-    data.body = this.evaluate(function() {
-        var rows = $('#content table:first tbody tr');
+    this.body = this.evaluate(function() {
+        var rows = $('table#surveyDataTable.dataTable');
         var listings = rows.eq(3).text();
         var count = rows.eq(4).text();
         return {
@@ -170,8 +175,8 @@ casper.then(function() {
 	this.echo(data.body.listings); 
 	// Select Akvo Group from DropDown Menu
 	this.evaluate(function() {
-	this.test.assertExists('select[#ember6356]', 'Dropdown is found');
-    	document.querySelector('select[#ember6556]').value = 12;
+	this.test.assertExists('//*[@id="ember21602"]', 'Dropdown is found');
+	return document.querySelector('//*[@id="ember21602"]').value = 12;
 	});
 });
 
