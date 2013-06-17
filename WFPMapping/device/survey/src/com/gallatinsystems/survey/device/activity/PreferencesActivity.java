@@ -42,6 +42,7 @@ import com.gallatinsystems.survey.device.util.ArrayPreferenceData;
 import com.gallatinsystems.survey.device.util.ArrayPreferenceUtil;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
+import com.gallatinsystems.survey.device.util.StringUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -372,6 +373,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 						public void onAuthenticated() {
 							final EditText inputView = new EditText(
 									PreferencesActivity.this);
+							//one line only
+							inputView.setSingleLine();
 							ViewUtil.ShowTextInputDialog(
 									PreferencesActivity.this,
 									R.string.identlabel,
@@ -381,12 +384,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 										public void onClick(
 												DialogInterface dialog,
 												int which) {
-											identTextView.setText(inputView
-													.getText());
+											String s = StringUtil.ControlToSPace(inputView.getText().toString());
+											//drop any control chars, especially tabs
+											identTextView.setText(s);
 											database.savePreference(
 													ConstantUtil.DEVICE_IDENT_KEY,
-													inputView.getText()
-															.toString());
+													s);
 										}
 									});
 						}
