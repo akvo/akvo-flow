@@ -10,20 +10,7 @@ verbose: true,
 logLevel: 'debug',
 waitTimeout: 50000,
 clientScripts: ["includes/jquery.min.js"],
-remoteScripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js'
-	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/handlebars-1.0.rc.1.js',
-	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/ember-1.0.0.pre-2-36.min.js',
-	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/ember-data-rev10.min.js',
-	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/jquery-ui-1.8.21.custom.js',
-	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/jquery.dataTables.js',
-	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/d3.v2.min.js',
-	'http://akvoflowsandbox.appspot.com/vendorjs/js/vendor/resumable.min.js',
-	'http://akvoflowsandbox.appspot.com/js/loader.js',
-	'http://akvoflowsandbox.appspot.com/ui-strings.js',
-	'http://akvoflowsandbox.appspot.com/flowenv.js',
-	'http://akvoflowsandbox.appspot.com/currentuser.js',
-	'http://akvoflowsandbox.appspot.com/js/app.js',
-	'http://akvoflowsandbox.appspot.com/js/flowDashboard.js']
+
 PageSettings: {
 	javascriptEnabled: true,
 	loadImages:	true,		// WebPage instance will use these settings
@@ -124,16 +111,15 @@ casper.then(function () {
 
 });
 
-//casper.then(function() {
-//     var ids = $('//*[@id="main"]').children().map(function(n,i) {
-//       return n.id;
- //    this.echo('Return set of IDs under #datasection');
-  //   });
-   //  if (this.test.assertVisible('.tabNav%20floats-in') {
-  //  return document.getElementByXPath("//a[text()="Data Cleaning"]");
-   //  });
-//});
-    // },
+casper.then(function() {
+     var ids = $('//*[@id="main"]').children().map(function(n,i) {
+       return n.id;
+       this.echo('Return set of IDs under #datasection');
+ 	 if (this.test.assertVisible('.tabNav%20floats-in') {
+  	 return document.getElementByXPath("//a[text()='Data Cleaning']");
+    });
+});
+
   //  function then() {
    // 	console.log("element : ", this.evaluate(function ()
 	//	{
