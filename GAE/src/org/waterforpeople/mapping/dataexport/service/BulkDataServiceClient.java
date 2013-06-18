@@ -68,9 +68,9 @@ import com.gallatinsystems.framework.rest.RestRequest;
  * 
  */
 public class BulkDataServiceClient {
-	private static final String DATA_SERVLET_PATH = "/databackout?action=";
+	private static final String DATA_SERVLET_PATH = "/databackout";
 	public static final String RESPONSE_KEY = "dtoList";
-	private static final String SURVEY_SERVLET_PATH = "/surveyrestapi?action=";
+	private static final String SURVEY_SERVLET_PATH = "/surveyrestapi";
 	private static final String DEVICE_FILES_SERVLET_PATH = "/devicefilesrestapi?action=";
 	private static final String ACCESS_POINT_SERVLET_PATH = "/accesspoint?action=search";
 
@@ -84,12 +84,12 @@ public class BulkDataServiceClient {
 	 * @throws Exception
 	 */
 	public static Map<String, String> fetchQuestionResponses(String instanceId,
-			String serverBase) throws Exception {
+			String serverBase, String apiKey) throws Exception {
 		String instanceValues = fetchDataFromServer(serverBase
-				+ DATA_SERVLET_PATH
+				+ DATA_SERVLET_PATH, "?action="
 				+ DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION + "&"
 				+ DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
-				+ instanceId);
+				+ instanceId, true, apiKey);
 		return parseInstanceValues(instanceValues);
 	}
 
@@ -293,12 +293,16 @@ public class BulkDataServiceClient {
 	 * @throws Exception
 	 */
 	public static Map<String, String> fetchInstanceIds(String surveyId,
-			String serverBase) throws Exception {
+			String serverBase, String apiKey) throws Exception {
 		Map<String, String> values = new HashMap<String, String>();
-		String instanceString = fetchDataFromServer(serverBase
-				+ DATA_SERVLET_PATH + DataBackoutRequest.LIST_INSTANCE_ACTION
-				+ "&" + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId
-				+ "&" + DataBackoutRequest.INCLUDE_DATE_PARAM + "=true");
+		
+		String instanceString = fetchDataFromServer(serverBase + DATA_SERVLET_PATH,
+						"?action=" + DataBackoutRequest.LIST_INSTANCE_ACTION
+								+ "&" + DataBackoutRequest.SURVEY_ID_PARAM
+								+ "=" + surveyId + "&"
+								+ DataBackoutRequest.INCLUDE_DATE_PARAM
+								+ "=true", true, apiKey);
+		
 		if (instanceString != null && instanceString.trim().length() != 0) {
 			StringTokenizer strTok = new StringTokenizer(instanceString, ",");
 			while (strTok.hasMoreTokens()) {
@@ -319,7 +323,7 @@ public class BulkDataServiceClient {
 	public static void main(String[] args) {
 		try {
 			Map<String, String> results = BulkDataServiceClient
-					.fetchInstanceIds(args[1], args[0]);
+					.fetchInstanceIds(args[1], args[0], args[2]);
 			if (results != null) {
 				for (Entry<String, String> entry : results.entrySet()) {
 					System.out
@@ -384,14 +388,15 @@ public class BulkDataServiceClient {
 	 * @return
 	 */
 	public static QuestionDto loadQuestionDetails(String serverBase,
-			Long questionId) throws Exception {
+			Long questionId, String apiKey) throws Exception {
 
 		List<QuestionDto> dtoList = null;
 
 		dtoList = parseQuestions(fetchDataFromServer(serverBase
-				+ SURVEY_SERVLET_PATH
+				+ SURVEY_SERVLET_PATH, "?action="
 				+ SurveyRestRequest.GET_QUESTION_DETAILS_ACTION + "&"
-				+ SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId));
+				+ SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId, true,
+				apiKey));
 
 		if (dtoList != null && dtoList.size() > 0) {
 			return dtoList.get(0);
@@ -411,17 +416,17 @@ public class BulkDataServiceClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Object[] loadQuestions(String surveyId, String serverBase)
+	public static Object[] loadQuestions(String surveyId, String serverBase, String apiKey)
 			throws Exception {
 		Object[] results = new Object[2];
 		Map<String, QuestionDto> questions = new HashMap<String, QuestionDto>();
 		List<QuestionGroupDto> groups = fetchQuestionGroups(serverBase,
-				surveyId);
+				surveyId, apiKey);
 		List<String> keyList = new ArrayList<String>();
 		if (groups != null) {
 			for (QuestionGroupDto group : groups) {
 				List<QuestionDto> questionDtos = fetchQuestions(serverBase,
-						group.getKeyId());
+						group.getKeyId(), apiKey);
 				if (questionDtos != null) {
 					for (QuestionDto question : questionDtos) {
 						keyList.add(question.getKeyId().toString());
@@ -445,11 +450,12 @@ public class BulkDataServiceClient {
 	 * @throws Exception
 	 */
 	public static List<QuestionDto> fetchQuestions(String serverBase,
-			Long groupId) throws Exception {
+			Long groupId, String apiKey) throws Exception {
 		return parseQuestions(fetchDataFromServer(serverBase
-				+ SURVEY_SERVLET_PATH + SurveyRestRequest.LIST_QUESTION_ACTION
-				+ "&" + SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "="
-				+ groupId));
+				+ SURVEY_SERVLET_PATH, "?action="
+				+ SurveyRestRequest.LIST_QUESTION_ACTION + "&"
+				+ SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "=" + groupId,
+				true, apiKey));
 	}
 
 	/**
@@ -461,11 +467,12 @@ public class BulkDataServiceClient {
 	 * @throws Exception
 	 */
 	public static SurveyInstanceDto findSurveyInstance(Long id,
-			String serverBase) throws Exception {
+			String serverBase, String apiKey) throws Exception {
 		return parseSurveyInstance(fetchDataFromServer(serverBase
-				+ SURVEY_SERVLET_PATH
+				+ SURVEY_SERVLET_PATH, "?action="
 				+ SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION + "&"
-				+ SurveyRestRequest.INSTANCE_PARAM + "=" + id));
+				+ SurveyRestRequest.INSTANCE_PARAM + "=" + id, true,
+				apiKey));
 	}
 
 	/**
@@ -477,10 +484,12 @@ public class BulkDataServiceClient {
 	 * @throws Exception
 	 */
 	public static List<QuestionGroupDto> fetchQuestionGroups(String serverBase,
-			String surveyId) throws Exception {
+			String surveyId, String apiKey) throws Exception {
 		return parseQuestionGroups(fetchDataFromServer(serverBase
-				+ SURVEY_SERVLET_PATH + SurveyRestRequest.LIST_GROUP_ACTION
-				+ "&" + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId));
+				+ SURVEY_SERVLET_PATH, "?action="
+				+ SurveyRestRequest.LIST_GROUP_ACTION + "&"
+				+ SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+				apiKey));
 	}
 
 	/**
@@ -491,11 +500,12 @@ public class BulkDataServiceClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<SurveyGroupDto> fetchSurveyGroups(String serverBase)
+	public static List<SurveyGroupDto> fetchSurveyGroups(String serverBase, String apiKey)
 			throws Exception {
 		return parseSurveyGroups(fetchDataFromServer(serverBase
-				+ SURVEY_SERVLET_PATH
-				+ SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION));
+				+ SURVEY_SERVLET_PATH, "?action="
+				+ SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION, true,
+				apiKey));
 	}
 
 	/**
@@ -507,11 +517,12 @@ public class BulkDataServiceClient {
 	 * @throws Exception
 	 */
 	public static List<SurveyDto> fetchSurveys(Long surveyGroupId,
-			String serverBase) throws Exception {
+			String serverBase, String apiKey) throws Exception {
 		return parseSurveys(fetchDataFromServer(serverBase
-				+ SURVEY_SERVLET_PATH + SurveyRestRequest.LIST_SURVEYS_ACTION
-				+ "&" + SurveyRestRequest.SURVEY_GROUP_ID_PARAM + "="
-				+ surveyGroupId));
+				+ SURVEY_SERVLET_PATH,
+				"?action=" + SurveyRestRequest.LIST_SURVEYS_ACTION + "&"
+						+ SurveyRestRequest.SURVEY_GROUP_ID_PARAM + "="
+						+ surveyGroupId, true, apiKey));
 	}
 
 	/**
@@ -959,9 +970,9 @@ public class BulkDataServiceClient {
 	 * @throws Exception
 	 */
 	public static String fetchDataFromServer(String baseUrl,
-			String queryString, boolean shouldSign, String key)
+			String queryString, boolean shouldSign, String apiKey)
 			throws Exception {
-		if (shouldSign && key != null) {
+		if (shouldSign && apiKey != null) {
 			if (queryString == null) {
 				queryString = new String();
 			} else {
@@ -976,7 +987,7 @@ public class BulkDataServiceClient {
 					+ URLEncoder.encode(df.format(new Date()), "UTF-8");
 			queryString = sortQueryString(queryString);
 			queryString += "&" + RestRequest.HASH_PARAM + "="
-					+ MD5Util.generateHMAC(queryString, key);
+					+ MD5Util.generateHMAC(queryString, apiKey);
 		}
 		return fetchDataFromServer(baseUrl
 				+ ((queryString != null && queryString.trim().length() > 0) ? "?"
