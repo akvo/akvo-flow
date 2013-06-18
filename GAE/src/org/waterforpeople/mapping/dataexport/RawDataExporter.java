@@ -48,6 +48,7 @@ public class RawDataExporter extends AbstractDataExporter {
 	private String serverBase;
 	private String surveyId;
 	private String imgPrefix = null;
+	private String apiKey;
 
 	public static final String SURVEY_ID = "surveyId";
 	private Map<String, QuestionDto> questionMap;
@@ -60,12 +61,14 @@ public class RawDataExporter extends AbstractDataExporter {
 		this.serverBase = serverBase;
 		surveyId = criteria.get(SURVEY_ID);
 		imgPrefix = options.get("imagePrefix");
+		apiKey = criteria.get("apiKey");
 
 		Writer pw = null;
 		System.out.println("In CSV exporter");
+		final String apiKey = criteria.get("apiKey");
 		try {
 			Object[] results = BulkDataServiceClient.loadQuestions(surveyId,
-					serverBase);
+					serverBase, apiKey);
 			if (results != null) {
 				keyList = (List<String>) results[0];
 				questionMap = (Map<String, QuestionDto>) results[1];
@@ -95,7 +98,7 @@ public class RawDataExporter extends AbstractDataExporter {
 			this.surveyId = surveyIdentifier.toString();
 			this.serverBase = serverBase;
 			Object[] results = BulkDataServiceClient.loadQuestions(surveyId,
-					serverBase);
+					serverBase, apiKey);
 			if (results != null) {
 				keyList = (List<String>) results[0];
 				questionMap = (Map<String, QuestionDto>) results[1];
@@ -135,7 +138,7 @@ public class RawDataExporter extends AbstractDataExporter {
 	private void exportInstances(Writer pw, List<String> idList)
 			throws Exception {
 		Map<String, String> instances = BulkDataServiceClient.fetchInstanceIds(
-				surveyId, serverBase);
+				surveyId, serverBase, apiKey);
 		if (instances != null) {
 			String imagePrefix = imgPrefix != null ? imgPrefix : IMAGE_PREFIX;
 
@@ -150,7 +153,7 @@ public class RawDataExporter extends AbstractDataExporter {
 				if (instanceId != null && instanceId.trim().length() > 0) {
 					try {
 						Map<String, String> responses = BulkDataServiceClient
-								.fetchQuestionResponses(instanceId, serverBase);
+								.fetchQuestionResponses(instanceId, serverBase, apiKey);
 						if (responses != null && responses.size() > 0) {
 							pw.write(instanceId);
 							pw.write("\t");
@@ -159,7 +162,7 @@ public class RawDataExporter extends AbstractDataExporter {
 							SurveyInstanceDto dto = BulkDataServiceClient
 									.findSurveyInstance(
 											Long.parseLong(instanceId.trim()),
-											serverBase);
+											serverBase, apiKey);
 							if (dto != null) {
 								String name = dto.getSubmitterName();
 								if (name != null) {

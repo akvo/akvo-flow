@@ -145,7 +145,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			}
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
 			Object[] results = BulkDataServiceClient.loadQuestions(
-					getSurveyId().toString(), serverBase);
+					getSurveyId().toString(), serverBase, criteria.get("apiKey"));
 			Map<String, QuestionDto> questionMap = null;
 
 			if (results != null) {

@@ -46,6 +46,7 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
+import com.google.api.server.spi.config.Api;
 
 /**
  * 
@@ -59,7 +60,7 @@ import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
 public class SurveySummaryExporter extends AbstractDataExporter {
 
 	public static final String RESPONSE_KEY = "dtoList";
-	private static final String SERVLET_URL = "/surveyrestapi?action=";
+	private static final String SERVLET_URL = "/surveyrestapi";
 	private static final NumberFormat PCT_FMT = new DecimalFormat("0.00");
 	protected static final String[] ROLLUP_QUESTIONS = { "Sector/Cell",
 			"Department", "Province", "Municipality", "Region", "District",
@@ -106,11 +107,11 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			writeHeader(pw, dia.getDoRollup());
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
 					criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), true,
-					serverBase);
+					serverBase, criteria.get("apiKey"));
 			if (questionMap.size() > 0) {
 				SummaryModel model = buildDataModel(
 						criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
-						serverBase);
+						serverBase, criteria.get("apiKey"));
 				for (QuestionGroupDto group : orderedGroupList) {
 					for (QuestionDto question : questionMap.get(group)) {
 						pw.print(model.outputQuestion(group.getDisplayName()
@@ -131,14 +132,14 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		}
 	}
 
-	protected SummaryModel buildDataModel(String surveyId, String serverBase)
+	protected SummaryModel buildDataModel(String surveyId, String serverBase, String apiKey)
 			throws Exception {
 		SummaryModel model = new SummaryModel();
 		Map<String, String> instanceMap = BulkDataServiceClient
-				.fetchInstanceIds(surveyId, serverBase);
+				.fetchInstanceIds(surveyId, serverBase, apiKey);
 		for (String instanceId : instanceMap.keySet()) {
 			Map<String, String> responseMap = BulkDataServiceClient
-					.fetchQuestionResponses(instanceId, serverBase);
+					.fetchQuestionResponses(instanceId, serverBase, apiKey);
 			Set<String> rollups = null;
 			if (rollupOrder != null && rollupOrder.size() > 0) {
 				rollups = formRollupStrings(responseMap);
@@ -181,14 +182,14 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	}
 
 	protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
-			String surveyId, boolean performRollups, String serverBase)
+			String surveyId, boolean performRollups, String serverBase, String apiKey)
 			throws Exception {
 		Map<QuestionGroupDto, List<QuestionDto>> questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
-		orderedGroupList = fetchQuestionGroups(serverBase, surveyId);
+		orderedGroupList = fetchQuestionGroups(serverBase, surveyId, apiKey);
 		rollupOrder = new ArrayList<QuestionDto>();
 		for (QuestionGroupDto group : orderedGroupList) {
 			List<QuestionDto> questions = fetchQuestions(serverBase,
-					group.getKeyId());
+					group.getKeyId(), apiKey);
 			if (performRollups && questions != null) {
 				for (QuestionDto q : questions) {
 					
@@ -212,18 +213,23 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 		}
 	}
 
-	protected List<QuestionDto> fetchQuestions(String serverBase, Long groupId)
+	protected List<QuestionDto> fetchQuestions(String serverBase, Long groupId, String apiKey)
 			throws Exception {
-		return parseQuestions(fetchDataFromServer(serverBase + SERVLET_URL
-				+ SurveyRestRequest.LIST_QUESTION_ACTION + "&"
-				+ SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "=" + groupId));
+
+		return parseQuestions(BulkDataServiceClient.fetchDataFromServer(
+				serverBase + SERVLET_URL, "?action="
+						+ SurveyRestRequest.LIST_QUESTION_ACTION + "&"
+						+ SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "="
+						+ groupId, true, apiKey));
 	}
 
 	protected List<QuestionGroupDto> fetchQuestionGroups(String serverBase,
-			String surveyId) throws Exception {
-		return parseQuestionGroups(fetchDataFromServer(serverBase + SERVLET_URL
-				+ SurveyRestRequest.LIST_GROUP_ACTION + "&"
-				+ SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId));
+			String surveyId, String apiKey) throws Exception {
+		return parseQuestionGroups(BulkDataServiceClient.fetchDataFromServer(
+				serverBase + SERVLET_URL, "?action="
+						+ SurveyRestRequest.LIST_GROUP_ACTION + "&"
+						+ SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId,
+				true, apiKey));
 	}
 
 	protected List<QuestionGroupDto> parseQuestionGroups(String response)
