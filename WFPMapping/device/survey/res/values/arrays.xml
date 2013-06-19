@@ -45,7 +45,7 @@
 	    <!-- extra servers for debugging or special circumstances. survey.properties:serverBase is always an option -->
 	    <item>http://192.168.1.100</item>
 	    <item>http://127.0.0.1</item>
-	    	</string-array>
+	</string-array>
 	<string-array name="lengthmetric">
 		<item>millimeters</item>
 		<item>centimeters</item>
