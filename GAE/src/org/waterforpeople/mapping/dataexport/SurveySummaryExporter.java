@@ -217,7 +217,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			throws Exception {
 
 		return parseQuestions(BulkDataServiceClient.fetchDataFromServer(
-				serverBase + SERVLET_URL, "?action="
+				serverBase + SERVLET_URL, "action="
 						+ SurveyRestRequest.LIST_QUESTION_ACTION + "&"
 						+ SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "="
 						+ groupId, true, apiKey));
@@ -226,7 +226,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 	protected List<QuestionGroupDto> fetchQuestionGroups(String serverBase,
 			String surveyId, String apiKey) throws Exception {
 		return parseQuestionGroups(BulkDataServiceClient.fetchDataFromServer(
-				serverBase + SERVLET_URL, "?action="
+				serverBase + SERVLET_URL, "action="
 						+ SurveyRestRequest.LIST_GROUP_ACTION + "&"
 						+ SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId,
 				true, apiKey));
