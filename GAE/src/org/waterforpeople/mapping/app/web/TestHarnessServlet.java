@@ -1366,7 +1366,7 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("importallsurveys".equals(action)) {
 			// Only run in dev hence hardcoding
 			SurveyReplicationImporter sri = new SurveyReplicationImporter();
-			sri.executeImport("http://watermapmonitordev.appspot.com", null);
+			sri.executeImport("http://watermapmonitordev.appspot.com", null, null);
 			// sri.executeImport("http://localhost:8888",
 			// "http://localhost:8888");
 
