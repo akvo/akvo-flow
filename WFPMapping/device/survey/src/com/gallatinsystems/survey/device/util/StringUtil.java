@@ -37,11 +37,27 @@ public class StringUtil {
 			return false;
 		}
 	}
-	
+
+	//copy a string transforming all control chars
+	//(like newline and tab) into spaces
 	public static String ControlToSPace(String val) {
 		String result = "";
 		for (int i= 0; i < val.length(); i++) {
 			if (val.charAt(i) < '\u0020')
+				result = result + '\u0020';
+			else
+				result = result + val.charAt(i);
+		}
+		
+		return result;
+	}
+
+	//copy a string transforming all control chars
+	//(like newline and tab) and comma into spaces
+	public static String ControlCommaToSPace(String val) {
+		String result = "";
+		for (int i= 0; i < val.length(); i++) {
+			if (val.charAt(i) < '\u0020' || val.charAt(i) == ',')
 				result = result + '\u0020';
 			else
 				result = result + val.charAt(i);
