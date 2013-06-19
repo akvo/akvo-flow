@@ -158,7 +158,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		// validation
 		if (this.type.get('value') == 'NUMBER'){
 			if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))  ){
-				if (this.get('minVal') >= this.get('maxVal')){
+				if (parseFloat(this.get('minVal')) >= parseFloat(this.get('maxVal'))){
 					FLOW.dialogControl.set('activeAction', 'ignore');
 					FLOW.dialogControl.set('header', Ember.String.loc('_min_max_not_correct'));
 					FLOW.dialogControl.set('message', Ember.String.loc('_min_larger_than_max_or_equal'));
