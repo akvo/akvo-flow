@@ -219,14 +219,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						QuestionDto question = questionMap.get(questionIDColMap
 								.get(cell.getColumnIndex()));
 						QuestionType type = null;
+						// VALUE is default, it is valid for NUMBER, FREE_TEXT, SCAN, OPTION
 						String typeString = "VALUE";
 						if (question != null) {
 							type = question.getType();
-							typeString = type.toString();
-							if (QuestionType.GEO == type
-									|| QuestionType.PHOTO == type
-									|| QuestionType.VIDEO == type) {
-								typeString = type.toString();
+							if (QuestionType.GEO == type){
+								typeString = "GEO";
+							} else if (QuestionType.PHOTO == type) {
+								typeString = "IMAGE";
+							} else if (QuestionType.VIDEO == type) {
+								typeString = "VIDEO";
+							} else if (QuestionType.DATE == type) {
+								typeString = "DATE";
 							}
 						} else if (questionIDColMap.get(cell.getColumnIndex())
 								.startsWith("--")) {

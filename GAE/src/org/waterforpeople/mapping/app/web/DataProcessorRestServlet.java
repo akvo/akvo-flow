@@ -24,9 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.zip.ZipInputStream;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+
 
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
@@ -64,7 +67,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
  * 
  */
 public class DataProcessorRestServlet extends AbstractRestApiServlet {
-
+	private static final Logger log = Logger.getLogger("DataProcessorRestServlet");
 	private static final long serialVersionUID = -7902002525342262821L;
 	private static final String REBUILD_Q_SUM_STATUS_KEY = "rebuildQuestionSummary";
 	private static final String VALUE_TYPE = "VALUE";
@@ -103,6 +106,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.TRIM_OPTIONS.equalsIgnoreCase(dpReq
 				.getAction())) {
 			trimOptions();
+		} else if (DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION.equalsIgnoreCase(dpReq.getAction())){
+			fixOptions2Values(dpReq.getCursor());
 		}
 		return new RestResponse();
 	}
@@ -509,4 +514,49 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
 	}
 
+	/**
+	 * fixes wrong Types in questionAnswerStore objects. When cleaned data is 
+	 * uploaded using an excel file, the type of the answer is set according 
+	 * to the type of the question, while the device sets the type according
+	 * to a different convention. The action handles 500 items in one call, 
+	 * and invokes new tasks as necessary if there are more items.
+	 * 
+	 * @param cursor
+	 * @author M.T. Westra
+	 */
+	public static void fixOptions2Values(String cursorString) {
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao(); 
+		List<QuestionAnswerStore> qasList = siDao.listqaOPTION_FREETEXT_NUMBER_SCAN_PHOTO(cursorString,500);
+		List<QuestionAnswerStore> qasChangedList = new ArrayList<QuestionAnswerStore>();
+		log.log(Level.INFO, "Running fixOptions2Values, cursor at " + cursorString);
+		if (qasList != null) {
+			String cursor = SurveyInstanceDAO.getCursor(qasList);
+			for (QuestionAnswerStore qas : qasList) {
+
+				if (Question.Type.OPTION.toString().equals(qas.getType())
+						|| Question.Type.NUMBER.toString().equals(qas.getType())
+						|| Question.Type.FREE_TEXT.toString().equals(qas.getType())
+						|| Question.Type.SCAN.toString().equals(qas.getType())){
+					qas.setType("VALUE");
+					qasChangedList.add(qas);
+				} else if (Question.Type.PHOTO.toString().equals(qas.getType())){
+					qas.setType("IMAGE");
+					qasChangedList.add(qas);
+				}					
+			}
+			qasDao.save(qasChangedList);
+			// if there are more, invoke another task
+			if (qasList.size() == 500) {
+				log.log(Level.INFO, "invoking another fixOptions task");
+				Queue queue = QueueFactory.getDefaultQueue();
+				TaskOptions options = TaskOptions.Builder
+						.withUrl("/app_worker/dataprocessor")
+						.param(DataProcessorRequest.ACTION_PARAM,
+								DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION)
+						.param(DataProcessorRequest.CURSOR_PARAM, cursor);
+				queue.add(options);
+			}
+		} 	
+	}
 }
