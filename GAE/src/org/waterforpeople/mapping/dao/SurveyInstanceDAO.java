@@ -611,6 +611,20 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		}
 	}
 
+	
+	/** lists surveyInstances of particular types
+	 * 
+	 * 
+	 * 
+	 */
+	public List<QuestionAnswerStore> listqaOPTION_FREETEXT_NUMBER_SCAN_PHOTO(String cursorString, Integer pageSize){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query q = pm.newQuery(QuestionAnswerStore.class);
+		q.setFilter("type == 'OPTION' || type == 'NUMBER' || type == 'FREE_TEXT' || type == 'SCAN' || type == 'PHOTO'");
+		prepareCursor(cursorString, pageSize, q);
+		return (List<QuestionAnswerStore>) q.execute();
+	}
+	
 	/**
 	 * finds a single survey instance by uuid. This method will NOT load all
 	 * QuestionAnswerStore objects.
