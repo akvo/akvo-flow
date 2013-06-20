@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,7 +53,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class RawDataRestServlet extends AbstractRestApiServlet {
-
+	private static final Logger log = Logger.getLogger("RawDataRestServlet");
 	private static final long serialVersionUID = 2409014651721639814L;
 
 	private SurveyInstanceDAO instanceDao;
@@ -187,6 +189,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 		} else if (RawDataImportRequest.UPDATE_SUMMARIES_ACTION
 				.equalsIgnoreCase(importReq.getAction())) {
 			// first rebuild the summaries
+			log.log(Level.INFO, "Rebuilding summaries for surveyId " + importReq.getSurveyId().toString());
 			TaskOptions options = TaskOptions.Builder.withUrl(
 					"/app_worker/dataprocessor").param(
 					DataProcessorRequest.ACTION_PARAM,
