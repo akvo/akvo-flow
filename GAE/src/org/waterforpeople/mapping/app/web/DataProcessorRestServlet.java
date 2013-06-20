@@ -527,7 +527,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	public static void fixOptions2Values(String cursorString) {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao(); 
-		List<QuestionAnswerStore> qasList = siDao.listqaOPTION_FREETEXT_NUMBER_SCAN_PHOTO(cursorString,500);
+		List<QuestionAnswerStore> qasList = siDao.listQAOptions(cursorString,500,"OPTION","FREE_TEXT","NUMBER","SCAN","PHOTO");
 		List<QuestionAnswerStore> qasChangedList = new ArrayList<QuestionAnswerStore>();
 		log.log(Level.INFO, "Running fixOptions2Values, cursor at " + cursorString);
 		if (qasList != null) {
