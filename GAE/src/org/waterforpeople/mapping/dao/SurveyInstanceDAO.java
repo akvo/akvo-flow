@@ -606,15 +606,16 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	
-	/** lists surveyInstances of particular types
-	 * 
-	 * 
-	 * 
+	/** lists surveyInstances of particular types passed in
 	 */
-	public List<QuestionAnswerStore> listqaOPTION_FREETEXT_NUMBER_SCAN_PHOTO(String cursorString, Integer pageSize){
+	public List<QuestionAnswerStore> listQAOptions(String cursorString, Integer pageSize, String... options){
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(QuestionAnswerStore.class);
-		q.setFilter("type == 'OPTION' || type == 'NUMBER' || type == 'FREE_TEXT' || type == 'SCAN' || type == 'PHOTO'");
+		StringBuffer filter = new StringBuffer();
+		for(String op :options) {
+			filter.append("type == '").append(op).append("' ||");
+		}
+		q.setFilter(filter.substring(0,filter.length()-3).toString());
 		prepareCursor(cursorString, pageSize, q);
 		return (List<QuestionAnswerStore>) q.execute();
 	}
