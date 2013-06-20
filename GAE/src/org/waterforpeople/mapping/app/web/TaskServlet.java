@@ -42,6 +42,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -480,10 +481,10 @@ public class TaskServlet extends AbstractRestApiServlet {
 					log.info("Received Task Queue calls for surveyInstanceKey: "
 							+ instance.getKey().getId() + "");
 					aph.processSurveyInstance(instance.getKey().getId() + "");
-					summQueue.add(TaskOptions.Builder.withUrl("/app_worker/datasummarization").param(
-							"objectKey", instance.getKey().getId() + "").param(
-							"type", "SurveyInstance"));
-					// process the "new" domain structure
+//					summQueue.add(TaskOptions.Builder.withUrl("/app_worker/datasummarization").param(
+//							"objectKey", instance.getKey().getId() + "").param(
+//							"type", "SurveyInstance"));
+//					// process the "new" domain structure
 
 					defaultQueue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet").param(
 							SurveyalRestRequest.ACTION_PARAM,
