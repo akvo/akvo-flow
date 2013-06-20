@@ -53,6 +53,7 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 	/**
 	 * looks up a survey instance then finds it's corresponding country and (if
 	 * possible) sublevel1 using the GIS serviceF
+	 * A second version of this function is present in dataProcessorRestService.
 	 */
 	@Override
 	public boolean performSummarization(String key, String type, String value,
