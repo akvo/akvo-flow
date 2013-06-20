@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 
+import org.waterforpeople.mapping.analytics.SurveyInstanceSummarizer;
+import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -40,6 +42,7 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
@@ -48,6 +51,9 @@ import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.gis.location.GeoLocationService;
+import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
+import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.operations.dao.ProcessingStatusDao;
 import com.gallatinsystems.operations.domain.ProcessingStatus;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -108,6 +114,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			trimOptions();
 		} else if (DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION.equalsIgnoreCase(dpReq.getAction())){
 			fixOptions2Values(dpReq.getCursor());
+		} else if (DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER.equalsIgnoreCase(dpReq.getAction())){
+			surveyInstanceSummarizer(dpReq.getSurveyInstanceId(),dpReq.getQasId());
 		}
 		return new RestResponse();
 	}
@@ -559,4 +567,34 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			}
 		} 	
 	}
+	
+	public static void surveyInstanceSummarizer(Long surveyInstanceId, Long qasId) {
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		boolean success = false;
+		if (surveyInstanceId != null) {
+			SurveyInstance si = siDao.getByKey(surveyInstanceId);
+			if (si != null && qasId != null) {
+				QuestionAnswerStore qas = qasDao.getByKey(qasId);
+				if (qas != null){
+					GeoCoordinates geoC = null;
+					if (qas.getValue() != null && qas.getValue().trim().length() > 0) {
+						geoC = GeoCoordinates.extractGeoCoordinate(qas.getValue());
+					}
+					if (geoC != null) {
+						GeoLocationService gisService = new GeoLocationServiceGeonamesImpl();
+						GeoPlace gp = gisService.findDetailedGeoPlace(geoC.getLatitude().toString(), geoC.getLongitude().toString());
+						if (gp != null) {
+							SurveyInstanceSummaryDao.incrementCount(gp.getSub1(), gp.getCountryCode(), qas.getCollectionDate());
+							success = true;
+						}
+					}
+				}
+			}
+		}
+		if (!success) {
+			log.log(Level.SEVERE,"Couldnt find geoplace for instance. Instance id: " + surveyInstanceId);
+		}
+	}
+	
 }
