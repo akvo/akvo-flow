@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -667,13 +668,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	}
 
 	
-	/** lists surveyInstances of particular types passed in
+	/** lists questionAnswerStore objects of particular types passed in
 	 */
 	public List<QuestionAnswerStore> listQAOptions(String cursorString, Integer pageSize, String... options){
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(QuestionAnswerStore.class);
 		StringBuffer filter = new StringBuffer();
-		for(String op :options) {
+		for (String op : options) {
 			filter.append("type == '").append(op).append("' ||");
 		}
 		q.setFilter(filter.substring(0,filter.length()-3).toString());
