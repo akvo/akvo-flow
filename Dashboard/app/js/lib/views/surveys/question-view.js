@@ -158,6 +158,16 @@ FLOW.QuestionView = FLOW.View.extend({
 		// validation
 		if (this.type.get('value') == 'NUMBER'){
 			if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))  ){
+				
+				if (isNaN(this.get('minVal')) || isNaN(this.get('maxVal'))){
+					FLOW.dialogControl.set('activeAction', 'ignore');
+					FLOW.dialogControl.set('header', Ember.String.loc('_min_max_not_number'));
+					FLOW.dialogControl.set('message', Ember.String.loc('_min_max_not_number_message'));
+					FLOW.dialogControl.set('showCANCEL', false);
+					FLOW.dialogControl.set('showDialog', true);
+					return;
+				}
+
 				if (parseFloat(this.get('minVal')) >= parseFloat(this.get('maxVal'))){
 					FLOW.dialogControl.set('activeAction', 'ignore');
 					FLOW.dialogControl.set('header', Ember.String.loc('_min_max_not_correct'));
