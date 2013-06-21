@@ -42,7 +42,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
-import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -457,7 +456,6 @@ public class TaskServlet extends AbstractRestApiServlet {
 					req.getOffset());
 			Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
 			SurveyDAO surveyDao = new SurveyDAO();
-			Queue summQueue = QueueFactory.getQueue("dataSummarization");
 			Queue defaultQueue = QueueFactory.getDefaultQueue();
 			for (SurveyInstance instance : surveyInstances) {
 				Survey s = surveyMap.get(instance.getSurveyId());
