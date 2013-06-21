@@ -407,13 +407,24 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 							countMap = new HashMap<String, Long>();
 							summaryMap.put(qas.getQuestionID(), countMap);
 						}
-						Long count = countMap.get(val);
-						if (count == null) {
-							count = 1L;
+						
+						// split up multiple answers
+						String[] answers;
+						if (val != null && val.contains("|")) {
+							answers = val.split("\\|");
 						} else {
-							count = count + 1;
+							answers = new String[] { val };
 						}
-						countMap.put(val, count);
+						// perform count
+						for (int i = 0; i < answers.length; i++) {
+							Long count = countMap.get(answers[i]);
+							if (count == null) {
+								count = 1L;
+							} else {
+								count = count + 1;
+							}
+							countMap.put(answers[i], count);
+						}
 					}
 				}
 			}
