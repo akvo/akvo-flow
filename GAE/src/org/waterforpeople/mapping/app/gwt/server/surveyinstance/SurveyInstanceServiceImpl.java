@@ -174,8 +174,10 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			domainList.add(answer);
 		}
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		
 		dao.save(domainList);
+		
+		// this is not active - questionAnswerSummary objects are updated in bulk 
+		// after the import  in RawDataSpreadsheetImporter
 		if (isApproved && processSummaries) {
 			SurveyAttributeMappingDao mappingDao = new SurveyAttributeMappingDao();
 			// now send a change message for each item
