@@ -50,6 +50,8 @@ import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class RawDataRestServlet extends AbstractRestApiServlet {
@@ -77,10 +79,12 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 		if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq
 				.getAction())) {
 			List<QuestionAnswerStoreDto> dtoList = new ArrayList<QuestionAnswerStoreDto>();
+			boolean isNew = false;
 			if (importReq.getSurveyInstanceId() == null
 					&& importReq.getSurveyId() != null) {
 				// if the instanceID is null, we need to create one
 				createInstance(importReq);
+				isNew = true;
 			}
 			for (Map.Entry<Long, String[]> item : importReq
 					.getQuestionAnswerMap().entrySet()) {
@@ -93,7 +97,21 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				qasDto.setCollectionDate(importReq.getCollectionDate());
 				dtoList.add(qasDto);
 			}
+			
 			sisi.updateQuestions(dtoList, true, false);
+			
+			if (isNew) {
+				SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+				List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStoreByType(new Long(importReq.getSurveyInstanceId()), "GEO");
+				if (qasList != null && qasList.size() > 0)	{
+					Queue summQueue = QueueFactory.getQueue("dataSummarization");
+					summQueue.add(TaskOptions.Builder.withUrl("/app_worker/dataprocessor").param(
+							DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
+							.param("surveyInstanceId", importReq.getSurveyInstanceId() + "")
+							.param("qasId", qasList.get(0).getKey().getId() + "")
+							.param("delta",1 + ""));
+				}		
+			}
 		} else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 				.equals(importReq.getAction())) {
 			SurveyInstance instance = instanceDao.getByKey(importReq

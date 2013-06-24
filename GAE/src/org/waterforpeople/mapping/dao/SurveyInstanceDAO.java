@@ -29,6 +29,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
+import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
@@ -38,6 +39,7 @@ import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -226,7 +228,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			summQueue.add(TaskOptions.Builder.withUrl("/app_worker/dataprocessor").param(
 					DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
 					.param("surveyInstanceId", si.getKey().getId() + "")
-					.param("qasId", geoQasId + ""));
+					.param("qasId", geoQasId + "")
+					.param("delta",1 + ""));
 		}
 		return si;
 	}
@@ -515,9 +518,19 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStore(
 				surveyInstanceId, null);
 
+		// to account for the slim change if we have two geo questions in one surveyInstance
+		Boolean SISCount_updated = false;
 		if (qasList != null && qasList.size() > 0) {
 			// update the questionAnswerSummary counts
 			for (QuestionAnswerStore qasItem : qasList) {
+				
+				// if the questionAnswerStore item is the GEO type, try to update
+				// the surveyInstanceSummary
+				if (Question.Type.GEO.toString().equals(qasItem.getType()) && !SISCount_updated){
+					DataProcessorRestServlet.surveyInstanceSummarizer(surveyInstanceId, qasItem.getKey().getId(), new Integer(-1));
+					SISCount_updated = true;
+				}
+
 				// if the questionAnswerStore item belongs to an OPTION type,
 				// update the count
 				Question q = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
@@ -534,6 +547,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		// delete the surveyInstance
 		SurveyInstance instance = siDao.getByKey(item.getKey());
 		if (instance != null) {
+			// send notification
+			List<Long> ids = new ArrayList<Long>();
+			ids.add(instance.getSurveyId());
+			SurveyUtils.notifyReportService(ids, "invalidate");
 			siDao.delete(instance);
 		}
 
