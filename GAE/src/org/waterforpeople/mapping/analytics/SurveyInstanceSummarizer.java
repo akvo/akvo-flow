@@ -83,7 +83,7 @@ public class SurveyInstanceSummarizer implements DataSummarizer {
 					if (gp != null) {
 						SurveyInstanceSummaryDao.incrementCount(gp.getSub1(),
 								gp.getCountryCode(),
-								instance.getCollectionDate());
+								instance.getCollectionDate(), 1);
 						success = true;
 					}
 				} else {
