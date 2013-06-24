@@ -35,6 +35,15 @@ casper.on("page.error", function(msg, trace) {
 var url = 'http://akvoflowsandbox.appspot.com/admin/';
 var x = require('casper').selectXPath;
 
+// For taking username/password via CLI
+// if (system.args.length < 3) {
+// console.info("You need to pass in account name, username, password, and path to casperJS as arguments to this code
+// phantom.exit();
+// }
+
+// var username = system.args[1];
+// var password = system.args[2];
+
 casper.start(url, function() {
 	console.log("page loaded");
 	this.test.assertExists('form#gaia_loginform', 'GAE Login form is found');
@@ -69,11 +78,7 @@ casper.then(function() {
 	this.test.assertExists(x('//*[@id="ember848"]/a'), 'Users Nav Tab Exists');
 	this.test.assertExists(x('//*[@id="ember861"]/a'), 'Messages Nav Tab Exists');
 	
-	
-	
 });
-
-
 
 
 casper.then(function () {
@@ -86,7 +91,6 @@ casper.then(function () {
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/d3.v2.min.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/resumable.min.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/plugins/loader.js');
-   	// this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/plugins/flowDashboard.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/flowDashboard.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/app.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/currentuser.js');
@@ -111,14 +115,17 @@ casper.then(function () {
 
 });
 
-casper.then(function() {
-     var ids = $('//*[@id="main"]').children().map(function(n,i) {
-       return n.id;
-       this.echo('Return set of IDs under #datasection');
- 	 if (this.test.assertVisible('.tabNav%20floats-in') {
-  	 return document.getElementByXPath("//a[text()='Data Cleaning']");
-    });
-});
+//
+//  Iterate through children that inherit dataSection Class from 
+
+// casper.then(function() {
+//     var ids = $('//*[@id="main"]').children().map(function(n,i) {
+//       return n.id;
+//       this.echo('Return set of IDs under #datasection');
+// 	 if (this.test.assertVisible('.tabNav%20floats-in') {
+//  	 return document.getElementByXPath();
+//    });
+// });
 
   //  function then() {
    // 	console.log("element : ", this.evaluate(function ()
