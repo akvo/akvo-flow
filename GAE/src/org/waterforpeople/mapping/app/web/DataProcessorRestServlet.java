@@ -119,7 +119,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER
 				.equalsIgnoreCase(dpReq.getAction())) {
 			surveyInstanceSummarizer(dpReq.getSurveyInstanceId(),
-					dpReq.getQasId());
+					dpReq.getQasId(), dpReq.getDelta());
 		}
 		return new RestResponse();
 	}
@@ -603,7 +603,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	}
 
 	public static void surveyInstanceSummarizer(Long surveyInstanceId,
-			Long qasId) {
+			Long qasId, Integer delta) {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		boolean success = false;
@@ -626,7 +626,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 						if (gp != null) {
 							SurveyInstanceSummaryDao.incrementCount(
 									gp.getSub1(), gp.getCountryCode(),
-									qas.getCollectionDate());
+									qas.getCollectionDate(), delta.intValue());
 							success = true;
 						}
 					}

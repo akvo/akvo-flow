@@ -43,12 +43,14 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String SURVEY_ID_PARAM = "surveyId";
 	public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
 	public static final String QAS_ID_PARAM = "qasId";
+	public static final String DELTA_PARAM = "delta";
 
 	private String country;
 	private String source;
 	private Long surveyId;
 	private Long surveyInstanceId;
 	private Long qasId;
+	private Integer delta;
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
@@ -78,6 +80,16 @@ public class DataProcessorRequest extends RestRequest {
 			} catch (Exception e) {
 				addError(new RestError(RestError.BAD_DATATYPE_CODE,
 						RestError.BAD_DATATYPE_MESSAGE, QAS_ID_PARAM
+								+ " must be an integer"));
+			}
+		}
+		
+		if (req.getParameter(DELTA_PARAM) != null) {
+			try {
+				setDelta(new Integer(req.getParameter(DELTA_PARAM).trim()));
+			} catch (Exception e) {
+				addError(new RestError(RestError.BAD_DATATYPE_CODE,
+						RestError.BAD_DATATYPE_MESSAGE, DELTA_PARAM
 								+ " must be an integer"));
 			}
 		}
@@ -128,6 +140,14 @@ public class DataProcessorRequest extends RestRequest {
 
 	public void setQasId(Long qasId) {
 		this.qasId = qasId;
+	}
+
+	public Integer getDelta() {
+		return delta;
+	}
+
+	public void setDelta(Integer delta) {
+		this.delta = delta;
 	}
 
 }
