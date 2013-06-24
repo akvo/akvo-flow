@@ -50,7 +50,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
 	amOptionType: function() {
 		if(this.type) {
-			return(this.type.get('value') == 'OPTION');
+			return this.type.get('value') == 'OPTION';
 		} else {
 			return false;
 		}
@@ -58,7 +58,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
 	amNumberType: function() {
 		if(this.type) {
-			return(this.type.get('value') == 'NUMBER');
+			return this.type.get('value') == 'NUMBER';
 		} else {
 			return false;
 		}
@@ -68,7 +68,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		var val;
 		if(!Ember.none(this.type)) {
 			val = this.type.get('value');
-			return(val == 'GEO' || val == 'FREE_TEXT' || val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE');
+			return val == 'GEO' || val == 'FREE_TEXT' || val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
 		}
 	}.property('this.type').cacheable(),
 
@@ -277,7 +277,7 @@ FLOW.QuestionView = FLOW.View.extend({
 				// restore order
 				qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 				questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-			        return(item.get('questionGroupId') == qgId);
+			        return item.get('questionGroupId') == qgId;
 			      });
 				
 				origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
@@ -329,7 +329,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		// restore order
 		qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 		questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-	        return(item.get('questionGroupId') == qgId);
+	        return item.get('questionGroupId') == qgId;
 	      });
 		
 		// move items up to make space
@@ -378,7 +378,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		// restore order
 		qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 		questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-	        return(item.get('questionGroupId') == qgId);
+	        return item.get('questionGroupId') == qgId;
 	      });
 		
 		// move items up to make space

@@ -74,11 +74,11 @@ FLOW.devicesInGroupControl = Ember.ArrayController.create({
       // 1 means all unassigned devices
       if(deviceGroupId == 1) {
         this.set('content', FLOW.store.filter(FLOW.Device, function(item) {
-          return(Ember.empty(item.get('deviceGroup')));
+          return Ember.empty(item.get('deviceGroup'));
         }));
       } else {
         this.set('content', FLOW.store.filter(FLOW.Device, function(item) {
-          return(parseInt(item.get('deviceGroup'), 10) == deviceGroupId);
+          return parseInt(item.get('deviceGroup'), 10) == deviceGroupId;
         }));
       }
     }
