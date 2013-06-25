@@ -613,11 +613,11 @@ FLOW.ColumnView = Ember.View.extend({
   classNameBindings: ['isActiveAsc:sorting_asc', 'isActiveDesc:sorting_desc'],
 
   isActiveAsc: function() {
-    return this.get('item') === FLOW.tableColumnControl.get('selected')) && (FLOW.tableColumnControl.get('sortAscending') === true;
+    return this.get('item') === FLOW.tableColumnControl.get('selected') && FLOW.tableColumnControl.get('sortAscending') === true;
   }.property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
 
   isActiveDesc: function() {
-    return this.get('item') === FLOW.tableColumnControl.get('selected')) && (FLOW.tableColumnControl.get('sortAscending') === false;
+    return this.get('item') === FLOW.tableColumnControl.get('selected') && FLOW.tableColumnControl.get('sortAscending') === false;
   }.property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
 
   sort: function() {
