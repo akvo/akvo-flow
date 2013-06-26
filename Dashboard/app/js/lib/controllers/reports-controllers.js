@@ -61,6 +61,7 @@ FLOW.statisticsControl = Ember.ArrayController.create({
     this.set('selectedSurvey',null);
     this.set('totalsSurveys',[]);
     this.set('total',null);
+    this.set('content',null);
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   getQA: function(){
