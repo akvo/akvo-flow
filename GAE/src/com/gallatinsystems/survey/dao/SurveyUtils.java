@@ -16,7 +16,9 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +27,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.common.util.HttpUtil;
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -213,4 +218,59 @@ public class SurveyUtils {
 		return sg.getName() + "/" + s.getName();
 	}
 
+	/**
+	 * Sends a POST request of a collection of surveyIds to a server defined by
+	 * the `flowServices` property
+	 * 
+	 * The property `alias` define the baseURL property that is sent in the
+	 * request
+	 * 
+	 * @param surveyIds
+	 *            Collection of ids (Long) that requires processing
+	 * @param action
+	 *            A string indicating the action that will be used, this string
+	 *            is used for building the URL, with the `flowServices`
+	 *            property + / + action
+	 * @return The response from the server or null when `flowServices` is not
+	 *         defined, or an error in the request happens
+	 */
+	public static String notifyReportService(Collection<Long> surveyIds,
+			String action) {
+		final String flowServiceURL = PropertyUtil
+				.getProperty("flowServices");
+		final String baseURL = PropertyUtil.getProperty("alias");
+
+		if (flowServiceURL == null || "".equals(flowServiceURL)) {
+			log.log(Level.SEVERE,
+					"Error trying to notify server. It's not configured, check `flowServices` property");
+			return null;
+		}
+
+		try {
+
+			final JSONObject payload = new JSONObject();
+			payload.put("surveyIds", surveyIds);
+			payload.put("baseURL", (baseURL.startsWith("http") ? baseURL
+					: "http://" + baseURL));
+
+			log.log(Level.INFO, "Sending notification (" + action
+					+ ") for surveys: " + surveyIds);
+
+			final String postString = "criteria="
+					+ URLEncoder.encode(payload.toString(), "UTF-8");
+
+			log.log(Level.FINE, "POST string: " + postString);
+
+			final String response = new String(HttpUtil.doPost(flowServiceURL
+					+ "/" + action, postString), "UTF-8");
+
+			log.log(Level.INFO, "Response from server: " + response);
+
+			return response;
+		} catch (Exception e) {
+			log.log(Level.SEVERE,
+					"Error notifying the report service: " + e.getMessage(), e);
+		}
+		return null;
+	}
 }

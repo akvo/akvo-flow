@@ -19,6 +19,7 @@
 		<property name="storepass" value="$storepass" />
 		<property name="keypass" value="$keypass" />
 		<property name="alias" value="$alias" />
+		<property name="flowServices" value="http://reporting.akvoflow.org" />
 		<property name="google_spreadsheet_url"
 			value="http://spreadsheets.google.com/feeds/spreadsheets/private/full" />
 		<property name="next_url"

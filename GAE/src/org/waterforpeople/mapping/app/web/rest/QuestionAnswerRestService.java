@@ -39,6 +39,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
@@ -194,9 +195,21 @@ public class QuestionAnswerRestService {
 					// give back the question text as we received it
 					dto.setQuestionText(questionAnswerStoreDto.getQuestionText());
 					statusDto.setStatus("ok");
+
+					try {
+						// A PUT is done when editing a QuestionAnswerStore, we
+						// need to invalidate a cached report
+						List<Long> surveyIds = new ArrayList<Long>();
+						surveyIds.add(questionAnswerStoreDto.getSurveyId());
+						SurveyUtils
+								.notifyReportService(surveyIds, "invalidate");
+					} catch (Exception e) {
+						// no-op
+					}
 				}
 			}
 		}
+
 		response.put("meta", statusDto);
 		response.put("question_answer", dto);
 		return response;
