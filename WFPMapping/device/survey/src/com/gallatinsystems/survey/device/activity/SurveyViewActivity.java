@@ -26,13 +26,16 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -40,6 +43,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StatFs;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -199,7 +203,80 @@ public class SurveyViewActivity extends TabActivity implements
 			eventSourceQuestionId = savedInstanceState
 					.getString(ConstantUtil.QUESTION_ID_KEY);
 		}
+		
+		spaceLeftOnCard();
 
+	}
+	
+
+	/*
+	 * Check SD card space.
+	 * Warn by dialog popup if it is getting low.
+	 * Return to home screen if completely full. 
+	 */
+	public void spaceLeftOnCard() {
+		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+			//TODO: more specific warning if card not mounted?
+			
+		}
+		//compute space left
+		StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+		double sdAvailSize = (double)stat.getAvailableBlocks()
+		                   * (double)stat.getBlockSize();
+		//One binary gigabyte equals 1,073,741,824 bytes.
+		//double gigaAvailable = sdAvailSize / 1073741824;
+		//One binary megabyte equals 1 048 576 bytes.
+		long megaAvailable = (long)Math.floor(sdAvailSize / 1048576.0);
+		
+		//keep track of changes
+		SharedPreferences settings = getPreferences(MODE_PRIVATE);
+		long lastMegaAvailable = settings.getLong("cardMBAvaliable", 101L);//assume we had space before
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putLong("cardMBAvaliable", megaAvailable);
+		// Commit the edits!
+		editor.commit();
+
+		if (megaAvailable <= 0L) {//All out, OR media not mounted
+			//Bounce user
+			ViewUtil.showConfirmDialog(R.string.nocardspacetitle,
+					R.string.nocardspacedialog, this, false,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog,
+								int which) {
+							if(dialog!=null){
+								dialog.dismiss();
+							}
+							finish();
+						}
+					});
+			return;
+		}
+
+		//just issue a warning if we just descended to or past a number on the list 
+		if (megaAvailable < lastMegaAvailable) {
+			for (long l = megaAvailable; l < lastMegaAvailable; l++)
+				if (ConstantUtil.SPACE_WARNING_MB_LEVELS.contains(Long.toString(l))) {
+					//display how much space is left
+					String s = getResources().getString(R.string.lowcardspacedialog);
+					s = s.replace("%%%", Long.toString(megaAvailable));
+					ViewUtil.showConfirmDialog(
+							R.string.lowcardspacetitle,
+							s,
+							this,
+							false,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,	int which) {
+									if(dialog!=null) {
+										dialog.dismiss();
+									}
+								}
+							},
+							null);
+					return; // only one warning per survey, even of we passed >1 limit
+				}
+			}
 	}
 
 	/**
@@ -356,7 +433,7 @@ public class SurveyViewActivity extends TabActivity implements
 						try {
 							out = new BufferedOutputStream(new FileOutputStream(outputFileName));
 	//						out = new FileOutputStream(f);
-							if (bm.compress(CompressFormat.JPEG, 50, out)) {
+							if (bm.compress(CompressFormat.JPEG, 75, out)) {
 								Log.i(ACTIVITY_NAME,"Media file resized");
 								return true;
 							}
@@ -921,6 +998,7 @@ public class SurveyViewActivity extends TabActivity implements
 		setRespondentId(databaseAdapter
 				.createSurveyRespondent(surveyId, userId));
 		resetAllQuestions();
+		spaceLeftOnCard();
 	}
 
 	/**

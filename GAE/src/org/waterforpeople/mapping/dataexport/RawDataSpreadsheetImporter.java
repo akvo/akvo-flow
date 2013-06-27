@@ -145,7 +145,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			}
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
 			Object[] results = BulkDataServiceClient.loadQuestions(
-					getSurveyId().toString(), serverBase);
+					getSurveyId().toString(), serverBase, criteria.get("apiKey"));
 			Map<String, QuestionDto> questionMap = null;
 
 			if (results != null) {
@@ -219,14 +219,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						QuestionDto question = questionMap.get(questionIDColMap
 								.get(cell.getColumnIndex()));
 						QuestionType type = null;
+						// VALUE is default, it is valid for NUMBER, FREE_TEXT, SCAN, OPTION
 						String typeString = "VALUE";
 						if (question != null) {
 							type = question.getType();
-							typeString = type.toString();
-							if (QuestionType.GEO == type
-									|| QuestionType.PHOTO == type
-									|| QuestionType.VIDEO == type) {
-								typeString = type.toString();
+							if (QuestionType.GEO == type){
+								typeString = "GEO";
+							} else if (QuestionType.PHOTO == type) {
+								typeString = "IMAGE";
+							} else if (QuestionType.VIDEO == type) {
+								typeString = "VIDEO";
+							} else if (QuestionType.DATE == type) {
+								typeString = "DATE";
 							}
 						} else if (questionIDColMap.get(cell.getColumnIndex())
 								.startsWith("--")) {
@@ -289,6 +293,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									cellVal += "|"
 											+ (nextVal != null ? nextVal : "");
 								}
+								// if the length of the cellVal is too small, which means there is no valid info, skip.
+								if (cellVal.length() < 5){
+									cellVal = "";
+									}
 								sb.append(cellVal != null ? URLEncoder.encode(
 										cellVal, "UTF-8") : "");
 							} else {
@@ -377,6 +385,11 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 								+ "&" + RawDataImportRequest.SURVEY_ID_PARAM
 								+ "=" + surveyId, true, criteria.get(KEY_PARAM));
 			}
+
+			invokeUrl(serverBase, "action="
+					+ RawDataImportRequest.SAVE_MESSAGE_ACTION + "&"
+					+ RawDataImportRequest.SURVEY_ID_PARAM + "=" + surveyId,
+					true, criteria.get(KEY_PARAM));
 
 			SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 					COMPLETE.get(locale), true));

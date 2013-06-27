@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.survey.device.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import android.widget.EditText;
 import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.StringUtil;
 
 /**
  * this activity is used to edit a user's profile information and persist it to
@@ -41,6 +43,7 @@ public class UserEditActivity extends Activity {
 	private Long userId;
 	private SurveyDbAdapter databaseAdaptor;
 
+	@SuppressLint("UseValueOf")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -120,22 +123,12 @@ public class UserEditActivity extends Activity {
 	}
 
 	/**
-	 * save the name and email address to the db
+	 * save the sanitized name and email address to the db
 	 */
 	private void saveState() {
-		String name = displayName.getText().toString();
-		String email = emailAddr.getText().toString();
-		name = cleanupString(name);
-		email = cleanupString(email);
+		String name = StringUtil.ControlCommaToSPace(displayName.getText().toString()).trim();
+		String email = StringUtil.ControlCommaToSPace(emailAddr.getText().toString()).trim();
 		databaseAdaptor.createOrUpdateUser(userId, name, email);
 	}
 
-	private String cleanupString(String input) {
-		if (input != null) {
-			input = input.trim();
-			input = input.replaceAll("\n", " ");
-			input = input.replaceAll(",", " ");
-		}
-		return input;
-	}
 }

@@ -119,7 +119,7 @@ public class SurveyUtils {
 			final Question qTmp = SurveyUtils.copyQuestion(q, newQuestionGroup
 					.getKey().getId(), qCount++);
 			qMap.put(q.getKey().getId(), qTmp.getKey().getId());
-			if (qTmp.getDependentFlag()) {
+			if (qTmp.getDependentFlag() != null && qTmp.getDependentFlag()) {
 				dependentQuestionList.add(qTmp);
 			}
 		}

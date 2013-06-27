@@ -44,7 +44,8 @@ FLOW.ReportLoader = Ember.Object.create({
         criteria = Ember.copy(this.get('payloads')[exportType]);
         criteria.surveyId = '' + surveyId;
         criteria.baseURL = location.protocol + '//' + location.host;
-        criteria.opts.imagePrefix = FLOW.Env.photo_url_root;
+        criteria.opts.imgPrefix = FLOW.Env.photo_url_root;
+        criteria.opts.uploadUrl = FLOW.Env.surveyuploadurl;
 
         if (opts) {
             Ember.keys(opts).forEach(function (k) {
@@ -115,6 +116,10 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     showRawDataImportApplet: false,
     showGoogleEarthButton: false,
 
+    didInsertElement: function () {
+      FLOW.uploader.registerEvents();
+    },
+
     showRawDataReport: function () {
       if (!FLOW.selectedControl.selectedSurvey) {
         this.showWarning();
@@ -149,8 +154,22 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       FLOW.ReportLoader.load('SURVEY_FORM', FLOW.selectedControl.selectedSurvey.get('id'));
     },
 
-    showImportApplet: function () {
-        this.renderApplet('showRawDataImportApplet', true);
+    importFile: function () {
+      var file;
+      if (!FLOW.selectedControl.selectedSurvey) {
+        this.showImportWarning(Ember.String.loc('_import_select_survey'));
+        return;
+      }
+
+      file = $('#raw-data-import-file')[0];
+
+      if (!file || file.files.length === 0) {
+        this.showImportWarning(Ember.String.loc('_import_select_file'));
+        return;
+      }
+
+      FLOW.uploader.addFile(file.files[0]);
+      FLOW.uploader.upload();
     },
 
     showComprehensiveOptions: function () {
@@ -172,28 +191,11 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
         FLOW.dialogControl.set('showDialog', true);
     },
 
-    renderApplet: function (prop, skipSurveyCheck) {
-        if (!skipSurveyCheck && !FLOW.selectedControl.selectedSurvey) {
-            this.showWarning();
-            return;
-        }
-
-        if (prop === 'showRawDataImportApplet') {
-          this.set('showRawDataReportApplet', false);
-          this.set('showComprehensiveReportApplet', false);
-          this.set('showGoogleEarthFileApplet', false);
-          this.set('showSurveyFormApplet', true);
-          this.set('showRawDataImportApplet', true);
-        }
-
-        this.get('childViews').forEach(function (v) {
-            if (v.get('childViews') && v.get('childViews').length > 0) {
-                return; // skip initial select items
-            }
-
-            if (v.state === 'inDOM') {
-                v.rerender();
-            }
-        });
+    showImportWarning: function (msg) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', Ember.String.loc('_import_clean_data'));
+      FLOW.dialogControl.set('message', msg);
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
     }
 });

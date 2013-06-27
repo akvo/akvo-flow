@@ -168,6 +168,7 @@ public class SubmitTabContentFactory extends SurveyTabContentFactory {
 		context.setRespondentId(databaseAdaptor.createSurveyRespondent(
 				context.getSurveyId(), context.getUserId()));
 		context.resetAllQuestions();
+		context.spaceLeftOnCard();
 	}
 
 }

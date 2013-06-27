@@ -79,18 +79,19 @@ public class SurveySpreadsheetImporter implements DataImporter {
 			inp = new FileInputStream(file);
 			HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
 			sheet1 = wb.getSheetAt(0);
+			String apiKey = criteria.get("apiKey");
 			if (!isWholeSurvey) {
 				// even though there is a header row, we want lastRowNum since
 				// rows are 0 indexed
 				int questionCount = sheet1.getLastRowNum();
 				// figure out the starting order
 				QuestionDto startingQuestion = BulkDataServiceClient
-						.loadQuestionDetails(serverBase, beforeQuestionId);
+						.loadQuestionDetails(serverBase, beforeQuestionId, apiKey);
 				startRow = startingQuestion.getOrder();
 				// now get all the questions
 				List<QuestionDto> questionsInGroup = BulkDataServiceClient
 						.fetchQuestions(serverBase,
-								startingQuestion.getQuestionGroupId());
+								startingQuestion.getQuestionGroupId(), apiKey);
 
 				if (questionsInGroup != null) {
 					// we only need to reorder the group into which we're

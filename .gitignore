@@ -44,6 +44,7 @@ GAE/war/admin
 GAE/war/com.*
 GAE/war/exporterapplet.jar
 GAE/war/flowenv.js
+GAE/war/index.html
 GAE/war/org.*
 GAE/war/publicmap
 GAE/war/vendorjs

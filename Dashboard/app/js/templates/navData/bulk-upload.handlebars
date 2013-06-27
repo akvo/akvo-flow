@@ -4,20 +4,16 @@
  <h1>{{t _bulk_upload_data}}</h1>
 
   <div class="bulkUpload block">    
-    <h3>{{t _bulk_upload_data}}</h3>
     <p>{{t _upload_applet_text_}}</p>
 
     {{#if FLOW.uploader.support}}
       <div class="resumable-drop" ondragenter="jQuery(this).addClass('resumable-dragover');" ondragend="jQuery(this).removeClass('resumable-dragover');" ondrop="jQuery(this).removeClass('resumable-dragover');">
-        Drop files here to upload or <a class="resumable-browse"><u>select from your computer</u></a>
+        {{t _drop_files}} <a class="resumable-browse"><u>{{t _select_files}}</u></a>
       </div>
+      <div>{{t _do_not_navigate_away}}</div>
       <div class="resumable-progress">
-        <table class="fullWidth">
-          <tr><td class="fullWidth"><div>{{t _progress}}</div></td></tr>
-          <tr>
-            <td class="fullWidth"><div class="progress-container"><div class="progress-bar"></div></div></td>
-          </tr>
-        </table>
+      	<h5>{{t _progress}}</h5>
+		<div class="progress-container"><div class="progress-bar"></div></div>
       </div>      
       <ul class="resumable-list"></ul>
     {{else}}

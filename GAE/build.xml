@@ -94,7 +94,6 @@
 				<striplinebreaks/>
 			</filterchain>
 		</loadfile>
-		<replace file="../WFPMapping/device/survey/res/values/arrays.xml" token="http://@@@@.appspot.com" value="http://${app.id}.appspot.com"/>
 	</target>
 
 	<target name="copyjars" description="Copies the App Engine JARs to the WAR.">

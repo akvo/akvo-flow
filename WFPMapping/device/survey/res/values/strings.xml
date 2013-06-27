@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">Field Survey</string>
-	<string name="takephoto">Take Photo</string>
+	<string name="appversion">1.10.6</string>
+    <string name="app_name">Field Survey</string>
+    <string name="nocardspacetitle">No Storage Space</string>
+    <string name="lowcardspacetitle">Low Storage Space</string>
+    <string name="nocardspacedialog">The SD card on this device is full and you can no longer collect data. You must clear space on the SD card in order to continue.</string>
+    <string name="lowcardspacedialog">You have %%% MB of storage space left on this device\'s SD card. Once the SD card is full, you will no longer be able to collect data.</string>
+    <string name="takephoto">Take Photo</string>
 	<string name="takevideo">Take Video</string>
 	<string name="getgeo">Check Geo Location</string>
 	<string name="lat">Lat</string>
@@ -208,5 +213,4 @@
 	<string name="addtestpoints">Add test points</string>
 	<string name="updateavail">Update Available</string>
 	<string name="clicktoinstall">Click to install</string>
-	<string name="appversion">1.10.2</string>
 </resources>

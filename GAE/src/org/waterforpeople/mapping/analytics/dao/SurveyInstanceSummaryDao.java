@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 
@@ -38,6 +40,8 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
  */
 public class SurveyInstanceSummaryDao extends BaseDAO<SurveyInstanceSummary> {
 
+	private static final Logger log = Logger
+			.getLogger("SurveyInstanceSummaryDao");
 	public SurveyInstanceSummaryDao() {
 		super(SurveyInstanceSummary.class);
 	}
@@ -52,7 +56,7 @@ public class SurveyInstanceSummaryDao extends BaseDAO<SurveyInstanceSummary> {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static synchronized void incrementCount(String community,
-			String country, Date collectionDate) {
+			String country, Date collectionDate, int delta) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyInstanceSummary.class);
 		Date colDate = DateUtil.getDateNoTime(collectionDate);
@@ -62,20 +66,27 @@ public class SurveyInstanceSummaryDao extends BaseDAO<SurveyInstanceSummary> {
 				.declareParameters("String countryCodeParam, String communityCodeParam, Date collectionDateParam");
 		// have to import the date class before we can use it
 		query.declareImports("import java.util.Date");
-		List results = (List) query.execute(community, country, colDate);
+		List results = (List) query.execute(country,community, colDate);
+	
 		SurveyInstanceSummary summary = null;
+		SurveyInstanceSummaryDao thisDao = new SurveyInstanceSummaryDao();
 		if (results == null || results.size() == 0) {
 			summary = new SurveyInstanceSummary();
 			summary.setCount(1L);
 			summary.setCommunityCode(community);
 			summary.setCountryCode(country);
 			summary.setCollectionDate(colDate);
+			thisDao.save(summary);
 		} else {
 			summary = (SurveyInstanceSummary) results.get(0);
-			summary.setCount(summary.getCount() + 1);
+			summary.setCount(summary.getCount() + delta);
+			// if the count is zero, delete it
+			if (summary.getCount() == 0){
+				thisDao.delete(summary);
+			} else {
+				thisDao.save(summary);
+			}
 		}
-		SurveyInstanceSummaryDao thisDao = new SurveyInstanceSummaryDao();
-		thisDao.save(summary);
 	}
 
 	/**

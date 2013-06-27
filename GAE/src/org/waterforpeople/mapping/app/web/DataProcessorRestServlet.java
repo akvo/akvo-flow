@@ -24,10 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.zip.ZipInputStream;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.waterforpeople.mapping.analytics.SurveyInstanceSummarizer;
+import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -37,6 +41,7 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
 import org.waterforpeople.mapping.domain.AccessPoint;
+import org.waterforpeople.mapping.domain.GeoCoordinates;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
@@ -45,6 +50,9 @@ import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.gis.location.GeoLocationService;
+import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
+import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.operations.dao.ProcessingStatusDao;
 import com.gallatinsystems.operations.domain.ProcessingStatus;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -64,10 +72,12 @@ import com.google.appengine.api.taskqueue.TaskOptions;
  * 
  */
 public class DataProcessorRestServlet extends AbstractRestApiServlet {
-
+	private static final Logger log = Logger
+			.getLogger("DataProcessorRestServlet");
 	private static final long serialVersionUID = -7902002525342262821L;
 	private static final String REBUILD_Q_SUM_STATUS_KEY = "rebuildQuestionSummary";
 	private static final String VALUE_TYPE = "VALUE";
+	private static final String OTHER_TYPE = "OTHER";
 	private static final Integer QAS_PAGE_SIZE = 300;
 
 	@Override
@@ -90,7 +100,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			SurveyReplicationImporter sri = new SurveyReplicationImporter();
-			sri.executeImport(dpReq.getSource(), dpReq.getSurveyId());
+			sri.executeImport(dpReq.getSource(), dpReq.getSurveyId(), null); // FIXME
 		} else if (DataProcessorRequest.RESCORE_AP_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			rescoreAp(dpReq.getCountry());
@@ -103,6 +113,13 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.TRIM_OPTIONS.equalsIgnoreCase(dpReq
 				.getAction())) {
 			trimOptions();
+		} else if (DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION
+				.equalsIgnoreCase(dpReq.getAction())) {
+			fixOptions2Values(dpReq.getCursor());
+		} else if (DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER
+				.equalsIgnoreCase(dpReq.getAction())) {
+			surveyInstanceSummarizer(dpReq.getSurveyInstanceId(),
+					dpReq.getQasId(), dpReq.getDelta());
 		}
 		return new RestResponse();
 	}
@@ -374,37 +391,63 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		String cursor = null;
 		Map<String, Map<String, Long>> summaryMap = new HashMap<String, Map<String, Long>>();
 		List<QuestionAnswerStore> qasList = null;
-		do {
-			qasList = qasDao.listByTypeAndDate(VALUE_TYPE, surveyId, sinceDate,
-					cursor, QAS_PAGE_SIZE);
-			if (qasList != null && qasList.size() > 0) {
-				cursor = QuestionAnswerStoreDao.getCursor(qasList);
-				for (QuestionAnswerStore qas : qasList) {
-					if (isSummarizable(qas, qList)) {
-						String val = qas.getValue();
-						// skip images since the summary is meaningless in those
-						// cases
-						if (val == null
-								|| val.toLowerCase().trim().endsWith(".jpg")) {
-							continue;
+
+		String responseType = VALUE_TYPE;
+		// first do VALUE_TYPE, then do OTHER_TYPE. We need to do it this way
+		// because the datastore does not support contains() queries with a cursor
+		for (int run = 1; run <= 2; run++) {
+			do {
+				// We need both VALUE and OTHER QAS because both can originate
+				// from an option question
+				qasList = qasDao.listByTypeAndDate(responseType, surveyId,
+						sinceDate, cursor, QAS_PAGE_SIZE);
+
+				if (qasList != null && qasList.size() > 0) {
+					cursor = QuestionAnswerStoreDao.getCursor(qasList);
+					
+					for (QuestionAnswerStore qas : qasList) {
+						if (isSummarizable(qas, qList)) {
+							String val = qas.getValue();
+							// skip images since the summary is meaningless in
+							// those
+							// cases
+							if (val == null
+									|| val.toLowerCase().trim()
+											.endsWith(".jpg")) {
+								continue;
+							}
+							Map<String, Long> countMap = summaryMap.get(qas
+									.getQuestionID());
+							if (countMap == null) {
+								countMap = new HashMap<String, Long>();
+								summaryMap.put(qas.getQuestionID(), countMap);
+							}
+
+							// split up multiple answers
+							String[] answers;
+							if (val != null && val.contains("|")) {
+								answers = val.split("\\|");
+							} else {
+								answers = new String[] { val };
+							}
+							// perform count
+							for (int i = 0; i < answers.length; i++) {
+								Long count = countMap.get(answers[i]);
+								if (count == null) {
+									count = 1L;
+								} else {
+									count = count + 1;
+								}
+								countMap.put(answers[i], count);
+							}
 						}
-						Map<String, Long> countMap = summaryMap.get(qas
-								.getQuestionID());
-						if (countMap == null) {
-							countMap = new HashMap<String, Long>();
-							summaryMap.put(qas.getQuestionID(), countMap);
-						}
-						Long count = countMap.get(val);
-						if (count == null) {
-							count = 1L;
-						} else {
-							count = count + 1;
-						}
-						countMap.put(val, count);
 					}
 				}
-			}
-		} while (qasList != null && qasList.size() > 0);
+			} while (qasList != null && qasList.size() > 0);
+			responseType = OTHER_TYPE;
+			cursor = null;
+		}
+
 		return summaryMap;
 	}
 
@@ -507,6 +550,94 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		Queue queue = QueueFactory.getDefaultQueue();
 		queue.add(options);
 
+	}
+
+	/**
+	 * fixes wrong Types in questionAnswerStore objects. When cleaned data is
+	 * uploaded using an excel file, the type of the answer is set according to
+	 * the type of the question, while the device sets the type according to a
+	 * different convention. The action handles 500 items in one call, and
+	 * invokes new tasks as necessary if there are more items.
+	 * 
+	 * @param cursor
+	 * @author M.T. Westra
+	 */
+	public static void fixOptions2Values(String cursorString) {
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		List<QuestionAnswerStore> qasList = siDao.listQAOptions(cursorString,
+				500, "OPTION", "FREE_TEXT", "NUMBER", "SCAN", "PHOTO");
+		List<QuestionAnswerStore> qasChangedList = new ArrayList<QuestionAnswerStore>();
+		log.log(Level.INFO, "Running fixOptions2Values, cursor at "
+				+ cursorString);
+		if (qasList != null) {
+			String cursor = SurveyInstanceDAO.getCursor(qasList);
+			for (QuestionAnswerStore qas : qasList) {
+
+				if (Question.Type.OPTION.toString().equals(qas.getType())
+						|| Question.Type.NUMBER.toString()
+								.equals(qas.getType())
+						|| Question.Type.FREE_TEXT.toString().equals(
+								qas.getType())
+						|| Question.Type.SCAN.toString().equals(qas.getType())) {
+					qas.setType("VALUE");
+					qasChangedList.add(qas);
+				} else if (Question.Type.PHOTO.toString().equals(qas.getType())) {
+					qas.setType("IMAGE");
+					qasChangedList.add(qas);
+				}
+			}
+			qasDao.save(qasChangedList);
+			// if there are more, invoke another task
+			if (qasList.size() == 500) {
+				log.log(Level.INFO, "invoking another fixOptions task");
+				Queue queue = QueueFactory.getDefaultQueue();
+				TaskOptions options = TaskOptions.Builder
+						.withUrl("/app_worker/dataprocessor")
+						.param(DataProcessorRequest.ACTION_PARAM,
+								DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION)
+						.param(DataProcessorRequest.CURSOR_PARAM, cursor);
+				queue.add(options);
+			}
+		}
+	}
+
+	public static void surveyInstanceSummarizer(Long surveyInstanceId,
+			Long qasId, Integer delta) {
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		boolean success = false;
+		if (surveyInstanceId != null) {
+			SurveyInstance si = siDao.getByKey(surveyInstanceId);
+			if (si != null && qasId != null) {
+				QuestionAnswerStore qas = qasDao.getByKey(qasId);
+				if (qas != null) {
+					GeoCoordinates geoC = null;
+					if (qas.getValue() != null
+							&& qas.getValue().trim().length() > 0) {
+						geoC = GeoCoordinates.extractGeoCoordinate(qas
+								.getValue());
+					}
+					if (geoC != null) {
+						GeoLocationService gisService = new GeoLocationServiceGeonamesImpl();
+						GeoPlace gp = gisService.findDetailedGeoPlace(geoC
+								.getLatitude().toString(), geoC.getLongitude()
+								.toString());
+						if (gp != null) {
+							SurveyInstanceSummaryDao.incrementCount(
+									gp.getSub1(), gp.getCountryCode(),
+									qas.getCollectionDate(), delta.intValue());
+							success = true;
+						}
+					}
+				}
+			}
+		}
+		if (!success) {
+			log.log(Level.SEVERE,
+					"Couldnt find geoplace for instance. Instance id: "
+							+ surveyInstanceId);
+		}
 	}
 
 }
