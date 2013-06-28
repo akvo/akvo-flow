@@ -17,9 +17,13 @@
 package com.gallatinsystems.survey.device.dao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
 import android.annotation.SuppressLint;
@@ -32,6 +36,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
 import android.util.Log;
 
+import com.gallatinsystems.survey.device.R;
 import com.gallatinsystems.survey.device.domain.FileTransmission;
 import com.gallatinsystems.survey.device.domain.PointOfInterest;
 import com.gallatinsystems.survey.device.domain.QuestionResponse;
@@ -1682,4 +1687,69 @@ public class SurveyDbAdapter {
 		database.update(USER_TABLE, updatedValues, PK_ID_COL + " = ?",
 				new String[] { id.toString() });
 	}
+
+	public HashSet<String> stringToSet(String item) {
+		HashSet<String> set = new HashSet<String>();
+		StringTokenizer strTok = new StringTokenizer(item, ",");
+		while (strTok.hasMoreTokens()) {
+			set.add(strTok.nextToken());
+		}
+		return set;
+	}
+
+	public String setToString(HashSet<String> set) {
+		boolean isFirst = true;
+		StringBuffer buffer = new StringBuffer();
+		Iterator<String> itr = set.iterator();
+
+		for (int i = 0; i < set.size(); i++) {
+			if (!isFirst) {
+				buffer.append(",");
+			} else {
+				isFirst = false;
+			}
+			buffer.append(itr.next());
+		}
+		return buffer.toString();
+	}
+
+	public void addLanguages(String[] values) {
+		// values holds the 2-letter codes of the languages. We first have to
+		// find out what the indexes are
+
+		String[] langCodesArray = context.getResources().getStringArray(
+				R.array.alllanguagecodes);
+		int[] valuesIndex = new int[values.length];
+		List<String> langCodesList = Arrays.asList(langCodesArray);
+		int index;
+		for (int i = 0; i < values.length; i++) {
+			index = langCodesList.indexOf(values[i]);
+			if (index != -1) {
+				valuesIndex[i] = index;
+			}
+		}
+
+		String langsSelection = findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
+		String langsPresentIndexes = findPreference(ConstantUtil.SURVEY_LANG_PRESENT_KEY);
+
+		HashSet<String> langsSelectionSet = stringToSet(langsSelection);
+		HashSet<String> langsPresentIndexesSet = stringToSet(langsPresentIndexes);
+
+		for (int i = 0; i < values.length; i++) {
+			// values[0] holds the default language. That is the one that will
+			// be turned 'on'.
+			if (i == 0) {
+				langsSelectionSet.add(valuesIndex[i] + "");
+			}
+			langsPresentIndexesSet.add(valuesIndex[i] + "");
+		}
+
+		String newLangsSelection = setToString(langsSelectionSet);
+		String newLangsPresentIndexes = setToString(langsPresentIndexesSet);
+
+		savePreference(ConstantUtil.SURVEY_LANG_SETTING_KEY, newLangsSelection);
+		savePreference(ConstantUtil.SURVEY_LANG_PRESENT_KEY,
+				newLangsPresentIndexes);
+	}
+
 }
