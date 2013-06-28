@@ -1058,19 +1058,18 @@ public class SurveyDbAdapter {
 	public Cursor listSurveyRespondent(String status, boolean byDelivered) {
 		String[] whereParams = { status };
 		String sortBy;
-		if (byDelivered){
-			sortBy = "case when " + DELIVERED_DATE_COL + " is null then 0 else 1 end, " + DELIVERED_DATE_COL + " desc"; 
+		if (byDelivered) {
+			sortBy = "case when " + DELIVERED_DATE_COL
+					+ " is null then 0 else 1 end, " + DELIVERED_DATE_COL
+					+ " desc";
 		} else {
 			sortBy = RESPONDENT_TABLE + "." + PK_ID_COL + " desc";
 		}
 		Cursor cursor = database.query(RESPONDENT_JOIN, new String[] {
 				RESPONDENT_TABLE + "." + PK_ID_COL, DISP_NAME_COL,
 				SAVED_DATE_COL, SURVEY_FK_COL, USER_FK_COL, SUBMITTED_DATE_COL,
-				DELIVERED_DATE_COL, UUID_COL },
-				"status = ?", whereParams,
-				null,
-				null,
-				sortBy);
+				DELIVERED_DATE_COL, UUID_COL }, "status = ?", whereParams,
+				null, null, sortBy);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -1369,75 +1368,81 @@ public class SurveyDbAdapter {
 	}
 
 	/**
-	 * lists all points of interest, filtering by distance, optionally filtering by country code
+	 * lists all points of interest, filtering by distance, optionally filtering
+	 * by country code
 	 * 
-	 * @param country - country code
+	 * @param country
+	 *            - country code
 	 * @param prefix
-	 * @param latitude - decimal degrees
-	 * @param longitude - decimal degrees
-	 * @param radius - meters
+	 * @param latitude
+	 *            - decimal degrees
+	 * @param longitude
+	 *            - decimal degrees
+	 * @param radius
+	 *            - meters
 	 * @return ArrayList<PointOfInterest>
 	 */
-	public ArrayList<PointOfInterest> listPointsOfInterest(String country, String prefix, Double longitude, Double latitude, Double radius ) {
+	public ArrayList<PointOfInterest> listPointsOfInterest(String country,
+			String prefix, Double longitude, Double latitude, Double radius) {
 		if (longitude == null || latitude == null)
 			return listPointsOfInterest(country, prefix);
-		
+
 		ArrayList<PointOfInterest> points = null;
 		String whereClause = null;
-		String[] whereValues; //unfortunately, length of this array must match the number of ?'s in the whereClause
+		String[] whereValues; // unfortunately, length of this array must match
+								// the number of ?'s in the whereClause
 		@SuppressWarnings("unused")
 		int i;
-		//Maximum angular difference for a given radius. Must avoid problems at high latitudes....
+		// Maximum angular difference for a given radius. Must avoid problems at
+		// high latitudes....
 		double nsDegrees = radius * 360 / 40000000;
 		double ewDegrees;
 		if (Math.abs(latitude) > 80.0d)
-			ewDegrees = 0; //don't use, just include the whole [ant]arctic...
+			ewDegrees = 0; // don't use, just include the whole [ant]arctic...
 		else
-			ewDegrees = radius * 360 / (40000000 * Math.cos(latitude*Math.PI/180.0d));
+			ewDegrees = radius * 360
+					/ (40000000 * Math.cos(latitude * Math.PI / 180.0d));
 		if (Math.abs(ewDegrees) > 180.0d)
 			ewDegrees = 0;
 
-		//Longitude is a little tricky (if we are out in the Pacific...)
+		// Longitude is a little tricky (if we are out in the Pacific...)
 		double east = longitude + ewDegrees;
 		double west = longitude - ewDegrees;
 
 		whereClause = LAT_COL + "<? AND " + LAT_COL + ">?";
-		if (ewDegrees == 0.0d){ //degenerate case
+		if (ewDegrees == 0.0d) { // degenerate case
 			whereValues = new String[2];
 			i = 2;
-		} else	{
+		} else {
 			whereValues = new String[4];
-			whereValues[2] = Double.toString(east); //East limit
-			whereValues[3] = Double.toString(west); //West limit
+			whereValues[2] = Double.toString(east); // East limit
+			whereValues[3] = Double.toString(west); // West limit
 			i = 4;
-			if (east > 180.0d){ //wrapped
+			if (east > 180.0d) { // wrapped
 				east = east - 360.0d;
-				whereClause += " AND (" + LON_COL + "<? OR " + LON_COL + ">?)"; 
-			} else	
-			if (west < -180.0d){
+				whereClause += " AND (" + LON_COL + "<? OR " + LON_COL + ">?)";
+			} else if (west < -180.0d) {
 				west = west + 360.0d;
-				whereClause += " AND (" + LON_COL + "<? OR " + LON_COL + ">?) "; 
-					
-			} else	//boring case		
-				whereClause += " AND " + LON_COL + "<? AND " + LON_COL + ">? "; 
-		}
-		//Latitude is simple
-		whereValues[0] = Double.toString(Math.min(latitude + nsDegrees,  90.0d));//North limit
-		whereValues[1] = Double.toString(Math.max(latitude - nsDegrees, -90.0d));//South limit
+				whereClause += " AND (" + LON_COL + "<? OR " + LON_COL + ">?) ";
 
-/*	TODO: (maybe)
-		if (country != null) {
-			whereClause += " AND " + COUNTRY_COL + "=?";
-			whereValues[i] = country;
+			} else
+				// boring case
+				whereClause += " AND " + LON_COL + "<? AND " + LON_COL + ">? ";
+		}
+		// Latitude is simple
+		whereValues[0] = Double.toString(Math.min(latitude + nsDegrees, 90.0d));// North
+																				// limit
+		whereValues[1] = Double
+				.toString(Math.max(latitude - nsDegrees, -90.0d));// South limit
 
-		}
-		if (prefix != null && prefix.trim().length() > 0) {
-			whereClause += " AND " + DISP_NAME_COL + " like ?";
-			whereValues = new String[2];
-			whereValues[i] = country;
-			whereValues[i+1] = prefix + "%";
-		}
-		*/
+		/*
+		 * TODO: (maybe) if (country != null) { whereClause += " AND " +
+		 * COUNTRY_COL + "=?"; whereValues[i] = country;
+		 * 
+		 * } if (prefix != null && prefix.trim().length() > 0) { whereClause +=
+		 * " AND " + DISP_NAME_COL + " like ?"; whereValues = new String[2];
+		 * whereValues[i] = country; whereValues[i+1] = prefix + "%"; }
+		 */
 		Cursor cursor = database.query(POINT_OF_INTEREST_TABLE, new String[] {
 				PK_ID_COL, COUNTRY_COL, DISP_NAME_COL, UPDATED_DATE_COL,
 				LAT_COL, LON_COL, PROP_NAME_COL, PROP_VAL_COL, TYPE_COL },
@@ -1467,10 +1472,10 @@ public class SurveyDbAdapter {
 					point.setLongitude(cursor.getDouble(cursor
 							.getColumnIndexOrThrow(LON_COL)));
 					float[] distance = new float[1];
-					Location.distanceBetween(latitude,longitude,
-											 point.getLatitude(),point.getLongitude(),
-											 distance);
-					if (distance[0] < radius){//now keep only those within actual distance
+					Location.distanceBetween(latitude, longitude,
+							point.getLatitude(), point.getLongitude(), distance);
+					if (distance[0] < radius) {// now keep only those within
+												// actual distance
 						point.setDistance(Double.valueOf(distance[0]));
 						points.add(point);
 					}
@@ -1511,18 +1516,19 @@ public class SurveyDbAdapter {
 		return idVal;
 	}
 
-	
 	/**
-	 * updates the first matching transmission history record with the status passed in.
-	 * If the status == Completed, the completion date is updated.
-	 * If the status == In Progress, the start date is updated.
+	 * updates the first matching transmission history record with the status
+	 * passed in. If the status == Completed, the completion date is updated. If
+	 * the status == In Progress, the start date is updated.
 	 * 
 	 * @param respondId
 	 * @param fileName
 	 * @param status
 	 */
-	public void updateTransmissionHistory(Long respondId, String fileName, String status) {
-		ArrayList<FileTransmission> transList = listFileTransmission(respondId,	fileName, true);
+	public void updateTransmissionHistory(Long respondId, String fileName,
+			String status) {
+		ArrayList<FileTransmission> transList = listFileTransmission(respondId,
+				fileName, true);
 		Long idVal = null;
 		if (transList != null && transList.size() > 0) {
 			idVal = transList.get(0).getId();
