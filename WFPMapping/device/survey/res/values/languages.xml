@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string-array name="allLanguages">   
+  <string-array name="alllanguages">   
+      <item>English</item>
  <item>Abkhaz</item>
 <item>Afar</item>
 <item>Afrikaans</item>
@@ -40,7 +41,6 @@
 <item>Danish</item>
 <item>Divehi</item>
 <item>Dutch</item>
-<item>English</item>
 <item>Esperanto</item>
 <item>Estonian</item>
 <item>Ewe</item>
@@ -184,7 +184,8 @@
 <item>Zhuang</item>
   </string-array>  
   
-  <string-array name="allLanguageCodes">   
+  <string-array name="alllanguagecodes">   
+      <item>en</item>
   <item>ab</item>
 <item>aa</item>
 <item>af</item>
@@ -224,7 +225,6 @@
 <item>da</item>
 <item>dv</item>
 <item>nl</item>
-<item>en</item>
 <item>eo</item>
 <item>et</item>
 <item>ee</item>
