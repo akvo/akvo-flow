@@ -52,13 +52,12 @@ import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 import com.gallatinsystems.common.util.StringUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
-import com.gallatinsystems.survey.dao.SurveyUtils;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
 	private static final String SERVLET_URL = "/rawdatarestapi";
 	private static final String DEFAULT_LOCALE = "en";
 	public static final String SURVEY_CONFIG_KEY = "surveyId";
-	protected static final String KEY_PARAM = "k";
+	protected static final String KEY_PARAM = "apiKey";
 	private static final Map<String, String> SAVING_DATA;
 	private static final Map<String, String> COMPLETE;
 	private Long surveyId;
@@ -146,7 +145,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			}
 			HashMap<Integer, String> questionIDColMap = new HashMap<Integer, String>();
 			Object[] results = BulkDataServiceClient.loadQuestions(
-					getSurveyId().toString(), serverBase);
+					getSurveyId().toString(), serverBase, criteria.get("apiKey"));
 			Map<String, QuestionDto> questionMap = null;
 
 			if (results != null) {
@@ -220,14 +219,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						QuestionDto question = questionMap.get(questionIDColMap
 								.get(cell.getColumnIndex()));
 						QuestionType type = null;
+						// VALUE is default, it is valid for NUMBER, FREE_TEXT, SCAN, OPTION
 						String typeString = "VALUE";
 						if (question != null) {
 							type = question.getType();
-							typeString = type.toString();
-							if (QuestionType.GEO == type
-									|| QuestionType.PHOTO == type
-									|| QuestionType.VIDEO == type) {
-								typeString = type.toString();
+							if (QuestionType.GEO == type){
+								typeString = "GEO";
+							} else if (QuestionType.PHOTO == type) {
+								typeString = "IMAGE";
+							} else if (QuestionType.VIDEO == type) {
+								typeString = "VIDEO";
+							} else if (QuestionType.DATE == type) {
+								typeString = "DATE";
 							}
 						} else if (questionIDColMap.get(cell.getColumnIndex())
 								.startsWith("--")) {
@@ -363,11 +366,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							SAVING_DATA.get(locale)));
 				}
 			}
-			// invalidate report
-			List<Long> ids = new ArrayList<Long>();
-			ids.add(getSurveyId());
-			SurveyUtils.notifyReportService(ids, "invalidate");
-			
 			while (!jobQueue.isEmpty() && threadPool.getActiveCount() > 0) {
 				Thread.sleep(5000);
 			}

@@ -32,17 +32,25 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String PROJECT_FLAG_UPDATE_ACTION = "projectFlagUpdate";
 	public static final String REBUILD_QUESTION_SUMMARY_ACTION = "rebuildQuestionSummary";
 	public static final String IMPORT_REMOTE_SURVEY_ACTION = "importRemoteSurvey";
+	public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
 	public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
 	public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
+	public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
 	public static final String TRIM_OPTIONS = "trimOptions";
 	public static final String RESCORE_AP_ACTION = "rescoreAp";
 	public static final String SOURCE_PARAM = "source";
 	public static final String COUNTRY_PARAM = "country";
 	public static final String SURVEY_ID_PARAM = "surveyId";
+	public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
+	public static final String QAS_ID_PARAM = "qasId";
+	public static final String DELTA_PARAM = "delta";
 
 	private String country;
 	private String source;
 	private Long surveyId;
+	private Long surveyInstanceId;
+	private Long qasId;
+	private Integer delta;
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
@@ -54,6 +62,34 @@ public class DataProcessorRequest extends RestRequest {
 			} catch (Exception e) {
 				addError(new RestError(RestError.BAD_DATATYPE_CODE,
 						RestError.BAD_DATATYPE_MESSAGE, SURVEY_ID_PARAM
+								+ " must be an integer"));
+			}
+		}
+		if (req.getParameter(SURVEY_INSTANCE_PARAM) != null) {
+			try {
+				setSurveyInstanceId(new Long(req.getParameter(SURVEY_INSTANCE_PARAM).trim()));
+			} catch (Exception e) {
+				addError(new RestError(RestError.BAD_DATATYPE_CODE,
+						RestError.BAD_DATATYPE_MESSAGE, SURVEY_INSTANCE_PARAM
+								+ " must be an integer"));
+			}
+		}
+		if (req.getParameter(QAS_ID_PARAM) != null) {
+			try {
+				setQasId(new Long(req.getParameter(QAS_ID_PARAM).trim()));
+			} catch (Exception e) {
+				addError(new RestError(RestError.BAD_DATATYPE_CODE,
+						RestError.BAD_DATATYPE_MESSAGE, QAS_ID_PARAM
+								+ " must be an integer"));
+			}
+		}
+		
+		if (req.getParameter(DELTA_PARAM) != null) {
+			try {
+				setDelta(new Integer(req.getParameter(DELTA_PARAM).trim()));
+			} catch (Exception e) {
+				addError(new RestError(RestError.BAD_DATATYPE_CODE,
+						RestError.BAD_DATATYPE_MESSAGE, DELTA_PARAM
 								+ " must be an integer"));
 			}
 		}
@@ -88,6 +124,30 @@ public class DataProcessorRequest extends RestRequest {
 
 	public Long getSurveyId() {
 		return surveyId;
+	}
+
+	public Long getSurveyInstanceId() {
+		return surveyInstanceId;
+	}
+
+	public void setSurveyInstanceId(Long surveyInstanceId) {
+		this.surveyInstanceId = surveyInstanceId;
+	}
+
+	public Long getQasId() {
+		return qasId;
+	}
+
+	public void setQasId(Long qasId) {
+		this.qasId = qasId;
+	}
+
+	public Integer getDelta() {
+		return delta;
+	}
+
+	public void setDelta(Integer delta) {
+		this.delta = delta;
 	}
 
 }

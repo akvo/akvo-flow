@@ -24,7 +24,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".activity.SurveyViewActivity" />
+		<activity android:name=".activity.SurveyViewActivity" android:configChanges="keyboardHidden|orientation"/>
 		<activity android:name=".activity.ListUserActivity" />
 		<activity android:name=".activity.UserEditActivity" />
 		<activity android:name=".activity.SettingsActivity" />

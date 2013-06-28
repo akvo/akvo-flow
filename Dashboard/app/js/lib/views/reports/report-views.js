@@ -6,7 +6,7 @@ FLOW.chartView = FLOW.View.extend({
   compactSmaller: true,
 
   isDoughnut: function() {
-    return(this.chartType.get('value') == 'doughnut');
+    return this.chartType.get('value') == 'doughnut';
   }.property('this.chartType'),
 
   init: function() {
@@ -59,7 +59,7 @@ FLOW.chartView = FLOW.View.extend({
 
         // sort smallest first
         chartData.sort(function(a, b) {
-          return(a.percentage >= b.percentage);
+          return a.percentage >= b.percentage;
         });
 
 
@@ -106,7 +106,7 @@ FLOW.chartView = FLOW.View.extend({
 
         // sort smallest first
         chartData.sort(function(a, b) {
-          return(a.percentage <= b.percentage);
+          return a.percentage <= b.percentage;
         });
         FLOW.chartDataControl.set('chartData', chartData);
         FLOW.chartDataControl.set('maxPer', maxPer);
@@ -125,7 +125,7 @@ FLOW.chartView = FLOW.View.extend({
 
         // sort smallest first
         chartData.sort(function(a, b) {
-          return(a.percentage <= b.percentage);
+          return a.percentage <= b.percentage;
         });
         FLOW.chartDataControl.set('chartData', chartData);
         FLOW.chartDataControl.set('maxPer', maxPer);

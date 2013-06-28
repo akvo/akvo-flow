@@ -44,7 +44,9 @@ FLOW.ReportLoader = Ember.Object.create({
         criteria = Ember.copy(this.get('payloads')[exportType]);
         criteria.surveyId = '' + surveyId;
         criteria.baseURL = location.protocol + '//' + location.host;
-        criteria.opts.imagePrefix = FLOW.Env.photo_url_root;
+
+        criteria.opts.imgPrefix = FLOW.Env.photo_url_root;
+        criteria.opts.uploadUrl = FLOW.Env.surveyuploadurl;
 
         if (opts) {
             Ember.keys(opts).forEach(function (k) {

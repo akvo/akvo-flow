@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,8 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
+import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -36,6 +39,7 @@ import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -46,12 +50,16 @@ import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	private static final Logger logger = Logger
 			.getLogger(SurveyInstanceDAO.class.getName());
-
+	// the set of unparsedLines we have here represent values from one surveyInstance
+	// as they are split up in the TaskServlet task.
 	public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
 			Long userID, List<String> unparsedLines) {
 
@@ -60,10 +68,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		si.setDeviceFile(deviceFile);
 		si.setUserID(userID);
 		String delimiter = "\t";
+		Boolean surveyInstanceIsNew = true;
+		Long geoQasId = null;
 
 		final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
+		
 		for (String line : unparsedLines) {
 
 			String[] parts = line.split(delimiter);
@@ -123,7 +134,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					si.setDeviceIdentifier(parts[8].trim());
 				}
 			}
-			
+			// if this is the first time round, save the surveyInstance or use an existing one
 			if (si.getSurveyId() == null) {
 				try {
 					if (collDate != null) {
@@ -144,6 +155,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 						}
 					}
 					si = save(si);
+					
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
 							+ parts[0], e);
@@ -196,9 +208,56 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					StatusCode.PROCESSED_WITH_ERRORS);
 		}
 		si.setQuestionAnswersStore(qasList);
+		
+		QuestionDao questionDao = new QuestionDao();
+		List<Question> qOptionList = questionDao.listQuestionByType(si.getSurveyId(), Question.Type.OPTION);
+		
+		for (QuestionAnswerStore qas : qasList){
+			if (Question.Type.GEO.toString().equals(qas.getType())){
+				geoQasId = qas.getKey().getId();
+			}
+			// update count of questionAnswerSummary objects
+			if (isSummarizable(qas, qOptionList)) {
+				SurveyQuestionSummaryDao.incrementCount(qas,1);
+			}
+		}
+		
+		// invoke a task to update corresponding surveyInstanceSummary objects
+		if (surveyInstanceIsNew && geoQasId != null){
+			Queue summQueue = QueueFactory.getQueue("dataSummarization");
+			summQueue.add(TaskOptions.Builder.withUrl("/app_worker/dataprocessor").param(
+					DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
+					.param("surveyInstanceId", si.getKey().getId() + "")
+					.param("qasId", geoQasId + "")
+					.param("delta",1 + ""));
+		}
 		return si;
 	}
 
+	/**
+	 * returns true if the question type for the answer object is an OPTION type
+	 * @param answer
+	 * @param questions
+	 * @return
+	 */
+	private boolean isSummarizable(QuestionAnswerStore answer,
+			List<Question> questions) {
+		if (questions != null && answer != null) {
+			long id = Long.parseLong(answer.getQuestionID());
+			for (Question q : questions) {
+				if (q.getKey().getId() == id) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return false;
+		}
+	}
+	
+	
+	
+	
 	public SurveyInstanceDAO() {
 		super(SurveyInstance.class);
 	}
@@ -257,6 +316,53 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	}
 
+	// same as listByDateRange, but adds sumbitterName as search field
+	// @Author: M.T.Westra
+	@SuppressWarnings("unchecked")
+	public List<SurveyInstance> listByDateRangeAndSubmitter(Date beginDate, Date endDate,
+			boolean unapprovedOnlyFlag, Long surveyId, String deviceIdentifier, String submitterName,
+			String cursorString) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
+
+		Map<String, Object> paramMap = null;
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("surveyId", filterString, paramString, "Long",
+				surveyId, paramMap);
+		appendNonNullParam("deviceIdentifier", filterString, paramString,
+				"String", deviceIdentifier, paramMap);
+		appendNonNullParam("submitterName", filterString, paramString,
+				"String", submitterName, paramMap);
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				beginDate, paramMap, GTE_OP);
+		appendNonNullParam("collectionDate", filterString, paramString, "Date",
+				endDate, paramMap, LTE_OP);
+		if (unapprovedOnlyFlag) {
+			appendNonNullParam("approvedFlag", filterString, paramString,
+					"String", "False", paramMap);
+		}
+		if (beginDate != null || endDate != null) {
+			query.declareImports("import java.util.Date");
+		}
+
+		query.setOrdering("collectionDate desc");
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		prepareCursor(cursorString, query);
+
+		return (List<SurveyInstance>) query.executeWithMap(paramMap);
+
+	}
+
+	
+	
+	
 	/***********************
 	 * returns raw entities
 	 * 
@@ -406,9 +512,19 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStore(
 				surveyInstanceId, null);
 
+		// to account for the slim change if we have two geo questions in one surveyInstance
+		Boolean SISCount_updated = false;
 		if (qasList != null && qasList.size() > 0) {
 			// update the questionAnswerSummary counts
 			for (QuestionAnswerStore qasItem : qasList) {
+				
+				// if the questionAnswerStore item is the GEO type, try to update
+				// the surveyInstanceSummary
+				if (Question.Type.GEO.toString().equals(qasItem.getType()) && !SISCount_updated){
+					DataProcessorRestServlet.surveyInstanceSummarizer(surveyInstanceId, qasItem.getKey().getId(), new Integer(-1));
+					SISCount_updated = true;
+				}
+
 				// if the questionAnswerStore item belongs to an OPTION type,
 				// update the count
 				Question q = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
@@ -425,23 +541,28 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		// delete the surveyInstance
 		SurveyInstance instance = siDao.getByKey(item.getKey());
 		if (instance != null) {
+			// send notification
+			List<Long> ids = new ArrayList<Long>();
+			ids.add(instance.getSurveyId());
+			SurveyUtils.notifyReportService(ids, "invalidate");
 			siDao.delete(instance);
 		}
 
 		// delete surveyalValue items
-		List<SurveyalValue> vals = localeDao
+		List<SurveyalValue> valsForInstance = localeDao
 				.listSurveyalValuesByInstance(surveyInstanceId);
-		if (vals != null && vals.size() > 0) {
-			Long localeId = vals.get(0).getSurveyedLocaleId();
-			localeDao.delete(vals);
-			// now see if there are any other values for the same locale
-			List<SurveyalValue> otherVals = localeDao
+		if (valsForInstance != null && valsForInstance.size() > 0) {
+			Long localeId = valsForInstance.get(0).getSurveyedLocaleId();
+			List<SurveyalValue> valsForLocale = localeDao
 					.listValuesByLocale(localeId);
-			if (otherVals == null || otherVals.size() == 0) {
+
+			// now see if there are any other values for the same locale
+			if (valsForLocale != null && valsForLocale.size() <= valsForInstance.size()) {
 				// if there are no other values, delete the locale
 				SurveyedLocale l = localeDao.getByKey(localeId);
 				localeDao.delete(l);
 			}
+			localeDao.delete(valsForInstance);		
 		}
 	}
 
@@ -557,6 +678,21 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		}
 	}
 
+	
+	/** lists questionAnswerStore objects of particular types passed in
+	 */
+	public List<QuestionAnswerStore> listQAOptions(String cursorString, Integer pageSize, String... options){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query q = pm.newQuery(QuestionAnswerStore.class);
+		StringBuffer filter = new StringBuffer();
+		for (String op : options) {
+			filter.append("type == '").append(op).append("' ||");
+		}
+		q.setFilter(filter.substring(0,filter.length()-3).toString());
+		prepareCursor(cursorString, pageSize, q);
+		return (List<QuestionAnswerStore>) q.execute();
+	}
+	
 	/**
 	 * finds a single survey instance by uuid. This method will NOT load all
 	 * QuestionAnswerStore objects.

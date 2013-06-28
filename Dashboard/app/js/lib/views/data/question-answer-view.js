@@ -104,8 +104,18 @@ doInit: function() {
   },
 
   doSave: function() {
+    var tempDate = null;
     if(this.get('isDateType')){
-      this.content.set('value',Date.parse(this.get('date')));
+      if (Ember.empty(this.get('date'))){
+        this.content.set('value',null);
+      } else {
+        tempDate = Date.parse(this.get('date'));
+        if (!isNaN(tempDate)){
+          this.content.set('value',tempDate);
+        } else {
+          this.content.set('value',null);
+        }
+      }
     } else if (this.get('isOptionType')){
       this.content.set('value',this.optionChoice.get('value'));
     } else if (this.get('isNumberType')){

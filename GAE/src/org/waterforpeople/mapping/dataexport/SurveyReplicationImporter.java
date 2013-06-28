@@ -41,20 +41,20 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyReplicationImporter {	
 
-	public void executeImport(String sourceBase, Long surveyId) {
+	public void executeImport(String sourceBase, Long surveyId, String apiKey) {
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		SurveyDAO sDao = new SurveyDAO();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		QuestionDao qDao = new QuestionDao();
 		boolean hasFoundSurvey = false;
 		try {
-			for (SurveyGroup sg : fetchSurveyGroups(sourceBase)) {
+			for (SurveyGroup sg : fetchSurveyGroups(sourceBase, apiKey)) {
 				System.out.println("surveygroup: " + sg.getName() + ":"
 						+ sg.getCode());
 				if (surveyId == null) {
 					sgDao.save(sg);
 				}
-				for (Survey s : fetchSurveys(sg.getKey().getId(), sourceBase)) {
+				for (Survey s : fetchSurveys(sg.getKey().getId(), sourceBase, apiKey)) {
 					System.out.println("  survey:" + s.getCode());
 					if (surveyId != null && surveyId.equals(s.getKey().getId())) {
 						sgDao.save(sg);
@@ -69,11 +69,11 @@ public class SurveyReplicationImporter {
 					}
 
 					for (QuestionGroup qg : fetchQuestionGroups(s.getKey()
-							.getId(), sourceBase)) {
+							.getId(), sourceBase, apiKey)) {
 						System.out.println("     qg:" + qg.getCode());
 						qgDao.save(qg);
 						for (Question q : fetchQuestions(qg.getKey().getId(),
-								sourceBase)) {
+								sourceBase, apiKey)) {
 							System.out.println("       q" + q.getText());
 							qDao.save(q, qg.getKey().getId());
 						}
@@ -91,34 +91,34 @@ public class SurveyReplicationImporter {
 
 	}
 
-	public List<SurveyGroup> fetchSurveyGroups(String serverBase)
+	public List<SurveyGroup> fetchSurveyGroups(String serverBase, String apiKey)
 			throws Exception {
 		List<SurveyGroupDto> sgDtoList = BulkDataServiceClient
-				.fetchSurveyGroups(serverBase);
+				.fetchSurveyGroups(serverBase, apiKey);
 		List<SurveyGroup> sgList = new ArrayList<SurveyGroup>();
 		return copyAndCreateList(sgList, sgDtoList, SurveyGroup.class);
 	}
 
-	public List<Survey> fetchSurveys(Long surveyGroupId, String serverBase)
+	public List<Survey> fetchSurveys(Long surveyGroupId, String serverBase, String apiKey)
 			throws Exception {
 		List<SurveyDto> surveyDtoList = BulkDataServiceClient.fetchSurveys(
-				surveyGroupId, serverBase);
+				surveyGroupId, serverBase, apiKey);
 		List<Survey> surveyList = new ArrayList<Survey>();
 		return copyAndCreateList(surveyList, surveyDtoList, Survey.class);
 	}
 
 	public List<QuestionGroup> fetchQuestionGroups(Long surveyId,
-			String serverBase) throws Exception {
+			String serverBase, String apiKey) throws Exception {
 		List<QuestionGroupDto> qgDtoList = BulkDataServiceClient
-				.fetchQuestionGroups(serverBase, surveyId.toString());
+				.fetchQuestionGroups(serverBase, surveyId.toString(), apiKey);
 		List<QuestionGroup> qgList = new ArrayList<QuestionGroup>();
 		return copyAndCreateList(qgList, qgDtoList, QuestionGroup.class);
 	}
 
-	public List<Question> fetchQuestions(Long questionGroupId, String serverBase)
+	public List<Question> fetchQuestions(Long questionGroupId, String serverBase, String apiKey)
 			throws Exception {
 		List<QuestionDto> qgDtoList = BulkDataServiceClient.fetchQuestions(
-				serverBase, questionGroupId);
+				serverBase, questionGroupId, apiKey);
 		List<Question> qList = new ArrayList<Question>();
 		
 		SurveyServiceImpl ssi = new SurveyServiceImpl();
@@ -127,7 +127,7 @@ public class SurveyReplicationImporter {
 			for (int i = 0; i < 3; i++) {
 				try {
 					dtoDetail = (QuestionDto) BulkDataServiceClient
-							.loadQuestionDetails(serverBase, dto.getKeyId());
+							.loadQuestionDetails(serverBase, dto.getKeyId(), apiKey);
 					break;
 				} catch (IOException iex) {
 					System.out.print("Retrying because of timeout.");

@@ -82,7 +82,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	amOptionType: function() {
 		var options;
 		if(this.type) {
-			return(this.type.get('value') == 'OPTION');
+			return this.type.get('value') == 'OPTION';
 		} else {
 			return false;
 		}
@@ -90,7 +90,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
 	amNumberType: function() {
 		if(this.type) {
-			return(this.type.get('value') == 'NUMBER');
+			return this.type.get('value') == 'NUMBER';
 		} else {
 			return false;
 		}
@@ -100,7 +100,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		var val;
 		if(!Ember.none(this.type)) {
 			val = this.type.get('value');
-			return(val == 'GEO' || val == 'FREE_TEXT' || val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE');
+			return val == 'GEO' || val == 'FREE_TEXT' || val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
 		}
 	}.property('this.type').cacheable(),
 
@@ -201,7 +201,17 @@ FLOW.QuestionView = FLOW.View.extend({
 		// validation
 		if (this.type.get('value') == 'NUMBER'){
 			if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))  ){
-				if (this.get('minVal') >= this.get('maxVal')){
+				
+				if (isNaN(this.get('minVal')) || isNaN(this.get('maxVal'))){
+					FLOW.dialogControl.set('activeAction', 'ignore');
+					FLOW.dialogControl.set('header', Ember.String.loc('_min_max_not_number'));
+					FLOW.dialogControl.set('message', Ember.String.loc('_min_max_not_number_message'));
+					FLOW.dialogControl.set('showCANCEL', false);
+					FLOW.dialogControl.set('showDialog', true);
+					return;
+				}
+
+				if (parseFloat(this.get('minVal')) >= parseFloat(this.get('maxVal'))){
 					FLOW.dialogControl.set('activeAction', 'ignore');
 					FLOW.dialogControl.set('header', Ember.String.loc('_min_max_not_correct'));
 					FLOW.dialogControl.set('message', Ember.String.loc('_min_larger_than_max_or_equal'));
@@ -363,8 +373,9 @@ FLOW.QuestionView = FLOW.View.extend({
 				// restore order
 				qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 				questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-					return(item.get('questionGroupId') == qgId);
-				});
+			        return item.get('questionGroupId') == qgId;
+			      });
+				
 
 				origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
 				movingUp = origOrder < insertAfterOrder;
@@ -414,9 +425,8 @@ FLOW.QuestionView = FLOW.View.extend({
 		// restore order
 		qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 		questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-			return(item.get('questionGroupId') == qgId);
-		});
-
+	        return item.get('questionGroupId') == qgId;
+	      });
 		// move items up to make space
 		questionsInGroup.forEach(function(item) {
 			if (item.get('order') > insertAfterOrder) {
@@ -463,7 +473,7 @@ FLOW.QuestionView = FLOW.View.extend({
 		// restore order
 		qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
 		questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-	        return(item.get('questionGroupId') == qgId);
+	        return item.get('questionGroupId') == qgId;
 	      });
 		
 		// move items up to make space

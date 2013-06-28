@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="appversion">1.10.4</string>
+	<string name="appversion">1.10.6</string>
     <string name="app_name">Field Survey</string>
     <string name="nocardspacetitle">No Storage Space</string>
     <string name="lowcardspacetitle">Low Storage Space</string>

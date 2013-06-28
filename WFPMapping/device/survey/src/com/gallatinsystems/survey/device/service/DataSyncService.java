@@ -73,9 +73,10 @@ import com.gallatinsystems.survey.device.util.ViewUtil;
  */
 public class DataSyncService extends Service {
 
-	private static final String TAG = "DATA_SYNC_ACTIVITY";
+	private static final String TAG = "DATA_SYNC_SERVICE";
 	private static final String NOTHING = "NADA";
 	private static final String DELIMITER = "\t";
+	private static final String SPACE = "\u0020"; //safe from source whitespace reformatting
 
 	private static final String SIGNING_KEY_PROP = "signingKey";
 	private static final String SIGNING_ALGORITHM = "HmacSHA1";
@@ -110,6 +111,8 @@ public class DataSyncService extends Service {
 	private static Semaphore lock = new Semaphore(1);
 	private static int counter = 0;
 	private PropertyUtil props;
+	
+	private boolean debugFailMedia = false;
 
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -456,7 +459,12 @@ public class DataSyncService extends Service {
 											Long.valueOf(paths.getKey()),
 											ifn,
 											ConstantUtil.IN_PROGRESS_STATUS);
-									boolean isOk = sendFile(
+									
+									boolean isOk;
+									if (debugFailMedia)
+										isOk = false;
+									else
+										isOk = sendFile(
 											ifn,
 											S3_IMAGE_FILE_PATH,
 											props.getProperty(ConstantUtil.IMAGE_S3_POLICY),
@@ -611,62 +619,48 @@ public class DataSyncService extends Service {
 				} else {
 					deviceIdentifier = cleanVal(deviceIdentifier);
 				}
+				//evaluate indices once, outside the loop
+				int survey_fk_col = data.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL);
+				int pk_id_col = data.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL);
+				int question_fk_col = data.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_FK_COL);
+				int answer_type_col = data.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_TYPE_COL);
+				int answer_col = data.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_COL);
+				int disp_name_col = data.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL);
+				int email_col = data.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL);
+				int submitted_date_col = data.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL);
+				int scored_val_col = data.getColumnIndexOrThrow(SurveyDbAdapter.SCORED_VAL_COL);
+				int strength_col = data.getColumnIndexOrThrow(SurveyDbAdapter.STRENGTH_COL);
+				int uuid_col = data.getColumnIndexOrThrow(SurveyDbAdapter.UUID_COL);
+				
 				do {
-
-					String value = data.getString(data
-							.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_COL));
+					// Sanitize answer value. No newlines or tabs!
+					String value = data.getString(answer_col);
 					if (value != null) {
+						value = value.replace("\n", SPACE);
+						value = value.replace(DELIMITER, SPACE);
 						value = value.trim();
-						value = value.replaceAll("\\n", " ");
 					}
-
-					if (value == null || value.trim().length() == 0) {
+					// never send empty answers
+					if (value == null || value.length() == 0) {
 						continue;
 					}
 
-					buf.append(
-							data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.SURVEY_FK_COL)))
-							.append(DELIMITER);
-
-					String type = data
-							.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.ANSWER_TYPE_COL));
-					buf.append(data.getString(data
-							.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL)));
-					buf.append(DELIMITER)
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.QUESTION_FK_COL)));
+					buf.append(data.getString(survey_fk_col));
+					String respId = data.getString(pk_id_col);
+					buf.append(DELIMITER).append(respId);
+					buf.append(DELIMITER).append(data.getString(question_fk_col));
+					String type = data.getString(answer_type_col);
 					buf.append(DELIMITER).append(type);
 					buf.append(DELIMITER).append(value);
-
-					buf.append(DELIMITER)
-							.append(cleanVal(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.DISP_NAME_COL))));
-					buf.append(DELIMITER)
-							.append(cleanVal(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.EMAIL_COL))));
-					buf.append(DELIMITER)
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.SUBMITTED_DATE_COL)));
+					buf.append(DELIMITER).append(cleanVal(data.getString(disp_name_col)));
+					buf.append(DELIMITER).append(cleanVal(data.getString(email_col)));
+					buf.append(DELIMITER).append(data.getString(submitted_date_col));
 					buf.append(DELIMITER).append(deviceIdentifier);
-					String scoredVal = data
-							.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.SCORED_VAL_COL));
-					buf.append(DELIMITER).append(
-							scoredVal != null ? scoredVal : "");
-					String strength = data
-							.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.STRENGTH_COL));
-					buf.append(DELIMITER).append(
-							strength != null ? strength : "");
-					buf.append(DELIMITER)
-							.append(data.getString(data
-									.getColumnIndexOrThrow(SurveyDbAdapter.UUID_COL)));
+					buf.append(DELIMITER).append(neverNull(data.getString(scored_val_col)));
+					buf.append(DELIMITER).append(neverNull(data.getString(strength_col)));
+					buf.append(DELIMITER).append(data.getString(uuid_col));
 					buf.append("\n");
 
-					String respId = data.getString(data
-							.getColumnIndexOrThrow(SurveyDbAdapter.PK_ID_COL));
 					if (ConstantUtil.IMAGE_RESPONSE_TYPE.equals(type)
 							|| ConstantUtil.VIDEO_RESPONSE_TYPE.equals(type)) {
 						ArrayList<String> paths = imagePaths.get(respId);
@@ -689,16 +683,27 @@ public class DataSyncService extends Service {
 		}
 	}
 
+	//replace troublesome chars in user-provided values
+	//replaceAll() compiles a Pattern, and so is inefficient inside a loop
 	private String cleanVal(String val) {
 		if (val != null) {
 			if (val.contains(DELIMITER)) {
-				val = val.replaceAll(DELIMITER, " ");
+				val = val.replace(DELIMITER, SPACE);
 			}
 			if (val.contains(",")) {
-				val.replaceAll(",", " ");
+				val = val.replace(",", SPACE);
+			}
+			if (val.contains("\n")) {
+				val = val.replace("\n", SPACE);
 			}
 		}
 		return val;
+	}
+
+	private String neverNull(String val) {
+		if (val != null) {
+			return val;
+		} else return "";
 	}
 
 	/**

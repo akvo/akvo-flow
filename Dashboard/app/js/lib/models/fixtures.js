@@ -17,7 +17,103 @@ FLOW.SurveyGroup.FIXTURES = [{
 }, {
     id: 5,
     keyId: 5,
-    code: 'Akvo test surveys'
+    code: '1 Akvo test surveys'
+}, {
+    id: 6,
+    keyId: 6,
+    code: '2 Akvo test surveys'
+}, {
+    id: 7,
+    keyId: 7,
+    code: '3 Akvo test surveys'
+}, {
+    id: 8,
+    keyId: 8,
+    code: '4 Akvo test surveys'
+}, {
+    id: 9,
+    keyId: 9,
+    code: '5 Akvo test surveys'
+}, {
+    id: 10,
+    keyId:11,
+    code: '6 Akvo test surveys'
+}, {
+    id: 12,
+    keyId: 12,
+    code: '7 Akvo test surveys'
+}, {
+    id: 13,
+    keyId: 14,
+    code: '8 Akvo test surveys'
+}, {
+    id: 15,
+    keyId: 15,
+    code: '9 Akvo test surveys'
+}, {
+    id: 16,
+    keyId: 16,
+    code: '10 Akvo test surveys'
+}, {
+    id: 17,
+    keyId: 17,
+    code: '11 Akvo test surveys'
+}, {
+    id: 18,
+    keyId: 18,
+    code: '12 Akvo test surveys'
+}, {
+    id: 19,
+    keyId: 19,
+    code: '13 Akvo test surveys'
+}, {
+    id: 21,
+    keyId: 21,
+    code: '14 Akvo test surveys'
+}, {
+    id: 22,
+    keyId:22,
+    code: '15 Akvo test surveys'
+}, {
+    id: 23,
+    keyId: 23,
+    code: '16 Akvo test surveys'
+}, {
+    id: 24,
+    keyId: 24,
+    code: '17 Akvo test surveys'
+}, {
+    id: 25,
+    keyId: 25,
+    code: '18 Akvo test surveys'
+}, {
+    id: 26,
+    keyId: 26,
+    code: '19 Akvo test surveys'
+}, {
+    id: 27,
+    keyId: 27,
+    code: '20 Akvo test surveys'
+}, {
+    id: 28,
+    keyId: 28,
+    code: '21 Akvo test surveys'
+}, {
+    id: 29,
+    keyId: 29,
+    code: '22 Akvo test surveys'
+}, {
+    id: 30,
+    keyId: 30,
+    code: '23 Akvo test surveys'
+}, {
+    id: 31,
+    keyId: 31,
+    code: '24 Akvo test surveys'
+}, {
+    id: 32,
+    keyId: 32,
+    code: '25 Akvo test surveys'
 }];
 
 
@@ -913,263 +1009,186 @@ FLOW.QuestionAnswer.FIXTURES = [{
 
 FLOW.SurveyInstance.FIXTURES = [{
     submitterName: "Community (CBO)",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302001,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "1. WP Ownership",
     placemarkId: 732033,
     id: 734238
 }, {
     submitterName: "Functional ( in use)",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302002,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "1.Functional status",
     placemarkId: 732033,
     id: 734234
 }, {
     submitterName: "Unsafe",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302003,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "2a. Quantitative in-field assessment",
     placemarkId: 732033,
     id: 735246
 }, {
     submitterName: "Coloured (whitish- brownish)",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302004,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "2b.Qualitative in-field assessment",
     placemarkId: 732033,
     id: 735245
 }, {
     submitterName: "Good- practically always",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302005,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "3. Reliability",
     placemarkId: 732033,
     id: 734235
 }, {
     submitterName: "Yes",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302006,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "B.Sufficient for HHs",
     placemarkId: 732033,
     id: 732228
 }, {
     submitterName: "Yes",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302006,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "C. Sufficient for livestock",
     placemarkId: 732033,
     id: 735242
 }, {
     submitterName: "ahero youth",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302007,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "CBO, specify",
     placemarkId: 732033,
     id: 732222
 }, {
     submitterName: "Unknown",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302008,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Committee in place:",
     placemarkId: 732033,
     id: 735249
 }, {
     submitterName: "all",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302009,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Community, specify",
     placemarkId: 732033,
     id: 732224
 }, {
     submitterName: "Name one",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302010,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Contact one",
     placemarkId: 732033,
     id: 735244
 }, {
     submitterName: "40",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302011,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "D. HHs # served/day",
     placemarkId: 732033,
     id: 735241
 }, {
     submitterName: "20/04/12",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302012,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Date Record",
     placemarkId: 732033,
     id: 728181
 }, {
     submitterName: "No",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302013,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Do you have an SPA?",
     placemarkId: 732033,
     id: 734236
 }, {
     submitterName: "community",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302014,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Funded by",
     placemarkId: 732033,
     id: 728179
 }, {
     submitterName: "-0.16252854|35.07743752|1136.800048828125|7gs8a46",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302015,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "GPS reading",
     placemarkId: 732033,
     id: 732229
 }, {
     submitterName: "alex",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302016,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Interviewee",
     placemarkId: 732033,
     id: 728178
 }, {
     submitterName: "amara",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302017,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Interviewer",
     placemarkId: 732033,
     id: 728180
 }, {
     submitterName: "ahero pan",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302018,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Name of source/water point",
     placemarkId: 732033,
     id: 728182
 }, {
     submitterName: "onuonga",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302019,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Names one,specify",
     placemarkId: 732033,
     id: 735247
 }, {
     submitterName: "No",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302020,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "O&M cost recovery",
     placemarkId: 732033,
     id: 732225
 }, {
     submitterName: "LVNWSB",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302021,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Organisation",
     placemarkId: 732033,
     id: 728183
 }, {
     submitterName: "No",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302022,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Part of the piped scheme",
     placemarkId: 732033,
     id: 734229
 }, {
     submitterName: "/mnt/sdcard/fieldsurvey/surveyal/8/7/9/8/5/wfpPhoto18652367987985.jpg",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302023,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Photo",
     placemarkId: 732033,
     id: 732230
 }, {
     submitterName: "No",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302024,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Specify none",
     placemarkId: 732033,
     id: 732223
 }, {
     submitterName: "tura",
-    collectionDate: 1334938302000,
+    collectionDate: 1334938302025,
     surveyCode: "Mars / Initial question du planteur",
     deviceIdentifier: "Sub-location",
     placemarkId: 732033,
     id: 734231
-}, {
-    submitterName: "< 1 hour",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "Time",
-    placemarkId: 732033,
-    id: 732227
-}, {
-    submitterName: "Dam/Pan(runoff harvesting)",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "Unimproved",
-    placemarkId: 732033,
-    id: 734233
-}, {
-    submitterName: "ksm/040",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "WP ID",
-    placemarkId: 732033,
-    id: 728177
-}, {
-    submitterName: "Community (technician) Name/NO",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "WP Maintenance",
-    placemarkId: 732033,
-    id: 735248
-}, {
-    submitterName: "Directly managed by the CBO",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "WP Management",
-    placemarkId: 732033,
-    id: 734237
-}, {
-    submitterName: "Year round",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "Water Availability",
-    placemarkId: 732033,
-    id: 732226
-}, {
-    submitterName: "None",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "Water Payment",
-    placemarkId: 732033,
-    id: 735250
-}, {
-    submitterName: "30",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "Water consumption per ( in dry season)",
-    placemarkId: 732033,
-    id: 735243
-}, {
-    submitterName: "Unimproved",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "Water source type",
-    placemarkId: 732033,
-    id: 734232
-}, {
-    submitterName: "No",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "Within WSP",
-    placemarkId: 732033,
-    id: 734230
-}, {
-    submitterName: "2004",
-    collectionDate: 1334938302000,
-    surveyCode: "Mars / Initial question du planteur",
-    deviceIdentifier: "Year Constructed",
-    placemarkId: 732033,
-    id: 732231
 }];
 
 FLOW.SurveyQuestionSummary.FIXTURES = [{

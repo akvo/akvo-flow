@@ -171,7 +171,7 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
       minString = curr_min.toString();
     }
 
-    return(curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString);
+    return curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString;
   }).property('content')
 }));
 

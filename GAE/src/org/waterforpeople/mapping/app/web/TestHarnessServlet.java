@@ -397,6 +397,35 @@ public class TestHarnessServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else if ("testDetailedGeoLocation".equals(action)) {
+			OGRFeatureDao ogrFeatureDao = new OGRFeatureDao();
+			GeoLocationServiceGeonamesImpl gs = new GeoLocationServiceGeonamesImpl();
+			String lat = req.getParameter("lat");
+			String lon = req.getParameter("lon");
+			GeoPlace geoPlace = gs.manualLookup(lat, lon, OGRFeature.FeatureType.SUB_COUNTRY_OTHER);
+			try {
+				if (geoPlace != null) {
+					resp.getWriter().println(
+							"Found: " + geoPlace.getCountryName() + ":"
+									+ geoPlace.getCountryCode() + " for " + lat
+									+ ", " + lon);
+					geoPlace = gs.resolveSubCountry(lat, lon,
+							geoPlace.getCountryCode());
+				}
+				if (geoPlace != null)
+					resp.getWriter().println(
+							"Found: " + geoPlace.getCountryCode() + ":"
+									+ geoPlace.getSub1() + ":"
+									+ geoPlace.getSub2() + ":"
+									+ geoPlace.getSub3() + ":"
+									+ geoPlace.getSub4() + ":"
+									+ geoPlace.getSub5() + ":"
+									+ geoPlace.getSub6() + " for " + lat + ", "
+									+ lon);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if ("RemapAPToSub".equals(action)) {
 			AccessPointDao apDao = new AccessPointDao();
 
@@ -1337,7 +1366,7 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("importallsurveys".equals(action)) {
 			// Only run in dev hence hardcoding
 			SurveyReplicationImporter sri = new SurveyReplicationImporter();
-			sri.executeImport("http://watermapmonitordev.appspot.com", null);
+			sri.executeImport("http://watermapmonitordev.appspot.com", null, null);
 			// sri.executeImport("http://localhost:8888",
 			// "http://localhost:8888");
 

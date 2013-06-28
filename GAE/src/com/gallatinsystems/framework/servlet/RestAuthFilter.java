@@ -51,8 +51,6 @@ public class RestAuthFilter implements Filter {
 
 	private static final long MAX_TIME = 60000;
 	
-	private static final String[] RESTRICTED_ACTIONS = { "delete", "save",
-			"update", "create", "purge", "reset" };
 	private static final Logger log = Logger.getLogger(RestAuthFilter.class
 			.getName());
 	private static final String ENABLED_PROP = "enableRestSecurity";
@@ -93,10 +91,7 @@ public class RestAuthFilter implements Filter {
 		String incomingHash = null;
 		long incomingTimestamp = 0;
 		List<String> names = new ArrayList<String>();
-		if (paramMap != null
-				&& isRestrictedAction((String[]) paramMap
-						.get(RestRequest.ACTION_PARAM))) {
-
+		if (paramMap != null) {
 			names.addAll(paramMap.keySet());
 			Collections.sort(names);
 			StringBuilder builder = new StringBuilder();
@@ -105,25 +100,31 @@ public class RestAuthFilter implements Filter {
 					if (builder.length() > 0) {
 						builder.append("&");
 					}
-					builder.append(name)
-							.append("=")
-							.append(URLEncoder.encode(
-									((String[]) paramMap.get(name))[0], "UTF-8"));
+
 					if (RestRequest.TIMESTAMP_PARAM.equals(name)) {
+						String timestamp = ((String[]) paramMap.get(name))[0];
 						try {
 							DateFormat df = new SimpleDateFormat(
 									"yyyy/MM/dd HH:mm:ss");
 							df.setTimeZone(TimeZone.getTimeZone("GMT"));
-							incomingTimestamp = df.parse(
-									((String[]) paramMap.get(name))[0])
-									.getTime();
+							incomingTimestamp = df.parse(timestamp).getTime();
 						} catch (Exception e) {
 							log.warning("Recived rest api request with invalid timestamp");
 							return false;
 						}
 					}
+					String [] vals = ((String[]) paramMap.get(name));
+					int count = 0;
+					for (String v : vals) {
+						if (count > 0) {
+							builder.append("&");
+						}
+						builder.append(name).append("=").append(URLEncoder.encode(v, "UTF-8"));
+						count++;
+					}
 				} else {
 					incomingHash = ((String[]) paramMap.get(name))[0];
+					incomingHash = incomingHash.replaceAll(" ", "+");
 				}
 			}
 
@@ -134,6 +135,7 @@ public class RestAuthFilter implements Filter {
 					// Do something but for now return false;
 					return false;
 				}
+
 				if (ourHash.equals(incomingHash)) {
 					return isTimestampValid(incomingTimestamp);
 				} else {
@@ -141,18 +143,6 @@ public class RestAuthFilter implements Filter {
 				}
 			} else {
 				return false;
-			}
-		}
-		return true;
-	}
-
-	private boolean isRestrictedAction(String[] action) {
-		if (action != null && action.length > 0) {
-			String actionVal = action[0].trim().toLowerCase();
-			for (int i = 0; i < RESTRICTED_ACTIONS.length; i++) {
-				if (actionVal.contains(RESTRICTED_ACTIONS[i])) {
-					return true;
-				}
 			}
 		}
 		return false;

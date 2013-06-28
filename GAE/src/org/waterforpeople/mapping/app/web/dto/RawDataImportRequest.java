@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -199,8 +200,11 @@ public class RawDataImportRequest extends RestRequest {
 		}
 		if (req.getParameter(COLLECTION_DATE_PARAM) != null
 				&& req.getParameter(COLLECTION_DATE_PARAM).trim().length() > 0	) {
-			collectionDate = IN_FMT.get().parse(req.getParameter(
-					COLLECTION_DATE_PARAM).trim());
+			String colDate = req.getParameter(COLLECTION_DATE_PARAM).trim();
+			if (colDate.contains("%") || colDate.contains("+")) {
+				colDate = URLDecoder.decode(colDate, "UTF-8");
+			}
+			collectionDate = IN_FMT.get().parse(colDate);
 		}
 		if (req.getParameter(SUBMITTER_PARAM) != null) {
 			setSubmitter(req.getParameter(SUBMITTER_PARAM));

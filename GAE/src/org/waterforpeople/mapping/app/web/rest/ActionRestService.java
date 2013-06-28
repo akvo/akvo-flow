@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
@@ -78,6 +79,8 @@ public class ActionRestService {
 			statusDto.setMessage(message);
 		} else if ("removeZeroValues".equals(action)) {
 			status = removeZeroMinMaxValues();
+		} else if ("fixOptions2Values".equals(action)){
+			status = fixOptions2Values();
 		}
 
 		statusDto.setStatus(status);
@@ -150,6 +153,18 @@ public class ActionRestService {
 		return "publishing requested";
 	}
 
+	private String fixOptions2Values() {
+		Queue queue = QueueFactory.getDefaultQueue();
+		TaskOptions options = TaskOptions.Builder
+				.withUrl("/app_worker/dataprocessor")
+				.param(DataProcessorRequest.ACTION_PARAM,
+						DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION);
+		queue.add(options);
+		
+		return "fixing opions to values in surveyInstances requested";
+	}
+	
+	
 	private String generateBootstrapFile(Long[] surveyIdList,
 			String dbInstructions, String notificationEmail) {
 
