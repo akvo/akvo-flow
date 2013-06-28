@@ -40,6 +40,7 @@ import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
+import com.gallatinsystems.survey.device.util.LangsPreferenceUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
@@ -249,8 +250,10 @@ public class BootstrapService extends Service {
 						} else if (survey.getVersion() <= 0) {
 							survey.setVersion(1d);
 						}
-						// now save the survey
+						// now save the survey and add the languages
 						databaseAdapter.saveSurvey(survey);
+						String[] langs = LangsPreferenceUtil.determineLanguages(this, survey);
+						databaseAdapter.addLanguages(langs);
 					} else {
 						// if it's not a sql file and its not a survey, it must
 						// be help media
