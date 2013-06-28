@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -1123,7 +1124,7 @@ public class BulkDataServiceClient {
 		return result;
 	}
 
-	private static String sortQueryString(String queryString) {
+	private static String sortQueryString(String queryString) throws UnsupportedEncodingException {
 		String[] parts = queryString.split("&");
 		List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 		for (int i = 0; i < parts.length; i++) {
@@ -1153,7 +1154,12 @@ public class BulkDataServiceClient {
 			if (result.length() > 0) {
 				result.append("&");
 			}
-			result.append(nvp.getName()).append("=").append(nvp.getValue());
+			result.append(nvp.getName()).append("=");
+			if(nvp.getName().equals(RestRequest.TIMESTAMP_PARAM)) {
+				result.append(nvp.getValue());
+			} else {
+				result.append(URLEncoder.encode(nvp.getValue(), "UTF-8"));
+			}
 		}
 		return result.toString();
 	}

@@ -57,7 +57,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	private static final String SERVLET_URL = "/rawdatarestapi";
 	private static final String DEFAULT_LOCALE = "en";
 	public static final String SURVEY_CONFIG_KEY = "surveyId";
-	protected static final String KEY_PARAM = "k";
+	protected static final String KEY_PARAM = "apiKey";
 	private static final Map<String, String> SAVING_DATA;
 	private static final Map<String, String> COMPLETE;
 	private Long surveyId;
