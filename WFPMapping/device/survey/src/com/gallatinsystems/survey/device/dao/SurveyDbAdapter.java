@@ -129,9 +129,9 @@ public class SurveyDbAdapter {
 			// "insert into survey values(943186,'Community Water Point', 1.0,'Survey','res','cw943186','en','N','N')",
 			// "insert into survey values(1007024,'Household Interview', 1.0,'Survey','res','hh1007024','en','N','N')",
 			// "insert into survey values(971189,'Public Institution', 1.0,'Survey','res','pi971189','en','N','N')",
-		
-			// insert default values
-			"insert into preferences values('survey.language','0')",
+
+			"insert into preferences values('survey.language','')",
+			"insert into preferences values('survey.languagespresent','')",
 			"insert into preferences values('user.storelast','false')",
 			"insert into preferences values('data.cellular.upload','0')",
 			"insert into preferences values('plot.default.mode','manual')",
