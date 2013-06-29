@@ -16,7 +16,6 @@
 
 package com.gallatinsystems.survey.device.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -43,7 +42,6 @@ public class UserEditActivity extends Activity {
 	private Long userId;
 	private SurveyDbAdapter databaseAdaptor;
 
-	@SuppressLint("UseValueOf")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
