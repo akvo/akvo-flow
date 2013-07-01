@@ -556,7 +556,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * fixes wrong Types in questionAnswerStore objects. When cleaned data is
 	 * uploaded using an excel file, the type of the answer is set according to
 	 * the type of the question, while the device sets the type according to a
-	 * different convention. The action handles 500 items in one call, and
+	 * different convention. The action handles QAS_PAGE_SIZE items in one call, and
 	 * invokes new tasks as necessary if there are more items.
 	 * 
 	 * @param cursor
@@ -566,7 +566,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		List<QuestionAnswerStore> qasList = siDao.listQAOptions(cursorString,
-				500, "OPTION", "FREE_TEXT", "NUMBER", "SCAN", "PHOTO");
+				QAS_PAGE_SIZE, "OPTION", "FREE_TEXT", "NUMBER", "SCAN", "PHOTO");
 		List<QuestionAnswerStore> qasChangedList = new ArrayList<QuestionAnswerStore>();
 		log.log(Level.INFO, "Running fixOptions2Values, cursor at "
 				+ cursorString);
@@ -589,7 +589,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			}
 			qasDao.save(qasChangedList);
 			// if there are more, invoke another task
-			if (qasList.size() == 500) {
+			if (qasList.size() == QAS_PAGE_SIZE) {
 				log.log(Level.INFO, "invoking another fixOptions task");
 				Queue queue = QueueFactory.getDefaultQueue();
 				TaskOptions options = TaskOptions.Builder
