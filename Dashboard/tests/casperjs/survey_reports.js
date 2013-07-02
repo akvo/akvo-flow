@@ -6,7 +6,7 @@
 var utils = require('utils');
 
 var casper = require('casper').create({
-verbose: true,
+verbose: false,
 logLevel: 'debug',
 waitTimeout: 50000,
 clientScripts: ["includes/jquery.min.js"],
@@ -49,7 +49,7 @@ casper.start(url, function() {
 	this.test.assertExists('form#gaia_loginform', 'GAE Login form is found');
 	this.fill('form#gaia_loginform', {
 		Email:	'nchriss@gmail.com',
-		Passwd:	'$0c1o/p4tH'
+		Passwd:	'$hnnzw3swAub..'
 	}, true);
 });
 
@@ -92,9 +92,9 @@ casper.then(function () {
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/resumable.min.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/plugins/loader.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/flowDashboard.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/app.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/currentuser.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/flowenv.js');
+   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/app.js');
 
 	this.thenClick(x('//*[@id="ember819"]/a'), function() {
 		console.log("Navigate to 'root.navData.index' Event");
