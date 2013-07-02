@@ -183,7 +183,7 @@ public class SurveyDbAdapter {
 	static class DatabaseHelper extends SQLiteOpenHelper {
 
 		private static SQLiteDatabase database;
-		private static volatile Long LOCK_OBJ = new Long(1);
+		private static volatile Long LOCK_OBJ = 1L;
 		private volatile static int instanceCount = 0;
 		private Context context;
 

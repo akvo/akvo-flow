@@ -55,13 +55,11 @@ WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/R.java
 deploy
 gwt-unitcache
 
-# Reports service
-reports/.externalToolBuilders/*
-reports/.lein-failures
-reports/.lein-repl-history
-reports/bin/*
-reports/target/*
-
+# Clojure smoke tests
+tests/clojure/akvo-tests/.lein-failures
+tests/clojure/akvo-tests/.lein-repl-history
+tests/clojure/akvo-tests/target/*
+tests/clojure/akvo-tests/bin/*
 
 # Vagrant
 .vagrant

@@ -508,22 +508,23 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
 		QuestionDao qDao = new QuestionDao();
+		BaseDAO<SurveyalValue> svDao = new BaseDAO<SurveyalValue>(SurveyalValue.class);
 		Long surveyInstanceId = item.getKey().getId();
 
 		List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStore(
 				surveyInstanceId, null);
 
 		// to account for the slim change if we have two geo questions in one surveyInstance
-		Boolean SISCount_updated = false;
+		boolean sisCountUpdated = false;
 		if (qasList != null && qasList.size() > 0) {
 			// update the questionAnswerSummary counts
 			for (QuestionAnswerStore qasItem : qasList) {
 				
 				// if the questionAnswerStore item is the GEO type, try to update
 				// the surveyInstanceSummary
-				if (Question.Type.GEO.toString().equals(qasItem.getType()) && !SISCount_updated){
-					DataProcessorRestServlet.surveyInstanceSummarizer(surveyInstanceId, qasItem.getKey().getId(), new Integer(-1));
-					SISCount_updated = true;
+				if (Question.Type.GEO.toString().equals(qasItem.getType()) && !sisCountUpdated){
+					DataProcessorRestServlet.surveyInstanceSummarizer(surveyInstanceId, qasItem.getKey().getId(), -1);
+					sisCountUpdated = true;
 				}
 
 				// if the questionAnswerStore item belongs to an OPTION type,
@@ -555,12 +556,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			// now delete the surveyInstance
 			siDao.delete(instance);
 
-			// delete the corresponding surveyalValues
-			// SurveyalValues don't have a Dao of their own, therefore we use the SurveyedLocaleDao
 			List<SurveyalValue> valsForInstance = localeDao
 				.listSurveyalValuesByInstance(instance.getKey().getId());
 			if (valsForInstance != null && valsForInstance.size() > 0) {
-				localeDao.delete(valsForInstance);
+				svDao.delete(valsForInstance);
 			}
 
 			// if there is only one surveyInstance that has contributed to this Locale,

@@ -60,7 +60,7 @@ public class UserEditActivity extends Activity {
 				.getLong(ConstantUtil.ID_KEY) : null;
 		if (userId == null || userId == 0L) {
 			Bundle extras = getIntent().getExtras();
-			userId = extras != null ? new Long(extras
+			userId = extras != null ? Long.valueOf(extras
 					.getString(ConstantUtil.ID_KEY)) : null;
 		}
 		
