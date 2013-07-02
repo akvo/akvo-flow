@@ -5,40 +5,37 @@
            java.text.SimpleDateFormat
            java.net.URLEncoder
            java.util.TimeZone
-           javax.crypto.Mac
            javax.crypto.spec.SecretKeySpec
            org.springframework.security.oauth.common.signature.HMAC_SHA1SignatureMethod))
 
-(def date (Date.))
-
-(defn tsgen 
-  "Generates ts parameter for flowservices request"
-  []
+(defn- dformat []
   (doto (SimpleDateFormat. "yyyy/MM/dd HH:mm:ss")
           (.setTimeZone
             (TimeZone/getTimeZone "GMT"))))
 
-(defn tsenc
-  "URL Encodes ts parameter for flowservices request"
+(defn generate-timestamp
+  "Returns the current date using the format yyyy/MM/dd HH:mm:ss"
   []
-  (URLEncoder/encode (.format (tsgen) date) "UTF-8"))
+  (.format (dformat) (Date.)))
 
-(defn genapikey [secret sign]
-  (.sign (HMAC_SHA1SignatureMethod. (SecretKeySpec. (.getBytes "foo") "HMACSHA1")) "bar"))
+(defn generate-apikey
+  "Generates a HMAC-SHA1 signature based on a secret"
+  [secret sign]
+  (.sign (HMAC_SHA1SignatureMethod. (SecretKeySpec. (.getBytes secret) "HMAC-SHA1")) sign))
 
-(def query
-      {"action" "listInstance" "includeDate" "true" "surveyId" "394002" "ts" (tsenc) "h" (genapikey "foo" "bar")})
- 
-(def querynone
-      {"action" "listInstance" "includeDate" "true" "surveyId" "394002"})
+(defn generate-query-string
+  "Returns a string suitable for a GET request based on a Map of parameters
+   The parameters are sorted by key, Note: The values are url encoded e.g.
 
-(defn querystring [params]
-  (loop [ks (sort (keys params)) 
-         result "" ] 
+   {\"includeDate\" \"true\"}
+    \"action\" \"listInstance\"
+    \"ts\" \"2013/07/02 08:09:55\"}
+
+   Returns: action=listInstance&includeDate=true&ts=2013%2F07%2F02+08%3A09%3A55"
+  [params]
+  (loop [ks (sort (keys params))
+         result ""]
    (if-not ks
-    (subs result 0 (- (count result) 1))
-    (recur (next ks) 
-          (str result (first ks) "=" (params (first ks)) "&" )))))
-
-
-(client/get (str "http://flowaglimmerofhope.appspot.com/databackout?" (querystring querynone)))
+    (subs result 0 (- (count result) 1)) ;; removing the last &
+    (recur (next ks)
+           (str result (first ks) "=" (URLEncoder/encode (params (first ks)) "UTF-8") "&" )))))
