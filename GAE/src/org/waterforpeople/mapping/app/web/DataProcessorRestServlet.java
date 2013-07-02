@@ -115,7 +115,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			trimOptions();
 		} else if (DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
-			fixOptions2Values(dpReq.getCursor());
+			fixOptions2Values();
 		} else if (DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER
 				.equalsIgnoreCase(dpReq.getAction())) {
 			surveyInstanceSummarizer(dpReq.getSurveyInstanceId(),
@@ -556,24 +556,21 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * fixes wrong Types in questionAnswerStore objects. When cleaned data is
 	 * uploaded using an excel file, the type of the answer is set according to
 	 * the type of the question, while the device sets the type according to a
-	 * different convention. The action handles 500 items in one call, and
+	 * different convention. The action handles QAS_PAGE_SIZE items in one call, and
 	 * invokes new tasks as necessary if there are more items.
 	 * 
 	 * @param cursor
 	 * @author M.T. Westra
 	 */
-	public static void fixOptions2Values(String cursorString) {
+	public static void fixOptions2Values() {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-		List<QuestionAnswerStore> qasList = siDao.listQAOptions(cursorString,
-				500, "OPTION", "FREE_TEXT", "NUMBER", "SCAN", "PHOTO");
+		List<QuestionAnswerStore> qasList = siDao.listQAOptions(null,
+				QAS_PAGE_SIZE, "OPTION", "FREE_TEXT", "NUMBER", "SCAN", "PHOTO");
 		List<QuestionAnswerStore> qasChangedList = new ArrayList<QuestionAnswerStore>();
-		log.log(Level.INFO, "Running fixOptions2Values, cursor at "
-				+ cursorString);
+		log.log(Level.INFO, "Running fixOptions2Values");
 		if (qasList != null) {
-			String cursor = SurveyInstanceDAO.getCursor(qasList);
 			for (QuestionAnswerStore qas : qasList) {
-
 				if (Question.Type.OPTION.toString().equals(qas.getType())
 						|| Question.Type.NUMBER.toString()
 								.equals(qas.getType())
@@ -589,14 +586,13 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			}
 			qasDao.save(qasChangedList);
 			// if there are more, invoke another task
-			if (qasList.size() == 500) {
+			if (qasList.size() == QAS_PAGE_SIZE) {
 				log.log(Level.INFO, "invoking another fixOptions task");
 				Queue queue = QueueFactory.getDefaultQueue();
 				TaskOptions options = TaskOptions.Builder
 						.withUrl("/app_worker/dataprocessor")
 						.param(DataProcessorRequest.ACTION_PARAM,
-								DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION)
-						.param(DataProcessorRequest.CURSOR_PARAM, cursor);
+								DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION);
 				queue.add(options);
 			}
 		}
