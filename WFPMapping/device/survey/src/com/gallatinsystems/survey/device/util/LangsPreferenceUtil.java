@@ -153,6 +153,10 @@ public class LangsPreferenceUtil {
 			}
 			Survey hydratedSurvey = SurveyDao.loadSurvey(survey, in);
 			if (hydratedSurvey != null) {
+				// add main language to survey object. It is used in the next
+				// section to populate the languages
+				survey.setLanguage(hydratedSurvey.getLanguage());
+
 				if (hydratedSurvey.getQuestionGroups() != null) {
 					for (int i = 0; i < hydratedSurvey.getQuestionGroups()
 							.size(); i++) {
