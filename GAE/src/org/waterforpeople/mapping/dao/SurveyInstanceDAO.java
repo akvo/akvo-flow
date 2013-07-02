@@ -505,6 +505,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	// TODO update lastSurveyalInstanceId in surveydLocale objects
 	public void deleteSurveyInstance(SurveyInstance item) {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
 		QuestionDao qDao = new QuestionDao();
 		Long surveyInstanceId = item.getKey().getId();
@@ -535,8 +536,11 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 			// delete the questionAnswerStore objects in a single datastore
 			// operation
-			siDao.delete(qasList);
+			qasDao.delete(qasList);
 		}
+
+		// get the instances that have contributed to the Locale, for later use
+		List<SurveyInstance> instancesForLocale = siDao.listByProperty("surveyedLocaleId",item.getSurveyedLocaleId(),"Long");
 
 		// delete the surveyInstance
 		SurveyInstance instance = siDao.getByKey(item.getKey());
@@ -545,24 +549,27 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			List<Long> ids = new ArrayList<Long>();
 			ids.add(instance.getSurveyId());
 			SurveyUtils.notifyReportService(ids, "invalidate");
+
+			Long localeId = instance.getSurveyedLocaleId();
+
+			// now delete the surveyInstance
 			siDao.delete(instance);
-		}
 
-		// delete surveyalValue items
-		List<SurveyalValue> valsForInstance = localeDao
-				.listSurveyalValuesByInstance(surveyInstanceId);
-		if (valsForInstance != null && valsForInstance.size() > 0) {
-			Long localeId = valsForInstance.get(0).getSurveyedLocaleId();
-			List<SurveyalValue> valsForLocale = localeDao
-					.listValuesByLocale(localeId);
+			// delete the corresponding surveyalValues
+			// SurveyalValues don't have a Dao of their own, therefore we use the SurveyedLocaleDao
+			List<SurveyalValue> valsForInstance = localeDao
+				.listSurveyalValuesByInstance(instance.getKey().getId());
+			if (valsForInstance != null && valsForInstance.size() > 0) {
+				localeDao.delete(valsForInstance);
+			}
 
-			// now see if there are any other values for the same locale
-			if (valsForLocale != null && valsForLocale.size() <= valsForInstance.size()) {
-				// if there are no other values, delete the locale
+			// if there is only one surveyInstance that has contributed to this Locale,
+			// we can delete the SurveyedLocale. The values should already have been deleted
+			// in the previous step.
+			if (instancesForLocale != null && instancesForLocale.size() == 1) {
 				SurveyedLocale l = localeDao.getByKey(localeId);
 				localeDao.delete(l);
 			}
-			localeDao.delete(valsForInstance);		
 		}
 	}
 
