@@ -17,11 +17,13 @@ FLOW.inspectDataTableView = FLOW.View.extend({
      FLOW.selectedControl.set('selectedSurvey',null);
      FLOW.dateControl.set('toDate',null);
      FLOW.dateControl.set('fromDate',null);
+     FLOW.surveyInstanceControl.set('pageNumber',0);
    },
 
   // do a new query
   doFindSurveyInstances: function() {
     FLOW.surveyInstanceControl.get('sinceArray').clear();
+    FLOW.surveyInstanceControl.set('pageNumber',-1);
     FLOW.metaControl.set('since', null);
     this.doNextPage();
   },
@@ -54,12 +56,14 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   doNextPage: function() {
     FLOW.surveyInstanceControl.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
     this.doInstanceQuery();
+    FLOW.surveyInstanceControl.set('pageNumber',FLOW.surveyInstanceControl.get('pageNumber') + 1);
   },
 
   doPrevPage: function() {
     FLOW.surveyInstanceControl.get('sinceArray').popObject();
     FLOW.metaControl.set('since', FLOW.surveyInstanceControl.get('sinceArray')[FLOW.surveyInstanceControl.get('sinceArray').length - 1]);
     this.doInstanceQuery();
+    FLOW.surveyInstanceControl.set('pageNumber',FLOW.surveyInstanceControl.get('pageNumber') - 1);
   },
 
   // If the number of items in the previous call was 20 (a full page) we assume that there are more.
@@ -152,10 +156,6 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     }
   },
 
-  // doSaveSI: function(event) {
-  //   this.set('showEditSurveyInstanceWindowBool', false);
-  // },
-
   doShowDeleteSIDialog: function(event) {
     FLOW.dialogControl.set('activeAction', 'delSI');
     FLOW.dialogControl.set('showCANCEL', true);
@@ -184,5 +184,17 @@ FLOW.DataItemView = FLOW.View.extend({
       SI.deleteRecord();
       FLOW.store.commit();
     }
+  }
+});
+
+FLOW.DataNumView = FLOW.View.extend({
+  tagName: 'span',
+  content:null,
+  rownum:null,
+
+  init: function(){
+    var index;
+    index = FLOW.surveyInstanceControl.content.indexOf(this.get('content'));
+    this.set('rownum',index + 1 + 20 * FLOW.surveyInstanceControl.get('pageNumber'));
   }
 });

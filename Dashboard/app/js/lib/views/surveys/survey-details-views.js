@@ -64,7 +64,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 	},
 
 	isPublished: function() {
-		return(FLOW.selectedControl.selectedSurvey.get('status') == 'PUBLISHED');
+		return FLOW.selectedControl.selectedSurvey.get('status') == 'PUBLISHED';
 	}.property('FLOW.selectedControl.selectedSurvey.status'),
 
 	numberQuestions: function() {
@@ -243,7 +243,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 		questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
 		qgOrder = questionGroup.get('order');
 		questionsInGroup = FLOW.store.filter(FLOW.Question,function (item){
-			return(item.get('questionGroupId') == qgDeleteId);
+			return item.get('questionGroupId') == qgDeleteId;
 		});
 
 		if (questionsInGroup.get('content').length > 0){
@@ -259,7 +259,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 		questionGroup.deleteRecord();
 		// restore order
 		questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function(item) {
-			return(item.get('surveyId') == sId);
+			return item.get('surveyId') == sId;
 		});
 
 		questionGroupsInSurvey.forEach(function(item) {
@@ -288,7 +288,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 			// restore order
 			sId = FLOW.selectedControl.selectedSurvey.get('keyId');
 			questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function(item) {
-		        return(item.get('surveyId') == sId);
+		        return item.get('surveyId') == sId;
 		      });
 			
 			// move items up to make space
@@ -363,7 +363,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 				// restore order
 				sId = FLOW.selectedControl.selectedSurvey.get('keyId');
 				questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function(item) {
-			        return(item.get('surveyId') == sId);
+			        return item.get('surveyId') == sId;
 			      });
 				
 				origOrder = FLOW.selectedControl.selectedForMoveQuestionGroup.get('order');
@@ -413,7 +413,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
 		sId = FLOW.selectedControl.selectedSurvey.get('keyId');
 		questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function(item) {
-	        return(item.get('surveyId') == sId);
+	        return item.get('surveyId') == sId;
 	      });
 		
 		// restore order - move items up to make space

@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -129,7 +128,8 @@ public class SurveyDbAdapter {
 			// "insert into survey values(943186,'Community Water Point', 1.0,'Survey','res','cw943186','en','N','N')",
 			// "insert into survey values(1007024,'Household Interview', 1.0,'Survey','res','hh1007024','en','N','N')",
 			// "insert into survey values(971189,'Public Institution', 1.0,'Survey','res','pi971189','en','N','N')",
-
+		
+			// insert default values
 			"insert into preferences values('survey.language','0')",
 			"insert into preferences values('user.storelast','false')",
 			"insert into preferences values('data.cellular.upload','0')",
@@ -138,13 +138,15 @@ public class SurveyDbAdapter {
 			"insert into preferences values('user.lastuser.id','')",
 			"insert into preferences values('location.sendbeacon','true')",
 			"insert into preferences values('survey.precachehelp','1')",
-			"insert into preferences values('upload.server','0')",
+			"insert into preferences values('backend.server','')",
 			"insert into preferences values('screen.keepon','true')",
 			"insert into preferences values('precache.points.countries','2')",
 			"insert into preferences values('precache.points.limit','200')",
 			"insert into preferences values('survey.textsize','LARGE')",
 			"insert into preferences values('survey.checkforupdates','0')",
-			"insert into preferences values('remoteexception.upload','0')" };
+			"insert into preferences values('remoteexception.upload','0')",
+			"insert into preferences values('survey.media.photo.shrink','true')",		
+			"insert into preferences values('survey.media.photo.sizereminder','true')" };
 
 	private static final String DATABASE_NAME = "surveydata";
 	private static final String SURVEY_TABLE = "survey";
@@ -176,8 +178,7 @@ public class SurveyDbAdapter {
 	static class DatabaseHelper extends SQLiteOpenHelper {
 
 		private static SQLiteDatabase database;
-		@SuppressLint("UseValueOf")
-		private static volatile Long LOCK_OBJ = new Long(1);
+		private static volatile Long LOCK_OBJ = 1L;
 		private volatile static int instanceCount = 0;
 		private Context context;
 

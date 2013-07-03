@@ -61,15 +61,25 @@ public class GeoCoordinates {
 			gc = new GeoCoordinates();
 			String[] coordinates = line.split("\\|");
 			if (coordinates.length > 1) {
-				gc.setLatitude(new Double(coordinates[0]));
-				gc.setLongitude(new Double(coordinates[1]));
+				try {
+				  gc.setLatitude(Double.parseDouble(coordinates[0]));
+				  gc.setLongitude(Double.parseDouble(coordinates[1]));
+				} catch (NumberFormatException nfe) {
+					// if we can't parse the lat/lon, the whole operation should fail
+					return null;
+				}
 			} else {
 				return null;
 			}
 			if (coordinates.length > 2) {
 				if (coordinates[2] != null
 						&& coordinates[2].trim().length() > 0) {
-					gc.setAltitude(new Double(coordinates[2]));
+					try {
+						gc.setAltitude(Double.parseDouble(coordinates[2]));
+					} catch (NumberFormatException nfe) {
+					    // the altitude cannot be parsed as double, so set it to null
+						gc.setAltitude(null);
+					}
 				}
 			}
 			if (coordinates.length > 3) {

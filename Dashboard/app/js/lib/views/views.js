@@ -80,6 +80,12 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
 });
 
 
+Ember.Handlebars.registerHelper('if_blank', function(item) {
+  var text;
+  text = Ember.get(this,item);
+  return (text && text.replace(/\s/g,"").length) ? new Handlebars.SafeString('') : new Handlebars.SafeString('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+});
+
 Ember.Handlebars.registerHelper('tooltip', function(i18nKey) {
   var tooltip;
   try {
@@ -164,7 +170,7 @@ Ember.Handlebars.registerHelper("date", function(property) {
   var curr_date = d.getDate();
   var curr_month = d.getMonth();
   var curr_year = d.getFullYear();
-  return(curr_date + " " + m_names[curr_month] + " " + curr_year);
+  return curr_date + " " + m_names[curr_month] + " " + curr_year;
 });
 
 // format used in devices table
@@ -202,7 +208,7 @@ Ember.Handlebars.registerHelper("date1", function(property) {
       minString = curr_min.toString();
     }
 
-    return(curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString);
+    return curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString;
   } else {
     return "";
   }
@@ -229,7 +235,7 @@ Ember.Handlebars.registerHelper("date3", function(property) {
       dateString = curr_date.toString();
     }
 
-    return(curr_year + "-" + monthString + "-" + dateString);
+    return curr_year + "-" + monthString + "-" + dateString;
   } else {
     return "";
   }
@@ -296,7 +302,7 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
       minString = curr_min.toString();
     }
 
-    return(curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString);
+    return curr_year + "-" + monthString + "-" + dateString + "  " + hourString + ":" + minString;
   }).property('content')
 }));
 
@@ -607,11 +613,11 @@ FLOW.ColumnView = Ember.View.extend({
   classNameBindings: ['isActiveAsc:sorting_asc', 'isActiveDesc:sorting_desc'],
 
   isActiveAsc: function() {
-    return(this.get('item') === FLOW.tableColumnControl.get('selected')) && (FLOW.tableColumnControl.get('sortAscending') === true);
+    return this.get('item') === FLOW.tableColumnControl.get('selected') && FLOW.tableColumnControl.get('sortAscending') === true;
   }.property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
 
   isActiveDesc: function() {
-    return(this.get('item') === FLOW.tableColumnControl.get('selected')) && (FLOW.tableColumnControl.get('sortAscending') === false);
+    return this.get('item') === FLOW.tableColumnControl.get('selected') && FLOW.tableColumnControl.get('sortAscending') === false;
   }.property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
 
   sort: function() {

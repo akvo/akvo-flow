@@ -379,6 +379,7 @@ public class ViewUtil {
 	public static void showAdminAuthDialog(final Context parentContext,
 			final AdminAuthDialogListener listener) {
 		final EditText input = new EditText(parentContext);
+		input.setSingleLine();
 		ShowTextInputDialog(parentContext, R.string.authtitle,
 				R.string.authtext, input,
 				new DialogInterface.OnClickListener() {

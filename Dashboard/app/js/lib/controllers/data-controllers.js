@@ -40,6 +40,7 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   selectedSurvey: null,
   content: null,
   sinceArray: [],
+  pageNumber:0,
 
   populate: function() {
     this.get('sinceArray').pushObject(FLOW.metaControl.get('since'));

@@ -15,7 +15,7 @@ FLOW.PreviewQuestionGroupView = FLOW.View.extend({
     this._super();
     qgId = this.content.get('keyId');
     this.set('QGcontent', FLOW.store.filter(FLOW.Question, function(item) {
-      return(item.get('questionGroupId') == qgId);
+      return item.get('questionGroupId') == qgId;
     }));
   }
 });

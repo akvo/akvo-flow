@@ -1,6 +1,6 @@
 This is the root directory of the Flow Field Survey application.
 
-The project depends on Android version 
+The project depends on Android version 2.0.0
 
 Before the project will build, the survey.properties file must be placed in the following location:
 res/raw/
@@ -9,4 +9,16 @@ This file contains the secret keys needed to communicate with the Flow Server in
 This file is slated to be replaced via a central configuration service in an upcoming version.
 
 
+
+
+Summary of new features and changes for released versions
+---------------------------------------------------------
+
+1.10.6	Always include serverBase from survey.properties in server selection. Makes instance builds independent of res/values/arrays.xml
+
+1.10.5	Prevent display rotation from forgetting a taken photo. Fix survey status partially-successful icon bug.
+
+1.10.3	Report OS version to server in beacon call.
+
+1.10.2	Shrink photos, warn about large media files, report IMEI to server.
 

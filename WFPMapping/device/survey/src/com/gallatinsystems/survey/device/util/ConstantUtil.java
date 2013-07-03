@@ -206,7 +206,7 @@ public class ConstantUtil {
 	public static final String LAST_USER_SETTING_KEY = "user.lastuser.id";
 	public static final String LOCATION_BEACON_SETTING_KEY = "location.sendbeacon";
 	public static final String PRECACHE_SETTING_KEY = "survey.precachehelp";
-	public static final String SERVER_SETTING_KEY = "upload.server";
+	public static final String SERVER_SETTING_KEY = "backend.server";
 	public static final String SCREEN_ON_KEY = "screen.keepon";
 	public static final String PRECACHE_POINT_COUNTRY_KEY = "precache.points.countries";
 	public static final String PRECACHE_POINT_LIMIT_KEY = "precache.points.limit";

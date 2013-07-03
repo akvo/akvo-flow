@@ -66,7 +66,7 @@ public class SurveyFormExporter implements DataExporter {
 	public void export(Map<String, String> criteria, File fileName,
 			String serverBase, Map<String,String> options) {
 		try {
-			populateQuestionMap(criteria.get(SURVEY_ID_KEY), serverBase);
+			populateQuestionMap(criteria.get(SURVEY_ID_KEY), serverBase, criteria.get("apiKey"));
 			writeSurvey(surveyTitle, fileName, groupList, questionMap);
 		} catch (Exception e) {
 			System.out.println("Could not write survey");
@@ -81,22 +81,22 @@ public class SurveyFormExporter implements DataExporter {
 	 * will populate a number of member variables to store the results.
 	 * 
 	 */
-	private void populateQuestionMap(String surveyId, String serverBase)
+	private void populateQuestionMap(String surveyId, String serverBase, String apiKey)
 			throws Exception {
 		groupList = BulkDataServiceClient.fetchQuestionGroups(serverBase,
-				surveyId);
+				surveyId, apiKey);
 		questionMap = new HashMap<QuestionGroupDto, List<QuestionDto>>();
 		idToNumberMap = new HashMap<Long, Long>();
 		if (groupList != null) {
 			Long count = 1L;
 			for (QuestionGroupDto group : groupList) {
 				List<QuestionDto> questions = BulkDataServiceClient
-						.fetchQuestions(serverBase, group.getKeyId());
+						.fetchQuestions(serverBase, group.getKeyId(), apiKey);
 				if (questions != null) {
 					List<QuestionDto> fullQuestions = new ArrayList<QuestionDto>();
 					for (QuestionDto q : questions) {
 						QuestionDto fullQ = BulkDataServiceClient
-								.loadQuestionDetails(serverBase, q.getKeyId());
+								.loadQuestionDetails(serverBase, q.getKeyId(), apiKey);
 						if (fullQ != null) {
 							fullQuestions.add(fullQ);
 							idToNumberMap.put(fullQ.getKeyId(), count++);

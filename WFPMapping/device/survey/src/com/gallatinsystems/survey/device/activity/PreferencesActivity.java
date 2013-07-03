@@ -41,6 +41,8 @@ import com.gallatinsystems.survey.device.service.LocationService;
 import com.gallatinsystems.survey.device.util.ArrayPreferenceData;
 import com.gallatinsystems.survey.device.util.ArrayPreferenceUtil;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
+import com.gallatinsystems.survey.device.util.PropertyUtil;
+import com.gallatinsystems.survey.device.util.StringUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -76,6 +78,7 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	private String[] uploadArray;
 	private String[] precacheHelpArray;
 	private String[] serverArray;
+	private PropertyUtil props;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -100,6 +103,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		radiusTextView = (TextView) findViewById(R.id.radiusvalue);
 
 		Resources res = getResources();
+		props = new PropertyUtil(res);
+
 
 		uploadArray = res.getStringArray(R.array.celluploadoptions);
 		precacheHelpArray = res.getStringArray(R.array.precachehelpoptions);
@@ -178,10 +183,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		}
 
 		val = settings.get(ConstantUtil.SERVER_SETTING_KEY);
-		if (val != null) {
+		if (val != null && val.trim().length() > 0) {
 			serverTextView.setText(serverArray[Integer.parseInt(val)]);
+		} else {
+			serverTextView.setText(props.getProperty(ConstantUtil.SERVER_BASE));
 		}
-
+		
 		val = settings.get(ConstantUtil.DEVICE_IDENT_KEY);
 		if (val != null) {
 			identTextView.setText(val);
@@ -334,10 +341,10 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					new ViewUtil.AdminAuthDialogListener() {
 						@Override
 						public void onAuthenticated() {
-							showPreferenceDialog(R.string.serverlabel,
-									R.array.servers,
+							showPreferenceDialogBase(R.string.serverlabel,
+									props.getProperty(ConstantUtil.SERVER_BASE),
 									ConstantUtil.SERVER_SETTING_KEY,
-									serverArray, serverTextView, null, null);
+									serverArray, serverTextView);
 
 						}
 					});
@@ -366,6 +373,8 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 						public void onAuthenticated() {
 							final EditText inputView = new EditText(
 									PreferencesActivity.this);
+							//one line only
+							inputView.setSingleLine();
 							ViewUtil.ShowTextInputDialog(
 									PreferencesActivity.this,
 									R.string.identlabel,
@@ -375,12 +384,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 										public void onClick(
 												DialogInterface dialog,
 												int which) {
-											identTextView.setText(inputView
-													.getText());
+											String s = StringUtil.ControlToSPace(inputView.getText().toString());
+											//drop any control chars, especially tabs
+											identTextView.setText(s);
 											database.savePreference(
 													ConstantUtil.DEVICE_IDENT_KEY,
-													inputView.getText()
-															.toString());
+													s);
 										}
 									});
 						}
@@ -424,6 +433,46 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 								sendBroadcast(new Intent(actionIntent));
 							}
 						}
+						if(dialog != null){
+							dialog.dismiss();
+						}
+					}
+				});
+		builder.show();
+	}
+	/**
+	 * displays a dialog that allows the user to choose a setting from a string
+	 * array
+	 * 
+	 * @param titleId
+	 *            - resource id of dialog title
+	 * @param baseValue
+	 *            - Value resulting in empty setting value
+	 * @param settingKey
+	 *            - key of setting to edit
+	 * @param valueArray
+	 *            - string array containing values
+	 * @param currentValView
+	 *            - view to update with value selected
+	 */
+	private void showPreferenceDialogBase(int titleId, String baseValue,
+			final String settingKey, final String[] valueArray,
+			final TextView currentValView) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		final String[] extraValueArray = new String[valueArray.length + 1];
+		extraValueArray[0] = baseValue;
+		for (int i = 0; i < valueArray.length; i++ ){
+			extraValueArray[i+1] = valueArray[i];
+		}
+		builder.setTitle(titleId).setItems(extraValueArray,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == 0)
+							database.savePreference(settingKey, "");
+						else
+							database.savePreference(settingKey, (which - 1) + "");
+						currentValView.setText(extraValueArray[which]);
 						if(dialog != null){
 							dialog.dismiss();
 						}
