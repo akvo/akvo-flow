@@ -432,7 +432,8 @@ FLOW.translationControl = Ember.ArrayController.create({
   currentTranslationName: null,
   defaultLang: null,
   selectedLanguage: null,
-  noTransSelected:true,
+  newSelected:false,
+  noCurrentTrans:true,
   toBeDeletedTranslations:[],
 
   init: function(){
@@ -460,6 +461,8 @@ FLOW.translationControl = Ember.ArrayController.create({
         surveyId:id
     }));
     this.set('translations',[]);
+    this.set('newSelected',false);
+    this.set('noCurrentTrans',true);
     this.set('selectedLanguage',null);
     this.set('currentTranslation', null);
     this.set('currentTranslationName',null);
@@ -479,13 +482,12 @@ FLOW.translationControl = Ember.ArrayController.create({
         this.set('currentTranslation',this.get('translations')[0].value);
         this.set('currentTranslationName',this.get('translations')[0].label);
         this.putTranslationsInList();
-        this.set('noTransSelected',false);
+        this.set('noCurrentTrans',false);
       } else {
-        this.set('noTransSelected',true);
+        this.set('noCurrentTrans',true);
       }
     }
   }.observes('content.isLoaded'),
-
 
   resetTranslationFields: function(){
     this.get('itemArray').forEach(function(item){
@@ -535,6 +537,17 @@ FLOW.translationControl = Ember.ArrayController.create({
     }));
   },
 
+  cancelAddTranslation: function(){
+     this.set('newSelected',false);
+     this.set('selectedLanguage',null);
+   },
+
+  lockWhenNewLangChosen: function(){
+      if (!Ember.none(this.get('selectedLanguage'))){
+        this.set('newSelected',true);
+      }
+    }.observes('this.selectedLanguage'),
+
   addTranslation: function(){
     var found = false, newLang = null;
     newLang = this.get('selectedLanguage');
@@ -550,7 +563,8 @@ FLOW.translationControl = Ember.ArrayController.create({
         }));
         this.set('currentTranslation',this.get('selectedLanguage').value);
         this.set('currentTranslationName',FLOW.isoLanguagesDict[this.get('selectedLanguage').value].name);
-        this.set('noTransSelected',false);
+        this.set('newSelected',false);
+        this.set('noCurrentTrans',false);
       }
     }
   },
@@ -561,7 +575,7 @@ FLOW.translationControl = Ember.ArrayController.create({
       this.resetTranslationFields();
       this.set('currentTranslation',event.context.value);
       this.set('currentTranslationName',FLOW.isoLanguagesDict[event.context.value].name);
-      this.set('noTransSelected',false);
+      this.set('noCurrentTrans',false);
       this.putTranslationsInList();
     }
   },
