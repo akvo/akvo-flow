@@ -1604,7 +1604,7 @@ li.aSurvey:hover h2 { color: rgb(57, 102, 128); }
 }
 #newSurveyInfo .helpIcon {
 	position: absolute;
-	right: 1%;
+	right: 3%;
 	margin: -3px 0 0 0;
 }
 a.manageNotifications {
