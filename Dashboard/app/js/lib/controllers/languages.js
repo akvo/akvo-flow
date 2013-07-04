@@ -100,7 +100,7 @@ FLOW.isoLanguagesDict = {
         "nativeName":"ဗမာစာ"
     },
     "ca":{
-        "name":"Catalan; Valencian",
+        "name":"Catalan",
         "nativeName":"Català"
     },
     "ch":{
@@ -112,7 +112,7 @@ FLOW.isoLanguagesDict = {
         "nativeName":"нохчийн мотт"
     },
     "ny":{
-        "name":"Chichewa; Chewa; Nyanja",
+        "name":"Chichewa",
         "nativeName":"chiCheŵa"
     },
     "zh":{
@@ -148,8 +148,8 @@ FLOW.isoLanguagesDict = {
         "nativeName":"dansk"
     },
     "dv":{
-        "name":"Divehi; Dhivehi; Maldivian;",
-        "nativeName":""
+        "name":"Divehi",
+        "nativeName":"Dhivehi; Maldivian"
     },
     "nl":{
         "name":"Dutch",
@@ -188,8 +188,8 @@ FLOW.isoLanguagesDict = {
         "nativeName":"français, langue française"
     },
     "ff":{
-        "name":"Fula; Fulah; Pulaar; Pular",
-        "nativeName":"Fulfulde"
+        "name":"Fula",
+        "nativeName":"Fulfulde; Fulah; Pulaar; Pular"
     },
     "gl":{
         "name":"Galician",
@@ -216,8 +216,8 @@ FLOW.isoLanguagesDict = {
         "nativeName":"ગુજરાતી"
     },
     "ht":{
-        "name":"Haitian; Haitian Creole",
-        "nativeName":"Kreyòl ayisyen"
+        "name":"Haitian",
+        "nativeName":"Kreyòl ayisyen; Haitian Creole"
     },
     "ha":{
         "name":"Hausa",
