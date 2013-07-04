@@ -460,6 +460,7 @@ FLOW.translationControl = Ember.ArrayController.create({
         surveyId:id
     }));
     this.set('translations',[]);
+    this.set('selectedLanguage',null);
     this.set('currentTranslation', null);
     this.set('currentTranslationName',null);
 
