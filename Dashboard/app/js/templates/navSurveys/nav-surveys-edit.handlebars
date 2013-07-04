@@ -26,13 +26,13 @@
     </label>
     
     <label for="surveyLanguage">{{t _master_language}}:{{tooltip _master_lang_no_change}}</span>
-      {{view Ember.Select 
-      contentBinding="FLOW.languageControl.content" 
-      optionLabelPath="content.label" 
-      optionValuePath="content.value" 
-      selectionBinding="view.language" 
-      prompt=""
-      promptBinding="Ember.STRINGS._select_language"}}
+     {{view Ember.Select
+         contentBinding="FLOW.translationControl.isoLangs"
+         selectionBinding="view.language"
+         optionLabelPath="content.labelShort"
+         optionValuePath="content.value"
+         prompt=""
+         promptBinding="Ember.STRINGS._select_language"}}
     </label>
   </form>
   <a {{action "doManageTranslations"}} class="manageNotifications"><span>+</span>{{t _manage_translations}}</a>
