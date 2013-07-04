@@ -525,7 +525,9 @@ FLOW.translationControl = Ember.ArrayController.create({
   determineAvailableTranslations: function(){
     var tempDict = {};
     this.get('content').forEach(function(item){
-      tempDict[item.get('langCode')] = item.get('langCode');
+      if (!Ember.none(item.get('langCode'))){
+        tempDict[item.get('langCode')] = item.get('langCode');
+      }
     });
     for (var key in tempDict) this.translations.pushObject(Ember.Object.create({
       value: key,
