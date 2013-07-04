@@ -100,22 +100,27 @@ public class RestAuthFilter implements Filter {
 					if (builder.length() > 0) {
 						builder.append("&");
 					}
-					builder.append(name)
-							.append("=")
-							.append(URLEncoder.encode(
-									((String[]) paramMap.get(name))[0], "UTF-8"));
+
 					if (RestRequest.TIMESTAMP_PARAM.equals(name)) {
+						String timestamp = ((String[]) paramMap.get(name))[0];
 						try {
 							DateFormat df = new SimpleDateFormat(
 									"yyyy/MM/dd HH:mm:ss");
 							df.setTimeZone(TimeZone.getTimeZone("GMT"));
-							incomingTimestamp = df.parse(
-									((String[]) paramMap.get(name))[0])
-									.getTime();
+							incomingTimestamp = df.parse(timestamp).getTime();
 						} catch (Exception e) {
 							log.warning("Recived rest api request with invalid timestamp");
 							return false;
 						}
+					}
+					String [] vals = ((String[]) paramMap.get(name));
+					int count = 0;
+					for (String v : vals) {
+						if (count > 0) {
+							builder.append("&");
+						}
+						builder.append(name).append("=").append(URLEncoder.encode(v, "UTF-8"));
+						count++;
 					}
 				} else {
 					incomingHash = ((String[]) paramMap.get(name))[0];

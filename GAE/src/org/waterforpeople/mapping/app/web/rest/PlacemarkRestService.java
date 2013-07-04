@@ -49,6 +49,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 @RequestMapping("/placemarks")
 public class PlacemarkRestService {
 
+	final int LIMIT_PLACEMARK_POINTS = 500;
 	private static final Logger log = Logger
 			.getLogger(PlacemarkRestService.class.getName());
 
@@ -88,7 +89,7 @@ public class PlacemarkRestService {
 		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
 
 		slList.addAll(localeDao.listBySubLevel(country, null, null, null, null,
-				null, 200));
+				null, LIMIT_PLACEMARK_POINTS));
 
 		if (slList.size() > 0) {
 			for (SurveyedLocale ap : slList) {
@@ -107,9 +108,9 @@ public class PlacemarkRestService {
 
 		// exclude Household data
 		slList.addAll(localeDao.listBySubLevel(country, null, null,"Point", null,
-				null, 200));
+				null, LIMIT_PLACEMARK_POINTS));
 		slList.addAll(localeDao.listBySubLevel(country, null, null,"PublicInstitution", null,
-				null, 200));
+				null, LIMIT_PLACEMARK_POINTS));
 
 		if (slList.size() > 0) {
 			for (SurveyedLocale ap : slList) {
