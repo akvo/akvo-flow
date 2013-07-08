@@ -271,12 +271,31 @@ public class QuestionView extends TableLayout implements
 			TextView tipText = new TextView(getContext());
 			StringBuilder textBuilder = new StringBuilder();
 			ArrayList<QuestionHelp> helpItems = question.getHelpByType(type);
+			boolean isFirst = true;
 			if (helpItems != null) {
 				for (int i = 0; i < helpItems.size(); i++) {
 					if (i > 0) {
 						textBuilder.append("<br>");
 					}
-					textBuilder.append(helpItems.get(i).getText());
+
+					for (int ii = 0; ii < langs.length; ii++) {
+						if (defaultLang.equalsIgnoreCase(langs[ii])) {
+							textBuilder.append(helpItems.get(i).getText());
+							isFirst = false;
+						}
+
+						AltText aText = helpItems.get(i).getAltText(langs[ii]);
+						if (aText != null) {
+							if (!isFirst) {
+								textBuilder.append(" / ");
+							} else {
+								isFirst = false;
+							}
+
+							textBuilder.append("<font color='").append(colors[ii]).append("'>")
+								.append(aText.getText()).append("</font>");
+						}
+					}
 				}
 			}
 			tipText.setText(Html.fromHtml(textBuilder.toString()));
