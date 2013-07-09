@@ -60,6 +60,7 @@ FLOW.notificationEventControl = Ember.Object.create({
   })]
 });
 
+// deprecated
 FLOW.languageControl = Ember.Object.create({
   content: [
   Ember.Object.create({
@@ -453,6 +454,10 @@ FLOW.translationControl = Ember.ArrayController.create({
     this.set('isoLangs',tempArray);
   },
 
+  blockInteraction: function(){
+    return this.get('noCurrentTrans') || this.get('newSelected');
+  }.property('this.noCurrentTrans','this.newSelected'),
+
   populate: function(){
     var id;
     id = FLOW.selectedControl.selectedSurvey.get('keyId');
@@ -543,7 +548,34 @@ FLOW.translationControl = Ember.ArrayController.create({
    },
 
   lockWhenNewLangChosen: function(){
+      var selLang, found = false;
       if (!Ember.none(this.get('selectedLanguage'))){
+        if (FLOW.selectedControl.selectedSurvey.get('defaultLanguageCode') == this.selectedLanguage.get('value')){
+          // we can't select the same language as the default language
+          FLOW.dialogControl.set('activeAction', 'ignore');
+          FLOW.dialogControl.set('header', Ember.String.loc('_cant_select_lang'));
+          FLOW.dialogControl.set('message', Ember.String.loc('_cant_select_lang_text'));
+          FLOW.dialogControl.set('showCANCEL', false);
+          FLOW.dialogControl.set('showDialog', true);
+          this.set('selectedLanguage',null);
+          this.set('newSelected',false);
+          return;
+        }
+        selLang = this.selectedLanguage.get('value');
+        this.get('translations').forEach(function(item){
+            found = found || selLang == item.value;
+        });
+
+        if (found) {
+          FLOW.dialogControl.set('activeAction', 'ignore');
+          FLOW.dialogControl.set('header', Ember.String.loc('_trans_already_present'));
+          FLOW.dialogControl.set('message', Ember.String.loc('_trans_already_present_text'));
+          FLOW.dialogControl.set('showCANCEL', false);
+          FLOW.dialogControl.set('showDialog', true);
+          this.set('selectedLanguage',null);
+          this.set('newSelected',false);
+          return;
+        }
         this.set('newSelected',true);
       }
     }.observes('this.selectedLanguage'),
