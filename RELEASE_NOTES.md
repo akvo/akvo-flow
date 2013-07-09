@@ -35,6 +35,7 @@ Other minor enhancements
 * Fix a bug where a large number of survey groups broke the css box for the display and the group names stopped displaying correctly (#242)
 * Fix a bug where services.akvoflow.org was dishing up stale reports (#246)
 * Fix bug in validation of min/max parameter on type=Number survey questions where string values were being compared instead of int values (#258)
+* Increase maximum map place mark points from 200 to 500 to improve map performance (#263)
 
 ---
 
