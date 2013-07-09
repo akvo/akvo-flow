@@ -1378,7 +1378,9 @@ public class TestHarnessServlet extends HttpServlet {
 					.param(DataProcessorRequest.SOURCE_PARAM,
 							req.getParameter("source"))
 					.param(DataProcessorRequest.SURVEY_ID_PARAM,
-							req.getParameter("surveyId"));
+							req.getParameter("surveyId"))
+					.param(DataProcessorRequest.API_KEY_PARAM,
+							req.getParameter("apiKey"));
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
 			queue.add(options);
