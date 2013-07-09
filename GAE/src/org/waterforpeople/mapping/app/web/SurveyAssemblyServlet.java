@@ -512,19 +512,18 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				TranslationDao tDao = new TranslationDao();
 				Map<String, Translation> tipTrans = tDao.findTranslations(Translation.ParentType.QUESTION_TIP,q.getKey().getId());
 				// any translations for question tooltip?
-				if (tipTrans != null && tipTrans.size() > 0) {
-					List<AltText> translationList = new ArrayList<AltText>();
-					for (Translation trans : tipTrans
-							.values()) {
-						AltText aText = new AltText();
-						aText.setContent(trans.getText());
-						aText.setLanguage(trans.getLanguageCode());
-						aText.setType("translation");
-						translationList.add(aText);
-					}
-					if (translationList.size() > 0) {
-						tip.setAltText(translationList);
-					}
+
+				List<AltText> translationList = new ArrayList<AltText>();
+				for (Translation trans : tipTrans
+						.values()) {
+					AltText aText = new AltText();
+					aText.setContent(trans.getText());
+					aText.setLanguage(trans.getLanguageCode());
+					aText.setType("translation");
+					translationList.add(aText);
+				}
+				if (translationList.size() > 0) {
+					tip.setAltText(translationList);
 				}
 				helpList.add(tip);
 			}
