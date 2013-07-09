@@ -278,13 +278,13 @@ public class QuestionView extends TableLayout implements
 						textBuilder.append("<br>");
 					}
 
-					for (int ii = 0; ii < langs.length; ii++) {
-						if (defaultLang.equalsIgnoreCase(langs[ii])) {
+					for (int j = 0; j < langs.length; j++) {
+						if (defaultLang.equalsIgnoreCase(langs[j])) {
 							textBuilder.append(helpItems.get(i).getText());
 							isFirst = false;
 						}
 
-						AltText aText = helpItems.get(i).getAltText(langs[ii]);
+						AltText aText = helpItems.get(i).getAltText(langs[j]);
 						if (aText != null) {
 							if (!isFirst) {
 								textBuilder.append(" / ");
@@ -292,7 +292,7 @@ public class QuestionView extends TableLayout implements
 								isFirst = false;
 							}
 
-							textBuilder.append("<font color='").append(colors[ii]).append("'>")
+							textBuilder.append("<font color='").append(colors[j]).append("'>")
 								.append(aText.getText()).append("</font>");
 						}
 					}
