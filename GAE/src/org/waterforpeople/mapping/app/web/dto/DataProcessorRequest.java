@@ -44,6 +44,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
 	public static final String QAS_ID_PARAM = "qasId";
 	public static final String DELTA_PARAM = "delta";
+	public static final String API_KEY_PARAM = "apiKey";
 
 	private String country;
 	private String source;
@@ -51,6 +52,7 @@ public class DataProcessorRequest extends RestRequest {
 	private Long surveyInstanceId;
 	private Long qasId;
 	private Integer delta;
+	private String apiKey;
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
@@ -94,6 +96,9 @@ public class DataProcessorRequest extends RestRequest {
 			}
 		}
 
+		if (req.getParameter(API_KEY_PARAM) != null) {
+			setApiKey(req.getParameter(API_KEY_PARAM).trim());
+		}
 	}
 
 	@Override
@@ -148,6 +153,14 @@ public class DataProcessorRequest extends RestRequest {
 
 	public void setDelta(Integer delta) {
 		this.delta = delta;
+	}
+
+	public String getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
 	}
 
 }
