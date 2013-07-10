@@ -1,4 +1,4 @@
-Last changed: 2 April 2013 co
+Last changed: 9 July 2013, co
 
 Akvo FLOW (Field Level Operations Watch) is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
 
@@ -7,6 +7,38 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+
+# 1.5.1
+Release Date: 4 July 2013
+
+Improvements to data summarization and counting
+* Fix defect where data submitted over wifi and the bulk upload was double counted in data summaries (#185)
+* Fix a bug where the surveyInstance Count was creating new entities each time instead of checking first whether there was a matching one already existing (#235)
+* Fix a bug where spreadsheet import was using different summarization customs than the device, resulting in confusion in the backend for OTHER types (#250)
+
+Improvements in Data tab and Inspect Data table
+* Fixing filtering in Inspect Data table - Fix a bug in filtering for Device ID and Submitter in Inspect Data table (#212)
+* Fix a paging bug in Inspect Data table where cursor reset to zero (#251)
+
+Improvements to Bulk Upload tool usability
+* Prevent bulk upload tool from importing data for a survey that doesn't exist on the Dashboard (#230)
+* Warn user if they try to close the browser page while a data bulk upload is in progress; add explanation text on the Bulk Upload page to direct the user not to navigate away during the upload (#201)
+
+Security
+* Enable security on REST calls based on API servlet (#256)
+* Update FLOW instance configurator to create API key and enable REST security (related to #256) (#272)
+
+Other minor enhancements
+* Entering user email addresses - Save email addresses in lowercase when adding or editing a new Dashboard user (#193)
+* Fix defect where surveyedLocales remained in the datastore after surveyInstances were deleted (#218)
+* Fix a bug where deleting a date in the Edit data window displayed filler text (NaN) in the date field (#236)
+* Fix a bug where a large number of survey groups broke the css box for the display and the group names stopped displaying correctly (#242)
+* Fix a bug where services.akvoflow.org was dishing up stale reports (#246)
+* Fix bug in validation of min/max parameter on type=Number survey questions where string values were being compared instead of int values (#258)
+* Increase maximum map place mark points from 200 to 500 to improve map performance (#263)
+
+---
+
 
 This set of notes captures the weekly status of FLOW features and fixes to keep our colleagues and partners better informed about the status of the software as we concentrate on roll-out of 1.5.
 
