@@ -456,7 +456,7 @@ FLOW.translationControl = Ember.ArrayController.create({
 
   blockInteraction: function(){
     return this.get('noCurrentTrans') || this.get('newSelected');
-  }.property('this.noCurrentTrans','this.newSelected'),
+  }.property('noCurrentTrans','newSelected'),
 
   populate: function(){
     var id;
