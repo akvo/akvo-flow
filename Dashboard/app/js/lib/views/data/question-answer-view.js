@@ -66,7 +66,7 @@ doInit: function() {
       this.set('date',formatDate(date));
     }
     // fill option list
-    if(this.get('isOptionType') && q.get('optionList') !== null) {
+    if(this.get('isOptionType') && !Ember.none(q.get('optionList'))) {
       this.set('optionsList', []);
       opList = q.get('optionList');
       opListArray = opList.split('\n');
