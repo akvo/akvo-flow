@@ -22,10 +22,11 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   },
 
   sideload: function (store, type, json, root) {
-    var msg,status;
+  var msg,status, metaObj;
     this._super(store, type, json, root);
     // only change metaControl info if there is actual meta info in the server response
-    if (Object.keys(this.extractMeta(json)).length !== 0) {
+    metaObj = this.extractMeta(json);
+    if (metaObj && metaObj.message) {
       if (type == FLOW.SurveyInstance) {
         FLOW.metaControl.set('numSILoaded', this.extractMeta(json).num);
         FLOW.metaControl.set('since', this.extractMeta(json).since);
