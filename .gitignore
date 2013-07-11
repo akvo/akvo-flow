@@ -47,10 +47,10 @@ WFPMapping/device/debugcert
 WFPMapping/device/survey/res/raw/survey.properties
 WFPMapping/device/survey_test/bin/*
 WFPMapping/device/survey/bin/*
+WFPMapping/device/survey/gen/*
+WFPMapping/device/survey/build.properties
 WFPMapping/device/calabash/.calabash_settings
-WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/BuildConfig.java
 WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
-WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/R.java
 
 deploy
 gwt-unitcache
