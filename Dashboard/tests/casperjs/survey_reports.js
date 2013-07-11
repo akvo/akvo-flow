@@ -8,8 +8,9 @@ var utils = require('utils');
 var casper = require('casper').create({
 verbose: true,
 logLevel: 'debug',
-waitTimeout: 50000,
-clientScripts: ["includes/jquery.min.js"],
+	
+// Give waitForResource calls plenty of time to load.
+// waitTimeout: 50000,
 
 PageSettings: {
 	javascriptEnabled: true,
@@ -18,6 +19,7 @@ PageSettings: {
 	userAgent:	'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36'
 	}
 });
+
 phantom.cookiesEnabled = true;
 
 
@@ -33,7 +35,7 @@ casper.on("page.error", function(msg, trace) {
 
 
 var url = 'http://akvoflowsandbox.appspot.com/admin/';
-var x = require('casper').selectXPath;
+var ember_xpath = require('casper').selectXPath;
 
 // For taking username/password via CLI
 // if (system.args.length < 3) {
@@ -49,71 +51,37 @@ casper.start(url, function() {
 	this.test.assertExists('form#gaia_loginform', 'GAE Login form is found');
 	this.fill('form#gaia_loginform', {
 		Email:	'nchriss@gmail.com',
-		Passwd:	'$0c1o/p4tH'
+		Passwd:	'876^5017&'
 	}, true);
-});
-
-casper.then(function() {
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/jquery-1.8.2.min.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/handlebars-1.0.rc.1.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/ember-1.0.0.pre-2-36.min.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/ember-data-rev10.min.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/jquery-ui-1.8.21.custom.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/jquery.dataTables.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/d3.v2.min.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/resumable.min.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/plugins/loader.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/plugins/flowDashboard.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/app.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/flowDashboard.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/currentuser.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/flowenv.js');
-   	// this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/jquery-1.8.2.min.js');
-
-	this.test.assertExists(x('//*[@id="ember803"]/a'), 'Survey Nav Tab Exists');
-	this.test.assertExists(x('//*[@id="ember811"]/a'), 'Devices Nav Tab Exists');
-	this.test.assertExists(x('//*[@id="ember819"]/a'), 'Data Nav Tab Exists');
-	this.test.assertExists(x('//*[@id="ember827"]/a'), 'Reports Nav Tab Exists');
-	this.test.assertExists(x('//*[@id="ember835"]/a'), 'Maps Nav Tab Exists');
-	this.test.assertExists(x('//*[@id="ember848"]/a'), 'Users Nav Tab Exists');
-	this.test.assertExists(x('//*[@id="ember861"]/a'), 'Messages Nav Tab Exists');
-	
 });
 
 
 casper.then(function () {
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/jquery-1.8.2.min.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/handlebars-1.0.rc.1.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/ember-1.0.0.pre-2-36.min.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/ember-data-rev10.min.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/jquery-ui-1.8.21.custom.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/jquery.dataTables.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/d3.v2.min.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/resumable.min.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/plugins/loader.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/flowDashboard.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/app.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/currentuser.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/flowenv.js');
 
-	this.thenClick(x('//*[@id="ember819"]/a'), function() {
+	this.thenClick(ember_xpath('//*[@id="ember819"]/a'), function() {
 		console.log("Navigate to 'root.navData.index' Event");
 		});
-
 	this.waitFor(function check() {
-    this.test.assertVisible(x('//*[@id="ember15236"]/a'));
-	});
-
-    this.echo('TabNav Test Block END');
-	
-    this.capture('shots/pageWrap.png', {
-		top: 0,
-		left: 0,
-		width: 1280,
-		height: 1024
-	});
-
+    			return this.test.assertVisible(ember_xpath('//*[@id="ember2023"]/a'), 
+    			'Ember.root NavdataIndex');	
+			}, function then() { 
+				this.capture('shots/NavDataIndex.png', {
+				top: 0,
+				left: 0,
+				width: 1280,
+				height: 1024
+			});
+		}, 400);
+		
 });
+
+// casper.then(function () {
+   //  this.capture('shots/pageWrap.png', {
+	 //   top: 0,
+	  //  left: 0,
+	   //  width: 1280,
+	 //    height: 1024
+//	});
 
 //
 //  Iterate through children that inherit dataSection Class from 
