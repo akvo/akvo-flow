@@ -19,9 +19,11 @@ Dashboard/assets*
 Dashboard/tmp*
 Dashboard/test_assets*
 
+# Configuration files
+*build.properties
+
 GAE/appletbin
 GAE/build
-GAE/build.properties
 GAE/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties
 GAE/war/WEB-INF/*.jks
 GAE/war/WEB-INF/appengine-web.xml
@@ -48,7 +50,6 @@ WFPMapping/device/survey/res/raw/survey.properties
 WFPMapping/device/survey_test/bin/*
 WFPMapping/device/survey/bin/*
 WFPMapping/device/survey/gen/*
-WFPMapping/device/survey/build.properties
 WFPMapping/device/calabash/.calabash_settings
 WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
 
