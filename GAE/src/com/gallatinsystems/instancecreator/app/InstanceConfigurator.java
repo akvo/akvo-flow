@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -113,7 +114,7 @@ public class InstanceConfigurator {
 		String localLocation = args[12];
 		ic.addAttribute("keystore", args[13]);
 		ic.addAttribute("mapsApiKey", args[14]);
-		ic.addAttribute("restApiKey",args[15]);		
+		ic.addAttribute("restApiKey", args[15].equals("test") || args[15].equals("") ? UUID.randomUUID().toString() : args[15]);
 
 		localLocation = ic.createLocalDeployDir(localLocation, args[2]);
 

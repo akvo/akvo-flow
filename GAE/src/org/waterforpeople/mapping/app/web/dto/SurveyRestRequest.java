@@ -74,7 +74,7 @@ public class SurveyRestRequest extends RestRequest {
 	private String surveyName;
 	private Long surveyGroupId;
 	private String questionGroupName;
-	private Integer questionId;
+	private Long questionId;
 	private String questionText;
 	private String questionType;
 	private String options;
@@ -83,8 +83,8 @@ public class SurveyRestRequest extends RestRequest {
 	private Boolean allowMultipleFlag;
 	private Boolean mandatoryFlag;
 	private Integer questionGroupOrder;
-	private Integer surveyId;
-	private Integer questionGroupId;
+	private Long surveyId;
+	private Long questionGroupId;
 	private String scoring;
 	private Long instanceId;
 	private String graphType;
@@ -161,19 +161,19 @@ public class SurveyRestRequest extends RestRequest {
 		this.scoring = scoring;
 	}
 
-	public Integer getSurveyId() {
+	public Long getSurveyId() {
 		return surveyId;
 	}
 
-	public void setSurveyId(Integer surveyId) {
+	public void setSurveyId(Long surveyId) {
 		this.surveyId = surveyId;
 	}
 
-	public Integer getQuestionGroupId() {
+	public Long getQuestionGroupId() {
 		return questionGroupId;
 	}
 
-	public void setQuestionGroupId(Integer questionGruopId) {
+	public void setQuestionGroupId(Long questionGruopId) {
 		this.questionGroupId = questionGruopId;
 	}
 
@@ -201,11 +201,11 @@ public class SurveyRestRequest extends RestRequest {
 		this.questionGroupName = questionGroupName;
 	}
 
-	public Integer getQuestionId() {
+	public Long getQuestionId() {
 		return questionId;
 	}
 
-	public void setQuestionId(Integer questionId) {
+	public void setQuestionId(Long questionId) {
 		this.questionId = questionId;
 	}
 
@@ -282,11 +282,11 @@ public class SurveyRestRequest extends RestRequest {
 					.trim();
 		}
 		if (req.getParameter(QUESTION_ID_PARAM) != null) {
-			questionId = Integer.parseInt(req.getParameter(QUESTION_ID_PARAM)
+			questionId = Long.parseLong(req.getParameter(QUESTION_ID_PARAM)
 					.trim());
 		}
 		if (req.getParameter(QUESTION_ID_PARAM_ALT) != null) {
-			questionId = Integer.parseInt(req.getParameter(
+			questionId = Long.parseLong(req.getParameter(
 					QUESTION_ID_PARAM_ALT).trim());
 		}
 		if (req.getParameter(QUESTION_TEXT_PARAM) != null) {
@@ -321,11 +321,11 @@ public class SurveyRestRequest extends RestRequest {
 					QUESTION_ORDER_PARAM).trim()));
 		}
 		if (req.getParameter(SURVEY_ID_PARAM) != null) {
-			surveyId = Integer.parseInt(req.getParameter(SURVEY_ID_PARAM)
+			surveyId = Long.parseLong(req.getParameter(SURVEY_ID_PARAM)
 					.trim());
 		}
 		if (req.getParameter(QUESTION_GROUP_ID_PARAM) != null) {
-			questionGroupId = Integer.parseInt(req.getParameter(
+			questionGroupId = Long.parseLong(req.getParameter(
 					QUESTION_GROUP_ID_PARAM).trim());
 		}
 		if (req.getParameter(DEPEND_QUESTION_PARAM) != null) {

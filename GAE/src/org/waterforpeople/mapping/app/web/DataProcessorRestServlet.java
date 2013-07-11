@@ -100,7 +100,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			SurveyReplicationImporter sri = new SurveyReplicationImporter();
-			sri.executeImport(dpReq.getSource(), dpReq.getSurveyId(), null); // FIXME
+			sri.executeImport(dpReq.getSource(), dpReq.getSurveyId(), dpReq.getApiKey());
 		} else if (DataProcessorRequest.RESCORE_AP_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			rescoreAp(dpReq.getCountry());

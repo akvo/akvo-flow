@@ -479,10 +479,6 @@ public class TaskServlet extends AbstractRestApiServlet {
 					log.info("Received Task Queue calls for surveyInstanceKey: "
 							+ instance.getKey().getId() + "");
 					aph.processSurveyInstance(instance.getKey().getId() + "");
-//					summQueue.add(TaskOptions.Builder.withUrl("/app_worker/datasummarization").param(
-//							"objectKey", instance.getKey().getId() + "").param(
-//							"type", "SurveyInstance"));
-//					// process the "new" domain structure
 
 					defaultQueue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet").param(
 							SurveyalRestRequest.ACTION_PARAM,

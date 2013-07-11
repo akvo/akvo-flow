@@ -6,11 +6,7 @@
 var utils = require('utils');
 
 var casper = require('casper').create({
-<<<<<<< HEAD
-verbose: false,
-=======
 verbose: true,
->>>>>>> f9db7280f42b32efabd4be7dbe2525bc12ac2635
 logLevel: 'debug',
 waitTimeout: 50000,
 clientScripts: ["includes/jquery.min.js"],
@@ -53,11 +49,7 @@ casper.start(url, function() {
 	this.test.assertExists('form#gaia_loginform', 'GAE Login form is found');
 	this.fill('form#gaia_loginform', {
 		Email:	'nchriss@gmail.com',
-<<<<<<< HEAD
-		Passwd:	'$hnnzw3swAub..'
-=======
 		Passwd:	'$0c1o/p4tH'
->>>>>>> f9db7280f42b32efabd4be7dbe2525bc12ac2635
 	}, true);
 });
 
@@ -100,15 +92,9 @@ casper.then(function () {
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/resumable.min.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/plugins/loader.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/flowDashboard.js');
-<<<<<<< HEAD
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/currentuser.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/flowenv.js');
-   	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/app.js');
-=======
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/GAE/war/admin/js/app.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/currentuser.js');
    	this.page.injectJs('/Users/neha/code/akvo/akvo-flow/Dashboard/app/js/vendor/flowenv.js');
->>>>>>> f9db7280f42b32efabd4be7dbe2525bc12ac2635
 
 	this.thenClick(x('//*[@id="ember819"]/a'), function() {
 		console.log("Navigate to 'root.navData.index' Event");
