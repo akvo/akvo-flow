@@ -1,8 +1,26 @@
 Akvo FLOW Field Survey app 
 last update 12 july 2013, co
 
-#ver 1.10.5
 
+#ver 1.10.6  
+* Always include serverBase from survey.properties in server selection. Makes instance builds independent of res/values/arrays.xml
+
+#ver 1.10.5	
+* Prevent display rotation from forgetting a taken photo (#118)
+* Fix survey status partially-successful icon bug (#183)
+
+#ver 1.10.4
+* Notify user when SD card nearing capacity (#208)
+
+#ver 1.10.3	
+* Report OS version to server in beacon call (#204)
+
+#ver 1.10.2	
+* Automatically shrink photos (#188)
+* Warn about large media files (#182)
+* report IMEI to server (#xxx)
+
+#ver 1.10.1
 
 
 #ver 1.9.36
@@ -50,3 +68,13 @@ External barcode scanning apps (QuickMark, ZXing) crash or freeze in Android OS 
 
 GPS Status App
 Cannot reliably launch GPS Status app from inside the Field Survey application running on Android OS 2.1 (Settings > GPS Status).
+
+#ver 1.9.35
+
+* Gray out "Scan Barcode" button in apk running on OS 2.1 (#59)
+* Fixed bug where email address of user not displayed correctly in user management
+* Create initial test scripts for the apk (#37)
+* Modify apk signature to eliminate signature conflicts that forced some users to uninstall before updating application (#21)
+* Add ability to scan barcodes from app (#17)
+* Fixed a defect where device users that exceeded the SD card file directory limits were losing data when directories were full (16)
+*
