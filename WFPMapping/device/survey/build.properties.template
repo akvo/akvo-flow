@@ -1,0 +1,17 @@
+# This file is used to override default values used by the Ant build system.
+
+# This file is only used by the Ant script.
+
+sdk.dir=/path/to/your/android-sdk
+key.store=/path/to/the/keystore
+key.alias=youralias
+key.store.password=keystorepassword
+key.alias.password=aliaspassword
+
+# To specify a different location for the final apk, setup out.dir property
+# out.dir=bin
+
+# You can specify a survey.properties location in this file as well,
+# to avoid calling flow-release with that parameter each time
+#
+# survey.properties=/path/to/survey.properties
