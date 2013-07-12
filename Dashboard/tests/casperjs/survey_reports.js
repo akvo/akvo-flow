@@ -46,6 +46,15 @@ var ember_xpath = require('casper').selectXPath;
 // var username = system.args[1];
 // var password = system.args[2];
 
+screenshotNow = new Date(),
+// screenshotDateTime = screenshotNow.getFullYear() + pad(screenshotNow.getMonth() + 1) + pad(screenshotNow.getDate()) + '-' + pad(screenshotNow.getHours()) + pad(screenshotNow.getMinutes()) + pad(screenshotNow.getSeconds()), 
+viewport = [
+		{
+			'name': 'desktop-standard',
+			'viewport': {width: 1280, height: 1024}
+		}
+];
+
 casper.start(url, function() {
 	console.log("page loaded");
 	this.test.assertExists('form#gaia_loginform', 'GAE Login form is found');
@@ -57,24 +66,21 @@ casper.start(url, function() {
 
 
 casper.then(function () {
-
 	this.thenClick(ember_xpath('//*[@id="ember819"]/a'), function() {
 		console.log("Navigate to 'root.navData.index' Event");
-		});
+
 	this.waitFor(function check() {
     			return this.test.assertVisible(ember_xpath('//*[@id="ember2023"]/a'), 
     			'Ember.root NavdataIndex');	
-			}, function then() { 
-				this.capture('shots/NavDataIndex.png', {
-				top: 0,
-				left: 0,
-				width: 1280,
-				height: 1024
-			});
-		}, 400);
-		
-});
+				}, function then() { 
+    				this.wait(8000);
+		            this.capture('screenshots/NavDataIndex.png');
+				});
+		});
+	});
 
+//
+//
 // casper.then(function () {
    //  this.capture('shots/pageWrap.png', {
 	 //   top: 0,
