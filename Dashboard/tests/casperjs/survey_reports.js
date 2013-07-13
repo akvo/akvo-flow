@@ -69,26 +69,52 @@ casper.then(function () {
 	this.thenClick(ember_xpath('//*[@id="ember819"]/a'), function() {
 		console.log("Navigate to 'root.navData.index' Event");
 
-	this.waitFor(function check() {
     			return this.test.assertVisible(ember_xpath('//*[@id="ember2023"]/a'), 
     			'Ember.root NavdataIndex');	
-				}, function then() { 
-    				this.wait(8000);
+    				this.wait(50000);
 		            this.capture('screenshots/NavDataIndex.png');
-				});
+					});
+			
+});	
+
+casper.then(function () {
+	this.thenClick(ember_xpath('//*[@id="ember2041"]/a'), function () {
+		console.log("Navigate to Data Cleaning Tab");
+		this.capture('screenshots/DataCleaning.png', {
+			top: 0,
+			left: 0,
+			width: 1280,
+			height: 1024
 		});
 	});
+});
 
-//
-//
+casper.then(function () {
+		this.capture('screenshots/Step4.png', {
+			top: 0,
+			left: 0,
+			width: 1280,
+			height: 1024
+		});         
+});
 // casper.then(function () {
-   //  this.capture('shots/pageWrap.png', {
-	 //   top: 0,
-	  //  left: 0,
-	   //  width: 1280,
-	 //    height: 1024
-//	});
+  //   this.test.assertExists(ember_xpath('//*[@id="ember2029"]/a', 'Manage Attributes Exists'));
+	// this.click(ember_xpath('//*[@id="ember2029"]/a');
+   //  casper.capture('screenshots/NavDataIndex2.png');
+   //  });
 
+//
+
+// casper.then(function () {
+//   this.test.assertVisible(ember_xpath('//*[@id="surveyDataTable"]'));
+//   this.test.assertVisible(ember_xpath('//*[@id="surveyDataTable"]/thead/tr/th[3]'));
+//   return casper.capture('shots/pageWrap.png', {
+ //   top: 0,
+//   left: 0,
+	 //width: 1280,
+//    height: 1024
+//   });
+//});
 //
 //  Iterate through children that inherit dataSection Class from 
 
