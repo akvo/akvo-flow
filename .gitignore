@@ -37,6 +37,7 @@ UploadConstants.properties
 
 # Server paths
 GAE/appletbin
+GAE/bin
 GAE/build
 
 GAE/src/services/DataIssues.java
@@ -53,11 +54,11 @@ GAE/war/vendorjs
 GAE/war/WEB-INF/appengine-generated
 GAE/war/WEB-INF/classes
 GAE/war/WEB-INF/deploy
-GAE/war/WEB-INF/lib/appengine
-GAE/war/WEB-INF/lib/datanucleus
-GAE/war/WEB-INF/lib/geronimo
-GAE/war/WEB-INF/lib/jdo2-api
-GAE/war/WEB-INF/lib/jsr107
+GAE/war/WEB-INF/lib/appengine*.jar
+GAE/war/WEB-INF/lib/datanucleus*.jar
+GAE/war/WEB-INF/lib/geronimo*.jar
+GAE/war/WEB-INF/lib/jdo2-api*.jar
+GAE/war/WEB-INF/lib/jsr107*.jar
 
 # APK paths
 WFPMapping/device/debugcert
