@@ -66,12 +66,21 @@ casper.start(url, function() {
 
 
 casper.then(function () {
-	this.thenClick(ember_xpath('//*[@id="ember819"]/a'), function() {
+		this.test.assertVisible(ember_xpath('//*[@id="ember803"]/a'), 'Survey Tab Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember803"]/a'), 'Device Tab Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember803"]/a'), 'Data Tab Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember827"]/a'), 'Reports Tab Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember835"]/a'), 'Maps Tab Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember848"]/a'), 'Users Tab Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember861"]/a'), 'Messags Tab Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember3482"]/a'), 'Survey Menu Group Visible');
+
+		this.thenClick(ember_xpath('//*[@id="ember819"]/a'), function() {
 		console.log("Navigate to 'root.navData.index' Event");
     	this.test.assertVisible(ember_xpath('//*[@id="ember2023"]/a'), 'Ember.root NavdataIndex');	
 		console.error(this);
 		this.waitUntilVisible(
-			ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]'),
+	  	 	ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]'),
 			function then() {
 				casper.capture('screenshots/NavData-SurveyDataTable.png');
             }
@@ -99,27 +108,9 @@ casper.then(function () {
 					width: 1280,
 					height: 1024
 				});
-				this.wait(
-					10000,
-//				this.waitUntilVisible(
-//					ember_xpath('//*[contains(text(), "Select survey group")]'),
-					function then() {
-                		casper.capture('screenshots/NavData-DataCleaning2.png', {
-							top: 0,
-							left: 0,
-							width: 1280,
-							height: 1024
-						});
-						//	this.test.assertVisible(ember_xpath('//select/option/*[contains(text(), "Select survey group")]'), 'Select Survey Group Visible');
-						this.test.assertVisible(ember_xpath('//select'), 'A select box exists on the page.');
-						this.thenClick(ember_xpath('//select[0]'), function() {
-                		casper.capture('screenshots/NavData-DataCleaning3.png', {
-							top: 0,
-							left: 0,
-							width: 1280,
-							height: 1024
-						});
-						});
+				this.waitUntilVisible(
+					ember_xpath('//*[contains(text(), "Select survey group")]'), function then() {
+					   	this.test.assertVisible(ember_xpath('//select/option/*[contains(text(), "Select survey group")]'), 'Select Survey Group Visible');
 		   			 	this.test.assertVisible(ember_xpath('select/option//*[contains(., "Select survey group")]'), 'Select Survey Group Visible');
 						this.test.assertVisible(ember_xpath('select/option[1]'), 'Select with Option Visible');
 						this.test.assertVisible(ember_xpath('//*[@id="ember9917"]/a'), 'Select Survey Menu Visible');
@@ -132,9 +123,10 @@ casper.then(function () {
 		});
 	});
 });
+					   // this.thenClick(ember_xpath('//select/option[@value='1']'), function () {
+					   // console.log("Click Select Survey Drop");
 
-casper.then(function () {
-		});         
+					   //  });
 
 casper.then(function () {
 		console.log("Foo Bar");
