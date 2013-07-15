@@ -86,34 +86,55 @@ casper.then(function () {
 });	
 
 casper.then(function () {               
+
 	//*[@id="ember8278"]/a
-	this.thenClick(ember_xpath('//a[text()="Data cleaning"'), function () {
+	this.thenClick(ember_xpath('//a[.="Data cleaning"]'), function () {
 		console.log("Entering root.navData.dataCleaning");
-		this.test.assertVisible(ember_xpath('//*[@id="ember7576"]'), 'Select Survey Group Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember9917"]'), 'Select Survey Menu Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[1]/a'), 'Raw Data Report Button Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Rawe Data Import File Upload Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[2]/a'), 'Import Clean Data Button Visible');
 		this.waitUntilVisible(
-			ember_xpath('//*[@id="ember9535"]/div[2]/a'),
+			ember_xpath('//a[@class="standardBtn" and .=" Import clean data"]'),
 			function then() {
-				casper.capture('screenshots/NavData-DataCleaning.png', {
-				top: 0,
-				left: 0,
-				width: 1280,
-				height: 1024
-			});
+                casper.capture('screenshots/NavData-DataCleaning1.png', {
+					top: 0,
+					left: 0,
+					width: 1280,
+					height: 1024
+				});
+				this.wait(
+					10000,
+//				this.waitUntilVisible(
+//					ember_xpath('//*[contains(text(), "Select survey group")]'),
+					function then() {
+                		casper.capture('screenshots/NavData-DataCleaning2.png', {
+							top: 0,
+							left: 0,
+							width: 1280,
+							height: 1024
+						});
+						//	this.test.assertVisible(ember_xpath('//select/option/*[contains(text(), "Select survey group")]'), 'Select Survey Group Visible');
+						this.test.assertVisible(ember_xpath('//select'), 'A select box exists on the page.');
+						this.thenClick(ember_xpath('//select[0]'), function() {
+                		casper.capture('screenshots/NavData-DataCleaning3.png', {
+							top: 0,
+							left: 0,
+							width: 1280,
+							height: 1024
+						});
+						});
+		   			 	this.test.assertVisible(ember_xpath('select/option//*[contains(., "Select survey group")]'), 'Select Survey Group Visible');
+						this.test.assertVisible(ember_xpath('select/option[1]'), 'Select with Option Visible');
+						this.test.assertVisible(ember_xpath('//*[@id="ember9917"]/a'), 'Select Survey Menu Visible');
+						this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[1]/a'), 'Raw Data Report Button Visible');
+						this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Raw Data Import File Upload Visible');
+						this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[2]/a'), 'Import Clean Data Button Visible');
+				//*[@id="ember26276"]/option[1]
+					}
+				);
 		});
 	});
 });
+
 casper.then(function () {
-		this.capture('screenshots/Step4.png', {
-			top: 0,
-			left: 0,
-			width: 1280,
-			height: 1024
 		});         
-});
 
 casper.then(function () {
 		console.log("Foo Bar");
