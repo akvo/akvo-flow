@@ -68,27 +68,44 @@ casper.start(url, function() {
 casper.then(function () {
 	this.thenClick(ember_xpath('//*[@id="ember819"]/a'), function() {
 		console.log("Navigate to 'root.navData.index' Event");
+    	this.test.assertVisible(ember_xpath('//*[@id="ember2023"]/a'), 'Ember.root NavdataIndex');	
+		console.error(this);
+		this.waitUntilVisible(
+			ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]'),
+			function then() {
+				casper.capture('screenshots/NavData-SurveyDataTable.png');
+            }
+        );
 
-    			return this.test.assertVisible(ember_xpath('//*[@id="ember2023"]/a'), 
-    			'Ember.root NavdataIndex');	
-    				this.wait(50000);
-		            this.capture('screenshots/NavDataIndex.png');
-					});
-			
+			//// 
+			//function check() {
+			  //  return this.test.assertVisible(ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]');
+			  //   console.error(this);
+			  //   return this.visible(ember_xpath('//*[@id="surveyDataTable"]/tbody/tr'));
+		});
 });	
 
-casper.then(function () {
-	this.thenClick(ember_xpath('//*[@id="ember2041"]/a'), function () {
-		console.log("Navigate to Data Cleaning Tab");
-		this.capture('screenshots/DataCleaning.png', {
-			top: 0,
-			left: 0,
-			width: 1280,
-			height: 1024
+casper.then(function () {               
+	//*[@id="ember8278"]/a
+	this.thenClick(ember_xpath('//a[text()="Data cleaning"'), function () {
+		console.log("Entering root.navData.dataCleaning");
+		this.test.assertVisible(ember_xpath('//*[@id="ember7576"]'), 'Select Survey Group Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember9917"]'), 'Select Survey Menu Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[1]/a'), 'Raw Data Report Button Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Rawe Data Import File Upload Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[2]/a'), 'Import Clean Data Button Visible');
+		this.waitUntilVisible(
+			ember_xpath('//*[@id="ember9535"]/div[2]/a'),
+			function then() {
+				casper.capture('screenshots/NavData-DataCleaning.png', {
+				top: 0,
+				left: 0,
+				width: 1280,
+				height: 1024
+			});
 		});
 	});
 });
-
 casper.then(function () {
 		this.capture('screenshots/Step4.png', {
 			top: 0,
@@ -97,6 +114,11 @@ casper.then(function () {
 			height: 1024
 		});         
 });
+
+casper.then(function () {
+		console.log("Foo Bar");
+});
+
 // casper.then(function () {
   //   this.test.assertExists(ember_xpath('//*[@id="ember2029"]/a', 'Manage Attributes Exists'));
 	// this.click(ember_xpath('//*[@id="ember2029"]/a');
@@ -155,23 +177,23 @@ casper.then(function () {
 
 // Table Listing Test
 
-casper.then(function() {
-    this.body = this.evaluate(function() {
-        var rows = $('table#surveyDataTable.dataTable');
-        var listings = rows.eq(3).text();
-        var count = rows.eq(4).text();
-        return {
-            listings: listings,
-            count: count
-        };  
-    });
-	this.echo(data.body.listings); 
+//casper.then(function() {
+  //  this.body = this.evaluate(function() {
+   //     var rows = $('table#surveyDataTable.dataTable');
+    //    var listings = rows.eq(3).text();
+     //   var count = rows.eq(4).text();
+      //  return {
+       //     listings: listings,
+        //    count: count
+        // };  
+    // });
+   // this.echo(data.body.listings); 
 	// Select Akvo Group from DropDown Menu
-	this.evaluate(function() {
-	this.test.assertExists('//*[@id="ember21602"]', 'Dropdown is found');
-	return document.querySelector('//*[@id="ember21602"]').value = 12;
-	});
-});
+  //  this.evaluate(function() {
+	// this.test.assertExists('//*[@id="ember21602"]', 'Dropdown is found');
+	// return document.querySelector('//*[@id="ember21602"]').value = 12;
+   //  });
+// });
 
 
 casper.then(function() {
