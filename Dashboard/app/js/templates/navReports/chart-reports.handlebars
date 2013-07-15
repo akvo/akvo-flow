@@ -2,7 +2,7 @@
     {{#view FLOW.chartView}}
         <h1>{{t _chart_builder}}</h1>
         {{view Ember.Select 
-      contentBinding="FLOW.surveyGroupControl.content" 
+      contentBinding="FLOW.surveyGroupControl.arrangedContent"
       selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
       optionLabelPath="content.code" 
       optionValuePath="content.keyId"
@@ -10,7 +10,7 @@
       promptBinding="Ember.STRINGS._select_survey_group"}}
 		<span class=""></span>
       {{view Ember.Select 
-        contentBinding="FLOW.surveyControl.content" 
+        contentBinding="FLOW.surveyControl.arrangedContent"
         selectionBinding="FLOW.selectedControl.selectedSurvey" 
         optionLabelPath="content.name" 
         optionValuePath="content.keyId"
