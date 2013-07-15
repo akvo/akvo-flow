@@ -505,24 +505,26 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	// TODO update lastSurveyalInstanceId in surveydLocale objects
 	public void deleteSurveyInstance(SurveyInstance item) {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 		SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
 		QuestionDao qDao = new QuestionDao();
+		BaseDAO<SurveyalValue> svDao = new BaseDAO<SurveyalValue>(SurveyalValue.class);
 		Long surveyInstanceId = item.getKey().getId();
 
 		List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStore(
 				surveyInstanceId, null);
 
 		// to account for the slim change if we have two geo questions in one surveyInstance
-		Boolean SISCount_updated = false;
+		boolean sisCountUpdated = false;
 		if (qasList != null && qasList.size() > 0) {
 			// update the questionAnswerSummary counts
 			for (QuestionAnswerStore qasItem : qasList) {
 				
 				// if the questionAnswerStore item is the GEO type, try to update
 				// the surveyInstanceSummary
-				if (Question.Type.GEO.toString().equals(qasItem.getType()) && !SISCount_updated){
-					DataProcessorRestServlet.surveyInstanceSummarizer(surveyInstanceId, qasItem.getKey().getId(), new Integer(-1));
-					SISCount_updated = true;
+				if (Question.Type.GEO.toString().equals(qasItem.getType()) && !sisCountUpdated){
+					DataProcessorRestServlet.surveyInstanceSummarizer(surveyInstanceId, qasItem.getKey().getId(), -1);
+					sisCountUpdated = true;
 				}
 
 				// if the questionAnswerStore item belongs to an OPTION type,
@@ -535,8 +537,11 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 			// delete the questionAnswerStore objects in a single datastore
 			// operation
-			siDao.delete(qasList);
+			qasDao.delete(qasList);
 		}
+
+		// get the instances that have contributed to the Locale, for later use
+		List<SurveyInstance> instancesForLocale = siDao.listByProperty("surveyedLocaleId",item.getSurveyedLocaleId(),"Long");
 
 		// delete the surveyInstance
 		SurveyInstance instance = siDao.getByKey(item.getKey());
@@ -545,24 +550,25 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			List<Long> ids = new ArrayList<Long>();
 			ids.add(instance.getSurveyId());
 			SurveyUtils.notifyReportService(ids, "invalidate");
+
+			Long localeId = instance.getSurveyedLocaleId();
+
+			// now delete the surveyInstance
 			siDao.delete(instance);
-		}
 
-		// delete surveyalValue items
-		List<SurveyalValue> valsForInstance = localeDao
-				.listSurveyalValuesByInstance(surveyInstanceId);
-		if (valsForInstance != null && valsForInstance.size() > 0) {
-			Long localeId = valsForInstance.get(0).getSurveyedLocaleId();
-			List<SurveyalValue> valsForLocale = localeDao
-					.listValuesByLocale(localeId);
+			List<SurveyalValue> valsForInstance = localeDao
+				.listSurveyalValuesByInstance(instance.getKey().getId());
+			if (valsForInstance != null && valsForInstance.size() > 0) {
+				svDao.delete(valsForInstance);
+			}
 
-			// now see if there are any other values for the same locale
-			if (valsForLocale != null && valsForLocale.size() <= valsForInstance.size()) {
-				// if there are no other values, delete the locale
+			// if there is only one surveyInstance that has contributed to this Locale,
+			// we can delete the SurveyedLocale. The values should already have been deleted
+			// in the previous step.
+			if (instancesForLocale != null && instancesForLocale.size() == 1) {
 				SurveyedLocale l = localeDao.getByKey(localeId);
 				localeDao.delete(l);
 			}
-			localeDao.delete(valsForInstance);		
 		}
 	}
 

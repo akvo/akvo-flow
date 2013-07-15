@@ -177,8 +177,12 @@ FLOW.surveyControl = Ember.ArrayController.create({
     var sgId;
     if(FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
       sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-      this.set('publishedContent', FLOW.store.filter(FLOW.Survey, function(item) {
-        return item.get('surveyGroupId') == sgId && item.get('status') == 'PUBLISHED';
+      this.set('publishedContent', Ember.ArrayController.create({
+    	 sortProperties: this.get('sortProperties'),
+    	 sortAscending: this.get('sortAscending'),
+    	 content: FLOW.store.filter(FLOW.Survey, function(item) {
+    	        return item.get('surveyGroupId') == sgId && item.get('status') == 'PUBLISHED';
+         })
       }));
     } else {
       this.set('publishedContent', null);
@@ -323,7 +327,6 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
   setQGcontent: function() {
-	  var qId
     if(FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       var qId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
       this.set('content', FLOW.store.filter(FLOW.Question, function(item) {

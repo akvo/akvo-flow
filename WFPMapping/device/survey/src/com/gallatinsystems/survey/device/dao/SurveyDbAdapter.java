@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -179,8 +178,7 @@ public class SurveyDbAdapter {
 	static class DatabaseHelper extends SQLiteOpenHelper {
 
 		private static SQLiteDatabase database;
-		@SuppressLint("UseValueOf")
-		private static volatile Long LOCK_OBJ = new Long(1);
+		private static volatile Long LOCK_OBJ = 1L;
 		private volatile static int instanceCount = 0;
 		private Context context;
 

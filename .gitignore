@@ -10,7 +10,7 @@
 .project
 .settings
 
-# Generated and build output paths
+# Build config and output paths
 .gradle
 .gwt-log
 gwt-unitcache
@@ -32,12 +32,13 @@ Dashboard/tmp
 # Server config files
 *.jks
 appengine-web.xml
+build.properties
 UploadConstants.properties
 
 # Server paths
 GAE/appletbin
 GAE/build
-GAE/build.properties
+
 GAE/src/services/DataIssues.java
 
 GAE/war/admin
@@ -61,14 +62,17 @@ GAE/war/WEB-INF/lib/jsr107
 # APK paths
 WFPMapping/device/debugcert
 WFPMapping/device/survey/bin
-WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/BuildConfig.java
-WFPMapping/device/survey/gen/com/gallatinsystems/survey/device/R.java
+WFPMapping/device/survey/gen
 WFPMapping/device/survey/res/raw/survey.properties
 WFPMapping/device/survey_test/bin
 WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
 
 # Reports service
-reports/.lein-failures
-reports/.lein-repl-history
+reports/.lein*
 reports/bin
 reports/target
+
+# Clojure smoke tests
+tests/clojure/akvo-tests/.lein*
+tests/clojure/akvo-tests/bin
+tests/clojure/akvo-tests/target
