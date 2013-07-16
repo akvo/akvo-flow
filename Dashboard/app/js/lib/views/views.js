@@ -104,7 +104,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question;
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, 'stringValue').replace(/\|/g, ' | ');
+  answer = Ember.get(this, 'stringValue').replace(/\|/g, ' | '); // geo data
+  answer = answer.replace(/\//g, ' / '); // also split folder paths
 
   markup = '<div class="defListWrap"><dt>' +
     question + ':</dt><dd>' +
