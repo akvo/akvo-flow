@@ -213,4 +213,7 @@
 	<string name="addtestpoints">Add test points</string>
 	<string name="updateavail">Update Available</string>
 	<string name="clicktoinstall">Click to install</string>
+    
+	<!-- Action to identify the BroadcastReceiver, notifying new surveys have been downloaded -->
+	<string name="action_surveys_sync">fieldsurvey.ACTION_SURVEYS_SYNC</string>
 </resources>
