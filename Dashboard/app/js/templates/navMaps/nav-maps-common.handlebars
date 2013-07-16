@@ -33,9 +33,11 @@
           </li>
         </ul>
         <div {{bindAttr class=":imgContainer photoUrl:shown:hidden"}}>
-          <a {{bindAttr href="photoUrl"}} target="_blank">
-            <img {{bindAttr src="photoUrl"}} alt="">
-          </a>
+          {{#each photo in photoUrl}}
+            <a href="{{unbound photo}}" target="_blank">
+              <img src="{{unbound photo}}" alt=""/>
+            </a>
+          {{/each}}
         </div>
         <dl class="floats-in">
           {{#each content}}

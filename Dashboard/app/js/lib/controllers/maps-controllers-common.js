@@ -16,11 +16,8 @@ FLOW.placemarkController = Ember.ArrayController.create({
   },
 
   populateMap: function () {
-    var map;
-    
     if (this.content.get('isUpdating') === false) {
       this.clearOverlays();
-      map = this.get('map');
       this.get('content').forEach(function(placemark) {
         this.addMarker(placemark);
       }, this);
@@ -212,7 +209,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   }.observes('FLOW.placemarkController.selected'),
 
   photoUrl: function() {
-    var photoDetails, photoUrl, rawPhotoUrl;
+    var photoDetails, photoUrls = [], rawPhotoUrl;
 
     if(!this.get('content').get('isLoaded')) {
       return null;
@@ -227,12 +224,13 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
       return null;
     }
 
-    // We only care for the first image
-    rawPhotoUrl = photoDetails[0].get('stringValue');
-    // Since photos have a leading path from devices that we need to trim
-    photoUrl = FLOW.Env.photo_url_root + rawPhotoUrl.split('/').pop();
+    photoDetails.forEach(function (photo) {
+      rawPhotoUrl = photo.get('stringValue');
+      // Since photos have a leading path from devices that we need to trim
+      photoUrls.push(FLOW.Env.photo_url_root + rawPhotoUrl.split('/').pop());
+    });
 
-    return photoUrl;
+    return Ember.ArrayController.create({content: photoUrls});
   }.property('content.isLoaded')
 
 });
