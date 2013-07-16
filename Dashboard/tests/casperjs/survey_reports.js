@@ -11,6 +11,7 @@ logLevel: 'debug',
 	
 // Give waitForResource calls plenty of time to load.
 // waitTimeout: 50000,
+clientScripts: ["includes/jquery.min.js"],
 
 PageSettings: {
 	javascriptEnabled: true,
@@ -36,6 +37,7 @@ casper.on("page.error", function(msg, trace) {
 
 var url = 'http://akvoflowsandbox.appspot.com/admin/';
 var ember_xpath = require('casper').selectXPath;
+var ember_css = require('casper').selectCSS;
 
 // For taking username/password via CLI
 // if (system.args.length < 3) {
@@ -66,41 +68,46 @@ casper.start(url, function() {
 
 
 casper.then(function () {
-		this.test.assertVisible(ember_xpath('//*[@id="ember803"]/a'), 'Survey Tab Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember803"]/a'), 'Device Tab Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember803"]/a'), 'Data Tab Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember827"]/a'), 'Reports Tab Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember835"]/a'), 'Maps Tab Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember848"]/a'), 'Users Tab Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember861"]/a'), 'Messags Tab Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember3482"]/a'), 'Survey Menu Group Visible');
+		this.test.assertVisible('.navSurveys', 'Survey Tab Visible');
+		this.test.assertVisible('.navDevices', 'Device Tab Visible');
+		this.test.assertVisible('.navData', 'Data Tab Visible');
+		this.test.assertVisible('.navReports', 'Reports Tab Visible');
+		this.test.assertVisible('.navMaps', 'Maps Tab Visible');
+		this.test.assertVisible('.navUsers', 'Users Tab Visible');
+		this.test.assertVisible('.navMessages', 'Messags Tab Visible');
+		this.test.assertVisible('.menuGroup', 'Survey Menu Group Visible');
+		
+		// Add additional asserts for Survey MenuGroup
+});
 
-		this.thenClick(ember_xpath('//*[@id="ember819"]/a'), function() {
+casper.then(function() {
+		this.thenClick('.navData a', function() {
 		console.log("Navigate to 'root.navData.index' Event");
-    	this.test.assertVisible(ember_xpath('//*[@id="ember2023"]/a'), 'Ember.root NavdataIndex');	
-		console.error(this);
-		this.waitUntilVisible(
-	  	 	ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]'),
+    	this.waitUntilVisible('.tabNav li.active', 
+    		function then() {
+				this.test.assertMatch(this.fetchText('.tabNav li.active'), /\s*Inspect data\s*/);
+				});
+
+
+		this.waitUntilVisible('#surveyDataTable td.device',
+	  	 	// ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]'),
 			function then() {
 				casper.capture('screenshots/NavData-SurveyDataTable.png');
             }
         );
 
-			//// 
-			//function check() {
-			  //  return this.test.assertVisible(ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]');
-			  //   console.error(this);
-			  //   return this.visible(ember_xpath('//*[@id="surveyDataTable"]/tbody/tr'));
 		});
 });	
 
 casper.then(function () {               
+	this.test.assertSelectorHasText('a', 'Data cleaning');
 
-	//*[@id="ember8278"]/a
 	this.thenClick(ember_xpath('//a[.="Data cleaning"]'), function () {
 		console.log("Entering root.navData.dataCleaning");
-		this.waitUntilVisible(
-			ember_xpath('//a[@class="standardBtn" and .=" Import clean data"]'),
+
+		this.waitUntilVisible('select.ember-select', 
+
+			//ember_xpath('//a[@class="standardBtn" and .=" Import clean data"]'),
 			function then() {
                 casper.capture('screenshots/NavData-DataCleaning1.png', {
 					top: 0,
@@ -108,25 +115,33 @@ casper.then(function () {
 					width: 1280,
 					height: 1024
 				});
-				this.waitUntilVisible(
-					ember_xpath('//*[contains(text(), "Select survey group")]'), function then() {
-					   	this.test.assertVisible(ember_xpath('//select/option/*[contains(text(), "Select survey group")]'), 'Select Survey Group Visible');
-		   			 	this.test.assertVisible(ember_xpath('select/option//*[contains(., "Select survey group")]'), 'Select Survey Group Visible');
-						this.test.assertVisible(ember_xpath('select/option[1]'), 'Select with Option Visible');
-						this.test.assertVisible(ember_xpath('//*[@id="ember9917"]/a'), 'Select Survey Menu Visible');
-						this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[1]/a'), 'Raw Data Report Button Visible');
-						this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Raw Data Import File Upload Visible');
-						this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[2]/a'), 'Import Clean Data Button Visible');
-				//*[@id="ember26276"]/option[1]
-					}
-				);
+			});
 		});
+	
+	this.waitForText("Select survey group", function then() {
+		this.test.assertVisible('select.ember-select');
+		// this.test.assertVisible(ember_xpatch('//*[contains(text(), "Select survey group")]'), 'Select Survey Group Visible');
+		this.test.assertSelectorHasText('select.ember-select option', "Select survey group");
 	});
 });
-					   // this.thenClick(ember_xpath('//select/option[@value='1']'), function () {
-					   // console.log("Click Select Survey Drop");
 
-					   //  });
+casper.then(function () {
+
+		this.evaluate( function() {
+		 		$('select.ember-select option').each(function(index, option) {
+   	 			if ($(this).text() == "IPE Test") {
+		 				$(this).click(); 
+				}
+				});
+  	});
+
+		this.test.assertVisible(ember_xpath('select/option[1]'), 'Select with Option Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember9917"]/a'), 'Select Survey Menu Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[1]/a'), 'Raw Data Report Button Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Raw Data Import File Upload Visible');
+		this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[2]/a'), 'Import Clean Data Button Visible');
+				//*[@id="ember26276"]/option[1]
+		});
 
 casper.then(function () {
 		console.log("Foo Bar");
