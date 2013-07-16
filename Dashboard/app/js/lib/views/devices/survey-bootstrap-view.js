@@ -14,7 +14,7 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
 
   selectAllSurveys: function () {
     var selected = Ember.A([]);
-    FLOW.surveyControl.get('content').forEach(function(item) {
+    FLOW.surveyControl.get('content').forEach(function (item) {
       selected.pushObject(item);
     });
     FLOW.selectedControl.set('selectedSurveys', selected);
@@ -24,10 +24,10 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
     FLOW.selectedControl.set('selectedSurveys', []);
   },
 
-  addSelectedSurveys: function() {
+  addSelectedSurveys: function () {
     var sgName = FLOW.selectedControl.selectedSurveyGroup.get('code');
 
-    FLOW.selectedControl.get('selectedSurveys').forEach(function(item) {
+    FLOW.selectedControl.get('selectedSurveys').forEach(function (item) {
       item.set('surveyGroupName', sgName);
     });
 
@@ -36,19 +36,19 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
     this.set('surveysPreview', FLOW.ArrNoDupe(this.get('surveysPreview')));
   },
 
-  removeSingleSurvey: function(event) {
+  removeSingleSurvey: function (event) {
     var id, surveysPreview, i;
     id = event.context.get('clientId');
     surveysPreview = this.get('surveysPreview');
-    for(i = 0; i < surveysPreview.length; i++) {
-      if(surveysPreview.objectAt(i).clientId == id) {
+    for (i = 0; i < surveysPreview.length; i++) {
+      if (surveysPreview.objectAt(i).clientId == id) {
         surveysPreview.removeAt(i);
       }
     }
     this.set('surveysPreview', surveysPreview);
   },
 
-  removeAllSurveys: function() {
+  removeAllSurveys: function () {
     this.set('surveysPreview', Ember.A([]));
   },
 
@@ -60,12 +60,12 @@ FLOW.SurveyBootstrap = FLOW.View.extend({
       return;
     }
 
-    if(this.get('includeDBInstructions') && this.get('dbInstructions') === '') {
+    if (this.get('includeDBInstructions') && this.get('dbInstructions') === '') {
       this.showMessage(Ember.String.loc('_missing_db_instructions'));
       return;
     }
 
-    if(!this.get('notificationEmail')) {
+    if (!this.get('notificationEmail')) {
       this.showMessage(Ember.String.loc('_notification_email_required'));
       return;
     }

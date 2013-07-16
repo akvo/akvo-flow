@@ -43,6 +43,8 @@ import com.gallatinsystems.survey.device.util.ArrayPreferenceUtil;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StringUtil;
+import com.gallatinsystems.survey.device.util.LangsPreferenceData;
+import com.gallatinsystems.survey.device.util.LangsPreferenceUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
 /**
@@ -71,8 +73,12 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 	private TextView identTextView;
 	private TextView radiusTextView;
 	private SurveyDbAdapter database;
-	private String[] languageArray;
-	private boolean[] selectedLanguages;
+
+	private LangsPreferenceData langsPrefData;
+	private String[] langsSelectedNameArray;
+	private boolean[] langsSelectedBooleanArray;
+	private int[] langsSelectedMasterIndexArray;
+
 	private String[] precacheCountryArray;
 	private boolean[] selectedPrecacheCountries;
 	private String[] uploadArray;
@@ -147,13 +153,14 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 		if (val != null) {
 			uploadOptionTextView.setText(uploadArray[Integer.parseInt(val)]);
 		}
+
 		val = settings.get(ConstantUtil.SURVEY_LANG_SETTING_KEY);
-		ArrayPreferenceData langs = ArrayPreferenceUtil.loadArray(this, val,
-				R.array.languages);
-		languageArray = langs.getItems();
-		selectedLanguages = langs.getSelectedItems();
+		String langsPresentIndexes = settings.get(ConstantUtil.SURVEY_LANG_PRESENT_KEY);
+		langsPrefData = LangsPreferenceUtil.createLangPrefData(this, val, langsPresentIndexes);
+
 		languageTextView.setText(ArrayPreferenceUtil.formSelectedItemString(
-				languageArray, selectedLanguages));
+				langsPrefData.getLangsSelectedNameArray(), langsPrefData.getLangsSelectedBooleanArray()));
+
 
 		val = settings.get(ConstantUtil.PRECACHE_POINT_COUNTRY_KEY);
 		ArrayPreferenceData precacheCountries = ArrayPreferenceUtil.loadArray(
@@ -290,16 +297,22 @@ public class PreferencesActivity extends Activity implements OnClickListener,
 					uploadArray[ConstantUtil.UPLOAD_DATA_ALLWAYS_IDX],
 					ConstantUtil.DATA_AVAILABLE_INTENT);
 		} else if (R.id.surveylangbutton == v.getId()) {
-			ViewUtil.displayLanguageSelector(this, selectedLanguages,
+
+			langsSelectedNameArray = langsPrefData.getLangsSelectedNameArray();
+			langsSelectedBooleanArray = langsPrefData.getLangsSelectedBooleanArray();
+			langsSelectedMasterIndexArray = langsPrefData.getLangsSelectedMasterIndexArray();
+
+			ViewUtil.displayLanguageSelector(this, langsSelectedNameArray, langsSelectedBooleanArray,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int clicked) {
 							database.savePreference(
 									ConstantUtil.SURVEY_LANG_SETTING_KEY,
-									ArrayPreferenceUtil
-											.formPreferenceString(selectedLanguages));
+									LangsPreferenceUtil
+											.formLangPreferenceString(langsSelectedBooleanArray, langsSelectedMasterIndexArray));
+
 							languageTextView.setText(ArrayPreferenceUtil
-									.formSelectedItemString(languageArray,
-											selectedLanguages));
+									.formSelectedItemString(langsSelectedNameArray,
+											langsSelectedBooleanArray));
 							if(dialog!=null){
 								dialog.dismiss();
 							}

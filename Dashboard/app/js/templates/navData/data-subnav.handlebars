@@ -1,10 +1,12 @@
 <ul>
     {{#view view.NavItemView item="inspectData" }}
     <a {{action doInspectData}}>{{t _inspect_data}}</a>
-    {{/view}} 
-    {{#view view.NavItemView item="manageAttributes" }}
-    <a {{action doManageAttributes}}>{{t _manage_attributes}}</a>
-    {{/view}} 
+    {{/view}}
+    {{#if view.undef}}
+      {{#view view.NavItemView item="manageAttributes" }}
+        <a {{action doManageAttributes}}>{{t _manage_attributes}}</a>
+      {{/view}}
+    {{/if}}
     {{#view view.NavItemView item="bulkUpload" }}
     <a {{action doBulkUpload}}>{{t _bulk_upload_data}}</a>
     {{/view}} 

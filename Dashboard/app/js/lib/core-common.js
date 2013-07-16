@@ -7,7 +7,7 @@ window.FLOW = Ember.Application.create({
 
 /* Generic FLOW view that also handles lanague rerenders*/
 FLOW.View = Ember.View.extend({
-  onLanguageChange: function() {
+  onLanguageChange: function () {
     this.rerender();
   }.observes('FLOW.dashboardLanguageControl.dashboardLanguage')
 });
