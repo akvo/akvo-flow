@@ -157,7 +157,7 @@ public class ValidationRule {
 			if (allowDecimal) {
 				val = num.toString();
 			} else {
-				val = "" + num.intValue();
+				val = "" + num.longValue();
 			}
 		}
 		return val;
