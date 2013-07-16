@@ -87,6 +87,8 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
 
 
 FLOW.Question = FLOW.BaseModel.extend({
+  questionOptions: DS.hasMany('FLOW.QuestionOption'),
+  questionOptionList: null,
   allowDecimal: DS.attr('boolean', {
     defaultValue: false
   }),
@@ -122,7 +124,6 @@ FLOW.Question = FLOW.BaseModel.extend({
   minVal: DS.attr('number',{
     defaultValue: null
   }),
-  optionList: DS.attr('string'),
   order: DS.attr('number'),
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
@@ -137,6 +138,8 @@ FLOW.Question = FLOW.BaseModel.extend({
 
 
 FLOW.QuestionOption = FLOW.BaseModel.extend({
+  question: DS.belongsTo('FLOW.Question'),
+  order: DS.attr('number'),
   questionId: DS.attr('number'),
   text: DS.attr('string')
 });
@@ -297,6 +300,40 @@ FLOW.Message = FLOW.BaseModel.extend({
 });
 
 FLOW.Action = FLOW.BaseModel.extend({});
+
+FLOW.Translation = FLOW.BaseModel.extend({
+  didUpdate: function(){
+    console.log('didUpdate',this.get('keyId'));
+    FLOW.translationControl.putSingleTranslationInList(this.get('parentType'),this.get('parentId'),this.get('text'),this.get('keyId'), false);
+  },
+
+  // can't use this at the moment, as the didCreate is fired before the id is back from the ajax call
+  // didCreate: function(){
+  //   console.log('didCreate',this.get('keyId'));
+  //   FLOW.translationControl.putSingleTranslationInList(this.get('parentType'),this.get('parentId'),this.get('text'),this.get('keyId'), false);
+  // },
+
+  // temporary hack to fire the didCreate event after the keyId is known
+  didCreateId: function(){
+    if (!Ember.none(this.get('keyId')) && this.get('keyId') > 0) {
+      console.log('didCreate',this.get('keyId'));
+      FLOW.translationControl.putSingleTranslationInList(this.get('parentType'),this.get('parentId'),this.get('text'),this.get('keyId'), false);
+    }
+  }.observes('this.keyId'),
+
+  didDelete: function(){
+    console.log('didDelete',this.get('keyId'));
+    console.log('value:',this.get('text'));
+    
+    FLOW.translationControl.putSingleTranslationInList(this.get('parentType'),this.get('parentId'), null, null, true);
+  },
+
+  parentType: DS.attr('string'),
+  parentId: DS.attr('string'),
+  surveyId: DS.attr('string'),
+  text: DS.attr('string'),
+  langCode: DS.attr('string')
+});
 
 
 FLOW.NotificationSubscription = FLOW.BaseModel.extend({

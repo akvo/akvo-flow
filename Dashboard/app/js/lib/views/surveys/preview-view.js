@@ -37,7 +37,7 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
   longitude:null,
 
   init: function() {
-    var opList, opListArray, i, sizeList;
+    var opList, opListArray, i, sizeList, qId,tempList;
     this._super();
 
     this.set('isTextType',this.content.get('type') == 'FREE_TEXT');
@@ -50,18 +50,25 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
     this.set('isDateType',this.content.get('type') == 'DATE');
 
     // fill option list
-    if(this.isOptionType && this.content.get('optionList') !== null) {
-      this.set('optionsList',[]);
-      opList = this.content.get('optionList');
-      opListArray = opList.split('\n');
-      sizeList = opListArray.length;
+    if(this.isOptionType) {
+      qId = this.content.get('keyId');
+      options = FLOW.store.filter(FLOW.QuestionOption,function(item){
+          return item.get('questionId') == qId;
+        });
 
-      for(i = 0; i < sizeList; i++) {
-        this.get('optionsList').push(Ember.Object.create({
+      optionArray = options.toArray();
+      optionArray.sort(function(a, b) {
+          return(a.order >= b.order);
+        });
+
+      tempList = [];
+      optionArray.forEach(function(item){
+       tempList.push(Ember.Object.create({
           isSelected: false,
-          value: opListArray[i]
+          value: item.get('text')
         }));
-      }
+      });
+      this.set('optionsList',tempList);
     }
   },
 

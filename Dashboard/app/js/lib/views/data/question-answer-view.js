@@ -28,7 +28,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     this.doInit();
   },
 
-doInit: function() {
+  doInit: function() {
     var q, questionId, type;
 
     // TODO use filter instead: if the question is not yet there, don't do anything
@@ -65,19 +65,25 @@ doInit: function() {
       date = new Date(parseInt(this.content.get('value'),10));
       this.set('date',formatDate(date));
     }
-    // fill option list
-    if(this.get('isOptionType') && !Ember.none(q.get('optionList'))) {
-      this.set('optionsList', []);
-      opList = q.get('optionList');
-      opListArray = opList.split('\n');
-      sizeList = opListArray.length;
+    if(this.get('isOptionType') && !Ember.none(this.content.get('value'))) {
+      options = FLOW.store.filter(FLOW.QuestionOption,function(item){
+          return item.get('questionId') == questionId;
+        });
 
-      for(i = 0; i < sizeList; i++) {
-        this.get('optionsList').push(Ember.Object.create({
+      optionArray = options.toArray();
+      optionArray.sort(function(a, b) {
+          return(a.order >= b.order);
+        });
+
+      tempList = [];
+      optionArray.forEach(function(item){
+       tempList.push(Ember.Object.create({
           isSelected: false,
-          value: opListArray[i]
+          value: item.get('text')
         }));
-      }
+      });
+      this.set('optionsList',tempList);
+
       // set answer
       qaValue = this.content.get('value');
       this.get('optionsList').forEach(function(item) {

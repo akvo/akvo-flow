@@ -6,6 +6,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   beginDate: null,
   endDate: null,
   since: null,
+  alreadyLoaded:[],
   showEditSurveyInstanceWindowBool: false,
   selectedSurveyInstanceId: null,
   selectedSurveyInstanceNum: null,
@@ -47,6 +48,8 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     }
 
     this.set('since', FLOW.metaControl.get('since'));
+    // if we have selected a survey, preload the questions as we'll need them
+    // the questions are also loaded once the surveyInstances come in.
     if(FLOW.selectedControl.get('selectedSurvey')) {
       FLOW.questionControl.populateAllQuestions(FLOW.selectedControl.selectedSurvey.get('keyId'));
     }
@@ -91,11 +94,25 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     this.set('siString', si.get('surveyCode') + "/" + si.get('keyId') + "/" + si.get('submitterName'));
   },
 
+  downloadQuestionsIfNeeded:function(){
+    var si, surveyId;
+    si = FLOW.store.find(FLOW.SurveyInstance, this.get('selectedSurveyInstanceId'));
+    if (!Ember.none(si)){
+      surveyId = si.get('surveyId');
+      // if we haven't loaded the questions of this survey yet, do so.
+      if (this.get('alreadyLoaded').indexOf(surveyId) == -1){
+        FLOW.questionControl.doSurveyIdQuery(surveyId);
+        this.get('alreadyLoaded').push(surveyId);
+      }
+    }
+  },
+
   // Survey instance edit popup window
   // TODO solve when popup is open, no new surveyIdQuery is done
   showEditSurveyInstanceWindow: function(event) {
     FLOW.questionAnswerControl.doQuestionAnswerQuery(event.context.get('keyId'));
     FLOW.questionControl.doSurveyIdQuery(event.context.get('surveyId'));
+    this.get('alreadyLoaded').push(event.context.get('surveyId'));
     this.set('selectedSurveyInstanceId', event.context.get('keyId'));
     this.set('selectedSurveyInstanceNum', event.context.clientId);
     this.set('showEditSurveyInstanceWindowBool', true);
@@ -107,7 +124,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   },
 
   doPreviousSI: function(event) {
-    var currentSIList, SIindex, nextItem, filtered, nextSIkeyId;
+    var currentSIList, SIindex, nextItem, filtered, nextSIkeyId, si;
     currentSIList = FLOW.surveyInstanceControl.content.get('content');
     SIindex = currentSIList.indexOf(this.get('selectedSurveyInstanceNum'));
 
@@ -126,6 +143,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       this.set('selectedSurveyInstanceId', nextSIkeyId);
       this.set('selectedSurveyInstanceNum', nextItem);
       this.createSurveyInstanceString();
+      this.downloadQuestionsIfNeeded();
       FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSIkeyId);
     }
   },
@@ -152,6 +170,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
       this.set('selectedSurveyInstanceId', nextSIkeyId);
       this.set('selectedSurveyInstanceNum', nextItem);
       this.createSurveyInstanceString();
+      this.downloadQuestionsIfNeeded();
       FLOW.questionAnswerControl.doQuestionAnswerQuery(nextSIkeyId);
     }
   },

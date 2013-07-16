@@ -20,8 +20,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 			}
 		});
 		this.set('surveyPointType', pointType);
-
-		FLOW.languageControl.get('content').forEach(function(item) {
+		FLOW.translationControl.get('isoLangs').forEach(function(item) {
 			if(item.get('value') == FLOW.selectedControl.selectedSurvey.get('defaultLanguageCode')) {
 				language = item;
 			}

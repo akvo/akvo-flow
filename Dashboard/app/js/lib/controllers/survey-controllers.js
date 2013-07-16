@@ -334,7 +334,7 @@ FLOW.questionControl = Ember.ArrayController.create({
       }));
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
-   
+
   setOPTIONcontent: function() {
     var sId;
     if(FLOW.selectedControl.get('selectedSurvey')) {
@@ -404,7 +404,6 @@ FLOW.notificationControl = Ember.ArrayController.create({
   sortAscending: true,
 
   populate: function() {
-    console.log('populate');
     var id;
     if(FLOW.selectedControl.get('selectedSurvey')) {
       id = FLOW.selectedControl.selectedSurvey.get('keyId');

@@ -5,6 +5,7 @@
 // the application and initialized.
 require('akvo-flow/core-common');
 require('akvo-flow/flowenv');
+require('akvo-flow/controllers/languages');
 require('akvo-flow/currentuser');
 require('akvo-flow/controllers/permissions');
 require('akvo-flow/controllers/general-controllers-common');
@@ -53,3 +54,4 @@ FLOW.NavMapsController = Ember.Controller.extend();
 FLOW.NavUsersController = Ember.Controller.extend();
 FLOW.NavMessagesController = Ember.Controller.extend();
 FLOW.NavAdminController = Ember.Controller.extend();
+

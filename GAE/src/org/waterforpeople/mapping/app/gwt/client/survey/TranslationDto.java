@@ -31,6 +31,7 @@ public class TranslationDto extends BaseDto {
 	private String text;
 	private Long parentId;
 	private String parentType;
+	private Long surveyId;
 
 	public String getLangCode() {
 		return langCode;
@@ -62,6 +63,14 @@ public class TranslationDto extends BaseDto {
 
 	public void setParentType(String parentType) {
 		this.parentType = parentType;
+	}
+
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
 	}
 
 }

@@ -6,6 +6,7 @@
 require('akvo-flow/core-common');
 require('akvo-flow/views/surveys/preview-view');
 require('akvo-flow/views/surveys/notifications-view');
+require('akvo-flow/views/surveys/translations-view');
 require('akvo-flow/views/surveys/survey-group-views');
 require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/data/inspect-data-table-views');
@@ -77,6 +78,14 @@ Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
     return i18nKey;
   }
   return i18nValue;
+});
+
+Ember.Handlebars.registerHelper('newLines', function(text) {
+  var answer = "";
+  if (!Ember.none(Ember.get(this,text))){
+    answer = Ember.get(this, text).replace(/\n/g, '<br/>');
+  }
+  return new Handlebars.SafeString(answer);
 });
 
 
@@ -441,6 +450,10 @@ FLOW.NavSurveysEditView = Ember.View.extend({
 
 FLOW.ManageNotificationsView = Ember.View.extend({
   templateName: 'navSurveys/manage-notifications'
+});
+
+FLOW.ManageTranslationsView = Ember.View.extend({
+  templateName: 'navSurveys/manage-translations'
 });
 
 FLOW.EditQuestionsView = Ember.View.extend({
