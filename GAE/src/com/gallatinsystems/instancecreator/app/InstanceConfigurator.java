@@ -173,28 +173,32 @@ public class InstanceConfigurator {
 
 	private static void checkUsage(String[] args) {
 		if (args.length != 16) {
-			System.out
-					.println("Bad command line arguments. Usage:\n\t java com.gallatinsystems.instancecreator.app.InstanceConfigurator <awsSecretKey> <awsIdentifier> <instanceName> <s3Bucket> <directories> <s3policyFileTemplateName> <signingKey> <dataUploadUrl> <serverBase> <storepass> <keypass> <alias> <reportsEmailAddress> <scoreAPFlag> <organization> <localLocation> <keystore> <mapsApiKey> <restApiKey>");
+			System.out.println("Invalid command line arguments.\n\t" +
+				               "Usage:\n\t java com.gallatinsystems.instancecreator.app.InstanceConfigurator " +
+							   "<awsSecretKey> <awsIdentifier> <instanceName> <directories> <s3policyFileTemplateName> " +
+							   "<signingKey> <storepass> <keypass> <alias> <reportsEmailAddress> <scoreAPFlag> " +
+							   "<organization> <localLocation> <keystore> <mapsApiKey> <restApiKey>");
 			System.exit(1);
 		}
 	}
 
 	private void writeFile(String location, String name, String contents)
 			throws IOException {
-		File file = new File(location + System.getProperty("file.separator")
-				+ name);
+		String filePath = location + System.getProperty("file.separator") + name;
+		File file = new File(filePath);
+
 		if (file.exists()) {
 			if (file.delete()) {
 				file.createNewFile();
 			}
 		}
+
 		Writer output = new BufferedWriter(new FileWriter(file));
 		try {
 			output.write(contents);
 		} finally {
 			output.close();
 		}
-
 	}
 
 	private String createLocalDeployDir(String dir, String instanceName) {

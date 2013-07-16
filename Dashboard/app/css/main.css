@@ -2558,18 +2558,17 @@ div.drawHandle.hideMapD { }
 div.drawHandle.showMapD { }
 #pointDetails .imgContainer {
 	position: relative;
-	overflow: hidden;
 	margin: 10px 5px 10px 1px;
 	padding: 1px;
-	width: 62px;
-	height: 62px;
-	border: 1px solid rgb(214,214,214);
 }
 #pointDetails .imgContainer a {
 	position: relative;
 	display: block;
-	width: 100%;
-	height: 100%;
+	width: 62px;
+	padding: 2px;
+	margin: 2px;
+	float: left;
+	border: 1px solid rgb(214,214,214);
 }
 #pointDetails .imgContainer img { }
 #flowMapLegend {
