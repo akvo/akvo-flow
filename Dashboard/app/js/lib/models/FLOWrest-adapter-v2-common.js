@@ -146,8 +146,5 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         this.didCreateRecords(store, type, records, json);
       }
     });
-  },
-
-
-
+  }
 });
