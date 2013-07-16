@@ -1,117 +1,124 @@
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
-  Ember.Object.create({
-    label: Ember.String.loc('_free_text'),
-    value: 'FREE_TEXT'
-  }), Ember.Object.create({
-    label: Ember.String.loc('_option'),
-    value: 'OPTION'
-  }), Ember.Object.create({
-    label: Ember.String.loc('_number'),
-    value: 'NUMBER'
-  }), Ember.Object.create({
-    label: Ember.String.loc('_gelocation'),
-    value: 'GEO'
-  }), Ember.Object.create({
-    label: Ember.String.loc('_photo'),
-    value: 'PHOTO'
-  }), Ember.Object.create({
-    label: Ember.String.loc('_video'),
-    value: 'VIDEO'
-  }), Ember.Object.create({
-    label: Ember.String.loc('_date'),
-    value: 'DATE'
-  }), Ember.Object.create({
-    label: Ember.String.loc('_barcode'),
-    value: 'SCAN'
-  })]
+    Ember.Object.create({
+      label: Ember.String.loc('_free_text'),
+      value: 'FREE_TEXT'
+    }), Ember.Object.create({
+      label: Ember.String.loc('_option'),
+      value: 'OPTION'
+    }), Ember.Object.create({
+      label: Ember.String.loc('_number'),
+      value: 'NUMBER'
+    }), Ember.Object.create({
+      label: Ember.String.loc('_gelocation'),
+      value: 'GEO'
+    }), Ember.Object.create({
+      label: Ember.String.loc('_photo'),
+      value: 'PHOTO'
+    }), Ember.Object.create({
+      label: Ember.String.loc('_video'),
+      value: 'VIDEO'
+    }), Ember.Object.create({
+      label: Ember.String.loc('_date'),
+      value: 'DATE'
+    }), Ember.Object.create({
+      label: Ember.String.loc('_barcode'),
+      value: 'SCAN'
+    })
+  ]
 });
 
 FLOW.notificationOptionControl = Ember.Object.create({
   content: [
-  Ember.Object.create({
-    label: "link",
-    value: "LINK"
-  }), Ember.Object.create({
-    label: "attachment",
-    value: "ATTACHMENT"
-  })]
+    Ember.Object.create({
+      label: "link",
+      value: "LINK"
+    }), Ember.Object.create({
+      label: "attachment",
+      value: "ATTACHMENT"
+    })
+  ]
 });
 
 FLOW.notificationTypeControl = Ember.Object.create({
   content: [
-  Ember.Object.create({
-    label: "email",
-    value: "EMAIL"
-  })]
+    Ember.Object.create({
+      label: "email",
+      value: "EMAIL"
+    })
+  ]
 });
 
 FLOW.notificationEventControl = Ember.Object.create({
   content: [
-  Ember.Object.create({
-    label: "Raw data reports (nightly)",
-    value: "rawDataReport"
-  }), Ember.Object.create({
-    label: "Survey submission",
-    value: "surveySubmission"
-  }), Ember.Object.create({
-    label: "Survey approval",
-    value: "surveyApproval"
-  })]
+    Ember.Object.create({
+      label: "Raw data reports (nightly)",
+      value: "rawDataReport"
+    }), Ember.Object.create({
+      label: "Survey submission",
+      value: "surveySubmission"
+    }), Ember.Object.create({
+      label: "Survey approval",
+      value: "surveyApproval"
+    })
+  ]
 });
 
 FLOW.languageControl = Ember.Object.create({
   content: [
-  Ember.Object.create({
-    label: "English",
-    value: "en"
-  }), Ember.Object.create({
-    label: "Español",
-    value: "es"
-  }), Ember.Object.create({
-    label: "Français",
-    value: "fr"
-  })]
+    Ember.Object.create({
+      label: "English",
+      value: "en"
+    }), Ember.Object.create({
+      label: "Español",
+      value: "es"
+    }), Ember.Object.create({
+      label: "Français",
+      value: "fr"
+    })
+  ]
 });
 
 FLOW.surveyPointTypeControl = Ember.Object.create({
   content: [
-  Ember.Object.create({
-    label: "Point",
-    value: "Point"
-  }), Ember.Object.create({
-    label: "Household",
-    value: "Household"
-  }), Ember.Object.create({
-    label: "Public institution",
-    value: "PublicInstitution"
-  })]
+    Ember.Object.create({
+      label: "Point",
+      value: "Point"
+    }), Ember.Object.create({
+      label: "Household",
+      value: "Household"
+    }), Ember.Object.create({
+      label: "Public institution",
+      value: "PublicInstitution"
+    })
+  ]
 });
 
 FLOW.surveySectorTypeControl = Ember.Object.create({
   content: [
-  Ember.Object.create({
-    label: "Water and Sanitation",
-    value: "WASH"
-  }), Ember.Object.create({
-    label: "Education",
-    value: "EDUC"
-  }), Ember.Object.create({
-    label: "Economic development",
-    value: "ECONDEV"
-  }), Ember.Object.create({
-    label: "Health care",
-    value: "HEALTH"
-  }), Ember.Object.create({
-    label: "IT and Communication",
-    value: "ICT"
-  }), Ember.Object.create({
-    label: "Food security",
-    value: "FOODSEC"
-  }), Ember.Object.create({
-    label: "Other",
-    value: "OTHER"
-  })]
+    Ember.Object.create({
+      label: "Water and Sanitation",
+      value: "WASH"
+    }), Ember.Object.create({
+      label: "Education",
+      value: "EDUC"
+    }), Ember.Object.create({
+      label: "Economic development",
+      value: "ECONDEV"
+    }), Ember.Object.create({
+      label: "Health care",
+      value: "HEALTH"
+    }), Ember.Object.create({
+      label: "IT and Communication",
+      value: "ICT"
+    }), Ember.Object.create({
+      label: "Food security",
+      value: "FOODSEC"
+    }), Ember.Object.create({
+      label: "Other",
+      value: "OTHER"
+    })
+  ]
 });
 
 
@@ -120,32 +127,32 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
-  setFilteredContent: function() {
-    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function(item) {
+  setFilteredContent: function () {
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function (item) {
       return true;
     }));
   },
 
   // load all Survey Groups
-  populate: function() {
+  populate: function () {
     FLOW.store.find(FLOW.SurveyGroup);
     this.setFilteredContent();
   },
 
   // checks if data store contains surveys within this survey group.
   // this is also checked server side.
-  containsSurveys: function() {
+  containsSurveys: function () {
     var surveys, sgId;
-    surveys = FLOW.store.filter(FLOW.Survey, function(data) {
+    surveys = FLOW.store.filter(FLOW.Survey, function (data) {
       sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
-      if(data.get('surveyGroupId') == sgId) {
+      if (data.get('surveyGroupId') == sgId) {
         return true;
       }
     });
     return surveys.get('content').length > 0;
   },
 
-  deleteSurveyGroup: function(keyId){
+  deleteSurveyGroup: function (keyId) {
     var surveyGroup;
     surveyGroup = FLOW.store.find(FLOW.SurveyGroup, keyId);
     surveyGroup.deleteRecord();
@@ -161,11 +168,11 @@ FLOW.surveyControl = Ember.ArrayController.create({
   sortProperties: ['name'],
   sortAscending: true,
 
-  setFilteredContent: function() {
+  setFilteredContent: function () {
     var sgId;
-    if(FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
+    if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
       sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-      this.set('content', FLOW.store.filter(FLOW.Survey, function(item) {
+      this.set('content', FLOW.store.filter(FLOW.Survey, function (item) {
         return item.get('surveyGroupId') == sgId;
       }));
     } else {
@@ -173,25 +180,25 @@ FLOW.surveyControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
-  setPublishedContent: function() {
+  setPublishedContent: function () {
     var sgId;
-    if(FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
+    if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
       sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       this.set('publishedContent', Ember.ArrayController.create({
-    	 sortProperties: this.get('sortProperties'),
-    	 sortAscending: this.get('sortAscending'),
-    	 content: FLOW.store.filter(FLOW.Survey, function(item) {
-    	        return item.get('surveyGroupId') == sgId && item.get('status') == 'PUBLISHED';
-         })
+        sortProperties: this.get('sortProperties'),
+        sortAscending: this.get('sortAscending'),
+        content: FLOW.store.filter(FLOW.Survey, function (item) {
+          return item.get('surveyGroupId') == sgId && item.get('status') == 'PUBLISHED';
+        })
       }));
     } else {
       this.set('publishedContent', null);
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
-  populate: function() {
+  populate: function () {
     var id;
-    if(FLOW.selectedControl.get('selectedSurveyGroup')) {
+    if (FLOW.selectedControl.get('selectedSurveyGroup')) {
       id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       // this content is actualy not used, the data ends up in the store
       // and is accessed through the filtered content above
@@ -201,7 +208,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
-  publishSurvey: function() {
+  publishSurvey: function () {
     var surveyId;
     surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
     FLOW.store.findQuery(FLOW.Action, {
@@ -210,7 +217,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     });
   },
 
-  deleteSurvey: function(keyId){
+  deleteSurvey: function (keyId) {
     var survey;
     survey = FLOW.store.find(FLOW.Survey, keyId);
     survey.deleteRecord();
@@ -224,12 +231,12 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
-  setFilteredContent: function() {
+  setFilteredContent: function () {
     var sId;
-    if(FLOW.selectedControl.get('selectedSurvey')) {
-      if(!Ember.empty(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
+    if (FLOW.selectedControl.get('selectedSurvey')) {
+      if (!Ember.empty(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
         sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-        this.set('content', FLOW.store.filter(FLOW.QuestionGroup, function(item) {
+        this.set('content', FLOW.store.filter(FLOW.QuestionGroup, function (item) {
           return item.get('surveyId') == sId;
         }));
       } else {
@@ -239,8 +246,8 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
     }
   },
 
-  populate: function() {
-	if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
+  populate: function () {
+    if (FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       var id = FLOW.selectedControl.selectedSurvey.get('keyId');
       FLOW.store.findQuery(FLOW.QuestionGroup, {
         surveyId: id
@@ -251,13 +258,13 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
 
   // true if all items have been saved
   // used in models.js
-  allRecordsSaved: function() {
+  allRecordsSaved: function () {
     var allSaved = true;
-    if(Ember.none(this.get('content'))) {
+    if (Ember.none(this.get('content'))) {
       return true;
     } else {
-      this.get('content').forEach(function(item) {
-        if(item.get('isSaving')) {
+      this.get('content').forEach(function (item) {
+        if (item.get('isSaving')) {
           allSaved = false;
         }
       });
@@ -275,11 +282,11 @@ FLOW.questionControl = Ember.ArrayController.create({
   filterContent: null,
   sortProperties: ['order'],
   sortAscending: true,
-  preflightQId:null,
+  preflightQId: null,
 
-  populateAllQuestions: function() {
+  populateAllQuestions: function () {
     var sId;
-    if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
+    if (FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
       this.set('content', FLOW.store.findQuery(FLOW.Question, {
         surveyId: sId
@@ -288,13 +295,13 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
   // used for surveyInstances in data edit popup
-  doSurveyIdQuery: function(surveyId) {
+  doSurveyIdQuery: function (surveyId) {
     this.set('content', FLOW.store.findQuery(FLOW.Question, {
       surveyId: surveyId
     }));
   },
 
-  deleteQuestion: function(questionId){
+  deleteQuestion: function (questionId) {
     qgId = this.content.get('questionGroupId');
     question = FLOW.store.find(FLOW.Question, questionId);
     qgId = question.get('questionGroupId');
@@ -302,44 +309,44 @@ FLOW.questionControl = Ember.ArrayController.create({
     question.deleteRecord();
 
     // restore order
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function(item) {
-          return item.get('questionGroupId') == qgId;
-        });
+    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+      return item.get('questionGroupId') == qgId;
+    });
 
-    questionsInGroup.forEach(function(item) {
-     if (item.get('order') > qOrder) {
-       item.set('order',item.get('order') - 1);
-     }
+    questionsInGroup.forEach(function (item) {
+      if (item.get('order') > qOrder) {
+        item.set('order', item.get('order') - 1);
+      }
     });
     FLOW.store.commit();
   },
 
-  allQuestionsFilter: function() {
+  allQuestionsFilter: function () {
     var sId;
-    if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
+    if (FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('filterContent', FLOW.store.filter(FLOW.Question, function(item) {
+      this.set('filterContent', FLOW.store.filter(FLOW.Question, function (item) {
         return item.get('surveyId') == sId;
       }));
     } else {
-      this.set('filterContent',null);
+      this.set('filterContent', null);
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
-  setQGcontent: function() {
-    if(FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
+  setQGcontent: function () {
+    if (FLOW.selectedControl.get('selectedQuestionGroup') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       var qId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
-      this.set('content', FLOW.store.filter(FLOW.Question, function(item) {
-    	  return item.get('questionGroupId') == qId;
+      this.set('content', FLOW.store.filter(FLOW.Question, function (item) {
+        return item.get('questionGroupId') == qId;
       }));
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
 
-  setOPTIONcontent: function() {
+  setOPTIONcontent: function () {
     var sId;
-    if(FLOW.selectedControl.get('selectedSurvey')) {
+    if (FLOW.selectedControl.get('selectedSurvey')) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('OPTIONcontent', FLOW.store.filter(FLOW.Question, function(item) {
+      this.set('OPTIONcontent', FLOW.store.filter(FLOW.Question, function (item) {
         return item.get('type') == 'OPTION' && item.get('surveyId') == sId;
       }));
     } else {
@@ -348,21 +355,25 @@ FLOW.questionControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
   // used for display of dependencies: a question can only be dependent on earlier questions
-  setEarlierOptionQuestions: function() {
+  setEarlierOptionQuestions: function () {
 
-    if(!Ember.none(FLOW.selectedControl.get('selectedQuestion')) && !Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
+    if (!Ember.none(FLOW.selectedControl.get('selectedQuestion')) && !Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
       var optionQuestionList, sId, questionGroupOrder, qgOrder, qg, questionOrder;
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
       questionGroupOrder = FLOW.selectedControl.selectedQuestionGroup.get('order');
       questionOrder = FLOW.selectedControl.selectedQuestion.get('order');
-      optionQuestionList = FLOW.store.filter(FLOW.Question, function(item) {
+      optionQuestionList = FLOW.store.filter(FLOW.Question, function (item) {
         qg = FLOW.store.find(FLOW.QuestionGroup, item.get('questionGroupId'));
         qgOrder = qg.get('order');
-        if(!(item.get('type') == 'OPTION' && item.get('surveyId') == sId)) return false;
-        if(qgOrder > questionGroupOrder) {return false;}
-        if(qgOrder < questionGroupOrder) {return true;}
+        if (!(item.get('type') == 'OPTION' && item.get('surveyId') == sId)) return false;
+        if (qgOrder > questionGroupOrder) {
+          return false;
+        }
+        if (qgOrder < questionGroupOrder) {
+          return true;
+        }
         // when we arrive there qgOrder = questionGroupOrder, so we have to check question order
-        return  item.get('order') < questionOrder;
+        return item.get('order') < questionOrder;
       });
 
       this.set('earlierOptionQuestions', optionQuestionList);
@@ -373,10 +384,10 @@ FLOW.questionControl = Ember.ArrayController.create({
 
   // true if all items have been saved
   // used in models.js
-  allRecordsSaved: function() {
+  allRecordsSaved: function () {
     var allSaved = true;
-    FLOW.questionControl.get('content').forEach(function(item) {
-      if(item.get('isSaving')) {
+    FLOW.questionControl.get('content').forEach(function (item) {
+      if (item.get('isSaving')) {
         allSaved = false;
       }
     });
@@ -403,9 +414,9 @@ FLOW.notificationControl = Ember.ArrayController.create({
   sortProperties: ['notificationDestination'],
   sortAscending: true,
 
-  populate: function() {
+  populate: function () {
     var id;
-    if(FLOW.selectedControl.get('selectedSurvey')) {
+    if (FLOW.selectedControl.get('selectedSurvey')) {
       id = FLOW.selectedControl.selectedSurvey.get('keyId');
       FLOW.store.findQuery(FLOW.NotificationSubscription, {
         surveyId: id
@@ -413,11 +424,11 @@ FLOW.notificationControl = Ember.ArrayController.create({
     }
   },
 
-  doFilterContent: function() {
+  doFilterContent: function () {
     var sId;
-    if(FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
+    if (FLOW.selectedControl.get('selectedSurvey') && FLOW.selectedControl.selectedSurvey.get('keyId') > 0) {
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('content', FLOW.store.filter(FLOW.NotificationSubscription, function(item) {
+      this.set('content', FLOW.store.filter(FLOW.NotificationSubscription, function (item) {
         return item.get('entityId') == sId;
       }));
     }

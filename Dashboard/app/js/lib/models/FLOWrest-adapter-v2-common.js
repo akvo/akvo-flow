@@ -1,5 +1,6 @@
 /*global DS*/
-var get = Ember.get, set = Ember.set;
+var get = Ember.get,
+  set = Ember.set;
 
 DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   serializer: DS.RESTSerializer.extend({
@@ -16,13 +17,13 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
 
     url = this._super(record, suffix);
     if (record === 'placemark') {
-      return  url + '?country=' + FLOW.countryController.get('countryCode');
+      return url + '?country=' + FLOW.countryController.get('countryCode');
     }
     return url;
   },
 
   sideload: function (store, type, json, root) {
-  var msg,status, metaObj;
+    var msg, status, metaObj;
     this._super(store, type, json, root);
     // only change metaControl info if there is actual meta info in the server response
     metaObj = this.extractMeta(json);
@@ -45,8 +46,8 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       FLOW.savingMessageControl.set('areLoadingBool', false);
       FLOW.savingMessageControl.set('areSavingBool', false);
 
-      if (status === 'preflight-delete-question'){
-        if (msg === 'can_delete'){
+      if (status === 'preflight-delete-question') {
+        if (msg === 'can_delete') {
           // do deletion
           FLOW.questionControl.deleteQuestion(keyId);
         } else {
@@ -59,8 +60,8 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         return;
       }
 
-      if (status === 'preflight-delete-survey'){
-        if (msg === 'can_delete'){
+      if (status === 'preflight-delete-survey') {
+        if (msg === 'can_delete') {
           // do deletion
           FLOW.surveyControl.deleteSurvey(keyId);
         } else {
@@ -73,8 +74,8 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         return;
       }
 
-      if (status === 'preflight-delete-surveygroup'){
-        if (msg === 'can_delete'){
+      if (status === 'preflight-delete-surveygroup') {
+        if (msg === 'can_delete') {
           // do deletion
           FLOW.surveyGroupControl.deleteSurveyGroup(keyId);
         } else {
@@ -87,9 +88,9 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         return;
       }
 
-      if (this.extractMeta(json).status === 'failed' || FLOW.metaControl.get('message') !== ''){
+      if (this.extractMeta(json).status === 'failed' || FLOW.metaControl.get('message') !== '') {
         FLOW.dialogControl.set('activeAction', 'ignore');
-        FLOW.dialogControl.set('header', '' /*Ember.String.loc('_action_failed')*/); //FIXME
+        FLOW.dialogControl.set('header', '' /*Ember.String.loc('_action_failed')*/ ); //FIXME
         FLOW.dialogControl.set('message', FLOW.metaControl.get('message'));
         FLOW.dialogControl.set('showCANCEL', false);
         FLOW.dialogControl.set('showDialog', true);
@@ -97,49 +98,51 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     }
   },
 
- ajax: function(url, type, hash) {
-   this._super(url, type, hash);
-   if (type == "GET"){
-     FLOW.savingMessageControl.set('areLoadingBool',true);
-   }
- },
+  ajax: function (url, type, hash) {
+    this._super(url, type, hash);
+    if (type == "GET") {
+      FLOW.savingMessageControl.set('areLoadingBool', true);
+    }
+  },
 
-didFindRecord: function(store, type, json, id) {
-  this._super(store, type, json, id);
-  FLOW.savingMessageControl.set('areLoadingBool',false);
-},
+  didFindRecord: function (store, type, json, id) {
+    this._super(store, type, json, id);
+    FLOW.savingMessageControl.set('areLoadingBool', false);
+  },
 
-didFindAll: function(store, type, json) {
-  this._super(store, type, json);
-  FLOW.savingMessageControl.set('areLoadingBool',false);
-},
+  didFindAll: function (store, type, json) {
+    this._super(store, type, json);
+    FLOW.savingMessageControl.set('areLoadingBool', false);
+  },
 
-didFindQuery: function(store, type, json, recordArray) {
-  this._super(store, type, json, recordArray);
-  FLOW.savingMessageControl.set('areLoadingBool',false);
-},
+  didFindQuery: function (store, type, json, recordArray) {
+    this._super(store, type, json, recordArray);
+    FLOW.savingMessageControl.set('areLoadingBool', false);
+  },
 
-// adapted from standard ember rest_adapter
-// includes 'bulk' in the POST call, to allign
-// with updateRecords and deleteRecords behaviour.
-createRecords: function(store, type, records) {
+  // adapted from standard ember rest_adapter
+  // includes 'bulk' in the POST call, to allign
+  // with updateRecords and deleteRecords behaviour.
+  createRecords: function (store, type, records) {
     if (get(this, 'bulkCommit') === false) {
       return this._super(store, type, records);
     }
 
     var root = this.rootForType(type),
-        plural = this.pluralize(root);
+      plural = this.pluralize(root);
 
     var data = {};
     data[plural] = [];
-    records.forEach(function(record) {
-      data[plural].push(this.serialize(record, { includeId: true }));
+    records.forEach(function (record) {
+      data[plural].push(this.serialize(record, {
+        includeId: true
+      }));
     }, this);
 
     this.ajax(this.buildURL(root, 'bulk'), "POST", {
       data: data,
       context: this,
-      success: function(json) {
+      success: function (json) {
         this.didCreateRecords(store, type, records, json);
       }
     });

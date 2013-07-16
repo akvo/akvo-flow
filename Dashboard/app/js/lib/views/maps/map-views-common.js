@@ -1,4 +1,3 @@
-
 FLOW.NavMapsView = FLOW.View.extend({
   templateName: 'navMaps/nav-maps-common',
   showDetailsBool: false,
@@ -6,7 +5,7 @@ FLOW.NavMapsView = FLOW.View.extend({
   detailsPaneVisible: null,
 
 
-  init: function() {
+  init: function () {
     this._super();
     this.detailsPaneElements = "#pointDetails h2" +
       ", #pointDetails dl" +
@@ -21,9 +20,9 @@ FLOW.NavMapsView = FLOW.View.extend({
   /**
     Once the view is in the DOM create the map
   */
-  didInsertElement: function() {
+  didInsertElement: function () {
     var map, mapOptions, self;
-    
+
     mapOptions = {
       center: new google.maps.LatLng(-0.703107, 36.765747),
       zoom: 2,
@@ -56,28 +55,34 @@ FLOW.NavMapsView = FLOW.View.extend({
   /**
     Slide in the details pane
   */
-  showDetailsPane: function() {
+  showDetailsPane: function () {
     var button;
 
     button = this.$('#mapDetailsHideShow');
     button.html('Hide &rsaquo;');
     this.set('detailsPaneVisible', true);
 
-    this.$('#flowMap').animate({width: '75%'}, 200);
-    this.$('#pointDetails').animate({width: '24.5%'}, 200).css({
+    this.$('#flowMap').animate({
+      width: '75%'
+    }, 200);
+    this.$('#pointDetails').animate({
+      width: '24.5%'
+    }, 200).css({
       overflow: 'auto',
       marginLeft: '-2px'
     });
     this.$(this.detailsPaneElements, '#pointDetails').animate({
       opacity: '1'
-    }, 200).css({display: 'inherit'});
+    }, 200).css({
+      display: 'inherit'
+    });
   },
 
 
   /**
     Slide out details pane
   */
-  hideDetailsPane: function(delay) {
+  hideDetailsPane: function (delay) {
     var button;
 
     delay = typeof delay !== 'undefined' ? delay : 0;
@@ -106,7 +111,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     If a placemark is selected and the details pane is hidden make sure to
     slide out
   */
-  handlePlacemarkDetails: function() {
+  handlePlacemarkDetails: function () {
     var details;
 
     details = FLOW.placemarkDetailController.get('content');
@@ -127,7 +132,7 @@ FLOW.NavMapsView = FLOW.View.extend({
     var rawImagePath, verticalBars;
 
     this.set('showDetailsBool', true);
-    details.forEach(function(item) {
+    details.forEach(function (item) {
       rawImagePath = item.get('stringValue');
       verticalBars = rawImagePath.split('|');
       if (verticalBars.length === 4) {

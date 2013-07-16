@@ -18,7 +18,7 @@ require('akvo-flow/controllers/messages-controllers');
 require('akvo-flow/controllers/user-controllers');
 
 FLOW.ApplicationController = Ember.Controller.extend({
-  init: function() {
+  init: function () {
     this._super();
     Ember.STRINGS = Ember.STRINGS_EN;
   }
@@ -54,4 +54,3 @@ FLOW.NavMapsController = Ember.Controller.extend();
 FLOW.NavUsersController = Ember.Controller.extend();
 FLOW.NavMessagesController = Ember.Controller.extend();
 FLOW.NavAdminController = Ember.Controller.extend();
-
