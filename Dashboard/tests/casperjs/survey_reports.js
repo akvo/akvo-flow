@@ -1,3 +1,6 @@
+/* jshint strict:false*/
+/*global CasperError, console, phantom, require*/
+
 //
 // Test - Import Cleaned Survey Data
 // neha@akvo.org
@@ -7,7 +10,7 @@ var utils = require('utils');
 
 var casper = require('casper').create({
 verbose: true,
-logLevel: 'debug',
+// logLevel: 'debug',
 	
 // Give waitForResource calls plenty of time to load.
 // waitTimeout: 50000,
@@ -57,8 +60,8 @@ viewport = [
 ];
 
 casper.start(url, function() {
-	console.log("page loaded");
-	this.test.assertExists('form#gaia_loginform', 'GAE Login form is found');
+	console.log("Initial Akvo FLOW Login Page");
+	this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
 	this.fill('form#gaia_loginform', {
 		Email:	'nchriss@gmail.com',
 		Passwd:	'876^5017&'
@@ -77,6 +80,9 @@ casper.then(function () {
 		this.test.assertVisible('.menuGroup', 'Survey Menu Group Visible');
 		
 		// Add additional asserts for Survey MenuGroup
+		this.test.assertTruthy(casper.evaluate(function() {
+			return FLOW.router.location.path
+		}) === '/surveys/main', 'Successfully Loaded Dashboard');
 });
 
 casper.then(function() {
@@ -168,6 +174,7 @@ casper.then(function () {
         // };  
 
 casper.then(function() {
+  	var fileName = 'blah.xlsx'
   	this.evaluate(function(fileName) {__utils__.findOne('input[#raw-data-import-file]="file"]').setAttribute('value',fileName)},{fileName:fileName});
   	this.echo('Name='+this.evaluate(function() {return __utils__.findOne('input[#raw-data-import-file="file"]').getAttribute('name')}));
   	this.echo('Value='+this.evaluate(function() {return __utils__.findOne('input[#raw-data-import-file="file"]').getAttribute('value')}));
