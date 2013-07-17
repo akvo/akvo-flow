@@ -37,7 +37,6 @@ import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
@@ -59,27 +58,7 @@ public class QuestionRestService {
 	@Inject
 	private SurveyMetricMappingDao surveyMetricMappingDao;
 
-	// TODO put in dependencies
-	// list all questions
-	@RequestMapping(method = RequestMethod.GET, value = "/all")
-	@ResponseBody
-	public Map<String, List<QuestionDto>> listQuestions() {
-		final Map<String, List<QuestionDto>> response = new HashMap<String, List<QuestionDto>>();
-		List<QuestionDto> results = new ArrayList<QuestionDto>();
-		List<Question> questions = questionDao.list(Constants.ALL_RESULTS);
-		if (questions != null) {
-			for (Question s : questions) {
-				QuestionDto dto = new QuestionDto();
-				DtoMarshaller.copyToDto(s, dto);
-				dto.setOptionList(questionOptionDao
-						.listOptionInStringByQuestion(dto.getKeyId()));
-				results.add(dto);
-			}
-		}
-		response.put("questions", results);
-		return response;
-	}
-
+	
 	// list questions by questionGroup or by survey. If includeNumber or
 	// includeOption are true, only NUMBER and OPTION type questions are
 	// returned
@@ -268,8 +247,6 @@ public class QuestionRestService {
 				q = questionDao.getByKey(keyId);
 				// if we find the question, update it's properties
 				if (q != null) {
-
-					Integer origOrder = q.getOrder();
 					// copy the properties, except the createdDateTime property,
 					// because it is set in the Dao.
 					BeanUtils.copyProperties(questionDto, q, new String[] {
@@ -277,9 +254,6 @@ public class QuestionRestService {
 					if (questionDto.getType() != null)
 						q.setType(Question.Type.valueOf(questionDto.getType()
 								.toString()));
-
-					questionOptionDao.saveOptionInStringByQuestion(keyId,
-							questionDto.getOptionList());
 
 					if (questionDto.getMetricId() != null) {
 						// delete existing mappings
@@ -298,8 +272,6 @@ public class QuestionRestService {
 
 					dto = new QuestionDto();
 					DtoMarshaller.copyToDto(q, dto);
-					dto.setOptionList(questionOptionDao
-							.listOptionInStringByQuestion(dto.getKeyId()));
 					statusDto.setStatus("ok");
 					statusDto.setMessage("");
 				}
