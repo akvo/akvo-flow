@@ -1,11 +1,14 @@
 Akvo FLOW Field Survey app 
-last update 12 july 2013, co
+last update 17 july 2013, co
 
+#ver 1.11.0
+* Update available survey languages on device to dynamic list that builds according to languages available in the survey xml for all surveys currently assigned to the device (#259)
 
 #ver 1.10.6  
+* Fix bug where device ID and other fields would accept line breaks and tab characters, which could generate broken data.txt files (#255)
 * Always include serverBase from survey.properties in server selection. Makes instance builds independent of res/values/arrays.xml
 
-#ver 1.10.5	
+#ver 1.10.5  
 * Prevent display rotation from forgetting a taken photo (#118)
 * Fix survey status partially-successful icon bug (#183)
 
