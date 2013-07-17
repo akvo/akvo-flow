@@ -1,12 +1,12 @@
 FLOW.dashboardLanguageControl = Ember.Object.create({
   dashboardLanguage: null,
 
-  init: function() {
+  init: function () {
     var locale;
 
     this._super();
     locale = localStorage.locale;
-    if(typeof locale === 'undefined') {
+    if (typeof locale === 'undefined') {
       this.set('dashboardLanguage', this.content.findProperty('value', 'en'));
     } else {
       this.set('dashboardLanguage', this.content.findProperty('value', locale));
@@ -26,7 +26,7 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
     })
   ],
 
-  changeLanguage: function() {
+  changeLanguage: function () {
     var locale;
     locale = this.dashboardLanguage.get("value");
     localStorage.locale = this.get('dashboardLanguage.value');
@@ -53,15 +53,15 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
 FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
   selectedSurvey: null,
-  selectedSurveys:[],
+  selectedSurveys: [],
   selectedSurveyAllQuestions: null,
   selectedSurveyAssignment: null,
   dependentQuestion: null,
   selectedQuestionGroup: null,
   selectedQuestion: null,
   selectedOption: null,
-  selectedDevice:null,
-  selectedDevices:[],
+  selectedDevice: null,
+  selectedDevices: [],
   selectedDevicesPreview: [],
   selectedSurveysPreview: [],
   selectedForMoveQuestionGroup: null,
@@ -77,14 +77,14 @@ FLOW.selectedControl = Ember.Controller.create({
   // }.observes('this.selectedSurveyOPTIONQuestions'),
 
   // when selected survey changes, deselect selected surveys and question groups
-  deselectSurveyGroupChildren: function() {
+  deselectSurveyGroupChildren: function () {
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.selectedControl.set('selectedSurveyAllQuestions', null);
     FLOW.selectedControl.set('selectedQuestionGroup', null);
     FLOW.selectedControl.set('selectedQuestion', null);
   }.observes('this.selectedSurveyGroup'),
 
-  deselectSurveyChildren: function() {
+  deselectSurveyChildren: function () {
     FLOW.selectedControl.set('selectedQuestionGroup', null);
     FLOW.selectedControl.set('selectedQuestion', null);
   }.observes('this.selectedSurvey')
@@ -117,7 +117,7 @@ FLOW.tableColumnControl = Ember.Object.create({
 
 // set by restadapter sideLoad meta
 FLOW.metaControl = Ember.Object.create({
-  numSILoaded:null, // used by data tab nextPage method
+  numSILoaded: null, // used by data tab nextPage method
   since: null,
   num: null,
   message: null,
@@ -139,12 +139,11 @@ FLOW.savingMessageControl = Ember.Object.create({
   areSavingBool: false,
   areLoadingBool: false,
 
-  checkSaving: function() {
-    if(FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0) {
+  checkSaving: function () {
+    if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0) {
       this.set('areSavingBool', true);
     } else {
       this.set('areSavingBool', false);
     }
   }
 });
-

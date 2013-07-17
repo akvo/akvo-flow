@@ -110,7 +110,7 @@
          <p class="dialogMsg">{{t _choose_the_destination_survey_group}}</p>
          <br/>
          {{view Ember.Select 
-         contentBinding="FLOW.surveyGroupControl.content" 
+         contentBinding="FLOW.surveyGroupControl.arrangedContent" 
          selectionBinding="view.selectedSurveyGroup" 
          optionLabelPath="content.code" 
          optionValuePath="content.keyId"

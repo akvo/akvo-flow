@@ -1378,7 +1378,9 @@ public class TestHarnessServlet extends HttpServlet {
 					.param(DataProcessorRequest.SOURCE_PARAM,
 							req.getParameter("source"))
 					.param(DataProcessorRequest.SURVEY_ID_PARAM,
-							req.getParameter("surveyId"));
+							req.getParameter("surveyId"))
+					.param(DataProcessorRequest.API_KEY_PARAM,
+							req.getParameter("apiKey"));
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
 			queue.add(options);
@@ -1403,7 +1405,7 @@ public class TestHarnessServlet extends HttpServlet {
 			} else {
 
 				deleteSurveyResponses(
-						Integer.parseInt(req.getParameter("surveyId")),
+						Long.parseLong(req.getParameter("surveyId")),
 						Integer.parseInt(req.getParameter("count")));
 			}
 		} else if ("fixNameQuestion".equals(action)) {
@@ -2078,10 +2080,10 @@ public class TestHarnessServlet extends HttpServlet {
 				.param("type", "NameQuestionFix"));
 	}
 
-	private boolean deleteSurveyResponses(Integer surveyId, Integer count) {
+	private boolean deleteSurveyResponses(Long surveyId, Integer count) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
-				new Long(surveyId), count != null ? count : 100);
+				surveyId, count != null ? count : 100);
 
 		if (instances != null) {
 			for (SurveyInstance instance : instances) {

@@ -46,6 +46,7 @@ import com.gallatinsystems.survey.device.service.DataSyncService;
 import com.gallatinsystems.survey.device.service.SurveyDownloadService;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
+import com.gallatinsystems.survey.device.util.PlatformUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 
@@ -158,7 +159,7 @@ public class SettingsActivity extends ListActivity {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				TextView tipText = new TextView(this);
 				String txt = resources.getString(R.string.abouttext) + " "
-						+ resources.getString(R.string.appversion);
+						+ PlatformUtil.getVersionName(this);
 				tipText.setText(txt);
 				builder.setTitle(R.string.abouttitle);
 				builder.setView(tipText);

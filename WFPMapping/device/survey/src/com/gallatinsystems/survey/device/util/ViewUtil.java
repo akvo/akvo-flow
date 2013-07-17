@@ -273,16 +273,6 @@ public class ViewUtil {
 		notifcationMgr.cancel(id);
 	}
 
-	/**
-	 * displays a dialog box for selection of one or more survey languages
-	 */
-	public static void displayLanguageSelector(final Context context,
-			final boolean[] selections,
-			final DialogInterface.OnClickListener listener) {
-		displaySelectionDialog(context, selections, listener,
-				R.string.surveylanglabel, R.array.languages, true,
-				R.string.langmandatorytitle, R.string.langmandatorytext);
-	}
 
 	/**
 	 * displays a dialog box for selection of one or more countries
@@ -359,6 +349,93 @@ public class ViewUtil {
 													selections, listener,
 													labelResourceId,
 													valueArrayResourceId,
+													selectionMandatory,
+													mandatoryTitleResourceId,
+													mandatoryTextResourceId);
+										}
+									});
+						}
+					}
+				}).create();
+		dia.show();
+	}
+
+	/**
+	 * displays a dialog box for selection of one or more survey languages
+	 */
+	public static void displayLanguageSelector(final Context context, final CharSequence[] languages,
+			final boolean[] selections,
+			final DialogInterface.OnClickListener listener) {
+
+		displayLanguageSelectionDialog(context, selections, listener,
+				R.string.surveylanglabel, languages, true,
+				R.string.langmandatorytitle, R.string.langmandatorytext);
+	}
+
+	/**
+	 * displays a dialog box for allowing selection of countries from a list
+	 *
+	 * @param context
+	 * @param selections
+	 * @param listener
+	 * @param labelResourceId
+	 * @param valueArray
+	 * @param selectionMandatory
+	 * @param mandatoryTitleResourceId
+	 * @param mandatoryTextResourceId
+	 */
+	private static void displayLanguageSelectionDialog(final Context context,
+			final boolean[] selections,
+			final DialogInterface.OnClickListener listener,
+			final int labelResourceId, final CharSequence[] languages,
+			final boolean selectionMandatory,
+			final int mandatoryTitleResourceId,
+			final int mandatoryTextResourceId) {
+		AlertDialog dia = new AlertDialog.Builder(context)
+				.setTitle(labelResourceId)
+				.setMultiChoiceItems(languages, selections,
+						new DialogInterface.OnMultiChoiceClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which, boolean isChecked) {
+								switch (which) {
+								case DialogInterface.BUTTON_POSITIVE:
+									break;
+								}
+							}
+						})
+				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						boolean isValid = false;
+						if (selectionMandatory) {
+							for (int i = 0; i < selections.length; i++) {
+								if (selections[i]) {
+									isValid = true;
+									break;
+								}
+							}
+						} else {
+							isValid = true;
+						}
+						if (isValid) {
+							listener.onClick(dialog, which);
+						} else {
+							showConfirmDialog(mandatoryTitleResourceId,
+									mandatoryTextResourceId, context, false,
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											if (dialog != null) {
+												dialog.dismiss();
+											}
+											displayLanguageSelectionDialog(context,
+													selections, listener,
+													labelResourceId,
+													languages,
 													selectionMandatory,
 													mandatoryTitleResourceId,
 													mandatoryTextResourceId);

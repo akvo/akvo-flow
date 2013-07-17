@@ -6,6 +6,7 @@
 require('akvo-flow/core-common');
 require('akvo-flow/views/surveys/preview-view');
 require('akvo-flow/views/surveys/notifications-view');
+require('akvo-flow/views/surveys/translations-view');
 require('akvo-flow/views/surveys/survey-group-views');
 require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/data/inspect-data-table-views');
@@ -27,17 +28,17 @@ require('akvo-flow/views/users/user-view');
 FLOW.ApplicationView = Ember.View.extend({
   templateName: 'application/application',
 
-  init: function() {
+  init: function () {
     var locale;
 
     this._super();
 
     // If available set language from local storage
     locale = localStorage.locale;
-    if(typeof locale === 'undefined') {
+    if (typeof locale === 'undefined') {
       locale = 'en';
     }
-    switch(locale) {
+    switch (locale) {
     case 'fr':
       Ember.STRINGS = Ember.STRINGS_FR;
       break;
@@ -52,7 +53,7 @@ FLOW.ApplicationView = Ember.View.extend({
 });
 
 
-FLOW.locale = function(i18nKey) {
+FLOW.locale = function (i18nKey) {
   return 'Ember.STRINGS._select_survey_group';
   // var i18nValue;
   // try {
@@ -68,30 +69,36 @@ FLOW.locale = function(i18nKey) {
 //                      Handlebar helpers
 // ***********************************************//
 // localisation helper
-Ember.Handlebars.registerHelper('t', function(i18nKey, options) {
+Ember.Handlebars.registerHelper('t', function (i18nKey, options) {
   var i18nValue;
   try {
     i18nValue = Ember.String.loc(i18nKey);
-  }
-  catch (err) {
+  } catch (err) {
     return i18nKey;
   }
   return i18nValue;
 });
 
-
-Ember.Handlebars.registerHelper('if_blank', function(item) {
-  var text;
-  text = Ember.get(this,item);
-  return (text && text.replace(/\s/g,"").length) ? new Handlebars.SafeString('') : new Handlebars.SafeString('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+Ember.Handlebars.registerHelper('newLines', function (text) {
+  var answer = "";
+  if (!Ember.none(Ember.get(this, text))) {
+    answer = Ember.get(this, text).replace(/\n/g, '<br/>');
+  }
+  return new Handlebars.SafeString(answer);
 });
 
-Ember.Handlebars.registerHelper('tooltip', function(i18nKey) {
+
+Ember.Handlebars.registerHelper('if_blank', function (item) {
+  var text;
+  text = Ember.get(this, item);
+  return (text && text.replace(/\s/g, "").length) ? new Handlebars.SafeString('') : new Handlebars.SafeString('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+});
+
+Ember.Handlebars.registerHelper('tooltip', function (i18nKey) {
   var tooltip;
   try {
     tooltip = Ember.String.loc(i18nKey);
-  }
-  catch (err) {
+  } catch (err) {
     tooltip = i18nKey;
   }
   return new Handlebars.SafeString(
@@ -104,7 +111,8 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
   var answer, markup, question;
 
   question = Ember.get(this, 'questionText');
-  answer = Ember.get(this, 'stringValue').replace(/\|/g, ' | ');
+  answer = Ember.get(this, 'stringValue').replace(/\|/g, ' | '); // geo data
+  answer = answer.replace(/\//g, ' / '); // also split folder paths
 
   markup = '<div class="defListWrap"><dt>' +
     question + ':</dt><dd>' +
@@ -115,12 +123,12 @@ Ember.Handlebars.registerHelper('placemarkDetail', function () {
 
 
 // translates values to labels for languages
-Ember.Handlebars.registerHelper('toLanguage', function(value) {
+Ember.Handlebars.registerHelper('toLanguage', function (value) {
   var label, valueLoc;
   label = "";
-  valueLoc = Ember.get(this,value);
+  valueLoc = Ember.get(this, value);
 
-  FLOW.languageControl.get('content').forEach(function(item){
+  FLOW.languageControl.get('content').forEach(function (item) {
     if (item.get('value') == valueLoc) {
       label = item.get('label');
     }
@@ -129,12 +137,12 @@ Ember.Handlebars.registerHelper('toLanguage', function(value) {
 });
 
 // translates values to labels for surveyPointTypes
-Ember.Handlebars.registerHelper('toPointType', function(value) {
+Ember.Handlebars.registerHelper('toPointType', function (value) {
   var label, valueLoc;
   label = "";
-  valueLoc = Ember.get(this,value);
+  valueLoc = Ember.get(this, value);
 
-  FLOW.surveyPointTypeControl.get('content').forEach(function(item){
+  FLOW.surveyPointTypeControl.get('content').forEach(function (item) {
     if (item.get('value') == valueLoc) {
       label = item.get('label');
     }
@@ -143,12 +151,12 @@ Ember.Handlebars.registerHelper('toPointType', function(value) {
 });
 
 // translates values to labels for attributeTypes
-Ember.Handlebars.registerHelper('toAttributeType', function(value) {
+Ember.Handlebars.registerHelper('toAttributeType', function (value) {
   var label, valueLoc;
   label = "";
-  valueLoc = Ember.get(this,value);
+  valueLoc = Ember.get(this, value);
 
-  FLOW.attributeTypeControl.get('content').forEach(function(item){
+  FLOW.attributeTypeControl.get('content').forEach(function (item) {
     if (item.get('value') == valueLoc) {
       label = item.get('label');
     }
@@ -158,12 +166,12 @@ Ember.Handlebars.registerHelper('toAttributeType', function(value) {
 
 
 // add space to vertical bar helper
-Ember.Handlebars.registerHelper('addSpace', function(property) {
+Ember.Handlebars.registerHelper('addSpace', function (property) {
   return Ember.get(this, property).replace(/\|/g, ' | ');
 });
 
 // date format helper
-Ember.Handlebars.registerHelper("date", function(property) {
+Ember.Handlebars.registerHelper("date", function (property) {
   var d = new Date(parseInt(Ember.get(this, property), 10));
   var m_names = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
@@ -174,9 +182,9 @@ Ember.Handlebars.registerHelper("date", function(property) {
 });
 
 // format used in devices table
-Ember.Handlebars.registerHelper("date1", function(property) {
+Ember.Handlebars.registerHelper("date1", function (property) {
   var d, curr_date, curr_month, curr_year, curr_hour, curr_min, monthString, dateString, hourString, minString;
-  if(Ember.get(this, property) !== null) {
+  if (Ember.get(this, property) !== null) {
     d = new Date(parseInt(Ember.get(this, property), 10));
     curr_date = d.getDate();
     curr_month = d.getMonth() + 1;
@@ -184,25 +192,25 @@ Ember.Handlebars.registerHelper("date1", function(property) {
     curr_hour = d.getHours();
     curr_min = d.getMinutes();
 
-    if(curr_month < 10) {
+    if (curr_month < 10) {
       monthString = "0" + curr_month.toString();
     } else {
       monthString = curr_month.toString();
     }
 
-    if(curr_date < 10) {
+    if (curr_date < 10) {
       dateString = "0" + curr_date.toString();
     } else {
       dateString = curr_date.toString();
     }
 
-    if(curr_hour < 10) {
+    if (curr_hour < 10) {
       hourString = "0" + curr_hour.toString();
     } else {
       hourString = curr_hour.toString();
     }
 
-    if(curr_min < 10) {
+    if (curr_min < 10) {
       minString = "0" + curr_min.toString();
     } else {
       minString = curr_min.toString();
@@ -215,21 +223,21 @@ Ember.Handlebars.registerHelper("date1", function(property) {
 });
 
 // format used in devices table
-Ember.Handlebars.registerHelper("date3", function(property) {
+Ember.Handlebars.registerHelper("date3", function (property) {
   var d, curr_date, curr_month, curr_year, monthString, dateString;
-  if(Ember.get(this, property) !== null) {
+  if (Ember.get(this, property) !== null) {
     d = new Date(parseInt(Ember.get(this, property), 10));
     curr_date = d.getDate();
     curr_month = d.getMonth() + 1;
     curr_year = d.getFullYear();
 
-    if(curr_month < 10) {
+    if (curr_month < 10) {
       monthString = "0" + curr_month.toString();
     } else {
       monthString = curr_month.toString();
     }
 
-    if(curr_date < 10) {
+    if (curr_date < 10) {
       dateString = "0" + curr_date.toString();
     } else {
       dateString = curr_date.toString();
@@ -243,15 +251,15 @@ Ember.Handlebars.registerHelper("date3", function(property) {
 
 Ember.Handlebars.registerHelper("getServer", function () {
   var loc = window.location.href,
-      pos = loc.indexOf("/admin");
+    pos = loc.indexOf("/admin");
   return loc.substring(0, pos);
 });
 
 // Register a Handlebars helper that instantiates `view`.
 // The view will have its `content` property bound to the
 // helper argument.
-FLOW.registerViewHelper = function(name, view) {
-  Ember.Handlebars.registerHelper(name, function(property, options) {
+FLOW.registerViewHelper = function (name, view) {
+  Ember.Handlebars.registerHelper(name, function (property, options) {
     options.hash.contentBinding = property;
     return Ember.Handlebars.helpers.view.call(this, view, options);
   });
@@ -263,11 +271,11 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
 
   template: Ember.Handlebars.compile('{{view.formattedContent}}'),
 
-  formattedContent: (function() {
+  formattedContent: (function () {
     var content, d, curr_date, curr_month, curr_year, curr_hour, curr_min, monthString, dateString, hourString, minString;
     content = this.get('content');
 
-    if(content === null) {
+    if (content === null) {
       return "";
     }
 
@@ -278,25 +286,25 @@ FLOW.registerViewHelper('date2', Ember.View.extend({
     curr_hour = d.getHours();
     curr_min = d.getMinutes();
 
-    if(curr_month < 10) {
+    if (curr_month < 10) {
       monthString = "0" + curr_month.toString();
     } else {
       monthString = curr_month.toString();
     }
 
-    if(curr_date < 10) {
+    if (curr_date < 10) {
       dateString = "0" + curr_date.toString();
     } else {
       dateString = curr_date.toString();
     }
 
-    if(curr_hour < 10) {
+    if (curr_hour < 10) {
       hourString = "0" + curr_hour.toString();
     } else {
       hourString = curr_hour.toString();
     }
 
-    if(curr_min < 10) {
+    if (curr_min < 10) {
       minString = "0" + curr_min.toString();
     } else {
       minString = curr_min.toString();
@@ -317,7 +325,7 @@ FLOW.NavigationView = Em.View.extend({
   templateName: 'application/navigation',
   selectedBinding: 'controller.selected',
 
-  onLanguageChange: function() {
+  onLanguageChange: function () {
     this.rerender();
   }.observes('FLOW.dashboardLanguageControl.dashboardLanguage'),
 
@@ -325,11 +333,11 @@ FLOW.NavigationView = Em.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:current navItem'.w(),
 
-    navItem: function() {
+    navItem: function () {
       return this.get('item');
     }.property('item').cacheable(),
 
-    isActive: function() {
+    isActive: function () {
       return this.get('item') === this.get('parentView.selected');
     }.property('item', 'parentView.selected').cacheable()
   })
@@ -343,7 +351,7 @@ FLOW.NavigationView = Em.View.extend({
 // one way could be use an extended copy of view, with the didInsertElement,
 // for some of the elements, and not for others.
 Ember.View.reopen({
-  didInsertElement: function() {
+  didInsertElement: function () {
     this._super();
     tooltip();
   }
@@ -355,19 +363,19 @@ Ember.Select.reopen({
 
 
 FLOW.DateField = Ember.TextField.extend({
- minDate: true,
+  minDate: true,
 
- didInsertElement: function() {
+  didInsertElement: function () {
     this._super();
 
-    if (this.get('minDate')){
+    if (this.get('minDate')) {
       // datepickers with only future dates
       $("#from_date").datepicker({
         dateFormat: 'yy/mm/dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
-        onSelect: function(selectedDate) {
+        onSelect: function (selectedDate) {
           $("#to_date").datepicker("option", "minDate", selectedDate);
           FLOW.dateControl.set('fromDate', selectedDate);
         }
@@ -378,7 +386,7 @@ FLOW.DateField = Ember.TextField.extend({
         defaultDate: new Date(),
         numberOfMonths: 1,
         minDate: new Date(),
-        onSelect: function(selectedDate) {
+        onSelect: function (selectedDate) {
           $("#from_date").datepicker("option", "maxDate", selectedDate);
           FLOW.dateControl.set('toDate', selectedDate);
         }
@@ -389,7 +397,7 @@ FLOW.DateField = Ember.TextField.extend({
         dateFormat: 'yy/mm/dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
-        onSelect: function(selectedDate) {
+        onSelect: function (selectedDate) {
           $("#to_date").datepicker("option", "minDate", selectedDate);
           FLOW.dateControl.set('fromDate', selectedDate);
         }
@@ -399,7 +407,7 @@ FLOW.DateField = Ember.TextField.extend({
         dateFormat: 'yy/mm/dd',
         defaultDate: new Date(),
         numberOfMonths: 1,
-        onSelect: function(selectedDate) {
+        onSelect: function (selectedDate) {
           $("#from_date").datepicker("option", "maxDate", selectedDate);
           FLOW.dateControl.set('toDate', selectedDate);
         }
@@ -409,7 +417,7 @@ FLOW.DateField = Ember.TextField.extend({
 });
 
 FLOW.DateField2 = Ember.TextField.extend({
- didInsertElement: function() {
+  didInsertElement: function () {
     this._super();
 
     this.$().datepicker({
@@ -440,6 +448,10 @@ FLOW.NavSurveysEditView = Ember.View.extend({
 
 FLOW.ManageNotificationsView = Ember.View.extend({
   templateName: 'navSurveys/manage-notifications'
+});
+
+FLOW.ManageTranslationsView = Ember.View.extend({
+  templateName: 'navSurveys/manage-translations'
 });
 
 FLOW.EditQuestionsView = Ember.View.extend({
@@ -567,7 +579,7 @@ FLOW.DatasubnavView = FLOW.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:active'.w(),
 
-    isActive: function() {
+    isActive: function () {
       return this.get('item') === this.get('parentView.selected');
     }.property('item', 'parentView.selected').cacheable()
   })
@@ -583,7 +595,7 @@ FLOW.DevicesSubnavView = FLOW.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:active'.w(),
 
-    isActive: function() {
+    isActive: function () {
       return this.get('item') === this.get('parentView.selected');
     }.property('item', 'parentView.selected').cacheable()
   })
@@ -599,7 +611,7 @@ FLOW.ReportsSubnavView = Em.View.extend({
     tagName: 'li',
     classNameBindings: 'isActive:active'.w(),
 
-    isActive: function() {
+    isActive: function () {
       return this.get('item') === this.get('parentView.selected');
     }.property('item', 'parentView.selected').cacheable()
   })
@@ -616,35 +628,36 @@ FLOW.ColumnView = Ember.View.extend({
 
   classNameBindings: ['isActiveAsc:sorting_asc', 'isActiveDesc:sorting_desc'],
 
-  isActiveAsc: function() {
+  isActiveAsc: function () {
     return this.get('item') === FLOW.tableColumnControl.get('selected') && FLOW.tableColumnControl.get('sortAscending') === true;
   }.property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
 
-  isActiveDesc: function() {
+  isActiveDesc: function () {
     return this.get('item') === FLOW.tableColumnControl.get('selected') && FLOW.tableColumnControl.get('sortAscending') === false;
   }.property('item', 'FLOW.tableColumnControl.selected', 'FLOW.tableColumnControl.sortAscending').cacheable(),
 
-  sort: function() {
-    if((this.get('isActiveAsc')) || (this.get('isActiveDesc'))) {
+  sort: function () {
+    if ((this.get('isActiveAsc')) || (this.get('isActiveDesc'))) {
       FLOW.tableColumnControl.toggleProperty('sortAscending');
     } else {
       FLOW.tableColumnControl.set('sortProperties', [this.get('item')]);
       FLOW.tableColumnControl.set('selected', this.get('item'));
     }
 
-    if(this.get('type') === 'device') {
+    if (this.get('type') === 'device') {
       FLOW.deviceControl.getSortInfo();
-    } else if(this.get('type') === 'assignment') {
+    } else if (this.get('type') === 'assignment') {
       FLOW.surveyAssignmentControl.getSortInfo();
-    } else if(this.get('type') === 'attribute'){
+    } else if (this.get('type') === 'attribute') {
       FLOW.attributeControl.getSortInfo();
-    } else if(this.get('type') === 'message'){
+    } else if (this.get('type') === 'message') {
       FLOW.messageControl.getSortInfo();
     }
   }
 });
 
-var set = Ember.set, get = Ember.get;
+var set = Ember.set,
+  get = Ember.get;
 Ember.RadioButton = Ember.View.extend({
   title: null,
   checked: false,
@@ -655,17 +668,17 @@ Ember.RadioButton = Ember.View.extend({
 
   defaultTemplate: Ember.Handlebars.compile('<label><input type="radio" {{ bindAttr disabled="view.disabled" name="view.group" value="view.option" checked="view.checked"}} />{{view.title}}</label>'),
 
-  bindingChanged: function(){
-   if(this.get("option") == get(this, 'value')){
-       this.set("checked", true);
+  bindingChanged: function () {
+    if (this.get("option") == get(this, 'value')) {
+      this.set("checked", true);
     }
   }.observes("value"),
 
-  change: function() {
+  change: function () {
     Ember.run.once(this, this._updateElementValue);
   },
 
-  _updateElementValue: function() {
+  _updateElementValue: function () {
     var input = this.$('input:radio');
     set(this, 'value', input.attr('value'));
   }

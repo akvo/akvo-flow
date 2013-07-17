@@ -1,4 +1,4 @@
-Last changed: 2 April 2013 co
+Last changed: 9 July 2013, co
 
 Akvo FLOW (Field Level Operations Watch) is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
 
@@ -7,6 +7,38 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+
+# 1.5.1
+Release Date: 4 July 2013
+
+Improvements to data summarization and counting
+* Fix defect where data submitted over wifi and the bulk upload was double counted in data summaries (#185)
+* Fix a bug where the surveyInstance Count was creating new entities each time instead of checking first whether there was a matching one already existing (#235)
+* Fix a bug where spreadsheet import was using different summarization customs than the device, resulting in confusion in the backend for OTHER types (#250)
+
+Improvements in Data tab and Inspect Data table
+* Fixing filtering in Inspect Data table - Fix a bug in filtering for Device ID and Submitter in Inspect Data table (#212)
+* Fix a paging bug in Inspect Data table where cursor reset to zero (#251)
+
+Improvements to Bulk Upload tool usability
+* Prevent bulk upload tool from importing data for a survey that doesn't exist on the Dashboard (#230)
+* Warn user if they try to close the browser page while a data bulk upload is in progress; add explanation text on the Bulk Upload page to direct the user not to navigate away during the upload (#201)
+
+Security
+* Enable security on REST calls based on API servlet (#256)
+* Update FLOW instance configurator to create API key and enable REST security (related to #256) (#272)
+
+Other minor enhancements
+* Entering user email addresses - Save email addresses in lowercase when adding or editing a new Dashboard user (#193)
+* Fix defect where surveyedLocales remained in the datastore after surveyInstances were deleted (#218)
+* Fix a bug where deleting a date in the Edit data window displayed filler text (NaN) in the date field (#236)
+* Fix a bug where a large number of survey groups broke the css box for the display and the group names stopped displaying correctly (#242)
+* Fix a bug where services.akvoflow.org was dishing up stale reports (#246)
+* Fix bug in validation of min/max parameter on type=Number survey questions where string values were being compared instead of int values (#258)
+* Increase maximum map place mark points from 200 to 500 to improve map performance (#263)
+
+---
+
 
 This set of notes captures the weekly status of FLOW features and fixes to keep our colleagues and partners better informed about the status of the software as we concentrate on roll-out of 1.5.
 
@@ -207,49 +239,3 @@ Backburner
 * Implement ability to delete a single raw data record (leftover from FLOW Classic)
 
 
-Akvo FLOW Field Survey app ver 1.9.36 release notes
----
-8 July 2012, co
-
-Overview
-----
-This release contains improvements to the FLOW Field Survey application related to the storage of files on the device, a new keystore for app generation for easier installation of updates, and a new feature to allow users to scan barcodes from within a survey on the application.
-
-New features & enhancements
-----
-### New feature: Barcode question type in surveys
-A new question type that allows users to scan a barcode from inside their FLOW survey while collecting data in the field. The user selects the question type from the Survey Manager on the Dashboard when creating a survey, and then on the device this question prompts the user to "Scan Barcode," which calls an external barcode scanning app, and then populates the text field with the barcode number. REQUIRES an external barcode scanning app to be installed on the device. Barcode scanning apps that have been tested for this feature are: ZXing and QuickMark.
-
-GitHub issues:
-[17](https://github.com/akvo/akvo-flow/issues/17), [59](https://github.com/akvo/akvo-flow/issues/59)
-
-### Enhancement: Enable users to store large numbers of surveys and photos on device SD card
-Users can now store very large numbers of survey zip files and photos on their device's SD card. This is necessary when data collectors are going for long periods offline, where surveys must be stored on the devices for later upload. Since there is a limit for the number of files that can be stored in each directory independent of SD card storage capacity, this is achieved using a new file structure that distributes the files into multiple directories, instead of just storing them in the SD card root directory as before.
-
-GitHub issue:
-[16](https://https://github.com/akvo/akvo-flow/issues/16)
-
-### Enhancement: New keystore for apk generation to eliminate signature conflicts
-Created and distributed a release keystore along with instructions for use so that there is a single signature for the Field Survey application. This solved the problem from previous versions where, when multiple keystores were used to generate the app, users would face a signature conflict when trying to update the app on the device that forced them to uninstall the existing app before installing an update.
-
-GitHub issue:
-[21](https://https://github.com/akvo/akvo-flow/issues/21)
-
-
-Bug fixes
-----
-### Email address of user not displayed correctly in user management
-
-GitHub issue:
-[51](https://https://github.com/akvo/akvo-flow/issues/51)
-
-
-Known Issues
-----
-### Compatibility issues with Android OS version 2.1
-
-Barcode Scanning
-External barcode scanning apps (QuickMark, ZXing) crash or freeze in Android OS 2.1. As a result, we have not made this feature available for the apk running on 2.1. You can still enter barcodes manually into surveys when a barcode question type is present.
-
-GPS Status App
-Cannot reliably launch GPS Status app from inside the Field Survey application running on Android OS 2.1 (Settings > GPS Status).

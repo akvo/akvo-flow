@@ -22,3 +22,29 @@ Summary of new features and changes for released versions
 
 1.10.2	Shrink photos, warn about large media files, report IMEI to server.
 
+
+Command line build
+------------------
+
+Create build.properties file (just copy build.properties.template) and edit it:
+
++ sdk.dir: this is the path your android-sdk directory.
++ key.store: path to the keystore
++ key.alias: your alias
++ key.store.password: your keystore password
++ key.alias.password: your alias password
+
+Call ant target **flow-release, with the parameter survey.properties, which specifies the path to the survey.properties file you want to use**:
+
+    ant flow-release -Dsurvey.properties=/path/to/your/survey.properties
+
+
+The app will be named fieldSurvey-[version].apk (i.e. fieldsurvey-1.10.7.apk). 
+The version number will be retrieved from AndroidManifest.xml (android:versionName) and by default, it will be located in the bin folder. 
+You can override the default output directory with the property **out.dir**, setting it on the build.properties file:
+
+    out.dir=/path/to/dir
+
+or just passing it as a parameter to the build script (which will override the build.properties one):
+    
+    ant flow-release -Dout.dir=/path/to/dir

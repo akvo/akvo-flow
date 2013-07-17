@@ -39,6 +39,7 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
 
 @Controller
@@ -168,6 +169,11 @@ public class SurveyInstanceRestService {
 			statusDto.setStatus("ok");
 		}
 		response.put("meta", statusDto);
+
+		List<Long> ids = new ArrayList<Long>();
+		ids.add(id);
+		SurveyUtils.notifyReportService(ids, "invalidate");
+
 		return response;
 	}
 

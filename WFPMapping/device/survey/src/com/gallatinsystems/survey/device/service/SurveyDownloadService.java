@@ -51,6 +51,7 @@ import com.gallatinsystems.survey.device.exception.TransferException;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
+import com.gallatinsystems.survey.device.util.LangsPreferenceUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
@@ -170,6 +171,8 @@ public class SurveyDownloadService extends Service {
 							try {
 								if (downloadSurvey(serverBase, survey)) {
 									databaseAdaptor.saveSurvey(survey);
+									String[] langs = LangsPreferenceUtil.determineLanguages(this, survey);
+									databaseAdaptor.addLanguages(langs);
 									downloadHelp(survey, precacheOption);
 									updateCount++;
 								}

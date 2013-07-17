@@ -1,16 +1,17 @@
 // removes duplicate objects with a clientId from an Ember Array
 
 FLOW.ArrNoDupe = function (a) {
-  var templ, i, item = null, gotIt, tempa;
+  var templ, i, item = null,
+    gotIt, tempa;
   templ = {};
   tempa = Ember.A([]);
-  for(i = 0; i < a.length; i++) {
+  for (i = 0; i < a.length; i++) {
     templ[a.objectAt(i).clientId] = true;
   }
-  for(item in templ) {
+  for (item in templ) {
     gotIt = false;
-    for(i = 0; i < a.length; i++) {
-      if(a.objectAt(i).clientId == item && !gotIt) {
+    for (i = 0; i < a.length; i++) {
+      if (a.objectAt(i).clientId == item && !gotIt) {
         tempa.pushObject(a.objectAt(i));
         gotIt = true;
       }
@@ -20,7 +21,7 @@ FLOW.ArrNoDupe = function (a) {
 };
 
 FLOW.formatDate = function (value) {
-  if(!Ember.none(value)) {
+  if (!Ember.none(value)) {
     return value.getFullYear() + "/" + (value.getMonth() + 1) + "/" + value.getDate();
   } else return null;
 };
@@ -31,7 +32,7 @@ FLOW.AssignmentEditView = FLOW.View.extend({
   assignmentName: null,
   language: null,
 
-  init: function() {
+  init: function () {
     var deviceIds, previewDevices, surveyIds, previewSurveys, startDate = null,
       endDate = null;
     previewDevices = Ember.A([]);
@@ -45,10 +46,10 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     FLOW.surveyControl.set('content', null);
     FLOW.devicesInGroupControl.set('content', null);
 
-    if(FLOW.selectedControl.selectedSurveyAssignment.get('startDate') > 0) {
+    if (FLOW.selectedControl.selectedSurveyAssignment.get('startDate') > 0) {
       startDate = new Date(FLOW.selectedControl.selectedSurveyAssignment.get('startDate'));
     }
-    if(FLOW.selectedControl.selectedSurveyAssignment.get('endDate') > 0) {
+    if (FLOW.selectedControl.selectedSurveyAssignment.get('endDate') > 0) {
       endDate = new Date(FLOW.selectedControl.selectedSurveyAssignment.get('endDate'));
     }
     FLOW.dateControl.set('fromDate', FLOW.formatDate(startDate));
@@ -58,42 +59,42 @@ FLOW.AssignmentEditView = FLOW.View.extend({
 
     deviceIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('devices'));
 
-    deviceIds.forEach(function(item) {
+    deviceIds.forEach(function (item) {
       previewDevices.pushObjects(FLOW.store.find(FLOW.Device, item));
     });
     this.set('devicesPreview', previewDevices);
 
     surveyIds = Ember.A(FLOW.selectedControl.selectedSurveyAssignment.get('surveys'));
 
-    surveyIds.forEach(function(item) {
-      if (item !== null){
+    surveyIds.forEach(function (item) {
+      if (item !== null) {
         previewSurveys.pushObjects(FLOW.store.find(FLOW.Survey, item));
       }
     });
     this.set('surveysPreview', previewSurveys);
   },
 
-  detectChangeTab: function() {
-    if(Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
+  detectChangeTab: function () {
+    if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
       FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
     }
     FLOW.selectedControl.set('selectedSurveyAssignment', null);
-  }.observes('FLOW.router.navigationController.selected','FLOW.router.devicesSubnavController.selected'),
+  }.observes('FLOW.router.navigationController.selected', 'FLOW.router.devicesSubnavController.selected'),
 
-  saveSurveyAssignment: function() {
+  saveSurveyAssignment: function () {
     var sa, endDateParse, startDateParse, devices = [],
       surveys = [];
     sa = FLOW.selectedControl.get('selectedSurveyAssignment');
 
     sa.set('name', this.get('assignmentName'));
 
-    if(!Ember.none(FLOW.dateControl.get('toDate'))) {
+    if (!Ember.none(FLOW.dateControl.get('toDate'))) {
       endDateParse = Date.parse(FLOW.dateControl.get('toDate'));
     } else {
       endDateParse = null;
     }
 
-    if(!Ember.none(FLOW.dateControl.get('fromDate'))) {
+    if (!Ember.none(FLOW.dateControl.get('fromDate'))) {
       startDateParse = Date.parse(FLOW.dateControl.get('fromDate'));
     } else {
       startDateParse = null;
@@ -103,12 +104,12 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     sa.set('startDate', startDateParse);
     sa.set('language', 'en');
 
-    this.get('devicesPreview').forEach(function(item) {
+    this.get('devicesPreview').forEach(function (item) {
       devices.push(item.get('keyId'));
     });
     sa.set('devices', devices);
 
-    this.get('surveysPreview').forEach(function(item) {
+    this.get('surveysPreview').forEach(function (item) {
       surveys.push(item.get('keyId'));
     });
     sa.set('surveys', surveys);
@@ -117,24 +118,24 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     FLOW.router.transitionTo('navDevices.assignSurveysOverview');
   },
 
-  cancelEditSurveyAssignment: function() {
-    if(Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
+  cancelEditSurveyAssignment: function () {
+    if (Ember.none(FLOW.selectedControl.selectedSurveyAssignment.get('keyId'))) {
       FLOW.selectedControl.get('selectedSurveyAssignment').deleteRecord();
     }
     FLOW.selectedControl.set('selectedSurveyAssignment', null);
     FLOW.router.transitionTo('navDevices.assignSurveysOverview');
   },
 
-  addSelectedDevices: function() {
+  addSelectedDevices: function () {
     this.devicesPreview.pushObjects(FLOW.selectedControl.get('selectedDevices'));
     // delete duplicates
     this.set('devicesPreview', FLOW.ArrNoDupe(this.get('devicesPreview')));
   },
 
-  addSelectedSurveys: function() {
+  addSelectedSurveys: function () {
     var sgName;
     sgName = FLOW.selectedControl.selectedSurveyGroup.get('code');
-    FLOW.selectedControl.get('selectedSurveys').forEach(function(item) {
+    FLOW.selectedControl.get('selectedSurveys').forEach(function (item) {
       item.set('surveyGroupName', sgName);
     });
     this.surveysPreview.pushObjects(FLOW.selectedControl.get('selectedSurveys'));
@@ -142,59 +143,59 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     this.set('surveysPreview', FLOW.ArrNoDupe(this.get('surveysPreview')));
   },
 
-  selectAllDevices: function() {
+  selectAllDevices: function () {
     var selected = Ember.A([]);
-    FLOW.devicesInGroupControl.get('content').forEach(function(item) {
+    FLOW.devicesInGroupControl.get('content').forEach(function (item) {
       selected.pushObject(item);
     });
     FLOW.selectedControl.set('selectedDevices', selected);
   },
 
-  deselectAllDevices: function() {
+  deselectAllDevices: function () {
     FLOW.selectedControl.set('selectedDevices', []);
   },
 
-  selectAllSurveys: function() {
+  selectAllSurveys: function () {
     var selected = Ember.A([]);
-    FLOW.surveyControl.get('content').forEach(function(item) {
+    FLOW.surveyControl.get('content').forEach(function (item) {
       selected.pushObject(item);
     });
     FLOW.selectedControl.set('selectedSurveys', selected);
   },
 
-  deselectAllSurveys: function() {
+  deselectAllSurveys: function () {
     FLOW.selectedControl.set('selectedSurveys', []);
   },
 
-  removeSingleSurvey: function(event) {
+  removeSingleSurvey: function (event) {
     var id, surveysPreview, i;
     id = event.context.get('clientId');
     surveysPreview = this.get('surveysPreview');
-    for(i = 0; i < surveysPreview.length; i++) {
-      if(surveysPreview.objectAt(i).clientId == id) {
+    for (i = 0; i < surveysPreview.length; i++) {
+      if (surveysPreview.objectAt(i).clientId == id) {
         surveysPreview.removeAt(i);
       }
     }
     this.set('surveysPreview', surveysPreview);
   },
 
-  removeAllSurveys: function() {
+  removeAllSurveys: function () {
     this.set('surveysPreview', Ember.A([]));
   },
 
-  removeSingleDevice: function(event) {
+  removeSingleDevice: function (event) {
     var id, devicesPreview, i;
     id = event.context.get('clientId');
     devicesPreview = this.get('devicesPreview');
-    for(i = 0; i < devicesPreview.length; i++) {
-      if(devicesPreview.objectAt(i).clientId == id) {
+    for (i = 0; i < devicesPreview.length; i++) {
+      if (devicesPreview.objectAt(i).clientId == id) {
         devicesPreview.removeAt(i);
       }
     }
     this.set('devicesPreview', devicesPreview);
   },
 
-  removeAllDevices: function() {
+  removeAllDevices: function () {
     this.set('devicesPreview', Ember.A([]));
   }
 });

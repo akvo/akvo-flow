@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -43,6 +44,7 @@ import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionOption;
 
 @Controller
 @RequestMapping("/questions")
@@ -81,7 +83,6 @@ public class QuestionRestService {
 	// list questions by questionGroup or by survey. If includeNumber or
 	// includeOption are true, only NUMBER and OPTION type questions are
 	// returned
-	// TODO put in dependencies
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public Map<String, Object> listQuestions(
@@ -93,6 +94,7 @@ public class QuestionRestService {
 			@RequestParam(value = "questionId", defaultValue = "") Long questionId) {
 		final Map<String, Object> response = new HashMap<String, Object>();
 		List<QuestionDto> results = new ArrayList<QuestionDto>();
+		List<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
 		List<Question> questions = new ArrayList<Question>();
 		RestStatusDto statusDto = new RestStatusDto();
 		statusDto.setStatus("");
@@ -129,7 +131,7 @@ public class QuestionRestService {
 						includeElement = true;
 
 					// include if we are requesting questions in a survey, with
-					// non of the other parameters set
+					// none of the other parameters set
 					if (surveyId != null
 							&& ("".equals(includeNumber) && ""
 									.equals(includeOption)))
@@ -151,15 +153,25 @@ public class QuestionRestService {
 						QuestionDto dto = new QuestionDto();
 						DtoMarshaller.copyToDto(question, dto);
 						if (question.getType() == Question.Type.OPTION) {
-							dto.setOptionList(questionOptionDao
-									.listOptionInStringByQuestion(dto
-											.getKeyId()));
+							
+							Map<Integer,QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto.getKeyId());
+							List<Long> qoList = new ArrayList<Long>();
+							for (QuestionOption qo : qoMap.values()){
+								QuestionOptionDto qoDto = new QuestionOptionDto();
+								BeanUtils.copyProperties(qo, qoDto, new String[] {
+										"translationMap"});
+								qoDto.setKeyId(qo.getKey().getId());
+								qoList.add(qo.getKey().getId());
+								qoResults.add(qoDto);
+							}
+							dto.setQuestionOptions(qoList);
 						}
 						results.add(dto);
 					}
 				}
 			}
 		}
+		response.put("questionOptions", qoResults);
 		response.put("questions", results);
 		response.put("meta",statusDto);
 		return response;
@@ -168,16 +180,29 @@ public class QuestionRestService {
 	// find a single question by the questionId
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
-	public Map<String, QuestionDto> findQuestion(@PathVariable("id") Long id) {
-		final Map<String, QuestionDto> response = new HashMap<String, QuestionDto>();
-		Question s = questionDao.getByKey(id);
+	public Map<String, Object> findQuestion(@PathVariable("id") Long id) {
+		final Map<String, Object> response = new HashMap<String, Object>();
+		List<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
+		Question q = questionDao.getByKey(id);
 		QuestionDto dto = null;
-		if (s != null) {
+		if (q != null) {
 			dto = new QuestionDto();
-			DtoMarshaller.copyToDto(s, dto);
-			dto.setOptionList(questionOptionDao
-					.listOptionInStringByQuestion(dto.getKeyId()));
+			DtoMarshaller.copyToDto(q, dto);
+			if (q.getType() == Question.Type.OPTION) {
+				Map<Integer,QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto.getKeyId());
+				List<Long> qoList = new ArrayList<Long>();
+				for (QuestionOption qo : qoMap.values()){
+					QuestionOptionDto qoDto = new QuestionOptionDto();
+					BeanUtils.copyProperties(qo, qoDto, new String[] {
+							"translationMap"});
+					qoDto.setKeyId(qo.getKey().getId());
+					qoList.add(qo.getKey().getId());
+					qoResults.add(qoDto);
+				}
+				dto.setQuestionOptions(qoList);
+			}
 		}
+		response.put("questionOptions", qoResults);
 		response.put("question", dto);
 		return response;
 
@@ -219,7 +244,7 @@ public class QuestionRestService {
 	}
 
 	// update existing question
-	// TODO put in metrics
+	// questionOptions are saved and updated on their own
 	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
 	@ResponseBody
 	public Map<String, Object> saveExistingQuestion(
@@ -273,13 +298,8 @@ public class QuestionRestService {
 
 					dto = new QuestionDto();
 					DtoMarshaller.copyToDto(q, dto);
-					// this doesn't work because sometimes deleted options are asked for.
-					// this happens because we delete and then recreate the items in an earlier call
-					// if we then ask for them here, sometimes it gives 'cannot read field in deleted item'
-					// dto.setOptionList(questionOptionDao
-					//		.listOptionInStringByQuestion(dto.getKeyId()));
-					// instead, return the string itself.
-					dto.setOptionList(questionDto.getOptionList());
+					dto.setOptionList(questionOptionDao
+							.listOptionInStringByQuestion(dto.getKeyId()));
 					statusDto.setStatus("ok");
 					statusDto.setMessage("");
 				}
@@ -291,6 +311,7 @@ public class QuestionRestService {
 	}
 
 	// create new question
+	// questionOptions are saved and updated on their own
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@ResponseBody
 	public Map<String, Object> saveNewQuestion(
@@ -311,26 +332,11 @@ public class QuestionRestService {
 			// copy the properties, except the createdDateTime property, because
 			// it is set in the Dao.
 			BeanUtils.copyProperties(questionDto, q, new String[] {
-					"createdDateTime", "type", "optionList" });
+					"createdDateTime", "type"});
 			if (questionDto.getType() != null)
 				q.setType(Question.Type.valueOf(questionDto.getType()
 						.toString()));
 
-			// make room by moving items up
-			// List<Question> questions = questionDao
-			// .listQuestionsInOrderForGroup(questionDto
-			// .getQuestionGroupId());
-			// Integer insertAfterOrder = questionDto.getOrder();
-			// if (questions != null) {
-			// for (Question question : questions) {
-			// if (question.getOrder() > insertAfterOrder) {
-			// question.setOrder(question.getOrder() + 1);
-			// question = questionDao.save(question);
-			// }
-			// }
-			// }
-			//
-			// q.setOrder(insertAfterOrder + 1);
 			q = questionDao.save(q);
 
 			dto = new QuestionDto();

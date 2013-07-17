@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.survey.device.util;
 
+import java.util.List;
 /**
  * Utilities for manipulating arrays
  * 
@@ -45,4 +46,23 @@ public class ArrayUtil {
 			destination[i + startIndex] = source[i];
 		}
 	}
+
+	public static boolean[] toPrimitiveBooleanArray(final List<Boolean> booleanList) {
+	    final boolean[] primitives = new boolean[booleanList.size()];
+	    int index = 0;
+	    for (Boolean object : booleanList) {
+	        primitives[index++] = object;
+	    }
+	    return primitives;
+	}
+
+	public static int[] toPrimitiveIntArray(final List<Integer> integerList) {
+	    final int[] primitives = new int[integerList.size()];
+	    int index = 0;
+	    for (Integer object : integerList) {
+	        primitives[index++] = object;
+	    }
+	    return primitives;
+	}
+
 }

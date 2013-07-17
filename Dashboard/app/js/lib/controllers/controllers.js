@@ -5,6 +5,7 @@
 // the application and initialized.
 require('akvo-flow/core-common');
 require('akvo-flow/flowenv');
+require('akvo-flow/controllers/languages');
 require('akvo-flow/currentuser');
 require('akvo-flow/controllers/permissions');
 require('akvo-flow/controllers/general-controllers-common');
@@ -17,7 +18,7 @@ require('akvo-flow/controllers/messages-controllers');
 require('akvo-flow/controllers/user-controllers');
 
 FLOW.ApplicationController = Ember.Controller.extend({
-  init: function() {
+  init: function () {
     this._super();
     Ember.STRINGS = Ember.STRINGS_EN;
   }
