@@ -13,8 +13,8 @@ FLOW.BaseModel = DS.Model.extend({
   // so a saving message can be displayed. savingStatus is used to capture the
   // moment that nothing is being saved anymore, but in the previous event it was
   // so we can turn off the saving message.
-  anySaving: function() {
-    if(this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
+  anySaving: function () {
+    if (this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
       FLOW.savingMessageControl.checkSaving();
     }
     this.set('savingStatus', (this.get('isSaving') || this.get('isDirty')));
@@ -23,13 +23,13 @@ FLOW.BaseModel = DS.Model.extend({
 });
 
 FLOW.SurveyGroup = FLOW.BaseModel.extend({
-  didDelete: function() {
+  didDelete: function () {
     FLOW.surveyGroupControl.populate();
   },
-  didUpdate: function() {
+  didUpdate: function () {
     FLOW.surveyGroupControl.populate();
   },
-  didCreate: function() {
+  didCreate: function () {
     FLOW.surveyGroupControl.populate();
   },
 

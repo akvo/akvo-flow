@@ -62,10 +62,10 @@ import com.gallatinsystems.survey.device.domain.QuestionResponse;
 import com.gallatinsystems.survey.device.domain.Survey;
 import com.gallatinsystems.survey.device.event.QuestionInteractionEvent;
 import com.gallatinsystems.survey.device.event.QuestionInteractionListener;
-import com.gallatinsystems.survey.device.util.ArrayPreferenceData;
-import com.gallatinsystems.survey.device.util.ArrayPreferenceUtil;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
+import com.gallatinsystems.survey.device.util.LangsPreferenceData;
+import com.gallatinsystems.survey.device.util.LangsPreferenceUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
 import com.gallatinsystems.survey.device.view.OptionQuestionView;
@@ -117,8 +117,13 @@ public class SurveyViewActivity extends TabActivity implements
 	private Long respondentId;
 	private String userId;
 	private float currentTextSize;
-	private boolean[] selectedLanguages;
 	private String[] selectedLanguageCodes;
+
+	private LangsPreferenceData langsPrefData;
+	private String[] langsSelectedNameArray;
+	private boolean[] langsSelectedBooleanArray;
+	private int[] langsSelectedMasterIndexArray;
+
 	private HashMap<QuestionGroup, SurveyQuestionTabContentFactory> factoryMap;
 	private SubmitTabContentFactory submissionTab;
 	private Survey survey;
@@ -905,22 +910,28 @@ public class SurveyViewActivity extends TabActivity implements
 				updateTextSize(LARGE_TXT_SIZE);
 			}
 			return true;
+
 		case SURVEY_LANG:
-			ViewUtil.displayLanguageSelector(this, selectedLanguages,
+			langsSelectedNameArray = langsPrefData.getLangsSelectedNameArray();
+			langsSelectedBooleanArray = langsPrefData.getLangsSelectedBooleanArray();
+			langsSelectedMasterIndexArray = langsPrefData.getLangsSelectedMasterIndexArray();
+
+			ViewUtil.displayLanguageSelector(this, langsSelectedNameArray, langsSelectedBooleanArray,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int clicked) {
 							if(dialog!=null){
 								dialog.dismiss();
 							}
-							selectedLanguageCodes = ArrayPreferenceUtil
-									.getSelectedCodes(SurveyViewActivity.this,
-											selectedLanguages,
-											R.array.languagecodes);
-							databaseAdapter
-									.savePreference(
-											ConstantUtil.SURVEY_LANG_SETTING_KEY,
-											ArrayPreferenceUtil
-													.formPreferenceString(selectedLanguages));
+
+							databaseAdapter.savePreference(
+									ConstantUtil.SURVEY_LANG_SETTING_KEY,
+									LangsPreferenceUtil
+											.formLangPreferenceString(langsSelectedBooleanArray, langsSelectedMasterIndexArray));
+
+							selectedLanguageCodes = LangsPreferenceUtil.getSelectedLangCodes(SurveyViewActivity.this,
+									langsPrefData.getLangsSelectedMasterIndexArray(),
+									langsPrefData.getLangsSelectedBooleanArray(),
+									R.array.alllanguagecodes);
 							for (int i = 0; i < tabContentFactories.size(); i++) {
 								tabContentFactories.get(i)
 										.updateQuestionLanguages(
@@ -1053,20 +1064,21 @@ public class SurveyViewActivity extends TabActivity implements
 		try {
 			super.onResume();
 			databaseAdapter.open();
-			String langSelection = databaseAdapter
+
+			String langsSelection = databaseAdapter
 					.findPreference(ConstantUtil.SURVEY_LANG_SETTING_KEY);
-			ArrayPreferenceData langData = ArrayPreferenceUtil.loadArray(this,
-					langSelection, R.array.languages);
+			String langsPresentIndexes = databaseAdapter.findPreference(ConstantUtil.SURVEY_LANG_PRESENT_KEY);
+			langsPrefData = LangsPreferenceUtil.createLangPrefData(this, langsSelection, langsPresentIndexes);
+			selectedLanguageCodes = LangsPreferenceUtil.getSelectedLangCodes(this,
+					langsPrefData.getLangsSelectedMasterIndexArray(),
+					langsPrefData.getLangsSelectedBooleanArray(),
+					R.array.alllanguagecodes);
 
 			String textSize = databaseAdapter
 					.findPreference(ConstantUtil.SURVEY_TEXT_SIZE_KEY);
 			if (ConstantUtil.LARGE_TXT.equalsIgnoreCase(textSize)) {
 				currentTextSize = LARGE_TXT_SIZE;
 			}
-
-			selectedLanguages = langData.getSelectedItems();
-			selectedLanguageCodes = ArrayPreferenceUtil.getSelectedCodes(this,
-					selectedLanguages, R.array.languagecodes);
 
 			try {
 				Survey surveyFromDb = databaseAdapter.findSurvey(surveyId);

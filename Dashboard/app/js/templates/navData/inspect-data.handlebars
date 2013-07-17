@@ -4,7 +4,7 @@
       <h1>{{t _choose_survey_data_to_display}}:</h1>
       <div class="chooseSurveyData">
         {{view Ember.Select 
-          contentBinding="FLOW.surveyGroupControl.content" 
+          contentBinding="FLOW.surveyGroupControl.arrangedContent"
           selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
           optionLabelPath="content.code" 
           optionValuePath="content.keyId"
@@ -12,7 +12,7 @@
           promptBinding="Ember.STRINGS._select_survey_group"}}
 
         {{view Ember.Select 
-          contentBinding="FLOW.surveyControl.content" 
+          contentBinding="FLOW.surveyControl.arrangedContent"
           selectionBinding="FLOW.selectedControl.selectedSurvey" 
           optionLabelPath="content.code" 
           optionValuePath="content.keyId"

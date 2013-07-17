@@ -13,8 +13,8 @@ FLOW.BaseModel = DS.Model.extend({
   // so a saving message can be displayed. savingStatus is used to capture the
   // moment that nothing is being saved anymore, but in the previous event it was
   // so we can turn off the saving message.
-  anySaving: function() {
-    if(this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
+  anySaving: function () {
+    if (this.get('isSaving') || this.get('isDirty') || this.get('savingStatus')) {
       FLOW.savingMessageControl.checkSaving();
     }
     this.set('savingStatus', (this.get('isSaving') || this.get('isDirty')));
@@ -43,10 +43,10 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 
 
 FLOW.Survey = FLOW.BaseModel.extend({
-  didLoad: function() {
+  didLoad: function () {
     // set the survey group name
     var sg = FLOW.store.find(FLOW.SurveyGroup, this.get('surveyGroupId'));
-    if(!Ember.empty(sg)) {
+    if (!Ember.empty(sg)) {
       this.set('surveyGroupName', sg.get('code'));
     }
   },
@@ -87,6 +87,8 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
 
 
 FLOW.Question = FLOW.BaseModel.extend({
+  questionOptions: DS.hasMany('FLOW.QuestionOption'),
+  questionOptionList: null,
   allowDecimal: DS.attr('boolean', {
     defaultValue: false
   }),
@@ -116,13 +118,12 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
   dependentQuestionAnswer: DS.attr('string'),
   dependentQuestionId: DS.attr('number'),
-  maxVal: DS.attr('number',{
+  maxVal: DS.attr('number', {
     defaultValue: null
   }),
-  minVal: DS.attr('number',{
+  minVal: DS.attr('number', {
     defaultValue: null
   }),
-  optionList: DS.attr('string'),
   order: DS.attr('number'),
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
@@ -137,6 +138,8 @@ FLOW.Question = FLOW.BaseModel.extend({
 
 
 FLOW.QuestionOption = FLOW.BaseModel.extend({
+  question: DS.belongsTo('FLOW.Question'),
+  order: DS.attr('number'),
   questionId: DS.attr('number'),
   text: DS.attr('string')
 });
@@ -149,14 +152,14 @@ FLOW.DeviceGroup = FLOW.BaseModel.extend({
 });
 
 FLOW.Device = FLOW.BaseModel.extend({
-  didLoad: function(){
+  didLoad: function () {
     var combinedName;
-      if(Ember.empty(this.get('deviceIdentifier'))) {
-          combinedName = "no identifer";
-        } else {
-          combinedName = this.get('deviceIdentifier');
-        }
-        this.set('combinedName', combinedName + " " + this.get('phoneNumber'));
+    if (Ember.empty(this.get('deviceIdentifier'))) {
+      combinedName = "no identifer";
+    } else {
+      combinedName = this.get('deviceIdentifier');
+    }
+    this.set('combinedName', combinedName + " " + this.get('phoneNumber'));
   },
   esn: DS.attr('string', {
     defaultValue: ''
@@ -183,8 +186,8 @@ FLOW.Device = FLOW.BaseModel.extend({
   deviceGroup: DS.attr('string', {
     defaultValue: ''
   }),
-  deviceGroupName: DS.attr('string',{
-    defaultValue:''
+  deviceGroupName: DS.attr('string', {
+    defaultValue: ''
   }),
   isSelected: false,
   combinedName: null
@@ -297,6 +300,40 @@ FLOW.Message = FLOW.BaseModel.extend({
 });
 
 FLOW.Action = FLOW.BaseModel.extend({});
+
+FLOW.Translation = FLOW.BaseModel.extend({
+  didUpdate: function () {
+    console.log('didUpdate', this.get('keyId'));
+    FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
+  },
+
+  // can't use this at the moment, as the didCreate is fired before the id is back from the ajax call
+  // didCreate: function(){
+  //   console.log('didCreate',this.get('keyId'));
+  //   FLOW.translationControl.putSingleTranslationInList(this.get('parentType'),this.get('parentId'),this.get('text'),this.get('keyId'), false);
+  // },
+
+  // temporary hack to fire the didCreate event after the keyId is known
+  didCreateId: function () {
+    if (!Ember.none(this.get('keyId')) && this.get('keyId') > 0) {
+      console.log('didCreate', this.get('keyId'));
+      FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
+    }
+  }.observes('this.keyId'),
+
+  didDelete: function () {
+    console.log('didDelete', this.get('keyId'));
+    console.log('value:', this.get('text'));
+
+    FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), null, null, true);
+  },
+
+  parentType: DS.attr('string'),
+  parentId: DS.attr('string'),
+  surveyId: DS.attr('string'),
+  text: DS.attr('string'),
+  langCode: DS.attr('string')
+});
 
 
 FLOW.NotificationSubscription = FLOW.BaseModel.extend({

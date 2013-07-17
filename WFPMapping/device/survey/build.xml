@@ -32,17 +32,22 @@
     <!-- Specify survey.properties destination -->
     <property name="survey.properties.dest"  location="res/raw/survey.properties" />
 
-    <target name="setup-instance">
+    <target name="setup-app">
         <fail
             message="survey.properties is missing. Make sure to provide a valid path to that file."
             unless="survey.properties"
         />
         <copy file="${survey.properties}" tofile="${survey.properties.dest}" overwrite="true"/>
         <echo> Survey.properties set: ${survey.properties}</echo>
+
+        <!-- Set final name to contain current version name -->
+        <xmlproperty file="AndroidManifest.xml"
+                     collapseAttributes="true" />
+        <property name="out.final.file" location="${out.dir}/fieldsurvey-${manifest.android:versionName}.apk" />
+        <echo message="${out.final.file}" />
     </target>
 
-    <target name="flow-release">
-        <antcall target="setup-instance" />
+    <target name="flow-release" depends="setup-app">
         <antcall target="release" />
     </target>
 

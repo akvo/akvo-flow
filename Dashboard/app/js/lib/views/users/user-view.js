@@ -2,12 +2,12 @@ FLOW.UserListView = FLOW.View.extend({
   showAddUserBool: false,
   showEditUserBool: false,
 
-  showAddUserDialog: function() {
+  showAddUserDialog: function () {
     var userPerm;
     FLOW.editControl.set('newUserName', null);
     FLOW.editControl.set('newEmailAddress', null);
 
-    userPerm = FLOW.permissionLevelControl.find(function(item) {
+    userPerm = FLOW.permissionLevelControl.find(function (item) {
       return item.value == 20; // USER
     });
     FLOW.editControl.set('newPermissionLevel', userPerm);
@@ -15,16 +15,16 @@ FLOW.UserListView = FLOW.View.extend({
     this.set('showAddUserBool', true);
   },
 
-  doAddUser: function() {
+  doAddUser: function () {
     var value = null,
       superAdmin = false;
-    if(FLOW.editControl.newPermissionLevel !== null) {
+    if (FLOW.editControl.newPermissionLevel !== null) {
       value = FLOW.editControl.newPermissionLevel.value;
     } else {
       value = null;
     }
 
-    if(value === 0) {
+    if (value === 0) {
       value = 20; // Can't create a Super Admin from UI
       superAdmin = true;
     }
@@ -38,23 +38,23 @@ FLOW.UserListView = FLOW.View.extend({
     FLOW.store.commit();
     this.set('showAddUserBool', false);
 
-    if(superAdmin) {
+    if (superAdmin) {
       this.showRoleWarning();
     }
 
   },
 
-  cancelAddUser: function() {
+  cancelAddUser: function () {
     this.set('showAddUserBool', false);
   },
 
-  showEditUserDialog: function(event) {
+  showEditUserDialog: function (event) {
     var permission = null;
     FLOW.editControl.set('editUserName', event.context.get('userName'));
     FLOW.editControl.set('editEmailAddress', event.context.get('emailAddress'));
     FLOW.editControl.set('editUserId', event.context.get('keyId'));
 
-    permission = FLOW.permissionLevelControl.find(function(item) {
+    permission = FLOW.permissionLevelControl.find(function (item) {
       return item.value == event.context.get('permissionList');
     });
 
@@ -62,14 +62,14 @@ FLOW.UserListView = FLOW.View.extend({
     this.set('showEditUserBool', true);
   },
 
-  doEditUser: function() {
+  doEditUser: function () {
     var user, superAdmin = false;
     user = FLOW.store.find(FLOW.User, FLOW.editControl.get('editUserId'));
     user.set('userName', FLOW.editControl.get('editUserName'));
     user.set('emailAddress', FLOW.editControl.get('editEmailAddress').toLowerCase());
 
-    if(FLOW.editControl.editPermissionLevel !== null) {
-      if(FLOW.editControl.editPermissionLevel.value === 0) {
+    if (FLOW.editControl.editPermissionLevel !== null) {
+      if (FLOW.editControl.editPermissionLevel.value === 0) {
         superAdmin = true;
         user.set('permissionList', 20); // Can't change to Super Admin
       } else {
@@ -80,16 +80,16 @@ FLOW.UserListView = FLOW.View.extend({
     FLOW.store.commit();
     this.set('showEditUserBool', false);
 
-    if(superAdmin) {
+    if (superAdmin) {
       this.showRoleWarning();
     }
   },
 
-  cancelEditUser: function() {
+  cancelEditUser: function () {
     this.set('showEditUserBool', false);
   },
 
-  showRoleWarning: function() {
+  showRoleWarning: function () {
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_manage_users_and_user_rights'));
     FLOW.dialogControl.set('message', Ember.String.loc('_cant_set_superadmin'));
@@ -100,10 +100,10 @@ FLOW.UserListView = FLOW.View.extend({
 
 FLOW.UserView = FLOW.View.extend({
   tagName: 'span',
-  deleteUser: function() {
+  deleteUser: function () {
     var user;
     user = FLOW.store.find(FLOW.User, this.content.get('keyId'));
-    if(user !== null) {
+    if (user !== null) {
       user.deleteRecord();
       FLOW.store.commit();
     }
@@ -115,7 +115,7 @@ FLOW.SingleUserView = FLOW.View.extend({
   permissionLevel: null,
   roleLabel: null,
 
-  init: function() {
+  init: function () {
     var role = null;
     this._super();
 
@@ -124,7 +124,7 @@ FLOW.SingleUserView = FLOW.View.extend({
     }, this);
 
 
-    if(Ember.none(role)) {
+    if (Ember.none(role)) {
       this.set('roleLabel', Ember.String.loc('_please_reset_the_role_for_this_user'));
       this.set('roleClass', 'notFound');
     } else {

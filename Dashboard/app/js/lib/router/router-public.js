@@ -5,7 +5,7 @@ FLOW.Router = Ember.Router.extend({
   loggedIn: false,
   location: 'none',
   root: Ember.Route.extend({
-    doNavMaps: function(router, context) {
+    doNavMaps: function (router, context) {
       router.transitionTo('navMaps');
     },
     index: Ember.Route.extend({
@@ -16,7 +16,7 @@ FLOW.Router = Ember.Router.extend({
     // ************************** MAPS ROUTER **********************************
     navMaps: Ember.Route.extend({
       route: '/maps',
-      connectOutlets: function(router, context) {
+      connectOutlets: function (router, context) {
         router.get('applicationController').connectOutlet('navMaps');
       }
     })

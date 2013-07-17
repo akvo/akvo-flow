@@ -5,12 +5,12 @@ FLOW.ManageAttributesTableView = FLOW.View.extend({
   newAttributeGroup: null,
   newAttributeType: null,
 
-  showAddAttributeDialog: function() {
+  showAddAttributeDialog: function () {
     this.set('showAddAttributeDialogBool', true);
   },
 
-  doAddAttribute: function() {
-    if(this.get('newAttributeName') !== null && this.get('newAttributeType') !== null) {
+  doAddAttribute: function () {
+    if (this.get('newAttributeName') !== null && this.get('newAttributeType') !== null) {
       FLOW.store.createRecord(FLOW.Metric, {
         "name": this.get('newAttributeName'),
         "group": this.get('newAttributeGroup'),
@@ -21,19 +21,19 @@ FLOW.ManageAttributesTableView = FLOW.View.extend({
     this.set('showAddAttributeDialogBool', false);
   },
 
-  cancelAddAttribute: function() {
+  cancelAddAttribute: function () {
     this.set('showAddAttributeDialogBool', false);
   },
 
-showEditAttributeDialog: function(event) {
+  showEditAttributeDialog: function (event) {
     var attrType = null;
 
     FLOW.editControl.set('editAttributeName', event.context.get('name'));
     FLOW.editControl.set('editAttributeGroup', event.context.get('group'));
     FLOW.editControl.set('editAttributeId', event.context.get('keyId'));
 
-    FLOW.attributeTypeControl.get('content').forEach(function(item) {
-      if(item.get('value') == event.context.get('valueType')) {
+    FLOW.attributeTypeControl.get('content').forEach(function (item) {
+      if (item.get('value') == event.context.get('valueType')) {
         attrType = item;
       }
     });
@@ -42,13 +42,13 @@ showEditAttributeDialog: function(event) {
     this.set('showEditAttributeDialogBool', true);
   },
 
-  doEditAttribute: function() {
+  doEditAttribute: function () {
     var attribute;
     attribute = FLOW.store.find(FLOW.Metric, FLOW.editControl.get('editAttributeId'));
     attribute.set('name', FLOW.editControl.get('editAttributeName'));
     attribute.set('group', FLOW.editControl.get('editAttributeGroup'));
 
-    if(FLOW.editControl.editAttributeType !== null) {
+    if (FLOW.editControl.editAttributeType !== null) {
       attribute.set('valueType', FLOW.editControl.editAttributeType.get('value'));
     }
 
@@ -56,7 +56,7 @@ showEditAttributeDialog: function(event) {
     this.set('showEditAttributeDialogBool', false);
   },
 
-  cancelEditAttribute: function() {
+  cancelEditAttribute: function () {
     this.set('showEditAttributeDialogBool', false);
   }
 });
@@ -64,7 +64,7 @@ showEditAttributeDialog: function(event) {
 FLOW.AttributeView = FLOW.View.extend({
   tagName: 'span',
 
-  deleteAttribute: function() {
+  deleteAttribute: function () {
     var attrDeleteId, attribute;
     attrDeleteId = this.content.get('keyId');
     attribute = FLOW.store.find(FLOW.Metric, attrDeleteId);

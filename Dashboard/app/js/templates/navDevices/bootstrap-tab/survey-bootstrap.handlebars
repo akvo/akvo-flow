@@ -7,7 +7,7 @@
           <h2>01. {{t _select_survey}}:</h2>
           <div class="">
             <label for="surveyGroup">{{t _select_survey_group}}:</label>
-            {{view Ember.Select contentBinding="FLOW.surveyGroupControl.content" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.code" optionValuePath="content.keyId" id="surveyGroup" prompt="Select survey group"}}
+            {{view Ember.Select contentBinding="FLOW.surveyGroupControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.code" optionValuePath="content.keyId" id="surveyGroup" prompt="Select survey group"}}
 			<span class="infoText">{{t _cant_find_your_survey_}}</span>
 			</div>
           <div class="">
@@ -21,7 +21,7 @@
            {{view Ember.Select 
            multiple=true
            size=10
-        contentBinding="FLOW.surveyControl.publishedContent" 
+        contentBinding="FLOW.surveyControl.publishedContent.arrangedContent" 
         selectionBinding="FLOW.selectedControl.selectedSurveys" 
         optionLabelPath="content.name" 
           id="surveys"

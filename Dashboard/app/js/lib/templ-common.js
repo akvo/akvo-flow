@@ -1,11 +1,14 @@
-var get = Ember.get, fmt = Ember.String.fmt;
+var get = Ember.get,
+  fmt = Ember.String.fmt;
 
 Ember.View.reopen({
-  templateForName: function(name, type) {
-    if (!name) { return; }
+  templateForName: function (name, type) {
+    if (!name) {
+      return;
+    }
 
     var templates = get(this, 'templates'),
-        template = get(templates, name);
+      template = get(templates, name);
 
     if (!template) {
       try {

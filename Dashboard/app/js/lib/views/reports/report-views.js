@@ -5,19 +5,19 @@ FLOW.chartView = FLOW.View.extend({
   chartType: null,
   compactSmaller: true,
 
-  isDoughnut: function() {
+  isDoughnut: function () {
     return this.chartType.get('value') == 'doughnut';
   }.property('this.chartType'),
 
-  init: function() {
+  init: function () {
     this._super();
     this.chartType = FLOW.chartTypeControl.content[0];
   },
 
-  getChartData: function() {
+  getChartData: function () {
     //   createBarChart();
     this.set('noChoiceBool', false);
-    if(FLOW.selectedControl.get('selectedQuestion') !== null) {
+    if (FLOW.selectedControl.get('selectedQuestion') !== null) {
       FLOW.surveyQuestionSummaryControl.doSurveyQuestionSummaryQuery(FLOW.selectedControl.selectedQuestion.get('keyId'));
       FLOW.chartDataControl.set('questionText', FLOW.selectedControl.selectedQuestion.get('text'));
     } else {
@@ -25,30 +25,30 @@ FLOW.chartView = FLOW.View.extend({
     }
   },
 
-  buildChart: function() {
+  buildChart: function () {
     var chartData = [],
       smallerItems = [],
       total = 0,
       max = 0,
       maxPer, i, tot, totPerc;
 
-    if(FLOW.surveyQuestionSummaryControl.content.get('isLoaded') === true) {
+    if (FLOW.surveyQuestionSummaryControl.content.get('isLoaded') === true) {
       FLOW.chartDataControl.set('total', FLOW.surveyQuestionSummaryControl.content.get('length'));
-      FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
+      FLOW.surveyQuestionSummaryControl.get('content').forEach(function (item) {
         total = total + item.get('count');
-        if(item.get('count') > max) max = item.get('count');
+        if (item.get('count') > max) max = item.get('count');
       });
 
       // set the maximum of the scale
       maxPer = 100.0 * max / total;
 
       // if type is doughnut, do doughnut things
-      if(this.chartType.get('value') == 'doughnut') {
+      if (this.chartType.get('value') == 'doughnut') {
         i = -1;
         tot = 0;
         totPerc = 0;
 
-        FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
+        FLOW.surveyQuestionSummaryControl.get('content').forEach(function (item) {
           var percentage = 100.0 * item.get('count') / total,
             percString = percentage.toFixed(1);
           chartData.push({
@@ -58,14 +58,14 @@ FLOW.chartView = FLOW.View.extend({
         });
 
         // sort smallest first
-        chartData.sort(function(a, b) {
+        chartData.sort(function (a, b) {
           return a.percentage >= b.percentage;
         });
 
 
-        if(this.get('compactSmaller')) {
-          chartData.forEach(function(item) {
-            if((totPerc < 5 || item.percentage < 5) && (item.percentage < 7)) {
+        if (this.get('compactSmaller')) {
+          chartData.forEach(function (item) {
+            if ((totPerc < 5 || item.percentage < 5) && (item.percentage < 7)) {
               totPerc = totPerc + item.percentage;
               i = i + 1;
             }
@@ -73,7 +73,7 @@ FLOW.chartView = FLOW.View.extend({
 
           tot = 0;
 
-          for(var ii = 0; ii <= i; ii++) {
+          for (var ii = 0; ii <= i; ii++) {
             smallerItems.push(chartData[ii]);
             tot = tot + chartData[ii].percentage;
           }
@@ -95,9 +95,9 @@ FLOW.chartView = FLOW.View.extend({
         createDoughnutChart();
 
         // if type vbar, do vbar things
-      } else if(this.chartType.get('value') == 'vbar') {
+      } else if (this.chartType.get('value') == 'vbar') {
 
-        FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
+        FLOW.surveyQuestionSummaryControl.get('content').forEach(function (item) {
           chartData.push({
             "legendLabel": (item.get('response')),
             "percentage": 100.0 * item.get('count') / total
@@ -105,7 +105,7 @@ FLOW.chartView = FLOW.View.extend({
         });
 
         // sort smallest first
-        chartData.sort(function(a, b) {
+        chartData.sort(function (a, b) {
           return a.percentage <= b.percentage;
         });
         FLOW.chartDataControl.set('chartData', chartData);
@@ -114,9 +114,9 @@ FLOW.chartView = FLOW.View.extend({
         createVBarChart();
 
         // if type hbar, do hbar things
-      } else if(this.chartType.get('value') == 'hbar') {
+      } else if (this.chartType.get('value') == 'hbar') {
 
-        FLOW.surveyQuestionSummaryControl.get('content').forEach(function(item) {
+        FLOW.surveyQuestionSummaryControl.get('content').forEach(function (item) {
           chartData.push({
             "legendLabel": (item.get('response')),
             "percentage": 100.0 * item.get('count') / total
@@ -124,7 +124,7 @@ FLOW.chartView = FLOW.View.extend({
         });
 
         // sort smallest first
-        chartData.sort(function(a, b) {
+        chartData.sort(function (a, b) {
           return a.percentage <= b.percentage;
         });
         FLOW.chartDataControl.set('chartData', chartData);
