@@ -17,6 +17,7 @@
 <bean id="surveyedLocaleDao" class="com.gallatinsystems.surveyal.dao.SurveyedLocaleDao"/>
 <bean id="surveyInstanceDao" class="org.waterforpeople.mapping.dao.SurveyInstanceDAO"/>
 <bean id="surveyQuestionSummaryDao" class="org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao"/>
+<bean id="translationDao" class="com.gallatinsystems.survey.dao.TranslationDao"/>
 <bean id="userDao" class="com.gallatinsystems.user.dao.UserDao"/>
 <bean id="userConfigDao" class="com.gallatinsystems.user.dao.UserConfigDao"/>
 <bean id="metricDao" class="com.gallatinsystems.metric.dao.MetricDao"/>

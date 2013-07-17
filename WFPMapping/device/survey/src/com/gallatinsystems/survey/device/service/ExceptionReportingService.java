@@ -39,6 +39,7 @@ import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHa
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
+import com.gallatinsystems.survey.device.util.PlatformUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 
@@ -97,7 +98,7 @@ public class ExceptionReportingService extends Service {
 			database.open();
 			deviceId = database.findPreference(ConstantUtil.DEVICE_IDENT_KEY);
 			Resources resources = getResources();
-			version = resources.getString(R.string.appversion);
+			version = PlatformUtil.getVersionName(this);
 			String serverBase = database
 					.findPreference(ConstantUtil.SERVER_SETTING_KEY);
 			if (serverBase != null && serverBase.trim().length() > 0) {

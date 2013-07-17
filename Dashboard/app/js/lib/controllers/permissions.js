@@ -1,14 +1,14 @@
 FLOW.permControl = Ember.Controller.create({
   perms: [],
 
-  init: function() {
+  init: function () {
     this._super();
     this.initPermissions();
     this.setUserPermissions();
     this.setCurrentPermissions();
   },
 
-  initPermissions: function() {
+  initPermissions: function () {
     this.perms.push(Ember.Object.create({
       perm: 'createSurvey',
       value: false
@@ -83,9 +83,9 @@ FLOW.permControl = Ember.Controller.create({
     }));
   },
 
-  setUserPermissions: function() {
+  setUserPermissions: function () {
     var user = true;
-    if(user === true) {
+    if (user === true) {
       this.perms.findProperty('perm', 'createSurvey').value = true;
       this.perms.findProperty('perm', 'editSurvey').value = true;
       this.perms.findProperty('perm', 'uploadSurveyZipData').value = true;
@@ -96,7 +96,7 @@ FLOW.permControl = Ember.Controller.create({
       this.perms.findProperty('perm', 'runReport').value = true;
     }
 
-    if(user === true) {
+    if (user === true) {
       this.perms.findProperty('perm', 'createSurvey').value = true;
       this.perms.findProperty('perm', 'editSurvey').value = true;
       this.perms.findProperty('perm', 'uploadSurveyZipData').value = true;
@@ -111,7 +111,7 @@ FLOW.permControl = Ember.Controller.create({
       this.perms.findProperty('perm', 'approveSurvey').value = true;
     }
 
-    if(user === true) {
+    if (user === true) {
       this.perms.findProperty('perm', 'createSurvey').value = true;
       this.perms.findProperty('perm', 'editSurvey').value = true;
       this.perms.findProperty('perm', 'uploadSurveyZipData').value = true;
@@ -133,8 +133,8 @@ FLOW.permControl = Ember.Controller.create({
 
   },
 
-  setCurrentPermissions: function() {
-    this.perms.forEach(function(item) {
+  setCurrentPermissions: function () {
+    this.perms.forEach(function (item) {
       //this.set(item.perm,item.value);
     });
   }
@@ -160,17 +160,17 @@ FLOW.dialogControl = Ember.Object.create({
   showOK: true,
   showCANCEL: true,
 
-  confirm: function(event) {
+  confirm: function (event) {
     this.set('activeView', event.view);
     this.set('activeAction', event.context);
     this.set('showOK', true);
     this.set('showCANCEL', true);
 
-    switch(this.get('activeAction')) {
+    switch (this.get('activeAction')) {
     case "delSG":
-        this.set('header', Ember.String.loc('_sg_delete_header'));
-        this.set('message', Ember.String.loc('_this_cant_be_undo'));
-        this.set('showDialog', true);
+      this.set('header', Ember.String.loc('_sg_delete_header'));
+      this.set('message', Ember.String.loc('_this_cant_be_undo'));
+      this.set('showDialog', true);
       break;
 
     case "delS":
@@ -231,13 +231,13 @@ FLOW.dialogControl = Ember.Object.create({
     }
   },
 
-  doOK: function(event) {
+  doOK: function (event) {
     this.set('header', null);
     this.set('message', null);
     this.set('showCANCEL', true);
     this.set('showDialog', false);
     var view = this.get('activeView');
-    switch(this.get('activeAction')) {
+    switch (this.get('activeAction')) {
     case "delSG":
       view.deleteSurveyGroup.apply(view, arguments);
       break;
@@ -289,7 +289,7 @@ FLOW.dialogControl = Ember.Object.create({
     }
   },
 
-  doCANCEL: function(event) {
+  doCANCEL: function (event) {
     this.set('showDialog', false);
   }
 });

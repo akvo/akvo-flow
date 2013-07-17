@@ -9,7 +9,7 @@ require('akvo-flow/controllers/general-controllers-common');
 require('akvo-flow/controllers/maps-controllers-common');
 
 FLOW.ApplicationController = Ember.Controller.extend({
-  init: function() {
+  init: function () {
     this._super();
     Ember.STRINGS = Ember.STRINGS_EN;
   }

@@ -34,6 +34,7 @@ import com.gallatinsystems.survey.device.dao.SurveyDbAdapter;
 import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHandler;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
+import com.gallatinsystems.survey.device.util.PlatformUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 
@@ -91,7 +92,7 @@ public class LocationService extends Service {
 				sendBeacon = Boolean.parseBoolean(val);
 			}
 			Resources resources = getResources();
-			version = resources.getString(R.string.appversion);
+			version = PlatformUtil.getVersionName(this);
 			String serverBase = database
 					.findPreference(ConstantUtil.SERVER_SETTING_KEY);
 			if (serverBase != null && serverBase.trim().length() > 0) {

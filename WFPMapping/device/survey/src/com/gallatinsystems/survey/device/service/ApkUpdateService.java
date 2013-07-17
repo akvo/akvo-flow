@@ -35,6 +35,7 @@ import com.gallatinsystems.survey.device.exception.PersistentUncaughtExceptionHa
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
+import com.gallatinsystems.survey.device.util.PlatformUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
@@ -116,8 +117,7 @@ public class ApkUpdateService extends Service {
 					if (json != null) {
 						String ver = json.getString("version");
 						if (ver != null) {
-							String installedVer = getResources().getString(
-									R.string.appversion);
+							String installedVer = PlatformUtil.getVersionName(this);
 							if (installedVer != null) {
 								if (ver.toLowerCase()
 										.trim()
