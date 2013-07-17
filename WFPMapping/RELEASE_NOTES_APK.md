@@ -8,7 +8,7 @@ last update 17 july 2013, co
 * Fix bug where device ID and other fields would accept line breaks and tab characters, which could generate broken data.txt files (#255)
 * Always include serverBase from survey.properties in server selection. Makes instance builds independent of res/values/arrays.xml
 
-#ver 1.10.5	
+#ver 1.10.5  
 * Prevent display rotation from forgetting a taken photo (#118)
 * Fix survey status partially-successful icon bug (#183)
 
