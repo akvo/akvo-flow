@@ -11,7 +11,7 @@ logLevel: 'debug',
 	
 // Give waitForResource calls plenty of time to load.
 // waitTimeout: 50000,
-clientScripts: ["includes/jquery.min.js"],
+// clientScripts: ["includes/jquery.min.js"],
 
 PageSettings: {
 	javascriptEnabled: true,
@@ -37,7 +37,6 @@ casper.on("page.error", function(msg, trace) {
 
 var url = 'http://akvoflowsandbox.appspot.com/admin/';
 var ember_xpath = require('casper').selectXPath;
-var ember_css = require('casper').selectCSS;
 
 // For taking username/password via CLI
 // if (system.args.length < 3) {
@@ -127,81 +126,34 @@ casper.then(function () {
 
 casper.then(function () {
 
+		// Iterate through select options to find group 'IPE Test', execute click()
+
 		this.evaluate( function() {
 		 		$('select.ember-select option').each(function(index, option) {
-   	 			if ($(this).text() == "IPE Test") {
-		 				$(this).click(); 
-				}
+   	 			if ($(this).text() === "IPE Test") {
+		 			$(this).click(); 
+		 			console.log("PASS IPE Test Survey Click");
+		 			return false;
+					}
 				});
-  	});
 
-		this.test.assertVisible(ember_xpath('select/option[1]'), 'Select with Option Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember9917"]/a'), 'Select Survey Menu Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[1]/a'), 'Raw Data Report Button Visible');
+ 	   // Iterate through select options for 'Neha Test', execute click()	
+  				// $('select.ember-select option').each(function(index, option) {
+  				   // if ($(this.text) === "Neha Test") {
+  				   // 	$(this).click();
+  				   // 	console.log("PASS Neha Test Survey Selected");
+  				   // 	return false;
+				  //  }
+
+ });
+
+
+
+		this.test.assertVisible(ember_xpath('//*[contains(text()," Raw data report ")]'), 'Raw Data Report Button Visible');
 		this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Raw Data Import File Upload Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="ember9535"]/div[2]/a'), 'Import Clean Data Button Visible');
-				//*[@id="ember26276"]/option[1]
-		});
-
-casper.then(function () {
-		console.log("Foo Bar");
+		this.test.assertVisible(ember_xpath('//*[contains(text()," Import clean data")]'), 'Import Clean Data Button Visible');
+		casper.capture('screenshots/SurveyGroupSelect.png');
 });
-
-// casper.then(function () {
-  //   this.test.assertExists(ember_xpath('//*[@id="ember2029"]/a', 'Manage Attributes Exists'));
-	// this.click(ember_xpath('//*[@id="ember2029"]/a');
-   //  casper.capture('screenshots/NavDataIndex2.png');
-   //  });
-
-//
-
-// casper.then(function () {
-//   this.test.assertVisible(ember_xpath('//*[@id="surveyDataTable"]'));
-//   this.test.assertVisible(ember_xpath('//*[@id="surveyDataTable"]/thead/tr/th[3]'));
-//   return casper.capture('shots/pageWrap.png', {
- //   top: 0,
-//   left: 0,
-	 //width: 1280,
-//    height: 1024
-//   });
-//});
-//
-//  Iterate through children that inherit dataSection Class from 
-
-// casper.then(function() {
-//     var ids = $('//*[@id="main"]').children().map(function(n,i) {
-//       return n.id;
-//       this.echo('Return set of IDs under #datasection');
-// 	 if (this.test.assertVisible('.tabNav%20floats-in') {
-//  	 return document.getElementByXPath();
-//    });
-// });
-
-  //  function then() {
-   // 	console.log("element : ", this.evaluate(function ()
-	//	{
-	 //   	var el = $("ul li:eq(3)");
-	  //  	return el;
-	   // }));
-
-    // var url = this.evaluate(function() {
-    	// return __utils__.getElementByXPath("//a[text()="Data cleaning"
-    
-    	// return document.getElementById('watch-related').getElementsByTagName('li');
-    // this.clickLabel('Data cleaning', 'a');
-    // xpath selector: xpath se
-    // //a[text()="Data cleaning"
-	
-	
-   // return this.evaluate(function	
-	// return document.querySelectorAll('#ember1965 > a:nth-child(1)').length > 0;
-
-	// step to execute when check is ok
-	// this.test.assertExists('#ember1965 > a:nth-child(1)','Cleaning data Tab exists');
-	// this.clickLabel('Data cleaning', 'a');
-  	// step to execute when check fails	
-	// }, function then() { 
-	// this.echo('Failed to Navigate to Data Cleaning Tab', 'ERROR');
 
 // Table Listing Test
 
@@ -214,15 +166,6 @@ casper.then(function () {
        //     listings: listings,
         //    count: count
         // };  
-    // });
-   // this.echo(data.body.listings); 
-	// Select Akvo Group from DropDown Menu
-  //  this.evaluate(function() {
-	// this.test.assertExists('//*[@id="ember21602"]', 'Dropdown is found');
-	// return document.querySelector('//*[@id="ember21602"]').value = 12;
-   //  });
-// });
-
 
 casper.then(function() {
   	this.evaluate(function(fileName) {__utils__.findOne('input[#raw-data-import-file]="file"]').setAttribute('value',fileName)},{fileName:fileName});
