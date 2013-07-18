@@ -183,6 +183,7 @@ public class SurveyDownloadService extends Service {
 							}
 						}
 						if (updateCount > 0) {
+							sendBroadcastNotification();
 							fireNotification(updateCount);
 						}
 					}
@@ -501,6 +502,17 @@ public class SurveyDownloadService extends Service {
 		String text = getResources().getText(R.string.surveysupdated)
 				.toString();
 		ViewUtil.fireNotification(text, text, this, COMPLETE_ID, null);
+	}
+    
+	/**
+	 * Dispatch a Broadcast notification to notify of surveys synchronization.
+	 * This notification will be received in SurveyHomeActivity, in order
+	 * to refresh its data
+	 *
+	 */
+	private void sendBroadcastNotification() {
+		Intent intentBroadcast = new Intent(getString(R.string.action_surveys_sync));
+		sendBroadcast(intentBroadcast);
 	}
 
 	/**
