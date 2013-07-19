@@ -5,6 +5,7 @@
 	<inherits name="org.waterforpeople.mapping.app.gwt.WFPServices" />
 	<inherits name="com.google.gwt.i18n.I18N" />
 	<inherits name="com.google.gwt.maps.GoogleMaps" />
+	<set-property name="user.agent" value="safari"/>
 	<source path="client" />
 	<entry-point
 		class="org.waterforpeople.mapping.surveyentry.client.SurveyEntryClient" />

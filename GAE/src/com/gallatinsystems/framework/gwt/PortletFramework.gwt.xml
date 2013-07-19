@@ -4,6 +4,7 @@
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name="com.gallatinsystems.user.app.gwt.User"/>
 	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd' />
+        <set-property name="user.agent" value="safari"/>
 	<source path="portlet/client"/>
 	<source path="dto/client"/>
 	<source path="util/client"/>
