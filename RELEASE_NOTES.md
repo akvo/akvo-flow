@@ -1,4 +1,4 @@
-Last changed: 9 July 2013, co
+Last changed: 18 July 2013, co
 
 Akvo FLOW (Field Level Operations Watch) is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
 
@@ -7,6 +7,34 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+
+# 1.6.0
+Release Date: 18 July 2013
+
+This is a combined release of the Akvo FLOW Dashboard and Field Survey app whose major feature is survey translations. Survey translations allow users to enter multiple translations for a single FLOW survey so that data collectors in the field can conduct a survey in their local language. 
+
+In order to take advantage of the survey translations feature, users must be running both the 1.6.0 Dashboard or higher and the 1.11.0 Field Survey app or higher.
+
+## Survey translations
+* Implement survey translations for FLOW Dashboard (#177)
+
+## Interface and usability improvements
+* Temporarily hide unused items on Dashboard (#253)
+* Revert to creating short survey IDs to adapt to GAE datastore change that started creating very long IDs (#254)
+* Fix a bug where Edit data window wasn't loading questions correctly while navigating between records from different surveys (#281)
+* Fix a bug where survey groups weren't sorting alphabetically in dropdowns in Devices, Data and Reports tabs (#286)
+* Enhance map placemark detail pane to show all available photos for a survey taken at that point (#289)
+* Enhance map placemark detail pane to display survey questions in alphabetical order (#291)
+* Add version to footer to show user what version the Dashboard is running (#294)
+
+## Deployments and infrastructure
+* Upgrade included jar files for Dashboard to GAE SDK 1.8.1 (#274)
+
+## Bug fixes and misc 
+* Resolve emberjs deprecation warnings on flowaglimmerofhope dashboard (#225)
+* Fix a bug where operations on `/survey_instances` endpoint weren't triggering _cache invalidation_ messages to FLOW services (#265)
+* Correct the displayed parameter list for InstanceConfigurator utility (#288)
+
 
 # 1.5.1
 Release Date: 4 July 2013
