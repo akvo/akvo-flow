@@ -1,4 +1,3 @@
-/* jshint strict:false*/
 /*global CasperError, console, phantom, require*/
 
 //
@@ -20,7 +19,7 @@ PageSettings: {
 	javascriptEnabled: true,
 	loadImages:	true,		// WebPage instance will use these settings
 	laodPlugins: false,		// use these settings
-	userAgent:	'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36'
+//	userAgent:	'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36'
 	}
 });
 
@@ -79,11 +78,14 @@ casper.then(function () {
 		this.test.assertVisible('.navMessages', 'Messags Tab Visible');
 		this.test.assertVisible('.menuGroup', 'Survey Menu Group Visible');
 		
-		// Add additional asserts for Survey MenuGroup
 		this.test.assertTruthy(casper.evaluate(function() {
 			return FLOW.router.location.path
-		}) === '/surveys/main', 'Successfully Loaded Dashboard');
+		}) === '/surveys/main', 'Successfully Loaded Main Surveys Page');
+		 
 });
+
+
+			
 
 casper.then(function() {
 		this.thenClick('.navData a', function() {
@@ -101,8 +103,36 @@ casper.then(function() {
             }
         );
 
+		this.waitForSelector('.nextBtn a',
+            function then() {
+            	casper.capture('screenshots/Navdata-SurveyTableNext.png');
+            });
+
+		this.test.assertSelectorExists('.nextBtn a', 'Survey Table Next Button Rendered'); 
+
 		});
-});	
+		
+});	  
+
+casper.then(function() {
+	   this.click('.nextBtn a');
+		this.waitUntilVisible('#surveyDataTable td.device',
+	  	 	// ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]'),
+			function then() {
+				casper.capture('screenshots/NavData-SurveyDataTableNext.png');
+            }
+        );
+});
+
+
+casper.then(function() {
+	var pElements = document.getElementsByTagName('#device'); // NodeList
+	
+	for (var i = 0, len = pElements.length; i < len; i = i + 1) {
+		   this.echo(pElements[i], + " check this out ", PELEMENT);
+		   console.log("HelloHlllo");
+	}
+});
 
 casper.then(function () {               
 	this.test.assertSelectorHasText('a', 'Data cleaning');
@@ -125,8 +155,14 @@ casper.then(function () {
 	
 	this.waitForText("Select survey group", function then() {
 		this.test.assertVisible('select.ember-select');
+		this.test.assertVisible('#ember8562', 'Survey Group Drop Down Visible');
 		// this.test.assertVisible(ember_xpatch('//*[contains(text(), "Select survey group")]'), 'Select Survey Group Visible');
 		this.test.assertSelectorHasText('select.ember-select option', "Select survey group");
+		this.test.assertSelectorHasText('select.ember-select option', "Akvo QA");
+
+		this.evaluate(function () {
+			$("select:has(option:contains('Akvo QA'))").change();
+		});
 	});
 });
 
@@ -142,6 +178,7 @@ casper.then(function () {
 		 			return false;
 					}
 				});
+		
 
  	   // Iterate through select options for 'Neha Test', execute click()	
   				// $('select.ember-select option').each(function(index, option) {
@@ -150,11 +187,11 @@ casper.then(function () {
   				   // 	console.log("PASS Neha Test Survey Selected");
   				   // 	return false;
 				  //  }
-
  });
 
 
-
+		
+		casper.capture('screenshots/DataCleaningSelect_DropDown.png');
 		this.test.assertVisible(ember_xpath('//*[contains(text()," Raw data report ")]'), 'Raw Data Report Button Visible');
 		this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Raw Data Import File Upload Visible');
 		this.test.assertVisible(ember_xpath('//*[contains(text()," Import clean data")]'), 'Import Clean Data Button Visible');
@@ -174,13 +211,52 @@ casper.then(function () {
         // };  
 
 casper.then(function() {
-  	var fileName = 'blah.xlsx'
-  	this.evaluate(function(fileName) {__utils__.findOne('input[#raw-data-import-file]="file"]').setAttribute('value',fileName)},{fileName:fileName});
-  	this.echo('Name='+this.evaluate(function() {return __utils__.findOne('input[#raw-data-import-file="file"]').getAttribute('name')}));
-  	this.echo('Value='+this.evaluate(function() {return __utils__.findOne('input[#raw-data-import-file="file"]').getAttribute('value')}));
-  	this.page.uploadFile('input[#raw-data-import-file="file"]',fileName);
-  	this.click('a.standardBtn');
+  	// var fileName = 'blah.xlsx'
+    var surveyLink = 'a[data-ember-action="348"]'
 
+    this.click('.navSurveys a');
+
+    // this.waitUntilVisible(surveyLink, function then() {
+	//			this.click(surveyLink); 
+	//				});
+
+    this.capture('screenshots/navSurveys.png');
+    this.capture('screenshots/navSurveys-AkvoGroupSurveys.png');
+    
+});
+  	// this.evaluate(function(fileName) {__utils__.findOne('#raw-data-import-file').setAttribute('value',fileName)},{fileName:fileName});
+  	// this.echo('Name='+this.evaluate(function() {return __utils__.findOne('input[#raw-data-import-file="file"]').getAttribute('name')}));
+  	// this.echo('Value='+this.evaluate(function() {return __utils__.findOne('input[#raw-data-import-file="file"]').getAttribute('value')}));
+  	// this.page.uploadFile('input[#raw-data-import-file="file"]',fileName);
+  	// this.click('a.standardBtn');
+
+casper.then(function() {
+		this.click('.navDevices a');
+
+		this.waitUntilVisible('#surveyDataTable td.EMEI', function then() {
+			this.capture('screenshots/devicesTable.png', {
+				top: 0, 
+				left: 0,
+				width: 1280,
+				height: 1024 
+			});
+		});
+   		var mngdeviceLink = 'a[id="ember15890"]';
+
+   		if (!this.exists(mngdeviceLink)) return;
+		this.click(mngdeviceLink);
+
+		this.evaluate(function(mngdeviceLink) {
+			__utils__.findOne(mngdeviceLink).setAttribute("className", "clicked");
+		}, mngdeviceLink);
+
+   		this.test.assertVisible(ember_xpath('//*[@id="ember15890"]/a'), 'Manage Device Groups Button Visible');
+
+		setInterval(function () {
+			document.getElementById("ember15980").click();}, 1000);
+
+		this.click('.btnAboveTable a');
+		casper.capture('screenshots/devicesManageDevices.png');
 });
 
 casper.run();
