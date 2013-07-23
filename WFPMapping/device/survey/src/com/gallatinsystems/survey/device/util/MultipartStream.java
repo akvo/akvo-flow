@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class MultipartStream {
 	private static final String BOUNDRY = "***xxx";
@@ -33,17 +35,19 @@ public class MultipartStream {
 	private static final int BUFFER_SIZE = 2048;
 	private static final String FORM_PARAM_TEXT_START = "Content-Disposition: form-data; name=\"";
 	private static final String FILE_PARAM_TEXT_MID = "\"; filename=\"";
-	private ArrayList<String> names;
-	private ArrayList<String> values;
-	private ArrayList<String> formParamTextList;
-	private ArrayList<File> files;
-	private ArrayList<String> fileParamTextList;
+	private List<String> names;
+	private List<String> values;
+	private List<String> formParamTextList;
+	private List<File> files;
+	private List<String> fileParamTextList;
 	private int totalBytes;
-	private ArrayList<String> mimeTypeTextList;
+	private List<String> mimeTypeTextList;
 	private URL url;	
-	private ArrayList<Long> fileBytes;
+	private List<Long> fileBytes;
 
 	private DataOutputStream out;
+	
+	private Map<String, List<String>> responseHeaders;
 
 	public MultipartStream(URL url) {
 		names = new ArrayList<String>();
@@ -55,6 +59,7 @@ public class MultipartStream {
 		fileBytes = new ArrayList<Long>();
 		this.url = url;
 		totalBytes = DELIMITER_BYTES + PREFIX.getBytes().length;
+		responseHeaders = null;
 	}
 
 	public void addFormField(String name, String value) {
@@ -166,6 +171,10 @@ public class MultipartStream {
 			HttpURLConnection httpConn = (HttpURLConnection) urlConn;
 			httpConn.setRequestMethod("POST");
 		}
+		
+		// Ensure no redirection is done, so we can extract the ETag from the headers
+		urlConn.setInstanceFollowRedirects(false);
+		
 		// connection level settings. This doesn't seem to have any effect with
 		// https!
 		urlConn.setDoInput(true);
@@ -189,9 +198,24 @@ public class MultipartStream {
 		}
 		writeFiles(listener);
 		close();
-
-		int code = urlConn.getResponseCode();
+		
+		final int code = urlConn.getResponseCode();
+		responseHeaders = urlConn.getHeaderFields();
+		
+		// Release the connection
+		urlConn.disconnect();
+		
 		return code;
+	}
+	
+	public String getResponseHeader(String name) {
+		if (responseHeaders != null && responseHeaders.containsKey(name)) {
+			List<String> values = responseHeaders.get(name);
+			if (values.size() > 0) {
+				return values.get(0);
+			}
+		}
+		return null;
 	}
 
 	/**
