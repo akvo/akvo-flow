@@ -1,3 +1,4 @@
+/* jshint strict: false */
 /*global CasperError, console, phantom, require*/
 
 //
@@ -9,7 +10,7 @@ var utils = require('utils');
 
 var casper = require('casper').create({
 verbose: true,
-// logLevel: 'debug',
+logLevel: 'debug',
 	
 // Give waitForResource calls plenty of time to load.
 // waitTimeout: 50000,
@@ -131,7 +132,7 @@ casper.then(function() {
 	for (var i = 0, len = pElements.length; i < len; i = i + 1) {
 		   this.echo(pElements[i], + " check this out ", PELEMENT);
 		   console.log("HelloHlllo");
-	}
+	};
 });
 
 casper.then(function () {               
@@ -173,7 +174,7 @@ casper.then(function () {
 		this.evaluate( function() {
 		 		$('select.ember-select option').each(function(index, option) {
    	 			if ($(this).text() === "IPE Test") {
-		 			$(this).click(); 
+		 			$("select:has(option:contains('Akvo group'))").click(); 
 		 			console.log("PASS IPE Test Survey Click");
 		 			return false;
 					}
