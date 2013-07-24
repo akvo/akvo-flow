@@ -32,6 +32,10 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheFactory;
+import net.sf.jsr107cache.CacheManager;
+
 import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
@@ -63,6 +67,9 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
+import com.google.appengine.api.backends.BackendServiceFactory;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -81,6 +88,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final String VALUE_TYPE = "VALUE";
 	private static final String OTHER_TYPE = "OTHER";
 	private static final Integer QAS_PAGE_SIZE = 300;
+	private static final String QAS_TO_REMOVE = "QAStoRemove";
 
 	@Override
 	protected RestRequest convertRequest() throws Exception {
@@ -124,7 +132,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 					dpReq.getQasId(), dpReq.getDelta());
 		} else if (DataProcessorRequest.DELETE_DUPLICATE_QAS
 				.equalsIgnoreCase(dpReq.getAction())) {
-			deleteDuplicatedQAS();
+			deleteDuplicatedQAS(dpReq.getOffset());
 		}
 		return new RestResponse();
 	}
@@ -257,53 +265,82 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void deleteDuplicatedQAS() {
-		log.log(Level.INFO, "Searching for duplicated QAS entities");
-		PersistenceManager pm = PersistenceFilter.getManager();
-		Query q = pm.newQuery(QuestionAnswerStore.class);
-		q.setOrdering("createdDateTime asc");
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void deleteDuplicatedQAS(Long offset) {
+		log.log(Level.INFO, "Searching for duplicated QAS entities [Offset: "
+				+ offset + "]");
 
-		long offset = 0;
-		q.setRange(offset, offset + QAS_PAGE_SIZE);
-
-		List<QuestionAnswerStore> results = (List<QuestionAnswerStore>) q
-				.execute();
-
-		final Map<Map<Long, Long>, Boolean> cache = new HashMap<Map<Long, Long>, Boolean>();
-		final List<QuestionAnswerStore> toRemove = new ArrayList<QuestionAnswerStore>();
-
-		while (!results.isEmpty()) {
-
-			for (QuestionAnswerStore item : results) {
-
-				final Long questionID = Long.valueOf(item.getQuestionID());
-				final Long surveyInstanceId = item.getSurveyInstanceId();
-
-				final Map<Long, Long> k = new HashMap<Long, Long>();
-				k.put(surveyInstanceId, questionID);
-
-				if (cache.containsKey(k)) {
-					toRemove.add(item);
-				}
-
-				cache.put(k, true);
-			}
-
-			if (results.size() < QAS_PAGE_SIZE) {
-				break;
-			}
-
-			offset += QAS_PAGE_SIZE;
-			q.setRange(offset, offset + QAS_PAGE_SIZE);
-			results = (List<QuestionAnswerStore>) q.execute();
+		Cache cache = null;
+		Map props = new HashMap();
+		props.put(GCacheFactory.EXPIRATION_DELTA, 1 * 60 * 60);
+		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+		try {
+			CacheFactory cacheFactory = CacheManager.getInstance()
+					.getCacheFactory();
+			cache = cacheFactory.createCache(props);
+		} catch (Exception e) {
+			log.log(Level.SEVERE,
+					"Couldn't initialize cache: " + e.getMessage(), e);
 		}
 
-		q.closeAll();
-		log.log(Level.INFO, "QAS entities to remove: " + toRemove.size());
+		if (cache == null) {
+			return;
+		}
 
-		QuestionAnswerStoreDao dao = new QuestionAnswerStoreDao();
-		dao.delete(toRemove);
+		final PersistenceManager pm = PersistenceFilter.getManager();
+		final Query q = pm.newQuery(QuestionAnswerStore.class);
+		q.setOrdering("createdDateTime asc");
+		q.setRange(offset, offset + QAS_PAGE_SIZE);
+
+		final List<QuestionAnswerStore> results = (List<QuestionAnswerStore>) q
+				.execute();
+
+		List<QuestionAnswerStore> toRemove;
+
+		if (cache.containsKey(QAS_TO_REMOVE)) {
+			toRemove = (List<QuestionAnswerStore>) cache.get(QAS_TO_REMOVE);
+		} else {
+			toRemove = new ArrayList<QuestionAnswerStore>();
+		}
+
+		for (QuestionAnswerStore item : results) {
+
+			final Long questionID = Long.valueOf(item.getQuestionID());
+			final Long surveyInstanceId = item.getSurveyInstanceId();
+
+			final Map<Long, Long> k = new HashMap<Long, Long>();
+			k.put(surveyInstanceId, questionID);
+
+			if (cache.containsKey(k)) {
+				toRemove.add(item);
+			}
+
+			cache.put(k, true);
+		}
+
+		if (results.size() == QAS_PAGE_SIZE) {
+
+			cache.put(QAS_TO_REMOVE, toRemove);
+
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.DELETE_DUPLICATE_QAS)
+					.param(DataProcessorRequest.OFFSET_PARAM,
+							String.valueOf(offset + QAS_PAGE_SIZE))
+					.header("Host",
+							BackendServiceFactory.getBackendService()
+									.getBackendAddress("dataprocessor"));
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+
+		} else {
+			log.log(Level.INFO, "Removing " + toRemove.size()
+					+ " duplicated QAS entities");
+			QuestionAnswerStoreDao dao = new QuestionAnswerStoreDao();
+			pm.makePersistentAll(toRemove); // some objects are in "transient" state
+			dao.delete(toRemove);
+		}
 	}
 
 	/**

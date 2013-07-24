@@ -46,6 +46,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String QAS_ID_PARAM = "qasId";
 	public static final String DELTA_PARAM = "delta";
 	public static final String API_KEY_PARAM = "apiKey";
+	public static final String OFFSET_PARAM = "offset";
 
 	private String country;
 	private String source;
@@ -54,6 +55,7 @@ public class DataProcessorRequest extends RestRequest {
 	private Long qasId;
 	private Integer delta;
 	private String apiKey;
+	private Long offset = 0L;
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
@@ -99,6 +101,10 @@ public class DataProcessorRequest extends RestRequest {
 
 		if (req.getParameter(API_KEY_PARAM) != null) {
 			setApiKey(req.getParameter(API_KEY_PARAM).trim());
+		}
+
+		if (req.getParameter(OFFSET_PARAM) != null) {
+			setOffset(Long.valueOf(req.getParameter(OFFSET_PARAM).trim()));
 		}
 	}
 
@@ -162,6 +168,14 @@ public class DataProcessorRequest extends RestRequest {
 
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
+	}
+
+	public Long getOffset() {
+		return offset;
+	}
+
+	public void setOffset(Long offset) {
+		this.offset = offset;
 	}
 
 }
