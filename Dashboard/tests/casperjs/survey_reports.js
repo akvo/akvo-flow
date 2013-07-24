@@ -10,7 +10,7 @@ var utils = require('utils');
 
 var casper = require('casper').create({
 verbose: true,
-logLevel: 'debug',
+// logLevel: 'debug',
 	
 // Give waitForResource calls plenty of time to load.
 // waitTimeout: 50000,
@@ -156,11 +156,11 @@ casper.then(function () {
 	
 	this.waitForText("Select survey group", function then() {
 		this.test.assertVisible('select.ember-select');
-		this.test.assertVisible('#ember8562', 'Survey Group Drop Down Visible');
+		// this.test.assertVisible('#ember8562', 'Survey Group Drop Down Visible');
 		// this.test.assertVisible(ember_xpatch('//*[contains(text(), "Select survey group")]'), 'Select Survey Group Visible');
 		this.test.assertSelectorHasText('select.ember-select option', "Select survey group");
 		this.test.assertSelectorHasText('select.ember-select:nth-of-type(1)', "Akvo QA");
-
+        this.test.assertSelectorHasText('select.ember-select option', "Select survey");
 	});        
 });
 
@@ -169,51 +169,41 @@ casper.then(function () {
 		// Iterate through select options to find group 'IPE Test', execute click()
 
 		this.evaluate( function() {
-				var val = '2164002';
-				var val2 = '2165002';
+				var valSurveyGroup = '2164002';
 
 		 		$('select.ember-select option').each(function(index, option) {
    	 			if ($(this).text() === "Akvo QA") {
-				    $('select.ember-select:nth-of-type(1)').val(val);
+				    $('select.ember-select:nth-of-type(1)').val(valSurveyGroup);
 		 		    $('select.ember-select:nth-of-type(1)').trigger('change');
-		 			console.log("Akvo Survey Group Selected" + " " + val);
+		 			console.log("Akvo Survey Group Selected" + " " + valSurveyGroup);
 		 			return false;
 					}
 				});
+			});
 
-		 		$('select.ember-select option').each(function(index, option) {
-		 			if ($(this).text() === "QA Eng Survey I") {
-		 				$('select.ember-select:nth-of-type(2)').val(val2);
-		 				$('select.ember-select:nth-of-type(2)').trigger('change');
-		 				console.log("Akvo Survey Selected" + " " + val2);
-		 				return false;
+		this.waitForText("QA Eng Survey I", function then() {
+            		this.test.assertVisible('select.ember-select:nth-of-type(2)');
+					this.evaluate( function() {
+						var valSurvey = '2165002';
+
+		 				$('select.ember-select option').each(function(index, option) {
+		 					if ($(this).text() === "QA Eng Survey I") {
+		 						$('select.ember-select:nth-of-type(2)').val(valSurvey);
+		 						$('select.ember-select:nth-of-type(2)').trigger('change');
+		 						console.log("Akvo Survey Selected" + " " + valSurvey);
+		 						return false;
 					}
 				});
-		
+		 });
+		 });	
 
-		 		// $('select.ember-select:nth-of-type(1)').change();
-		 		// $('select.ember-select:nth-of-type(1)').val(val);
-				// $('select.ember-select:nth-of-type(1)').change();
-
-        
-				// this.test.assertSelectorHasText('select.ember-select:nth-of-type(2)', "QA Eng Survey I");
+		this.wait(5000, function() {
+			casper.capture('screenshots/DataCleaningSelect_DropDown.png');
+			this.test.assertVisible(ember_xpath('//*[contains(text()," Raw data report ")]'), 'Raw Data Report Button Visible');
+			this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Raw Data Import File Upload Visible');
+			this.test.assertVisible(ember_xpath('//*[contains(text()," Import clean data")]'), 'Import Clean Data Button Visible');
+			casper.capture('screenshots/SurveyGroupSelect.png');
 		});
-		
-		// this.test.assertSelectorHasText('select#ember5496.ember-view.ember-select', "QA Eng Survey I");
-
- 	   // Iterate through select options for 'Neha Test', execute click()	
-  				// $('select.ember-select option').each(function(index, option) {
-  				   // if ($(this.text) === "Neha Test") {
-  				   // 	$(this).click();
-  				   // 	console.log("PASS Neha Test Survey Selected");
-  				   // 	return false;
-				  //  }
-		
-		casper.capture('screenshots/DataCleaningSelect_DropDown.png');
-		this.test.assertVisible(ember_xpath('//*[contains(text()," Raw data report ")]'), 'Raw Data Report Button Visible');
-		this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Raw Data Import File Upload Visible');
-		this.test.assertVisible(ember_xpath('//*[contains(text()," Import clean data")]'), 'Import Clean Data Button Visible');
-		casper.capture('screenshots/SurveyGroupSelect.png');
 });
 
 // Table Listing Test
