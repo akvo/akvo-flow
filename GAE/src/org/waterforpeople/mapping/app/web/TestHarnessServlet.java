@@ -1826,6 +1826,21 @@ public class TestHarnessServlet extends HttpServlet {
 			if(surveyId != null && !surveyId.trim().isEmpty() && find!=null && !find.trim().isEmpty()){
 				fixBadImage(surveyId,find,replace);
 			}
+		} else if (DataProcessorRequest.DELETE_DUPLICATE_QAS.equals(action)) {
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.DELETE_DUPLICATE_QAS)
+					.header("Host",
+							BackendServiceFactory.getBackendService()
+									.getBackendAddress("dataprocessor"));
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+			try {
+				resp.getWriter().print("Request Processed - Check the logs");
+			} catch (Exception e) {
+				// no-op
+			}
 		}
 	}
 

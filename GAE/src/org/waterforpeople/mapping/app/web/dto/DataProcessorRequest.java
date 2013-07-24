@@ -35,6 +35,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
 	public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
 	public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
+	public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
 	public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
 	public static final String TRIM_OPTIONS = "trimOptions";
 	public static final String RESCORE_AP_ACTION = "rescoreAp";

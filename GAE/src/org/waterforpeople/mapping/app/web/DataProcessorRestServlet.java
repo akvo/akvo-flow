@@ -25,9 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.zip.ZipInputStream;
 import java.util.logging.Logger;
+import java.util.zip.ZipInputStream;
 
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
@@ -49,6 +51,7 @@ import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.location.GeoLocationService;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
@@ -119,6 +122,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				.equalsIgnoreCase(dpReq.getAction())) {
 			surveyInstanceSummarizer(dpReq.getSurveyInstanceId(),
 					dpReq.getQasId(), dpReq.getDelta());
+		} else if (DataProcessorRequest.DELETE_DUPLICATE_QAS
+				.equalsIgnoreCase(dpReq.getAction())) {
+			deleteDuplicatedQAS();
 		}
 		return new RestResponse();
 	}
@@ -249,6 +255,55 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				}
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void deleteDuplicatedQAS() {
+		log.log(Level.INFO, "Searching for duplicated QAS entities");
+		PersistenceManager pm = PersistenceFilter.getManager();
+		Query q = pm.newQuery(QuestionAnswerStore.class);
+		q.setOrdering("createdDateTime asc");
+
+		long offset = 0;
+		q.setRange(offset, offset + QAS_PAGE_SIZE);
+
+		List<QuestionAnswerStore> results = (List<QuestionAnswerStore>) q
+				.execute();
+
+		final Map<Map<Long, Long>, Boolean> cache = new HashMap<Map<Long, Long>, Boolean>();
+		final List<QuestionAnswerStore> toRemove = new ArrayList<QuestionAnswerStore>();
+
+		while (!results.isEmpty()) {
+
+			for (QuestionAnswerStore item : results) {
+
+				final Long questionID = Long.valueOf(item.getQuestionID());
+				final Long surveyInstanceId = item.getSurveyInstanceId();
+
+				final Map<Long, Long> k = new HashMap<Long, Long>();
+				k.put(surveyInstanceId, questionID);
+
+				if (cache.containsKey(k)) {
+					toRemove.add(item);
+				}
+
+				cache.put(k, true);
+			}
+
+			if (results.size() < QAS_PAGE_SIZE) {
+				break;
+			}
+
+			offset += QAS_PAGE_SIZE;
+			q.setRange(offset, offset + QAS_PAGE_SIZE);
+			results = (List<QuestionAnswerStore>) q.execute();
+		}
+
+		q.closeAll();
+		log.log(Level.INFO, "QAS entities to remove: " + toRemove.size());
+
+		QuestionAnswerStoreDao dao = new QuestionAnswerStoreDao();
+		dao.delete(toRemove);
 	}
 
 	/**
