@@ -272,7 +272,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
 		Cache cache = null;
 		Map props = new HashMap();
-		props.put(GCacheFactory.EXPIRATION_DELTA, 1 * 60 * 60);
+		props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
 		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
 		try {
 			CacheFactory cacheFactory = CacheManager.getInstance()
