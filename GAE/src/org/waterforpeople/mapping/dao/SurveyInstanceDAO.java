@@ -28,6 +28,10 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheFactory;
+import net.sf.jsr107cache.CacheManager;
+
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -50,6 +54,8 @@ import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -60,6 +66,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			.getLogger(SurveyInstanceDAO.class.getName());
 	// the set of unparsedLines we have here represent values from one surveyInstance
 	// as they are split up in the TaskServlet task.
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
 			Long userID, List<String> unparsedLines) {
 
@@ -75,6 +82,19 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 		
+		Cache cache = null;
+		Map props = new HashMap();
+		props.put(GCacheFactory.EXPIRATION_DELTA, 15 * 60); // 15min
+		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+		try {
+			CacheFactory cacheFactory = CacheManager.getInstance()
+					.getCacheFactory();
+			cache = cacheFactory.createCache(props);
+		} catch (Exception e) {
+			log.log(Level.SEVERE,
+					"Couldn't initialize cache: " + e.getMessage(), e);
+		}
+
 		for (String line : unparsedLines) {
 
 			String[] parts = line.split(delimiter);
@@ -172,8 +192,25 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			if (qasDao.listBySurveyInstance(si.getKey().getId(),
 					si.getSurveyId(), parts[2].trim()).size() != 0) {
 				log.log(Level.INFO, "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: " + si.getKey().getId() + ", " + si.getSurveyId() + ", " + parts[2].trim());
-				continue;
+				continue; // skip processing
 			}
+
+			if (cache != null) {
+				Map<Long, Long> ck = new HashMap<Long, Long>();
+				// {surveyInstanceId, questionID}
+				ck.put(si.getKey().getId(), Long.valueOf(parts[2].trim()));
+
+				if (cache.containsKey(ck)) {
+					log.log(Level.INFO,
+							"Skipping QAS already present in temporary cache [SurveyInstance, Survey, Question]: "
+									+ si.getKey().getId() + ", "
+									+ si.getSurveyId() + ", " + parts[2].trim());
+					continue; // skip processing
+				} else {
+					cache.put(ck, true);
+				}
+			}
+
 
 			qas.setSurveyId(si.getSurveyId());
 			qas.setSurveyInstanceId(si.getKey().getId());
