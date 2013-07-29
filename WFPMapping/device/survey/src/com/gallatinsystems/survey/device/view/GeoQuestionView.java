@@ -20,6 +20,8 @@ import java.text.DecimalFormat;
 import java.util.StringTokenizer;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -55,7 +57,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 	private static final int DEFAULT_WIDTH = 200;
 	private static final float UNKNOWN_ACCURACY = 99999999f;
-	private static final float ACCURACY_THRESHOLD = 200f;
+	private static final float ACCURACY_THRESHOLD = 25f;
 	private static final String DELIM = "|";
 	private Button geoButton;
 	private TextView latLabel;
@@ -66,9 +68,12 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	private EditText lonField;
 	private TextView elevationLabel;
 	private EditText elevationField;
-	private ImageView statusIndicator;
+	private TextView statusIndicator;
+	private TextView searchingIndicator;
 	private float lastAccuracy;
+	private Resources res;
 	private boolean needUpdate = false;
+	private boolean searching = false;
 	private boolean generateCode;
 
 	public GeoQuestionView(Context context, Question q, String defaultLang,
@@ -87,12 +92,15 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		TableRow innerRow = new TableRow(context);
 
 		DigitsKeyListener numericListener = new DigitsKeyListener(true, true);
+		res = getResources();
+		statusIndicator = new TextView(context);
+		statusIndicator.setText(res.getString(R.string.accuracy) + ": ");
+		statusIndicator.setTextColor(Color.WHITE);
 
-		statusIndicator = new ImageView(context);
-		statusIndicator.setImageResource(R.drawable.greencircle);
-		statusIndicator.setClickable(false);
-		statusIndicator.setVisibility(View.GONE);
-
+		searchingIndicator = new TextView(context);
+		searchingIndicator.setText("");
+		searchingIndicator.setTextColor(Color.WHITE);
+		
 		latField = new EditText(context);
 		latField.setWidth(screenWidth / 2);
 		latField.setOnFocusChangeListener(this);
@@ -117,6 +125,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 
 		innerRow.addView(lonLabel);
 		innerRow.addView(lonField);
+		innerRow.addView(searchingIndicator);
 
 		innerTable.addView(innerRow);
 		innerRow = new TableRow(context);
@@ -186,16 +195,27 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		LocationManager locMgr = (LocationManager) getContext()
 				.getSystemService(Context.LOCATION_SERVICE);
 		if (locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			Location loc = locMgr
-					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			if (loc != null) {
+//			Location loc = locMgr
+//					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//			//if (loc != null) {
 				// if the last location is accurate, then we can use it
 				// TODO: also check if it is too old to be useful
-				if (loc.hasAccuracy() && loc.getAccuracy() < ACCURACY_THRESHOLD) {
-					populateLocation(loc);
-				}
+				//if (loc.hasAccuracy() && loc.getAccuracy() < ACCURACY_THRESHOLD) {
+				//	populateLocation(loc);
+				//}
+			//}
+			statusIndicator.setText(res.getString(R.string.accuracy) + ": ");
+			statusIndicator.setTextColor(Color.WHITE);
+			
+			latField.setText("");
+			lonField.setText("");
+			elevationField.setText("");
+			if (generatedCodeField != null) {
+				generatedCodeField.setText("");
 			}
 			needUpdate = true;
+			searching = true;
+			searchingIndicator.setText(R.string.searching);
 			lastAccuracy = UNKNOWN_ACCURACY;
 			locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
 					this);
@@ -213,12 +233,13 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	 * @param loc
 	 */
 	private void populateLocation(Location loc) {
-		if (loc.hasAccuracy() && loc.getAccuracy() < ACCURACY_THRESHOLD) {
-			statusIndicator.setImageResource(R.drawable.greencircle);
-			statusIndicator.setVisibility(View.VISIBLE);
-		} else {
-			statusIndicator.setImageResource(R.drawable.redcircle);
-			statusIndicator.setVisibility(View.VISIBLE);
+		if (loc.hasAccuracy()) {
+			statusIndicator.setText(res.getString(R.string.accuracy) + ": " + new DecimalFormat("#").format(loc.getAccuracy()) + "m");
+			if (loc.getAccuracy() <= ACCURACY_THRESHOLD) {
+				statusIndicator.setTextColor(Color.GREEN);
+			} else {
+				statusIndicator.setTextColor(Color.RED);
+			}
 		}
 		latField.setText(loc.getLatitude() + "");
 		lonField.setText(loc.getLongitude() + "");
@@ -258,9 +279,13 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		if (generatedCodeField != null) {
 			generatedCodeField.setText("");
 		}
-		if (statusIndicator != null) {
-			statusIndicator.setVisibility(View.GONE);
-		}
+		searchingIndicator.setText("");
+		statusIndicator.setText(res.getString(R.string.accuracy) + ": ");
+		statusIndicator.setTextColor(Color.WHITE);
+		
+//		if (statusIndicator != null) {
+//			statusIndicator.setVisibility(View.GONE);
+//		}
 	}
 
 	/**
@@ -299,13 +324,14 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		// if accuracy is 0 then the gps has no idea where we're at
 		if (currentAccuracy > 0) {
 
-			// if we're decreasing in accuracy or staying the same, or if we're
-			// below the accuracy threshold, stop listening for updates
-			if (currentAccuracy >= lastAccuracy
-					|| currentAccuracy <= ACCURACY_THRESHOLD) {
+			// If we are below the accuracy treshold, stop listening for updates.
+			// This means that after the geolocation is 'green', it stays the same, 
+			// otherwise it keeps on listening
+			if (currentAccuracy <= ACCURACY_THRESHOLD) {
 				LocationManager locMgr = (LocationManager) getContext()
 						.getSystemService(Context.LOCATION_SERVICE);
 				locMgr.removeUpdates(this);
+				searchingIndicator.setText(R.string.ready);
 			}
 
 			// if the location reading is more accurate than the last, update
@@ -316,7 +342,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 				populateLocation(location);
 			}
 		} else if (needUpdate) {
-			needUpdate = false;
+			needUpdate = true;
 			populateLocation(location);
 		}
 	}
