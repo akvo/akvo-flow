@@ -350,8 +350,6 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       insertAfterOrder = this.content.get('order');
     }
-    console.log('insertAfterOrder: ', insertAfterOrder);
-
     // check to see if we are trying to move the question to another question group
     if (FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId') != FLOW.selectedControl.selectedQuestionGroup.get('keyId')) {
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
