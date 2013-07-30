@@ -70,10 +70,9 @@
           </tr>
         </thead>
         <tbody>
-          {{#each SI in FLOW.surveyInstanceControl}}
-            {{#unless SI.isDeleted}}
+          {{#each SI in FLOW.surveyInstanceControl.currentContents}}
             <tr>
-              <td class="device">{{#view FLOW.DataNumView contentBinding="SI"}}{{view.rownum}}{{/view}}</td>
+              <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
               <td class="device">{{SI.keyId}}</td>
               <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
               <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
@@ -90,7 +89,6 @@
                 {{/if}}
               </td>
             </tr>
-            {{/unless}}
             {{/each}}
         </tbody>
         <tfoot>
