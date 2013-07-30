@@ -73,7 +73,6 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 	private float lastAccuracy;
 	private Resources res;
 	private boolean needUpdate = false;
-	private boolean searching = false;
 	private boolean generateCode;
 
 	public GeoQuestionView(Context context, Question q, String defaultLang,
@@ -195,15 +194,7 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		LocationManager locMgr = (LocationManager) getContext()
 				.getSystemService(Context.LOCATION_SERVICE);
 		if (locMgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//			Location loc = locMgr
-//					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//			//if (loc != null) {
-				// if the last location is accurate, then we can use it
-				// TODO: also check if it is too old to be useful
-				//if (loc.hasAccuracy() && loc.getAccuracy() < ACCURACY_THRESHOLD) {
-				//	populateLocation(loc);
-				//}
-			//}
+
 			statusIndicator.setText(res.getString(R.string.accuracy) + ": ");
 			statusIndicator.setTextColor(Color.WHITE);
 			
@@ -214,7 +205,6 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 				generatedCodeField.setText("");
 			}
 			needUpdate = true;
-			searching = true;
 			searchingIndicator.setText(R.string.searching);
 			lastAccuracy = UNKNOWN_ACCURACY;
 			locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
@@ -282,10 +272,6 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		searchingIndicator.setText("");
 		statusIndicator.setText(res.getString(R.string.accuracy) + ": ");
 		statusIndicator.setTextColor(Color.WHITE);
-		
-//		if (statusIndicator != null) {
-//			statusIndicator.setVisibility(View.GONE);
-//		}
 	}
 
 	/**
