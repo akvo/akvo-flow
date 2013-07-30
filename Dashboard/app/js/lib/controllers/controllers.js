@@ -24,6 +24,20 @@ FLOW.ApplicationController = Ember.Controller.extend({
   }
 });
 
+FLOW.role = Ember.Object.create({
+	SUPER_ADMIN: function () {
+		return FLOW.currentUser && FLOW.currentUser.permissionList === 0;
+	}.property(),
+
+	ADMIN: function () {
+		return FLOW.currentUser && FLOW.currentUser.permissionList <= 10;
+	}.property(),
+
+	USER: function () {
+		return FLOW.currentUser && FLOW.currentUser.permissionList <= 20;
+	}.property()
+});
+
 //require('akvo-flow/currentuser');
 
 // Navigation controllers

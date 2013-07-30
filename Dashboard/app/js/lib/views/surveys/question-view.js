@@ -19,6 +19,7 @@ FLOW.QuestionView = FLOW.View.extend({
   newAttributeName: null,
   newAttributeGroup: null,
   newAttributeType: null,
+  doingMoveToDifferentGroup: false,
 
   init: function () {
     var self, qoList, i;
@@ -342,7 +343,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   // move question to selected location
   doQuestionMoveHere: function () {
-    var selectedOrder, insertAfterOrder, selectedQ;
+    var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion;
     selectedOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
 
     if (this.get('zeroItemQuestion')) {
@@ -351,8 +352,14 @@ FLOW.QuestionView = FLOW.View.extend({
       insertAfterOrder = this.content.get('order');
     }
 
-    // only do something if we are not moving to the same place
-    if (!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
+     // check to see if we are trying to move the question to another question group
+     if (FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId') != FLOW.selectedControl.selectedQuestionGroup.get('keyId')) {
+       this.set('doingMoveToDifferentGroup', true);
+       this.doQuestionCopyHere();
+       FLOW.questionControl.deleteQuestion(FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
+
+     // only do something if we are not moving to the same place
+     } else if (!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
       if (selectedQ !== null) {
         // restore order
@@ -387,18 +394,23 @@ FLOW.QuestionView = FLOW.View.extend({
           }
         });
 
+        questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgId;
+        });
+
+        // restore order in case the order has gone haywire
+        FLOW.questionControl.restoreOrder(questionsInGroup);
+
         FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
         FLOW.store.commit();
       }
     }
-
-    FLOW.store.commit();
     FLOW.selectedControl.set('selectedForMoveQuestion', null);
   },
 
   // execute question copy to selected location
   doQuestionCopyHere: function () {
-    var insertAfterOrder, path, qgId, questionsInGroup;
+    var insertAfterOrder, path, qgId, questionsInGroup, question;
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
     if (this.get('zeroItemQuestion')) {
@@ -419,28 +431,45 @@ FLOW.QuestionView = FLOW.View.extend({
       }
     });
 
+    if (this.get('doingMoveToDifferentGroup')) {
+      question = FLOW.selectedControl.get('selectedForMoveQuestion');
+    } else {
+      question = FLOW.selectedControl.get('selectedForCopyQuestion');
+    }
+
     // create copy of Question item in the store
     FLOW.store.createRecord(FLOW.Question, {
-      "tip": FLOW.selectedControl.selectedForCopyQuestion.get('tip'),
-      "mandatoryFlag": FLOW.selectedControl.selectedForCopyQuestion.get('mandatoryFlag'),
-      "allowSign": FLOW.selectedControl.selectedForCopyQuestion.get('allowSign'),
-      "allowDecimal": FLOW.selectedControl.selectedForCopyQuestion.get('allowDecimal'),
-      "allowMultipleFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowMultipleFlag'),
-      "allowOtherFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowOtherFlag'),
+      "tip": question.get('tip'),
+      "mandatoryFlag": question.get('mandatoryFlag'),
+      "allowSign": question.get('allowSign'),
+      "allowDecimal": question.get('allowDecimal'),
+      "allowMultipleFlag": question.get('allowMultipleFlag'),
+      "allowOtherFlag": question.get('allowOtherFlag'),
       "dependentFlag": false,
       "path": path,
-      "maxVal": FLOW.selectedControl.selectedForCopyQuestion.get('maxVal'),
-      "minVal": FLOW.selectedControl.selectedForCopyQuestion.get('minVal'),
-      "type": FLOW.selectedControl.selectedForCopyQuestion.get('type'),
+      "maxVal": question.get('maxVal'),
+      "minVal": question.get('minVal'),
+      "type": question.get('type'),
       "order": insertAfterOrder + 1,
-      "text": FLOW.selectedControl.selectedForCopyQuestion.get('text'),
-      "optionList": FLOW.selectedControl.selectedForCopyQuestion.get('optionList'),
-      "surveyId": FLOW.selectedControl.selectedForCopyQuestion.get('surveyId'),
-      "questionGroupId": FLOW.selectedControl.selectedForCopyQuestion.get('questionGroupId')
+      "text": question.get('text'),
+      "optionList": question.get('optionList'),
+      "surveyId": question.get('surveyId'),
+      "questionGroupId": qgId
     });
 
+    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+      return item.get('questionGroupId') == qgId;
+    });
+
+    // restore order in case the order has gone haywire
+    FLOW.questionControl.restoreOrder(questionsInGroup);
+
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    FLOW.store.commit();
+    // if we are actually moving to a diffent surveygroup, we commit in the
+    // move method, which calls the delete action.
+    if (!this.get('doingMoveToDifferentGroup')) {
+      FLOW.store.commit();
+    }
     FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
 
@@ -478,6 +507,11 @@ FLOW.QuestionView = FLOW.View.extend({
       "questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
     });
 
+    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+      return item.get('questionGroupId') == qgId;
+    });
+    // restore order in case the order has gone haywire
+    FLOW.questionControl.restoreOrder(questionsInGroup);
     FLOW.store.commit();
   },
 
