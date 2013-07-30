@@ -278,7 +278,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     var temp, i;
     // sort them and renumber them according to logical numbering
     temp = groups.toArray();
-    console.log(temp);
     temp.sort(function(a,b) {
       return a.get('order') > b.get('order');
     })
