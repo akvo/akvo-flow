@@ -261,16 +261,34 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       return item.get('surveyId') == sId;
     });
 
+    // restore order
     questionGroupsInSurvey.forEach(function (item) {
       if (item.get('order') > qgOrder) {
         item.set('order', item.get('order') - 1);
       }
     });
-
+    // restore order in case the order has gone haywire
+    this.restoreOrder(questionGroupsInSurvey);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
 
   },
+
+  restoreOrder: function (groups) {
+    var temp, i;
+    // sort them and renumber them according to logical numbering
+    temp = groups.toArray();
+    console.log(temp);
+    temp.sort(function(a,b) {
+      return a.get('order') > b.get('order');
+    })
+    i = 1
+    temp.forEach(function(item){
+      item.set('order',i);
+      i++;
+    })
+  },
+
 
   // insert group
   doInsertQuestionGroup: function () {
@@ -305,6 +323,14 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
         "path": path,
         "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
       });
+
+      // get the question groups again, now it contains the new one as well
+      questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
+        return item.get('surveyId') == sId;
+      });
+
+      // restore order in case the order has gone haywire
+      this.restoreOrder(questionGroupsInSurvey);
 
       FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
       FLOW.store.commit();
@@ -390,6 +416,9 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
           }
         });
 
+        // restore order in case the order has gone haywire
+        this.restoreOrder(questionGroupsInSurvey);
+
         FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
         FLOW.store.commit();
       }
@@ -430,6 +459,14 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "path": path,
       "surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId')
     });
+
+      // get the question groups again, now it contains the new one as well
+      questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
+        return item.get('surveyId') == sId;
+      });
+
+      // restore order in case the order has gone haywire
+      this.restoreOrder(questionGroupsInSurvey);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
