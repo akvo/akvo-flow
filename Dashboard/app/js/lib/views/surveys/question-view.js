@@ -19,7 +19,6 @@ FLOW.QuestionView = FLOW.View.extend({
   newAttributeName: null,
   newAttributeGroup: null,
   newAttributeType: null,
-  doingMoveToDifferentGroup: false,
 
   init: function () {
     var self, qoList, i;
@@ -351,15 +350,58 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       insertAfterOrder = this.content.get('order');
     }
+    console.log('insertAfterOrder: ', insertAfterOrder);
 
-     // check to see if we are trying to move the question to another question group
-     if (FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId') != FLOW.selectedControl.selectedQuestionGroup.get('keyId')) {
-       this.set('doingMoveToDifferentGroup', true);
-       this.doQuestionCopyHere();
-       FLOW.questionControl.deleteQuestion(FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
+    // check to see if we are trying to move the question to another question group
+    if (FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId') != FLOW.selectedControl.selectedQuestionGroup.get('keyId')) {
+      selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
+      if (selectedQ !== null) {
 
-     // only do something if we are not moving to the same place
-     } else if (!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
+        // restore order
+        qgIdSource = FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId');
+        qgIdDest = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+
+        questionsInSourceGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgIdSource;
+        });
+
+        questionsInDestGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgIdDest;
+        });
+
+        // restore order in source group, where the question dissapears 
+        questionsInSourceGroup.forEach(function (item) {
+          if (item.get('order') > selectedOrder) {
+            item.set('order', item.get('order') - 1);
+          }
+        });
+
+        // make room in destination group
+        questionsInDestGroup.forEach(function (item) {
+          if (item.get('order') > insertAfterOrder) {
+            item.set('order', item.get('order') + 1);
+          }
+        });
+
+        // move question
+        selectedQ.set('order', insertAfterOrder + 1);
+        selectedQ.set('questionGroupId', qgIdDest);
+
+        // recompute questions in groups so we can correct any order problems
+        questionsInSourceGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgIdSource;
+        });
+
+        questionsInDestGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgIdDest;
+        });
+
+        FLOW.questionControl.restoreOrder(questionsInSourceGroup);
+        FLOW.questionControl.restoreOrder(questionsInDestGroup);
+      }
+    // if we are not moving to another group, we must be moving inside a group
+    // only do something if we are not moving to the same place
+    } else if (!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
       if (selectedQ !== null) {
         // restore order
@@ -367,7 +409,6 @@ FLOW.QuestionView = FLOW.View.extend({
         questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
           return item.get('questionGroupId') == qgId;
         });
-
 
         origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
         movingUp = origOrder < insertAfterOrder;
@@ -400,11 +441,10 @@ FLOW.QuestionView = FLOW.View.extend({
 
         // restore order in case the order has gone haywire
         FLOW.questionControl.restoreOrder(questionsInGroup);
-
-        FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-        FLOW.store.commit();
       }
     }
+    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
+    FLOW.store.commit();
     FLOW.selectedControl.set('selectedForMoveQuestion', null);
   },
 
@@ -431,12 +471,7 @@ FLOW.QuestionView = FLOW.View.extend({
       }
     });
 
-    if (this.get('doingMoveToDifferentGroup')) {
-      question = FLOW.selectedControl.get('selectedForMoveQuestion');
-    } else {
-      question = FLOW.selectedControl.get('selectedForCopyQuestion');
-    }
-
+    question = FLOW.selectedControl.get('selectedForCopyQuestion');
     // create copy of Question item in the store
     FLOW.store.createRecord(FLOW.Question, {
       "tip": question.get('tip'),
@@ -465,11 +500,8 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.questionControl.restoreOrder(questionsInGroup);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    // if we are actually moving to a diffent surveygroup, we commit in the
-    // move method, which calls the delete action.
-    if (!this.get('doingMoveToDifferentGroup')) {
-      FLOW.store.commit();
-    }
+    FLOW.store.commit();
+    
     FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
 
