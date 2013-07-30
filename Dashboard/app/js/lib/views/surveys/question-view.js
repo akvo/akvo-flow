@@ -387,6 +387,13 @@ FLOW.QuestionView = FLOW.View.extend({
           }
         });
 
+        questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgId;
+        });
+
+        // restore order in case the order has gone haywire
+        FLOW.questionControl.restoreOrder(questionsInGroup);
+
         FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
         FLOW.store.commit();
       }
@@ -437,7 +444,12 @@ FLOW.QuestionView = FLOW.View.extend({
       "optionList": FLOW.selectedControl.selectedForCopyQuestion.get('optionList'),
       "surveyId": FLOW.selectedControl.selectedForCopyQuestion.get('surveyId'),
       "questionGroupId": FLOW.selectedControl.selectedForCopyQuestion.get('questionGroupId')
+    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+      return item.get('questionGroupId') == qgId;
     });
+
+    // restore order in case the order has gone haywire
+    FLOW.questionControl.restoreOrder(questionsInGroup);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
@@ -478,6 +490,11 @@ FLOW.QuestionView = FLOW.View.extend({
       "questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
     });
 
+    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+      return item.get('questionGroupId') == qgId;
+    });
+    // restore order in case the order has gone haywire
+    FLOW.questionControl.restoreOrder(questionsInGroup);
     FLOW.store.commit();
   },
 
