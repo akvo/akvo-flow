@@ -233,8 +233,10 @@ public class RawDataExporter extends AbstractDataExporter {
 	public static void main(String[] args) {
 		RawDataExporter exporter = new RawDataExporter();
 		Map<String, String> criteria = new HashMap<String, String>();
+		Map<String, String> options = new HashMap<String, String>();
 		criteria.put(SURVEY_ID, args[2]);
-		exporter.export(criteria, new File(args[0]), args[1], null);
+		criteria.put("apiKey", args[3]);
+		exporter.export(criteria, new File(args[0]), args[1], options);
 	}
 
 }

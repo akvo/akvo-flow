@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView android:id="@id/android:list"
 	android:layout_width="wrap_content" android:layout_height="wrap_content"
+	android:padding="8dp"
 	xmlns:android="http://schemas.android.com/apk/res/android">
 	<LinearLayout android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:orientation="vertical">
@@ -36,7 +37,7 @@
 				android:text="@string/screenoptlabel" android:layout_toLeftOf="@id/screenoptcheckbox" />
 			<TextView android:textSize="10dip" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:layout_below="@id/screenopttxt"
-				android:text="@string/screenoptdesc" />
+				android:text="@string/screenoptdesc" android:layout_toLeftOf="@id/screenoptcheckbox" />
 		</RelativeLayout>
 		<RelativeLayout android:layout_width="fill_parent"
 			android:layout_height="wrap_content">

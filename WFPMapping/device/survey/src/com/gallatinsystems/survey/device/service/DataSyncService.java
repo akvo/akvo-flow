@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,9 +38,12 @@ import java.util.zip.ZipOutputStream;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.http.HttpStatus;
+
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -106,8 +110,6 @@ public class DataSyncService extends Service {
 	private static final String SIG_FILE_NAME = ".sig";
 	private static final String REGION_DATA_FILE = "regions.txt";
 	private Thread thread;
-	private static final int REDIRECT_CODE = 303;
-	private static final int OK_CODE = 200;
 	private static Semaphore lock = new Semaphore(1);
 	private static int counter = 0;
 	private PropertyUtil props;
@@ -716,7 +718,6 @@ public class DataSyncService extends Service {
 			String policy, String sig, String contentType) {
 
 		try {
-
 			String fileName = fileAbsolutePath;
 			if (fileName.contains(File.separator)) {
 				fileName = fileName.substring(fileName
@@ -724,6 +725,9 @@ public class DataSyncService extends Service {
 			}
 			final String fileNameForNotification = fileName;
 			fireNotification(ConstantUtil.PROGRESS, fileName);
+			
+			// Generate checksum, to be compared against response's ETag
+			final String checksum = getMD5Checksum(fileAbsolutePath);
 
 			MultipartStream stream = new MultipartStream(new URL(
 					props.getProperty(ConstantUtil.DATA_UPLOAD_URL)));
@@ -754,19 +758,35 @@ public class DataSyncService extends Service {
 							fireNotification(ConstantUtil.PROGRESS,
 									PCT_FORMAT.format(percentComplete) + " - "
 											+ fileNameForNotification);
-
 						}
 					});
-
-			if (code != REDIRECT_CODE && code != OK_CODE) {
+				
+			/*
+			 * Determine if an upload to Amazon S3 is successful.
+			 * The response headers should contain a redirection to a URL,
+			 * in which query, a parameter called "etag" will be the md5 checksum 
+			 * of the uploaded file.
+			 */
+			String etag = null;
+			if (code == HttpStatus.SC_SEE_OTHER) {
+				String location = stream.getResponseHeader("Location");
+				Uri uri = Uri.parse(location);
+				etag = uri.getQueryParameter("etag");
+				etag = etag.replaceAll("\"", "");// Remove quotes
+				Log.d(TAG, "ETag: " + etag);
+			} else {
 				Log.e(TAG, "Server returned a bad code after upload: " + code);
+			}
+					
+			if (etag != null && etag.equals(checksum)) {
+				fireNotification(ConstantUtil.FILE_COMPLETE,
+						fileNameForNotification);
+			} else {
+				Log.e(TAG, "Server returned a bad checksum after upload: " + checksum);
 				fireNotification(ConstantUtil.ERROR,
 						getString(R.string.uploaderror) + " "
 								+ fileNameForNotification);
 				return false;
-			} else {
-				fireNotification(ConstantUtil.FILE_COMPLETE,
-						fileNameForNotification);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Could not send upload " + e.getMessage(), e);
@@ -818,5 +838,41 @@ public class DataSyncService extends Service {
 			ok = true;
 		}
 		return ok;
+	}
+	
+	private byte[] getFileBytes(String path) {
+		File file = new File(path);
+		int size = (int)file.length();
+		byte[] bytes = null;
+		BufferedInputStream bis = null;
+		
+		try {
+			bis = new BufferedInputStream(new FileInputStream(file));
+			bytes = new byte[size];
+			bis.read(bytes, 0, size);
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage());
+			bytes = null;
+		} finally {
+			try {
+				bis.close();
+			} catch (IOException ignored) {}
+		}
+		return bytes;
+	}
+	
+	private String getMD5Checksum(String filePath) throws NoSuchAlgorithmException {
+		StringBuilder stringBuilder = new StringBuilder();
+		byte[] bytes = getFileBytes(filePath);
+		
+		if (bytes != null) {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] rawHash = md.digest(bytes);
+			
+			for (byte b : rawHash) {
+				stringBuilder.append(String.format("%02x", b));
+			}
+		}
+		return stringBuilder.toString();
 	}
 }

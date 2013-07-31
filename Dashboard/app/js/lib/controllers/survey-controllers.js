@@ -301,6 +301,20 @@ FLOW.questionControl = Ember.ArrayController.create({
     }));
   },
 
+  restoreOrder: function (groups) {
+    var temp, i;
+    // sort them and renumber them according to logical numbering
+    temp = groups.toArray();
+    temp.sort(function(a,b) {
+      return a.get('order') > b.get('order');
+    });
+    i = 1
+    temp.forEach(function(item){
+      item.set('order',i);
+      i++;
+    });
+  },
+
   deleteQuestion: function (questionId) {
     qgId = this.content.get('questionGroupId');
     question = FLOW.store.find(FLOW.Question, questionId);
@@ -318,6 +332,8 @@ FLOW.questionControl = Ember.ArrayController.create({
         item.set('order', item.get('order') - 1);
       }
     });
+    // restore order in case the order has gone haywire
+    this.restoreOrder(questionsInGroup);
     FLOW.store.commit();
   },
 

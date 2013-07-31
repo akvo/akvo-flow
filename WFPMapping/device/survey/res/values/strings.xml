@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Field Survey</string>
+    <string name="accuracy">Acc</string>
+    <string name="searching">Searching...</string>
+    <string name="ready">Ready</string>
     <string name="nocardspacetitle">No Storage Space</string>
     <string name="lowcardspacetitle">Low Storage Space</string>
     <string name="nocardspacedialog">The SD card on this device is full and you can no longer collect data. You must clear space on the SD card in order to continue.</string>
@@ -10,7 +13,7 @@
 	<string name="getgeo">Check Geo Location</string>
 	<string name="lat">Lat</string>
 	<string name="lon">Lon</string>
-	<string name="elevation">Elevation</string>
+	<string name="elevation">Height</string>
 	<string name="savebutton">Save</string>
 	<string name="clearbutton">Clear</string>
 	<string name="submitbutton">Submit</string>
@@ -212,4 +215,7 @@
 	<string name="addtestpoints">Add test points</string>
 	<string name="updateavail">Update Available</string>
 	<string name="clicktoinstall">Click to install</string>
+    
+	<!-- Action to identify the BroadcastReceiver, notifying new surveys have been downloaded -->
+	<string name="action_surveys_sync">fieldsurvey.ACTION_SURVEYS_SYNC</string>
 </resources>
