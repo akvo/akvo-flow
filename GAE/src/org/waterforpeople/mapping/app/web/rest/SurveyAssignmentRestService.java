@@ -308,6 +308,7 @@ public class SurveyAssignmentRestService {
 		queueItem.setAssignmentId(assignment.getKey().getId());
 		queueItem
 				.setSurveyDistributionStatus(DeviceSurveyJobQueue.DistributionStatus.UNSENT);
+		queueItem.setImei(d.getEsn());
 		return queueItem;
 	}
 

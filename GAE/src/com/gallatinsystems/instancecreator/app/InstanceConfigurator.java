@@ -184,8 +184,7 @@ public class InstanceConfigurator {
 
 	private void writeFile(String location, String name, String contents)
 			throws IOException {
-		String filePath = location + System.getProperty("file.separator") + name;
-		File file = new File(filePath);
+		File file = new File(location + '/' + name);
 
 		if (file.exists()) {
 			if (file.delete()) {

@@ -59,6 +59,24 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
     }));
   },
 
+  contentChanged: function() {
+    var mutableContents = [];
+
+    this.get('arrangedContent').forEach(function(item) {
+        mutableContents.pushObject(item);
+    });
+
+    this.set('currentContents', mutableContents);
+  }.observes('content', 'content.isLoaded'),
+
+  removeInstance: function(instance) {
+    this.get('currentContents').forEach(function(item, i, currentContents) {
+        if (item.get('id') == instance.get('id')) {
+            currentContents.removeAt(i, 1);
+        }
+    });
+  },
+
   allAreSelected: function (key, value) {
     if (arguments.length === 2) {
       this.setEach('isSelected', value);

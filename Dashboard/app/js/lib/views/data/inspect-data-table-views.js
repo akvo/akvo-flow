@@ -200,6 +200,7 @@ FLOW.DataItemView = FLOW.View.extend({
     var SI;
     SI = FLOW.store.find(FLOW.SurveyInstance, this.content.get('keyId'));
     if (SI !== null) {
+      FLOW.surveyInstanceControl.removeInstance(SI);
       SI.deleteRecord();
       FLOW.store.commit();
     }
@@ -209,11 +210,8 @@ FLOW.DataItemView = FLOW.View.extend({
 FLOW.DataNumView = FLOW.View.extend({
   tagName: 'span',
   content: null,
-  rownum: null,
+  rownum: function() {
+    return this.get("_parentView.contentIndex") + 1 + 20 * FLOW.surveyInstanceControl.get('pageNumber');
+  }.property()
 
-  init: function () {
-    var index;
-    index = FLOW.surveyInstanceControl.content.indexOf(this.get('content'));
-    this.set('rownum', index + 1 + 20 * FLOW.surveyInstanceControl.get('pageNumber'));
-  }
 });

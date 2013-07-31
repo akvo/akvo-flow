@@ -15,6 +15,11 @@ FLOW.ReportLoader = Ember.Object.create({
         generateTabFormat: 'false'
       }
     },
+    RAW_DATA_TEXT: {
+        surveyId: '75201',
+        exportType: 'RAW_DATA_TEXT',
+        opts: {}
+    },
     GRAPHICAL_SURVEY_SUMMARY: {
       surveyId: '75201',
       exportType: 'GRAPHICAL_SURVEY_SUMMARY',
@@ -127,6 +132,14 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       return;
     }
     FLOW.ReportLoader.load('RAW_DATA', FLOW.selectedControl.selectedSurvey.get('id'));
+  },
+  
+  showRawTextFileExport: function () {
+    if (!FLOW.selectedControl.selectedSurvey) {
+	  this.showWarning();
+    return;
+	}
+	FLOW.ReportLoader.load('RAW_DATA_TEXT', FLOW.selectedControl.selectedSurvey.get('id'));  
   },
 
   showComprehensiveReport: function () {
