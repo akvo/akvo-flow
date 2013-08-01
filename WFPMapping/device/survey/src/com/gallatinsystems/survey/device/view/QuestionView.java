@@ -472,6 +472,18 @@ public class QuestionView extends TableLayout implements
 		setResponse(resp, true);
 	}
 
+	/**
+	 * Release any heavy resource associated with this view. This method will likely be 
+	 * overridden by subclasses. This callback should ALWAYS be called when the Activity 
+	 * is about to become invisible (paused, stopped,...) and this View's responses have 
+	 * been successfully cached. Any resource that can cause a memory leak or prevent 
+	 * this View from being GC should be freed/notified
+	 * 
+	 */
+	public void releaseResources() {
+		
+	}
+
 	public QuestionResponse getResponse(boolean suppressListeners) {
 		if (response == null
 				|| (ConstantUtil.VALUE_RESPONSE_TYPE.equals(response.getType()) && (response

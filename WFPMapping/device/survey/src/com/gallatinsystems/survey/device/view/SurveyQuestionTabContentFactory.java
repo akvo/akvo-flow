@@ -366,6 +366,9 @@ public class SurveyQuestionTabContentFactory extends SurveyTabContentFactory {
 					//so we can just discard it
 					responseMap.remove(curResponse.getQuestionId());
 				}
+				
+				// Notify the View so it can release any system resource (i.e. Location updates)
+				q.releaseResources();
 			}
 		}
 	}

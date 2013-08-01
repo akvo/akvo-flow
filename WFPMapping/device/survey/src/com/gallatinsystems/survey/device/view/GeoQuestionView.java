@@ -32,7 +32,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -376,6 +375,15 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 					+ DELIM + generatedCodeField.getText(),
 					ConstantUtil.GEO_RESPONSE_TYPE, getQuestion().getId()));
 		}
+	}
+	
+	@Override
+	public void releaseResources() {
+		// Remove updates from LocationManager, to allow this object being GC
+		// and avoid an unnecessary use of the GPS and battery draining.
+		LocationManager locMgr = (LocationManager) getContext()
+				.getSystemService(Context.LOCATION_SERVICE);
+		locMgr.removeUpdates(this);
 	}
 
 }
