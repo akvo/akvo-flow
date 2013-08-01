@@ -35,6 +35,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
 	public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
 	public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
+	public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
 	public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
 	public static final String TRIM_OPTIONS = "trimOptions";
 	public static final String RESCORE_AP_ACTION = "rescoreAp";
@@ -45,6 +46,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String QAS_ID_PARAM = "qasId";
 	public static final String DELTA_PARAM = "delta";
 	public static final String API_KEY_PARAM = "apiKey";
+	public static final String OFFSET_PARAM = "offset";
 
 	private String country;
 	private String source;
@@ -53,6 +55,7 @@ public class DataProcessorRequest extends RestRequest {
 	private Long qasId;
 	private Integer delta;
 	private String apiKey;
+	private Long offset = 0L;
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
@@ -98,6 +101,10 @@ public class DataProcessorRequest extends RestRequest {
 
 		if (req.getParameter(API_KEY_PARAM) != null) {
 			setApiKey(req.getParameter(API_KEY_PARAM).trim());
+		}
+
+		if (req.getParameter(OFFSET_PARAM) != null) {
+			setOffset(Long.valueOf(req.getParameter(OFFSET_PARAM).trim()));
 		}
 	}
 
@@ -161,6 +168,14 @@ public class DataProcessorRequest extends RestRequest {
 
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
+	}
+
+	public Long getOffset() {
+		return offset;
+	}
+
+	public void setOffset(Long offset) {
+		this.offset = offset;
 	}
 
 }

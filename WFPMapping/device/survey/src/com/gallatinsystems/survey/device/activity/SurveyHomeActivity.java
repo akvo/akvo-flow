@@ -19,9 +19,11 @@ package com.gallatinsystems.survey.device.activity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -121,9 +123,9 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 		startSyncService();
 		startService(SurveyDownloadService.class);
 		startService(LocationService.class);
-		startService(PrecacheService.class);
+		//startService(PrecacheService.class);
 		startService(BootstrapService.class);
-		startService(ApkUpdateService.class);
+		//startService(ApkUpdateService.class);
 		startService(ExceptionReportingService.class);
 	}
 
@@ -355,6 +357,7 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	@Override
 	protected void onPause() {
 		super.onPause();
+		unregisterReceiver(surveysSyncReceiver);
 		saveState();
 	}
 
@@ -362,6 +365,8 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	protected void onResume() {
 		super.onResume();
 		populateFields();
+		registerReceiver(surveysSyncReceiver, 
+				new IntentFilter(getString(R.string.action_surveys_sync)));
 	}
 
 	private void populateFields() {
@@ -372,4 +377,17 @@ public class SurveyHomeActivity extends Activity implements OnItemClickListener 
 	private void saveState() {
 
 	}
+    
+	/**
+	 * BroadcastReceiver to notify of surveys synchronisation.
+	 * This should be fired from SurveyDownloadService.
+	 *
+	 */
+	private BroadcastReceiver surveysSyncReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.i(TAG, "Surveys have been synchronised. Refreshing grid data...");
+			populateFields();
+		}
+	};
 }

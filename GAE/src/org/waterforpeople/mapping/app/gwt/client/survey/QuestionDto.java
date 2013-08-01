@@ -37,6 +37,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private List<QuestionHelpDto> questionHelpList;
 	private String tip = null;
 	private String optionList = null;
+	private List<Long> questionOptions = null;
 	private Boolean mandatoryFlag = null;
 	private Boolean dependentFlag = null;
 	private Long dependentQuestionId;
@@ -350,5 +351,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
 	public Boolean getImmutable() {
 		return immutable;
+	}
+
+	public List<Long> getQuestionOptions() {
+		return questionOptions;
+	}
+
+	public void setQuestionOptions(List<Long> questionOption_ids) {
+		this.questionOptions = questionOption_ids;
 	}
 }

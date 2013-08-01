@@ -28,6 +28,7 @@ public class QuestionOptionDto extends BaseDto implements Serializable {
 	private String text;
 	private String code;
 	private Integer order;
+	private Long questionId;
 	private TreeMap<String, TranslationDto> translationMap;
 
 	public TreeMap<String, TranslationDto> getTranslationMap() {
@@ -97,6 +98,14 @@ public class QuestionOptionDto extends BaseDto implements Serializable {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Long getQuestionId() {
+		return questionId;
+	}
+
+	public void setQuestionId(Long questionId) {
+		this.questionId = questionId;
 	}
 
 }

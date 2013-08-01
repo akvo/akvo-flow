@@ -173,6 +173,12 @@
 		source="manual">
 		<property name="__key__" direction="desc" />
 	</datastore-index>
+	<datastore-index kind="QuestionAnswerStore" ancestor="false"
+	    source="manual">
+		<property name="questionID" direction="asc"/>
+		<property name="surveyInstanceId" direction="asc"/>
+		<property name="createdDateTime" direction="desc"/>
+	</datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointStatus" direction="asc" />

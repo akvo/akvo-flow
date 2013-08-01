@@ -16,12 +16,9 @@ FLOW.placemarkController = Ember.ArrayController.create({
   },
 
   populateMap: function () {
-    var map;
-    
     if (this.content.get('isUpdating') === false) {
       this.clearOverlays();
-      map = this.get('map');
-      this.get('content').forEach(function(placemark) {
+      this.get('content').forEach(function (placemark) {
         this.addMarker(placemark);
       }, this);
     }
@@ -38,12 +35,12 @@ FLOW.placemarkController = Ember.ArrayController.create({
     var marker, map, coordinate;
 
     coordinate = new google.maps.LatLng(placemark.get('latitude'),
-                                     placemark.get('longitude'));
+      placemark.get('longitude'));
     map = this.get('map');
 
     marker = new google.maps.Marker({
       position: coordinate,
-      map: map, 
+      map: map,
       placemark: placemark,
       icon: '/images/maps/blueMarker.png'
     });
@@ -59,11 +56,11 @@ FLOW.placemarkController = Ember.ArrayController.create({
 
       marker.placemark.toggleMarker(marker.placemark);
       oldSelected = FLOW.placemarkController.get('selected');
-      if(Ember.none(oldSelected)) {
+      if (Ember.none(oldSelected)) {
         // console.log("No previous selection");
         FLOW.placemarkController.set('selected', marker.placemark);
       } else {
-        if(this.marker === oldSelected.marker) {
+        if (this.marker === oldSelected.marker) {
           // console.log("Clicked a selected marker");
           FLOW.placemarkController.set('selected', undefined);
         } else {
@@ -79,17 +76,17 @@ FLOW.placemarkController = Ember.ArrayController.create({
 
       map = FLOW.placemarkController.get('map');
       coordinate = new google.maps.LatLng(placemark.get('latitude'),
-                                     placemark.get('longitude'));
+        placemark.get('longitude'));
 
-      if(placemark.marker.icon === ('/images/maps/blueMarker.png')) {
-        iconUrl = '/images/maps/redMarker.png' ;
+      if (placemark.marker.icon === ('/images/maps/blueMarker.png')) {
+        iconUrl = '/images/maps/redMarker.png';
       } else {
         iconUrl = '/images/maps/blueMarker.png';
       }
-      
+
       newMarker = new google.maps.Marker({
         position: coordinate,
-        map: map, 
+        map: map,
         placemark: placemark,
         icon: iconUrl
       });
@@ -116,9 +113,9 @@ FLOW.countryController = Ember.ArrayController.create({
   country: null,
   countryCode: null,
 
-  init: function() {
+  init: function () {
     this._super();
-    if ( !Ember.none(FLOW.Env) && !Ember.none(FLOW.Env.countries) ) {
+    if (!Ember.none(FLOW.Env) && !Ember.none(FLOW.Env.countries)) {
       this.set('content', this.getContent(FLOW.Env.countries));
     }
   },
@@ -137,23 +134,22 @@ FLOW.countryController = Ember.ArrayController.create({
     if (!Ember.none(selectedMarker)) {
       selectedMarker.toggleMarker(selectedMarker);
       FLOW.placemarkController.set('selected', null);
-    } 
+    }
   },
 
-  positionMap: function() {
+  positionMap: function () {
     var country, map;
-  
+
     country = this.get('country');
     map = FLOW.placemarkController.get('map');
 
     if (!Ember.none(country)) {
       map.panTo(new google.maps.LatLng(
-        country.get('lat'), country.get('lon'))
-      );
+        country.get('lat'), country.get('lon')));
       map.setZoom(country.get('zoom'));
     }
   },
-  
+
 
   /**
     Helper function to parse backend countries to countryList
@@ -168,7 +164,7 @@ FLOW.countryController = Ember.ArrayController.create({
     });
 
     for (var i = 0; i < countries.length; i++) {
-      if ( !Ember.none(countries[i].centroidLat) && !Ember.none(countries[i].centroidLon) ) {
+      if (!Ember.none(countries[i].centroidLat) && !Ember.none(countries[i].centroidLon)) {
         var zoom = 7; // default zoom level
         if (!Ember.none(countries[i].zoomLevel)) {
           zoom = countries[i].zoomLevel;
@@ -193,6 +189,8 @@ FLOW.countryController = Ember.ArrayController.create({
 
 FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: Ember.A(),
+  sortProperties: ['questionText'],
+  sortAscending: true,
 
   populate: function (placemark) {
     if (placemark && placemark.id) {
@@ -204,17 +202,18 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
     }
   },
 
-  handlePlacemarkSelection: function() {
+  handlePlacemarkSelection: function () {
     var selected;
-    
+
     selected = FLOW.placemarkController.get('selected');
     this.populate(selected);
   }.observes('FLOW.placemarkController.selected'),
 
-  photoUrl: function() {
-    var photoDetails, photoUrl, rawPhotoUrl;
+  photoUrl: function () {
+    var photoDetails, photoUrls = [],
+      rawPhotoUrl;
 
-    if(!this.get('content').get('isLoaded')) {
+    if (!this.get('content').get('isLoaded')) {
       return null;
     }
 
@@ -223,16 +222,19 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
       return detail.get('questionType') === 'PHOTO';
     });
 
-    if(Ember.empty(photoDetails)) {
+    if (Ember.empty(photoDetails)) {
       return null;
     }
 
-    // We only care for the first image
-    rawPhotoUrl = photoDetails[0].get('stringValue');
-    // Since photos have a leading path from devices that we need to trim
-    photoUrl = FLOW.Env.photo_url_root + rawPhotoUrl.split('/').pop();
+    photoDetails.forEach(function (photo) {
+      rawPhotoUrl = photo.get('stringValue');
+      // Since photos have a leading path from devices that we need to trim
+      photoUrls.push(FLOW.Env.photo_url_root + rawPhotoUrl.split('/').pop());
+    });
 
-    return photoUrl;
+    return Ember.ArrayController.create({
+      content: photoUrls
+    });
   }.property('content.isLoaded')
 
 });

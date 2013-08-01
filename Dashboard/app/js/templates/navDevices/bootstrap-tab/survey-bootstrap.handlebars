@@ -69,10 +69,12 @@
           <div class="">
           <label for="notificationEmail">{{t _notification_email}}:</label>
          {{view Ember.TextField valueBinding="view.notificationEmail" id="notificationEmail" placeholder="Enter the notification email" size=30}}
-         <label for="includeDBInstructions">{{t _include_db_instructions}}:</label>
-         {{view Ember.Checkbox checkedBinding="view.includeDBInstructions" id="includeDBInstructions"}}
-         {{#if view.includeDBInstructions}}
-           {{view Ember.TextArea valueBinding="view.dbInstructions" id="dbInstructions"}}
+         {{#if view.undef}}
+           <label for="includeDBInstructions">{{t _include_db_instructions}}:</label>
+           {{view Ember.Checkbox checkedBinding="view.includeDBInstructions" id="includeDBInstructions"}}
+           {{#if view.includeDBInstructions}}
+             {{view Ember.TextArea valueBinding="view.dbInstructions" id="dbInstructions"}}
+           {{/if}}
          {{/if}}
         </fieldset>
       </div>

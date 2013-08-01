@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -159,6 +160,8 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 					dev.setPhoneNumber(mgrReq.getPhoneNumber());
 					dev.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
 					dev.setDeviceIdentifier(mgrReq.getDeviceId());
+					dev.setLastLocationBeaconTime(new Date());
+					dev.setGallatinSoftwareManifest(mgrReq.getVersion());
 					deviceDao.save(dev);
 				}
 			}
@@ -191,6 +194,8 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 					device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
 					device.setDeviceIdentifier(mgrReq.getDeviceId());
 					device.setPhoneNumber(mgrReq.getPhoneNumber());
+					device.setLastLocationBeaconTime(new Date());
+					device.setGallatinSoftwareManifest(mgrReq.getVersion());
 					deviceDao.save(device);
 				}
 			}

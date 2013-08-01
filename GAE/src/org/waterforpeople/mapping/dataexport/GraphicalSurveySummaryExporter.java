@@ -537,6 +537,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					for (int j = count; j < 4; j++) {
 						createCell(row, col++, "", null);
 					}
+				} else if (qdto != null && QuestionType.NUMBER.equals(qdto.getType())) {
+					String cellVal = val.trim();
+					createCell(row, col++, cellVal, null, Cell.CELL_TYPE_NUMERIC);
+					digest.update(cellVal.getBytes());
 				} else {
 					String cellVal = val.replaceAll("\n", " ").trim();
 					createCell(row, col++, cellVal, null);
@@ -903,13 +907,24 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	 * non-null)
 	 * 
 	 */
+
 	protected Cell createCell(Row row, int col, String value, CellStyle style) {
+		return createCell(row, col, value, style, -1);
+	}
+
+	protected Cell createCell(Row row, int col, String value, CellStyle style, int type) {
 		Cell cell = row.createCell(col);
+
 		if (style != null) {
 			cell.setCellStyle(style);
 		}
 		if (value != null) {
-			cell.setCellValue(value);
+			if (type == Cell.CELL_TYPE_NUMERIC) {
+				cell.setCellType(type);
+				cell.setCellValue(Double.valueOf(value));
+			} else {
+				cell.setCellValue(value);
+			}
 		}
 
 		return cell;
@@ -1048,8 +1063,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	public static void main(String[] args) {
 		GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
 		Map<String, String> criteria = new HashMap<String, String>();
+		Map<String, String> options = new HashMap<String, String>();
 		criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
-		exporter.export(criteria, new File(args[0]), args[1], null);
+		criteria.put("apiKey", args[3]);
+		exporter.export(criteria, new File(args[0]), args[1], options);
 	}
 
 	/**

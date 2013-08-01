@@ -51,6 +51,8 @@ import com.gallatinsystems.survey.device.exception.TransferException;
 import com.gallatinsystems.survey.device.util.ConstantUtil;
 import com.gallatinsystems.survey.device.util.FileUtil;
 import com.gallatinsystems.survey.device.util.HttpUtil;
+import com.gallatinsystems.survey.device.util.LangsPreferenceUtil;
+import com.gallatinsystems.survey.device.util.PlatformUtil;
 import com.gallatinsystems.survey.device.util.PropertyUtil;
 import com.gallatinsystems.survey.device.util.StatusUtil;
 import com.gallatinsystems.survey.device.util.ViewUtil;
@@ -75,6 +77,7 @@ public class SurveyDownloadService extends Service {
 	private static final String SURVEY_HEADER_SERVICE_PATH = "/surveymanager?action=getSurveyHeader&surveyId=";
 	private static final String DEV_ID_PARAM = "&devId=";
 	private static final String IMEI_PARAM = "&imei=";
+	private static final String VERSION_PARAM="&ver=";
 	@SuppressWarnings("unused")
 	private static final String SURVEY_SERVICE_SERVICE_PATH = "/surveymanager?surveyId=";
 	private static final String SD_LOC = "sdcard";
@@ -170,6 +173,8 @@ public class SurveyDownloadService extends Service {
 							try {
 								if (downloadSurvey(serverBase, survey)) {
 									databaseAdaptor.saveSurvey(survey);
+									String[] langs = LangsPreferenceUtil.determineLanguages(this, survey);
+									databaseAdaptor.addLanguages(langs);
 									downloadHelp(survey, precacheOption);
 									updateCount++;
 								}
@@ -180,6 +185,7 @@ public class SurveyDownloadService extends Service {
 							}
 						}
 						if (updateCount > 0) {
+							sendBroadcastNotification();
 							fireNotification(updateCount);
 						}
 					}
@@ -457,6 +463,7 @@ public class SurveyDownloadService extends Service {
 			response = HttpUtil.httpGet(serverBase
 					+ SURVEY_LIST_SERVICE_PATH + URLEncoder.encode(StatusUtil.getPhoneNumber(this), "UTF-8")
 					+ IMEI_PARAM + URLEncoder.encode(StatusUtil.getImei(this), "UTF-8")
+					+ VERSION_PARAM + URLEncoder.encode(PlatformUtil.getVersionName(this), "UTF-8")
 					+ (deviceId != null ? DEV_ID_PARAM + URLEncoder.encode(deviceId, "UTF-8") : ""));
 			if (response != null) {
 				StringTokenizer strTok = new StringTokenizer(response, "\n");
@@ -498,6 +505,17 @@ public class SurveyDownloadService extends Service {
 		String text = getResources().getText(R.string.surveysupdated)
 				.toString();
 		ViewUtil.fireNotification(text, text, this, COMPLETE_ID, null);
+	}
+    
+	/**
+	 * Dispatch a Broadcast notification to notify of surveys synchronization.
+	 * This notification will be received in SurveyHomeActivity, in order
+	 * to refresh its data
+	 *
+	 */
+	private void sendBroadcastNotification() {
+		Intent intentBroadcast = new Intent(getString(R.string.action_surveys_sync));
+		sendBroadcast(intentBroadcast);
 	}
 
 	/**

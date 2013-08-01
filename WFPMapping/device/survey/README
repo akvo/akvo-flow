@@ -39,7 +39,8 @@ Call ant target **flow-release, with the parameter survey.properties, which spec
     ant flow-release -Dsurvey.properties=/path/to/your/survey.properties
 
 
-The app will be named FieldSurvey-release.apk, and by default, it will be located in the bin folder. 
+The app will be named fieldSurvey-[version].apk (i.e. fieldsurvey-1.10.7.apk). 
+The version number will be retrieved from AndroidManifest.xml (android:versionName) and by default, it will be located in the bin folder. 
 You can override the default output directory with the property **out.dir**, setting it on the build.properties file:
 
     out.dir=/path/to/dir
