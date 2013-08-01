@@ -384,6 +384,10 @@ public class GeoQuestionView extends QuestionView implements OnClickListener,
 		LocationManager locMgr = (LocationManager) getContext()
 				.getSystemService(Context.LOCATION_SERVICE);
 		locMgr.removeUpdates(this);
+		
+		// Update the UI in case we come back later to the same instance
+		searchingIndicator.setText("");
+		statusIndicator.setText(res.getString(R.string.accuracy) + ": ");
 	}
 
 }
