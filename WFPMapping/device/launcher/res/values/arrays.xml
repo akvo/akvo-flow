@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-	<string-array name="approvedapps">
-		<item>Field Survey</item>
-		<item>Camera</item>
-		<item>GPS Status</item>
-		<item>aLogcat</item>
-	</string-array>
-</resources>
