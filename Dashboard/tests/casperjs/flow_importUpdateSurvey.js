@@ -1,5 +1,5 @@
 /* jshint strict: false */
-/* global CasperError, console, phantom, require*/
+/* global CasperError, console, phantom, require */
 
 //
 // Test - Import Cleaned Survey Data
@@ -32,10 +32,8 @@
 		this.echo("Page Error: " + msg, "ERROR");
 	});
 
-
-
-	var url = 'http://akvoflowsandbox.appspot.com/admin/';
 	var ember_xpath = require('casper').selectXPath;
+
 
    
 // screenshotNow = new Date(),
@@ -48,11 +46,13 @@
 ];
 */
 
-	casper.test.begin('Import Clean Survey Data', 28, function suite(test) {
-			casper.start(url, function() {
+	casper.test.begin('Import Clean Survey Data', 2, function suite(test) {
+			var url = 'http://akvoflowsandbox.appspot.com/admin/';
+
+			casper.start('http://akvoflowsandbox.appspot.com/admin', function() {
 				console.log("Initial Akvo FLOW Login Page");
-				this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
-				this.fill('form#gaia_loginform', {
+				test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
+				this.test.fill('form#gaia_loginform', {
 					Email:	'akvoqa@gmail.com',
 					Passwd:	'R4inDr0p!'
 				}, true);
@@ -227,5 +227,8 @@
 
 	});  
 
-	casper.run();
+	casper.run(function() {
+		require('utils').dump(this.test.getPasses());
+		this.test.done();
+	});
 

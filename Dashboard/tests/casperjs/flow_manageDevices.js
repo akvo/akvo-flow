@@ -2,7 +2,7 @@
 /*global CasperError, console, phantom, require*/
 
 //
-//// Test - Basic Manage Devices 
+//// Test - Manage FLOW Dashboard Devices
 //// neha@akvo.org
 
 
