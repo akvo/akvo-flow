@@ -108,8 +108,8 @@ public class StringsServlet extends HttpServlet {
 			String k = (String) keys.next();
 			String v = tr.getProperty(strings.getProperty(k));
 			if (v == null) {
-				log.log(Level.WARNING, "Translation for term " + k
-						+ " not found, using English term");
+				//log.log(Level.WARNING, "Translation for term " + k
+				//		+ " not found, using English term");
 				result.put(k, strings.getProperty(k));
 			} else {
 				result.put(k, v);

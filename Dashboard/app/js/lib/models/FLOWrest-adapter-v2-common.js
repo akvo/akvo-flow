@@ -26,9 +26,10 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     var msg, status, metaObj;
     this._super(store, type, json, root);
     // only change metaControl info if there is actual meta info in the server response
+    // and if it does not come from a delete action. We detect this by looking if num == null
     metaObj = this.extractMeta(json);
     if (metaObj && !Ember.none(metaObj.message)) {
-      if (type == FLOW.SurveyInstance) {
+      if (type == FLOW.SurveyInstance && !Ember.none(this.extractMeta(json).num)) {
         FLOW.metaControl.set('numSILoaded', this.extractMeta(json).num);
         FLOW.metaControl.set('since', this.extractMeta(json).since);
         FLOW.metaControl.set('num', this.extractMeta(json).num);

@@ -342,7 +342,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
   // move question to selected location
   doQuestionMoveHere: function () {
-    var selectedOrder, insertAfterOrder, selectedQ;
+    var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion;
     selectedOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
 
     if (this.get('zeroItemQuestion')) {
@@ -350,9 +350,56 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       insertAfterOrder = this.content.get('order');
     }
+    // check to see if we are trying to move the question to another question group
+    if (FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId') != FLOW.selectedControl.selectedQuestionGroup.get('keyId')) {
+      selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
+      if (selectedQ !== null) {
 
+        // restore order
+        qgIdSource = FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId');
+        qgIdDest = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+
+        questionsInSourceGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgIdSource;
+        });
+
+        questionsInDestGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgIdDest;
+        });
+
+        // restore order in source group, where the question dissapears 
+        questionsInSourceGroup.forEach(function (item) {
+          if (item.get('order') > selectedOrder) {
+            item.set('order', item.get('order') - 1);
+          }
+        });
+
+        // make room in destination group
+        questionsInDestGroup.forEach(function (item) {
+          if (item.get('order') > insertAfterOrder) {
+            item.set('order', item.get('order') + 1);
+          }
+        });
+
+        // move question
+        selectedQ.set('order', insertAfterOrder + 1);
+        selectedQ.set('questionGroupId', qgIdDest);
+
+        // recompute questions in groups so we can correct any order problems
+        questionsInSourceGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgIdSource;
+        });
+
+        questionsInDestGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgIdDest;
+        });
+
+        FLOW.questionControl.restoreOrder(questionsInSourceGroup);
+        FLOW.questionControl.restoreOrder(questionsInDestGroup);
+      }
+    // if we are not moving to another group, we must be moving inside a group
     // only do something if we are not moving to the same place
-    if (!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
+    } else if (!((selectedOrder == insertAfterOrder) || (selectedOrder == (insertAfterOrder + 1)))) {
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
       if (selectedQ !== null) {
         // restore order
@@ -360,7 +407,6 @@ FLOW.QuestionView = FLOW.View.extend({
         questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
           return item.get('questionGroupId') == qgId;
         });
-
 
         origOrder = FLOW.selectedControl.selectedForMoveQuestion.get('order');
         movingUp = origOrder < insertAfterOrder;
@@ -387,18 +433,22 @@ FLOW.QuestionView = FLOW.View.extend({
           }
         });
 
-        FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-        FLOW.store.commit();
+        questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+          return item.get('questionGroupId') == qgId;
+        });
+
+        // restore order in case the order has gone haywire
+        FLOW.questionControl.restoreOrder(questionsInGroup);
       }
     }
-
+    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedForMoveQuestion', null);
   },
 
   // execute question copy to selected location
   doQuestionCopyHere: function () {
-    var insertAfterOrder, path, qgId, questionsInGroup;
+    var insertAfterOrder, path, qgId, questionsInGroup, question;
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
     if (this.get('zeroItemQuestion')) {
@@ -419,28 +469,37 @@ FLOW.QuestionView = FLOW.View.extend({
       }
     });
 
+    question = FLOW.selectedControl.get('selectedForCopyQuestion');
     // create copy of Question item in the store
     FLOW.store.createRecord(FLOW.Question, {
-      "tip": FLOW.selectedControl.selectedForCopyQuestion.get('tip'),
-      "mandatoryFlag": FLOW.selectedControl.selectedForCopyQuestion.get('mandatoryFlag'),
-      "allowSign": FLOW.selectedControl.selectedForCopyQuestion.get('allowSign'),
-      "allowDecimal": FLOW.selectedControl.selectedForCopyQuestion.get('allowDecimal'),
-      "allowMultipleFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowMultipleFlag'),
-      "allowOtherFlag": FLOW.selectedControl.selectedForCopyQuestion.get('allowOtherFlag'),
+      "tip": question.get('tip'),
+      "mandatoryFlag": question.get('mandatoryFlag'),
+      "allowSign": question.get('allowSign'),
+      "allowDecimal": question.get('allowDecimal'),
+      "allowMultipleFlag": question.get('allowMultipleFlag'),
+      "allowOtherFlag": question.get('allowOtherFlag'),
       "dependentFlag": false,
       "path": path,
-      "maxVal": FLOW.selectedControl.selectedForCopyQuestion.get('maxVal'),
-      "minVal": FLOW.selectedControl.selectedForCopyQuestion.get('minVal'),
-      "type": FLOW.selectedControl.selectedForCopyQuestion.get('type'),
+      "maxVal": question.get('maxVal'),
+      "minVal": question.get('minVal'),
+      "type": question.get('type'),
       "order": insertAfterOrder + 1,
-      "text": FLOW.selectedControl.selectedForCopyQuestion.get('text'),
-      "optionList": FLOW.selectedControl.selectedForCopyQuestion.get('optionList'),
-      "surveyId": FLOW.selectedControl.selectedForCopyQuestion.get('surveyId'),
-      "questionGroupId": FLOW.selectedControl.selectedForCopyQuestion.get('questionGroupId')
+      "text": question.get('text'),
+      "optionList": question.get('optionList'),
+      "surveyId": question.get('surveyId'),
+      "questionGroupId": qgId
     });
+
+    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+      return item.get('questionGroupId') == qgId;
+    });
+
+    // restore order in case the order has gone haywire
+    FLOW.questionControl.restoreOrder(questionsInGroup);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
+    
     FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
 
@@ -478,6 +537,11 @@ FLOW.QuestionView = FLOW.View.extend({
       "questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
     });
 
+    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
+      return item.get('questionGroupId') == qgId;
+    });
+    // restore order in case the order has gone haywire
+    FLOW.questionControl.restoreOrder(questionsInGroup);
     FLOW.store.commit();
   },
 
