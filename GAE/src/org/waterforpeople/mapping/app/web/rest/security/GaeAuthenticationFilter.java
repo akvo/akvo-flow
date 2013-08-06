@@ -63,11 +63,18 @@ public class GaeAuthenticationFilter extends GenericFilterBean {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     String logoutUrl = UserServiceFactory.getUserService().createLogoutURL("");
 
-                    if (authentication.getAuthorities().contains(AppRole.NEW_USER) && !logoutUrl.startsWith(httpRequest.getRequestURI())) {
-                    	logger.log(Level.INFO, "New user authenticated. Redirecting to registration page");
-                        ((HttpServletResponse) response).sendRedirect(REGISTRATION_URL);
-                        return;
-                    }
+					if (authentication.getAuthorities().contains(
+							AppRole.NEW_USER)
+							&& !logoutUrl.startsWith(httpRequest
+									.getRequestURI())
+							&& !httpRequest.getRequestURI().startsWith(
+									"/remote_api")) {
+						logger.log(Level.INFO,
+								"New user authenticated. Redirecting to registration page");
+						((HttpServletResponse) response)
+								.sendRedirect(REGISTRATION_URL);
+						return;
+					}
 
                 } catch (AuthenticationException e) {
                 	logger.log(Level.SEVERE, e.getMessage(), e);
