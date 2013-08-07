@@ -56,8 +56,8 @@ casper.test.begin('Import Clean Survey Data', 28, function suite(test) {
 			console.log("Initial Akvo FLOW Login Page");
 			this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
 			this.fill('form#gaia_loginform', {
-				Email:	'nchriss@gmail.com',
-				Passwd:	'876^5017&'
+				Email:	'akvoqa@gmail.com',
+				Passwd:	''
 			}, true);
 		});
 });
