@@ -23,6 +23,5 @@ cd ../../akvo
 
 printf "\n>> Running CasperJS Tests:\n"
 
-find . -name \*.js -maxdepth 1 -exec casperjs test {} 
-
+casperjs test ./Dashboard/tests/casperjs
 
