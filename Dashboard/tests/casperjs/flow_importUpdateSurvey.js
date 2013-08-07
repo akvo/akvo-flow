@@ -202,7 +202,7 @@ casper.then(function() {
 
 	this.test.assertSelectorHasText('a', ' Import clean data');
 
-	var fileName = '/Users/neha/code/akvo/akvo-flow/Dashboard/tests/casperjs/surveys/SURVEY_FORM-2205003.xls';
+	var fileName = './surveys/SURVEY_FORM-2205003.xls';
 
   	this.evaluate(function(fileName) {
 			__utils__.findOne('input[type="file"]').setAttribute('value',fileName)},{fileName:fileName});
