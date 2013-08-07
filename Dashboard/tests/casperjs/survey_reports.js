@@ -1,4 +1,4 @@
-/* jshint strict: false */
+//* jshint strict: false */
 /*global CasperError, console, phantom, require*/
 
 //
@@ -77,7 +77,10 @@ casper.then(function () {
 		this.test.assertVisible('.navMaps', 'Maps Tab Visible');
 		this.test.assertVisible('.navUsers', 'Users Tab Visible');
 		this.test.assertVisible('.navMessages', 'Messags Tab Visible');
-		this.test.assertVisible('.menuGroup', 'Survey Menu Group Visible');
+		this.waitUntilVisible('.menuGroup',
+			function then() {
+				this.test.assertVisible('.menuGroup', 'Survey Menu Group Visible');
+			});
 		
 		this.test.assertTruthy(casper.evaluate(function() {
 			return FLOW.router.location.path
@@ -104,12 +107,12 @@ casper.then(function() {
             }
         );
 
-		this.waitForSelector('.nextBtn a',
+		this.waitUntilVisible('.nextBtn a',
             function then() {
+				this.test.assertSelectorExists('.nextBtn a', 'Survey Table Next Button Rendered'); 
             	casper.capture('screenshots/Navdata-SurveyTableNext.png');
             });
 
-		this.test.assertSelectorExists('.nextBtn a', 'Survey Table Next Button Rendered'); 
 
 		});
 		
@@ -195,7 +198,7 @@ casper.then(function () {
 					}
 				});
 		 });
-		 });	
+});	
 
 		this.wait(5000, function() {
 			casper.capture('screenshots/DataCleaningSelect_DropDown.png');
@@ -206,22 +209,9 @@ casper.then(function () {
 		});
 });
 
-// Table Listing Test
-
-//casper.then(function() {
-  //  this.body = this.evaluate(function() {
-   //     var rows = $('table#surveyDataTable.dataTable');
-    //    var listings = rows.eq(3).text();
-     //   var count = rows.eq(4).text();
-      //  return {
-       //     listings: listings,
-        //    count: count
-        // };  
-
-casper.then(function() {
-  	// var fileName = 'blah.xlsx'
+/* casper.then(function() {
     var surveyLink = 'a[data-ember-action="348"]'
-
+	
     this.click('.navSurveys a');
 
     // this.waitUntilVisible(surveyLink, function then() {
@@ -231,13 +221,57 @@ casper.then(function() {
     this.capture('screenshots/navSurveys.png');
     this.capture('screenshots/navSurveys-AkvoGroupSurveys.png');
     
-});
-  	// this.evaluate(function(fileName) {__utils__.findOne('#raw-data-import-file').setAttribute('value',fileName)},{fileName:fileName});
-  	// this.echo('Name='+this.evaluate(function() {return __utils__.findOne('input[#raw-data-import-file="file"]').getAttribute('name')}));
-  	// this.echo('Value='+this.evaluate(function() {return __utils__.findOne('input[#raw-data-import-file="file"]').getAttribute('value')}));
-  	// this.page.uploadFile('input[#raw-data-import-file="file"]',fileName);
-  	// this.click('a.standardBtn');
+}); */
 
+
+// Table Listing Test
+
+casper.then(function() {
+
+
+	this.test.assertSelectorHasText('a', ' Import clean data');
+	this.capture('screenshots/ImportFileUpload.png');
+
+/*  this.body = this.evaluate(function() {
+	var rows = $('table#surveyDataTable.dataTable');
+    var listings = rows.eq(3).text();
+    var count = rows.eq(4).text();
+     return {
+            listings: listings,
+            count: count
+         };  
+*/
+
+var fileName = '/Users/neha/code/akvo/akvo-flow/Dashboard/tests/casperjs/surveys/SURVEY_FORM-2205003.xls';
+
+  	this.evaluate(function(fileName) {
+	 __utils__.findOne('input[type="file"]').setAttribute('value',fileName)},{fileName:fileName});
+  	 this.echo('Name='+this.evaluate(function() {
+  	 	 return __utils__.findOne('input[type="file"]').getAttribute('name')}));
+  	 this.echo('Value='+this.evaluate(function() {
+  	 	 return __utils__.findOne('input[type="file"]').getAttribute('value')}));
+  	 this.page.uploadFile('input[type="file"]',fileName);
+});
+
+
+
+casper.then(function() {
+    this.wait(50000, function() {
+	this.click(ember_xpath('//a[@class="standardBtn"]'));
+	this.click(ember_xpath('//*[contains(text()," Import clean data")]'));
+	});
+});
+
+casper.then(function() {
+	casper.capture('screenshots/FileUploadDialogue.png');
+	this.test.assertVisible('.progress-bar', 'Progress Bar Visible');
+	this.waitUntilVisible(ember_xpath('//*[contains(text(), "Upload Complete")]'), function then() {
+		casper.capture('screenshots/UploadCompleteConfirm.png');
+		});
+});  
+
+
+/*
 casper.then(function() {
 		this.click('.navDevices a');
 
@@ -266,5 +300,6 @@ casper.then(function() {
 		this.click('.btnAboveTable a');
 		casper.capture('screenshots/devicesManageDevices.png');
 });
+*/
 
 casper.run();
