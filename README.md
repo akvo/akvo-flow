@@ -1,15 +1,15 @@
 ## Akvo FLOW -- Field Level Operations Watch
 
-This is the main Akvo FLOW repository, which consists of 3 applications:
+This is the main repository of the Akvo FLOW system, and consists in 2 parts:
 
-* **Field Survey**: the Akvo FLOW mobile application for data collection
-* **Flow Launcher**: a custom home screen replacement for Android that restricts phones so they can only use the Field Survey app and the camera
-* **Flow Server**: the server application for defining surveys, managing phones and collecting, analyzing and visualizing Akvo FLOW data.
+* [Akvo FLOW Dashboard](https://github.com/akvo/akvo-flow/tree/master/Dashboard) a modern Dashboard application made with [Ember.js](http://emberjs.com/)
+* [Akvo FLOW Server](https://github.com/akvo/akvo-flow/tree/master/GAE) the backend based on [Google App Engine](https://developers.google.com/appengine/docs/java/) APIs
 
-Source code locations:
 
-* **Field Survey**: [WFPMapping/device/survey](https://github.com/akvo/akvo-flow/tree/master/WFPMapping/device/survey)
-* **Flow Launcher**: [WFPMapping/device/launcher](https://github.com/akvo/akvo-flow/tree/master/WFPMapping/device/launcher)
-* **Flow Server**: [GAE](https://github.com/akvo/akvo-flow/tree/master/GAE)
+Other components of the Akvo FLOW system:
+
+* [Akvo FLOW Survey App](https://github.com/akvo/akvo-flow-mobile/tree/master/survey)
+* [Akvo FLOW Launcher](https://github.com/akvo/akvo-flow-mobile/tree/master/launcher)
+* [Akvo FLOW Services](https://github.com/akvo/akvo-flow-services)
 
 [Akvo FLOW license](https://github.com/akvo/akvo-flow/blob/master/LICENSE.md)
