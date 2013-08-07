@@ -41,14 +41,6 @@ casper.on("page.error", function(msg, trace) {
 var url = 'http://akvoflowsandbox.appspot.com/admin/';
 var ember_xpath = require('casper').selectXPath;
 
-// For taking username/password via CLI
-// if (system.args.length < 3) {
-// console.info("You need to pass in account name, username, password, and path to casperJS as arguments to this code
-// phantom.exit();
-// }
-
-// var username = system.args[1];
-// var password = system.args[2];
 
 screenshotNow = new Date(),
 // screenshotDateTime = screenshotNow.getFullYear() + pad(screenshotNow.getMonth() + 1) + pad(screenshotNow.getDate()) + '-' + pad(screenshotNow.getHours()) + pad(screenshotNow.getMinutes()) + pad(screenshotNow.getSeconds()), 
@@ -59,15 +51,16 @@ viewport = [
 		}
 ];
 
-casper.start(url, function() {
-	console.log("Initial Akvo FLOW Login Page");
-	this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
-	this.fill('form#gaia_loginform', {
-		Email:	'nchriss@gmail.com',
-		Passwd:	'876^5017&'
-	}, true);
+casper.test.begin('Import Clean Survey Data', 28, function suite(test) {
+		casper.start(url, function() {
+			console.log("Initial Akvo FLOW Login Page");
+			this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
+			this.fill('form#gaia_loginform', {
+				Email:	'nchriss@gmail.com',
+				Passwd:	'876^5017&'
+			}, true);
+		});
 });
-
 
 casper.then(function () {
 		this.test.assertVisible('.navSurveys', 'Survey Tab Visible');
@@ -76,10 +69,10 @@ casper.then(function () {
 		this.test.assertVisible('.navReports', 'Reports Tab Visible');
 		this.test.assertVisible('.navMaps', 'Maps Tab Visible');
 		this.test.assertVisible('.navUsers', 'Users Tab Visible');
-		this.test.assertVisible('.navMessages', 'Messags Tab Visible');
+		this.test.assertVisible('.navMessages', 'Messages Tab Visible');
 		this.waitUntilVisible('.menuGroup',
 			function then() {
-				this.test.assertVisible('.menuGroup', 'Survey Menu Group Visible');
+				this.test.assertVisible('.menuGroup', 'Surveys Menu Group Visible');
 			});
 		
 		this.test.assertTruthy(casper.evaluate(function() {
@@ -87,9 +80,6 @@ casper.then(function () {
 		}) === '/surveys/main', 'Successfully Loaded Main Surveys Page');
 		 
 });
-
-
-			
 
 casper.then(function() {
 		this.thenClick('.navData a', function() {
@@ -109,7 +99,7 @@ casper.then(function() {
 
 		this.waitUntilVisible('.nextBtn a',
             function then() {
-				this.test.assertSelectorExists('.nextBtn a', 'Survey Table Next Button Rendered'); 
+				this.test.assertSelectorExists('.nextBtn a', 'Full Survey Table Rendered (Next Button)'); 
             	casper.capture('screenshots/Navdata-SurveyTableNext.png');
             });
 
@@ -130,7 +120,7 @@ casper.then(function() {
 
 
 casper.then(function() {
-	var pElements = document.getElementsByTagName('#device'); // NodeList
+	var pElements = document.getElementsByTagName('.device'); // NodeList
 	
 	for (var i = 0, len = pElements.length; i < len; i = i + 1) {
 		   this.echo(pElements[i], + " check this out ", PELEMENT);
@@ -145,8 +135,7 @@ casper.then(function () {
 		console.log("Entering root.navData.dataCleaning");
 
 		this.waitUntilVisible('select.ember-select', 
-
-			//ember_xpath('//a[@class="standardBtn" and .=" Import clean data"]'),
+			// ember_xpath('//a[@class="standardBtn" and .=" Import clean data"]'),
 			function then() {
                 casper.capture('screenshots/NavData-DataCleaning1.png', {
 					top: 0,
@@ -202,104 +191,46 @@ casper.then(function () {
 
 		this.wait(5000, function() {
 			casper.capture('screenshots/DataCleaningSelect_DropDown.png');
-			this.test.assertVisible(ember_xpath('//*[contains(text()," Raw data report ")]'), 'Raw Data Report Button Visible');
-			this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Raw Data Import File Upload Visible');
+			this.test.assertVisible(ember_xpath('//*[contains(text()," Raw data report ")]'), 'Raw Data Export Visible');
+			this.test.assertVisible(ember_xpath('//*[@id="raw-data-import-file"]'), 'Import Updated Survey Button Visible');
 			this.test.assertVisible(ember_xpath('//*[contains(text()," Import clean data")]'), 'Import Clean Data Button Visible');
-			casper.capture('screenshots/SurveyGroupSelect.png');
 		});
 });
-
-/* casper.then(function() {
-    var surveyLink = 'a[data-ember-action="348"]'
-	
-    this.click('.navSurveys a');
-
-    // this.waitUntilVisible(surveyLink, function then() {
-	//			this.click(surveyLink); 
-	//				});
-
-    this.capture('screenshots/navSurveys.png');
-    this.capture('screenshots/navSurveys-AkvoGroupSurveys.png');
-    
-}); */
-
-
-// Table Listing Test
 
 casper.then(function() {
 
 
 	this.test.assertSelectorHasText('a', ' Import clean data');
-	this.capture('screenshots/ImportFileUpload.png');
 
-/*  this.body = this.evaluate(function() {
-	var rows = $('table#surveyDataTable.dataTable');
-    var listings = rows.eq(3).text();
-    var count = rows.eq(4).text();
-     return {
-            listings: listings,
-            count: count
-         };  
-*/
-
-var fileName = '/Users/neha/code/akvo/akvo-flow/Dashboard/tests/casperjs/surveys/SURVEY_FORM-2205003.xls';
+	var fileName = '/Users/neha/code/akvo/akvo-flow/Dashboard/tests/casperjs/surveys/SURVEY_FORM-2205003.xls';
 
   	this.evaluate(function(fileName) {
-	 __utils__.findOne('input[type="file"]').setAttribute('value',fileName)},{fileName:fileName});
+			__utils__.findOne('input[type="file"]').setAttribute('value',fileName)},{fileName:fileName});
   	 this.echo('Name='+this.evaluate(function() {
-  	 	 return __utils__.findOne('input[type="file"]').getAttribute('name')}));
+			return __utils__.findOne('input[type="file"]').getAttribute('name')}));
   	 this.echo('Value='+this.evaluate(function() {
-  	 	 return __utils__.findOne('input[type="file"]').getAttribute('value')}));
+			return __utils__.findOne('input[type="file"]').getAttribute('value')}));
+
   	 this.page.uploadFile('input[type="file"]',fileName);
 });
 
 
 
 casper.then(function() {
-    this.wait(50000, function() {
+    this.wait(5000, function() {
 	this.click(ember_xpath('//a[@class="standardBtn"]'));
 	this.click(ember_xpath('//*[contains(text()," Import clean data")]'));
 	});
 });
 
 casper.then(function() {
-	casper.capture('screenshots/FileUploadDialogue.png');
-	this.test.assertVisible('.progress-bar', 'Progress Bar Visible');
+	casper.capture('screenshots/FileUploadDialogueFilled.png');
+	this.test.assertVisible('.progress-bar', 'Progress Bar Rendered');
 	this.waitUntilVisible(ember_xpath('//*[contains(text(), "Upload Complete")]'), function then() {
+		console.log("Survey Upload Complete");
 		casper.capture('screenshots/UploadCompleteConfirm.png');
 		});
+	
 });  
-
-
-/*
-casper.then(function() {
-		this.click('.navDevices a');
-
-		this.waitUntilVisible('#surveyDataTable td.EMEI', function then() {
-			this.capture('screenshots/devicesTable.png', {
-				top: 0, 
-				left: 0,
-				width: 1280,
-				height: 1024 
-			});
-		});
-   		var mngdeviceLink = 'a[id="ember15890"]';
-
-   		if (!this.exists(mngdeviceLink)) return;
-		this.click(mngdeviceLink);
-
-		this.evaluate(function(mngdeviceLink) {
-			__utils__.findOne(mngdeviceLink).setAttribute("className", "clicked");
-		}, mngdeviceLink);
-
-   		this.test.assertVisible(ember_xpath('//*[@id="ember15890"]/a'), 'Manage Device Groups Button Visible');
-
-		setInterval(function () {
-			document.getElementById("ember15980").click();}, 1000);
-
-		this.click('.btnAboveTable a');
-		casper.capture('screenshots/devicesManageDevices.png');
-});
-*/
 
 casper.run();
