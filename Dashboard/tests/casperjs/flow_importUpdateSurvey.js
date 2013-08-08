@@ -1,5 +1,5 @@
 /* jshint strict: false */
-/* global CasperError, console, phantom, require */
+/*global CasperError, console, phantom, require*/
 
 //
 // Test - Import Cleaned Survey Data
@@ -49,6 +49,7 @@
 
 	casper.test.begin('Import Clean Survey Data', function suite(test) {
 
+			// var url = 'http://uat1.akvoflow.org';
 			var url = 'http://akvoflowsandbox.appspot.com/admin/';
 
 			casper.start(url, function() {
@@ -226,7 +227,6 @@
 
 
 	});  
-
 
 });
 
