@@ -200,6 +200,10 @@
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} --passin &lt; ${pwd} update war" />
 		</exec>
+		<exec dir="." executable="sh">
+		    <arg value="-c" />
+		    <arg value="${sdk.dir}/bin/appcfg.sh backends war update" />
+		</exec>
 	</target>
 
 	<target name="update_indexes" depends="datanucleusenhance" description="Uploads just the datastore index configuration to App Engine.">
