@@ -15,7 +15,7 @@ var utils = require('utils');
 	var url = 'http://akvoflowsandbox.appspot.com/admin/';
 	var ember_xpath = require('casper').selectXPath;
 
-	casper.test.begin('Import Clean Survey Data', function suite(test) {
+	casper.test.begin('Manage FLOW Devices', function suite(test) {
 
 			var url = 'http://akvoflowsandbox.appspot.com/admin/';
 
