@@ -10,7 +10,7 @@
         <intercept-url pattern="/remote_api**" access="permitAll"/>
         <intercept-url pattern="/admin/logout.html" access="permitAll"/>
         <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
-        <intercept-url pattern="/_ah/admin/**" access="permitAll"/> <!-- dev environment -->
+        <intercept-url pattern="/_ah/**" access="permitAll"/>
         <intercept-url pattern="/webapp/testharness**" access="hasRole('SUPER_ADMIN')"/>
         <intercept-url pattern="/dashboard.html" access="hasRole('SUPER_ADMIN')"/>
         <intercept-url pattern="/rest/survey_instances**" method="DELETE" access="hasRole('ADMIN')"/>
