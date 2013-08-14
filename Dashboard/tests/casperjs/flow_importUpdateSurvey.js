@@ -15,8 +15,6 @@
 	casper.options.loadImages = true;
 	phantom.cookiesEnabled = true;
 
-// logLevel: 'debug',
-	
 // Give waitForResource calls plenty of time to load.
 // waitTimeout: 50000,
 // clientScripts: ["includes/jquery.min.js"],

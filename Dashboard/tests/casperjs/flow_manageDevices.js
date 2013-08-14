@@ -6,11 +6,11 @@
 //// neha@akvo.org
 
 
-var utils = require('utils');
-
-// Give waitForResource calls plenty of time to load.
-/// clientScripts: ["includes/jquery.min.js"],
-//
+	var utils = require('utils');
+	casper.options.verbose = true;
+	casper.options.javascriptEnabled = true;
+	casper.options.loadImages = true;
+	phantom.cookiesEnabled = true;
 
 	var url = 'http://akvoflowsandbox.appspot.com/admin/';
 	var ember_xpath = require('casper').selectXPath;
@@ -19,7 +19,7 @@ var utils = require('utils');
 
 			var url = 'http://akvoflowsandbox.appspot.com/admin/';
 
-	casper.start(url, function() {
+			casper.start(url, function() {
 				console.log("Initial Akvo FLOW Login Page");
 			    this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
 				this.fill('form#gaia_loginform', {
@@ -43,7 +43,7 @@ var utils = require('utils');
 				var mngdeviceLink = 'a[id="ember15890"]';
 
 				if (!this.exists(mngdeviceLink)) return;
-	
+
 				this.click(mngdeviceLink);
 				this.evaluate(function(mngdeviceLink) {
 						__utils__.findOne(mngdeviceLink).setAttribute("className", "clicked");
@@ -55,7 +55,39 @@ var utils = require('utils');
 						casper.capture('screenshots/devicesManageDevices.png');
 			});
 
-casper.run(function() {
-		this.test.done();
-		casper.test.renderResults(true,0,'deviceTest-results.xml');
-});
+		
+	casper.then(function() {
+				this.thenClick('.navDevices a', function() {
+					console.log("Navigate to 'root.navDevices.index' Event");
+				this.waitUntilVisible('.tabNav li.active', 
+					function then() {
+						this.test.assertMatch(this.fetchText('.tabNav li.active'), /\s*Devices list\s*/);
+				});
+
+				this.waitUntilVisible('#surveyDataTable td.device',
+					// ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]'),
+					function then() {
+						casper.capture('screenshots/NavData-SurveyDataTable.png');
+					}
+				);
+	});
+	
+	casper.then(function() {
+				this.test.assertSelectorHasText('a', 'Assignments list');
+
+				this.thenClick(ember_xpath('//a[.="Assignments list"]'), function() {
+						this.waitUntilVisible('select.ember-select',
+							function then() {
+								casper.capture('screenshots/devicesAssignmentList.png', {
+									top: 0,
+									left: 0,
+									width: 1280,
+									height: 1024
+								});
+				});
+	});
+
+	casper.run(function() {
+			this.test.done();
+			casper.test.renderResults(true,0,'deviceTest-results.xml');
+		});
