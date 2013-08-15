@@ -5,6 +5,7 @@
 // Test - Import Cleaned Survey Data
 // neha@akvo.org
 //
+	var require = patchRequire(require);
 
 	var utils = require('utils');
 	
@@ -210,9 +211,12 @@
 });
 
 
+
+casper.test.suiteResults.getAllPasses();
+
 casper.run(function() {
 			this.test.done();
-			casper.test.renderResults(true, 0, 'test-results.xml');
+			// casper.test.renderResults(true, 0, 'test-results.xml');
 		});
 
 
