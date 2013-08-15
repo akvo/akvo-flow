@@ -8,21 +8,13 @@
 
 	var utils = require('utils');
 	
-	//
-// var casper = require('casper').create({
 	casper.options.verbose = true;
 	casper.options.javascriptEnabled = true;
 	casper.options.loadImages = true;
 	phantom.cookiesEnabled = true;
 
-// Give waitForResource calls plenty of time to load.
-// waitTimeout: 50000,
-// clientScripts: ["includes/jquery.min.js"],
 
-	phantom.cookiesEnabled = true;
-
-
-// print out all the messages in the headless browser context
+	// print out all the messages in the headless browser context
 	casper.on('remote.message', function(msg) {
 		this.echo('remote message caught: ' + msg);
 	});
@@ -33,17 +25,6 @@
 
 	var ember_xpath = require('casper').selectXPath;
 
-
-   
-// screenshotNow = new Date(),
-// screenshotDateTime = screenshotNow.getFullYear() + pad(screenshotNow.getMonth() + 1) + pad(screenshotNow.getDate()) + '-' + pad(screenshotNow.getHours()) + pad(screenshotNow.getMinutes()) + pad(screenshotNow.getSeconds()), 
-/* viewport = [
-		{
-			'name': 'desktop-standard',
-			'viewport': {width: 1280, height: 1024}
-		}
-];
-*/
 
 	casper.test.begin('Import Clean Survey Data', function suite(test) {
 
