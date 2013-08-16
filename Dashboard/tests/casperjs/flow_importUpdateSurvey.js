@@ -6,9 +6,14 @@
 // neha@akvo.org
 //
 	var require = patchRequire(require);
-
+	//
+	//casperjs convention - call utils for phantom extension
 	var utils = require('utils');
-	
+	var ember_xpath = require('casper').selectXPath;
+    var loginModule = require("./lib/loginGAE.js");
+    // var consoleLog = require("./lib/jsConsole.js");
+    // var testrailModule = require("./lib/testrailPostResults.js");
+
 	casper.options.verbose = true;
 	casper.options.javascriptEnabled = true;
 	casper.options.loadImages = true;
@@ -24,22 +29,24 @@
 		this.echo("Page Error: " + msg, "ERROR");
 	});
 
-	var ember_xpath = require('casper').selectXPath;
-
 
 	casper.test.begin('Import Clean Survey Data', function suite(test) {
 
 			// var url = 'http://uat1.akvoflow.org';
-			var url = 'http://akvoflowsandbox.appspot.com/admin/';
+			// var url = 'http://akvoflowsandbox.appspot.com/admin/';
 
-			casper.start(url, function() {
-				console.log("Initial Akvo FLOW Login Page");
+            loginModule.login("foo", "bar");
+
+			/*  
+			 casper.thenOpen(casper.cli.get("url"), function() {
+			 console.log("Initial Akvo FLOW Login Page");
 			    this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
-				this.fill('form#gaia_loginform', {
-					Email:	'akvoqa@gmail.com',
-					Passwd:	'R4inDr0p!'
-				}, true);
-			}); 
+			    this.fill('form#gaia_loginform', {
+			    	Email:	'akvoqa@gmail.com',
+			    	Passwd:	'R4inDr0p!'
+			    }, true);
+			 }); 
+			 */
 
 	casper.then(function () {
 			this.test.assertVisible('.navSurveys', 'Survey Tab Visible');

@@ -22,4 +22,4 @@ exports.login = function(username, password) {
 			});
 
 	        return casper.then(function() {});
-
+};
