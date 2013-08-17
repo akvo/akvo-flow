@@ -1,25 +1,44 @@
 // login module
 //
 
+casper.options.verbose = true;
+casper.options.logLevel = "debug";
+casper.options.javascriptEnabled = true;
+casper.options.loadImages = true;
+phantom.cookiesEnabled = true;
+casper.options.waitTimeout = 5000;
+
 exports.login = function(username, password) {
-			casper.test.comment("Login in with username \"" + username + "\", password \"" + password + "\"");
+			casper.test.comment("Login with username \"" + username + "\"");
+			var url = 'https://akvoflowsandbox.appspot.com/admin/login';
 			
-			casper.start(casper.cli.get("url") + "/login", function() {
-	    	    return this.test.assertExists('form#gaia_login', 'FLOW GAE Login Found');
+            casper.capture('screenshots/NavLogin-GAE.png');
+
+			casper.test.assertExists('form#gaia_loginform', 'FLOW GAE Login Found');
+	    	   
+	    	   /* return this.waitUntilVisible('form#gaia_login', 
+	    	   	  function then() {
+						this.test.assertExists('form#gaia_login', 'FLOW GAE Login Found');
 	    	      });
-            
-	      	casper.then(function() {
-				this.fill('form#gaia_loginform', {
-					Email: username,
-					Password: 'R4inDr0p!'
+	    	   */
+			  	
+			  //  this.sendKeys("input[name=username]", username);
+			  //  this.sendKeys("input[name=password]", password);
+			   
+			 casper.fill('form#gaia_loginform', {
+					Email: 'akvoqa',
+					Passwd: 'R4inDr0p!'
 				}, true);
 
-			casper.this.getPasses();
+			// casper.this.getPasses();
             // casper.testrail.postResults();
 				// this.sendKeys("input[name=username]", username);
 				// this.sendKeys("input[name=password]", password);
 				//	return this.click("input[type=submit]");
-			});
+			// });
 
-	        return casper.then(function() {});
+			casper.capture('screenshots/NavAdmin-FLOW.png');
+
 };
+
+

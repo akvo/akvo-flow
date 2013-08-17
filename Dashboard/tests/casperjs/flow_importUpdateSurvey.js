@@ -6,8 +6,9 @@
 // neha@akvo.org
 //
 	var require = patchRequire(require);
-	//
+	
 	//casperjs convention - call utils for phantom extension
+
 	var utils = require('utils');
 	var ember_xpath = require('casper').selectXPath;
     var loginModule = require("./lib/loginGAE.js");
@@ -33,22 +34,34 @@
 	casper.test.begin('Import Clean Survey Data', function suite(test) {
 
 			// var url = 'http://uat1.akvoflow.org';
-			// var url = 'http://akvoflowsandbox.appspot.com/admin/';
 
-            loginModule.login("foo", "bar");
+			var url = 'http://akvoflowsandbox.appspot.com/admin/';
 
-			/*  
-			 casper.thenOpen(casper.cli.get("url"), function() {
-			 console.log("Initial Akvo FLOW Login Page");
-			    this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
+
+			  
+			 casper.start(casper.cli.get("url"), function() {
+			 	console.log("Initial Akvo FLOW Login Page");
+
+				loginModule.login("akvoqa", "R4inDr0p!");
+
+		 //       this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
+		
+		/*
 			    this.fill('form#gaia_loginform', {
 			    	Email:	'akvoqa@gmail.com',
 			    	Passwd:	'R4inDr0p!'
 			    }, true);
 			 }); 
 			 */
+			});
 
-	casper.then(function () {
+	casper.thenOpen('https://akvoflowsandbox.appspot.com/admin', function () {
+
+			casper.waitUntilVisible('.menuGroup',
+				function then() {
+					this.test.assertVisible('.menuGroup', 'Surveys Menu Group Visible');
+				});
+			
 			this.test.assertVisible('.navSurveys', 'Survey Tab Visible');
 			this.test.assertVisible('.navDevices', 'Device Tab Visible');
 			this.test.assertVisible('.navData', 'Data Tab Visible');
@@ -56,10 +69,6 @@
 			this.test.assertVisible('.navMaps', 'Maps Tab Visible');
 			this.test.assertVisible('.navUsers', 'Users Tab Visible');
 			this.test.assertVisible('.navMessages', 'Messages Tab Visible');
-			this.waitUntilVisible('.menuGroup',
-				function then() {
-					this.test.assertVisible('.menuGroup', 'Surveys Menu Group Visible');
-				});
 			
 			this.test.assertTruthy(casper.evaluate(function() {
 				return FLOW.router.location.path
