@@ -10,8 +10,8 @@ exports.login = function(username, password) {
             
 	      	casper.then(function() {
 				this.fill('form#gaia_loginform', {
-					username: 'akvoqa@gmail.com',
-					password: 'R4inDr0p!'
+					Email: username,
+					Password: 'R4inDr0p!'
 				}, true);
 
 			casper.this.getPasses();
