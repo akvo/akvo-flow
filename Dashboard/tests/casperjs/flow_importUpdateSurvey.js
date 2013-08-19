@@ -55,7 +55,8 @@
 			 */
 			});
 
-	casper.thenOpen('https://akvoflowsandbox.appspot.com/admin', function () {
+	casper.then(function () {
+			casper.capture('screenshots/NavAdmin-capture.png');
 
 			casper.waitUntilVisible('.menuGroup',
 				function then() {

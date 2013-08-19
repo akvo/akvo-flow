@@ -10,7 +10,7 @@ casper.options.waitTimeout = 5000;
 
 exports.login = function(username, password) {
 			casper.test.comment("Login with username \"" + username + "\"");
-			var url = 'https://akvoflowsandbox.appspot.com/admin/login';
+			var url = 'https://akvoflowsandbox.appspot.com/admin';
 			
             casper.capture('screenshots/NavLogin-GAE.png');
 
@@ -29,6 +29,8 @@ exports.login = function(username, password) {
 					Email: 'akvoqa',
 					Passwd: 'R4inDr0p!'
 				}, true);
+
+			 casper.click('input[name=signIn]');
 
 			// casper.this.getPasses();
             // casper.testrail.postResults();
