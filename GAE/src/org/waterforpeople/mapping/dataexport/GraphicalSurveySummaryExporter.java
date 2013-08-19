@@ -924,7 +924,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					cell.setCellType(type);
 					cell.setCellValue(Double.valueOf(value));
 				} catch (Exception e) {
-					cell.setCellValue(value); // fallback
+					// fallback
+					cell.setCellType(Cell.CELL_TYPE_STRING);
+					cell.setCellValue(value);
 				}
 			} else {
 				cell.setCellValue(value);
