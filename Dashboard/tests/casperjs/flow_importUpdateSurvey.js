@@ -30,6 +30,7 @@
 		this.echo("Page Error: " + msg, "ERROR");
 	});
 
+	var url = 'http://akvoflowsandbox.appspot.com/admin/';
 
 	casper.test.begin('Import Clean Survey Data', function suite(test) {
 
@@ -58,10 +59,6 @@
 	casper.then(function () {
 			casper.capture('screenshots/NavAdmin-capture.png');
 
-			casper.waitUntilVisible('.menuGroup',
-				function then() {
-					this.test.assertVisible('.menuGroup', 'Surveys Menu Group Visible');
-				});
 			
 			this.test.assertVisible('.navSurveys', 'Survey Tab Visible');
 			this.test.assertVisible('.navDevices', 'Device Tab Visible');
