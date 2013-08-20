@@ -43,23 +43,20 @@
 			 casper.start(casper.cli.get("url"), function() {
 			 	console.log("Initial Akvo FLOW Login Page");
 
-				loginModule.login("akvoqa", "R4inDr0p!");
-
-		 //       this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
-		
-		/*
-			    this.fill('form#gaia_loginform', {
-			    	Email:	'akvoqa@gmail.com',
-			    	Passwd:	'R4inDr0p!'
-			    }, true);
-			 }); 
-			 */
-			});
+				loginModule.login("akvoqa@gmail.com");
+			 });
 
 	casper.then(function () {
 			casper.capture('screenshots/NavAdmin-capture.png');
 
-			
+			/*
+			 var js = this.evaluate(function() {
+				return document;
+				});
+
+			this.echo(JSON.stringify(js));
+           	*/
+                    
 			this.test.assertVisible('.navSurveys', 'Survey Tab Visible');
 			this.test.assertVisible('.navDevices', 'Device Tab Visible');
 			this.test.assertVisible('.navData', 'Data Tab Visible');
