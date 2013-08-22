@@ -29,6 +29,14 @@ exports.login = function(username, password) {
 
 			 //POST to GAE
 			
+			 this.waitForResource(this.getCurrentUrl(), function() {
+					casper.capture('screenshots/NavAdmin-FLOW.png');
+ 					}, function() {
+ 					// page load failed after 5 seconds
+					}, 2000);
+		
+
+
 			// casper.this.getPasses();
             // casper.testrail.postResults();
 				// this.sendKeys("input[name=username]", username);

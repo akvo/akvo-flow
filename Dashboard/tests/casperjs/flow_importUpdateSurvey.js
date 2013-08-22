@@ -12,6 +12,7 @@
 	var utils = require('utils');
 	var ember_xpath = require('casper').selectXPath;
     var loginModule = require("./lib/loginGAE.js");
+    
     // var consoleLog = require("./lib/jsConsole.js");
     // var testrailModule = require("./lib/testrailPostResults.js");
 
@@ -19,7 +20,7 @@
 	casper.options.javascriptEnabled = true;
 	casper.options.loadImages = true;
 	phantom.cookiesEnabled = true;
-
+	casper.options.waitTimeout = 100000;
 
 	// print out all the messages in the headless browser context
 	casper.on('remote.message', function(msg) {
@@ -74,10 +75,16 @@
 	casper.then(function() {
 			this.thenClick('.navData a', function() {
 				console.log("Navigate to 'root.navData.index' Event");
+			});
+	});
+
+	casper.then(function() {
 			this.waitUntilVisible('.tabNav li.active', 
 				function then() {
 					this.test.assertMatch(this.fetchText('.tabNav li.active'), /\s*Inspect data\s*/);
 			});
+
+			casper.capture('screenshots/NavData-SurveyWaitCapture.png');
 
 			this.waitUntilVisible('#surveyDataTable td.device',
 				// ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]'),
@@ -85,7 +92,7 @@
 					casper.capture('screenshots/NavData-SurveyDataTable.png');
 				}
 			);
-
+            
 			this.waitUntilVisible('.nextBtn a',
 				function then() {
 					this.test.assertSelectorExists('.nextBtn a', 'Full Survey Table Rendered (Next Button)'); 
@@ -95,7 +102,7 @@
 
 		});
 		
-	});	  
+   //  });	  
 
 	casper.then(function() {
 		this.click('.nextBtn a');
