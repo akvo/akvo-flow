@@ -1,19 +1,19 @@
 // login module
 //
 
-casper.options.verbose = true;
+//casper.options.verbose = true;
 casper.options.logLevel = "debug";
-casper.options.javascriptEnabled = true;
-casper.options.loadImages = true;
-phantom.cookiesEnabled = true;
-casper.options.waitTimeout = 5000;
+//casper.options.javascriptEnabled = true;
+//casper.options.loadImages = true;
+//phantom.cookiesEnabled = true;
+//casper.options.waitTimeout = 5000;
 
 exports.login = function(username, password) {
 
 			casper.test.comment("Login with username \"" + username + "\"");
 			var url = 'https://akvoflowsandbox.appspot.com/admin';
 
-		casper.open(url).then(function() {
+			casper.open(url).then(function() {
 
 			this.capture('screenshots/NavLogin-GAE.png');
 

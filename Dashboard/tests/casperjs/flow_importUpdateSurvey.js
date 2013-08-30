@@ -12,6 +12,7 @@
 	var utils = require('utils');
 	var ember_xpath = require('casper').selectXPath;
     var loginModule = require("./lib/loginGAE.js");
+
     
     // var consoleLog = require("./lib/jsConsole.js");
     // var testrailModule = require("./lib/testrailPostResults.js");
@@ -21,7 +22,7 @@
 	casper.options.loadImages = true;
 	phantom.cookiesEnabled = true;
 	casper.options.waitTimeout = 100000;
-
+    casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36  (KHTML, like Gecko) ');
 	// print out all the messages in the headless browser context
 	casper.on('remote.message', function(msg) {
 		this.echo('remote message caught: ' + msg);
