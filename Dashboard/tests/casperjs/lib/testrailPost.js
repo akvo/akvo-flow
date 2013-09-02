@@ -11,11 +11,11 @@ exports.postResultsTR = function(){
     var rawResults = require('utils').dump(casper.test.suiteResults.getAllPasses());
 	var url = 'https://akvo.testrail.com';
 
-    testResultsObj = JSON.parse(results);
+    testResultsObj = JSON.parse(rawResults);
 
 	postParams = { 
-		foo: "bar", 
-		bar: "baz" 
+		foo: "case_id", 
+		bar: testResultsObj
 	}; 
 
 	casper.start().then(function() { 
