@@ -343,7 +343,6 @@
   checkQuestionsBeingSaved: function () {
 	var question;
 	question = FLOW.store.filter(FLOW.Question, function(item){
-		console.log(item, item.get('isSaving'));
 		return item.get('isSaving');
 	});
 	return question.content.length > 0;
@@ -369,8 +368,6 @@
          FLOW.dialogControl.set('showDialog', true);
     	 return;
      }
-    
-    
     
     // check to see if we are trying to move the question to another question group
     if (FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId') != FLOW.selectedControl.selectedQuestionGroup.get('keyId')) {
