@@ -1,4 +1,4 @@
-FLOW.QuestionView = FLOW.View.extend({
+	FLOW.QuestionView = FLOW.View.extend({
   templateName: 'navSurveys/question-view',
   content: null,
   text: null,
@@ -322,16 +322,16 @@ FLOW.QuestionView = FLOW.View.extend({
     var qDeleteId;
     qDeleteId = this.content.get('keyId');
 
-    //are we saving / loading anything?
-    if (FLOW.savingMessageControl.get('areLoadingBool') || FLOW.savingMessageControl.get('areSavingBool')) {
-      FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-      return;
-    }
-
+    // check if anything is being saved at the moment
+    if (this.checkQuestionsBeingSaved()) {
+   	 FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
+        FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
+   	 	return;
+    } 
+   
     // check if deleting this question is allowed
     // if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
     FLOW.store.findQuery(FLOW.Question, {
@@ -340,6 +340,15 @@ FLOW.QuestionView = FLOW.View.extend({
     });
   },
 
+  checkQuestionsBeingSaved: function () {
+	var question;
+	question = FLOW.store.filter(FLOW.Question, function(item){
+		console.log(item, item.get('isSaving'));
+		return item.get('isSaving');
+	});
+	return question.content.length > 0;
+  },
+  
   // move question to selected location
   doQuestionMoveHere: function () {
     var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion;
@@ -350,6 +359,19 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       insertAfterOrder = this.content.get('order');
     }
+    
+    // check if anything is being saved at the moment
+     if (this.checkQuestionsBeingSaved()) {
+    	 FLOW.dialogControl.set('activeAction', 'ignore');
+         FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
+         FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
+         FLOW.dialogControl.set('showCANCEL', false);
+         FLOW.dialogControl.set('showDialog', true);
+    	 return;
+     }
+    
+    
+    
     // check to see if we are trying to move the question to another question group
     if (FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId') != FLOW.selectedControl.selectedQuestionGroup.get('keyId')) {
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
@@ -434,12 +456,12 @@ FLOW.QuestionView = FLOW.View.extend({
         });
 
         questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgId;
-        });
+        	return item.get('questionGroupId') == qgId;
+       	});
 
         // restore order in case the order has gone haywire
         FLOW.questionControl.restoreOrder(questionsInGroup);
-      }
+      	}
     }
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
@@ -457,6 +479,17 @@ FLOW.QuestionView = FLOW.View.extend({
       insertAfterOrder = this.content.get('order');
     }
 
+    // check if anything is being saved at the moment
+    if (this.checkQuestionsBeingSaved()) {
+   	 FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
+        FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
+   	 	return;
+    }
+    
+    
     // restore order
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
     questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
@@ -496,7 +529,6 @@ FLOW.QuestionView = FLOW.View.extend({
 
     // restore order in case the order has gone haywire
     FLOW.questionControl.restoreOrder(questionsInGroup);
-
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
     
@@ -514,6 +546,17 @@ FLOW.QuestionView = FLOW.View.extend({
       insertAfterOrder = this.content.get('order');
     }
 
+    // check if anything is being saved at the moment
+    if (this.checkQuestionsBeingSaved()) {
+   	 FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
+        FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
+   	 	return;
+    } 
+    
+    
     // restore order
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
     questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
