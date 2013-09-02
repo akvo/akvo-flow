@@ -920,8 +920,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		}
 		if (value != null) {
 			if (type == Cell.CELL_TYPE_NUMERIC) {
-				cell.setCellType(type);
-				cell.setCellValue(Double.valueOf(value));
+				Double val = null;
+				try {
+					val = Double.parseDouble(value);
+				} catch (Exception e) {
+					//no-op
+				}
+				if(val != null) {
+					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+					cell.setCellValue(val.doubleValue());
+				} else {
+					cell.setCellValue(value);
+				}
 			} else {
 				cell.setCellValue(value);
 			}
