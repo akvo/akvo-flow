@@ -471,6 +471,7 @@ FLOW.translationControl = Ember.ArrayController.create({
   newSelected: false,
   noCurrentTrans: true,
   toBeDeletedTranslations: [],
+  firstLoad: true,
 
   init: function () {
     this._super();
@@ -494,37 +495,75 @@ FLOW.translationControl = Ember.ArrayController.create({
   }.property('noCurrentTrans', 'newSelected'),
 
   populate: function () {
-    var id;
+    var id, questionGroupId, questionGroup;
     id = FLOW.selectedControl.selectedSurvey.get('keyId');
-    if (!Ember.none(id)) {}
-    this.set('content', FLOW.store.findQuery(FLOW.Translation, {
-      surveyId: id
-    }));
-    this.set('translations', []);
-    this.set('newSelected', false);
-    this.set('noCurrentTrans', true);
-    this.set('selectedLanguage', null);
-    this.set('currentTranslation', null);
-    this.set('currentTranslationName', null);
+    questionGroupId = FLOW.questionGroupControl.get('arrangedContent')[0].get('keyId');
+    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
 
-    // this creates the internal structure that we use to display all the items for translation
-    // the translation items are put in here when they arrive from the backend
-    this.createItemList(id);
-    this.set('defaultLang', FLOW.isoLanguagesDict[FLOW.selectedControl.selectedSurvey.get('defaultLanguageCode')].name);
+    if (!Ember.none(questionGroup)){
+    	FLOW.selectedControl.set('selectedQuestionGroup',questionGroup);
+    }
+
+    if (!Ember.none(id) && !Ember.none(questionGroupId)) {
+      this.set('content', FLOW.store.findQuery(FLOW.Translation, {
+        surveyId: id,
+        questionGroupId: questionGroupId
+      }));
+      this.set('translations', []);
+      this.set('newSelected', false);
+      this.set('noCurrentTrans', true);
+      this.set('selectedLanguage', null);
+      this.set('currentTranslation', null);
+      this.set('currentTranslationName', null);
+
+      // this creates the internal structure that we use to display all the items for translation
+      // the translation items are put in here when they arrive from the backend
+      this.createItemList(id, questionGroupId);
+      this.set('defaultLang', FLOW.isoLanguagesDict[FLOW.selectedControl.selectedSurvey.get('defaultLanguageCode')].name);
+      this.set('firstLoad', true);
+    }
+  },
+
+  loadQuestionGroup: function (questionGroupId) {
+        var id;
+	    id = FLOW.selectedControl.selectedSurvey.get('keyId');
+	    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
+
+	    if (!Ember.none(questionGroup)){
+	    	FLOW.selectedControl.set('selectedQuestionGroup',questionGroup);
+	    }
+
+	    if (!Ember.none(id)) {}
+	    this.set('content', FLOW.store.findQuery(FLOW.Translation, {
+	      surveyId: id,
+	      questionGroupId: questionGroupId
+	    }));
+	    this.set('firstLoad', false);
+
+	    // this creates the internal structure that we use to display all the items for translation
+	    // the translation items are put in here when they arrive from the backend
+	    this.createItemList(id, questionGroupId);
   },
 
   //when the translations arrive, put them in the internal data structure
   initiateData: function () {
-    if (this.get('content').content.length > 0) {
-      this.determineAvailableTranslations();
-      this.resetTranslationFields();
-      if (this.get('translations').length > 0) {
-        this.set('currentTranslation', this.get('translations')[0].value);
-        this.set('currentTranslationName', this.get('translations')[0].label);
-        this.putTranslationsInList();
-        this.set('noCurrentTrans', false);
-      } else {
-        this.set('noCurrentTrans', true);
+    if (this.get('firstLoad')){
+	  if (this.get('content').content.length > 0) {
+        this.determineAvailableTranslations();
+        this.resetTranslationFields();
+        if (this.get('translations').length > 0) {
+          this.set('currentTranslation', this.get('translations')[0].value);
+          this.set('currentTranslationName', this.get('translations')[0].label);
+          this.putTranslationsInList();
+          this.set('noCurrentTrans', false);
+        } else {
+          this.set('noCurrentTrans', true);
+        }
+      }
+    } else {
+      if (this.get('content').content.length > 0) {
+    	  this.resetTranslationFields();
+    	  this.putTranslationsInList();
       }
     }
   }.observes('content.isLoaded'),
@@ -648,7 +687,7 @@ FLOW.translationControl = Ember.ArrayController.create({
     }
   },
 
-  createItemList: function (id) {
+  createItemList: function (id, questionGroupId) {
     var tempArray, tempHashDict, questionGroup, qgOrder;
     tempArray = [];
     tempHashDict = {};
@@ -664,24 +703,21 @@ FLOW.translationControl = Ember.ArrayController.create({
       isSurvey: true
     }));
 
-    // put in question groups
-    questionGroups = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == id;
-    });
-    questionGroups.forEach(function (item) {
+    // put in question group
+    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
+    if (!Ember.none(questionGroup)){
       tempArray.push(Ember.Object.create({
-        keyId: item.get('keyId'),
+        keyId: questionGroup.get('keyId'),
         type: "QG",
-        order: 1000000 * parseInt(item.get('order'), 10),
-        displayOrder: item.get('order'),
-        qgText: item.get('name'),
+        order: 1000000 * parseInt(questionGroup.get('order'), 10),
+        displayOrder: questionGroup.get('order'),
+        qgText: questionGroup.get('name'),
         isQG: true
       }));
-    });
-
+    }
     // put in questions
     questions = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('surveyId') == id;
+      return item.get('questionGroupId') == questionGroupId;
     });
     questions.forEach(function (item) {
       questionGroup = FLOW.store.find(FLOW.QuestionGroup, item.get('questionGroupId'));
