@@ -59,7 +59,8 @@ public class SurveyInstanceRestService {
 			@RequestParam(value = "since", defaultValue = "") String since,
 			@RequestParam(value = "unapprovedOnlyFlag",defaultValue = "") Boolean unapprovedOnlyFlag,
 			@RequestParam(value = "deviceId", defaultValue = "") String deviceId,
-			@RequestParam(value = "submitterName", defaultValue = "") String submitterName) {
+			@RequestParam(value = "submitterName", defaultValue = "") String submitterName,
+			@RequestParam(value = "surveyalTime", defaultValue = "0") Long surveyalTime) {
 		
 		// we don't want to search for empty deviceId's and submitter names
 		if ("".equals(deviceId)) {

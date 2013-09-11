@@ -33,6 +33,7 @@ public class SurveyInstanceDto extends BaseDto {
 	private List<QuestionAnswerStoreDto> questionAnswersStore;
 
 	private Long surveyId;
+	private Long surveyalTime;
 
 	private String submitterName;
 	private String deviceIdentifier;
@@ -117,5 +118,13 @@ public class SurveyInstanceDto extends BaseDto {
 
 	public String getSurveyCode() {
 		return surveyCode;
+	}
+	
+	public void setSurveyalTime(Long surveyalTime) {
+		this.surveyalTime = surveyalTime;
+	}
+	
+	public Long getSurveyalTime() {
+		return surveyalTime;
 	}
 }
