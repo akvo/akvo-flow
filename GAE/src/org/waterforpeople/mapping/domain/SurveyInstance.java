@@ -63,6 +63,8 @@ public class SurveyInstance extends BaseDomain {
 	private String sublevel5;
 	private String sublevel6;
 
+	private Long surveyalTime;
+
 	public String getCountryCode() {
 		return countryCode;
 	}
@@ -126,8 +128,6 @@ public class SurveyInstance extends BaseDomain {
 	public void setSublevel6(String sublevel6) {
 		this.sublevel6 = sublevel6;
 	}
-
-	
 
 	public Long getSurveyedLocaleId() {
 		return surveyedLocaleId;
@@ -258,4 +258,13 @@ public class SurveyInstance extends BaseDomain {
 	public Long getDeviceFileId() {
 		return deviceFileId;
 	}
+
+	public void setSurveyalTime(Long survetalTime) {
+		this.surveyalTime = survetalTime;
+	}
+
+	public Long getSurveyalTime() {
+		return surveyalTime;
+	}
+
 }
