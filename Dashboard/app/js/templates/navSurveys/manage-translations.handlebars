@@ -83,6 +83,13 @@
       </tbody>
     </table>
     </div> <!--  end twocolumns -->
+    <header style="heigh:40px; padding: 10px 0 10px 0">
+      <nav class="qtnGroupMenu">
+        <ul>
+          <li style="text-align:right;margin:0 10px 0 0;"><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
+        </ul>
+      </nav>
+    </header>
 
     <section class="aQuestionSet mainContent">
      	{{#each questionGroup in FLOW.questionGroupControl}}
@@ -172,7 +179,6 @@
 
     <nav class="bottomPg">
       <ul>
-        <li><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
          <li><a  {{action "saveTranslationsAndClose" target="FLOW.translationControl"}} class="standardBtn">{{t _save_and_close}}</a> </li>
         <li><a {{action "closeTranslations" target="FLOW.translationControl"}}>{{t _close_without_saving}}</a> </li>
       </ul>
