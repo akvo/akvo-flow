@@ -502,7 +502,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				createCell(row, col++, " ", null);
 			}
 			// Surveyal time
-			createCell(row, col++, getDurationText(dto.getSurveyalTime()), null);
+			createCell(row, col++, getDurationText(dto.getSurveyalTime()), null, 
+					Cell.CELL_TYPE_NUMERIC);
 		}
 
 		for (String q : questionIdList) {
@@ -1075,7 +1076,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	}
 	
 	private String getDurationText(Long duration) {
-        return duration != null ? String.valueOf(duration) : "";
+        return duration != null ? String.valueOf(duration) : "0";
 	}
 
 	protected String getImagePrefix() {
