@@ -209,7 +209,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		
 		DURATION_LABEL = new HashMap<String, String>();
 		DURATION_LABEL.put("en", "Duration");
-		DURATION_LABEL.put("es", "Duración");
+		DURATION_LABEL.put("es", "Duraci√≥n");
 
 		LOADING_QUESTIONS = new HashMap<String, String>();
 		LOADING_QUESTIONS.put("en", "Loading Questions");
