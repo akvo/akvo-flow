@@ -303,7 +303,6 @@ FLOW.Action = FLOW.BaseModel.extend({});
 
 FLOW.Translation = FLOW.BaseModel.extend({
   didUpdate: function () {
-    console.log('didUpdate', this.get('keyId'));
     FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
   },
 
@@ -316,15 +315,11 @@ FLOW.Translation = FLOW.BaseModel.extend({
   // temporary hack to fire the didCreate event after the keyId is known
   didCreateId: function () {
     if (!Ember.none(this.get('keyId')) && this.get('keyId') > 0) {
-      console.log('didCreate', this.get('keyId'));
       FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
     }
   }.observes('this.keyId'),
 
   didDelete: function () {
-    console.log('didDelete', this.get('keyId'));
-    console.log('value:', this.get('text'));
-
     FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), null, null, true);
   },
 
