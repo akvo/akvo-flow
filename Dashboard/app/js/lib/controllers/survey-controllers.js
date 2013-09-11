@@ -826,47 +826,62 @@ FLOW.translationControl = Ember.ArrayController.create({
     }
   },
 
-  createUpdateOrDeleteRecord: function (surveyId, type, parentId, origText, translationText, lan, transId) {
-    if (!Ember.none(origText) && origText.length > 0) {
+  createUpdateOrDeleteRecord: function (surveyId, type, parentId, origText, translationText, lan, transId, allowSideEffects) {
+	  var changed = false;
+	  if (!Ember.none(origText) && origText.length > 0) {
       // we have an original text
       if (!Ember.none(translationText) && translationText.length > 0) {
         // we have a translation text
         if (Ember.none(transId)) {
           // we don't have an existing translation, so create it
-          FLOW.store.createRecord(FLOW.Translation, {
-            parentType: type,
-            parentId: parentId,
-            surveyId: surveyId,
-            text: translationText,
-            langCode: lan
-          });
+        	changed = true;
+        	if (allowSideEffects){
+        	  FLOW.store.createRecord(FLOW.Translation, {
+                parentType: type,
+                parentId: parentId,
+                surveyId: surveyId,
+                text: translationText,
+                langCode: lan
+              });
+            }
         } else {
           // we have an existing translation, so update it, if the text has changed
-          if (origText != translationText) {
-            candidates = FLOW.store.filter(FLOW.Translation, function (item) {
-              return item.get('keyId') == transId;
-            });
+          candidates = FLOW.store.filter(FLOW.Translation, function (item) {
+            return item.get('keyId') == transId;
+          });
 
-            if (candidates.get('content').length > 0) {
-              existingTrans = candidates.objectAt(0);
-              existingTrans.set('text', translationText);
-            }
+          if (candidates.get('content').length > 0) {
+        	 existingTrans = candidates.objectAt(0);
+        	 // if the existing translation is different from the existing one, update it
+        	 if (existingTrans.get('text') != translationText){
+        		 changed = true;
+        		 if(allowSideEffects){
+            		existingTrans.set('text', translationText);
+            	 }
+        	 }
           }
         }
       } else {
         // we don't have a translation text. If there is an existing translation, delete it
         if (!Ember.none(transId)) {
           // add this id to the list of to be deleted items
-          this.toBeDeletedTranslations.pushObject(transId);
+          changed = true;
+          if (allowSideEffects){
+        	  this.toBeDeletedTranslations.pushObject(transId);
+          }
         }
       }
     } else {
       // we don't have an original text. If there is an existing translation, delete it
       if (!Ember.none(transId)) {
         // add this to the list of to be deleted items
-        this.toBeDeletedTranslations.pushObject(transId);
+        changed = true;
+    	if (allowSideEffects){
+    	  this.toBeDeletedTranslations.pushObject(transId);
+        }
       }
     }
+	return changed;
   },
 
   saveTranslationsAndClose: function () {
@@ -889,15 +904,15 @@ FLOW.translationControl = Ember.ArrayController.create({
       surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
       lan = _self.get('currentTranslation');
       if (type == 'S') {
-        _self.createUpdateOrDeleteRecord(surveyId, "SURVEY_NAME", parentId, item.surveyText, item.surveyTextTrans, lan, item.surveyTextTransId);
-        _self.createUpdateOrDeleteRecord(surveyId, "SURVEY_DESC", parentId, item.sDescText, item.sDescTextTrans, lan, item.sDescTextTransId);
+        _self.createUpdateOrDeleteRecord(surveyId, "SURVEY_NAME", parentId, item.surveyText, item.surveyTextTrans, lan, item.surveyTextTransId, true);
+        _self.createUpdateOrDeleteRecord(surveyId, "SURVEY_DESC", parentId, item.sDescText, item.sDescTextTrans, lan, item.sDescTextTransId, true);
       } else if (type == 'QG') {
-        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_GROUP_NAME", parentId, item.qgText, item.qgTextTrans, lan, item.qgTextTransId);
+        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_GROUP_NAME", parentId, item.qgText, item.qgTextTrans, lan, item.qgTextTransId, true);
       } else if (type == 'Q') {
-        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_TEXT", parentId, item.qText, item.qTextTrans, lan, item.qTextTransId);
-        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_TIP", parentId, item.qTipText, item.qTipTextTrans, lan, item.qTipTextTransId);
+        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_TEXT", parentId, item.qText, item.qTextTrans, lan, item.qTextTransId, true);
+        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_TIP", parentId, item.qTipText, item.qTipTextTrans, lan, item.qTipTextTransId, true);
       } else if (type == 'QO') {
-        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_OPTION", parentId, item.qoText, item.qoTextTrans, lan, item.qoTextTransId);
+        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_OPTION", parentId, item.qoText, item.qoTextTrans, lan, item.qoTextTransId, true);
       }
     });
     FLOW.store.commit();
