@@ -20,6 +20,7 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -504,6 +505,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			// Surveyal time
 			createCell(row, col++, getDurationText(dto.getSurveyalTime()), null, 
 					Cell.CELL_TYPE_NUMERIC);
+			// Surveyal time also computes for our hash
+			digest.update(ByteBuffer.allocate(Long.SIZE).putLong(dto.getSurveyalTime()));
 		}
 
 		for (String q : questionIdList) {
