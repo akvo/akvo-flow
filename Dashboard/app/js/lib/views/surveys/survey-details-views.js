@@ -154,6 +154,8 @@ FLOW.SurveySidebarView = FLOW.View.extend({
       item = FLOW.selectedControl.get('selectedSurvey');
       item.deleteRecord();
     }
+    FLOW.selectedControl.set('selectedQuestionGroup', null);
+    FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.router.transitionTo('navSurveys.navSurveysMain');
   }
 });
