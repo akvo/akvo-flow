@@ -163,7 +163,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				rows++;
 				if (row.getRowNum() == 0) {
 					hasDurationCol = row.getCell(3).getStringCellValue().indexOf("|") == -1;
-					if (!hasDurationCol) firstQuestionCol = 3;
+					if (!hasDurationCol) {
+						firstQuestionCol = 3;
+					}
 					continue;
 				}
 				digest.reset();
