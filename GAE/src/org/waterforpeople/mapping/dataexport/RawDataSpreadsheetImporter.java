@@ -153,20 +153,25 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				questionMap = (Map<String, QuestionDto>) results[1];
 
 			}
+			
+			boolean hasDurationCol = true;
+			int firstQuestionCol = 4;
 
 			currentStep = 0;
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			for (Row row : sheet1) {
 				rows++;
+				if (row.getRowNum() == 0) {
+					hasDurationCol = row.getCell(3).getStringCellValue().indexOf("|") == -1;
+					if (!hasDurationCol) firstQuestionCol = 3;
+					continue;
+				}
 				digest.reset();
 				String instanceId = null;
 				String dateString = null;
 				String submitter = null;
 				StringBuilder sb = new StringBuilder();
 				String duration = null;
-				// Check 'Duration' column's numeric type. TODO: Use a more reliable system
-				final boolean hasDurationCol = row.getCell(3).getCellType() == Cell.CELL_TYPE_NUMERIC;
-				final int firstQuestionCol = hasDurationCol ? 4 : 3;
 
 				sb.append("action="
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
@@ -175,12 +180,12 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				boolean needUpload = true;
 
 				for (Cell cell : row) {					
-					if (row.getRowNum() == 0 && cell.getColumnIndex() > 1) {
+					if (cell.getColumnIndex() > 1) {
 						// load questionIds
 						String[] parts = cell.getStringCellValue().split("\\|");
 						questionIDColMap.put(cell.getColumnIndex(), parts[0]);
 					}
-					if (cell.getColumnIndex() == 0 && cell.getRowIndex() > 0) {
+					if (cell.getColumnIndex() == 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 							instanceId = new Double(cell.getNumericCellValue())
 									.intValue() + "";
@@ -193,7 +198,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ "=" + instanceId + "&");
 						}
 					}
-					if (cell.getColumnIndex() == 1 && cell.getRowIndex() > 0) {
+					if (cell.getColumnIndex() == 1) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							dateString = cell.getStringCellValue();
 						} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -208,7 +213,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ "&");
 						}
 					}
-					if (cell.getColumnIndex() == 2 && cell.getRowIndex() > 0) {
+					if (cell.getColumnIndex() == 2) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							submitter = cell.getStringCellValue();
 							sb.append("submitter="
@@ -217,7 +222,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						}
 					}
 					// Survey Duration
-					if (cell.getColumnIndex() == 3 && cell.getRowIndex() > 0) {
+					if (cell.getColumnIndex() == 3) {
 						if (hasDurationCol) {
 							duration = String.valueOf(cell.getNumericCellValue());
 							sb.append("duration="
@@ -229,8 +234,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					}
 
 					boolean hasValue = false;
-					if (cell.getRowIndex() > 0
-							&& cell.getColumnIndex() >= firstQuestionCol
+					if (cell.getColumnIndex() >= firstQuestionCol
 							&& questionIDColMap.get(cell.getColumnIndex()) != null) {
 						QuestionDto question = questionMap.get(questionIDColMap
 								.get(cell.getColumnIndex()));
@@ -324,8 +328,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						if (hasValue) {
 							sb.append("|type=").append(typeString).append("&");
 						}
-					} else if (cell.getRowIndex() > 0
-							&& cell.getColumnIndex() >= firstQuestionCol) {
+					} else if (cell.getColumnIndex() >= firstQuestionCol) {
 						// we should only get here if we have a column that
 						// isn't in the header
 						// as long as the user hasn't messed up the sheet, this
@@ -349,7 +352,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						}
 					}
 				}
-				if (row.getRowNum() > 0 && needUpload) {
+				if (needUpload) {
 					sendDataToServer(
 							serverBase,
 							instanceId == null ? null
@@ -357,7 +360,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							sb.toString(),
 							criteria.get(KEY_PARAM));
 
-				} else if (row.getRowNum() > 0) {
+				} else {
 					// if we didn't need to upload, then just increment our
 					// progress counter
 					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
