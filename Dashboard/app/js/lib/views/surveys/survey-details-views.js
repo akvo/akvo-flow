@@ -301,26 +301,11 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       }
     });
     // restore order in case the order has gone haywire
-    this.restoreOrder(questionGroupsInSurvey);
+    FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
 
   },
-
-  restoreOrder: function (groups) {
-    var temp, i;
-    // sort them and renumber them according to logical numbering
-    temp = groups.toArray();
-    temp.sort(function(a,b) {
-      return a.get('order') > b.get('order');
-    })
-    i = 1
-    temp.forEach(function(item){
-      item.set('order',i);
-      i++;
-    })
-  },
-
 
   // insert group
   doInsertQuestionGroup: function () {
@@ -362,7 +347,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       });
 
       // restore order in case the order has gone haywire
-      this.restoreOrder(questionGroupsInSurvey);
+      FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
       FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
       FLOW.store.commit();
@@ -449,7 +434,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
         });
 
         // restore order in case the order has gone haywire
-        this.restoreOrder(questionGroupsInSurvey);
+        FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
         FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
         FLOW.store.commit();
@@ -498,7 +483,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       });
 
       // restore order in case the order has gone haywire
-      this.restoreOrder(questionGroupsInSurvey);
+      FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
