@@ -93,6 +93,15 @@
     var questionType = null,
       attribute = null,
       dependentQuestion, dependentAnswer, dependentAnswerArray;
+    if (this.content && (this.content.get('isDirty') || this.content.get('isSaving'))){
+    	 FLOW.dialogControl.set('activeAction', 'ignore');
+         FLOW.dialogControl.set('header', Ember.String.loc('_question_is_being_saved'));
+         FLOW.dialogControl.set('message', Ember.String.loc('_question_is_being_saved_text'));
+         FLOW.dialogControl.set('showCANCEL', false);
+         FLOW.dialogControl.set('showDialog', true);
+    	return;
+    }
+    this.init();
 
     FLOW.selectedControl.set('selectedQuestion', this.get('content'));
     this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
