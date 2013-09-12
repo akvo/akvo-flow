@@ -132,7 +132,12 @@ FLOW.Question = FLOW.BaseModel.extend({
   text: DS.attr('string'),
   tip: DS.attr('string'),
   type: DS.attr('string', {
-    defaultValue: "FREE_TEXT"
+	defaultValue: "FREE_TEXT"
+  }),
+  // This attribute is used for the 'Copy Survey' functionality 
+  // Most of the times is `null`
+  sourceId: DS.attr('number', {
+	 defaultValue: null
   })
 });
 
