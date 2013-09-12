@@ -503,10 +503,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 				createCell(row, col++, " ", null);
 			}
 			// Surveyal time
-			createCell(row, col++, getDurationText(dto.getSurveyalTime()), null, 
+			final Long duration = dto.getSurveyalTime();
+			createCell(row, col++, getDurationText(duration), null, 
 					Cell.CELL_TYPE_NUMERIC);
 			// Surveyal time also computes for our hash
-			digest.update(ByteBuffer.allocate(Long.SIZE).putLong(dto.getSurveyalTime()));
+			if (duration != null) {
+				digest.update(ByteBuffer.allocate(Long.SIZE).putLong(duration));
+			}
 		}
 
 		for (String q : questionIdList) {
