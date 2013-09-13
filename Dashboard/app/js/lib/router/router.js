@@ -125,6 +125,14 @@ FLOW.Router = Ember.Router.extend({
         },
 
         doManageTranslations: function (router, event) {
+        	if (!FLOW.questionControl.content.get('isLoaded')){
+        		FLOW.dialogControl.set('activeAction', "ignore");
+        	    FLOW.dialogControl.set('header', Ember.String.loc('_questions_still_loading'));
+        	    FLOW.dialogControl.set('message', Ember.String.loc('_questions_still_loading_text'));
+        	    FLOW.dialogControl.set('showCANCEL', false);
+        	    FLOW.dialogControl.set('showDialog', true);
+        		return;
+        	}
           router.transitionTo('navSurveys.navSurveysEdit.manageTranslations');
         },
 
