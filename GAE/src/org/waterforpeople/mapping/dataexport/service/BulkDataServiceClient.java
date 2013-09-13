@@ -551,7 +551,7 @@ public class BulkDataServiceClient {
 					if (json.has("userID")) {
 						dto.setUserID(json.getLong("userID"));
 					}
-					if (json.has("surveyalTime")) {
+					if (json.has("surveyalTime") && !json.isNull("surveyalTime")) {
 						dto.setSurveyalTime(json.getLong("surveyalTime"));
 					}
 					if (json.has("submitterName")) {
