@@ -150,7 +150,6 @@ FLOW.savingMessageControl = Ember.Object.create({
 	  } else {
 		  this.set('areLoadingBool', false);
 	  }
-	  console.log('number loading:', this.get('numberLoading'));
   },
   
   checkSaving: function () {
