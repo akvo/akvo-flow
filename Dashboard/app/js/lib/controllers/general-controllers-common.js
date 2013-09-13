@@ -138,7 +138,21 @@ FLOW.dateControl = Ember.Object.create({
 FLOW.savingMessageControl = Ember.Object.create({
   areSavingBool: false,
   areLoadingBool: false,
+  numberLoading: 0,
 
+  numLoadingChange: function (delta) {
+	  this.set('numberLoading',this.get('numberLoading') + delta);
+	  if (this.get('numberLoading') < 0){
+		  this.set('numberLoading', 0);
+	  }
+	  if (this.get('numberLoading') > 0) {
+		  this.set('areLoadingBool', true);
+	  } else {
+		  this.set('areLoadingBool', false);
+	  }
+	  console.log('number loading:', this.get('numberLoading'));
+  },
+  
   checkSaving: function () {
     if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0) {
       this.set('areSavingBool', true);

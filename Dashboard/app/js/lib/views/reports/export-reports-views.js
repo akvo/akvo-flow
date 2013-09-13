@@ -73,7 +73,7 @@ FLOW.ReportLoader = Ember.Object.create({
       this.set('processing', false);
       Ember.run.later(this, this.requestReport, this.requestInterval);
     } else if (resp.file) {
-      FLOW.savingMessageControl.set('areLoadingBool', false);
+      FLOW.savingMessageControl.numLoadingChange(-1);
       this.set('processing', false);
       this.set('criteria', null);
       $('#downloader').attr('src', FLOW.Env.flowServices + '/report/' + resp.file);
@@ -81,7 +81,7 @@ FLOW.ReportLoader = Ember.Object.create({
   },
 
   requestReport: function () {
-    FLOW.savingMessageControl.set('areLoadingBool', true);
+	  FLOW.savingMessageControl.numLoadingChange(1);
     this.set('processing', true);
     $.ajax({
       url: FLOW.Env.flowServices + '/generate',
@@ -102,7 +102,7 @@ FLOW.ReportLoader = Ember.Object.create({
   },
 
   showError: function () {
-    FLOW.savingMessageControl.set('areLoadingBool', false);
+	  FLOW.savingMessageControl.numLoadingChange(-1);
     this.set('processing', false);
     this.set('criteria', null);
     FLOW.dialogControl.set('activeAction', 'ignore');
