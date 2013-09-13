@@ -59,7 +59,7 @@ public class RawDataExporter extends AbstractDataExporter {
 			String serverBase, Map<String, String> options) {
 		this.serverBase = serverBase;
 		surveyId = criteria.get(SURVEY_ID);
-		imgPrefix = options.get("imagePrefix");
+		imgPrefix = options.get("imgPrefix");
 		apiKey = criteria.get("apiKey");
 
 		Writer pw = null;
