@@ -60,15 +60,16 @@ FLOW.ReportLoader = Ember.Object.create({
     }
 
     this.set('criteria', criteria);
+    FLOW.savingMessageControl.numLoadingChange(1);
     this.requestReport();
   },
 
   handleResponse: function (resp) {
     if (!resp || resp.status !== 'OK') {
+      FLOW.savingMessageControl.numLoadingChange(-1);
       this.showError();
       return;
     }
-
     if (resp.message === 'PROCESSING') {
       this.set('processing', false);
       Ember.run.later(this, this.requestReport, this.requestInterval);
@@ -81,7 +82,6 @@ FLOW.ReportLoader = Ember.Object.create({
   },
 
   requestReport: function () {
-	  FLOW.savingMessageControl.numLoadingChange(1);
     this.set('processing', true);
     $.ajax({
       url: FLOW.Env.flowServices + '/generate',
@@ -97,6 +97,7 @@ FLOW.ReportLoader = Ember.Object.create({
 
   handleError: function () {
     if (this.get('processing')) {
+      FLOW.savingMessageControl.numLoadingChange(-1);
       this.showError();
     }
   },
