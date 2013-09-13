@@ -43,7 +43,6 @@ import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
  */
 public class RawDataExporter extends AbstractDataExporter {
 	private static final String IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
-	private static final String SDCARD_PREFIX = "/sdcard/";
 
 	private String serverBase;
 	private String surveyId;
@@ -175,10 +174,9 @@ public class RawDataExporter extends AbstractDataExporter {
 								String val = responses.get(key);
 								pw.write("\t");
 								if (val != null) {
-									if (questionMap != null
-											&& questionMap.get(key) != null
-											&& QuestionType.GEO == questionMap
-													.get(key).getType()) {
+									QuestionDto qdto = questionMap != null ? questionMap.get(key)
+											: null;
+									if (qdto != null && QuestionType.GEO == qdto.getType()) {
 										String[] geoParts = val.split("\\|");
 										int count = 0;
 										for (count =0; count < geoParts.length; count++){
@@ -190,27 +188,17 @@ public class RawDataExporter extends AbstractDataExporter {
 										//now handle any missing fields
 										for(int j =count; j < 4; j++){
 											pw.write("\t");
-										}										
+										}
 									} else {
-										if (val.contains(SDCARD_PREFIX)) {
-											String[] photoParts = val
-													.split("/");
-											if (photoParts.length > 1) {
-												val = imagePrefix
-														+ photoParts[photoParts.length - 1];
-											} else {
-												val = imagePrefix
-														+ val.substring(val
-																.indexOf(SDCARD_PREFIX)
-																+ SDCARD_PREFIX
-																		.length());
+										if (qdto != null && QuestionType.PHOTO == qdto.getType()) {
+											final int filenameIndex = val.lastIndexOf("/") + 1;
+											if (filenameIndex > 0 && filenameIndex < val.length()) {
+												val = imagePrefix + val.substring(filenameIndex);
 											}
 										}
 										pw.write(val.replaceAll("\n", " ")
 												.trim());
 									}
-								}else{
-									
 								}
 							}
 
