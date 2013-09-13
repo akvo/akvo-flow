@@ -33,7 +33,11 @@ public class SurveyInstanceDto extends BaseDto {
 	private List<QuestionAnswerStoreDto> questionAnswersStore;
 
 	private Long surveyId;
-	private Long surveyalTime;
+
+	/**
+	 * Initialize surveyalTime to enhance backwards compatibility
+	 */
+	private Long surveyalTime = 0L;
 
 	private String submitterName;
 	private String deviceIdentifier;
