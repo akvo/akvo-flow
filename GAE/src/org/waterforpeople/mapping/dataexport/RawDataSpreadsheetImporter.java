@@ -162,9 +162,20 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			for (Row row : sheet1) {
 				rows++;
 				if (row.getRowNum() == 0) {
-					hasDurationCol = row.getCell(3).getStringCellValue().indexOf("|") == -1;
-					if (!hasDurationCol) {
-						firstQuestionCol = 3;
+					// Process headers
+					for (Cell cell : row) {
+						if (cell.getColumnIndex() == 3) {
+							hasDurationCol = cell.getStringCellValue().indexOf("|") == -1;
+							if (!hasDurationCol) {
+								firstQuestionCol = 3;
+							}
+						}
+						
+						if (cell.getColumnIndex() >= firstQuestionCol) {
+							// load questionIds
+							String[] parts = cell.getStringCellValue().split("\\|");
+							questionIDColMap.put(cell.getColumnIndex(), parts[0]);
+						}
 					}
 					continue;
 				}
@@ -182,11 +193,6 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				boolean needUpload = true;
 
 				for (Cell cell : row) {					
-					if (cell.getColumnIndex() > 1) {
-						// load questionIds
-						String[] parts = cell.getStringCellValue().split("\\|");
-						questionIDColMap.put(cell.getColumnIndex(), parts[0]);
-					}
 					if (cell.getColumnIndex() == 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 							instanceId = new Double(cell.getNumericCellValue())
