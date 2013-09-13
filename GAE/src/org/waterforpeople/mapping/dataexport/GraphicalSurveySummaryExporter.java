@@ -85,7 +85,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final String NO_CHART_OPT = "nocharts";
 
 	private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
-	private static final String SDCARD_PREFIX = "/sdcard/";
 
 	private static final Map<String, String> REPORT_HEADER;
 	private static final Map<String, String> FREQ_LABEL;
@@ -515,14 +514,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 							.println("couldn't format value for question id: "
 									+ q + "\n" + e.getMessage());
 				}
-				if (val.contains(SDCARD_PREFIX)) {
-					String[] photoParts = val.split("/");
-					if (photoParts.length > 1) {
-						val = imagePrefix + photoParts[photoParts.length - 1];
-					} else {
-						val = imagePrefix
-								+ val.substring(val.indexOf(SDCARD_PREFIX)
-										+ SDCARD_PREFIX.length());
+				
+				if (qdto != null && QuestionType.PHOTO == qdto.getType()) {
+					final int filenameIndex = val.lastIndexOf("/") + 1;
+					if (filenameIndex > 0 && filenameIndex < val.length()) {
+						val = imagePrefix + val.substring(filenameIndex);
 					}
 				}
 

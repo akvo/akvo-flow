@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -43,8 +44,10 @@ import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.survey.domain.Survey;
 
 @Controller
 @RequestMapping("/questions")
@@ -291,6 +294,7 @@ public class QuestionRestService {
 			@RequestBody QuestionPayload payLoad) {
 		final QuestionDto questionDto = payLoad.getQuestion();
 		final Map<String, Object> response = new HashMap<String, Object>();
+		List<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
 		QuestionDto dto = null;
 
 		RestStatusDto statusDto = new RestStatusDto();
@@ -300,27 +304,60 @@ public class QuestionRestService {
 		// if the POST data contains a valid questionDto, continue. Otherwise,
 		// server will respond with 400 Bad Request
 		if (questionDto != null) {
-			Question q = new Question();
+			Question q = null;
 
-			// copy the properties, except the createdDateTime property, because
-			// it is set in the Dao.
-			BeanUtils.copyProperties(questionDto, q, new String[] {
-					"createdDateTime", "type"});
-			if (questionDto.getType() != null)
-				q.setType(Question.Type.valueOf(questionDto.getType()
-						.toString()));
-
-			q = questionDao.save(q);
-
+			if (questionDto.getSourceId() == null) {
+				q = newQuestion(questionDto);
+			} else {
+				q = copyQuestion(questionDto);
+			}
 			dto = new QuestionDto();
 			DtoMarshaller.copyToDto(q, dto);
 			statusDto.setStatus("ok");
 			statusDto.setMessage("");
+
+			if (q.getType() == Question.Type.OPTION) {
+				Map<Integer,QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto.getKeyId());
+				List<Long> qoList = new ArrayList<Long>();
+				for (QuestionOption qo : qoMap.values()){
+					QuestionOptionDto qoDto = new QuestionOptionDto();
+					BeanUtils.copyProperties(qo, qoDto, new String[] {
+							"translationMap"});
+					qoDto.setKeyId(qo.getKey().getId());
+					qoList.add(qo.getKey().getId());
+					qoResults.add(qoDto);
+				}
+				dto.setQuestionOptions(qoList);
+			}
+		}
+		response.put("meta", statusDto);
+		response.put("questionOptions", qoResults);
+		response.put("question", dto);
+
+		return response;
 		}
 
-		response.put("meta", statusDto);
-		response.put("question", dto);
-		return response;
+	private Question copyQuestion(QuestionDto dto) {
+		final Question source = questionDao.getByKey(dto.getSourceId());
+
+		if (source == null) {
+			// source question not found, the getByKey already logged the problem
+			return null;
+		}
+		return SurveyUtils.copyQuestion(source,dto.getQuestionGroupId(), dto.getOrder());
 	}
 
+	private Question newQuestion(QuestionDto dto) {
+		final Question q = new Question();
+		// copy the properties, except the createdDateTime property, because
+		// it is set in the Dao.
+		BeanUtils.copyProperties(dto, q, new String[] {
+			"createdDateTime", "type"});
+		if (dto.getType() != null){
+			q.setType(Question.Type.valueOf(dto.getType()
+								.toString()));
+			}
+		final Question result = questionDao.save(q);
+		return result;
+	}
 }

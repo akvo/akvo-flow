@@ -3056,7 +3056,7 @@ table.surveyTranslate .qHelpTooltip p {
 }
 table.surveyTranslate .qHelpTooltip label { margin: 1.25em 0 0em 0; }
 table.surveyTranslate .qHelpTooltip label.qTooltip + input { width:93%; }
-.surveyDetails { min-height: 300px; }
+.surveyDetails { min-height: 200px; }
 .surveyDetails ul textarea { margin: 0 0 0 0 !important; }
 .groupSection h1 { margin: 0.5em 0 0.5em 0; }
  .fullWidth: {

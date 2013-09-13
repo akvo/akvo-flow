@@ -58,6 +58,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private Double minVal;
 	private Double maxVal;
 	private Boolean isName;
+	private Long sourceId = null;
 
 	
 	public Boolean getAllowDecimal() {
@@ -359,5 +360,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
 	public void setQuestionOptions(List<Long> questionOption_ids) {
 		this.questionOptions = questionOption_ids;
+	}
+
+	public Long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(Long sourceId) {
+		this.sourceId = sourceId;
 	}
 }

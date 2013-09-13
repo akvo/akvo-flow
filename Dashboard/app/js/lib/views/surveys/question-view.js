@@ -1,4 +1,4 @@
-	FLOW.QuestionView = FLOW.View.extend({
+FLOW.QuestionView = FLOW.View.extend({
   templateName: 'navSurveys/question-view',
   content: null,
   text: null,
@@ -93,6 +93,15 @@
     var questionType = null,
       attribute = null,
       dependentQuestion, dependentAnswer, dependentAnswerArray;
+    if (this.content && (this.content.get('isDirty') || this.content.get('isSaving'))){
+    	 FLOW.dialogControl.set('activeAction', 'ignore');
+         FLOW.dialogControl.set('header', Ember.String.loc('_question_is_being_saved'));
+         FLOW.dialogControl.set('message', Ember.String.loc('_question_is_being_saved_text'));
+         FLOW.dialogControl.set('showCANCEL', false);
+         FLOW.dialogControl.set('showDialog', true);
+    	return;
+    }
+    this.init();
 
     FLOW.selectedControl.set('selectedQuestion', this.get('content'));
     this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
@@ -260,6 +269,8 @@
 
 
     // deal with saving options
+    // the questionOptionList field is created in the init method, and contains the list of options as a string
+    // if the list of options is not equal to the edited list, we need to save it
     if (FLOW.selectedControl.selectedQuestion.get('questionOptionList') != this.get('optionList')) {
       options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
         if (!Ember.none(FLOW.selectedControl.selectedQuestion)) {
@@ -468,7 +479,7 @@
   // execute question copy to selected location
   doQuestionCopyHere: function () {
     var insertAfterOrder, path, qgId, questionsInGroup, question;
-    path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
+    //path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
     if (this.get('zeroItemQuestion')) {
       insertAfterOrder = 0;
@@ -485,8 +496,7 @@
         FLOW.dialogControl.set('showDialog', true);
    	 	return;
     }
-    
-    
+
     // restore order
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
     questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
@@ -502,22 +512,10 @@
     question = FLOW.selectedControl.get('selectedForCopyQuestion');
     // create copy of Question item in the store
     FLOW.store.createRecord(FLOW.Question, {
-      "tip": question.get('tip'),
-      "mandatoryFlag": question.get('mandatoryFlag'),
-      "allowSign": question.get('allowSign'),
-      "allowDecimal": question.get('allowDecimal'),
-      "allowMultipleFlag": question.get('allowMultipleFlag'),
-      "allowOtherFlag": question.get('allowOtherFlag'),
-      "dependentFlag": false,
-      "path": path,
-      "maxVal": question.get('maxVal'),
-      "minVal": question.get('minVal'),
-      "type": question.get('type'),
       "order": insertAfterOrder + 1,
-      "text": question.get('text'),
-      "optionList": question.get('optionList'),
       "surveyId": question.get('surveyId'),
-      "questionGroupId": qgId
+      "questionGroupId": qgId,
+      "sourceId":question.get('keyId')
     });
 
     questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {

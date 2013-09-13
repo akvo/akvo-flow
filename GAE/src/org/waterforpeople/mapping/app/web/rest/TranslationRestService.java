@@ -70,11 +70,12 @@ public class TranslationRestService {
 	private List<Question> questions;
 	Map<String, Translation> translations = new HashMap<String, Translation>();
 
-	// list translations by surveyId
+	// list translations by surveyId and questionGroupId
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public Map<String, Object> listTranslationsBySurveyId(
-			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId) {
+			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+			@RequestParam(value = "questionGroupId", defaultValue = "") Long questionGroupId) {
 		final Map<String, Object> response = new HashMap<String, Object>();
 		List<TranslationDto> results = new ArrayList<TranslationDto>();
 		RestStatusDto statusDto = new RestStatusDto();
@@ -83,7 +84,7 @@ public class TranslationRestService {
 
 		if (surveyId != null) {
 			Survey survey = sDao.getById(surveyId);
-			if (survey != null) {
+			if (survey != null && questionGroupId != null) {
 				addTranslations(Translation.ParentType.SURVEY_NAME, survey
 						.getKey().getId(), surveyId, results);
 				addTranslations(Translation.ParentType.SURVEY_DESC, survey
@@ -99,7 +100,7 @@ public class TranslationRestService {
 								qgroup.getKey().getId(),surveyId, results);
 					}
 					// get question translations
-					questions = qDao.listQuestionsBySurvey(surveyId);
+					questions = qDao.listQuestionsInOrderForGroup(questionGroupId);
 					if (questions != null && questions.size() > 0) {
 						for (Question question : questions) {
 							addTranslations(

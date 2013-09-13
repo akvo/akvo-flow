@@ -154,8 +154,41 @@ FLOW.SurveySidebarView = FLOW.View.extend({
       item = FLOW.selectedControl.get('selectedSurvey');
       item.deleteRecord();
     }
+    FLOW.selectedControl.set('selectedQuestionGroup', null);
+    FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.router.transitionTo('navSurveys.navSurveysMain');
   }
+});
+
+FLOW.QuestionGroupItemTranslationView = FLOW.View.extend({
+	content: null,
+	 // question group content comes through binding in handlebars file
+	amVisible: function () {
+	  var selected, isVis;
+	  selected = FLOW.selectedControl.get('selectedQuestionGroup');
+	  if (selected) {
+	     isVis = (this.content.get('keyId') === FLOW.selectedControl.selectedQuestionGroup.get('keyId'));
+	     return isVis;
+	   } else {
+	     return null;
+	   }
+	 }.property('FLOW.selectedControl.selectedQuestionGroup', 'content.keyId').cacheable(),
+
+	toggleVisibility: function () {
+	   if (this.get('amVisible')) {
+		 // if we have any unsaved translations, do nothing.
+		 // a warning will be printed by the check method.
+		   console.log('unsaved? ',FLOW.translationControl.unsavedTranslations());
+		 if (FLOW.translationControl.unsavedTranslations()){
+			 return;
+		 }
+	     FLOW.selectedControl.set('selectedQuestionGroup', null);
+	     // empty translation structures
+	   } else {
+	     FLOW.selectedControl.set('selectedQuestionGroup', this.content);
+	     FLOW.translationControl.loadQuestionGroup(this.content.get('keyId'));
+	   }
+	}
 });
 
 
@@ -268,26 +301,11 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       }
     });
     // restore order in case the order has gone haywire
-    this.restoreOrder(questionGroupsInSurvey);
+    FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
 
   },
-
-  restoreOrder: function (groups) {
-    var temp, i;
-    // sort them and renumber them according to logical numbering
-    temp = groups.toArray();
-    temp.sort(function(a,b) {
-      return a.get('order') > b.get('order');
-    })
-    i = 1
-    temp.forEach(function(item){
-      item.set('order',i);
-      i++;
-    })
-  },
-
 
   // insert group
   doInsertQuestionGroup: function () {
@@ -329,7 +347,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       });
 
       // restore order in case the order has gone haywire
-      this.restoreOrder(questionGroupsInSurvey);
+      FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
       FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
       FLOW.store.commit();
@@ -416,7 +434,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
         });
 
         // restore order in case the order has gone haywire
-        this.restoreOrder(questionGroupsInSurvey);
+        FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
         FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
         FLOW.store.commit();
@@ -465,7 +483,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       });
 
       // restore order in case the order has gone haywire
-      this.restoreOrder(questionGroupsInSurvey);
+      FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
