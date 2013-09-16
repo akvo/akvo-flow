@@ -34,6 +34,11 @@ public class SurveyInstanceDto extends BaseDto {
 
 	private Long surveyId;
 
+	/**
+	 * Initialize surveyalTime to enhance backwards compatibility
+	 */
+	private Long surveyalTime = 0L;
+
 	private String submitterName;
 	private String deviceIdentifier;
 	private String surveyCode;
@@ -117,5 +122,13 @@ public class SurveyInstanceDto extends BaseDto {
 
 	public String getSurveyCode() {
 		return surveyCode;
+	}
+	
+	public void setSurveyalTime(Long surveyalTime) {
+		this.surveyalTime = surveyalTime;
+	}
+	
+	public Long getSurveyalTime() {
+		return surveyalTime;
 	}
 }

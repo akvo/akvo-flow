@@ -20,6 +20,7 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -94,6 +95,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final Map<String, String> INSTANCE_LABEL;
 	private static final Map<String, String> SUB_DATE_LABEL;
 	private static final Map<String, String> SUBMITTER_LABEL;
+	private static final Map<String, String> DURATION_LABEL;
 	private static final Map<String, String> MEAN_LABEL;
 	private static final Map<String, String> MODE_LABEL;
 	private static final Map<String, String> MEDIAN_LABEL;
@@ -204,6 +206,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		SUBMITTER_LABEL = new HashMap<String, String>();
 		SUBMITTER_LABEL.put("en", "Submitter");
 		SUBMITTER_LABEL.put("es", "Peticionario");
+		
+		DURATION_LABEL = new HashMap<String, String>();
+		DURATION_LABEL.put("en", "Duration");
+		DURATION_LABEL.put("es", "Duración");
 
 		LOADING_QUESTIONS = new HashMap<String, String>();
 		LOADING_QUESTIONS.put("en", "Loading Questions");
@@ -495,6 +501,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			} else {
 				createCell(row, col++, " ", null);
 			}
+			// Surveyal time
+			final Long duration = dto.getSurveyalTime();
+			createCell(row, col++, getDurationText(duration), null, 
+					Cell.CELL_TYPE_NUMERIC);
+			// Surveyal time also computes for our hash
+			if (duration != null) {
+				digest.update(ByteBuffer.allocate(Long.SIZE).putLong(duration));
+			}
 		}
 
 		for (String q : questionIdList) {
@@ -604,12 +618,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		createCell(row, 0, INSTANCE_LABEL.get(locale), headerStyle);
 		createCell(row, 1, SUB_DATE_LABEL.get(locale), headerStyle);
 		createCell(row, 2, SUBMITTER_LABEL.get(locale), headerStyle);
+		createCell(row, 3, DURATION_LABEL.get(locale), headerStyle);
 
 		List<String> questionIdList = new ArrayList<String>();
 		List<String> nonSummarizableList = new ArrayList<String>();
 
 		if (questionMap != null) {
-			int offset = 3;
+			int offset = 4;
 			for (QuestionGroupDto group : orderedGroupList) {
 				if (questionMap.get(group) != null) {
 					for (QuestionDto q : questionMap.get(group)) {
@@ -1061,6 +1076,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 		}
 	}
+	
+	private String getDurationText(Long duration) {
+        return duration != null ? String.valueOf(duration) : "0";
+	}
 
 	protected String getImagePrefix() {
 		return this.imagePrefix;
@@ -1070,6 +1089,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
 		Map<String, String> criteria = new HashMap<String, String>();
 		Map<String, String> options = new HashMap<String, String>();
+		options.put(LOCALE_OPT, "en");
+		options.put(TYPE_OPT, RAW_ONLY_TYPE);
 		criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
 		criteria.put("apiKey", args[3]);
 		exporter.export(criteria, new File(args[0]), args[1], options);
