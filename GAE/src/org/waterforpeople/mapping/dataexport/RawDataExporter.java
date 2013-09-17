@@ -32,7 +32,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
-import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
 
 /**
@@ -113,7 +112,7 @@ public class RawDataExporter extends AbstractDataExporter {
 
 	private void writeHeader(Writer pw, Map<String, QuestionDto> questions)
 			throws Exception {
-		pw.write("Instance\tSubmission Date\tSubmitter");
+		pw.write("Instance\tSubmission Date\tSubmitter\tDuration");
 		if (keyList != null) {
 			for (String key : keyList) {
 				pw.write("\t");
@@ -168,6 +167,11 @@ public class RawDataExporter extends AbstractDataExporter {
 									pw.write(dto.getSubmitterName()
 											.replaceAll("\n", " ")
 											.replaceAll("\t", " ").trim());
+								}
+								pw.write("\t");
+								Long duration = dto.getSurveyalTime();
+								if (duration != null) {
+									pw.write(duration.toString());
 								}
 							}
 							for (String key : idList) {
