@@ -7,6 +7,13 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+# 1.6.4
+
+Release Date: 17 September 2013
+
+## New Features
+
+* Record the duration of a survey (#356)
 
 # 1.6.3
 
