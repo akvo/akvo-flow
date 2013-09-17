@@ -130,6 +130,9 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 						instance.setSubmitterName(importReq.getSubmitter());
 					}
 					instance.setSurveyId(importReq.getSurveyId());
+					if (importReq.getSurveyDuration() != null) {
+						instance.setSurveyalTime(importReq.getSurveyDuration());
+					}
 					instanceDao.save(instance);
 				}
 			} else {
@@ -141,6 +144,9 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 					instance.setSurveyId(importReq.getSurveyId());
 					instance.setCollectionDate(importReq.getCollectionDate());
 					instance.setSubmitterName(importReq.getSubmitter());
+					if (importReq.getSurveyDuration() != null) {
+						instance.setSurveyalTime(importReq.getSurveyDuration());
+					}
 					instanceDao.save(instance);
 				} else {
 					instance.setLastUpdateDateTime(new Date());
@@ -151,6 +157,9 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 						instance.setSubmitterName(importReq.getSubmitter());
 					}
 					instance.setSurveyId(importReq.getSurveyId());
+					if (importReq.getSurveyDuration() != null) {
+						instance.setSurveyalTime(importReq.getSurveyDuration());
+					}
 					instanceDao.save(instance);
 				}
 			}

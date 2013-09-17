@@ -47,6 +47,7 @@ public class RawDataImportRequest extends RestRequest {
 	public static final String SUBMITTER_PARAM = "submitter";
 	public static final String FIXED_FIELD_VALUE_PARAM = "values";
 	public static final String LOCALE_ID_PARAM = "surveyedLocale";
+	public static final String DURATION_PARAM = "duration";
 
 	public static final String SAVE_SURVEY_INSTANCE_ACTION = "saveSurveyInstance";
 	public static final String RESET_SURVEY_INSTANCE_ACTION = "resetSurveyInstance";
@@ -59,6 +60,7 @@ public class RawDataImportRequest extends RestRequest {
 	private Long surveyId;
 	private Long surveyedLocaleId;
 	private Long surveyInstanceId = null;
+	private Long duration = null;
 	private Date collectionDate = null;
 	private String submitter = null;
 	private HashMap<Long, String[]> questionAnswerMap = null;
@@ -209,6 +211,10 @@ public class RawDataImportRequest extends RestRequest {
 		if (req.getParameter(SUBMITTER_PARAM) != null) {
 			setSubmitter(req.getParameter(SUBMITTER_PARAM));
 		}
+		if (req.getParameter(DURATION_PARAM) != null) {
+			Double duration = Double.valueOf(req.getParameter(DURATION_PARAM));
+			setSurveyDuration(duration.longValue());
+		}
 	}
 
 	public void setSubmitter(String submitter) {
@@ -225,6 +231,14 @@ public class RawDataImportRequest extends RestRequest {
 
 	public void setSurveyedLocaleId(Long surveyedLocaleId) {
 		this.surveyedLocaleId = surveyedLocaleId;
+	}
+	
+	public void setSurveyDuration(Long duration) {
+		this.duration = duration;
+	}
+	
+	public Long getSurveyDuration() {
+		return duration;
 	}
 
 }

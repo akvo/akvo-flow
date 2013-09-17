@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
@@ -152,16 +153,38 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				questionMap = (Map<String, QuestionDto>) results[1];
 
 			}
+			
+			boolean hasDurationCol = true;
+			int firstQuestionCol = 4;
 
 			currentStep = 0;
 			MessageDigest digest = MessageDigest.getInstance("MD5");
 			for (Row row : sheet1) {
 				rows++;
+				if (row.getRowNum() == 0) {
+					// Process headers
+					for (Cell cell : row) {
+						if (cell.getColumnIndex() == 3) {
+							hasDurationCol = cell.getStringCellValue().indexOf("|") == -1;
+							if (!hasDurationCol) {
+								firstQuestionCol = 3;
+							}
+						}
+						
+						if (cell.getColumnIndex() >= firstQuestionCol) {
+							// load questionIds
+							String[] parts = cell.getStringCellValue().split("\\|");
+							questionIDColMap.put(cell.getColumnIndex(), parts[0]);
+						}
+					}
+					continue;
+				}
 				digest.reset();
 				String instanceId = null;
 				String dateString = null;
 				String submitter = null;
 				StringBuilder sb = new StringBuilder();
+				String duration = null;
 
 				sb.append("action="
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
@@ -170,12 +193,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				boolean needUpload = true;
 
 				for (Cell cell : row) {					
-					if (row.getRowNum() == 0 && cell.getColumnIndex() > 1) {
-						// load questionIds
-						String[] parts = cell.getStringCellValue().split("\\|");
-						questionIDColMap.put(cell.getColumnIndex(), parts[0]);
-					}
-					if (cell.getColumnIndex() == 0 && cell.getRowIndex() > 0) {
+					if (cell.getColumnIndex() == 0) {
 						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 							instanceId = new Double(cell.getNumericCellValue())
 									.intValue() + "";
@@ -188,7 +206,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ "=" + instanceId + "&");
 						}
 					}
-					if (cell.getColumnIndex() == 1 && cell.getRowIndex() > 0) {
+					if (cell.getColumnIndex() == 1) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							dateString = cell.getStringCellValue();
 						} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -203,7 +221,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ "&");
 						}
 					}
-					if (cell.getColumnIndex() == 2 && cell.getRowIndex() > 0) {
+					if (cell.getColumnIndex() == 2) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							submitter = cell.getStringCellValue();
 							sb.append("submitter="
@@ -211,10 +229,20 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ "&");
 						}
 					}
+					// Survey Duration
+					if (cell.getColumnIndex() == 3) {
+						if (hasDurationCol) {
+							duration = String.valueOf(cell.getNumericCellValue());
+							sb.append("duration="
+									+ URLEncoder.encode(duration, "UTF-8")
+									+ "&");
+							// The digest has to be aware of this field
+							digest.update(duration.getBytes());
+						}
+					}
 
 					boolean hasValue = false;
-					if (cell.getRowIndex() > 0
-							&& cell.getColumnIndex() > 2
+					if (cell.getColumnIndex() >= firstQuestionCol
 							&& questionIDColMap.get(cell.getColumnIndex()) != null) {
 						QuestionDto question = questionMap.get(questionIDColMap
 								.get(cell.getColumnIndex()));
@@ -308,8 +336,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						if (hasValue) {
 							sb.append("|type=").append(typeString).append("&");
 						}
-					} else if (cell.getRowIndex() > 0
-							&& cell.getColumnIndex() > 2) {
+					} else if (cell.getColumnIndex() >= firstQuestionCol) {
 						// we should only get here if we have a column that
 						// isn't in the header
 						// as long as the user hasn't messed up the sheet, this
@@ -333,33 +360,15 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						}
 					}
 				}
-				if (row.getRowNum() > 0 && needUpload) {
+				if (needUpload) {
 					sendDataToServer(
 							serverBase,
 							instanceId == null ? null
-									: "action="
-											+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
-											+ "&"
-											+ RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
-											+ "="
-											+ instanceId
-											+ "&"
-											+ RawDataImportRequest.SURVEY_ID_PARAM
-											+ "="
-											+ getSurveyId()
-											+ "&"
-											+ RawDataImportRequest.COLLECTION_DATE_PARAM
-											+ "="
-											+ URLEncoder.encode(dateString,
-													"UTF-8")
-											+ "&"
-											+ RawDataImportRequest.SUBMITTER_PARAM
-											+ "="
-											+ URLEncoder.encode(submitter,
-													"UTF-8"), sb.toString(),
+									: getResetUrlString(instanceId, dateString, submitter, duration),
+							sb.toString(),
 							criteria.get(KEY_PARAM));
 
-				} else if (row.getRowNum() > 0) {
+				} else {
 					// if we didn't need to upload, then just increment our
 					// progress counter
 					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
@@ -398,6 +407,28 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		} finally {
 			cleanup();
 		}
+	}
+	
+	private String getResetUrlString(String instanceId, String dateString,
+			String submitter, String duration) throws UnsupportedEncodingException {
+		String url = "action="
+				+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
+				+ "&" + RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
+				+ "=" + instanceId
+				+ "&" + RawDataImportRequest.SURVEY_ID_PARAM
+				+ "=" + getSurveyId()
+				+ "&" + RawDataImportRequest.COLLECTION_DATE_PARAM
+				+ "=" + URLEncoder.encode(dateString, "UTF-8")
+				+ "&" + RawDataImportRequest.SUBMITTER_PARAM
+				+ "=" + URLEncoder.encode(submitter, "UTF-8");
+		
+		// Duration might be missing in old reports
+		if (duration != null) {
+			url += "&" + RawDataImportRequest.DURATION_PARAM + "="
+					+ URLEncoder.encode(duration, "UTF-8");
+		}
+		
+		return url;
 	}
 
 	/**
@@ -451,7 +482,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	}
 
 	public static void main(String[] args) {
-		if (args.length != 3) {
+		if (args.length != 4) {
 			System.out
 					.println("Error.\nUsage:\n\tjava org.waterforpeople.mapping.dataexport.RawDataSpreadsheetImporter <file> <serverBase> <surveyId>");
 			System.exit(1);
@@ -461,6 +492,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		RawDataSpreadsheetImporter r = new RawDataSpreadsheetImporter();
 		Map<String, String> configMap = new HashMap<String, String>();
 		configMap.put(SURVEY_CONFIG_KEY, args[2].trim());
+		configMap.put("apiKey", args[3].trim());
 		r.executeImport(file, serverBaseArg, configMap);
 	}
 
