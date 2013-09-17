@@ -1,18 +1,30 @@
 // login module
 //
 
-//casper.options.verbose = true;
+// patching phantomjs require to allow casper modules using thei full name
+var require = patchRequire(require);
+var fs = require('fs');
+
+casper.options.verbose = true;
 casper.options.logLevel = "debug";
-//casper.options.javascriptEnabled = true;
-//casper.options.loadImages = true;
-//phantom.cookiesEnabled = true;
-//casper.options.waitTimeout = 5000;
+casper.options.javascriptEnabled = true;
+casper.options.loadImages = true;
+phantom.cookiesEnabled = true;
+casper.options.waitTimeout = 5000;
+casper.options.clientScripts.push("includes/jquery-1.8.2.min.js"); 
 
 exports.login = function(username, password) {
 
 			casper.test.comment("Login with username \"" + username + "\"");
 			var url = 'https://akvoflowsandbox.appspot.com/admin';
 
+
+            var gmailCred = {
+            		'Passwd': fs.read('./lib/creds/akvoqa_gmail')
+            	};
+			
+			// closure to capture the file information.
+			
 			casper.open(url).then(function() {
 
 			this.capture('screenshots/NavLogin-GAE.png');
@@ -24,12 +36,12 @@ exports.login = function(username, password) {
 			   
 			 casper.fill('form#gaia_loginform', {
 					Email: 'akvoqa@gmail.com',
-					Passwd: 'R4inDr0p!'
+					gmailCred
 				}, true);
 
 			 //POST to GAE
 			
-			 this.waitForResource(this.getCurrentUrl(), function() {
+			 return this.waitForResource(this.getCurrentUrl(), function() {
 					casper.capture('screenshots/NavAdmin-FLOW.png');
  					}, function() {
  					// page load failed after 5 seconds

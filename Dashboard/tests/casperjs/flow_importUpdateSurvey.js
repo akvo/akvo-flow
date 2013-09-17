@@ -12,17 +12,20 @@
 	var utils = require('utils');
 	var ember_xpath = require('casper').selectXPath;
     var loginModule = require("./lib/loginGAE.js");
-
+  	var system = require('system');
     
     // var consoleLog = require("./lib/jsConsole.js");
     // var testrailModule = require("./lib/testrailPostResults.js");
 
 	casper.options.verbose = true;
 	casper.options.javascriptEnabled = true;
+	casper.options.logLevel = "debug";
 	casper.options.loadImages = true;
 	phantom.cookiesEnabled = true;
-	casper.options.waitTimeout = 100000;
-    casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36  (KHTML, like Gecko) ');
+	casper.options.waitTimeout = 1000000;
+    system.env.RAISE_ON_DEPRECATION = true;
+
+    // casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36  (KHTML, like Gecko) ');
 	// print out all the messages in the headless browser context
 	casper.on('remote.message', function(msg) {
 		this.echo('remote message caught: ' + msg);
@@ -34,19 +37,22 @@
 
 	var url = 'http://akvoflowsandbox.appspot.com/admin/';
 
-	casper.test.begin('Import Clean Survey Data', function suite(test) {
+	casper.test.begin('Import Clean Survey Data', 20, function suite(test) {
 
 			// var url = 'http://uat1.akvoflow.org';
 
-			var url = 'http://akvoflowsandbox.appspot.com/admin/';
-
+		var url = 'http://akvoflowsandbox.appspot.com/admin';
 
 			  
-			 casper.start(casper.cli.get("url"), function() {
-			 	console.log("Initial Akvo FLOW Login Page");
-
-				loginModule.login("akvoqa@gmail.com");
-			 });
+		casper.start(url, function() {
+			console.log("Initial Akvo FLOW Login Page");
+			// loginModule.login("akvoqa@gmail.com");
+			this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
+					this.fill('form#gaia_loginform', {
+						Email:	'akvoqa@gmail.com',
+						Passwd:	'R4inDr0p!'
+						}, true);
+			});
 
 	casper.then(function () {
 			casper.capture('screenshots/NavAdmin-capture.png');
@@ -117,14 +123,15 @@
 
 
 	casper.then(function() {
-		var pElements = document.getElementsByTagName('.device'); // NodeList
-	
+		this.evaluate(function() {
+			var pElements = document.getElementsByTagName('.device'); // NodeList
+	    
 		for (var i = 0, len = pElements.length; i < len; i = i + 1) {
 			this.echo(pElements[i], + " check this out ", PELEMENT);
 			console.log("HelloHlllo");
 		};
 	});
-
+	});
 	casper.then(function () {               
 		this.test.assertSelectorHasText('a', 'Data cleaning');
 
@@ -159,23 +166,29 @@
 
 		this.evaluate( function() {
 				var valSurveyGroup = '2164002';
+				// var valSurvey = '2165002';
 
 		 		$('select.ember-select option').each(function(index, option) {
    	 			if ($(this).text() === "Akvo QA") {
 				    $('select.ember-select:nth-of-type(1)').val(valSurveyGroup);
 		 		    $('select.ember-select:nth-of-type(1)').trigger('change');
 		 			console.log("Akvo Survey Group Selected" + " " + valSurveyGroup);
+		 			
+		 			// $('select.ember-select:nth-child(3)').val(valSurvey);
+		 		    // $('select.ember-select:nth-child(3)').trigger('change');
+					// console.log("Akvo Survey Selected" + " " + valSurvey);
 		 			return false;
-					}
+				   }
 				});
 		});
-
-		this.waitForText("QA Eng Survey I", function then() {
-            		this.test.assertVisible('select.ember-select:nth-of-type(2)');
-					this.evaluate( function() {
+		
+		// this.waitForText("QA Eng Survey I", function then() {
+	   //  });	
+		this.test.assertVisible('select.ember-select:nth-of-type(2)');
+		this.evaluate( function() {
 						var valSurvey = '2165002';
 
-		 				$('select.ember-select option').each(function(index, option) {
+					$('select.ember-select option').each(function(index, option) {
 		 					if ($(this).text() === "QA Eng Survey I") {
 		 						$('select.ember-select:nth-of-type(2)').val(valSurvey);
 		 						$('select.ember-select:nth-of-type(2)').trigger('change');
@@ -184,8 +197,7 @@
 								}
 						});
 					});
-		});	
-
+        
 		this.wait(5000, function() {
 					casper.capture('screenshots/DataCleaningSelect_DropDown.png');
 					this.test.assertVisible(ember_xpath('//*[contains(text()," Raw data report ")]'), 'Raw Data Export Visible');
@@ -231,11 +243,6 @@
 
 
 
-casper.test.suiteResults.getAllPasses();
+// casper.test.suiteResults.getAllPasses();
 
-casper.run(function() {
-			this.test.done();
-			// casper.test.renderResults(true, 0, 'test-results.xml');
-		});
-
-
+casper.run();
