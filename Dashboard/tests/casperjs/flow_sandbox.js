@@ -7,7 +7,7 @@
 
 
 var utils = require('utils');
-
+var ember_xpath = require('casper').selectXPath;
 var casper = require('casper').create({
 verbose: true,
 logLevel: 'debug',
@@ -94,6 +94,7 @@ casper.then(function() {
 
 casper.then(function() {
 	this.click('.nextBtn a');
+
 	this.waitUntilVisible('#surveyDataTable td.device',
 			ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]'),
 					function then() {

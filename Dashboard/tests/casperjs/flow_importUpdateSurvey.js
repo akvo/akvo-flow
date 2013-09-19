@@ -166,14 +166,20 @@
 
 		this.evaluate( function() {
 				var valSurveyGroup = '2164002';
-				// var valSurvey = '2165002';
+				var valSurvey = '2165002';
 
 		 		$('select.ember-select option').each(function(index, option) {
    	 			if ($(this).text() === "Akvo QA") {
 				    $('select.ember-select:nth-of-type(1)').val(valSurveyGroup);
 		 		    $('select.ember-select:nth-of-type(1)').trigger('change');
+
 		 			console.log("Akvo Survey Group Selected" + " " + valSurveyGroup);
+					console.log("el id =" + $('select.ember-select:nth-of-type(1)')[0].id);
+					console.log("el id =" + $('select.ember-select:nth-of-type(2)')[0].id);
+					console.log("Akvo Survey Selected" + " " + valSurvey);
 		 			
+                   
+
 		 			// $('select.ember-select:nth-child(3)').val(valSurvey);
 		 		    // $('select.ember-select:nth-child(3)').trigger('change');
 					// console.log("Akvo Survey Selected" + " " + valSurvey);
@@ -182,17 +188,37 @@
 				});
 		});
 		
+		casper.waitForResource("http://akvoflowsandbox.appspot.com/rest/surveys", function() {
+					this.echo('survey has been loaded');
+				    this.evaluate( function() {
+				    var valSurvey = '2165002';
+
+				    setTimeout(function() {
+							console.log("drop down=" + $('select.ember-select:nth-of-type(2)')[0].innerHTML);
+							$('select.ember-select:nth-of-type(2)').val(valSurvey);
+							$('select.ember-select:nth-of-type(2)').trigger('change');
+							return false;
+					}, 1); 
+                    
+					});
+				    casper.capture('screenshots/Survey_DropDown.png');
+		});
+		
 		// this.waitForText("QA Eng Survey I", function then() {
 	   //  });	
 		this.test.assertVisible('select.ember-select:nth-of-type(2)');
-		this.evaluate( function() {
-						var valSurvey = '2165002';
 
-					$('select.ember-select option').each(function(index, option) {
+		this.evaluate( function() {
+			var valSurvey = '2165002';
+
+			$('select.ember-select option').each(function(index, option) {
 		 					if ($(this).text() === "QA Eng Survey I") {
 		 						$('select.ember-select:nth-of-type(2)').val(valSurvey);
 		 						$('select.ember-select:nth-of-type(2)').trigger('change');
-		 						console.log("Akvo Survey Selected" + " " + valSurvey);
+		 						console.log("el id =" + $('select.ember-select:nth-of-type(1)')[0].id);
+		 						console.log("el id =" + $('select.ember-select:nth-of-type(2)')[0].id);
+		 						// console.log("el id =" + $('select.ember-select:nth-of-type(3)')[0].id);
+		 						// console.log("Akvo Survey Selected" + " " + valSurvey);
 		 						return false;
 								}
 						});
