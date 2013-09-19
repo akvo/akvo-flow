@@ -271,4 +271,7 @@
 
 // casper.test.suiteResults.getAllPasses();
 
-casper.run();
+casper.run(function() {
+	this.test.done();
+	// casper.test.renderResults(true, 0, 'test-results.xml');
+});
