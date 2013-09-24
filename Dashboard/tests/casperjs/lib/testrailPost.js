@@ -6,15 +6,17 @@
 //
 
 
-exports.postResultsTR = function(){
+// exports.postResultsTR = function(){
 
-    var rawResults = require('utils').dump(casper.test.suiteResults.getAllPasses());
-	var url = 'https://akvo.testrail.com';
+require('utils').dump(casper.test.suiteResults.getAllPasses());
+// this.echo(typeof rawResults);
+casper.test.done();
+	// var url = 'https://akvo.testrail.com';
 
-    testResultsObj = JSON.parse(rawResults);
+    // testResultsObj = JSON.parse(rawResults);
 
-	postParams = { 
-		foo: "case_id", 
+	/* postParams = { 
+	  foo: "case_id", 
 		bar: testResultsObj
 	}; 
 
@@ -24,6 +26,7 @@ exports.postResultsTR = function(){
 	    	        data: postParams 
 	    	    }) 
 	});
+   */
 
-    casper.test.done();
-};
+//    casper.test.done();
+// };
