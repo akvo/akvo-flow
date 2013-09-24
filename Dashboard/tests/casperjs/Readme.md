@@ -4,6 +4,6 @@ To run:
 
 bash$ casperjs scriptName.js
 
-![alt tag](https://raw.github.com/nehafish/akvo/akvo-flow/develop/Dashboard/tests/casperjs/screenshots/evaluate-diagram.png)
+![alt tag](http://docs.casperjs.org/en/latest/_images/evaluate-diagram.png)
 
 
