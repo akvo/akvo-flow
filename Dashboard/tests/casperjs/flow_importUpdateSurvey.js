@@ -5,13 +5,13 @@
 // Test - Import Cleaned Survey Data
 // neha@akvo.org
 //
-	var require = patchRequire(require);
+	// var require = patchRequire(require);
 	
 	//casperjs convention - call utils for phantom extension
 
 	var utils = require('utils');
 	var ember_xpath = require('casper').selectXPath;
-    var loginModule = require("./lib/loginGAE.js");
+    // var loginModule = require("./lib/loginGAE.js");
   	var system = require('system');
     
     // var consoleLog = require("./lib/jsConsole.js");
@@ -22,8 +22,7 @@
 	casper.options.logLevel = "debug";
 	casper.options.loadImages = true;
 	phantom.cookiesEnabled = true;
-	casper.options.waitTimeout = 1000000;
-    system.env.RAISE_ON_DEPRECATION = true;
+	//	casper.options.waitTimeout = 1000000;
 
     // casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36  (KHTML, like Gecko) ');
 	// print out all the messages in the headless browser context
@@ -35,24 +34,23 @@
 		this.echo("Page Error: " + msg, "ERROR");
 	});
 
-	var url = 'http://akvoflowsandbox.appspot.com/admin/';
 
-	casper.test.begin('Import Clean Survey Data', 20, function suite(test) {
+	casper.test.begin('Import Clean Survey Data', function suite(test) {
 
 			// var url = 'http://uat1.akvoflow.org';
 
-		var url = 'http://akvoflowsandbox.appspot.com/admin';
+			var url = 'http://akvoflowsandbox.appspot.com/admin';
 
 			  
-		casper.start(url, function() {
-			console.log("Initial Akvo FLOW Login Page");
+			casper.start(url, function() {
+				console.log("Initial Akvo FLOW Login Page");
 			// loginModule.login("akvoqa@gmail.com");
 			this.test.assertExists('form#gaia_loginform', 'GAE Login Form is Found');
 					this.fill('form#gaia_loginform', {
 						Email:	'akvoqa@gmail.com',
 						Passwd:	'R4inDr0p!'
 						}, true);
-			});
+			 });
 
 	casper.then(function () {
 			casper.capture('screenshots/NavAdmin-capture.png');
@@ -97,8 +95,7 @@
 				// ember_xpath('//*[@id="surveyDataTable"]/tbody/tr[1]/td[3]'),
 				function then() {
 					casper.capture('screenshots/NavData-SurveyDataTable.png');
-				}
-			);
+				});
             
 			this.waitUntilVisible('.nextBtn a',
 				function then() {
@@ -109,7 +106,6 @@
 
 		});
 		
-   //  });	  
 
 	casper.then(function() {
 		this.click('.nextBtn a');
@@ -122,16 +118,6 @@
 	});
 
 
-	casper.then(function() {
-		this.evaluate(function() {
-			var pElements = document.getElementsByTagName('.device'); // NodeList
-	    
-		for (var i = 0, len = pElements.length; i < len; i = i + 1) {
-			this.echo(pElements[i], + " check this out ", PELEMENT);
-			console.log("HelloHlllo");
-		};
-	});
-	});
 	casper.then(function () {               
 		this.test.assertSelectorHasText('a', 'Data cleaning');
 
@@ -178,8 +164,6 @@
 					console.log("el id =" + $('select.ember-select:nth-of-type(2)')[0].id);
 					console.log("Akvo Survey Selected" + " " + valSurvey);
 		 			
-                   
-
 		 			// $('select.ember-select:nth-child(3)').val(valSurvey);
 		 		    // $('select.ember-select:nth-child(3)').trigger('change');
 					// console.log("Akvo Survey Selected" + " " + valSurvey);
@@ -265,13 +249,12 @@
 
 	});  
 
-});
-
-
-
 // casper.test.suiteResults.getAllPasses();
 
-casper.run(function() {
-	this.test.done();
-	// casper.test.renderResults(true, 0, 'test-results.xml');
+// casper.run();
+
+	casper.run(function() {
+		this.test.done();
+		// casper.test.renderResults(true, 0, 'test-results.xml');
+	});
 });
