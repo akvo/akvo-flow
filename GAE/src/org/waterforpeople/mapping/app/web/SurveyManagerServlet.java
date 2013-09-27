@@ -36,6 +36,7 @@ import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.Device.DeviceType;
@@ -46,8 +47,10 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyManagerServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
@@ -94,7 +97,21 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		}
 		return sb.toString();
 	}
-
+	//Return a list all the projects the device needs
+	//use imei or phone number for lookup
+	private String getSurveyGroupsForPhone(String devicePhoneNumber, String imei) {
+		StringBuilder sb = new StringBuilder();
+	    // TODO this should be restricted to only return projects for this device
+	    SurveyGroupDAO sgDao = new SurveyGroupDAO();
+	    for (SurveyGroup sg : sgDao.list(Constants.ALL_RESULTS)) {
+	    	sb.append(sg.getKey().getId() + "," + sg.getName()
+	          + "\n");
+	    	}
+	    return sb.toString();
+	    }
+	
+	
+	
 	@Override
 	protected RestRequest convertRequest() throws Exception {
 		HttpServletRequest req = getRequest();
@@ -132,7 +149,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				} else {
 					resp.setMessage("No Survey Found");
 				}
-			}
+			} 
 
 		} else if (SurveyManagerRequest.GET_AVAIL_DEVICE_SURVEY_ACTION
 				.equalsIgnoreCase(req.getAction())) {
@@ -165,6 +182,12 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 					deviceDao.save(dev);
 				}
 			}
+		} else if (SurveyManagerRequest.GET_AVAIL_DEVICE_SURVEYGROUP_ACTION
+				.equalsIgnoreCase(req.getAction())) {
+			//Report which survey groups the device should have
+			if (mgrReq.getPhoneNumber() != null || mgrReq.getImei() != null) {
+				resp.setMessage(getSurveyGroupsForPhone(mgrReq.getPhoneNumber(), mgrReq.getImei()));
+			}
 		} else if (SurveyManagerRequest.GET_SURVEY_HEADER_ACTION
 				.equalsIgnoreCase(req.getAction())) {
 			if (mgrReq.getSurveyId() != null) {
@@ -180,7 +203,9 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 									.getDefaultLanguageCode() : "en")
 							.append(",")
 							.append(survey.getVersion() != null ? survey
-									.getVersion() : "1");
+									.getVersion() : "1")
+							.append(",")
+							.append(survey.getSurveyGroupId().toString());
 					resp.setMessage(sb.toString());
 				}
 			}

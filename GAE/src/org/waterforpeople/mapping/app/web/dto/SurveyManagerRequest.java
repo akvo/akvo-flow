@@ -48,6 +48,8 @@ public class SurveyManagerRequest extends RestRequest {
 	private static final String FILE_START_DATE_PARAM = "startDate";
 	private static final String DEVICE_ID_PARAM = "devId";
 
+	public static final String GET_AVAIL_DEVICE_SURVEYGROUP_ACTION = "getAvailableSurveyGroupsDevice";
+
 	private Long surveyId;
 	private Long surveyInstanceId;
 	private String surveyDoc;
