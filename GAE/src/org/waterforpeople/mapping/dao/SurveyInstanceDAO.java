@@ -173,7 +173,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					}
 					si.setSurveyId(Long.parseLong(parts[0].trim()));
 					if (parts.length >= 12) {
-						String uuid = parts[parts.length - 1];
+						String uuid = parts[11];
 						if (uuid != null && uuid.trim().length() > 0) {
 							SurveyInstance existingSi = findByUUID(uuid);
 							if (existingSi != null) {
