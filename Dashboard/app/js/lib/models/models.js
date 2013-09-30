@@ -32,6 +32,9 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
   createdDateTime: DS.attr('string', {
     defaultValue: ''
   }),
+  isMonitoringGroupFlag: DS.attr('boolean', {
+	    defaultValue: false
+	  }),
   lastUpdateDateTime: DS.attr('string', {
     defaultValue: ''
   }),

@@ -7,7 +7,8 @@ FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   content: null,
   tagName: 'li',
   classNameBindings: 'amSelected:current'.w(),
-
+  isMonitoringGroupFlag: false,
+  
   // true if the survey group is selected. Used to set proper display class
   amSelected: function () {
     var selected = FLOW.selectedControl.get('selectedSurveyGroup');
@@ -68,6 +69,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   showSGDeleteNotPossibleDialog: false,
   showCopySurveyDialogBool: false,
   newSurveyName: null,
+  isMonitoringGroupFlag:false,
 
   // true if at least one survey group is active
   oneSelected: function () {
@@ -78,6 +80,13 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
       return false;
     }
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
+  
+  initVars: function () {
+	  if (!Ember.none('FLOW.selectedControl.selectedSurveyGroup')) {
+		  this.set('isMonitoringGroupFlag',FLOW.selectedControl.selectedSurveyGroup.get('isMonitoringGroupFlag'));
+	  }
+	  console.log('monitoirng gloupr flag:',this.get('isMonitoringGroupFlag'));
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   // fired when 'edit name' is clicked, shows edit field to change survey group name
   editSurveyGroupName: function () {
@@ -101,8 +110,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
     this.set('surveyGroupName', FLOW.selectedControl.selectedSurveyGroup.get('code'));
     this.set('showEditField', false);
   },
-
-
+  
   // fired when 'add a group' is clicked. Displays a new group text field in the left sidebar
   addGroup: function () {
     FLOW.selectedControl.set('selectedSurveyGroup', null);
@@ -110,6 +118,12 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
     this.set('showNewGroupField', true);
   },
 
+  makeMonitorGroup: function () {
+	  this.set('isMonitoringGroupFlag', true);
+	  FLOW.selectedControl.selectedSurveyGroup.set('isMonitoringGroupFlag', true);
+	  FLOW.store.commit();
+  },
+  
   deleteSurveyGroup: function () {
     var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
     var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);

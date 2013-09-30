@@ -36,6 +36,7 @@ public class SurveyGroup extends BaseDomain {
 	private static final long serialVersionUID = 8941584684617286776L;
 	private String name = null;
 	private String code = null;
+	private Boolean isMonitoringGroupFlag = false;
 	private String description = null;
 	@NotPersistent
 	private HashMap<String, Translation> altTextMap;
@@ -86,6 +87,14 @@ public class SurveyGroup extends BaseDomain {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public Boolean getIsMonitoringGroupFlag() {
+		return isMonitoringGroupFlag;
+	}
+
+	public void setIsMonitoringGroupFlag(Boolean isMonitoringGroupFlag) {
+		this.isMonitoringGroupFlag = isMonitoringGroupFlag;
 	}
 
 }

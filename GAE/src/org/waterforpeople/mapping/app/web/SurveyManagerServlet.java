@@ -97,7 +97,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		}
 		return sb.toString();
 	}
-	//Return a list all the projects the device needs
+	//Return a list all the survey groups the device needs
 	//use imei or phone number for lookup
 	private String getSurveyGroupsForPhone(String devicePhoneNumber, String imei) {
 		StringBuilder sb = new StringBuilder();
@@ -105,7 +105,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 	    SurveyGroupDAO sgDao = new SurveyGroupDAO();
 	    for (SurveyGroup sg : sgDao.list(Constants.ALL_RESULTS)) {
 	    	sb.append(sg.getKey().getId() + "," + sg.getName()
-	          + "\n");
+	          + "," + sg.getIsMonitoringGroupFlag() + "\n");
 	    	}
 	    return sb.toString();
 	    }

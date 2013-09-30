@@ -23,7 +23,7 @@
         {{#view FLOW.JavascriptSurveyGroupListView}}
           {{#each sg in FLOW.surveyGroupControl.arrangedContent}}
             {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-              <a {{action "makeSelected" target="this"}}>{{sg.code}}</a>
+              <a  {{action "makeSelected" target="this"}}> {{#if sg.isMonitoringGroupFlag}}<span style="color:rgb(74, 177, 207)">M</span>&nbsp;&nbsp;{{/if}}{{sg.code}}</a>
             {{/view}}
           {{/each}} 
         {{/view}}
@@ -44,8 +44,13 @@
           <!-- show selected survey group and edit name button --> 
           <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2> 
           <a {{action "editSurveyGroupName" target="this"}} class="editGroupName">{{t _edit_name}}</a>
-          <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a> 
+          <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a>
         {{/if}}
+         {{#if view.isMonitoringGroupFlag}}
+		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a>          
+		  {{else}}
+		    <a {{action confirm FLOW.dialogControl.makeMonitor target="FLOW.dialogControl"}} class="makeMonitorGroup">{{t _make_monitoring_group}}</a> 
+		  {{/if}}
       {{/if}}
       
       <!-- show delete group, add new group, and create new survey buttons--> 

@@ -29,6 +29,7 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 	private String description;
 	private String name;
 	private String code;
+	private Boolean isMonitoringGroupFlag;
 	private Date createdDateTime;
 	private Date lastUpdateDateTime;
 
@@ -92,6 +93,14 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 
 	public String getName() {
 		return name;
+	}
+
+	public Boolean getIsMonitoringGroupFlag() {
+		return isMonitoringGroupFlag;
+	}
+
+	public void setIsMonitoringGroupFlag(Boolean isMonitoringGroupFlag) {
+		this.isMonitoringGroupFlag = isMonitoringGroupFlag;
 	}
 
 }
