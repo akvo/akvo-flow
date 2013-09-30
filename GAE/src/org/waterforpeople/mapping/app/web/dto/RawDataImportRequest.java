@@ -209,7 +209,8 @@ public class RawDataImportRequest extends RestRequest {
 			collectionDate = IN_FMT.get().parse(colDate);
 		}
 		if (req.getParameter(SUBMITTER_PARAM) != null) {
-			setSubmitter(req.getParameter(SUBMITTER_PARAM));
+			setSubmitter(URLDecoder.decode(
+					req.getParameter(SUBMITTER_PARAM), "UTF-8"));
 		}
 		if (req.getParameter(DURATION_PARAM) != null) {
 			Double duration = Double.valueOf(req.getParameter(DURATION_PARAM));
