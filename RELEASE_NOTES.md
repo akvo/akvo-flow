@@ -1,4 +1,4 @@
-Last changed: 17 September 2013
+Last changed: 30 September 2013
 
 Akvo FLOW (Field Level Operations Watch) is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
 
@@ -7,6 +7,16 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+# 1.6.5
+
+Release Date: 30 September 2013
+
+## Resolved Issues
+
+* While uploading spreadsheet, the submitter name gets altered (#367)
+* Surveys with same response but different UUID getting skipped as duplicate while processing (#369)
+* Issue with data Cleaning: Blank responses are getting added as records (#371)
+
 # 1.6.4
 
 Release Date: 17 September 2013
