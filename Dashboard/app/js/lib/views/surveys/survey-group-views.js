@@ -57,9 +57,6 @@ FLOW.SurveyGroupSurveyView = FLOW.View.extend({
 
 });
 
-
-
-
 // handles all survey-group interaction elements on survey group page
 FLOW.SurveyGroupMainView = FLOW.View.extend({
   showEditField: false,
@@ -86,7 +83,6 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 	  if (!Ember.none('FLOW.selectedControl.selectedSurveyGroup')) {
 		  this.set('isMonitoringGroupFlag',FLOW.selectedControl.selectedSurveyGroup.get('isMonitoringGroupFlag'));
 	  }
-	  console.log('monitoirng gloupr flag:',this.get('isMonitoringGroupFlag'));
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   // fired when 'edit name' is clicked, shows edit field to change survey group name
@@ -119,12 +115,6 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
     this.set('showNewGroupField', true);
   },
 
-  makeMonitorGroup: function () {
-	  this.set('isMonitoringGroupFlag', true);
-	  FLOW.selectedControl.selectedSurveyGroup.set('isMonitoringGroupFlag', true);
-	  FLOW.store.commit();
-  },
-  
   deleteSurveyGroup: function () {
     var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
     var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
@@ -151,6 +141,12 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   cancelNewSurveyGroupName: function () {
     this.set('surveyGroupName', null);
     this.set('showNewGroupField', false);
+  },
+
+  makeMonitorGroup: function () {
+	  this.set('isMonitoringGroupFlag', true);
+	  FLOW.selectedControl.selectedSurveyGroup.set('isMonitoringGroupFlag', true);
+	  FLOW.store.commit();
   },
 
   saveNewLocaleSurveyIdChoice: function () {
