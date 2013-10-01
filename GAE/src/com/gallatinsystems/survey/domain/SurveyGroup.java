@@ -37,6 +37,7 @@ public class SurveyGroup extends BaseDomain {
 	private String name = null;
 	private String code = null;
 	private Boolean isMonitoringGroupFlag = false;
+	private Long newLocaleSurveyId;
 	private String description = null;
 	@NotPersistent
 	private HashMap<String, Translation> altTextMap;
@@ -95,6 +96,14 @@ public class SurveyGroup extends BaseDomain {
 
 	public void setIsMonitoringGroupFlag(Boolean isMonitoringGroupFlag) {
 		this.isMonitoringGroupFlag = isMonitoringGroupFlag;
+	}
+
+	public Long getNewLocaleSurveyId() {
+		return newLocaleSurveyId;
+	}
+
+	public void setNewLocaleSurveyId(Long newLocaleSurveyId) {
+		this.newLocaleSurveyId = newLocaleSurveyId;
 	}
 
 }

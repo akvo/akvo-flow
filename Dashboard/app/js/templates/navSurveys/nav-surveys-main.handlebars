@@ -46,11 +46,6 @@
           <a {{action "editSurveyGroupName" target="this"}} class="editGroupName">{{t _edit_name}}</a>
           <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a>
         {{/if}}
-         {{#if view.isMonitoringGroupFlag}}
-		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a>          
-		  {{else}}
-		    <a {{action confirm FLOW.dialogControl.makeMonitor target="FLOW.dialogControl"}} class="makeMonitorGroup">{{t _make_monitoring_group}}</a> 
-		  {{/if}}
       {{/if}}
       
       <!-- show delete group, add new group, and create new survey buttons--> 
@@ -69,6 +64,22 @@
 
     <!-- show all surveys of the currently selected survey group-->
     <ul class="surveyBatch">
+    
+    {{#if view.oneSelected}}
+     {{#if view.isMonitoringGroupFlag}}
+		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a> 
+		      <div style="margin:0 10px 0 20px;"> <p style="text-size:1.5em;">Survey that creates new monitored entities:</p> {{view Ember.Select 
+         		contentBinding="FLOW.surveyControl.content" 
+         		selectionBinding="view.newLocaleSurveyId" 
+         		optionLabelPath="content.name" 
+         		optionValuePath="content.keyId"
+         		prompt=""
+         		promptBinding="Ember.STRINGS._select_survey"}}       </div>
+		  {{else}}
+		    <a {{action confirm FLOW.dialogControl.makeMonitor target="FLOW.dialogControl"}} class="makeMonitorGroup">{{t _make_monitoring_group}}</a> 
+		  {{/if}}
+    {{/if}}
+    
       {{#each survey in FLOW.surveyControl.arrangedContent}} 
         {{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
           <li class="aSurvey waterPoint">

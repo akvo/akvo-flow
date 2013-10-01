@@ -105,7 +105,9 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 	    SurveyGroupDAO sgDao = new SurveyGroupDAO();
 	    for (SurveyGroup sg : sgDao.list(Constants.ALL_RESULTS)) {
 	    	sb.append(sg.getKey().getId() + "," + sg.getName()
-	          + "," + sg.getIsMonitoringGroupFlag() + "\n");
+	          + "," + sg.getIsMonitoringGroupFlag() 
+	          + "," + sg.getNewLocaleSurveyId()
+	          + "\n");
 	    	}
 	    return sb.toString();
 	    }
