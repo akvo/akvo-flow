@@ -494,15 +494,12 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 							.getSurveyInstanceId());
 			List<Metric> metrics = null;
 			boolean loadedItems = false;
-			List<Question> questionList = null;
-			// initialize outside the loop so all answers get same collection
+			List<Question> questionList = qDao.listQuestionsBySurvey(answers.get(0).getSurveyId());
+
 			// date value
 			Calendar cal = new GregorianCalendar();
 			for (QuestionAnswerStore ans : answers) {
 				if (!loadedItems && ans.getSurveyId() != null) {
-
-					questionList = qDao
-							.listQuestionsBySurvey(ans.getSurveyId());
 					metrics = metricDao.listMetrics(null, null, null,
 							l.getOrganization(), "all");
 					mappings = metricMappingDao.listMappingsBySurvey(ans
