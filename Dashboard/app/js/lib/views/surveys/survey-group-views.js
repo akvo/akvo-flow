@@ -2,6 +2,10 @@ function capitaliseFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+if (!String.prototype.trim) {
+		String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+	}
+
 // displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   content: null,
@@ -93,12 +97,16 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 
   // fired when 'save' is clicked while showing edit group name field. Saves the new group name
   saveSurveyGroupNameEdit: function () {
-    var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
-    var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
-    surveyGroup.set('code', capitaliseFirstLetter(this.get('surveyGroupName')));
-    surveyGroup.set('name', capitaliseFirstLetter(this.get('surveyGroupName')));
-    FLOW.store.commit();
-    FLOW.selectedControl.set('selectedSurveyGroup', FLOW.store.find(FLOW.SurveyGroup, sgId));
+    if (!Ember.empty(this.get('surveyGroupName').trim())){
+    	var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
+    	var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
+    	surveyGroup.set('code', capitaliseFirstLetter(this.get('surveyGroupName')));
+    	surveyGroup.set('name', capitaliseFirstLetter(this.get('surveyGroupName')));
+    	FLOW.store.commit();
+    	FLOW.selectedControl.set('selectedSurveyGroup', FLOW.store.find(FLOW.SurveyGroup, sgId));
+    } else {
+    	this.cancelSurveyGroupNameEdit();
+    }
     this.set('showEditField', false);
   },
 
@@ -129,11 +137,13 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 
   // fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
   saveNewSurveyGroupName: function () {
-    FLOW.store.createRecord(FLOW.SurveyGroup, {
-      "code": capitaliseFirstLetter(this.get('surveyGroupName')),
-      "name": capitaliseFirstLetter(this.get('surveyGroupName'))
-    });
-    FLOW.store.commit();
+	  if (!Ember.empty(this.get('surveyGroupName').trim())){
+		  FLOW.store.createRecord(FLOW.SurveyGroup, {
+			  "code": capitaliseFirstLetter(this.get('surveyGroupName')),
+			  "name": capitaliseFirstLetter(this.get('surveyGroupName'))
+		  });
+		  FLOW.store.commit();
+	  }
     this.set('showNewGroupField', false);
   },
 
