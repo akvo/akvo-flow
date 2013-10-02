@@ -234,14 +234,27 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 	//Return a list all the survey groups the device needs
 	//use imei or phone number for lookup
 	private String getSurveyGroupsForPhone(String devicePhoneNumber, String imei) {
-		StringBuilder sb = new StringBuilder();
-	    // TODO this should be restricted to only return projects for this device
+		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
+		SurveyDAO surveyDao = new SurveyDAO();
 	    SurveyGroupDAO sgDao = new SurveyGroupDAO();
+
+		// build map of which surveyGroups to include
+		Map<Long, Boolean> includeGroupMap = new HashMap<Long, Boolean>();
+		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
+			Survey s = surveyDao.getById(dsjq.getSurveyID());
+			if (s != null) {
+				includeGroupMap.put(s.getSurveyGroupId(), true);
+			}
+		}
+
+		StringBuilder sb = new StringBuilder();
 	    for (SurveyGroup sg : sgDao.list(Constants.ALL_RESULTS)) {
-	    	sb.append(sg.getKey().getId() + "," + sg.getName()
-	          + "," + sg.getIsMonitoringGroupFlag()
-	          + "," + sg.getNewLocaleSurveyId()
-	          + "\n");
+	    	if (includeGroupMap.get(sg.getKey().getId()) != null){
+	    		sb.append(sg.getKey().getId() + "," + sg.getName()
+	    				+ "," + sg.getIsMonitoringGroupFlag()
+	    				+ "," + sg.getNewLocaleSurveyId()
+	    				+ "\n");
+	    		}
 	    	}
 	    return sb.toString();
 	    }
