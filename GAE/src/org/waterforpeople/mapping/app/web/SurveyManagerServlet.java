@@ -51,6 +51,8 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleSummaryDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocaleSummary;
 
 public class SurveyManagerServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
@@ -205,6 +207,8 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		SurveyDAO surveyDao = new SurveyDAO();
 		Map<Long, Double> versionMap = new HashMap<Long, Double>();
 		StringBuilder sb = new StringBuilder();
+		Long surveyGroupId = null;
+
 		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
 			Double ver = versionMap.get(dsjq.getSurveyID());
 			if (ver == null) {
@@ -213,6 +217,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 					if (s.getVersion() != null) {
 						versionMap.put(dsjq.getSurveyID(), s.getVersion());
 						ver = s.getVersion();
+						surveyGroupId = s.getSurveyGroupId();
 					} else {
 						versionMap.put(dsjq.getSurveyID(), new Double(1.0));
 						ver = new Double(1.0);
@@ -226,6 +231,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 			}
 			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
 					+ dsjq.getName() + "," + dsjq.getLanguage() + "," + ver
+					+ "," + surveyGroupId
 					+ "\n");
 		}
 		return sb.toString();
