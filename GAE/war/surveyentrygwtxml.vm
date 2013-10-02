@@ -6,7 +6,6 @@
 	<inherits name="com.google.gwt.i18n.I18N" />
 	<inherits name="com.google.gwt.maps.GoogleMaps" />		
 	<source path="client" />	
-	<entry-point
-		class="org.waterforpeople.mapping.surveyentry.client.SurveyEntryClient" />
-        <script src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2&amp;sensor=false&amp;key=$mapsApiKey"/>
+	<entry-point class="org.waterforpeople.mapping.surveyentry.client.SurveyEntryClient" />
+    <script src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2&amp;sensor=false&amp;key=$mapsApiKey"/>
 </module>

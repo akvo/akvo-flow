@@ -4,6 +4,7 @@
 	<version>1</version>
 	<sessions-enabled>true</sessions-enabled>
 	<threadsafe>true</threadsafe>
+	<auto-id-policy>legacy</auto-id-policy>
 	<static-files>
 		<include path="/**.png" expiration="1000d 5h" />
 		<include path="/**.jpg" expiration="1000d 5h" />
@@ -13,38 +14,33 @@
 		<property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
 		<property name="aws_secret_key" value="$awsSecretKey" />
 		<property name="aws_identifier" value="$awsIdentifier" />
-		<property name="keystore" value="WEB-INF/$keystore" />
-		<property name="photo_url_root"
-			value="$s3url/images/" />
+		<property name="keystore" value="$keystore" />
+		<property name="photo_url_root" value="$s3url/images/" />
 		<property name="storepass" value="$storepass" />
 		<property name="keypass" value="$keypass" />
 		<property name="alias" value="$alias" />
 		<property name="flowServices" value="http://services.akvoflow.org" />
-		<property name="google_spreadsheet_url"
-			value="http://spreadsheets.google.com/feeds/spreadsheets/private/full" />
-		<property name="next_url"
-			value="$alais/authsub" />
+		<property name="google_spreadsheet_url" value="http://spreadsheets.google.com/feeds/spreadsheets/private/full" />
+		<property name="next_url" value="$alais/authsub" />
 		<property name="google_scope"
 			value="http://spreadsheets.google.com/feeds/ https://docs.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://docs.googleusercontent.com" />
 		<property name="s3bucket" value="$s3bucket" />
 		<property name="surveyuploadurl" value="$s3url/" />
 		<property name="surveyuploaddir" value="surveys" />
-		<property name="deviceZipPath"
-			value="$s3url/devicezip/" />
+		<property name="deviceZipPath" value="$s3url/devicezip/" />
 		<property name="emailFromAddress" value="$reportsEmailAddress" />
-		<property name="recipientListString"
-			value="flowerrors@akvo.org;FLOW Errors List" />
+		<property name="recipientListString" value="flowerrors@akvo.org;FLOW Errors List" />
 		<property name="defaultPhotoCaption" value="$organization" />
 		<property name="surveyuploadsig" value="$surveyS3Sig" />
 		<property name="surveyuploadpolicy"
 			value="$surveyPolicy"/>
-		<property name="reportS3Policy"
-			value="$reportS3Policy" />
+		<property name="reportS3Policy" value="$reportS3Policy" />
 		<property name="reportS3Sig" value="$reportS3Sig" />
 		<property name="reportS3Path" value="reports" />
 		<property name="attachreport" value="true" />
 		<property name="bootstrapdir" value="bootstrap"/>
-		<property name="bootstraps3policy" value="$bootstrapS3Policy"/>
+		<property name="bootstraps3policy"
+			value="$bootstrapS3Policy"/>
 		<property name="bootstraps3sig" value="$bootstrapS3Sig"/>
 		<property name="imageroot" value="http://$instanceName.appspot.com"/>
 		<property name="mapiconimageroot" value="http://$s3bucket.s3.amazonaws.com/images/mapicons"/>
