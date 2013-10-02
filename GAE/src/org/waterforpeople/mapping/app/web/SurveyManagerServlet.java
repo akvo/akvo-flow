@@ -64,55 +64,6 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		deviceDao = new DeviceDAO();
 		setMode(AbstractRestApiServlet.XML_MODE);
 	}
-
-	//Return a list all the surveys the device needs
-	//use imei or phone number for lookup
-	private String getSurveyForPhone(String devicePhoneNumber, String imei) {
-		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
-		SurveyDAO surveyDao = new SurveyDAO();
-		Map<Long, Double> versionMap = new HashMap<Long, Double>();
-		StringBuilder sb = new StringBuilder();
-		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
-			Double ver = versionMap.get(dsjq.getSurveyID());
-			if (ver == null) {
-				Survey s = surveyDao.getById(dsjq.getSurveyID());
-				if (s != null) {
-					if (s.getVersion() != null) {
-						versionMap.put(dsjq.getSurveyID(), s.getVersion());
-						ver = s.getVersion();
-					} else {
-						versionMap.put(dsjq.getSurveyID(), new Double(1.0));
-						ver = new Double(1.0);
-					}
-
-				} else {
-					// for testing so I can mock a version for local survey
-					Random rand = new Random();
-					ver = rand.nextDouble();
-				}
-			}
-			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
-					+ dsjq.getName() + "," + dsjq.getLanguage() + "," + ver
-					+ "\n");
-		}
-		return sb.toString();
-	}
-	//Return a list all the survey groups the device needs
-	//use imei or phone number for lookup
-	private String getSurveyGroupsForPhone(String devicePhoneNumber, String imei) {
-		StringBuilder sb = new StringBuilder();
-	    // TODO this should be restricted to only return projects for this device
-	    SurveyGroupDAO sgDao = new SurveyGroupDAO();
-	    for (SurveyGroup sg : sgDao.list(Constants.ALL_RESULTS)) {
-	    	sb.append(sg.getKey().getId() + "," + sg.getName()
-	          + "," + sg.getIsMonitoringGroupFlag() 
-	          + "," + sg.getNewLocaleSurveyId()
-	          + "\n");
-	    	}
-	    return sb.toString();
-	    }
-	
-	
 	
 	@Override
 	protected RestRequest convertRequest() throws Exception {
@@ -246,6 +197,54 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		}
 		return resp;
 	}
+
+	//Return a list all the surveys the device needs
+	//use imei or phone number for lookup
+	private String getSurveyForPhone(String devicePhoneNumber, String imei) {
+		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
+		SurveyDAO surveyDao = new SurveyDAO();
+		Map<Long, Double> versionMap = new HashMap<Long, Double>();
+		StringBuilder sb = new StringBuilder();
+		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
+			Double ver = versionMap.get(dsjq.getSurveyID());
+			if (ver == null) {
+				Survey s = surveyDao.getById(dsjq.getSurveyID());
+				if (s != null) {
+					if (s.getVersion() != null) {
+						versionMap.put(dsjq.getSurveyID(), s.getVersion());
+						ver = s.getVersion();
+					} else {
+						versionMap.put(dsjq.getSurveyID(), new Double(1.0));
+						ver = new Double(1.0);
+					}
+
+				} else {
+					// for testing so I can mock a version for local survey
+					Random rand = new Random();
+					ver = rand.nextDouble();
+				}
+			}
+			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
+					+ dsjq.getName() + "," + dsjq.getLanguage() + "," + ver
+					+ "\n");
+		}
+		return sb.toString();
+	}
+
+	//Return a list all the survey groups the device needs
+	//use imei or phone number for lookup
+	private String getSurveyGroupsForPhone(String devicePhoneNumber, String imei) {
+		StringBuilder sb = new StringBuilder();
+	    // TODO this should be restricted to only return projects for this device
+	    SurveyGroupDAO sgDao = new SurveyGroupDAO();
+	    for (SurveyGroup sg : sgDao.list(Constants.ALL_RESULTS)) {
+	    	sb.append(sg.getKey().getId() + "," + sg.getName()
+	          + "," + sg.getIsMonitoringGroupFlag()
+	          + "," + sg.getNewLocaleSurveyId()
+	          + "\n");
+	    	}
+	    return sb.toString();
+	    }
 
 	@Override
 	protected void writeOkResponse(RestResponse response) throws Exception {
