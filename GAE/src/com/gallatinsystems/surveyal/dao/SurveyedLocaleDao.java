@@ -293,6 +293,19 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 	}
 
 	/**
+	 * returns all the locales by surveyGroupId
+	 * survey instance only.
+	 *
+	 * @param surveyGroupId
+	 * @return
+	 */
+	public List<SurveyedLocale> listLocalesBySurveyGroupId(Long surveyGroupId) {
+		List<SurveyedLocale> locales = listByProperty("surveyGroupId", surveyGroupId,
+				"Long");
+		return locales;
+	}
+
+	/**
 	 * returns all the locales with the identifier passed in. If needDetails is
 	 * true, it will list the surveyalValues for the locale from the most recent
 	 * survey instance only.

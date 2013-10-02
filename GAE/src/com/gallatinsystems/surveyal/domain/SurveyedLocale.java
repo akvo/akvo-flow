@@ -55,6 +55,7 @@ public class SurveyedLocale extends BaseDomain {
 	private Double longitude;
 	private boolean ambiguous;
 	private String currentStatus;
+	private Long surveyGroupId;
 	private Date lastSurveyedDate;
 	private Long lastSurveyalInstanceId;
 	@NotPersistent
@@ -206,6 +207,14 @@ public class SurveyedLocale extends BaseDomain {
 
 	public String getCurrentStatus() {
 		return currentStatus;
+	}
+
+	public Long getSurveyGroupId() {
+		return surveyGroupId;
+	}
+
+	public void setSurveyGroupId(Long surveyGroupId) {
+		this.surveyGroupId = surveyGroupId;
 	}
 
 }
