@@ -50,8 +50,10 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleSummaryDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.gallatinsystems.surveyal.domain.SurveyedLocaleSummary;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -237,7 +239,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 * @param surveyInstanceId
 	 */
 	private void ingestSurveyInstance(SurveyInstance instance) {
-
 		SurveyedLocale locale = null;
 		if (instance != null) {
 			List<QuestionAnswerStore> answers = surveyInstanceDao
@@ -246,9 +247,24 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			SurveyDAO surveyDao = new SurveyDAO();
 			Survey survey = surveyDao.getByKey(instance.getSurveyId());
 			String pointType = null;
+			Long surveyGroupId = null;
 			if (survey != null) {
 				pointType = survey.getPointType();
+				surveyGroupId = survey.getSurveyGroupId();
 			}
+
+			// if the surveyed locale id was available in the ingested data,
+			// this has been set in the save method in surveyInstanceDao.
+			boolean useExistingLocale = false;
+			if (instance.getSurveyedLocaleId() != null) {
+				locale = surveyedLocaleDao.getByKey(instance
+						.getSurveyedLocaleId());
+				if (locale != null) {
+					useExistingLocale = true;
+				}
+			}
+
+			// try to construct geoPlace
 			if (answers != null) {
 				for (QuestionAnswerStore q : answers) {
 					if (QuestionType.GEO.toString().equals(q.getType())) {
@@ -258,76 +274,62 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				}
 			}
 
-			if (instance.getSurveyedLocaleId() != null) {
-				locale = surveyedLocaleDao.getByKey(instance
-						.getSurveyedLocaleId());
-			}
 			GeoPlace geoPlace = null;
-
-			// only create a "locale" if we have a valid geographic question
-			if (geoQ != null && geoQ.getValue() != null && geoQ.getValue().length() > 0) {
-				double lat = UNSET_VAL;
-				double lon = UNSET_VAL;
-				boolean ambiguousFlag = false;
-				String code = null;
+			double lat = UNSET_VAL;
+			double lon = UNSET_VAL;
+			if (geoQ != null && geoQ.getValue() != null
+					&& geoQ.getValue().length() > 0) {
 				String[] tokens = geoQ.getValue().split("\\|");
 				if (tokens.length >= 2) {
-					lat = Double.parseDouble(tokens[0]);
-					lon = Double.parseDouble(tokens[1]);
-					if (tokens.length >= 4) {
-						code = tokens[tokens.length - 1];
+					try {
+						lat = Double.parseDouble(tokens[0]);
+						lon = Double.parseDouble(tokens[1]);
+					} catch (NumberFormatException nfe) {
+						log.log(Level.SEVERE, "Could not parse lat/lon from Geo Question "
+								+ geoQ.getQuestionID());
 					}
 				}
-				if (code == null) {
-					Long codeNum = Long
-							.parseLong((int) ((Math.abs(lat) * 10000d)) + ""
-									+ (int) ((Math.abs(lon) * 10000d)));
-					code = Long.toString(codeNum, 36);
-				}
-				if (lat == UNSET_VAL || lon == UNSET_VAL) {
-					throw new RuntimeException(
-							"Could not parse lat/lon from Geo Question "
-									+ geoQ.getQuestionID());
-				} else if (mergeNearby && locale == null) {
-					// if we have a geo question but no locale id, see if we can
-					// find one based on lat/lon
-					List<SurveyedLocale> candidates = surveyedLocaleDao
-							.listLocalesByCoordinates(pointType, lat, lon,
-									TOLERANCE);
-					if (candidates != null && candidates.size() == 1) {
-						locale = candidates.get(0);
-					} else if (candidates != null && candidates.size() > 1) {
-						log.log(Level.WARNING,
-								"Geo based lookup of surveyed locale returned more than one candidate so we are creating a new one");
-						ambiguousFlag = true;
-					}
-				}
-				geoPlace = getGeoPlace(lat, lon);
-				if (locale == null) {
-					locale = new SurveyedLocale();
-					locale.setAmbiguous(ambiguousFlag);
-					locale.setLatitude(lat);
-					locale.setLongitude(lon);
-					setGeoData(geoPlace, locale);
-					if (survey != null) {
-						locale.setLocaleType(survey.getPointType());
-					}
-					locale.setIdentifier(code);
-					// TODO: for multi-org instances, set org on Survey and pull
-					// from there
-					if (locale.getOrganization() == null) {
-						locale.setOrganization(PropertyUtil
-								.getProperty(DEFAULT_ORG_PROP));
-					}
-					locale = surveyedLocaleDao.save(locale);
-				} else {
-					if (survey.getPointType() != null
-							&& !survey.getPointType().equals(
-									locale.getLocaleType())) {
-						locale.setLocaleType(survey.getPointType());
-					}
+				if (lat != UNSET_VAL && lon != UNSET_VAL) {
+					geoPlace = getGeoPlace(lat, lon);
 				}
 			}
+
+			if (locale == null) {
+				locale = new SurveyedLocale();
+				// locale.setAmbiguous(ambiguousFlag);
+				if (lat != UNSET_VAL && lon != UNSET_VAL) {
+					locale.setLatitude(lat);
+					locale.setLongitude(lon);
+				}
+				locale.setSurveyGroupId(surveyGroupId);
+				if (geoPlace != null) {
+					setGeoData(geoPlace, locale);
+				}
+				if (survey != null) {
+					locale.setLocaleType(pointType);
+				}
+				// on a new Locale, create an identifier based on the UUID of the instance
+				String idString = base32Uuid(instance.getUuid());
+				if (idString.equals("")){
+					// if we can't form the base32 uuid, use uuid itself
+					idString = instance.getUuid();
+				}
+
+				locale.setIdentifier(idString);
+
+				if (locale.getOrganization() == null) {
+					locale.setOrganization(PropertyUtil
+							.getProperty(DEFAULT_ORG_PROP));
+				}
+				locale = surveyedLocaleDao.save(locale);
+			} else {
+				if (survey.getPointType() != null
+						&& !survey.getPointType()
+								.equals(locale.getLocaleType())) {
+					locale.setLocaleType(survey.getPointType());
+				}
+			}
+
 			if (instance != null && geoPlace != null) {
 				instance.setCountryCode(geoPlace.getCountryCode());
 				instance.setSublevel1(geoPlace.getSub1());
@@ -341,11 +343,29 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			if (locale != null && locale.getKey() != null && answers != null) {
 				locale.setLastSurveyedDate(instance.getCollectionDate());
 				locale.setLastSurveyalInstanceId(instance.getKey().getId());
+
+				// increment surveyedLocaleSummary count for this surveyGroupId
+				if (!useExistingLocale){
+					SurveyedLocaleSummaryDao SLSdao = new SurveyedLocaleSummaryDao();
+					SurveyedLocaleSummary SLSummary = SLSdao.getBySurveyGroupId(surveyGroupId);
+					if (SLSummary != null && SLSummary.getKey() != null) {
+						SLSummary.setCount(SLSummary.getCount() + 1);
+					} else {
+						SLSummary = new SurveyedLocaleSummary();
+						SLSummary.setSurveyGroupId(surveyGroupId);
+						SLSummary.setCount(1L);
+					}
+					SLSdao.save(SLSummary);
+				}
+
 				instance.setSurveyedLocaleId(locale.getKey().getId());
 				List<SurveyalValue> values = constructValues(locale, answers);
 				if (values != null) {
 					surveyedLocaleDao.save(values);
 				}
+				// not needed?
+				surveyInstanceDao.save(instance);
+				surveyedLocaleDao.save(locale);
 			}
 		}
 	}
@@ -498,6 +518,24 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
+	}
+
+	/* creates a base32 version of a UUID. in the output, it replaces the following letters:
+	 * l, o, i are replace by w, x, y, to avoid confusion with 1 and 0
+	 * we don't use the z as it can easily be confused with 2, especially in handwriting.
+	 * If we can't form the base32 version, we return an empty string.
+	 */
+	private String base32Uuid(String UUID){
+		String strippedUUID = (UUID.substring(0,13) + UUID.substring(24,27)).replace("-", "");
+		String result = null;
+		try {
+			Long id = Long.parseLong(strippedUUID,16);
+			result = Long.toString(id,32).replace("l","w").replace("o","x").replace("i","y");
+		} catch (NumberFormatException e){
+			// if we can't create the base32 UUID string, return empty string.
+			return "";
+		}
+		return result;
 	}
 
 }
