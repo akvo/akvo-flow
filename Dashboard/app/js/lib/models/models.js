@@ -102,6 +102,12 @@ FLOW.Question = FLOW.BaseModel.extend({
   allowOtherFlag: DS.attr('boolean', {
     defaultValue: false
   }),
+  localeNameFlag: DS.attr('boolean', {
+	    defaultValue: false
+	  }),
+  localeLocationFlag: DS.attr('boolean', {
+		defaultValue: false
+  }),
   allowSign: DS.attr('boolean', {
     defaultValue: false
   }),

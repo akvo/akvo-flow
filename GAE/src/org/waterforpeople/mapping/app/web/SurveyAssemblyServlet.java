@@ -625,6 +625,15 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		if (q.getMandatoryFlag() != null) {
 			qXML.setMandatory(q.getMandatoryFlag().toString());
 		}
+		qXML.setLocaleNameFlag("false");
+		if (q.getLocaleNameFlag() != null) {
+			qXML.setLocaleNameFlag(q.getLocaleNameFlag().toString());
+		}
+		if (q.getLocaleLocationFlag() != null) {
+			if (q.getLocaleLocationFlag()) {
+				qXML.setLocaleLocationFlag("true");
+			}
+		}
 		Dependency dependency = objFactory.createDependency();
 		if (q.getDependentQuestionId() != null) {
 			dependency.setQuestion(q.getDependentQuestionId().toString());

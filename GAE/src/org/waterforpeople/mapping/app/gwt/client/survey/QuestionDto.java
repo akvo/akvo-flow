@@ -40,6 +40,8 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private List<Long> questionOptions = null;
 	private Boolean mandatoryFlag = null;
 	private Boolean dependentFlag = null;
+	private Boolean localeNameFlag;
+	private Boolean localeLocationFlag;
 	private Long dependentQuestionId;
 	private String dependentQuestionAnswer;
 	private Long metricId;
@@ -368,5 +370,21 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
 	public void setSourceId(Long sourceId) {
 		this.sourceId = sourceId;
+	}
+
+	public Boolean getLocaleNameFlag() {
+		return localeNameFlag;
+	}
+
+	public void setLocaleNameFlag(Boolean localeNameFlag) {
+		this.localeNameFlag = localeNameFlag;
+	}
+
+	public Boolean getLocaleLocationFlag() {
+		return localeLocationFlag;
+	}
+
+	public void setLocaleLocationFlag(Boolean localeLocationFlag) {
+		this.localeLocationFlag = localeLocationFlag;
 	}
 }

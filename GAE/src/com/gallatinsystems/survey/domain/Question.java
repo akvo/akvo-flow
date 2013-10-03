@@ -51,6 +51,8 @@ public class Question extends BaseDomain {
 	private Boolean allowOtherFlag = null;
 	private Boolean collapseable = false;
 	private Boolean immutable = false;
+	private Boolean localeNameFlag = false;
+	private Boolean localeLocationFlag = false;
 	private Long dependentQuestionId;
 	private String dependentQuestionAnswer;
 	private Long metricId;
@@ -322,5 +324,21 @@ public class Question extends BaseDomain {
 
 	public Boolean getImmutable() {
 		return immutable;
+	}
+
+	public Boolean getLocaleNameFlag() {
+		return localeNameFlag;
+	}
+
+	public void setLocaleNameFlag(Boolean localeNameFlag) {
+		this.localeNameFlag = localeNameFlag;
+	}
+
+	public Boolean getLocaleLocationFlag() {
+		return localeLocationFlag;
+	}
+
+	public void setLocaleLocationFlag(Boolean localeLocationFlag) {
+		this.localeLocationFlag = localeLocationFlag;
 	}
 }

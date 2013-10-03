@@ -11,6 +11,8 @@ FLOW.QuestionView = FLOW.View.extend({
   allowDecimal: null,
   allowMultipleFlag: null,
   allowOtherFlag: null,
+  localeNameFlag:false,
+  localeLocationFlag:false,
   dependentFlag: false,
   dependentQuestion: null,
   optionList: null,
@@ -71,6 +73,25 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  amGeoType: function () {
+	    var options;
+	    if (this.type) {
+	      return this.type.get('value') == 'GEO';
+	    } else {
+	      return false;
+	    }
+	  }.property('this.type').cacheable(),
+
+  
+  amFreetextType: function () {
+	    var options;
+	    if (this.type) {
+	      return this.type.get('value') == 'FREE_TEXT';
+	    } else {
+	      return false;
+	    }
+	  }.property('this.type').cacheable(),
+
   amNumberType: function () {
     if (this.type) {
       return this.type.get('value') == 'NUMBER';
@@ -87,6 +108,14 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  // when we change the question type to GEO, we turn on the
+  // localeLocationFLag by default. If we change to something else, we
+  // turn the flag of.
+  enableLocaleLocation: function() {
+	  this.set('localeLocationFlag', this.type.get('value') == 'GEO');
+  }.observes('this.type'),
+  
+  
   // TODO dependencies
   // TODO options
   doQuestionEdit: function () {
@@ -113,6 +142,8 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('allowDecimal', FLOW.selectedControl.selectedQuestion.get('allowDecimal'));
     this.set('allowMultipleFlag', FLOW.selectedControl.selectedQuestion.get('allowMultipleFlag'));
     this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
+    this.set('localeNameFlag', FLOW.selectedControl.selectedQuestion.get('localeNameFlag'));
+    this.set('localeLocationFlag', FLOW.selectedControl.selectedQuestion.get('localeLocationFlag'));
     this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
     this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
     this.set('optionList', FLOW.selectedControl.selectedQuestion.get('questionOptionList'));
@@ -234,6 +265,8 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('allowDecimal', this.get('allowDecimal'));
     FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
     FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
+    FLOW.selectedControl.selectedQuestion.set('localeNameFlag', this.get('localeNameFlag'));
+    FLOW.selectedControl.selectedQuestion.set('localeLocationFlag', this.get('localeLocationFlag'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
 
     dependentQuestionAnswer = "";
