@@ -17,15 +17,26 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+
+
+
+
+
+import org.waterforpeople.mapping.app.util.json.JSONObject;
+//import org.json.JSONArray;
+//import org.json.JSONObject;
+import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleResponse;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -36,6 +47,7 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleSummaryDao;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.gallatinsystems.surveyal.domain.SurveyedLocaleSummary;
 
@@ -98,70 +110,50 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 	protected SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList, Long surveyGroupId,
 			String cursor) {
 		SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
+		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		if (slList != null) {
 			List<SurveyedLocaleDto> dtoList = new ArrayList<SurveyedLocaleDto>();
-			SurveyDAO sDao = new SurveyDAO();
-			QuestionDao qDao = new QuestionDao();
-			List<Survey> surveyList = sDao.listSurveysByGroup(surveyGroupId);
-//			List<Question> QuestionList= new ArrayList<Question>();
-//			// get all the questions from all the surveys in the project, and add them to surveyQuestionList
-//			if (surveyList != null && surveyList.size() > 0){
-//				for (Survey s : surveyList){
-//					List<Question> questions = qDao.listQuestionsBySurvey(s.getKey().getId());
-//					if (questions !=null){
-//						QuestionList.addAll(questions);
-//					}
-//				}
-//			}
-
-//			// for each question which has a metric, put an item in the metaDto
-//			// with questionId, metricName, metricId and includeInList
-//			RecordsMetaDto metaDto = new RecordsMetaDto();
-//			MetricDao mDao = new MetricDao();
-//			if (QuestionList.size() > 0){
-//				for (Question q : QuestionList){
-//					if (q.getMetricId() != null){
-//						Metric m = mDao.getByKey(q.getMetricId());
-//						String mName = m != null ? m.getName() : "";
-//						Long mId = m!= null ? m.getKey().getId() : null;
-//						metaDto.addItem(q.getKey().getId(), mName, mId, q.getIncludeInList());
-//					}
-//				}
-//			}
-
-			// put all the surveyedLocales in the result dto
-			SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-			for (SurveyedLocale sl : slList) {
+			
+			// for each surveyedLocale, get the surveyalValues and store them in a map
+			for (SurveyedLocale sl : slList){
+				List<SurveyalValue> svList = slDao.listValuesByLocale(sl.getKey().getId());
+				HashMap<Long,List<SurveyalValue>> instanceMap = new HashMap<Long,List<SurveyalValue>>();
+				if (svList != null && svList.size() > 0){
+					for (SurveyalValue sv : svList){
+						//put them in a map with the surveyInstance as key
+						if (instanceMap.containsKey(sv.getSurveyInstanceId())){
+							instanceMap.get(sv.getSurveyInstanceId()).add(sv);
+						} else {
+							instanceMap.put(sv.getSurveyInstanceId(),new ArrayList<SurveyalValue>());
+							instanceMap.get(sv.getSurveyInstanceId()).add(sv);
+						}
+					}
+				}
+				// put them in the dto
 				SurveyedLocaleDto dto = new SurveyedLocaleDto();
 				dto.setId(sl.getIdentifier());
-				dto.setLastSDate(sl.getLastSurveyedDate());
 				dto.setLat(sl.getLatitude());
 				dto.setLon(sl.getLongitude());
-
-				// for each question which has a metric, get the latest surveyalValue
-				// with that surveyedLocaleId and metricId and order by time desc
-//				if (QuestionList.size() > 0){
-//					for (Question q : QuestionList){
-//						// only include questions which have a metric
-//						if (q.getMetricId() != null){
-//							List<SurveyalValue> sv = slDao.listValuesByLocaleAndMetric(sl.getKey().getId(),q.getMetricId());
-//							if (sv != null && sv.size() > 0) {
-//								if (!sv.get(0).getQuestionType().equals("GEO")
-//										&& !sv.get(0).getQuestionType().equals("IMAGE")) {
-//									dto.addProperty(
-//										sv.get(0).getSurveyQuestionId(),
-//										sv.get(0).getStringValue() != null ? sv.get(0).getStringValue() : "");
-//								}
-//							}
-//						}
-//					}
-//				}
+				SurveyInstanceDAO sDao = new SurveyInstanceDAO();
+				for (Long instanceId : instanceMap.keySet()){
+					SurveyInstanceDto siDto = new SurveyInstanceDto();
+					SurveyInstance si = sDao.getByKey(instanceId);
+					if (si != null){
+						siDto.setUuid(si.getUuid());
+					}
+					siDto.setCollectionDate(instanceMap.get(instanceId).get(0).getCollectionDate().getTime());
+					siDto.setSurveyId(instanceMap.get(instanceId).get(0).getSurveyId());
+					for (SurveyalValue sv : instanceMap.get(instanceId)){
+						if (!sv.getQuestionType().equals("IMAGE")){
+							siDto.addProperty(sv.getSurveyQuestionId(), sv.getStringValue() != null ? sv.getStringValue() : "");
+						}
+					}
+					dto.getSurveyInstances().add(siDto);
+				}
 				dtoList.add(dto);
 			}
 			resp.setSurveyedLocaleData(dtoList);
-			//resp.setRecordsMeta(metaDto);
 		}
-		resp.setCursor(cursor);
 		return resp;
 	}
 
@@ -172,7 +164,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
 		SurveyedLocaleResponse slResp = (SurveyedLocaleResponse) resp;
-		JSONObject result = new JSONObject(slResp, false);
+		JSONObject result = new JSONObject(slResp);
 
 //		// do this differently
 //		if (slResp.getSurveyedLocaleCount() == null) {

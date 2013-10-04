@@ -477,6 +477,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				val.setLocaleType(l.getLocaleType());
 				val.setStringValue(ans.getValue());
 				val.setValueType(SurveyalValue.STRING_VAL_TYPE);
+				val.setSurveyId(ans.getSurveyId());
 				if (ans.getValue() != null) {
 					try {
 

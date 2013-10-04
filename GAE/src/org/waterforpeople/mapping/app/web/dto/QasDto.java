@@ -23,57 +23,27 @@ import java.util.Date;
 
 
 /**
- * dto that can hold surveyedLocale data
+ * dto that can hold questionanswerstore data
  * 
  * @author Mark Westra
  * 
  */
-public class SurveyedLocaleDto implements Serializable {
+public class QasDto implements Serializable {
 
 	private static final long serialVersionUID = -850583183416882347L;
 
-	private String id;
-	private Double lat;
-	private Double lon;
-	private List<SurveyInstanceDto> surveyInstances;
-
-	public SurveyedLocaleDto() {
-		surveyInstances = new ArrayList<SurveyInstanceDto>();
+	private String q;
+	private String a;
+	public String getQ() {
+		return q;
 	}
-
-	public Double getLat() {
-		return lat;
+	public void setQ(String q) {
+		this.q = q;
 	}
-
-	public void setLat(Double lat) {
-		this.lat = lat;
+	public String getA() {
+		return a;
 	}
-
-	public Double getLon() {
-		return lon;
-	}
-
-	public void setLon(Double lon) {
-		this.lon = lon;
-	}
-	
-	public List<SurveyInstanceDto> getSurveyInstances() {
-		return surveyInstances;
-	}
-
-	public void setSurveyInstances(List<SurveyInstanceDto> surveyInstances) {
-		this.surveyInstances = surveyInstances;
-	}
-
-	public void addInstance(SurveyInstanceDto siDto) {
-		surveyInstances.add(siDto);
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+	public void setA(String a) {
+		this.a = a;
 	}
 }
