@@ -256,7 +256,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		StringBuilder sb = new StringBuilder();
 	    for (SurveyGroup sg : sgDao.list(Constants.ALL_RESULTS)) {
 	    	if (includeGroupMap.get(sg.getKey().getId()) != null){
-	    		sb.append(sg.getKey().getId() + "," + sg.getName()
+	    		sb.append(sg.getKey().getId() + "," + sg.getCode()
 	    				+ "," + sg.getIsMonitoringGroupFlag()
 	    				+ "," + sg.getNewLocaleSurveyId()
 	    				+ "\n");
