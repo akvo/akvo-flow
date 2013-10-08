@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -59,12 +59,17 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.location.GeoLocationService;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
+import com.gallatinsystems.messaging.dao.MessageDao;
+import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.operations.dao.ProcessingStatusDao;
 import com.gallatinsystems.operations.domain.ProcessingStatus;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.backends.BackendServiceFactory;
@@ -107,6 +112,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			rebuildQuestionSummary(dpReq.getSurveyId());
+		} else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq
+				.getAction())) {
+			copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
 		} else if (DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			SurveyReplicationImporter sri = new SurveyReplicationImporter();
@@ -363,6 +371,38 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				}
 			}
 		} while (apList != null && apList.size() == 200);
+	}
+
+	private void copySurvey(Long surveyId, Long sourceId) {
+
+		final QuestionGroupDao qgDao = new QuestionGroupDao();
+		final Map<Long, Long> qMap = new HashMap<Long, Long>();
+
+		final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(sourceId);
+
+		if (qgList == null) {
+			log.log(Level.INFO, "Nothing to copy from {surveyId: " + sourceId
+					+ "} to {surveyId: " + surveyId + "}");
+			SurveyUtils.resetSurveyState(surveyId);
+			return;
+		}
+
+		log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
+		int qgOrder = 1;
+		for (final QuestionGroup sourceQG : qgList) {
+			SurveyUtils.copyQuestionGroup(sourceQG, surveyId, qgOrder++, qMap);
+		}
+
+		SurveyUtils.resetSurveyState(surveyId);
+
+		MessageDao mDao = new MessageDao();
+		Message message = new Message();
+
+		message.setObjectId(surveyId);
+		message.setActionAbout("copySurvey");
+		message.setShortMessage("Copy from Survey " + sourceId + " to Survey " + surveyId + " completed");
+		mDao.save(message);
+
 	}
 
 	/**

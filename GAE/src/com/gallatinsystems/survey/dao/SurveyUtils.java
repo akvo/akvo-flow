@@ -19,7 +19,6 @@ package com.gallatinsystems.survey.dao;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,6 +29,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.HttpUtil;
@@ -39,6 +39,10 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.google.appengine.api.backends.BackendServiceFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class SurveyUtils {
 
@@ -49,16 +53,14 @@ public class SurveyUtils {
 
 		final SurveyDAO sDao = new SurveyDAO();
 		final Survey tmp = new Survey();
-		final QuestionGroupDao qgDao = new QuestionGroupDao();
-		final Map<Long, Long> qMap = new HashMap<Long, Long>();
 
 		BeanUtils.copyProperties(source, tmp, Constants.EXCLUDED_PROPERTIES);
 		// set name and surveyGroupId to values we got from the dashboard
-		tmp.setCode(dto.getCode()); 
-		tmp.setName(dto.getName()); 
+		tmp.setCode(dto.getCode());
+		tmp.setName(dto.getName());
 		tmp.setSurveyGroupId(dto.getSurveyGroupId());
-		
-		tmp.setStatus(Survey.Status.NOT_PUBLISHED);
+
+		tmp.setStatus(Survey.Status.COPYING);
 		tmp.setPath(getPath(tmp));
 
 		log.log(Level.INFO, "Copying `Survey` " + source.getKey().getId());
@@ -66,19 +68,21 @@ public class SurveyUtils {
 
 		log.log(Level.INFO, "New `Survey` ID: " + newSurvey.getKey().getId());
 
-		final List<QuestionGroup> qgList = qgDao
-				.listQuestionGroupBySurvey(source.getKey().getId());
+		final Queue queue = QueueFactory.getDefaultQueue();
 
-		if (qgList == null) {
-			return newSurvey;
-		}
+		log.log(Level.INFO,
+				"Running rest of copy functionality as a task...");
 
-		log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
-		int qgOrder = 1;
-		for (final QuestionGroup sourceQG : qgList) {
-			SurveyUtils.copyQuestionGroup(sourceQG, newSurvey.getKey().getId(),
-					qgOrder++, qMap);
-		}
+		final TaskOptions options = TaskOptions.Builder
+				.withUrl("/app_worker/dataprocessor")
+				.param(DataProcessorRequest.ACTION_PARAM,
+						DataProcessorRequest.COPY_SURVEY)
+				.param(DataProcessorRequest.SURVEY_ID_PARAM,
+						String.valueOf(newSurvey.getKey().getId()))
+				.param(DataProcessorRequest.SOURCE_PARAM,
+						String.valueOf(source.getKey().getId()));
+
+		queue.add(options);
 
 		return newSurvey;
 	}
@@ -126,8 +130,9 @@ public class SurveyUtils {
 
 		// fixing dependencies
 
-		log.log(Level.INFO, "Fixing dependencies for " + dependentQuestionList.size()
-				+ " `Question`");
+		log.log(Level.INFO,
+				"Fixing dependencies for " + dependentQuestionList.size()
+						+ " `Question`");
 
 		for (Question nQ : dependentQuestionList) {
 			nQ.setDependentQuestionId(qMap.get(nQ.getDependentQuestionId()));
@@ -146,7 +151,8 @@ public class SurveyUtils {
 		final Question tmp = new Question();
 
 		final String[] questionExcludedProps = { "questionOptionMap",
-				"questionHelpMediaMap", "scoringRules", "translationMap", "order" };
+				"questionHelpMediaMap", "scoringRules", "translationMap",
+				"order" };
 
 		final String[] allExcludedProps = (String[]) ArrayUtils.addAll(
 				questionExcludedProps, Constants.EXCLUDED_PROPERTIES);
@@ -203,6 +209,13 @@ public class SurveyUtils {
 		return newQuestionOption;
 	}
 
+	public static Survey resetSurveyState(Long surveyId) {
+		final SurveyDAO sDao = new SurveyDAO();
+		final Survey s = sDao.getById(surveyId);
+		s.setStatus(Survey.Status.NOT_PUBLISHED);
+		return sDao.save(s);
+	}
+
 	private static String getPath(Survey s) {
 		if (s == null) {
 			return null;
@@ -229,15 +242,14 @@ public class SurveyUtils {
 	 *            Collection of ids (Long) that requires processing
 	 * @param action
 	 *            A string indicating the action that will be used, this string
-	 *            is used for building the URL, with the `flowServices`
-	 *            property + / + action
+	 *            is used for building the URL, with the `flowServices` property
+	 *            + / + action
 	 * @return The response from the server or null when `flowServices` is not
 	 *         defined, or an error in the request happens
 	 */
 	public static String notifyReportService(Collection<Long> surveyIds,
 			String action) {
-		final String flowServiceURL = PropertyUtil
-				.getProperty("flowServices");
+		final String flowServiceURL = PropertyUtil.getProperty("flowServices");
 		final String baseURL = PropertyUtil.getProperty("alias");
 
 		if (flowServiceURL == null || "".equals(flowServiceURL)) {
