@@ -163,6 +163,12 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedForCopySurvey', null);
     this.set('showCopySurveyDialogBool', false);
+
+    FLOW.dialogControl.set('activeAction', "ignore");
+    FLOW.dialogControl.set('header', Ember.String.loc('_copying_survey'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_copying_published_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
   },
 
   cancelMoveSurvey: function () {
