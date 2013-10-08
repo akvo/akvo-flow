@@ -59,6 +59,10 @@ FLOW.ReportLoader = Ember.Object.create({
       });
     }
 
+    if (criteria.opts.locale && FLOW.reportLanguageControl.get('selectedLanguage')) {
+      criteria.opts.locale = FLOW.reportLanguageControl.get('selectedLanguage').get('value');
+    }
+
     this.set('criteria', criteria);
     FLOW.savingMessageControl.numLoadingChange(1);
     this.requestReport();

@@ -49,6 +49,18 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
   }.observes('this.dashboardLanguage')
 });
 
+FLOW.reportLanguageControl = Ember.ArrayController.create({
+  content: [
+    Ember.Object.create({
+	  label: "English (Default)",
+	  value: "en"
+	}),
+	Ember.Object.create({
+	  label: "Español",
+	  value: "es"
+	})]
+});
+
 
 FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
