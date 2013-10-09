@@ -54,7 +54,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		StringBuilder paramString = new StringBuilder();
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("questionId", filterString, paramString, "Long", questionId,
+		appendNonNullParam("questionID", filterString, paramString, "String", String.valueOf(questionId),
 				paramMap);
 
 		query.setFilter(filterString.toString());
