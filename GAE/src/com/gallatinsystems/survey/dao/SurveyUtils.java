@@ -39,7 +39,8 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.google.appengine.api.backends.BackendServiceFactory;
+import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -68,10 +69,12 @@ public class SurveyUtils {
 
 		log.log(Level.INFO, "New `Survey` ID: " + newSurvey.getKey().getId());
 
-		final Queue queue = QueueFactory.getDefaultQueue();
+		SurveyUtils.copyTranslation(source.getKey().getId(), newSurvey.getKey()
+				.getId(), ParentType.SURVEY_NAME, ParentType.SURVEY_DESC);
 
-		log.log(Level.INFO,
-				"Running rest of copy functionality as a task...");
+		log.log(Level.INFO, "Running rest of copy functionality as a task...");
+
+		final Queue queue = QueueFactory.getDefaultQueue();
 
 		final TaskOptions options = TaskOptions.Builder
 				.withUrl("/app_worker/dataprocessor")
@@ -106,6 +109,10 @@ public class SurveyUtils {
 
 		log.log(Level.INFO, "New `QuestionGroup` ID: "
 				+ newQuestionGroup.getKey().getId());
+
+		SurveyUtils.copyTranslation(source.getKey().getId(), newQuestionGroup
+				.getKey().getId(), ParentType.QUESTION_GROUP_NAME,
+				ParentType.QUESTION_GROUP_DESC);
 
 		List<Question> qList = qDao.listQuestionsInOrderForGroup(source
 				.getKey().getId());
@@ -166,6 +173,13 @@ public class SurveyUtils {
 		log.log(Level.INFO, "New `Question` ID: "
 				+ newQuestion.getKey().getId());
 
+		log.log(Level.INFO, "Copying question translations");
+
+		SurveyUtils.copyTranslation(source.getKey().getId(), newQuestion
+				.getKey().getId(), ParentType.QUESTION_NAME,
+				ParentType.QUESTION_DESC, ParentType.QUESTION_TEXT,
+				ParentType.QUESTION_TIP);
+
 		if (!Question.Type.OPTION.equals(newQuestion.getType())) {
 			// Nothing more to do
 			return newQuestion;
@@ -206,6 +220,11 @@ public class SurveyUtils {
 		log.log(Level.INFO, "New `QuestionOption` ID: "
 				+ newQuestionOption.getKey().getId());
 
+		log.log(Level.INFO, "Copying question option translations");
+
+		SurveyUtils.copyTranslation(source.getKey().getId(), newQuestionOption
+				.getKey().getId(), ParentType.QUESTION_OPTION);
+
 		return newQuestionOption;
 	}
 
@@ -229,6 +248,34 @@ public class SurveyUtils {
 		}
 
 		return sg.getName() + "/" + s.getName();
+	}
+
+	public static List<Translation> getTranslations(Long parentId,
+			ParentType... types) {
+		final List<Translation> trs = new ArrayList<Translation>();
+		final TranslationDao trDao = new TranslationDao();
+		for (ParentType pt : types) {
+			trs.addAll(trDao.findTranslations(pt, parentId).values());
+		}
+		return trs;
+	}
+
+	public static void saveTranslationCopy(List<Translation> trs,
+			Long newParentId) {
+		final TranslationDao trDao = new TranslationDao();
+		for (Translation t : trs) {
+			Translation copy = new Translation();
+			BeanUtils.copyProperties(t, copy, Constants.EXCLUDED_PROPERTIES);
+			copy.setParentId(newParentId);
+			trDao.save(copy);
+		}
+	}
+
+	public static void copyTranslation(Long sourceParentId, Long copyParentId,
+			ParentType... types) {
+		SurveyUtils.saveTranslationCopy(
+				SurveyUtils.getTranslations(sourceParentId, types),
+				copyParentId);
 	}
 
 	/**
