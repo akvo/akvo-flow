@@ -28,14 +28,20 @@ FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
 // displays single survey in content area of survey group page
 // doEditSurvey is defined in the Router. It transfers to the nav-surveys-edit handlebar view
 FLOW.SurveyGroupSurveyView = FLOW.View.extend({
-  // fired when 'preview survey' is clicked in the survey item display
+  
+	// fired when 'preview survey' is clicked in the survey item display
   previewSurvey: function () {
     FLOW.selectedControl.set('selectedSurvey', this.content);
     FLOW.questionGroupControl.populate();
     FLOW.questionControl.populateAllQuestions();
-    FLOW.previewControl.set('showPreviewPopup', true);
   },
 
+  showPreview: function () {
+	if (FLOW.questionControl.content.get('isLoaded')) {
+		FLOW.previewControl.set('showPreviewPopup', true);
+	}
+  }.observes('FLOW.questionControl.content.isLoaded'),
+  
   // fired when 'delete survey' is clicked in the survey item display
   deleteSurvey: function () {
     var sId = this.content.get('id');
