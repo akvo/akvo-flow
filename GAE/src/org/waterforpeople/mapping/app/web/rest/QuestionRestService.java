@@ -32,13 +32,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
@@ -47,7 +45,6 @@ import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
-import com.gallatinsystems.survey.domain.Survey;
 
 @Controller
 @RequestMapping("/questions")
@@ -63,16 +60,16 @@ public class QuestionRestService {
 	private SurveyMetricMappingDao surveyMetricMappingDao;
 
 	
-	// list questions by questionGroup or by survey. If includeNumber or
-	// includeOption are true, only NUMBER and OPTION type questions are
-	// returned
+	// list questions by questionGroup or by survey.
+	// if optionQuestionHeadersOnly is true, only the option questions are returned
+	// and without any of the actual options loaded. In the dashboard, this is used
+	// merely to make a choice between options, so not all details are necessary.
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public Map<String, Object> listQuestions(
 			@RequestParam(value = "questionGroupId", defaultValue = "") Long questionGroupId,
 			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
-			@RequestParam(value = "includeNumber", defaultValue = "") String includeNumber,
-			@RequestParam(value = "includeOption", defaultValue = "") String includeOption,
+			@RequestParam(value = "optionQuestionsOnly", defaultValue = "") String optionQuestionsOnly,
 			@RequestParam(value = "preflight", defaultValue = "") String preflight,
 			@RequestParam(value = "questionId", defaultValue = "") Long questionId) {
 		final Map<String, Object> response = new HashMap<String, Object>();
@@ -93,64 +90,35 @@ public class QuestionRestService {
 			if (qasDao.listByQuestion(questionId).size() == 0) {
 				statusDto.setMessage("can_delete");
 				statusDto.setKeyId(questionId);
-			} 
-		} else {
-
-			// load questions in a question group, or all questions in the
-			// survey
-			if (questionGroupId != null) {
-				questions = questionDao
-						.listQuestionsInOrderForGroup(questionGroupId);
-			} else if (surveyId != null) {
-				questions = questionDao.listQuestionsInOrder(surveyId);
 			}
 
-			if (questions.size() > 0) {
+		// if questionGroupId is present, load questions in that group
+		} else if (questionGroupId != null){
+			questions = questionDao.listQuestionsInOrderForGroup(questionGroupId);
+		} else if (surveyId != null){
+			if (optionQuestionsOnly.equals("true")){
+				questions = questionDao.listQuestionsInOrder(surveyId,Question.Type.OPTION);
+			} else {
+				questions = questionDao.listQuestionsInOrder(surveyId, null);
+			}
+			if (questions != null && questions.size()  > 0){
 				for (Question question : questions) {
-
-					Boolean includeElement = false;
-					// include if we are requesting questions in a group
-					if (questionGroupId != null)
-						includeElement = true;
-
-					// include if we are requesting questions in a survey, with
-					// none of the other parameters set
-					if (surveyId != null
-							&& ("".equals(includeNumber) && ""
-									.equals(includeOption)))
-						includeElement = true;
-
-					// include if we request options, and the present element is
-					// an option
-					if (surveyId != null && "true".equals(includeOption)
-							&& question.getType() == Question.Type.OPTION)
-						includeElement = true;
-
-					// include if we request numbers, and the present element is
-					// a number
-					if (surveyId != null && "true".equals(includeNumber)
-							&& question.getType() == Question.Type.NUMBER)
-						includeElement = true;
-
-					if (includeElement) {
-						QuestionDto dto = new QuestionDto();
-						DtoMarshaller.copyToDto(question, dto);
-						if (question.getType() == Question.Type.OPTION) {
-							
-							Map<Integer,QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto.getKeyId());
-							List<Long> qoList = new ArrayList<Long>();
-							for (QuestionOption qo : qoMap.values()){
-								QuestionOptionDto qoDto = new QuestionOptionDto();
-								BeanUtils.copyProperties(qo, qoDto, new String[] {
-										"translationMap"});
-								qoDto.setKeyId(qo.getKey().getId());
-								qoList.add(qo.getKey().getId());
-								qoResults.add(qoDto);
-							}
-							dto.setQuestionOptions(qoList);
+					QuestionDto qDto = new QuestionDto();
+					DtoMarshaller.copyToDto(question, qDto);
+					if (question.getType() == Question.Type.OPTION && !optionQuestionsOnly.equals("true")) {
+						Map<Integer,QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(qDto.getKeyId());
+						List<Long> qoList = new ArrayList<Long>();
+						for (QuestionOption qo : qoMap.values()){
+							QuestionOptionDto qoDto = new QuestionOptionDto();
+							BeanUtils.copyProperties(qo, qoDto, new String[] {
+								"translationMap"});
+							qoDto.setKeyId(qo.getKey().getId());
+							qoList.add(qo.getKey().getId());
+							qoResults.add(qoDto);
 						}
-						results.add(dto);
+						qDto.setQuestionOptions(qoList);
 					}
+					results.add(qDto);
 				}
 			}
 		}

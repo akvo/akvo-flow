@@ -5,6 +5,13 @@ FLOW.chartView = FLOW.View.extend({
   noDataBool: false,
   chartType: null,
   compactSmaller: true,
+  selectedSurvey: null,
+  
+  downloadOptionQuestions: function () {
+	  if (!Ember.none(this.get('selectedSurvey'))) {
+		  FLOW.questionControl.downloadOptionQuestions(this.selectedSurvey.get('keyId'));
+	  }
+  }.observes('this.selectedSurvey'),
 
   isDoughnut: function () {
     return this.chartType.get('value') == 'doughnut';

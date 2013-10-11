@@ -364,21 +364,15 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
 
-  setOPTIONcontent: function () {
-    var sId;
-    if (FLOW.selectedControl.get('selectedSurvey')) {
-      sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('OPTIONcontent', FLOW.store.filter(FLOW.Question, function (item) {
-        return item.get('type') == 'OPTION' && item.get('surveyId') == sId;
-      }));
-    } else {
-      this.set('OPTIONcontent', null);
-    }
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  downloadOptionQuestions: function (surveyId) {
+	  this.set('OPTIONcontent', FLOW.store.findQuery(FLOW.Question, {
+	     surveyId: surveyId,
+	      optionQuestionsOnly:true
+	  }));
+  },
 
   // used for display of dependencies: a question can only be dependent on earlier questions
   setEarlierOptionQuestions: function () {
-
     if (!Ember.none(FLOW.selectedControl.get('selectedQuestion')) && !Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
       var optionQuestionList, sId, questionGroupOrder, qgOrder, qg, questionOrder;
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
