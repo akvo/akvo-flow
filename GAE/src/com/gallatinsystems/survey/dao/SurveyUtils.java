@@ -39,7 +39,8 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.google.appengine.api.backends.BackendServiceFactory;
+import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -53,6 +54,7 @@ public class SurveyUtils {
 
 		final SurveyDAO sDao = new SurveyDAO();
 		final Survey tmp = new Survey();
+		final TranslationDao trDao = new TranslationDao();
 
 		BeanUtils.copyProperties(source, tmp, Constants.EXCLUDED_PROPERTIES);
 		// set name and surveyGroupId to values we got from the dashboard
@@ -68,10 +70,24 @@ public class SurveyUtils {
 
 		log.log(Level.INFO, "New `Survey` ID: " + newSurvey.getKey().getId());
 
-		final Queue queue = QueueFactory.getDefaultQueue();
+		final List<Translation> trs = new ArrayList<Translation>();
 
-		log.log(Level.INFO,
-				"Running rest of copy functionality as a task...");
+		trs.addAll(trDao.findTranslations(ParentType.SURVEY_NAME,
+				source.getKey().getId()).values());
+
+		trs.addAll(trDao.findTranslations(ParentType.SURVEY_DESC,
+				source.getKey().getId()).values());
+
+		for (Translation t : trs) {
+			Translation copy = new Translation();
+			BeanUtils.copyProperties(t, copy, Constants.EXCLUDED_PROPERTIES);
+			copy.setParentId(newSurvey.getKey().getId());
+			trDao.save(copy);
+		}
+
+		log.log(Level.INFO, "Running rest of copy functionality as a task...");
+
+		final Queue queue = QueueFactory.getDefaultQueue();
 
 		final TaskOptions options = TaskOptions.Builder
 				.withUrl("/app_worker/dataprocessor")
