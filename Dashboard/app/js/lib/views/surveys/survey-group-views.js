@@ -181,9 +181,6 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedForCopySurvey', null);
     this.set('showCopySurveyDialogBool', false);
   }
-
-
-
 });
 
 FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
@@ -191,7 +188,8 @@ FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
     var menuHeight, scroll;
     this._super();
     $('.scrollUp').addClass("FadeIt");
-    $('.scrollUp').click(function () {
+    $('.scrollUp').click(function (e) {
+      e.preventDefault();
       menuHeight = $('.menuGroupWrap').height();
       scroll = $('.menuGroupWrap').scrollTop();
       $('.scrollDown').removeClass("FadeIt");
@@ -204,7 +202,8 @@ FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
         $('.scrollUp').addClass("FadeIt");
       }
     });
-    $('.scrollDown').click(function () {
+    $('.scrollDown').click(function (e) {
+      e.preventDefault();
       menuHeight = $('.menuGroupWrap').height();
       scroll = $('.menuGroupWrap').scrollTop();
       $('.scrollUp').removeClass("FadeIt");
