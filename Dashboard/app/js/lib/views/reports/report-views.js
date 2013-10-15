@@ -46,7 +46,7 @@ FLOW.chartView = FLOW.View.extend({
     	  this.set('noDataBool',true);
     	  return;
       } else {
-    	  noDatabool = false;
+    	  this.set('noDataBool', false);
       }
 
       FLOW.surveyQuestionSummaryControl.get('content').forEach(function (item) {
