@@ -35,7 +35,7 @@
          promptBinding="Ember.STRINGS._select_language"}}
     </label>
   </form>
-  <a {{action "doManageTranslations"}} class="manageNotifications"><span>+</span>{{t _manage_translations}}</a>
+  <a {{action "doManageTranslations" target="this"}} class="manageNotifications"><span>+</span>{{t _manage_translations}}</a>
   <a {{action "doManageNotifications"}} class="manageNotifications"><span>+</span>{{t _manage_notifications}}</a>
   <ul class="newSurveyInfoUl" id="">
     <li>
