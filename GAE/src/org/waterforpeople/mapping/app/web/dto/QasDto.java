@@ -32,8 +32,15 @@ public class QasDto implements Serializable {
 
 	private static final long serialVersionUID = -850583183416882347L;
 
+	// questions ids
 	private String q;
+
+	// answers
 	private String a;
+
+	// question type
+	private String t;
+
 	public String getQ() {
 		return q;
 	}
@@ -45,5 +52,11 @@ public class QasDto implements Serializable {
 	}
 	public void setA(String a) {
 		this.a = a;
+	}
+	public String getT() {
+		return t;
+	}
+	public void setT(String t) {
+		this.t = t;
 	}
 }

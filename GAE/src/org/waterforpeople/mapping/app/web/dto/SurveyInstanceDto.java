@@ -61,29 +61,12 @@ public class SurveyInstanceDto implements Serializable {
 		this.collectionDate = collectionDate;
 	}
 
-//	public List<Long> getQuestionIds() {
-//		return questionIds;
-//	}
-//
-//	public void setQuestionIds(List<Long> questionIds) {
-//		this.questionIds = questionIds;
-//	}
-//
-//	public List<String> getAnswerValues() {
-//		return answerValues;
-//	}
-//
-//	public void setAnswerValues(List<String> answerValues) {
-//		this.answerValues = answerValues;
-//	}
-//
-	public void addProperty(Long questionId, String answerValue) {
+	public void addProperty(Long questionId, String answerValue, String deviceQuestionType) {
 		QasDto qasDto = new QasDto();
 		qasDto.setQ(questionId + "");
 		qasDto.setA(answerValue);
+		qasDto.setT(deviceQuestionType);
 		this.qasList.add(qasDto);
-	//	questionIds.add(questionId);
-	//	answerValues.add(answerValue != null ? answerValue : "");
 	}
 
 	public Long getSurveyId() {

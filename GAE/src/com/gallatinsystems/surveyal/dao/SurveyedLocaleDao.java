@@ -348,4 +348,14 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 		}
 		return null;
 	}
+
+	/**
+	 * finds a single surveyedLocale by identifier.
+	 * 
+	 * @param identifier
+	 * @return
+	 */
+	public SurveyedLocale getByIdentifier(String identifier) {
+		return findByProperty("identifier", identifier, "String");
+	}
 }

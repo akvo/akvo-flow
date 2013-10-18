@@ -111,9 +111,10 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 			String cursor) {
 		SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
 		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		QuestionDao qDao = new QuestionDao();
 		if (slList != null) {
 			List<SurveyedLocaleDto> dtoList = new ArrayList<SurveyedLocaleDto>();
-			
+			HashMap <Long, String> questionTypeMap = new HashMap<Long, String>();
 			// for each surveyedLocale, get the surveyalValues and store them in a map
 			for (SurveyedLocale sl : slList){
 				List<SurveyalValue> svList = slDao.listValuesByLocale(sl.getKey().getId());
@@ -132,6 +133,8 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 				// put them in the dto
 				SurveyedLocaleDto dto = new SurveyedLocaleDto();
 				dto.setId(sl.getIdentifier());
+				dto.setSurveyGroupId(surveyGroupId);
+				dto.setDisplayName(sl.getDisplayName());
 				dto.setLat(sl.getLatitude());
 				dto.setLon(sl.getLongitude());
 				SurveyInstanceDAO sDao = new SurveyInstanceDAO();
@@ -144,8 +147,38 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 					siDto.setCollectionDate(instanceMap.get(instanceId).get(0).getCollectionDate().getTime());
 					siDto.setSurveyId(instanceMap.get(instanceId).get(0).getSurveyId());
 					for (SurveyalValue sv : instanceMap.get(instanceId)){
+						String svQuestionType = sv.getQuestionType();
+						String deviceQuestionType = "VALUE";
+						if (svQuestionType.equals("DATE")) {
+							deviceQuestionType = "DATE";
+						} else if (svQuestionType.equals("GEO")) {
+							deviceQuestionType = "GEO";
+						} else if (svQuestionType.equals("PHOTO")) {
+							deviceQuestionType = "IMAGE";
+						} else if (svQuestionType.equals("VIDEO")) {
+							deviceQuestionType = "VIDEO";
+						} else if (svQuestionType.equals("SCAN")) {
+							deviceQuestionType = "SCAN";
+						} else if (svQuestionType.equals("OPTION")) {
+							// first see if we have the question in the map already
+							if (questionTypeMap.containsKey(sv.getSurveyQuestionId())){
+								deviceQuestionType = questionTypeMap.get(sv.getSurveyQuestionId()); 
+							} else {
+								// find question by id
+								Question q = qDao.getByKey(sv.getSurveyQuestionId());
+								if (q!= null){
+									// if the question has the allowOtherFlag set,
+									// use OTHER as the device question type
+									if (q.getAllowOtherFlag()) {
+										deviceQuestionType = "OTHER";
+									}
+									questionTypeMap.put(sv.getSurveyQuestionId(), deviceQuestionType);
+								}
+							}
+						}
 						if (!sv.getQuestionType().equals("IMAGE")){
-							siDto.addProperty(sv.getSurveyQuestionId(), sv.getStringValue() != null ? sv.getStringValue() : "");
+							// add question type
+							siDto.addProperty(sv.getSurveyQuestionId(), sv.getStringValue() != null ? sv.getStringValue() : "", deviceQuestionType);
 						}
 					}
 					dto.getSurveyInstances().add(siDto);
@@ -166,27 +199,6 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 		SurveyedLocaleResponse slResp = (SurveyedLocaleResponse) resp;
 		JSONObject result = new JSONObject(slResp);
 
-//		// do this differently
-//		if (slResp.getSurveyedLocaleCount() == null) {
-//
-//		..	JSONArray arr = result.getJSONArray("recordData");
-////			if (arr != null) {
-////				for (int i = 0; i < arr.length(); i++) {
-////					((JSONObject) arr.get(i)).put("questionIds", rdResp
-////							.getSurveyedLocaleData().get(i).getQuestionIds());
-////
-////					((JSONObject) arr.get(i)).put("answerValues", rdResp
-////							.getSurveyedLocaleData().get(i).getAnswerValues());
-////				}
-////			}
-//		//	JSONObject meta = result.getJSONObject("recordsMeta");
-////			if (meta != null){
-////				meta.put("questionIds", slResp.getRecordsMeta().getQuestionIds());
-////				meta.put("metricIds", slResp.getRecordsMeta().getMetricIds());
-////				meta.put("metricNames", slResp.getRecordsMeta().getMetricNames());
-////				meta.put("includeInList", slResp.getRecordsMeta().getIncludeInList());
-////			}
-//		}
 		getResponse().getWriter().println(result.toString());
 	}
 }
