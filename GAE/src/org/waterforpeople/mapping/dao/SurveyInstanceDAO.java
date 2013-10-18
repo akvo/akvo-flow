@@ -222,7 +222,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				}
 			}
 
-
 			qas.setSurveyId(si.getSurveyId());
 			qas.setSurveyInstanceId(si.getKey().getId());
 			qas.setArbitratyNumber(new Long(parts[1].trim()));

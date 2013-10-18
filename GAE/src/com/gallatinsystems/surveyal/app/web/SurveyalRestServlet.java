@@ -285,8 +285,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 						lat = Double.parseDouble(tokens[0]);
 						lon = Double.parseDouble(tokens[1]);
 					} catch (NumberFormatException nfe) {
-						log.log(Level.SEVERE, "Could not parse lat/lon from Geo Question "
-								+ geoQ.getQuestionID());
+						log.log(Level.SEVERE,
+								"Could not parse lat/lon from Geo Question "
+										+ geoQ.getQuestionID());
 					}
 				}
 				if (lat != UNSET_VAL && lon != UNSET_VAL) {
@@ -329,7 +330,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					locale.setLocaleType(survey.getPointType());
 				}
 			}
-
+			
 			if (instance != null && geoPlace != null) {
 				instance.setCountryCode(geoPlace.getCountryCode());
 				instance.setSublevel1(geoPlace.getSub1());
@@ -345,9 +346,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				locale.setLastSurveyalInstanceId(instance.getKey().getId());
 
 				// increment surveyedLocaleSummary count for this surveyGroupId
-				if (!useExistingLocale){
+				if (!useExistingLocale) {
 					SurveyedLocaleSummaryDao SLSdao = new SurveyedLocaleSummaryDao();
-					SurveyedLocaleSummary SLSummary = SLSdao.getBySurveyGroupId(surveyGroupId);
+					SurveyedLocaleSummary SLSummary = SLSdao
+							.getBySurveyGroupId(surveyGroupId);
 					if (SLSummary != null && SLSummary.getKey() != null) {
 						SLSummary.setCount(SLSummary.getCount() + 1);
 					} else {
@@ -439,7 +441,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 							.getSurveyInstanceId());
 			List<Metric> metrics = null;
 			boolean loadedItems = false;
-			List<Question> questionList = qDao.listQuestionsBySurvey(answers.get(0).getSurveyId());
+			List<Question> questionList = qDao.listQuestionsBySurvey(answers
+					.get(0).getSurveyId());
 
 			// date value
 			Calendar cal = new GregorianCalendar();
