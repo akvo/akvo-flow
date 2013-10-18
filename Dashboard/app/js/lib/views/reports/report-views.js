@@ -75,7 +75,9 @@ FLOW.chartView = FLOW.View.extend({
 
         // sort smallest first
         chartData.sort(function (a, b) {
-          return a.percentage >= b.percentage;
+        	 if (a.percentage < b.percentage) return -1;
+             if (a.percentage > b.percentage) return 1;
+             return 0;
         });
 
 

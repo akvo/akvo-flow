@@ -69,7 +69,13 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
 
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-        return (a.order >= b.order);
+    	 if (a.get('order') < b.get('order')) {
+            return -1;
+         }
+         if (a.get('order') > b.get('order')) {
+           return 1;
+         }
+         return 0;
       });
 
       tempList = [];
