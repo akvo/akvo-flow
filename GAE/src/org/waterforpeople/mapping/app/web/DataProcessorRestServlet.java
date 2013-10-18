@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -59,12 +59,17 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.location.GeoLocationService;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
+import com.gallatinsystems.messaging.dao.MessageDao;
+import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.operations.dao.ProcessingStatusDao;
 import com.gallatinsystems.operations.domain.ProcessingStatus;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.backends.BackendServiceFactory;
@@ -76,17 +81,15 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 
 /**
  * Restful servlet to do bulk data update operations
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
 			.getLogger("DataProcessorRestServlet");
 	private static final long serialVersionUID = -7902002525342262821L;
 	private static final String REBUILD_Q_SUM_STATUS_KEY = "rebuildQuestionSummary";
-	private static final String VALUE_TYPE = "VALUE";
-	private static final String OTHER_TYPE = "OTHER";
 	private static final Integer QAS_PAGE_SIZE = 300;
 	private static final String QAS_TO_REMOVE = "QAStoRemove";
 
@@ -107,6 +110,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			rebuildQuestionSummary(dpReq.getSurveyId());
+		} else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq
+				.getAction())) {
+			copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
 		} else if (DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			SurveyReplicationImporter sri = new SurveyReplicationImporter();
@@ -345,7 +351,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
 	/**
 	 * this method re-runs scoring on all access points for a country
-	 * 
+	 *
 	 * @param country
 	 */
 	private void rescoreAp(String country) {
@@ -363,6 +369,38 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				}
 			}
 		} while (apList != null && apList.size() == 200);
+	}
+
+	private void copySurvey(Long surveyId, Long sourceId) {
+
+		final QuestionGroupDao qgDao = new QuestionGroupDao();
+		final Map<Long, Long> qMap = new HashMap<Long, Long>();
+
+		final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(sourceId);
+
+		if (qgList == null) {
+			log.log(Level.INFO, "Nothing to copy from {surveyId: " + sourceId
+					+ "} to {surveyId: " + surveyId + "}");
+			SurveyUtils.resetSurveyState(surveyId);
+			return;
+		}
+
+		log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
+		int qgOrder = 1;
+		for (final QuestionGroup sourceQG : qgList) {
+			SurveyUtils.copyQuestionGroup(sourceQG, surveyId, qgOrder++, qMap);
+		}
+
+		SurveyUtils.resetSurveyState(surveyId);
+
+		MessageDao mDao = new MessageDao();
+		Message message = new Message();
+
+		message.setObjectId(surveyId);
+		message.setActionAbout("copySurvey");
+		message.setShortMessage("Copy from Survey " + sourceId + " to Survey " + surveyId + " completed");
+		mDao.save(message);
+
 	}
 
 	/**
@@ -411,7 +449,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * iterates over the new summary counts and updates the records in the
 	 * datastore. Where appropriate, new records will be created and defunct
 	 * records will be removed.
-	 * 
+	 *
 	 * @param summaryMap
 	 */
 	private void saveSummaries(Map<String, Map<String, Long>> summaryMap) {
@@ -469,73 +507,94 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * loads all the summarizable QuestionAnswerStore instances from the data
 	 * store and accrues counts by value occurrence in a map keyed on the
 	 * questionId
-	 * 
+	 *
 	 * @param sinceDate
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Map<String, Map<String, Long>> summarizeQuestionAnswerStore(
 			Long surveyId, Date sinceDate) {
-		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-		QuestionDao questionDao = new QuestionDao();
-		List<Question> qList = questionDao.listQuestionByType(surveyId,
+
+		final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+		final QuestionDao questionDao = new QuestionDao();
+		final List<Question> qList = questionDao.listQuestionByType(surveyId,
 				Question.Type.OPTION);
+
+		Cache cache = null;
+		Map props = new HashMap();
+		props.put(GCacheFactory.EXPIRATION_DELTA, 60 * 60 * 2); // 2h
+		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+		try {
+			CacheFactory cacheFactory = CacheManager.getInstance()
+					.getCacheFactory();
+			cache = cacheFactory.createCache(props);
+		} catch (Exception e) {
+			log.log(Level.SEVERE,
+					"Couldn't initialize cache: " + e.getMessage(), e);
+		}
+
 		String cursor = null;
-		Map<String, Map<String, Long>> summaryMap = new HashMap<String, Map<String, Long>>();
-		List<QuestionAnswerStore> qasList = null;
+		final Map<String, Map<String, Long>> summaryMap = new HashMap<String, Map<String, Long>>();
 
-		String responseType = VALUE_TYPE;
-		// first do VALUE_TYPE, then do OTHER_TYPE. We need to do it this way
-		// because the datastore does not support contains() queries with a cursor
-		for (int run = 1; run <= 2; run++) {
+		for (Question q : qList) {
+			List<QuestionAnswerStore> qasList  = qasDao.listByQuestion(q.getKey().getId(), cursor, QAS_PAGE_SIZE);
+
+			if (qasList == null || qasList.size() == 0) {
+				continue; // skip
+			}
+
 			do {
-				// We need both VALUE and OTHER QAS because both can originate
-				// from an option question
-				qasList = qasDao.listByTypeAndDate(responseType, surveyId,
-						sinceDate, cursor, QAS_PAGE_SIZE);
+				cursor = QuestionAnswerStoreDao.getCursor(qasList);
 
-				if (qasList != null && qasList.size() > 0) {
-					cursor = QuestionAnswerStoreDao.getCursor(qasList);
-					
-					for (QuestionAnswerStore qas : qasList) {
-						if (isSummarizable(qas, qList)) {
-							String val = qas.getValue();
-							// skip images since the summary is meaningless in
-							// those
-							// cases
-							if (val == null
-									|| val.toLowerCase().trim()
-											.endsWith(".jpg")) {
-								continue;
-							}
-							Map<String, Long> countMap = summaryMap.get(qas
-									.getQuestionID());
-							if (countMap == null) {
-								countMap = new HashMap<String, Long>();
-								summaryMap.put(qas.getQuestionID(), countMap);
-							}
+				for(QuestionAnswerStore qas : qasList) {
 
-							// split up multiple answers
-							String[] answers;
-							if (val != null && val.contains("|")) {
-								answers = val.split("\\|");
-							} else {
-								answers = new String[] { val };
-							}
-							// perform count
-							for (int i = 0; i < answers.length; i++) {
-								Long count = countMap.get(answers[i]);
-								if (count == null) {
-									count = 1L;
-								} else {
-									count = count + 1;
-								}
-								countMap.put(answers[i], count);
-							}
+					if (cache != null) {
+						Map<Long, String> answer = new HashMap<Long, String>();
+						answer.put(qas.getSurveyInstanceId(), qas.getQuestionID());
+
+						if (cache.containsKey(answer)) {
+							log.log(Level.INFO, "Found duplicated QAS {surveyInstanceId: " + qas.getSurveyInstanceId() +" , questionID: " + qas.getQuestionID() +"}");
+							continue;
 						}
+
+						cache.put(answer, true);
+					}
+
+					String val = qas.getValue();
+
+					Map<String, Long> countMap = summaryMap.get(qas
+							.getQuestionID());
+
+					if (countMap == null) {
+						countMap = new HashMap<String, Long>();
+						summaryMap.put(qas.getQuestionID(), countMap);
+					}
+
+					// split up multiple answers
+					String[] answers;
+
+					if (val != null && val.contains("|")) {
+						answers = val.split("\\|");
+					} else {
+						answers = new String[] { val };
+					}
+
+					// perform count
+					for (int i = 0; i < answers.length; i++) {
+						Long count = countMap.get(answers[i]);
+						if (count == null) {
+							count = 1L;
+						} else {
+							count = count + 1;
+						}
+						countMap.put(answers[i], count);
 					}
 				}
+
+				qasList  = qasDao.listByQuestion(q.getKey().getId(), cursor, QAS_PAGE_SIZE);
+
 			} while (qasList != null && qasList.size() > 0);
-			responseType = OTHER_TYPE;
+
 			cursor = null;
 		}
 
@@ -543,31 +602,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	}
 
 	/**
-	 * checks if a question is summarizable by looking for an association to an
-	 * OPTION question
-	 * 
-	 * @param qas
-	 * @param qList
-	 * @return
-	 */
-	private boolean isSummarizable(QuestionAnswerStore qas, List<Question> qList) {
-		if (qList != null && qas != null) {
-			for (Question q : qList) {
-				long id = Long.parseLong(qas.getQuestionID());
-				if (q.getKey().getId() == id) {
-					return true;
-				}
-			}
-			return false;
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * iterates over all AccessPoints in a country and applies a static set of
 	 * rules to determine the proper value of the WFPProjectFlag
-	 * 
+	 *
 	 * @param country
 	 * @param cursor
 	 */
@@ -626,7 +663,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	/**
 	 * Sends a message to a task queue to start or continue the processing of
 	 * the AP Project Flag
-	 * 
+	 *
 	 * @param country
 	 * @param cursor
 	 */
@@ -649,7 +686,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * the type of the question, while the device sets the type according to a
 	 * different convention. The action handles QAS_PAGE_SIZE items in one call, and
 	 * invokes new tasks as necessary if there are more items.
-	 * 
+	 *
 	 * @param cursor
 	 * @author M.T. Westra
 	 */

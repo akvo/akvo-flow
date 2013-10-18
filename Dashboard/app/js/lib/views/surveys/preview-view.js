@@ -19,13 +19,7 @@ FLOW.PreviewQuestionGroupView = FLOW.View.extend({
 
     tmp = QGcontent.toArray();
     tmp.sort(function(a,b){
-    	if (a.get('order') < b.get('order')) {
-    		return -1;
-    	}
-    	if (a.get('order') > b.get('order')) {
-    		return 1;
-    	}
-      return 0;
+    	return a.get('order') - b.get('order');
     });
     this.set('QGcontent',tmp);
   }
@@ -69,7 +63,7 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
 
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-        return (a.order >= b.order);
+    	  return a.get('order') - b.get('order');
       });
 
       tempList = [];

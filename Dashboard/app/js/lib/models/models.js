@@ -71,8 +71,14 @@ FLOW.Survey = FLOW.BaseModel.extend({
   sourceId: DS.attr('number', {
     defaultValue: null
   }),
+
   // used in the assignment edit page, not saved to backend
-  surveyGroupName: null
+  surveyGroupName: null,
+
+  allowEdit: function () {
+	  return !this.get('isNew') && this.get('status') !== 'COPYING';
+  }.property('status', 'isNew')
+
 });
 
 

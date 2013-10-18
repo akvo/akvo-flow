@@ -306,13 +306,7 @@ FLOW.questionControl = Ember.ArrayController.create({
     // sort them and renumber them according to logical numbering
     temp = groups.toArray();
     temp.sort(function(a,b) {
-    	if (a.get('order') < b.get('order')) {
-    		return -1;
-    	}
-    	if (a.get('order') > b.get('order')) {
-    		return 1;
-    	}
-      return 0;
+    	return a.get('order') - b.get('order');
     });
     i = 1;
     temp.forEach(function(item){
@@ -364,21 +358,15 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedQuestionGroup'),
 
-  setOPTIONcontent: function () {
-    var sId;
-    if (FLOW.selectedControl.get('selectedSurvey')) {
-      sId = FLOW.selectedControl.selectedSurvey.get('keyId');
-      this.set('OPTIONcontent', FLOW.store.filter(FLOW.Question, function (item) {
-        return item.get('type') == 'OPTION' && item.get('surveyId') == sId;
-      }));
-    } else {
-      this.set('OPTIONcontent', null);
-    }
-  }.observes('FLOW.selectedControl.selectedSurvey'),
+  downloadOptionQuestions: function (surveyId) {
+	  this.set('OPTIONcontent', FLOW.store.findQuery(FLOW.Question, {
+	     surveyId: surveyId,
+	      optionQuestionsOnly:true
+	  }));
+  },
 
   // used for display of dependencies: a question can only be dependent on earlier questions
   setEarlierOptionQuestions: function () {
-
     if (!Ember.none(FLOW.selectedControl.get('selectedQuestion')) && !Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
       var optionQuestionList, sId, questionGroupOrder, qgOrder, qg, questionOrder;
       sId = FLOW.selectedControl.selectedSurvey.get('keyId');
@@ -754,9 +742,7 @@ FLOW.translationControl = Ember.ArrayController.create({
 
     // put all the items in the right order
     tempArray.sort(function (a, b) {
-      a = a.order;
-      b = b.order;
-      return a < b ? -1 : (a > b ? 1 : 0);
+    	return a.get('order') - b.get('order');
     });
 
     i = 0;

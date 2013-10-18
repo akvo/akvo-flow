@@ -80,6 +80,29 @@ FLOW.SurveySidebarView = FLOW.View.extend({
     return FLOW.questionGroupControl.content.toArray().length;
   }.property('FLOW.questionGroupControl.content.@each'),
 
+  doManageTranslations: function () {
+	// check if we have questions that are still loading
+	if (!FLOW.questionControl.content.get('isLoaded')){
+  		FLOW.dialogControl.set('activeAction', "ignore");
+  	    FLOW.dialogControl.set('header', Ember.String.loc('_questions_still_loading'));
+  	    FLOW.dialogControl.set('message', Ember.String.loc('_questions_still_loading_text'));
+  	    FLOW.dialogControl.set('showCANCEL', false);
+  	    FLOW.dialogControl.set('showDialog', true);
+  		return;
+  	}
+	// check if we have any unsaved changes
+	survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
+	this.setIsDirty();
+	if (!Ember.none(survey) && this.get('isDirty')) {
+	    FLOW.dialogControl.set('activeAction', "ignore");
+	    FLOW.dialogControl.set('header', Ember.String.loc('_you_have_unsaved_changes'));
+	    FLOW.dialogControl.set('message', Ember.String.loc('_before_translations_save'));
+	    FLOW.dialogControl.set('showCANCEL', false);      FLOW.dialogControl.set('showDialog', true);
+	    return;
+	}
+	FLOW.router.transitionTo('navSurveys.navSurveysEdit.manageTranslations');
+  },
+  
   doSaveSurvey: function () {
     var survey;
     // validation
