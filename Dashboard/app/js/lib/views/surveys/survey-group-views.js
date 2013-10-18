@@ -87,7 +87,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 	  if (!Ember.none('FLOW.selectedControl.selectedSurveyGroup')) {
 		  this.set('isMonitoringGroupFlag',FLOW.selectedControl.selectedSurveyGroup.get('isMonitoringGroupFlag'));
 	  }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+  }.observes('FLOW.selectedControl.selectedSurveyGroup', 'FLOW.selectedControl.selectedSurvey'),
 
   // fired when 'edit name' is clicked, shows edit field to change survey group name
   editSurveyGroupName: function () {
