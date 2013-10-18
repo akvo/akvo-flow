@@ -27,8 +27,16 @@ FLOW.StatisticsMetricView = FLOW.View.extend({
 
 FLOW.chartView = FLOW.View.extend({
   noChoiceBool: false,
+  noDataBool: false,
   chartType: null,
   compactSmaller: true,
+  selectedSurvey: null,
+  
+  downloadOptionQuestions: function () {
+	  if (!Ember.none(this.get('selectedSurvey'))) {
+		  FLOW.questionControl.downloadOptionQuestions(this.selectedSurvey.get('keyId'));
+	  }
+  }.observes('this.selectedSurvey'),
 
   isDoughnut: function () {
     return this.chartType.get('value') == 'doughnut';
@@ -57,8 +65,16 @@ FLOW.chartView = FLOW.View.extend({
       max = 0,
       maxPer, i, tot, totPerc;
 
+    deleteChart();
     if (FLOW.surveyQuestionSummaryControl.content.get('isLoaded') === true) {
       FLOW.chartDataControl.set('total', FLOW.surveyQuestionSummaryControl.content.get('length'));
+      if (FLOW.chartDataControl.get('total') == 0) {
+    	  this.set('noDataBool',true);
+    	  return;
+      } else {
+    	  this.set('noDataBool', false);
+      }
+
       FLOW.surveyQuestionSummaryControl.get('content').forEach(function (item) {
         total = total + item.get('count');
         if (item.get('count') > max) max = item.get('count');
@@ -84,7 +100,7 @@ FLOW.chartView = FLOW.View.extend({
 
         // sort smallest first
         chartData.sort(function (a, b) {
-          return a.percentage >= b.percentage;
+        	return a.percentage - b.percentage;
         });
 
 
@@ -116,12 +132,10 @@ FLOW.chartView = FLOW.View.extend({
         FLOW.chartDataControl.set('smallerItems', smallerItems);
         FLOW.chartDataControl.set('total', total);
 
-        deleteChart();
         createDoughnutChart();
 
         // if type vbar, do vbar things
       } else if (this.chartType.get('value') == 'vbar') {
-
         FLOW.surveyQuestionSummaryControl.get('content').forEach(function (item) {
           chartData.push({
             "legendLabel": (item.get('response')),
@@ -131,11 +145,10 @@ FLOW.chartView = FLOW.View.extend({
 
         // sort smallest first
         chartData.sort(function (a, b) {
-          return a.percentage <= b.percentage;
+        	return a.percentage - b.percentage;
         });
         FLOW.chartDataControl.set('chartData', chartData);
         FLOW.chartDataControl.set('maxPer', maxPer);
-        deleteChart();
         createVBarChart();
 
         // if type hbar, do hbar things
@@ -150,11 +163,10 @@ FLOW.chartView = FLOW.View.extend({
 
         // sort smallest first
         chartData.sort(function (a, b) {
-          return a.percentage <= b.percentage;
+        	return a.percentage - b.percentage;
         });
         FLOW.chartDataControl.set('chartData', chartData);
         FLOW.chartDataControl.set('maxPer', maxPer);
-        deleteChart();
         createHBarChart();
       }
     }

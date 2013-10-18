@@ -2097,18 +2097,13 @@ public class TestHarnessServlet extends HttpServlet {
 
 	private boolean deleteSurveyResponses(Long surveyId, Integer count) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+
 		List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
 				surveyId, count != null ? count : 100);
 
 		if (instances != null) {
 			for (SurveyInstance instance : instances) {
-				List<QuestionAnswerStore> questions = dao
-						.listQuestionAnswerStore(instance.getKey().getId(),
-								count);
-				if (questions != null) {
-					dao.delete(questions);
-				}
-				dao.delete(instance);
+				dao.deleteSurveyInstance(instance);
 			}
 			return true;
 		}

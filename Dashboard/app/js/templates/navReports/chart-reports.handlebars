@@ -11,7 +11,7 @@
 		<span class=""></span>
       {{view Ember.Select 
         contentBinding="FLOW.surveyControl.arrangedContent"
-        selectionBinding="FLOW.selectedControl.selectedSurvey" 
+        selectionBinding="view.selectedSurvey" 
         optionLabelPath="content.name" 
         optionValuePath="content.keyId"
         prompt=""
@@ -41,6 +41,9 @@
 </div>		
     {{#if view.noChoiceBool}}
       <p class="errorMsg">Please choose a survey group, survey and question using the selectors above.</p>
+    {{/if}}
+     {{#if view.noDataBool}}
+      <p class="errorMsg">There is no data available for this question. Please select another one.</p>
     {{/if}}
      	<h3 class="chartTitle">{{FLOW.selectedControl.selectedQuestion.text}}</h3>
         <div id="piechart">

@@ -44,7 +44,7 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
       FLOW.metaControl.set('message', msg);
       FLOW.metaControl.set('status', status);
       FLOW.metaControl.set('keyId', keyId);
-      FLOW.savingMessageControl.set('areLoadingBool', false);
+      FLOW.savingMessageControl.numLoadingChange(-1);
       FLOW.savingMessageControl.set('areSavingBool', false);
 
       if (status === 'preflight-delete-question') {
@@ -102,23 +102,23 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   ajax: function (url, type, hash) {
     this._super(url, type, hash);
     if (type == "GET") {
-      FLOW.savingMessageControl.set('areLoadingBool', true);
+      FLOW.savingMessageControl.numLoadingChange(1);
     }
   },
 
   didFindRecord: function (store, type, json, id) {
     this._super(store, type, json, id);
-    FLOW.savingMessageControl.set('areLoadingBool', false);
+    FLOW.savingMessageControl.numLoadingChange(-1);
   },
 
   didFindAll: function (store, type, json) {
     this._super(store, type, json);
-    FLOW.savingMessageControl.set('areLoadingBool', false);
+    FLOW.savingMessageControl.numLoadingChange(-1);
   },
 
   didFindQuery: function (store, type, json, recordArray) {
     this._super(store, type, json, recordArray);
-    FLOW.savingMessageControl.set('areLoadingBool', false);
+    FLOW.savingMessageControl.numLoadingChange(-1);
   },
 
   // adapted from standard ember rest_adapter

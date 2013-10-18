@@ -71,8 +71,14 @@ FLOW.Survey = FLOW.BaseModel.extend({
   sourceId: DS.attr('number', {
     defaultValue: null
   }),
+
   // used in the assignment edit page, not saved to backend
-  surveyGroupName: null
+  surveyGroupName: null,
+
+  allowEdit: function () {
+	  return !this.get('isNew') && this.get('status') !== 'COPYING';
+  }.property('status', 'isNew')
+
 });
 
 
@@ -132,7 +138,12 @@ FLOW.Question = FLOW.BaseModel.extend({
   text: DS.attr('string'),
   tip: DS.attr('string'),
   type: DS.attr('string', {
-    defaultValue: "FREE_TEXT"
+	defaultValue: "FREE_TEXT"
+  }),
+  // This attribute is used for the 'Copy Survey' functionality 
+  // Most of the times is `null`
+  sourceId: DS.attr('number', {
+	 defaultValue: null
   })
 });
 
@@ -305,7 +316,6 @@ FLOW.Action = FLOW.BaseModel.extend({});
 
 FLOW.Translation = FLOW.BaseModel.extend({
   didUpdate: function () {
-    console.log('didUpdate', this.get('keyId'));
     FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
   },
 
@@ -318,15 +328,11 @@ FLOW.Translation = FLOW.BaseModel.extend({
   // temporary hack to fire the didCreate event after the keyId is known
   didCreateId: function () {
     if (!Ember.none(this.get('keyId')) && this.get('keyId') > 0) {
-      console.log('didCreate', this.get('keyId'));
       FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), this.get('text'), this.get('keyId'), false);
     }
   }.observes('this.keyId'),
 
   didDelete: function () {
-    console.log('didDelete', this.get('keyId'));
-    console.log('value:', this.get('text'));
-
     FLOW.translationControl.putSingleTranslationInList(this.get('parentType'), this.get('parentId'), null, null, true);
   },
 

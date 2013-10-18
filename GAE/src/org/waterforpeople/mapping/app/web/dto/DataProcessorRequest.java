@@ -32,6 +32,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String PROJECT_FLAG_UPDATE_ACTION = "projectFlagUpdate";
 	public static final String REBUILD_QUESTION_SUMMARY_ACTION = "rebuildQuestionSummary";
 	public static final String IMPORT_REMOTE_SURVEY_ACTION = "importRemoteSurvey";
+	public static final String COPY_SURVEY = "copySurvey";
 	public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
 	public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
 	public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";

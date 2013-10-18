@@ -54,7 +54,7 @@ public class Survey extends BaseDomain {
 	private Boolean requireApproval;
 
 	public enum Status {
-		PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED
+		PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED, COPYING
 	};
 	
 	public enum Sector {
@@ -196,5 +196,4 @@ public class Survey extends BaseDomain {
 	public Boolean getRequireApproval() {
 		return requireApproval;
 	}
-
 }

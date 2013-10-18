@@ -81,6 +81,8 @@ FLOW.Router = Ember.Router.extend({
             name: 'navSurveysMain'
           });
           FLOW.surveyGroupControl.populate();
+          FLOW.selectedControl.set('selectedQuestionGroup', null);
+          FLOW.selectedControl.set('selectedSurvey', null);
         }
       }),
 
@@ -120,10 +122,6 @@ FLOW.Router = Ember.Router.extend({
 
         doManageNotifications: function (router, event) {
           router.transitionTo('navSurveys.navSurveysEdit.manageNotifications');
-        },
-
-        doManageTranslations: function (router, event) {
-          router.transitionTo('navSurveys.navSurveysEdit.manageTranslations');
         },
 
         doEditQuestions: function (router, event) {

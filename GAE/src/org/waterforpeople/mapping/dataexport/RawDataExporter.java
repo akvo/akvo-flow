@@ -32,7 +32,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
-import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
 
 /**
@@ -43,7 +42,6 @@ import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
  */
 public class RawDataExporter extends AbstractDataExporter {
 	private static final String IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
-	private static final String SDCARD_PREFIX = "/sdcard/";
 
 	private String serverBase;
 	private String surveyId;
@@ -60,7 +58,7 @@ public class RawDataExporter extends AbstractDataExporter {
 			String serverBase, Map<String, String> options) {
 		this.serverBase = serverBase;
 		surveyId = criteria.get(SURVEY_ID);
-		imgPrefix = options.get("imagePrefix");
+		imgPrefix = options.get("imgPrefix");
 		apiKey = criteria.get("apiKey");
 
 		Writer pw = null;
@@ -114,7 +112,7 @@ public class RawDataExporter extends AbstractDataExporter {
 
 	private void writeHeader(Writer pw, Map<String, QuestionDto> questions)
 			throws Exception {
-		pw.write("Instance\tSubmission Date\tSubmitter");
+		pw.write("Instance\tSubmission Date\tSubmitter\tDuration");
 		if (keyList != null) {
 			for (String key : keyList) {
 				pw.write("\t");
@@ -170,15 +168,19 @@ public class RawDataExporter extends AbstractDataExporter {
 											.replaceAll("\n", " ")
 											.replaceAll("\t", " ").trim());
 								}
+								pw.write("\t");
+								Long duration = dto.getSurveyalTime();
+								if (duration != null) {
+									pw.write(duration.toString());
+								}
 							}
 							for (String key : idList) {
 								String val = responses.get(key);
 								pw.write("\t");
 								if (val != null) {
-									if (questionMap != null
-											&& questionMap.get(key) != null
-											&& QuestionType.GEO == questionMap
-													.get(key).getType()) {
+									QuestionDto qdto = questionMap != null ? questionMap.get(key)
+											: null;
+									if (qdto != null && QuestionType.GEO == qdto.getType()) {
 										String[] geoParts = val.split("\\|");
 										int count = 0;
 										for (count =0; count < geoParts.length; count++){
@@ -190,27 +192,17 @@ public class RawDataExporter extends AbstractDataExporter {
 										//now handle any missing fields
 										for(int j =count; j < 4; j++){
 											pw.write("\t");
-										}										
+										}
 									} else {
-										if (val.contains(SDCARD_PREFIX)) {
-											String[] photoParts = val
-													.split("/");
-											if (photoParts.length > 1) {
-												val = imagePrefix
-														+ photoParts[photoParts.length - 1];
-											} else {
-												val = imagePrefix
-														+ val.substring(val
-																.indexOf(SDCARD_PREFIX)
-																+ SDCARD_PREFIX
-																		.length());
+										if (qdto != null && QuestionType.PHOTO == qdto.getType()) {
+											final int filenameIndex = val.lastIndexOf("/") + 1;
+											if (filenameIndex > 0 && filenameIndex < val.length()) {
+												val = imagePrefix + val.substring(filenameIndex);
 											}
 										}
 										pw.write(val.replaceAll("\n", " ")
 												.trim());
 									}
-								}else{
-									
 								}
 							}
 

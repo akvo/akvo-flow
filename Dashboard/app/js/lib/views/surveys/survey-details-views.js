@@ -80,6 +80,29 @@ FLOW.SurveySidebarView = FLOW.View.extend({
     return FLOW.questionGroupControl.content.toArray().length;
   }.property('FLOW.questionGroupControl.content.@each'),
 
+  doManageTranslations: function () {
+	// check if we have questions that are still loading
+	if (!FLOW.questionControl.content.get('isLoaded')){
+  		FLOW.dialogControl.set('activeAction', "ignore");
+  	    FLOW.dialogControl.set('header', Ember.String.loc('_questions_still_loading'));
+  	    FLOW.dialogControl.set('message', Ember.String.loc('_questions_still_loading_text'));
+  	    FLOW.dialogControl.set('showCANCEL', false);
+  	    FLOW.dialogControl.set('showDialog', true);
+  		return;
+  	}
+	// check if we have any unsaved changes
+	survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
+	this.setIsDirty();
+	if (!Ember.none(survey) && this.get('isDirty')) {
+	    FLOW.dialogControl.set('activeAction', "ignore");
+	    FLOW.dialogControl.set('header', Ember.String.loc('_you_have_unsaved_changes'));
+	    FLOW.dialogControl.set('message', Ember.String.loc('_before_translations_save'));
+	    FLOW.dialogControl.set('showCANCEL', false);      FLOW.dialogControl.set('showDialog', true);
+	    return;
+	}
+	FLOW.router.transitionTo('navSurveys.navSurveysEdit.manageTranslations');
+  },
+  
   doSaveSurvey: function () {
     var survey;
     // validation
@@ -154,8 +177,41 @@ FLOW.SurveySidebarView = FLOW.View.extend({
       item = FLOW.selectedControl.get('selectedSurvey');
       item.deleteRecord();
     }
+    FLOW.selectedControl.set('selectedQuestionGroup', null);
+    FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.router.transitionTo('navSurveys.navSurveysMain');
   }
+});
+
+FLOW.QuestionGroupItemTranslationView = FLOW.View.extend({
+	content: null,
+	 // question group content comes through binding in handlebars file
+	amVisible: function () {
+	  var selected, isVis;
+	  selected = FLOW.selectedControl.get('selectedQuestionGroup');
+	  if (selected) {
+	     isVis = (this.content.get('keyId') === FLOW.selectedControl.selectedQuestionGroup.get('keyId'));
+	     return isVis;
+	   } else {
+	     return null;
+	   }
+	 }.property('FLOW.selectedControl.selectedQuestionGroup', 'content.keyId').cacheable(),
+
+	toggleVisibility: function () {
+	   if (this.get('amVisible')) {
+		 // if we have any unsaved translations, do nothing.
+		 // a warning will be printed by the check method.
+		   console.log('unsaved? ',FLOW.translationControl.unsavedTranslations());
+		 if (FLOW.translationControl.unsavedTranslations()){
+			 return;
+		 }
+	     FLOW.selectedControl.set('selectedQuestionGroup', null);
+	     // empty translation structures
+	   } else {
+	     FLOW.selectedControl.set('selectedQuestionGroup', this.content);
+	     FLOW.translationControl.loadQuestionGroup(this.content.get('keyId'));
+	   }
+	}
 });
 
 
@@ -268,26 +324,11 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       }
     });
     // restore order in case the order has gone haywire
-    this.restoreOrder(questionGroupsInSurvey);
+    FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
 
   },
-
-  restoreOrder: function (groups) {
-    var temp, i;
-    // sort them and renumber them according to logical numbering
-    temp = groups.toArray();
-    temp.sort(function(a,b) {
-      return a.get('order') > b.get('order');
-    })
-    i = 1
-    temp.forEach(function(item){
-      item.set('order',i);
-      i++;
-    })
-  },
-
 
   // insert group
   doInsertQuestionGroup: function () {
@@ -329,7 +370,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       });
 
       // restore order in case the order has gone haywire
-      this.restoreOrder(questionGroupsInSurvey);
+      FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
       FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
       FLOW.store.commit();
@@ -416,7 +457,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
         });
 
         // restore order in case the order has gone haywire
-        this.restoreOrder(questionGroupsInSurvey);
+        FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
         FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
         FLOW.store.commit();
@@ -465,7 +506,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       });
 
       // restore order in case the order has gone haywire
-      this.restoreOrder(questionGroupsInSurvey);
+      FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();

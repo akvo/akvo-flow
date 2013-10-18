@@ -49,6 +49,18 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
   }.observes('this.dashboardLanguage')
 });
 
+FLOW.reportLanguageControl = Ember.ArrayController.create({
+  content: [
+    Ember.Object.create({
+	  label: "English (Default)",
+	  value: "en"
+	}),
+	Ember.Object.create({
+	  label: "Español",
+	  value: "es"
+	})]
+});
+
 
 FLOW.selectedControl = Ember.Controller.create({
   selectedSurveyGroup: null,
@@ -138,7 +150,20 @@ FLOW.dateControl = Ember.Object.create({
 FLOW.savingMessageControl = Ember.Object.create({
   areSavingBool: false,
   areLoadingBool: false,
+  numberLoading: 0,
 
+  numLoadingChange: function (delta) {
+	  this.set('numberLoading',this.get('numberLoading') + delta);
+	  if (this.get('numberLoading') < 0){
+		  this.set('numberLoading', 0);
+	  }
+	  if (this.get('numberLoading') > 0) {
+		  this.set('areLoadingBool', true);
+	  } else {
+		  this.set('areLoadingBool', false);
+	  }
+  },
+  
   checkSaving: function () {
     if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0) {
       this.set('areSavingBool', true);

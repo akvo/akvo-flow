@@ -59,21 +59,26 @@ FLOW.ReportLoader = Ember.Object.create({
       });
     }
 
+    if (criteria.opts.locale && FLOW.reportLanguageControl.get('selectedLanguage')) {
+      criteria.opts.locale = FLOW.reportLanguageControl.get('selectedLanguage').get('value');
+    }
+
     this.set('criteria', criteria);
+    FLOW.savingMessageControl.numLoadingChange(1);
     this.requestReport();
   },
 
   handleResponse: function (resp) {
     if (!resp || resp.status !== 'OK') {
+      FLOW.savingMessageControl.numLoadingChange(-1);
       this.showError();
       return;
     }
-
     if (resp.message === 'PROCESSING') {
       this.set('processing', false);
       Ember.run.later(this, this.requestReport, this.requestInterval);
     } else if (resp.file) {
-      FLOW.savingMessageControl.set('areLoadingBool', false);
+      FLOW.savingMessageControl.numLoadingChange(-1);
       this.set('processing', false);
       this.set('criteria', null);
       $('#downloader').attr('src', FLOW.Env.flowServices + '/report/' + resp.file);
@@ -81,7 +86,6 @@ FLOW.ReportLoader = Ember.Object.create({
   },
 
   requestReport: function () {
-    FLOW.savingMessageControl.set('areLoadingBool', true);
     this.set('processing', true);
     $.ajax({
       url: FLOW.Env.flowServices + '/generate',
@@ -97,12 +101,13 @@ FLOW.ReportLoader = Ember.Object.create({
 
   handleError: function () {
     if (this.get('processing')) {
+      FLOW.savingMessageControl.numLoadingChange(-1);
       this.showError();
     }
   },
 
   showError: function () {
-    FLOW.savingMessageControl.set('areLoadingBool', false);
+	  FLOW.savingMessageControl.numLoadingChange(-1);
     this.set('processing', false);
     this.set('criteria', null);
     FLOW.dialogControl.set('activeAction', 'ignore');
@@ -121,25 +126,26 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
   showGoogleEarthButton: false,
+  selectedSurvey:null,
 
   didInsertElement: function () {
     FLOW.uploader.registerEvents();
   },
 
   showRawDataReport: function () {
-    if (!FLOW.selectedControl.selectedSurvey) {
+    if (!this.get('selectedSurvey')) {
       this.showWarning();
       return;
     }
-    FLOW.ReportLoader.load('RAW_DATA', FLOW.selectedControl.selectedSurvey.get('id'));
+    FLOW.ReportLoader.load('RAW_DATA', this.selectedSurvey.get('id'));
   },
   
   showRawTextFileExport: function () {
-    if (!FLOW.selectedControl.selectedSurvey) {
+    if (!this.get('selectedSurvey')) {
 	  this.showWarning();
     return;
 	}
-	FLOW.ReportLoader.load('RAW_DATA_TEXT', FLOW.selectedControl.selectedSurvey.get('id'));  
+	FLOW.ReportLoader.load('RAW_DATA_TEXT', this.selectedSurvey.get('id'));
   },
 
   showComprehensiveReport: function () {
@@ -149,11 +155,11 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     opts.performRollup = '' + FLOW.editControl.summaryPerGeoArea;
     opts.nocharts = '' + FLOW.editControl.omitCharts;
 
-    FLOW.ReportLoader.load('GRAPHICAL_SURVEY_SUMMARY', FLOW.selectedControl.selectedSurvey.get('id'), opts);
+    FLOW.ReportLoader.load('GRAPHICAL_SURVEY_SUMMARY', this.selectedSurvey.get('id'), opts);
   },
 
   showGoogleEarthFile: function () {
-    if (!FLOW.selectedControl.selectedSurvey) {
+    if (!this.get('selectedSurvey')) {
       this.showWarning();
       return;
     }
@@ -161,16 +167,16 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showSurveyForm: function () {
-    if (!FLOW.selectedControl.selectedSurvey) {
+    if (!this.get('selectedSurvey')) {
       this.showWarning();
       return;
     }
-    FLOW.ReportLoader.load('SURVEY_FORM', FLOW.selectedControl.selectedSurvey.get('id'));
+    FLOW.ReportLoader.load('SURVEY_FORM', this.selectedSurvey.get('id'));
   },
 
   importFile: function () {
     var file;
-    if (!FLOW.selectedControl.selectedSurvey) {
+    if (!this.get('selectedSurvey')) {
       this.showImportWarning(Ember.String.loc('_import_select_survey'));
       return;
     }
@@ -187,7 +193,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showComprehensiveOptions: function () {
-    if (!FLOW.selectedControl.selectedSurvey) {
+    if (!this.get('selectedSurvey')) {
       this.showWarning();
       return;
     }

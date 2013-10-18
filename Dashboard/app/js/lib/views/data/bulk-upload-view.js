@@ -1,5 +1,9 @@
 /*global Resumable, FLOW, $, Ember */
 
+FLOW.uuid = function (file) {
+  return Math.uuidFast();
+};
+
 FLOW.uploader = Ember.Object.create({
   r: new Resumable({
     target: FLOW.Env.flowServices + '/upload',
@@ -8,7 +12,8 @@ FLOW.uploader = Ember.Object.create({
     testChunks: false,
     throttleProgressCallbacks: 1, // 1s
     chunkRetryInterval: 1000, // 1s
-    chunkSize: 512 * 1024 // 512KB
+    chunkSize: 512 * 1024, // 512KB,
+    generateUniqueIdentifier: FLOW.uuid
   }),
 
   assignDrop: function (el) {

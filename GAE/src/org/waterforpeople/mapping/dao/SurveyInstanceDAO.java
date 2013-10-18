@@ -154,6 +154,17 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					si.setDeviceIdentifier(parts[8].trim());
 				}
 			}
+			
+			// Time tracking new column - 13
+			if (parts.length >= 13) {
+				try {
+					final Long time = Long.valueOf(parts[12].trim());
+					si.setSurveyalTime(time);
+				} catch (NumberFormatException e) {
+					logger.log(Level.WARNING, "Surveyal time column is not a number", e);
+				}
+			}
+			
 			// if this is the first time round, save the surveyInstance or use an existing one
 			if (si.getSurveyId() == null) {
 				try {
@@ -162,7 +173,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					}
 					si.setSurveyId(Long.parseLong(parts[0].trim()));
 					if (parts.length >= 12) {
-						String uuid = parts[parts.length - 1];
+						String uuid = parts[11];
 						if (uuid != null && uuid.trim().length() > 0) {
 							SurveyInstance existingSi = findByUUID(uuid);
 							if (existingSi != null) {
