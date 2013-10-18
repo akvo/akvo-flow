@@ -33,6 +33,8 @@ public class SurveyedLocaleDto implements Serializable {
 	private static final long serialVersionUID = -850583183416882347L;
 
 	private String id;
+	private Long surveyGroupId;
+	private String displayName;
 	private Double lat;
 	private Double lon;
 	private List<SurveyInstanceDto> surveyInstances;
@@ -75,5 +77,21 @@ public class SurveyedLocaleDto implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public Long getSurveyGroupId() {
+		return surveyGroupId;
+	}
+
+	public void setSurveyGroupId(Long surveyGroupId) {
+		this.surveyGroupId = surveyGroupId;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 }

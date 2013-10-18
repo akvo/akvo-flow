@@ -165,6 +165,30 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				}
 			}
 			
+			if (parts.length >= 14) {
+				SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+				si.setSurveyedLocaleIdentifier(parts[13]);
+
+				// if we find an existing surveyedLocale with the same identifier,
+				// set the surveyedLocaleId field on the instance
+				// If we don't find it, it will be handled in SurveyalRestServlet
+				SurveyedLocale sl = slDao.getByIdentifier(parts[13]);
+				if (sl != null){
+					si.setSurveyedLocaleId(sl.getKey().getId());
+				}
+			}
+			// if one of the answer types is META_GEO, interpret this as the
+			// geolocation information of the surveyedLocale
+			if (parts[3].equals("META_GEO")){
+				si.setGeoLocation(parts[4].trim());
+			}
+
+			// if one of the answer types is META_NAME, interpret this as the
+			// displayName information of the surveyedLocale
+			if (parts[3].equals("META_NAME")){
+				si.setSurveyedLocaleDisplayName(parts[4].trim());
+			}
+
 			// if this is the first time round, save the surveyInstance or use an existing one
 			if (si.getSurveyId() == null) {
 				try {
@@ -186,7 +210,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 						}
 					}
 					si = save(si);
-					
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
 							+ parts[0], e);
@@ -198,6 +221,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					sleep();
 					si = save(si);
 				}
+			}
+
+			if (parts[3].equals("META_GEO") || parts[3].equals("META_NAME")) {
+				continue; // skip processing
 			}
 
 			if (qasDao.listBySurveyInstance(si.getKey().getId(),

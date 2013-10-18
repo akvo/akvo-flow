@@ -264,22 +264,36 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				}
 			}
 
-			// try to construct geoPlace
-			if (answers != null) {
-				for (QuestionAnswerStore q : answers) {
-					if (QuestionType.GEO.toString().equals(q.getType())) {
-						geoQ = q;
-						break;
+			// try to construct geoPlace. Geo information can come from two sources:
+			// 1) the META_GEO information in the surveyInstance, and
+			// 2) a geo question. 
+			// If we can't find geo information in 1), we try 2)
+
+			GeoPlace geoPlace = null;
+			String geoString = null;
+			double lat = UNSET_VAL;
+			double lon = UNSET_VAL;
+
+			if (instance.getGeoLocation() != null && instance.getGeoLocation().length() > 0) {
+				geoString = instance.getGeoLocation();
+			}
+			else {
+				if (answers != null) {
+					for (QuestionAnswerStore q : answers) {
+						if (QuestionType.GEO.toString().equals(q.getType())) {
+							geoQ = q;
+							break;
+						}
+					}
+					if (geoQ != null && geoQ.getValue() != null
+							&& geoQ.getValue().length() > 0) {
+						geoString = geoQ.getValue();
 					}
 				}
 			}
 
-			GeoPlace geoPlace = null;
-			double lat = UNSET_VAL;
-			double lon = UNSET_VAL;
-			if (geoQ != null && geoQ.getValue() != null
-					&& geoQ.getValue().length() > 0) {
-				String[] tokens = geoQ.getValue().split("\\|");
+			if (geoString != null && geoString.length() > 0) {
+				String[] tokens = geoString.split("\\|");
 				if (tokens.length >= 2) {
 					try {
 						lat = Double.parseDouble(tokens[0]);
@@ -303,20 +317,13 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					locale.setLongitude(lon);
 				}
 				locale.setSurveyGroupId(surveyGroupId);
+				locale.setIdentifier(instance.getSurveyedLocaleIdentifier());
 				if (geoPlace != null) {
 					setGeoData(geoPlace, locale);
 				}
 				if (survey != null) {
 					locale.setLocaleType(pointType);
 				}
-				// on a new Locale, create an identifier based on the UUID of the instance
-				String idString = base32Uuid(instance.getUuid());
-				if (idString.equals("")){
-					// if we can't form the base32 uuid, use uuid itself
-					idString = instance.getUuid();
-				}
-
-				locale.setIdentifier(idString);
 
 				if (locale.getOrganization() == null) {
 					locale.setOrganization(PropertyUtil
@@ -339,6 +346,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				instance.setSublevel4(geoPlace.getSub4());
 				instance.setSublevel5(geoPlace.getSub5());
 				instance.setSublevel6(geoPlace.getSub6());
+			}
+
+			if (locale != null && instance.getSurveyedLocaleDisplayName() != null && instance.getSurveyedLocaleDisplayName().length() > 0){
+				locale.setDisplayName(instance.getSurveyedLocaleDisplayName());
 			}
 
 			if (locale != null && locale.getKey() != null && answers != null) {
@@ -523,23 +534,4 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
 	}
-
-	/* creates a base32 version of a UUID. in the output, it replaces the following letters:
-	 * l, o, i are replace by w, x, y, to avoid confusion with 1 and 0
-	 * we don't use the z as it can easily be confused with 2, especially in handwriting.
-	 * If we can't form the base32 version, we return an empty string.
-	 */
-	private String base32Uuid(String UUID){
-		String strippedUUID = (UUID.substring(0,13) + UUID.substring(24,27)).replace("-", "");
-		String result = null;
-		try {
-			Long id = Long.parseLong(strippedUUID,16);
-			result = Long.toString(id,32).replace("l","w").replace("o","x").replace("i","y");
-		} catch (NumberFormatException e){
-			// if we can't create the base32 UUID string, return empty string.
-			return "";
-		}
-		return result;
-	}
-
 }

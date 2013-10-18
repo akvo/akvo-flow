@@ -32,6 +32,7 @@ public class SurveyedLocaleDto extends BaseDto {
 	private String organization;
 	private String systemIdentifier;
 	private String identifier;
+	private String displayName;
 	private String countryCode;
 	private String sublevel1;
 	private String sublevel2;
@@ -191,6 +192,14 @@ public class SurveyedLocaleDto extends BaseDto {
 
 	public String getCurrentStatus() {
 		return currentStatus;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 }
