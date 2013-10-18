@@ -742,9 +742,7 @@ FLOW.translationControl = Ember.ArrayController.create({
 
     // put all the items in the right order
     tempArray.sort(function (a, b) {
-      a = a.order;
-      b = b.order;
-      return a < b ? -1 : (a > b ? 1 : 0);
+    	return a.get('order') - b.get('order');
     });
 
     i = 0;
