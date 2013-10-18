@@ -66,7 +66,7 @@ public class MetricRestService {
 		List<Metric> metrics = new ArrayList<Metric>();
 		if (surveyId != null) {
 			// get metrics for a specific survey
-			questions = questionDao.listQuestionsInOrder(surveyId);
+			questions = questionDao.listQuestionsInOrder(surveyId,null);
 			if (questions != null && questions.size() > 0) {
 				for (Question question : questions) {
 					if (question.getMetricId() != null && question.getMetricId() != 0) {
