@@ -7,6 +7,33 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+# 1.6.6
+
+Release Date: 18 October 2013
+
+## Enhancements
+Thanks to the efforts of the Water for People team, we now have a complete set of Spanish translations of the dashboard.
+
+## Resolved issues
+* Fixed: Chart Builder should clean the previous chart on each question. (#365)
+* Fixed: 'No data available' warning still shown when data is available for chart. (#388)
+* Fixed: Increase performance of loading questions for charts. (#379)
+* Fixed: When showing a surveyGroup with a lot of surveys, scrolling behaviour is strange. (#387)
+* Fixed: Make summary count more robust to possible QAS duplicates. (#385)
+* Fixed: Trim user email address when creating a new user. (#384, #366)
+* Fixed: Make reports support languages other than english. (#381)
+* Fixed: Update FLOW logo. (#378)
+* Fixed: Move copy survey functionality to backend to avoid timeouts on large surveys. (#377)
+* Fixed:  Bring back language dropdown and incorporate new spanish translations. (#376)
+* Fixed: Update instance creation templates with latest config. (#374)
+* Fixed: Improve efficiency in saving of surveyedLocales. (#373)
+* Fixed: Translations does not get copied when we copy a Survey. (#357)
+* Fixed: Prevent user from going to translations when there are unsaved changes. (#389)
+* Fixed: Better implementation of sort functions. (#394)
+* Fixed: Opt in a UUID implementation for `generateUniqueIdentifier` (#391)
+* Fixed: Fix faulty sort functions (#394)
+
+
 # 1.6.5
 
 Release Date: 30 September 2013
