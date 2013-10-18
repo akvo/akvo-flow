@@ -36,13 +36,7 @@ FLOW.QuestionView = FLOW.View.extend({
       i = 0;
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-    	  if (a.get('order') < b.get('order')) {
-          	return -1;
-          }
-          if (a.get('order') > b.get('order')) {
-          	return 1;
-          }
-          return 0;
+    	  return a.get('order') - b.get('order');
       });
 
       optionArray.forEach(function (item) {
@@ -177,13 +171,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-    	if (a.get('order') < b.get('order')) {
-        	return -1;
-        }
-        if (a.get('order') > b.get('order')) {
-        	return 1;
-        }
-        return 0;
+    	  return a.get('order') - b.get('order');
       });
 
       optionArray.forEach(function (item) {

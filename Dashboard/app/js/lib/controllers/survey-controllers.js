@@ -306,13 +306,7 @@ FLOW.questionControl = Ember.ArrayController.create({
     // sort them and renumber them according to logical numbering
     temp = groups.toArray();
     temp.sort(function(a,b) {
-    	if (a.get('order') < b.get('order')) {
-    		return -1;
-    	}
-    	if (a.get('order') > b.get('order')) {
-    		return 1;
-    	}
-      return 0;
+    	return a.get('order') - b.get('order');
     });
     i = 1;
     temp.forEach(function(item){

@@ -75,9 +75,7 @@ FLOW.chartView = FLOW.View.extend({
 
         // sort smallest first
         chartData.sort(function (a, b) {
-        	 if (a.percentage < b.percentage) return -1;
-             if (a.percentage > b.percentage) return 1;
-             return 0;
+        	return a.percentage - b.percentage;
         });
 
 
@@ -122,7 +120,7 @@ FLOW.chartView = FLOW.View.extend({
 
         // sort smallest first
         chartData.sort(function (a, b) {
-          return a.percentage <= b.percentage;
+        	return a.percentage - b.percentage;
         });
         FLOW.chartDataControl.set('chartData', chartData);
         FLOW.chartDataControl.set('maxPer', maxPer);
@@ -140,7 +138,7 @@ FLOW.chartView = FLOW.View.extend({
 
         // sort smallest first
         chartData.sort(function (a, b) {
-          return a.percentage <= b.percentage;
+        	return a.percentage - b.percentage;
         });
         FLOW.chartDataControl.set('chartData', chartData);
         FLOW.chartDataControl.set('maxPer', maxPer);
