@@ -274,10 +274,11 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			double lat = UNSET_VAL;
 			double lon = UNSET_VAL;
 
-			if (instance.getGeoLocation() != null && instance.getGeoLocation().length() > 0) {
-				geoString = instance.getGeoLocation();
-			}
-			else {
+			// if the GEO information was present as Meta data, get it from there
+			if (instance.getLocaleGeoLocation() != null && instance.getLocaleGeoLocation().length() > 0) {
+				geoString = instance.getLocaleGeoLocation();
+			// else, try to look for a GEO question
+			} else {
 				if (answers != null) {
 					for (QuestionAnswerStore q : answers) {
 						if (QuestionType.GEO.toString().equals(q.getType())) {
@@ -309,35 +310,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				}
 			}
 
-			if (locale == null) {
-				locale = new SurveyedLocale();
-				// locale.setAmbiguous(ambiguousFlag);
-				if (lat != UNSET_VAL && lon != UNSET_VAL) {
-					locale.setLatitude(lat);
-					locale.setLongitude(lon);
-				}
-				locale.setSurveyGroupId(surveyGroupId);
-				locale.setIdentifier(instance.getSurveyedLocaleIdentifier());
-				if (geoPlace != null) {
-					setGeoData(geoPlace, locale);
-				}
-				if (survey != null) {
-					locale.setLocaleType(pointType);
-				}
-
-				if (locale.getOrganization() == null) {
-					locale.setOrganization(PropertyUtil
-							.getProperty(DEFAULT_ORG_PROP));
-				}
-				locale = surveyedLocaleDao.save(locale);
-			} else {
-				if (survey.getPointType() != null
-						&& !survey.getPointType()
-								.equals(locale.getLocaleType())) {
-					locale.setLocaleType(survey.getPointType());
-				}
-			}
-			
+			// if we have a geoPlace, set it on the instance
 			if (instance != null && geoPlace != null) {
 				instance.setCountryCode(geoPlace.getCountryCode());
 				instance.setSublevel1(geoPlace.getSub1());
@@ -348,37 +321,73 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				instance.setSublevel6(geoPlace.getSub6());
 			}
 
-			if (locale != null && instance.getSurveyedLocaleDisplayName() != null && instance.getSurveyedLocaleDisplayName().length() > 0){
-				locale.setDisplayName(instance.getSurveyedLocaleDisplayName());
+			// increment surveyedLocaleSummary count for this surveyGroupId
+			if (!useExistingLocale && surveyGroupId != null) {
+				SurveyedLocaleSummaryDao SLSdao = new SurveyedLocaleSummaryDao();
+				SurveyedLocaleSummary SLSummary = SLSdao
+						.getBySurveyGroupId(surveyGroupId);
+				if (SLSummary != null && SLSummary.getKey() != null) {
+					SLSummary.setCount(SLSummary.getCount() + 1);
+				} else {
+					SLSummary = new SurveyedLocaleSummary();
+					SLSummary.setSurveyGroupId(surveyGroupId);
+					SLSummary.setCount(1L);
+				}
+				SLSdao.save(SLSummary);
 			}
 
-			if (locale != null && locale.getKey() != null && answers != null) {
+			// if we don't have a locale, create one
+			if (locale == null) {
+				locale = new SurveyedLocale();
+				if (lat != UNSET_VAL && lon != UNSET_VAL) {
+					locale.setLatitude(lat);
+					locale.setLongitude(lon);
+				}
+				locale.setSurveyGroupId(surveyGroupId);
+				locale.setIdentifier(instance.getSurveyedLocaleIdentifier());
+
+				if (survey != null) {
+					locale.setLocaleType(pointType);
+				}
+
+				if (locale.getOrganization() == null) {
+					locale.setOrganization(PropertyUtil
+							.getProperty(DEFAULT_ORG_PROP));
+				}
+			}
+			
+			if (locale != null){
 				locale.setLastSurveyedDate(instance.getCollectionDate());
 				locale.setLastSurveyalInstanceId(instance.getKey().getId());
 
-				// increment surveyedLocaleSummary count for this surveyGroupId
-				if (!useExistingLocale) {
-					SurveyedLocaleSummaryDao SLSdao = new SurveyedLocaleSummaryDao();
-					SurveyedLocaleSummary SLSummary = SLSdao
-							.getBySurveyGroupId(surveyGroupId);
-					if (SLSummary != null && SLSummary.getKey() != null) {
-						SLSummary.setCount(SLSummary.getCount() + 1);
-					} else {
-						SLSummary = new SurveyedLocaleSummary();
-						SLSummary.setSurveyGroupId(surveyGroupId);
-						SLSummary.setCount(1L);
-					}
-					SLSdao.save(SLSummary);
+				if (instance.getSurveyedLocaleDisplayName() != null && 
+						instance.getSurveyedLocaleDisplayName().length() > 0){
+					locale.setDisplayName(instance.getSurveyedLocaleDisplayName());
 				}
 
+				// if we have geoinformation, we will use it on the locale provided that:
+				// 1) it is a new Locale, or 2) it was brought in as meta information, meaning it should 
+				// overwrite previous locale geo information
+				if (geoPlace != null && (instance.getLocaleGeoLocation() != null || !useExistingLocale)){
+					setGeoData(geoPlace, locale);
+				}
+
+				if (survey.getPointType() != null && !survey.getPointType()
+								.equals(locale.getLocaleType())) {
+					locale.setLocaleType(survey.getPointType());
+				}
+
+				locale = surveyedLocaleDao.save(locale);
+			}
+
+			// save the surveyalValues
+			if (locale != null && locale.getKey() != null && answers != null) {
 				instance.setSurveyedLocaleId(locale.getKey().getId());
 				List<SurveyalValue> values = constructValues(locale, answers);
 				if (values != null) {
 					surveyedLocaleDao.save(values);
 				}
-				// not needed?
 				surveyInstanceDao.save(instance);
-				surveyedLocaleDao.save(locale);
 			}
 		}
 	}

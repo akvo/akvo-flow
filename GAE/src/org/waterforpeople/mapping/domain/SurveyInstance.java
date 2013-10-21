@@ -58,7 +58,7 @@ public class SurveyInstance extends BaseDomain {
 	private String surveyedLocaleDisplayName;
 	private String countryCode;
 	private String community;
-	private String geoLocation;
+	private String localeGeoLocation;
 	private String sublevel1;
 	private String sublevel2;
 	private String sublevel3;
@@ -278,12 +278,12 @@ public class SurveyInstance extends BaseDomain {
 		this.surveyedLocaleIdentifier = surveyedLocaleIdentifier;
 	}
 
-	public String getGeoLocation() {
-		return geoLocation;
+	public String getLocaleGeoLocation() {
+		return localeGeoLocation;
 	}
 
-	public void setGeoLocation(String geoLocation) {
-		this.geoLocation = geoLocation;
+	public void setLocaleGeoLocation(String localeGeoLocation) {
+		this.localeGeoLocation = localeGeoLocation;
 	}
 
 	public String getSurveyedLocaleDisplayName() {

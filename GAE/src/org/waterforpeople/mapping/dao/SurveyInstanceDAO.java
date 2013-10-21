@@ -180,7 +180,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			// if one of the answer types is META_GEO, interpret this as the
 			// geolocation information of the surveyedLocale
 			if (parts[3].equals("META_GEO")){
-				si.setGeoLocation(parts[4].trim());
+				si.setLocaleGeoLocation(parts[4].trim());
 			}
 
 			// if one of the answer types is META_NAME, interpret this as the
