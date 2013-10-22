@@ -370,6 +370,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				// overwrite previous locale geo information
 				if (geoPlace != null && (instance.getLocaleGeoLocation() != null || !useExistingLocale)){
 					setGeoData(geoPlace, locale);
+					if (lat != UNSET_VAL && lon != UNSET_VAL) {
+						locale.setLatitude(lat);
+						locale.setLongitude(lon);
+					}
 				}
 
 				if (survey.getPointType() != null && !survey.getPointType()
