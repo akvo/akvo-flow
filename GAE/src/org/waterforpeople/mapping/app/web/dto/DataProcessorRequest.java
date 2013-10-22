@@ -48,7 +48,6 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String DELTA_PARAM = "delta";
 	public static final String API_KEY_PARAM = "apiKey";
 	public static final String OFFSET_PARAM = "offset";
-	public static final String LOCALE_TYPE_PARAM = "localeType";
 	public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
 
 	private String country;
@@ -57,7 +56,6 @@ public class DataProcessorRequest extends RestRequest {
 	private Long surveyInstanceId;
 	private Long qasId;
 	private Integer delta;
-	private Integer localeType;
 	private String apiKey;
 	private Long offset = 0L;
 
@@ -99,16 +97,6 @@ public class DataProcessorRequest extends RestRequest {
 			} catch (Exception e) {
 				addError(new RestError(RestError.BAD_DATATYPE_CODE,
 						RestError.BAD_DATATYPE_MESSAGE, DELTA_PARAM
-								+ " must be an integer"));
-			}
-		}
-
-		if (req.getParameter(LOCALE_TYPE_PARAM) != null) {
-			try {
-				setLocaleType(new Integer(req.getParameter(LOCALE_TYPE_PARAM).trim()));
-			} catch (Exception e) {
-				addError(new RestError(RestError.BAD_DATATYPE_CODE,
-						RestError.BAD_DATATYPE_MESSAGE, LOCALE_TYPE_PARAM
 								+ " must be an integer"));
 			}
 		}
@@ -191,13 +179,4 @@ public class DataProcessorRequest extends RestRequest {
 	public void setOffset(Long offset) {
 		this.offset = offset;
 	}
-
-	public Integer getLocaleType() {
-		return localeType;
-	}
-
-	public void setLocaleType(Integer localeType) {
-		this.localeType = localeType;
-	}
-
 }
