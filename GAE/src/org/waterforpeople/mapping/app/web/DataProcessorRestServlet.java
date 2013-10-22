@@ -143,7 +143,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			deleteDuplicatedQAS(dpReq.getOffset());
 		} else if (DataProcessorRequest.CHANGE_LOCALE_TYPE_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
-			changeLocaleType(dpReq.getSurveyId(), dpReq.getLocaleType());
+			changeLocaleType(dpReq.getSurveyId());
 		}
 		return new RestResponse();
 	}
@@ -244,7 +244,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * 2 = Household
 	 * 3 = Public Institutions
 	 */
-	private void changeLocaleType(Long surveyId, Integer type) {
+	private void changeLocaleType(Long surveyId) {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		SurveyDAO sDao = new SurveyDAO();
