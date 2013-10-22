@@ -1712,34 +1712,30 @@ public class TestHarnessServlet extends HttpServlet {
 			DataProcessorRestServlet.sendProjectUpdateTask(
 					req.getParameter("country"), null);
 		} else if ("changeLocaleType".equals(action)) {
-			TaskOptions options = TaskOptions.Builder.withUrl(
+			String surveyId = req
+					.getParameter(DataProcessorRequest.SURVEY_ID_PARAM);
+			if (surveyId != null && surveyId.trim().length() > 0) {
+				TaskOptions options = TaskOptions.Builder.withUrl(
 					"/app_worker/dataprocessor").param(
 					DataProcessorRequest.ACTION_PARAM,
 					DataProcessorRequest.CHANGE_LOCALE_TYPE_ACTION);
 
-			if (req.getParameter("bypassBackend") == null
-					|| !req.getParameter("bypassBackend").equals("true")) {
-				// change the host so the queue invokes the backend
-				options = options
+				if (req.getParameter("bypassBackend") == null
+						|| !req.getParameter("bypassBackend").equals("true")) {
+					// change the host so the queue invokes the backend
+					options = options
 						.header("Host",
 								BackendServiceFactory.getBackendService()
 										.getBackendAddress("dataprocessor"));
-			}
-			String surveyId = req
-					.getParameter(DataProcessorRequest.SURVEY_ID_PARAM);
-			String localeType = req
-					.getParameter(DataProcessorRequest.LOCALE_TYPE_PARAM);
-			if (surveyId != null && surveyId.trim().length() > 0 &&
-					localeType != null && localeType.trim().length() > 0) {
+				}
 				options.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId);
-				options.param(DataProcessorRequest.LOCALE_TYPE_PARAM, localeType);
 				com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 						.getDefaultQueue();
 				queue.add(options);
 			} else {
 				try {
 					resp.getWriter()
-					.println("surveyId or localeType parameter missing");
+					.println("surveyId parameter missing");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

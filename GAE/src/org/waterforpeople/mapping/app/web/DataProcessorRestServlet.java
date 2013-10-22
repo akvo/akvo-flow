@@ -247,36 +247,35 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private void changeLocaleType(Long surveyId, Integer type) {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-		int pageSize = 300;
+		SurveyDAO sDao = new SurveyDAO();
 		String cursor = null;
-		// be default, we choose the safe option: not shown in public maps.
-		String localeType = "Household";
-		if (type == 1) {
-			localeType = "Point";
-		} else if (type == 3) {
-			localeType = "PublicInstitution";
-		}
-		do {
-			List<SurveyInstance> siList = siDao.listSurveyInstanceBySurvey(surveyId, pageSize, cursor);
-			List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
-			if (siList != null && siList.size() > 0) {
-				for (SurveyInstance si : siList) {
-					if (si.getSurveyedLocaleId() != null) {
-						SurveyedLocale sl = slDao.getByKey(si.getSurveyedLocaleId());
-						if (sl != null && !sl.getLocaleType().equals(localeType)) {
-							sl.setLocaleType(localeType);
-							slList.add(sl);
+		// get the desired type from the survey definition
+		Survey s = sDao.getByKey(surveyId);
+		if (s != null && s.getPointType() != null && s.getPointType().length() > 0){
+			String localeType = s.getPointType();
+
+			do {
+				List<SurveyInstance> siList = siDao.listSurveyInstanceBySurvey(surveyId, QAS_PAGE_SIZE, cursor);
+				List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+				if (siList != null && siList.size() > 0) {
+					for (SurveyInstance si : siList) {
+						if (si.getSurveyedLocaleId() != null) {
+							SurveyedLocale sl = slDao.getByKey(si.getSurveyedLocaleId());
+							if (sl != null && !sl.getLocaleType().equals(localeType)) {
+								sl.setLocaleType(localeType);
+								slList.add(sl);
+							}
 						}
 					}
+					slDao.save(slList);
+					if (siList.size() == QAS_PAGE_SIZE) {
+						cursor = SurveyInstanceDAO.getCursor(siList);
+					} else {
+						cursor = null;
+					}
 				}
-				slDao.save(slList);
-				if (siList.size() == pageSize) {
-					cursor = SurveyInstanceDAO.getCursor(siList);
-				} else {
-					cursor = null;
-				}
-			}
-		} while (cursor != null);
+			} while (cursor != null);
+		}
 	}
 
 	private void fixNullSubmitter() {
