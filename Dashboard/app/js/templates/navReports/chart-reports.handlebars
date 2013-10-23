@@ -46,9 +46,11 @@
       <p class="errorMsg">There is no data available for this question. Please select another one.</p>
     {{/if}}
      	<h3 class="chartTitle">{{FLOW.selectedControl.selectedQuestion.text}}</h3>
+    {{#unless view.hideChart}}
         <div id="piechart">
 			<p>Choose a Question from above selectors.</p> 	
 		</div>
+    {{/unless}}
 {{/view}}
 
  <script type="text/javascript">
