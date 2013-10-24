@@ -48,6 +48,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String DELTA_PARAM = "delta";
 	public static final String API_KEY_PARAM = "apiKey";
 	public static final String OFFSET_PARAM = "offset";
+	public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
 
 	private String country;
 	private String source;
@@ -178,5 +179,4 @@ public class DataProcessorRequest extends RestRequest {
 	public void setOffset(Long offset) {
 		this.offset = offset;
 	}
-
 }

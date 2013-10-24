@@ -72,6 +72,8 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
@@ -139,6 +141,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.DELETE_DUPLICATE_QAS
 				.equalsIgnoreCase(dpReq.getAction())) {
 			deleteDuplicatedQAS(dpReq.getOffset());
+		} else if (DataProcessorRequest.CHANGE_LOCALE_TYPE_ACTION
+				.equalsIgnoreCase(dpReq.getAction())) {
+			changeLocaleType(dpReq.getSurveyId());
 		}
 		return new RestResponse();
 	}
@@ -231,6 +236,46 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				}
 			}
 		} while (cursor != null);
+	}
+
+	/**
+	 * changes the surveyedLocales attached to a survey to a different type
+	 * 1 = Point
+	 * 2 = Household
+	 * 3 = Public Institutions
+	 */
+	private void changeLocaleType(Long surveyId) {
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		SurveyDAO sDao = new SurveyDAO();
+		String cursor = null;
+		// get the desired type from the survey definition
+		Survey s = sDao.getByKey(surveyId);
+		if (s != null && s.getPointType() != null && s.getPointType().length() > 0){
+			String localeType = s.getPointType();
+
+			do {
+				List<SurveyInstance> siList = siDao.listSurveyInstanceBySurvey(surveyId, QAS_PAGE_SIZE, cursor);
+				List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+				if (siList != null && siList.size() > 0) {
+					for (SurveyInstance si : siList) {
+						if (si.getSurveyedLocaleId() != null) {
+							SurveyedLocale sl = slDao.getByKey(si.getSurveyedLocaleId());
+							if (sl != null && !sl.getLocaleType().equals(localeType)) {
+								sl.setLocaleType(localeType);
+								slList.add(sl);
+							}
+						}
+					}
+					slDao.save(slList);
+					if (siList.size() == QAS_PAGE_SIZE) {
+						cursor = SurveyInstanceDAO.getCursor(siList);
+					} else {
+						cursor = null;
+					}
+				}
+			} while (cursor != null);
+		}
 	}
 
 	private void fixNullSubmitter() {

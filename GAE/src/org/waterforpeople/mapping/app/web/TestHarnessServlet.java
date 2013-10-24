@@ -1711,6 +1711,35 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("startProjectFlagUpdate".equals(action)) {
 			DataProcessorRestServlet.sendProjectUpdateTask(
 					req.getParameter("country"), null);
+		} else if ("changeLocaleType".equals(action)) {
+			String surveyId = req
+					.getParameter(DataProcessorRequest.SURVEY_ID_PARAM);
+			if (surveyId == null) {
+				try {
+					resp.getWriter()
+					.println("surveyId parameter missing");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return;
+			}
+
+			TaskOptions options = TaskOptions.Builder.withUrl(
+				"/app_worker/dataprocessor").param(
+				DataProcessorRequest.ACTION_PARAM,
+				DataProcessorRequest.CHANGE_LOCALE_TYPE_ACTION);
+
+			if (req.getParameter("bypassBackend") == null
+					|| !req.getParameter("bypassBackend").equals("true")) {
+				// change the host so the queue invokes the backend
+				options = options.header("Host",BackendServiceFactory.getBackendService()
+					.getBackendAddress("dataprocessor"));
+			}
+			options.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId);
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
 		} else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
 				.equals(action)) {
 			TaskOptions options = TaskOptions.Builder.withUrl(
