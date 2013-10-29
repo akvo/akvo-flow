@@ -91,20 +91,31 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 			if (importReq.getSurveyInstanceId() != null
 					&& importReq.getSurveyId() != null) {
 
-				SurveyInstance si = new SurveyInstanceDAO().getByKey(importReq.getSurveyInstanceId());
+				SurveyInstance si = new SurveyInstanceDAO().getByKey(importReq
+						.getSurveyInstanceId());
 
-				if (si != null
-						&& !si.getSurveyId().equals(importReq.getSurveyId())) {
-
+				if (si == null) {
 					MessageDao mDao = new MessageDao();
 					Message message = new Message();
 
 					message.setObjectId(importReq.getSurveyInstanceId());
 					message.setActionAbout("importData");
-					message.setShortMessage("Wrong survey selected for instance id ["
+					message.setShortMessage("Survey instance id ["
+							+ importReq.getSurveyInstanceId()
+							+ "] doesn't exist");
+					mDao.save(message);
+					return null;
+				}
+
+				if (!si.getSurveyId().equals(importReq.getSurveyId())) {
+					MessageDao mDao = new MessageDao();
+					Message message = new Message();
+
+					message.setObjectId(importReq.getSurveyInstanceId());
+					message.setActionAbout("importData");
+					message.setShortMessage("Wrong survey selected when importing instance id ["
 							+ importReq.getSurveyInstanceId() + "]");
 					mDao.save(message);
-
 					return null;
 				}
 			}
