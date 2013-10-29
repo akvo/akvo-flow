@@ -368,8 +368,11 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				// if we have geoinformation, we will use it on the locale provided that:
 				// 1) it is a new Locale, or 2) it was brought in as meta information, meaning it should 
 				// overwrite previous locale geo information
-				if (geoPlace != null && (instance.getLocaleGeoLocation() != null || !useExistingLocale)){
-					setGeoData(geoPlace, locale);
+				if (instance.getLocaleGeoLocation() != null || !useExistingLocale){
+					if (geoPlace != null) {
+						setGeoData(geoPlace, locale);
+					}
+
 					if (lat != UNSET_VAL && lon != UNSET_VAL) {
 						locale.setLatitude(lat);
 						locale.setLongitude(lon);
