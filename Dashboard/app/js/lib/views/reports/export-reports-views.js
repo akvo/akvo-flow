@@ -129,6 +129,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   selectedSurvey:null,
 
   didInsertElement: function () {
+    FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.uploader.registerEvents();
   },
 
@@ -176,7 +177,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
 
   importFile: function () {
     var file;
-    if (!this.get('selectedSurvey')) {
+    if (!FLOW.selectedControl.selectedSurvey) {
       this.showImportWarning(Ember.String.loc('_import_select_survey'));
       return;
     }
