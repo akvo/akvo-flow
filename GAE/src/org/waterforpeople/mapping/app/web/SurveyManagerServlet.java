@@ -147,8 +147,14 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				.equalsIgnoreCase(req.getAction())) {
 			if (mgrReq.getSurveyId() != null) {
 				SurveyDAO surveyDao = new SurveyDAO();
+				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				Survey survey = surveyDao.getById(mgrReq.getSurveyId());
+				String sgName = null;
 				if (survey != null) {
+					SurveyGroup sg = sgDao.getByKey(survey.getSurveyGroupId());
+					if (sg != null) {
+						sgName = sg.getCode();
+					}
 					StringBuilder sb = new StringBuilder();
 					sb.append(survey.getKey().getId() + ",")
 							.append(survey.getName() != null ? survey.getName()
@@ -160,7 +166,9 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 							.append(survey.getVersion() != null ? survey
 									.getVersion() : "1")
 							.append(",")
-							.append(survey.getSurveyGroupId().toString());
+							.append(survey.getSurveyGroupId().toString())
+							.append(",")
+							.append(sgName != null ? sgName : "null");
 					resp.setMessage(sb.toString());
 				}
 			}
@@ -205,19 +213,25 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 	private String getSurveyForPhone(String devicePhoneNumber, String imei) {
 		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
+		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		Map<Long, Double> versionMap = new HashMap<Long, Double>();
 		StringBuilder sb = new StringBuilder();
 		Long surveyGroupId = null;
+		String sgName = null;
 
 		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
 			Double ver = versionMap.get(dsjq.getSurveyID());
 			if (ver == null) {
 				Survey s = surveyDao.getById(dsjq.getSurveyID());
 				if (s != null) {
+					surveyGroupId = s.getSurveyGroupId();
+					SurveyGroup sg = sgDao.getByKey(s.getSurveyGroupId());
+					if (sg != null) {
+						sgName = sg.getCode();
+					}
 					if (s.getVersion() != null) {
 						versionMap.put(dsjq.getSurveyID(), s.getVersion());
 						ver = s.getVersion();
-						surveyGroupId = s.getSurveyGroupId();
 					} else {
 						versionMap.put(dsjq.getSurveyID(), new Double(1.0));
 						ver = new Double(1.0);
@@ -231,7 +245,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 			}
 			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
 					+ dsjq.getName() + "," + dsjq.getLanguage() + "," + ver
-					+ "," + surveyGroupId
+					+ "," + surveyGroupId + "," + sgName != null ? sgName : "null" 
 					+ "\n");
 		}
 		return sb.toString();
