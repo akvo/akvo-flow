@@ -592,6 +592,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			qXML.setType(FREE_QUESTION_TYPE);
 		} else if (q.getType().equals(Question.Type.GEO)) {
 			qXML.setType(GEO_QUESTION_TYPE);
+			// add locked flag if the geoLocked field is true in the question
+			if (q.getGeoLocked() != null && q.getGeoLocked()){
+				qXML.setLocked(q.getGeoLocked().toString());
+			}
 		} else if (q.getType().equals(Question.Type.NUMBER)) {
 			qXML.setType(FREE_QUESTION_TYPE);
 			if (!hasValidation) {
