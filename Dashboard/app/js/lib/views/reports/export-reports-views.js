@@ -126,57 +126,56 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showComprehensiveDialog: false,
   showRawDataImportApplet: false,
   showGoogleEarthButton: false,
-  selectedSurvey:null,
 
   didInsertElement: function () {
+    FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.uploader.registerEvents();
   },
 
+  selectedSurvey: function () {
+	  return FLOW.selectedControl.selectedSurvey.get('keyId');
+  }.property(),
+
   showRawDataReport: function () {
-    if (!this.get('selectedSurvey')) {
+	var sId = this.get('selectedSurvey');
+    if (!sId) {
       this.showWarning();
       return;
     }
-    FLOW.ReportLoader.load('RAW_DATA', this.selectedSurvey.get('id'));
+    FLOW.ReportLoader.load('RAW_DATA', sId);
   },
   
   showRawTextFileExport: function () {
-    if (!this.get('selectedSurvey')) {
+	var sId = this.get('selectedSurvey');
+    if (!sId) {
 	  this.showWarning();
     return;
 	}
-	FLOW.ReportLoader.load('RAW_DATA_TEXT', this.selectedSurvey.get('id'));
+	FLOW.ReportLoader.load('RAW_DATA_TEXT', sId);
   },
 
   showComprehensiveReport: function () {
-    var opts = {};
+    var opts = {}, sId = this.get('selectedSurvey');
     this.set('showComprehensiveDialog', false);
 
     opts.performRollup = '' + FLOW.editControl.summaryPerGeoArea;
     opts.nocharts = '' + FLOW.editControl.omitCharts;
 
-    FLOW.ReportLoader.load('GRAPHICAL_SURVEY_SUMMARY', this.selectedSurvey.get('id'), opts);
-  },
-
-  showGoogleEarthFile: function () {
-    if (!this.get('selectedSurvey')) {
-      this.showWarning();
-      return;
-    }
-    this.renderApplet('showGoogleEarthFileApplet', true);
+    FLOW.ReportLoader.load('GRAPHICAL_SURVEY_SUMMARY', sId, opts);
   },
 
   showSurveyForm: function () {
-    if (!this.get('selectedSurvey')) {
+	var sId = this.get('selectedSurvey');
+    if (!sId) {
       this.showWarning();
       return;
     }
-    FLOW.ReportLoader.load('SURVEY_FORM', this.selectedSurvey.get('id'));
+    FLOW.ReportLoader.load('SURVEY_FORM', sId);
   },
 
   importFile: function () {
-    var file;
-    if (!this.get('selectedSurvey')) {
+    var file, sId = this.get('selectedSurvey');
+    if (!sId) {
       this.showImportWarning(Ember.String.loc('_import_select_survey'));
       return;
     }
@@ -193,7 +192,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showComprehensiveOptions: function () {
-    if (!this.get('selectedSurvey')) {
+	var sId = this.get('selectedSurvey');
+    if (!sId) {
       this.showWarning();
       return;
     }
