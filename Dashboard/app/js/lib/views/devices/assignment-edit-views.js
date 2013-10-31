@@ -81,11 +81,33 @@ FLOW.AssignmentEditView = FLOW.View.extend({
     FLOW.selectedControl.set('selectedSurveyAssignment', null);
   }.observes('FLOW.router.navigationController.selected', 'FLOW.router.devicesSubnavController.selected'),
 
+  assignmentNotComplete: function () {
+	  if (Ember.empty(this.get('assignmentName'))) {
+		  FLOW.dialogControl.set('activeAction', 'ignore');
+		  FLOW.dialogControl.set('header', Ember.String.loc('_assignment_name_not_set'));
+		  FLOW.dialogControl.set('message', Ember.String.loc('_assignment_name_not_set_text'));
+		  FLOW.dialogControl.set('showCANCEL', false);
+		  FLOW.dialogControl.set('showDialog', true);
+		  return true;
+	  }
+	  if (Ember.none(FLOW.dateControl.get('toDate')) || Ember.none(FLOW.dateControl.get('fromDate'))) {
+		  FLOW.dialogControl.set('activeAction', 'ignore');
+		  FLOW.dialogControl.set('header', Ember.String.loc('_date_not_set'));
+		  FLOW.dialogControl.set('message', Ember.String.loc('_date_not_set_text'));
+		  FLOW.dialogControl.set('showCANCEL', false);
+		  FLOW.dialogControl.set('showDialog', true);
+		  return true;
+	  }
+	  return false;
+  },
+
   saveSurveyAssignment: function () {
     var sa, endDateParse, startDateParse, devices = [],
       surveys = [];
+    if (this.assignmentNotComplete()){
+		return;
+	}
     sa = FLOW.selectedControl.get('selectedSurveyAssignment');
-
     sa.set('name', this.get('assignmentName'));
 
     if (!Ember.none(FLOW.dateControl.get('toDate'))) {
