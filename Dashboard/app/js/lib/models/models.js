@@ -107,6 +107,9 @@ FLOW.Question = FLOW.BaseModel.extend({
   allowSign: DS.attr('boolean', {
     defaultValue: false
   }),
+  geoLocked: DS.attr('boolean', {
+	    defaultValue: false
+	  }),
   collapseable: DS.attr('boolean', {
     defaultValue: false
   }),

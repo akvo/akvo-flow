@@ -40,6 +40,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private List<Long> questionOptions = null;
 	private Boolean mandatoryFlag = null;
 	private Boolean dependentFlag = null;
+	private Boolean geoLocked = null;
 	private Long dependentQuestionId;
 	private String dependentQuestionAnswer;
 	private Long metricId;
@@ -368,5 +369,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
 	public void setSourceId(Long sourceId) {
 		this.sourceId = sourceId;
+	}
+
+	public Boolean getGeoLocked() {
+		return geoLocked;
+	}
+
+	public void setGeoLocked(Boolean geoLocked) {
+		this.geoLocked = geoLocked;
 	}
 }
