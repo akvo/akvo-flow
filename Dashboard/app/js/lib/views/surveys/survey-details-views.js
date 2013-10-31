@@ -80,6 +80,26 @@ FLOW.SurveySidebarView = FLOW.View.extend({
     return FLOW.questionGroupControl.content.toArray().length;
   }.property('FLOW.questionGroupControl.content.@each'),
 
+  surveyNotComplete: function () {
+	 if (Ember.empty(this.get('surveyTitle'))) {
+		 FLOW.dialogControl.set('activeAction', 'ignore');
+		 FLOW.dialogControl.set('header', Ember.String.loc('_survey_title_not_set'));
+		 FLOW.dialogControl.set('message', Ember.String.loc('_survey_title_not_set_text'));
+		 FLOW.dialogControl.set('showCANCEL', false);
+		 FLOW.dialogControl.set('showDialog', true);
+		 return true;
+	 }
+	 if (Ember.empty(this.get('surveyPointType'))) {
+		 FLOW.dialogControl.set('activeAction', 'ignore');
+		 FLOW.dialogControl.set('header', Ember.String.loc('_survey_type_not_set'));
+		 FLOW.dialogControl.set('message', Ember.String.loc('_survey_type_not_set_text'));
+		 FLOW.dialogControl.set('showCANCEL', false);
+		 FLOW.dialogControl.set('showDialog', true);
+		 return true;
+	 }
+	 return false;
+  },
+  
   doManageTranslations: function () {
 	// check if we have questions that are still loading
 	if (!FLOW.questionControl.content.get('isLoaded')){
@@ -105,16 +125,9 @@ FLOW.SurveySidebarView = FLOW.View.extend({
   
   doSaveSurvey: function () {
     var survey;
-    // validation
-    if (this.get('surveyPointType') === null) {
-      FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', Ember.String.loc('_survey_type_not_set'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_survey_type_not_set_text'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-      return;
-    }
-
+    if (this.surveyNotComplete()){
+		return;
+	}
     survey = FLOW.selectedControl.get('selectedSurvey');
     survey.set('name', this.get('surveyTitle'));
     survey.set('code', this.get('surveyTitle'));
