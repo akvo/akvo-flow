@@ -102,6 +102,15 @@ FLOW.SurveySidebarView = FLOW.View.extend({
   
   doManageTranslations: function () {
 	// check if we have questions that are still loading
+	if (Ember.none(FLOW.questionControl.get('content'))){
+	  	FLOW.dialogControl.set('activeAction', "ignore");
+	  	FLOW.dialogControl.set('header', Ember.String.loc('_no_questions'));
+	  	FLOW.dialogControl.set('message', Ember.String.loc('_no_questions_text'));
+	  	FLOW.dialogControl.set('showCANCEL', false);
+	  	FLOW.dialogControl.set('showDialog', true);
+	    return;
+	}
+	// check if we have questions that are still loading
 	if (!FLOW.questionControl.content.get('isLoaded')){
   		FLOW.dialogControl.set('activeAction', "ignore");
   	    FLOW.dialogControl.set('header', Ember.String.loc('_questions_still_loading'));
@@ -110,6 +119,9 @@ FLOW.SurveySidebarView = FLOW.View.extend({
   	    FLOW.dialogControl.set('showDialog', true);
   		return;
   	}
+	if (this.surveyNotComplete()){
+		return;
+	}
 	// check if we have any unsaved changes
 	survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
 	this.setIsDirty();
@@ -121,6 +133,24 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 	    return;
 	}
 	FLOW.router.transitionTo('navSurveys.navSurveysEdit.manageTranslations');
+  },
+  
+  
+  doManageNotifications: function () {
+	if (this.surveyNotComplete()){
+		return;
+	}
+	// check if we have any unsaved changes
+	survey = FLOW.store.find(FLOW.Survey, FLOW.selectedControl.selectedSurvey.get('keyId'));
+	this.setIsDirty();
+	if (!Ember.none(survey) && this.get('isDirty')) {
+		 FLOW.dialogControl.set('activeAction', "ignore");
+		 FLOW.dialogControl.set('header', Ember.String.loc('_you_have_unsaved_changes'));
+		 FLOW.dialogControl.set('message', Ember.String.loc('_before_notifications_save'));
+		 FLOW.dialogControl.set('showCANCEL', false);      FLOW.dialogControl.set('showDialog', true);
+		 return;
+	}
+	FLOW.router.transitionTo('navSurveys.navSurveysEdit.manageNotifications');
   },
   
   doSaveSurvey: function () {
