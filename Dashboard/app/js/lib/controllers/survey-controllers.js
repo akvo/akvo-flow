@@ -156,6 +156,7 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     var surveyGroup;
     surveyGroup = FLOW.store.find(FLOW.SurveyGroup, keyId);
     surveyGroup.deleteRecord();
+    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedSurveyGroup', null);
   }
@@ -334,6 +335,7 @@ FLOW.questionControl = Ember.ArrayController.create({
     });
     // restore order in case the order has gone haywire
     this.restoreOrder(questionsInGroup);
+    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
   },
 
