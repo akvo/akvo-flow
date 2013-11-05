@@ -180,7 +180,9 @@ FLOW.AssignmentEditView = FLOW.View.extend({
   selectAllSurveys: function () {
     var selected = Ember.A([]);
     FLOW.surveyControl.get('content').forEach(function (item) {
-      selected.pushObject(item);
+      if (item.get('status') == "PUBLISHED") {
+    	  selected.pushObject(item);
+      }
     });
     FLOW.selectedControl.set('selectedSurveys', selected);
   },
