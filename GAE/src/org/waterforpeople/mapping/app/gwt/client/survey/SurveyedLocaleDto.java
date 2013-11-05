@@ -40,6 +40,7 @@ public class SurveyedLocaleDto extends BaseDto {
 	private String sublevel4;
 	private String sublevel5;
 	private String sublevel6;
+	private List<Long> surveyInstanceContrib;
 	private String localeType;
 	private Double latitude;
 	private Double longitude;
@@ -200,6 +201,14 @@ public class SurveyedLocaleDto extends BaseDto {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+
+	public List<Long> getSurveyInstanceContrib() {
+		return surveyInstanceContrib;
+	}
+
+	public void setSurveyInstanceContrib(List<Long> surveyInstanceContrib) {
+		this.surveyInstanceContrib = surveyInstanceContrib;
 	}
 
 }

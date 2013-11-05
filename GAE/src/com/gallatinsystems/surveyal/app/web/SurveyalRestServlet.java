@@ -360,6 +360,19 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				locale.setLastSurveyedDate(instance.getCollectionDate());
 				locale.setLastSurveyalInstanceId(instance.getKey().getId());
 
+				// add surveyInstanceId to list of contributed surveyInstances
+				List<Long> surveyInstanceContrib = locale.getSurveyInstanceContrib();
+				if (surveyInstanceContrib == null) {
+					List<Long> newList = new ArrayList<Long>();
+					newList.add(instance.getKey().getId());
+					locale.setSurveyInstanceContrib(newList);
+				} else {
+					if (!surveyInstanceContrib.contains(instance.getKey().getId())) {
+						surveyInstanceContrib.add(instance.getSurveyId());
+						locale.setSurveyInstanceContrib(surveyInstanceContrib);
+						}
+					}
+
 				if (instance.getSurveyedLocaleDisplayName() != null && 
 						instance.getSurveyedLocaleDisplayName().length() > 0){
 					locale.setDisplayName(instance.getSurveyedLocaleDisplayName());

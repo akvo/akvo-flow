@@ -67,6 +67,8 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
@@ -130,6 +132,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				.equalsIgnoreCase(dpReq.getAction())) {
 			surveyInstanceSummarizer(dpReq.getSurveyInstanceId(),
 					dpReq.getQasId(), dpReq.getDelta());
+		} else if (DataProcessorRequest.ADD_SURVEY_INSTANCE_TO_LOCALES_ACTION
+					.equalsIgnoreCase(dpReq.getAction())) {
+			addSurveyInstanceToLocales(dpReq.getCursor());
 		} else if (DataProcessorRequest.DELETE_DUPLICATE_QAS
 				.equalsIgnoreCase(dpReq.getAction())) {
 			deleteDuplicatedQAS(dpReq.getOffset());
@@ -688,6 +693,65 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			}
 		}
 	}
+
+	/**
+	 * runs over all surveydLocale objects, and populates:
+	 * the Geocells field based on the latitude and longitude.
+	 * the list of surveyInstances that have contributed to this surveyedLocale
+	 *
+	 * New surveyedLocales will have these fields populated automatically, this 
+	 * method is to update legacy data.
+	 * 
+	 * This method is invoked as a URL request: 
+	 * http://..../rest/actions?action=addSurveyInstanceToLocales
+	 * @param cursor
+	 */
+	private void addSurveyInstanceToLocales(String cursor) {
+		log.log(Level.INFO, "adding surveyInstance ids to locales. Cursor at " + cursor);
+		List<SurveyedLocale> slList = null;
+		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		slList = slDao.list(cursor);
+		String newCursor = SurveyedLocaleDao.getCursor(slList);
+		Integer num = slList.size();
+
+		if (slList != null && slList.size() > 0) {
+			for (SurveyedLocale sl : slList) {
+				// populate surveyIdContrib
+				List<SurveyInstance> siList = siDao.listInstancesByLocale(sl
+						.getKey().getId(), null, null, null);
+
+				if (siList != null && siList.size() > 0) {
+					List<Long> surveyInstanceContrib = sl.getSurveyInstanceContrib();
+					if (surveyInstanceContrib == null) {
+						List<Long> newList = new ArrayList<Long>();
+						for (SurveyInstance si : siList) {
+							newList.add(si.getSurveyId());
+						}
+						sl.setSurveyInstanceContrib(newList);
+					} else {
+						for (SurveyInstance si : siList) {
+							if (!surveyInstanceContrib.contains(si
+									.getSurveyId())) {
+								surveyInstanceContrib.add(si.getSurveyId());
+							}
+						}
+						sl.setSurveyInstanceContrib(surveyInstanceContrib);
+					}
+				}
+				slDao.save(sl);
+			}
+		}
+
+		if (num > 0) {
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.ADD_SURVEY_INSTANCE_TO_LOCALES_ACTION)
+					.param("cursor", newCursor));
+		}
+	};
 
 	public static void surveyInstanceSummarizer(Long surveyInstanceId,
 			Long qasId, Integer delta) {

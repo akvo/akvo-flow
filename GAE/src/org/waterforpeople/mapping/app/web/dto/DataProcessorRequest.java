@@ -47,6 +47,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String DELTA_PARAM = "delta";
 	public static final String API_KEY_PARAM = "apiKey";
 	public static final String OFFSET_PARAM = "offset";
+	public static final String ADD_SURVEY_INSTANCE_TO_LOCALES_ACTION = "addSurveyInstanceToLocales";
 
 	private String country;
 	private String source;

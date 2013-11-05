@@ -51,6 +51,7 @@ public class SurveyedLocale extends BaseDomain {
 	private String sublevel4;
 	private String sublevel5;
 	private String sublevel6;
+	private List<Long> surveyInstanceContrib;
 	private String localeType;
 	private Double latitude;
 	private Double longitude;
@@ -224,6 +225,14 @@ public class SurveyedLocale extends BaseDomain {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+
+	public List<Long> getSurveyInstanceContrib() {
+		return surveyInstanceContrib;
+	}
+
+	public void setSurveyInstanceContrib(List<Long> surveyInstanceContrib) {
+		this.surveyInstanceContrib = surveyInstanceContrib;
 	}
 
 }
