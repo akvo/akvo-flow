@@ -217,15 +217,18 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		Map<Long, Double> versionMap = new HashMap<Long, Double>();
 		StringBuilder sb = new StringBuilder();
 		Long surveyGroupId = null;
-		String sgName = null;
-
+		String sgName;
+		String surveyName;
 		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
 			Double ver = versionMap.get(dsjq.getSurveyID());
+			sgName = "unknown";
+			surveyName = "unknown";
 			if (ver == null) {
 				Survey s = surveyDao.getById(dsjq.getSurveyID());
 				if (s != null) {
 					surveyGroupId = s.getSurveyGroupId();
 					SurveyGroup sg = sgDao.getByKey(s.getSurveyGroupId());
+					surveyName = s.getName();
 					if (sg != null) {
 						sgName = sg.getCode();
 					}
@@ -244,9 +247,8 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				}
 			}
 			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
-					+ dsjq.getName() + "," + dsjq.getLanguage() + "," + ver
-					+ "," + surveyGroupId + "," + sgName != null ? sgName : "null" 
-					+ "\n");
+					+ surveyName + "," + dsjq.getLanguage() + "," + ver
+					+ "," + surveyGroupId + "," + sgName + "\n");
 		}
 		return sb.toString();
 	}
