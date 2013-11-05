@@ -219,36 +219,33 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		Long surveyGroupId = null;
 		String sgName;
 		String surveyName;
+		String isInMonitoringGroup;
+		String newLocaleSurveyId;
 		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
 			Double ver = versionMap.get(dsjq.getSurveyID());
-			sgName = "unknown";
-			surveyName = "unknown";
-			if (ver == null) {
-				Survey s = surveyDao.getById(dsjq.getSurveyID());
-				if (s != null) {
-					surveyGroupId = s.getSurveyGroupId();
-					SurveyGroup sg = sgDao.getByKey(s.getSurveyGroupId());
-					surveyName = s.getName();
-					if (sg != null) {
-						sgName = sg.getCode();
-					}
-					if (s.getVersion() != null) {
-						versionMap.put(dsjq.getSurveyID(), s.getVersion());
-						ver = s.getVersion();
-					} else {
-						versionMap.put(dsjq.getSurveyID(), new Double(1.0));
-						ver = new Double(1.0);
-					}
+			Survey s = surveyDao.getById(dsjq.getSurveyID());
+			surveyGroupId = s.getSurveyGroupId();
+			SurveyGroup sg = sgDao.getByKey(s.getSurveyGroupId());
 
+			if (s != null && sg != null) {
+				surveyName = s.getName();
+				sgName = sg.getCode() != null ? sg.getCode() : "unknown";
+				isInMonitoringGroup = sg.getIsMonitoringGroupFlag() != null ? sg.getIsMonitoringGroupFlag().toString() : "false";
+				newLocaleSurveyId = sg.getNewLocaleSurveyId() != null ? sg.getNewLocaleSurveyId().toString() : "null";
+				if (s.getVersion() != null) {
+					versionMap.put(dsjq.getSurveyID(), s.getVersion());
+					ver = s.getVersion();
 				} else {
-					// for testing so I can mock a version for local survey
-					Random rand = new Random();
-					ver = rand.nextDouble();
+					versionMap.put(dsjq.getSurveyID(), new Double(1.0));
+					ver = new Double(1.0);
 				}
-			}
+
 			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
 					+ surveyName + "," + dsjq.getLanguage() + "," + ver
-					+ "," + surveyGroupId + "," + sgName + "\n");
+					+ "," + surveyGroupId + "," + sgName
+					+ "," + isInMonitoringGroup + "," + newLocaleSurveyId
+					+ "\n");
+				}
 		}
 		return sb.toString();
 	}
