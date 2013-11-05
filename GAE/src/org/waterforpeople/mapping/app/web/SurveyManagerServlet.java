@@ -150,10 +150,14 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				Survey survey = surveyDao.getById(mgrReq.getSurveyId());
 				String sgName = null;
+				String isInMonitoringGroup = "false";
+				String newLocaleSurveyId = "null";
 				if (survey != null) {
 					SurveyGroup sg = sgDao.getByKey(survey.getSurveyGroupId());
 					if (sg != null) {
 						sgName = sg.getCode();
+						isInMonitoringGroup = sg.getIsMonitoringGroupFlag() != null ? sg.getIsMonitoringGroupFlag().toString() : "false";
+						newLocaleSurveyId = sg.getNewLocaleSurveyId() != null ? sg.getNewLocaleSurveyId().toString() : "null";
 					}
 					StringBuilder sb = new StringBuilder();
 					sb.append(survey.getKey().getId() + ",")
@@ -168,7 +172,10 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 							.append(",")
 							.append(survey.getSurveyGroupId().toString())
 							.append(",")
-							.append(sgName != null ? sgName : "null");
+							.append(sgName != null ? sgName : "null")
+							.append(isInMonitoringGroup)
+							.append(",")
+							.append(newLocaleSurveyId);
 					resp.setMessage(sb.toString());
 				}
 			}
