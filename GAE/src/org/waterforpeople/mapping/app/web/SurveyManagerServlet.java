@@ -173,6 +173,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 							.append(survey.getSurveyGroupId().toString())
 							.append(",")
 							.append(sgName != null ? sgName : "null")
+							.append(",")
 							.append(isInMonitoringGroup)
 							.append(",")
 							.append(newLocaleSurveyId);
