@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;/choice>
  *       &lt;attribute name="order" use="required" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="locked" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
+ *       &lt;attribute name="requireDoubleEntry" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="mandatory" use="required">
  *         &lt;simpleType>
@@ -83,6 +84,10 @@ public class Question {
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	@XmlSchemaType(name = "NMTOKEN")
 	protected String locked;
+	@XmlAttribute
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	@XmlSchemaType(name = "NMTOKEN")
+	protected String requireDoubleEntry;
 	@XmlAttribute(required = true)
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	@XmlSchemaType(name = "NMTOKEN")
@@ -250,10 +255,33 @@ public class Question {
 	 *            allowed object is {@link String }
 	 * 
 	 */
+	public void setRequireDoubleEntry(String value) {
+		this.requireDoubleEntry = value;
+	}
+
+	/**
+	 * Gets the value of the locked property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getRequireDoubleEntry() {
+		return requireDoubleEntry;
+	}
+
+	/**
+	 * Sets the value of the locked property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
 	public void setLocked(String value) {
 		this.locked = value;
 	}
 
+	
+	
 	/**
 	 * Gets the value of the type property.
 	 * 

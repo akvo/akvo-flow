@@ -1,158 +1,169 @@
 {{#unless view.zeroItemQuestion}}
 
 <div class="innerContent" id="innerContent_01">
-  {{#if view.amOpenQuestion}}
-    <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
-    <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.text" size=100 }}</label>
-    <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
- 
-    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
+	{{#if view.amOpenQuestion}}
+	<h1 class="questionNbr">
+		<span>{{view.content.order}}} </span>{{view.content.text}}
+	</h1>
+	<label>{{t _question_text}}: {{view Ember.TextField
+		valueBinding="view.text" size=100 }}</label> <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100
+		}}
+	</label> <label class="labelcheckbox">{{view Ember.Checkbox
+		checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label> {{#if view.undef
+	}} <label class="selectinLabel"><span>{{t _tag}}
+			{{tooltip _what_is_tag}}:</span> {{view Ember.Select
+		contentBinding="FLOW.attributeControl.content"
+		optionLabelPath="content.name" optionValuePath="content.keyId"
+		selectionBinding="view.attribute" prompt=""
+		promptBinding="Ember.STRINGS._select_tag"}} <a
+		{{action "showAddAttributeDialog" target="this"
+		}} class="addAttribute"><span>+</span>{{t _add_tag}} </a> </label> {{#if
+	view.attribute}}<label class="labelcheckbox">{{view
+		Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}} {{/if}} <label class="selectinLabel"><span>{{t _question_type}}:</span> {{view Ember.Select
+		contentBinding="FLOW.questionTypeControl.content"
+		optionLabelPath="content.label" optionValuePath="content.value"
+		selectionBinding="view.type" }} </label>
 
-    {{#if view.undef }}
-    <label class="selectinLabel"><span>{{t _tag}} {{tooltip _what_is_tag}}:</span> {{view Ember.Select 
-      contentBinding="FLOW.attributeControl.content" 
-      optionLabelPath="content.name" 
-      optionValuePath="content.keyId" 
-      selectionBinding="view.attribute"
-      prompt=""
-      promptBinding="Ember.STRINGS._select_tag"}}
-	   <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _add_tag}} </a> </label>
-      {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
-    {{/if}}
+	<!-- Question specific material -->
+	<div class="questionOption floats-in">
 
-    <label class="selectinLabel"><span>{{t _question_type}}:</span> {{view Ember.Select 
-      contentBinding="FLOW.questionTypeControl.content" 
-      optionLabelPath="content.label" 
-      optionValuePath="content.value" 
-      selectionBinding="view.type" }} </label>
-  
-    <!-- Question specific material --> 
-<div class="questionOption floats-in">
-
-    {{#if view.amOptionType}}
-      <h1 class="answerNbr">{{t _option_details}}: </h1>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowOtherFlag"}}{{t _allow_other}} </label>
-      <br>
-      <p><strong>{{t _options}}:&nbsp;</strong><span class="fadedText"> ({{t _enter_each_choice_on_a_separate_line}})</span> </p>
-      {{view Ember.TextArea valueBinding="view.optionList" size="100" rows="7" }}  
-    {{/if}}                 
-    
-    {{#if view.amNumberType}}
-	  <h1 class="answerNbr">{{t _number_details}}: </h1>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimal"}}{{t _allow_decimal_point}} </label>
-
-      <label class="minValNumb">{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label>
-      <label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
-    {{/if}} 
-     {{#if view.amGeoType}}
-	  <h1 class="answerNbr">{{t _geo_details}}: </h1>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
-    {{/if}}
-
-    {{#if view.amNoOptionsType}}
-		<p class="noOptions">
-		  {{t _no_options_for_this_question_type}}
+		{{#if view.amOptionType}}
+		<h1 class="answerNbr">{{t _option_details}}:</h1>
+		<label class="labelcheckbox"> {{view Ember.Checkbox
+			checkedBinding="view.allowMultipleFlag"}}{{t _allow_multiple}} </label> <label
+			class="labelcheckbox"> {{view Ember.Checkbox
+			checkedBinding="view.allowOtherFlag"}}{{t _allow_other}} </label> <br>
+		<p>
+			<strong>{{t _options}}:&nbsp;</strong><span class="fadedText">
+				({{t _enter_each_choice_on_a_separate_line}})</span>
 		</p>
-    {{/if}}
+		{{view Ember.TextArea valueBinding="view.optionList" size="100"
+		rows="7" }} 
+		{{/if}} 
+		{{#if view.amFreeTextType}}
+		<label class="labelcheckbox"> {{view Ember.Checkbox
+			checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>		
+		{{/if}}
+		{{#if view.amNumberType}}
+		<h1 class="answerNbr">{{t _number_details}}:</h1>
+		<label class="labelcheckbox"> {{view Ember.Checkbox
+			checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>
+		<label class="labelcheckbox"> {{view Ember.Checkbox
+			checkedBinding="view.allowSign"}}{{t _allow_sign}} </label> <label
+			class="labelcheckbox"> {{view Ember.Checkbox
+			checkedBinding="view.allowDecimal"}}{{t _allow_decimal_point}} </label> <label
+			class="minValNumb">{{t _min_val}}: {{view Ember.TextField
+			valueBinding="view.minVal" size=10 }}</label> <label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10
+			}}</label> {{/if}} {{#if view.amGeoType}}
+		<h1 class="answerNbr">{{t _geo_details}}:</h1>
+		<label class="labelcheckbox"> {{view Ember.Checkbox
+			checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
+		{{/if}} 
+		{{#if view.amNoOptionsType}}
+		<p class="noOptions">{{t _no_options_for_this_question_type}}</p>
+		{{/if}}
 
+	</div>
+	<div class="dependencyBlock">
+		<label class="labelcheckbox">{{view Ember.Checkbox
+			checkedBinding="view.dependentFlag"}}{{t _dependent}} </label> {{#if
+		view.dependentFlag}} <label class="selectinLabel dependencySelect">
+			{{t _dependent_question}}: {{view Ember.Select
+			contentBinding="FLOW.questionControl.earlierOptionQuestions"
+			selectionBinding="FLOW.selectedControl.dependentQuestion"
+			optionLabelPath="content.text" optionValuePath="content.keyId"
+			prompt="Select question"}}</label> {{/if}} {{#if view.dependentFlag}} {{#if
+		FLOW.selectedControl.dependentQuestion}}
+		<div class="qDependency">{{t _answer_of_dependent_question}}:</div>
+		{{#each item in FLOW.optionListControl.content}} <label>{{view
+			Ember.Checkbox checkedBinding="item.isSelected"}}{{item.value}}</label>
+		{{/each}} {{/if}} {{/if}}
+	</div>
+	<!-- add attribute dialog-->
+	<div {{bindAttr
+		class="view.showAddAttributeDialogBool:display :overlay"}}>
+		<div class="blanket"></div>
+		<div class="dialogWrap">
+			<!-- the dialog contents -->
+			<div class="confirmDialog dialog">
+				<h2>{{t _add_attribute}}</h2>
+				<p class="dialogMsg">Please provide a name, an optional group,
+					and a value type for the attribute</p>
+				<br /> <label for="newAttributeName">Attribute name:</label> {{view
+				Ember.TextField valueBinding="view.newAttributeName"
+				id="newAttributeName" size=40}} <label for="newAttributeGroup">Group:</label>
+				{{view Ember.TextField valueBinding="view.newAttributeGroup"
+				id="newAttributeGroup" size=40}} <label>Value type:</label> {{view
+				Ember.Select contentBinding="FLOW.attributeTypeControl.content"
+				selectionBinding="view.newAttributeType"
+				optionLabelPath="content.label" optionValuePath="content.value"
+				prompt="" promptBinding="Ember.STRINGS._select_value_type"}}
+
+				<div class="buttons menuCentre">
+					<ul>
+						<li><a {{action "doAddAttribute" target="this"
+							}} class="ok smallBtn">SAVE</a></li>
+						<li><a {{action "cancelAddAttribute" target="this"
+							}}} class="cancel">CANCEL</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End question specific material -->
+	<nav>
+		<ul>
+			<li><a class="standardBtn" id="standardBtn_01"
+				{{action "doSaveEditQuestion" target="this"}}>Save Question</a></li>
+			<li><a class="" id="standardBtn_01"
+				{{action "doCancelEditQuestion" target="this"}}>Cancel</a></li>
+		</ul>
+	</nav>
+	{{else}}
+	<!-- nav is only displayed if question is closed -->
+	<nav class="smallMenu">
+		<ul>
+			<li><a {{action confirm FLOW.dialogControl.delQ
+				target="FLOW.dialogControl" }} class="deleteQuestion">{{t
+					_delete}}</a></li>
+			<li><a {{action "doQuestionCopy" target="this"
+				}} class="copyQuestion" id="">{{t _copy}}</a></li>
+			<li><a {{action "doQuestionMove" target="this"
+				}} class="moveQuestion" id="">{{t _move}}</a></li>
+			<li><a {{action "doQuestionEdit" target="this"
+				}} class="editQuestion" id="">{{t _edit}}</a></li>
+		</ul>
+	</nav>
+	<h1 class="questionNbr">
+		<span>{{view.content.order}}} </span>{{view.content.text}}
+	</h1>
+
+	{{/if}}
 </div>
-<div class="dependencyBlock">
-    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.dependentFlag"}}{{t _dependent}}
-    </label>
-
-     {{#if view.dependentFlag}}
-    <label class="selectinLabel dependencySelect"> {{t _dependent_question}}:
-        {{view Ember.Select 
-        contentBinding="FLOW.questionControl.earlierOptionQuestions" 
-        selectionBinding="FLOW.selectedControl.dependentQuestion" 
-        optionLabelPath="content.text" 
-        optionValuePath="content.keyId" 
-        prompt="Select question"}}</label>
-    {{/if}} 
-     {{#if view.dependentFlag}}
-    {{#if FLOW.selectedControl.dependentQuestion}}
-     <div class="qDependency">{{t _answer_of_dependent_question}}:</div>
-      {{#each item in FLOW.optionListControl.content}}
-        <label>{{view Ember.Checkbox checkedBinding="item.isSelected"}}{{item.value}}</label>
-      {{/each}}
-      {{/if}}
-  {{/if}}
-</div>
-<!-- add attribute dialog-->
-    <div {{bindAttr class="view.showAddAttributeDialogBool:display :overlay"}}>
-      <div class="blanket"></div>
-          <div class="dialogWrap">
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialog">
-          <h2>{{t _add_attribute}}</h2>
-          <p class="dialogMsg">Please provide a name, an optional group, and a value type for the attribute</p>
-          <br/>
-         <label for="newAttributeName">Attribute name:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
-         <label for="newAttributeGroup">Group:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
-          <label>Value type:</label>
-             {{view Ember.Select 
-            contentBinding="FLOW.attributeTypeControl.content" 
-            selectionBinding="view.newAttributeType" 
-            optionLabelPath="content.label" 
-            optionValuePath="content.value"
-            prompt=""
-            promptBinding="Ember.STRINGS._select_value_type"}}
-        
-          <div class="buttons menuCentre"> 
-            <ul>  
-               <li><a {{action "doAddAttribute" target="this"}} class="ok smallBtn">SAVE</a></li>
-              <li><a {{action "cancelAddAttribute" target="this"}}} class="cancel">CANCEL</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- End question specific material -->
-    <nav>
-      <ul>
-        <li><a class="standardBtn" id="standardBtn_01" {{action "doSaveEditQuestion" target="this"}}>Save Question</a> </li>
-        <li><a class="" id="standardBtn_01" {{action "doCancelEditQuestion" target="this"}}>Cancel</a> </li>
-      </ul>
-    </nav>
-  {{else}}   
-    <!-- nav is only displayed if question is closed -->
-    <nav class="smallMenu">
-      <ul>
-        <li><a {{action confirm FLOW.dialogControl.delQ target="FLOW.dialogControl"}} class="deleteQuestion">{{t _delete}}</a> </li>
-        <li><a {{action "doQuestionCopy" target="this"}} class="copyQuestion" id="">{{t _copy}}</a></li>
-        <li><a {{action "doQuestionMove" target="this"}} class="moveQuestion" id="">{{t _move}}</a></li>
-        <li><a {{action "doQuestionEdit" target="this"}} class="editQuestion" id="">{{t _edit}}</a></li>
-      </ul>
-    </nav>
-    <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
-
-  {{/if}} 
-  </div>
 
 {{/unless}}
-  <div>
-    {{#if view.oneSelectedForMove}}
-      <nav class="moveQMenu questionActionMenu">
-        <ul>
-          <li><a {{action "doQuestionMoveHere" target="this"}} class="smallBtn">{{t _move_question_here}}</a></li>
-          <li><a {{action "doQuestionMoveCancel" target="this"}} class="">{{t _cancel}}</a></li>
-        </ul>
-      </nav>
-    {{else}}   
-      {{#if view.oneSelectedForCopy}}
-        <nav class="copyQMenu questionActionMenu">
-          <ul>
-            <li><a {{action "doQuestionCopyHere" target="this"}} class="smallBtn">{{t _paste_question_here}}</a></li>
-            <li><a {{action "doQuestionCopyCancel" target="this"}} class="">{{t _cancel}}</a></li>
-          </ul>
-        </nav>
-       {{else}} 
-         <a {{action "doInsertQuestion" target="this"}} class="addQuestion">{{t _add_new_question}}</a> 
-      {{/if}}  
-    {{/if}} 
-  </div>
+<div>
+	{{#if view.oneSelectedForMove}}
+	<nav class="moveQMenu questionActionMenu">
+		<ul>
+			<li><a {{action "doQuestionMoveHere" target="this"
+				}} class="smallBtn">{{t _move_question_here}}</a></li>
+			<li><a {{action "doQuestionMoveCancel" target="this" }} class="">{{t
+					_cancel}}</a></li>
+		</ul>
+	</nav>
+	{{else}} {{#if view.oneSelectedForCopy}}
+	<nav class="copyQMenu questionActionMenu">
+		<ul>
+			<li><a {{action "doQuestionCopyHere" target="this"
+				}} class="smallBtn">{{t _paste_question_here}}</a></li>
+			<li><a {{action "doQuestionCopyCancel" target="this" }} class="">{{t
+					_cancel}}</a></li>
+		</ul>
+	</nav>
+	{{else}} <a {{action "doInsertQuestion" target="this"
+		}} class="addQuestion">{{t _add_new_question}}</a> {{/if}} {{/if}}
+</div>
 
 
- 
+

@@ -596,6 +596,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			if (q.getGeoLocked() != null && q.getGeoLocked()){
 				qXML.setLocked(q.getGeoLocked().toString());
 			}
+			// add requireDoubleEntry flag if the field is true in the question
+			if (q.getRequireDoubleEntry() != null && q.getRequireDoubleEntry()){
+				qXML.setRequireDoubleEntry(q.getRequireDoubleEntry().toString());
+			}
 		} else if (q.getType().equals(Question.Type.NUMBER)) {
 			qXML.setType(FREE_QUESTION_TYPE);
 			if (!hasValidation) {
