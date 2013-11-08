@@ -6,7 +6,7 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
-# 1.6.6.3
+# 1.6.7
 
 Release Date: 08 November 2013
 
@@ -15,6 +15,7 @@ Release Date: 08 November 2013
 * Fixed: Prevent user from going to notifications when there are unsaved changes (#405)
 * Fixed: User can create a new survey without completing the title field (#406)
 * Fixed: Quick fix - persmission level tool tip has unused "Project Editor" role (#409)
+* Fixed: Quick fix - notification email dashboard spelling mistake (#410)
 * Fixed: When previewing a large survey it would be nice if the exit button remained visible (#412)
 * Fixed: Prevent user from creating empty assignments (#413)
 * Fixed: MINOR - UI style issues in header/footer on the dashboard (#415)
