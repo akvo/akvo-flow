@@ -2121,14 +2121,11 @@ nav.smallMenu ul li a.showQuestion:hover { background: url(../images/showQuestio
 .questionNbr span {
 	display: inline-block;
 	margin: -10px 0.6em 0 0;
-	padding: 0.2em 0 0 0;
-	width: 2em;
-	height: 1.8em;
-	border-radius: 1em;
+	padding:0.3em 0.6em;
+	border-radius: 0.75em;
 	background: rgb(58,58,58);
 	color: rgb(223,223,223);
 	text-align: center;
-	font-weight: bold;
 	font-size: 0.8em;
 	-moz-box-shadow: 0 -1px 0 rgb(185,185,185), 0 2px 0 rgb(255,255,255);
 	-webkit-box-shadow: 0 -1px 0 rgb(185,185,185), 0 2px 0 rgb(255,255,255);
@@ -2687,6 +2684,17 @@ footer.bottomPage a[rel="self"]:hover { }
 	font-size: 1.2em;
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
+.fixedMenu {
+  background: none repeat scroll 0 0 #FFFFFF;
+  box-shadow: 0 1px 3px #F2F2F2;
+  height: 35px;
+  padding:10px 0;
+  position: fixed;
+  top: 15.3%;
+  width: 60%;
+  min-width:500px;
+  z-index: 9999;
+}
 .surveyPreviewWrap div.questionGroupBlock {
 	margin: 5em auto;
 	padding: 0.5em 1em 1em 1em;
@@ -2736,24 +2744,15 @@ footer.bottomPage a[rel="self"]:hover { }
 }
 .surveyPreviewWrap .innerContent h1.questionNbr span {
 	display: inline-block;
-	margin: 0.1em 0.2em 0 0;
-	padding: 0 0 0 0;
+	margin: 0.1em 0.5em 0 0;
 	width: inherit;
 	height: inherit;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
-	border-radius: 0;
-	background: transparent;
-	color: rgb(58,58,58);
 	text-align: center;
-	font-weight: bold;
-	font-size: 1.2em;
-	-o-border-radius: 0;
 }
+
 .surveyPreviewWrap .innerContent h1.questionNbr span:after {
 	display: inline-block;
-	margin: 0 0.2em 0 0;
-	content: ".";
+	margin: 0 0.5em 0 0;
 }
 .surveyPreviewWrap .previewQuestion { margin: 2.5em auto 0 auto; }
 /********************************************************************************************************************************

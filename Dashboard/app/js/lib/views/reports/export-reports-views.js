@@ -134,7 +134,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
 
   selectedSurvey: function () {
 	  return FLOW.selectedControl.selectedSurvey.get('keyId');
-  }.property(),
+  }.property('FLOW.selectedControl.selectedSurvey'),
 
   showRawDataReport: function () {
 	var sId = this.get('selectedSurvey');
