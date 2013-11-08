@@ -41,6 +41,7 @@
 		rows="7" }} 
 		{{/if}} 
 		{{#if view.amFreeTextType}}
+		<h1 class="answerNbr">{{t _free_text_details}}:</h1>
 		<label class="labelcheckbox"> {{view Ember.Checkbox
 			checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>		
 		{{/if}}
