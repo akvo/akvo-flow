@@ -255,12 +255,24 @@ public class Question {
 	 *            allowed object is {@link String }
 	 * 
 	 */
+	public void setLocked(String value) {
+		this.locked = value;
+	}
+	
+	
+	/**
+	 * Sets the value of the requireDoubleEntry property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
 	public void setRequireDoubleEntry(String value) {
 		this.requireDoubleEntry = value;
 	}
 
 	/**
-	 * Gets the value of the locked property.
+	 * Gets the value of the requireDoubleEntry property.
 	 * 
 	 * @return possible object is {@link String }
 	 * 
@@ -269,19 +281,6 @@ public class Question {
 		return requireDoubleEntry;
 	}
 
-	/**
-	 * Sets the value of the locked property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public void setLocked(String value) {
-		this.locked = value;
-	}
-
-	
-	
 	/**
 	 * Gets the value of the type property.
 	 * 

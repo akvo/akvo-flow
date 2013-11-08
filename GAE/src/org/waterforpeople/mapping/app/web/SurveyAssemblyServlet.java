@@ -596,10 +596,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			if (q.getGeoLocked() != null && q.getGeoLocked()){
 				qXML.setLocked(q.getGeoLocked().toString());
 			}
-			// add requireDoubleEntry flag if the field is true in the question
-			if (q.getRequireDoubleEntry() != null && q.getRequireDoubleEntry()){
-				qXML.setRequireDoubleEntry(q.getRequireDoubleEntry().toString());
-			}
 		} else if (q.getType().equals(Question.Type.NUMBER)) {
 			qXML.setType(FREE_QUESTION_TYPE);
 			if (!hasValidation) {
@@ -607,6 +603,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				vrule.setValidationType("numeric");
 				vrule.setSigned("false");
 				qXML.setValidationRule(vrule);
+			}
+			// add requireDoubleEntry flag if the field is true in the question
+			if (q.getRequireDoubleEntry() != null && q.getRequireDoubleEntry()){
+				qXML.setRequireDoubleEntry(q.getRequireDoubleEntry().toString());
 			}
 		} else if (q.getType().equals(Question.Type.OPTION)) {
 			qXML.setType(OPTION_QUESTION_TYPE);
@@ -621,6 +621,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			ValidationRule vrule = new ValidationRule();
 			vrule.setValidationType("name");
 			qXML.setValidationRule(vrule);
+			// add requireDoubleEntry flag if the field is true in the question
+			if (q.getRequireDoubleEntry() != null && q.getRequireDoubleEntry()){
+				qXML.setRequireDoubleEntry(q.getRequireDoubleEntry().toString());
+			}
 		} else if (q.getType().equals(Question.Type.STRENGTH)) {
 			qXML.setType(STRENGTH_QUESTION_TYPE);
 		} else if (q.getType().equals(Question.Type.DATE)) {
