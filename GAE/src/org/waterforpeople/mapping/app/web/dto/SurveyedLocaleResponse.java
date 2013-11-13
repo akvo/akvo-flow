@@ -31,7 +31,6 @@ public class SurveyedLocaleResponse extends RestResponse {
 	private static final long serialVersionUID = 1548249617327473969L;
 	private List<SurveyedLocaleDto> surveyedLocaleData;
 	private Long lastUpdateTime;
-	private Long surveyedLocaleCount;
 
 	public List<SurveyedLocaleDto> getSurveyedLocaleData() {
 		return surveyedLocaleData;
@@ -39,14 +38,6 @@ public class SurveyedLocaleResponse extends RestResponse {
 
 	public void setSurveyedLocaleData(List<SurveyedLocaleDto> surveyedLocaleData) {
 		this.surveyedLocaleData = surveyedLocaleData;
-	}
-
-	public Long getSurveyedLocaleCount() {
-		return surveyedLocaleCount;
-	}
-
-	public void setSurveyedLocaleCount(Long surveyedLocaleCount) {
-		this.surveyedLocaleCount = surveyedLocaleCount;
 	}
 
 	public Long getLastUpdateTime() {

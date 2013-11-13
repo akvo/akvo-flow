@@ -91,7 +91,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 		QuestionDao qDao = new QuestionDao();
 		if (slList != null) {
 			// set meta data
-			resp.setSurveyedLocaleCount((long) slList.size());
+			resp.setResultCount(slList.size());
 			if (slList.size() > 1) {
 				resp.setLastUpdateTime(slList.get(slList.size() - 1).getLastUpdateDateTime().getTime());
 				}
