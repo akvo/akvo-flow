@@ -19,6 +19,7 @@ package org.waterforpeople.mapping.app.web;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.util.json.JSONObject;
@@ -31,11 +32,16 @@ import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleResponse;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleSummaryDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -75,8 +81,22 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 		SurveyedLocaleRequest slReq = (SurveyedLocaleRequest) req;
 		SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
 		List<SurveyedLocale> slList = null;
+		Boolean hasPermission = false;
 		if (slReq.getSurveyGroupId() != null){
-			slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(slReq.getSurveyGroupId(),slReq.getLastUpdateTime(),SL_PAGE_SIZE);
+			if (slReq.getPhoneNumber() != null || slReq.getImei() != null) {
+				DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
+				SurveyDAO surveyDao = new SurveyDAO();
+			    SurveyGroupDAO sgDao = new SurveyGroupDAO();
+			    for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(slReq.getPhoneNumber(), slReq.getImei())) {
+					Survey s = surveyDao.getById(dsjq.getSurveyID());
+					if (s != null && s.getSurveyGroupId() == slReq.getSurveyGroupId()) {
+						hasPermission = true;
+					}
+				}
+				if (hasPermission) {
+					slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(slReq.getSurveyGroupId(),slReq.getLastUpdateTime(),SL_PAGE_SIZE);
+				}
+			}
 		}
 		return convertToResponse(slList, slReq.getSurveyGroupId());
 	}
