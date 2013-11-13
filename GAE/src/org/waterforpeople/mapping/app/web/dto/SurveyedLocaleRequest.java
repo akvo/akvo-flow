@@ -16,6 +16,11 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestError;
@@ -33,6 +38,7 @@ public class SurveyedLocaleRequest extends RestRequest {
 	private static final String IMEI_PARAM = "imei";
 	private static final String PHONE_NUMBER_PARAM = "phoneNumber";
 	private static final String DEVICE_ID_PARAM = "deviceId";
+	private static final String LAST_UPDATE_TIME_PARAM = "lastUpdateTime";
 	private static final String CURSOR_PARAM = "cursor";
 	private static final String CHECK_AVAILABLE_PARAM = "checkAvailable";
 	
@@ -41,6 +47,7 @@ public class SurveyedLocaleRequest extends RestRequest {
 	private String imei;
 	private String phoneNumber;
 	private String deviceId;
+	private Date lastUpdateTime;
 	private String cursor;
 
 	@Override
@@ -59,6 +66,16 @@ public class SurveyedLocaleRequest extends RestRequest {
 		phoneNumber = req.getParameter(PHONE_NUMBER_PARAM);
 		deviceId = req.getParameter(DEVICE_ID_PARAM);
 		cursor = req.getParameter(CURSOR_PARAM);
+		if(req.getParameter(LAST_UPDATE_TIME_PARAM) != null){
+			try{
+				Long ts = Long.parseLong(req.getParameter(LAST_UPDATE_TIME_PARAM));
+				setLastUpdateTime(new Date(ts));
+			} catch(Exception e){
+				addError(new RestError(RestError.BAD_DATATYPE_CODE,
+						RestError.BAD_DATATYPE_MESSAGE, LAST_UPDATE_TIME_PARAM
+								+ " not a valid timestamp"));
+			}
+		}
 	}
 
 	public Long getSurveyGroupId() {
@@ -107,5 +124,13 @@ public class SurveyedLocaleRequest extends RestRequest {
 
 	public void setCursor(String cursor) {
 		this.cursor = cursor;
+	}
+
+	public Date getLastUpdateTime() {
+		return lastUpdateTime;
+	}
+
+	public void setLastUpdateTime(Date lastUpdateTime) {
+		this.lastUpdateTime = lastUpdateTime;
 	}
 }

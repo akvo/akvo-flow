@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
+import java.util.Date;
 import java.util.List;
 
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -29,16 +30,8 @@ import com.gallatinsystems.framework.rest.RestResponse;
 public class SurveyedLocaleResponse extends RestResponse {
 	private static final long serialVersionUID = 1548249617327473969L;
 	private List<SurveyedLocaleDto> surveyedLocaleData;
-	private String cursor;
+	private Long lastUpdateTime;
 	private Long surveyedLocaleCount;
-
-	public String getCursor() {
-		return cursor;
-	}
-
-	public void setCursor(String cursor) {
-		this.cursor = cursor;
-	}
 
 	public List<SurveyedLocaleDto> getSurveyedLocaleData() {
 		return surveyedLocaleData;
@@ -54,5 +47,13 @@ public class SurveyedLocaleResponse extends RestResponse {
 
 	public void setSurveyedLocaleCount(Long surveyedLocaleCount) {
 		this.surveyedLocaleCount = surveyedLocaleCount;
+	}
+
+	public Long getLastUpdateTime() {
+		return lastUpdateTime;
+	}
+
+	public void setLastUpdateTime(Long lastUpdateTime) {
+		this.lastUpdateTime = lastUpdateTime;
 	}
 }
