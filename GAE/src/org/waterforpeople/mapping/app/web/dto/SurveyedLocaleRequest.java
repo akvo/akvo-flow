@@ -40,10 +40,8 @@ public class SurveyedLocaleRequest extends RestRequest {
 	private static final String DEVICE_ID_PARAM = "deviceId";
 	private static final String LAST_UPDATE_TIME_PARAM = "lastUpdateTime";
 	private static final String CURSOR_PARAM = "cursor";
-	private static final String CHECK_AVAILABLE_PARAM = "checkAvailable";
 	
 	private Long surveyGroupId;
-	private Boolean checkAvailable;
 	private String imei;
 	private String phoneNumber;
 	private String deviceId;
@@ -61,7 +59,6 @@ public class SurveyedLocaleRequest extends RestRequest {
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
 		surveyGroupId = Long.parseLong(req.getParameter(SURVEY_GROUP_ID_PARAM));
-		checkAvailable = Boolean.parseBoolean(req.getParameter(CHECK_AVAILABLE_PARAM));
 		imei = req.getParameter(IMEI_PARAM);
 		phoneNumber = req.getParameter(PHONE_NUMBER_PARAM);
 		deviceId = req.getParameter(DEVICE_ID_PARAM);
@@ -84,14 +81,6 @@ public class SurveyedLocaleRequest extends RestRequest {
 
 	public void setSurveyGroupId(Long surveyGroupId) {
 		this.surveyGroupId = surveyGroupId;
-	}
-
-	public Boolean getCheckAvailable() {
-		return checkAvailable;
-	}
-
-	public void setCheckAvailable(Boolean checkAvailable) {
-		this.checkAvailable = checkAvailable;
 	}
 
 	public String getImei() {

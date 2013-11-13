@@ -75,16 +75,6 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 		SurveyedLocaleRequest slReq = (SurveyedLocaleRequest) req;
 		SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
 		List<SurveyedLocale> slList = null;
-		if (slReq.getCheckAvailable()) {
-			SurveyedLocaleSummaryDao SLSdao = new SurveyedLocaleSummaryDao();
-			SurveyedLocaleSummary SLSummary = SLSdao.getBySurveyGroupId(slReq.getSurveyGroupId());
-			if (SLSummary != null && SLSummary.getKey() != null) {
-				resp.setSurveyedLocaleCount(SLSummary.getCount());
-			} else {
-				resp.setSurveyedLocaleCount(0L);
-			}
-			return resp;
-		}
 		if (slReq.getSurveyGroupId() != null){
 			slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(slReq.getSurveyGroupId(),slReq.getLastUpdateTime(),SL_PAGE_SIZE);
 		}
