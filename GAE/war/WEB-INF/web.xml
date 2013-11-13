@@ -709,6 +709,10 @@
 		<url-pattern>/databackout</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
+    <filter-name>restAuthFilter</filter-name>
+    <url-pattern>/surveyedlocale</url-pattern>
+</filter-mapping>
+	<filter-mapping>
 		<filter-name>restAuthFilter</filter-name>
 		<url-pattern>/surveyrestapi</url-pattern>
 	</filter-mapping>
