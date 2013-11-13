@@ -19,14 +19,7 @@ package org.waterforpeople.mapping.app.web;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
-
-
-
-
 
 import org.waterforpeople.mapping.app.util.json.JSONObject;
 //import org.json.JSONArray;
@@ -42,9 +35,7 @@ import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleSummaryDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -59,6 +50,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocaleSummary;
 public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = 8748650927754433019L;
 	private SurveyedLocaleDao surveyedLocaleDao;
+	private static final Integer SL_PAGE_SIZE = 300;
 
 	public SurveyedLocaleServlet() {
 		setMode(JSON_MODE);
@@ -81,9 +73,8 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		SurveyedLocaleRequest slReq = (SurveyedLocaleRequest) req;
-
 		SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
-
+		List<SurveyedLocale> slList = null;
 		if (slReq.getCheckAvailable()) {
 			SurveyedLocaleSummaryDao SLSdao = new SurveyedLocaleSummaryDao();
 			SurveyedLocaleSummary SLSummary = SLSdao.getBySurveyGroupId(slReq.getSurveyGroupId());
@@ -94,25 +85,28 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 			}
 			return resp;
 		}
-
-		List<SurveyedLocale> results = surveyedLocaleDao
-				.listLocalesBySurveyGroupId(slReq.getSurveyGroupId());
-		// we probably want to include a cursor at some point:
-				//.listLocalesBySurveyGroupId(slReq.getSurveyGroupId(),slReq.getCursor());
-
-		return convertToResponse(results, slReq.getSurveyGroupId(), SurveyedLocaleDao.getCursor(results));
+		if (slReq.getSurveyGroupId() != null){
+			slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(slReq.getSurveyGroupId(),slReq.getLastUpdateTime(),SL_PAGE_SIZE);
+		}
+		return convertToResponse(slList, slReq.getSurveyGroupId());
 	}
 
 	/**
 	 * converts the domain objects to dtos and then installs them in a
 	 * RecordDataResponse object
 	 */
-	protected SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList, Long surveyGroupId,
-			String cursor) {
+	protected SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList, Long surveyGroupId) {
 		SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
 		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		QuestionDao qDao = new QuestionDao();
 		if (slList != null) {
+			// set meta data
+			resp.setSurveyedLocaleCount((long) slList.size());
+			if (slList.size() > 1) {
+				resp.setLastUpdateTime(slList.get(slList.size() - 1).getLastUpdateDateTime().getTime());
+				}
+
+			// set Locale data
 			List<SurveyedLocaleDto> dtoList = new ArrayList<SurveyedLocaleDto>();
 			HashMap <Long, String> questionTypeMap = new HashMap<Long, String>();
 			// for each surveyedLocale, get the surveyalValues and store them in a map
