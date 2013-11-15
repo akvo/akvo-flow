@@ -503,12 +503,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			}
 			// Surveyal time
 			final Long duration = dto.getSurveyalTime();
-			createCell(row, col++, getDurationText(duration), null, 
-					Cell.CELL_TYPE_NUMERIC);
+			final String durationText = getDurationText(duration);
+			createCell(row, col++, durationText, null, 
+					Cell.CELL_TYPE_STRING);
 			// Surveyal time also computes for our hash
-			if (duration != null) {
-				digest.update(ByteBuffer.allocate(Long.SIZE).putLong(duration));
-			}
+			digest.update(durationText.getBytes());
 		}
 
 		for (String q : questionIdList) {
@@ -1078,7 +1077,16 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	}
 	
 	private String getDurationText(Long duration) {
-        return duration != null ? String.valueOf(duration) : "0";
+		if (duration == null) return "";
+		String result = "";
+		try {
+			SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+			df.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+			result = df.format(duration*1000);
+		} catch (Exception e){
+			// swallow, the default value of result will be used.
+		}
+		return result;
 	}
 
 	protected String getImagePrefix() {

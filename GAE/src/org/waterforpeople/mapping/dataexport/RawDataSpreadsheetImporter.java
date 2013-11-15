@@ -232,9 +232,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					// Survey Duration
 					if (cell.getColumnIndex() == 3) {
 						if (hasDurationCol) {
-							duration = String.valueOf(cell.getNumericCellValue());
+							duration = cell.getStringCellValue();
+							Integer durationSeconds = durationToSeconds(duration);
 							sb.append("duration="
-									+ URLEncoder.encode(duration, "UTF-8")
+									+ URLEncoder.encode(String.valueOf(durationSeconds), "UTF-8")
 									+ "&");
 							// The digest has to be aware of this field
 							digest.update(duration.getBytes());
@@ -409,6 +410,20 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		}
 	}
 	
+	private Integer durationToSeconds(String duration) {
+		if (duration == null || duration.length() == 0) return 0;
+		String[] tokens = duration.split(":");
+		if (tokens.length != 3) return 0;
+		try{
+			int hours = Integer.parseInt(tokens[0]);
+			int minutes = Integer.parseInt(tokens[1]);
+			int seconds = Integer.parseInt(tokens[2]);
+			return 3600 * hours + 60 * minutes + seconds;
+		} catch (Exception e){
+			return 0;
+		}
+	}
+
 	private String getResetUrlString(String instanceId, String dateString,
 			String submitter, String duration) throws UnsupportedEncodingException {
 		String url = "action="
