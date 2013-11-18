@@ -1077,7 +1077,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	}
 	
 	private String getDurationText(Long duration) {
-		if (duration == null) return "";
+		if (duration == null) {
+			return "";
+		}
 		String result = "";
 		try {
 			SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
