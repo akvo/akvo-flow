@@ -412,6 +412,18 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	
 	private Integer durationToSeconds(String duration) {
 		if (duration == null || duration.length() == 0) return 0;
+
+		//try to parse as integer
+		if (!duration.contains(":")) {
+			try {
+				int seconds = Integer.parseInt(duration);
+				return seconds;
+			} catch (Exception e) {
+				return 0;
+			}
+		}
+
+		// try do parse as hh:mm:ss
 		String[] tokens = duration.split(":");
 		if (tokens.length != 3) return 0;
 		try{
