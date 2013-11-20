@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -93,23 +94,26 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 				}
 			}
 		}
-		return convertToResponse(slList, slReq.getSurveyGroupId());
+		return convertToResponse(slList, slReq.getSurveyGroupId(), slReq.getLastUpdateTime());
 	}
 
 	/**
 	 * converts the domain objects to dtos and then installs them in a
 	 * RecordDataResponse object
+	 * @param lastUpdateTime 
 	 */
-	protected SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList, Long surveyGroupId) {
+	protected SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList, Long surveyGroupId, Date lastUpdateTime) {
 		SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
 		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		QuestionDao qDao = new QuestionDao();
 		if (slList != null) {
 			// set meta data
 			resp.setResultCount(slList.size());
-			if (slList.size() > 1) {
+			if (slList.size() > 0) {
 				resp.setLastUpdateTime(slList.get(slList.size() - 1).getLastUpdateDateTime().getTime());
-				}
+			} else {
+				resp.setLastUpdateTime(lastUpdateTime.getTime()); // return original query timestamp
+			}
 
 			// set Locale data
 			List<SurveyedLocaleDto> dtoList = new ArrayList<SurveyedLocaleDto>();
