@@ -261,9 +261,13 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 					for (SurveyInstance si : siList) {
 						if (si.getSurveyedLocaleId() != null) {
 							SurveyedLocale sl = slDao.getByKey(si.getSurveyedLocaleId());
-							if (sl != null && !sl.getLocaleType().equals(localeType)) {
-								sl.setLocaleType(localeType);
-								slList.add(sl);
+							if (sl != null){
+								// if the locale type is not set or if it is not equal to the survey setting, 
+								// reset the local type
+								if (sl.getLocaleType() == null || !sl.getLocaleType().equals(localeType)) {
+									sl.setLocaleType(localeType);
+									slList.add(sl);
+								}
 							}
 						}
 					}
