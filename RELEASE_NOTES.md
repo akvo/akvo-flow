@@ -6,6 +6,14 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+# 1.6.7.1
+
+Release Date: 20 November 2013
+
+## Resolved issues
+* Fix the logic for SurveyedLocale reset (#396)
+
+
 # 1.6.7
 
 Release Date: 08 November 2013
