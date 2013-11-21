@@ -185,6 +185,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				String submitter = null;
 				StringBuilder sb = new StringBuilder();
 				String duration = null;
+				Integer durationSeconds = null;
 
 				sb.append("action="
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
@@ -232,9 +233,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					// Survey Duration
 					if (cell.getColumnIndex() == 3) {
 						if (hasDurationCol) {
-							duration = String.valueOf(cell.getNumericCellValue());
+							duration = cell.getStringCellValue();
+							durationSeconds = durationToSeconds(duration);
 							sb.append("duration="
-									+ URLEncoder.encode(duration, "UTF-8")
+									+ URLEncoder.encode(String.valueOf(durationSeconds), "UTF-8")
 									+ "&");
 							// The digest has to be aware of this field
 							digest.update(duration.getBytes());
@@ -364,7 +366,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					sendDataToServer(
 							serverBase,
 							instanceId == null ? null
-									: getResetUrlString(instanceId, dateString, submitter, duration),
+									: getResetUrlString(instanceId, dateString, submitter, durationSeconds),
 							sb.toString(),
 							criteria.get(KEY_PARAM));
 
@@ -409,8 +411,34 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		}
 	}
 	
+	private Integer durationToSeconds(String duration) {
+		if (duration == null || duration.length() == 0) return 0;
+
+		//try to parse as integer
+		if (!duration.contains(":")) {
+			try {
+				int seconds = Integer.parseInt(duration);
+				return seconds;
+			} catch (Exception e) {
+				return 0;
+			}
+		}
+
+		// try do parse as hh:mm:ss
+		String[] tokens = duration.split(":");
+		if (tokens.length != 3) return 0;
+		try{
+			int hours = Integer.parseInt(tokens[0]);
+			int minutes = Integer.parseInt(tokens[1]);
+			int seconds = Integer.parseInt(tokens[2]);
+			return 3600 * hours + 60 * minutes + seconds;
+		} catch (Exception e){
+			return 0;
+		}
+	}
+
 	private String getResetUrlString(String instanceId, String dateString,
-			String submitter, String duration) throws UnsupportedEncodingException {
+			String submitter, Integer durationSeconds) throws UnsupportedEncodingException {
 		String url = "action="
 				+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 				+ "&" + RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
@@ -423,9 +451,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				+ "=" + URLEncoder.encode(submitter, "UTF-8");
 		
 		// Duration might be missing in old reports
-		if (duration != null) {
+		if (durationSeconds != null) {
 			url += "&" + RawDataImportRequest.DURATION_PARAM + "="
-					+ URLEncoder.encode(duration, "UTF-8");
+					+ URLEncoder.encode(String.valueOf(durationSeconds), "UTF-8");
 		}
 		
 		return url;
