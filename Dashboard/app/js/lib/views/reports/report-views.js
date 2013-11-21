@@ -47,8 +47,11 @@ FLOW.chartView = FLOW.View.extend({
     this.chartType = FLOW.chartTypeControl.content[0];
   },
 
+  hideChart: function () {
+	  return this.get('noChoiceBool') || this.get('noDataBool');
+  }.property('noChoiceBool', 'noDataBool'),
+
   getChartData: function () {
-    //   createBarChart();
     this.set('noChoiceBool', false);
     if (FLOW.selectedControl.get('selectedQuestion') !== null) {
       FLOW.surveyQuestionSummaryControl.doSurveyQuestionSummaryQuery(FLOW.selectedControl.selectedQuestion.get('keyId'));
@@ -66,10 +69,11 @@ FLOW.chartView = FLOW.View.extend({
       maxPer, i, tot, totPerc;
 
     deleteChart();
+
     if (FLOW.surveyQuestionSummaryControl.content.get('isLoaded') === true) {
       FLOW.chartDataControl.set('total', FLOW.surveyQuestionSummaryControl.content.get('length'));
       if (FLOW.chartDataControl.get('total') == 0) {
-    	  this.set('noDataBool',true);
+          this.set('noDataBool', true);
     	  return;
       } else {
     	  this.set('noDataBool', false);

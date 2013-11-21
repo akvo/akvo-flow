@@ -1,4 +1,3 @@
-Last changed: 30 September 2013
 
 Akvo FLOW (Field Level Operations Watch) is a system to collect, manage, analyse and display geographically-referenced monitoring and evaluation data.
 
@@ -7,6 +6,74 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+# 1.6.7
+
+Release Date: 08 November 2013
+
+## Resolved issues
+* Fixed: Survey preview number styling looks strange (#401)
+* Fixed: Prevent user from going to notifications when there are unsaved changes (#405)
+* Fixed: User can create a new survey without completing the title field (#406)
+* Fixed: Quick fix - persmission level tool tip has unused "Project Editor" role (#409)
+* Fixed: Quick fix - notification email dashboard spelling mistake (#410)
+* Fixed: When previewing a large survey it would be nice if the exit button remained visible (#412)
+* Fixed: Prevent user from creating empty assignments (#413)
+* Fixed: MINOR - UI style issues in header/footer on the dashboard (#415)
+* Fixed: Survey status not updated on some survey changes (#422)
+* Fixed: Not possible to export data of two surveys consecutively (#423)
+* Fixed: Add requirements and design documents to the code base (#424)
+* Fixed: Issue with deleting survey groups (#425)
+* Fixed: Unpublished copied surveys can appear in the assignment list (#426)
+
+# 1.6.6.2
+
+Release Date: 24 October 2013
+
+## Enhancements
+* Make it harder for user to upload data to wrong survey (#408)
+* Add ability to lock manual edit of GEO question (#418)
+
+## Resolved issues
+* Fixed: Importing a spreadsheet fails silently with a JS error (#416)
+
+# 1.6.6.1
+
+Release Date: 24 October 2013
+
+## Enhancements
+* Provide method for bulk change locale type (#396)
+
+## Resolved issues
+* Fixed: Chart Builder should clean the previous chart on each question (#365)
+* Fixed: Terms of service link broken on FLOW instances (#400)
+
+# 1.6.6
+
+Release Date: 18 October 2013
+
+## Enhancements
+Thanks to the efforts of the Water for People team, we now have a complete set of Spanish translations of the dashboard.
+
+## Resolved issues
+* Fixed: Chart Builder should clean the previous chart on each question. (#365)
+* Fixed: 'No data available' warning still shown when data is available for chart. (#388)
+* Fixed: Increase performance of loading questions for charts. (#379)
+* Fixed: When showing a surveyGroup with a lot of surveys, scrolling behaviour is strange. (#387)
+* Fixed: Make summary count more robust to possible QAS duplicates. (#385)
+* Fixed: Trim user email address when creating a new user. (#384, #366)
+* Fixed: Make reports support languages other than english. (#381)
+* Fixed: Update FLOW logo. (#378)
+* Fixed: Move copy survey functionality to backend to avoid timeouts on large surveys. (#377)
+* Fixed:  Bring back language dropdown and incorporate new spanish translations. (#376)
+* Fixed: Update instance creation templates with latest config. (#374)
+* Fixed: Improve efficiency in saving of surveyedLocales. (#373)
+* Fixed: Translations does not get copied when we copy a Survey. (#357)
+* Fixed: Prevent user from going to translations when there are unsaved changes. (#389)
+* Fixed: Better implementation of sort functions. (#394)
+* Fixed: Opt in a UUID implementation for `generateUniqueIdentifier` (#391)
+* Fixed: Fix faulty sort functions (#394)
+
+
 # 1.6.5
 
 Release Date: 30 September 2013

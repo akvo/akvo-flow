@@ -44,6 +44,10 @@
       <label class="minValNumb">{{t _min_val}}: {{view Ember.TextField valueBinding="view.minVal" size=10 }}</label>
       <label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
     {{/if}} 
+     {{#if view.amGeoType}}
+	  <h1 class="answerNbr">{{t _geo_details}}: </h1>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
+    {{/if}}
 
     {{#if view.amNoOptionsType}}
 		<p class="noOptions">

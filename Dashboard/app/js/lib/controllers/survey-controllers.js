@@ -334,6 +334,7 @@ FLOW.questionControl = Ember.ArrayController.create({
     });
     // restore order in case the order has gone haywire
     this.restoreOrder(questionsInGroup);
+    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
   },
 

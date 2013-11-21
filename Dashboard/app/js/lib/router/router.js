@@ -120,10 +120,6 @@ FLOW.Router = Ember.Router.extend({
           }
         },
 
-        doManageNotifications: function (router, event) {
-          router.transitionTo('navSurveys.navSurveysEdit.manageNotifications');
-        },
-
         doEditQuestions: function (router, event) {
           router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
         },

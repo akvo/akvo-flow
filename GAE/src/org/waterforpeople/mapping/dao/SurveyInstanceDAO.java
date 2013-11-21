@@ -647,6 +647,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		Query q = pm.newQuery(SurveyInstance.class);
 		q.setFilter("surveyId == surveyIdParam");
+		q.setOrdering("createdDateTime asc");
 		q.declareParameters("Long surveyIdParam");
 		prepareCursor(cursorString, count, q);
 		List<SurveyInstance> siList = (List<SurveyInstance>) q
