@@ -336,7 +336,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		query.declareImports("import java.util.Date");
-		query.setRange(0, pageSize - 1);
+		query.setRange(0, pageSize);
 
 		return (List<SurveyedLocale>) query.executeWithMap(paramMap);
 	}
