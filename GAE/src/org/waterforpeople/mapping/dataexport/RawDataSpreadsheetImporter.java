@@ -185,7 +185,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				String submitter = null;
 				StringBuilder sb = new StringBuilder();
 				String duration = null;
-				Integer durationSeconds = null;
+				String durationSeconds = null;
 
 				sb.append("action="
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
@@ -233,13 +233,26 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					// Survey Duration
 					if (cell.getColumnIndex() == 3) {
 						if (hasDurationCol) {
-							duration = cell.getStringCellValue();
-							durationSeconds = durationToSeconds(duration);
+							 switch (cell.getCellType()) {
+							 	// if the cell type is string, we expect hh:mm:ss format
+							 	case Cell.CELL_TYPE_STRING:
+							 		duration = cell.getStringCellValue();
+							 		durationSeconds = String.valueOf(durationToSeconds(duration));
+							 		digest.update(duration.getBytes());
+							 		break;
+							 	// if the cell type if numeric, we expect a single seconds value
+							 	case Cell.CELL_TYPE_NUMERIC:
+							 		 durationSeconds = String.valueOf(cell.getNumericCellValue());
+							 		 digest.update(durationSeconds.getBytes());
+							 		break;
+							 	default:
+							 		durationSeconds = "0";
+							 		// don't update the digest, because we want this value to be saved.
+							 		break;
+							 }
 							sb.append("duration="
-									+ URLEncoder.encode(String.valueOf(durationSeconds), "UTF-8")
+									+ URLEncoder.encode(durationSeconds, "UTF-8")
 									+ "&");
-							// The digest has to be aware of this field
-							digest.update(duration.getBytes());
 						}
 					}
 
