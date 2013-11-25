@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -282,6 +283,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 		inst.setApproximateLocationFlag("False");
 		inst.setDeviceIdentifier("IMPORTER");
 		inst.setSurveyedLocaleId(importReq.getSurveyedLocaleId());
+		inst.setUuid(UUID.randomUUID().toString());
 		SurveyInstanceDAO instDao = new SurveyInstanceDAO();
 		inst = instDao.save(inst);
 		// set the key so the subsequent logic can populate it in the
