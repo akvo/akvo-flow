@@ -22,6 +22,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -344,8 +345,13 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					locale.setLongitude(lon);
 				}
 				locale.setSurveyGroupId(surveyGroupId);
-				locale.setIdentifier(instance.getSurveyedLocaleIdentifier());
+				if (instance.getSurveyedLocaleIdentifier() != null && instance.getSurveyedLocaleIdentifier().trim().length() > 0){
+					locale.setIdentifier(instance.getSurveyedLocaleIdentifier());
+				} else {
+					// if we don't have an identifier, create a random UUID.
 
+					locale.setIdentifier(base32Uuid());
+				}
 				if (survey != null) {
 					locale.setLocaleType(pointType);
 				}
@@ -368,7 +374,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					locale.setSurveyInstanceContrib(newList);
 				} else {
 					if (!surveyInstanceContrib.contains(instance.getKey().getId())) {
-						surveyInstanceContrib.add(instance.getSurveyId());
+						surveyInstanceContrib.add(instance.getKey().getId());
 						locale.setSurveyInstanceContrib(surveyInstanceContrib);
 						}
 					}
@@ -411,6 +417,28 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			}
 		}
 	}
+
+	/* Creates a base32 version of a UUID. in the output, it replaces the following letters:
+     * l, o, i are replace by w, x, y, to avoid confusion with 1 and 0
+     * we don't use the z as it can easily be confused with 2, especially in handwriting.
+     * If we can't form the base32 version, we return an empty string.
+     * The same code is used in the FLOW Mobile app: https://github.com/akvo/akvo-flow-mobile/blob/feature/pointupdates/survey/
+     * src/com/gallatinsystems/survey/device/util/Base32.java
+     */
+    public static String base32Uuid(){
+        final String uuid = UUID.randomUUID().toString();
+        String strippedUUID = (uuid.substring(0,13) + uuid.substring(24,27)).replace("-", "");
+        String result = null;
+        try {
+            Long id = Long.parseLong(strippedUUID,16);
+            result = Long.toString(id,32).replace("l","w").replace("o","x").replace("i","y");
+        } catch (NumberFormatException e){
+            // if we can't create the base32 UUID string, return the original uuid.
+            result = uuid;
+        }
+
+        return result;
+    }
 
 	/**
 	 * tries several methods to resolve the lat/lon to a GeoPlace. If a geoPlace
