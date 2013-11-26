@@ -451,7 +451,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 	}
 
 	private String getResetUrlString(String instanceId, String dateString,
-			String submitter, Integer durationSeconds) throws UnsupportedEncodingException {
+			String submitter, String durationSeconds) throws UnsupportedEncodingException {
 		String url = "action="
 				+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 				+ "&" + RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
@@ -466,7 +466,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		// Duration might be missing in old reports
 		if (durationSeconds != null) {
 			url += "&" + RawDataImportRequest.DURATION_PARAM + "="
-					+ URLEncoder.encode(String.valueOf(durationSeconds), "UTF-8");
+					+ URLEncoder.encode(durationSeconds, "UTF-8");
 		}
 		
 		return url;
