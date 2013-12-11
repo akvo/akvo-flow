@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -171,7 +172,13 @@ public class RawDataExporter extends AbstractDataExporter {
 								pw.write("\t");
 								Long duration = dto.getSurveyalTime();
 								if (duration != null) {
-									pw.write(duration.toString());
+									try {
+										SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+										df.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+										pw.write(df.format(duration*1000));
+									} catch (Exception e){
+										pw.write("");
+									}
 								}
 							}
 							for (String key : idList) {
