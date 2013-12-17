@@ -733,11 +733,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * fixes wrong Types in questionAnswerStore objects. When cleaned data is
 	 * uploaded using an excel file, the type of the answer is set according to
 	 * the type of the question, while the device sets the type according to a
-<<<<<<< HEAD
-	 * different convention. The action handles 500 items in one call, and
-=======
 	 * different convention. The action handles QAS_PAGE_SIZE items in one call, and
->>>>>>> develop
 	 * invokes new tasks as necessary if there are more items.
 	 *
 	 * @param cursor
