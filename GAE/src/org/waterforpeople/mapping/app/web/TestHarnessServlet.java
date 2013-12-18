@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
@@ -170,8 +171,17 @@ import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -183,7 +193,7 @@ public class TestHarnessServlet extends HttpServlet {
 	private static final long serialVersionUID = -5673118002247715049L;
 
 	@SuppressWarnings("unused")
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		String action = req.getParameter("action");
 		if ("setupTestUser".equals(action)) {
 			setupTestUser();
@@ -1841,7 +1851,61 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (Exception e) {
 				// no-op
 			}
+		} else if ("testDS".equals(action)) {
+			testDSTimes(req, resp);
 		}
+	}
+
+	private void testDSTimes(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
+
+		String type = null;
+		Long surveyedLocaleId = null;
+		StringBuffer sb = new StringBuffer();
+
+		try {
+			surveyedLocaleId = Long.parseLong(req
+					.getParameter("surveyedLocaleId"));
+		} catch (Exception e) {
+			// NPE or NumberFormatException
+		}
+
+		if (surveyedLocaleId == null) {
+			PrintWriter out = resp.getWriter();
+			out.println("Unable to parse parameter surveyedLocaleId");
+			return;
+		}
+
+		type = req.getParameter("type"); // jdo or raw
+
+		if ("jdo".equals(type)) {
+
+			long t1 = System.currentTimeMillis();
+			SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+			List<SurveyalValue> svs = slDao
+					.listValuesByLocale(surveyedLocaleId);
+			svs.size();
+			sb.append("JDO time: ").append(System.currentTimeMillis() - t1);
+
+		} else if ("raw".equals(type)) {
+
+			long t1 = System.currentTimeMillis();
+			DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+			Filter f = new FilterPredicate("surveyedLocaleId",
+					FilterOperator.EQUAL, surveyedLocaleId);
+			Query q = new Query("SurveyalValue").setFilter(f);
+			PreparedQuery pq = ds.prepare(q);
+			List<Entity> result = pq
+					.asList(FetchOptions.Builder.withDefaults());
+			result.size();
+			sb.append("Low level API time: ").append(
+					System.currentTimeMillis() - t1);
+		} else {
+			sb.append("type parameters is: jdo or raw");
+		}
+
+		PrintWriter out = resp.getWriter();
+		out.println(sb.toString());
 	}
 
 	private void fixBadImage(String surveyId, String findString, String replaceString){
