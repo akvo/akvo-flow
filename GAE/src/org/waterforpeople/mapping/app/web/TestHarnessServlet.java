@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.jdo.PersistenceManager;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -122,6 +123,7 @@ import com.gallatinsystems.editorial.domain.EditorialPageContent;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.coordinate.utilities.Coordinate;
 import com.gallatinsystems.gis.coordinate.utilities.CoordinateUtilities;
 import com.gallatinsystems.gis.geography.dao.CountryDao;
@@ -1856,47 +1858,31 @@ public class TestHarnessServlet extends HttpServlet {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void testDSTimes(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 
-		String type = null;
-		Long surveyedLocaleId = null;
 		StringBuffer sb = new StringBuffer();
-
-		try {
-			surveyedLocaleId = Long.parseLong(req
-					.getParameter("surveyedLocaleId"));
-		} catch (Exception e) {
-			// NPE or NumberFormatException
-		}
-
-		if (surveyedLocaleId == null) {
-			PrintWriter out = resp.getWriter();
-			out.println("Unable to parse parameter surveyedLocaleId");
-			return;
-		}
-
-		type = req.getParameter("type"); // jdo or raw
+		String type = req.getParameter("type"); // jdo or raw
 
 		if ("jdo".equals(type)) {
 
 			long t1 = System.currentTimeMillis();
-			SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-			List<SurveyalValue> svs = slDao
-					.listValuesByLocale(surveyedLocaleId);
-			svs.size();
+			PersistenceManager pm = PersistenceFilter.getManager();
+			javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+			query.setRange(0, 300);
+			List<SurveyedLocale> result = (List<SurveyedLocale>) query.execute();
+			result.size();
 			sb.append("JDO time: ").append(System.currentTimeMillis() - t1);
 
 		} else if ("raw".equals(type)) {
 
 			long t1 = System.currentTimeMillis();
 			DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-			Filter f = new FilterPredicate("surveyedLocaleId",
-					FilterOperator.EQUAL, surveyedLocaleId);
-			Query q = new Query("SurveyalValue").setFilter(f);
+			Query q = new Query("SurveyedLocale");
 			PreparedQuery pq = ds.prepare(q);
 			List<Entity> result = pq
-					.asList(FetchOptions.Builder.withDefaults());
+					.asList(FetchOptions.Builder.withLimit(300));
 			result.size();
 			sb.append("Low level API time: ").append(
 					System.currentTimeMillis() - t1);
