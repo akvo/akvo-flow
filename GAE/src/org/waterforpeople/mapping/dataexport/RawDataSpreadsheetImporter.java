@@ -257,8 +257,10 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					}
 
 					boolean hasValue = false;
+					String qId = questionIDColMap.get(cell.getColumnIndex());
+
 					if (cell.getColumnIndex() >= firstQuestionCol
-							&& questionIDColMap.get(cell.getColumnIndex()) != null) {
+							&& qId != null && !qId.trim().equals("")) {
 						QuestionDto question = questionMap.get(questionIDColMap
 								.get(cell.getColumnIndex()));
 						QuestionType type = null;
