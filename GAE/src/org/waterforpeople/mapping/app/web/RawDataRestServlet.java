@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -178,6 +179,8 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 					instance.setSurveyId(importReq.getSurveyId());
 					instance.setCollectionDate(importReq.getCollectionDate());
 					instance.setSubmitterName(importReq.getSubmitter());
+					instance.setUserID(1L);
+					instance.setUuid(UUID.randomUUID().toString());
 					if (importReq.getSurveyDuration() != null) {
 						instance.setSurveyalTime(importReq.getSurveyDuration());
 					}
