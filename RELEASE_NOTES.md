@@ -5,6 +5,13 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+# 1.6.8.1
+
+Release Date: 23 December 2013
+
+## Resolved issues
+* Fixed: Set the uuid and userID when importing a file (#446)
+
 # 1.6.8
 
 Release Date: 11 December 2013
