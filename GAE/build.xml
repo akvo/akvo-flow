@@ -117,6 +117,13 @@
 	</target>
 
 	<target name="GWTcompile" depends="copyjars,compile">
+		<fail message="GWT compilation is deprecated. You can force it with: ant GWTCompile -Dforce=yes">
+			<condition>
+				<not>
+					<isset property="force" />
+				</not>
+			</condition>
+		</fail>
 		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true" maxmemory="512m">
 			<arg value="org.waterforpeople.mapping.portal.portal" />
 			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
@@ -179,7 +186,7 @@
 		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
 	</target>
 
-	<target name="update" depends="datanucleusenhance,validate.constants,version" description="Uploads the application to App Engine.">
+	<target name="update" depends="datanucleusenhance,version" description="Uploads the application to App Engine.">
 		<fail message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt">
 			<condition>
 				<not>
@@ -187,8 +194,6 @@
 				</not>
 			</condition>
 		</fail>
-
-		<fail message="You need to rebuild the applet jar before updating an instance, e.g.: ant -f appletBuild.xml clean compile package signjar" unless="${md5OK}"/>
 
 		<delete failonerror="false">
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
