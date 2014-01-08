@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.MetricDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
@@ -38,6 +39,8 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.metric.dao.MetricDao;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.Metric;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
 
 @Controller
 @RequestMapping("/metrics")
@@ -45,19 +48,44 @@ public class MetricRestService {
 
 	@Inject
 	private MetricDao metricDao;
-	
+
+	@Inject
+	private QuestionDao questionDao;
+
 	@Inject
 	private SurveyMetricMappingDao surveyMetricMappingDao;
 
-	// TODO put in meta information?
-	// list all metrics
+	// list all metrics, or the metrics for a single surveyId.
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
-	public Map<String, List<MetricDto>> listMetrics() {
+	public Map<String, List<MetricDto>> listMetrics(
+			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId) {
 		final Map<String, List<MetricDto>> response = new HashMap<String, List<MetricDto>>();
 		List<MetricDto> results = new ArrayList<MetricDto>();
-		List<Metric> metrics = metricDao
-				.list(Constants.ALL_RESULTS);
+		List<Question> questions = new ArrayList<Question>();
+		List<Metric> metrics = new ArrayList<Metric>();
+		if (surveyId != null) {
+			// get metrics for a specific survey
+			questions = questionDao.listQuestionsInOrder(surveyId,null);
+			if (questions != null && questions.size() > 0) {
+				for (Question question : questions) {
+					if (question.getMetricId() != null && question.getMetricId() != 0) {
+						// we have found a question with a metric,
+						// get the metric and put it in the dto
+						Metric m = metricDao.getByKey(question.getMetricId());
+						if (m != null) {
+							MetricDto mDto = new MetricDto();
+							DtoMarshaller.copyToDto(m, mDto);
+							mDto.setQuestionId(question.getKey().getId());
+							results.add(mDto);
+						}
+					}
+				}
+			}
+		} else {
+			// get all metrics
+			metrics = metricDao.list(Constants.ALL_RESULTS);
+		}
 		if (metrics != null) {
 			for (Metric s : metrics) {
 				MetricDto dto = new MetricDto();
@@ -73,8 +101,7 @@ public class MetricRestService {
 	// find a single metric by the metricId
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
 	@ResponseBody
-	public Map<String, MetricDto> findMetric(
-			@PathVariable("id") Long id) {
+	public Map<String, MetricDto> findMetric(@PathVariable("id") Long id) {
 		final Map<String, MetricDto> response = new HashMap<String, MetricDto>();
 		Metric s = metricDao.getByKey(id);
 		MetricDto dto = null;
@@ -100,9 +127,9 @@ public class MetricRestService {
 
 		// check if metric exists in the datastore
 		if (s != null) {
-			// delete metric group
+			// delete metric
 			metricDao.delete(s);
-			
+
 			// delete associated surveyMetricMappings
 			surveyMetricMappingDao.deleteMetricMappingByMetric(id);
 			statusDto.setStatus("ok");
@@ -136,9 +163,10 @@ public class MetricRestService {
 				// if we find the metric, update it's properties
 				if (s != null) {
 					// copy the properties, except the createdDateTime property,
-					// because it is set in the Dao.
-					BeanUtils.copyProperties(metricDto, s,
-							new String[] { "createdDateTime" });
+					// because it is set in the Dao. The surveyId is not part of
+					// the metric object.
+					BeanUtils.copyProperties(metricDto, s, new String[] {
+							"createdDateTime", "surveyId" });
 					s = metricDao.save(s);
 					dto = new MetricDto();
 					DtoMarshaller.copyToDto(s, dto);
@@ -154,8 +182,7 @@ public class MetricRestService {
 	// create new metric
 	@RequestMapping(method = RequestMethod.POST, value = "")
 	@ResponseBody
-	public Map<String, Object> saveNewMetric(
-			@RequestBody MetricPayload payLoad) {
+	public Map<String, Object> saveNewMetric(@RequestBody MetricPayload payLoad) {
 		final MetricDto metricDto = payLoad.getMetric();
 		final Map<String, Object> response = new HashMap<String, Object>();
 		MetricDto dto = null;
@@ -170,9 +197,10 @@ public class MetricRestService {
 			Metric s = new Metric();
 
 			// copy the properties, except the createdDateTime property, because
-			// it is set in the Dao.
-			BeanUtils.copyProperties(metricDto, s,
-					new String[] { "createdDateTime" });
+			// it is set in the Dao. the surveyId is not part of the metric
+			// object
+			BeanUtils.copyProperties(metricDto, s, new String[] {
+					"createdDateTime", "surveyId" });
 			s = metricDao.save(s);
 
 			dto = new MetricDto();

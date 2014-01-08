@@ -59,14 +59,26 @@ public class SurveyInstanceRestService {
 			@RequestParam(value = "since", defaultValue = "") String since,
 			@RequestParam(value = "unapprovedOnlyFlag",defaultValue = "") Boolean unapprovedOnlyFlag,
 			@RequestParam(value = "deviceId", defaultValue = "") String deviceId,
-			@RequestParam(value = "submitterName", defaultValue = "") String submitterName) {
+			@RequestParam(value = "submitterName", defaultValue = "") String submitterName,
+			@RequestParam(value = "countryCode", defaultValue = "") String countryCode,
+			@RequestParam(value = "level1", defaultValue = "") String level1,
+			@RequestParam(value = "level2", defaultValue = "") String level2) {
 		
-		// we don't want to search for empty deviceId's and submitter names
+		// we don't want to search for empty fields
 		if ("".equals(deviceId)) {
 			deviceId = null;
 		}
 		if ("".equals(submitterName)) {
 			submitterName = null;
+		}
+		if ("".equals(countryCode)) {
+			countryCode = null;
+		}
+		if ("".equals(level1)) {
+			level1 = null;
+		}
+		if ("".equals(level2)) {
+			level2 = null;
 		}
 		
 		final Map<String, Object> response = new HashMap<String, Object>();
@@ -103,7 +115,7 @@ public class SurveyInstanceRestService {
 		List<SurveyInstance> siList = null;
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
 		siList = dao.listByDateRangeAndSubmitter(beginDate, endDate, false,
-				surveyId, deviceId, submitterName, since);
+				surveyId, deviceId, submitterName, countryCode, level1, level2, since);
 		Integer num = siList.size();
 		String newSince = SurveyInstanceDAO.getCursor(siList);
 		

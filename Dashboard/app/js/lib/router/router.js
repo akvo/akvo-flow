@@ -312,6 +312,10 @@ FLOW.Router = Ember.Router.extend({
         router.transitionTo('navReports.chartReports');
       },
 
+      doStatistics: function(router, event) {
+        router.transitionTo('navReports.statistics');
+      },
+
       index: Ember.Route.extend({
         route: '/',
         redirectsTo: 'chartReports'
@@ -331,6 +335,16 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function (router, context) {
           router.get('navReportsController').connectOutlet('chartReports');
           router.set('reportsSubnavController.selected', 'chartReports');
+          FLOW.surveyGroupControl.populate();
+        }
+      }),
+      statistics: Ember.Route.extend({
+        route: '/statistics',
+        connectOutlets: function(router, context) {
+          FLOW.selectedControl.set('selectedSurvey',null);
+          FLOW.selectedControl.set('selectedSurveyGroup',null);
+          router.get('navReportsController').connectOutlet('statistics');
+          router.set('reportsSubnavController.selected', 'statistics');
           FLOW.surveyGroupControl.populate();
         }
       })

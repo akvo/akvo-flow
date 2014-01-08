@@ -54,7 +54,29 @@
           placeholderBinding="Ember.STRINGS._submitter_name"
           size=30}}
 			</div>
-      <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>
+
+      <div class="chooseLocationData">
+      {{#if FLOW.Env.showStatisticsFeature}}
+           {{view Ember.Select 
+            contentBinding="FLOW.countryController.content" 
+            selectionBinding="FLOW.locationControl.selectedCountry"
+            optionLabelPath="content.label"
+            prompt="select country"}}
+    
+           {{view Ember.Select 
+            contentBinding="FLOW.locationControl.level1Content" 
+            selectionBinding="FLOW.locationControl.selectedLevel1"
+            optionLabelPath="content.name"
+            prompt="select sublevel 1"}}
+   
+           {{view Ember.Select 
+            contentBinding="FLOW.locationControl.level2Content" 
+            selectionBinding="FLOW.locationControl.selectedLevel2"
+            optionLabelPath="content.name"
+            prompt="select sublevel 2"}}
+       {{/if}}
+             <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>
+      </div>
     </div>
     <section class="fullWidth " id="devicesList">
       <table class="dataTable" id="surveyDataTable">

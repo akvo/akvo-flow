@@ -763,6 +763,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			}
 			qasDao.save(qasChangedList);
 			// if there are more, invoke another task
+
 			if (qasList.size() == QAS_PAGE_SIZE) {
 				log.log(Level.INFO, "invoking another fixOptions task");
 				Queue queue = QueueFactory.getDefaultQueue();
@@ -770,6 +771,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 						.withUrl("/app_worker/dataprocessor")
 						.param(DataProcessorRequest.ACTION_PARAM,
 								DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION);
+
 				queue.add(options);
 			}
 		}

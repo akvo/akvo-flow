@@ -48,14 +48,17 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
     this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {}));
   },
 
-  doInstanceQuery: function (surveyId, deviceId, since, beginDate, endDate, submitterName) {
+  doInstanceQuery: function (surveyId, deviceId, since, beginDate, endDate, submitterName, countryCode, level1, level2) {
     this.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
       'surveyId': surveyId,
       'deviceId': deviceId,
       'since': since,
       'beginDate': beginDate,
       'endDate': endDate,
-      'submitterName': submitterName
+      'submitterName': submitterName,
+      'countryCode': countryCode,
+      'level1': level1,
+      'level2': level2
     }));
   },
 
@@ -106,4 +109,34 @@ FLOW.questionAnswerControl = Ember.ArrayController.create({
       'surveyInstanceId': surveyInstanceId
     }));
   }
+});
+
+FLOW.locationControl = Ember.ArrayController.create({
+  selectedCountry: null,
+  content:null,
+  level1Content:null,
+  level2Content:null,
+  selectedLevel1: null,
+  selectedLevel2: null,
+
+  populateLevel1: function(){
+    if (!Ember.none(this.get('selectedCountry')) && this.selectedCountry.get('iso').length > 0){
+    this.set('level1Content',FLOW.store.findQuery(FLOW.SubCountry,{
+      countryCode:this.selectedCountry.get('iso'),
+      level:1,
+      parentId:null
+      }));
+    }
+  }.observes('this.selectedCountry'),
+
+ populateLevel2: function(){
+    if (!Ember.none(this.get('selectedLevel1')) && this.selectedLevel1.get('name').length > 0){
+    this.set('level2Content',FLOW.store.findQuery(FLOW.SubCountry,{
+      countryCode:this.selectedCountry.get('iso'),
+      level:2,
+      parentId:this.selectedLevel1.get('keyId')
+      }));
+    }
+  }.observes('this.selectedLevel1')
+
 });
