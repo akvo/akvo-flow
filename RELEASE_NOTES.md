@@ -5,6 +5,22 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+# 1.6.9
+
+Release Date: 08 January 2014
+
+## Enhancements
+
+* Add filter on sub-country regions to data tab and raw data report (#229)
+* Show statistics on questions which have a metric (#231)
+* Note: Both functionality is only available when the instance is configured to
+  show the statistics tab
+
+## Resolved issues
+
+* Fixed: Deprecate the compilation of GWT and applet code (#448)
+* Fixed: Remote survey importer fails when there is a large amount of survey groups (#444)
+
 # 1.6.8.1
 
 Release Date: 23 December 2013
