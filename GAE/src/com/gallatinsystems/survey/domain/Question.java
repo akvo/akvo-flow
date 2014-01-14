@@ -74,6 +74,7 @@ public class Question extends BaseDomain {
 	private Double minVal;
 	private Double maxVal;
 	private Boolean isName;
+	private Long sourceQuestionId;
 
 	public Boolean getAllowDecimal() {
 		return allowDecimal;
@@ -340,5 +341,13 @@ public class Question extends BaseDomain {
 
 	public void setLocaleLocationFlag(Boolean localeLocationFlag) {
 		this.localeLocationFlag = localeLocationFlag;
+	}
+
+	public Long getSourceQuestionId() {
+		return sourceQuestionId;
+	}
+
+	public void setSourceQuestionId(Long sourceQuestionId) {
+		this.sourceQuestionId = sourceQuestionId;
 	}
 }
