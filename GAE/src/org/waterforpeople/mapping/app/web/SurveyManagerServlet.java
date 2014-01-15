@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,8 +50,6 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleSummaryDao;
-import com.gallatinsystems.surveyal.domain.SurveyedLocaleSummary;
 
 public class SurveyManagerServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
