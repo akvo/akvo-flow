@@ -42,10 +42,6 @@ import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
-import com.gallatinsystems.metric.dao.MetricDao;
-import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
-import com.gallatinsystems.metric.domain.Metric;
-import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
@@ -70,10 +66,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
  */
 public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = 5923399458369692813L;
-	private static final String COMMUNITY_METRIC_NAME = "Community";
-	private static final double TOLERANCE = 0.01;
 	private static final double UNSET_VAL = -9999.9;
-	private static final String DEFAULT = "DEFAULT";
 	private static final String DEFAULT_ORG_PROP = "defaultOrg";
 	private static final Logger log = Logger
 			.getLogger(SurveyalRestServlet.class.getName());
@@ -82,13 +75,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private SurveyedLocaleDao surveyedLocaleDao;
 	private QuestionDao qDao;
 	private CountryDao countryDao;
-	private SurveyMetricMappingDao metricMappingDao;
-	private MetricDao metricDao;
-	private boolean useConfigStatusScore = false;
-	private boolean useDynamicScoring = false;
 	private String statusFragment;
 	private Map<String, String> scoredVals;
-	private boolean mergeNearby;
 
 	/**
 	 * initializes the servlet by instantiating all needed Dao classes and
@@ -101,19 +89,11 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		surveyedLocaleDao = new SurveyedLocaleDao();
 		qDao = new QuestionDao();
 		countryDao = new CountryDao();
-		metricDao = new MetricDao();
-		metricMappingDao = new SurveyMetricMappingDao();
-		mergeNearby = true;
-		String mergeProp = PropertyUtil.getProperty("mergeNearbyLocales");
-		useDynamicScoring = Boolean.parseBoolean(PropertyUtil.getProperty("scoreLocaleDynmaic"));
-		if (mergeProp != null && "false".equalsIgnoreCase(mergeProp.trim())) {
-			mergeNearby = false;
-		}
+
 		// TODO: once the appropriate metric types are defined and reliably
 		// assigned, consider removing this in favor of metrics
 		statusFragment = PropertyUtil.getProperty("statusQuestionText");
 		if (statusFragment != null && statusFragment.trim().length() > 0) {
-			useConfigStatusScore = true;
 			String[] fields = statusFragment.split(";");
 			statusFragment = fields[0].toLowerCase();
 			scoredVals = new HashMap<String, String>();
@@ -487,25 +467,15 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			List<QuestionAnswerStore> answers) {
 		List<SurveyalValue> values = new ArrayList<SurveyalValue>();
 		if (answers != null && answers.size() > 0) {
-			List<SurveyMetricMapping> mappings = null;
 			List<SurveyalValue> oldVals = surveyedLocaleDao
 					.listSurveyalValuesByInstance(answers.get(0)
 							.getSurveyInstanceId());
-			List<Metric> metrics = null;
-			boolean loadedItems = false;
 			List<Question> questionList = qDao.listQuestionsBySurvey(answers
 					.get(0).getSurveyId());
 
 			// date value
 			Calendar cal = new GregorianCalendar();
 			for (QuestionAnswerStore ans : answers) {
-				if (!loadedItems && ans.getSurveyId() != null) {
-					metrics = metricDao.listMetrics(null, null, null,
-							l.getOrganization(), "all");
-					mappings = metricMappingDao.listMappingsBySurvey(ans
-							.getSurveyId());
-					loadedItems = true;
-				}
 				SurveyalValue val = null;
 				if (oldVals != null) {
 					for (SurveyalValue oldVal : oldVals) {
