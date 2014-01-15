@@ -51,10 +51,8 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleSummaryDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import com.gallatinsystems.surveyal.domain.SurveyedLocaleSummary;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -322,20 +320,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				instance.setSublevel6(geoPlace.getSub6());
 			}
 
-			// increment surveyedLocaleSummary count for this surveyGroupId
-			if (!useExistingLocale && surveyGroupId != null) {
-				SurveyedLocaleSummaryDao SLSdao = new SurveyedLocaleSummaryDao();
-				SurveyedLocaleSummary SLSummary = SLSdao
-						.getBySurveyGroupId(surveyGroupId);
-				if (SLSummary != null && SLSummary.getKey() != null) {
-					SLSummary.setCount(SLSummary.getCount() + 1);
-				} else {
-					SLSummary = new SurveyedLocaleSummary();
-					SLSummary.setSurveyGroupId(surveyGroupId);
-					SLSummary.setCount(1L);
-				}
-				SLSdao.save(SLSummary);
-			}
 
 			// if we don't have a locale, create one
 			if (locale == null) {
