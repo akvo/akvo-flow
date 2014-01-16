@@ -73,7 +73,7 @@
               <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
               <td class="surveyGroup" style="text-align:left;">{{sl.surveyGroupId}}</td>
               <td class="displayName" style="text-align:left;">{{sl.displayName}}</td>
-              <td class="collected">{{sl.lastUpdateDateTime}}</td>
+              <td class="collected">{{#with sl}}{{date1 lastUpdateDateTime}}{{/with}}</td>
               <td class="action">
                 <a {{action showEditSurveyInstanceWindow SI target="this" }}>
                   {{t _view_details}}

@@ -225,7 +225,7 @@ FLOW.SurveyedLocale = DS.Model.extend({
   latitude: DS.attr('number'),
   longitude: DS.attr('number'),
   displayName: DS.attr('string'),
-  lastUpdateDateTime: DS.attr('date'),
+  lastUpdateDateTime: DS.attr('number'),
   surveyGroupId: DS.attr('number'),
   primaryKey: 'keyId'
 });
