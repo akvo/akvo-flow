@@ -224,10 +224,10 @@ FLOW.SurveyedLocale = DS.Model.extend({
   keyId: DS.attr('number'),
   latitude: DS.attr('number'),
   longitude: DS.attr('number'),
-  primaryKey: 'keyId',
-  typeMark: DS.attr('string', {
-    defaultValue: 'WATER_POINT'
-  })
+  displayName: DS.attr('string'),
+  lastUpdateDateTime: DS.attr('date'),
+  surveyGroupId: DS.attr('number'),
+  primaryKey: 'keyId'
 });
 
 // Explicitly avoid to use belongTo and hasMany as

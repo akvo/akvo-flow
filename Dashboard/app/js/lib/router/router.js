@@ -263,6 +263,9 @@ FLOW.Router = Ember.Router.extend({
       doDataCleaning: function (router, event) {
         router.transitionTo('navData.dataCleaning');
       },
+      doMonitoringData: function (router, event) {
+        router.transitionTo('navData.monitoringData');
+      },
 
       index: Ember.Route.extend({
         route: '/',
@@ -302,7 +305,17 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('dataCleaning');
           router.set('datasubnavController.selected', 'dataCleaning');
         }
-      })
+      }),
+      
+      monitoringData: Ember.Route.extend({
+        route: '/monitoringdata',
+        connectOutlets: function (router, context) {
+          router.get('navDataController').connectOutlet('monitoringData');
+          router.set('datasubnavController.selected', 'monitoringData');
+          FLOW.surveyGroupControl.populate();
+          FLOW.surveyedLocaleControl.populate();
+        }
+      }),
     }),
 
     // ************************** REPORTS ROUTER **********************************

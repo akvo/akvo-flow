@@ -16,10 +16,11 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
+
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 
 /**
@@ -28,7 +29,7 @@ import java.util.Date;
  * @author Mark Westra
  * 
  */
-public class SurveyedLocaleDto implements Serializable {
+public class SurveyedLocaleDto extends BaseDto {
 
 	private static final long serialVersionUID = -850583183416882347L;
 
@@ -38,6 +39,7 @@ public class SurveyedLocaleDto implements Serializable {
 	private Double lat;
 	private Double lon;
 	private List<SurveyInstanceDto> surveyInstances;
+	private Date lastUpdateDateTime;
 
 	public SurveyedLocaleDto() {
 		surveyInstances = new ArrayList<SurveyInstanceDto>();
@@ -93,5 +95,13 @@ public class SurveyedLocaleDto implements Serializable {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+
+	public Date getLastUpdateDateTime() {
+		return lastUpdateDateTime;
+	}
+
+	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
+		this.lastUpdateDateTime = lastUpdateDateTime;
 	}
 }

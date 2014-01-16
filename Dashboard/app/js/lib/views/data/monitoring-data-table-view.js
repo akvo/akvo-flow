@@ -1,0 +1,1 @@
+FLOW.MonitoringDataTableView = FLOW.View.extend({});
