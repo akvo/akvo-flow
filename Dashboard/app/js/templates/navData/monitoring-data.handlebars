@@ -20,38 +20,13 @@
           promptBinding="Ember.STRINGS._select_survey"}}
 			</div>
 			<div class="dataCollectedDate">
-        <label class="collectedFrom"> {{t _collected_from}}:
-          {{view FLOW.DateField
-            minDate=false
-            valueBinding="FLOW.dateControl.fromDate"
-            elementId="from_date"
-            placeholder="Collected from"
-            placeholderBinding="Ember.STRINGS._collected_from"
-            size=30}}
-        </label>
-
-        <label class="collectedTo"> {{t _to}}:
-          {{view FLOW.DateField
-            minDate=false
-            valueBinding="FLOW.dateControl.toDate"
-            elementId="to_date"
-            placeholder="To"
-            placeholderBinding="Ember.STRINGS._to"
-            size=30}}
-        </label>
 			</div>
 			<div class="dataDeviceId">
-        <label  class="devideId"> {{t _device_id}}:</label> 
+        <label  class="devideId"> {{t _display_name}}:</label>
         {{view Ember.TextField 
-          valueBinding="view.deviceId" 
+          valueBinding="view.displayName"
           placeholder=""
-          placeholderBinding="Ember.STRINGS._device_id"
-          size=30}} 
-        <label class="submitterName"> {{t _submitter_name}}:</label> 
-        {{view Ember.TextField 
-          valueBinding="view.submitterName"
-          placeholder=""
-          placeholderBinding="Ember.STRINGS._submitter_name"
+          placeholderBinding="Ember.STRINGS._display_name"
           size=30}}
 			</div>
       <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>
