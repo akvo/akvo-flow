@@ -702,6 +702,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			}
 		}
 
+		if (q.getSourceId() != null) {
+			qXML.setSourceId(q.getSurveyId().toString());
+		}
+
 		String questionDocument = null;
 		try {
 			questionDocument = sax.marshal(qXML);

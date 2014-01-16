@@ -107,7 +107,20 @@ public class Question {
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	@XmlSchemaType(name = "NMTOKEN")
 	protected String id;
+
+	@XmlAttribute(required = false)
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	@XmlSchemaType(name = "NMTOKEN")
+	protected String sourceId;
 		
+
+	public String getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(String sourceId) {
+		this.sourceId = sourceId;
+	}
 
 	public List<AltText> getAltText() {
 		if (altText == null) {
