@@ -50,7 +50,7 @@
               <td class="displayName" style="text-align:left;">{{sl.displayName}}</td>
               <td class="collected">{{#with sl}}{{date1 lastUpdateDateTime}}{{/with}}</td>
               <td class="action">
-                <a {{action showEditSurveyInstanceWindow SI target="this" }}>
+                <a {{action showDetailsDialog sl target="this" }}>
                   {{t _view_details}}
                 </a>
               </td>
@@ -74,25 +74,17 @@
     </section>
 
     <!-- edit surveyInstance popup-->
-    <div {{bindAttr class="view.showEditSurveyInstanceWindowBool:display :overlay"}}>
+    <div {{bindAttr class="view.showingDetailsDialog:display :overlay"}}>
       <div class="blanketWide"></div>
           <div class="dialogWrap">
         <!-- the dialog contents -->
         <div class="confirmDialog dialogWide">
-		     <a {{action "doCloseEditSIWindow" target="this"}} class="ok clodeDialog">close window</a>
+		     <a {{action "closeDetailsDialog" target="this"}} class="ok clodeDialog">close window</a>
 
           <h2>{{t _edit_answers}}</h2>
             <nav class="editAnswerMenu"> 
-            <ul>  
-              <li class="prevBtn"><a {{action "doPreviousSI" target="this"}}>&lsaquo; {{t _previous_record}}</a></li>
-              {{#if FLOW.role.ADMIN }}
-                <li class="deleteBtn"><a {{action confirm FLOW.dialogControl.delSI target="FLOW.dialogControl"}} class="smallBtn">{{t _delete}}</a></li>
-              {{/if}}
-             <!--  <li class="saveBtn"><a {{action "doSaveSI" target="this"}} class="smallBtn">{{t _save}}</a></li> -->
-              <li class="nextBtn"><a {{action "doNextSI" target="this"}}>{{t _next_record}} &rsaquo;</a></li>
-            </ul>
           </nav>
-        <p>{{view.siString}}</p>
+        <p></p>
 
  <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->
