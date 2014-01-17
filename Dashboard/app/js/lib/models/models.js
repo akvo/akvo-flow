@@ -227,6 +227,7 @@ FLOW.SurveyedLocale = DS.Model.extend({
   displayName: DS.attr('string'),
   lastUpdateDateTime: DS.attr('number'),
   surveyGroupId: DS.attr('number'),
+  identifier: DS.attr('string'),
   primaryKey: 'keyId'
 });
 

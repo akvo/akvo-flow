@@ -40,6 +40,15 @@ public class SurveyedLocaleDto extends BaseDto {
 	private Double lon;
 	private List<SurveyInstanceDto> surveyInstances;
 	private Date lastUpdateDateTime;
+	private String identifier;
+
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
 
 	public SurveyedLocaleDto() {
 		surveyInstances = new ArrayList<SurveyInstanceDto>();

@@ -10,18 +10,16 @@
           optionValuePath="content.keyId"
           prompt=""
           promptBinding="Ember.STRINGS._select_survey_group"}}
-
-        {{view Ember.Select 
-          contentBinding="FLOW.surveyControl.arrangedContent"
-          selectionBinding="FLOW.selectedControl.selectedSurvey" 
-          optionLabelPath="content.code" 
-          optionValuePath="content.keyId"
-          prompt=""
-          promptBinding="Ember.STRINGS._select_survey"}}
-			</div>
-			<div class="dataCollectedDate">
-			</div>
-			<div class="dataDeviceId">
+	  </div>
+	  <div class="dataCollectedDate">
+	  </div>
+		<div class="dataDeviceId">
+		<label  class="devideId"> {{t _identifier}}:</label>
+	    {{view Ember.TextField
+          valueBinding="view.identifier"
+          placeholder=""
+          placeholderBinding="Ember.STRINGS._identifier"
+          size=30}}
         <label  class="devideId"> {{t _display_name}}:</label>
         {{view Ember.TextField 
           valueBinding="view.displayName"
@@ -37,6 +35,7 @@
           <tr>
               <th class="noArrows"></th>
               <th class="noArrows">{{t _survey_group}}</th>
+              <th class="noArrows">{{t _identifier}}</th>
               <th class="noArrows">{{t _display_name}}</th>
               <th class="noArrows">{{t _last_update}}</th>
               <th class="noArrows">{{t _action}}</th>
@@ -47,6 +46,7 @@
             <tr>
               <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
               <td class="surveyGroup" style="text-align:left;">{{sl.surveyGroupId}}</td>
+              <td class="identifier" style="text-align:left;">{{sl.identifier}}</td>
               <td class="displayName" style="text-align:left;">{{sl.displayName}}</td>
               <td class="collected">{{#with sl}}{{date1 lastUpdateDateTime}}{{/with}}</td>
               <td class="action">
