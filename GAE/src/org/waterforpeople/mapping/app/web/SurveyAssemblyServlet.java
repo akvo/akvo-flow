@@ -689,6 +689,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				qXML.setScoring(scoring);
 			}
 		}
+		
+		if (q.getAllowExternalSources() != null) {
+			qXML.setAllowExternalSources(String.valueOf(q.getAllowExternalSources()));
+		}
 
 		String questionDocument = null;
 		try {

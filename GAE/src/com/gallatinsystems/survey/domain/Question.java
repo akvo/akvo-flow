@@ -72,6 +72,7 @@ public class Question extends BaseDomain {
 	private Boolean allowSign;
 	private Double minVal;
 	private Double maxVal;
+	private Boolean allowExternalSources;
 	private Boolean isName;
 
 	public Boolean getAllowDecimal() {
@@ -325,6 +326,14 @@ public class Question extends BaseDomain {
 		return immutable;
 	}
 
+	public Boolean getAllowExternalSources() {
+		return allowExternalSources;
+	}
+
+	public void setAllowExternalSources(Boolean allowExternalSources) {
+		this.allowExternalSources = allowExternalSources;
+	}
+    
 	public Boolean getGeoLocked() {
 		return geoLocked;
 	}
@@ -332,4 +341,5 @@ public class Question extends BaseDomain {
 	public void setGeoLocked(Boolean geoLocked) {
 		this.geoLocked = geoLocked;
 	}
+	
 }

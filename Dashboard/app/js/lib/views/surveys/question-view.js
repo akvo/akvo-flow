@@ -11,6 +11,7 @@ FLOW.QuestionView = FLOW.View.extend({
   allowDecimal: null,
   allowMultipleFlag: null,
   allowOtherFlag: null,
+  allowExternalSources: false,
   geoLocked: null,
   dependentFlag: false,
   dependentQuestion: null,
@@ -122,6 +123,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('allowDecimal', FLOW.selectedControl.selectedQuestion.get('allowDecimal'));
     this.set('allowMultipleFlag', FLOW.selectedControl.selectedQuestion.get('allowMultipleFlag'));
     this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
+    this.set('allowExternalSources', FLOW.selectedControl.selectedQuestion.get('allowExternalSources'));
     this.set('geoLocked', FLOW.selectedControl.selectedQuestion.get('geoLocked'));
     this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
     this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
@@ -247,6 +249,7 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('allowDecimal', this.get('allowDecimal'));
     FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
     FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
+    FLOW.selectedControl.selectedQuestion.set('allowExternalSources', this.get('allowExternalSources'));
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
 

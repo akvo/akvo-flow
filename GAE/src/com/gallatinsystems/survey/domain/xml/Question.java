@@ -90,11 +90,13 @@ public class Question {
 	@XmlAttribute(required = true)
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	protected String mandatory;
+	@XmlAttribute(required = false)
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	protected String allowExternalSources;
 	@XmlAttribute(required = true)
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	@XmlSchemaType(name = "NMTOKEN")
 	protected String id;
-		
 
 	public List<AltText> getAltText() {
 		if (altText == null) {
@@ -315,6 +317,14 @@ public class Question {
 	 */
 	public void setId(String value) {
 		this.id = value;
+	}
+    
+	public String getAllowExternalSources() {
+		return allowExternalSources;
+	}
+
+	public void setAllowExternalSources(String allowExternalSources) {
+		this.allowExternalSources = allowExternalSources;
 	}
 
 	public Scoring getScoring() {
