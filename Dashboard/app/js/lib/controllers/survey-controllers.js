@@ -122,21 +122,24 @@ FLOW.surveySectorTypeControl = Ember.Object.create({
 });
 
 
+FLOW.alwaysTrue = function () {
+  return true;
+};
+
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortProperties: ['code'],
   sortAscending: true,
   content: null,
 
-  setFilteredContent: function () {
-    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function (item) {
-      return true;
-    }));
+  setFilteredContent: function (f) {
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, f));
   },
 
   // load all Survey Groups
-  populate: function () {
+  populate: function (f) {
+    var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
     FLOW.store.find(FLOW.SurveyGroup);
-    this.setFilteredContent();
+    this.setFilteredContent(fn);
   },
 
   // checks if data store contains surveys within this survey group.
