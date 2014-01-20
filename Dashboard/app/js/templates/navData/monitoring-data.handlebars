@@ -81,10 +81,71 @@
         <div class="confirmDialog dialogWide">
 		     <a {{action "closeDetailsDialog" target="this"}} class="ok clodeDialog">close window</a>
 
-          <h2>{{t _edit_answers}}</h2>
+          <h2>{{t _details}}</h2>
             <nav class="editAnswerMenu"> 
           </nav>
         <p></p>
+<section class="fullWidth " id="devicesList">
+      <table class="dataTable" id="surveyDataTable">
+        <thead>
+          <tr>
+              <th class="noArrows"></th>
+              <th class="noArrows">{{t _id}}</th>
+              <th class="noArrows">{{t _survey}}</th>
+              <th class="noArrows">{{t _submitter}}</th>
+              <th class="noArrows">{{t _device}}</th>
+              <th class="noArrows">{{t _collected}}</th>
+              <th class="noArrows">{{t _action}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each SI in FLOW.surveyInstanceControl.currentContents}}
+            <tr>
+              <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
+              <td class="device">{{SI.keyId}}</td>
+              <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
+              <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
+              <td class="device">{{SI.deviceIdentifier}}</td>
+              <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
+              <td class="action">
+                <a {{action showSurveyInstanceDialog sl target="this"}}>
+                  {{t _view_details}}
+                </a>
+              </td>
+            </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="7"><small>This is the footer.</small></td>
+          </tr>
+        </tfoot>
+      </table>
+      <ul class="prevNext">
+        <li class="prevBtn">{{#if view.hasPrevPage}}
+          <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
+        </li>
+        <li class="nextBtn">{{#if view.hasNextPage}}
+          <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
+        </li>
+      </ul>
+    </section>
+         </div>
+      </div>
+    </div>
+    <div {{bindAttr class="view.showingSurveyInstanceDialog:display :overlay"}}>
+      <div class="blanketWide"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialogWide">
+		     <a {{action hideSurveyInstanceDialog target="this"}} class="ok clodeDialog">close window</a>
+
+          <h2>{{t _details}}</h2>
+            <nav class="editAnswerMenu">
+            <ul>
+            </ul>
+          </nav>
+        <p>{{view.siString}}</p>
 
  <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->
