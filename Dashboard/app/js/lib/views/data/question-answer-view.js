@@ -74,7 +74,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-        return (a.order >= b.order);
+    	  return a.get('order') - b.get('order');
       });
 
       tempList = [];

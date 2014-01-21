@@ -49,7 +49,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 @RequestMapping("/placemarks")
 public class PlacemarkRestService {
 
-	final int LIMIT_PLACEMARK_POINTS = 500;
+	final int LIMIT_PLACEMARK_POINTS = 2000;
 	private static final Logger log = Logger
 			.getLogger(PlacemarkRestService.class.getName());
 

@@ -51,8 +51,6 @@ public class Question extends BaseDomain {
 	private Boolean allowOtherFlag = null;
 	private Boolean collapseable = false;
 	private Boolean immutable = false;
-	private Boolean localeNameFlag = false;
-	private Boolean localeLocationFlag = false;
 	private Long dependentQuestionId;
 	private String dependentQuestionAnswer;
 	private Long metricId;
@@ -75,6 +73,9 @@ public class Question extends BaseDomain {
 	private Double maxVal;
 	private Boolean isName;
 	private Long sourceId;
+	private Boolean localeNameFlag;
+	private Boolean localeLocationFlag;
+	private Boolean geoLocked;
 
 	public Boolean getAllowDecimal() {
 		return allowDecimal;
@@ -327,8 +328,16 @@ public class Question extends BaseDomain {
 		return immutable;
 	}
 
+	public Boolean getGeoLocked() {
+		return geoLocked;
+	}
+
 	public Boolean getLocaleNameFlag() {
 		return localeNameFlag;
+	}
+
+	public void setGeoLocked(Boolean geoLocked) {
+		this.geoLocked = geoLocked;
 	}
 
 	public void setLocaleNameFlag(Boolean localeNameFlag) {

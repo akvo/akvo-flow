@@ -55,6 +55,7 @@ public class EnvServlet extends HttpServlet {
 		properties.add("imageroot");
 		properties.add("flowServices");
 		properties.add("surveyuploadurl");
+		properties.add("showStatisticsFeature");
 	}
 
 	@Override
@@ -81,6 +82,9 @@ public class EnvServlet extends HttpServlet {
 		final VelocityContext context = new VelocityContext();
 		final Map<String, String> props = PropertyUtil
 				.getPropertiesMap(properties);
+
+		// if the showStatisticsFeature is not present in appengine-web.xml, we want it to be false.
+		if (props.get("showStatisticsFeature") == null) props.put("showStatisticsFeature", "false");
 
 		final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
 		final JSONArray jsonArray = new JSONArray();

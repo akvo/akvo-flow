@@ -59,6 +59,10 @@ FLOW.ReportLoader = Ember.Object.create({
       });
     }
 
+    if (criteria.opts.locale && FLOW.reportLanguageControl.get('selectedLanguage')) {
+      criteria.opts.locale = FLOW.reportLanguageControl.get('selectedLanguage').get('value');
+    }
+
     this.set('criteria', criteria);
     FLOW.savingMessageControl.numLoadingChange(1);
     this.requestReport();
@@ -124,54 +128,54 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showGoogleEarthButton: false,
 
   didInsertElement: function () {
+    FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.uploader.registerEvents();
   },
 
+  selectedSurvey: function () {
+	  return FLOW.selectedControl.selectedSurvey.get('keyId');
+  }.property('FLOW.selectedControl.selectedSurvey'),
+
   showRawDataReport: function () {
-    if (!FLOW.selectedControl.selectedSurvey) {
+	var sId = this.get('selectedSurvey');
+    if (!sId) {
       this.showWarning();
       return;
     }
-    FLOW.ReportLoader.load('RAW_DATA', FLOW.selectedControl.selectedSurvey.get('id'));
+    FLOW.ReportLoader.load('RAW_DATA', sId);
   },
   
   showRawTextFileExport: function () {
-    if (!FLOW.selectedControl.selectedSurvey) {
+	var sId = this.get('selectedSurvey');
+    if (!sId) {
 	  this.showWarning();
     return;
 	}
-	FLOW.ReportLoader.load('RAW_DATA_TEXT', FLOW.selectedControl.selectedSurvey.get('id'));  
+	FLOW.ReportLoader.load('RAW_DATA_TEXT', sId);
   },
 
   showComprehensiveReport: function () {
-    var opts = {};
+    var opts = {}, sId = this.get('selectedSurvey');
     this.set('showComprehensiveDialog', false);
 
     opts.performRollup = '' + FLOW.editControl.summaryPerGeoArea;
     opts.nocharts = '' + FLOW.editControl.omitCharts;
 
-    FLOW.ReportLoader.load('GRAPHICAL_SURVEY_SUMMARY', FLOW.selectedControl.selectedSurvey.get('id'), opts);
-  },
-
-  showGoogleEarthFile: function () {
-    if (!FLOW.selectedControl.selectedSurvey) {
-      this.showWarning();
-      return;
-    }
-    this.renderApplet('showGoogleEarthFileApplet', true);
+    FLOW.ReportLoader.load('GRAPHICAL_SURVEY_SUMMARY', sId, opts);
   },
 
   showSurveyForm: function () {
-    if (!FLOW.selectedControl.selectedSurvey) {
+	var sId = this.get('selectedSurvey');
+    if (!sId) {
       this.showWarning();
       return;
     }
-    FLOW.ReportLoader.load('SURVEY_FORM', FLOW.selectedControl.selectedSurvey.get('id'));
+    FLOW.ReportLoader.load('SURVEY_FORM', sId);
   },
 
   importFile: function () {
-    var file;
-    if (!FLOW.selectedControl.selectedSurvey) {
+    var file, sId = this.get('selectedSurvey');
+    if (!sId) {
       this.showImportWarning(Ember.String.loc('_import_select_survey'));
       return;
     }
@@ -188,7 +192,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   showComprehensiveOptions: function () {
-    if (!FLOW.selectedControl.selectedSurvey) {
+	var sId = this.get('selectedSurvey');
+    if (!sId) {
       this.showWarning();
       return;
     }

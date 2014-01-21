@@ -185,6 +185,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				String submitter = null;
 				StringBuilder sb = new StringBuilder();
 				String duration = null;
+				String durationSeconds = null;
 
 				sb.append("action="
 						+ RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
@@ -232,18 +233,34 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					// Survey Duration
 					if (cell.getColumnIndex() == 3) {
 						if (hasDurationCol) {
-							duration = String.valueOf(cell.getNumericCellValue());
+							 switch (cell.getCellType()) {
+							 	// if the cell type is string, we expect hh:mm:ss format
+							 	case Cell.CELL_TYPE_STRING:
+							 		duration = cell.getStringCellValue();
+							 		durationSeconds = String.valueOf(durationToSeconds(duration));
+							 		digest.update(duration.getBytes());
+							 		break;
+							 	// if the cell type if numeric, we expect a single seconds value
+							 	case Cell.CELL_TYPE_NUMERIC:
+							 		 durationSeconds = String.valueOf(cell.getNumericCellValue());
+							 		 digest.update(durationSeconds.getBytes());
+							 		break;
+							 	default:
+							 		durationSeconds = "0";
+							 		// don't update the digest, because we want this value to be saved.
+							 		break;
+							 }
 							sb.append("duration="
-									+ URLEncoder.encode(duration, "UTF-8")
+									+ URLEncoder.encode(durationSeconds, "UTF-8")
 									+ "&");
-							// The digest has to be aware of this field
-							digest.update(duration.getBytes());
 						}
 					}
 
 					boolean hasValue = false;
+					String qId = questionIDColMap.get(cell.getColumnIndex());
+
 					if (cell.getColumnIndex() >= firstQuestionCol
-							&& questionIDColMap.get(cell.getColumnIndex()) != null) {
+							&& qId != null && !qId.trim().equals("")) {
 						QuestionDto question = questionMap.get(questionIDColMap
 								.get(cell.getColumnIndex()));
 						QuestionType type = null;
@@ -364,7 +381,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 					sendDataToServer(
 							serverBase,
 							instanceId == null ? null
-									: getResetUrlString(instanceId, dateString, submitter, duration),
+									: getResetUrlString(instanceId, dateString, submitter, durationSeconds),
 							sb.toString(),
 							criteria.get(KEY_PARAM));
 
@@ -409,8 +426,34 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 		}
 	}
 	
+	private Integer durationToSeconds(String duration) {
+		if (duration == null || duration.length() == 0) return 0;
+
+		//try to parse as integer
+		if (!duration.contains(":")) {
+			try {
+				int seconds = Integer.parseInt(duration);
+				return seconds;
+			} catch (Exception e) {
+				return 0;
+			}
+		}
+
+		// try do parse as hh:mm:ss
+		String[] tokens = duration.split(":");
+		if (tokens.length != 3) return 0;
+		try{
+			int hours = Integer.parseInt(tokens[0]);
+			int minutes = Integer.parseInt(tokens[1]);
+			int seconds = Integer.parseInt(tokens[2]);
+			return 3600 * hours + 60 * minutes + seconds;
+		} catch (Exception e){
+			return 0;
+		}
+	}
+
 	private String getResetUrlString(String instanceId, String dateString,
-			String submitter, String duration) throws UnsupportedEncodingException {
+			String submitter, String durationSeconds) throws UnsupportedEncodingException {
 		String url = "action="
 				+ RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
 				+ "&" + RawDataImportRequest.SURVEY_INSTANCE_ID_PARAM
@@ -423,9 +466,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				+ "=" + URLEncoder.encode(submitter, "UTF-8");
 		
 		// Duration might be missing in old reports
-		if (duration != null) {
+		if (durationSeconds != null) {
 			url += "&" + RawDataImportRequest.DURATION_PARAM + "="
-					+ URLEncoder.encode(duration, "UTF-8");
+					+ URLEncoder.encode(durationSeconds, "UTF-8");
 		}
 		
 		return url;

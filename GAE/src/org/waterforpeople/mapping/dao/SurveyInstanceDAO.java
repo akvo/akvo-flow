@@ -390,12 +390,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	}
 
-	// same as listByDateRange, but adds sumbitterName as search field
+	// same as listByDateRange, but adds sumbitterName, country, and sublevels as search fields
 	// @Author: M.T.Westra
 	@SuppressWarnings("unchecked")
 	public List<SurveyInstance> listByDateRangeAndSubmitter(Date beginDate, Date endDate,
-			boolean unapprovedOnlyFlag, Long surveyId, String deviceIdentifier, String submitterName,
-			String cursorString) {
+			boolean unapprovedOnlyFlag, Long surveyId, String deviceIdentifier, String submitterName, 
+			String countryCode, String level1, String level2, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
 
@@ -411,6 +411,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				"String", deviceIdentifier, paramMap);
 		appendNonNullParam("submitterName", filterString, paramString,
 				"String", submitterName, paramMap);
+		appendNonNullParam("countryCode", filterString, paramString,
+				"String", countryCode, paramMap);
+		appendNonNullParam("sublevel1", filterString, paramString,
+				"String", level1, paramMap);
+		appendNonNullParam("sublevel2", filterString, paramString,
+				"String", level2, paramMap);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",
 				beginDate, paramMap, GTE_OP);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",
@@ -589,13 +595,16 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				surveyInstanceId, null);
 
 		// to account for the slim change if we have two geo questions in one surveyInstance
+
 		boolean sisCountUpdated = false;
+
 		if (qasList != null && qasList.size() > 0) {
 			// update the questionAnswerSummary counts
 			for (QuestionAnswerStore qasItem : qasList) {
 				
 				// if the questionAnswerStore item is the GEO type, try to update
 				// the surveyInstanceSummary
+
 				if (Question.Type.GEO.toString().equals(qasItem.getType()) && !sisCountUpdated){
 					DataProcessorRestServlet.surveyInstanceSummarizer(surveyInstanceId, qasItem.getKey().getId(), -1);
 					sisCountUpdated = true;
@@ -664,6 +673,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		Query q = pm.newQuery(SurveyInstance.class);
 		q.setFilter("surveyId == surveyIdParam");
+		q.setOrdering("createdDateTime asc");
 		q.declareParameters("Long surveyIdParam");
 		prepareCursor(cursorString, count, q);
 		List<SurveyInstance> siList = (List<SurveyInstance>) q

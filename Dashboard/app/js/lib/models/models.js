@@ -75,8 +75,14 @@ FLOW.Survey = FLOW.BaseModel.extend({
   sourceId: DS.attr('number', {
     defaultValue: null
   }),
+
   // used in the assignment edit page, not saved to backend
-  surveyGroupName: null
+  surveyGroupName: null,
+
+  allowEdit: function () {
+	  return !this.get('isNew') && this.get('status') !== 'COPYING';
+  }.property('status', 'isNew')
+
 });
 
 
@@ -111,6 +117,9 @@ FLOW.Question = FLOW.BaseModel.extend({
   allowSign: DS.attr('boolean', {
     defaultValue: false
   }),
+  geoLocked: DS.attr('boolean', {
+	    defaultValue: false
+	  }),
   collapseable: DS.attr('boolean', {
     defaultValue: false
   }),
@@ -276,6 +285,7 @@ FLOW.QuestionAnswer = FLOW.BaseModel.extend({
 FLOW.SurveyQuestionSummary = FLOW.BaseModel.extend({
   response: DS.attr('string'),
   count: DS.attr('number'),
+  percentage: null,
   questionId: DS.attr('string')
 });
 
@@ -303,7 +313,8 @@ FLOW.Metric = FLOW.BaseModel.extend({
   organization: DS.attr('string'),
   name: DS.attr('string'),
   group: DS.attr('string'),
-  valueType: DS.attr('string')
+  valueType: DS.attr('string'),
+  questionId: DS.attr('number')
 });
 
 FLOW.Message = FLOW.BaseModel.extend({
@@ -354,4 +365,12 @@ FLOW.NotificationSubscription = FLOW.BaseModel.extend({
   notificationType: DS.attr('string'),
   expiryDate: DS.attr('number'),
   entityId: DS.attr('number')
+});
+
+FLOW.SubCountry = FLOW.BaseModel.extend({
+  countryCode: DS.attr('string'),
+  level: DS.attr('number'),
+  name: DS.attr('string'),
+  parentKey: DS.attr('number'),
+  parentName: DS.attr('string')
 });

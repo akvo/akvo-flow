@@ -31,7 +31,7 @@ FLOW.UserListView = FLOW.View.extend({
 
     FLOW.store.createRecord(FLOW.User, {
       "userName": FLOW.editControl.get('newUserName'),
-      "emailAddress": FLOW.editControl.get('newEmailAddress').toLowerCase(),
+      "emailAddress": Ember.$.trim(FLOW.editControl.get('newEmailAddress').toLowerCase()),
       "permissionList": value
     });
 
@@ -66,7 +66,7 @@ FLOW.UserListView = FLOW.View.extend({
     var user, superAdmin = false;
     user = FLOW.store.find(FLOW.User, FLOW.editControl.get('editUserId'));
     user.set('userName', FLOW.editControl.get('editUserName'));
-    user.set('emailAddress', FLOW.editControl.get('editEmailAddress').toLowerCase());
+    user.set('emailAddress', Ember.$.trim(FLOW.editControl.get('editEmailAddress').toLowerCase()));
 
     if (FLOW.editControl.editPermissionLevel !== null) {
       if (FLOW.editControl.editPermissionLevel.value === 0) {

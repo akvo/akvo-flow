@@ -5,5 +5,10 @@
     {{#view view.NavItemView item="exportReports" }}
     	<a {{action doExportReports}}>{{t _export_reports}}</a>
     {{/view}} 
+    {{#if FLOW.Env.showStatisticsFeature}}
+     {{#view view.NavItemView item="statistics" }}
+      <a {{action doStatistics}}>{{t _statistics}}</a>
+    {{/view}} 
+    {{/if}}
 
 </ul>

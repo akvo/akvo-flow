@@ -1191,36 +1191,55 @@ FLOW.SurveyInstance.FIXTURES = [{
   id: 734231
 }];
 
+
+FLOW.Metric.FIXTURES = [{
+    name:'metric 1',
+    questionId: 1,
+    id:1,
+    keyId:1
+},{
+    name:'metric 2',
+    questionId: 1,
+    id:2,
+    keyId:2
+},{
+    name:'metric 2',
+    questionId: 1,
+    id:1,
+    keyId:1
+}];
+
+
 FLOW.SurveyQuestionSummary.FIXTURES = [{
-  id: 1,
-  keyId: 1,
-  response: 'Apples',
-  count: 20
+    id: 1,
+    keyId: 1,
+    response:'Apples',
+    count:20
 }, {
-  id: 2,
-  keyId: 2,
-  response: 'Pears',
-  count: 30
+    id: 2,
+    keyId: 2,
+    response:'Pears',
+    count:30
 }, {
-  id: 3,
-  keyId: 3,
-  response: 'Oranges',
-  count: '15'
+    id: 3,
+    keyId: 3,
+    response:'Oranges',
+    count:'15'
 }, {
-  id: 4,
-  keyId: 4,
-  response: 'Mangos',
-  count: '45'
+    id: 4,
+    keyId: 4,
+    response:'Mangos',
+    count:'45'
 }, {
-  id: 5,
-  keyId: 5,
-  response: 'Mandarins',
-  count: '80'
-}, {
-  id: 5,
-  keyId: 5,
-  response: 'Grapes',
-  count: '100'
+    id: 5,
+    keyId: 5,
+    response:'Mandarins',
+    count:'80'
+},{
+    id: 5,
+    keyId: 5,
+    response:'Grapes',
+    count:'100'
 }];
 
 FLOW.Message.FIXTURES = [{
