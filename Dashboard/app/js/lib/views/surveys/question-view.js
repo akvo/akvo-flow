@@ -63,6 +63,13 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedQuestion', 'content.keyId').cacheable(),
 
+  amTextType: function () {
+    if (this.type) {
+      return this.type.get('value') == 'FREE_TEXT';
+    } else {
+      return false;
+    }
+  }.property('this.type').cacheable(),
 
   amOptionType: function () {
     var options;
@@ -93,7 +100,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val == 'FREE_TEXT' || val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
+      return val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
     }
   }.property('this.type').cacheable(),
 
@@ -249,9 +256,11 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('allowDecimal', this.get('allowDecimal'));
     FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
     FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
-    FLOW.selectedControl.selectedQuestion.set('allowExternalSources', this.get('allowExternalSources'));
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
+    
+    var allowExternalSources = (this.type.get('value') !== 'FREE_TEXT') ? false : this.get('allowExternalSources');
+    FLOW.selectedControl.selectedQuestion.set('allowExternalSources', allowExternalSources);
 
     dependentQuestionAnswer = "";
     first = true;

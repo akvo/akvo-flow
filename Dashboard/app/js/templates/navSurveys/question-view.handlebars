@@ -7,7 +7,7 @@
     <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
  
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
-    <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.allowExternalSources"}}{{t _allow_external_sources}}</label>
+    
 	{{#if FLOW.Env.showStatisticsFeature}}
     <label class="selectinLabel"><span>{{t _tag}} {{tooltip _what_is_tag}}:</span> {{view Ember.Select 
       contentBinding="FLOW.attributeControl.content" 
@@ -48,6 +48,10 @@
      {{#if view.amGeoType}}
 	  <h1 class="answerNbr">{{t _geo_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
+    {{/if}}
+    
+    {{#if view.amTextType}}
+      <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.allowExternalSources"}}{{t _allow_external_sources}}</label>
     {{/if}}
 
     {{#if view.amNoOptionsType}}
