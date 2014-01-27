@@ -108,7 +108,7 @@
               <td class="device">{{SI.deviceIdentifier}}</td>
               <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
               <td class="action">
-                <a {{action showSurveyInstanceDialog sl target="this"}}>
+                <a {{action showSurveyInstanceDialog SI target="this"}}>
                   {{t _view_details}}
                 </a>
               </td>

@@ -11,6 +11,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   },
 
   showSurveyInstanceDialog: function (evt) {
+    FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context.get('keyId'));
     this.toggleProperty('showingSurveyInstanceDialog');
   },
   hideSurveyInstanceDialog: function (evt) {
