@@ -51,6 +51,7 @@ public class Question extends BaseDomain {
 	private Boolean allowOtherFlag = null;
 	private Boolean collapseable = false;
 	private Boolean geoLocked = null;
+	private Boolean requireDoubleEntry = null;
 	private Boolean immutable = false;
 	private Long dependentQuestionId;
 	private String dependentQuestionAnswer;
@@ -331,5 +332,13 @@ public class Question extends BaseDomain {
 
 	public void setGeoLocked(Boolean geoLocked) {
 		this.geoLocked = geoLocked;
+	}
+
+	public Boolean getRequireDoubleEntry() {
+		return requireDoubleEntry;
+	}
+
+	public void setRequireDoubleEntry(Boolean requireDoubleEntry) {
+		this.requireDoubleEntry = requireDoubleEntry;
 	}
 }

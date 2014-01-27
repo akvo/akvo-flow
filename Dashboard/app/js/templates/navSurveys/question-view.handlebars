@@ -7,7 +7,7 @@
     <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
  
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
-	{{#if FLOW.Env.showStatisticsFeature}}
+  {{#if FLOW.Env.showStatisticsFeature}}
     <label class="selectinLabel"><span>{{t _tag}} {{tooltip _what_is_tag}}:</span> {{view Ember.Select 
       contentBinding="FLOW.attributeControl.content" 
       optionLabelPath="content.name" 
@@ -15,9 +15,9 @@
       selectionBinding="view.attribute"
       prompt=""
       promptBinding="Ember.STRINGS._select_tag"}}
-	   <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _create_new_tag}} </a> </label>
+     <a {{action "showAddAttributeDialog" target="this"}} class="addAttribute"><span>+</span>{{t _create_new_tag}} </a> </label>
       {{#if view.attribute}}<label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.includeInMap"}}{{t _include_in_map}}</label>{{/if}}
-	{{/if}}
+  {{/if}}
     <label class="selectinLabel"><span>{{t _question_type}}:</span> {{view Ember.Select 
       contentBinding="FLOW.questionTypeControl.content" 
       optionLabelPath="content.label" 
@@ -35,9 +35,13 @@
       <p><strong>{{t _options}}:&nbsp;</strong><span class="fadedText"> ({{t _enter_each_choice_on_a_separate_line}})</span> </p>
       {{view Ember.TextArea valueBinding="view.optionList" size="100" rows="7" }}  
     {{/if}}                 
-    
+    {{#if view.amFreeTextType}}
+    <h1 class="answerNbr">{{t _free_text_details}}:</h1>
+    <label class="labelcheckbox"> {{view Ember.Checkbox
+      checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>    
+    {{/if}}
     {{#if view.amNumberType}}
-	  <h1 class="answerNbr">{{t _number_details}}: </h1>
+    <h1 class="answerNbr">{{t _number_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowDecimal"}}{{t _allow_decimal_point}} </label>
 
@@ -45,14 +49,14 @@
       <label class="maxValNumb">{{t _max_val}}: {{view Ember.TextField valueBinding="view.maxVal" size=10 }}</label>
     {{/if}} 
      {{#if view.amGeoType}}
-	  <h1 class="answerNbr">{{t _geo_details}}: </h1>
+    <h1 class="answerNbr">{{t _geo_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
     {{/if}}
 
     {{#if view.amNoOptionsType}}
-		<p class="noOptions">
-		  {{t _no_options_for_this_question_type}}
-		</p>
+    <p class="noOptions">
+      {{t _no_options_for_this_question_type}}
+    </p>
     {{/if}}
 
 </div>
