@@ -113,41 +113,9 @@
                 </a>
               </td>
             </tr>
-            {{/each}}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="7"><small>This is the footer.</small></td>
-          </tr>
-        </tfoot>
-      </table>
-      <ul class="prevNext">
-        <li class="prevBtn">{{#if view.hasPrevPage}}
-          <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
-        </li>
-        <li class="nextBtn">{{#if view.hasNextPage}}
-          <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
-        </li>
-      </ul>
-    </section>
-         </div>
-      </div>
-    </div>
-    <div {{bindAttr class="view.showingSurveyInstanceDialog:display :overlay"}}>
-      <div class="blanketWide"></div>
-          <div class="dialogWrap">
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialogWide">
-		     <a {{action hideSurveyInstanceDialog target="this"}} class="ok clodeDialog">close window</a>
-
-          <h2>{{t _details}}</h2>
-            <nav class="editAnswerMenu">
-            <ul>
-            </ul>
-          </nav>
-        <p>{{view.siString}}</p>
-
- <table class="dataTable" id="surveyDataTable">
+            <tr class="si_details" style="background: #fff; display:none;" data-flow-id="si_details_{{unbound SI.id}}">
+              <td colspan="7">
+              <table class="dataTable" id="surveyDataTable">
             <!-- TABLE HEADER-->
             <thead>
                 <tr>
@@ -190,8 +158,26 @@
                 </tr>
             </tfoot>
         </table>
-
-        </div>
+              </td>
+            </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="7"><small>This is the footer.</small></td>
+          </tr>
+        </tfoot>
+      </table>
+      <ul class="prevNext">
+        <li class="prevBtn">{{#if view.hasPrevPage}}
+          <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
+        </li>
+        <li class="nextBtn">{{#if view.hasNextPage}}
+          <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
+        </li>
+      </ul>
+    </section>
+         </div>
       </div>
     </div>
 </section>

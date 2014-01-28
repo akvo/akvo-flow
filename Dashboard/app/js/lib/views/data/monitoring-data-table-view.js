@@ -1,6 +1,5 @@
 FLOW.MonitoringDataTableView = FLOW.View.extend({
   showingDetailsDialog: false,
-  showingSurveyInstanceDialog: false,
 
   showDetailsDialog: function (evt) {
     this.toggleProperty('showingDetailsDialog');
@@ -12,7 +11,8 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 
   showSurveyInstanceDialog: function (evt) {
     FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context.get('keyId'));
-    this.toggleProperty('showingSurveyInstanceDialog');
+    $('.si_details').hide();
+    $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
   },
   hideSurveyInstanceDialog: function (evt) {
     this.toggleProperty('showingSurveyInstanceDialog');
