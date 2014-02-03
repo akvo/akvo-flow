@@ -23,10 +23,6 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 	      sgId = this.get('selectedSurveyGroup'),
 	      criteria = {};
 
-	  if (!ident && !displayName && !sgId) {
-		  return;
-	  }
-
 	  if (ident) {
 		  criteria.identifier = ident;
 	  }
