@@ -51,7 +51,8 @@ public class SurveyedLocaleRestService {
 
 		List<SurveyedLocaleDto> locales = new ArrayList<SurveyedLocaleDto>();
 
-		for (SurveyedLocale sl : surveyedLocaleDao.list(null)) {
+		for (SurveyedLocale sl : surveyedLocaleDao
+				.listLocalesBySurveyGroupAndDate(null, null, 20)) {
 			SurveyedLocaleDto dto = new SurveyedLocaleDto();
 			DtoMarshaller.copyToDto(sl, dto);
 			locales.add(dto);

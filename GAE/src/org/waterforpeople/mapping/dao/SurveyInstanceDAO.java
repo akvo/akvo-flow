@@ -175,18 +175,28 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				SurveyedLocale sl = slDao.getByIdentifier(parts[13]);
 				if (sl != null){
 					si.setSurveyedLocaleId(sl.getKey().getId());
-				}
-			}
-			// if one of the answer types is META_GEO, interpret this as the
-			// geolocation information of the surveyedLocale
-			if (parts[3].equals("META_GEO")){
-				si.setLocaleGeoLocation(parts[4].trim());
-			}
 
-			// if one of the answer types is META_NAME, interpret this as the
-			// displayName information of the surveyedLocale
-			if (parts[3].equals("META_NAME")){
-				si.setSurveyedLocaleDisplayName(parts[4].trim());
+					// if one of the answer types is META_NAME, interpret this as the
+					// displayName information of the surveyedLocale
+					if (parts[3].equals("META_NAME")){
+						sl.setDisplayName(parts[4].trim());
+					}
+
+					// if one of the answer types is META_GEO, interpret this as the
+					// geolocation information of the surveyedLocale
+					if (parts[3].equals("META_GEO")){
+						String[] tokens = parts[4].trim().split("\\|");
+						if (tokens.length >= 2) {
+							try {
+								sl.setLatitude(Double.parseDouble(tokens[0]));
+								sl.setLongitude(Double.parseDouble(tokens[1]));
+							} catch (NumberFormatException nfe) {
+								log.log(Level.SEVERE,
+										"Could not parse lat/lon from META_GEO: " + parts[4]);
+							}
+						}
+					}
+				}
 			}
 
 			// if this is the first time round, save the surveyInstance or use an existing one
