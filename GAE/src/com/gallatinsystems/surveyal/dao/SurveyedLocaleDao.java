@@ -305,6 +305,12 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 		return locales;
 	}
 
+	public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
+		List<SurveyedLocale> locales = listByProperty("displayName", displayName,
+				"String");
+		return locales;
+	}
+
 	/**
 	 * returns all the locales by surveyGroupId, from a certain date.
 	 * If no date is supplised, t = 0 is used.

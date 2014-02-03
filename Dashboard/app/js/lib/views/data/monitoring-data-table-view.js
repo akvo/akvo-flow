@@ -16,5 +16,29 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
     FLOW.questionAnswerControl.doQuestionAnswerQuery(evt.context.get('keyId'));
     $('.si_details').hide();
     $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
+  },
+  findSurveyedLocale: function (evt) {
+	  var ident = this.get('identifier'),
+	      displayName = this.get('displayName'),
+	      sgId = this.get('selectedSurveyGroup'),
+	      criteria = {};
+
+	  if (!ident && !displayName && !sgId) {
+		  return;
+	  }
+
+	  if (ident) {
+		  criteria.identifier = ident;
+	  }
+
+	  if (displayName) {
+		  criteria.displayName = displayName;
+	  }
+
+	  if (sgId) {
+		  criteria.surveyGroupId = sgId.get('keyId');
+	  }
+
+	  FLOW.surveyedLocaleControl.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, criteria));
   }
 });

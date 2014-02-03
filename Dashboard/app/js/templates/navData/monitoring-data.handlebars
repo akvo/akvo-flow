@@ -5,7 +5,7 @@
       <div class="chooseSurveyData">
         {{view Ember.Select 
           contentBinding="FLOW.surveyGroupControl.arrangedContent"
-          selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
+          selectionBinding="view.selectedSurveyGroup"
           optionLabelPath="content.code" 
           optionValuePath="content.keyId"
           prompt=""
@@ -27,7 +27,7 @@
           placeholderBinding="Ember.STRINGS._display_name"
           size=30}}
 			</div>
-      <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>
+      <a {{action "findSurveyedLocale" target="this"}} class="findData"> {{t _find}}</a>
     </div>
     <section class="fullWidth " id="devicesList">
       <table class="dataTable" id="surveyDataTable">

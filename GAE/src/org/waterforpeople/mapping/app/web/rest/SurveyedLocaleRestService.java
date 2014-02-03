@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
@@ -42,17 +43,30 @@ public class SurveyedLocaleRestService {
 
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> listQuestions() {
+	public Map<String, Object> listQuestions(
+			@RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId,
+			@RequestParam(value = "identifier", defaultValue = "") String identifier,
+			@RequestParam(value = "displayName", defaultValue = "") String displayName) {
+
 		Map<String, Object> response = new HashMap<String, Object>();
 
 		RestStatusDto statusDto = new RestStatusDto();
 		statusDto.setStatus("");
 		statusDto.setMessage("");
 
+		List<SurveyedLocale> sls = new ArrayList<SurveyedLocale>();
 		List<SurveyedLocaleDto> locales = new ArrayList<SurveyedLocaleDto>();
 
-		for (SurveyedLocale sl : surveyedLocaleDao
-				.listLocalesBySurveyGroupAndDate(null, null, 20)) {
+		if (identifier != null && !"".equals(identifier)) {
+			sls = surveyedLocaleDao.listLocalesByCode(identifier, false);
+		} else if (displayName != null && !"".equals(displayName)) {
+			sls = surveyedLocaleDao.listLocalesByDisplayName(displayName);
+		} else {
+			sls = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
+					surveyGroupId, null, 20);
+		}
+
+		for (SurveyedLocale sl : sls) {
 			SurveyedLocaleDto dto = new SurveyedLocaleDto();
 			DtoMarshaller.copyToDto(sl, dto);
 			locales.add(dto);
