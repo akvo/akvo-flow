@@ -2,6 +2,9 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   showingDetailsDialog: false,
 
   showDetailsDialog: function (evt) {
+	FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
+		surveyedLocaleId: evt.context.get('keyId')
+	}));
     this.toggleProperty('showingDetailsDialog');
   },
 
