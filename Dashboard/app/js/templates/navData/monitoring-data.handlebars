@@ -45,7 +45,7 @@
           {{#each sl in FLOW.surveyedLocaleControl.content}}
             <tr>
               <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
-              <td class="surveyGroup" style="text-align:left;">{{sl.surveyGroupId}}</td>
+              <td class="surveyGroup" style="text-align:left;">{{#with sl}}{{sgName surveyGroupId}}{{/with}}</td>
               <td class="identifier" style="text-align:left;">{{sl.identifier}}</td>
               <td class="displayName" style="text-align:left;">{{sl.displayName}}</td>
               <td class="collected">{{#with sl}}{{date1 lastUpdateDateTime}}{{/with}}</td>
@@ -73,7 +73,7 @@
       </ul>
     </section>
 
-    <!-- edit surveyInstance popup-->
+    <!-- surveyInstance details Dialog -->
     <div {{bindAttr class="view.showingDetailsDialog:display :overlay"}}>
       <div class="blanketWide"></div>
           <div class="dialogWrap">
