@@ -91,4 +91,19 @@ public class TranslationDao extends BaseDAO<Translation> {
 			delete(trans.values());
 		}
 	}
+
+	/**
+	 * list all translations
+	 * 
+	 * @param cursor
+	 * @param count
+	 */
+	 @SuppressWarnings("unchecked")
+	 public List<Translation> listTranslations(Integer count, String cursorString) {
+		 PersistenceManager pm = PersistenceFilter.getManager();
+		 javax.jdo.Query q = pm.newQuery(Translation.class);
+		 prepareCursor(cursorString, count, q);
+		 List<Translation> tList = (List<Translation>) q.execute();
+		 return tList;
+		 }
 }

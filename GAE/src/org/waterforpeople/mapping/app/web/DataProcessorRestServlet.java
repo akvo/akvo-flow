@@ -74,7 +74,6 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.backends.BackendServiceFactory;
@@ -150,7 +149,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			changeLocaleType(dpReq.getSurveyId());
 		} else if (DataProcessorRequest.ADD_TRANSLATION_FIELDS
 				.equalsIgnoreCase(dpReq.getAction())) {
-			addTranslationFields(dpReq.getOffset());
+			addTranslationFields(dpReq.getCursor());
 			} 
 		return new RestResponse();
 	}
@@ -821,31 +820,13 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 							+ surveyInstanceId);
 		}
 	}
-
-	/**
-	* Determine type of translation:
-	* survey - 1
-	* question group - 2
-	* question - 3
-	* question option - 4
-	*/
-	private int translationParentType(ParentType pt) {
-		if (pt == ParentType.SURVEY_NAME || pt == ParentType.SURVEY_DESC) return 1;
-		if (pt == ParentType.QUESTION_GROUP_DESC 
-			  || pt == ParentType.QUESTION_GROUP_NAME) return 2;
-		if (pt == ParentType.QUESTION_NAME || pt == ParentType.QUESTION_DESC 
-			  || pt == ParentType.QUESTION_TEXT || pt == ParentType.QUESTION_TIP) return 3;
-		if (pt == ParentType.QUESTION_OPTION) return 4;
-		return 0;
-	}
 	
 	/**
 	* Adds surveyId and questionGroupId to translations
 	* This only needs to happen once to populate the fields
 	* on old translation values.
 	*/
-	@SuppressWarnings("unchecked")
-	private void addTranslationFields(Long offset) {
+	private void addTranslationFields(String cursor) {
 		SurveyDAO sDao = new SurveyDAO();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		QuestionDao qDao = new QuestionDao();
@@ -858,39 +839,33 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		Long surveyId = null;
 		Long questionGroupId = null;
 		List<Translation> tListSave = new ArrayList<Translation>();
-		
-		final PersistenceManager pm = PersistenceFilter.getManager();
-		final Query q = pm.newQuery(Translation.class);
-		q.setOrdering("createdDateTime asc");
-		q.setRange(offset, offset + T_PAGE_SIZE);
 
-		final List<Translation> results = (List<Translation>) q
-				.execute();
-		
-		 for (Translation t : results){
-			 int tType = translationParentType(t.getParentType());
-			 switch (tType){
-			 case 1: // survey
+		final List<Translation> results = tDao.listTranslations(T_PAGE_SIZE, cursor);
+		for (Translation t : results){
+			surveyId = null;
+			questionGroupId = null;
+			switch (t.getParentType()){
+			case SURVEY_NAME: case SURVEY_DESC:
 				 Survey s = sDao.getById(t.getParentId());
 				 if (s != null) {
 					 surveyId = s.getKey().getId();
 				 }
 				 break;
-			 case 2: // question group
+			case QUESTION_GROUP_DESC: case QUESTION_GROUP_NAME:
 				 qg = qgDao.getByKey(t.getParentId());
 			     if (qg != null) {
 			    	 surveyId = qg.getSurveyId();
 			         questionGroupId = qg.getKey().getId();
 			     }
 			     break;
-			 case 3: // question
+			case QUESTION_NAME: case QUESTION_DESC: case QUESTION_TEXT: case QUESTION_TIP:
 				 qu = qDao.getByKey(t.getParentId());
 			     if (qu != null){
 			    	 surveyId = qu.getSurveyId();
 			         questionGroupId = qu.getQuestionGroupId();
 			     }
 			     break;
-			 case 4: // question option
+			case QUESTION_OPTION:
 				 qo = qoDao.getByKey(t.getParentId());
 			     if (qo != null){
 			    	 Long questionId = qo.getQuestionId();
@@ -901,26 +876,23 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			    	 }
 			     }
 			     break;
-			 default: 
+			default:
 				 break;
-			 }
-			 t.setSurveyId(surveyId);
-			 t.setQuestionGroupId(questionGroupId);
-			 tListSave.add(t);			 
-			 tDao.save(t);
-		 }	
-		 tDao.save(tListSave);
+			}
+			t.setSurveyId(surveyId);
+			t.setQuestionGroupId(questionGroupId);
+			tListSave.add(t);
+		}
+		tDao.save(tListSave);
 		
 		if (results.size() == T_PAGE_SIZE) {
+			cursor = TranslationDao.getCursor(results);
 			final TaskOptions options = TaskOptions.Builder
 					.withUrl("/app_worker/dataprocessor")
 					.param(DataProcessorRequest.ACTION_PARAM,
 							DataProcessorRequest.ADD_TRANSLATION_FIELDS)
-					.param(DataProcessorRequest.OFFSET_PARAM,
-							String.valueOf(offset + T_PAGE_SIZE))
-					.header("Host",
-							BackendServiceFactory.getBackendService()
-									.getBackendAddress("dataprocessor"));
+					.param(DataProcessorRequest.CURSOR_PARAM,
+						cursor != null ? cursor : "");
 			Queue queue = QueueFactory.getDefaultQueue();
 			queue.add(options);
 		}
