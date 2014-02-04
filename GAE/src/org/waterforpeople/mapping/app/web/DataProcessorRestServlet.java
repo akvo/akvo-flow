@@ -68,10 +68,13 @@ import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
+import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.backends.BackendServiceFactory;
@@ -93,6 +96,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = -7902002525342262821L;
 	private static final String REBUILD_Q_SUM_STATUS_KEY = "rebuildQuestionSummary";
 	private static final Integer QAS_PAGE_SIZE = 300;
+	private static final Integer T_PAGE_SIZE = 300;
 	private static final String QAS_TO_REMOVE = "QAStoRemove";
 
 	@Override
@@ -144,7 +148,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.CHANGE_LOCALE_TYPE_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			changeLocaleType(dpReq.getSurveyId());
-		}
+		} else if (DataProcessorRequest.ADD_TRANSLATION_FIELDS
+				.equalsIgnoreCase(dpReq.getAction())) {
+			addTranslationFields(dpReq.getOffset());
+			} 
 		return new RestResponse();
 	}
 
@@ -815,4 +822,107 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		}
 	}
 
+	/**
+	* Determine type of translation:
+	* survey - 1
+	* question group - 2
+	* question - 3
+	* question option - 4
+	*/
+	private int translationParentType(ParentType pt) {
+		if (pt == ParentType.SURVEY_NAME || pt == ParentType.SURVEY_DESC) return 1;
+		if (pt == ParentType.QUESTION_GROUP_DESC 
+			  || pt == ParentType.QUESTION_GROUP_NAME) return 2;
+		if (pt == ParentType.QUESTION_NAME || pt == ParentType.QUESTION_DESC 
+			  || pt == ParentType.QUESTION_TEXT || pt == ParentType.QUESTION_TIP) return 3;
+		if (pt == ParentType.QUESTION_OPTION) return 4;
+		return 0;
+	}
+	
+	/**
+	* Adds surveyId and questionGroupId to translations
+	* This only needs to happen once to populate the fields
+	* on old translation values.
+	*/
+	@SuppressWarnings("unchecked")
+	private void addTranslationFields(Long offset) {
+		SurveyDAO sDao = new SurveyDAO();
+		QuestionGroupDao qgDao = new QuestionGroupDao();
+		QuestionDao qDao = new QuestionDao();
+		QuestionOptionDao qoDao = new QuestionOptionDao();
+		TranslationDao tDao = new TranslationDao();
+		QuestionGroup qg;
+		Question qu;
+		QuestionOption qo;
+		
+		Long surveyId = null;
+		Long questionGroupId = null;
+		List<Translation> tListSave = new ArrayList<Translation>();
+		
+		final PersistenceManager pm = PersistenceFilter.getManager();
+		final Query q = pm.newQuery(Translation.class);
+		q.setOrdering("createdDateTime asc");
+		q.setRange(offset, offset + T_PAGE_SIZE);
+
+		final List<Translation> results = (List<Translation>) q
+				.execute();
+		
+		 for (Translation t : results){
+			 int tType = translationParentType(t.getParentType());
+			 switch (tType){
+			 case 1: // survey
+				 Survey s = sDao.getById(t.getParentId());
+				 if (s != null) {
+					 surveyId = s.getKey().getId();
+				 }
+				 break;
+			 case 2: // question group
+				 qg = qgDao.getByKey(t.getParentId());
+			     if (qg != null) {
+			    	 surveyId = qg.getSurveyId();
+			         questionGroupId = qg.getKey().getId();
+			     }
+			     break;
+			 case 3: // question
+				 qu = qDao.getByKey(t.getParentId());
+			     if (qu != null){
+			    	 surveyId = qu.getSurveyId();
+			         questionGroupId = qu.getQuestionGroupId();
+			     }
+			     break;
+			 case 4: // question option
+				 qo = qoDao.getByKey(t.getParentId());
+			     if (qo != null){
+			    	 Long questionId = qo.getQuestionId();
+			    	 qu = qDao.getByKey(questionId);
+			    	 if (qu != null){
+			    		 surveyId = qu.getSurveyId();
+			    		 questionGroupId = qu.getQuestionGroupId();
+			    	 }
+			     }
+			     break;
+			 default: 
+				 break;
+			 }
+			 t.setSurveyId(surveyId);
+			 t.setQuestionGroupId(questionGroupId);
+			 tListSave.add(t);			 
+			 tDao.save(t);
+		 }	
+		 tDao.save(tListSave);
+		
+		if (results.size() == T_PAGE_SIZE) {
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.ADD_TRANSLATION_FIELDS)
+					.param(DataProcessorRequest.OFFSET_PARAM,
+							String.valueOf(offset + T_PAGE_SIZE))
+					.header("Host",
+							BackendServiceFactory.getBackendService()
+									.getBackendAddress("dataprocessor"));
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+		}
+	}
 }
