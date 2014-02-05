@@ -38,6 +38,8 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.device.dao.DeviceDAO;
+import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -76,6 +78,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		String delimiter = "\t";
 		Boolean surveyInstanceIsNew = true;
 		Long geoQasId = null;
+		DeviceDAO deviceDao = new DeviceDAO();
 		final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
@@ -265,6 +268,33 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			// update count of questionAnswerSummary objects
 			if (isSummarizable(qas, qOptionList)) {
 				SurveyQuestionSummaryDao.incrementCount(qas,1);
+			}
+
+			if ("IMAGE".equals(qas.getType())) {
+				// the device send values as IMAGE and not PHOTO
+				String filename = qas.getValue().substring(
+						qas.getValue().lastIndexOf("/") + 1);
+				Device d = null;
+
+				if (deviceFile.getImei() != null) {
+					d = deviceDao.getByImei(deviceFile.getImei());
+				}
+
+				if (d == null && deviceFile.getPhoneNumber() != null) {
+					d = deviceDao.get(deviceFile.getPhoneNumber());
+				}
+
+				String deviceId = d == null ? "null" : String.valueOf(d
+						.getKey().getId());
+
+				Queue queue = QueueFactory.getQueue("background-processing");
+				TaskOptions to = TaskOptions.Builder
+						.withUrl("/app_worker/imagecheck")
+						.param("filename", filename)
+						.param("deviceId", deviceId)
+						.param("qasId", String.valueOf(qas.getKey().getId()))
+						.param("attempt", "1");
+				queue.add(to);
 			}
 		}
 
