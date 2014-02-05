@@ -18,6 +18,7 @@ package org.waterforpeople.mapping.app.web.rest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Inject;
 
@@ -31,7 +32,9 @@ import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
+import org.waterforpeople.mapping.dao.DeviceApplicationDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.DeviceApplication;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 
 import com.gallatinsystems.common.Constants;
@@ -61,6 +64,7 @@ public class ActionRestService {
 			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
 			@RequestParam(value = "surveyIds[]", defaultValue = "") Long[] surveyIds,
 			@RequestParam(value = "email", defaultValue = "") String email,
+			@RequestParam(value = "version", defaultValue = "") String version,
 			@RequestParam(value = "dbInstructions", defaultValue = "") String dbInstructions) {
 		String status = "failed";
 		String message = "";
@@ -81,6 +85,12 @@ public class ActionRestService {
 			status = removeZeroMinMaxValues();
 		} else if ("fixOptions2Values".equals(action)){
 			status = fixOptions2Values();
+		} else if ("newApkVersion".equals(action)){
+			String path = newApkVersion(version);
+			if (path.length() > 0){
+				status = "success";
+				statusDto.setMessage("Created entry for " + path);
+			}
 		}
 
 		statusDto.setStatus(status);
@@ -190,5 +200,28 @@ public class ActionRestService {
 				.param(BootstrapGeneratorRequest.DB_PARAM,
 						dbInstructions != null ? dbInstructions : ""));
 		return "_request_submitted_email_will_be_sent";
+	}
+	/**
+	 * Create datastore entry for new apk version object
+	 * called as: http://host/rest/actions?action=newApkVersion&version=x.y.z
+	 * appCode and deviceType properties are defaults.
+	 * @Param version
+	 *
+	 */
+	private String newApkVersion(String version){
+		Properties props = System.getProperties();
+		String apkS3Path = props.getProperty("apkS3Path");
+		if (version != null && version.length() > 0 && apkS3Path != null && apkS3Path.length() > 0){
+			DeviceApplicationDao daDao = new DeviceApplicationDao();
+			DeviceApplication da = new DeviceApplication();
+			da.setAppCode("fieldSurvey");
+			da.setDeviceType("androidPhone");
+			da.setVersion(version);
+			da.setFileName(apkS3Path + "fieldsurvey-" + version + ".apk");
+			daDao.save(da);
+			return da.getFileName();
+		} else {
+			return "";
+		}
 	}
 }
