@@ -30,7 +30,14 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-
+	<servlet>
+		<servlet-name>DeviceApplicationRestService</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.DeviceApplicationRestService</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeviceApplicationRestService</servlet-name>
+		<url-pattern>/deviceapprest</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>CurrentUserServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.CurrentUserServlet</servlet-class>
