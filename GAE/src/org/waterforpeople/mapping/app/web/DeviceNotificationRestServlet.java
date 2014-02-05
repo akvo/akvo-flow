@@ -52,13 +52,14 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		DeviceNotificationRequest dnReq = (DeviceNotificationRequest) req;
+		DeviceNotificationResponse resp = new DeviceNotificationResponse();
 		Device d = getDevice(dnReq);
 
 		if (d == null) {
-			return new RestResponse();
+			return resp;
 		}
 
-		DeviceNotificationResponse resp = new DeviceNotificationResponse();
+
 		DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
 
 		List<DeviceFileJobQueue> missingByDevice = jobDao.listByDeviceId(d

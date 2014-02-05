@@ -26,8 +26,8 @@ public class DeviceNotificationResponse extends RestResponse {
 
 	private static final long serialVersionUID = -5674899264132126425L;
 
-	List<String> missingFiles;
-	List<String> missingFilesUnknown;
+	List<String> missingFiles = new ArrayList<String>();
+	List<String> missingFilesUnknown = new ArrayList<String>();
 
 	public void setMissingFiles(List<DeviceFileJobQueue> byDevice) {
 		missingFiles = new ArrayList<String>();
