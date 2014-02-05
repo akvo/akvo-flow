@@ -12,6 +12,7 @@
     <!-- Configure java.util.logging -->
     <system-properties>
         <property name="apkS3Path" value="$apkS3Path" />
+        <property name="autoUpdateApk" value="true" />
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
         <property name="aws_secret_key" value="$awsSecretKey" />
         <property name="aws_identifier" value="$awsIdentifier" />
