@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.device.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.gallatinsystems.device.domain.DeviceFileJobQueue;
@@ -33,5 +34,23 @@ public class DeviceFileJobQueueDAO extends BaseDAO<DeviceFileJobQueue> {
 
 	public List<DeviceFileJobQueue> listByUnknownDevice() {
 		return listByDeviceId(null);
+	}
+
+	public List<DeviceFileJobQueue> listByDeviceAndFile(Long deviceId,
+			String fileName) {
+
+		List<DeviceFileJobQueue> list = super.listByProperty("fileName",
+				fileName, "String");
+		List<DeviceFileJobQueue> result = new ArrayList<DeviceFileJobQueue>();
+
+		for (DeviceFileJobQueue e : list) {
+			// deviceId is null when we don't know the source of the image
+			// some device is "reclaiming" it
+			if (e.getDeviceId() == null || e.getDeviceId().equals(deviceId)) {
+				result.add(e);
+			}
+		}
+
+		return result;
 	}
 }
