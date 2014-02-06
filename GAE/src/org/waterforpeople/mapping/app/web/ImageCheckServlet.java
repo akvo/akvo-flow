@@ -119,6 +119,8 @@ public class ImageCheckServlet extends AbstractRestApiServlet {
 
 		int attempt = delay ? req.getAttempt() + 1 : req.getAttempt();
 
+		log.log(Level.INFO, "Rescheduling image check: " + req);
+
 		Queue queue = QueueFactory.getQueue("background-processing");
 		TaskOptions to = TaskOptions.Builder
 				.withUrl("/app_worker/imagecheck")
@@ -131,5 +133,4 @@ public class ImageCheckServlet extends AbstractRestApiServlet {
 				.countdownMillis(delay ? DELAY * attempt : 0);
 		queue.add(to);
 	}
-
 }

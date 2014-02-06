@@ -18,6 +18,8 @@ package org.waterforpeople.mapping.app.web.dto;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONObject;
+
 import com.gallatinsystems.framework.rest.RestRequest;
 
 public class ImageCheckRequest extends RestRequest {
@@ -60,6 +62,11 @@ public class ImageCheckRequest extends RestRequest {
 
 	@Override
 	protected void populateErrors() {
+	}
+
+	@Override
+	public String toString() {
+		return new JSONObject(this).toString();
 	}
 
 }
