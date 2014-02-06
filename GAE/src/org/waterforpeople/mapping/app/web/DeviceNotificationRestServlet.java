@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.web.dto.DeviceNotificationRequest;
 import org.waterforpeople.mapping.app.web.dto.DeviceNotificationResponse;
@@ -59,7 +60,6 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 			return resp;
 		}
 
-
 		DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
 
 		List<DeviceFileJobQueue> missingByDevice = jobDao.listByDeviceId(d
@@ -75,8 +75,27 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
-		JSONObject obj = new JSONObject(resp);
-		getResponse().getWriter().println(obj.toString());
+		DeviceNotificationResponse r = (DeviceNotificationResponse) resp;
+
+		// manually building the JSON response as the current version of the
+		// JSON library can't handle the resp object
+
+		JSONObject json = new JSONObject();
+		JSONArray missingFiles = new JSONArray();
+		JSONArray missingUnknown = new JSONArray();
+
+		for (String mf : r.getMissingFiles()) {
+			missingFiles.put(mf);
+		}
+
+		for (String mu : r.getMissingUnknown()) {
+			missingUnknown.put(mu);
+		}
+
+		json.put("missingFiles", missingFiles);
+		json.put("missingUnknown", missingUnknown);
+
+		getResponse().getWriter().println(json.toString());
 	}
 
 	private Device getDevice(DeviceNotificationRequest req) {
