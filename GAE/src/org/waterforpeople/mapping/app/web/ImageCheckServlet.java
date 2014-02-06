@@ -42,7 +42,7 @@ public class ImageCheckServlet extends AbstractRestApiServlet {
 			.getName());
 	private static final long serialVersionUID = 9187987692591327059L;
 	private static final long MAX_ATTEMPTS = 3;
-	private static final long DELAY = 1000 * 60 * 3;
+	private static final long DELAY = 1000 * 60 * 5; // 5min
 
 	@Override
 	protected RestRequest convertRequest() throws Exception {
@@ -82,6 +82,7 @@ public class ImageCheckServlet extends AbstractRestApiServlet {
 
 			if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
 				if (checkReq.getAttempt() == MAX_ATTEMPTS) {
+					log.log(Level.INFO, "Adding file as missing: " + checkReq);
 					DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
 					DeviceFileJobQueue df = new DeviceFileJobQueue();
 					df.setFileName(checkReq.getFileName());
@@ -130,7 +131,7 @@ public class ImageCheckServlet extends AbstractRestApiServlet {
 				.param(ImageCheckRequest.QAS_ID_PARAM,
 						String.valueOf(req.getQasId()))
 				.param(ImageCheckRequest.ATTEMPT_PARAM, String.valueOf(attempt))
-				.countdownMillis(delay ? DELAY * attempt : 0);
+				.countdownMillis(delay ? DELAY * req.getAttempt() : 0);
 		queue.add(to);
 	}
 }
