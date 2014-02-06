@@ -16,6 +16,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,8 +57,10 @@ public class DeviceApplicationRestService extends AbstractRestApiServlet {
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		DeviceApplicationRestResponse resp = new DeviceApplicationRestResponse();
+		Properties props = System.getProperties();
+		String autoUpdateApk = props.getProperty("autoUpdateApk");
 		if (DeviceApplicationRestRequest.GET_LATEST_VERSION_ACTION
-				.equalsIgnoreCase(req.getAction())) {
+				.equalsIgnoreCase(req.getAction()) && autoUpdateApk != null && autoUpdateApk.equalsIgnoreCase("true")) {
 
 			DeviceApplicationRestRequest daReq = (DeviceApplicationRestRequest) req;
 			List<DeviceApplication> devAppList = devAppDao

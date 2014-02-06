@@ -89,6 +89,7 @@ public class InstanceConfigurator {
 		aws_secret_key = args[0];
 		String instanceName = args[2];
 		ic.addAttribute("awsSecretKey", args[0]);
+		ic.addAttribute("apkS3Path","http://akvoflow.s3.amazonaws.com/apk/" + instanceName + "/");
 		ic.addAttribute("awsIdentifier", args[1]);
 		ic.addAttribute("instanceName", instanceName);
 		ic.addAttribute("s3bucket", instanceName);
