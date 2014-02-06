@@ -16,43 +16,120 @@
 
 package org.waterforpeople.mapping.app.web;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
+
+import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
+import com.gallatinsystems.device.domain.DeviceFileJobQueue;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class ImageCheckServlet extends AbstractRestApiServlet {
-
+	private static final Logger log = Logger.getLogger(ImageCheckServlet.class
+			.getName());
 	private static final long serialVersionUID = 9187987692591327059L;
+	private static final long MAX_ATTEMPTS = 3;
+	private static final long DELAY = 1000 * 60 * 3;
 
 	@Override
 	protected RestRequest convertRequest() throws Exception {
-		return new RestRequest() {
-
-			private static final long serialVersionUID = 5774835861536685383L;
-
-			@Override
-			protected void populateFields(HttpServletRequest req)
-					throws Exception {
-
-			}
-
-			@Override
-			protected void populateErrors() {
-
-			}
-		};
+		HttpServletRequest req = getRequest();
+		RestRequest restRequest = new ImageCheckRequest();
+		restRequest.populateFromHttpRequest(req);
+		return restRequest;
 	}
 
 	@Override
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
+		final ImageCheckRequest checkReq = (ImageCheckRequest) req;
+
+		if (checkReq.getFileName() == null || checkReq.getFileName().equals("")) {
+			log.log(Level.SEVERE, "No filename was provided, aborting check");
+			return new RestResponse();
+		}
+
+		if (checkReq.getAttempt() == null || checkReq.getAttempt().equals("")) {
+			log.log(Level.SEVERE,
+					"No attempt number was specified, aborting check");
+			return new RestResponse();
+		}
+
+		// NOTE: baseUrl contains a trailing slash
+		final String baseUrl = PropertyUtil.getProperty("photo_url_root");
+		final String imageUrl = baseUrl + checkReq.getFileName();
+
+		// MalformedURLException exception caught by method signature
+		final URL url = new URL(imageUrl);
+
+		try {
+
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(TaskServlet.CONNECTION_TIMEOUT);
+			conn.setRequestMethod("HEAD");
+
+			if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+				if (checkReq.getAttempt() == MAX_ATTEMPTS) {
+					DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
+					DeviceFileJobQueue df = new DeviceFileJobQueue();
+					df.setFileName(checkReq.getFileName());
+					df.setDeviceId(checkReq.getDeviceId());
+					df.setQasId(checkReq.getQasId());
+					jobDao.save(df);
+				} else {
+					rescheduleTask(checkReq, true);
+				}
+			}
+		} catch (SocketTimeoutException timeout) {
+			// reschedule the task without delay
+			// Possible a hiccup in GAE side
+			rescheduleTask(checkReq, false);
+		} catch (IOException e) {
+			// IOException possible a http 403, reschedule the task
+			rescheduleTask(checkReq, true);
+		}
+
 		return new RestResponse();
 	}
 
 	@Override
 	protected void writeOkResponse(RestResponse resp) throws Exception {
 		getResponse().setStatus(200);
+	}
+
+	/**
+	 *
+	 * Reschedules the CheckImage task with a possible delay<br>
+	 * delay = 3 min * attempt number
+	 *
+	 */
+	private void rescheduleTask(ImageCheckRequest req, boolean delay) {
+
+		int attempt = delay ? req.getAttempt() + 1 : req.getAttempt();
+
+		Queue queue = QueueFactory.getQueue("background-processing");
+		TaskOptions to = TaskOptions.Builder
+				.withUrl("/app_worker/imagecheck")
+				.param(ImageCheckRequest.FILENAME_PARAM, req.getFileName())
+				.param(ImageCheckRequest.DEVICE_ID_PARAM,
+						String.valueOf(req.getDeviceId()))
+				.param(ImageCheckRequest.QAS_ID_PARAM,
+						String.valueOf(req.getQasId()))
+				.param(ImageCheckRequest.ATTEMPT_PARAM, String.valueOf(attempt))
+				.countdownMillis(delay ? DELAY * attempt : 0);
+		queue.add(to);
 	}
 
 }

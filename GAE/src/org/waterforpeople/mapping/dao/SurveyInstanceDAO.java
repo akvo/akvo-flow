@@ -34,6 +34,7 @@ import net.sf.jsr107cache.CacheManager;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
+import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -290,10 +291,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				Queue queue = QueueFactory.getQueue("background-processing");
 				TaskOptions to = TaskOptions.Builder
 						.withUrl("/app_worker/imagecheck")
-						.param("filename", filename)
-						.param("deviceId", deviceId)
-						.param("qasId", String.valueOf(qas.getKey().getId()))
-						.param("attempt", "1");
+						.param(ImageCheckRequest.FILENAME_PARAM, filename)
+						.param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
+						.param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
+						.param(ImageCheckRequest.ATTEMPT_PARAM, "1");
 				queue.add(to);
 			}
 		}
