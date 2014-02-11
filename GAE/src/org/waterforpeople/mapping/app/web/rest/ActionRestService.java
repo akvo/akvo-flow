@@ -46,6 +46,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.utils.SystemProperty;
 
 @Controller
 @RequestMapping("/actions")
@@ -211,6 +212,9 @@ public class ActionRestService {
 	private String newApkVersion(String version){
 		Properties props = System.getProperties();
 		String apkS3Path = props.getProperty("apkS3Path");
+		// apkS3Path property in appengine-web.xml has a trailing slash
+		apkS3Path += SystemProperty.applicationId.get() + "/";
+
 		if (version != null && version.length() > 0 && apkS3Path != null && apkS3Path.length() > 0){
 			DeviceApplicationDao daDao = new DeviceApplicationDao();
 			DeviceApplication da = new DeviceApplication();
