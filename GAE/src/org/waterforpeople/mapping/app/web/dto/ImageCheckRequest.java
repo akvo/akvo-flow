@@ -57,7 +57,11 @@ public class ImageCheckRequest extends RestRequest {
 		fileName = req.getParameter(FILENAME_PARAM);
 		attempt = Integer.valueOf(req.getParameter(ATTEMPT_PARAM));
 		qasId = Long.valueOf(req.getParameter(QAS_ID_PARAM));
-		deviceId = Long.valueOf(req.getParameter(DEVICE_ID_PARAM));
+        
+		String deviceIdParam = req.getParameter(DEVICE_ID_PARAM);
+		if (deviceIdParam != null && !"null".equalsIgnoreCase(deviceIdParam)) {
+			deviceId = Long.valueOf(deviceIdParam);
+		}
 	}
 
 	@Override
