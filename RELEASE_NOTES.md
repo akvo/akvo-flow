@@ -5,6 +5,28 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+
+# 1.6.10
+
+Release Date: 18 February 2014
+
+The enhancements and resolved issues described work with apk version 1.13.0.
+
+## Enhancements
+* Automatically download new APK versions (#457). From now on, whenever there is a new version of the FLOW app, the user will be notified and can download and install the new version
+* Implement a way of checking if an image is present in the remote object store (#456). When images don't make it to S3, there is now a fallback system that guarantees that images are retrieved from devices.
+* Warn user that a survey group and survey have not been selected when trying to upload data (#461)
+* Implement double entry functionality (#427)
+
+## Resolved issues
+* Fixed: On importing data, information on the original upload is discarded (#458)
+* Fixed: Change geonames api call (#454)
+* Fixed: Spreadsheet importer needs to handle empty columns (#445)
+* Fixed: Remote survey importer fails when there is a large amount of survey groups (#444)
+* Fixed: Deprecate the GWT and applet code compilation (#448)
+* Fixed: Path to video in raw data export should point to S3 (#462)
+* Fixed: When viewing the map, video links are not shown on survey points (#403)
+
 # 1.6.9
 
 Release Date: 08 January 2014
