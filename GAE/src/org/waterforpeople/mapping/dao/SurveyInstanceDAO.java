@@ -199,6 +199,18 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				}
 			}
 
+			// if one of the answer types is META_GEO, interpret this as the
+			// geolocation information of the surveyedLocale
+			if (parts[3].equals("META_GEO")) {
+				si.setLocaleGeoLocation(parts[4].trim());;
+			}
+
+			// if one of the answer types is META_NAME, interpret this as the
+			// displayName information of the surveyedLocale
+			if (parts[3].equals("META_NAME")) {
+				si.setSurveyedLocaleDisplayName(parts[4].trim());
+			}
+
 			// if this is the first time round, save the surveyInstance or use an existing one
 			if (si.getSurveyId() == null) {
 				try {
