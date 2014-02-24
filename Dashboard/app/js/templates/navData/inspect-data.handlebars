@@ -199,7 +199,11 @@
                         {{#if view.isPhotoType}}
                           {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open photo</a> 
                         {{else}}
-                          {{QA.value}}
+                          {{#if view.isVideoType}}
+                            {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open video</a> 
+                          {{else}}
+                            {{QA.value}}
+                          {{/if}}
                         {{/if}}
                       {{else}}
                         {{#if view.isDateType}}
