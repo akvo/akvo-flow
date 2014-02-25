@@ -199,6 +199,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 							}
 						}
 					}
+					slDao.save(sl);
 				}
 			}
 
