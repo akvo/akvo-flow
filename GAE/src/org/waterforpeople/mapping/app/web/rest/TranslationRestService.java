@@ -173,7 +173,7 @@ public class TranslationRestService {
 	private TranslationDto createTranslation(TranslationDto translationDto) {
 		Translation t = new Translation();
 		BeanUtils.copyProperties(translationDto, t, new String[] {
-				"createdDateTime", "parentType", "langCode", "surveyId" });
+				"createdDateTime", "parentType", "langCode"});
 		t.setLanguageCode(translationDto.getLangCode());
 		if (translationDto.getParentType() != null) {
 			t.setParentType(Translation.ParentType.valueOf(translationDto
@@ -184,10 +184,6 @@ public class TranslationRestService {
 		TranslationDto tDto = new TranslationDto();
 		DtoMarshaller.copyToDto(t, tDto);
 		tDto.setLangCode(t.getLanguageCode());
-		// the surveyId is taken directly from the input dto 
-		// as it is not stored on the object
-		tDto.setSurveyId(translationDto.getSurveyId());
-		
 		return tDto;
 	}
 
