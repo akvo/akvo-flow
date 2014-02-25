@@ -14,6 +14,7 @@ FLOW.QuestionView = FLOW.View.extend({
   localeNameFlag:false,
   localeLocationFlag:false,
   geoLocked: null,
+  requireDoubleEntry: null,
   dependentFlag: false,
   dependentQuestion: null,
   optionList: null,
@@ -82,6 +83,14 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  amFreeTextType: function () {
+	    if (this.type) {
+	      return this.type.get('value') == 'FREE_TEXT';
+	    } else {
+	      return false;
+	    }
+	  }.property('this.type').cacheable(),
+
   amGeoType: function () {
 	    var options;
 	    if (this.type) {
@@ -113,7 +122,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val == 'FREE_TEXT' || val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
+      return val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
     }
   }.property('this.type').cacheable(),
 
@@ -154,6 +163,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('localeNameFlag', FLOW.selectedControl.selectedQuestion.get('localeNameFlag'));
     this.set('localeLocationFlag', FLOW.selectedControl.selectedQuestion.get('localeLocationFlag'));
     this.set('geoLocked', FLOW.selectedControl.selectedQuestion.get('geoLocked'));
+    this.set('requireDoubleEntry', FLOW.selectedControl.selectedQuestion.get('requireDoubleEntry'));
     this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
     this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
     this.set('optionList', FLOW.selectedControl.selectedQuestion.get('questionOptionList'));
@@ -263,6 +273,10 @@ FLOW.QuestionView = FLOW.View.extend({
     if (this.type.get('value') !== 'GEO') {
         this.set('geoLocked', false);
     }
+
+    if (!(this.type.get('value') == 'NUMBER' || this.type.get('value') == 'FREE_TEXT')) {
+        this.set('requireDoubleEntry', false);
+    }
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
     FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
@@ -281,6 +295,7 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('localeNameFlag', this.get('localeNameFlag'));
     FLOW.selectedControl.selectedQuestion.set('localeLocationFlag', this.get('localeLocationFlag'));
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
+    FLOW.selectedControl.selectedQuestion.set('requireDoubleEntry', this.get('requireDoubleEntry'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
 
     dependentQuestionAnswer = "";

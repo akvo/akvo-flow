@@ -599,6 +599,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 		if (q.getType().equals(Question.Type.FREE_TEXT)) {
 			qXML.setType(FREE_QUESTION_TYPE);
+			// add requireDoubleEntry flag if the field is true in the question
+			if (q.getRequireDoubleEntry() != null && q.getRequireDoubleEntry()){
+				qXML.setRequireDoubleEntry(q.getRequireDoubleEntry().toString());
+			}
 		} else if (q.getType().equals(Question.Type.GEO)) {
 			qXML.setType(GEO_QUESTION_TYPE);
 			// add locked flag if the geoLocked field is true in the question
@@ -612,6 +616,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 				vrule.setValidationType("numeric");
 				vrule.setSigned("false");
 				qXML.setValidationRule(vrule);
+			}
+			// add requireDoubleEntry flag if the field is true in the question
+			if (q.getRequireDoubleEntry() != null && q.getRequireDoubleEntry()){
+				qXML.setRequireDoubleEntry(q.getRequireDoubleEntry().toString());
 			}
 		} else if (q.getType().equals(Question.Type.OPTION)) {
 			qXML.setType(OPTION_QUESTION_TYPE);

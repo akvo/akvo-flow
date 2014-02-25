@@ -120,6 +120,9 @@ FLOW.Question = FLOW.BaseModel.extend({
   geoLocked: DS.attr('boolean', {
 	    defaultValue: false
 	  }),
+  requireDoubleEntry: DS.attr('boolean', {
+    defaultValue: false
+  }),
   collapseable: DS.attr('boolean', {
     defaultValue: false
   }),

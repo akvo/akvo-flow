@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -50,6 +50,8 @@ public class Question extends BaseDomain {
 	private Boolean allowMultipleFlag = null;
 	private Boolean allowOtherFlag = null;
 	private Boolean collapseable = false;
+	private Boolean geoLocked = null;
+	private Boolean requireDoubleEntry = null;
 	private Boolean immutable = false;
 	private Long dependentQuestionId;
 	private String dependentQuestionAnswer;
@@ -75,7 +77,6 @@ public class Question extends BaseDomain {
 	private Long sourceId;
 	private Boolean localeNameFlag;
 	private Boolean localeLocationFlag;
-	private Boolean geoLocked;
 
 	public Boolean getAllowDecimal() {
 		return allowDecimal;
@@ -340,8 +341,20 @@ public class Question extends BaseDomain {
 		this.geoLocked = geoLocked;
 	}
 
-	public void setLocaleNameFlag(Boolean localeNameFlag) {
-		this.localeNameFlag = localeNameFlag;
+	public Boolean getRequireDoubleEntry() {
+		return requireDoubleEntry;
+	}
+
+	public void setRequireDoubleEntry(Boolean requireDoubleEntry) {
+		this.requireDoubleEntry = requireDoubleEntry;
+	}
+
+	public Long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(Long sourceId) {
+		this.sourceId = sourceId;
 	}
 
 	public Boolean getLocaleLocationFlag() {
@@ -350,13 +363,5 @@ public class Question extends BaseDomain {
 
 	public void setLocaleLocationFlag(Boolean localeLocationFlag) {
 		this.localeLocationFlag = localeLocationFlag;
-	}
-
-	public Long getSourceId() {
-		return sourceId;
-	}
-
-	public void setSourceId(Long sourceQuestionId) {
-		this.sourceId = sourceQuestionId;
 	}
 }

@@ -43,6 +43,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
 	private Boolean localeNameFlag;
 	private Boolean localeLocationFlag;
 	private Boolean geoLocked = null;
+	private Boolean requireDoubleEntry = null;
 	private Long dependentQuestionId;
 	private String dependentQuestionAnswer;
 	private Long metricId;
@@ -395,5 +396,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
 	public void setLocaleLocationFlag(Boolean localeLocationFlag) {
 		this.localeLocationFlag = localeLocationFlag;
+	}
+
+	public Boolean getRequireDoubleEntry() {
+		return requireDoubleEntry;
+	}
+
+	public void setRequireDoubleEntry(Boolean requireDoubleEntry) {
+		this.requireDoubleEntry = requireDoubleEntry;
 	}
 }

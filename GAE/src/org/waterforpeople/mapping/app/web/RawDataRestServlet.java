@@ -318,6 +318,7 @@ public class RawDataRestServlet extends AbstractRestApiServlet {
 				.getCollectionDate() : new Date());
 		inst.setApproximateLocationFlag("False");
 		inst.setDeviceIdentifier("IMPORTER");
+		inst.setUuid(UUID.randomUUID().toString());
 		inst.setSurveyedLocaleId(importReq.getSurveyedLocaleId());
 		inst.setUuid(UUID.randomUUID().toString());
 		SurveyInstanceDAO instDao = new SurveyInstanceDAO();

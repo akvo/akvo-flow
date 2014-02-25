@@ -133,7 +133,11 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   },
 
   selectedSurvey: function () {
-	  return FLOW.selectedControl.selectedSurvey.get('keyId');
+    if (!Ember.none(FLOW.selectedControl.get('selectedSurvey')) && !Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))){
+      return FLOW.selectedControl.selectedSurvey.get('keyId');
+    } else {
+      return null;
+    }
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   showRawDataReport: function () {

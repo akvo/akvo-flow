@@ -201,7 +201,7 @@ public class RawDataExporter extends AbstractDataExporter {
 											pw.write("\t");
 										}
 									} else {
-										if (qdto != null && QuestionType.PHOTO == qdto.getType()) {
+										if (qdto != null && (QuestionType.PHOTO == qdto.getType() || QuestionType.VIDEO == qdto.getType())) {
 											final int filenameIndex = val.lastIndexOf("/") + 1;
 											if (filenameIndex > 0 && filenameIndex < val.length()) {
 												val = imagePrefix + val.substring(filenameIndex);
