@@ -59,15 +59,6 @@ public class TranslationRestService {
 	@Inject
 	private SurveyDAO sDao;
 
-	@Inject
-	private QuestionGroupDao qgDao;
-
-	@Inject
-	private QuestionDao qDao;
-
-	@Inject
-	private QuestionOptionDao qoDao;
-	private List<Question> questions;
 	Map<String, Translation> translations = new HashMap<String, Translation>();
 
 	// list translations by surveyId and questionGroupId
@@ -91,48 +82,17 @@ public class TranslationRestService {
 						.getKey().getId(),surveyId, results);
 
 				// get question group translations
-				List<QuestionGroup> qGroups = qgDao
-						.listQuestionGroupBySurvey(surveyId);
-				if (qGroups != null && qGroups.size() > 0) {
-					for (QuestionGroup qgroup : qGroups) {
-						addTranslations(
-								Translation.ParentType.QUESTION_GROUP_NAME,
-								qgroup.getKey().getId(),surveyId, results);
-					}
-					// get question translations
-					questions = qDao.listQuestionsInOrderForGroup(questionGroupId);
-					if (questions != null && questions.size() > 0) {
-						for (Question question : questions) {
-							addTranslations(
-									Translation.ParentType.QUESTION_TEXT,
-									question.getKey().getId(),surveyId, results);
-							addTranslations(
-									Translation.ParentType.QUESTION_TIP,
-									question.getKey().getId(),surveyId, results);
-
-							// if the question is of OPTION type, get the option
-							// translations
-							if (question.getType() == Question.Type.OPTION) {
-								Map<Integer, QuestionOption> questionOptions = qoDao
-										.listOptionByQuestion(question.getKey()
-												.getId());
-								if (questionOptions != null
-										&& questionOptions.size() > 0) {
-									for (QuestionOption qOption : questionOptions
-											.values()) {
-										addTranslations(
-												Translation.ParentType.QUESTION_OPTION,
-												qOption.getKey().getId(),surveyId,
-												results);
-									}
-								}
-							}
-						}
-					}
+				List<Translation> translations = tDao.listTranslationsByQuestionGroup(
+						questionGroupId);
+				for (Translation t : translations) {
+					TranslationDto tDto = new TranslationDto();
+					DtoMarshaller.copyToDto(t, tDto);
+					tDto.setLangCode(t.getLanguageCode());
+					tDto.setSurveyId(surveyId);
+					results.add(tDto);
 				}
 			}
 		}
-
 		response.put("translations", results);
 		return response;
 	}
