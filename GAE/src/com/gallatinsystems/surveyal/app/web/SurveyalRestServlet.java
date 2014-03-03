@@ -113,7 +113,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		countryDao = new CountryDao();
 		metricDao = new MetricDao();
 		metricMappingDao = new SurveyMetricMappingDao();
-		mergeNearby = true;
+		mergeNearby = false;
 		String mergeProp = PropertyUtil.getProperty("mergeNearbyLocales");
 		useDynamicScoring = Boolean.parseBoolean(PropertyUtil.getProperty("scoreLocaleDynmaic"));
 		if (mergeProp != null && "false".equalsIgnoreCase(mergeProp.trim())) {
