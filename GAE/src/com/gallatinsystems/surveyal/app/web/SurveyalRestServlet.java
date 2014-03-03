@@ -354,6 +354,15 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 								.getProperty(DEFAULT_ORG_PROP));
 					}
 					locale = surveyedLocaleDao.save(locale);
+
+					// adjust Geocell cluster data
+					// we first build a map of existing clusters
+					// then either adapt an existing one, or create a new cluster
+					// TODO when surveyedLocales are deleted, it needs to be substracted from the clusters.
+					if (locale.getGeocells() != null){
+						adaptClusterData(locale);
+					} // end cluster data
+
 				} else {
 					if (survey.getPointType() != null
 							&& !survey.getPointType().equals(
@@ -448,6 +457,78 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				}
 			}
 		}
+	}
+
+	// this method is synchronised, because we are changing counts.
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private synchronized void adaptClusterData(SurveyedLocale locale) {
+		SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		Long surveyId = null;
+		String surveyIdString = "";
+		SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
+		if (si != null) {
+			surveyId = si.getSurveyId();
+			surveyIdString = surveyId.toString();
+		}
+
+		// initialize the memcache
+		Cache cache = null;
+		Map props = new HashMap();
+		props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
+		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+		try {
+			CacheFactory cacheFactory = CacheManager.getInstance()
+					.getCacheFactory();
+			cache = cacheFactory.createCache(props);
+		} catch (Exception e) {
+			log.log(Level.SEVERE,
+					"Couldn't initialize cache: " + e.getMessage(), e);
+		}
+
+		if (cache == null) {
+			return;
+		}
+
+		Map<String, Long> cellMap;
+		for (int i = 1 ; i <= 4 ; i++){
+			String cell =  surveyIdString + "-" + locale.getGeocells().get(i);
+			if (cache.containsKey(cell)){
+				cellMap = (Map<String, Long>) cache.get(cell);
+				addToCache(cache, cell,cellMap.get("id"), cellMap.get("count") + 1);
+				SurveyedLocaleCluster clusterInStore = slcDao.getByKey(cellMap.get("id"));
+				if (clusterInStore != null){
+					clusterInStore.setCount(cellMap.get("count").intValue() + 1);
+					slcDao.save(clusterInStore);
+				}
+				log.log(Level.INFO,"------------ got it from the cache");
+			} else {
+				// try to get it in the datastore. This can happen when the cache
+				// has expired
+				SurveyedLocaleCluster clusterInStore = slcDao.getExistingCluster(cell);
+				if (clusterInStore != null){
+					addToCache(cache, cell, clusterInStore.getKey().getId(),clusterInStore.getCount() + 1);
+					clusterInStore.setCount(clusterInStore.getCount() + 1);
+					slcDao.save(clusterInStore);
+					log.log(Level.INFO,"------------ got it from the datastore");
+				} else {
+					// create a new one
+					SurveyedLocaleCluster slcNew = new SurveyedLocaleCluster(locale.getLatitude(),
+							locale.getLongitude(), locale.getGeocells().subList(0,i),
+							locale.getGeocells().get(i), i + 1, locale.getKey().getId(), surveyId);
+					slcDao.save(slcNew);
+					addToCache(cache, cell, slcNew.getKey().getId(),1);
+					log.log(Level.INFO,"------------ made a new one");
+				}
+			}
+		}
+	}
+
+	private void addToCache(Cache cache, String cell, Long id, long count){
+		final Map<String, Long> v = new HashMap<String, Long>();
+		v.put("count", count);
+		v.put("id", id);
+		cache.put(cell, v);
 	}
 
 	private boolean isStatus(String name) {
