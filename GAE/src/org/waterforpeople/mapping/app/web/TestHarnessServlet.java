@@ -1890,6 +1890,19 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (Exception e) {
 				// no-op
 			}
+		} else if ("addCreationSurveyIdToLocale".equals(action)) {
+			final TaskOptions options = TaskOptions.Builder.withUrl(
+					"/app_worker/dataprocessor")
+							.param(DataProcessorRequest.ACTION_PARAM,
+									DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE);
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
+			try {
+				resp.getWriter().print("Request Processed - Check the logs");
+			} catch (Exception e) {
+				// no-op
+			}
 		}
 	}
 

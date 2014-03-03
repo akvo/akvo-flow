@@ -150,6 +150,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS
 				.equalsIgnoreCase(dpReq.getAction())) {
 			recomputeLocaleClusters(dpReq.getCursor());
+		} else if (DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE
+				.equalsIgnoreCase(dpReq.getAction())) {
+			addCreationSurveyIdToLocale(dpReq.getCursor());
 			} 
 		return new RestResponse();
 	}
@@ -919,4 +922,41 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		}
 	}
 
+	/**
+	 * populates the creationSurveyId field for existing locales
+	 * started from testharness with host/webapp/testharness?action=addCreationSurveyIdToLocale
+	 * @param cursor
+	 */
+	public static void addCreationSurveyIdToLocale(String cursor){
+		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+		final List<SurveyedLocale> results = slDao.listAll(cursor, LOCALE_PAGE_SIZE);
+
+		for (SurveyedLocale sl : results){
+			// make it idempotent
+			if (sl.getCreationSurveyId() == null){
+				SurveyInstance si = siDao.getByKey(sl.getLastSurveyalInstanceId());
+				if (si != null) {
+					sl.setCreationSurveyId(si.getSurveyId());
+					slList.add(sl);
+				}
+			}
+		}
+		slDao.save(slList);
+
+		if (results.size() == LOCALE_PAGE_SIZE) {
+			cursor = SurveyedLocaleDao.getCursor(results);
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE)
+					.param(DataProcessorRequest.CURSOR_PARAM,
+						cursor != null ? cursor : "");
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+		}
+	}
+	
+	
 }

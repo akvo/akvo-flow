@@ -321,6 +321,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					locale = new SurveyedLocale();
 					locale.setLastSurveyalInstanceId(instance.getKey().getId());
 					locale.setAmbiguous(ambiguousFlag);
+
+					if (survey != null) {
+						locale.setCreationSurveyId(survey.getKey().getId());
+					}
 					locale.setLatitude(lat);
 					locale.setLongitude(lon);
 					setGeoData(geoPlace, locale);
