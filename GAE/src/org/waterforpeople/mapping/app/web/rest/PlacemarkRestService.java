@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +42,10 @@ import org.waterforpeople.mapping.app.web.rest.dto.PlacemarkDto;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 
 
 @Controller
@@ -56,25 +59,28 @@ public class PlacemarkRestService {
 	@Inject
 	SurveyedLocaleDao localeDao;
 
+	@Inject
+	SurveyedLocaleClusterDao slcDao;
+
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public Map<String, Object> listPlaceMarks(
-			@RequestParam(value = "country", defaultValue = "") String country) {
+			@RequestParam(value = "bbString", defaultValue = "") String boundingBoxString,
+			@RequestParam(value = "gcLevel", defaultValue = "") Integer gcLevel) {
 
-		if (StringUtils.isEmpty(country)) {
-			final String msg = "You must pass a parameter [country]";
-			log.log(Level.SEVERE, msg);
-			throw new HttpMessageNotReadableException(msg);
-		}
+		log.info("received request for: "+ boundingBoxString + ", " + gcLevel);
+
+		List<String> geocells = Arrays.asList(boundingBoxString.split(","));
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null){
 			Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
 			if (auths.contains(AppRole.USER) || auths.contains(AppRole.ADMIN) || auths.contains(AppRole.SUPER_ADMIN)){
-				return getPlacemarksReponseByCountry(country);
+				return getPlacemarksReponse(geocells, gcLevel);
 			}			
 		}
 		
-		return getPlacemarksReponseByCountryPublic(country);
+		return getPlacemarksReponse(geocells, gcLevel);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
@@ -83,17 +89,29 @@ public class PlacemarkRestService {
 		return getPlacemarkResponseById(id);
 	}
 
-	private Map<String, Object> getPlacemarksReponseByCountry(String country) {
+
+	private Map<String, Object> getPlacemarksReponse(List<String> geocells, Integer gcLevel) {
 		final Map<String, Object> response = new HashMap<String, Object>();
 		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
-		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
 
-		slList.addAll(localeDao.listBySubLevel(country, null, null, null, null,
-				null, LIMIT_PLACEMARK_POINTS));
-
-		if (slList.size() > 0) {
-			for (SurveyedLocale ap : slList) {
-				result.add(marshallDomainToDto(ap));
+		if (gcLevel > 0){
+			// get clusters on the basis of the geocells list received from the dashboard, 
+			// and the required level of clustering. The geocells list form the viewport,
+			// and in this viewport we still have to determine the right cluster level.
+			// The dashboard is responsible for asking for a level that makes sense.
+			List<SurveyedLocaleCluster> slcList = slcDao.listLocaleClustersByGeocell(geocells, gcLevel);
+			if (slcList.size() > 0){
+				for (SurveyedLocaleCluster slc : slcList) {
+					result.add(marshallClusterDomainToDto(slc));
+				}
+			}
+		} else {
+			// get surveyedLocales
+			List<SurveyedLocale> slList = localeDao.listLocalesByGeocell(geocells);
+			if (slList.size() > 0){
+				for (SurveyedLocale sl : slList) {
+					result.add(marshallDomainToDto(sl));
+				}
 			}
 		}
 
@@ -101,26 +119,26 @@ public class PlacemarkRestService {
 		return response;
 	}
 
-	private Map<String, Object> getPlacemarksReponseByCountryPublic(String country) {
-		final Map<String, Object> response = new HashMap<String, Object>();
-		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
-		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
-
-		// exclude Household data
-		slList.addAll(localeDao.listBySubLevel(country, null, null,"Point", null,
-				null, LIMIT_PLACEMARK_POINTS));
-		slList.addAll(localeDao.listBySubLevel(country, null, null,"PublicInstitution", null,
-				null, LIMIT_PLACEMARK_POINTS));
-
-		if (slList.size() > 0) {
-			for (SurveyedLocale ap : slList) {
-				result.add(marshallDomainToDto(ap));
-			}
-		}
-
-		response.put("placemarks", result);
-		return response;
-	}
+//	private Map<String, Object> getPlacemarksReponseByCountryPublic() {
+//		final Map<String, Object> response = new HashMap<String, Object>();
+//		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
+//		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+//
+//		// exclude Household data
+////		slList.addAll(localeDao.listBySubLevel(country, null, null,"Point", null,
+////				null, LIMIT_PLACEMARK_POINTS));
+////		slList.addAll(localeDao.listBySubLevel(country, null, null,"PublicInstitution", null,
+////				null, LIMIT_PLACEMARK_POINTS));
+//
+//		if (slList.size() > 0) {
+//			for (SurveyedLocale ap : slList) {
+//				result.add(marshallDomainToDto(ap));
+//			}
+//		}
+//
+//		response.put("placemarks", result);
+//		return response;
+//	}
 
 	
 	
@@ -138,14 +156,24 @@ public class PlacemarkRestService {
 
 	private PlacemarkDto marshallDomainToDto(SurveyedLocale sl) {
 		final PlacemarkDto dto = new PlacemarkDto();
-		final String markType = StringUtils.isEmpty(sl.getLocaleType()) ? AccessPointType.WATER_POINT
-				.toString() : sl.getLocaleType().toUpperCase();
-
-		dto.setMarkType(markType);
 		dto.setLatitude(sl.getLatitude());
 		dto.setLongitude(sl.getLongitude());
+		dto.setCount(1);
+		dto.setLevel(0);
+		dto.setSurveyId(sl.getCreationSurveyId());
 		dto.setCollectionDate(sl.getLastUpdateDateTime());
 		dto.setKeyId(sl.getKey().getId());
+		return dto;
+	}
+
+	private PlacemarkDto marshallClusterDomainToDto(SurveyedLocaleCluster slc) {
+		final PlacemarkDto dto = new PlacemarkDto();
+		dto.setLatitude(slc.getLatCenter());
+		dto.setLongitude(slc.getLonCenter());
+		dto.setCount(slc.getCount());
+		dto.setLevel(slc.getLevel());
+		dto.setSurveyId(slc.getSurveyId());
+		dto.setKeyId(slc.getKey().getId());
 		return dto;
 	}
 }
