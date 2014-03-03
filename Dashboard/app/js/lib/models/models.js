@@ -245,12 +245,12 @@ FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
 });
 
 FLOW.Placemark = FLOW.BaseModel.extend({
-  latitude: DS.attr('number'),
-  longitude: DS.attr('number'),
-  collectionDate: DS.attr('number'),
-  markType: DS.attr('string', {
-    defaultValue: 'WATER_POINT'
-  })
+	latitude: DS.attr('number'),
+	longitude: DS.attr('number'),
+	count: DS.attr('number'),
+	level: DS.attr('number'),
+	surveyId: DS.attr('number'),
+	collectionDate: DS.attr('number')
 });
 
 FLOW.SurveyInstance = FLOW.BaseModel.extend({
