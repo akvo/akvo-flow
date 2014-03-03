@@ -12,16 +12,6 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     }
   }),
 
-  buildURL: function (record, suffix) {
-    var url;
-
-    url = this._super(record, suffix);
-    if (record === 'placemark') {
-      return url + '?country=' + FLOW.countryController.get('countryCode');
-    }
-    return url;
-  },
-
   sideload: function (store, type, json, root) {
     var msg, status, metaObj;
     this._super(store, type, json, root);
