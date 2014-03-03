@@ -47,17 +47,17 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
  * Utility to recursively search the file system for all zip and jpg files to
  * upload. Some ignore paths are hard coded based on the data upload by WSP in
  * Liberia.
- * 
+ *
  * This utility will also combine all zip files in a single directory into a
  * single ZIP taking care not to have any duplicate survey instances.
- * 
+ *
  * After uploading a zip file, this utility will call the server to kick off
  * processing
- * 
- * 
- * 
+ *
+ *
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class SurveyBulkUploader implements DataImporter {
 
@@ -69,6 +69,7 @@ public class SurveyBulkUploader implements DataImporter {
 	public static final String MERGE_ONLY_MODE = "mergeOnly";
 
 	private static final String IMAGE_TEMP_DIR = "resized";
+	private static final String OSX_RESOURCE_DIR = "__MACOSX";
 
 	private static final String IMAGE_POLICY_KEY = "imagePolicy";
 	private static final String IMAGE_SIG_KEY = "imageSig";
@@ -251,7 +252,8 @@ public class SurveyBulkUploader implements DataImporter {
 							&& !files[i].getName().endsWith("fieldsurvey")
 							&& !files[i].getName().endsWith(".thumbnails")
 							&& !files[i].getName().endsWith("processed")
-							&& !files[i].getName().endsWith(IMAGE_TEMP_DIR)) {
+							&& !files[i].getName().endsWith(IMAGE_TEMP_DIR)
+							&& !files[i].getName().contains(OSX_RESOURCE_DIR)) {
 						List<List<File>> added = addFilesInDirectory(files[i],
 								ignoreList, hasUUID);
 						fileList.addAll(added.get(0));
@@ -265,7 +267,7 @@ public class SurveyBulkUploader implements DataImporter {
 					StringBuilder allContent = new StringBuilder();
 					for (File fx : zipFileList) {
 						try {
-							
+
 							allContent.append(getContentFromZip(fx));
 							collapsedZips.add(fx);
 						} catch (Exception e) {
@@ -331,7 +333,7 @@ public class SurveyBulkUploader implements DataImporter {
 		result.add(collapsedZips);
 		return result;
 	}
-	
+
 	public static String getContentFromZip(File zip) throws Exception{
 		FileInputStream fis;
 		fis = new FileInputStream(zip);
