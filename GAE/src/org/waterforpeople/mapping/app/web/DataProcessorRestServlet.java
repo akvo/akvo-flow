@@ -72,8 +72,10 @@ import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
@@ -93,6 +95,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = -7902002525342262821L;
 	private static final String REBUILD_Q_SUM_STATUS_KEY = "rebuildQuestionSummary";
 	private static final Integer QAS_PAGE_SIZE = 300;
+	private static final Integer LOCALE_PAGE_SIZE = 500;
 	private static final String QAS_TO_REMOVE = "QAStoRemove";
 
 	@Override
@@ -144,7 +147,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.CHANGE_LOCALE_TYPE_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			changeLocaleType(dpReq.getSurveyId());
-		}
+		} else if (DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS
+				.equalsIgnoreCase(dpReq.getAction())) {
+			recomputeLocaleClusters(dpReq.getCursor());
+			} 
 		return new RestResponse();
 	}
 
@@ -374,7 +380,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		}
 
 		if (results.size() == QAS_PAGE_SIZE) {
-
 			cache.put(QAS_TO_REMOVE, toRemove);
 
 			final TaskOptions options = TaskOptions.Builder
@@ -398,6 +403,105 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		}
 	}
 
+	/**
+	 * This recomputes all Locale clusters. First, all clusters are removed.
+	 * TODO: do this in batches.
+	 * @param offset
+	 */
+	@SuppressWarnings({ "unchecked" })
+	private void recomputeLocaleClusters(String cursor) {
+		log.log(Level.INFO, "recomputing locale clusters [cursor: " + cursor + "]");
+
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
+		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final List<SurveyedLocale> results = slDao.listAll(cursor, LOCALE_PAGE_SIZE);
+
+		// initialize the memcache
+		Cache cache = null;
+		Map props = new HashMap();
+		props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
+		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+		try {
+			CacheFactory cacheFactory = CacheManager.getInstance()
+					.getCacheFactory();
+			cache = cacheFactory.createCache(props);
+		} catch (Exception e) {
+			log.log(Level.SEVERE,
+					"Couldn't initialize cache: " + e.getMessage(), e);
+		}
+
+		if (cache == null) {
+			return;
+		}
+		
+		for (SurveyedLocale locale : results) {
+			Long surveyId = null;
+			String surveyIdString = "";
+			SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
+			if (si != null) {
+				surveyId = si.getSurveyId();
+				surveyIdString = surveyId.toString();
+			}
+			// adjust Geocell cluster data
+			if (locale.getGeocells() != null){
+				
+				Map<String, Long> cellMap;
+				for (int i = 1 ; i <= 4 ; i++){
+					String cell =  surveyIdString + "-" + locale.getGeocells().get(i);
+					if (cache.containsKey(cell)){
+						cellMap = (Map<String, Long>) cache.get(cell);
+						addToCache(cache, cell,cellMap.get("id"), cellMap.get("count") + 1);
+						SurveyedLocaleCluster clusterInStore = slcDao.getByKey(cellMap.get("id"));
+						if (clusterInStore != null){
+							clusterInStore.setCount(cellMap.get("count").intValue() + 1);
+							slcDao.save(clusterInStore);
+						}
+						log.log(Level.INFO,"------------ got it from the cache");
+					} else {
+						// try to get it in the datastore. This can happen when the cache
+						// has expired
+						SurveyedLocaleCluster clusterInStore = slcDao.getExistingCluster(cell);
+						if (clusterInStore != null){
+							addToCache(cache, cell, clusterInStore.getKey().getId(),clusterInStore.getCount() + 1);
+							clusterInStore.setCount(clusterInStore.getCount() + 1);
+							slcDao.save(clusterInStore);
+							log.log(Level.INFO,"------------ got it from the datastore");
+						} else {
+							// create a new one
+							SurveyedLocaleCluster slcNew = new SurveyedLocaleCluster(locale.getLatitude(),
+									locale.getLongitude(), locale.getGeocells().subList(0,i), 
+									locale.getGeocells().get(i), i + 1, locale.getKey().getId(), surveyId);
+							slcDao.save(slcNew);
+							addToCache(cache, cell, slcNew.getKey().getId(),1);
+							log.log(Level.INFO,"------------ made a new one");
+						}
+					}
+				}	
+			}
+		}
+		
+		if (results.size() == LOCALE_PAGE_SIZE) {
+			cursor = SurveyedLocaleDao.getCursor(results);
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS)
+					.param(DataProcessorRequest.CURSOR_PARAM,
+						cursor != null ? cursor : "");
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+
+		}
+	}
+
+	private void addToCache(Cache cache, String cell, Long id, long count){
+		final Map<String, Long> v = new HashMap<String, Long>();
+		v.put("count", count);
+		v.put("id", id);
+		cache.put(cell, v);
+	}
+	
 	/**
 	 * this method re-runs scoring on all access points for a country
 	 *

@@ -162,9 +162,11 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
@@ -1863,6 +1865,24 @@ public class TestHarnessServlet extends HttpServlet {
 					.header("Host",
 							BackendServiceFactory.getBackendService()
 									.getBackendAddress("dataprocessor"));
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+			try {
+				resp.getWriter().print("Request Processed - Check the logs");
+			} catch (Exception e) {
+				// no-op
+			}
+		} else if (DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS.equals(action)) {
+			SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
+			// first, delete all clusters
+			for (SurveyedLocaleCluster slc : slcDao.list("all")) {
+				slcDao.delete(slc);
+			}
+			
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS);
 			Queue queue = QueueFactory.getDefaultQueue();
 			queue.add(options);
 			try {
