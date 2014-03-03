@@ -13,7 +13,7 @@ FLOW.NavMapsView = FLOW.View.extend({
       ", #pointDetails .imgContainer" +
       ", .placeMarkBasicInfo" +
       ", .noDetails";
-    this.detailsPaneVisible = true;
+    this.detailsPaneVisible = false;
   },
 
 
@@ -21,16 +21,49 @@ FLOW.NavMapsView = FLOW.View.extend({
     Once the view is in the DOM create the map
   */
   didInsertElement: function () {
-    var map, mapOptions, self;
+	var map, self, geoModel;
 
-    mapOptions = {
-      center: new google.maps.LatLng(-0.703107, 36.765747),
-      zoom: 2,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    map = new google.maps.Map(document.getElementById("flowMap"), mapOptions);
+	// insert the map
+	map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
+    .setView([-0.703107, 36.765], 2);
 
-    FLOW.placemarkController.set('map', map);
+	L.control.layers({
+		 'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(map),
+		'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
+	    'Satellite': L.mapbox.tileLayer('akvo.he30neh4'),
+	}).addTo(map);
+
+	// couple listener to end of zoom or drag
+	map.on('moveend', function(e) {
+	  redoMap();
+	});
+	FLOW.placemarkController.set('map', map);
+	geoModel = create_geomodel();
+
+	//load points for the visible map
+	redoMap();
+
+	function redoMap () {
+	  // get current bounding box of the visible map
+	  n = map.getBounds().getNorthEast().lat;
+	  e = map.getBounds().getNorthEast().lng;
+	  s = map.getBounds().getSouthWest().lat;
+	  w = map.getBounds().getSouthWest().lng;
+
+	  // bound east and west
+	  e = (e + 3*180.0) % (2*180.0) - 180.0;
+	  w = (w + 3*180.0) % (2*180.0) - 180.0;
+
+	  // create bounding box object
+	  var bb = geoModel.create_bounding_box(n,e,s,w);
+
+	  // create the best set of geocell box cells which covers
+	  // the current viewport
+	  var bestBB = geoModel.best_bbox_search_cells(bb);
+
+	  // adapt the points shown on the map
+	  FLOW.placemarkController.adaptMap(bestBB,map.getZoom());
+	}
 
     self = this;
     this.$('#mapDetailsHideShow').click(function () {
