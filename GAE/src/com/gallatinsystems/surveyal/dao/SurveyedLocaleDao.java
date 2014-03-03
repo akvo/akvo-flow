@@ -75,6 +75,23 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 	return results;
 }
 
+	/**
+	 * lists all locales
+	 * 
+	 * @param cursor
+	 * @param pagesize
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<SurveyedLocale> listAll(String cursor, Integer pageSize) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+		prepareCursor(cursor, pageSize, query);
+		List<SurveyedLocale> results = (List<SurveyedLocale>) query
+				.execute();
+		return results;
+	}
+	/**
 	 * lists locales that fit within the bounding box passed in
 	 * 
 	 * @param pointType
