@@ -61,6 +61,20 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 	}
 
 	/**
+	* lists locales that fit within the bounding box geocells passed in
+	*
+	* @return
+	*/
+	@SuppressWarnings("unchecked")
+	public List<SurveyedLocale> listLocalesByGeocell(List<String> geocells) {
+	PersistenceManager pm = PersistenceFilter.getManager();
+	String queryString = ":p1.contains(geocells)";
+	javax.jdo.Query query = pm.newQuery(SurveyedLocale.class,queryString);
+	List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(geocells);
+
+	return results;
+}
+
 	 * lists locales that fit within the bounding box passed in
 	 * 
 	 * @param pointType

@@ -42,6 +42,7 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -92,12 +93,37 @@ public class ActionRestService {
 				status = "success";
 				statusDto.setMessage("Created entry for " + path);
 			}
+		} else if ("populateGeocellsForLocale".equals(action)){
+			status = computeGeocellsForLocales();
 		}
 
 		statusDto.setStatus(status);
 		response.put("actions", "[]");
 		response.put("meta", statusDto);
 		return response;
+	}
+
+	/**
+	* runs over all surveydLocale objects, and populates:
+	* the Geocells field based on the latitude and longitude.
+	*
+	* New surveyedLocales will have these fields populated automatically, this
+	* method is to update legacy data.
+	*
+	* This method is invoked as a URL request:
+	* http://..../rest/actions?action=populateGeocellsForLocale
+	* 
+	* Clusters are not automatically computed.This is done by
+	* 1) deleting all the cluster objects by hand
+	* 2) running recomputeLocaleClusters in the dataProcessorRestServlet.
+	**/
+	private String computeGeocellsForLocales(){
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet")
+				.param(SurveyalRestRequest.ACTION_PARAM,
+				SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION)
+				.param("cursor", ""));
+		return "Done";
 	}
 
 	// remove zero minVal and maxVal values
