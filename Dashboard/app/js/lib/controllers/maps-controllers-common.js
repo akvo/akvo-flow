@@ -110,6 +110,8 @@ FLOW.placemarkController = Ember.ArrayController.create({
     			radius:7,
     			color:'#222070',
     			fillcolor:'#433ec9',
+    			opacity:0.7,
+    			fillOpacity:0.5,
     			placemarkId: placemark.get('keyId')});
     		marker.on('click', onMarkerClick);
     		return marker;
