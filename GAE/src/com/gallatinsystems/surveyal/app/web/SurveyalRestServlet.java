@@ -466,10 +466,12 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	// this method is synchronised, because we are changing counts.
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private synchronized void adaptClusterData(SurveyedLocale locale) {
+		SurveyDAO sDao = new SurveyDAO();
 		SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		Long surveyId = null;
 		String surveyIdString = "";
+		Boolean showOnPublicMap = false;
 		SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
 		if (si != null) {
 			surveyId = si.getSurveyId();
@@ -492,6 +494,18 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
 		if (cache == null) {
 			return;
+		}
+
+		// get public status, first try from cache
+		String pubKey = surveyIdString + "-publicStatus";
+		if (cache.containsKey(pubKey)){
+			showOnPublicMap = (Boolean) cache.get(pubKey);
+		} else {
+			Survey s = sDao.getByKey(surveyId);
+			if (s != null){
+				showOnPublicMap = showOnPublicMap || s.getPointType().equals("Point") || s.getPointType().equals("PublicInstitution");
+				cache.put(pubKey, showOnPublicMap);
+			}
 		}
 
 		Map<String, Long> cellMap;
@@ -519,7 +533,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					// create a new one
 					SurveyedLocaleCluster slcNew = new SurveyedLocaleCluster(locale.getLatitude(),
 							locale.getLongitude(), locale.getGeocells().subList(0,i),
-							locale.getGeocells().get(i), i + 1, locale.getKey().getId(), surveyId);
+							locale.getGeocells().get(i), i + 1, locale.getKey().getId(), surveyId, showOnPublicMap);
 					slcDao.save(slcNew);
 					addToCache(cache, cell, slcNew.getKey().getId(),1);
 					log.log(Level.INFO,"------------ made a new one");

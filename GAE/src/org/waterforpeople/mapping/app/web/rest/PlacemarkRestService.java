@@ -47,11 +47,9 @@ import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 
-
 @Controller
 @RequestMapping("/placemarks")
 public class PlacemarkRestService {
-
 	final int LIMIT_PLACEMARK_POINTS = 2000;
 	private static final Logger log = Logger
 			.getLogger(PlacemarkRestService.class.getName());
@@ -67,7 +65,8 @@ public class PlacemarkRestService {
 	public Map<String, Object> listPlaceMarks(
 			@RequestParam(value = "bbString", defaultValue = "") String boundingBoxString,
 			@RequestParam(value = "gcLevel", defaultValue = "") Integer gcLevel) {
-
+		// assume we are on the public map
+		Boolean allPlacemarks = false;
 		log.info("received request for: "+ boundingBoxString + ", " + gcLevel);
 
 		List<String> geocells = Arrays.asList(boundingBoxString.split(","));
@@ -76,11 +75,11 @@ public class PlacemarkRestService {
 		if (authentication != null){
 			Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
 			if (auths.contains(AppRole.USER) || auths.contains(AppRole.ADMIN) || auths.contains(AppRole.SUPER_ADMIN)){
-				return getPlacemarksReponse(geocells, gcLevel);
+				allPlacemarks = true;
 			}			
 		}
 		
-		return getPlacemarksReponse(geocells, gcLevel);
+		return getPlacemarksReponse(geocells, gcLevel, allPlacemarks);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
@@ -89,25 +88,34 @@ public class PlacemarkRestService {
 		return getPlacemarkResponseById(id);
 	}
 
-
-	private Map<String, Object> getPlacemarksReponse(List<String> geocells, Integer gcLevel) {
+	private Map<String, Object> getPlacemarksReponse(List<String> geocells, Integer gcLevel, Boolean allPlacemarks) {
 		final Map<String, Object> response = new HashMap<String, Object>();
 		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
-
+		List<SurveyedLocaleCluster> slcList;
 		if (gcLevel > 0){
 			// get clusters on the basis of the geocells list received from the dashboard, 
 			// and the required level of clustering. The geocells list form the viewport,
 			// and in this viewport we still have to determine the right cluster level.
 			// The dashboard is responsible for asking for a level that makes sense.
-			List<SurveyedLocaleCluster> slcList = slcDao.listLocaleClustersByGeocell(geocells, gcLevel);
+			if (allPlacemarks){
+				slcList = slcDao.listLocaleClustersByGeocell(geocells, gcLevel);
+			} else {
+				slcList = slcDao.listPublicLocaleClustersByGeocell(geocells, gcLevel);
+			}
 			if (slcList.size() > 0){
 				for (SurveyedLocaleCluster slc : slcList) {
 					result.add(marshallClusterDomainToDto(slc));
 				}
 			}
 		} else {
+			List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
 			// get surveyedLocales
-			List<SurveyedLocale> slList = localeDao.listLocalesByGeocell(geocells);
+			if (allPlacemarks) {
+				slList.addAll(localeDao.listLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS));
+			} else {
+				// exclude Household data
+				slList.addAll(localeDao.listPublicLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS));
+			}
 			if (slList.size() > 0){
 				for (SurveyedLocale sl : slList) {
 					result.add(marshallDomainToDto(sl));
@@ -119,29 +127,6 @@ public class PlacemarkRestService {
 		return response;
 	}
 
-//	private Map<String, Object> getPlacemarksReponseByCountryPublic() {
-//		final Map<String, Object> response = new HashMap<String, Object>();
-//		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
-//		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
-//
-//		// exclude Household data
-////		slList.addAll(localeDao.listBySubLevel(country, null, null,"Point", null,
-////				null, LIMIT_PLACEMARK_POINTS));
-////		slList.addAll(localeDao.listBySubLevel(country, null, null,"PublicInstitution", null,
-////				null, LIMIT_PLACEMARK_POINTS));
-//
-//		if (slList.size() > 0) {
-//			for (SurveyedLocale ap : slList) {
-//				result.add(marshallDomainToDto(ap));
-//			}
-//		}
-//
-//		response.put("placemarks", result);
-//		return response;
-//	}
-
-	
-	
 	private Map<String, Object> getPlacemarkResponseById(Long id) {
 		final Map<String, Object> response = new HashMap<String, Object>();
 		final SurveyedLocale sl = localeDao.getById(id);

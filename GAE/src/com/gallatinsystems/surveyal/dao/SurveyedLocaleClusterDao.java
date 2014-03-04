@@ -36,24 +36,6 @@ public class SurveyedLocaleClusterDao extends BaseDAO<SurveyedLocaleCluster> {
 	}
 
 	/**
-	 * lists localeClusters that correspond to the list of geocells passed in
-	 * 
-	 * 
-	 * @param geocells
-	 * @param gcLevel
-	 * @return
-	 */	
-	@SuppressWarnings("unchecked")
-	public List<SurveyedLocaleCluster> getExistingClusters(Long surveyId, List<String>geocell) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		String queryString = ":p1.contains(clusterGeocell) && surveyId == :p2";
-		javax.jdo.Query query = pm.newQuery(SurveyedLocaleCluster.class,queryString);
-		List<SurveyedLocaleCluster> results = (List<SurveyedLocaleCluster>) query.execute(geocell, surveyId);
-
-		return results;
-	}
-
-	/**
 	 * returns a single localeCluster that correspond to the geocell passed in
 	 * 
 	 * @param geocell
@@ -73,9 +55,8 @@ public class SurveyedLocaleClusterDao extends BaseDAO<SurveyedLocaleCluster> {
 		}
 	}
 
-
 	/**
-	 * lists localeClusters that lie within the geocells and on the level passed in
+	 * lists all localeClusters that lie within the geocells and on the level passed in
 	 * Level should be 2, 3, 4 or 5.
 	 * 
 	 * @param geocells
@@ -91,4 +72,23 @@ public class SurveyedLocaleClusterDao extends BaseDAO<SurveyedLocaleCluster> {
 		List<SurveyedLocaleCluster> results = (List<SurveyedLocaleCluster>) query.execute(geocells,gcLevel);
 		return results;
 	}	
+
+	/**
+	 * lists all localeClusters that lie within the geocells and on the level passed in
+	 * and that have showOnPublicMap = true
+	 * Level should be 2, 3, 4 or 5.
+	 * 
+	 * @param geocells
+	 * @param gcLevel
+	 * @return
+	 */
+
+	@SuppressWarnings("unchecked")
+	public List<SurveyedLocaleCluster> listPublicLocaleClustersByGeocell(List<String> geocells, Integer gcLevel) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		String queryString = ":p1.contains(geocells) && level == :p2 && showOnPublicMap == true";
+		javax.jdo.Query query = pm.newQuery(SurveyedLocaleCluster.class,queryString);
+		List<SurveyedLocaleCluster> results = (List<SurveyedLocaleCluster>) query.execute(geocells,gcLevel);
+		return results;
+	}
 }

@@ -288,6 +288,14 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 					}
 				}
 			} while (cursor != null);
+
+			// recompute all clusters
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS);
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
 		}
 	}
 
@@ -415,6 +423,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private void recomputeLocaleClusters(String cursor) {
 		log.log(Level.INFO, "recomputing locale clusters [cursor: " + cursor + "]");
 
+		SurveyDAO sDao = new SurveyDAO();
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
 		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
@@ -440,11 +449,24 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		
 		for (SurveyedLocale locale : results) {
 			Long surveyId = null;
+			Boolean showOnPublicMap = false;
 			String surveyIdString = "";
 			SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
 			if (si != null) {
 				surveyId = si.getSurveyId();
 				surveyIdString = surveyId.toString();
+
+				// get public status, first try from cache
+				String pubKey = surveyIdString + "-publicStatus";
+				if (cache.containsKey(pubKey)){
+					showOnPublicMap = (Boolean) cache.get(pubKey);
+				} else {
+					Survey s = sDao.getByKey(surveyId);
+					if (s != null){
+						showOnPublicMap = showOnPublicMap || s.getPointType().equals("Point") || s.getPointType().equals("PublicInstitution");
+						cache.put(pubKey, showOnPublicMap);
+					}
+				}
 			}
 			// adjust Geocell cluster data
 			if (locale.getGeocells() != null){
@@ -474,7 +496,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 							// create a new one
 							SurveyedLocaleCluster slcNew = new SurveyedLocaleCluster(locale.getLatitude(),
 									locale.getLongitude(), locale.getGeocells().subList(0,i), 
-									locale.getGeocells().get(i), i + 1, locale.getKey().getId(), surveyId);
+									locale.getGeocells().get(i), i + 1, locale.getKey().getId(), surveyId, showOnPublicMap);
 							slcDao.save(slcNew);
 							addToCache(cache, cell, slcNew.getKey().getId(),1);
 							log.log(Level.INFO,"------------ made a new one");

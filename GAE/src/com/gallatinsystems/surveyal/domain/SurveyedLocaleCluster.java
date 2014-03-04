@@ -44,7 +44,7 @@ public class SurveyedLocaleCluster extends BaseDomain {
 	private Boolean showOnPublicMap;
 	
 	public SurveyedLocaleCluster(Double lat, Double lon, List<String> geocells, 
-			String cGeocell, Integer level, Long lastSurveyedLocaleId, Long surveyId){
+			String cGeocell, Integer level, Long lastSurveyedLocaleId, Long surveyId, Boolean showOnPublicMap){
 		setClusterGeocell(cGeocell);
 		setGeocells(geocells);
 		setLatCenter(lat);
@@ -52,6 +52,7 @@ public class SurveyedLocaleCluster extends BaseDomain {
 		setLevel(level);
 		setCount(1);
 		setLastSurveyedLocaleId(lastSurveyedLocaleId);
+		setShowOnPublicMap(showOnPublicMap);
 		setSurveyId(surveyId);
 	}
 	
