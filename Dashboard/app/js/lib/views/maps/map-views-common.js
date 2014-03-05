@@ -44,11 +44,13 @@ FLOW.NavMapsView = FLOW.View.extend({
 	redoMap();
 
 	function redoMap () {
+		var n, e, s, w, mapBounds;
+		mapBounds = map.getBounds();
 	  // get current bounding box of the visible map
-	  n = map.getBounds().getNorthEast().lat;
-	  e = map.getBounds().getNorthEast().lng;
-	  s = map.getBounds().getSouthWest().lat;
-	  w = map.getBounds().getSouthWest().lng;
+	  n = mapBounds.getNorthEast().lat;
+	  e = mapBounds.getNorthEast().lng;
+	  s = mapBounds.getSouthWest().lat;
+	  w = mapBounds.getSouthWest().lng;
 
 	  // bound east and west
 	  e = (e + 3*180.0) % (2*180.0) - 180.0;

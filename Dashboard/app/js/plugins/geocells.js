@@ -1,4 +1,11 @@
 /**
+  This is a modified version of geomodel.js by Daniel Kim. The original can be found here:
+  https://github.com/danieldkim/geomodel/blob/master/geomodel.js
+  This file only retains the functions used by the Akvo FLOW dashboard, and makes
+  some javascript style improvements
+**/
+
+/**
 #
 # Copyright 2010 Daniel Kim
 #
@@ -84,7 +91,6 @@
  * 
  */
 
-
 if (typeof exports !== 'undefined') exports.create_geomodel = create_geomodel;
 
 function create_geomodel() {
@@ -112,14 +118,17 @@ function create_geomodel() {
   var RADIUS_MI = 3963.2;
 
   // adding this which is used in the GeoCell.best_bbox_search_cells function
-  String.prototype.startsWith = function(str) {return (this.match("^"+str)==str)}
+  String.prototype.startsWith = function(str) {
+    return (this.match("^"+str)==str);
+  };
 
   // adding the Array and String functions below, which are used by the 
   // interpolate function and others
   function arrayAddAll(target) {
-    for (var a = 1;  a < arguments.length;  a++) {
+    var a, i;
+    for (a = 1;  a < arguments.length;  a++) {
       arr = arguments[a];
-      for (var i = 0;  i < arr.length;  i++) {
+      for (i = 0;  i < arr.length;  i++) {
         target.push(arr[i]);
       }
     }
@@ -128,25 +137,24 @@ function create_geomodel() {
   function arrayGetLast(arr) { return arr[arr.length-1];}
   function arrayGetFirst(arr) { return arr[0];}
   String.prototype.equalsIgnoreCase = function(arg) {
-    return (new String(this.toLowerCase())==(new
-                                             String(arg)).toLowerCase());
+    return (this.toLowerCase() == arg.toLowerCase());
   };
 
   return {
     create_point: function(lat, lon) {
-      if(lat > 90.0 || lat < -90.0) {
+      if (lat > 90.0 || lat < -90.0) {
         throw new Error("Latitude must be in [-90, 90] but was " + lat);
       }
-      if(lon > 180.0 || lon < -180.0) {
+      if (lon > 180.0 || lon < -180.0) {
         throw new Error("Longitude must be in [-180, 180] but was " + lon);
       }
-      return { lat: lat, lon:lon }
+      return { lat: lat, lon:lon };
     },
 
-    create_bounding_box: function(north, east, south, west) { 
+    create_bounding_box: function(north, east, south, west) {
       var north_,south_;
 
-      if(south > north) {
+      if (south > north) {
         south_ = north;
         north_ = south;
       } else {
@@ -171,7 +179,7 @@ function create_geomodel() {
         getEast: function() {
           return this.northEast.lon;
         }
-      }
+      };
     },
 
     /**
@@ -189,35 +197,37 @@ function create_geomodel() {
      * @return A list of geocell strings that contain the given box.
      */
     best_bbox_search_cells: function(bbox) {
-      var cell_ne = this.compute(bbox.northEast, MAX_GEOCELL_RESOLUTION);
-      var cell_sw = this.compute(bbox.southWest, MAX_GEOCELL_RESOLUTION);
+      var cell_ne, cell_sw, min_cost, min_cost_cell_set, min_resolution, max_resolution, cur_ne, cur_sw,
+      num_cells, cell_set, cost, cur_resolution;
+
+      cell_ne = this.compute(bbox.northEast, MAX_GEOCELL_RESOLUTION);
+      cell_sw = this.compute(bbox.southWest, MAX_GEOCELL_RESOLUTION);
 
       // The current lowest BBOX-search cost found; start with practical infinity.
-      var min_cost = Number.MAX_VALUE;
+      min_cost = Number.MAX_VALUE;
 
       // The set of cells having the lowest calculated BBOX-search cost.
-      var min_cost_cell_set = [];
+      min_cost_cell_set = [];
 
       // First find the common prefix, if there is one.. this will be the base
       // resolution.. i.e. we don't have to look at any higher resolution cells.
-      var min_resolution = 1;
-      var max_resolution = Math.min(cell_ne.length, cell_sw.length);
-      while(min_resolution < max_resolution  && 
+      min_resolution = 1;
+      max_resolution = Math.min(cell_ne.length, cell_sw.length);
+      while (min_resolution < max_resolution  &&
             cell_ne.substring(0, min_resolution+1).startsWith(cell_sw.substring(0, min_resolution+1))) {
         min_resolution++;
       }
 
       // Iteravely calculate all possible sets of cells that wholely contain
       // the requested bounding box.
-      var cur_ne, cur_sw, num_cells, cell_set, cost;
-      for(var cur_resolution = min_resolution; 
-          cur_resolution < MAX_GEOCELL_RESOLUTION + 1; 
+      for (cur_resolution = min_resolution;
+          cur_resolution < MAX_GEOCELL_RESOLUTION + 1;
           cur_resolution++) {
         cur_ne = cell_ne.substring(0, cur_resolution);
         cur_sw = cell_sw.substring(0, cur_resolution);
 
         num_cells = this.interpolation_count(cur_ne, cur_sw);
-        if(num_cells > MAX_FEASIBLE_BBOX_SEARCH_CELLS) {
+        if (num_cells > MAX_FEASIBLE_BBOX_SEARCH_CELLS) {
           continue;
         }
 
@@ -226,11 +236,11 @@ function create_geomodel() {
 
         cost = cell_set.length <= 16 ? 0 : 1000000;
 
-        if(cost <= min_cost) {
+        if (cost <= min_cost) {
           min_cost = cost;
           min_cost_cell_set = cell_set;
         } else {
-          if(min_cost_cell_set.length == 0) {
+          if (min_cost_cell_set.length === 0) {
             min_cost_cell_set = cell_set;
           }
           // Once the cost starts rising, we won't be able to do better, so abort.
@@ -255,7 +265,7 @@ function create_geomodel() {
      */
     collinear: function(cell1, cell2, column_test) {
 
-      for(var i = 0; i < Math.min(cell1.length, cell2.length); i++) {
+      for (var i = 0; i < Math.min(cell1.length, cell2.length); i++) {
         var l1 = this._subdiv_xy(cell1.charAt(i));
         var x1 = l1[0];
         var y1 = l1[1];
@@ -269,10 +279,10 @@ function create_geomodel() {
         }
 
         // Check column collinearity (assure x's are always the same).
-        if(column_test && x1 != x2) {
+        if (column_test && x1 != x2) {
           return false;
         }
-      }   
+      }
       return true;
     },
 
@@ -291,39 +301,40 @@ function create_geomodel() {
      * @return A list of geocell strings in the interpolation.
      */
     interpolate: function(cell_ne, cell_sw) {
+      var cell_set, cell_first, cell_tmp, cell_tmp_row, cell_set_last, i, result;
       // 2D array, will later be flattened.
-      var cell_set = [];
-      var cell_first = [];
+      cell_set = [];
+      cell_first = [];
       cell_first.push(cell_sw);
       cell_set.push(cell_first);
 
       // First get adjacent geocells across until Southeast--collinearity with
       // Northeast in vertical direction (0) means we're at Southeast.
-      while(!this.collinear(arrayGetLast(cell_first), cell_ne, true)) {
-        var cell_tmp = this.adjacent(arrayGetLast(cell_first), EAST);
-        if(cell_tmp == null) {
+      while (!this.collinear(arrayGetLast(cell_first), cell_ne, true)) {
+        cell_tmp = this.adjacent(arrayGetLast(cell_first), EAST);
+        if (cell_tmp === null) {
           break;
         }
         cell_first.push(cell_tmp);
       }
 
       // Then get adjacent geocells upwards.
-      while(!arrayGetLast(arrayGetLast(cell_set)).equalsIgnoreCase(cell_ne)) {
+      while (!arrayGetLast(arrayGetLast(cell_set)).equalsIgnoreCase(cell_ne)) {
 
-        var cell_tmp_row = [];
-        var cell_set_last = arrayGetLast(cell_set);
-        for(var i = 0; i < cell_set_last.length; i++) {
+        cell_tmp_row = [];
+        cell_set_last = arrayGetLast(cell_set);
+        for (i = 0; i < cell_set_last.length; i++) {
           cell_tmp_row.push(this.adjacent(cell_set_last[i], NORTH));
         }
-        if( !arrayGetFirst(cell_tmp_row) ) {
+        if ( !arrayGetFirst(cell_tmp_row) ) {
           break;
         }
         cell_set.push(cell_tmp_row);
       }
 
       // Flatten cell_set, since it's currently a 2D array.
-      var result = [];
-      for(var i = 0; i < cell_set.length; i++) {
+      result = [];
+      for (i = 0; i < cell_set.length; i++) {
         arrayAddAll(result, cell_set[i]);
       }
       return result;
@@ -342,15 +353,16 @@ function create_geomodel() {
      * @return An int, indicating the number of geocells in the interpolation.
      */
     interpolation_count: function(cell_ne, cell_sw) {
+      var bbox_ne, bbox_sw, cell_lat_span, cell_lon_span, num_cols, num_rows;
 
-      var bbox_ne = this.compute_box(cell_ne);
-      var bbox_sw = this.compute_box(cell_sw);
+      bbox_ne = this.compute_box(cell_ne);
+      bbox_sw = this.compute_box(cell_sw);
 
-      var cell_lat_span = bbox_sw.getNorth() - bbox_sw.getSouth();
-      var cell_lon_span = bbox_sw.getEast() - bbox_sw.getWest();
+      cell_lat_span = bbox_sw.getNorth() - bbox_sw.getSouth();
+      cell_lon_span = bbox_sw.getEast() - bbox_sw.getWest();
 
-      var num_cols = Math.floor((bbox_ne.getEast() - bbox_sw.getWest()) / cell_lon_span);
-      var num_rows = Math.floor((bbox_ne.getNorth() - bbox_sw.getSouth()) / cell_lat_span);
+      num_cols = Math.floor((bbox_ne.getEast() - bbox_sw.getWest()) / cell_lon_span);
+      num_rows = Math.floor((bbox_ne.getNorth() - bbox_sw.getSouth()) / cell_lat_span);
 
       return num_cols * num_rows;
     },
@@ -361,12 +373,13 @@ function create_geomodel() {
      * 
      * @param cell: The geocell string for which to calculate adjacent/neighboring cells.
      * @return A list of 8 geocell strings and/or None values indicating adjacent cells.
-     */    
+     */
 
     all_adjacents: function(cell) {
-      var result = [];
-      var directions = [NORTHWEST, NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST];
-      for(var i = 0; i < directions.length; i++) {
+      var result, directions, i;
+      result = [];
+      directions = [NORTHWEST, NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST];
+      for (i = 0; i < directions.length; i++) {
         result.push(this.adjacent(cell, directions[i]));
       }
       return result;
@@ -386,30 +399,31 @@ function create_geomodel() {
 
      */
     adjacent: function(cell, dir) {
-      if(!cell) {
+      var dx, dy, cell_adj_arr, i, l, x, y, l2;
+      if (!cell) {
         return null;
       }
-      var dx = dir[0];
-      var dy = dir[1];
-      var cell_adj_arr = cell.split(""); // Split the geocell string characters into a list.
-      var i = cell_adj_arr.length - 1;
+      dx = dir[0];
+      dy = dir[1];
+      cell_adj_arr = cell.split(""); // Split the geocell string characters into a list.
+      i = cell_adj_arr.length - 1;
 
-      while(i >= 0 && (dx != 0 || dy != 0)) {
-        var l= this._subdiv_xy(cell_adj_arr[i]);
-        var x = l[0];
-        var y = l[1];
+      while (i >= 0 && (dx !== 0 || dy !== 0)) {
+        l = this._subdiv_xy(cell_adj_arr[i]);
+        x = l[0];
+        y = l[1];
 
         // Horizontal adjacency.
-        if(dx == -1) {  // Asking for left.
-          if(x == 0) {  // At left of parent cell.
+        if (dx == -1) {  // Asking for left.
+          if (x === 0) {  // At left of parent cell.
             x = GEOCELL_GRID_SIZE - 1;  // Becomes right edge of adjacent parent.
           } else {
             x--;  // Adjacent, same parent.
             dx = 0; // Done with x.
           }
         }
-        else if(dx == 1) { // Asking for right.
-          if(x == GEOCELL_GRID_SIZE - 1) { // At right of parent cell.
+        else if (dx == 1) { // Asking for right.
+          if (x == GEOCELL_GRID_SIZE - 1) { // At right of parent cell.
             x = 0;  // Becomes left edge of adjacent parent.
           } else {
             x++;  // Adjacent, same parent.
@@ -418,15 +432,15 @@ function create_geomodel() {
         }
 
         // Vertical adjacency.
-        if(dy == 1) { // Asking for above.
-          if(y == GEOCELL_GRID_SIZE - 1) {  // At top of parent cell.
+        if (dy == 1) { // Asking for above.
+          if (y == GEOCELL_GRID_SIZE - 1) {  // At top of parent cell.
             y = 0;  // Becomes bottom edge of adjacent parent.
           } else {
             y++;  // Adjacent, same parent.
             dy = 0;  // Done with y.
           }
-        } else if(dy == -1) {  // Asking for below.
-          if(y == 0) { // At bottom of parent cell.
+        } else if (dy == -1) {  // Asking for below.
+          if (y === 0) { // At bottom of parent cell.
             y = GEOCELL_GRID_SIZE - 1; // Becomes top edge of adjacent parent.
           } else {
             y--;  // Adjacent, same parent.
@@ -434,13 +448,13 @@ function create_geomodel() {
           }
         }
 
-        var l2 = [x,y];
+        l2 = [x,y];
         cell_adj_arr[i] = this._subdiv_char(l2);
         i--;
       }
       // If we're not done with y then it's trying to wrap vertically,
       // which is a failure.
-      if(dy != 0) {
+      if (dy !== 0) {
         return null;
       }
 
@@ -458,25 +472,26 @@ function create_geomodel() {
      * @return The geocell string containing the given point, of length resolution.
      */
     compute: function(point, resolution) {
- 
-      resolution = resolution || MAX_GEOCELL_RESOLUTION
+      var north, south, east, west, cell, subcell_lon_span, subcell_lat_span, x, y, l;
 
-      var north = 90.0;
-      var south = -90.0;
-      var east = 180.0;
-      var west = -180.0;
+      resolution = resolution || MAX_GEOCELL_RESOLUTION;
 
-      var cell = "";
-      while(cell.length < resolution) {
-        var subcell_lon_span = (east - west) / GEOCELL_GRID_SIZE;
-        var subcell_lat_span = (north - south) / GEOCELL_GRID_SIZE;
+      north = 90.0;
+      south = -90.0;
+      east = 180.0;
+      west = -180.0;
 
-        var x = Math.min(Math.floor(GEOCELL_GRID_SIZE * (point.lon - west) / (east - west)),
+      cell = "";
+      while (cell.length < resolution) {
+        subcell_lon_span = (east - west) / GEOCELL_GRID_SIZE;
+        subcell_lat_span = (north - south) / GEOCELL_GRID_SIZE;
+
+        x = Math.min(Math.floor(GEOCELL_GRID_SIZE * (point.lon - west) / (east - west)),
                          GEOCELL_GRID_SIZE - 1);
-        var y = Math.min(Math.floor(GEOCELL_GRID_SIZE * (point.lat - south) / (north - south)),
+        y = Math.min(Math.floor(GEOCELL_GRID_SIZE * (point.lat - south) / (north - south)),
                          GEOCELL_GRID_SIZE - 1);
 
-        var l = [x,y];
+        l = [x,y];
         cell += this._subdiv_char(l);
 
         south += subcell_lat_span * y;
@@ -495,19 +510,20 @@ function create_geomodel() {
      * @return A geotypes.Box corresponding to the rectangular boundaries of the geocell.
      */
     compute_box: function(cell_) {
-      if(!cell_) {
+      var bbox, cell, subcell_lon_span, subcell_lat_span, l, x, y;
+      if (!cell_) {
         return null;
       }
 
-      var bbox = this.create_bounding_box(90.0, 180.0, -90.0, -180.0);
-      var cell = cell_;
-      while(cell.length > 0) {
-        var subcell_lon_span = (bbox.getEast() - bbox.getWest()) / GEOCELL_GRID_SIZE;
-        var subcell_lat_span = (bbox.getNorth() - bbox.getSouth()) / GEOCELL_GRID_SIZE;
+      bbox = this.create_bounding_box(90.0, 180.0, -90.0, -180.0);
+      cell = cell_;
+      while (cell.length > 0) {
+        subcell_lon_span = (bbox.getEast() - bbox.getWest()) / GEOCELL_GRID_SIZE;
+        subcell_lat_span = (bbox.getNorth() - bbox.getSouth()) / GEOCELL_GRID_SIZE;
 
-        var l = this._subdiv_xy(cell.charAt(0));
-        var x = l[0];
-        var y = l[1];
+        l = this._subdiv_xy(cell.charAt(0));
+        x = l[0];
+        y = l[1];
 
         bbox = this.create_bounding_box(bbox.getSouth() + subcell_lat_span * (y + 1),
             bbox.getWest()  + subcell_lon_span * (x + 1),
@@ -526,8 +542,9 @@ function create_geomodel() {
      * @return Returns the (x, y) of the geocell character in the 4x4 alphabet grid.
      */
     _subdiv_xy:function(char_) {
+      var charI;
       // NOTE: This only works for grid size 4.
-      var charI = GEOCELL_ALPHABET.indexOf(char_);
+      charI = GEOCELL_ALPHABET.indexOf(char_);
       return [(charI & 4) >> 1 | (charI & 1) >> 0,
                 (charI & 8) >> 2 | (charI & 2) >> 1];
     },
@@ -545,5 +562,5 @@ function create_geomodel() {
                                 (pos[1] & 1) << 1 |
                                 (pos[0] & 1) << 0);
     },
-  }
+  };
 }
