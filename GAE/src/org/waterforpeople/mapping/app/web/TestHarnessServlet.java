@@ -1742,6 +1742,14 @@ public class TestHarnessServlet extends HttpServlet {
 			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
 					.getDefaultQueue();
 			queue.add(options);
+		} else if ("addTranslationFields".equals(action)) {
+			TaskOptions options = TaskOptions.Builder.withUrl(
+					"/app_worker/dataprocessor").param(
+							DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.ADD_TRANSLATION_FIELDS);
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
 		} else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
 				.equals(action)) {
 			TaskOptions options = TaskOptions.Builder.withUrl(

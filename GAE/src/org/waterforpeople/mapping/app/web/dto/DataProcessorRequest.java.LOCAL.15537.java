@@ -51,7 +51,6 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String OFFSET_PARAM = "offset";
 	public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
 	public static final String ADD_CREATION_SURVEY_ID_TO_LOCALE = "addCreationSurveyIdToLocale";
-	public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
 
 	private String country;
 	private String source;
