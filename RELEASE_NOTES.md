@@ -8,7 +8,7 @@ Akvo FLOW Dashboard release notes
 
 # 1.6.11
 
-Release date: 5 March 2014
+Release date: 6 March 2014
 
 ## Enhancements
 * Increase loading speed of translations [#455]
@@ -17,6 +17,10 @@ Release date: 5 March 2014
 * Fixed: Failing uploads due to race condition on bulk upload process in some browsers [#465]
 * Fixed: Ignore __MACOSX folders created by MacOS in zip files during bulk upload [#464]
 * Fixed: Missing translation key in translation tab [#449]
+
+## Known issues
+* When working with translations, if the first question group contains a large number of
+  questions (30+) the UI locks up for a few seconds. See [#469]
 
 # 1.6.10
 
