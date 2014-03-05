@@ -312,7 +312,7 @@ public class QuestionRestService {
 			// source question not found, the getByKey already logged the problem
 			return null;
 		}
-		return SurveyUtils.copyQuestion(source,dto.getQuestionGroupId(), dto.getOrder());
+		return SurveyUtils.copyQuestion(source,dto.getQuestionGroupId(), dto.getOrder(), source.getSurveyId());
 	}
 
 	private Question newQuestion(QuestionDto dto) {
