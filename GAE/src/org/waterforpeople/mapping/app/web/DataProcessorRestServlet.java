@@ -68,10 +68,12 @@ import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
+import com.gallatinsystems.survey.dao.TranslationDao;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.backends.BackendServiceFactory;
@@ -93,6 +95,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = -7902002525342262821L;
 	private static final String REBUILD_Q_SUM_STATUS_KEY = "rebuildQuestionSummary";
 	private static final Integer QAS_PAGE_SIZE = 300;
+	private static final Integer T_PAGE_SIZE = 300;
 	private static final String QAS_TO_REMOVE = "QAStoRemove";
 
 	@Override
@@ -144,7 +147,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.CHANGE_LOCALE_TYPE_ACTION
 				.equalsIgnoreCase(dpReq.getAction())) {
 			changeLocaleType(dpReq.getSurveyId());
-		}
+		} else if (DataProcessorRequest.ADD_TRANSLATION_FIELDS
+				.equalsIgnoreCase(dpReq.getAction())) {
+			addTranslationFields(dpReq.getCursor());
+			} 
 		return new RestResponse();
 	}
 
@@ -814,5 +820,81 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 							+ surveyInstanceId);
 		}
 	}
+	
+	/**
+	* Adds surveyId and questionGroupId to translations
+	* This only needs to happen once to populate the fields
+	* on old translation values.
+	*/
+	private void addTranslationFields(String cursor) {
+		SurveyDAO sDao = new SurveyDAO();
+		QuestionGroupDao qgDao = new QuestionGroupDao();
+		QuestionDao qDao = new QuestionDao();
+		QuestionOptionDao qoDao = new QuestionOptionDao();
+		TranslationDao tDao = new TranslationDao();
+		QuestionGroup qg;
+		Question qu;
+		QuestionOption qo;
+		
+		Long surveyId = null;
+		Long questionGroupId = null;
+		List<Translation> tListSave = new ArrayList<Translation>();
 
+		final List<Translation> results = tDao.listTranslations(T_PAGE_SIZE, cursor);
+		for (Translation t : results){
+			surveyId = null;
+			questionGroupId = null;
+			switch (t.getParentType()){
+			case SURVEY_NAME: case SURVEY_DESC:
+				 Survey s = sDao.getById(t.getParentId());
+				 if (s != null) {
+					 surveyId = s.getKey().getId();
+				 }
+				 break;
+			case QUESTION_GROUP_DESC: case QUESTION_GROUP_NAME:
+				 qg = qgDao.getByKey(t.getParentId());
+			     if (qg != null) {
+			    	 surveyId = qg.getSurveyId();
+			         questionGroupId = qg.getKey().getId();
+			     }
+			     break;
+			case QUESTION_NAME: case QUESTION_DESC: case QUESTION_TEXT: case QUESTION_TIP:
+				 qu = qDao.getByKey(t.getParentId());
+			     if (qu != null){
+			    	 surveyId = qu.getSurveyId();
+			         questionGroupId = qu.getQuestionGroupId();
+			     }
+			     break;
+			case QUESTION_OPTION:
+				 qo = qoDao.getByKey(t.getParentId());
+			     if (qo != null){
+			    	 Long questionId = qo.getQuestionId();
+			    	 qu = qDao.getByKey(questionId);
+			    	 if (qu != null){
+			    		 surveyId = qu.getSurveyId();
+			    		 questionGroupId = qu.getQuestionGroupId();
+			    	 }
+			     }
+			     break;
+			default:
+				 break;
+			}
+			t.setSurveyId(surveyId);
+			t.setQuestionGroupId(questionGroupId);
+			tListSave.add(t);
+		}
+		tDao.save(tListSave);
+		
+		if (results.size() == T_PAGE_SIZE) {
+			cursor = TranslationDao.getCursor(results);
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.ADD_TRANSLATION_FIELDS)
+					.param(DataProcessorRequest.CURSOR_PARAM,
+						cursor != null ? cursor : "");
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+		}
+	}
 }

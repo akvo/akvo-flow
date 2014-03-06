@@ -49,6 +49,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String API_KEY_PARAM = "apiKey";
 	public static final String OFFSET_PARAM = "offset";
 	public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
+	public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
 
 	private String country;
 	private String source;

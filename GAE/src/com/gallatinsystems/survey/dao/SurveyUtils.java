@@ -70,7 +70,7 @@ public class SurveyUtils {
 		log.log(Level.INFO, "New `Survey` ID: " + newSurvey.getKey().getId());
 
 		SurveyUtils.copyTranslation(source.getKey().getId(), newSurvey.getKey()
-				.getId(), ParentType.SURVEY_NAME, ParentType.SURVEY_DESC);
+				.getId(), newSurvey.getKey().getId(), null, ParentType.SURVEY_NAME, ParentType.SURVEY_DESC);
 
 		log.log(Level.INFO, "Running rest of copy functionality as a task...");
 
@@ -111,7 +111,7 @@ public class SurveyUtils {
 				+ newQuestionGroup.getKey().getId());
 
 		SurveyUtils.copyTranslation(source.getKey().getId(), newQuestionGroup
-				.getKey().getId(), ParentType.QUESTION_GROUP_NAME,
+				.getKey().getId(), newSurveyId, newQuestionGroup.getKey().getId(), ParentType.QUESTION_GROUP_NAME,
 				ParentType.QUESTION_GROUP_DESC);
 
 		List<Question> qList = qDao.listQuestionsInOrderForGroup(source
@@ -128,7 +128,7 @@ public class SurveyUtils {
 		int qCount = 1;
 		for (Question q : qList) {
 			final Question qTmp = SurveyUtils.copyQuestion(q, newQuestionGroup
-					.getKey().getId(), qCount++);
+					.getKey().getId(), qCount++, newSurveyId);
 			qMap.put(q.getKey().getId(), qTmp.getKey().getId());
 			if (qTmp.getDependentFlag() != null && qTmp.getDependentFlag()) {
 				dependentQuestionList.add(qTmp);
@@ -151,7 +151,7 @@ public class SurveyUtils {
 	}
 
 	public static Question copyQuestion(Question source,
-			Long newQuestionGroupId, Integer order) {
+			Long newQuestionGroupId, Integer order, Long newSurveyId) {
 
 		final QuestionDao qDao = new QuestionDao();
 		final QuestionOptionDao qoDao = new QuestionOptionDao();
@@ -176,7 +176,7 @@ public class SurveyUtils {
 		log.log(Level.INFO, "Copying question translations");
 
 		SurveyUtils.copyTranslation(source.getKey().getId(), newQuestion
-				.getKey().getId(), ParentType.QUESTION_NAME,
+				.getKey().getId(), newSurveyId, newQuestionGroupId, ParentType.QUESTION_NAME,
 				ParentType.QUESTION_DESC, ParentType.QUESTION_TEXT,
 				ParentType.QUESTION_TIP);
 
@@ -197,14 +197,14 @@ public class SurveyUtils {
 
 		// Copying Question Options
 		for (QuestionOption qo : options.values()) {
-			SurveyUtils.copyQuestionOption(qo, newQuestion.getKey().getId());
+			SurveyUtils.copyQuestionOption(qo, newQuestion.getKey().getId(), newSurveyId, newQuestionGroupId);
 		}
 
 		return newQuestion;
 	}
 
 	public static QuestionOption copyQuestionOption(QuestionOption source,
-			Long newQuestionId) {
+			Long newQuestionId, Long newSurveyId, Long newQuestionGroupId) {
 
 		final QuestionOptionDao qDao = new QuestionOptionDao();
 		final QuestionOption tmp = new QuestionOption();
@@ -223,7 +223,7 @@ public class SurveyUtils {
 		log.log(Level.INFO, "Copying question option translations");
 
 		SurveyUtils.copyTranslation(source.getKey().getId(), newQuestionOption
-				.getKey().getId(), ParentType.QUESTION_OPTION);
+				.getKey().getId(), newSurveyId, newQuestionGroupId, ParentType.QUESTION_OPTION);
 
 		return newQuestionOption;
 	}
@@ -261,21 +261,23 @@ public class SurveyUtils {
 	}
 
 	public static void saveTranslationCopy(List<Translation> trs,
-			Long newParentId) {
+			Long newParentId, Long newSurveyId, Long newQuestionGroupId) {
 		final TranslationDao trDao = new TranslationDao();
 		for (Translation t : trs) {
 			Translation copy = new Translation();
 			BeanUtils.copyProperties(t, copy, Constants.EXCLUDED_PROPERTIES);
 			copy.setParentId(newParentId);
+			copy.setQuestionGroupId(newQuestionGroupId);
+			copy.setSurveyId(newSurveyId);
 			trDao.save(copy);
 		}
 	}
 
-	public static void copyTranslation(Long sourceParentId, Long copyParentId,
-			ParentType... types) {
+	public static void copyTranslation(Long sourceParentId, Long copyParentId, 
+			Long newSurveyId, Long newQuestionGroupId, ParentType... types) {
 		SurveyUtils.saveTranslationCopy(
 				SurveyUtils.getTranslations(sourceParentId, types),
-				copyParentId);
+				copyParentId, newSurveyId, newQuestionGroupId);
 	}
 
 	/**
