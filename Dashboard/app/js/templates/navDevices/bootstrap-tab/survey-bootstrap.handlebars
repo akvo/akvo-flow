@@ -68,7 +68,12 @@
           <h2>02. {{t _notification_details}}:</h2>
           <div class="">
           <label for="notificationEmail">{{t _notification_email}}:</label>
-         {{view Ember.TextField valueBinding="view.notificationEmail" id="notificationEmail" placeholder="Enter the notification email" size=30}}
+         {{view Ember.TextField
+                valueBinding="view.notificationEmail"
+                id="notificationEmail"
+                placeholder="Enter the notification email"
+                placeholderBinding="Ember.STRINGS._enter_notification_email"
+                size=30}}
          {{#if view.undef}}
            <label for="includeDBInstructions">{{t _include_db_instructions}}:</label>
            {{view Ember.Checkbox checkedBinding="view.includeDBInstructions" id="includeDBInstructions"}}
