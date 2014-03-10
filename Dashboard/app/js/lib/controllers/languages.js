@@ -315,6 +315,10 @@ FLOW.isoLanguagesDict = {
     "name": "Khmer",
     "nativeName": "ភាសាខ្មែរ"
   },
+  "quc": {
+    "name":"K'iche', Quiché",
+    "nativeName": "K'iche'"
+  },
   "ki": {
     "name": "Kikuyu, Gikuyu",
     "nativeName": "Gĩkũyũ"
