@@ -472,8 +472,8 @@ FLOW.translationControl = Ember.ArrayController.create({
     for (var key in FLOW.isoLanguagesDict) {
       tempArray.push(Ember.Object.create({
         value: key,
-        labelShort: FLOW.isoLanguagesDict[key].name,
-        labelLong: FLOW.isoLanguagesDict[key].name + " - " + FLOW.isoLanguagesDict[key].nativeName
+        labelShort: FLOW.isoLanguagesDict[key].nativeName,
+        labelLong: FLOW.isoLanguagesDict[key].nativeName + " - " + FLOW.isoLanguagesDict[key].name
       }));
     }
     this.set('isoLangs', tempArray);
