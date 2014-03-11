@@ -90,11 +90,11 @@
         <!-- the dialog contents -->
         <div class="confirmDialog dialog">
           <h2>{{t _add_attribute}}</h2>
-          <p class="dialogMsg">Please provide a name, an optional group, and a value type for the attribute</p>
+          <p class="dialogMsg">{{t _please_provide_name_for_attribute}}</p>
           <br/>
-         <label for="newAttributeName">Attribute name:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
-         <label for="newAttributeGroup">Group:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
-          <label>Value type:</label>
+         <label for="newAttributeName">{{t _attribute_name}}:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
+         <label for="newAttributeGroup">{{t _group}}:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
+          <label>{{t _value_type}}:</label>
              {{view Ember.Select 
             contentBinding="FLOW.attributeTypeControl.content" 
             selectionBinding="view.newAttributeType" 

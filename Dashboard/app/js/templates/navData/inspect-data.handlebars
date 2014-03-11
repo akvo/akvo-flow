@@ -118,7 +118,7 @@
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="7"><small>This is the footer.</small></td>
+            <td colspan="7"><small></small></td>
           </tr>
         </tfoot>
       </table>
@@ -138,7 +138,7 @@
           <div class="dialogWrap">
         <!-- the dialog contents -->
         <div class="confirmDialog dialogWide">
-		     <a {{action "doCloseEditSIWindow" target="this"}} class="ok clodeDialog">close window</a>
+		     <a {{action "doCloseEditSIWindow" target="this"}} class="ok clodeDialog">{{t _close_window}}</a>
 
           <h2>{{t _edit_answers}}</h2>
             <nav class="editAnswerMenu"> 
@@ -200,10 +200,10 @@
                     {{else}}
                       {{#if view.isNotEditable}}
                         {{#if view.isPhotoType}}
-                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open photo</a> 
+                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
                         {{else}}
                           {{#if view.isVideoType}}
-                            {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open video</a> 
+                            {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_video}}</a>
                           {{else}}
                             {{QA.value}}
                           {{/if}}
@@ -224,7 +224,7 @@
             <!-- TABLE FOOTER-->
             <tfoot>
                 <tr>
-                    <td colspan="7"><small>This is the footer.</small></td>
+                    <td colspan="7"><small></small></td>
                 </tr>
             </tfoot>
         </table>
