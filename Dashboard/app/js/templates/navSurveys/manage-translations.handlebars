@@ -28,7 +28,8 @@
          selectionBinding="FLOW.translationControl.selectedLanguage" 
          optionLabelPath="content.labelLong" 
          optionValuePath="content.value"
-         prompt="select language"}} 
+         prompt="Select language"
+         promptBinding="Ember.STRINGS._select_language"}}
             <a {{action "addTranslation" target="FLOW.translationControl"}} class="smallBtn">Add</a>
             {{#if FLOW.translationControl.newSelected}}
               <a {{action "cancelAddTranslation" target="FLOW.translationControl"}} class="smallBtn">Cancel</a>

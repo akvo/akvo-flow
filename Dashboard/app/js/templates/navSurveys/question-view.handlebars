@@ -71,7 +71,8 @@
         selectionBinding="FLOW.selectedControl.dependentQuestion" 
         optionLabelPath="content.text" 
         optionValuePath="content.keyId" 
-        prompt="Select question"}}</label>
+        prompt="Select question"
+        promptBinding="Ember.STRINGS._select_question"}}</label>
     {{/if}} 
      {{#if view.dependentFlag}}
     {{#if FLOW.selectedControl.dependentQuestion}}
