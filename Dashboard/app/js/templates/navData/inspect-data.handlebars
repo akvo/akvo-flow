@@ -61,19 +61,22 @@
             contentBinding="FLOW.countryController.content" 
             selectionBinding="FLOW.locationControl.selectedCountry"
             optionLabelPath="content.label"
-            prompt="select country"}}
+            prompt="select country"
+            promptBinding="Ember.STRINGS._select_country"}}
     
            {{view Ember.Select 
             contentBinding="FLOW.locationControl.level1Content" 
             selectionBinding="FLOW.locationControl.selectedLevel1"
             optionLabelPath="content.name"
-            prompt="select sublevel 1"}}
+            prompt="select sublevel 1"
+            promptBinding="Ember.STRINGS._select_sublevel_1"}}
    
            {{view Ember.Select 
             contentBinding="FLOW.locationControl.level2Content" 
             selectionBinding="FLOW.locationControl.selectedLevel2"
             optionLabelPath="content.name"
-            prompt="select sublevel 2"}}
+            prompt="select sublevel 2"
+            promptBinding="Ember.STRINGS._select_sublevel_2"}}
        {{/if}}
              <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>
       </div>
@@ -115,7 +118,7 @@
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="7"><small>This is the footer.</small></td>
+            <td colspan="7"><small></small></td>
           </tr>
         </tfoot>
       </table>
@@ -135,7 +138,7 @@
           <div class="dialogWrap">
         <!-- the dialog contents -->
         <div class="confirmDialog dialogWide">
-		     <a {{action "doCloseEditSIWindow" target="this"}} class="ok clodeDialog">close window</a>
+		     <a {{action "doCloseEditSIWindow" target="this"}} class="ok clodeDialog">{{t _close_window}}</a>
 
           <h2>{{t _edit_answers}}</h2>
             <nav class="editAnswerMenu"> 
@@ -197,10 +200,10 @@
                     {{else}}
                       {{#if view.isNotEditable}}
                         {{#if view.isPhotoType}}
-                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open photo</a> 
+                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
                         {{else}}
                           {{#if view.isVideoType}}
-                            {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open video</a> 
+                            {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_video}}</a>
                           {{else}}
                             {{QA.value}}
                           {{/if}}
@@ -221,7 +224,7 @@
             <!-- TABLE FOOTER-->
             <tfoot>
                 <tr>
-                    <td colspan="7"><small>This is the footer.</small></td>
+                    <td colspan="7"><small></small></td>
                 </tr>
             </tfoot>
         </table>

@@ -19,14 +19,14 @@ FLOW.chartDataControl = Ember.Object.create({
 FLOW.chartTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "Doughnut chart",
+      label: Ember.String.loc('_doughnut_chart'),
       value: "doughnut"
     }), Ember.Object.create({
-      label: "Vertical bar chart",
+      label: Ember.String.loc('_vertical_bar_chart'),
       value: "vbar"
     }),
     Ember.Object.create({
-      label: "Horizontal bar chart",
+      label: Ember.String.loc('_horizontal_bar_chart'),
       value: "hbar"
     })
   ]
