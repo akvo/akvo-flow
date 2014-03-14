@@ -78,7 +78,6 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 	protected RestResponse handleRequest(RestRequest req) throws Exception {
 		SurveyedLocaleRequest slReq = (SurveyedLocaleRequest) req;
 		List<SurveyedLocale> slList = null;
-		Boolean hasPermission = false;
 		if (slReq.getSurveyGroupId() != null){
 			if (slReq.getPhoneNumber() != null || slReq.getImei() != null) {
 				DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
@@ -86,11 +85,9 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 			    for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(slReq.getPhoneNumber(), slReq.getImei())) {
 					Survey s = surveyDao.getById(dsjq.getSurveyID());
 					if (s != null && s.getSurveyGroupId().longValue() == slReq.getSurveyGroupId().longValue()) {
-						hasPermission = true;
+						slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(slReq.getSurveyGroupId(),slReq.getLastUpdateTime(), SL_PAGE_SIZE);
+						return convertToResponse(null, slReq.getSurveyGroupId(), slReq.getLastUpdateTime());
 					}
-				}
-				if (hasPermission) {
-					slList = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(slReq.getSurveyGroupId(),slReq.getLastUpdateTime(),SL_PAGE_SIZE);
 				}
 			}
 		}
@@ -110,7 +107,8 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 			// set meta data
 			resp.setResultCount(slList.size());
 			if (slList.size() > 0) {
-				resp.setLastUpdateTime(slList.get(slList.size() - 1).getLastUpdateDateTime().getTime());
+				// slList is sorted descending, first element is the oldest
+				resp.setLastUpdateTime(slList.get(0).getLastUpdateDateTime().getTime());
 			} else {
 				resp.setLastUpdateTime(lastUpdateTime.getTime()); // return original query timestamp
 			}
