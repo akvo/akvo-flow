@@ -595,8 +595,8 @@ public class BulkDataServiceClient {
 					if (json.has("surveyedLocaleDisplayName") && !json.isNull("surveyedLocaleDisplayName")) {
 						dto.setSurveyedLocaleDisplayName(json.getString("surveyedLocaleDisplayName"));
 					}
-					if (json.has("surveyedLocaleIdentifier") && !json.isNull("surveyedLocaleDisplayName")) {
-						dto.setSurveyedLocaleIdentifier(json.getString("surveyedLocaleDisplayName"));
+					if (json.has("surveyedLocaleIdentifier") && !json.isNull("surveyedLocaleIdentifier")) {
+						dto.setSurveyedLocaleIdentifier(json.getString("surveyedLocaleIdentifier"));
 					}
 				}
 			}

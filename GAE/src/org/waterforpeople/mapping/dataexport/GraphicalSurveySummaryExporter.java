@@ -20,7 +20,6 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -118,6 +117,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final Map<String, String> LON_LABEL;
 	private static final Map<String, String> ELEV_LABEL;
 	private static final Map<String, String> CODE_LABEL;
+	private static final Map<String, String> IDENTIFIER_LABEL;
+	private static final Map<String, String> DISPLAY_NAME_LABEL;
+
 
 	private static final int CHART_WIDTH = 600;
 	private static final int CHART_HEIGHT = 400;
@@ -259,6 +261,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		CODE_LABEL.put("en", "Geo Code");
 		CODE_LABEL.put("es", "Código Geo");
 
+		IDENTIFIER_LABEL = new HashMap<String, String>();
+		IDENTIFIER_LABEL.put("en", "Identifier");
+		IDENTIFIER_LABEL.put("es", "Identificador");
+
+		DISPLAY_NAME_LABEL = new HashMap<String, String>();
+		DISPLAY_NAME_LABEL.put("en", "Display Name");
+		DISPLAY_NAME_LABEL.put("es", "Nombre");
 	}
 
 	private CellStyle headerStyle;
@@ -490,6 +499,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			SummaryModel model) throws Exception {
 		int col = 0;
 		MessageDigest digest = MessageDigest.getInstance("MD5");
+		createCell(row, col++, dto.getSurveyedLocaleIdentifier(), null);
+		createCell(row, col++, dto.getSurveyedLocaleDisplayName(), null);
 		createCell(row, col++, instanceId, null);
 		createCell(row, col++, dateString, null);
 		if (dto != null) {
@@ -614,16 +625,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		Row row = null;
 
 		row = getRow(0, sheet);
-		createCell(row, 0, INSTANCE_LABEL.get(locale), headerStyle);
-		createCell(row, 1, SUB_DATE_LABEL.get(locale), headerStyle);
-		createCell(row, 2, SUBMITTER_LABEL.get(locale), headerStyle);
-		createCell(row, 3, DURATION_LABEL.get(locale), headerStyle);
+		createCell(row, 0, IDENTIFIER_LABEL.get(locale), headerStyle);
+		createCell(row, 1, DISPLAY_NAME_LABEL.get(locale), headerStyle);
+		createCell(row, 2, INSTANCE_LABEL.get(locale), headerStyle);
+		createCell(row, 3, SUB_DATE_LABEL.get(locale), headerStyle);
+		createCell(row, 4, SUBMITTER_LABEL.get(locale), headerStyle);
+		createCell(row, 5, DURATION_LABEL.get(locale), headerStyle);
 
 		List<String> questionIdList = new ArrayList<String>();
 		List<String> nonSummarizableList = new ArrayList<String>();
 
 		if (questionMap != null) {
-			int offset = 4;
+			int offset = 6;
 			for (QuestionGroupDto group : orderedGroupList) {
 				if (questionMap.get(group) != null) {
 					for (QuestionDto q : questionMap.get(group)) {
