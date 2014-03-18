@@ -589,6 +589,15 @@ public class BulkDataServiceClient {
 						dto.setDeviceIdentifier(json
 								.getString("deviceIdentifier"));
 					}
+					if (json.has("surveyedLocaleId") && !json.isNull("surveyedLocaleId")) {
+						dto.setSurveyedLocaleId(json.getLong("surveyedLocaleId"));
+					}
+					if (json.has("surveyedLocaleDisplayName") && !json.isNull("surveyedLocaleDisplayName")) {
+						dto.setSurveyedLocaleDisplayName(json.getString("surveyedLocaleDisplayName"));
+					}
+					if (json.has("surveyedLocaleIdentifier") && !json.isNull("surveyedLocaleDisplayName")) {
+						dto.setSurveyedLocaleIdentifier(json.getString("surveyedLocaleDisplayName"));
+					}
 				}
 			}
 		}
