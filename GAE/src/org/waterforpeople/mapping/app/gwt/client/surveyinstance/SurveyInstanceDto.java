@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -44,6 +44,10 @@ public class SurveyInstanceDto extends BaseDto {
 	private String surveyCode;
 	private String approvedFlag;
 	private String approximateLocationFlag;
+	private Long surveyedLocaleId;
+	private String surveyedLocaleIdentifier;
+	private String surveyedLocaleDisplayName;
+
 
 	public String getApproximateLocationFlag() {
 		return approximateLocationFlag;
@@ -130,5 +134,29 @@ public class SurveyInstanceDto extends BaseDto {
 	
 	public Long getSurveyalTime() {
 		return surveyalTime;
+	}
+
+	public Long getSurveyedLocaleId() {
+		return surveyedLocaleId;
+	}
+
+	public void setSurveyedLocaleId(Long surveyedLocaleId) {
+		this.surveyedLocaleId = surveyedLocaleId;
+	}
+
+	public String getSurveyedLocaleIdentifier() {
+		return surveyedLocaleIdentifier;
+	}
+
+	public void setSurveyedLocaleIdentifier(String surveyedLocaleIdentifier) {
+		this.surveyedLocaleIdentifier = surveyedLocaleIdentifier;
+	}
+
+	public String getSurveyedLocaleDisplayName() {
+		return surveyedLocaleDisplayName;
+	}
+
+	public void setSurveyedLocaleDisplayName(String surveyedLocaleDisplayName) {
+		this.surveyedLocaleDisplayName = surveyedLocaleDisplayName;
 	}
 }
