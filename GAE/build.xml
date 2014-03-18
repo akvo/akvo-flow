@@ -191,6 +191,12 @@
 
 		<delete file="war/PlacemarksNewLook.vm" failonerror="false" />
 
+		<echo message="Rebuilding Dashboard..." />
+
+		<exec dir="../Dashboard" executable="rake">
+		    <env key="RAKEP_MODE" value="production" />
+		    <arg value="build" />
+		</exec>
 		<exec dir="." executable="sh">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} --passin &lt; ${pwd} update war" />
