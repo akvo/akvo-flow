@@ -103,7 +103,7 @@ public class TranslationGenerator {
 					.append("\n");
 		}
 		FileUtils.writeStringToFile(new File(output, "/en.properties"),
-				sb.toString(), "UTF-8");
+				sb.toString(), "ISO-8859-1");
 
 		final List<String> tmp = new ArrayList<String>(trlKeys.keySet());
 		Collections.sort(tmp);
@@ -113,7 +113,7 @@ public class TranslationGenerator {
 					.append("\n");
 		}
 		FileUtils.writeStringToFile(new File(output, "/ui-strings.properties"),
-				uisource.toString(), "UTF-8");
+				uisource.toString(), "ISO-8859-1");
 	}
 
 	private static boolean containsTranslatableKeys(String line) {

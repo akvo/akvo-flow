@@ -37,6 +37,8 @@ public class Translation extends BaseDomain {
 	private String languageCode = null;
 	private String text = null;
 	private Long parentId = null;
+	private Long surveyId = null;
+	private Long questionGroupId = null;
 	private ParentType parentType = null;
 
 	public String getLanguageCode() {
@@ -69,6 +71,22 @@ public class Translation extends BaseDomain {
 
 	public void setParentType(ParentType parentType) {
 		this.parentType = parentType;
+	}
+
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
+	}
+
+	public Long getQuestionGroupId() {
+		return questionGroupId;
+	}
+
+	public void setQuestionGroupId(Long questionGroupId) {
+		this.questionGroupId = questionGroupId;
 	}
 
 	public enum ParentType {

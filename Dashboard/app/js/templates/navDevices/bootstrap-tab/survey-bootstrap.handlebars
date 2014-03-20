@@ -7,7 +7,14 @@
           <h2>01. {{t _select_survey}}:</h2>
           <div class="">
             <label for="surveyGroup">{{t _select_survey_group}}:</label>
-            {{view Ember.Select contentBinding="FLOW.surveyGroupControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.code" optionValuePath="content.keyId" id="surveyGroup" prompt="Select survey group"}}
+            {{view Ember.Select
+                   contentBinding="FLOW.surveyGroupControl.arrangedContent"
+                   selectionBinding="FLOW.selectedControl.selectedSurveyGroup"
+                   optionLabelPath="content.code"
+                   optionValuePath="content.keyId"
+                   id="surveyGroup"
+                   prompt="Select survey group"
+                   promptBinding="Ember.STRINGS._select_survey_group"}}
 			<span class="infoText">{{t _cant_find_your_survey_}}</span>
 			</div>
           <div class="">
@@ -68,7 +75,12 @@
           <h2>02. {{t _notification_details}}:</h2>
           <div class="">
           <label for="notificationEmail">{{t _notification_email}}:</label>
-         {{view Ember.TextField valueBinding="view.notificationEmail" id="notificationEmail" placeholder="Enter the notification email" size=30}}
+         {{view Ember.TextField
+                valueBinding="view.notificationEmail"
+                id="notificationEmail"
+                placeholder="Enter the notification email"
+                placeholderBinding="Ember.STRINGS._enter_notification_email"
+                size=30}}
          {{#if view.undef}}
            <label for="includeDBInstructions">{{t _include_db_instructions}}:</label>
            {{view Ember.Checkbox checkedBinding="view.includeDBInstructions" id="includeDBInstructions"}}

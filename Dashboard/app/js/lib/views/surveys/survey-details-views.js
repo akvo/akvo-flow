@@ -400,8 +400,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
       // create new QuestionGroup item in the store
       FLOW.store.createRecord(FLOW.QuestionGroup, {
-        "code": "New group - please change name",
-        "name": "New group - please change name",
+        "code": Ember.String.loc('_new_group_please_change_name'),
+        "name": Ember.String.loc('_new_group_please_change_name'),
         "order": insertAfterOrder + 1,
         "path": path,
         "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')

@@ -356,6 +356,7 @@ FLOW.Translation = FLOW.BaseModel.extend({
   parentType: DS.attr('string'),
   parentId: DS.attr('string'),
   surveyId: DS.attr('string'),
+  questionGroupId: DS.attr('string'),
   text: DS.attr('string'),
   langCode: DS.attr('string')
 });

@@ -31,7 +31,7 @@ FLOW.questionTypeControl = Ember.Object.create({
 FLOW.notificationOptionControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "link",
+      label: Ember.String.loc('_link'),
       value: "LINK"
     }), Ember.Object.create({
       label: "attachment",
@@ -43,7 +43,7 @@ FLOW.notificationOptionControl = Ember.Object.create({
 FLOW.notificationTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "email",
+      label: Ember.String.loc('_email'),
       value: "EMAIL"
     })
   ]
@@ -52,13 +52,13 @@ FLOW.notificationTypeControl = Ember.Object.create({
 FLOW.notificationEventControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "Raw data reports (nightly)",
+      label: Ember.String.loc('_raw_data_reports_nightly'),
       value: "rawDataReport"
     }), Ember.Object.create({
-      label: "Survey submission",
+      label: Ember.String.loc('_survey_submission'),
       value: "surveySubmission"
     }), Ember.Object.create({
-      label: "Survey approval",
+      label: Ember.String.loc('_survey_approval'),
       value: "surveyApproval"
     })
   ]
@@ -82,13 +82,13 @@ FLOW.languageControl = Ember.Object.create({
 FLOW.surveyPointTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "Point",
+      label: Ember.String.loc('_point'),
       value: "Point"
     }), Ember.Object.create({
-      label: "Household",
+      label: Ember.String.loc('_household'),
       value: "Household"
     }), Ember.Object.create({
-      label: "Public institution",
+      label: Ember.String.loc('_public_institution'),
       value: "PublicInstitution"
     })
   ]
@@ -122,24 +122,21 @@ FLOW.surveySectorTypeControl = Ember.Object.create({
 });
 
 
-FLOW.alwaysTrue = function () {
-  return true;
-};
-
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortProperties: ['code'],
   sortAscending: true,
   content: null,
 
-  setFilteredContent: function (f) {
-    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, f));
+  setFilteredContent: function () {
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function (item) {
+      return true;
+    }));
   },
 
   // load all Survey Groups
-  populate: function (f) {
-    var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
+  populate: function () {
     FLOW.store.find(FLOW.SurveyGroup);
-    this.setFilteredContent(fn);
+    this.setFilteredContent();
   },
 
   // checks if data store contains surveys within this survey group.
@@ -475,8 +472,8 @@ FLOW.translationControl = Ember.ArrayController.create({
     for (var key in FLOW.isoLanguagesDict) {
       tempArray.push(Ember.Object.create({
         value: key,
-        labelShort: FLOW.isoLanguagesDict[key].name,
-        labelLong: FLOW.isoLanguagesDict[key].name + " - " + FLOW.isoLanguagesDict[key].nativeName
+        labelShort: FLOW.isoLanguagesDict[key].nativeName,
+        labelLong: FLOW.isoLanguagesDict[key].nativeName + " - " + FLOW.isoLanguagesDict[key].name
       }));
     }
     this.set('isoLangs', tempArray);
@@ -852,7 +849,7 @@ FLOW.translationControl = Ember.ArrayController.create({
     }
   },
 
-  createUpdateOrDeleteRecord: function (surveyId, type, parentId, origText, translationText, lan, transId, allowSideEffects) {
+  createUpdateOrDeleteRecord: function (surveyId, questionGroupId, type, parentId, origText, translationText, lan, transId, allowSideEffects) {
 	  var changed = false;
 	  if (!Ember.none(origText) && origText.length > 0) {
       // we have an original text
@@ -866,6 +863,7 @@ FLOW.translationControl = Ember.ArrayController.create({
                 parentType: type,
                 parentId: parentId,
                 surveyId: surveyId,
+                questionGroupId: questionGroupId,
                 text: translationText,
                 langCode: lan
               });
@@ -928,22 +926,22 @@ FLOW.translationControl = Ember.ArrayController.create({
 		  type = item.type;
 	      parentId = item.keyId;
 	      surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+        if (!Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
+          questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+        } else {
+          questionGroupId = null;
+        }
 	      lan = _self.get('currentTranslation');
 	      if (type == 'S') {
-	        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, "SURVEY_NAME", parentId, item.surveyText, item.surveyTextTrans, lan, item.surveyTextTransId, false);
-	        console.log('survey name ', unsaved);
-	        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, "SURVEY_DESC", parentId, item.sDescText, item.sDescTextTrans, lan, item.sDescTextTransId, false);
-	        console.log('survey desc ', unsaved);
+	        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "SURVEY_NAME", parentId, item.surveyText, item.surveyTextTrans, lan, item.surveyTextTransId, false);
+	        unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "SURVEY_DESC", parentId, item.sDescText, item.sDescTextTrans, lan, item.sDescTextTransId, false);
 	      } else if (type == 'QG') {
-	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_GROUP_NAME", parentId, item.qgText, item.qgTextTrans, lan, item.qgTextTransId, false);
-	    	console.log('question group ', unsaved);
+	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_GROUP_NAME", parentId, item.qgText, item.qgTextTrans, lan, item.qgTextTransId, false);
 	      } else if (type == 'Q') {
-	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_TEXT", parentId, item.qText, item.qTextTrans, lan, item.qTextTransId, false);
-	    	console.log('question ', unsaved);
-	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_TIP", parentId, item.qTipText, item.qTipTextTrans, lan, item.qTipTextTransId, false);
+	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_TEXT", parentId, item.qText, item.qTextTrans, lan, item.qTextTransId, false);
+	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_TIP", parentId, item.qTipText, item.qTipTextTrans, lan, item.qTipTextTransId, false);
 	      } else if (type == 'QO') {
-	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_OPTION", parentId, item.qoText, item.qoTextTrans, lan, item.qoTextTransId, false);
-	    	console.log('option ', unsaved);
+	    	unsaved = unsaved || _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_OPTION", parentId, item.qoText, item.qoTextTrans, lan, item.qoTextTransId, false);
 	      }
 	  });
       if (unsaved){
@@ -965,17 +963,22 @@ FLOW.translationControl = Ember.ArrayController.create({
       type = item.type;
       parentId = item.keyId;
       surveyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+      if (!Ember.none(FLOW.selectedControl.get('selectedQuestionGroup'))) {
+        questionGroupId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
+      } else {
+        questionGroupId = null;
+      }
       lan = _self.get('currentTranslation');
       if (type == 'S') {
-        _self.createUpdateOrDeleteRecord(surveyId, "SURVEY_NAME", parentId, item.surveyText, item.surveyTextTrans, lan, item.surveyTextTransId, true);
-        _self.createUpdateOrDeleteRecord(surveyId, "SURVEY_DESC", parentId, item.sDescText, item.sDescTextTrans, lan, item.sDescTextTransId, true);
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "SURVEY_NAME", parentId, item.surveyText, item.surveyTextTrans, lan, item.surveyTextTransId, true);
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "SURVEY_DESC", parentId, item.sDescText, item.sDescTextTrans, lan, item.sDescTextTransId, true);
       } else if (type == 'QG') {
-        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_GROUP_NAME", parentId, item.qgText, item.qgTextTrans, lan, item.qgTextTransId, true);
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_GROUP_NAME", parentId, item.qgText, item.qgTextTrans, lan, item.qgTextTransId, true);
       } else if (type == 'Q') {
-        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_TEXT", parentId, item.qText, item.qTextTrans, lan, item.qTextTransId, true);
-        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_TIP", parentId, item.qTipText, item.qTipTextTrans, lan, item.qTipTextTransId, true);
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_TEXT", parentId, item.qText, item.qTextTrans, lan, item.qTextTransId, true);
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_TIP", parentId, item.qTipText, item.qTipTextTrans, lan, item.qTipTextTransId, true);
       } else if (type == 'QO') {
-        _self.createUpdateOrDeleteRecord(surveyId, "QUESTION_OPTION", parentId, item.qoText, item.qoTextTrans, lan, item.qoTextTransId, true);
+        _self.createUpdateOrDeleteRecord(surveyId, questionGroupId, "QUESTION_OPTION", parentId, item.qoText, item.qoTextTrans, lan, item.qoTextTransId, true);
       }
     });
     FLOW.store.commit();
