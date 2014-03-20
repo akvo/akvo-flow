@@ -6,6 +6,16 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 Akvo FLOW Dashboard release notes
 ----
 
+# 1.6.12
+
+## Enhancements
+* Completed translations for all UI elements in French and Spanish. Thanks Iñigo, Iván, Valentin, and Emeline! [#474, #436, #440]
+* Add K'iche', the second dominant language in Guatemala, as an available translation language [#473]
+* Enhance build process: automatically rebuild dashboard code when updating an instance [#478]
+
+## Resolved issues
+* A change in dashboard language now refreshes the whole page, to prevent rendering issues [#474, #163]
+
 # 1.6.11
 
 Release date: 6 March 2014
