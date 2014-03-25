@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.rest.dto.PlacemarkDto;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
-import org.waterforpeople.mapping.domain.AccessPoint.AccessPointType;
 
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
@@ -67,7 +65,7 @@ public class PlacemarkRestService {
 			@RequestParam(value = "gcLevel", defaultValue = "") Integer gcLevel) {
 		// assume we are on the public map
 		Boolean allPlacemarks = false;
-		log.info("received request for: "+ boundingBoxString + ", " + gcLevel);
+		log.log(Level.FINE, "received request for: "+ boundingBoxString + ", " + gcLevel);
 
 		List<String> geocells = Arrays.asList(boundingBoxString.split(","));
 
@@ -91,7 +89,7 @@ public class PlacemarkRestService {
 	private Map<String, Object> getPlacemarksReponse(List<String> geocells, Integer gcLevel, Boolean allPlacemarks) {
 		final Map<String, Object> response = new HashMap<String, Object>();
 		final List<PlacemarkDto> result = new ArrayList<PlacemarkDto>();
-		List<SurveyedLocaleCluster> slcList;
+		final List<SurveyedLocaleCluster> slcList;
 		if (gcLevel > 0){
 			// get clusters on the basis of the geocells list received from the dashboard, 
 			// and the required level of clustering. The geocells list form the viewport,
@@ -108,7 +106,7 @@ public class PlacemarkRestService {
 				}
 			}
 		} else {
-			List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+			final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
 			// get surveyedLocales
 			if (allPlacemarks) {
 				slList.addAll(localeDao.listLocalesByGeocell(geocells, LIMIT_PLACEMARK_POINTS));
