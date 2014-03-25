@@ -475,7 +475,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				}
 			}
 			// adjust Geocell cluster data
-			if (locale.getGeocells() != null){
+			if (locale.getGeocells() != null && !locale.getGeocells().isEmpty()){
 				
 				Map<String, Long> cellMap;
 				for (int i = 1 ; i <= 4 ; i++){
