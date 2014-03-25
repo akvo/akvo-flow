@@ -21,51 +21,52 @@ FLOW.NavMapsView = FLOW.View.extend({
     Once the view is in the DOM create the map
   */
   didInsertElement: function () {
-	var map, self, geoModel;
+    var map, self, geoModel;
 
-	// insert the map
-	map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
-    .setView([-0.703107, 36.765], 2);
+    // insert the map
+    map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
+      .setView([-0.703107, 36.765], 2);
 
-	L.control.layers({
-		 'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(map),
-		'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
-	    'Satellite': L.mapbox.tileLayer('akvo.he30neh4'),
-	}).addTo(map);
+    L.control.layers({
+      'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(map),
+      'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
+      'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
+    }).addTo(map);
 
-	// couple listener to end of zoom or drag
-	map.on('moveend', function(e) {
-	  redoMap();
-	});
-	FLOW.placemarkController.set('map', map);
-	geoModel = create_geomodel();
+    // couple listener to end of zoom or drag
+    map.on('moveend', function (e) {
+      redoMap();
+    });
 
-	//load points for the visible map
-	redoMap();
+    FLOW.placemarkController.set('map', map);
+    geoModel = create_geomodel();
 
-	function redoMap () {
-		var n, e, s, w, mapBounds;
-		mapBounds = map.getBounds();
-	  // get current bounding box of the visible map
-	  n = mapBounds.getNorthEast().lat;
-	  e = mapBounds.getNorthEast().lng;
-	  s = mapBounds.getSouthWest().lat;
-	  w = mapBounds.getSouthWest().lng;
+    //load points for the visible map
+    redoMap();
 
-	  // bound east and west
-	  e = (e + 3*180.0) % (2*180.0) - 180.0;
-	  w = (w + 3*180.0) % (2*180.0) - 180.0;
+    function redoMap() {
+      var n, e, s, w, mapBounds;
+      mapBounds = map.getBounds();
+      // get current bounding box of the visible map
+      n = mapBounds.getNorthEast().lat;
+      e = mapBounds.getNorthEast().lng;
+      s = mapBounds.getSouthWest().lat;
+      w = mapBounds.getSouthWest().lng;
 
-	  // create bounding box object
-	  var bb = geoModel.create_bounding_box(n,e,s,w);
+      // bound east and west
+      e = (e + 3 * 180.0) % (2 * 180.0) - 180.0;
+      w = (w + 3 * 180.0) % (2 * 180.0) - 180.0;
 
-	  // create the best set of geocell box cells which covers
-	  // the current viewport
-	  var bestBB = geoModel.best_bbox_search_cells(bb);
+      // create bounding box object
+      var bb = geoModel.create_bounding_box(n, e, s, w);
 
-	  // adapt the points shown on the map
-	  FLOW.placemarkController.adaptMap(bestBB,map.getZoom());
-	}
+      // create the best set of geocell box cells which covers
+      // the current viewport
+      var bestBB = geoModel.best_bbox_search_cells(bb);
+
+      // adapt the points shown on the map
+      FLOW.placemarkController.adaptMap(bestBB, map.getZoom());
+    }
 
     self = this;
     this.$('#mapDetailsHideShow').click(function () {
