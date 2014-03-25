@@ -29,26 +29,9 @@ FLOW.ApplicationView = Ember.View.extend({
   templateName: 'application/application',
 
   init: function () {
-    var locale;
-
+    var locale = localStorage.locale || 'en';
     this._super();
-
-    // If available set language from local storage
-    locale = localStorage.locale;
-    if (typeof locale === 'undefined') {
-      locale = 'en';
-    }
-    switch (locale) {
-    case 'fr':
-      Ember.STRINGS = Ember.STRINGS_FR;
-      break;
-    case 'es':
-      Ember.STRINGS = Ember.STRINGS_ES;
-      break;
-    default:
-      Ember.STRINGS = Ember.STRINGS_EN;
-      break;
-    }
+    Ember.STRINGS = Ember['STRINGS_' + locale.toUpperCase()];
   }
 });
 

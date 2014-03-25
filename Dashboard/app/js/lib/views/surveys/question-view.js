@@ -345,7 +345,7 @@ FLOW.QuestionView = FLOW.View.extend({
       });
 
       // delete unused questionOptions
-      for (ii = 0; ii < optionsToDelete.length; ii++) {
+      for (var ii = 0; ii < optionsToDelete.length; ii++) {
         opToDel = FLOW.store.find(FLOW.QuestionOption, optionsToDelete[ii]);
         opToDel.deleteRecord();
       }
@@ -599,7 +599,7 @@ FLOW.QuestionView = FLOW.View.extend({
       "order": insertAfterOrder + 1,
       "type": "FREE_TEXT",
       "path": path,
-      "text": "new question - please change name",
+      "text": Ember.String.loc('_new_question_please_change_name'),
       "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId'),
       "questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
     });

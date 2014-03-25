@@ -31,10 +31,10 @@ FLOW.questionTypeControl = Ember.Object.create({
 FLOW.notificationOptionControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "link",
+      label: Ember.String.loc('_link'),
       value: "LINK"
     }), Ember.Object.create({
-      label: "attachment",
+      label: Ember.String.loc('_attachment'),
       value: "ATTACHMENT"
     })
   ]
@@ -43,7 +43,7 @@ FLOW.notificationOptionControl = Ember.Object.create({
 FLOW.notificationTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "email",
+      label: Ember.String.loc('_email'),
       value: "EMAIL"
     })
   ]
@@ -52,13 +52,13 @@ FLOW.notificationTypeControl = Ember.Object.create({
 FLOW.notificationEventControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "Raw data reports (nightly)",
+      label: Ember.String.loc('_raw_data_reports_nightly'),
       value: "rawDataReport"
     }), Ember.Object.create({
-      label: "Survey submission",
+      label: Ember.String.loc('_survey_submission'),
       value: "surveySubmission"
     }), Ember.Object.create({
-      label: "Survey approval",
+      label: Ember.String.loc('_survey_approval'),
       value: "surveyApproval"
     })
   ]
@@ -82,45 +82,17 @@ FLOW.languageControl = Ember.Object.create({
 FLOW.surveyPointTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
-      label: "Point",
+      label: Ember.String.loc('_point'),
       value: "Point"
     }), Ember.Object.create({
-      label: "Household",
+      label: Ember.String.loc('_household'),
       value: "Household"
     }), Ember.Object.create({
-      label: "Public institution",
+      label: Ember.String.loc('_public_institution'),
       value: "PublicInstitution"
     })
   ]
 });
-
-FLOW.surveySectorTypeControl = Ember.Object.create({
-  content: [
-    Ember.Object.create({
-      label: "Water and Sanitation",
-      value: "WASH"
-    }), Ember.Object.create({
-      label: "Education",
-      value: "EDUC"
-    }), Ember.Object.create({
-      label: "Economic development",
-      value: "ECONDEV"
-    }), Ember.Object.create({
-      label: "Health care",
-      value: "HEALTH"
-    }), Ember.Object.create({
-      label: "IT and Communication",
-      value: "ICT"
-    }), Ember.Object.create({
-      label: "Food security",
-      value: "FOODSEC"
-    }), Ember.Object.create({
-      label: "Other",
-      value: "OTHER"
-    })
-  ]
-});
-
 
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortProperties: ['code'],
@@ -472,8 +444,8 @@ FLOW.translationControl = Ember.ArrayController.create({
     for (var key in FLOW.isoLanguagesDict) {
       tempArray.push(Ember.Object.create({
         value: key,
-        labelShort: FLOW.isoLanguagesDict[key].name,
-        labelLong: FLOW.isoLanguagesDict[key].name + " - " + FLOW.isoLanguagesDict[key].nativeName
+        labelShort: FLOW.isoLanguagesDict[key].nativeName,
+        labelLong: FLOW.isoLanguagesDict[key].nativeName + " - " + FLOW.isoLanguagesDict[key].name
       }));
     }
     this.set('isoLangs', tempArray);

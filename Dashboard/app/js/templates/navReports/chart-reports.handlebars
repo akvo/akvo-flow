@@ -40,15 +40,15 @@
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
 </div>		
     {{#if view.noChoiceBool}}
-      <p class="errorMsg">Please choose a survey group, survey and question using the selectors above.</p>
+      <p class="errorMsg">{{t _please_select_survey_group_survey_and_question}}</p>
     {{/if}}
      {{#if view.noDataBool}}
-      <p class="errorMsg">There is no data available for this question. Please select another one.</p>
+      <p class="errorMsg">{{t _there_is_no_data_available_for_question}}</p>
     {{/if}}
      	<h3 class="chartTitle">{{FLOW.selectedControl.selectedQuestion.text}}</h3>
     {{#unless view.hideChart}}
         <div id="piechart">
-			<p>Choose a Question from above selectors.</p> 	
+			<p>{{t _choose_a_question}}</p>
 		</div>
     {{/unless}}
 {{/view}}

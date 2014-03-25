@@ -169,14 +169,7 @@
 		</dev_appserver>
 	</target>
 
-	<target name="version" description="Extracts the version using git describe and modifies war/admin/js/app.js">
-		<exec dir="../" executable="git" outputproperty="app.version">
-			<arg value="describe"/>
-		</exec>
-		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
-	</target>
-
-	<target name="update" depends="datanucleusenhance,version" description="Uploads the application to App Engine.">
+	<target name="update" depends="compile,datanucleusenhance" description="Uploads the application to App Engine.">
 		<fail message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt">
 			<condition>
 				<not>
@@ -191,10 +184,24 @@
 
 		<delete file="war/PlacemarksNewLook.vm" failonerror="false" />
 
+		<echo message="Rebuilding Dashboard..." />
+
+		<exec dir="../Dashboard" executable="rake" failonerror="true">
+		    <env key="RAKEP_MODE" value="production" />
+		    <arg value="build" />
+		</exec>
+
+		<exec dir="../" executable="git" outputproperty="app.version">
+			<arg value="describe"/>
+		</exec>
+
+		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
+
 		<exec dir="." executable="sh">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} --passin &lt; ${pwd} update war" />
 		</exec>
+
 		<exec dir="." executable="sh">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh backends war update" />
