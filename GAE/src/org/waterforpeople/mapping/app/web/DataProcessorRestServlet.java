@@ -425,7 +425,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * TODO: do this in batches.
 	 * @param offset
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void recomputeLocaleClusters(String cursor) {
 		log.log(Level.INFO, "recomputing locale clusters [cursor: " + cursor + "]");
 
@@ -469,7 +469,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				} else {
 					Survey s = sDao.getByKey(surveyId);
 					if (s != null){
-						showOnPublicMap = showOnPublicMap || s.getPointType().equals("Point") || s.getPointType().equals("PublicInstitution");
+						showOnPublicMap = (showOnPublicMap != null && showOnPublicMap) || "Point".equals(s.getPointType()) || "PublicInstitution".equals(s.getPointType());
 						cache.put(pubKey, showOnPublicMap);
 					}
 				}
