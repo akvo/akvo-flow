@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -25,8 +25,6 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 
 /**
  * Data access object for manipulating SurveyedLocalesClusters
- * 
- * @author  Mark Westra
  * 
  */
 public class SurveyedLocaleClusterDao extends BaseDAO<SurveyedLocaleCluster> {

@@ -38,8 +38,7 @@ FLOW.placemarkController = Ember.ArrayController.create({
   }.observes('this.content.isLoaded'),
 
   adaptMap: function(bestBB, zoomlevel){
-    console.log('--------------------------- adapting the map --------------------');
-    var bbString = "", gcLevel, listToRetrieve = [], isFirst;
+    var bbString = "", gcLevel, listToRetrieve = [];
 
     // determine the geocell cluster level we want to show
     if (zoomlevel < 5){
@@ -54,12 +53,10 @@ FLOW.placemarkController = Ember.ArrayController.create({
       gcLevel = 0;
     }
     this.set('currentGcLevel',gcLevel);
-    console.log('current gclevel:',gcLevel, ', zoomlevel:', zoomlevel);
-
     // on zoomlevel 2, the map repeats itself, leading to wrong results
     // therefore, we force to download the highest level on all the world.
     if (zoomlevel == 2) {
-    	bestBB = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
+    	bestBB = "0123456789abcdef".split("");
     }
 
     // see if we already have it in the cache
@@ -77,25 +74,15 @@ FLOW.placemarkController = Ember.ArrayController.create({
     }
 
     // pack best bounding box values in a string for sending to the server
-    isFirst = true;
-    listToRetrieve.forEach(function(item){
-      if (isFirst) {
-    	bbString += item;
-    	isFirst = false;
-      } else {
-    	bbString += "," + item;
-      }
-    });
+    bbString = listToRetrieve.join(',');
 
     // go get it in the datastore
     // when the points come in, populateMap will trigger and place the points
     if (!Ember.empty(bbString)){
-      console.log('--------- database query on ', bbString, ", zoomlevel:", gcLevel);
       this.set('content',FLOW.store.findQuery(FLOW.Placemark,
         {bbString: bbString, gcLevel: gcLevel}));
     } else {
     	// we might have stuff in cache, so draw anyway
-    	console.log('nothing to fetch, all comes from cache');
     	this.populateMap();
     }
   },

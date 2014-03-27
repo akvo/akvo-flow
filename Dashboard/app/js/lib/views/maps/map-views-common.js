@@ -3,7 +3,8 @@ FLOW.NavMapsView = FLOW.View.extend({
   showDetailsBool: false,
   detailsPaneElements: null,
   detailsPaneVisible: null,
-
+  map: null,
+  geomodel: null,
 
   init: function () {
     this._super();
@@ -16,37 +17,9 @@ FLOW.NavMapsView = FLOW.View.extend({
     this.detailsPaneVisible = false;
   },
 
-
-  /**
-    Once the view is in the DOM create the map
-  */
-  didInsertElement: function () {
-    var map, self, geoModel;
-
-    // insert the map
-    map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
-      .setView([-0.703107, 36.765], 2);
-
-    L.control.layers({
-      'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(map),
-      'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
-      'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
-    }).addTo(map);
-
-    // couple listener to end of zoom or drag
-    map.on('moveend', function (e) {
-      redoMap();
-    });
-
-    FLOW.placemarkController.set('map', map);
-    geoModel = create_geomodel();
-
-    //load points for the visible map
-    redoMap();
-
-    function redoMap() {
+  redoMap: function() {
       var n, e, s, w, mapBounds;
-      mapBounds = map.getBounds();
+      mapBounds = this.map.getBounds();
       // get current bounding box of the visible map
       n = mapBounds.getNorthEast().lat;
       e = mapBounds.getNorthEast().lng;
@@ -58,17 +31,42 @@ FLOW.NavMapsView = FLOW.View.extend({
       w = (w + 3 * 180.0) % (2 * 180.0) - 180.0;
 
       // create bounding box object
-      var bb = geoModel.create_bounding_box(n, e, s, w);
+      var bb = this.geoModel.create_bounding_box(n, e, s, w);
 
       // create the best set of geocell box cells which covers
       // the current viewport
-      var bestBB = geoModel.best_bbox_search_cells(bb);
+      var bestBB = this.geoModel.best_bbox_search_cells(bb);
 
       // adapt the points shown on the map
-      FLOW.placemarkController.adaptMap(bestBB, map.getZoom());
-    }
+      FLOW.placemarkController.adaptMap(bestBB, this.map.getZoom());
+    },
 
-    self = this;
+  /**
+    Once the view is in the DOM create the map
+  */
+  didInsertElement: function () {
+	var self = this;
+    // insert the map
+    this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
+      .setView([-0.703107, 36.765], 2);
+
+    L.control.layers({
+      'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
+      'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
+      'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
+    }).addTo(this.map);
+
+    // couple listener to end of zoom or drag
+    this.map.on('moveend', function (e) {
+      self.redoMap();
+    });
+
+    FLOW.placemarkController.set('map', this.map);
+    this.geoModel = create_geomodel();
+
+    //load points for the visible map
+    this.redoMap();
+
     this.$('#mapDetailsHideShow').click(function () {
       self.handleShowHideDetails();
     });

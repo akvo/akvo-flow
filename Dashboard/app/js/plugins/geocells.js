@@ -142,12 +142,19 @@ function create_geomodel() {
 
   return {
     create_point: function(lat, lon) {
-      if (lat > 90.0 || lat < -90.0) {
-        throw new Error("Latitude must be in [-90, 90] but was " + lat);
-      }
-      if (lon > 180.0 || lon < -180.0) {
-        throw new Error("Longitude must be in [-180, 180] but was " + lon);
-      }
+     // limit point range
+     if (lat > 90) {
+    	 lat = 90;
+     } else if (lat < -90){
+    	 lat = -90;
+     }
+    
+     if (lon > 180) {
+    	 lon = 180;
+     } else if (lon < -180){
+    	 lon = -180;
+     }
+ 
       return { lat: lat, lon:lon };
     },
 
