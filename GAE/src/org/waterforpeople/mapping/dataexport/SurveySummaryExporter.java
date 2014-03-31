@@ -136,7 +136,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 			throws Exception {
 		SummaryModel model = new SummaryModel();
 		Map<String, String> instanceMap = BulkDataServiceClient
-				.fetchInstanceIds(surveyId, serverBase, apiKey);
+				.fetchInstanceIds(surveyId, serverBase, apiKey, false);
 		for (String instanceId : instanceMap.keySet()) {
 			Map<String, String> responseMap = BulkDataServiceClient
 					.fetchQuestionResponses(instanceId, serverBase, apiKey);

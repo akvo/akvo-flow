@@ -49,6 +49,7 @@ public class DataBackoutRequest extends RestRequest {
 	public static final String COUNTRY_PARAM = "countryCode";
 	public static final String DATE_PARAM = "date";
 	public static final String INCLUDE_DATE_PARAM = "includeDate";
+	public static final String LAST_COLLECTION_PARAM = "lastCollection";
 
 	private static final ThreadLocal<DateFormat> inFmt = new ThreadLocal<DateFormat>() {
 		@Override
@@ -63,6 +64,7 @@ public class DataBackoutRequest extends RestRequest {
 	private String countryCode;
 	private Date date;
 	private boolean includeDate;
+	private boolean lastCollection = false;
 
 	public Long getSurveyId() {
 		return surveyId;
@@ -108,6 +110,14 @@ public class DataBackoutRequest extends RestRequest {
 		return includeDate;
 	}
 
+	public void setLastCollection(boolean lastCollection) {
+		this.lastCollection = lastCollection;
+	}
+
+	public boolean getLastCollection() {
+		return lastCollection;
+	}
+
 	@Override
 	protected void populateErrors() {
 		// TODO: add error checking
@@ -135,6 +145,9 @@ public class DataBackoutRequest extends RestRequest {
 		} else {
 			includeDate = false;
 		}
+
+		lastCollection = req.getParameter(LAST_COLLECTION_PARAM) != null
+				&& "true".equals(req.getParameter(LAST_COLLECTION_PARAM));
 		countryCode = req.getParameter(COUNTRY_PARAM);
 	}
 

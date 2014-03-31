@@ -294,15 +294,16 @@ public class BulkDataServiceClient {
 	 * @throws Exception
 	 */
 	public static Map<String, String> fetchInstanceIds(String surveyId,
-			String serverBase, String apiKey) throws Exception {
+			String serverBase, String apiKey, boolean lastCollection) throws Exception {
 		Map<String, String> values = new HashMap<String, String>();
 		
-		String instanceString = fetchDataFromServer(serverBase + DATA_SERVLET_PATH,
-						"?action=" + DataBackoutRequest.LIST_INSTANCE_ACTION
-								+ "&" + DataBackoutRequest.SURVEY_ID_PARAM
-								+ "=" + surveyId + "&"
-								+ DataBackoutRequest.INCLUDE_DATE_PARAM
-								+ "=true", true, apiKey);
+		String instanceString = fetchDataFromServer(serverBase
+				+ DATA_SERVLET_PATH, "?action="
+				+ DataBackoutRequest.LIST_INSTANCE_ACTION + "&"
+				+ DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId + "&"
+				+ DataBackoutRequest.INCLUDE_DATE_PARAM + "=true" + "&"
+				+ DataBackoutRequest.LAST_COLLECTION_PARAM + "="
+				+ lastCollection, true, apiKey);
 		
 		if (instanceString != null && instanceString.trim().length() != 0) {
 			StringTokenizer strTok = new StringTokenizer(instanceString, ",");
@@ -324,7 +325,7 @@ public class BulkDataServiceClient {
 	public static void main(String[] args) {
 		try {
 			Map<String, String> results = BulkDataServiceClient
-					.fetchInstanceIds(args[1], args[0], args[2]);
+					.fetchInstanceIds(args[1], args[0], args[2], false);
 			if (results != null) {
 				for (Entry<String, String> entry : results.entrySet()) {
 					System.out

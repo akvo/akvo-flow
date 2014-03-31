@@ -17,7 +17,6 @@
 package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +55,11 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
@@ -514,21 +517,34 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		// The Query interface assembles a query
 		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
 				"SurveyInstance");
+		List<Filter> filters = new ArrayList<Filter>();
 		if (returnKeysOnly) {
 			q.setKeysOnly();
 		}
 
-		if (surveyId != null)
-			q.addFilter("surveyId", FilterOperator.EQUAL, surveyId);
-		if (beginDate != null)
-			q.addFilter("collectionDate", FilterOperator.GREATER_THAN_OR_EQUAL,
-					beginDate);
-		if (endDate != null)
-			q.addFilter("collectionDate", FilterOperator.LESS_THAN_OR_EQUAL,
-					endDate);
+		if (surveyId != null) {
+			filters.add(new FilterPredicate("surveyId", FilterOperator.EQUAL,
+					surveyId));
+		}
+		if (beginDate != null) {
+			filters.add(new FilterPredicate("collectionDate",
+					FilterOperator.GREATER_THAN_OR_EQUAL, beginDate));
+		}
+		if (endDate != null) {
+			filters.add(new FilterPredicate("collectionDate",
+					FilterOperator.LESS_THAN_OR_EQUAL, endDate));
+		}
+
+		if (filters.size() == 1) {
+			q.setFilter(filters.get(0));
+		}
+
+		if (filters.size() > 1) {
+			q.setFilter(CompositeFilterOperator.and(filters));
+		}
+		q.addSort("createdDateTime", SortDirection.DESCENDING);
 		PreparedQuery pq = datastore.prepare(q);
 		return pq.asIterable();
-
 	}
 
 	/**
@@ -747,8 +763,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				.getDatastoreService();
 		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
 				"SurveyInstance");
-		q.setKeysOnly();
-		q.addFilter("surveyId", FilterOperator.EQUAL, surveyId);
+		q.setKeysOnly().setFilter(new FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId));
 		PreparedQuery pq = datastore.prepare(q);
 		return pq.asIterable();
 	}
@@ -826,6 +841,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/** lists questionAnswerStore objects of particular types passed in
 	 */
+	@SuppressWarnings("unchecked")
 	public List<QuestionAnswerStore> listQAOptions(String cursorString, Integer pageSize, String... options){
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(QuestionAnswerStore.class);
