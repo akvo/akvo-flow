@@ -459,6 +459,10 @@
         <property name="surveyId" direction="asc"/>
         <property name="createdDateTime" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="SurveyInstance" ancestor="false" source="manual">
+        <property name="surveyId" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
+    </datastore-index>
     <datastore-index kind="SurveyInstance" ancestor="false"
 		source="auto">
 		<property name="surveyedLocaleId" direction="asc" />
