@@ -61,8 +61,8 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 	 * always send this values to enable APK backwards compatibility
 	 */
 	private final static String IS_IN_MONITORING_GROUP = "false";
-	private final static String NEW_LOCALE_SURVEYID    = "null";
-	private final static String UNKNOWN                = "unknown";
+	private final static String NEW_LOCALE_SURVEYID = "null";
+	private final static String UNKNOWN = "unknown";
 
 	private DeviceDAO deviceDao;
 
