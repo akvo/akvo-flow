@@ -46,13 +46,23 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 
 public class SurveyManagerServlet extends AbstractRestApiServlet {
 	private static final Logger log = Logger
 			.getLogger(SurveyManagerServlet.class.getName());
 	private static final long serialVersionUID = 4400244780977729721L;
+
+	/**
+	 * As this backend does *NOT* contain monitoring features capabilities, we
+	 * always send this values to enable APK backwards compatibility
+	 */
+	private final static String IS_IN_MONITORING_GROUP = "false";
+	private final static String NEW_LOCALE_SURVEYID = "null";
+	private final static String UNKNOWN = "unknown";
 
 	private DeviceDAO deviceDao;
 
@@ -67,13 +77,17 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 	private String getSurveyForPhone(String devicePhoneNumber, String imei) {
 		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
 		SurveyDAO surveyDao = new SurveyDAO();
+		SurveyGroupDAO sgDao = new SurveyGroupDAO();
 		Map<Long, Double> versionMap = new HashMap<Long, Double>();
 		StringBuilder sb = new StringBuilder();
 		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
+			String surveyGroupId = "";
+			String surveyGroupName = UNKNOWN;
 			Double ver = versionMap.get(dsjq.getSurveyID());
 			if (ver == null) {
 				Survey s = surveyDao.getById(dsjq.getSurveyID());
-				if (s != null) {
+				SurveyGroup sg = sgDao.getByKey(s.getSurveyGroupId());
+				if (s != null && sg != null) {
 					if (s.getVersion() != null) {
 						versionMap.put(dsjq.getSurveyID(), s.getVersion());
 						ver = s.getVersion();
@@ -82,6 +96,8 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 						ver = new Double(1.0);
 					}
 
+					surveyGroupId = String.valueOf(s.getSurveyGroupId());
+					surveyGroupName = sg.getCode();
 				} else {
 					// for testing so I can mock a version for local survey
 					Random rand = new Random();
@@ -89,7 +105,9 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				}
 			}
 			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
-					+ dsjq.getName() + "," + dsjq.getLanguage() + "," + ver
+					+ dsjq.getName() + "," + dsjq.getLanguage() + "," + ver + ","
+					+ surveyGroupId + "," + surveyGroupName + "," 
+					+ IS_IN_MONITORING_GROUP + "," + NEW_LOCALE_SURVEYID
 					+ "\n");
 		}
 		return sb.toString();
@@ -169,8 +187,14 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				.equalsIgnoreCase(req.getAction())) {
 			if (mgrReq.getSurveyId() != null) {
 				SurveyDAO surveyDao = new SurveyDAO();
+				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				Survey survey = surveyDao.getById(mgrReq.getSurveyId());
+				String surveyGroupName = UNKNOWN;
 				if (survey != null) {
+					SurveyGroup sg = sgDao.getByKey(survey.getSurveyGroupId());
+					if (sg != null && sg.getCode() != null) {
+						surveyGroupName = sg.getCode();
+					}
 					StringBuilder sb = new StringBuilder();
 					sb.append(survey.getKey().getId() + ",")
 							.append(survey.getName() != null ? survey.getName()
@@ -180,7 +204,15 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 									.getDefaultLanguageCode() : "en")
 							.append(",")
 							.append(survey.getVersion() != null ? survey
-									.getVersion() : "1");
+									.getVersion() : "1")
+							.append(",")
+							.append(survey.getSurveyGroupId().toString())
+							.append(",")
+							.append(surveyGroupName)
+							.append(",")
+							.append(IS_IN_MONITORING_GROUP)
+							.append(",")
+							.append(NEW_LOCALE_SURVEYID);
 					resp.setMessage(sb.toString());
 				}
 			}
