@@ -29,19 +29,16 @@
 <div class="rawDataReport block">
   <h3>{{t _export_raw_data_report}}</h3>
     <p>{{t _raw_data_report_applet_text_}}</p>
-  <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
+    {{#if view.showLastCollection}}
+    <p><label for="lastCollection">{{t _export_only_last_collection}}:</label> {{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}</p>
+    {{/if}}
+    <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
 </div>
-  {{#if view.showRawDataReportApplet }}
-    {{view FLOW.rawDataReportApplet }}
-  {{/if}}
 <div class="comprehensiveReport block">
   <h3>{{t _export_comprehensive_report}}</h3>
    <p>{{t _comprehensive_report_applet_text}}.</p>
   <a {{action showComprehensiveOptions target="this"}} class="standardBtn"> {{t _comprehensive_report}} </a>
 </div>
-  {{#if view.showComprehensiveReportApplet }}
-    {{view FLOW.comprehensiveReportApplet}}
-  {{/if}}
 
 {{#if view.showGoogleEarthButton }}
 <div class="googleEarthExport block">
@@ -51,9 +48,6 @@
 
   <a {{action showGoogleEarthFile target="this"}} class="standardBtn"> {{t _google_earth_file}} </a>  
 </div>
-  {{#if view.showGoogleEarthFileApplet }}
-    {{view FLOW.googleEarthFileApplet}}
-  {{/if}}
 {{/if}}
 
 <div class="rawTextFile block">
