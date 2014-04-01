@@ -106,7 +106,7 @@ public class SurveyAssignmentRestService {
 			deviceSurveysDao.delete(deviceSurveys);
 			statusDto.setStatus("ok");
 		}
-		
+
 		response.put("meta", statusDto);
 		return response;
 	}
