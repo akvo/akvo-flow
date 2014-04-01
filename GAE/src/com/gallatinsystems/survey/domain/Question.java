@@ -337,6 +337,10 @@ public class Question extends BaseDomain {
 		return localeNameFlag;
 	}
 
+	public void setLocaleNameFlag(Boolean localeNameFlag) {
+		this.localeNameFlag = localeNameFlag;
+	}
+
 	public void setGeoLocked(Boolean geoLocked) {
 		this.geoLocked = geoLocked;
 	}
