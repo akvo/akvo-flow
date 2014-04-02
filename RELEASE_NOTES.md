@@ -6,6 +6,15 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 Akvo FLOW Dashboard release notes
 ----
 
+# 1.6.13
+
+## Enhancements
+* Prepare the Dashboard for responding to _Monitoring_ related requests [#487]
+
+## Resolved issues
+* Fixed: Deleting an assingment didn't cleaned all related data [#490]
+
+
 # 1.6.12
 
 ## Enhancements
