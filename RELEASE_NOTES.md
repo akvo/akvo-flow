@@ -12,7 +12,7 @@ Akvo FLOW Dashboard release notes
 * Prepare the Dashboard for responding to _Monitoring_ related requests [#487]
 
 ## Resolved issues
-* Fixed: Deleting an assingment didn't cleaned all related data [#490]
+* Fixed: Deleting an assingment didn't clean all related data [#490]
 
 
 # 1.6.12
