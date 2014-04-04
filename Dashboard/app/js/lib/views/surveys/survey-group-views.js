@@ -77,7 +77,6 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   showCopySurveyDialogBool: false,
   newSurveyName: null,
   isMonitoringGroupFlag:false,
-  newLocaleSurveyId: null,
 
   // true if at least one survey group is active
   oneSelected: function () {
@@ -166,11 +165,12 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   },
 
   saveNewLocaleSurveyIdChoice: function () {
-	  if (!Ember.none(this.get('newLocaleSurveyId')) && !Ember.none(this.newLocaleSurveyId.get('keyId'))){
-		  FLOW.selectedControl.selectedSurveyGroup.set('newLocaleSurveyId', this.newLocaleSurveyId.get('keyId'));
+	  var newLocaleSurvey = FLOW.surveyControl.get('newLocaleSurvey');
+	  if (!Ember.none(newLocaleSurvey) && !Ember.none(newLocaleSurvey.get('keyId'))){
+		  FLOW.selectedControl.selectedSurveyGroup.set('newLocaleSurveyId', newLocaleSurvey.get('keyId'));
 		  FLOW.store.commit();
 	  }
-  }.observes('newLocaleSurveyId'),
+  }.observes('FLOW.surveyControl.newLocaleSurvey'),
 
   showCopySurveyDialog: function (event) {
     FLOW.selectedControl.set('selectedForCopySurvey', event.context);

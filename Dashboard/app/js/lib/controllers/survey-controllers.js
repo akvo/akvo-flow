@@ -127,16 +127,9 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortAscending: true,
   content: null,
 
-  setFilteredContent: function () {
-    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function (item) {
-      return true;
-    }));
-  },
-
   // load all Survey Groups
   populate: function () {
-    FLOW.store.find(FLOW.SurveyGroup);
-    this.setFilteredContent();
+    this.set('content', FLOW.store.find(FLOW.SurveyGroup));
   },
 
   // checks if data store contains surveys within this survey group.
@@ -168,18 +161,6 @@ FLOW.surveyControl = Ember.ArrayController.create({
   sortProperties: ['name'],
   sortAscending: true,
 
-  setFilteredContent: function () {
-    var sgId;
-    if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
-      sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-      this.set('content', FLOW.store.filter(FLOW.Survey, function (item) {
-        return item.get('surveyGroupId') == sgId;
-      }));
-    } else {
-      this.set('content', null);
-    }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
-
   setPublishedContent: function () {
     var sgId;
     if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
@@ -202,11 +183,24 @@ FLOW.surveyControl = Ember.ArrayController.create({
       id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       // this content is actualy not used, the data ends up in the store
       // and is accessed through the filtered content above
-      FLOW.store.findQuery(FLOW.Survey, {
+      this.set('content', FLOW.store.findQuery(FLOW.Survey, {
         surveyGroupId: id
-      });
+      }));
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  refresh: function () {
+	  var sg = FLOW.selectedControl.get('selectedSurveyGroup');
+	  this.set('content', FLOW.store.filter(FLOW.Survey, function (item) {
+		  return item.get('surveyGroupId') === sg.get('keyId');
+	  }));
+  },
+
+  newLocale: function () {
+	  var newLocaleId = FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+	  if(!this.get('content').get('isLoaded')) { return; }
+	  this.set('newLocaleSurvey', this.find(function (item) { return item.get('keyId') === newLocaleId; }));
+  }.observes('content.isLoaded'),
 
   publishSurvey: function () {
     var surveyId;
@@ -222,6 +216,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     survey = FLOW.store.find(FLOW.Survey, keyId);
     survey.deleteRecord();
     FLOW.store.commit();
+    this.refresh();
   }
 });
 
