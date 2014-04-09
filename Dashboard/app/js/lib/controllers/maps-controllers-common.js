@@ -95,11 +95,12 @@ FLOW.placemarkController = Ember.ArrayController.create({
     	if (count == 1) {
     		marker = L.circleMarker([placemark.get('latitude'),placemark.get('longitude')],{
     			radius:7,
-    			color:'#222070',
-    			fillcolor:'#433ec9',
-    			opacity:0.7,
-    			fillOpacity:0.5,
-    			placemarkId: placemark.get('keyId')});
+    			color:'#d46f12',
+    			fillColor:'#edb660',
+    			opacity:0.9,
+    			fillOpacity:0.7,
+    			placemarkId: placemark.get('keyId'),
+    			collectionDate:placemark.get('collectionDate')});
     		marker.on('click', onMarkerClick);
     		return marker;
     	}
@@ -117,9 +118,10 @@ FLOW.placemarkController = Ember.ArrayController.create({
     	// if we are here, we are at level 0, and we have normal placemark icons.
     	marker = L.circleMarker([placemark.get('latitude'),placemark.get('longitude')],{
     		radius:7,
-    		color:'#222070',
-    		fillcolor:'#433ec9',
-    		placemarkId: placemark.get('keyId')});
+    		color:'#d46f12',
+    		fillColor:'#edb660',
+    		placemarkId: placemark.get('keyId'),
+    		collectionDate:placemark.get('collectionDate')});
 		marker.on('click', onMarkerClick);
     	return marker;
     }
@@ -129,21 +131,21 @@ FLOW.placemarkController = Ember.ArrayController.create({
     	if (!Ember.none(FLOW.placemarkController.get('selectedMarker'))){
     		if (FLOW.placemarkController.selectedMarker.target.options.placemarkId != marker.target.options.placemarkId){
     			FLOW.placemarkController.selectedMarker.target.options.selected = false;
-    			FLOW.placemarkController.selectedMarker.target.setStyle({color:'#222070', 
-    	    		fillcolor:'#433ec9'});
+    			FLOW.placemarkController.selectedMarker.target.setStyle({color:'#d46f12', 
+    	    		fillColor:'#edb660'});
     			FLOW.placemarkController.set('selectedMarker',null);
     		}
     	}
 
     	// now toggle this one
     	if (marker.target.options.selected) {
-    		marker.target.setStyle({color:'#222070',
-    	    		fillcolor:'#433ec9'});
+    		marker.target.setStyle({color:'#d46f12',
+    	    		fillColor:'#edb660'});
     		marker.target.options.selected = false;
     		FLOW.placemarkController.set('selectedMarker',null);
     	} else {
     		marker.target.setStyle({color:'#d46f12',
-	    		fillcolor:'#edb660'});
+	    		fillColor:'#433ec9'});
     		marker.target.options.selected = true;
     		FLOW.placemarkController.set('selectedMarker',marker);
     	}
