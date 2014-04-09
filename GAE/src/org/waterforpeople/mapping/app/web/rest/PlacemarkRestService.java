@@ -156,8 +156,10 @@ public class PlacemarkRestService {
 		dto.setCount(slc.getCount());
 		dto.setLevel(slc.getLevel());
 		dto.setSurveyId(slc.getSurveyId());
-		dto.setKeyId(slc.getKey().getId());
+		if (slc.getCount() == 1){
+			dto.setKeyId(slc.getFirstSurveyedLocaleId());
 			dto.setCollectionDate(slc.getFirstCollectionDate());
+		} else dto.setKeyId(slc.getKey().getId());
 		return dto;
 	}
 }
