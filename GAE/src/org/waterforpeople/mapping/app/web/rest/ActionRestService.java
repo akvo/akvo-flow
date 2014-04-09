@@ -15,6 +15,7 @@
  */
 package org.waterforpeople.mapping.app.web.rest;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,10 +133,12 @@ public class ActionRestService {
 			for (int j = 0; j < 10000; j++){
 				SurveyInstance newSI = new SurveyInstance();
 				newSI.setSurveyId(1L);
+				newSI.setCollectionDate(new Date());
 				newSI = sDao.save(newSI);
 				QuestionAnswerStore newQAS = new QuestionAnswerStore();
 				newQAS.setSurveyInstanceId(newSI.getKey().getId());
 				newQAS.setType("GEO");
+				newQAS.setCollectionDate(new Date());
 				lat = latc + generator.nextDouble() * 10 - 5;
 				lon = lonc + generator.nextDouble() * 10 - 5;
 				String geoloc = lat + "|" + lon + "|" + 0 + "|" + "aaaaaa";

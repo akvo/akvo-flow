@@ -144,7 +144,7 @@ public class PlacemarkRestService {
 		dto.setCount(1);
 		dto.setLevel(0);
 		dto.setSurveyId(sl.getCreationSurveyId());
-		dto.setCollectionDate(sl.getLastUpdateDateTime());
+		dto.setCollectionDate(sl.getLastSurveyedDate());
 		dto.setKeyId(sl.getKey().getId());
 		return dto;
 	}
@@ -157,6 +157,7 @@ public class PlacemarkRestService {
 		dto.setLevel(slc.getLevel());
 		dto.setSurveyId(slc.getSurveyId());
 		dto.setKeyId(slc.getKey().getId());
+			dto.setCollectionDate(slc.getFirstCollectionDate());
 		return dto;
 	}
 }

@@ -203,6 +203,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: Ember.A(),
   sortProperties: ['questionText'],
   sortAscending: true,
+  collectionDate: null,
 
   populate: function (placemarkId) {
 	  if (placemarkId) {
@@ -218,7 +219,8 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
     var selectedPlacemarkId = null;
     if (!Ember.none(FLOW.placemarkController.get('selectedMarker'))) {
     	selectedPlacemarkId = FLOW.placemarkController.selectedMarker.target.options.placemarkId;
-    	}
+    	this.set('collectionDate',FLOW.placemarkController.selectedMarker.target.options.collectionDate);
+    }
     this.populate(selectedPlacemarkId);
   }.observes('FLOW.placemarkController.selectedMarker'),
 

@@ -320,6 +320,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				if (locale == null) {
 					locale = new SurveyedLocale();
 					locale.setLastSurveyalInstanceId(instance.getKey().getId());
+					locale.setLastSurveyedDate(instance.getCollectionDate());
 					locale.setAmbiguous(ambiguousFlag);
 
 					if (survey != null) {
@@ -533,7 +534,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					// create a new one
 					SurveyedLocaleCluster slcNew = new SurveyedLocaleCluster(locale.getLatitude(),
 							locale.getLongitude(), locale.getGeocells().subList(0,i),
-							locale.getGeocells().get(i), i + 1, locale.getKey().getId(), surveyId, showOnPublicMap);
+							locale.getGeocells().get(i), i + 1, locale.getKey().getId(), surveyId, showOnPublicMap,locale.getLastSurveyedDate());
 					slcDao.save(slcNew);
 					addToCache(cache, cell, slcNew.getKey().getId(),1);
 					log.log(Level.INFO,"------------ made a new one");

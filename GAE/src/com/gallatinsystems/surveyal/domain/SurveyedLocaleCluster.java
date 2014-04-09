@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.surveyal.domain;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.jdo.annotations.PersistenceCapable;
@@ -38,13 +39,14 @@ public class SurveyedLocaleCluster extends BaseDomain {
 	private Integer level;
 	private Integer count;
 	private Long lastSurveyedLocaleId;
+	private Date firstCollectionDate;
 	private Long surveyId;
 	private Double latCenter;
 	private Double lonCenter;
 	private Boolean showOnPublicMap;
 	
 	public SurveyedLocaleCluster(Double lat, Double lon, List<String> geocells, 
-			String cGeocell, Integer level, Long lastSurveyedLocaleId, Long surveyId, Boolean showOnPublicMap){
+			String cGeocell, Integer level, Long firstSurveyedLocaleId, Long surveyId, Boolean showOnPublicMap, Date firstCollectionDate){
 		setClusterGeocell(cGeocell);
 		setGeocells(geocells);
 		setLatCenter(lat);
@@ -52,6 +54,7 @@ public class SurveyedLocaleCluster extends BaseDomain {
 		setLevel(level);
 		setCount(1);
 		setLastSurveyedLocaleId(lastSurveyedLocaleId);
+		setFirstCollectionDate(firstCollectionDate);
 		setShowOnPublicMap(showOnPublicMap);
 		setSurveyId(surveyId);
 	}
@@ -123,5 +126,13 @@ public class SurveyedLocaleCluster extends BaseDomain {
 
 	public void setSurveyId(Long surveyId) {
 		this.surveyId = surveyId;
+	}
+
+	public Date getFirstCollectionDate() {
+		return firstCollectionDate;
+	}
+
+	public void setFirstCollectionDate(Date firstCollectionDate) {
+		this.firstCollectionDate = firstCollectionDate;
 	}
 }
