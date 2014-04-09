@@ -91,7 +91,7 @@ function createDoughnutChart(){
       .attr("text-anchor", "left")
       .style("fill", "rgb(246, 160, 26)")
       .style("font", "bold 1.5em helvetica")
-      .text("Smallest items:") 
+      .text(Ember.String.loc('_smallest_items')) 
       .attr("transform","translate(320,-120)");
 
 
@@ -158,7 +158,7 @@ function createDoughnutChart(){
       .attr("text-anchor", "middle")
       .style("fill", "rgb(58,58,58)")
       .style("font", "bold 1.1em helvetica")
-      .text("answers") //get the label from our original data array
+      .text(Ember.String.loc('_answers')) //get the label from our original data array
       .attr("transform","translate(0,15)");
 
     vis.append("svg:text")
