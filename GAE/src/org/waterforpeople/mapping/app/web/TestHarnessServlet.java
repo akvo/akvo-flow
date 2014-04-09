@@ -175,6 +175,8 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -184,7 +186,7 @@ public class TestHarnessServlet extends HttpServlet {
 			.getName());
 	private static final long serialVersionUID = -5673118002247715049L;
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unused", "rawtypes" })
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
 		if ("setupTestUser".equals(action)) {
@@ -1887,6 +1889,19 @@ public class TestHarnessServlet extends HttpServlet {
 				slcDao.delete(slc);
 			}
 			
+			// initialize the memcache
+			Cache cache = null;
+			Map props = new HashMap();
+			try {
+				CacheFactory cacheFactory = CacheManager.getInstance()
+						.getCacheFactory();
+				cache = cacheFactory.createCache(props);
+				cache.clear();
+			} catch (Exception e) {
+				log.log(Level.SEVERE,
+						"Couldn't initialize cache: " + e.getMessage(), e);
+			}
+
 			final TaskOptions options = TaskOptions.Builder
 					.withUrl("/app_worker/dataprocessor")
 					.param(DataProcessorRequest.ACTION_PARAM,
