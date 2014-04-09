@@ -130,7 +130,7 @@ public class ActionRestService {
 		for (int i = 0 ; i < 1 ; i++){
 			latc = generator.nextDouble() * 120 - 60;
 			lonc = generator.nextDouble() * 360 - 180;
-			for (int j = 0; j < 10000; j++){
+			for (int j = 0; j < 100; j++){
 				SurveyInstance newSI = new SurveyInstance();
 				newSI.setSurveyId(1L);
 				newSI.setCollectionDate(new Date());

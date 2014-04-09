@@ -421,8 +421,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	}
 
 	/**
-	 * This recomputes all Locale clusters. First, all clusters are removed.
-	 * TODO: do this in batches.
+	 * This recomputes all Locale clusters. Clusters are deleted in the testharnessservlet.
+	 * The keys are first removed in the testharnessservlet.
 	 * @param offset
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })

@@ -209,7 +209,7 @@ FLOW.placemarkDetailController = Ember.ArrayController.create({
 
   populate: function (placemarkId) {
 	  if (placemarkId) {
-		  this.set('content', FLOW.store.find(FLOW.PlacemarkDetail, {
+		  this.set('content', FLOW.store.findQuery(FLOW.PlacemarkDetail, {
 			  placemarkId: placemarkId
 		  }));
 	  } else {
