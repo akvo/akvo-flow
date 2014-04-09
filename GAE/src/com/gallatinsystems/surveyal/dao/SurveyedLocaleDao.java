@@ -368,7 +368,9 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
 	public SurveyedLocale getById(Long id) {
 		final SurveyedLocale sl = getByKey(id);
-		sl.setSurveyalValues(getSurveyalValues(id));
+		if (sl != null){
+			sl.setSurveyalValues(getSurveyalValues(id));
+		}
 		return sl;
 	}
 
