@@ -92,17 +92,18 @@ public class SurveyAssignmentRestService {
 		return response;
 	}
 
-	// TODO delete all DevicesjobQueue
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	@ResponseBody
 	public Map<String, RestStatusDto> deleteById(@PathVariable("id") Long id) {
 		final HashMap<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
 		final SurveyAssignment sa = surveyAssignmentDao.getByKey(id);
-		RestStatusDto statusDto = null;
-		statusDto = new RestStatusDto();
+		DeviceSurveyJobQueueDAO deviceSurveysDao = new DeviceSurveyJobQueueDAO();
+		final List<DeviceSurveyJobQueue> deviceSurveys = deviceSurveysDao.listJobByAssignment(id);
+		RestStatusDto statusDto = new RestStatusDto();
 		statusDto.setStatus("failed");
-		if (sa != null) {
+		if (sa != null && deviceSurveys != null) {
 			surveyAssignmentDao.delete(sa);
+			deviceSurveysDao.delete(deviceSurveys);
 			statusDto.setStatus("ok");
 		}
 
