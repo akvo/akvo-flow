@@ -155,7 +155,6 @@ public class PlacemarkRestService {
 		dto.setLongitude(slc.getLonCenter());
 		dto.setCount(slc.getCount());
 		dto.setLevel(slc.getLevel());
-		dto.setSurveyId(slc.getSurveyId());
 		if (slc.getCount() == 1){
 			dto.setKeyId(slc.getFirstSurveyedLocaleId());
 			dto.setCollectionDate(slc.getFirstCollectionDate());
