@@ -46,7 +46,7 @@ public class SurveyedLocaleCluster extends BaseDomain {
 	private Boolean showOnPublicMap;
 	
 	public SurveyedLocaleCluster(Double lat, Double lon, List<String> geocells, 
-			String cGeocell, Integer level, Long firstSurveyedLocaleId, Long surveyId, Boolean showOnPublicMap, Date firstCollectionDate){
+			String cGeocell, Integer level, Long firstSurveyedLocaleId, Boolean showOnPublicMap, Date firstCollectionDate){
 		setClusterGeocell(cGeocell);
 		setGeocells(geocells);
 		setLatCenter(lat);
@@ -56,7 +56,6 @@ public class SurveyedLocaleCluster extends BaseDomain {
 		setFirstSurveyedLocaleId(firstSurveyedLocaleId);
 		setFirstCollectionDate(firstCollectionDate);
 		setShowOnPublicMap(showOnPublicMap);
-		setSurveyId(surveyId);
 	}
 	
 	public Integer getCount() {
@@ -118,14 +117,6 @@ public class SurveyedLocaleCluster extends BaseDomain {
 
 	public void setFirstSurveyedLocaleId(Long firstSurveyedLocaleId) {
 		this.firstSurveyedLocaleId = firstSurveyedLocaleId;
-	}
-
-	public Long getSurveyId() {
-		return surveyId;
-	}
-
-	public void setSurveyId(Long surveyId) {
-		this.surveyId = surveyId;
 	}
 
 	public Date getFirstCollectionDate() {
