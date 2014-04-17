@@ -162,6 +162,7 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -1912,6 +1913,19 @@ public class TestHarnessServlet extends HttpServlet {
 				resp.getWriter().print("Request Processed - Check the logs");
 			} catch (Exception e) {
 				// no-op
+			}
+		} else if (DataProcessorRequest.RECREATE_LOCALES.equals(action)){
+			Queue queue = QueueFactory.getDefaultQueue();
+			SurveyDAO surveyDao = new SurveyDAO();
+			List<Survey> sList = surveyDao.list("all");
+			for (Survey s : sList){
+				log.log(Level.INFO, "Running Remap for survey: " + s.getKey().getId());
+				queue.add(TaskOptions.Builder
+						.withUrl("/app_worker/surveyalservlet")
+						.param(SurveyalRestRequest.ACTION_PARAM,
+								SurveyalRestRequest.RERUN_ACTION)
+						.param(SurveyalRestRequest.SURVEY_ID_PARAM,
+								"" + s.getKey().getId()));
 			}
 		} else if ("addCreationSurveyIdToLocale".equals(action)) {
 			final TaskOptions options = TaskOptions.Builder.withUrl(
