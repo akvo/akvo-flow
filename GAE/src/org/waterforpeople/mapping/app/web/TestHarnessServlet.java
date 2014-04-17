@@ -162,9 +162,11 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
@@ -173,6 +175,8 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -182,7 +186,7 @@ public class TestHarnessServlet extends HttpServlet {
 			.getName());
 	private static final long serialVersionUID = -5673118002247715049L;
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unused", "rawtypes" })
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
 		if ("setupTestUser".equals(action)) {
@@ -1872,6 +1876,50 @@ public class TestHarnessServlet extends HttpServlet {
 							BackendServiceFactory.getBackendService()
 									.getBackendAddress("dataprocessor"));
 			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+			try {
+				resp.getWriter().print("Request Processed - Check the logs");
+			} catch (Exception e) {
+				// no-op
+			}
+		} else if (DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS.equals(action)) {
+			SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
+			// first, delete all clusters
+			for (SurveyedLocaleCluster slc : slcDao.list("all")) {
+				slcDao.delete(slc);
+			}
+			
+			// initialize the memcache
+			Cache cache = null;
+			Map props = new HashMap();
+			try {
+				CacheFactory cacheFactory = CacheManager.getInstance()
+						.getCacheFactory();
+				cache = cacheFactory.createCache(props);
+				cache.clear();
+			} catch (Exception e) {
+				log.log(Level.SEVERE,
+						"Couldn't initialize cache: " + e.getMessage(), e);
+			}
+
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS);
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+			try {
+				resp.getWriter().print("Request Processed - Check the logs");
+			} catch (Exception e) {
+				// no-op
+			}
+		} else if ("addCreationSurveyIdToLocale".equals(action)) {
+			final TaskOptions options = TaskOptions.Builder.withUrl(
+					"/app_worker/dataprocessor")
+							.param(DataProcessorRequest.ACTION_PARAM,
+									DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE);
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
 			queue.add(options);
 			try {
 				resp.getWriter().print("Request Processed - Check the logs");
