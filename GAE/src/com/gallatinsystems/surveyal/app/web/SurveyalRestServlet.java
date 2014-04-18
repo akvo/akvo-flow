@@ -460,6 +460,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 						}
 					}
 				}
+				surveyedLocaleDao.save(locale);
+				surveyInstanceDao.save(instance);
 			}
 		}
 	}
