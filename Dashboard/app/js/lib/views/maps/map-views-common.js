@@ -3,7 +3,8 @@ FLOW.NavMapsView = FLOW.View.extend({
   showDetailsBool: false,
   detailsPaneElements: null,
   detailsPaneVisible: null,
-
+  map: null,
+  geomodel: null,
 
   init: function () {
     this._super();
@@ -13,26 +14,59 @@ FLOW.NavMapsView = FLOW.View.extend({
       ", #pointDetails .imgContainer" +
       ", .placeMarkBasicInfo" +
       ", .noDetails";
-    this.detailsPaneVisible = true;
+    this.detailsPaneVisible = false;
   },
 
+  redoMap: function() {
+      var n, e, s, w, mapBounds;
+      mapBounds = this.map.getBounds();
+      // get current bounding box of the visible map
+      n = mapBounds.getNorthEast().lat;
+      e = mapBounds.getNorthEast().lng;
+      s = mapBounds.getSouthWest().lat;
+      w = mapBounds.getSouthWest().lng;
+
+      // bound east and west
+      e = (e + 3 * 180.0) % (2 * 180.0) - 180.0;
+      w = (w + 3 * 180.0) % (2 * 180.0) - 180.0;
+
+      // create bounding box object
+      var bb = this.geoModel.create_bounding_box(n, e, s, w);
+
+      // create the best set of geocell box cells which covers
+      // the current viewport
+      var bestBB = this.geoModel.best_bbox_search_cells(bb);
+
+      // adapt the points shown on the map
+      FLOW.placemarkController.adaptMap(bestBB, this.map.getZoom());
+    },
 
   /**
     Once the view is in the DOM create the map
   */
   didInsertElement: function () {
-    var map, mapOptions, self;
+	var self = this;
+    // insert the map
+    this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
+      .setView([-0.703107, 36.765], 2);
 
-    mapOptions = {
-      center: new google.maps.LatLng(-0.703107, 36.765747),
-      zoom: 2,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    map = new google.maps.Map(document.getElementById("flowMap"), mapOptions);
+    L.control.layers({
+      'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
+      'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
+      'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
+    }).addTo(this.map);
 
-    FLOW.placemarkController.set('map', map);
+    // couple listener to end of zoom or drag
+    this.map.on('moveend', function (e) {
+      self.redoMap();
+    });
 
-    self = this;
+    FLOW.placemarkController.set('map', this.map);
+    this.geoModel = create_geomodel();
+
+    //load points for the visible map
+    this.redoMap();
+
     this.$('#mapDetailsHideShow').click(function () {
       self.handleShowHideDetails();
     });

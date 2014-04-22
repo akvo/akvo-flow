@@ -33,6 +33,7 @@ public class SurveyalRestRequest extends RestRequest {
 	public static final String INGEST_INSTANCE_ACTION = "ingestInstance";
 	public static final String RERUN_ACTION = "rerun";
 	public static final String REINGEST_INSTANCE_ACTION="reingestInstance";
+	public static final String POP_GEOCELLS_FOR_LOCALE_ACTION = "populateGeocellsForLocale";
 	public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
 	public static final String SURVEY_ID_PARAM ="surveyId";
 	

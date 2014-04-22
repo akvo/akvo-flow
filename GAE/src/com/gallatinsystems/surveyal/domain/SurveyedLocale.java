@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -50,6 +50,7 @@ public class SurveyedLocale extends BaseDomain {
 	private String sublevel4;
 	private String sublevel5;
 	private String sublevel6;
+	private List<String> geocells;
 	private String localeType;
 	private Double latitude;
 	private Double longitude;
@@ -57,6 +58,7 @@ public class SurveyedLocale extends BaseDomain {
 	private String currentStatus;
 	private Date lastSurveyedDate;
 	private Long lastSurveyalInstanceId;
+	private Long creationSurveyId;
 	@NotPersistent
 	private List<SurveyalValue> surveyalValues;
 
@@ -206,6 +208,22 @@ public class SurveyedLocale extends BaseDomain {
 
 	public String getCurrentStatus() {
 		return currentStatus;
+	}
+
+	public List<String> getGeocells() {
+		return geocells;
+	}
+
+	public void setGeocells(List<String> geocells) {
+		this.geocells = geocells;
+	}
+
+	public Long getCreationSurveyId() {
+		return creationSurveyId;
+	}
+
+	public void setCreationSurveyId(Long creationSurveyId) {
+		this.creationSurveyId = creationSurveyId;
 	}
 
 }

@@ -46,6 +46,7 @@ public class SurveyedLocaleDto extends BaseDto {
 	private String currentStatus;
 	private Date lastSurveyedDate;
 	private Long lastSurveyalInstanceId;
+	private Long creationSurveyId;
 
 	public Long getLastSurveyalInstanceId() {
 		return lastSurveyalInstanceId;
@@ -191,6 +192,14 @@ public class SurveyedLocaleDto extends BaseDto {
 
 	public String getCurrentStatus() {
 		return currentStatus;
+	}
+
+	public Long getCreationSurveyId() {
+		return creationSurveyId;
+	}
+
+	public void setCreationSurveyId(Long creationSurveyId) {
+		this.creationSurveyId = creationSurveyId;
 	}
 
 }

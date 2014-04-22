@@ -128,7 +128,7 @@ FLOW.chartView = FLOW.View.extend({
 
           // add new item with the size of the smallest items
           chartData.splice(0, 0, {
-            "legendLabel": ("Smallest items, " + tot.toFixed(1) + "%"),
+            "legendLabel": (Ember.String.loc('_smallest_items') + ", " + tot.toFixed(1) + "%"),
             "percentage": tot
           });
         }

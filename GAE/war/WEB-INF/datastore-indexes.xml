@@ -430,7 +430,10 @@
 		<property name="localeType" direction="asc" />
 		<property name="latitude" direction="asc" />
 	</datastore-index>
-	
+	<datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="geocells" direction="asc"/>
+        <property name="localeType" direction="asc"/>
+    </datastore-index>
 	 <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
         <property name="countryCode" direction="asc"/>
         <property name="localeType" direction="asc"/>

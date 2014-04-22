@@ -37,6 +37,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
 	public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
 	public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
+	public static final String RECOMPUTE_LOCALE_CLUSTERS = "recomputeLocaleClusters";
 	public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
 	public static final String TRIM_OPTIONS = "trimOptions";
 	public static final String RESCORE_AP_ACTION = "rescoreAp";
@@ -49,7 +50,9 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String API_KEY_PARAM = "apiKey";
 	public static final String OFFSET_PARAM = "offset";
 	public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
+	public static final String ADD_CREATION_SURVEY_ID_TO_LOCALE = "addCreationSurveyIdToLocale";
 	public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
+	public static final String RECREATE_LOCALES = "recreateLocales";
 
 	private String country;
 	private String source;

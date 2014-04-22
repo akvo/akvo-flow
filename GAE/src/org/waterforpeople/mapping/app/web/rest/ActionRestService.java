@@ -15,10 +15,12 @@
  */
 package org.waterforpeople.mapping.app.web.rest;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -33,8 +35,11 @@ import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.DeviceApplicationDao;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.DeviceApplication;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 
 import com.gallatinsystems.common.Constants;
@@ -42,6 +47,7 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -92,12 +98,86 @@ public class ActionRestService {
 				status = "success";
 				statusDto.setMessage("Created entry for " + path);
 			}
+		} else if ("populateGeocellsForLocale".equals(action)){
+			status = computeGeocellsForLocales();
+		} else if ("createTestLocales".equals(action)){
+			status = createTestLocales();
 		}
-
 		statusDto.setStatus(status);
 		response.put("actions", "[]");
 		response.put("meta", statusDto);
 		return response;
+	}
+
+	/**
+	*  Used to create test locales. The only field populated is surveyId,
+	* which is set to 1.
+	* To be used only to test clustering during development
+	* in order to speed this up, it is advisable to 
+	* comment out the code in SurveyalRestServlet which computes
+	* the geoplace while running this method.
+	**/ 
+	private String createTestLocales(){
+		double latc;
+		double lonc;
+		double lat;
+		double lon;
+
+		SurveyInstanceDAO sDao = new SurveyInstanceDAO();
+		QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
+		Random generator = new Random();
+		// create random points, in clusters.
+		for (int i = 0 ; i < 1 ; i++){
+			latc = generator.nextDouble() * 120 - 60;
+			lonc = generator.nextDouble() * 360 - 180;
+			for (int j = 0; j < 100; j++){
+				SurveyInstance newSI = new SurveyInstance();
+				newSI.setSurveyId(1L);
+				newSI.setCollectionDate(new Date());
+				newSI = sDao.save(newSI);
+				QuestionAnswerStore newQAS = new QuestionAnswerStore();
+				newQAS.setSurveyInstanceId(newSI.getKey().getId());
+				newQAS.setType("GEO");
+				newQAS.setCollectionDate(new Date());
+				lat = latc + generator.nextDouble() * 10 - 5;
+				lon = lonc + generator.nextDouble() * 10 - 5;
+				String geoloc = lat + "|" + lon + "|" + 0 + "|" + "aaaaaa";
+				newQAS.setValue(geoloc);
+				newQAS = sDao.save(newQAS);
+
+				Queue queue = QueueFactory.getDefaultQueue();
+				queue.add(TaskOptions.Builder
+					.withUrl("/app_worker/surveyalservlet")
+					.param(SurveyalRestRequest.ACTION_PARAM,
+						SurveyalRestRequest.INGEST_INSTANCE_ACTION)
+					.param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+							newSI.getKey().getId() + ""));
+			}
+		}
+		return "ok";
+	}
+
+	/**
+	* runs over all surveydLocale objects, and populates:
+	* the Geocells field based on the latitude and longitude.
+	*
+	* New surveyedLocales will have these fields populated automatically, this
+	* method is to update legacy data.
+	*
+	* This method is invoked as a URL request:
+	* http://..../rest/actions?action=populateGeocellsForLocale
+	* 
+	* Clusters are not automatically computed.This is done by
+	* 1) deleting all the cluster objects by hand
+	* 2) running recomputeLocaleClusters in the dataProcessorRestServlet.
+	**/
+	private String computeGeocellsForLocales(){
+		Queue queue = QueueFactory.getDefaultQueue();
+		queue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet")
+				.param(SurveyalRestRequest.ACTION_PARAM,
+				SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION)
+				.param("cursor", ""));
+		return "Done";
 	}
 
 	// remove zero minVal and maxVal values
