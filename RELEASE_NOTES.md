@@ -5,6 +5,15 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.6.14
+
+## Enhancements
+* Implement server-side clustering of markers on maps [#363]
+
+## Resolved issues
+* fixed translations in chart builder [#494]
+* fixed link to FLOW terms of use [#432]
+
 
 # 1.6.13
 

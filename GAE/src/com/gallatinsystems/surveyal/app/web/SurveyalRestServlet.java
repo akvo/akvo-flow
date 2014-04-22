@@ -460,6 +460,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 						}
 					}
 				}
+				surveyedLocaleDao.save(locale);
+				surveyInstanceDao.save(instance);
 			}
 		}
 	}
@@ -511,7 +513,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
 		Map<String, Long> cellMap;
 		for (int i = 1 ; i <= 4 ; i++){
-			String cell =  surveyIdString + "-" + locale.getGeocells().get(i);
+			String cell = locale.getGeocells().get(i);
 			if (cache.containsKey(cell)){
 				cellMap = (Map<String, Long>) cache.get(cell);
 				addToCache(cache, cell,cellMap.get("id"), cellMap.get("count") + 1);
@@ -534,7 +536,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					// create a new one
 					SurveyedLocaleCluster slcNew = new SurveyedLocaleCluster(locale.getLatitude(),
 							locale.getLongitude(), locale.getGeocells().subList(0,i),
-							locale.getGeocells().get(i), i + 1, locale.getKey().getId(), surveyId, showOnPublicMap,locale.getLastSurveyedDate());
+							locale.getGeocells().get(i), i + 1, locale.getKey().getId(), showOnPublicMap,locale.getLastSurveyedDate());
 					slcDao.save(slcNew);
 					addToCache(cache, cell, slcNew.getKey().getId(),1);
 					log.log(Level.INFO,"------------ made a new one");

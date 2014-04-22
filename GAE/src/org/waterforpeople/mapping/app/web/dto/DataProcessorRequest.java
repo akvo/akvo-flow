@@ -52,6 +52,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
 	public static final String ADD_CREATION_SURVEY_ID_TO_LOCALE = "addCreationSurveyIdToLocale";
 	public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
+	public static final String RECREATE_LOCALES = "recreateLocales";
 
 	private String country;
 	private String source;
