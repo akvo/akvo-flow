@@ -146,7 +146,8 @@ public class PlacemarkRestService {
 		dto.setLevel(0);
 		dto.setSurveyId(sl.getCreationSurveyId());
 		dto.setCollectionDate(sl.getLastSurveyedDate());
-		dto.setKeyId(sl.getKey().getId());
+		// make even to avoid clash with cluster keyIds in client cache
+		dto.setKeyId(sl.getKey().getId() * 2);
 		return dto;
 	}
 
@@ -156,7 +157,8 @@ public class PlacemarkRestService {
 		dto.setLongitude(slc.getLonCenter());
 		dto.setCount(slc.getCount());
 		dto.setLevel(slc.getLevel());
-		dto.setKeyId(slc.getKey().getId());
+		// make odd to avoid clash with cluster keyIds in client cache
+		dto.setKeyId(slc.getKey().getId() * 2 + 1);
 		if (slc.getCount() == 1){
 			dto.setDetailsId(slc.getFirstSurveyedLocaleId());
 			dto.setCollectionDate(slc.getFirstCollectionDate());
