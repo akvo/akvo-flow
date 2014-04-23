@@ -185,6 +185,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				.equalsIgnoreCase(req.getAction())) {
 				log.log(Level.INFO, "Creating geocells");
 				populateGeocellsForLocale(req.getCursor());
+		} else if (SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION
+				.equalsIgnoreCase(req.getAction())) {
+			log.log(Level.INFO, "adapting cluster data");
+			adaptClusterData(sReq.getSurveyedLocaleId());
 		}
 		return resp;
 	}
@@ -370,7 +374,15 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					// then either adapt an existing one, or create a new cluster
 					// TODO when surveyedLocales are deleted, it needs to be substracted from the clusters.
 					if (locale.getGeocells() != null){
-						adaptClusterData(locale);
+						// schedule adaptClusterData task
+						Queue queue = QueueFactory.getDefaultQueue();
+						TaskOptions to = TaskOptions.Builder
+								.withUrl("/app_worker/surveyalservlet")
+								.param(SurveyalRestRequest.ACTION_PARAM,
+										SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
+								.param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
+										locale.getKey().getId() + "");
+						queue.add(to);
 					} // end cluster data
 
 				} else {
@@ -473,9 +485,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
 	// this method is synchronised, because we are changing counts.
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private synchronized void adaptClusterData(SurveyedLocale locale) {
+	private synchronized void adaptClusterData(Long surveyedLocaleId) {
 		SurveyDAO sDao = new SurveyDAO();
 		SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
+		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		Long surveyId = null;
 		String surveyIdString = "";
@@ -485,6 +498,13 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		Long latTotal;
 		Long lonTotal;
 		Long count;
+
+		SurveyedLocale locale = slDao.getById(surveyedLocaleId);
+		if (locale == null){
+			log.log(Level.SEVERE,
+					"Couldn't find surveyedLocale with id: " + surveyedLocaleId);
+			return;
+		}
 
 		SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
 		if (si != null) {
@@ -507,6 +527,16 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		}
 
 		if (cache == null) {
+			// reschedule task to run in 5 mins
+			Queue queue = QueueFactory.getDefaultQueue();
+			TaskOptions to = TaskOptions.Builder
+					.withUrl("/app_worker/surveyalservlet")
+					.param(SurveyalRestRequest.ACTION_PARAM,
+							SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
+					.param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
+							surveyedLocaleId + "")
+					.countdownMillis(5 * 1000 * 60); // 5 minutes
+			queue.add(to);
 			return;
 		}
 
