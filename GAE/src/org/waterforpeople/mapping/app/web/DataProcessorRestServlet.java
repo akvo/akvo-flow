@@ -100,8 +100,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final Integer LOCALE_PAGE_SIZE = 500;
 	private static final Integer T_PAGE_SIZE = 300;
 	private static final String QAS_TO_REMOVE = "QAStoRemove";
-	private static final Integer MULT = 1000000;
-	private static final Double REVMULT = 0.000001;
+	// used to multiply latitude and longitude values, to fit them in a long
+	private static final int MULT = 1000000;
+	// used to divide long values by MULT, to go back to double values for latitude / longitude values
+	private static final double REVMULT = 0.000001;
 
 	@Override
 	protected RestRequest convertRequest() throws Exception {

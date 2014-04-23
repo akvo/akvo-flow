@@ -85,8 +85,11 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final double UNSET_VAL = -9999.9;
 	private static final String DEFAULT = "DEFAULT";
 	private static final String DEFAULT_ORG_PROP = "defaultOrg";
-	private static final Integer MULT = 1000000;
-	private static final Double REVMULT = 0.000001;
+	// used to multiply latitude and longitude values, to fit them in a long
+    private static final int MULT = 1000000;
+	// used to divide long values by MULT, to go back to double values for latitude / longitude values
+	private static final double REVMULT = 0.000001;
+
 	private static final Logger log = Logger
 			.getLogger(SurveyalRestServlet.class.getName());
 
