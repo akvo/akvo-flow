@@ -89,7 +89,6 @@ FLOW.placemarkController = Ember.ArrayController.create({
 
   addMarker: function (placemark) {
     var marker;
-    map = this.get('map');
     if (placemark.get('level') > 0){
     	count = placemark.get('count');
     	if (count == 1) {
