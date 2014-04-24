@@ -28,6 +28,7 @@ public class PlacemarkDto extends BaseDto {
 	private Integer level = 0;
 	private Long surveyId;
 	private Date collectionDate = null;
+	private Long detailsId = null;
 
 	public String getMarkType() {
 		return markType;
@@ -83,5 +84,13 @@ public class PlacemarkDto extends BaseDto {
 
 	public void setSurveyId(Long surveyId) {
 		this.surveyId = surveyId;
+	}
+
+	public Long getDetailsId() {
+		return detailsId;
+	}
+
+	public void setDetailsId(Long detailsId) {
+		this.detailsId = detailsId;
 	}
 }

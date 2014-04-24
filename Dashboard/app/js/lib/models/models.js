@@ -250,6 +250,7 @@ FLOW.Placemark = FLOW.BaseModel.extend({
 	count: DS.attr('number'),
 	level: DS.attr('number'),
 	surveyId: DS.attr('number'),
+	detailsId: DS.attr('number'),
 	collectionDate: DS.attr('number')
 });
 

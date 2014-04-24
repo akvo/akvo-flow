@@ -142,10 +142,12 @@ public class PlacemarkRestService {
 		dto.setLatitude(sl.getLatitude());
 		dto.setLongitude(sl.getLongitude());
 		dto.setCount(1);
+		dto.setDetailsId(sl.getKey().getId());
 		dto.setLevel(0);
 		dto.setSurveyId(sl.getCreationSurveyId());
 		dto.setCollectionDate(sl.getLastSurveyedDate());
-		dto.setKeyId(sl.getKey().getId());
+		// make even to avoid clash with cluster keyIds in client cache
+		dto.setKeyId(sl.getKey().getId() * 2);
 		return dto;
 	}
 
@@ -155,10 +157,12 @@ public class PlacemarkRestService {
 		dto.setLongitude(slc.getLonCenter());
 		dto.setCount(slc.getCount());
 		dto.setLevel(slc.getLevel());
+		// make odd to avoid clash with cluster keyIds in client cache
+		dto.setKeyId(slc.getKey().getId() * 2 + 1);
 		if (slc.getCount() == 1){
-			dto.setKeyId(slc.getFirstSurveyedLocaleId());
+			dto.setDetailsId(slc.getFirstSurveyedLocaleId());
 			dto.setCollectionDate(slc.getFirstCollectionDate());
-		} else dto.setKeyId(slc.getKey().getId());
+		}
 		return dto;
 	}
 }
