@@ -5,6 +5,14 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.6.14.1
+
+## Resolved issues
+* Compute lat / lon of cluster as average over all containing placemarks [#508]
+* Use cluster Id as key id to ensure all clusers have a unique id on all zoomlevels [#509]
+* Avoid keyId collision between clusters and individual placemarks [#510]
+* Perform adapt cluster data as separate task, to deal with non-availability of memcache [#363]
+
 #1.6.14
 
 ## Enhancements
