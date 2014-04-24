@@ -89,7 +89,6 @@ FLOW.placemarkController = Ember.ArrayController.create({
 
   addMarker: function (placemark) {
     var marker;
-    map = this.get('map');
     if (placemark.get('level') > 0){
     	count = placemark.get('count');
     	if (count == 1) {
@@ -99,7 +98,7 @@ FLOW.placemarkController = Ember.ArrayController.create({
     			fillColor:'#edb660',
     			opacity:0.9,
     			fillOpacity:0.7,
-    			placemarkId: placemark.get('keyId'),
+    			placemarkId: placemark.get('detailsId'),
     			collectionDate:placemark.get('collectionDate')});
     		marker.on('click', onMarkerClick);
     		return marker;
@@ -120,7 +119,7 @@ FLOW.placemarkController = Ember.ArrayController.create({
     		radius:7,
     		color:'#d46f12',
     		fillColor:'#edb660',
-    		placemarkId: placemark.get('keyId'),
+    		placemarkId: placemark.get('detailsId'),
     		collectionDate:placemark.get('collectionDate')});
 		marker.on('click', onMarkerClick);
     	return marker;
