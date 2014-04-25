@@ -506,12 +506,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			return;
 		}
 
-		SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
-		if (si != null) {
-			surveyId = si.getSurveyId();
-			surveyIdString = surveyId.toString();
-		}
-
 		// initialize the memcache
 		Cache cache = null;
 		Map props = new HashMap();
@@ -540,15 +534,23 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			return;
 		}
 
-		// get public status, first try from cache
-		String pubKey = surveyIdString + "-publicStatus";
-		if (cache.containsKey(pubKey)){
-			showOnPublicMap = (Boolean) cache.get(pubKey);
-		} else {
-			Survey s = sDao.getByKey(surveyId);
-			if (s != null){
-				showOnPublicMap = showOnPublicMap || s.getPointType().equals("Point") || s.getPointType().equals("PublicInstitution");
-				cache.put(pubKey, showOnPublicMap);
+		if (locale.getLastSurveyalInstanceId() != null){
+			SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
+			if (si != null) {
+				surveyId = si.getSurveyId();
+				surveyIdString = surveyId.toString();
+
+				// get public status, first try from cache
+				String pubKey = surveyIdString + "-publicStatus";
+				if (cache.containsKey(pubKey)){
+					showOnPublicMap = (Boolean) cache.get(pubKey);
+				} else {
+					Survey s = sDao.getByKey(surveyId);
+					if (s != null){
+						showOnPublicMap = showOnPublicMap || s.getPointType().equals("Point") || s.getPointType().equals("PublicInstitution");
+						cache.put(pubKey, showOnPublicMap);
+					}
+				}
 			}
 		}
 

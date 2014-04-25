@@ -5,6 +5,11 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.6.14.3
+
+## Resolved issues
+* avoid NPE when lastSurveyalInstanceId field is null (as happens on old data) [#516]
+
 #1.6.14.2
 
 ## Enhancements
