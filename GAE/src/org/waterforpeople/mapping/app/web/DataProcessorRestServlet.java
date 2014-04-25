@@ -469,20 +469,22 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			surveyId = null;
 			showOnPublicMap = false;
 			String surveyIdString = "";
-			SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
-			if (si != null) {
-				surveyId = si.getSurveyId();
-				surveyIdString = surveyId.toString();
+			if (locale.getLastSurveyalInstanceId() != null){
+				SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
+				if (si != null) {
+					surveyId = si.getSurveyId();
+					surveyIdString = surveyId.toString();
 
-				// get public status, first try from cache
-				String pubKey = surveyIdString + "-publicStatus";
-				if (cache.containsKey(pubKey)){
-					showOnPublicMap = (Boolean) cache.get(pubKey);
-				} else {
-					Survey s = sDao.getByKey(surveyId);
-					if (s != null){
-						showOnPublicMap = (showOnPublicMap != null && showOnPublicMap) || "Point".equals(s.getPointType()) || "PublicInstitution".equals(s.getPointType());
-						cache.put(pubKey, showOnPublicMap);
+					// get public status, first try from cache
+					String pubKey = surveyIdString + "-publicStatus";
+					if (cache.containsKey(pubKey)){
+						showOnPublicMap = (Boolean) cache.get(pubKey);
+					} else {
+						Survey s = sDao.getByKey(surveyId);
+						if (s != null){
+							showOnPublicMap = (showOnPublicMap != null && showOnPublicMap) || "Point".equals(s.getPointType()) || "PublicInstitution".equals(s.getPointType());
+							cache.put(pubKey, showOnPublicMap);
+						}
 					}
 				}
 			}
