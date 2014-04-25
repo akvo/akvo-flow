@@ -41,11 +41,11 @@ FLOW.placemarkController = Ember.ArrayController.create({
     var bbString = "", gcLevel, listToRetrieve = [];
 
     // determine the geocell cluster level we want to show
-    if (zoomlevel < 5){
+    if (zoomlevel < 4){
       gcLevel = 2;
-    } else if (zoomlevel < 7) {
+    } else if (zoomlevel < 6) {
       gcLevel = 3;
-    } else if (zoomlevel < 9) {
+    } else if (zoomlevel < 8) {
       gcLevel = 4;
     } else if (zoomlevel < 11) {
       gcLevel = 5;
