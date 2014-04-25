@@ -5,6 +5,11 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.6.14.2
+
+## Enhancements
+* Show more detailed clusters at a lower zoomlevel [#363]
+
 #1.6.14.1
 
 ## Resolved issues
