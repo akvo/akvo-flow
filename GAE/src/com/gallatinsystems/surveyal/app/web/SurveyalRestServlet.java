@@ -47,6 +47,7 @@ import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
+import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.metric.dao.MetricDao;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
@@ -56,11 +57,9 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
-import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
@@ -85,10 +84,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final double UNSET_VAL = -9999.9;
 	private static final String DEFAULT = "DEFAULT";
 	private static final String DEFAULT_ORG_PROP = "defaultOrg";
-	// used to multiply latitude and longitude values, to fit them in a long
-    private static final int MULT = 1000000;
-	// used to divide long values by MULT, to go back to double values for latitude / longitude values
-	private static final double REVMULT = 0.000001;
 
 	private static final Logger log = Logger
 			.getLogger(SurveyalRestServlet.class.getName());
@@ -486,20 +481,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	// this method is synchronised, because we are changing counts.
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private synchronized void adaptClusterData(Long surveyedLocaleId) {
-		SurveyDAO sDao = new SurveyDAO();
-		SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
-		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-		Long surveyId = null;
-		String surveyIdString = "";
-		Boolean showOnPublicMap = false;
-		Double latCenter;
-		Double lonCenter;
-		Long latTotal;
-		Long lonTotal;
-		Long count;
-
-		SurveyedLocale locale = slDao.getById(surveyedLocaleId);
+		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final SurveyedLocale locale = slDao.getById(surveyedLocaleId);
+		
 		if (locale == null){
 			log.log(Level.SEVERE,
 					"Couldn't find surveyedLocale with id: " + surveyedLocaleId);
@@ -533,77 +517,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			queue.add(to);
 			return;
 		}
+		
+		MapUtils.recomputeCluster(cache, locale);
 
-		if (locale.getLastSurveyalInstanceId() != null){
-			SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
-			if (si != null) {
-				surveyId = si.getSurveyId();
-				surveyIdString = surveyId.toString();
-
-				// get public status, first try from cache
-				String pubKey = surveyIdString + "-publicStatus";
-				if (cache.containsKey(pubKey)){
-					showOnPublicMap = (Boolean) cache.get(pubKey);
-				} else {
-					Survey s = sDao.getByKey(surveyId);
-					if (s != null){
-						showOnPublicMap = showOnPublicMap || s.getPointType().equals("Point") || s.getPointType().equals("PublicInstitution");
-						cache.put(pubKey, showOnPublicMap);
-					}
-				}
-			}
-		}
-
-		Map<String, Long> cellMap;
-		for (int i = 1 ; i <= 4 ; i++){
-			String cell = locale.getGeocells().get(i) + "-" + showOnPublicMap.toString();
-			if (cache.containsKey(cell)){
-				cellMap = (Map<String, Long>) cache.get(cell);
-				count = cellMap.get("count");
-				latTotal = cellMap.get("lat") + Math.round(locale.getLatitude() * MULT);
-				lonTotal = cellMap.get("lon") + Math.round(locale.getLongitude() * MULT);
-				addToCache(cache, cell,cellMap.get("id"), count + 1, latTotal, lonTotal);
-				SurveyedLocaleCluster clusterInStore = slcDao.getByKey(cellMap.get("id"));
-				if (clusterInStore != null){
-					clusterInStore.setCount(cellMap.get("count").intValue() + 1);
-					clusterInStore.setLatCenter(REVMULT * latTotal / (count + 1));
-					clusterInStore.setLonCenter(REVMULT * lonTotal / (count + 1));
-					slcDao.save(clusterInStore);
-				}
-			} else {
-				// try to get it in the datastore. This can happen when the cache
-				// has expired
-				SurveyedLocaleCluster clusterInStore = slcDao.getExistingCluster(locale.getGeocells().get(i), showOnPublicMap);
-				if (clusterInStore != null){
-					count = clusterInStore.getCount().longValue();
-					latCenter = (clusterInStore.getLatCenter() * count + locale.getLatitude()) / (count + 1);
-					lonCenter = (clusterInStore.getLonCenter() * count + locale.getLongitude()) / (count + 1);
-					addToCache(cache, cell, clusterInStore.getKey().getId(),
-							clusterInStore.getCount() + 1, Math.round(MULT * latCenter * (count+1)), Math.round(MULT * lonCenter * (count+1)));
-					clusterInStore.setCount(clusterInStore.getCount() + 1);
-					clusterInStore.setLatCenter(latCenter);
-					clusterInStore.setLonCenter(lonCenter);
-					slcDao.save(clusterInStore);
-				} else {
-					// create a new one
-					SurveyedLocaleCluster slcNew = new SurveyedLocaleCluster(locale.getLatitude(),
-							locale.getLongitude(), locale.getGeocells().subList(0,i),
-							locale.getGeocells().get(i), i + 1, locale.getKey().getId(), showOnPublicMap,locale.getLastSurveyedDate());
-					slcDao.save(slcNew);
-					addToCache(cache, cell, slcNew.getKey().getId(),1, Math.round(MULT * locale.getLatitude()), Math.round(MULT * locale.getLongitude()));
-				}
-			}
-		}
-	}
-
-	private void addToCache(Cache cache, String cell, Long id, long count, Long latTotal, Long lonTotal){
-		final Map<String, Long> v = new HashMap<String, Long>();
-		v.put("count", count);
-		v.put("id", id);
-		// the cache stores lat/lon values as longs. We store the sums over the whole cluster.
-		v.put("lat",latTotal);
-		v.put("lon",lonTotal);
-		cache.put(cell, v);
 	}
 
 	private boolean isStatus(String name) {
