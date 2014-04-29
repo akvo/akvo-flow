@@ -65,8 +65,8 @@ public class MapUtils {
                 } else {
                     Survey s = sDao.getByKey(surveyId);
                     if (s != null) {
-                        showOnPublicMap = showOnPublicMap || s.getPointType().equals("Point")
-                                || s.getPointType().equals("PublicInstitution");
+                        showOnPublicMap = showOnPublicMap || "Point".equals(s.getPointType())
+                                || "PublicInstitution".equals(s.getPointType());
                         cache.put(pubKey, showOnPublicMap);
                     }
                 }
