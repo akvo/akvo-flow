@@ -579,7 +579,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					latCenter = (clusterInStore.getLatCenter() * count + locale.getLatitude()) / (count + 1);
 					lonCenter = (clusterInStore.getLonCenter() * count + locale.getLongitude()) / (count + 1);
 					addToCache(cache, cell, clusterInStore.getKey().getId(),
-							clusterInStore.getCount() + 1, Math.round(MULT * latCenter), Math.round(MULT * lonCenter));
+							clusterInStore.getCount() + 1, Math.round(MULT * latCenter * (count+1)), Math.round(MULT * lonCenter * (count+1)));
 					clusterInStore.setCount(clusterInStore.getCount() + 1);
 					clusterInStore.setLatCenter(latCenter);
 					clusterInStore.setLonCenter(lonCenter);
