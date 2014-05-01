@@ -5,6 +5,11 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.6.14.4
+
+## Resolved issues
+* Fixed wrong computation of cache value for cluster locations [#519]
+
 #1.6.14.3
 
 ## Resolved issues
