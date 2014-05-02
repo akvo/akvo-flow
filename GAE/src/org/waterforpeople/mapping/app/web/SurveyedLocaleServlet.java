@@ -107,8 +107,8 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 			// set meta data
 			resp.setResultCount(slList.size());
 			if (slList.size() > 0) {
-				// slList is sorted descending, first element is the oldest
-				resp.setLastUpdateTime(slList.get(0).getLastUpdateDateTime().getTime());
+				// slList is sorted ascending, first element is the oldest
+				resp.setLastUpdateTime(slList.get(slList.size() - 1).getLastUpdateDateTime().getTime());
 			} else {
 				resp.setLastUpdateTime(lastUpdateTime.getTime()); // return original query timestamp
 			}
