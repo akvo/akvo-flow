@@ -77,6 +77,31 @@ public class TranslationDao extends BaseDAO<Translation> {
 	}
 
 	/**
+	 * Finds all translations for a certain question group
+	 *
+	 * @param questionGroupId
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Translation> listTranslationsByQuestionGroup(long questionGroupId){
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(Translation.class);
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = null;
+		paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("questionGroupId", filterString, paramString, "Long",
+				questionGroupId, paramMap);
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+
+		List<Translation> result = (List<Translation>) query
+				.executeWithMap(paramMap);
+		return result;
+	}
+
+	/**
 	 * deletes all items translations for a given parent
 	 * 
 	 * @param parentId
@@ -91,4 +116,19 @@ public class TranslationDao extends BaseDAO<Translation> {
 			delete(trans.values());
 		}
 	}
+
+	/**
+	 * list all translations
+	 * 
+	 * @param cursor
+	 * @param count
+	 */
+	 @SuppressWarnings("unchecked")
+	 public List<Translation> listTranslations(Integer count, String cursorString) {
+		 PersistenceManager pm = PersistenceFilter.getManager();
+		 javax.jdo.Query q = pm.newQuery(Translation.class);
+		 prepareCursor(cursorString, count, q);
+		 List<Translation> tList = (List<Translation>) q.execute();
+		 return tList;
+		 }
 }

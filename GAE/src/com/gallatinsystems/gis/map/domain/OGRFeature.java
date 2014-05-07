@@ -39,6 +39,8 @@ public class OGRFeature extends BaseDomain {
 	private Integer pop2005 = null;
 	private Double centroidLat = null;
 	private Double centroidLon = null;
+	private String divType = null;
+	private String divTypeEng = null;
 	private Double x1 = null;
 	private Double x2 = null;
 	private Double y1 = null;
@@ -335,5 +337,21 @@ public class OGRFeature extends BaseDomain {
 				.append(delim).append(sub4).append(delim).append(sub5).append(
 						delim).append(sub6);
 		return b.toString();
+	}
+
+	public String getDivType() {
+		return divType;
+	}
+
+	public void setDivType(String divType) {
+		this.divType = divType;
+	}
+
+	public String getDivTypeEng() {
+		return divTypeEng;
+	}
+
+	public void setDivTypeEng(String divTypeEng) {
+		this.divTypeEng = divTypeEng;
 	}
 }

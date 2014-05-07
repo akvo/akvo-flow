@@ -1,9 +1,5 @@
 {{#view FLOW.SurveyGroupMainView}}
   <section id="groupBar" class="leftSidebar">
-   <!--
-    <form action="" method="post">
-      <input type="search" placeholder="Filter surveys"  name="surveySearch" />
-    </form> -->
     <h2>{{t _survey_groups}}</h2>
 	<a {{action "addGroup" target="this"}} class="addGroup">{{t _add_new_group}}</a>
     <nav>
@@ -15,7 +11,7 @@
           <a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a>
         </nav>
       {{/if}}   	 
-<div class="scrollWrap"><a href="#scrollUpId" class="scrollUp" id="scrollUpId">up</a></div>
+<div class="scrollWrap"><a href="#" class="scrollUp" id="scrollUpId">up</a></div>
  
 <nav class="menuGroupWrap">
       <!-- show all survey groups --> 
@@ -29,7 +25,7 @@
         {{/view}}
       </ul>
 </nav>
-<div class="scrollWrap"><a href="#scrollDownId" class="scrollDown" id="scrollDownId">down</a></div>
+<div class="scrollWrap"><a href="#" class="scrollDown" id="scrollDownId">down</a></div>
   </section>
 
   <section id="allSurvey" class="mainRight surveysList">
@@ -85,14 +81,14 @@
               <dd>{{#with survey}}{{toLanguage defaultLanguageCode}}{{/with}}</dd>
             </dl>
             <nav>
-              {{#unless survey.isNew}}
+              {{#if survey.allowEdit}}
               <ul>              
                 <li class="editSurvey"><a {{action "doEditSurvey" survey}}>{{t _edit}}</a></li> <!-- this hands control over to the router -->
                 <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>{{t _preview}}</a></li>
                 <li class="deleteSurvey"> <a  {{action confirm FLOW.dialogControl.delS target="FLOW.dialogControl"}}>{{t _delete}}</a> </li>
                 <li class="copySurvey"><a {{action "showCopySurveyDialog" survey target="view.parentView"}}>{{t _copy}}</a></li>
               </ul>
-              {{/unless}}
+              {{/if}}
             </nav>
           </li>
         {{/view}}

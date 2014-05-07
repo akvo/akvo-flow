@@ -11,6 +11,8 @@ FLOW.QuestionView = FLOW.View.extend({
   allowDecimal: null,
   allowMultipleFlag: null,
   allowOtherFlag: null,
+  geoLocked: null,
+  requireDoubleEntry: null,
   dependentFlag: false,
   dependentQuestion: null,
   optionList: null,
@@ -36,7 +38,7 @@ FLOW.QuestionView = FLOW.View.extend({
       i = 0;
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-        return (a.order >= b.order);
+    	  return a.get('order') - b.get('order');
       });
 
       optionArray.forEach(function (item) {
@@ -79,11 +81,27 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  amFreeTextType: function () {
+	    if (this.type) {
+	      return this.type.get('value') == 'FREE_TEXT';
+	    } else {
+	      return false;
+	    }
+	  }.property('this.type').cacheable(),
+
+  amGeoType: function () {
+	    if (this.type) {
+	      return this.type.get('value') == 'GEO';
+	    } else {
+	      return false;
+	    }
+	  }.property('this.type').cacheable(),
+
   amNoOptionsType: function () {
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val == 'GEO' || val == 'FREE_TEXT' || val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
+      return val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
     }
   }.property('this.type').cacheable(),
 
@@ -93,6 +111,15 @@ FLOW.QuestionView = FLOW.View.extend({
     var questionType = null,
       attribute = null,
       dependentQuestion, dependentAnswer, dependentAnswerArray;
+    if (this.content && (this.content.get('isDirty') || this.content.get('isSaving'))){
+    	 FLOW.dialogControl.set('activeAction', 'ignore');
+         FLOW.dialogControl.set('header', Ember.String.loc('_question_is_being_saved'));
+         FLOW.dialogControl.set('message', Ember.String.loc('_question_is_being_saved_text'));
+         FLOW.dialogControl.set('showCANCEL', false);
+         FLOW.dialogControl.set('showDialog', true);
+    	return;
+    }
+    this.init();
 
     FLOW.selectedControl.set('selectedQuestion', this.get('content'));
     this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
@@ -104,6 +131,8 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('allowDecimal', FLOW.selectedControl.selectedQuestion.get('allowDecimal'));
     this.set('allowMultipleFlag', FLOW.selectedControl.selectedQuestion.get('allowMultipleFlag'));
     this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
+    this.set('geoLocked', FLOW.selectedControl.selectedQuestion.get('geoLocked'));
+    this.set('requireDoubleEntry', FLOW.selectedControl.selectedQuestion.get('requireDoubleEntry'));
     this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
     this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
     this.set('optionList', FLOW.selectedControl.selectedQuestion.get('questionOptionList'));
@@ -162,7 +191,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-        return (a.order >= b.order);
+    	  return a.get('order') - b.get('order');
       });
 
       optionArray.forEach(function (item) {
@@ -210,6 +239,13 @@ FLOW.QuestionView = FLOW.View.extend({
       this.set('allowSign', false);
       this.set('allowDecimal', false);
     }
+    if (this.type.get('value') !== 'GEO') {
+        this.set('geoLocked', false);
+    }
+
+    if (!(this.type.get('value') == 'NUMBER' || this.type.get('value') == 'FREE_TEXT')) {
+        this.set('requireDoubleEntry', false);
+    }
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
     FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
@@ -225,6 +261,8 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('allowDecimal', this.get('allowDecimal'));
     FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
     FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
+    FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
+    FLOW.selectedControl.selectedQuestion.set('requireDoubleEntry', this.get('requireDoubleEntry'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
 
     dependentQuestionAnswer = "";
@@ -260,6 +298,8 @@ FLOW.QuestionView = FLOW.View.extend({
 
 
     // deal with saving options
+    // the questionOptionList field is created in the init method, and contains the list of options as a string
+    // if the list of options is not equal to the edited list, we need to save it
     if (FLOW.selectedControl.selectedQuestion.get('questionOptionList') != this.get('optionList')) {
       options = FLOW.store.filter(FLOW.QuestionOption, function (item) {
         if (!Ember.none(FLOW.selectedControl.selectedQuestion)) {
@@ -305,7 +345,7 @@ FLOW.QuestionView = FLOW.View.extend({
       });
 
       // delete unused questionOptions
-      for (ii = 0; ii < optionsToDelete.length; ii++) {
+      for (var ii = 0; ii < optionsToDelete.length; ii++) {
         opToDel = FLOW.store.find(FLOW.QuestionOption, optionsToDelete[ii]);
         opToDel.deleteRecord();
       }
@@ -322,16 +362,16 @@ FLOW.QuestionView = FLOW.View.extend({
     var qDeleteId;
     qDeleteId = this.content.get('keyId');
 
-    //are we saving / loading anything?
-    if (FLOW.savingMessageControl.get('areLoadingBool') || FLOW.savingMessageControl.get('areSavingBool')) {
-      FLOW.dialogControl.set('activeAction', 'ignore');
-      FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-      return;
-    }
-
+    // check if anything is being saved at the moment
+    if (this.checkQuestionsBeingSaved()) {
+   	 FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
+        FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
+   	 	return;
+    } 
+   
     // check if deleting this question is allowed
     // if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
     FLOW.store.findQuery(FLOW.Question, {
@@ -340,6 +380,14 @@ FLOW.QuestionView = FLOW.View.extend({
     });
   },
 
+  checkQuestionsBeingSaved: function () {
+	var question;
+	question = FLOW.store.filter(FLOW.Question, function(item){
+		return item.get('isSaving');
+	});
+	return question.content.length > 0;
+  },
+  
   // move question to selected location
   doQuestionMoveHere: function () {
     var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion;
@@ -350,6 +398,17 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       insertAfterOrder = this.content.get('order');
     }
+    
+    // check if anything is being saved at the moment
+     if (this.checkQuestionsBeingSaved()) {
+    	 FLOW.dialogControl.set('activeAction', 'ignore');
+         FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
+         FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
+         FLOW.dialogControl.set('showCANCEL', false);
+         FLOW.dialogControl.set('showDialog', true);
+    	 return;
+     }
+    
     // check to see if we are trying to move the question to another question group
     if (FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId') != FLOW.selectedControl.selectedQuestionGroup.get('keyId')) {
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
@@ -434,12 +493,12 @@ FLOW.QuestionView = FLOW.View.extend({
         });
 
         questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-          return item.get('questionGroupId') == qgId;
-        });
+        	return item.get('questionGroupId') == qgId;
+       	});
 
         // restore order in case the order has gone haywire
         FLOW.questionControl.restoreOrder(questionsInGroup);
-      }
+      	}
     }
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
@@ -449,12 +508,22 @@ FLOW.QuestionView = FLOW.View.extend({
   // execute question copy to selected location
   doQuestionCopyHere: function () {
     var insertAfterOrder, path, qgId, questionsInGroup, question;
-    path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
+    //path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
 
     if (this.get('zeroItemQuestion')) {
       insertAfterOrder = 0;
     } else {
       insertAfterOrder = this.content.get('order');
+    }
+
+    // check if anything is being saved at the moment
+    if (this.checkQuestionsBeingSaved()) {
+   	 FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
+        FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
+   	 	return;
     }
 
     // restore order
@@ -472,22 +541,10 @@ FLOW.QuestionView = FLOW.View.extend({
     question = FLOW.selectedControl.get('selectedForCopyQuestion');
     // create copy of Question item in the store
     FLOW.store.createRecord(FLOW.Question, {
-      "tip": question.get('tip'),
-      "mandatoryFlag": question.get('mandatoryFlag'),
-      "allowSign": question.get('allowSign'),
-      "allowDecimal": question.get('allowDecimal'),
-      "allowMultipleFlag": question.get('allowMultipleFlag'),
-      "allowOtherFlag": question.get('allowOtherFlag'),
-      "dependentFlag": false,
-      "path": path,
-      "maxVal": question.get('maxVal'),
-      "minVal": question.get('minVal'),
-      "type": question.get('type'),
       "order": insertAfterOrder + 1,
-      "text": question.get('text'),
-      "optionList": question.get('optionList'),
       "surveyId": question.get('surveyId'),
-      "questionGroupId": qgId
+      "questionGroupId": qgId,
+      "sourceId":question.get('keyId')
     });
 
     questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
@@ -496,7 +553,6 @@ FLOW.QuestionView = FLOW.View.extend({
 
     // restore order in case the order has gone haywire
     FLOW.questionControl.restoreOrder(questionsInGroup);
-
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
     
@@ -514,6 +570,17 @@ FLOW.QuestionView = FLOW.View.extend({
       insertAfterOrder = this.content.get('order');
     }
 
+    // check if anything is being saved at the moment
+    if (this.checkQuestionsBeingSaved()) {
+   	 FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', Ember.String.loc('_please_wait'));
+        FLOW.dialogControl.set('message', Ember.String.loc('_please_wait_until_previous_request'));
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
+   	 	return;
+    } 
+    
+    
     // restore order
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
     questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
@@ -532,7 +599,7 @@ FLOW.QuestionView = FLOW.View.extend({
       "order": insertAfterOrder + 1,
       "type": "FREE_TEXT",
       "path": path,
-      "text": "new question - please change name",
+      "text": Ember.String.loc('_new_question_please_change_name'),
       "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId'),
       "questionGroupId": FLOW.selectedControl.selectedQuestionGroup.get('keyId')
     });
@@ -542,6 +609,7 @@ FLOW.QuestionView = FLOW.View.extend({
     });
     // restore order in case the order has gone haywire
     FLOW.questionControl.restoreOrder(questionsInGroup);
+    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
   },
 

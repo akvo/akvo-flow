@@ -48,7 +48,7 @@ public class SurveyEventNotificationHandler extends BaseNotificationHandler {
 	private static final String APPROVAL_HEADER = "A submission has been approved:";
 	private static final String APPROVAL_FOOTER = "Please visit the dashboard to view the details";
 	private static final String SUBMISSION_HEADER = "A submission has been received:";
-	private static final String SUBMISSION_FOOTER = "Please visit the daashboard to approve";
+	private static final String SUBMISSION_FOOTER = "Please visit the dashboard to approve";
 	private static final String SUBMISSION_SUBJECT = "FLOW Submisson Received";
 	private static final String APPROVAL_SUBJECT = "FLOW Submission Approval";
 

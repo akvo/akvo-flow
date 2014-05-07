@@ -32,6 +32,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -192,26 +193,52 @@ public class QuestionDao extends BaseDAO<Question> {
 	}
 
 	/**
-	 * list questions in order, by using question groups.
+	 * list questions in order, by using question groups. Optionally filtered by type
 	 * author: Mark Tiele Westra
 	 * @param surveyId
 	 * @return
 	 */
-	public List<Question> listQuestionsInOrder(Long surveyId) {
+	public List<Question> listQuestionsInOrder(Long surveyId, Question.Type type) {
 		List<Question> orderedQuestionList = new ArrayList<Question>();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(surveyId);
-
 		// for each question group, get the questions in the right order and put them in the list
+		List<Question> qList;
 		for (QuestionGroup qg : qgList) {
-			List<Question> qList = listByProperty("questionGroupId", qg
+			if (type == null){
+				qList = listByProperty("questionGroupId", qg
 					.getKey().getId(), "Long", "order", "asc");
-			for (Question q : qList) {
-				orderedQuestionList.add(q);
+			} else {
+				qList = getByQuestiongroupAndType(qg.getKey().getId(),type);
 			}
-
+			if (qList != null && qList.size() > 0){
+				for (Question q : qList) {
+					orderedQuestionList.add(q);
+				}
+			}
 		}
 		return orderedQuestionList;
+	}
+
+	/**
+	 * Lists questions by questionGroupId and type
+	 * @param questionGroupId
+	 * @param type
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Question> getByQuestiongroupAndType(long questionGroupId, Question.Type type) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(Question.class);
+		query.setFilter(" questionGroupId == questionGroupIdParam && type == questionTypeParam");
+		query.declareParameters("Long questionGroupIdParam, String questionTypeParam");
+		query.setOrdering("order asc");
+		List<Question> results = (List<Question>) query.execute(questionGroupId, type.toString());
+		if (results != null && results.size() > 0) {
+			return results;
+		} else {
+			return null;
+		}
 	}
 
 	/**

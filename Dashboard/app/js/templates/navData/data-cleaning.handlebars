@@ -18,6 +18,14 @@
       prompt=""
       promptBinding="Ember.STRINGS._select_survey"}}
 
+  {{view Ember.Select
+        contentBinding="FLOW.reportLanguageControl.arrangedContent"
+        selectionBinding="FLOW.reportLanguageControl.selectedLanguage"
+        optionLabelPath="content.label"
+        optionValuePath="content.value"
+        prompt=""
+        promptBinding="Ember.STRINGS._select_language"}}
+
     <div class="rawDataReport block">
       <h3>{{t _export_raw_data_report}}</h3>
       <p>{{t _raw_data_report_applet_text_}}</p>

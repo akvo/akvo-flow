@@ -2,7 +2,7 @@
     {{#view view.NavItemView item="inspectData" }}
     <a {{action doInspectData}}>{{t _inspect_data}}</a>
     {{/view}}
-    {{#if view.undef}}
+     {{#if FLOW.Env.showStatisticsFeature}} 
       {{#view view.NavItemView item="manageAttributes" }}
         <a {{action doManageAttributes}}>{{t _manage_attributes}}</a>
       {{/view}}

@@ -71,7 +71,7 @@ public class QuestionAnswerRestService {
 				// the right order
 				List<Question> qList = qDao
 						.listQuestionsInOrder(questionAnswerStores.get(0)
-								.getSurveyId());
+								.getSurveyId(), null);
 
 				Map<Integer, QuestionAnswerStoreDto> orderedResults = new TreeMap<Integer, QuestionAnswerStoreDto>();
 

@@ -17,7 +17,6 @@
 package org.waterforpeople.mapping.dao;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +34,13 @@ import net.sf.jsr107cache.CacheManager;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
+import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.device.dao.DeviceDAO;
+import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -77,11 +79,11 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		String delimiter = "\t";
 		Boolean surveyInstanceIsNew = true;
 		Long geoQasId = null;
-
+		DeviceDAO deviceDao = new DeviceDAO();
 		final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
 		ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
-		
+
 		Cache cache = null;
 		Map props = new HashMap();
 		props.put(GCacheFactory.EXPIRATION_DELTA, 15 * 60); // 15min
@@ -154,6 +156,17 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					si.setDeviceIdentifier(parts[8].trim());
 				}
 			}
+
+			// Time tracking new column - 13
+			if (parts.length >= 13) {
+				try {
+					final Long time = Long.valueOf(parts[12].trim());
+					si.setSurveyalTime(time);
+				} catch (NumberFormatException e) {
+					logger.log(Level.WARNING, "Surveyal time column is not a number", e);
+				}
+			}
+
 			// if this is the first time round, save the surveyInstance or use an existing one
 			if (si.getSurveyId() == null) {
 				try {
@@ -162,7 +175,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					}
 					si.setSurveyId(Long.parseLong(parts[0].trim()));
 					if (parts.length >= 12) {
-						String uuid = parts[parts.length - 1];
+						String uuid = parts[11];
 						if (uuid != null && uuid.trim().length() > 0) {
 							SurveyInstance existingSi = findByUUID(uuid);
 							if (existingSi != null) {
@@ -175,7 +188,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 						}
 					}
 					si = save(si);
-					
+
 				} catch (NumberFormatException e) {
 					logger.log(Level.SEVERE, "Could not parse survey id: "
 							+ parts[0], e);
@@ -245,10 +258,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					StatusCode.PROCESSED_WITH_ERRORS);
 		}
 		si.setQuestionAnswersStore(qasList);
-		
+
 		QuestionDao questionDao = new QuestionDao();
 		List<Question> qOptionList = questionDao.listQuestionByType(si.getSurveyId(), Question.Type.OPTION);
-		
+
 		for (QuestionAnswerStore qas : qasList){
 			if (Question.Type.GEO.toString().equals(qas.getType())){
 				geoQasId = qas.getKey().getId();
@@ -257,8 +270,35 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			if (isSummarizable(qas, qOptionList)) {
 				SurveyQuestionSummaryDao.incrementCount(qas,1);
 			}
+
+			if ("IMAGE".equals(qas.getType())) {
+				// the device send values as IMAGE and not PHOTO
+				String filename = qas.getValue().substring(
+						qas.getValue().lastIndexOf("/") + 1);
+				Device d = null;
+
+				if (deviceFile.getImei() != null) {
+					d = deviceDao.getByImei(deviceFile.getImei());
+				}
+
+				if (d == null && deviceFile.getPhoneNumber() != null) {
+					d = deviceDao.get(deviceFile.getPhoneNumber());
+				}
+
+				String deviceId = d == null ? "null" : String.valueOf(d
+						.getKey().getId());
+
+				Queue queue = QueueFactory.getQueue("background-processing");
+				TaskOptions to = TaskOptions.Builder
+						.withUrl("/app_worker/imagecheck")
+						.param(ImageCheckRequest.FILENAME_PARAM, filename)
+						.param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
+						.param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
+						.param(ImageCheckRequest.ATTEMPT_PARAM, "1");
+				queue.add(to);
+			}
 		}
-		
+
 		// invoke a task to update corresponding surveyInstanceSummary objects
 		if (surveyInstanceIsNew && geoQasId != null){
 			Queue summQueue = QueueFactory.getQueue("dataSummarization");
@@ -291,10 +331,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			return false;
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	public SurveyInstanceDAO() {
 		super(SurveyInstance.class);
 	}
@@ -353,12 +393,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	}
 
-	// same as listByDateRange, but adds sumbitterName as search field
+	// same as listByDateRange, but adds sumbitterName, country, and sublevels as search fields
 	// @Author: M.T.Westra
 	@SuppressWarnings("unchecked")
 	public List<SurveyInstance> listByDateRangeAndSubmitter(Date beginDate, Date endDate,
 			boolean unapprovedOnlyFlag, Long surveyId, String deviceIdentifier, String submitterName,
-			String cursorString) {
+			String countryCode, String level1, String level2, String cursorString) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyInstance.class);
 
@@ -374,6 +414,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				"String", deviceIdentifier, paramMap);
 		appendNonNullParam("submitterName", filterString, paramString,
 				"String", submitterName, paramMap);
+		appendNonNullParam("countryCode", filterString, paramString,
+				"String", countryCode, paramMap);
+		appendNonNullParam("sublevel1", filterString, paramString,
+				"String", level1, paramMap);
+		appendNonNullParam("sublevel2", filterString, paramString,
+				"String", level2, paramMap);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",
 				beginDate, paramMap, GTE_OP);
 		appendNonNullParam("collectionDate", filterString, paramString, "Date",
@@ -397,12 +443,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	}
 
-	
-	
-	
+
+
+
 	/***********************
 	 * returns raw entities
-	 * 
+	 *
 	 * @param returnKeysOnly
 	 * @param beginDate
 	 * @param endDate
@@ -436,7 +482,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	/**
 	 * finds a questionAnswerStore object for the surveyInstance and questionId
 	 * passed in (if it exists)
-	 * 
+	 *
 	 * @param surveyInstanceId
 	 * @param questionId
 	 * @return
@@ -460,7 +506,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	/**
 	 * lists all questionAnswerStore objects for a single surveyInstance,
 	 * optionally filtered by type
-	 * 
+	 *
 	 * @param surveyInstanceId
 	 *            - mandatory
 	 * @param type
@@ -498,7 +544,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/**
 	 * lists all questionAnswerStore objects for a survey instance
-	 * 
+	 *
 	 * @param instanceId
 	 * @return
 	 */
@@ -517,7 +563,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/**
 	 * lists all questionAnswerStore objects for a specific question
-	 * 
+	 *
 	 * @param questionId
 	 * @return
 	 */
@@ -535,7 +581,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	/**
 	 * Deletes a surveyInstance and all its related questionAnswerStore objects
 	 * Based on the version in DataBackoutServlet
-	 * 
+	 *
 	 * @param item
 	 * @return
 	 */
@@ -552,13 +598,16 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				surveyInstanceId, null);
 
 		// to account for the slim change if we have two geo questions in one surveyInstance
+
 		boolean sisCountUpdated = false;
+
 		if (qasList != null && qasList.size() > 0) {
 			// update the questionAnswerSummary counts
 			for (QuestionAnswerStore qasItem : qasList) {
-				
+
 				// if the questionAnswerStore item is the GEO type, try to update
 				// the surveyInstanceSummary
+
 				if (Question.Type.GEO.toString().equals(qasItem.getType()) && !sisCountUpdated){
 					DataProcessorRestServlet.surveyInstanceSummarizer(surveyInstanceId, qasItem.getKey().getId(), -1);
 					sisCountUpdated = true;
@@ -611,7 +660,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/**
 	 * lists all surveyInstance records for a given survey
-	 * 
+	 *
 	 * @param surveyId
 	 * @return
 	 */
@@ -627,6 +676,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		Query q = pm.newQuery(SurveyInstance.class);
 		q.setFilter("surveyId == surveyIdParam");
+		q.setOrdering("createdDateTime asc");
 		q.declareParameters("Long surveyIdParam");
 		prepareCursor(cursorString, count, q);
 		List<SurveyInstance> siList = (List<SurveyInstance>) q
@@ -654,7 +704,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	/**
 	 * lists instances for the given surveyedLocale optionally filtered by the
 	 * dates passed in
-	 * 
+	 *
 	 * @param surveyedLocaleId
 	 * @return
 	 */
@@ -667,7 +717,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	/**
 	 * lists instances for the given surveyedLocale optionally filtered by the
 	 * dates passed in
-	 * 
+	 *
 	 * @param surveyedLocaleId
 	 * @return
 	 */
@@ -705,7 +755,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/**
 	 * lists all survey instances by the submitter passed in
-	 * 
+	 *
 	 * @param submitter
 	 * @return
 	 */
@@ -721,7 +771,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		}
 	}
 
-	
+
 	/** lists questionAnswerStore objects of particular types passed in
 	 */
 	public List<QuestionAnswerStore> listQAOptions(String cursorString, Integer pageSize, String... options){
@@ -735,11 +785,11 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		prepareCursor(cursorString, pageSize, q);
 		return (List<QuestionAnswerStore>) q.execute();
 	}
-	
+
 	/**
 	 * finds a single survey instance by uuid. This method will NOT load all
 	 * QuestionAnswerStore objects.
-	 * 
+	 *
 	 * @param uuid
 	 * @return
 	 */

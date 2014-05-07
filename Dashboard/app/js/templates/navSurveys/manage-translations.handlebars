@@ -28,10 +28,11 @@
          selectionBinding="FLOW.translationControl.selectedLanguage" 
          optionLabelPath="content.labelLong" 
          optionValuePath="content.value"
-         prompt="select language"}} 
-            <a {{action "addTranslation" target="FLOW.translationControl"}} class="smallBtn">Add</a>
+         prompt="Select language"
+         promptBinding="Ember.STRINGS._select_language"}}
+            <a {{action "addTranslation" target="FLOW.translationControl"}} class="smallBtn">{{t _add}}</a>
             {{#if FLOW.translationControl.newSelected}}
-              <a {{action "cancelAddTranslation" target="FLOW.translationControl"}} class="smallBtn">Cancel</a>
+              <a {{action "cancelAddTranslation" target="FLOW.translationControl"}} class="smallBtn">{{t _cancel}}</a>
            {{/if}}</td>
         </tr>
       {{#unless FLOW.translationControl.newSelected}}
@@ -57,7 +58,12 @@
         <th class="targetLanguage"><h3>{{t _survey_details_in}} <em>{{FLOW.translationControl.currentTranslationName}}</em></h3></th>
       </tr>
     </thead>
+</table>
+</div>
 
+
+  <div class="twoColumns floats-in">
+    <table class="surveyTranslate surveyDetails">
     <tbody>      
       {{#each item in FLOW.translationControl.itemArray}}
         {{#if item.isSurvey}}
@@ -73,12 +79,46 @@
           <td class="targetLanguage"><label for="newSurveyDesc">{{t _survey_description}}</label>
             {{view Ember.TextField valueBinding="item.sDescTextTrans" disabledBinding="FLOW.translationControl.blockInteraction" size=40 }}</td>
         </tr>
-        {{else}}
+        {{/if}}
+      {{/each}}
+      </tbody>
+    </table>
+    </div> <!--  end twocolumns -->
+    <header style="heigh:40px; padding: 10px 0 10px 0">
+      <nav class="qtnGroupMenu">
+        <ul>
+          <li style="text-align:right;margin:0 10px 0 0;"><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="aQuestionSet mainContent">
+     	{{#each questionGroup in FLOW.questionGroupControl}}
+    	{{#view FLOW.QuestionGroupItemTranslationView contentBinding="questionGroup"}}
+    	 <div class="questionGroupBlock">
+    	   <header> <span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
+    	     <h1 class="qtnGroupTitle"><a {{action "toggleVisibility" target="this"}}>{{view.content.code}}</a></h1>
+    	      <nav class="qtnGroupMenu">
+                <ul>
+                  {{#if view.amVisible}}
+                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown" id="">{{t _hide_questions}} </a></li>
+                    <li><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
+                  {{else}}
+                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{t _show_questions}} </a></li>
+                  {{/if}}
+                </ul>
+              </nav>
+    	  </header>
+    	  {{#if view.amVisible}}
+    	 <div class="twoColumns floats-in">
+    <table class="surveyTranslate surveyDetails">
+    <tbody>
+      {{#each item in FLOW.translationControl.itemArray}}
           {{#if item.isQG}}
             <tr>
               <td class="defaultLanguage"> <span class="qtnGroupHead">{{t _group}} {{item.displayOrder}}</span>
               <h1 class="qtnGroupTitle">{{item.qgText}}</h1></td>
-              <td class="targetLanguage"> <span class="qtnGroupHead">{{t _group}}</span>
+              <td class="targetLanguage"> <span class="qtnGroupHead">{{t _group}} {{item.displayOrder}}</span>
               {{view Ember.TextField valueBinding="item.qgTextTrans" disabledBinding="FLOW.translationControl.blockInteraction" size=40 }}</td>
             </tr>
              <tr>
@@ -118,17 +158,28 @@
 
               {{/if}}
             {{/if}}
-          {{/if}}
         {{/if}} 
       {{/each}}
-
       </tbody>
     </table>
-  
-    </div>
+    </div> <!--  end twocolumns -->
+    <header style="heigh:40px; padding: 0 0 10px 0">
+     <h1 class="qtnGroupTitle">&nbsp;</h1>
+      <nav class="qtnGroupMenu">
+        <ul>
+          <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown" id="">{{t _hide_questions}} </a></li>
+          <li><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
+        </ul>
+      </nav>
+    </header>
+    	{{/if}}
+    	 	 </div>
+    	{{/view}}
+    {{/each}}
+    </section>
+
     <nav class="bottomPg">
       <ul>
-        <li><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_and_continue}}</a> </li>
          <li><a  {{action "saveTranslationsAndClose" target="FLOW.translationControl"}} class="standardBtn">{{t _save_and_close}}</a> </li>
         <li><a {{action "closeTranslations" target="FLOW.translationControl"}}>{{t _close_without_saving}}</a> </li>
       </ul>

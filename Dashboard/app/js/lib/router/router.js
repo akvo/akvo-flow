@@ -81,6 +81,8 @@ FLOW.Router = Ember.Router.extend({
             name: 'navSurveysMain'
           });
           FLOW.surveyGroupControl.populate();
+          FLOW.selectedControl.set('selectedQuestionGroup', null);
+          FLOW.selectedControl.set('selectedSurvey', null);
         }
       }),
 
@@ -111,19 +113,6 @@ FLOW.Router = Ember.Router.extend({
           // all questions should be closed when we enter
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.attributeControl.populate();
-
-          if (!Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
-            // questionGroups are already loaded in controller automatically
-            FLOW.questionControl.populateAllQuestions();
-          }
-        },
-
-        doManageNotifications: function (router, event) {
-          router.transitionTo('navSurveys.navSurveysEdit.manageNotifications');
-        },
-
-        doManageTranslations: function (router, event) {
-          router.transitionTo('navSurveys.navSurveysEdit.manageTranslations');
         },
 
         doEditQuestions: function (router, event) {
@@ -318,6 +307,10 @@ FLOW.Router = Ember.Router.extend({
         router.transitionTo('navReports.chartReports');
       },
 
+      doStatistics: function(router, event) {
+        router.transitionTo('navReports.statistics');
+      },
+
       index: Ember.Route.extend({
         route: '/',
         redirectsTo: 'chartReports'
@@ -337,6 +330,16 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function (router, context) {
           router.get('navReportsController').connectOutlet('chartReports');
           router.set('reportsSubnavController.selected', 'chartReports');
+          FLOW.surveyGroupControl.populate();
+        }
+      }),
+      statistics: Ember.Route.extend({
+        route: '/statistics',
+        connectOutlets: function(router, context) {
+          FLOW.selectedControl.set('selectedSurvey',null);
+          FLOW.selectedControl.set('selectedSurveyGroup',null);
+          router.get('navReportsController').connectOutlet('statistics');
+          router.set('reportsSubnavController.selected', 'statistics');
           FLOW.surveyGroupControl.populate();
         }
       })

@@ -42,12 +42,31 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
 	public List<QuestionAnswerStore> listByQuestion(Long questionId) {
 		return super.listByProperty("questionID", questionId.toString(),
-				"String");
+				"String", "createdDateTime");
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<QuestionAnswerStore> listByQuestion(Long questionId, String cursor, Integer pageSize) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+
+		appendNonNullParam("questionID", filterString, paramString, "String", String.valueOf(questionId),
+				paramMap);
+
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		query.setOrdering("createdDateTime");
+		prepareCursor(cursor, pageSize, query);
+		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 	}
 
 	/**
 	 * lists all the QuestionAnswerStore objects that match the type passed in
-	 * 
+	 *
 	 * @param type
 	 * @param cursor
 	 * @param pageSize
@@ -103,7 +122,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
 	/**
 	 * lists all the QuestionAnswerStore objects that match the type passed in
-	 * 
+	 *
 	 * @param sinceDate
 	 * @param cursor
 	 * @param pageSize
@@ -132,7 +151,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
 	}
 
-	
+
 	@SuppressWarnings("unchecked")
 	public List<QuestionAnswerStore> listByNotNullCollectionDateAfter(
 			Date sinceDate, String cursor, Integer pageSize) {
@@ -158,7 +177,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 	}
 	/**
 	 * lists all the QuestionAnswerStore objects that match the type passed in
-	 * 
+	 *
 	 * @param sinceDate
 	 * @param cursor
 	 * @param pageSize

@@ -501,12 +501,37 @@ public class BulkDataServiceClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<SurveyGroupDto> fetchSurveyGroups(String serverBase, String apiKey)
-			throws Exception {
-		return parseSurveyGroups(fetchDataFromServer(serverBase
-				+ SURVEY_SERVLET_PATH, "?action="
-				+ SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION, true,
-				apiKey));
+	public static List<SurveyGroupDto> fetchSurveyGroups(String serverBase,
+			String apiKey) throws Exception {
+
+		final List<SurveyGroupDto> result = new ArrayList<SurveyGroupDto>();
+		String cursor = null;
+
+		do {
+
+			String qs = "?action="
+					+ SurveyRestRequest.LIST_SURVEY_GROUPS_ACTION;
+
+			if (cursor != null && !"".equals(cursor)) {
+				qs = qs + "&cursor=" + cursor;
+			}
+
+			String resp = fetchDataFromServer(serverBase + SURVEY_SERVLET_PATH,
+					qs, true, apiKey);
+
+			try {
+				JSONObject jsonResp = new JSONObject(resp);
+				cursor = jsonResp.isNull("cursor") ? null : jsonResp
+						.getString("cursor");
+			} catch (JSONException e) {
+				cursor = null;
+			}
+
+			result.addAll(parseSurveyGroups(resp));
+
+		} while (cursor != null);
+
+		return result;
 	}
 
 	/**
@@ -550,6 +575,9 @@ public class BulkDataServiceClient {
 					}
 					if (json.has("userID")) {
 						dto.setUserID(json.getLong("userID"));
+					}
+					if (json.has("surveyalTime") && !json.isNull("surveyalTime")) {
+						dto.setSurveyalTime(json.getLong("surveyalTime"));
 					}
 					if (json.has("submitterName")) {
 						dto.setSubmitterName(json.getString("submitterName"));

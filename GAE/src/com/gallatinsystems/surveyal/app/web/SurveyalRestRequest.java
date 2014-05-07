@@ -33,12 +33,16 @@ public class SurveyalRestRequest extends RestRequest {
 	public static final String INGEST_INSTANCE_ACTION = "ingestInstance";
 	public static final String RERUN_ACTION = "rerun";
 	public static final String REINGEST_INSTANCE_ACTION="reingestInstance";
+	public static final String POP_GEOCELLS_FOR_LOCALE_ACTION = "populateGeocellsForLocale";
 	public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
 	public static final String SURVEY_ID_PARAM ="surveyId";
+	public static final String ADAPT_CLUSTER_DATA_ACTION = "adaptClusterData";
+	public static final String SURVEYED_LOCALE_PARAM = "surveyedLocaleId";
 	
 
 	private Long surveyInstanceId;
 	private Long surveyId;
+	private Long surveyedLocaleId;
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
@@ -66,6 +70,10 @@ public class SurveyalRestRequest extends RestRequest {
 			setSurveyInstanceId(Long.parseLong(req.getParameter(SURVEY_INSTANCE_PARAM).trim()));
 		}
 
+		if (req.getParameter(SURVEYED_LOCALE_PARAM) != null){
+			setSurveyedLocaleId(Long.parseLong(req.getParameter(SURVEYED_LOCALE_PARAM).trim()));
+		}
+
 	}
 
 	@Override
@@ -87,6 +95,14 @@ public class SurveyalRestRequest extends RestRequest {
 
 	public Long getSurveyId() {
 		return surveyId;
+	}
+
+	public Long getSurveyedLocaleId() {
+		return surveyedLocaleId;
+	}
+
+	public void setSurveyedLocaleId(Long surveyedLocaleId) {
+		this.surveyedLocaleId = surveyedLocaleId;
 	}
 	
 	

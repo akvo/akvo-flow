@@ -2,15 +2,8 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
   dashboardLanguage: null,
 
   init: function () {
-    var locale;
-
-    this._super();
-    locale = localStorage.locale;
-    if (typeof locale === 'undefined') {
-      this.set('dashboardLanguage', this.content.findProperty('value', 'en'));
-    } else {
-      this.set('dashboardLanguage', this.content.findProperty('value', locale));
-    }
+    var locale = localStorage.locale || (localStorage.locale = 'en');
+    this.set('dashboardLanguage', this.get('content').findProperty('value', locale));
   },
 
   content: [
@@ -26,27 +19,27 @@ FLOW.dashboardLanguageControl = Ember.Object.create({
     })
   ],
 
-  changeLanguage: function () {
-    var locale;
-    locale = this.dashboardLanguage.get("value");
-    localStorage.locale = this.get('dashboardLanguage.value');
+  languageChanged: function () {
+	var current = localStorage.locale,
+        changed = this.get('dashboardLanguage').value;
 
-    if (locale === 'fr') {
-      Ember.set('Ember.STRINGS', Ember.STRINGS_FR);
-    } else if (locale === 'es') {
-      Ember.set('Ember.STRINGS', Ember.STRINGS_ES);
-    } else {
-      Ember.set('Ember.STRINGS', Ember.STRINGS_EN);
+    if (current !== changed) {
+      localStorage.locale = changed;
+      window.location = window.location;
     }
+  }.observes('dashboardLanguage')
+});
 
-    // if(locale === "fr") {
-    //   Ember.STRINGS = Ember.STRINGS_FR;
-    // } else if(locale === "es") {
-    //   Ember.STRINGS = Ember.STRINGS_ES;
-    // } else {
-    //   Ember.STRINGS = Ember.STRINGS_EN;
-    // }
-  }.observes('this.dashboardLanguage')
+FLOW.reportLanguageControl = Ember.ArrayController.create({
+  content: [
+    Ember.Object.create({
+	  label: "English (Default)",
+	  value: "en"
+	}),
+	Ember.Object.create({
+	  label: "Español",
+	  value: "es"
+	})]
 });
 
 
@@ -138,7 +131,20 @@ FLOW.dateControl = Ember.Object.create({
 FLOW.savingMessageControl = Ember.Object.create({
   areSavingBool: false,
   areLoadingBool: false,
+  numberLoading: 0,
 
+  numLoadingChange: function (delta) {
+	  this.set('numberLoading',this.get('numberLoading') + delta);
+	  if (this.get('numberLoading') < 0){
+		  this.set('numberLoading', 0);
+	  }
+	  if (this.get('numberLoading') > 0) {
+		  this.set('areLoadingBool', true);
+	  } else {
+		  this.set('areLoadingBool', false);
+	  }
+  },
+  
   checkSaving: function () {
     if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0) {
       this.set('areSavingBool', true);

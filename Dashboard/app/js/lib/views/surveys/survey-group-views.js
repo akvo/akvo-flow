@@ -28,14 +28,18 @@ FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
 // displays single survey in content area of survey group page
 // doEditSurvey is defined in the Router. It transfers to the nav-surveys-edit handlebar view
 FLOW.SurveyGroupSurveyView = FLOW.View.extend({
-  // fired when 'preview survey' is clicked in the survey item display
+  
+	// fired when 'preview survey' is clicked in the survey item display
   previewSurvey: function () {
     FLOW.selectedControl.set('selectedSurvey', this.content);
-    FLOW.questionGroupControl.populate();
-    FLOW.questionControl.populateAllQuestions();
-    FLOW.previewControl.set('showPreviewPopup', true);
   },
 
+  showPreview: function () {
+	if (FLOW.questionControl.content.get('isLoaded')) {
+		FLOW.previewControl.set('showPreviewPopup', true);
+	}
+  }.observes('FLOW.questionControl.content.isLoaded'),
+  
   // fired when 'delete survey' is clicked in the survey item display
   deleteSurvey: function () {
     var sId = this.content.get('id');
@@ -163,15 +167,18 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedForCopySurvey', null);
     this.set('showCopySurveyDialogBool', false);
+
+    FLOW.dialogControl.set('activeAction', "ignore");
+    FLOW.dialogControl.set('header', Ember.String.loc('_copying_survey'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_copying_published_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
   },
 
   cancelMoveSurvey: function () {
     FLOW.selectedControl.set('selectedForCopySurvey', null);
     this.set('showCopySurveyDialogBool', false);
   }
-
-
-
 });
 
 FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
@@ -179,7 +186,8 @@ FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
     var menuHeight, scroll;
     this._super();
     $('.scrollUp').addClass("FadeIt");
-    $('.scrollUp').click(function () {
+    $('.scrollUp').click(function (e) {
+      e.preventDefault();
       menuHeight = $('.menuGroupWrap').height();
       scroll = $('.menuGroupWrap').scrollTop();
       $('.scrollDown').removeClass("FadeIt");
@@ -192,7 +200,8 @@ FLOW.JavascriptSurveyGroupListView = FLOW.View.extend({
         $('.scrollUp').addClass("FadeIt");
       }
     });
-    $('.scrollDown').click(function () {
+    $('.scrollDown').click(function (e) {
+      e.preventDefault();
       menuHeight = $('.menuGroupWrap').height();
       scroll = $('.menuGroupWrap').scrollTop();
       $('.scrollUp').removeClass("FadeIt");

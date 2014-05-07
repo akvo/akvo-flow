@@ -11,10 +11,8 @@
 	<inherits name="org.waterforpeople.mapping.app.gwt.WFPServices" />
 	<inherits name="org.waterforpeople.mapping.surveyentry.surveyentrywidgets" />
 	<inherits name="com.google.gwt.visualization.Visualization" />
-	
 	<inherits name="com.google.gwt.i18n.I18N" />
 	<source path="client" />
-		<script src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2&amp;sensor=false&amp;key=$mapsApiKey"/>
-	<entry-point
-		class="org.waterforpeople.mapping.portal.client.dashboard.Dashboard" />	
+	<script src="http://maps.google.com/maps?gwt=1&amp;file=api&amp;v=2&amp;sensor=false&amp;key=$mapsApiKey"/>
+	<entry-point class="org.waterforpeople.mapping.portal.client.dashboard.Dashboard" />
 </module>

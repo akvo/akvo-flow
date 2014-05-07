@@ -107,6 +107,21 @@
 		</copy>
 	</target>
 
+	<target name="GWTcompile" depends="copyjars,compile">
+		<fail message="GWT compilation is deprecated. You can force it with: ant GWTCompile -Dforce=yes">
+			<condition>
+				<not>
+					<isset property="force" />
+				</not>
+			</condition>
+		</fail>
+		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true" maxmemory="512m">
+			<arg value="org.waterforpeople.mapping.portal.portal" />
+			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
+			<arg value="org.waterforpeople.mapping.surveyentry.surveyentry" />
+		</java>
+	</target>
+
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
 		<mkdir dir="${app_classes_dir}" />
 		<copy todir="${app_classes_dir}">
@@ -153,26 +168,8 @@
 		</dev_appserver>
 	</target>
 
-	<target name="validate.constants">
-		<unzip src="war/exporterapplet.jar" dest="${java.io.tmpdir}">
-			<patternset>
-				<include name="UploadConstants.properties" />
-			</patternset>
-		</unzip>
-		<checksum file="${basedir}/src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" property="md5" />
-		<checksum file="${java.io.tmpdir}/UploadConstants.properties" property="${md5}" verifyproperty="md5_is_ok" />
-	</target>
-
-	<target name="version" description="Extracts the version using git describe and modifies war/admin/js/app.js">
-		<exec dir="../" executable="git" outputproperty="app.version">
-			<arg value="describe"/>
-		</exec>
-		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
-	</target>
-
-	<target name="update" depends="datanucleusenhance, validate.constants, version" description="Uploads the application to App Engine.">
+	<target name="update" depends="compile,datanucleusenhance" description="Uploads the application to App Engine.">
 		<fail unless="pwd" message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt" />
-		<fail unless="${md5_is_ok}" message="You need to rebuild the applet jar before updating an instance, e.g.: ant -f appletBuild.xml clean compile package signjar" />
 
 		<delete failonerror="false">
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
@@ -180,9 +177,27 @@
 
 		<delete file="war/PlacemarksNewLook.vm" failonerror="false" />
 
+		<echo message="Rebuilding Dashboard..." />
+
+		<exec dir="../Dashboard" executable="rake" failonerror="true">
+		    <env key="RAKEP_MODE" value="production" />
+		    <arg value="build" />
+		</exec>
+
+		<exec dir="../" executable="git" outputproperty="app.version">
+			<arg value="describe"/>
+		</exec>
+
+		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
+
 		<exec dir="." executable="sh">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} --passin &lt; ${pwd} update war" />
+		</exec>
+
+		<exec dir="." executable="sh">
+		    <arg value="-c" />
+		    <arg value="${sdk.dir}/bin/appcfg.sh backends war update" />
 		</exec>
 	</target>
 

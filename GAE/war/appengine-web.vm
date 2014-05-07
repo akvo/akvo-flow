@@ -1,71 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-	<application>$instanceName</application>
-	<version>1</version>
-	<sessions-enabled>true</sessions-enabled>
-	<threadsafe>true</threadsafe>
-	<static-files>
-		<include path="/**.png" expiration="1000d 5h" />
-		<include path="/**.jpg" expiration="1000d 5h" />
-	</static-files>
-	<!-- Configure java.util.logging -->
-	<system-properties>
-		<property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
-		<property name="aws_secret_key" value="$awsSecretKey" />
-		<property name="aws_identifier" value="$awsIdentifier" />
-		<property name="keystore" value="WEB-INF/$keystore" />
-		<property name="photo_url_root"
-			value="$s3url/images/" />
-		<property name="storepass" value="$storepass" />
-		<property name="keypass" value="$keypass" />
-		<property name="alias" value="$alias" />
-		<property name="flowServices" value="http://services.akvoflow.org" />
-		<property name="google_spreadsheet_url"
-			value="http://spreadsheets.google.com/feeds/spreadsheets/private/full" />
-		<property name="next_url"
-			value="$alais/authsub" />
-		<property name="google_scope"
-			value="http://spreadsheets.google.com/feeds/ https://docs.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://docs.googleusercontent.com" />
-		<property name="s3bucket" value="$s3bucket" />
-		<property name="surveyuploadurl" value="$s3url/" />
-		<property name="surveyuploaddir" value="surveys" />
-		<property name="deviceZipPath"
-			value="$s3url/devicezip/" />
-		<property name="emailFromAddress" value="$reportsEmailAddress" />
-		<property name="recipientListString"
-			value="flowerrors@akvo.org;FLOW Errors List" />
-		<property name="defaultPhotoCaption" value="$organization" />
-		<property name="surveyuploadsig" value="$surveyS3Sig" />
-		<property name="surveyuploadpolicy"
-			value="$surveyPolicy"/>
-		<property name="reportS3Policy"
-			value="$reportS3Policy" />
-		<property name="reportS3Sig" value="$reportS3Sig" />
-		<property name="reportS3Path" value="reports" />
-		<property name="attachreport" value="true" />
-		<property name="bootstrapdir" value="bootstrap"/>
-		<property name="bootstraps3policy" value="$bootstrapS3Policy"/>
-		<property name="bootstraps3sig" value="$bootstrapS3Sig"/>
-		<property name="imageroot" value="http://$instanceName.appspot.com"/>
-		<property name="mapiconimageroot" value="http://$s3bucket.s3.amazonaws.com/images/mapicons"/>
-		<property name="scoreAPFlag" value="$scoreAPFlag"/>
-		<property name="organization" value="$organization"/>
-		<property name="signingKey" value="$signingKey" />
-		<property name="allowUnsignedData" value="true" />
-		<property name="defaultOrg" value="$organization" />
-		<property name="domainType" value="locale" />
-		<property name="exportedProperties" value="defaultOrg,domainType,pointTypes" />
-		<property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution"/>
-		<property name="optionRenderMode" value="radio"/>
-		<property name="backendpublish" value="false"/>
-		<property name="cacheExpirySeconds" value="3600"/>
-		<property name="useLongDates" value="true"/>
-		<property name="statusQuestionText" value="water available on the day;Yes=FUNCTIONING_HIGH;No=BROKEN_DOWN;DEFAULT=BROKEN_DOWN"/>
-		<property name="mergeNearbyLocales" value="false"/>
-		<property name="scoreAPDynamicFlag" value="false"/>
-		<property name="asyncTaskTimeout" value="16384"/>
-		<property name="enableRestSecurity" value="true"/>
-		<property name="restPrivateKey" value="$restApiKey"/>
-		<property name="useTabRDRFlag" value="false"/>
-	</system-properties>
+    <application>$instanceName</application>
+    <version>1</version>
+    <sessions-enabled>true</sessions-enabled>
+    <threadsafe>true</threadsafe>
+    <auto-id-policy>legacy</auto-id-policy>
+    <static-files>
+        <include path="/**.png" expiration="1000d 5h" />
+        <include path="/**.jpg" expiration="1000d 5h" />
+    </static-files>
+    <!-- Configure java.util.logging -->
+    <system-properties>
+        <property name="apkS3Path" value="http://akvoflow.s3.amazonaws.com/apk/" />
+        <property name="autoUpdateApk" value="true" />
+        <property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
+        <property name="aws_secret_key" value="$awsSecretKey" />
+        <property name="aws_identifier" value="$awsIdentifier" />
+        <property name="keystore" value="$keystore" />
+        <property name="photo_url_root" value="$s3url/images/" />
+        <property name="storepass" value="$storepass" />
+        <property name="keypass" value="$keypass" />
+        <property name="alias" value="$alias" />
+        <property name="flowServices" value="http://services.akvoflow.org" />
+        <property name="google_spreadsheet_url" value="http://spreadsheets.google.com/feeds/spreadsheets/private/full" />
+        <property name="next_url" value="$alais/authsub" />
+        <property name="google_scope"
+            value="http://spreadsheets.google.com/feeds/ https://docs.google.com/feeds/ https://spreadsheets.google.com/feeds/ https://docs.googleusercontent.com" />
+        <property name="s3bucket" value="$s3bucket" />
+        <property name="surveyuploadurl" value="$s3url/" />
+        <property name="surveyuploaddir" value="surveys" />
+        <property name="deviceZipPath" value="$s3url/devicezip/" />
+        <property name="emailFromAddress" value="$reportsEmailAddress" />
+        <property name="recipientListString" value="flowerrors@akvo.org;FLOW Errors List" />
+        <property name="defaultPhotoCaption" value="$organization" />
+        <property name="surveyuploadsig" value="$surveyS3Sig" />
+        <property name="surveyuploadpolicy"
+            value="$surveyPolicy"/>
+        <property name="reportS3Policy" value="$reportS3Policy" />
+        <property name="reportS3Sig" value="$reportS3Sig" />
+        <property name="reportS3Path" value="reports" />
+        <property name="attachreport" value="true" />
+        <property name="bootstrapdir" value="bootstrap"/>
+        <property name="bootstraps3policy"
+            value="$bootstrapS3Policy"/>
+        <property name="bootstraps3sig" value="$bootstrapS3Sig"/>
+        <property name="imageroot" value="http://$instanceName.appspot.com"/>
+        <property name="mapiconimageroot" value="http://$s3bucket.s3.amazonaws.com/images/mapicons"/>
+        <property name="scoreAPFlag" value="$scoreAPFlag"/>
+        <property name="organization" value="$organization"/>
+        <property name="signingKey" value="$signingKey" />
+        <property name="allowUnsignedData" value="true" />
+        <property name="defaultOrg" value="$organization" />
+        <property name="domainType" value="locale" />
+        <property name="exportedProperties" value="defaultOrg,domainType,pointTypes" />
+        <property name="pointTypes" value="WaterPoint,SanitationPoint,PublicInstitution"/>
+        <property name="optionRenderMode" value="radio"/>
+        <property name="backendpublish" value="false"/>
+        <property name="cacheExpirySeconds" value="3600"/>
+        <property name="useLongDates" value="true"/>
+        <property name="statusQuestionText" value="water available on the day;Yes=FUNCTIONING_HIGH;No=BROKEN_DOWN;DEFAULT=BROKEN_DOWN"/>
+        <property name="mergeNearbyLocales" value="false"/>
+        <property name="scoreAPDynamicFlag" value="false"/>
+        <property name="asyncTaskTimeout" value="16384"/>
+        <property name="enableRestSecurity" value="true"/>
+        <property name="restPrivateKey" value="$restApiKey"/>
+        <property name="useTabRDRFlag" value="false"/>
+    </system-properties>
 </appengine-web-app>

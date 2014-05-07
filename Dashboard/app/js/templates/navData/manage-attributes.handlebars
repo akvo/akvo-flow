@@ -53,7 +53,7 @@
           <p class="dialogMsg">{{t _please_provide_a_name_}}</p>
           <br/>
          <label for="newAttributeName">{{t _attribute_name}}:</label> {{view Ember.TextField valueBinding="view.newAttributeName" id="newAttributeName" size=40}}
-         <label for="newAttributeGroup">{{t _tag}}:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
+         <label for="newAttributeGroup">{{t _attribute_group}}:</label> {{view Ember.TextField valueBinding="view.newAttributeGroup" id="newAttributeGroup" size=40}}
           <label>{{t _value_type}}:</label>
              {{view Ember.Select 
             contentBinding="FLOW.attributeTypeControl.content" 
@@ -82,7 +82,7 @@
           <h2>{{t _edit_attribute}}</h2>
           <p class="dialogMsg">{{t _please_edit_the_attribute_name_}}.</p>
           <label for="editAttributeName">{{t _attribute_name}}:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeName" id="editUserName" size=40}}<br/>
-           <label for="editAttributeGroup">Tag:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeGroup" id="editEmail" size=40}}<br/>
+           <label for="editAttributeGroup">{{t _attribute_group}}:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editAttributeGroup" id="editEmail" size=40}}<br/>
            <label>{{t _value_type}}:</label>
             {{view Ember.Select 
             contentBinding="FLOW.attributeTypeControl.content" 

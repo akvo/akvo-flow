@@ -162,9 +162,12 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyXMLFragment;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
+import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
@@ -173,6 +176,8 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -182,7 +187,7 @@ public class TestHarnessServlet extends HttpServlet {
 			.getName());
 	private static final long serialVersionUID = -5673118002247715049L;
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unused", "rawtypes" })
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
 		if ("setupTestUser".equals(action)) {
@@ -1711,6 +1716,43 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("startProjectFlagUpdate".equals(action)) {
 			DataProcessorRestServlet.sendProjectUpdateTask(
 					req.getParameter("country"), null);
+		} else if ("changeLocaleType".equals(action)) {
+			String surveyId = req
+					.getParameter(DataProcessorRequest.SURVEY_ID_PARAM);
+			if (surveyId == null) {
+				try {
+					resp.getWriter()
+					.println("surveyId parameter missing");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return;
+			}
+
+			TaskOptions options = TaskOptions.Builder.withUrl(
+				"/app_worker/dataprocessor").param(
+				DataProcessorRequest.ACTION_PARAM,
+				DataProcessorRequest.CHANGE_LOCALE_TYPE_ACTION);
+
+			if (req.getParameter("bypassBackend") == null
+					|| !req.getParameter("bypassBackend").equals("true")) {
+				// change the host so the queue invokes the backend
+				options = options.header("Host",BackendServiceFactory.getBackendService()
+					.getBackendAddress("dataprocessor"));
+			}
+			options.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId);
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
+		} else if ("addTranslationFields".equals(action)) {
+			TaskOptions options = TaskOptions.Builder.withUrl(
+					"/app_worker/dataprocessor").param(
+							DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.ADD_TRANSLATION_FIELDS);
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
+			queue.add(options);
 		} else if (DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION
 				.equals(action)) {
 			TaskOptions options = TaskOptions.Builder.withUrl(
@@ -1835,6 +1877,63 @@ public class TestHarnessServlet extends HttpServlet {
 							BackendServiceFactory.getBackendService()
 									.getBackendAddress("dataprocessor"));
 			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+			try {
+				resp.getWriter().print("Request Processed - Check the logs");
+			} catch (Exception e) {
+				// no-op
+			}
+		} else if (DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS.equals(action)) {
+			SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
+			// first, delete all clusters
+			for (SurveyedLocaleCluster slc : slcDao.list("all")) {
+				slcDao.delete(slc);
+			}
+			
+			// initialize the memcache
+			Cache cache = null;
+			Map props = new HashMap();
+			try {
+				CacheFactory cacheFactory = CacheManager.getInstance()
+						.getCacheFactory();
+				cache = cacheFactory.createCache(props);
+				cache.clear();
+			} catch (Exception e) {
+				log.log(Level.SEVERE,
+						"Couldn't initialize cache: " + e.getMessage(), e);
+			}
+
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS);
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+			try {
+				resp.getWriter().print("Request Processed - Check the logs");
+			} catch (Exception e) {
+				// no-op
+			}
+		} else if (DataProcessorRequest.RECREATE_LOCALES.equals(action)){
+			Queue queue = QueueFactory.getDefaultQueue();
+			SurveyDAO surveyDao = new SurveyDAO();
+			List<Survey> sList = surveyDao.list("all");
+			for (Survey s : sList){
+				log.log(Level.INFO, "Running Remap for survey: " + s.getKey().getId());
+				queue.add(TaskOptions.Builder
+						.withUrl("/app_worker/surveyalservlet")
+						.param(SurveyalRestRequest.ACTION_PARAM,
+								SurveyalRestRequest.RERUN_ACTION)
+						.param(SurveyalRestRequest.SURVEY_ID_PARAM,
+								"" + s.getKey().getId()));
+			}
+		} else if ("addCreationSurveyIdToLocale".equals(action)) {
+			final TaskOptions options = TaskOptions.Builder.withUrl(
+					"/app_worker/dataprocessor")
+							.param(DataProcessorRequest.ACTION_PARAM,
+									DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE);
+			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+					.getDefaultQueue();
 			queue.add(options);
 			try {
 				resp.getWriter().print("Request Processed - Check the logs");
@@ -2097,18 +2196,13 @@ public class TestHarnessServlet extends HttpServlet {
 
 	private boolean deleteSurveyResponses(Long surveyId, Integer count) {
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
+
 		List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
 				surveyId, count != null ? count : 100);
 
 		if (instances != null) {
 			for (SurveyInstance instance : instances) {
-				List<QuestionAnswerStore> questions = dao
-						.listQuestionAnswerStore(instance.getKey().getId(),
-								count);
-				if (questions != null) {
-					dao.delete(questions);
-				}
-				dao.delete(instance);
+				dao.deleteSurveyInstance(instance);
 			}
 			return true;
 		}

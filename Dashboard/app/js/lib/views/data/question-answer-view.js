@@ -14,6 +14,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   isBarcodeType: false,
   isDateType: false,
   isPhotoType: false,
+  isVideoType: false,
   optionsList: [],
   content: null,
   optionChoice: null,
@@ -42,6 +43,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     this.set('isNumberType', type == 'NUMBER');
     this.set('isBarcodeType', type == 'BARCODE');
     this.set('isPhotoType', type == 'PHOTO');
+    this.set('isVideoType', type == 'VIDEO');
     this.set('isDateType', type == 'DATE');
     this.set('isNotEditable', (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO'));
 
@@ -74,7 +76,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
 
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-        return (a.order >= b.order);
+    	  return a.get('order') - b.get('order');
       });
 
       tempList = [];
@@ -95,7 +97,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
       });
       this.set('optionChoice', choice);
     }
-    if (this.get('isPhotoType') && !Ember.empty(this.content.get('value'))) {
+    if ((this.get('isPhotoType') || this.get('isVideoType')) && !Ember.empty(this.content.get('value'))) {
       // Since photos have a leading path from devices that we need to trim
       this.set('photoUrl', FLOW.Env.photo_url_root + this.content.get('value').split('/').pop());
     }

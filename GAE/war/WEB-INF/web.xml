@@ -30,7 +30,14 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-
+	<servlet>
+		<servlet-name>DeviceApplicationRestService</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.DeviceApplicationRestService</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeviceApplicationRestService</servlet-name>
+		<url-pattern>/deviceapprest</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>CurrentUserServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.CurrentUserServlet</servlet-class>
@@ -205,6 +212,14 @@
 	<servlet-mapping>
 		<servlet-name>SpreadsheetImport</servlet-name>
 		<url-pattern>/app_worker/sheetimport</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ImageCheckTask</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.ImageCheckServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ImageCheckTask</servlet-name>
+		<url-pattern>/app_worker/imagecheck</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>SurveyEvent</servlet-name>
@@ -611,6 +626,14 @@
 	<servlet-mapping>
 		<servlet-name>DeviceFilesRestApi</servlet-name>
 		<url-pattern>/devicefilesrestapi</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>DeviceNotificationRestApi</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.DeviceNotificationRestServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeviceNotificationRestApi</servlet-name>
+		<url-pattern>/devicenotification</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>PlacemarkRestApi</servlet-name>

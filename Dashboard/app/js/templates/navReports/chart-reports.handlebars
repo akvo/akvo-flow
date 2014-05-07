@@ -11,7 +11,7 @@
 		<span class=""></span>
       {{view Ember.Select 
         contentBinding="FLOW.surveyControl.arrangedContent"
-        selectionBinding="FLOW.selectedControl.selectedSurvey" 
+        selectionBinding="view.selectedSurvey" 
         optionLabelPath="content.name" 
         optionValuePath="content.keyId"
         prompt=""
@@ -40,12 +40,17 @@
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
 </div>		
     {{#if view.noChoiceBool}}
-      <p class="errorMsg">Please choose a survey group, survey and question using the selectors above.</p>
+      <p class="errorMsg">{{t _please_select_survey_group_survey_and_question}}</p>
+    {{/if}}
+     {{#if view.noDataBool}}
+      <p class="errorMsg">{{t _there_is_no_data_available_for_question}}</p>
     {{/if}}
      	<h3 class="chartTitle">{{FLOW.selectedControl.selectedQuestion.text}}</h3>
+    {{#unless view.hideChart}}
         <div id="piechart">
-			<p>Choose a Question from above selectors.</p> 	
+			<p>{{t _choose_a_question}}</p>
 		</div>
+    {{/unless}}
 {{/view}}
 
  <script type="text/javascript">
@@ -86,7 +91,7 @@ function createDoughnutChart(){
       .attr("text-anchor", "left")
       .style("fill", "rgb(246, 160, 26)")
       .style("font", "bold 1.5em helvetica")
-      .text("Smallest items:") 
+      .text(Ember.String.loc('_smallest_items')) 
       .attr("transform","translate(320,-120)");
 
 
@@ -153,7 +158,7 @@ function createDoughnutChart(){
       .attr("text-anchor", "middle")
       .style("fill", "rgb(58,58,58)")
       .style("font", "bold 1.1em helvetica")
-      .text("answers") //get the label from our original data array
+      .text(Ember.String.loc('_answers')) //get the label from our original data array
       .attr("transform","translate(0,15)");
 
     vis.append("svg:text")

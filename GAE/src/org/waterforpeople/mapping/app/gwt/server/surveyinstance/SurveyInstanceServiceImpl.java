@@ -166,6 +166,9 @@ public class SurveyInstanceServiceImpl extends RemoteServiceServlet implements
 			boolean processSummaries) {
 		List<QuestionAnswerStore> domainList = new ArrayList<QuestionAnswerStore>();
 		for (QuestionAnswerStoreDto dto : dtoList) {
+			if ("".equals(dto.getValue()) && dto.getOldValue() == null) {
+				continue; // empty string as value, skipping it
+			}
 			QuestionAnswerStore answer = new QuestionAnswerStore();
 			DtoMarshaller.copyToCanonical(answer, dto);
 			if (answer.getValue() != null) {

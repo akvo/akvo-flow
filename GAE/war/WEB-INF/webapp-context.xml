@@ -24,7 +24,10 @@
 <bean id="surveyMetricMappingDao" class="com.gallatinsystems.metric.dao.SurveyMetricMappingDao"/>
 <bean id="messageDao" class="com.gallatinsystems.messaging.dao.MessageDao"/>
 <bean id="surveyInstanceSummaryDao" class="org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao"/>
+<bean id="SurveyedLocaleClusterDao" class="com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao"/>
 <bean id="notificationSubscriptionDao" class="com.gallatinsystems.notification.dao.NotificationSubscriptionDao"/>
+<bean id="subCountryDao" class="com.gallatinsystems.gis.geography.dao.SubCountryDao"/>
+
 
 
 	<context:annotation-config/>

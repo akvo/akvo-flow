@@ -25,7 +25,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.beoui.geocell.GeocellManager;
+import com.beoui.geocell.model.Point;
+
 import javax.servlet.http.HttpServletRequest;
+
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheFactory;
+import net.sf.jsr107cache.CacheManager;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -40,6 +47,7 @@ import com.gallatinsystems.gis.geography.dao.CountryDao;
 import com.gallatinsystems.gis.geography.domain.Country;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
+import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.metric.dao.MetricDao;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
@@ -53,6 +61,8 @@ import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -74,6 +84,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final double UNSET_VAL = -9999.9;
 	private static final String DEFAULT = "DEFAULT";
 	private static final String DEFAULT_ORG_PROP = "defaultOrg";
+
 	private static final Logger log = Logger
 			.getLogger(SurveyalRestServlet.class.getName());
 
@@ -102,7 +113,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		countryDao = new CountryDao();
 		metricDao = new MetricDao();
 		metricMappingDao = new SurveyMetricMappingDao();
-		mergeNearby = true;
+		mergeNearby = false;
 		String mergeProp = PropertyUtil.getProperty("mergeNearbyLocales");
 		useDynamicScoring = Boolean.parseBoolean(PropertyUtil.getProperty("scoreLocaleDynmaic"));
 		if (mergeProp != null && "false".equalsIgnoreCase(mergeProp.trim())) {
@@ -165,6 +176,14 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 								+ sReq.getSurveyInstanceId() + ": "
 								+ e.getMessage());
 			}
+		} else if (SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION
+				.equalsIgnoreCase(req.getAction())) {
+				log.log(Level.INFO, "Creating geocells");
+				populateGeocellsForLocale(req.getCursor());
+		} else if (SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION
+				.equalsIgnoreCase(req.getAction())) {
+			log.log(Level.INFO, "adapting cluster data");
+			adaptClusterData(sReq.getSurveyedLocaleId());
 		}
 		return resp;
 	}
@@ -237,7 +256,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 * @param surveyInstanceId
 	 */
 	private void ingestSurveyInstance(SurveyInstance instance) {
-
 		SurveyedLocale locale = null;
 		if (instance != null) {
 			List<QuestionAnswerStore> answers = surveyInstanceDao
@@ -305,10 +323,35 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				geoPlace = getGeoPlace(lat, lon);
 				if (locale == null) {
 					locale = new SurveyedLocale();
+					locale.setLastSurveyalInstanceId(instance.getKey().getId());
+					locale.setLastSurveyedDate(instance.getCollectionDate());
 					locale.setAmbiguous(ambiguousFlag);
+
+					if (survey != null) {
+						locale.setCreationSurveyId(survey.getKey().getId());
+					}
 					locale.setLatitude(lat);
 					locale.setLongitude(lon);
 					setGeoData(geoPlace, locale);
+
+					// set Geocell data
+					if (locale.getLatitude() != null
+							&& locale.getLongitude() != null
+							&& locale.getLongitude() < 180
+							&& locale.getLatitude() < 180) {
+						try {
+							locale.setGeocells(GeocellManager
+									.generateGeoCell(new Point(locale
+											.getLatitude(), locale
+											.getLongitude())));
+						} catch (Exception ex) {
+							log.log(Level.INFO,
+									"Could not generate Geocell for locale: "
+											+ locale.getKey().getId()
+											+ " error: " + ex);
+						}
+					}
+
 					if (survey != null) {
 						locale.setLocaleType(survey.getPointType());
 					}
@@ -320,6 +363,23 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 								.getProperty(DEFAULT_ORG_PROP));
 					}
 					locale = surveyedLocaleDao.save(locale);
+
+					// adjust Geocell cluster data
+					// we first build a map of existing clusters
+					// then either adapt an existing one, or create a new cluster
+					// TODO when surveyedLocales are deleted, it needs to be substracted from the clusters.
+					if (locale.getGeocells() != null){
+						// schedule adaptClusterData task
+						Queue queue = QueueFactory.getDefaultQueue();
+						TaskOptions to = TaskOptions.Builder
+								.withUrl("/app_worker/surveyalservlet")
+								.param(SurveyalRestRequest.ACTION_PARAM,
+										SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
+								.param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
+										locale.getKey().getId() + "");
+						queue.add(to);
+					} // end cluster data
+
 				} else {
 					if (survey.getPointType() != null
 							&& !survey.getPointType().equals(
@@ -412,8 +472,54 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 						}
 					}
 				}
+				surveyedLocaleDao.save(locale);
+				surveyInstanceDao.save(instance);
 			}
 		}
+	}
+
+	// this method is synchronised, because we are changing counts.
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private synchronized void adaptClusterData(Long surveyedLocaleId) {
+		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final SurveyedLocale locale = slDao.getById(surveyedLocaleId);
+		
+		if (locale == null){
+			log.log(Level.SEVERE,
+					"Couldn't find surveyedLocale with id: " + surveyedLocaleId);
+			return;
+		}
+
+		// initialize the memcache
+		Cache cache = null;
+		Map props = new HashMap();
+		props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
+		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+		try {
+			CacheFactory cacheFactory = CacheManager.getInstance()
+					.getCacheFactory();
+			cache = cacheFactory.createCache(props);
+		} catch (Exception e) {
+			log.log(Level.SEVERE,
+					"Couldn't initialize cache: " + e.getMessage(), e);
+		}
+
+		if (cache == null) {
+			// reschedule task to run in 5 mins
+			Queue queue = QueueFactory.getDefaultQueue();
+			TaskOptions to = TaskOptions.Builder
+					.withUrl("/app_worker/surveyalservlet")
+					.param(SurveyalRestRequest.ACTION_PARAM,
+							SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
+					.param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
+							surveyedLocaleId + "")
+					.countdownMillis(5 * 1000 * 60); // 5 minutes
+			queue.add(to);
+			return;
+		}
+		
+		MapUtils.recomputeCluster(cache, locale);
+
 	}
 
 	private boolean isStatus(String name) {
@@ -494,15 +600,12 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 							.getSurveyInstanceId());
 			List<Metric> metrics = null;
 			boolean loadedItems = false;
-			List<Question> questionList = null;
-			// initialize outside the loop so all answers get same collection
+			List<Question> questionList = qDao.listQuestionsBySurvey(answers.get(0).getSurveyId());
+
 			// date value
 			Calendar cal = new GregorianCalendar();
 			for (QuestionAnswerStore ans : answers) {
 				if (!loadedItems && ans.getSurveyId() != null) {
-
-					questionList = qDao
-							.listQuestionsBySurvey(ans.getSurveyId());
 					metrics = metricDao.listMetrics(null, null, null,
 							l.getOrganization(), "all");
 					mappings = metricMappingDao.listMappingsBySurvey(ans
@@ -594,4 +697,51 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		getResponse().setStatus(200);
 	}
 
+	/**
+	* runs over all surveydLocale objects, and populates:
+	* the Geocells field based on the latitude and longitude.
+	*
+	* New surveyedLocales will have these fields populated automatically, this
+	* method is to update legacy data.
+	*
+	* This method is invoked as a URL request:
+	* http://..../rest/actions?action=populateGeocellsForLocale
+	* @param cursor
+	* */
+	private void populateGeocellsForLocale(String cursor) {
+	log.log(Level.INFO, "creating geocells, at least, trying " + cursor);
+		List<SurveyedLocale> slList = null;
+		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		slList = slDao.list(cursor);
+		String newCursor = SurveyedLocaleDao.getCursor(slList);
+		Integer num = slList.size();
+
+		if (slList != null && slList.size() > 0) {
+			for (SurveyedLocale sl : slList) {
+				// populate geocells
+				if (sl.getGeocells() == null || sl.getGeocells().size() == 0) {
+					if (sl.getLatitude() != null && sl.getLongitude() != null
+						&& sl.getLongitude() < 180
+						&& sl.getLatitude() < 180) {
+						try {
+							sl.setGeocells(GeocellManager.generateGeoCell(new Point(
+									sl.getLatitude(), sl.getLongitude())));
+							} catch (Exception ex) {
+								log.log(Level.INFO,"Could not generate Geocell for AP: "
+									+ sl.getKey().getId() + " error: " + ex);
+							}
+						}
+					}
+					slDao.save(sl);
+			}
+		}
+		if (num > 0) {
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(TaskOptions.Builder
+				.withUrl("/app_worker/surveyalservlet")
+				.param(SurveyalRestRequest.ACTION_PARAM,
+					SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION)
+				.param("cursor", newCursor));
+		}
+	}
 }

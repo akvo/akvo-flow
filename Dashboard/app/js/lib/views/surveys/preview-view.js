@@ -1,6 +1,5 @@
 FLOW.PreviewView = FLOW.View.extend({
   templateName: 'navSurveys/preview-view',
-
   closePreviewPopup: function () {
     FLOW.previewControl.set('showPreviewPopup', false);
   }
@@ -11,12 +10,18 @@ FLOW.PreviewQuestionGroupView = FLOW.View.extend({
   QGcontent: null,
 
   init: function () {
-    var qgId;
+    var qgId,QGcontent;
     this._super();
     qgId = this.content.get('keyId');
-    this.set('QGcontent', FLOW.store.filter(FLOW.Question, function (item) {
+    QGcontent = FLOW.store.filter(FLOW.Question, function (item) {
       return item.get('questionGroupId') == qgId;
-    }));
+    });
+
+    tmp = QGcontent.toArray();
+    tmp.sort(function(a,b){
+    	return a.get('order') - b.get('order');
+    });
+    this.set('QGcontent',tmp);
   }
 });
 
@@ -58,7 +63,7 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
 
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-        return (a.order >= b.order);
+    	  return a.get('order') - b.get('order');
       });
 
       tempList = [];

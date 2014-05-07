@@ -752,6 +752,7 @@ table.dataTable thead tr th {
 table.dataTable thead tr th input[type="checkbox"] { margin: 0; }
 .dataSection table.dataTable thead tr th { padding: 9px 1em 9px 1em; }
 #surveyDataTable thead tr th { padding: 9px 1em 9px 1em; }
+#statisticsDataTable thead tr th { padding: 9px 1em 9px 1em; }
 #deviceDataTable thead tr th { padding: 9px 1em 9px 1em; }
 #usersListTable thead tr th { padding: 11px 1em 7px 1em; }
 #messageListTable thead tr th { padding: 9px 1em; }
@@ -760,6 +761,9 @@ table.dataTable thead tr th.noArrows { background: #3A3A3A; }
 table.dataTable thead tr th a, table.dataTable thead tr th a:link, table.dataTable thead tr th a:visited {
 	color: #FFD200;
 	cursor: pointer;
+}
+#statisticsDataTable {
+	width:400px;
 }
 /* end addition MTW */
 
@@ -2121,14 +2125,11 @@ nav.smallMenu ul li a.showQuestion:hover { background: url(../images/showQuestio
 .questionNbr span {
 	display: inline-block;
 	margin: -10px 0.6em 0 0;
-	padding: 0.2em 0 0 0;
-	width: 2em;
-	height: 1.8em;
-	border-radius: 1em;
+	padding:0.3em 0.6em;
+	border-radius: 0.75em;
 	background: rgb(58,58,58);
 	color: rgb(223,223,223);
 	text-align: center;
-	font-weight: bold;
 	font-size: 0.8em;
 	-moz-box-shadow: 0 -1px 0 rgb(185,185,185), 0 2px 0 rgb(255,255,255);
 	-webkit-box-shadow: 0 -1px 0 rgb(185,185,185), 0 2px 0 rgb(255,255,255);
@@ -2347,9 +2348,24 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	width: 49%;
 	height: 20px;
 }
+
+#dataFilter div.chooseLocationData {
+	position: relative;
+	display: block;
+	float: left;
+	margin: 0 1% 2em 0;
+	width: 100%;
+	height: 15px;
+}
+
 #dataFilter div.chooseSurveyData select {
 	display: inline;
 	width: 47%;
+}
+
+#dataFilter div.chooseLocationData select {
+	display: inline;
+	width: 15%;
 }
 #dataFilter div.dataCollectedDate {
 	position: relative;
@@ -2368,6 +2384,14 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 	padding: 0.5em 1em 8px 1em;
 	background: rgb(234,234,234);
 }
+
+#dataFilter div.dataLocation {
+	display: block;
+	margin: 5px 0 10px 0;
+	padding: 0.5em 1em 8px 1em;
+	background: rgb(234,234,234);
+}
+
 .dataTables_wrapper {
 	margin: 0px auto 1px auto;
 	background: rgb(235,235,235);
@@ -2447,7 +2471,7 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 #flowMap {
 	float: left;
 	margin: 0 0 0 0;
-	width: 75%;
+	width: 99.25%;
 	height: 600px;
 	border-bottom: 2px solid rgb(158, 158, 158);
 }
@@ -2687,6 +2711,17 @@ footer.bottomPage a[rel="self"]:hover { }
 	font-size: 1.2em;
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
+.fixedMenu {
+  background: none repeat scroll 0 0 #FFFFFF;
+  box-shadow: 0 1px 3px #F2F2F2;
+  height: 35px;
+  padding:10px 0;
+  position: fixed;
+  top: 15.3%;
+  width: 60%;
+  min-width:500px;
+  z-index: 9999;
+}
 .surveyPreviewWrap div.questionGroupBlock {
 	margin: 5em auto;
 	padding: 0.5em 1em 1em 1em;
@@ -2736,24 +2771,15 @@ footer.bottomPage a[rel="self"]:hover { }
 }
 .surveyPreviewWrap .innerContent h1.questionNbr span {
 	display: inline-block;
-	margin: 0.1em 0.2em 0 0;
-	padding: 0 0 0 0;
+	margin: 0.1em 0.5em 0 0;
 	width: inherit;
 	height: inherit;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
-	border-radius: 0;
-	background: transparent;
-	color: rgb(58,58,58);
 	text-align: center;
-	font-weight: bold;
-	font-size: 1.2em;
-	-o-border-radius: 0;
 }
+
 .surveyPreviewWrap .innerContent h1.questionNbr span:after {
 	display: inline-block;
-	margin: 0 0.2em 0 0;
-	content: ".";
+	margin: 0 0.5em 0 0;
 }
 .surveyPreviewWrap .previewQuestion { margin: 2.5em auto 0 auto; }
 /********************************************************************************************************************************
@@ -3056,7 +3082,7 @@ table.surveyTranslate .qHelpTooltip p {
 }
 table.surveyTranslate .qHelpTooltip label { margin: 1.25em 0 0em 0; }
 table.surveyTranslate .qHelpTooltip label.qTooltip + input { width:93%; }
-.surveyDetails { min-height: 300px; }
+.surveyDetails { min-height: 200px; }
 .surveyDetails ul textarea { margin: 0 0 0 0 !important; }
 .groupSection h1 { margin: 0.5em 0 0.5em 0; }
  .fullWidth: {
@@ -3221,3 +3247,23 @@ width: 100%;
 .is-error .uploader-item:hover, .is-active.is-error .uploader-item { border-color: #900; }
 .is-error .uploader-item:hover .uploader-item-title, .is-active.is-error .uploader-item .uploader-item-title { background-color: rgba(153,0,0,0.6); }
 .is-error .uploader-item-creating-thumbnail { display: none; }
+
+.marker-cluster {
+		background-color: rgba(253, 156, 115, 0.6);
+        background-clip: padding-box;
+        border-radius: 20px;
+        }
+.marker-cluster div {
+        background-color: rgba(241, 128, 23, 0.6);
+        width: 30px;
+        height: 30px;
+        margin-left: 5px;
+        margin-top: 5px;
+
+        text-align: center;
+        border-radius: 15px;
+        font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+        }
+.marker-cluster span {
+        line-height: 30px;
+        }

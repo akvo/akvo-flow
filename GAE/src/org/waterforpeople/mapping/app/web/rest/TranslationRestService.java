@@ -59,22 +59,14 @@ public class TranslationRestService {
 	@Inject
 	private SurveyDAO sDao;
 
-	@Inject
-	private QuestionGroupDao qgDao;
-
-	@Inject
-	private QuestionDao qDao;
-
-	@Inject
-	private QuestionOptionDao qoDao;
-	private List<Question> questions;
 	Map<String, Translation> translations = new HashMap<String, Translation>();
 
-	// list translations by surveyId
+	// list translations by surveyId and questionGroupId
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public Map<String, Object> listTranslationsBySurveyId(
-			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId) {
+			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+			@RequestParam(value = "questionGroupId", defaultValue = "") Long questionGroupId) {
 		final Map<String, Object> response = new HashMap<String, Object>();
 		List<TranslationDto> results = new ArrayList<TranslationDto>();
 		RestStatusDto statusDto = new RestStatusDto();
@@ -83,55 +75,24 @@ public class TranslationRestService {
 
 		if (surveyId != null) {
 			Survey survey = sDao.getById(surveyId);
-			if (survey != null) {
+			if (survey != null && questionGroupId != null) {
 				addTranslations(Translation.ParentType.SURVEY_NAME, survey
 						.getKey().getId(), surveyId, results);
 				addTranslations(Translation.ParentType.SURVEY_DESC, survey
 						.getKey().getId(),surveyId, results);
 
 				// get question group translations
-				List<QuestionGroup> qGroups = qgDao
-						.listQuestionGroupBySurvey(surveyId);
-				if (qGroups != null && qGroups.size() > 0) {
-					for (QuestionGroup qgroup : qGroups) {
-						addTranslations(
-								Translation.ParentType.QUESTION_GROUP_NAME,
-								qgroup.getKey().getId(),surveyId, results);
-					}
-					// get question translations
-					questions = qDao.listQuestionsBySurvey(surveyId);
-					if (questions != null && questions.size() > 0) {
-						for (Question question : questions) {
-							addTranslations(
-									Translation.ParentType.QUESTION_TEXT,
-									question.getKey().getId(),surveyId, results);
-							addTranslations(
-									Translation.ParentType.QUESTION_TIP,
-									question.getKey().getId(),surveyId, results);
-
-							// if the question is of OPTION type, get the option
-							// translations
-							if (question.getType() == Question.Type.OPTION) {
-								Map<Integer, QuestionOption> questionOptions = qoDao
-										.listOptionByQuestion(question.getKey()
-												.getId());
-								if (questionOptions != null
-										&& questionOptions.size() > 0) {
-									for (QuestionOption qOption : questionOptions
-											.values()) {
-										addTranslations(
-												Translation.ParentType.QUESTION_OPTION,
-												qOption.getKey().getId(),surveyId,
-												results);
-									}
-								}
-							}
-						}
-					}
+				List<Translation> translations = tDao.listTranslationsByQuestionGroup(
+						questionGroupId);
+				for (Translation t : translations) {
+					TranslationDto tDto = new TranslationDto();
+					DtoMarshaller.copyToDto(t, tDto);
+					tDto.setLangCode(t.getLanguageCode());
+					tDto.setSurveyId(surveyId);
+					results.add(tDto);
 				}
 			}
 		}
-
 		response.put("translations", results);
 		return response;
 	}
@@ -212,7 +173,7 @@ public class TranslationRestService {
 	private TranslationDto createTranslation(TranslationDto translationDto) {
 		Translation t = new Translation();
 		BeanUtils.copyProperties(translationDto, t, new String[] {
-				"createdDateTime", "parentType", "langCode", "surveyId" });
+				"createdDateTime", "parentType", "langCode"});
 		t.setLanguageCode(translationDto.getLangCode());
 		if (translationDto.getParentType() != null) {
 			t.setParentType(Translation.ParentType.valueOf(translationDto
@@ -223,10 +184,6 @@ public class TranslationRestService {
 		TranslationDto tDto = new TranslationDto();
 		DtoMarshaller.copyToDto(t, tDto);
 		tDto.setLangCode(t.getLanguageCode());
-		// the surveyId is taken directly from the input dto 
-		// as it is not stored on the object
-		tDto.setSurveyId(translationDto.getSurveyId());
-		
 		return tDto;
 	}
 

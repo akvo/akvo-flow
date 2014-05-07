@@ -37,12 +37,12 @@ import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
 
@@ -60,16 +60,16 @@ public class QuestionRestService {
 	private SurveyMetricMappingDao surveyMetricMappingDao;
 
 	
-	// list questions by questionGroup or by survey. If includeNumber or
-	// includeOption are true, only NUMBER and OPTION type questions are
-	// returned
+	// list questions by questionGroup or by survey.
+	// if optionQuestionHeadersOnly is true, only the option questions are returned
+	// and without any of the actual options loaded. In the dashboard, this is used
+	// merely to make a choice between options, so not all details are necessary.
 	@RequestMapping(method = RequestMethod.GET, value = "")
 	@ResponseBody
 	public Map<String, Object> listQuestions(
 			@RequestParam(value = "questionGroupId", defaultValue = "") Long questionGroupId,
 			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
-			@RequestParam(value = "includeNumber", defaultValue = "") String includeNumber,
-			@RequestParam(value = "includeOption", defaultValue = "") String includeOption,
+			@RequestParam(value = "optionQuestionsOnly", defaultValue = "") String optionQuestionsOnly,
 			@RequestParam(value = "preflight", defaultValue = "") String preflight,
 			@RequestParam(value = "questionId", defaultValue = "") Long questionId) {
 		final Map<String, Object> response = new HashMap<String, Object>();
@@ -90,64 +90,35 @@ public class QuestionRestService {
 			if (qasDao.listByQuestion(questionId).size() == 0) {
 				statusDto.setMessage("can_delete");
 				statusDto.setKeyId(questionId);
-			} 
-		} else {
-
-			// load questions in a question group, or all questions in the
-			// survey
-			if (questionGroupId != null) {
-				questions = questionDao
-						.listQuestionsInOrderForGroup(questionGroupId);
-			} else if (surveyId != null) {
-				questions = questionDao.listQuestionsInOrder(surveyId);
 			}
 
-			if (questions.size() > 0) {
+		// if questionGroupId is present, load questions in that group
+		} else if (questionGroupId != null){
+			questions = questionDao.listQuestionsInOrderForGroup(questionGroupId);
+		} else if (surveyId != null){
+			if (optionQuestionsOnly.equals("true")){
+				questions = questionDao.listQuestionsInOrder(surveyId,Question.Type.OPTION);
+			} else {
+				questions = questionDao.listQuestionsInOrder(surveyId, null);
+			}
+			if (questions != null && questions.size()  > 0){
 				for (Question question : questions) {
-
-					Boolean includeElement = false;
-					// include if we are requesting questions in a group
-					if (questionGroupId != null)
-						includeElement = true;
-
-					// include if we are requesting questions in a survey, with
-					// none of the other parameters set
-					if (surveyId != null
-							&& ("".equals(includeNumber) && ""
-									.equals(includeOption)))
-						includeElement = true;
-
-					// include if we request options, and the present element is
-					// an option
-					if (surveyId != null && "true".equals(includeOption)
-							&& question.getType() == Question.Type.OPTION)
-						includeElement = true;
-
-					// include if we request numbers, and the present element is
-					// a number
-					if (surveyId != null && "true".equals(includeNumber)
-							&& question.getType() == Question.Type.NUMBER)
-						includeElement = true;
-
-					if (includeElement) {
-						QuestionDto dto = new QuestionDto();
-						DtoMarshaller.copyToDto(question, dto);
-						if (question.getType() == Question.Type.OPTION) {
-							
-							Map<Integer,QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto.getKeyId());
-							List<Long> qoList = new ArrayList<Long>();
-							for (QuestionOption qo : qoMap.values()){
-								QuestionOptionDto qoDto = new QuestionOptionDto();
-								BeanUtils.copyProperties(qo, qoDto, new String[] {
-										"translationMap"});
-								qoDto.setKeyId(qo.getKey().getId());
-								qoList.add(qo.getKey().getId());
-								qoResults.add(qoDto);
-							}
-							dto.setQuestionOptions(qoList);
+					QuestionDto qDto = new QuestionDto();
+					DtoMarshaller.copyToDto(question, qDto);
+					if (question.getType() == Question.Type.OPTION && !optionQuestionsOnly.equals("true")) {
+						Map<Integer,QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(qDto.getKeyId());
+						List<Long> qoList = new ArrayList<Long>();
+						for (QuestionOption qo : qoMap.values()){
+							QuestionOptionDto qoDto = new QuestionOptionDto();
+							BeanUtils.copyProperties(qo, qoDto, new String[] {
+								"translationMap"});
+							qoDto.setKeyId(qo.getKey().getId());
+							qoList.add(qo.getKey().getId());
+							qoResults.add(qoDto);
 						}
-						results.add(dto);
+						qDto.setQuestionOptions(qoList);
 					}
+					results.add(qDto);
 				}
 			}
 		}
@@ -291,6 +262,7 @@ public class QuestionRestService {
 			@RequestBody QuestionPayload payLoad) {
 		final QuestionDto questionDto = payLoad.getQuestion();
 		final Map<String, Object> response = new HashMap<String, Object>();
+		List<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
 		QuestionDto dto = null;
 
 		RestStatusDto statusDto = new RestStatusDto();
@@ -300,27 +272,60 @@ public class QuestionRestService {
 		// if the POST data contains a valid questionDto, continue. Otherwise,
 		// server will respond with 400 Bad Request
 		if (questionDto != null) {
-			Question q = new Question();
+			Question q = null;
 
-			// copy the properties, except the createdDateTime property, because
-			// it is set in the Dao.
-			BeanUtils.copyProperties(questionDto, q, new String[] {
-					"createdDateTime", "type"});
-			if (questionDto.getType() != null)
-				q.setType(Question.Type.valueOf(questionDto.getType()
-						.toString()));
-
-			q = questionDao.save(q);
-
+			if (questionDto.getSourceId() == null) {
+				q = newQuestion(questionDto);
+			} else {
+				q = copyQuestion(questionDto);
+			}
 			dto = new QuestionDto();
 			DtoMarshaller.copyToDto(q, dto);
 			statusDto.setStatus("ok");
 			statusDto.setMessage("");
+
+			if (q.getType() == Question.Type.OPTION) {
+				Map<Integer,QuestionOption> qoMap = questionOptionDao.listOptionByQuestion(dto.getKeyId());
+				List<Long> qoList = new ArrayList<Long>();
+				for (QuestionOption qo : qoMap.values()){
+					QuestionOptionDto qoDto = new QuestionOptionDto();
+					BeanUtils.copyProperties(qo, qoDto, new String[] {
+							"translationMap"});
+					qoDto.setKeyId(qo.getKey().getId());
+					qoList.add(qo.getKey().getId());
+					qoResults.add(qoDto);
+				}
+				dto.setQuestionOptions(qoList);
+			}
+		}
+		response.put("meta", statusDto);
+		response.put("questionOptions", qoResults);
+		response.put("question", dto);
+
+		return response;
 		}
 
-		response.put("meta", statusDto);
-		response.put("question", dto);
-		return response;
+	private Question copyQuestion(QuestionDto dto) {
+		final Question source = questionDao.getByKey(dto.getSourceId());
+
+		if (source == null) {
+			// source question not found, the getByKey already logged the problem
+			return null;
+		}
+		return SurveyUtils.copyQuestion(source,dto.getQuestionGroupId(), dto.getOrder(), source.getSurveyId());
 	}
 
+	private Question newQuestion(QuestionDto dto) {
+		final Question q = new Question();
+		// copy the properties, except the createdDateTime property, because
+		// it is set in the Dao.
+		BeanUtils.copyProperties(dto, q, new String[] {
+			"createdDateTime", "type"});
+		if (dto.getType() != null){
+			q.setType(Question.Type.valueOf(dto.getType()
+								.toString()));
+			}
+		final Question result = questionDao.save(q);
+		return result;
+	}
 }
