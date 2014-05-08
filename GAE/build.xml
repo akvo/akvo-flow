@@ -182,6 +182,8 @@
 		<exec dir="../Dashboard" executable="rake" failonerror="true">
 		    <env key="RAKEP_MODE" value="production" />
 		    <arg value="build" />
+		    <arg value="--verbose" />
+		    <arg value="--trace" />
 		</exec>
 
 		<exec dir="../" executable="git" outputproperty="app.version">
