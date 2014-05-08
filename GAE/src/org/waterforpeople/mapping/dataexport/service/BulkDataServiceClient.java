@@ -821,6 +821,7 @@ public class BulkDataServiceClient {
 								}
 							}
 
+							/* TODO: remove duplicate
 							if (json.has("mandatoryFlag")) {
 								if (json.getString("mandatoryFlag") != null)
 									dto.setMandatoryFlag(Boolean.parseBoolean(json
@@ -828,6 +829,8 @@ public class BulkDataServiceClient {
 								else
 									dto.setMandatoryFlag(false);
 							}
+							*/
+							
 							if (json.has("allowMultipleFlag")) {
 								if (json.getString("allowMultipleFlag") != null)
 									dto.setAllowMultipleFlag(Boolean.parseBoolean(json
@@ -850,7 +853,11 @@ public class BulkDataServiceClient {
 										.getLong("questionGroupId"));
 							}
 							if (json.has("tip")) {
-								dto.setTip(json.getString("tip"));
+								// avoid "null" from appearing as help tooltip text 
+								String tipText = json.getString("tip").trim()
+										.equalsIgnoreCase("null") ? null : json
+										.getString("tip");
+								dto.setTip(tipText);
 							}
 							if (json.has("path")) {
 								dto.setPath(json.getString("path"));
@@ -861,13 +868,57 @@ public class BulkDataServiceClient {
 							if (json.has("keyId")) {
 								dto.setKeyId(json.getLong("keyId"));
 							}
-							if (json.has("mandatoryFlag")) {
-								dto.setMandatoryFlag(Boolean.parseBoolean(json
-										.getString("mandatoryFlag")));
+							if (json.has("collapseable")) {
+								dto.setCollapseable(Boolean.parseBoolean(
+												json.getString("collapseable")));
+							}
+							if (json.has("dependentFlag")) {
+								dto.setDependentFlag(Boolean.parseBoolean(json
+										.getString("dependentFlag")));
+							}
+							if (json.has("dependentQuestionAnswer")) {
+									dto.setDependentQuestionAnswer(json.optString("dependentQuestionAnswer"));
+							}
+							if(json.has("dependentQuestionId") && dto.getDependentFlag()) {
+								try {
+									dto.setDependentQuestionId(json.getLong("dependentQuestionId"));
+								} catch (Exception e) {
+									dto.setDependentQuestionId(null);
+								}
+							}
+							if (json.has("geoLocked")) {
+								dto.setGeoLocked(Boolean.parseBoolean(
+												json.getString("geoLocked")));
+							}
+							if (json.has("immutable")) {
+								dto.setImmutable(Boolean.parseBoolean(
+												json.getString("immutable")));
 							}
 							if (json.has("isName")) {
 								dto.setIsName(Boolean.parseBoolean(json
 										.getString("isName")));
+							}
+							if (json.has("mandatoryFlag")) {
+								dto.setMandatoryFlag(Boolean.parseBoolean(
+												json.getString("mandatoryFlag")));
+							}
+							if (json.has("metricId")) {
+								try {
+									dto.setMetricId(json.getLong("metricId"));
+								} catch (Exception e) {
+									dto.setMetricId(null);
+								}
+							}
+							if (json.has("requireDoubleEntry")) {
+								dto.setRequireDoubleEntry(Boolean.parseBoolean(
+												json.getString("requireDoubleEntry")));
+							}
+							if (json.has("sourceId")) {
+								try {
+									dto.setSourceId(json.getLong("sourceId"));
+								} catch (Exception e) {
+									dto.setSourceId(null);
+								}
 							}
 							if (json.has("allowDecimal")) {
 								dto.setAllowDecimal(Boolean.parseBoolean(json
@@ -938,6 +989,11 @@ public class BulkDataServiceClient {
 									}
 									dto.setOptionContainerDto(container);
 								}
+								
+								// The questionDependency check below is related to the
+								// previous if statements dependentFlag, dependentQuestionId, 
+								// dependentQuestionAnswer i.e. checks whether question is
+								// dependent on another
 								if (json.has("questionDependency")
 										&& !JSONObject.NULL.equals(json
 												.get("questionDependency"))) {
