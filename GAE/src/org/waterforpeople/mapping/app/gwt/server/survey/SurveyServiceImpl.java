@@ -319,33 +319,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 	public static QuestionDto marshalQuestionDto(Question q) {
 		QuestionDto qDto = new QuestionDto();
 
-		qDto.setKeyId(q.getKey().getId());
-		qDto.setQuestionGroupId(q.getQuestionGroupId());
-		qDto.setPath(q.getPath());
-		qDto.setOrder(q.getOrder());
-		qDto.setSurveyId(q.getSurveyId());
-		if (q.getMandatoryFlag() != null) {
-			if (q.getMandatoryFlag()) {
-				qDto.setMandatoryFlag(true);
-			}
-		} else {
-			qDto.setMandatoryFlag(false);
-		}
-		qDto.setCollapseable(q.getCollapseable());
-		qDto.setImmutable(q.getImmutable());
-		if (q.getText() != null)
-			qDto.setText(q.getText());
-		if (q.getTip() != null)
-			qDto.setTip(q.getTip());
-		if (q.getType() != null)
-			qDto.setType(QuestionDto.QuestionType.valueOf(q.getType()
-					.toString()));
-		qDto.setAllowDecimal(q.getAllowDecimal());
-		qDto.setAllowSign(q.getAllowSign());
-		qDto.setMinVal(q.getMinVal());
-		qDto.setMaxVal(q.getMaxVal());
-		qDto.setIsName(q.getIsName());
-
+		DtoMarshaller.copyToDto(q, qDto);
+		
 		if (q.getQuestionHelpMediaMap() != null) {
 			for (QuestionHelpMedia help : q.getQuestionHelpMediaMap().values()) {
 				QuestionHelpDto dto = new QuestionHelpDto();
@@ -442,37 +417,17 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
 	public Question marshalQuestion(QuestionDto qdto) {
 		Question q = new Question();
-		if (qdto.getKeyId() != null)
-			q.setKey((KeyFactory.createKey(Question.class.getSimpleName(),
-					qdto.getKeyId())));
-
-		q.setQuestionGroupId(qdto.getQuestionGroupId());
-		q.setOrder(qdto.getOrder());
-		q.setPath(qdto.getPath());
-		q.setMandatoryFlag(qdto.getMandatoryFlag());
-		q.setAllowMultipleFlag(qdto.getAllowMultipleFlag());
-		q.setAllowOtherFlag(qdto.getAllowOtherFlag());
-		if (qdto.getText() != null) {
-			q.setText(qdto.getText());
-		}
-		if (qdto.getTip() != null)
-			q.setTip(qdto.getTip());
-		if (qdto.getType() != null)
-			q.setType(Question.Type.valueOf(qdto.getType().toString()));
-
-		q.setAllowDecimal(qdto.getAllowDecimal());
-		q.setAllowSign(qdto.getAllowSign());
-		q.setMinVal(qdto.getMinVal());
-		q.setMaxVal(qdto.getMaxVal());
-		q.setIsName(qdto.getIsName());
-
+		
+		DtoMarshaller.copyToCanonical(q, qdto);
+		
+		/* TODO: remove as same code seems to be duplicated later in this method
 		if (qdto.getQuestionHelpList() != null) {
 			List<QuestionHelpDto> qHListDto = qdto.getQuestionHelpList();
 			for (QuestionHelpDto qhDto : qHListDto) {
 				QuestionHelpMedia qh = new QuestionHelpMedia();
 				DtoMarshaller.copyToCanonical(qh, qhDto);
 			}
-		}
+		}*/
 
 		if (qdto.getOptionContainerDto() != null) {
 			OptionContainerDto ocDto = qdto.getOptionContainerDto();
@@ -515,15 +470,18 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				}
 			}
 		}
+		
+		/*
+		 * TODO: remove. probably not necessary as already covered by 
+		 * dependentFlag, dependentQuestionId, and dependentQUestionAnswer
+		 * members in schema
 		if (qdto.getQuestionDependency() != null) {
 			q.setDependentQuestionId(qdto.getQuestionDependency()
 					.getQuestionId());
 			q.setDependentQuestionAnswer(qdto.getQuestionDependency()
 					.getAnswerValue());
 			q.setDependentFlag(true);
-		}
-		q.setCollapseable(qdto.getCollapseable());
-		q.setImmutable(qdto.getImmutable());
+		}*/
 
 		if (qdto.getTranslationMap() != null) {
 			TreeMap<String, Translation> transMap = marshalFromDtoTranslations(qdto
