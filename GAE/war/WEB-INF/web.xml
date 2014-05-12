@@ -364,15 +364,6 @@
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/editorialcontentrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>AccessPointMetricSummaryService</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointMetricSummaryServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AccessPointMetricSummaryService</servlet-name>
-		<url-pattern>org.waterforpeople.mapping.portal.portal/apmetricsummaryrpcservice</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>GISSupportService</servlet-name>
 		<servlet-class>com.gallatinsystems.gis.app.gwt.server.GISSupportServiceImpl</servlet-class>
 	</servlet>
@@ -445,19 +436,6 @@
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyattrmaprpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>WebActAuthRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.auth.WebActivityAuthorizationServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>WebActAuthRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/webactauthrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>WebActAuthRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/webactauthrpcservice</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>SurveyRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl</servlet-class>
 	</servlet>
@@ -472,7 +450,7 @@
 	<servlet>
 		<servlet-name>SurveyAssignmentRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl</servlet-class>
-	</servlet>
+	</servlet>	
 	<servlet-mapping>
 		<servlet-name>SurveyAssignmentRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyassnrpcservice</url-pattern>
@@ -486,40 +464,12 @@
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveysummaryrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>CommunityRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.community.CommunityServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>CommunityRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/communityrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>AccessPointManagerRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AccessPointManagerRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/apmanagerrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AccessPointManagerRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/apmanagerrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>AccessPointSummaryRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointSummaryServiceImpl</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>AccessPointSummaryRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/apsummaryrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>DeviceRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.device.DeviceServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DeviceRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/devicerpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>UserRpcServlet</servlet-name>

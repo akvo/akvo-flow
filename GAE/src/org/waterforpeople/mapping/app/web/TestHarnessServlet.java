@@ -68,7 +68,6 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
-import org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointManagerServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
@@ -585,16 +584,7 @@ public class TestHarnessServlet extends HttpServlet {
 				cursor = JDOCursorHelper.getCursor(siList);
 			}
 			System.out.println("finished");
-
-		} else if ("rotateImage".equals(action)) {
-
-			AccessPointManagerServiceImpl apmI = new AccessPointManagerServiceImpl();
-			String test1 = "http://waterforpeople.s3.amazonaws.com/images/wfpPhoto10062903227521.jpg";
-			// String test2 =
-			// "http://waterforpeople.s3.amazonaws.com/images/hn/ch003[1].jpg";
-			writeImageToResponse(resp, test1);
-			apmI.setUploadS3Flag(false);
-			// apmI.rotateImage(test2);
+			
 		} else if ("clearSurveyGroupGraph".equals(action)) {
 			SurveyGroupDAO sgDao = new SurveyGroupDAO();
 			sgDao.delete(sgDao.list("all"));
