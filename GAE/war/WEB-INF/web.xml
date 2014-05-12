@@ -354,15 +354,6 @@
 		<servlet-name>SurveyMetricMappingRpcService</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveymetricmaprpcservice</url-pattern>
 	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>EditorialContentService</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.editorial.EditorialContentServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>EditorialContentService</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/editorialcontentrpcservice</url-pattern>
-	</servlet-mapping>
 	<servlet>
 		<servlet-name>GISSupportService</servlet-name>
 		<servlet-class>com.gallatinsystems.gis.app.gwt.server.GISSupportServiceImpl</servlet-class>
@@ -479,15 +470,6 @@
 		<servlet-name>UserRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/userrpcservice</url-pattern>
 	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>RemoteExceptionRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/remoteexceptionrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>RemoteExceptionRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.diagnostics.RemoteExceptionServiceImpl</servlet-class>
-	</servlet>
 	<servlet>
 		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.spreadsheetmapper.SpreadsheetMappingAttributeServiceImpl</servlet-class>

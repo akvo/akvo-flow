@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
+@Deprecated
 public class DataEntryFormDefinitionDto extends BaseDto implements Serializable {
 
 	/**
