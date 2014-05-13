@@ -38,7 +38,8 @@ public class MapUtils {
     // latitude / longitude values
     private static final double REVMULT = 0.000001;
 
-    public static void recomputeCluster(Cache cache, SurveyedLocale locale) {
+    // delta can be +1 or -1, depending on if we want to add a point or delete a point.
+    public static void recomputeCluster(Cache cache, SurveyedLocale locale, int delta) {
 
         final SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();
         final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
@@ -60,14 +61,16 @@ public class MapUtils {
 
                 // get public status, first try from cache
                 String pubKey = surveyIdString + "-publicStatus";
-                if (cache.containsKey(pubKey)) {
+                if (cache != null && cache.containsKey(pubKey)) {
                     showOnPublicMap = (Boolean) cache.get(pubKey);
                 } else {
                     Survey s = sDao.getByKey(surveyId);
                     if (s != null) {
                         showOnPublicMap = showOnPublicMap || "Point".equals(s.getPointType())
                                 || "PublicInstitution".equals(s.getPointType());
-                        cache.put(pubKey, showOnPublicMap);
+                        if (cache != null){
+                        	cache.put(pubKey, showOnPublicMap);
+                        }
                     }
                 }
             }
@@ -77,24 +80,33 @@ public class MapUtils {
 
             String cell = locale.getGeocells().get(i) + "-" + showOnPublicMap.toString();
 
-            if (cache.containsKey(cell)) {
+            if (cache != null && cache.containsKey(cell)) {
 
                 @SuppressWarnings("unchecked")
                 final Map<String, Long> cellMap = (Map<String, Long>) cache.get(cell);
                 final Long count = (Long) cellMap.get("count");
 
-                latTotal = cellMap.get("lat") + Math.round(locale.getLatitude() * MULT);
-                lonTotal = cellMap.get("lon") + Math.round(locale.getLongitude() * MULT);
+                if (count == 1 && delta == -1) {
+                	// the cluster needs to be deleted, because the count will become zero
+                	cache.remove(cell);
+                    SurveyedLocaleCluster clusterInStore = slcDao.getByKey(cellMap.get("id"));
+                    if (clusterInStore != null) {
+                    	slcDao.delete(clusterInStore);
+                    }
+                } else {
+                	latTotal = cellMap.get("lat") + Math.round(locale.getLatitude() * MULT * delta);
+                	lonTotal = cellMap.get("lon") + Math.round(locale.getLongitude() * MULT * delta);
 
-                addToCache(cache, cell, cellMap.get("id"), count + 1, latTotal, lonTotal);
+                	addToCache(cache, cell, cellMap.get("id"), count + delta, latTotal, lonTotal);
 
-                SurveyedLocaleCluster clusterInStore = slcDao.getByKey(cellMap.get("id"));
+                	SurveyedLocaleCluster clusterInStore = slcDao.getByKey(cellMap.get("id"));
 
-                if (clusterInStore != null) {
-                    clusterInStore.setCount(cellMap.get("count").intValue() + 1);
-                    clusterInStore.setLatCenter(REVMULT * latTotal / (count + 1));
-                    clusterInStore.setLonCenter(REVMULT * lonTotal / (count + 1));
-                    slcDao.save(clusterInStore);
+                	if (clusterInStore != null) {
+                		clusterInStore.setCount(cellMap.get("count").intValue() + delta);
+                		clusterInStore.setLatCenter(REVMULT * latTotal / (count + delta));
+                		clusterInStore.setLonCenter(REVMULT * lonTotal / (count + delta));
+                		slcDao.save(clusterInStore);
+                	}
                 }
 
             } else {
@@ -104,23 +116,29 @@ public class MapUtils {
                         .getGeocells().get(i), showOnPublicMap);
 
                 if (clusterInStore != null) {
-                    final Long count = clusterInStore.getCount().longValue();
+                	if (clusterInStore.getCount() == 1 && delta == -1) {
+                		// the cluster needs to be deleted
+                		// as we didn't find it in the cache, we only need to delete it in the datastore
+                        slcDao.delete(clusterInStore);
+                	} else {
+                		final Long count = clusterInStore.getCount().longValue();
+                		latCenter = (clusterInStore.getLatCenter() * count + locale.getLatitude()*delta)
+                            / (count + delta);
+                		lonCenter = (clusterInStore.getLonCenter() * count + locale.getLongitude()*delta)
+                            / (count + delta);
 
-                    latCenter = (clusterInStore.getLatCenter() * count + locale.getLatitude())
-                            / (count + 1);
+                		if (cache != null) {
+                			addToCache(cache, cell, clusterInStore.getKey().getId(),
+                				clusterInStore.getCount() + delta,
+                				Math.round(MULT * latCenter * (count + delta)),
+                				Math.round(MULT * lonCenter * (count + delta)));
+                		}
 
-                    lonCenter = (clusterInStore.getLonCenter() * count + locale.getLongitude())
-                            / (count + 1);
-
-                    addToCache(cache, cell, clusterInStore.getKey().getId(),
-                            clusterInStore.getCount() + 1,
-                            Math.round(MULT * latCenter * (count + 1)),
-                            Math.round(MULT * lonCenter * (count + 1)));
-
-                    clusterInStore.setCount(clusterInStore.getCount() + 1);
-                    clusterInStore.setLatCenter(latCenter);
-                    clusterInStore.setLonCenter(lonCenter);
-                    slcDao.save(clusterInStore);
+                		clusterInStore.setCount(clusterInStore.getCount() + delta);
+                		clusterInStore.setLatCenter(latCenter);
+                		clusterInStore.setLonCenter(lonCenter);
+                		slcDao.save(clusterInStore);
+                	}
                 } else {
                     // create a new one
                     SurveyedLocaleCluster slcNew = new SurveyedLocaleCluster(locale.getLatitude(),
@@ -130,9 +148,11 @@ public class MapUtils {
 
                     slcDao.save(slcNew);
 
-                    addToCache(cache, cell, slcNew.getKey().getId(), 1,
+                    if (cache != null) {
+                    	addToCache(cache, cell, slcNew.getKey().getId(), 1,
                             Math.round(MULT * locale.getLatitude()),
                             Math.round(MULT * locale.getLongitude()));
+                    }
                 }
             }
         }

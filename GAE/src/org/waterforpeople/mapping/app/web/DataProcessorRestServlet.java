@@ -453,7 +453,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		for (SurveyedLocale locale : results) {
 			// adjust Geocell cluster data
 			if (locale.getGeocells() != null && !locale.getGeocells().isEmpty()){
-			    MapUtils.recomputeCluster(cache, locale);
+			    MapUtils.recomputeCluster(cache, locale, 1);
 			}
 		}
 		
