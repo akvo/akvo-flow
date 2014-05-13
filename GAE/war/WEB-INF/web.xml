@@ -319,14 +319,6 @@
 		<servlet-name>RemoteLogging</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/remote_logging</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>ConfigRpcService</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.config.ConfigurationServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ConfigRpcService</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/configrpcservice</url-pattern>
-	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>GISSupportService</servlet-name>
@@ -345,14 +337,6 @@
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/notificationsubrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>DeviceFileRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DeviceFileRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/devicefilerpc</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>NotificationProcessor</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.notification.MappingNotificationProcessor</servlet-class>
 	</servlet>
@@ -367,14 +351,6 @@
 	<servlet-mapping>
 		<servlet-name>MapingSummarization</servlet-name>
 		<url-pattern>/webapp/mapping/summary</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>StandardScoringServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.standardscoring.StandardScoringServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>StandardScoringServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/standardscoring</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>SpreadsheetProcessor</servlet-name>
@@ -395,14 +371,6 @@
 	<servlet-mapping>
 		<servlet-name>SurveyRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/surveyrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>AccessPointSummaryRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.accesspoint.AccessPointSummaryServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AccessPointSummaryRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/apsummaryrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>UserRpcServlet</servlet-name>
@@ -454,15 +422,6 @@
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/messagerpcservice</url-pattern>
 	</servlet-mapping>
 
-
-	<servlet>
-		<servlet-name>DisplayTemplateMappingRpcService</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.displaytemplate.DisplayTemplateMappingServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DisplayTemplateMappingRpcService</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/displaytemplatemapping</url-pattern>
-	</servlet-mapping>
 	<servlet>
 		<servlet-name>PhotoUpload</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.PhotoUpload</servlet-class>
@@ -526,14 +485,6 @@
 	<servlet-mapping>
 		<servlet-name>ExternalGISDataRestApi</servlet-name>
 		<url-pattern>/externalgisdatarestapi</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>ChartUrlRestApi</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.ChartUrlServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ChartUrlRestApi</servlet-name>
-		<url-pattern>/charturlrestapi</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>DataBackoutApi</servlet-name>
