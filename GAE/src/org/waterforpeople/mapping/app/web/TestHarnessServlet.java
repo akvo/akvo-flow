@@ -61,15 +61,12 @@ import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.AccessPointMetricSummary;
 import org.waterforpeople.mapping.analytics.domain.AccessPointStatusSummary;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
-import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyAssignmentDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.server.devicefiles.DeviceFilesServiceImpl;
-import org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
@@ -175,8 +172,6 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -1414,52 +1409,6 @@ public class TestHarnessServlet extends HttpServlet {
 			} else {
 				fixNameQuestion(req.getParameter("questionId"));
 			}
-		} else if ("createSurveyAssignment".equals(action)) {
-			Device device = new Device();
-			device.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
-			device.setPhoneNumber("1111111111");
-			device.setInServiceDate(new Date());
-
-			BaseDAO<Device> deviceDao = new BaseDAO<Device>(Device.class);
-			deviceDao.save(device);
-			SurveyAssignmentServiceImpl sasi = new SurveyAssignmentServiceImpl();
-			SurveyAssignmentDto dto = new SurveyAssignmentDto();
-			SurveyDAO surveyDao = new SurveyDAO();
-			List<Survey> surveyList = surveyDao.list("all");
-			SurveyAssignment sa = new SurveyAssignment();
-			BaseDAO<SurveyAssignment> surveyAssignmentDao = new BaseDAO<SurveyAssignment>(
-					SurveyAssignment.class);
-			sa.setCreatedDateTime(new Date());
-			sa.setCreateUserId(-1L);
-			ArrayList<Long> deviceList = new ArrayList<Long>();
-			deviceList.add(device.getKey().getId());
-			sa.setDeviceIds(deviceList);
-			ArrayList<SurveyDto> surveyDtoList = new ArrayList<SurveyDto>();
-
-			for (Survey survey : surveyList) {
-				sa.addSurvey(survey.getKey().getId());
-				SurveyDto surveyDto = new SurveyDto();
-				surveyDto.setKeyId(survey.getKey().getId());
-				surveyDtoList.add(surveyDto);
-			}
-			sa.setStartDate(new Date());
-			sa.setEndDate(new Date());
-			sa.setName(new Date().toString());
-
-			DeviceDto deviceDto = new DeviceDto();
-			deviceDto.setKeyId(device.getKey().getId());
-			deviceDto.setPhoneNumber(device.getPhoneNumber());
-			ArrayList<DeviceDto> deviceDtoList = new ArrayList<DeviceDto>();
-			deviceDtoList.add(deviceDto);
-			dto.setDevices(deviceDtoList);
-			dto.setSurveys(surveyDtoList);
-			dto.setEndDate(new Date());
-			dto.setLanguage("en");
-			dto.setName("Test Assignment: " + new Date().toString());
-			dto.setStartDate(new Date());
-			sasi.saveSurveyAssignment(dto);
-
-			// sasi.deleteSurveyAssignment(dto);
 		} else if ("populateAssignmentId".equalsIgnoreCase(action)) {
 			populateAssignmentId(Long.parseLong(req
 					.getParameter("assignmentId")));

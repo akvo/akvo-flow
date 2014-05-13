@@ -312,14 +312,6 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>MetricRpcService</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.MetricServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>MetricRpcService</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/metricrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>RemoteLogging</servlet-name>
 		<servlet-class>com.google.gwt.logging.server.RemoteLoggingServiceImpl</servlet-class>
 	</servlet>
@@ -336,24 +328,6 @@
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/configrpcservice</url-pattern>
 	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>SurveyedLocaleRpcService</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyedLocaleServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SurveyedLocaleRpcService</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyedlocalerpcservice</url-pattern>
-	</servlet-mapping>
-
-
-	<servlet>
-		<servlet-name>SurveyMetricMappingRpcService</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyMetricMappingServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SurveyMetricMappingRpcService</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveymetricmaprpcservice</url-pattern>
-	</servlet-mapping>
 	<servlet>
 		<servlet-name>GISSupportService</servlet-name>
 		<servlet-class>com.gallatinsystems.gis.app.gwt.server.GISSupportServiceImpl</servlet-class>
@@ -395,14 +369,6 @@
 		<url-pattern>/webapp/mapping/summary</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>surveyGroupServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyGroupServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>surveyGroupServlet</servlet-name>
-		<url-pattern>/surveygroup</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>StandardScoringServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.standardscoring.StandardScoringServiceImpl</servlet-class>
 	</servlet>
@@ -419,14 +385,6 @@
 		<url-pattern>/webapp/spreadsheetprocessor</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>SurveyAttributeMappingServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyAttributeMappingServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SurveyAttributeMappingServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyattrmaprpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>SurveyRpcServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl</servlet-class>
 	</servlet>
@@ -437,22 +395,6 @@
 	<servlet-mapping>
 		<servlet-name>SurveyRpcServlet</servlet-name>
 		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/surveyrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>SurveyAssignmentRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveyAssignmentServiceImpl</servlet-class>
-	</servlet>	
-	<servlet-mapping>
-		<servlet-name>SurveyAssignmentRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyassnrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>SurveySummaryRpcServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.survey.SurveySummaryServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SurveySummaryRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveysummaryrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>AccessPointSummaryRpcServlet</servlet-name>
@@ -502,20 +444,6 @@
 		<servlet-name>AuthSub</servlet-name>
 		<url-pattern>/authsub</url-pattern>
 	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>SurveyInstanceRpcService</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.gwt.server.surveyinstance.SurveyInstanceServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SurveyInstanceRpcService</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/surveyinstance</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>SurveyInstanceRpcService</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/surveyinstance</url-pattern>
-	</servlet-mapping>
-
 
 	<servlet>
 		<servlet-name>MessageRpcService</servlet-name>
