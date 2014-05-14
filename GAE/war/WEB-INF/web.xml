@@ -277,14 +277,6 @@
 		<servlet-name>PublishSurvey</servlet-name>
 		<url-pattern>/publishsurvey</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>AccessPointServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.AccessPointServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AccessPointServlet</servlet-name>
-		<url-pattern>/accesspoint</url-pattern>
-	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>SMSServlet</servlet-name>
