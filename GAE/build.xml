@@ -114,19 +114,6 @@
 		</copy>
 	</target>
 
-	<target name="GWTcompile" depends="copyjars,compile">
-		<fail message="GWT compilation is deprecated. You can force it with: ant GWTCompile -Dforce=yes">
-			<condition>
-				<not>
-					<isset property="force" />
-				</not>
-			</condition>
-		</fail>
-		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true" maxmemory="512m">
-			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
-		</java>
-	</target>
-
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
 		<mkdir dir="${app_classes_dir}" />
 		<copy todir="${app_classes_dir}">
