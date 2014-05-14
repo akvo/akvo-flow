@@ -277,14 +277,6 @@
 		<servlet-name>PublishSurvey</servlet-name>
 		<url-pattern>/publishsurvey</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>AccessPointServlet</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.AccessPointServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AccessPointServlet</servlet-name>
-		<url-pattern>/accesspoint</url-pattern>
-	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>SMSServlet</servlet-name>
@@ -320,22 +312,6 @@
 		<url-pattern>/org.waterforpeople.mapping.portal.portal/remote_logging</url-pattern>
 	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>GISSupportService</servlet-name>
-		<servlet-class>com.gallatinsystems.gis.app.gwt.server.GISSupportServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>GISSupportService</servlet-name>
-		<url-pattern> /org.waterforpeople.mapping.portal.portal/gissupportrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<servlet-name>NotificationSubscriptionService</servlet-name>
-		<servlet-class>com.gallatinsystems.notification.app.gwt.server.NotificationSubscriptionServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>NotificationSubscriptionService</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/notificationsubrpcservice</url-pattern>
-	</servlet-mapping>
 	<servlet>
 		<servlet-name>NotificationProcessor</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.notification.MappingNotificationProcessor</servlet-class>
@@ -373,14 +349,6 @@
 		<url-pattern>/org.waterforpeople.mapping.surveyentry.surveyentry/surveyrpcservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>UserRpcServlet</servlet-name>
-		<servlet-class>com.gallatinsystems.user.app.gwt.server.UserServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>UserRpcServlet</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/userrpcservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>SpreadsheetAttributeMapper</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.gwt.server.spreadsheetmapper.SpreadsheetMappingAttributeServiceImpl</servlet-class>
 	</servlet>
@@ -411,15 +379,6 @@
 	<servlet-mapping>
 		<servlet-name>AuthSub</servlet-name>
 		<url-pattern>/authsub</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>MessageRpcService</servlet-name>
-		<servlet-class>com.gallatinsystems.messaging.app.gwt.server.MessageServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>MessageRpcService</servlet-name>
-		<url-pattern>/org.waterforpeople.mapping.portal.portal/messagerpcservice</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
