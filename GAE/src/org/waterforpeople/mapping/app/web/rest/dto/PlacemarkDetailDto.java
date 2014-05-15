@@ -25,6 +25,7 @@ public class PlacemarkDetailDto extends BaseDto {
 	private Date collectionDate;
 	private String questionText;
 	private String metricName;
+	private Integer order;
 	private String stringValue;
 	private Long placemarkId;
 	private String questionType;
@@ -75,5 +76,13 @@ public class PlacemarkDetailDto extends BaseDto {
 
 	public void setQuestionType(String questionType) {
 		this.questionType = questionType;
+	}
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 }

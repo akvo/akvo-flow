@@ -88,10 +88,11 @@ public class PlacemarkDetailsRestService {
 		}
 
 		for (SurveyalValue sv : sl.getSurveyalValues()) {
-			PlacemarkDetailDto svDto = new PlacemarkDetailDto();
-			DtoMarshaller.copyToDto(sv, svDto);
-			svDto.setPlacemarkId(sl.getKey().getId());
-			details.add(svDto);
+			PlacemarkDetailDto pmDto = new PlacemarkDetailDto();
+			DtoMarshaller.copyToDto(sv, pmDto);
+			pmDto.setPlacemarkId(sl.getKey().getId());
+			pmDto.setOrder(sv.getQuestionGroupOrder() * 1000 + sv.getQuestionOrder());
+			details.add(pmDto);
 		}
 
 		return details;
