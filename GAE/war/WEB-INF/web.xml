@@ -398,14 +398,6 @@
 		<url-pattern>/placemarkrestapi</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>SummaryDataRestApi</servlet-name>
-		<servlet-class>org.waterforpeople.mapping.app.web.SummaryDataRestServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SummaryDataRestApi</servlet-name>
-		<url-pattern>/summarydatarestapi</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>GeoRestApi</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.GeoServlet</servlet-class>
 	</servlet>
