@@ -15,7 +15,9 @@
 
 package com.gallatinsystems.surveyal.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
@@ -42,12 +44,20 @@ public class SurveyalValueDao extends BaseDAO<SurveyalValue> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<SurveyalValue> listAll(String cursor, Integer pageSize) {
+	public List<SurveyalValue> listBySurvey(Long surveyId, String cursor, Integer pageSize) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
+
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		appendNonNullParam("surveyId", filterString, paramString, "Long",
+				surveyId, paramMap);
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
 		prepareCursor(cursor, pageSize, query);
 		List<SurveyalValue> results = (List<SurveyalValue>) query
-				.execute();
+				.executeWithMap(paramMap);
 		return results;
 	}
 }
