@@ -583,10 +583,16 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 * @param answers
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private List<SurveyalValue> constructValues(SurveyedLocale l,
 			List<QuestionAnswerStore> answers) {
 		List<SurveyalValue> values = new ArrayList<SurveyalValue>();
 		if (answers != null && answers.size() > 0) {
+			String key = null;
+			Integer questionGroupOrder = null;
+			Question q = null;
+			Long questionId = null;
+			QuestionGroupDao qgDao = new QuestionGroupDao();
 
 			Cache cache = MemCacheUtils.initCache(12 * 60 * 60); // 12 hours
 
@@ -597,6 +603,16 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			List<Metric> metrics = null;
 			boolean loadedItems = false;
 			List<Question> questionList = qDao.listQuestionsBySurvey(answers.get(0).getSurveyId());
+
+			// put questions in map for easy retrieval
+			Map qMap = new HashMap<Long,Integer>();
+			Integer index = 0;
+			if (questionList != null){
+				for (Question qu : questionList){
+					qMap.put(qu.getKey().getId(), index);
+					index++;
+				}
+			}
 
 			// date value
 			Calendar cal = new GregorianCalendar();
@@ -670,17 +686,42 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				val.setSublevel6(l.getSublevel6());
 				val.setSurveyInstanceId(ans.getSurveyInstanceId());
 				val.setSystemIdentifier(l.getSystemIdentifier());
-				if (questionList != null) {
-					for (Question q : questionList) {
-						if (ans.getQuestionID() != null
-								&& Long.parseLong(ans.getQuestionID()) == q
-										.getKey().getId()) {
-							val.setQuestionText(q.getText());
-							val.setSurveyQuestionId(q.getKey().getId());
-							val.setQuestionType(q.getType().toString());
-							break;
+
+				questionId = null;
+				if (ans.getQuestionID() != null){
+					try {
+						questionId = Long.parseLong(ans.getQuestionID());
+					} catch (NumberFormatException e){
+						log.log(Level.SEVERE,
+								"Could not create surveyal value for question answer: "
+										+ ans.getKey().getId() + ": "
+												+ "can't parse questionId.");
+					}
+				}
+
+				if (questionId != null &&
+						qMap.containsKey(questionId)){
+					q = questionList.get((Integer) qMap.get(questionId));
+					val.setQuestionText(q.getText());
+					val.setSurveyQuestionId(q.getKey().getId());
+					val.setQuestionType(q.getType().toString());
+					val.setQuestionOrder(q.getOrder());
+
+					// try to get question group order from cache
+					key = "qg-order-" + q.getQuestionGroupId();
+					if (cache != null && cache.containsKey(key)){
+						 questionGroupOrder = (Integer) cache.get(key);
+					} else {
+						// if not in cache, find it in datastore
+						QuestionGroup qg = qgDao.getByKey(q.getQuestionGroupId());
+						if (qg != null){
+							questionGroupOrder = qg.getOrder();
+							if (cache != null){
+								MemCacheUtils.putObject(cache, key, questionGroupOrder);
+							}
 						}
 					}
+					val.setQuestionGroupOrder(questionGroupOrder);
 				}
 				values.add(val);
 			}
