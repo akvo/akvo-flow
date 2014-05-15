@@ -24,6 +24,7 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import net.sf.jsr107cache.Cache;
 
+import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
@@ -60,25 +61,23 @@ public class MapUtils {
 
                 // get public status, first try from cache
                 String pubKey = surveyIdString + "-publicStatus";
-                if (cache.containsKey(pubKey)) {
+                if (cache != null && cache.containsKey(pubKey)) {
                     showOnPublicMap = (Boolean) cache.get(pubKey);
                 } else {
                     Survey s = sDao.getByKey(surveyId);
                     if (s != null) {
                         showOnPublicMap = showOnPublicMap || "Point".equals(s.getPointType())
                                 || "PublicInstitution".equals(s.getPointType());
-                        cache.put(pubKey, showOnPublicMap);
+                        MemCacheUtils.putObject(cache, pubKey, showOnPublicMap);
                     }
                 }
             }
         }
 
         for (int i = 1; i <= 4; i++) {
-
             String cell = locale.getGeocells().get(i) + "-" + showOnPublicMap.toString();
 
-            if (cache.containsKey(cell)) {
-
+            if (cache != null && cache.containsKey(cell)) {
                 @SuppressWarnings("unchecked")
                 final Map<String, Long> cellMap = (Map<String, Long>) cache.get(cell);
                 final Long count = (Long) cellMap.get("count");
@@ -148,6 +147,6 @@ public class MapUtils {
         // whole cluster.
         v.put("lat", latTotal);
         v.put("lon", lonTotal);
-        cache.put(cell, v);
+        MemCacheUtils.putObject(cache, cell, v);
     }
 }

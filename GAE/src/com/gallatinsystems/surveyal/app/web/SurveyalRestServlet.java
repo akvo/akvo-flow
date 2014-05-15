@@ -31,14 +31,13 @@ import com.beoui.geocell.model.Point;
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.jsr107cache.Cache;
-import net.sf.jsr107cache.CacheFactory;
-import net.sf.jsr107cache.CacheManager;
 
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -61,8 +60,6 @@ import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -490,19 +487,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			return;
 		}
 
-		// initialize the memcache
-		Cache cache = null;
-		Map props = new HashMap();
-		props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
-		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
-		try {
-			CacheFactory cacheFactory = CacheManager.getInstance()
-					.getCacheFactory();
-			cache = cacheFactory.createCache(props);
-		} catch (Exception e) {
-			log.log(Level.SEVERE,
-					"Couldn't initialize cache: " + e.getMessage(), e);
-		}
+		// initialize cache
+		Cache cache = MemCacheUtils.initCache(12 * 60 * 60); // 12 hours
 
 		if (cache == null) {
 			// reschedule task to run in 5 mins
@@ -594,6 +580,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			List<QuestionAnswerStore> answers) {
 		List<SurveyalValue> values = new ArrayList<SurveyalValue>();
 		if (answers != null && answers.size() > 0) {
+
+			Cache cache = MemCacheUtils.initCache(12 * 60 * 60); // 12 hours
+
 			List<SurveyMetricMapping> mappings = null;
 			List<SurveyalValue> oldVals = surveyedLocaleDao
 					.listSurveyalValuesByInstance(answers.get(0)
