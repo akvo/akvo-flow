@@ -51,6 +51,7 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -75,7 +76,10 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService;
@@ -98,6 +102,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final Integer QAS_PAGE_SIZE = 300;
 	private static final Integer LOCALE_PAGE_SIZE = 500;
 	private static final Integer T_PAGE_SIZE = 300;
+	private static final Integer SVAL_PAGE_SIZE = 300;
 	private static final String QAS_TO_REMOVE = "QAStoRemove";
 
 	@Override
@@ -158,7 +163,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE
 				.equalsIgnoreCase(dpReq.getAction())) {
 			addCreationSurveyIdToLocale(dpReq.getCursor());
-			} 
+		} else if (DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION.equalsIgnoreCase(req.getAction())) {
+			populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
+		}
 		return new RestResponse();
 	}
 
@@ -997,6 +1004,77 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 						cursor != null ? cursor : "");
 			Queue queue = QueueFactory.getDefaultQueue();
 			queue.add(options);
+		}
+	}
+
+	/**
+	 * runs over all surveyal value objects, and populates: the questionOrder
+	 * and questionGroupOrder fields This method is invoked as a URL request:
+	 * http://..../webapp/testharness?action=populateQuestionOrders
+	 *
+	 * @param cursor
+	 * */
+	@SuppressWarnings("unchecked")
+	private void populateQuestionOrdersSurveyalValues(Long surveyId,
+			String cursor) {
+		List<SurveyalValue> svList = null;
+		String newCursor = null;
+		SurveyalValueDao svDao = new SurveyalValueDao();
+		QuestionDao qDao = new QuestionDao();
+		QuestionGroupDao qgDao = new QuestionGroupDao();
+		if (surveyId != null) {
+			svList = svDao.listBySurvey(surveyId, cursor, SVAL_PAGE_SIZE);
+		} else {
+			svList = svDao.listAll(cursor, SVAL_PAGE_SIZE);
+		}
+		newCursor = SurveyalValueDao.getCursor(svList);
+		Integer num = svList.size();
+		Question q = null;
+		QuestionGroup qg = null;
+		String orderKey = null;
+		List<SurveyalValue> svSaveList = new ArrayList<SurveyalValue>();
+		// initialize the memcache
+		Cache cache = MemCacheUtils.initCache(12 * 60 * 60); // 12 hours
+
+		if (svList != null && svList.size() > 0) {
+			for (SurveyalValue sv : svList) {
+				q = null;
+				qg = null;
+				orderKey = "q-order-" + sv.getSurveyQuestionId();
+				if (cache != null && cache.containsKey(orderKey)) {
+					Map<String, Integer> orderMap = (Map<String, Integer>) cache
+							.get(orderKey);
+					sv.setQuestionOrder((Integer) orderMap.get("q-order"));
+					sv.setQuestionGroupOrder((Integer) orderMap.get("qg-order"));
+					svSaveList.add(sv);
+				} else { // get it from the datastore
+					q = qDao.getByKey(sv.getSurveyQuestionId());
+					if (q != null) {
+						sv.setQuestionOrder(q.getOrder());
+						qg = qgDao.getByKey(q.getQuestionGroupId());
+					}
+					if (qg != null) {
+						sv.setQuestionGroupOrder(qg.getOrder());
+					}
+					svSaveList.add(sv);
+
+					// put it in the cache for further reference
+					final Map<String, Integer> v = new HashMap<String, Integer>();
+					v.put("q-order", sv.getQuestionOrder());
+					v.put("qg-order", sv.getQuestionGroupOrder());
+					MemCacheUtils.putObject(cache, orderKey, v);
+				}
+			}
+			svDao.save(svSaveList);
+		}
+		if (num > 0) {
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
+					.param("cursor", newCursor)
+					.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString()));
 		}
 	}
 }

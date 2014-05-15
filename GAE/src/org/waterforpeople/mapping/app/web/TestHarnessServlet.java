@@ -1942,11 +1942,20 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 		} else if ("populateQuestionOrders".equals(action)) {
 			log.log(Level.INFO, "Populating question and question group orders: ");
-			Queue queue = QueueFactory.getDefaultQueue();
-			queue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet")
-					.param(SurveyalRestRequest.ACTION_PARAM,
-					SurveyalRestRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
-					.param("cursor", ""));
+			try {
+				// we try to parse the surveyId before we go further, and
+				// we fail completely if we can't parse the surveyId.
+				Long surveyId = Long.parseLong(req.getParameter("surveyId"));
+
+				Queue queue = QueueFactory.getDefaultQueue();
+				queue.add(TaskOptions.Builder.withUrl("/app_worker/dataprocessor")
+						.param(DataProcessorRequest.ACTION_PARAM,
+						DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
+						.param("cursor", "")
+						.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString()));
+			} catch (NumberFormatException e){
+				log.log(Level.SEVERE, "surveyId provided not valid: " + req.getParameter("surveyId"));
+			}
 		}
 	}
 

@@ -84,7 +84,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final double UNSET_VAL = -9999.9;
 	private static final String DEFAULT = "DEFAULT";
 	private static final String DEFAULT_ORG_PROP = "defaultOrg";
-	private static final Integer SVAL_PAGE_SIZE = 300;
 
 	private static final Logger log = Logger
 			.getLogger(SurveyalRestServlet.class.getName());
@@ -185,9 +184,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				.equalsIgnoreCase(req.getAction())) {
 			log.log(Level.INFO, "adapting cluster data");
 			adaptClusterData(sReq.getSurveyedLocaleId());
-		} else if (SurveyalRestRequest.POP_QUESTION_ORDER_FIELDS_ACTION.equalsIgnoreCase(req.getAction())) {
-			log.log(Level.INFO, "bulk populating question order fields in surveyal values");
-			populateQuestionOrdersSurveyalValues(req.getCursor());
 		}
 		return resp;
 	}
@@ -778,70 +774,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				.withUrl("/app_worker/surveyalservlet")
 				.param(SurveyalRestRequest.ACTION_PARAM,
 					SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION)
-				.param("cursor", newCursor));
-		}
-	}
-
-
-	/**
-	* runs over all surveyal value objects, and populates:
-	* the questionOrder and questionGroupOrder fields
-	* This method is invoked as a URL request:
-	* http://..../webapp/testharness?action=populateQuestionOrders
-	* @param cursor
-	* */
-	@SuppressWarnings("unchecked")
-	private void populateQuestionOrdersSurveyalValues(String cursor) {
-		List<SurveyalValue> svList = null;
-		SurveyalValueDao svDao = new SurveyalValueDao();
-		QuestionDao qDao = new QuestionDao();
-		QuestionGroupDao qgDao = new QuestionGroupDao();
-		svList = svDao.listAll(cursor, SVAL_PAGE_SIZE);
-		String newCursor = SurveyalValueDao.getCursor(svList);
-		Integer num = svList.size();
-		Question q = null;
-		QuestionGroup qg = null;
-		String orderKey = null;
-		List<SurveyalValue> svSaveList = new ArrayList<SurveyalValue>();
-		// initialize the memcache
-		Cache cache = MemCacheUtils.initCache(12 * 60 * 60); // 12 hours
-
-		if (svList != null && svList.size() > 0) {
-			for (SurveyalValue sv : svList) {
-				q = null;
-				qg = null;
-				orderKey = "q-order-" + sv.getSurveyQuestionId();
-				if (cache != null && cache.containsKey(orderKey)){
-					Map<String, Integer> orderMap = (Map<String, Integer>) cache.get(orderKey);
-					sv.setQuestionOrder((Integer) orderMap.get("q-order"));
-					sv.setQuestionGroupOrder((Integer) orderMap.get("qg-order"));
-					svSaveList.add(sv);
-				} else { // get it from the datastore
-					q = qDao.getByKey(sv.getSurveyQuestionId());
-					if (q != null){
-						sv.setQuestionOrder(q.getOrder());
-						qg = qgDao.getByKey(q.getQuestionGroupId());
-					}
-					if (qg != null) {
-						sv.setQuestionGroupOrder(qg.getOrder());
-					}
-					svSaveList.add(sv);
-
-					// put it in the cache for further reference
-					final Map<String, Integer> v = new HashMap<String, Integer>();
-			        v.put("q-order", sv.getQuestionOrder());
-			        v.put("qg-order", sv.getQuestionGroupOrder());
-			        MemCacheUtils.putObject(cache, orderKey, v);
-				}
-			}
-			svDao.save(svSaveList);
-		}
-		if (num > 0) {
-			Queue queue = QueueFactory.getDefaultQueue();
-			queue.add(TaskOptions.Builder
-				.withUrl("/app_worker/surveyalservlet")
-				.param(SurveyalRestRequest.ACTION_PARAM,
-					SurveyalRestRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
 				.param("cursor", newCursor));
 		}
 	}
