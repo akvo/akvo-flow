@@ -42,7 +42,6 @@ import java.util.zip.GZIPInputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDtoResponse;
@@ -92,18 +91,6 @@ public class BulkDataServiceClient {
 				+ DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
 				+ instanceId, true, apiKey);
 		return parseInstanceValues(instanceValues);
-	}
-
-	public static List<AccessPointDto> fetchAccessPoints(String cursor,
-			String serverBase) throws Exception {
-		String action = ACCESS_POINT_SERVLET_PATH
-				+ (cursor != null ? "&cursor=" + cursor : "");
-		String url = serverBase + action;
-
-		String response = fetchDataFromServer(url);
-		List<AccessPointDto> apDtoList = RestAccessPointParser
-				.parseAccessPoint(response);
-		return apDtoList;
 	}
 
 	public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,

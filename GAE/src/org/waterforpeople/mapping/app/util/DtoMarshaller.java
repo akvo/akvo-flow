@@ -24,7 +24,6 @@ import org.apache.commons.beanutils.converters.DoubleConverter;
 import org.apache.commons.beanutils.converters.IntegerConverter;
 import org.apache.commons.beanutils.converters.LongConverter;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
@@ -85,9 +84,7 @@ public class DtoMarshaller {
 		ConvertUtils.register(enumConverter, Question.Type.class);
 		ConvertUtils.register(enumConverter, QuestionDto.QuestionType.class);	
 		ConvertUtils.register(enumConverter,AccessPoint.Status.class);
-		ConvertUtils.register(enumConverter,AccessPointDto.Status.class);
 		ConvertUtils.register(enumConverter,AccessPoint.AccessPointType.class);
-		ConvertUtils.register(enumConverter,AccessPointDto.AccessPointType.class);
 		ConvertUtils.register(enumConverter,UnitOfMeasure.UnitOfMeasureSystem.class);
 		ConvertUtils.register(enumConverter,UnitOfMeasureDto.UnitOfMeasureSystem.class);
 		ConvertUtils.register(enumConverter,UnitOfMeasure.UnitOfMeasureType.class);

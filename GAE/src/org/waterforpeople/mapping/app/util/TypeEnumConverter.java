@@ -17,7 +17,6 @@
 package org.waterforpeople.mapping.app.util;
 
 import org.apache.commons.beanutils.converters.AbstractConverter;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.accesspoint.UnitOfMeasureDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
@@ -54,12 +53,8 @@ public class TypeEnumConverter extends AbstractConverter {
 
 				return AccessPoint.Status.valueOf(value.toString());
 
-			} else if (type == AccessPointDto.Status.class) {
-				return AccessPointDto.Status.valueOf(value.toString());
 			} else if (type == AccessPoint.AccessPointType.class) {
 				return AccessPoint.AccessPointType.valueOf(value.toString());
-			} else if (type == AccessPointDto.AccessPointType.class) {
-				return AccessPointDto.AccessPointType.valueOf(value.toString());
 			} else if (type == UnitOfMeasure.UnitOfMeasureSystem.class) {
 				return UnitOfMeasure.UnitOfMeasureSystem.valueOf(value
 						.toString());
