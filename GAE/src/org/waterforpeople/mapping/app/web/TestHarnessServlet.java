@@ -1940,6 +1940,13 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (Exception e) {
 				// no-op
 			}
+		} else if ("populateQuestionOrders".equals(action)) {
+			log.log(Level.INFO, "Populating question and question group orders: ");
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet")
+					.param(SurveyalRestRequest.ACTION_PARAM,
+					SurveyalRestRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
+					.param("cursor", ""));
 		}
 	}
 

@@ -38,6 +38,7 @@ public class SurveyalRestRequest extends RestRequest {
 	public static final String SURVEY_ID_PARAM ="surveyId";
 	public static final String ADAPT_CLUSTER_DATA_ACTION = "adaptClusterData";
 	public static final String SURVEYED_LOCALE_PARAM = "surveyedLocaleId";
+	public static final String POP_QUESTION_ORDER_FIELDS_ACTION = "populateQuestionOrders";
 	
 
 	private Long surveyInstanceId;
