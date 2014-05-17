@@ -102,7 +102,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final Integer QAS_PAGE_SIZE = 300;
 	private static final Integer LOCALE_PAGE_SIZE = 500;
 	private static final Integer T_PAGE_SIZE = 300;
-	private static final Integer SVAL_PAGE_SIZE = 300;
+	private static final Integer SVAL_PAGE_SIZE = 600;
 	private static final String QAS_TO_REMOVE = "QAStoRemove";
 
 	@Override
@@ -1009,8 +1009,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
 	/**
 	 * runs over all surveyal value objects, and populates: the questionOrder
-	 * and questionGroupOrder fields This method is invoked as a URL request:
+	 * and questionGroupOrder fields, and the surveyId if it is not populated
+	 * This method is invoked as a URL request:
 	 * http://..../webapp/testharness?action=populateQuestionOrders
+	 * with optional parameter surveyId
 	 *
 	 * @param cursor
 	 * */
@@ -1022,6 +1024,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		SurveyalValueDao svDao = new SurveyalValueDao();
 		QuestionDao qDao = new QuestionDao();
 		QuestionGroupDao qgDao = new QuestionGroupDao();
+
+		// get list of surveyalValues, either by surveyId, or all of them
 		if (surveyId != null) {
 			svList = svDao.listBySurvey(surveyId, cursor, SVAL_PAGE_SIZE);
 		} else {
@@ -1032,7 +1036,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		Question q = null;
 		QuestionGroup qg = null;
 		String orderKey = null;
+		Long sId = null;
+		Long sqId = null;
 		List<SurveyalValue> svSaveList = new ArrayList<SurveyalValue>();
+
 		// initialize the memcache
 		Cache cache = MemCacheUtils.initCache(12 * 60 * 60); // 12 hours
 
@@ -1040,41 +1047,62 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			for (SurveyalValue sv : svList) {
 				q = null;
 				qg = null;
-				orderKey = "q-order-" + sv.getSurveyQuestionId();
-				if (cache != null && cache.containsKey(orderKey)) {
-					Map<String, Integer> orderMap = (Map<String, Integer>) cache
-							.get(orderKey);
-					sv.setQuestionOrder((Integer) orderMap.get("q-order"));
-					sv.setQuestionGroupOrder((Integer) orderMap.get("qg-order"));
-					svSaveList.add(sv);
-				} else { // get it from the datastore
-					q = qDao.getByKey(sv.getSurveyQuestionId());
-					if (q != null) {
-						sv.setQuestionOrder(q.getOrder());
-						qg = qgDao.getByKey(q.getQuestionGroupId());
-					}
-					if (qg != null) {
-						sv.setQuestionGroupOrder(qg.getOrder());
-					}
-					svSaveList.add(sv);
 
-					// put it in the cache for further reference
-					final Map<String, Integer> v = new HashMap<String, Integer>();
-					v.put("q-order", sv.getQuestionOrder());
-					v.put("qg-order", sv.getQuestionGroupOrder());
-					MemCacheUtils.putObject(cache, orderKey, v);
+				// if the surveyQuestionId is not there, skip this surveyalValue
+				if (sv.getSurveyQuestionId() != null) {
+					sqId = sv.getSurveyQuestionId();
+					orderKey = "q-order-" + sqId;
+
+					// get orders from the cache
+					if (cache != null && cache.containsKey(orderKey)) {
+						Map<String, Object> orderMap = (Map<String, Object>) cache
+								.get(orderKey);
+						sv.setQuestionOrder((Integer) orderMap.get("q-order"));
+						sv.setQuestionGroupOrder((Integer) orderMap
+								.get("qg-order"));
+						sId = (Long) orderMap.get("q-survey-id");
+					} else {
+						// get orders from the datastore
+						q = qDao.getByKey(sqId);
+						if (q != null) {
+							sv.setQuestionOrder(q.getOrder());
+							sId = q.getSurveyId();
+							qg = qgDao.getByKey(q.getQuestionGroupId());
+						}
+
+						if (qg != null) {
+							sv.setQuestionGroupOrder(qg.getOrder());
+						}
+
+						// put it in the cache for further reference
+						final Map<String, Object> v = new HashMap<String, Object>();
+						v.put("q-order", sv.getQuestionOrder());
+						v.put("qg-order", sv.getQuestionGroupOrder());
+						v.put("q-survey-id", sv.getSurveyId());
+						MemCacheUtils.putObject(cache, orderKey, v);
+					}
+					// if the surveyId field of the surveyalValue has not been
+					// populated, do it now.
+					if (sv.getSurveyId() == null) {
+						sv.setSurveyId(sId);
+					}
+					svSaveList.add(sv);
 				}
 			}
 			svDao.save(svSaveList);
 		}
 		if (num > 0) {
 			Queue queue = QueueFactory.getDefaultQueue();
-			queue.add(TaskOptions.Builder
+			TaskOptions to = TaskOptions.Builder
 					.withUrl("/app_worker/dataprocessor")
 					.param(DataProcessorRequest.ACTION_PARAM,
 							DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
-					.param("cursor", newCursor)
-					.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString()));
+					.param("cursor", newCursor);
+
+			if (surveyId != null){
+				to.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString());
+			}
+			queue.add(to);
 		}
 	}
 }
