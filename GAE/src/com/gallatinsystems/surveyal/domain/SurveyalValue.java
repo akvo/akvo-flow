@@ -45,6 +45,7 @@ public class SurveyalValue extends BaseDomain {
 	private Date collectionDate;
 	private Long surveyedLocaleId;
 	private Long surveyInstanceId;
+	private Long surveyId;
 	private String questionText;
 	private Long surveyQuestionId;
 	private Integer questionGroupOrder;
@@ -290,6 +291,14 @@ public class SurveyalValue extends BaseDomain {
 
 	public void setQuestionOrder(Integer questionOrder) {
 		this.questionOrder = questionOrder;
+	}
+
+	public Long getSurveyId() {
+		return surveyId;
+	}
+
+	public void setSurveyId(Long surveyId) {
+		this.surveyId = surveyId;
 	}
 
 }

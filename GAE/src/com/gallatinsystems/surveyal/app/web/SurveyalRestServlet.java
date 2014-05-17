@@ -702,6 +702,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					val.setSurveyQuestionId(q.getKey().getId());
 					val.setQuestionType(q.getType().toString());
 					val.setQuestionOrder(q.getOrder());
+					val.setSurveyId(q.getSurveyId());
 
 					// try to get question group order from cache
 					key = "qg-order-" + q.getQuestionGroupId();

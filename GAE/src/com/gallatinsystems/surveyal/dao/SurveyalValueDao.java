@@ -37,10 +37,11 @@ public class SurveyalValueDao extends BaseDAO<SurveyalValue> {
 	}
 	
 	/**
-	 * lists all surveyalValues
+	 * lists all surveyalValues for a certain surveyId
 	 * 
 	 * @param cursor
 	 * @param pagesize
+	 * @param surveyId
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
