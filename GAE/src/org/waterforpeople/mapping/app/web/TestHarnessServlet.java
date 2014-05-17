@@ -1942,19 +1942,25 @@ public class TestHarnessServlet extends HttpServlet {
 			}
 		} else if ("populateQuestionOrders".equals(action)) {
 			log.log(Level.INFO, "Populating question and question group orders: ");
-			try {
-				// we try to parse the surveyId before we go further, and
-				// we fail completely if we can't parse the surveyId.
-				Long surveyId = Long.parseLong(req.getParameter("surveyId"));
-
-				Queue queue = QueueFactory.getDefaultQueue();
-				queue.add(TaskOptions.Builder.withUrl("/app_worker/dataprocessor")
-						.param(DataProcessorRequest.ACTION_PARAM,
-						DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
-						.param("cursor", "")
-						.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString()));
-			} catch (NumberFormatException e){
-				log.log(Level.SEVERE, "surveyId provided not valid: " + req.getParameter("surveyId"));
+			Queue queue = QueueFactory.getDefaultQueue();
+			TaskOptions to = TaskOptions.Builder.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+					DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
+					.param("cursor", "");
+			if (req.getParameter("surveyId") != null){
+				try {
+					// if we have a surveyId, try to parse it to long here
+					// if we fail, we break of the whole operation
+					// we don't use the parsed value
+					Long surveyId = Long.parseLong(req.getParameter("surveyId"));
+					queue.add(to.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString()));
+				} catch (NumberFormatException e){
+					log.log(Level.SEVERE, "surveyId provided not valid: " + req.getParameter("surveyId"));
+				}
+			} else {
+				// if we don't have a surveyId, we want to populate all surveys
+				// so we fire the task without the surveyId parameter.
+				queue.add(to);
 			}
 		}
 	}
