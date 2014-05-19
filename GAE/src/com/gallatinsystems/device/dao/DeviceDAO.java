@@ -30,6 +30,9 @@ import com.gallatinsystems.framework.dao.BaseDAO;
  * 
  */
 public class DeviceDAO extends BaseDAO<Device> {
+
+    public static final String NO_IMEI = "NO_IMEI";
+
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(DeviceDAO.class
 			.getName());
@@ -57,6 +60,11 @@ public class DeviceDAO extends BaseDAO<Device> {
 	 * @return
 	 */
 	public Device getByImei(String imei) {
+        if (NO_IMEI.equals(imei)) {
+            // WiFi only devices could have "NO_IMEI" as value
+            // We want to fall back to search by `phoneNumber` (MAC address)
+            return null;
+        }
 		return super.findByProperty("esn", imei, STRING_TYPE);
 	}
 
@@ -97,7 +105,7 @@ public class DeviceDAO extends BaseDAO<Device> {
 		if (deviceIdentifier != null) {
 			d.setDeviceIdentifier(deviceIdentifier);
 		}
-		if (imei != null) {
+		if (imei != null && !NO_IMEI.equals(imei)) {
 			d.setEsn(imei);
 		}
 		if (osVersion != null) {
