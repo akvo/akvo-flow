@@ -174,7 +174,9 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 					// we need to create the device since we haven't seen it
 					// before
 					dev = new Device();
-					dev.setEsn(mgrReq.getImei());
+					if (mgrReq.getImei() != null && !Device.NO_IMEI.equals(mgrReq.getImei())) {
+						dev.setEsn(mgrReq.getImei());
+					}
 					dev.setPhoneNumber(mgrReq.getPhoneNumber());
 					dev.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
 					dev.setDeviceIdentifier(mgrReq.getDeviceId());
