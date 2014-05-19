@@ -31,7 +31,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
  */
 public class DeviceDAO extends BaseDAO<Device> {
 
-    public static final String NO_IMEI = "NO_IMEI";
+    private static final String NO_IMEI = "NO_IMEI";
 
 	@SuppressWarnings("unused")
 	private static final Logger log = Logger.getLogger(DeviceDAO.class
