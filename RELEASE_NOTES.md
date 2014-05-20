@@ -5,6 +5,24 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.6.16
+
+## New and noteworthy
+
+* WiFi only devices (e.g. Tablets with no SIM card) are now
+  distinguished by MAC address [#320]
+
+## Resolved issues
+
+* Removed obsolete GWT code [#497]
+* When transferring surveys across instances, settings like _other_,
+  _allow multiple_ and _dependencies_ are now copied [#504]
+
+## Known issues
+
+* Some survey configuration settings are still missing when copying,
+  see [#420]
+
 #1.6.15
 
 ## Resolved issues
