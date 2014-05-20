@@ -15,12 +15,12 @@ Akvo FLOW Dashboard release notes
 ## Resolved issues
 
 * Removed obsolete GWT code [#497]
-* When transfering surveys across instances, settings like _other_,
+* When transferring surveys across instances, settings like _other_,
   _allow multiple_ and _dependencies_ are now copied [#504]
 
 ## Known issues
 
-* Some survey configuration settings is still missing when copying,
+* Some survey configuration settings are still missing when copying,
   see [#420]
 
 #1.6.15
