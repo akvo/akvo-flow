@@ -277,7 +277,8 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 				dto.setPointType(s.getPointType());
 				dto.setDefaultLanguageCode(s.getDefaultLanguageCode());
 				if (s.getStatus() != null) {
-					dto.setStatus(s.getStatus().toString());
+					dto.setStatus(SurveyDto.Status
+							.valueOf(s.getStatus().toString()));
 				}
 				dto.setRequireApproval(s.getRequireApproval());
 				surveyDtos.add(dto);

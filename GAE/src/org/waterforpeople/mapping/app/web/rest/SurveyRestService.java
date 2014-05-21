@@ -75,7 +75,7 @@ public class SurveyRestService {
 				}
 				// needed because of different names for description in survey
 				// and surveyDto
-				dto.setDescription(s.getDesc());
+				dto.setDescription(s.getDescription());
 				results.add(dto);
 			}
 		}
@@ -136,7 +136,7 @@ public class SurveyRestService {
 
 				// needed because of different names for description in survey
 				// and surveyDto
-				dto.setDescription(s.getDesc());
+				dto.setDescription(s.getDescription());
 				results.add(dto);
 			}
 		}
@@ -165,7 +165,7 @@ public class SurveyRestService {
 
 			// needed because of different names for description in survey and
 			// surveyDto
-			dto.setDescription(s.getDesc());
+			dto.setDescription(s.getDescription());
 		}
 		response.put("survey", dto);
 		return response;
@@ -228,13 +228,11 @@ public class SurveyRestService {
 							"lastUpdateDateTime", "description",
 							"instanceCount" });
 
-					s.setDesc(surveyDto.getDescription());
+					s.setDescription(surveyDto.getDescription());
 
-					// need to work around marshaller's inability to translate
-					// string to
-					// enumeration values.
 					if (surveyDto.getStatus() != null) {
-						s.setStatus(Survey.Status.valueOf(surveyDto.getStatus()));
+						s.setStatus(Survey.Status
+								.valueOf(surveyDto.getStatus().toString()));
 					}
 					if (surveyDto.getSector() != null) {
 						s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
@@ -243,7 +241,7 @@ public class SurveyRestService {
 					s = surveyDao.save(s);
 					dto = new SurveyDto();
 					DtoMarshaller.copyToDto(s, dto);
-					dto.setDescription(s.getDesc());
+					dto.setDescription(s.getDescription());
 					statusDto.setStatus("ok");
 				}
 			}
@@ -313,7 +311,8 @@ public class SurveyRestService {
 				"displayName", "questionGroupList", "instanceCount" });
 
 		if (dto.getStatus() != null) {
-			s.setStatus(Survey.Status.valueOf(dto.getStatus()));
+			s.setStatus(Survey.Status
+					.valueOf(dto.getStatus().toString()));
 		}
 		if (dto.getSector() != null) {
 			s.setSector(Survey.Sector.valueOf(dto.getSector()));

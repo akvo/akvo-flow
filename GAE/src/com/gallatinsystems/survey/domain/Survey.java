@@ -39,7 +39,7 @@ public class Survey extends BaseDomain {
 	private HashMap<String, Translation> translationMap;
 	private String code = null;
 	private String name = null;
-	private String desc = null;
+	private String description = null;
 	private Status status = null;
 	private Sector sector = null;
 	@NotPersistent
@@ -98,12 +98,12 @@ public class Survey extends BaseDomain {
 		this.name = name;
 	}
 
-	public String getDesc() {
-		return desc;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setDesc(String desc) {
-		this.desc = desc;
+	public void setDescription(String desc) {
+		this.description = desc;
 	}
 
 	public String getCode() {

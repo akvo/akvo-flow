@@ -20,6 +20,7 @@ import org.apache.commons.beanutils.converters.AbstractConverter;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
@@ -66,8 +67,10 @@ public class TypeEnumConverter extends AbstractConverter {
 				return QuestionHelpDto.Type.valueOf(value.toString());
 			} else if (type == OGRFeatureDto.FeatureType.class) {
 				return OGRFeatureDto.FeatureType.valueOf(value.toString());
-			}else if (type == Survey.Status.class){
+			} else if (type == Survey.Status.class){
 				return Survey.Status.valueOf(value.toString());
+			} else if (type == SurveyDto.Status.class){
+				return SurveyDto.Status.valueOf(value.toString());
 			}
 		}
 		return null;

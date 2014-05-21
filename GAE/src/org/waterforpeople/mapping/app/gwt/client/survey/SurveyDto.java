@@ -29,7 +29,7 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private String code;
 	private String version;
 	private String description;
-	private String status;
+	private Status status;
 	private String sector;
 	private List<QuestionGroupDto> questionGroupList;
 	private String path;
@@ -42,6 +42,10 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private Date lastUpdateDateTime;
 	private Long sourceId = null;
 
+	public enum Status {
+		PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED, COPYING
+	};
+	
 	public String getPath() {
 		return path;
 	}
@@ -105,11 +109,11 @@ public class SurveyDto extends BaseDto implements NamedObject {
 		this.description = description;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 	

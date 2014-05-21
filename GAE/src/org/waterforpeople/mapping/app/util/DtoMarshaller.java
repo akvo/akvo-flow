@@ -26,6 +26,7 @@ import org.apache.commons.beanutils.converters.LongConverter;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
@@ -91,6 +92,7 @@ public class DtoMarshaller {
 		ConvertUtils.register(enumConverter, OGRFeatureDto.FeatureType.class);
 		ConvertUtils.register(enumConverter, Survey.Status.class);
 		ConvertUtils.register(enumConverter, Survey.Sector.class);
+		ConvertUtils.register(enumConverter, SurveyDto.Status.class);
 
 		// Resetting default values from zero to null
 		ConvertUtils.register(new DoubleConverter(null), Double.class);
