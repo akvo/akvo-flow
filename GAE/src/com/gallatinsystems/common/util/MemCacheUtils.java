@@ -25,43 +25,59 @@ import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
-import com.gallatinsystems.surveyal.app.web.SurveyalRestServlet;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 
 public class MemCacheUtils {
-	
-	// initialize the memcache
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static Cache initCache(Integer expirySeconds){
+
+	private static Logger log = Logger.getLogger(MemCacheUtils.class.getName());
+
+	/**
+	 * Initialize a Cache object with a expiration delta defined in seconds
+	 *
+	 * @param expirySeconds
+	 *            Expiration delta defined in seconds
+	 * @return A Cache object or <b>null</b> when the runtime couldn't
+	 *         initialize the object
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Cache initCache(Integer expirySeconds) {
 		Cache cache = null;
+
 		Map props = new HashMap();
 		props.put(GCacheFactory.EXPIRATION_DELTA, expirySeconds);
 		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+
 		try {
-			CacheFactory cacheFactory = CacheManager.getInstance()
-					.getCacheFactory();
+			CacheFactory cacheFactory = CacheManager.getInstance().getCacheFactory();
 			cache = cacheFactory.createCache(props);
 		} catch (Exception e) {
-			Logger log = Logger
-					.getLogger(SurveyalRestServlet.class.getName());
-			log.log(Level.SEVERE,
-					"Couldn't initialize cache: " + e.getMessage(), e);
+			log.log(Level.SEVERE, "Couldn't initialize cache: " + e.getMessage(), e);
 		}
 		return cache;
 	}
-	
-	// try to store a value in the cache
-	public static void putObject(Cache cache, Object key, Object value){
-		try{
-			if (cache != null){
+
+	/**
+	 * Puts an object in the cache, the expiration is already defined in the
+	 * cache object.<br>
+	 * The current implementation of Cache.put always return null, therefore
+	 * this method doesn't return any value. <b>NOTE:</b> A failed put operation will get
+	 * logged but also fail silently to the executing program
+	 *
+	 * @param cache
+	 *            An initialized Cache object
+	 * @param key
+	 *            The key (must implement java.io.Serializable)
+	 * @param value
+	 *            The value (must implement java.io.Serializable)
+	 */
+	public static void putObject(Cache cache, Object key, Object value) {
+		try {
+			if (cache != null) {
 				cache.put(key, value);
 			}
 		} catch (Exception e) {
-			Logger log = Logger
-					.getLogger(SurveyalRestServlet.class.getName());
-			log.log(Level.SEVERE,
-					"Failed to store value in memcache: " + e.getMessage(), e);
+			log.log(Level.SEVERE, "Failed to store value in memcache: " + e.getMessage(), e);
 		}
 	}
 }
