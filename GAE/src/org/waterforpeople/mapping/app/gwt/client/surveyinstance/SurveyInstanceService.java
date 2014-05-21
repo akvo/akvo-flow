@@ -25,6 +25,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("surveyinstance")
+@Deprecated // to be removed eventually
 public interface SurveyInstanceService extends RemoteService {
 	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
 			Date beginDate, Date toDate, boolean unapprovedOnlyFlag, Long surveyId, String source,

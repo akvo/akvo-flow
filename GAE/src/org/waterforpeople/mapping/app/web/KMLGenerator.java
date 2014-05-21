@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.velocity.VelocityContext;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointMetricSummaryDto;
 import org.waterforpeople.mapping.dao.AccessPointDao;
 import org.waterforpeople.mapping.dao.GeoRegionDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
@@ -1229,23 +1228,5 @@ public class KMLGenerator {
 		} else {
 			return "Unknown";
 		}
-	}
-
-	public String bindSummaryPlacemark(AccessPointMetricSummaryDto apsDto,
-			String vmName) throws Exception {
-		VelocityContext context = new VelocityContext();
-		StringBuilder sb = new StringBuilder();
-		context.put("organization", ORGANIZATION);
-		if (apsDto.getParentSubName() != null) {
-			context.put("subPath", apsDto.getParentSubName()
-					.replace("/", " | "));
-		}
-
-		context.put("subValue", apsDto.getSubValue());
-		context.put("waterPointCount", apsDto.getCount());
-		context.put("type", apsDto.getMetricValue());
-		sb.append(mergeContext(context, vmName));
-		return sb.toString();
-
 	}
 }
