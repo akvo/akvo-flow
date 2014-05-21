@@ -61,8 +61,8 @@ public class MemCacheUtils {
 	 * Puts an object in the cache, the expiration is already defined in the
 	 * cache object.<br>
 	 * The current implementation of Cache.put always return null, therefore
-	 * this method doesn't return any value. <b>NOTE:</b> A failed put operation will get
-	 * logged but also fail silently to the executing program
+	 * this method doesn't return any value. <b>NOTE:</b> A failed put operation
+	 * will get logged but also fail silently to the executing program
 	 *
 	 * @param cache
 	 *            An initialized Cache object
@@ -73,9 +73,11 @@ public class MemCacheUtils {
 	 */
 	public static void putObject(Cache cache, Object key, Object value) {
 		try {
-			if (cache != null) {
-				cache.put(key, value);
+			if (cache == null) {
+				log.log(Level.WARNING, "Attempting to use an not initialized cache object");
+				return;
 			}
+			cache.put(key, value);
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Failed to store value in memcache: " + e.getMessage(), e);
 		}
