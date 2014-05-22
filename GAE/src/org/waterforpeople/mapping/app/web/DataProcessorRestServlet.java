@@ -1025,7 +1025,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		if (surveyId != null) {
 			svList = svDao.listBySurvey(surveyId, cursor, SVAL_PAGE_SIZE);
 		} else {
-			svList = svDao.listAll(cursor, SVAL_PAGE_SIZE);
+			svList = svDao.list(cursor, SVAL_PAGE_SIZE);
 		}
 
 		if (svList == null || svList.size() == 0) {

@@ -244,34 +244,8 @@ public class BaseDAO<T extends BaseDomain> {
 	 *
 	 * @return
 	 */
-	public List<T> listAll(String cursorString, Integer pageSize) {
-		return listAll(concreteClass, cursorString, pageSize);
-	}
-
-	/**
-	 * lists all of the type passed in, using a page size.
-	 *
-	 * if we think we'll use this on large tables, we should use Extents
-	 *
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public <E extends BaseDomain> List<E> listAll(Class<E> c, String cursorString, Integer pageSize) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(c);
-
-		if (cursorString != null
-				&& !cursorString.trim().toLowerCase()
-						.equals(Constants.ALL_RESULTS)) {
-			Cursor cursor = Cursor.fromWebSafeString(cursorString);
-			Map<String, Object> extensionMap = new HashMap<String, Object>();
-			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-			query.setExtensions(extensionMap);
-		}
-		List<E> results = null;
-		this.prepareCursor(cursorString, pageSize, query);
-		results = (List<E>) query.execute();
-		return results;
+	public List<T> list(String cursorString, Integer pageSize) {
+		return list(concreteClass, cursorString, pageSize);
 	}
 
 	/**
@@ -285,6 +259,13 @@ public class BaseDAO<T extends BaseDomain> {
 	}
 
 	/**
+	 * Lists all of the concreteClass instances in the datastore
+	 */
+	public <E extends BaseDomain> List<E> list(Class<E> c, String cursorString) {
+		return list(c, cursorString, null);
+	}
+
+	/**
 	 * lists all of the type passed in.
 	 * 
 	 * if we think we'll use this on large tables, we should use Extents
@@ -292,7 +273,7 @@ public class BaseDAO<T extends BaseDomain> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <E extends BaseDomain> List<E> list(Class<E> c, String cursorString) {
+	public <E extends BaseDomain> List<E> list(Class<E> c, String cursorString, Integer pageSize) {
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query query = pm.newQuery(c);
 
@@ -304,10 +285,16 @@ public class BaseDAO<T extends BaseDomain> {
 			extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
 			query.setExtensions(extensionMap);
 		}
-		List<E> results = null;
-		this.prepareCursor(cursorString, query);
-		results = (List<E>) query.execute();
 
+		List<E> results = null;
+
+		if (pageSize == null) {
+			this.prepareCursor(cursorString, query);
+		} else {
+			this.prepareCursor(cursorString, pageSize, query);
+		}
+
+		results = (List<E>) query.execute();
 		return results;
 	}
 
