@@ -75,7 +75,7 @@ public class SurveyRestService {
 				}
 				// needed because of different names for description in survey
 				// and surveyDto
-				dto.setDescription(s.getDescription());
+				dto.setDesc(s.getDesc());
 				results.add(dto);
 			}
 		}
@@ -136,7 +136,7 @@ public class SurveyRestService {
 
 				// needed because of different names for description in survey
 				// and surveyDto
-				dto.setDescription(s.getDescription());
+				dto.setDesc(s.getDesc());
 				results.add(dto);
 			}
 		}
@@ -165,7 +165,7 @@ public class SurveyRestService {
 
 			// needed because of different names for description in survey and
 			// surveyDto
-			dto.setDescription(s.getDescription());
+			dto.setDesc(s.getDesc());
 		}
 		response.put("survey", dto);
 		return response;
@@ -228,7 +228,7 @@ public class SurveyRestService {
 							"lastUpdateDateTime", "description",
 							"instanceCount" });
 
-					s.setDescription(surveyDto.getDescription());
+					s.setDesc(surveyDto.getDesc());
 
 					if (surveyDto.getStatus() != null) {
 						s.setStatus(Survey.Status
@@ -241,7 +241,7 @@ public class SurveyRestService {
 					s = surveyDao.save(s);
 					dto = new SurveyDto();
 					DtoMarshaller.copyToDto(s, dto);
-					dto.setDescription(s.getDescription());
+					dto.setDesc(s.getDesc());
 					statusDto.setStatus("ok");
 				}
 			}

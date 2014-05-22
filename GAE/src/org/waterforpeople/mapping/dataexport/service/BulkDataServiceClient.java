@@ -695,8 +695,8 @@ public class BulkDataServiceClient {
 						if (!json.isNull("defaultLanguageCode")) {
 							dto.setDefaultLanguageCode(json.getString("defaultLanguageCode"));
 						}
-						if (!json.isNull("description")) {
-							dto.setDescription(json.getString("description"));
+						if (!json.isNull("desc")) {
+							dto.setDesc(json.getString("desc"));
 						}
 						if (!json.isNull("instanceCount")) {
 							dto.setInstanceCount(json.getLong("instanceCount"));
@@ -720,8 +720,7 @@ public class BulkDataServiceClient {
 							dto.setSector(json.getString("sector"));
 						}
 						if (!json.isNull("status")) {
-							dto.setStatus(SurveyDto.Status
-									.valueOf(json.getString("status")));
+							dto.setStatus(json.getString("status"));
 						}
 						if (!json.isNull("surveyGroupId")) {
 							dto.setSurveyGroupId(json.getLong("surveyGroupId"));

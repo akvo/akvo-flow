@@ -92,7 +92,6 @@ public class DtoMarshaller {
 		ConvertUtils.register(enumConverter, OGRFeatureDto.FeatureType.class);
 		ConvertUtils.register(enumConverter, Survey.Status.class);
 		ConvertUtils.register(enumConverter, Survey.Sector.class);
-		ConvertUtils.register(enumConverter, SurveyDto.Status.class);
 
 		// Resetting default values from zero to null
 		ConvertUtils.register(new DoubleConverter(null), Double.class);

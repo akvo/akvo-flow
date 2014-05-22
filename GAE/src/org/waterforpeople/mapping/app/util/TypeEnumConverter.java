@@ -69,8 +69,6 @@ public class TypeEnumConverter extends AbstractConverter {
 				return OGRFeatureDto.FeatureType.valueOf(value.toString());
 			} else if (type == Survey.Status.class){
 				return Survey.Status.valueOf(value.toString());
-			} else if (type == SurveyDto.Status.class){
-				return SurveyDto.Status.valueOf(value.toString());
 			}
 		}
 		return null;
