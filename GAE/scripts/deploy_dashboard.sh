@@ -22,7 +22,7 @@ INSTANCE_NAME="$2"
 
 function display_usage_and_exit
 {
-    printf "Usage: $SCRIPT_NAME <deployment_password_file_path> <instance_name> \n"
+    printf "Usage: $SCRIPT_NAME /full/path/to/gae_password_file <instance_name> \n"
     exit -1
 }
 
@@ -34,19 +34,28 @@ if [[ -z "$PASSWORD_FILE_PATH" ]]; then
     display_usage_and_exit
 fi
 
+
 PROJECT_HOME="$(cd `dirname "$THIS_SCRIPT"`/../.. && pwd)"
 CODE_DIR="$PROJECT_HOME/GAE"
 DASHBOARD_DIR="$PROJECT_HOME/Dashboard"
 
+cd "$CODE_DIR"
+
+if [[ ! -r "$PASSWORD_FILE_PATH" ]]; then
+    printf "## GAE password file path should be fully qualified\n"
+    display_usage_and_exit
+fi
+
+
 function prebuild_cleanup
 {
     printf "\n>> Clearing generated class files...\n"
-    rm -r $CODE_DIR/war/WEB-INF/classes
+    rm -r "$CODE_DIR/war/WEB-INF/classes"
     printf "\n>> Clearing SDK libs...\n"
-    cd $CODE_DIR/war/WEB-INF/lib
+    cd "$CODE_DIR/war/WEB-INF/lib"
     rm appengine*.jar datanucleus*.jar geronimo*.jar jdo2*.jar jsr107cache*.jar
     printf "\n>> Resetting repo state...\n"
-    cd $CODE_DIR
+    cd "$CODE_DIR"
     git reset --hard HEAD
     printf "\n"
 }
