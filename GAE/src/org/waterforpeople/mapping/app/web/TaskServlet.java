@@ -124,7 +124,25 @@ public class TaskServlet extends AbstractRestApiServlet {
 			conn.setConnectTimeout(CONNECTION_TIMEOUT);
 			conn.setReadTimeout(CONNECTION_TIMEOUT);
 
-			BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
+			BufferedInputStream bis = null;
+			
+			try {
+				bis = new BufferedInputStream(conn.getInputStream());
+			} catch(IOException e) {
+				// requeue for execution 5 mins later
+				Queue defaultQueue = QueueFactory.getDefaultQueue();
+				defaultQueue.add(TaskOptions.Builder.withUrl("/app_worker/task")
+						.param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
+						.param("fileName", fileName)
+						.param("phoneNumber", phoneNumber)
+						.param("imei", imei)
+						.param("checksum", checksum)
+						.param("offset", offset.toString())
+						.countdownMillis(CONNECTION_TIMEOUT));
+
+				throw new Exception(e);
+			}
+					
 			ZipInputStream zis = new ZipInputStream(bis);
 			List<DeviceFiles> dfList = null;
 			DeviceFiles deviceFile = null;

@@ -102,8 +102,10 @@ public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 		DeviceDAO deviceDao = new DeviceDAO();
 
 		if (req.getImei() != null) {
-			return deviceDao.getByImei(req.getImei().trim());
-
+			Device d = deviceDao.getByImei(req.getImei().trim());
+			if (d != null) {
+				return d;
+			}
 		}
 
 		if (req.getPhoneNumber() != null) {

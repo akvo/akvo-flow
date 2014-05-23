@@ -74,8 +74,6 @@
 		<copy file="${instance.config.dir}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
 		<copy file="${instance.config.dir}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
 		<copy file="${instance.config.dir}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>
-		<copy file="${instance.config.dir}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${instance.config.dir}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
 		<copy file="${instance.config.dir}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false"/>
 		<copy file="${instance.config.dir}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" failonerror="false"/>
 		<copy file="${instance.config.dir}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false"/>
@@ -105,21 +103,6 @@
 				<include name="**/*.jar" />
 			</fileset>
 		</copy>
-	</target>
-
-	<target name="GWTcompile" depends="copyjars,compile">
-		<fail message="GWT compilation is deprecated. You can force it with: ant GWTCompile -Dforce=yes">
-			<condition>
-				<not>
-					<isset property="force" />
-				</not>
-			</condition>
-		</fail>
-		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true" maxmemory="512m">
-			<arg value="org.waterforpeople.mapping.portal.portal" />
-			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
-			<arg value="org.waterforpeople.mapping.surveyentry.surveyentry" />
-		</java>
 	</target>
 
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
