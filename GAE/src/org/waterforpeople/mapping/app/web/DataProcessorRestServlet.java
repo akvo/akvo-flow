@@ -493,34 +493,37 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} while (apList != null && apList.size() == 200);
 	}
 
-	private void copySurvey(Long surveyId, Long sourceId) {
+	private void copySurvey(Long copiedSurveyId, Long originalSurveyId) {
 
 		final QuestionGroupDao qgDao = new QuestionGroupDao();
 		final Map<Long, Long> qMap = new HashMap<Long, Long>();
 
-		final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(sourceId);
+		final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
 
 		if (qgList == null) {
-			log.log(Level.INFO, "Nothing to copy from {surveyId: " + sourceId
-					+ "} to {surveyId: " + surveyId + "}");
-			SurveyUtils.resetSurveyState(surveyId);
+			log.log(Level.INFO, "Nothing to copy from {surveyId: " + originalSurveyId
+					+ "} to {surveyId: " + copiedSurveyId + "}");
+			SurveyUtils.resetSurveyState(copiedSurveyId);
 			return;
 		}
 
 		log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
 		int qgOrder = 1;
 		for (final QuestionGroup sourceQG : qgList) {
-			SurveyUtils.copyQuestionGroup(sourceQG, surveyId, qgOrder++, qMap);
+			SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId, qgOrder++, qMap);
 		}
 
-		SurveyUtils.resetSurveyState(surveyId);
+		final SurveyDAO sDao = new SurveyDAO();
+		final Survey copiedSurvey = SurveyUtils.resetSurveyState(copiedSurveyId);
+		final Survey originalSurvey = sDao.getById(originalSurveyId);
 
 		MessageDao mDao = new MessageDao();
 		Message message = new Message();
 
-		message.setObjectId(surveyId);
+		message.setObjectId(copiedSurveyId);
+		message.setObjectTitle(copiedSurvey.getName());
 		message.setActionAbout("copySurvey");
-		message.setShortMessage("Copy from Survey " + sourceId + " to Survey " + surveyId + " completed");
+		message.setShortMessage("Copying from Survey " + originalSurveyId + " ("+originalSurvey.getName()+") completed");
 		mDao.save(message);
 
 	}
