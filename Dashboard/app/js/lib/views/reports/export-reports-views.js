@@ -84,7 +84,7 @@ FLOW.ReportLoader = Ember.Object.create({
       FLOW.savingMessageControl.numLoadingChange(-1);
       this.set('processing', false);
       this.set('criteria', null);
-      $('#downloader').attr('src', FLOW.Env.flowServices + '/report/' + resp.file);
+      $('#downloader').attr('src', FLOW.Env.flowServices.split(":3001")[0] + '/report/' + resp.file);
     }
   },
 
