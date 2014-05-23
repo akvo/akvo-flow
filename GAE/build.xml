@@ -175,12 +175,12 @@
 
 		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
 
-		<exec dir="." executable="sh">
+		<exec dir="." executable="sh" failonerror="true">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} --passin &lt; ${pwd} update war" />
 		</exec>
 
-		<exec dir="." executable="sh">
+		<exec dir="." executable="sh" failonerror="true">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh backends war update" />
 		</exec>
