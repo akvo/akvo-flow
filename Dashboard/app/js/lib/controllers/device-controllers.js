@@ -18,7 +18,7 @@ FLOW.deviceGroupControl = Ember.ArrayController.create({
     });
     if (unassigned.toArray().length === 0) {
       unassigned = FLOW.store.createRecord(FLOW.DeviceGroup, {
-        code: 'all unassigned devices',
+        code: Ember.String.loc('_devices_not_in_a_group'),
         keyId: 1
       });
       // prevent saving of this item to the backend

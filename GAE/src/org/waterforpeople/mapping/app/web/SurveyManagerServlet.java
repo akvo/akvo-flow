@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,7 +64,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		deviceDao = new DeviceDAO();
 		setMode(AbstractRestApiServlet.XML_MODE);
 	}
-	
+
 	@Override
 	protected RestRequest convertRequest() throws Exception {
 		HttpServletRequest req = getRequest();
@@ -101,7 +102,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				} else {
 					resp.setMessage("No Survey Found");
 				}
-			} 
+			}
 
 		} else if (SurveyManagerRequest.GET_AVAIL_DEVICE_SURVEY_ACTION
 				.equalsIgnoreCase(req.getAction())) {
@@ -125,7 +126,9 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 					// we need to create the device since we haven't seen it
 					// before
 					dev = new Device();
-					dev.setEsn(mgrReq.getImei());
+					if (mgrReq.getImei() != null && !Device.NO_IMEI.equals(mgrReq.getImei())) {
+						dev.setEsn(mgrReq.getImei());
+					}
 					dev.setPhoneNumber(mgrReq.getPhoneNumber());
 					dev.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
 					dev.setDeviceIdentifier(mgrReq.getDeviceId());

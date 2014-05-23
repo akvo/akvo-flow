@@ -42,7 +42,6 @@ import java.util.zip.GZIPInputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.waterforpeople.mapping.app.gwt.client.accesspoint.AccessPointDto;
 import org.waterforpeople.mapping.app.gwt.client.devicefiles.DeviceFilesDto;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDto;
 import org.waterforpeople.mapping.app.gwt.client.location.PlacemarkDtoResponse;
@@ -92,18 +91,6 @@ public class BulkDataServiceClient {
 				+ DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
 				+ instanceId, true, apiKey);
 		return parseInstanceValues(instanceValues);
-	}
-
-	public static List<AccessPointDto> fetchAccessPoints(String cursor,
-			String serverBase) throws Exception {
-		String action = ACCESS_POINT_SERVLET_PATH
-				+ (cursor != null ? "&cursor=" + cursor : "");
-		String url = serverBase + action;
-
-		String response = fetchDataFromServer(url);
-		List<AccessPointDto> apDtoList = RestAccessPointParser
-				.parseAccessPoint(response);
-		return apDtoList;
 	}
 
 	public static List<DeviceFilesDto> fetchDeviceFiles(String statusCode,
@@ -830,27 +817,14 @@ public class BulkDataServiceClient {
 									}
 								}
 							}
-
-							if (json.has("mandatoryFlag")) {
-								if (json.getString("mandatoryFlag") != null)
-									dto.setMandatoryFlag(Boolean.parseBoolean(json
-											.getString("mandatoryFlag")));
-								else
-									dto.setMandatoryFlag(false);
+							
+							if (json.has("allowMultipleFlag")
+									&& !"null".equalsIgnoreCase(json.getString("allowMultipleFlag"))) {
+									dto.setAllowMultipleFlag(json.getBoolean("allowMultipleFlag"));
 							}
-							if (json.has("allowMultipleFlag")) {
-								if (json.getString("allowMultipleFlag") != null)
-									dto.setAllowMultipleFlag(Boolean.parseBoolean(json
-											.getString("allowMultipleFlag")));
-								else
-									dto.setAllowMultipleFlag(false);
-							}
-							if (json.has("allowOtherFlag")) {
-								if (json.getString("allowOtherFlag") != null)
-									dto.setAllowOtherFlag(Boolean.parseBoolean(json
-											.getString("allowOtherFlag")));
-								else
-									dto.setAllowOtherFlag(null);
+							if (json.has("allowOtherFlag")
+									&& !"null".equalsIgnoreCase(json.getString("allowOtherFlag"))) {
+									dto.setAllowOtherFlag(json.getBoolean("allowOtherFlag"));
 							}
 							if (json.has("order")) {
 								dto.setOrder(json.getInt("order"));
@@ -859,8 +833,9 @@ public class BulkDataServiceClient {
 								dto.setQuestionGroupId(json
 										.getLong("questionGroupId"));
 							}
-							if (json.has("tip")) {
-								dto.setTip(json.getString("tip"));
+							if (json.has("tip")
+									&& !"null".equalsIgnoreCase(json.getString("tip"))) {
+								dto.setTip(json.optString("tip"));
 							}
 							if (json.has("path")) {
 								dto.setPath(json.getString("path"));
@@ -871,21 +846,65 @@ public class BulkDataServiceClient {
 							if (json.has("keyId")) {
 								dto.setKeyId(json.getLong("keyId"));
 							}
-							if (json.has("mandatoryFlag")) {
-								dto.setMandatoryFlag(Boolean.parseBoolean(json
-										.getString("mandatoryFlag")));
+							if (json.has("collapseable") 
+									&& !"null".equalsIgnoreCase(json.getString("collapseable"))) {
+								dto.setCollapseable(json.getBoolean("collapseable"));
 							}
-							if (json.has("isName")) {
-								dto.setIsName(Boolean.parseBoolean(json
-										.getString("isName")));
+							if (json.has("dependentFlag")
+									&& !"null".equalsIgnoreCase(json.getString("dependentFlag"))) {
+								dto.setDependentFlag(json.getBoolean("dependentFlag"));
 							}
-							if (json.has("allowDecimal")) {
-								dto.setAllowDecimal(Boolean.parseBoolean(json
-										.getString("allowDecimal")));
+							if (json.has("dependentQuestionAnswer")) {
+									dto.setDependentQuestionAnswer(json.optString("dependentQuestionAnswer"));
 							}
-							if (json.has("allowSign")) {
-								dto.setAllowSign(Boolean.parseBoolean(json
-										.getString("allowSign")));
+							if(json.has("dependentQuestionId")) {
+								try {
+									dto.setDependentQuestionId(json.getLong("dependentQuestionId"));
+								} catch (Exception e) {
+									dto.setDependentQuestionId(null);
+								}
+							}
+							if (json.has("geoLocked")
+									&& !"null".equalsIgnoreCase(json.getString("geoLocked"))) {
+								dto.setGeoLocked(json.getBoolean("geoLocked"));
+							}
+							if (json.has("immutable")
+									&& !"null".equalsIgnoreCase(json.getString("immutable"))) {
+								dto.setImmutable(json.getBoolean("immutable"));
+							}
+							if (json.has("isName")
+									&& !"null".equalsIgnoreCase(json.getString("isName"))) {
+								dto.setIsName(json.getBoolean("isName"));
+							}
+							if (json.has("mandatoryFlag")
+									&& !"null".equalsIgnoreCase(json.getString("mandatoryFlag"))) {
+								dto.setMandatoryFlag(json.getBoolean("mandatoryFlag"));
+							}
+							if (json.has("metricId")) {
+								try {
+									dto.setMetricId(json.getLong("metricId"));
+								} catch (Exception e) {
+									dto.setMetricId(null);
+								}
+							}
+							if (json.has("requireDoubleEntry")
+									&& !"null".equalsIgnoreCase(json.getString("requireDoubleEntry"))) {
+								dto.setRequireDoubleEntry(json.getBoolean("requireDoubleEntry"));
+							}
+							if (json.has("sourceId")) {
+								try {
+									dto.setSourceId(json.getLong("sourceId"));
+								} catch (Exception e) {
+									dto.setSourceId(null);
+								}
+							}
+							if (json.has("allowDecimal")
+									&& !"null".equalsIgnoreCase(json.getString("allowDecimal"))) {
+								dto.setAllowDecimal(json.getBoolean("allowDecimal"));
+							}
+							if (json.has("allowSign")
+									&& !"null".equalsIgnoreCase(json.getString("allowSign"))) {
+								dto.setAllowSign(json.getBoolean("allowSign"));
 							}
 							if (json.has("minVal")) {
 								try {
@@ -948,6 +967,11 @@ public class BulkDataServiceClient {
 									}
 									dto.setOptionContainerDto(container);
 								}
+								
+								// The questionDependency check below is related to the
+								// previous if statements dependentFlag, dependentQuestionId, 
+								// dependentQuestionAnswer i.e. checks whether question is
+								// dependent on another
 								if (json.has("questionDependency")
 										&& !JSONObject.NULL.equals(json
 												.get("questionDependency"))) {

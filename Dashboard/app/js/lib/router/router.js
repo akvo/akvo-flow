@@ -121,11 +121,6 @@ FLOW.Router = Ember.Router.extend({
           // all questions should be closed when we enter
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.attributeControl.populate();
-
-          if (!Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
-            // questionGroups are already loaded in controller automatically
-            FLOW.questionControl.populateAllQuestions();
-          }
         },
 
         doEditQuestions: function (router, event) {

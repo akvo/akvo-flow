@@ -59,6 +59,7 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.gis.location.GeoLocationService;
 import com.gallatinsystems.gis.location.GeoLocationServiceGeonamesImpl;
 import com.gallatinsystems.gis.location.GeoPlace;
+import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.operations.dao.ProcessingStatusDao;
@@ -95,6 +96,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = -7902002525342262821L;
 	private static final String REBUILD_Q_SUM_STATUS_KEY = "rebuildQuestionSummary";
 	private static final Integer QAS_PAGE_SIZE = 300;
+	private static final Integer LOCALE_PAGE_SIZE = 500;
 	private static final Integer T_PAGE_SIZE = 300;
 	private static final String QAS_TO_REMOVE = "QAStoRemove";
 
@@ -153,6 +155,12 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.ADD_TRANSLATION_FIELDS
 				.equalsIgnoreCase(dpReq.getAction())) {
 			addTranslationFields(dpReq.getCursor());
+		} else if (DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS
+				.equalsIgnoreCase(dpReq.getAction())) {
+			recomputeLocaleClusters(dpReq.getCursor());
+		} else if (DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE
+				.equalsIgnoreCase(dpReq.getAction())) {
+			addCreationSurveyIdToLocale(dpReq.getCursor());
 			} 
 		return new RestResponse();
 	}
@@ -288,6 +296,14 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 					}
 				}
 			} while (cursor != null);
+
+			// recompute all clusters
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS);
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
 		}
 	}
 
@@ -383,7 +399,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		}
 
 		if (results.size() == QAS_PAGE_SIZE) {
-
 			cache.put(QAS_TO_REMOVE, toRemove);
 
 			final TaskOptions options = TaskOptions.Builder
@@ -404,6 +419,58 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			QuestionAnswerStoreDao dao = new QuestionAnswerStoreDao();
 			pm.makePersistentAll(toRemove); // some objects are in "transient" state
 			dao.delete(toRemove);
+		}
+	}
+
+	/**
+	 * This recomputes all Locale clusters. Clusters are deleted in the testharnessservlet.
+	 * The keys are first removed in the testharnessservlet.
+	 * @param offset
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void recomputeLocaleClusters(String cursor) {
+
+		log.log(Level.INFO, "recomputing locale clusters [cursor: " + cursor + "]");
+
+		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final List<SurveyedLocale> results = slDao.listAll(cursor, LOCALE_PAGE_SIZE);
+
+		// initialize the memcache
+		Cache cache = null;
+		Map props = new HashMap();
+		props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
+		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+		try {
+			CacheFactory cacheFactory = CacheManager.getInstance()
+					.getCacheFactory();
+			cache = cacheFactory.createCache(props);
+		} catch (Exception e) {
+			log.log(Level.SEVERE,
+					"Couldn't initialize cache: " + e.getMessage(), e);
+		}
+
+		if (cache == null) {
+			return;
+		}
+		
+		for (SurveyedLocale locale : results) {
+			// adjust Geocell cluster data
+			if (locale.getGeocells() != null && !locale.getGeocells().isEmpty()){
+			    MapUtils.recomputeCluster(cache, locale);
+			}
+		}
+		
+		if (results.size() == LOCALE_PAGE_SIZE) {
+			cursor = SurveyedLocaleDao.getCursor(results);
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS)
+					.param(DataProcessorRequest.CURSOR_PARAM,
+						cursor != null ? cursor : "");
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+
 		}
 	}
 
@@ -953,6 +1020,41 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 					.withUrl("/app_worker/dataprocessor")
 					.param(DataProcessorRequest.ACTION_PARAM,
 							DataProcessorRequest.ADD_TRANSLATION_FIELDS)
+					.param(DataProcessorRequest.CURSOR_PARAM,
+						cursor != null ? cursor : "");
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+		}
+	}
+	/**
+	 * populates the creationSurveyId field for existing locales
+	 * started from testharness with host/webapp/testharness?action=addCreationSurveyIdToLocale
+	 * @param cursor
+	 */
+	public static void addCreationSurveyIdToLocale(String cursor){
+		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+		final List<SurveyedLocale> results = slDao.listAll(cursor, LOCALE_PAGE_SIZE);
+
+		for (SurveyedLocale sl : results){
+			// make it idempotent
+			if (sl.getCreationSurveyId() == null){
+				SurveyInstance si = siDao.getByKey(sl.getLastSurveyalInstanceId());
+				if (si != null) {
+					sl.setCreationSurveyId(si.getSurveyId());
+					slList.add(sl);
+				}
+			}
+		}
+		slDao.save(slList);
+
+		if (results.size() == LOCALE_PAGE_SIZE) {
+			cursor = SurveyedLocaleDao.getCursor(results);
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE)
 					.param(DataProcessorRequest.CURSOR_PARAM,
 						cursor != null ? cursor : "");
 			Queue queue = QueueFactory.getDefaultQueue();

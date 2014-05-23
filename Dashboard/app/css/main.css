@@ -2483,7 +2483,7 @@ table.dataTable.notificationTable thead tr th a, table.dataTable.notificationTab
 #flowMap {
 	float: left;
 	margin: 0 0 0 0;
-	width: 75%;
+	width: 99.25%;
 	height: 600px;
 	border-bottom: 2px solid rgb(158, 158, 158);
 }
@@ -3260,3 +3260,23 @@ width: 100%;
 .is-error .uploader-item:hover, .is-active.is-error .uploader-item { border-color: #900; }
 .is-error .uploader-item:hover .uploader-item-title, .is-active.is-error .uploader-item .uploader-item-title { background-color: rgba(153,0,0,0.6); }
 .is-error .uploader-item-creating-thumbnail { display: none; }
+
+.marker-cluster {
+		background-color: rgba(253, 156, 115, 0.6);
+        background-clip: padding-box;
+        border-radius: 20px;
+        }
+.marker-cluster div {
+        background-color: rgba(241, 128, 23, 0.6);
+        width: 30px;
+        height: 30px;
+        margin-left: 5px;
+        margin-top: 5px;
+
+        text-align: center;
+        border-radius: 15px;
+        font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+        }
+.marker-cluster span {
+        line-height: 30px;
+        }

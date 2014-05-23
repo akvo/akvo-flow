@@ -37,8 +37,6 @@ FLOW.SurveyGroupSurveyView = FLOW.View.extend({
 	// fired when 'preview survey' is clicked in the survey item display
   previewSurvey: function () {
     FLOW.selectedControl.set('selectedSurvey', this.content);
-    FLOW.questionGroupControl.populate();
-    FLOW.questionControl.populateAllQuestions();
   },
 
   showPreview: function () {

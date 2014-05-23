@@ -5,6 +5,71 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.6.16
+
+## New and noteworthy
+
+* WiFi only devices (e.g. Tablets with no SIM card) are now
+  distinguished by MAC address [#320]
+
+## Resolved issues
+
+* Removed obsolete GWT code [#497]
+* When transferring surveys across instances, settings like _other_,
+  _allow multiple_ and _dependencies_ are now copied [#504]
+
+## Known issues
+
+* Some survey configuration settings are still missing when copying,
+  see [#420]
+
+#1.6.15
+
+## Resolved issues
+* Fixed issue of performing the same data request 2 times on
+  Survey preview/edit [#527]
+
+#1.6.14.4
+
+## Resolved issues
+* Fixed wrong computation of cache value for cluster locations [#519]
+
+#1.6.14.3
+
+## Resolved issues
+* Avoid NPE when lastSurveyalInstanceId field is null (as happens on old data) [#516]
+
+#1.6.14.2
+
+## Enhancements
+* Show more detailed clusters at a lower zoomlevel [#363]
+
+#1.6.14.1
+
+## Resolved issues
+* Compute lat / lon of cluster as average over all containing placemarks [#508]
+* Use cluster Id as key id to ensure all clusers have a unique id on all zoomlevels [#509]
+* Avoid keyId collision between clusters and individual placemarks [#510]
+* Perform adapt cluster data as separate task, to deal with non-availability of memcache [#363]
+
+#1.6.14
+
+## Enhancements
+* Implement server-side clustering of markers on maps [#363]
+
+## Resolved issues
+* fixed translations in chart builder [#494]
+* fixed link to FLOW terms of use [#432]
+
+
+# 1.6.13
+
+## Enhancements
+* Prepare the Dashboard for responding to _Monitoring_ related requests [#487]
+
+## Resolved issues
+* Fixed: Deleting an assingment didn't clean all related data [#490]
+
 
 # 1.6.12
 

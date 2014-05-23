@@ -36,7 +36,6 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
 		private static final long serialVersionUID = 6562869574473763867L;
 
 		{
-			put("ACCESS_POINT", AccessPointExporter.class);
 			put("SURVEY_SUMMARY", SurveySummaryExporter.class);
 			put("RAW_DATA", GraphicalSurveySummaryExporter.class);
 			put("RAW_DATA_TEXT", RawDataExporter.class);
