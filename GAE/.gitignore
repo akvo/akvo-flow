@@ -25,6 +25,7 @@ war/exporterapplet.jar
 war/flowenv.js
 war/index.html
 war/org.*
+war/PlacemarksNewLook.vm
 war/publicmap
 war/vendorjs
 
