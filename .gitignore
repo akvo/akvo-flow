@@ -27,12 +27,7 @@ Dashboard/test_assets
 Dashboard/tmp
 
 # APK paths
-WFPMapping/device/debugcert
-WFPMapping/device/survey/bin
-WFPMapping/device/survey/gen
 WFPMapping/device/survey/res/raw/survey.properties
-WFPMapping/device/survey_test/bin
-WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
 
 # Reports service
 reports/.lein*
