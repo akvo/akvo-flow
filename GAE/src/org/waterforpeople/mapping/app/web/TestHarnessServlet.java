@@ -1943,10 +1943,14 @@ public class TestHarnessServlet extends HttpServlet {
 		} else if ("populateQuestionOrders".equals(action)) {
 			log.log(Level.INFO, "Populating question and question group orders: ");
 			Queue queue = QueueFactory.getDefaultQueue();
-			TaskOptions to = TaskOptions.Builder.withUrl("/app_worker/dataprocessor")
+			TaskOptions to = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
 					.param(DataProcessorRequest.ACTION_PARAM,
-					DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
-					.param("cursor", "");
+							DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
+					.param("cursor", "")
+					.header("host",
+							BackendServiceFactory.getBackendService().getBackendAddress(
+									"dataprocessor"));
 			if (req.getParameter("surveyId") != null){
 				try {
 					// if we have a surveyId, try to parse it to long here

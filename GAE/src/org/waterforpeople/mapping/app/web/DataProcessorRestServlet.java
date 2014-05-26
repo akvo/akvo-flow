@@ -1096,7 +1096,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 					.withUrl("/app_worker/dataprocessor")
 					.param(DataProcessorRequest.ACTION_PARAM,
 							DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
-					.param("cursor", newCursor);
+					.param("cursor", newCursor)
+					.header("host",
+							BackendServiceFactory.getBackendService().getBackendAddress(
+									"dataprocessor"));
 
 			if (surveyId != null) {
 				to.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString());
