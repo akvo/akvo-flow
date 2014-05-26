@@ -202,7 +202,7 @@ FLOW.countryController = Ember.ArrayController.create({
 
 FLOW.placemarkDetailController = Ember.ArrayController.create({
   content: Ember.A(),
-  sortProperties: ['questionText'],
+  sortProperties: ['order'],
   sortAscending: true,
   collectionDate: null,
 
