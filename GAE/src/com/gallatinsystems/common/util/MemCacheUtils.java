@@ -82,4 +82,30 @@ public class MemCacheUtils {
 			log.log(Level.SEVERE, "Failed to store value in memcache: " + e.getMessage(), e);
 		}
 	}
+
+	/**
+	 * Delegates testing to `Cache.containsKey`, handles runtime exceptions.<br>
+	 * The runtime could raise an exception on "too long" requests, or partial
+	 * service outage
+	 *
+	 * @param cache
+	 *            Initialized Cache object
+	 * @param key
+	 *            Key to search (must implement java.io.Serializable)
+	 * @return true|false depending if the Cache contains that key.<br>
+	 *         Returns <b>false</b> on runtime exception (e.g. Memcache service
+	 *         problem)
+	 */
+	public static boolean containsKey(Cache cache, Object key) {
+		try {
+			if (cache == null) {
+				log.log(Level.WARNING, "Attempting to use an not initialized cache object");
+				return false;
+			}
+			return cache.containsKey(key);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Failed testing containsKey: " + e.getMessage(), e);
+		}
+		return false;
+	}
 }

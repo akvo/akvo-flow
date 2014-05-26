@@ -51,7 +51,7 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.common.util.MemCacheUtils;
+
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -86,6 +86,8 @@ import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+
+import static com.gallatinsystems.common.util.MemCacheUtils.*;
 
 /**
  * Restful servlet to do bulk data update operations
@@ -1037,7 +1039,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		final List<SurveyalValue> svSaveList = new ArrayList<SurveyalValue>();
 
 		// initialize the memcache
-		Cache cache = MemCacheUtils.initCache(12 * 60 * 60); // 12 hours
+		Cache cache = initCache(12 * 60 * 60); // 12 hours
 
 		for (SurveyalValue sv : svList) {
 
@@ -1050,7 +1052,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				final String orderKey = "q-order-" + sqId;
 
 				// get orders from the cache
-				if (cache != null && cache.containsKey(orderKey)) {
+				if (cache != null && containsKey(cache, orderKey)) {
 					final Map<String, Object> orderMap = (Map<String, Object>) cache.get(orderKey);
 					sv.setQuestionOrder((Integer) orderMap.get("q-order"));
 					sv.setQuestionGroupOrder((Integer) orderMap.get("qg-order"));
@@ -1075,7 +1077,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 					v.put("q-order", sv.getQuestionOrder());
 					v.put("qg-order", sv.getQuestionGroupOrder());
 					v.put("q-survey-id", sv.getSurveyId());
-					MemCacheUtils.putObject(cache, orderKey, v);
+					putObject(cache, orderKey, v);
 				}
 				// if the surveyId field of the surveyalValue has not been
 				// populated, do it now.
