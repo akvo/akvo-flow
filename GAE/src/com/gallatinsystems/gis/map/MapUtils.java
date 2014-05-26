@@ -16,15 +16,17 @@
 
 package com.gallatinsystems.gis.map;
 
+import static com.gallatinsystems.common.util.MemCacheUtils.containsKey;
+import static com.gallatinsystems.common.util.MemCacheUtils.putObject;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import net.sf.jsr107cache.Cache;
 
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import net.sf.jsr107cache.Cache;
-
-import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
@@ -62,14 +64,14 @@ public class MapUtils {
 
                 // get public status, first try from cache
                 String pubKey = surveyIdString + "-publicStatus";
-                if (cache != null && cache.containsKey(pubKey)) {
+                if (containsKey(cache, pubKey)) {
                     showOnPublicMap = (Boolean) cache.get(pubKey);
                 } else {
                     Survey s = sDao.getByKey(surveyId);
                     if (s != null) {
                         showOnPublicMap = showOnPublicMap || "Point".equals(s.getPointType())
                                 || "PublicInstitution".equals(s.getPointType());
-                        MemCacheUtils.putObject(cache, pubKey, showOnPublicMap);
+                        putObject(cache, pubKey, showOnPublicMap);
                     }
                 }
             }
@@ -79,11 +81,11 @@ public class MapUtils {
 
             String cell = locale.getGeocells().get(i) + "-" + showOnPublicMap.toString();
 
-            if (cache != null && cache.containsKey(cell)) {
+            if (containsKey(cache, cell)) {
 
                 @SuppressWarnings("unchecked")
                 final Map<String, Long> cellMap = (Map<String, Long>) cache.get(cell);
-                final Long count = (Long) cellMap.get("count");
+                final Long count = cellMap.get("count");
 
                 if (count == 1 && delta == -1) {
                 	// the cluster needs to be deleted, because the count will become zero
@@ -126,12 +128,12 @@ public class MapUtils {
                 		lonCenter = (clusterInStore.getLonCenter() * count + locale.getLongitude()*delta)
                             / (count + delta);
 
-                		if (cache != null) {
-                			addToCache(cache, cell, clusterInStore.getKey().getId(),
-                				clusterInStore.getCount() + delta,
-                				Math.round(MULT * latCenter * (count + delta)),
-                				Math.round(MULT * lonCenter * (count + delta)));
-                		}
+
+						addToCache(cache, cell, clusterInStore.getKey().getId(),
+								clusterInStore.getCount() + delta,
+								Math.round(MULT * latCenter * (count + delta)),
+								Math.round(MULT * lonCenter * (count + delta)));
+
 
                 		clusterInStore.setCount(clusterInStore.getCount() + delta);
                 		clusterInStore.setLatCenter(latCenter);
@@ -167,6 +169,6 @@ public class MapUtils {
         // whole cluster.
         v.put("lat", latTotal);
         v.put("lon", lonTotal);
-        MemCacheUtils.putObject(cache, cell, v);
+        putObject(cache, cell, v);
     }
 }
