@@ -284,7 +284,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 						if (si.getSurveyedLocaleId() != null) {
 							SurveyedLocale sl = slDao.getByKey(si.getSurveyedLocaleId());
 							if (sl != null){
-								// if the locale type is not set or if it is not equal to the survey setting, 
+								// if the locale type is not set or if it is not equal to the survey setting,
 								// reset the local type
 								if (sl.getLocaleType() == null || !sl.getLocaleType().equals(localeType)) {
 									sl.setLocaleType(localeType);
@@ -457,14 +457,14 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		if (cache == null) {
 			return;
 		}
-		
+
 		for (SurveyedLocale locale : results) {
 			// adjust Geocell cluster data
 			if (locale.getGeocells() != null && !locale.getGeocells().isEmpty()){
 			    MapUtils.recomputeCluster(cache, locale);
 			}
 		}
-		
+
 		if (results.size() == LOCALE_PAGE_SIZE) {
 			cursor = SurveyedLocaleDao.getCursor(results);
 			final TaskOptions options = TaskOptions.Builder
@@ -895,7 +895,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 							+ surveyInstanceId);
 		}
 	}
-	
+
 	/**
 	* Adds surveyId and questionGroupId to translations
 	* This only needs to happen once to populate the fields
@@ -910,7 +910,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		QuestionGroup qg;
 		Question qu;
 		QuestionOption qo;
-		
+
 		Long surveyId = null;
 		Long questionGroupId = null;
 		List<Translation> tListSave = new ArrayList<Translation>();
@@ -959,7 +959,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			tListSave.add(t);
 		}
 		tDao.save(tListSave);
-		
+
 		if (results.size() == T_PAGE_SIZE) {
 			cursor = TranslationDao.getCursor(results);
 			final TaskOptions options = TaskOptions.Builder
@@ -1052,7 +1052,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				final String orderKey = "q-order-" + sqId;
 
 				// get orders from the cache
-				if (cache != null && containsKey(cache, orderKey)) {
+				if (containsKey(cache, orderKey)) {
 					final Map<String, Object> orderMap = (Map<String, Object>) cache.get(orderKey);
 					sv.setQuestionOrder((Integer) orderMap.get("q-order"));
 					sv.setQuestionGroupOrder((Integer) orderMap.get("qg-order"));
