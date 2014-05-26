@@ -33,6 +33,8 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 public class Device extends BaseDomain {
 
 	private static final long serialVersionUID = 4894680591207166295L;
+	public static final String NO_IMEI = "NO_IMEI";
+
 	private DeviceType deviceType;
 	private String phoneNumber;
 	private String esn;

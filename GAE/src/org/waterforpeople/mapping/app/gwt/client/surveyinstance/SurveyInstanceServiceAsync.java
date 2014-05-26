@@ -23,6 +23,7 @@ import java.util.List;
 import com.gallatinsystems.framework.gwt.dto.client.ResponseDto;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+@Deprecated // TODO: eventually remove class
 public interface SurveyInstanceServiceAsync {
 
 	void listSurveyInstance(Date beginDate, Date endDate,

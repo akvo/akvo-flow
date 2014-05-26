@@ -24,6 +24,7 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import net.sf.jsr107cache.Cache;
 
+import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
@@ -68,9 +69,7 @@ public class MapUtils {
                     if (s != null) {
                         showOnPublicMap = showOnPublicMap || "Point".equals(s.getPointType())
                                 || "PublicInstitution".equals(s.getPointType());
-                        if (cache != null){
-                        	cache.put(pubKey, showOnPublicMap);
-                        }
+                        MemCacheUtils.putObject(cache, pubKey, showOnPublicMap);
                     }
                 }
             }
@@ -168,6 +167,6 @@ public class MapUtils {
         // whole cluster.
         v.put("lat", latTotal);
         v.put("lon", lonTotal);
-        cache.put(cell, v);
+        MemCacheUtils.putObject(cache, cell, v);
     }
 }
