@@ -304,7 +304,7 @@ FLOW.Router = Ember.Router.extend({
           FLOW.surveyGroupControl.populate(function (item) {
         	  return item.get('isMonitoringGroupFlag');
           });
-          FLOW.surveyedLocaleControl.populate();
+          //FLOW.surveyedLocaleControl.populate();
         }
       }),
     }),
