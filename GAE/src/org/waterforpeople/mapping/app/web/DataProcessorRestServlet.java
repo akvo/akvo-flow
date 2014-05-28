@@ -51,6 +51,7 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
+
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -102,6 +103,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final Integer QAS_PAGE_SIZE = 300;
 	private static final Integer LOCALE_PAGE_SIZE = 500;
 	private static final Integer T_PAGE_SIZE = 300;
+	private static final Integer SVAL_PAGE_SIZE = 600;
 	private static final String QAS_TO_REMOVE = "QAStoRemove";
 
 	@Override
