@@ -28,7 +28,7 @@ public class SurveyDto extends BaseDto implements NamedObject {
 	private String name;
 	private String code;
 	private String version;
-	private String desc;
+	private String description;
 	private String status;
 	private String sector;
 	private List<QuestionGroupDto> questionGroupList;
@@ -97,12 +97,12 @@ public class SurveyDto extends BaseDto implements NamedObject {
 		this.version = version;
 	}
 
-	public String getDesc() {
-		return desc;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setDesc(String description) {
-		this.desc = description;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public String getStatus() {

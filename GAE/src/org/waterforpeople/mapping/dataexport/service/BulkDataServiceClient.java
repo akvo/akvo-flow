@@ -695,8 +695,8 @@ public class BulkDataServiceClient {
 						if (!json.isNull("defaultLanguageCode")) {
 							dto.setDefaultLanguageCode(json.getString("defaultLanguageCode"));
 						}
-						if (!json.isNull("desc")) {
-							dto.setDesc(json.getString("desc"));
+						if (!json.isNull("description")) {
+							dto.setDescription(json.getString("description"));
 						}
 						if (!json.isNull("instanceCount")) {
 							dto.setInstanceCount(json.getLong("instanceCount"));

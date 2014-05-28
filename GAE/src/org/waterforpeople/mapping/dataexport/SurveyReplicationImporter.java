@@ -156,10 +156,16 @@ public class SurveyReplicationImporter {
 			}
 			DtoMarshaller.copyToCanonical(canonical, dto);
 			
-			// overwrite status for published surveys to unpublished
-			if (canonical instanceof Survey
-					&& Survey.Status.PUBLISHED.equals(((Survey) canonical).getStatus())) {
-				((Survey) canonical).setStatus(Survey.Status.NOT_PUBLISHED);				
+			if (canonical instanceof Survey && dto instanceof SurveyDto) {
+				Survey s = (Survey) canonical;
+				SurveyDto d = (SurveyDto) dto;
+				// overwrite status for published surveys to unpublished
+				if(Survey.Status.PUBLISHED.equals(s.getStatus())){
+					s.setStatus(Survey.Status.NOT_PUBLISHED);
+				}
+				
+				//mismatch in SurveyDto and Survey property names
+				s.setDesc(d.getDescription());
 			}
 			canonicalList.add(canonical);
 		}
