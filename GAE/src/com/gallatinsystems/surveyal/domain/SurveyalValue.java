@@ -48,6 +48,8 @@ public class SurveyalValue extends BaseDomain {
 	private Long surveyId;
 	private String questionText;
 	private Long surveyQuestionId;
+	private Integer questionGroupOrder;
+	private Integer questionOrder;
 	private String metricName;
 	private String metricGroup;
 	private Long metricId;
@@ -273,6 +275,22 @@ public class SurveyalValue extends BaseDomain {
 
 	public void setOrganization(String organization) {
 		this.organization = organization;
+	}
+
+	public Integer getQuestionGroupOrder() {
+		return questionGroupOrder;
+	}
+
+	public void setQuestionGroupOrder(Integer questionGroupOrder) {
+		this.questionGroupOrder = questionGroupOrder;
+	}
+
+	public Integer getQuestionOrder() {
+		return questionOrder;
+	}
+
+	public void setQuestionOrder(Integer questionOrder) {
+		this.questionOrder = questionOrder;
 	}
 
 	public Long getSurveyId() {

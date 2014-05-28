@@ -54,6 +54,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String ADD_CREATION_SURVEY_ID_TO_LOCALE = "addCreationSurveyIdToLocale";
 	public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
 	public static final String RECREATE_LOCALES = "recreateLocales";
+	public static final String POP_QUESTION_ORDER_FIELDS_ACTION = "populateQuestionOrders";
 
 	private String country;
 	private String source;
