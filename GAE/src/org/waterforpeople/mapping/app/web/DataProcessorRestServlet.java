@@ -1039,7 +1039,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
 		for (SurveyedLocale sl : results){
 			// make it idempotent
-			if (sl.getCreationSurveyId() == null){
+			if (sl.getCreationSurveyId() == null
+					&& sl.getLastSurveyalInstanceId() != null) {
 				SurveyInstance si = siDao.getByKey(sl.getLastSurveyalInstanceId());
 				if (si != null) {
 					sl.setCreationSurveyId(si.getSurveyId());
