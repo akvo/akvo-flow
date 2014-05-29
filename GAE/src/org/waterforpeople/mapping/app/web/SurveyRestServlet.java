@@ -241,6 +241,9 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 			for (Survey s : groups) {
 				SurveyDto dto = new SurveyDto();
 				DtoMarshaller.copyToDto(s, dto);
+				
+				// due to difference in property names between Survey and SurveyDto
+				dto.setDescription(s.getDesc());
 				dtoList.add(dto);
 			}
 		}
@@ -259,7 +262,12 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 	private SurveyDto getSurvey(Long surveyId) {
 		SurveyDAO surveyDao = new SurveyDAO();
 		SurveyDto dto = new SurveyDto();
-		DtoMarshaller.copyToDto(surveyDao.getById(surveyId), dto);
+		Survey s = surveyDao.getById(surveyId);
+		DtoMarshaller.copyToDto(s, dto);
+		
+		// difference in property names between Survey and SurveyDto
+		dto.setDescription(s.getDesc());
+	
 		return dto;
 	}
 

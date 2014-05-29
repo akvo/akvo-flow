@@ -688,29 +688,44 @@ public class BulkDataServiceClient {
 				JSONObject json = arr.getJSONObject(i);
 				if (json != null) {
 					SurveyDto dto = new SurveyDto();
-					try {
-						if (json.has("code")) {
+					try {						
+						if (!json.isNull("code")) {
 							dto.setCode(json.getString("code"));
 						}
-						if (json.has("keyId")) {
-							dto.setKeyId(json.getLong("keyId"));
+						if (!json.isNull("defaultLanguageCode")) {
+							dto.setDefaultLanguageCode(json.getString("defaultLanguageCode"));
 						}
-						if (json.has("name")) {
-							dto.setName(json.getString("name"));
-						}
-						if (json.has("description")) {
+						if (!json.isNull("description")) {
 							dto.setDescription(json.getString("description"));
 						}
-						if (json.has("status")) {
-							dto.setStatus(json.getString("status"));
+						if (!json.isNull("instanceCount")) {
+							dto.setInstanceCount(json.getLong("instanceCount"));
 						}
-						if (json.has("path")) {
+						if (!json.isNull("keyId")) {
+							dto.setKeyId(json.getLong("keyId"));
+						}
+						if (!json.isNull("name")) {
+							dto.setName(json.getString("name"));
+						}
+						if (!json.isNull("path")) {
 							dto.setPath(json.getString("path"));
 						}
-						if (json.has("surveyGroupId")) {
+						if (!json.isNull("pointType")) {
+							dto.setPointType(json.getString("pointType"));
+						}
+						if (!json.isNull("requireApproval")) {
+							dto.setRequireApproval(json.getBoolean("requireApproval"));
+						}
+						if (!json.isNull("sector")) {
+							dto.setSector(json.getString("sector"));
+						}
+						if (!json.isNull("status")) {
+							dto.setStatus(json.getString("status"));
+						}
+						if (!json.isNull("surveyGroupId")) {
 							dto.setSurveyGroupId(json.getLong("surveyGroupId"));
 						}
-						if (json.has("version")) {
+						if (!json.isNull("version")) {
 							dto.setVersion(json.getString("version"));
 						}
 						dtoList.add(dto);
