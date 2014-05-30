@@ -56,6 +56,11 @@ public class MapUtils {
         Long surveyId = null;
         String surveyIdString = "";
 
+        if (locale.getGeocells() == null) {
+            // nothing to do
+            return;
+        }
+
         if (locale.getLastSurveyalInstanceId() != null) {
             SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
             if (si != null) {
