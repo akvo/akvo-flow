@@ -31,16 +31,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
+import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.DeviceApplicationDao;
-import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.DeviceApplication;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -124,7 +123,6 @@ public class ActionRestService {
 		double lon;
 
 		SurveyInstanceDAO sDao = new SurveyInstanceDAO();
-		QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
 		Random generator = new Random();
 		// create random points, in clusters.
 		for (int i = 0 ; i < 1 ; i++){

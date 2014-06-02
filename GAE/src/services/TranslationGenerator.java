@@ -41,7 +41,6 @@ public class TranslationGenerator {
 
 	private static final String[] EXTS = { "handlebars", "js" };
 
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
 
 		if (args.length < 2) {

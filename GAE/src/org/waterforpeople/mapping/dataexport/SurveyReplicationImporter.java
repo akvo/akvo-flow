@@ -141,7 +141,6 @@ public class SurveyReplicationImporter {
 
 	public static <T extends BaseDomain, U extends BaseDto> List<T> copyAndCreateList(
 			List<T> canonicalList, List<U> dtoList, Class<T> clazz) {
-		String surveyDtoStatus = null;
 
 		for (U dto : dtoList) {
 			T canonical = null;

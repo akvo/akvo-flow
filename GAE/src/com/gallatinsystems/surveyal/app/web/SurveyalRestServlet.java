@@ -25,9 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.beoui.geocell.GeocellManager;
-import com.beoui.geocell.model.Point;
-
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.jsr107cache.Cache;
@@ -37,6 +34,8 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.beoui.geocell.GeocellManager;
+import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -58,7 +57,6 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -479,7 +477,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	}
 
 	// this method is synchronised, because we are changing counts.
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private synchronized void adaptClusterData(Long surveyedLocaleId) {
 		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		final SurveyedLocale locale = slDao.getById(surveyedLocaleId);
