@@ -112,7 +112,7 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-		<javac source="1.6" target="1.6" encoding="UTF8" srcdir="src" destdir="${app_classes_dir}"
+		<javac source="1.7" target="1.7" encoding="UTF8" srcdir="src" destdir="${app_classes_dir}"
 			   classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
 
