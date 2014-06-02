@@ -41,8 +41,6 @@ import com.gallatinsystems.instancecreator.util.S3PolicySigner;
  * configuration files.
  * The files being generated are:
  * appengine-web.xml
- * portal-gwt.xml
- * surveyentry.gwt.xml
  * UploadConstants.properties
  * survey.properties
  * 
@@ -109,8 +107,8 @@ public class InstanceConfigurator {
 		ic.addAttribute("reportsEmailAddress", args[9]);
 		ic.addAttribute("scoreAPFlag", args[10]);
 		ic.addAttribute("organization", args[11]);
-		 ic.addAttribute("s3Url", "http://" + instanceName + ".s3.amazonaws.com");
-		 ic.addAttribute("s3url", "http://" + instanceName + ".s3.amazonaws.com");
+        ic.addAttribute("s3Url", "http://" + instanceName + ".s3.amazonaws.com");
+        ic.addAttribute("s3url", "http://" + instanceName + ".s3.amazonaws.com");
 		String localLocation = args[12];
 		ic.addAttribute("keystore", args[13]);
 		ic.addAttribute("mapsApiKey", args[14]);
@@ -147,23 +145,17 @@ public class InstanceConfigurator {
 				} else if (directory.equals("surveys")) {
 					ic.addAttribute("surveyS3Sig", documents[0]);
 					ic.addAttribute("surveyPolicy", documents[1]);
-				}else if ("apk".equals(directory)){
+                } else if ("apk".equals(directory)) {
 					ic.addAttribute("apkS3Sig", documents[0]);
 					ic.addAttribute("apkS3Policy", documents[1]);
 				}
 				policyFiles.put(directory, documents);
 			}
+
 			String appenginexml = ic.buildfile("war/appengine-web.vm");
 			ic.writeFile(localLocation, "appengine-web.xml", appenginexml);
-			String portalgwtxml = ic.buildfile("war/portalgwt.vm");
-			ic.writeFile(localLocation, "portal.gwt.xml", portalgwtxml);
-			String surveyentrygwtxml = ic.buildfile("war/surveyentrygwtxml.vm");
-			ic.writeFile(localLocation, "surveyEntry.gwt.xml",
-					surveyentrygwtxml);
-			String uploadconstantproperties = ic
-					.buildfile("war/UploadConstants.vm");
-			ic.writeFile(localLocation, "UploadConstants.properties",
-					uploadconstantproperties);
+            String uploadconstantproperties = ic.buildfile("war/UploadConstants.vm");
+            ic.writeFile(localLocation, "UploadConstants.properties", uploadconstantproperties);
 			String surveyproperties = ic.buildfile("war/surveyProperties.vm");
 			ic.writeFile(localLocation, "survey.properties", surveyproperties);
 		} catch (Exception e) {

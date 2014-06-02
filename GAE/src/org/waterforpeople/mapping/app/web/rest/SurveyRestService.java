@@ -230,11 +230,9 @@ public class SurveyRestService {
 
 					s.setDesc(surveyDto.getDescription());
 
-					// need to work around marshaller's inability to translate
-					// string to
-					// enumeration values.
 					if (surveyDto.getStatus() != null) {
-						s.setStatus(Survey.Status.valueOf(surveyDto.getStatus()));
+						s.setStatus(Survey.Status
+								.valueOf(surveyDto.getStatus().toString()));
 					}
 					if (surveyDto.getSector() != null) {
 						s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
@@ -281,6 +279,7 @@ public class SurveyRestService {
 		final RestStatusDto statusDto = new RestStatusDto();
 		final SurveyDto dto = new SurveyDto();
 		DtoMarshaller.copyToDto(s, dto);
+		dto.setDescription(s.getDesc());
 		statusDto.setStatus("ok");
 
 		response.put("meta", statusDto);
@@ -313,7 +312,8 @@ public class SurveyRestService {
 				"displayName", "questionGroupList", "instanceCount" });
 
 		if (dto.getStatus() != null) {
-			s.setStatus(Survey.Status.valueOf(dto.getStatus()));
+			s.setStatus(Survey.Status
+					.valueOf(dto.getStatus().toString()));
 		}
 		if (dto.getSector() != null) {
 			s.setSector(Survey.Sector.valueOf(dto.getSector()));

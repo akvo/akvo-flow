@@ -51,6 +51,7 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
+
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -75,7 +76,9 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.backends.BackendServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService;
@@ -83,6 +86,8 @@ import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+
+import static com.gallatinsystems.common.util.MemCacheUtils.*;
 
 /**
  * Restful servlet to do bulk data update operations
@@ -98,6 +103,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	private static final Integer QAS_PAGE_SIZE = 300;
 	private static final Integer LOCALE_PAGE_SIZE = 500;
 	private static final Integer T_PAGE_SIZE = 300;
+	private static final Integer SVAL_PAGE_SIZE = 600;
 	private static final String QAS_TO_REMOVE = "QAStoRemove";
 
 	@Override
@@ -158,7 +164,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE
 				.equalsIgnoreCase(dpReq.getAction())) {
 			addCreationSurveyIdToLocale(dpReq.getCursor());
-			} 
+		} else if (DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION.equalsIgnoreCase(req.getAction())) {
+			populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
+		}
 		return new RestResponse();
 	}
 
@@ -276,7 +284,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 						if (si.getSurveyedLocaleId() != null) {
 							SurveyedLocale sl = slDao.getByKey(si.getSurveyedLocaleId());
 							if (sl != null){
-								// if the locale type is not set or if it is not equal to the survey setting, 
+								// if the locale type is not set or if it is not equal to the survey setting,
 								// reset the local type
 								if (sl.getLocaleType() == null || !sl.getLocaleType().equals(localeType)) {
 									sl.setLocaleType(localeType);
@@ -424,47 +432,37 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * The keys are first removed in the testharnessservlet.
 	 * @param offset
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void recomputeLocaleClusters(String cursor) {
 
 		log.log(Level.INFO, "recomputing locale clusters [cursor: " + cursor + "]");
 
-		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		final List<SurveyedLocale> results = slDao.listAll(cursor, LOCALE_PAGE_SIZE);
 
 		// initialize the memcache
-		Cache cache = null;
-		Map props = new HashMap();
-		props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
-		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
-		try {
-			CacheFactory cacheFactory = CacheManager.getInstance()
-					.getCacheFactory();
-			cache = cacheFactory.createCache(props);
-		} catch (Exception e) {
-			log.log(Level.SEVERE,
-					"Couldn't initialize cache: " + e.getMessage(), e);
-		}
+		final Cache cache = initCache(12 * 60 * 60);
 
 		if (cache == null) {
 			return;
 		}
-		
+
 		for (SurveyedLocale locale : results) {
 			// adjust Geocell cluster data
 			if (locale.getGeocells() != null && !locale.getGeocells().isEmpty()){
-			    MapUtils.recomputeCluster(cache, locale);
+			    MapUtils.recomputeCluster(cache, locale, 1);
 			}
 		}
-		
+
 		if (results.size() == LOCALE_PAGE_SIZE) {
-			cursor = SurveyedLocaleDao.getCursor(results);
+			final String newCursor = SurveyedLocaleDao.getCursor(results);
 			final TaskOptions options = TaskOptions.Builder
 					.withUrl("/app_worker/dataprocessor")
 					.param(DataProcessorRequest.ACTION_PARAM,
 							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS)
 					.param(DataProcessorRequest.CURSOR_PARAM,
-						cursor != null ? cursor : "");
+							newCursor != null ? newCursor : "")
+					.header("Host", BackendServiceFactory.getBackendService()
+							.getBackendAddress("dataprocessor"));;
 			Queue queue = QueueFactory.getDefaultQueue();
 			queue.add(options);
 
@@ -493,34 +491,37 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} while (apList != null && apList.size() == 200);
 	}
 
-	private void copySurvey(Long surveyId, Long sourceId) {
+	private void copySurvey(Long copiedSurveyId, Long originalSurveyId) {
 
 		final QuestionGroupDao qgDao = new QuestionGroupDao();
 		final Map<Long, Long> qMap = new HashMap<Long, Long>();
 
-		final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(sourceId);
+		final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
 
 		if (qgList == null) {
-			log.log(Level.INFO, "Nothing to copy from {surveyId: " + sourceId
-					+ "} to {surveyId: " + surveyId + "}");
-			SurveyUtils.resetSurveyState(surveyId);
+			log.log(Level.INFO, "Nothing to copy from {surveyId: " + originalSurveyId
+					+ "} to {surveyId: " + copiedSurveyId + "}");
+			SurveyUtils.resetSurveyState(copiedSurveyId);
 			return;
 		}
 
 		log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
 		int qgOrder = 1;
 		for (final QuestionGroup sourceQG : qgList) {
-			SurveyUtils.copyQuestionGroup(sourceQG, surveyId, qgOrder++, qMap);
+			SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId, qgOrder++, qMap);
 		}
 
-		SurveyUtils.resetSurveyState(surveyId);
+		final SurveyDAO sDao = new SurveyDAO();
+		final Survey copiedSurvey = SurveyUtils.resetSurveyState(copiedSurveyId);
+		final Survey originalSurvey = sDao.getById(originalSurveyId);
 
 		MessageDao mDao = new MessageDao();
 		Message message = new Message();
 
-		message.setObjectId(surveyId);
+		message.setObjectId(copiedSurveyId);
+		message.setObjectTitle(copiedSurvey.getName());
 		message.setActionAbout("copySurvey");
-		message.setShortMessage("Copy from Survey " + sourceId + " to Survey " + surveyId + " completed");
+		message.setShortMessage("Copying from Survey " + originalSurveyId + " ("+originalSurvey.getName()+") completed");
 		mDao.save(message);
 
 	}
@@ -887,7 +888,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 							+ surveyInstanceId);
 		}
 	}
-	
+
 	/**
 	* Adds surveyId and questionGroupId to translations
 	* This only needs to happen once to populate the fields
@@ -902,7 +903,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		QuestionGroup qg;
 		Question qu;
 		QuestionOption qo;
-		
+
 		Long surveyId = null;
 		Long questionGroupId = null;
 		List<Translation> tListSave = new ArrayList<Translation>();
@@ -951,7 +952,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			tListSave.add(t);
 		}
 		tDao.save(tListSave);
-		
+
 		if (results.size() == T_PAGE_SIZE) {
 			cursor = TranslationDao.getCursor(results);
 			final TaskOptions options = TaskOptions.Builder
@@ -969,15 +970,15 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * started from testharness with host/webapp/testharness?action=addCreationSurveyIdToLocale
 	 * @param cursor
 	 */
-	public static void addCreationSurveyIdToLocale(String cursor){
-		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-		List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+	public static void addCreationSurveyIdToLocale(String cursor) {
+		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
 		final List<SurveyedLocale> results = slDao.listAll(cursor, LOCALE_PAGE_SIZE);
 
-		for (SurveyedLocale sl : results){
+		for (SurveyedLocale sl : results) {
 			// make it idempotent
-			if (sl.getCreationSurveyId() == null){
+			if (sl.getCreationSurveyId() == null) {
 				SurveyInstance si = siDao.getByKey(sl.getLastSurveyalInstanceId());
 				if (si != null) {
 					sl.setCreationSurveyId(si.getSurveyId());
@@ -985,18 +986,120 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				}
 			}
 		}
+
 		slDao.save(slList);
 
 		if (results.size() == LOCALE_PAGE_SIZE) {
-			cursor = SurveyedLocaleDao.getCursor(results);
+			final String cursorParam = SurveyedLocaleDao.getCursor(results);
 			final TaskOptions options = TaskOptions.Builder
 					.withUrl("/app_worker/dataprocessor")
 					.param(DataProcessorRequest.ACTION_PARAM,
 							DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE)
-					.param(DataProcessorRequest.CURSOR_PARAM,
-						cursor != null ? cursor : "");
+					.param(DataProcessorRequest.CURSOR_PARAM, cursorParam != null ? cursorParam : "");
 			Queue queue = QueueFactory.getDefaultQueue();
 			queue.add(options);
+		}
+	}
+
+	/**
+	 * runs over all surveyal value objects, and populates: the questionOrder
+	 * and questionGroupOrder fields, and the surveyId if it is not populated
+	 * This method is invoked as a URL request:
+	 * http://..../webapp/testharness?action=populateQuestionOrders
+	 * with optional parameter surveyId
+	 *
+	 * @param cursor
+	 * */
+	@SuppressWarnings("unchecked")
+	private void populateQuestionOrdersSurveyalValues(Long surveyId, String cursor) {
+
+		final SurveyalValueDao svDao = new SurveyalValueDao();
+		List<SurveyalValue> svList = null;
+
+		// get list of surveyalValues, either by surveyId, or all of them
+		if (surveyId != null) {
+			svList = svDao.listBySurvey(surveyId, cursor, SVAL_PAGE_SIZE);
+		} else {
+			svList = svDao.list(cursor, SVAL_PAGE_SIZE);
+		}
+
+		if (svList == null || svList.size() == 0) {
+			return; // nothing to do
+		}
+
+		final QuestionDao qDao = new QuestionDao();
+		final QuestionGroupDao qgDao = new QuestionGroupDao();
+		final List<SurveyalValue> svSaveList = new ArrayList<SurveyalValue>();
+
+		// initialize the memcache
+		Cache cache = initCache(12 * 60 * 60); // 12 hours
+
+		for (SurveyalValue sv : svList) {
+
+			Long sId = null;
+
+			// if the surveyQuestionId is not there, skip this surveyalValue
+			if (sv.getSurveyQuestionId() != null) {
+
+				final Long sqId = sv.getSurveyQuestionId();
+				final String orderKey = "q-order-" + sqId;
+
+				// get orders from the cache
+				if (containsKey(cache, orderKey)) {
+					final Map<String, Object> orderMap = (Map<String, Object>) cache.get(orderKey);
+					sv.setQuestionOrder((Integer) orderMap.get("q-order"));
+					sv.setQuestionGroupOrder((Integer) orderMap.get("qg-order"));
+					sId = (Long) orderMap.get("q-survey-id");
+				} else {
+					// get orders from the datastore
+					final Question q = qDao.getByKey(sqId);
+					final QuestionGroup qg = q != null && q.getQuestionGroupId() != null ? qgDao
+							.getByKey(q.getQuestionGroupId()) : null;
+
+					if (q != null) {
+						sv.setQuestionOrder(q.getOrder());
+						sId = q.getSurveyId();
+					}
+
+					if (qg != null) {
+						sv.setQuestionGroupOrder(qg.getOrder());
+					}
+
+					// put it in the cache for further reference
+					final Map<String, Object> v = new HashMap<String, Object>();
+					v.put("q-order", sv.getQuestionOrder());
+					v.put("qg-order", sv.getQuestionGroupOrder());
+					v.put("q-survey-id", sv.getSurveyId());
+					putObject(cache, orderKey, v);
+				}
+				// if the surveyId field of the surveyalValue has not been
+				// populated, do it now.
+				if (sv.getSurveyId() == null) {
+					sv.setSurveyId(sId);
+				}
+
+				svSaveList.add(sv);
+			}
+		}
+
+		svDao.save(svSaveList);
+
+		if (svList.size() == SVAL_PAGE_SIZE) {
+			final Queue queue = QueueFactory.getDefaultQueue();
+			final String newCursor = SurveyalValueDao.getCursor(svList);
+			final TaskOptions to = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
+					.param("cursor", newCursor)
+					.header("host",
+							BackendServiceFactory.getBackendService().getBackendAddress(
+									"dataprocessor"));
+
+			if (surveyId != null) {
+				to.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString());
+			}
+			queue.add(to);
 		}
 	}
 }
