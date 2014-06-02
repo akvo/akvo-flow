@@ -432,27 +432,15 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * The keys are first removed in the testharnessservlet.
 	 * @param offset
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void recomputeLocaleClusters(String cursor) {
 
 		log.log(Level.INFO, "recomputing locale clusters [cursor: " + cursor + "]");
 
-		SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		final List<SurveyedLocale> results = slDao.listAll(cursor, LOCALE_PAGE_SIZE);
 
 		// initialize the memcache
-		Cache cache = null;
-		Map props = new HashMap();
-		props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
-		props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
-		try {
-			CacheFactory cacheFactory = CacheManager.getInstance()
-					.getCacheFactory();
-			cache = cacheFactory.createCache(props);
-		} catch (Exception e) {
-			log.log(Level.SEVERE,
-					"Couldn't initialize cache: " + e.getMessage(), e);
-		}
+		final Cache cache = initCache(12 * 60 * 60);
 
 		if (cache == null) {
 			return;
@@ -466,13 +454,15 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		}
 
 		if (results.size() == LOCALE_PAGE_SIZE) {
-			cursor = SurveyedLocaleDao.getCursor(results);
+			final String newCursor = SurveyedLocaleDao.getCursor(results);
 			final TaskOptions options = TaskOptions.Builder
 					.withUrl("/app_worker/dataprocessor")
 					.param(DataProcessorRequest.ACTION_PARAM,
 							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS)
 					.param(DataProcessorRequest.CURSOR_PARAM,
-						cursor != null ? cursor : "");
+							newCursor != null ? newCursor : "")
+					.header("Host", BackendServiceFactory.getBackendService()
+							.getBackendAddress("dataprocessor"));;
 			Queue queue = QueueFactory.getDefaultQueue();
 			queue.add(options);
 

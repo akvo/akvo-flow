@@ -63,6 +63,7 @@ public class TestHarnessServlet extends HttpServlet {
 			.getName());
 	private static final long serialVersionUID = -5673118002247715049L;
 
+	@Override
 	@SuppressWarnings({ "unused", "rawtypes" })
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
@@ -245,7 +246,7 @@ public class TestHarnessServlet extends HttpServlet {
 			for (SurveyedLocaleCluster slc : slcDao.list("all")) {
 				slcDao.delete(slc);
 			}
-			
+
 			// initialize the memcache
 			Cache cache = null;
 			Map props = new HashMap();
@@ -262,7 +263,9 @@ public class TestHarnessServlet extends HttpServlet {
 			final TaskOptions options = TaskOptions.Builder
 					.withUrl("/app_worker/dataprocessor")
 					.param(DataProcessorRequest.ACTION_PARAM,
-							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS);
+							DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS)
+					.header("Host", BackendServiceFactory.getBackendService()
+							.getBackendAddress("dataprocessor"));
 			Queue queue = QueueFactory.getDefaultQueue();
 			queue.add(options);
 			try {
