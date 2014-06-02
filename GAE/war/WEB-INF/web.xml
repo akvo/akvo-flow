@@ -55,6 +55,15 @@
 		<servlet-name>EnvServlet</servlet-name>
 		<url-pattern>/flowenv.js</url-pattern>
 	</servlet-mapping>
+		<servlet>
+
+	<servlet-name>ApkRedirectServlet</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.ApkRedirectServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ApkRedirectServlet</servlet-name>
+		<url-pattern>/app</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
         <servlet-name>StringsServlet</servlet-name>
