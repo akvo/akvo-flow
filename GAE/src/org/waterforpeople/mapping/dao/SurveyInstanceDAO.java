@@ -44,6 +44,7 @@ import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
@@ -654,6 +655,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 	 * @return
 	 */
 	// TODO update lastSurveyalInstanceId in surveydLocale objects
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void deleteSurveyInstance(SurveyInstance item) {
 		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
 		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
@@ -707,9 +709,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 			Long localeId = instance.getSurveyedLocaleId();
 
-			// now delete the surveyInstance
-			siDao.delete(instance);
-
 			List<SurveyalValue> valsForInstance = localeDao
 				.listSurveyalValuesByInstance(instance.getKey().getId());
 			if (valsForInstance != null && valsForInstance.size() > 0) {
@@ -721,8 +720,26 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 			// in the previous step.
 			if (instancesForLocale != null && instancesForLocale.size() == 1) {
 				SurveyedLocale l = localeDao.getByKey(localeId);
-				localeDao.delete(l);
+				if (l != null) {
+					// initialize the memcache
+					Cache cache = null;
+					Map props = new HashMap();
+					props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
+					props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
+					try {
+						CacheFactory cacheFactory = CacheManager.getInstance()
+								.getCacheFactory();
+						cache = cacheFactory.createCache(props);
+					} catch (Exception e) {
+						log.log(Level.SEVERE,
+								"Couldn't initialize cache: " + e.getMessage(), e);
+					}
+					MapUtils.recomputeCluster(cache, l, -1);
+					localeDao.delete(l);
+				}
 			}
+			// now delete the surveyInstance
+			siDao.delete(instance);
 		}
 	}
 

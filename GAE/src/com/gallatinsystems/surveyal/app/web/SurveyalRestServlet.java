@@ -475,7 +475,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			return;
 		}
 		
-		MapUtils.recomputeCluster(cache, locale);
+		MapUtils.recomputeCluster(cache, locale, 1);
 
 	}
 
