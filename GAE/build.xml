@@ -116,14 +116,6 @@
 			   classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
 
-	<target name="GWTcompile" depends="copyjars, compile">
-		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true" maxmemory="512m">
-			<arg value="org.waterforpeople.mapping.portal.portal" />
-			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
-			<arg value="org.waterforpeople.mapping.surveyentry.surveyentry" />
-		</java>
-	</target>
-
 	<target name="translate" depends="compile" description="Generates the en.properties file from handlebars template and JS files">
     <java classname="services.TranslationGenerator" failonerror="true">
       <arg line="${dashboard} ${ui-strings}" />
@@ -157,8 +149,6 @@
 		<delete failonerror="false">
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
 		</delete>
-
-		<delete file="war/PlacemarksNewLook.vm" failonerror="true" />
 
 		<echo message="Rebuilding Dashboard..." />
 
