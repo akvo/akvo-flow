@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.sf.jsr107cache.Cache;
 
-import org.datanucleus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
@@ -56,12 +56,10 @@ import com.gallatinsystems.metric.domain.Metric;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -73,12 +71,12 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 /**
  * RESTFul servlet that can handle handle operations on SurveyedLocale and
  * related domain objects.
- * 
+ *
  * TODO: consider storing survey question list, metrics and mappings in a
  * Soft-Reference map to speed up processing.
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = 5923399458369692813L;
@@ -106,8 +104,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	/**
 	 * initializes the servlet by instantiating all needed Dao classes and
 	 * loading properties from the configuration.
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public SurveyalRestServlet() {
 		surveyInstanceDao = new SurveyInstanceDAO();
@@ -193,7 +191,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
 	/**
 	 * reruns the locale hydration for a survey
-	 * 
+	 *
 	 * @param surveyId
 	 */
 	private void rerunForSurvey(Long surveyId) {
@@ -252,43 +250,44 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
 	/**
 	 * Create or update a surveyedLocale based on the Geo data that is
-	 * retrieved from a surveyInstance. 
-	 * 
-	 * This method is unlikely to run in under 1 minute (based on datastore 
+	 * retrieved from a surveyInstance.
+	 *
+	 * This method is unlikely to run in under 1 minute (based on datastore
 	 * latency) so it is best invoked via a task queue
-	 * 
+	 *
 	 * @param surveyInstanceId
 	 */
 	private void ingestSurveyInstance(SurveyInstance surveyInstance) {
 		SurveyedLocale locale = null;
 		if (surveyInstance != null) {
-			
+
 			// extract/retrieve geo location data
 			String geoString = null;
-			List<QuestionAnswerStore> geoAnswers = surveyInstanceDao
-					.listQuestionAnswerStoreByType(surveyInstance.getKey().getId(), QuestionType.GEO.toString());
-	
+
 			// if the GEO information was present as Meta data, get it from there
 			if (surveyInstance.getLocaleGeoLocation() != null) {
 				geoString = surveyInstance.getLocaleGeoLocation();
-			// else, try to look for a GEO question
-			} else if (geoAnswers != null && !geoAnswers.isEmpty()) {
-				geoString = geoAnswers.get(0).getValue();
 			} else {
-				//TODO: not able to identify geo location. should we still create locale?
+				// else, try to look for a GEO question
+				List<QuestionAnswerStore> geoAnswers = surveyInstanceDao
+						.listQuestionAnswerStoreByType(surveyInstance.getKey().getId(), QuestionType.GEO.toString());
+				if (geoAnswers != null && !geoAnswers.isEmpty()) {
+					geoString = geoAnswers.get(0).getValue();
+				} else {
+					//TODO: not able to identify geo location. should we still create locale?
+				}
 			}
-			
-			
+
 			// try to construct geoPlace. Geo information can come from two sources:
 			// 1) the META_GEO information in the surveyInstance, and
-			// 2) a geo question. 
+			// 2) a geo question.
 			// If we can't find geo information in 1), we try 2)
-			
+
 			GeoPlace geoPlace = null;
 			double latitude = UNSET_VAL;
 			double longitude = UNSET_VAL;
 
-			if (StringUtils.notEmpty(geoString)) {
+			if (StringUtils.isNotBlank(geoString)) {
 				String[] tokens = geoString.split("\\|");
 				if (tokens.length >= 2) {
 					try {
@@ -314,8 +313,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				surveyInstance.setSublevel5(geoPlace.getSub5());
 				surveyInstance.setSublevel6(geoPlace.getSub6());
 			}
-			
-			
+
+
 			// if the surveyed locale id was available in the ingested data,
 			// this has been set in the save method in surveyInstanceDao.
 			if (surveyInstance.getSurveyedLocaleId() != null) {
@@ -329,8 +328,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			} else {
 				// we don't have a locale, create one
 				locale = new SurveyedLocale();
-				
-				if (StringUtils.notEmpty(surveyInstance
+
+				if (StringUtils.isNotBlank(surveyInstance
 						.getSurveyedLocaleIdentifier())) {
 					//TODO: is possible? having locale identifier in instance with no related locale?
 					locale.setIdentifier(surveyInstance.getSurveyedLocaleIdentifier());
@@ -342,8 +341,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				locale.setOrganization(PropertyUtil
 											.getProperty(DEFAULT_ORG_PROP));
 			}
-			
-			
+
+
 			locale.setLastSurveyedDate(surveyInstance.getCollectionDate());
 			locale.setLastSurveyalInstanceId(surveyInstance.getKey().getId());
 
@@ -360,41 +359,41 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					}
 				}
 
-			if (StringUtils.notEmpty(surveyInstance
+			if (StringUtils.isNotBlank(surveyInstance
 					.getSurveyedLocaleDisplayName())){
 				locale.setDisplayName(surveyInstance.getSurveyedLocaleDisplayName());
 			}
 
 			// if we have geoinformation, we will use it on the locale provided that:
-			// 1) it is a new Locale, or 2) it was brought in as meta information, meaning it should 
+			// 1) it is a new Locale, or 2) it was brought in as meta information, meaning it should
 			// overwrite previous locale geo information
 			if (surveyInstance.getLocaleGeoLocation() != null || !useExistingLocale){
 				if (geoPlace != null) {
 					setGeoData(geoPlace, locale);
 				}
 			}
-			
+
 			if (latitude != UNSET_VAL && longitude != UNSET_VAL) {
 				locale.setLatitude(latitude);
 				locale.setLongitude(longitude);
-			}			
-			
+			}
+
 			Survey survey = SurveyUtils.retrieveSurvey(surveyInstance.getSurveyId());
 			if (survey != null) {
 				locale.setLocaleType(survey.getPointType());
 				locale.setSurveyGroupId(survey.getSurveyGroupId());
 			}
-			
-			locale = surveyedLocaleDao.save(locale);
+
+			final SurveyedLocale savedLocale = surveyedLocaleDao.save(locale);
 
 			// save the surveyalValues
-			if (locale.getKey() != null && geoAnswers != null) {
-				surveyInstance.setSurveyedLocaleId(locale.getKey().getId());
-				List<SurveyalValue> values = constructValues(locale);
+			if (savedLocale.getKey() != null) {
+				surveyInstance.setSurveyedLocaleId(savedLocale.getKey().getId());
+				List<SurveyalValue> values = constructValues(savedLocale);
 				if (values != null) {
 					surveyedLocaleDao.save(values);
 				}
-				surveyedLocaleDao.save(locale);
+				surveyedLocaleDao.save(savedLocale);
 				surveyInstanceDao.save(surveyInstance);
 			}
 		}
@@ -427,7 +426,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private synchronized void adaptClusterData(Long surveyedLocaleId) {
 		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		final SurveyedLocale locale = slDao.getById(surveyedLocaleId);
-		
+
 		if (locale == null){
 			log.log(Level.SEVERE,
 					"Couldn't find surveyedLocale with id: " + surveyedLocaleId);
@@ -450,7 +449,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			queue.add(to);
 			return;
 		}
-		
+
 		MapUtils.recomputeCluster(cache, locale);
 
 	}
@@ -468,7 +467,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 * tries several methods to resolve the lat/lon to a GeoPlace. If a geoPlace
 	 * is found, looks for the country in the database and creates it if not
 	 * found
-	 * 
+	 *
 	 * @param lat
 	 * @param lon
 	 * @return
@@ -498,7 +497,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	/**
 	 * uses the geolocationService to determine the geographic sub-regions and
 	 * country for a given point
-	 * 
+	 *
 	 * @param l
 	 */
 	private void setGeoData(GeoPlace geoPlace, SurveyedLocale l) {
@@ -518,7 +517,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 * overlapping values from SurveyedLocale as needed. The surveydLocale must
 	 * have been saved prior to calling this method if one expects the
 	 * surveyedLocaleId member to be populated.
-	 * 
+	 *
 	 * @param l
 	 * @param answers
 	 * @return
