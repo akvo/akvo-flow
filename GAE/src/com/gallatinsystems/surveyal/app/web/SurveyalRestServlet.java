@@ -259,143 +259,141 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	 */
 	private void ingestSurveyInstance(SurveyInstance surveyInstance) {
 		SurveyedLocale locale = null;
-		if (surveyInstance != null) {
 
-			// extract/retrieve geo location data
-			String geoString = null;
+		// if the surveyed locale id was available in the ingested data,
+		// this has been set in the save method in surveyInstanceDao.
+		if (surveyInstance.getSurveyedLocaleId() != null) {
+		    locale = surveyedLocaleDao.getByKey(surveyInstance
+			    .getSurveyedLocaleId());
+		    if(locale == null) {
+			log.log(Level.WARNING,
+				"No SurveyedLocale (id=" + surveyInstance.getSurveyedLocaleId()
+				+ ") found for Survey Instance (id=" + surveyInstance.getKey().getId()+")");
+		    }
+		}
 
-			// if the GEO information was present as Meta data, get it from there
-			if (surveyInstance.getLocaleGeoLocation() != null) {
-				geoString = surveyInstance.getLocaleGeoLocation();
-			} else {
-				// else, try to look for a GEO question
-				List<QuestionAnswerStore> geoAnswers = surveyInstanceDao
-						.listQuestionAnswerStoreByType(surveyInstance.getKey().getId(), QuestionType.GEO.toString());
-				if (geoAnswers != null && !geoAnswers.isEmpty()) {
-					geoString = geoAnswers.get(0).getValue();
-				} else {
-					//TODO: not able to identify geo location. should we still create locale?
-				}
-			}
+		if (locale == null) {
+		    // we don't have a locale, or failed to retrieve one
+		    locale = new SurveyedLocale();
 
-			// try to construct geoPlace. Geo information can come from two sources:
-			// 1) the META_GEO information in the surveyInstance, and
-			// 2) a geo question.
-			// If we can't find geo information in 1), we try 2)
+		    if (StringUtils.isNotBlank(surveyInstance
+			    .getSurveyedLocaleIdentifier())) {
+			//TODO: is possible? having locale identifier in instance with no related locale?
+			locale.setIdentifier(surveyInstance.getSurveyedLocaleIdentifier());
+		    } else {
+			// if we don't have an identifier, create a random UUID.
+			locale.setIdentifier(base32Uuid());
+		    }
 
-			GeoPlace geoPlace = null;
-			double latitude = UNSET_VAL;
-			double longitude = UNSET_VAL;
+		    locale.setOrganization(PropertyUtil
+			    .getProperty(DEFAULT_ORG_PROP));
+		}
 
-			if (StringUtils.isNotBlank(geoString)) {
-				String[] tokens = geoString.split("\\|");
-				if (tokens.length >= 2) {
-					try {
-						latitude = Double.parseDouble(tokens[0]);
-						longitude = Double.parseDouble(tokens[1]);
-						geoPlace = getGeoPlace(latitude, longitude);
-					} catch (NumberFormatException nfe) {
-						log.log(Level.SEVERE,
-								"Could not parse lat/lon for SurveyInstance "
-										+ surveyInstance.getKey().getId());
-					}
-				}
-			}
+		// extract/retrieve geo location data
+		String geoString = null;
 
-			//TODO: move this to survey instance processing logic
-			// if we have a geoPlace, set it on the instance
-			if (geoPlace != null) {
-				surveyInstance.setCountryCode(geoPlace.getCountryCode());
-				surveyInstance.setSublevel1(geoPlace.getSub1());
-				surveyInstance.setSublevel2(geoPlace.getSub2());
-				surveyInstance.setSublevel3(geoPlace.getSub3());
-				surveyInstance.setSublevel4(geoPlace.getSub4());
-				surveyInstance.setSublevel5(geoPlace.getSub5());
-				surveyInstance.setSublevel6(geoPlace.getSub6());
-			}
+		// if the GEO information was present as Meta data, get it from there
+		if (StringUtils.isNotBlank(surveyInstance
+			.getLocaleGeoLocation())) {
+		    geoString = surveyInstance.getLocaleGeoLocation();
+		} else {
+		    // else, try to look for a GEO question
+		    List<QuestionAnswerStore> geoAnswers = surveyInstanceDao
+			    .listQuestionAnswerStoreByType(surveyInstance.getKey().getId(), QuestionType.GEO.toString());
+		    if (geoAnswers != null && !geoAnswers.isEmpty()) {
+			geoString = geoAnswers.get(0).getValue();
+		    } else {
+			//TODO: not able to identify geo location. should we still create locale?
+		    }
+		}
 
 
-			// if the surveyed locale id was available in the ingested data,
-			// this has been set in the save method in surveyInstanceDao.
-			if (surveyInstance.getSurveyedLocaleId() != null) {
-				locale = surveyedLocaleDao.getByKey(surveyInstance
-						.getSurveyedLocaleId());
-			}
+		// try to construct geoPlace. Geo information can come from two sources:
+		// 1) the META_GEO information in the surveyInstance, and
+		// 2) a geo question.
+		// If we can't find geo information in 1), we try 2)
 
-			boolean useExistingLocale = false;
-			if (locale != null) {
-				useExistingLocale = true;
-			} else {
-				// we don't have a locale, create one
-				locale = new SurveyedLocale();
+		GeoPlace geoPlace = null;
+		double latitude = UNSET_VAL;
+		double longitude = UNSET_VAL;
+		Map<String, Object> geoLocationMap = null;
 
-				if (StringUtils.isNotBlank(surveyInstance
-						.getSurveyedLocaleIdentifier())) {
-					//TODO: is possible? having locale identifier in instance with no related locale?
-					locale.setIdentifier(surveyInstance.getSurveyedLocaleIdentifier());
-				} else {
-					// if we don't have an identifier, create a random UUID.
-					locale.setIdentifier(base32Uuid());
-				}
+		try {
+		    geoLocationMap = SurveyedLocale.parseGeoLocation(geoString);
+		} catch (NumberFormatException nfe) {
+		    log.log(Level.SEVERE,
+			    "Could not parse lat/lon for SurveyInstance "
+		    + surveyInstance.getKey().getId());
+		}
 
-				locale.setOrganization(PropertyUtil
-											.getProperty(DEFAULT_ORG_PROP));
-			}
+		if(geoLocationMap != null && !geoLocationMap.isEmpty()) {
+		    latitude = (Double) geoLocationMap.get(MapUtils.LATITUDE);
+		    longitude = (Double) geoLocationMap.get(MapUtils.LONGITUDE);
 
+		    locale.setLatitude(latitude);
+		    locale.setLongitude(longitude);
+		    locale.setGeocells(GeocellManager
+			    .generateGeoCell(new Point(latitude, longitude)));
 
-			locale.setLastSurveyedDate(surveyInstance.getCollectionDate());
-			locale.setLastSurveyalInstanceId(surveyInstance.getKey().getId());
+		    geoPlace = getGeoPlace(latitude,longitude);
+		}
 
-			// add surveyInstanceId to list of contributed surveyInstances
-			List<Long> surveyInstanceContrib = locale.getSurveyInstanceContrib();
-			if (surveyInstanceContrib == null) {
-				List<Long> newList = new ArrayList<Long>();
-				newList.add(surveyInstance.getKey().getId());
-				locale.setSurveyInstanceContrib(newList);
-			} else {
-				if (!surveyInstanceContrib.contains(surveyInstance.getKey().getId())) {
-					surveyInstanceContrib.add(surveyInstance.getKey().getId());
-					locale.setSurveyInstanceContrib(surveyInstanceContrib);
-					}
-				}
+		if (geoPlace != null) {
 
-			if (StringUtils.isNotBlank(surveyInstance
-					.getSurveyedLocaleDisplayName())){
-				locale.setDisplayName(surveyInstance.getSurveyedLocaleDisplayName());
-			}
+		    // if we have geoinformation, we will use it on the locale provided that:
+		    // 1) it is a new Locale, or 2) it was brought in as meta information, meaning it should
+		    // overwrite previous locale geo information
+		    setGeoData(geoPlace, locale);
 
-			// if we have geoinformation, we will use it on the locale provided that:
-			// 1) it is a new Locale, or 2) it was brought in as meta information, meaning it should
-			// overwrite previous locale geo information
-			if (surveyInstance.getLocaleGeoLocation() != null || !useExistingLocale){
-				if (geoPlace != null) {
-					setGeoData(geoPlace, locale);
-				}
-			}
+		    //TODO: move this to survey instance processing logic
+		    // if we have a geoPlace, set it on the instance
+		    surveyInstance.setCountryCode(geoPlace.getCountryCode());
+		    surveyInstance.setSublevel1(geoPlace.getSub1());
+		    surveyInstance.setSublevel2(geoPlace.getSub2());
+		    surveyInstance.setSublevel3(geoPlace.getSub3());
+		    surveyInstance.setSublevel4(geoPlace.getSub4());
+		    surveyInstance.setSublevel5(geoPlace.getSub5());
+		    surveyInstance.setSublevel6(geoPlace.getSub6());
+		}
 
-			if (latitude != UNSET_VAL && longitude != UNSET_VAL) {
-				locale.setLatitude(latitude);
-				locale.setLongitude(longitude);
-			}
+		locale.setLastSurveyedDate(surveyInstance.getCollectionDate());
+		locale.setLastSurveyalInstanceId(surveyInstance.getKey().getId());
 
-			Survey survey = SurveyUtils.retrieveSurvey(surveyInstance.getSurveyId());
-			if (survey != null) {
-				locale.setLocaleType(survey.getPointType());
-				locale.setSurveyGroupId(survey.getSurveyGroupId());
-			}
+		// add surveyInstanceId to list of contributed surveyInstances
+		List<Long> surveyInstanceContrib = locale.getSurveyInstanceContrib();
+		if (surveyInstanceContrib == null) {
+		    List<Long> newList = new ArrayList<Long>();
+		    newList.add(surveyInstance.getKey().getId());
+		    locale.setSurveyInstanceContrib(newList);
+		} else {
+		    if (!surveyInstanceContrib.contains(surveyInstance.getKey().getId())) {
+			surveyInstanceContrib.add(surveyInstance.getKey().getId());
+			locale.setSurveyInstanceContrib(surveyInstanceContrib);
+		    }
+		}
 
-			final SurveyedLocale savedLocale = surveyedLocaleDao.save(locale);
+		if (StringUtils.isNotBlank(surveyInstance
+			.getSurveyedLocaleDisplayName())){
+		    locale.setDisplayName(surveyInstance.getSurveyedLocaleDisplayName());
+		}
 
-			// save the surveyalValues
-			if (savedLocale.getKey() != null) {
-				surveyInstance.setSurveyedLocaleId(savedLocale.getKey().getId());
-				List<SurveyalValue> values = constructValues(savedLocale);
-				if (values != null) {
-					surveyedLocaleDao.save(values);
-				}
-				surveyedLocaleDao.save(savedLocale);
-				surveyInstanceDao.save(surveyInstance);
-			}
+		Survey survey = SurveyUtils.retrieveSurvey(surveyInstance.getSurveyId());
+		if (survey != null) {
+		    locale.setLocaleType(survey.getPointType());
+		    locale.setSurveyGroupId(survey.getSurveyGroupId());
+		}
+
+		final SurveyedLocale savedLocale = surveyedLocaleDao.save(locale);
+
+		// save the surveyalValues
+		if (savedLocale.getKey() != null) {
+		    surveyInstance.setSurveyedLocaleId(savedLocale.getKey().getId());
+		    List<SurveyalValue> values = constructValues(savedLocale);
+		    if (values != null) {
+			surveyedLocaleDao.save(values);
+		    }
+		    surveyedLocaleDao.save(savedLocale);
+		    surveyInstanceDao.save(surveyInstance);
 		}
 	}
 

@@ -39,6 +39,12 @@ public class MapUtils {
     // latitude / longitude values
     private static final double REVMULT = 0.000001;
 
+    public static final String LATITUDE = "latitude";
+
+    public static final String LONGITUDE = "longitude";
+
+    public static final String ALTITUDE = "height";
+
     public static void recomputeCluster(Cache cache, SurveyedLocale locale) {
 
         final SurveyedLocaleClusterDao slcDao = new SurveyedLocaleClusterDao();

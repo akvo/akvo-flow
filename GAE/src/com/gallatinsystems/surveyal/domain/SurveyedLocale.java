@@ -17,12 +17,17 @@
 package com.gallatinsystems.surveyal.domain;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.gis.map.MapUtils;
 
 /**
  * Domain structure to represent a location about which there is data gathered
@@ -30,12 +35,12 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  * subdivisions (state/province/sector/cell, etc) where the exact definition of
  * what each level corresponds to depends on the country in which the point is
  * located.
- * 
+ *
  * Details about SurveyedLocales are stored using SurveyalValue which has a
  * loose association with this object.
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 @PersistenceCapable
 public class SurveyedLocale extends BaseDomain {
@@ -253,4 +258,31 @@ public class SurveyedLocale extends BaseDomain {
 		this.creationSurveyId = creationSurveyId;
 	}
 
+	/**
+	 * Split up a geoLocation string and return a map containing Latitude, Longitude
+	 * entries.
+	 *
+	 * @params
+	 * 		geoLocation
+	 *
+	 * @return
+	 * 		a map containing latitude and longitude entries
+	 * 		null if a null string is provided
+	 */
+	public static Map<String, Object> parseGeoLocation(String geoLocation) throws NumberFormatException {
+	    Map<String, Object> geoLocationMap =  null;
+
+	    String[] tokens = StringUtils.split(geoLocation, "\\|");
+	    if (tokens != null && tokens.length >= 2) {
+		geoLocationMap = new HashMap<String, Object>();
+		geoLocationMap.put(MapUtils.LATITUDE, Double.parseDouble(tokens[0]));
+		geoLocationMap.put(MapUtils.LONGITUDE, Double.parseDouble(tokens[1]));
+		//if(tokens.length > 2) {
+		// TODO: currently a string is generated for altitude. need to fix
+		//geoLocationMap.put(ALTITUDE, Long.parseLong(tokens[2]));
+		//}
+	    }
+
+	    return geoLocationMap;
+	}
 }
