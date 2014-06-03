@@ -9,9 +9,9 @@ Akvo FLOW Dashboard release notes
 
 ## New and noteworthy
 
-* The Dashboard has now a direct link where you get the mobile app, you
+* The Dashboard now has a direct link which lets users download the mobile app, you
   can find it in the footer __"Download FLOW app"__ [#565]
-* When showing the details of a _data point_ in the map, the questions
+* When showing the details of a _data point_ on the map, the questions
   are sorted based on the survey definition (previously they were sorted
   alphabetically) [#239]
 
