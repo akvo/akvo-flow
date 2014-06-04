@@ -34,7 +34,7 @@ public class ApkRedirectServlet extends HttpServlet {
 	private static final String ANDROID = "androidPhone";
 	private static final String FIELDSURVEY = "fieldSurvey";
 	private static final String SATSTAT = "satStat";
-	private static final String SATSTAT_APP_PATH = "/gps";
+	private static final String GPS_APP_PATH = "/gps";
 	private static final String FLOW_APP_PATH = "/app";
 
 	@Override
@@ -46,7 +46,7 @@ public class ApkRedirectServlet extends HttpServlet {
 
 	    if(FLOW_APP_PATH.equals(servletPath)) {
 		appCode = FIELDSURVEY;
-	    } else if(SATSTAT_APP_PATH.equals(servletPath)) {
+	    } else if(GPS_APP_PATH.equals(servletPath)) {
 		appCode = SATSTAT;
 	    }
 
