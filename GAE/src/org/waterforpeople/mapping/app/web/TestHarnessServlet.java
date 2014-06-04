@@ -296,6 +296,32 @@ public class TestHarnessServlet extends HttpServlet {
 			} catch (Exception e) {
 				// no-op
 			}
+		} else if ("populateQuestionOrders".equals(action)) {
+			log.log(Level.INFO, "Populating question and question group orders: ");
+			Queue queue = QueueFactory.getDefaultQueue();
+			TaskOptions to = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+							DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION)
+					.param("cursor", "")
+					.header("host",
+							BackendServiceFactory.getBackendService().getBackendAddress(
+									"dataprocessor"));
+			if (req.getParameter("surveyId") != null){
+				try {
+					// if we have a surveyId, try to parse it to long here
+					// if we fail, we break of the whole operation
+					// we don't use the parsed value
+					Long surveyId = Long.parseLong(req.getParameter("surveyId"));
+					queue.add(to.param(DataProcessorRequest.SURVEY_ID_PARAM, surveyId.toString()));
+				} catch (NumberFormatException e){
+					log.log(Level.SEVERE, "surveyId provided not valid: " + req.getParameter("surveyId"));
+				}
+			} else {
+				// if we don't have a surveyId, we want to populate all surveys
+				// so we fire the task without the surveyId parameter.
+				queue.add(to);
+			}
 		}
 	}
 

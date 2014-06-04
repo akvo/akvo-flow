@@ -82,16 +82,21 @@ public class PlacemarkDetailsRestService {
 
 	private List<PlacemarkDetailDto> getPlacemarkDetails(SurveyedLocale sl) {
 		final List<PlacemarkDetailDto> details = new ArrayList<PlacemarkDetailDto>();
+		Integer qgOrder;
+		Integer qOrder;
 
 		if (sl.getSurveyalValues() == null) {
 			return details;
 		}
 
 		for (SurveyalValue sv : sl.getSurveyalValues()) {
-			PlacemarkDetailDto svDto = new PlacemarkDetailDto();
-			DtoMarshaller.copyToDto(sv, svDto);
-			svDto.setPlacemarkId(sl.getKey().getId());
-			details.add(svDto);
+			PlacemarkDetailDto pmDto = new PlacemarkDetailDto();
+			DtoMarshaller.copyToDto(sv, pmDto);
+			pmDto.setPlacemarkId(sl.getKey().getId());
+			qgOrder = sv.getQuestionGroupOrder();
+			qOrder = sv.getQuestionOrder();
+			pmDto.setOrder((qgOrder == null ? 0 : qgOrder) * 1000 + (qOrder == null ? 0 : qOrder));
+			details.add(pmDto);
 		}
 
 		return details;

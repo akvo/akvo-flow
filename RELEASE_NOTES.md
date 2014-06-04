@@ -5,6 +5,24 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.6.17
+
+## New and noteworthy
+
+* The Dashboard now has a direct link which lets users download the mobile app, you
+  can find it in the footer __"Download FLOW app"__ [#565]
+* When showing the details of a _data point_ on the map, the questions
+  are sorted based on the survey definition (previously they were sorted
+  alphabetically) [#239]
+
+## Resolved issues
+
+* Survey transfer issues [#420]
+* Add a survey name to the survey id when copying [#399]
+* Removed GWT config file generation from InstanceConfigurator [#453]
+* Removing responses under the data tab should update the map [#523]
+* Adds URI to download a GPS status app [#572]
+
 #1.6.16
 
 ## New and noteworthy

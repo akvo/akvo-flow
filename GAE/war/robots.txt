@@ -11,3 +11,4 @@ Disallow: /devicefilesrestapi
 Disallow: /placemarkrestapi
 Disallow: /rawdatarestapi
 Disallow: /remote_api
+Disallow: /app

@@ -58,6 +58,7 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
   placemarkId: DS.attr('number'),
   collectionDate: DS.attr('number'),
+  order: DS.attr('number'),
   questionText: DS.attr('string'),
   metricName: DS.attr('string'),
   stringValue: DS.attr('string'),
