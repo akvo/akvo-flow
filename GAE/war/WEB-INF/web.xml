@@ -63,6 +63,7 @@
 	<servlet-mapping>
 		<servlet-name>ApkRedirectServlet</servlet-name>
 		<url-pattern>/app</url-pattern>
+		<url-pattern>/gps</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
