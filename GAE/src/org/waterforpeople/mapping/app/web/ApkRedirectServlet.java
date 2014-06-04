@@ -35,33 +35,33 @@ public class ApkRedirectServlet extends HttpServlet {
 	private static final long serialVersionUID = 8394168365501522124L;
 	private static final String ANDROID = "androidPhone";
 	private static final String FIELDSURVEY = "fieldSurvey";
-	private static final String SATSTAT_URL = "satStatUrl";
-	private static final String SATSTAT_APP_PATH = "/satstat";
+	private static final String SATSTAT = "satStat";
+	private static final String SATSTAT_APP_PATH = "/gps";
 	private static final String FLOW_APP_PATH = "/app";
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
 			IOException {
+	    final DeviceApplicationDao dao = new DeviceApplicationDao();
 	    String servletPath = req.getServletPath();
-	    String redirectUrl = null;
+	    String appCode = "";
 
 	    if(FLOW_APP_PATH.equals(servletPath)) {
-		final DeviceApplicationDao dao = new DeviceApplicationDao();
-		final List<DeviceApplication> apps = dao
-			.listByDeviceTypeAndAppCode(ANDROID, FIELDSURVEY, 1);
-
-		if (apps != null && apps.size() > 0) {
-		    redirectUrl = apps.get(0).getFileName();
-		}
+		appCode = FIELDSURVEY;
 	    } else if(SATSTAT_APP_PATH.equals(servletPath)) {
-		redirectUrl = PropertyUtil.getProperty(SATSTAT_URL);
+		appCode = SATSTAT;
 	    }
 
-	    if(StringUtils.isBlank(redirectUrl)) {
+	    final List<DeviceApplication> apps = dao
+		    .listByDeviceTypeAndAppCode(ANDROID, appCode, 1);
+	    if (apps == null
+		    || apps.size() == 0
+		    || StringUtils.isBlank(apps.get(0).getFileName())) {
 		resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		resp.getWriter().append("NOT FOUND");
 		return;
 	    }
-	    resp.sendRedirect(redirectUrl);
+
+	    resp.sendRedirect(apps.get(0).getFileName());
 	}
 }
