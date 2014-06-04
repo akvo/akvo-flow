@@ -28,8 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.dao.DeviceApplicationDao;
 import org.waterforpeople.mapping.domain.DeviceApplication;
 
-import com.gallatinsystems.common.util.PropertyUtil;
-
 public class ApkRedirectServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 8394168365501522124L;
