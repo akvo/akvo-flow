@@ -24,28 +24,44 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.dao.DeviceApplicationDao;
 import org.waterforpeople.mapping.domain.DeviceApplication;
+
+import com.gallatinsystems.common.util.PropertyUtil;
 
 public class ApkRedirectServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 8394168365501522124L;
 	private static final String ANDROID = "androidPhone";
 	private static final String FIELDSURVEY = "fieldSurvey";
+	private static final String SATSTAT_URL = "satStatUrl";
+	private static final String SATSTAT_APP_PATH = "/satstat";
+	private static final String FLOW_APP_PATH = "/app";
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
 			IOException {
+	    String servletPath = req.getServletPath();
+	    String redirectUrl = null;
+
+	    if(FLOW_APP_PATH.equals(servletPath)) {
 		final DeviceApplicationDao dao = new DeviceApplicationDao();
 		final List<DeviceApplication> apps = dao
-				.listByDeviceTypeAndAppCode(ANDROID, FIELDSURVEY, 1);
+			.listByDeviceTypeAndAppCode(ANDROID, FIELDSURVEY, 1);
 
-		if (apps == null || apps.size() == 0 || apps.get(0).getFileName() == null) {
-			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			resp.getWriter().append("NOT FOUND");
-			return;
+		if (apps != null && apps.size() > 0) {
+		    redirectUrl = apps.get(0).getFileName();
 		}
+	    } else if(SATSTAT_APP_PATH.equals(servletPath)) {
+		redirectUrl = PropertyUtil.getProperty(SATSTAT_URL);
+	    }
 
-		resp.sendRedirect(apps.get(0).getFileName());
+	    if(StringUtils.isBlank(redirectUrl)) {
+		resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		resp.getWriter().append("NOT FOUND");
+		return;
+	    }
+	    resp.sendRedirect(redirectUrl);
 	}
 }
