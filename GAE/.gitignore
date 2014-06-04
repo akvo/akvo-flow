@@ -1,0 +1,39 @@
+# Build config and output paths
+.gwt-log
+gwt-unitcache
+
+# Vagrant
+.vagrant
+env
+
+# Server config files
+*.jks
+appengine-web.xml
+build.properties
+UploadConstants.properties
+
+# Server paths
+appletbin
+bin
+build
+
+src/services/DataIssues.java
+
+war/admin
+war/com.*
+war/exporterapplet.jar
+war/flowenv.js
+war/index.html
+war/org.*
+war/PlacemarksNewLook.vm
+war/publicmap
+war/vendorjs
+
+war/WEB-INF/appengine-generated
+war/WEB-INF/classes
+war/WEB-INF/deploy
+war/WEB-INF/lib/appengine*.jar
+war/WEB-INF/lib/datanucleus*.jar
+war/WEB-INF/lib/geronimo*.jar
+war/WEB-INF/lib/jdo2-api*.jar
+war/WEB-INF/lib/jsr107*.jar

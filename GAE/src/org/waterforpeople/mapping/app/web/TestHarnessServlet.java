@@ -64,7 +64,6 @@ public class TestHarnessServlet extends HttpServlet {
 	private static final long serialVersionUID = -5673118002247715049L;
 
 	@Override
-	@SuppressWarnings({ "unused", "rawtypes" })
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		String action = req.getParameter("action");
 		if ("setupTestUser".equals(action)) {

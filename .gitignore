@@ -12,15 +12,12 @@
 
 # Build config and output paths
 .gradle
-.gwt-log
-gwt-unitcache
 
 # Testing
 .calabash_settings
 
 # Vagrant
 .vagrant
-GAE/env
 
 # Dashboard paths
 Dashboard/app/test.html
@@ -29,44 +26,8 @@ Dashboard/node_modules
 Dashboard/test_assets
 Dashboard/tmp
 
-# Server config files
-*.jks
-appengine-web.xml
-build.properties
-UploadConstants.properties
-
-# Server paths
-GAE/appletbin
-GAE/bin
-GAE/build
-
-GAE/src/services/DataIssues.java
-
-GAE/war/admin
-GAE/war/com.*
-GAE/war/exporterapplet.jar
-GAE/war/flowenv.js
-GAE/war/index.html
-GAE/war/org.*
-GAE/war/publicmap
-GAE/war/vendorjs
-
-GAE/war/WEB-INF/appengine-generated
-GAE/war/WEB-INF/classes
-GAE/war/WEB-INF/deploy
-GAE/war/WEB-INF/lib/appengine*.jar
-GAE/war/WEB-INF/lib/datanucleus*.jar
-GAE/war/WEB-INF/lib/geronimo*.jar
-GAE/war/WEB-INF/lib/jdo2-api*.jar
-GAE/war/WEB-INF/lib/jsr107*.jar
-
 # APK paths
-WFPMapping/device/debugcert
-WFPMapping/device/survey/bin
-WFPMapping/device/survey/gen
 WFPMapping/device/survey/res/raw/survey.properties
-WFPMapping/device/survey_test/bin
-WFPMapping/device/survey_test/src/com/jayway/test/SurveyDataTest.java
 
 # Reports service
 reports/.lein*

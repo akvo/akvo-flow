@@ -1,5 +1,6 @@
-sdk.dir=/usr/local/sdk/gae/java-sdk-1.7.6
+sdk.dir=/usr/local/sdk/gae/java-sdk-1.8.8
 gwtlibs.dir=/usr/local/sdk/gwt/2.5.1
+config.home=/path/to/repos/akvo-flow-server-config
 email.address=some_user@gmail.com
 keystore.password=[some_password]
 keystore.alias=fieldsurvey

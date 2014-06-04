@@ -6,6 +6,9 @@
 	<property name="app_classes_dir" location="${app_dir}/classes" />
 	<property name="app_lib_dir" location="${app_dir}/lib" />
 
+	<available file="build.properties" property="properties_file_exists" />
+    <fail unless="properties_file_exists" message="Expected build.properties file not found in ${basedir}" />
+
 	<import file="${sdk.dir}/config/user/ant-macros.xml" />
 
 	<path id="project.classpath">
@@ -49,20 +52,6 @@
 
 	</path>
 
-	<target name="check-files">
-	    <available file="build.properties" property="properties.file.exists" />
-	</target>
-
-	<target name="init" depends="check-files">
-	    <fail message="build.properties file doesn't exist">
-	        <condition>
-	            <not>
-	                <isset property="properties.file.exists"/>
-	            </not>
-	        </condition>
-	    </fail>
-	</target>
-
 	<target name="checkForBuiltFiles" description="Checks for any compiled files">
 		<available file="${app_classes_dir}" type="dir" property="built_classes_exist" />
 	</target>
@@ -72,27 +61,29 @@
 	<delete dir="gwt-unitCache" />
     </target>
 
-	<target name="copyconfig" depends="init" description="Copies the server configuration files">
-		<fail message="[config] property path must be present, e.g.: ant copyconfig -Dconfig=/path/to/config/folder">
-			<condition>
-				<not>
-					<isset property="config" />
-				</not>
-			</condition>
-		</fail>
-		<copy file="${config}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
-		<copy file="${config}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
-		<copy file="${config}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>
-		<copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true" failonerror="false"/>
+    <target name="verifyInstanceConfig" description="Fails the build if instance config details are missing or invalid">
+		<fail unless="config.home" message="[config.home] path must be present in build.properties file" />
+		<fail unless="instance.name" message="[instance.name] must be specified, e.g. ant copyconfig -Dinstance.name=some-flow-instance" />
+		<property name="instance.config.dir" location="${config.home}/${instance.name}" />
+		<available file="${instance.config.dir}" type="dir" property="instance_config_exists" />
+		<fail unless="instance_config_exists" message="Instance config directory not found: ${instance.config.dir}" />
+    </target>
+
+	<target name="copyconfig" depends="verifyInstanceConfig" description="Copies the server configuration files">
+		<property name="instance.config.dir" location="${config.home}/${instance.name}" />
+		<copy file="${instance.config.dir}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
+		<copy file="${instance.config.dir}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
+		<copy file="${instance.config.dir}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>
+		<copy file="${instance.config.dir}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${instance.config.dir}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${instance.config.dir}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${instance.config.dir}/images/wsp_logo.jpg" tofile="war/images/wfp_flow_header.jpg" overwrite="true" verbose="true" failonerror="false"/>
+		<copy file="${instance.config.dir}/placemarkExternalMap.vm" tofile="war/placemarkExternalMap.vm" overwrite="true" verbose="true" failonerror="false"/>
 		<loadfile property="app.id" srcFile="${app_dir}/appengine-web.xml">
 			<filterchain>
 				<linecontains>
 					<contains value="application"/>
-                		</linecontains>
+                </linecontains>
 				<tokenfilter>
 				<replaceregex pattern="(&lt;|&lt;/)application&gt;" replace="" flags="gi"/>
 				<trim/>
@@ -103,7 +94,7 @@
 		</loadfile>
 	</target>
 
-	<target name="copyjars" depends="init" description="Copies the App Engine JARs to the WAR.">
+	<target name="copyjars" description="Copies the App Engine JARs to the WAR.">
 		<copy todir="${app_lib_dir}" flatten="true" verbose="true">
 			<fileset dir="${sdk.dir}/lib/user">
 				<include name="**/*.jar" />
@@ -121,7 +112,7 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-		<javac source="1.6" target="1.6" encoding="UTF8" srcdir="src" destdir="${app_classes_dir}"
+		<javac source="1.7" target="1.7" encoding="UTF8" srcdir="src" destdir="${app_classes_dir}"
 			   classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
 
@@ -132,7 +123,7 @@
     </java>
   </target>
 
-	<target name="datanucleusenhance" depends="init, compile" description="Performs JDO enhancement on compiled data classes.">
+	<target name="datanucleusenhance" depends="compile" description="Performs JDO enhancement on compiled data classes.">
 		<enhance failonerror="true" api="JDO">
 			<classpath>
 				<pathelement path="${sdk.dir}/lib/appengine-tools-api.jar" />
@@ -153,25 +144,19 @@
 	</target>
 
 	<target name="update" depends="compile,datanucleusenhance" description="Uploads the application to App Engine.">
-		<fail message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt">
-			<condition>
-				<not>
-					<isset property="pwd" />
-				</not>
-			</condition>
-		</fail>
+		<fail unless="pwd" message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt" />
 
 		<delete failonerror="false">
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
 		</delete>
-
-		<delete file="war/PlacemarksNewLook.vm" failonerror="false" />
 
 		<echo message="Rebuilding Dashboard..." />
 
 		<exec dir="../Dashboard" executable="rake" failonerror="true">
 		    <env key="RAKEP_MODE" value="production" />
 		    <arg value="build" />
+		    <arg value="--verbose" />
+		    <arg value="--trace" />
 		</exec>
 
 		<exec dir="../" executable="git" outputproperty="app.version">
@@ -180,12 +165,12 @@
 
 		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
 
-		<exec dir="." executable="sh">
+		<exec dir="." executable="sh" failonerror="true">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} --passin &lt; ${pwd} update war" />
 		</exec>
 
-		<exec dir="." executable="sh">
+		<exec dir="." executable="sh" failonerror="true">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh backends war update" />
 		</exec>
@@ -197,6 +182,10 @@
 
 	<target name="rollback" depends="datanucleusenhance" description="Rolls back an interrupted application update.">
 		<appcfg action="rollback" war="war" />
+		<exec dir="." executable="sh" failonerror="true">
+		    <arg value="-c" />
+		    <arg value="${sdk.dir}/bin/appcfg.sh backends rollback war" />
+		</exec>
 	</target>
 
 	<target name="request_logs" description="Downloads log data from App Engine for the application.">

@@ -72,7 +72,6 @@ public class BulkDataServiceClient {
 	public static final String RESPONSE_KEY = "dtoList";
 	private static final String SURVEY_SERVLET_PATH = "/surveyrestapi";
 	private static final String DEVICE_FILES_SERVLET_PATH = "/devicefilesrestapi?action=";
-	private static final String ACCESS_POINT_SERVLET_PATH = "/accesspoint?action=search";
 
 	/**
 	 * lists all responses from the server for a surveyInstance submission as a
@@ -283,14 +282,14 @@ public class BulkDataServiceClient {
 	public static Map<String, String> fetchInstanceIds(String surveyId,
 			String serverBase, String apiKey) throws Exception {
 		Map<String, String> values = new HashMap<String, String>();
-		
+
 		String instanceString = fetchDataFromServer(serverBase + DATA_SERVLET_PATH,
 						"?action=" + DataBackoutRequest.LIST_INSTANCE_ACTION
 								+ "&" + DataBackoutRequest.SURVEY_ID_PARAM
 								+ "=" + surveyId + "&"
 								+ DataBackoutRequest.INCLUDE_DATE_PARAM
 								+ "=true", true, apiKey);
-		
+
 		if (instanceString != null && instanceString.trim().length() != 0) {
 			StringTokenizer strTok = new StringTokenizer(instanceString, ",");
 			while (strTok.hasMoreTokens()) {
