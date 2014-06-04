@@ -21,7 +21,7 @@ Akvo FLOW Dashboard release notes
 * Add a survey name to the survey id when copying [#399]
 * Removed GWT config file generation from InstanceConfigurator [#453]
 * Removing responses under the data tab should update the map [#523]
-
+* Adds URI to download a GPS status app [#572]
 
 #1.6.16
 
