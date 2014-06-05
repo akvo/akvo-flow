@@ -26,6 +26,7 @@ import org.apache.commons.beanutils.converters.LongConverter;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
