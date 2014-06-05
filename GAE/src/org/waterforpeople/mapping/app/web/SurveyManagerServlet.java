@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -150,13 +149,13 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				Survey survey = surveyDao.getById(mgrReq.getSurveyId());
 				String sgName = null;
-				String isInMonitoringGroup = "false";
+				Boolean isInMonitoringGroup = false;
 				String newLocaleSurveyId = "null";
 				if (survey != null) {
 					SurveyGroup sg = sgDao.getByKey(survey.getSurveyGroupId());
 					if (sg != null) {
 						sgName = sg.getCode();
-						isInMonitoringGroup = sg.getIsMonitoringGroupFlag() != null ? sg.getIsMonitoringGroupFlag().toString() : "false";
+						isInMonitoringGroup = Boolean.valueOf(sg.getMonitoringGroup()); // null ~ false
 						newLocaleSurveyId = sg.getNewLocaleSurveyId() != null ? sg.getNewLocaleSurveyId().toString() : "null";
 					}
 					StringBuilder sb = new StringBuilder();
@@ -227,7 +226,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		Long surveyGroupId = null;
 		String sgName;
 		String surveyName;
-		String isInMonitoringGroup;
+		Boolean isInMonitoringGroup;
 		String newLocaleSurveyId;
 		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
 			Double ver = versionMap.get(dsjq.getSurveyID());
@@ -238,7 +237,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 			if (s != null && sg != null) {
 				surveyName = s.getName();
 				sgName = sg.getCode() != null ? sg.getCode() : "unknown";
-				isInMonitoringGroup = sg.getIsMonitoringGroupFlag() != null ? sg.getIsMonitoringGroupFlag().toString() : "false";
+				isInMonitoringGroup = Boolean.valueOf(sg.getMonitoringGroup());
 				newLocaleSurveyId = sg.getNewLocaleSurveyId() != null ? sg.getNewLocaleSurveyId().toString() : "null";
 				if (s.getVersion() != null) {
 					versionMap.put(dsjq.getSurveyID(), s.getVersion());
@@ -276,13 +275,12 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 
 		StringBuilder sb = new StringBuilder();
 	    for (SurveyGroup sg : sgDao.list(Constants.ALL_RESULTS)) {
-	    	if (includeGroupMap.get(sg.getKey().getId()) != null){
-	    		sb.append(sg.getKey().getId() + "," + sg.getCode()
-	    				+ "," + sg.getIsMonitoringGroupFlag()
-	    				+ "," + sg.getNewLocaleSurveyId()
-	    				+ "\n");
-	    		}
-	    	}
+			if (includeGroupMap.get(sg.getKey().getId()) != null) {
+				sb.append(sg.getKey().getId()).append(",").append(sg.getCode())
+						.append(",").append(Boolean.valueOf(sg.getMonitoringGroup())).append(",")
+						.append(sg.getNewLocaleSurveyId()).append("\n");
+			}
+		}
 	    return sb.toString();
 	    }
 

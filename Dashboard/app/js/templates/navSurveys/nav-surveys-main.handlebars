@@ -19,7 +19,7 @@
         {{#view FLOW.JavascriptSurveyGroupListView}}
           {{#each sg in FLOW.surveyGroupControl.arrangedContent}}
             {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-              <a  {{action "makeSelected" target="this"}}> {{#if sg.isMonitoringGroupFlag}}<span style="color:rgb(74, 177, 207)">M</span>&nbsp;&nbsp;{{/if}}{{sg.code}}</a>
+              <a  {{action "makeSelected" target="this"}}> {{#if sg.monitoringGroup}}<span style="color:rgb(74, 177, 207)">M</span>&nbsp;&nbsp;{{/if}}{{sg.code}}</a>
             {{/view}}
           {{/each}} 
         {{/view}}
@@ -62,7 +62,7 @@
     <ul class="surveyBatch">
     
     {{#if view.oneSelected}}
-     {{#if view.isMonitoringGroupFlag}}
+     {{#if view.monitoringGroup}}
 		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a> 
 		      <div style="margin:0 10px 0 20px;"> <p style="text-size:1.5em;">Survey that creates new monitored entities:</p> {{view Ember.Select 
          		contentBinding="FLOW.surveyControl.content" 
