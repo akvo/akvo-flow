@@ -87,8 +87,8 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
   
   initVars: function () {
-	  if (!Ember.none('FLOW.selectedControl.selectedSurveyGroup')) {
-		  this.set('monitoringGroup',FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup'));
+	  if (FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup) {
+		  this.set('monitoringGroup', FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup'));
 	  }
   }.observes('FLOW.selectedControl.selectedSurveyGroup', 'FLOW.selectedControl.selectedSurvey'),
 
