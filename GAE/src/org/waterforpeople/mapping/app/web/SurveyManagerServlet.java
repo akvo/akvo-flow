@@ -110,7 +110,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 			if (mgrReq.getPhoneNumber() != null || mgrReq.getImei() != null) {
 				resp.setMessage(getSurveyForPhone(mgrReq.getPhoneNumber(), mgrReq.getImei()));
 				// now check to see if we need to update the device
-				if (mgrReq.getImei() != null){ 
+				if (mgrReq.getImei() != null){
 					dev = deviceDao.getByImei(mgrReq.getImei());
 				}
 				if (dev == null){
@@ -155,7 +155,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 					SurveyGroup sg = sgDao.getByKey(survey.getSurveyGroupId());
 					if (sg != null) {
 						sgName = sg.getCode();
-						isInMonitoringGroup = Boolean.valueOf(sg.getMonitoringGroup()); // null ~ false
+						isInMonitoringGroup = Boolean.valueOf(sg.getMonitoringGroup() != null ? sg.getMonitoringGroup() : false);
 						newLocaleSurveyId = sg.getNewLocaleSurveyId() != null ? sg.getNewLocaleSurveyId().toString() : "null";
 					}
 					StringBuilder sb = new StringBuilder();
@@ -237,7 +237,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 			if (s != null && sg != null) {
 				surveyName = s.getName();
 				sgName = sg.getCode() != null ? sg.getCode() : "unknown";
-				isInMonitoringGroup = Boolean.valueOf(sg.getMonitoringGroup());
+				isInMonitoringGroup = Boolean.valueOf(sg.getMonitoringGroup() != null ? sg.getMonitoringGroup() : false);
 				newLocaleSurveyId = sg.getNewLocaleSurveyId() != null ? sg.getNewLocaleSurveyId().toString() : "null";
 				if (s.getVersion() != null) {
 					versionMap.put(dsjq.getSurveyID(), s.getVersion());
@@ -277,7 +277,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 	    for (SurveyGroup sg : sgDao.list(Constants.ALL_RESULTS)) {
 			if (includeGroupMap.get(sg.getKey().getId()) != null) {
 				sb.append(sg.getKey().getId()).append(",").append(sg.getCode())
-						.append(",").append(Boolean.valueOf(sg.getMonitoringGroup())).append(",")
+						.append(",").append(Boolean.valueOf(sg.getMonitoringGroup() != null ? sg.getMonitoringGroup() : false)).append(",")
 						.append(sg.getNewLocaleSurveyId()).append("\n");
 			}
 		}
