@@ -17,17 +17,14 @@
 package com.gallatinsystems.surveyal.domain;
 
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.gallatinsystems.framework.domain.BaseDomain;
-import com.gallatinsystems.gis.map.MapUtils;
 
 /**
  * Domain structure to represent a location about which there is data gathered
@@ -56,7 +53,7 @@ public class SurveyedLocale extends BaseDomain {
 	private String sublevel4;
 	private String sublevel5;
 	private String sublevel6;
-	private List<Long> surveyInstanceContrib;
+	private Set<Long> surveyInstanceContrib;
 	private List<String> geocells;
 	private String localeType;
 	private Double latitude;
@@ -230,12 +227,19 @@ public class SurveyedLocale extends BaseDomain {
 		this.displayName = displayName;
 	}
 
-	public List<Long> getSurveyInstanceContrib() {
+	public Set<Long> getSurveyInstanceContrib() {
 		return surveyInstanceContrib;
 	}
 
-	public void setSurveyInstanceContrib(List<Long> surveyInstanceContrib) {
-		this.surveyInstanceContrib = surveyInstanceContrib;
+	public void addContributingSurveyInstance(Long surveyInstanceId) {
+		if(surveyInstanceContrib == null) {
+			surveyInstanceContrib = new HashSet<Long>();
+		}
+		surveyInstanceContrib.add(surveyInstanceId);
+	}
+
+	public void setSurveyInstanceContrib(Set<Long> surveyInstanceIdList) {
+		this.surveyInstanceContrib.addAll(surveyInstanceIdList);
 	}
 
 	public String getCurrentStatus() {
@@ -256,33 +260,5 @@ public class SurveyedLocale extends BaseDomain {
 
 	public void setCreationSurveyId(Long creationSurveyId) {
 		this.creationSurveyId = creationSurveyId;
-	}
-
-	/**
-	 * Split up a geoLocation string and return a map containing Latitude, Longitude
-	 * entries.
-	 *
-	 * @params
-	 * 		geoLocation
-	 *
-	 * @return
-	 * 		a map containing latitude and longitude entries
-	 * 		null if a null string is provided
-	 */
-	public static Map<String, Object> parseGeoLocation(String geoLocation) throws NumberFormatException {
-	    Map<String, Object> geoLocationMap =  null;
-
-	    String[] tokens = StringUtils.split(geoLocation, "\\|");
-	    if (tokens != null && tokens.length >= 2) {
-		geoLocationMap = new HashMap<String, Object>();
-		geoLocationMap.put(MapUtils.LATITUDE, Double.parseDouble(tokens[0]));
-		geoLocationMap.put(MapUtils.LONGITUDE, Double.parseDouble(tokens[1]));
-		//if(tokens.length > 2) {
-		// TODO: currently a string is generated for altitude. need to fix
-		//geoLocationMap.put(ALTITUDE, Long.parseLong(tokens[2]));
-		//}
-	    }
-
-	    return geoLocationMap;
 	}
 }
