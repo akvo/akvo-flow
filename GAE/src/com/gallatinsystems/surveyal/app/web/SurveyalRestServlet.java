@@ -332,6 +332,17 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				if (lat != UNSET_VAL && lon != UNSET_VAL) {
 					locale.setLatitude(lat);
 					locale.setLongitude(lon);
+
+					// set Geocell data
+					try {
+						locale.setGeocells(GeocellManager
+								.generateGeoCell(new Point(lat, lon)));
+					} catch (Exception ex) {
+						log.log(Level.INFO,
+								"Could not generate Geocell for locale: "
+										+ locale.getKey().getId()
+										+ " error: " + ex);
+					}
 				}
 				locale.setSurveyGroupId(surveyGroupId);
 				if (instance.getSurveyedLocaleIdentifier() != null && instance.getSurveyedLocaleIdentifier().trim().length() > 0){
@@ -341,6 +352,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
 					locale.setIdentifier(base32Uuid());
 				}
+				if (geoPlace != null) {
+					setGeoData(geoPlace, locale);
+				}
 				if (survey != null) {
 					locale.setLocaleType(pointType);
 				}
@@ -348,6 +362,14 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				if (locale.getOrganization() == null) {
 					locale.setOrganization(PropertyUtil
 							.getProperty(DEFAULT_ORG_PROP));
+				}
+
+				List<Long> surveyInstanceContrib = new ArrayList<Long>();
+				surveyInstanceContrib.add(instance.getKey().getId());
+				locale.setSurveyInstanceContrib(surveyInstanceContrib);
+
+				if (instance.getSurveyedLocaleDisplayName() != null && instance.getSurveyedLocaleDisplayName().length() > 0){
+					locale.setDisplayName(instance.getSurveyedLocaleDisplayName());
 				}
 
 				locale = surveyedLocaleDao.save(locale);
@@ -409,8 +431,13 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					locale.setLocaleType(survey.getPointType());
 				}
 
+				if (instance.getSurveyedLocaleDisplayName() != null && instance.getSurveyedLocaleDisplayName().length() > 0){
+					locale.setDisplayName(instance.getSurveyedLocaleDisplayName());
+				}
+
 				locale = surveyedLocaleDao.save(locale);
 			}
+
 
 			// save the surveyalValues
 			if (locale != null && locale.getKey() != null && answers != null) {
