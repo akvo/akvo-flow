@@ -29,7 +29,7 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 	private String description;
 	private String name;
 	private String code;
-	private Boolean isMonitoringGroupFlag;
+	private Boolean monitoringGroup;
 	private Long newLocaleSurveyId;
 	private Date createdDateTime;
 	private Date lastUpdateDateTime;
@@ -96,12 +96,12 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 		return name;
 	}
 
-	public Boolean getIsMonitoringGroupFlag() {
-		return isMonitoringGroupFlag;
+	public Boolean getMonitoringGroup() {
+		return monitoringGroup;
 	}
 
-	public void setIsMonitoringGroupFlag(Boolean isMonitoringGroupFlag) {
-		this.isMonitoringGroupFlag = isMonitoringGroupFlag;
+	public void setMonitoringGroup(Boolean monitoringGroup) {
+		this.monitoringGroup = monitoringGroup;
 	}
 
 	public Long getNewLocaleSurveyId() {

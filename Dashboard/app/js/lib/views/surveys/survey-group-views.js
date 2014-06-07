@@ -11,7 +11,7 @@ FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   content: null,
   tagName: 'li',
   classNameBindings: 'amSelected:current'.w(),
-  isMonitoringGroupFlag: false,
+  monitoringGroup: false,
   
   // true if the survey group is selected. Used to set proper display class
   amSelected: function () {
@@ -74,7 +74,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   showSGDeleteNotPossibleDialog: false,
   showCopySurveyDialogBool: false,
   newSurveyName: null,
-  isMonitoringGroupFlag:false,
+  monitoringGroup:false,
 
   // true if at least one survey group is active
   oneSelected: function () {
@@ -88,7 +88,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   
   initVars: function () {
 	  if (!Ember.none('FLOW.selectedControl.selectedSurveyGroup')) {
-		  this.set('isMonitoringGroupFlag',FLOW.selectedControl.selectedSurveyGroup.get('isMonitoringGroupFlag'));
+		  this.set('monitoringGroup',FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup'));
 	  }
   }.observes('FLOW.selectedControl.selectedSurveyGroup', 'FLOW.selectedControl.selectedSurvey'),
 
@@ -157,8 +157,8 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   },
 
   makeMonitorGroup: function () {
-	  this.set('isMonitoringGroupFlag', true);
-	  FLOW.selectedControl.selectedSurveyGroup.set('isMonitoringGroupFlag', true);
+	  this.set('monitoringGroup', true);
+	  FLOW.selectedControl.selectedSurveyGroup.set('monitoringGroup', true);
 	  FLOW.store.commit();
   },
 

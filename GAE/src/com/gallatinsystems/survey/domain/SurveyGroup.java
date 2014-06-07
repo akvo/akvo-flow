@@ -36,7 +36,7 @@ public class SurveyGroup extends BaseDomain {
 	private static final long serialVersionUID = 8941584684617286776L;
 	private String name = null;
 	private String code = null;
-	private Boolean isMonitoringGroupFlag = false;
+	private Boolean monitoringGroup = false;
 	private Long newLocaleSurveyId;
 	private String description = null;
 	@NotPersistent
@@ -90,12 +90,12 @@ public class SurveyGroup extends BaseDomain {
 		return description;
 	}
 
-	public Boolean getIsMonitoringGroupFlag() {
-		return isMonitoringGroupFlag;
+	public Boolean getMonitoringGroup() {
+		return monitoringGroup;
 	}
 
-	public void setIsMonitoringGroupFlag(Boolean isMonitoringGroupFlag) {
-		this.isMonitoringGroupFlag = isMonitoringGroupFlag;
+	public void setMonitoringGroup(Boolean monitoringGroup) {
+		this.monitoringGroup = monitoringGroup;
 	}
 
 	public Long getNewLocaleSurveyId() {

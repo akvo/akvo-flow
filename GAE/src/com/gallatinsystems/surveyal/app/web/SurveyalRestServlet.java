@@ -80,10 +80,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
  */
 public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private static final long serialVersionUID = 5923399458369692813L;
-	private static final String COMMUNITY_METRIC_NAME = "Community";
-	private static final double TOLERANCE = 0.01;
 	private static final double UNSET_VAL = -9999.9;
-	private static final String DEFAULT = "DEFAULT";
 	private static final String DEFAULT_ORG_PROP = "defaultOrg";
 
 	private static final Logger log = Logger
@@ -95,11 +92,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	private CountryDao countryDao;
 	private SurveyMetricMappingDao metricMappingDao;
 	private MetricDao metricDao;
-	private boolean useConfigStatusScore = false;
-	private boolean useDynamicScoring = false;
 	private String statusFragment;
 	private Map<String, String> scoredVals;
-	private boolean mergeNearby;
 
 	/**
 	 * initializes the servlet by instantiating all needed Dao classes and
@@ -114,17 +108,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		countryDao = new CountryDao();
 		metricDao = new MetricDao();
 		metricMappingDao = new SurveyMetricMappingDao();
-		mergeNearby = false;
-		String mergeProp = PropertyUtil.getProperty("mergeNearbyLocales");
-		useDynamicScoring = Boolean.parseBoolean(PropertyUtil.getProperty("scoreLocaleDynmaic"));
-		if (mergeProp != null && "false".equalsIgnoreCase(mergeProp.trim())) {
-			mergeNearby = false;
-		}
 		// TODO: once the appropriate metric types are defined and reliably
 		// assigned, consider removing this in favor of metrics
 		statusFragment = PropertyUtil.getProperty("statusQuestionText");
 		if (statusFragment != null && statusFragment.trim().length() > 0) {
-			useConfigStatusScore = true;
 			String[] fields = statusFragment.split(";");
 			statusFragment = fields[0].toLowerCase();
 			scoredVals = new HashMap<String, String>();
@@ -375,6 +362,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		// finally fire off adapt cluster data task
 		// TODO: consider firing this task after ALL survey instances are processed
 		// instead of a single survey instance
+		// TODO: when surveyedLocales are deleted, it needs to be substracted from the clusters
 		if(adaptClusterData) {
 			Queue defaultQueue = QueueFactory.getDefaultQueue();
 			TaskOptions to = TaskOptions.Builder
@@ -410,7 +398,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	}
 
 	// this method is synchronised, because we are changing counts.
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private synchronized void adaptClusterData(Long surveyedLocaleId) {
 		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		final SurveyedLocale locale = slDao.getById(surveyedLocaleId);
@@ -439,15 +426,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		}
 
 		MapUtils.recomputeCluster(cache, locale, 1);
-	}
-
-	private boolean isStatus(String name) {
-		if (name != null) {
-			if (name.trim().toLowerCase().contains("status")) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
