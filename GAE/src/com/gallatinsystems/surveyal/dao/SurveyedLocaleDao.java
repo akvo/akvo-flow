@@ -340,6 +340,61 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 	}
 
 	/**
+	 * returns all the locales by surveyGroupId
+	 * survey instance only.
+	 *
+	 * @param surveyGroupId
+	 * @return
+	 */
+	public List<SurveyedLocale> listLocalesBySurveyGroupId(Long surveyGroupId) {
+		List<SurveyedLocale> locales = listByProperty("surveyGroupId", surveyGroupId,
+				"Long");
+		return locales;
+	}
+
+	public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
+		List<SurveyedLocale> locales = listByProperty("displayName", displayName,
+				"String");
+		return locales;
+	}
+
+	/**
+	 * returns all the locales by surveyGroupId, from a certain date.
+	 * If no date is supplised, t = 0 is used.
+	 *
+	 * @param surveyGroupId
+	 * @param lastUpdateTime
+	 * @param pageSize
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<SurveyedLocale> listLocalesBySurveyGroupAndDate(Long surveyGroupId, Date lastUpdateTime, Integer pageSize) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+		Map<String, Object> paramMap = new HashMap<String, Object>();;
+		StringBuilder filterString = new StringBuilder();
+		StringBuilder paramString = new StringBuilder();
+		Date queryTime = null;
+		if (lastUpdateTime != null) {
+			queryTime = lastUpdateTime;
+		} else {
+			queryTime = new Date(0); // January 1st, 1970
+		}
+		appendNonNullParam("surveyGroupId", filterString, paramString, "Long",
+				surveyGroupId, paramMap);
+		appendNonNullParam("lastUpdateDateTime", filterString, paramString, "Date",
+				queryTime, paramMap, " > ");
+
+		query.setOrdering("lastUpdateDateTime asc");
+		query.setFilter(filterString.toString());
+		query.declareParameters(paramString.toString());
+		query.declareImports("import java.util.Date");
+		query.setRange(0, pageSize);
+
+		return (List<SurveyedLocale>) query.executeWithMap(paramMap);
+	}
+
+	/**
 	 * returns all the locales with the identifier passed in. If needDetails is
 	 * true, it will list the surveyalValues for the locale from the most recent
 	 * survey instance only.
@@ -383,5 +438,15 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 					.getId());
 		}
 		return null;
+	}
+
+	/**
+	 * finds a single surveyedLocale by identifier.
+	 * 
+	 * @param identifier
+	 * @return
+	 */
+	public SurveyedLocale getByIdentifier(String identifier) {
+		return findByProperty("identifier", identifier, "String");
 	}
 }

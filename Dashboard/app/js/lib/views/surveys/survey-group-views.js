@@ -2,12 +2,17 @@ function capitaliseFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+if (!String.prototype.trim) {
+		String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+	}
+
 // displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   content: null,
   tagName: 'li',
   classNameBindings: 'amSelected:current'.w(),
-
+  monitoringGroup: false,
+  
   // true if the survey group is selected. Used to set proper display class
   amSelected: function () {
     var selected = FLOW.selectedControl.get('selectedSurveyGroup');
@@ -60,9 +65,6 @@ FLOW.SurveyGroupSurveyView = FLOW.View.extend({
 
 });
 
-
-
-
 // handles all survey-group interaction elements on survey group page
 FLOW.SurveyGroupMainView = FLOW.View.extend({
   showEditField: false,
@@ -72,6 +74,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   showSGDeleteNotPossibleDialog: false,
   showCopySurveyDialogBool: false,
   newSurveyName: null,
+  monitoringGroup:false,
 
   // true if at least one survey group is active
   oneSelected: function () {
@@ -82,6 +85,12 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
       return false;
     }
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
+  
+  initVars: function () {
+	  if (FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup) {
+		  this.set('monitoringGroup', FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup'));
+	  }
+  }.observes('FLOW.selectedControl.selectedSurveyGroup', 'FLOW.selectedControl.selectedSurvey'),
 
   // fired when 'edit name' is clicked, shows edit field to change survey group name
   editSurveyGroupName: function () {
@@ -91,12 +100,16 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 
   // fired when 'save' is clicked while showing edit group name field. Saves the new group name
   saveSurveyGroupNameEdit: function () {
-    var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
-    var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
-    surveyGroup.set('code', capitaliseFirstLetter(this.get('surveyGroupName')));
-    surveyGroup.set('name', capitaliseFirstLetter(this.get('surveyGroupName')));
-    FLOW.store.commit();
-    FLOW.selectedControl.set('selectedSurveyGroup', FLOW.store.find(FLOW.SurveyGroup, sgId));
+    if (!Ember.empty(this.get('surveyGroupName').trim())){
+    	var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
+    	var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
+    	surveyGroup.set('code', capitaliseFirstLetter(this.get('surveyGroupName')));
+    	surveyGroup.set('name', capitaliseFirstLetter(this.get('surveyGroupName')));
+    	FLOW.store.commit();
+    	FLOW.selectedControl.set('selectedSurveyGroup', FLOW.store.find(FLOW.SurveyGroup, sgId));
+    } else {
+    	this.cancelSurveyGroupNameEdit();
+    }
     this.set('showEditField', false);
   },
 
@@ -105,8 +118,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
     this.set('surveyGroupName', FLOW.selectedControl.selectedSurveyGroup.get('code'));
     this.set('showEditField', false);
   },
-
-
+  
   // fired when 'add a group' is clicked. Displays a new group text field in the left sidebar
   addGroup: function () {
     FLOW.selectedControl.set('selectedSurveyGroup', null);
@@ -128,11 +140,13 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 
   // fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
   saveNewSurveyGroupName: function () {
-    FLOW.store.createRecord(FLOW.SurveyGroup, {
-      "code": capitaliseFirstLetter(this.get('surveyGroupName')),
-      "name": capitaliseFirstLetter(this.get('surveyGroupName'))
-    });
-    FLOW.store.commit();
+	  if (!Ember.empty(this.get('surveyGroupName').trim())){
+		  FLOW.store.createRecord(FLOW.SurveyGroup, {
+			  "code": capitaliseFirstLetter(this.get('surveyGroupName')),
+			  "name": capitaliseFirstLetter(this.get('surveyGroupName'))
+		  });
+		  FLOW.store.commit();
+	  }
     this.set('showNewGroupField', false);
   },
 
@@ -141,6 +155,20 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
     this.set('surveyGroupName', null);
     this.set('showNewGroupField', false);
   },
+
+  makeMonitorGroup: function () {
+	  this.set('monitoringGroup', true);
+	  FLOW.selectedControl.selectedSurveyGroup.set('monitoringGroup', true);
+	  FLOW.store.commit();
+  },
+
+  saveNewLocaleSurveyIdChoice: function () {
+	  var newLocaleSurvey = FLOW.surveyControl.get('newLocaleSurvey');
+	  if (!Ember.none(newLocaleSurvey) && !Ember.none(newLocaleSurvey.get('keyId'))){
+		  FLOW.selectedControl.selectedSurveyGroup.set('newLocaleSurveyId', newLocaleSurvey.get('keyId'));
+		  FLOW.store.commit();
+	  }
+  }.observes('FLOW.surveyControl.newLocaleSurvey'),
 
   showCopySurveyDialog: function (event) {
     FLOW.selectedControl.set('selectedForCopySurvey', event.context);

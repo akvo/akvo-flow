@@ -29,6 +29,8 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 	private String description;
 	private String name;
 	private String code;
+	private Boolean monitoringGroup;
+	private Long newLocaleSurveyId;
 	private Date createdDateTime;
 	private Date lastUpdateDateTime;
 
@@ -92,6 +94,22 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 
 	public String getName() {
 		return name;
+	}
+
+	public Boolean getMonitoringGroup() {
+		return monitoringGroup;
+	}
+
+	public void setMonitoringGroup(Boolean monitoringGroup) {
+		this.monitoringGroup = monitoringGroup;
+	}
+
+	public Long getNewLocaleSurveyId() {
+		return newLocaleSurveyId;
+	}
+
+	public void setNewLocaleSurveyId(Long newLocaleSurveyId) {
+		this.newLocaleSurveyId = newLocaleSurveyId;
 	}
 
 }

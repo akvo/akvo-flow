@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +35,7 @@ import org.waterforpeople.mapping.dao.SurveyContainerDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.Device.DeviceType;
@@ -56,61 +56,12 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 			.getLogger(SurveyManagerServlet.class.getName());
 	private static final long serialVersionUID = 4400244780977729721L;
 
-	/**
-	 * As this backend does *NOT* contain monitoring features capabilities, we
-	 * always send this values to enable APK backwards compatibility
-	 */
-	private final static String IS_IN_MONITORING_GROUP = "false";
-	private final static String NEW_LOCALE_SURVEYID = "null";
-	private final static String UNKNOWN = "unknown";
-
 	private DeviceDAO deviceDao;
 
 	public SurveyManagerServlet() {
 		super();
 		deviceDao = new DeviceDAO();
 		setMode(AbstractRestApiServlet.XML_MODE);
-	}
-
-	//Return a list all the surveys the device needs
-	//use imei or phone number for lookup
-	private String getSurveyForPhone(String devicePhoneNumber, String imei) {
-		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
-		SurveyDAO surveyDao = new SurveyDAO();
-		SurveyGroupDAO sgDao = new SurveyGroupDAO();
-		Map<Long, Double> versionMap = new HashMap<Long, Double>();
-		StringBuilder sb = new StringBuilder();
-		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
-			String surveyGroupId = "";
-			String surveyGroupName = UNKNOWN;
-			Double ver = versionMap.get(dsjq.getSurveyID());
-			if (ver == null) {
-				Survey s = surveyDao.getById(dsjq.getSurveyID());
-				SurveyGroup sg = sgDao.getByKey(s.getSurveyGroupId());
-				if (s != null && sg != null) {
-					if (s.getVersion() != null) {
-						versionMap.put(dsjq.getSurveyID(), s.getVersion());
-						ver = s.getVersion();
-					} else {
-						versionMap.put(dsjq.getSurveyID(), new Double(1.0));
-						ver = new Double(1.0);
-					}
-
-					surveyGroupId = String.valueOf(s.getSurveyGroupId());
-					surveyGroupName = sg.getCode();
-				} else {
-					// for testing so I can mock a version for local survey
-					Random rand = new Random();
-					ver = rand.nextDouble();
-				}
-			}
-			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
-					+ dsjq.getName() + "," + dsjq.getLanguage() + "," + ver + ","
-					+ surveyGroupId + "," + surveyGroupName + "," 
-					+ IS_IN_MONITORING_GROUP + "," + NEW_LOCALE_SURVEYID
-					+ "\n");
-		}
-		return sb.toString();
 	}
 
 	@Override
@@ -159,7 +110,7 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 			if (mgrReq.getPhoneNumber() != null || mgrReq.getImei() != null) {
 				resp.setMessage(getSurveyForPhone(mgrReq.getPhoneNumber(), mgrReq.getImei()));
 				// now check to see if we need to update the device
-				if (mgrReq.getImei() != null){ 
+				if (mgrReq.getImei() != null){
 					dev = deviceDao.getByImei(mgrReq.getImei());
 				}
 				if (dev == null){
@@ -185,17 +136,27 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 					deviceDao.save(dev);
 				}
 			}
+		} else if (SurveyManagerRequest.GET_AVAIL_DEVICE_SURVEYGROUP_ACTION
+				.equalsIgnoreCase(req.getAction())) {
+			//Report which survey groups the device should have
+			if (mgrReq.getPhoneNumber() != null || mgrReq.getImei() != null) {
+				resp.setMessage(getSurveyGroupsForPhone(mgrReq.getPhoneNumber(), mgrReq.getImei()));
+			}
 		} else if (SurveyManagerRequest.GET_SURVEY_HEADER_ACTION
 				.equalsIgnoreCase(req.getAction())) {
 			if (mgrReq.getSurveyId() != null) {
 				SurveyDAO surveyDao = new SurveyDAO();
 				SurveyGroupDAO sgDao = new SurveyGroupDAO();
 				Survey survey = surveyDao.getById(mgrReq.getSurveyId());
-				String surveyGroupName = UNKNOWN;
+				String sgName = null;
+				Boolean isInMonitoringGroup = false;
+				String newLocaleSurveyId = "null";
 				if (survey != null) {
 					SurveyGroup sg = sgDao.getByKey(survey.getSurveyGroupId());
-					if (sg != null && sg.getCode() != null) {
-						surveyGroupName = sg.getCode();
+					if (sg != null) {
+						sgName = sg.getCode();
+						isInMonitoringGroup = Boolean.valueOf(sg.getMonitoringGroup() != null ? sg.getMonitoringGroup() : false);
+						newLocaleSurveyId = sg.getNewLocaleSurveyId() != null ? sg.getNewLocaleSurveyId().toString() : "null";
 					}
 					StringBuilder sb = new StringBuilder();
 					sb.append(survey.getKey().getId() + ",")
@@ -210,11 +171,11 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 							.append(",")
 							.append(survey.getSurveyGroupId().toString())
 							.append(",")
-							.append(surveyGroupName)
+							.append(sgName != null ? sgName : "null")
 							.append(",")
-							.append(IS_IN_MONITORING_GROUP)
+							.append(isInMonitoringGroup)
 							.append(",")
-							.append(NEW_LOCALE_SURVEYID);
+							.append(newLocaleSurveyId);
 					resp.setMessage(sb.toString());
 				}
 			}
@@ -253,6 +214,75 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
 		}
 		return resp;
 	}
+
+	//Return a list all the surveys the device needs
+	//use imei or phone number for lookup
+	private String getSurveyForPhone(String devicePhoneNumber, String imei) {
+		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
+		SurveyDAO surveyDao = new SurveyDAO();
+		SurveyGroupDAO sgDao = new SurveyGroupDAO();
+		Map<Long, Double> versionMap = new HashMap<Long, Double>();
+		StringBuilder sb = new StringBuilder();
+		Long surveyGroupId = null;
+		String sgName;
+		String surveyName;
+		Boolean isInMonitoringGroup;
+		String newLocaleSurveyId;
+		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
+			Double ver = versionMap.get(dsjq.getSurveyID());
+			Survey s = surveyDao.getById(dsjq.getSurveyID());
+			surveyGroupId = s.getSurveyGroupId();
+			SurveyGroup sg = sgDao.getByKey(s.getSurveyGroupId());
+
+			if (s != null && sg != null) {
+				surveyName = s.getName();
+				sgName = sg.getCode() != null ? sg.getCode() : "unknown";
+				isInMonitoringGroup = Boolean.valueOf(sg.getMonitoringGroup() != null ? sg.getMonitoringGroup() : false);
+				newLocaleSurveyId = sg.getNewLocaleSurveyId() != null ? sg.getNewLocaleSurveyId().toString() : "null";
+				if (s.getVersion() != null) {
+					versionMap.put(dsjq.getSurveyID(), s.getVersion());
+					ver = s.getVersion();
+				} else {
+					versionMap.put(dsjq.getSurveyID(), new Double(1.0));
+					ver = new Double(1.0);
+				}
+
+			sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
+					+ surveyName + "," + dsjq.getLanguage() + "," + ver
+					+ "," + surveyGroupId + "," + sgName
+					+ "," + isInMonitoringGroup + "," + newLocaleSurveyId
+					+ "\n");
+				}
+		}
+		return sb.toString();
+	}
+
+	//Return a list all the survey groups the device needs
+	//use imei or phone number for lookup
+	private String getSurveyGroupsForPhone(String devicePhoneNumber, String imei) {
+		DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
+		SurveyDAO surveyDao = new SurveyDAO();
+	    SurveyGroupDAO sgDao = new SurveyGroupDAO();
+
+		// build map of which surveyGroups to include
+		Map<Long, Boolean> includeGroupMap = new HashMap<Long, Boolean>();
+		for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
+			Survey s = surveyDao.getById(dsjq.getSurveyID());
+			if (s != null) {
+				includeGroupMap.put(s.getSurveyGroupId(), true);
+			}
+		}
+
+		StringBuilder sb = new StringBuilder();
+	    for (SurveyGroup sg : sgDao.list(Constants.ALL_RESULTS)) {
+			if (includeGroupMap.get(sg.getKey().getId()) != null) {
+				sb.append(sg.getKey().getId()).append(",").append(sg.getCode())
+						.append(",").append(Boolean.valueOf(sg.getMonitoringGroup() != null ? sg.getMonitoringGroup() : false)).append(",")
+						.append(sg.getNewLocaleSurveyId()).append("\n");
+			}
+		}
+	    return sb.toString();
+	    }
 
 	@Override
 	protected void writeOkResponse(RestResponse response) throws Exception {

@@ -36,6 +36,8 @@ public class SurveyGroup extends BaseDomain {
 	private static final long serialVersionUID = 8941584684617286776L;
 	private String name = null;
 	private String code = null;
+	private Boolean monitoringGroup = false;
+	private Long newLocaleSurveyId;
 	private String description = null;
 	@NotPersistent
 	private HashMap<String, Translation> altTextMap;
@@ -86,6 +88,22 @@ public class SurveyGroup extends BaseDomain {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public Boolean getMonitoringGroup() {
+		return monitoringGroup;
+	}
+
+	public void setMonitoringGroup(Boolean monitoringGroup) {
+		this.monitoringGroup = monitoringGroup;
+	}
+
+	public Long getNewLocaleSurveyId() {
+		return newLocaleSurveyId;
+	}
+
+	public void setNewLocaleSurveyId(Long newLocaleSurveyId) {
+		this.newLocaleSurveyId = newLocaleSurveyId;
 	}
 
 }

@@ -50,6 +50,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String API_KEY_PARAM = "apiKey";
 	public static final String OFFSET_PARAM = "offset";
 	public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
+	public static final String ADD_SURVEY_INSTANCE_TO_LOCALES_ACTION = "addSurveyInstanceToLocales";
 	public static final String ADD_CREATION_SURVEY_ID_TO_LOCALE = "addCreationSurveyIdToLocale";
 	public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
 	public static final String RECREATE_LOCALES = "recreateLocales";

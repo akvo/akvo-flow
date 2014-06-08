@@ -76,10 +76,12 @@ public class Question {
 	protected ValidationRule validationRule;
 	@XmlElement(required = false)
 	protected Scoring scoring;
+	
 	@XmlAttribute(required = true)
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	@XmlSchemaType(name = "NMTOKEN")
 	protected String order;
+	
 	@XmlAttribute
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	@XmlSchemaType(name = "NMTOKEN")
@@ -92,14 +94,37 @@ public class Question {
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	@XmlSchemaType(name = "NMTOKEN")
 	protected String type;
+	
 	@XmlAttribute(required = true)
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	protected String mandatory;
+	
+	@XmlAttribute(required = true)
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	protected String localeNameFlag;
+	
+	@XmlAttribute(required = false)
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	protected String localeLocationFlag;
+	
 	@XmlAttribute(required = true)
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	@XmlSchemaType(name = "NMTOKEN")
 	protected String id;
+
+	@XmlAttribute(required = false)
+	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+	@XmlSchemaType(name = "NMTOKEN")
+	protected String sourceId;
 		
+
+	public String getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(String sourceId) {
+		this.sourceId = sourceId;
+	}
 
 	public List<AltText> getAltText() {
 		if (altText == null) {
@@ -322,7 +347,49 @@ public class Question {
 	public void setMandatory(String value) {
 		this.mandatory = value;
 	}
+	
+	/**
+	 * Gets the value of the localeName property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getLocaleNameFlag() {
+		return localeNameFlag;
+	}
 
+	/**
+	 * Sets the value of the localeName property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setLocaleNameFlag(String value) {
+		this.localeNameFlag = value;
+	}
+
+	/**
+	 * Gets the value of the localeLocation property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getLocaleLocationFlag() {
+		return localeLocationFlag;
+	}
+
+	/**
+	 * Sets the value of the localeLocation property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setLocaleLocationFlag(String value) {
+		this.localeLocationFlag = value;
+	}
+	
 	/**
 	 * Gets the value of the id property.
 	 * 

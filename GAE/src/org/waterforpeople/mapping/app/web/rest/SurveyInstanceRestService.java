@@ -62,7 +62,8 @@ public class SurveyInstanceRestService {
 			@RequestParam(value = "submitterName", defaultValue = "") String submitterName,
 			@RequestParam(value = "countryCode", defaultValue = "") String countryCode,
 			@RequestParam(value = "level1", defaultValue = "") String level1,
-			@RequestParam(value = "level2", defaultValue = "") String level2) {
+			@RequestParam(value = "level2", defaultValue = "") String level2,
+			@RequestParam(value = "surveyedLocaleId", defaultValue = "") Long surveyedLocaleId) {
 		
 		// we don't want to search for empty fields
 		if ("".equals(deviceId)) {
@@ -114,8 +115,12 @@ public class SurveyInstanceRestService {
 		// get survey Instances
 		List<SurveyInstance> siList = null;
 		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		siList = dao.listByDateRangeAndSubmitter(beginDate, endDate, false,
-				surveyId, deviceId, submitterName, countryCode, level1, level2, since);
+		if (surveyedLocaleId == null) {
+			siList = dao.listByDateRangeAndSubmitter(beginDate, endDate, false,
+					surveyId, deviceId, submitterName, countryCode, level1, level2, since);
+		} else {
+			siList = dao.listInstancesByLocale(surveyedLocaleId, null, null, null);
+		}
 		Integer num = siList.size();
 		String newSince = SurveyInstanceDAO.getCursor(siList);
 		

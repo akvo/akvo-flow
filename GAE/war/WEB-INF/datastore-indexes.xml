@@ -449,8 +449,11 @@
 		source="manual">
 		<property name="__key__" direction="desc" />
 	</datastore-index> 
-	
-	
+   <datastore-index kind="SurveyedLocale" ancestor="false"
+		source="manual">
+		<property name="surveyGroupId" direction="asc" />
+		<property name="lastUpdateDateTime" direction="asc" />
+	</datastore-index> 
 	<datastore-index kind="SurveyInstance" ancestor="false" >
         <property name="surveyId" direction="asc"/>
         <property name="collectionDate" direction="desc"/>
@@ -458,6 +461,10 @@
 	<datastore-index kind="SurveyInstance" ancestor="false" source="manual">
         <property name="surveyId" direction="asc"/>
         <property name="createdDateTime" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="SurveyInstance" ancestor="false" source="manual">
+        <property name="surveyId" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
     </datastore-index>
     <datastore-index kind="SurveyInstance" ancestor="false"
 		source="auto">

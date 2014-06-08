@@ -1303,25 +1303,37 @@ nav.menuTopbar ul li:last-child {
 	margin: 10px 15px 0 0;
 	text-transform: uppercase;
 }
-a.addGroup, a.addSurvey, a.stepBack, a.editGroupName, a.deleteGroup {
+a.addGroup, a.addSurvey, a.stepBack, a.editGroupName, a.makeMonitorGroup, a.deleteGroup {
 	display: block;
 	padding: 4px 0 4px 19px;
 	height: 10px;
 	text-transform: uppercase;
 	font-size: 1em;
 }
-a.editGroupName { margin: 0 10px 0 20px; }
+
+a.makeMonitorGroup {
+	display: block;
+	padding: 4px 0 4px 19px;
+	height: 10px;
+	text-transform: uppercase;
+	text-style:bold;
+	font-size: 1em;
+}
+
+a.editGroupName, a.makeMonitorGroup { margin: 0 10px 0 20px; }
 a.addGroup {
 	margin: 0 0 15px 15px;
 	padding: 5px 0 3px 19px;
 }
 a.addGroup:hover, a.addSurvey:hover, a.stepBack:hover, a.editGroupName:hover, a.deleteGroup:hover, a.manageNotifications:hover { color: rgb(255,255,255); }
+a.makeMonitorGroup:hover { color: rgb(36, 85, 100); }
 a.addGroup { background: url(../images/addGroupIcn.png) left top no-repeat; }
 a.addGroup:hover { background: url(../images/addGroupIcn.png) left bottom no-repeat; }
 a.addSurvey { background: url(../images/addSurveyIcn.png) left top no-repeat; }
 a.addSurvey:hover { background: url(../images/addSurveyIcn.png) left bottom no-repeat; }
 a.stepBack { background: transparent url(../images/backIcn.png) left top no-repeat; }
 a.stepBack:hover { background: url(../images/backIcn.png) left bottom no-repeat; }
+a.makeMonitorGroup { background: transparent url(../images/copySurvey.png) left top no-repeat; }
 a.editGroupName { background: transparent url(../images/editSurvey.png) left top no-repeat; }
 a.editGroupName:hover { background: url(../images/editSurvey.png) left bottom no-repeat; }
 a.deleteGroup { background: transparent url(../images/deleteSurvey.png) left top no-repeat; }

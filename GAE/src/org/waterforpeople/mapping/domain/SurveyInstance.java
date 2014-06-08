@@ -54,8 +54,11 @@ public class SurveyInstance extends BaseDomain {
 	private String uuid;
 	private String approximateLocationFlag;
 	private Long surveyedLocaleId;
+	private String surveyedLocaleIdentifier;
+	private String surveyedLocaleDisplayName;
 	private String countryCode;
 	private String community;
+	private String localeGeoLocation;
 	private String sublevel1;
 	private String sublevel2;
 	private String sublevel3;
@@ -265,6 +268,30 @@ public class SurveyInstance extends BaseDomain {
 
 	public Long getSurveyalTime() {
 		return surveyalTime;
+	}
+
+	public String getSurveyedLocaleIdentifier() {
+		return surveyedLocaleIdentifier;
+	}
+
+	public void setSurveyedLocaleIdentifier(String surveyedLocaleIdentifier) {
+		this.surveyedLocaleIdentifier = surveyedLocaleIdentifier;
+	}
+
+	public String getLocaleGeoLocation() {
+		return localeGeoLocation;
+	}
+
+	public void setLocaleGeoLocation(String localeGeoLocation) {
+		this.localeGeoLocation = localeGeoLocation;
+	}
+
+	public String getSurveyedLocaleDisplayName() {
+		return surveyedLocaleDisplayName;
+	}
+
+	public void setSurveyedLocaleDisplayName(String surveyedLocaleDisplayName) {
+		this.surveyedLocaleDisplayName = surveyedLocaleDisplayName;
 	}
 
 }

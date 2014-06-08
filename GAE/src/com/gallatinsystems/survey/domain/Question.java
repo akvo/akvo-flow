@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -74,6 +74,9 @@ public class Question extends BaseDomain {
 	private Double minVal;
 	private Double maxVal;
 	private Boolean isName;
+	private Long sourceId;
+	private Boolean localeNameFlag;
+	private Boolean localeLocationFlag;
 
 	public Boolean getAllowDecimal() {
 		return allowDecimal;
@@ -330,6 +333,14 @@ public class Question extends BaseDomain {
 		return geoLocked;
 	}
 
+	public Boolean getLocaleNameFlag() {
+		return localeNameFlag;
+	}
+
+	public void setLocaleNameFlag(Boolean localeNameFlag) {
+		this.localeNameFlag = localeNameFlag;
+	}
+
 	public void setGeoLocked(Boolean geoLocked) {
 		this.geoLocked = geoLocked;
 	}
@@ -340,5 +351,21 @@ public class Question extends BaseDomain {
 
 	public void setRequireDoubleEntry(Boolean requireDoubleEntry) {
 		this.requireDoubleEntry = requireDoubleEntry;
+	}
+
+	public Long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(Long sourceId) {
+		this.sourceId = sourceId;
+	}
+
+	public Boolean getLocaleLocationFlag() {
+		return localeLocationFlag;
+	}
+
+	public void setLocaleLocationFlag(Boolean localeLocationFlag) {
+		this.localeLocationFlag = localeLocationFlag;
 	}
 }

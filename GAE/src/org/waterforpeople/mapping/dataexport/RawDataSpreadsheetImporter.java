@@ -155,7 +155,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 			}
 			
 			boolean hasDurationCol = true;
-			int firstQuestionCol = 4;
+			int firstQuestionCol = 0;
 
 			currentStep = 0;
 			MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -164,11 +164,9 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				if (row.getRowNum() == 0) {
 					// Process headers
 					for (Cell cell : row) {
-						if (cell.getColumnIndex() == 3) {
-							hasDurationCol = cell.getStringCellValue().indexOf("|") == -1;
-							if (!hasDurationCol) {
-								firstQuestionCol = 3;
-							}
+						if (cell.getStringCellValue().indexOf("|") == -1) {
+							firstQuestionCol++;
+							continue; // iterate over the common headers
 						}
 						
 						if (cell.getColumnIndex() >= firstQuestionCol) {
@@ -177,7 +175,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 							questionIDColMap.put(cell.getColumnIndex(), parts[0]);
 						}
 					}
-					continue;
+					continue; // move to next row (data)
 				}
 				digest.reset();
 				String instanceId = null;
@@ -194,7 +192,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 				boolean needUpload = true;
 
 				for (Cell cell : row) {					
-					if (cell.getColumnIndex() == 0) {
+					if (cell.getColumnIndex() == 2) {
 						if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
 							instanceId = new Double(cell.getNumericCellValue())
 									.intValue() + "";
@@ -207,7 +205,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ "=" + instanceId + "&");
 						}
 					}
-					if (cell.getColumnIndex() == 1) {
+					if (cell.getColumnIndex() == 3) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							dateString = cell.getStringCellValue();
 						} else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -222,7 +220,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 									+ "&");
 						}
 					}
-					if (cell.getColumnIndex() == 2) {
+					if (cell.getColumnIndex() == 4) {
 						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
 							submitter = cell.getStringCellValue();
 							sb.append("submitter="
@@ -231,7 +229,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 						}
 					}
 					// Survey Duration
-					if (cell.getColumnIndex() == 3) {
+					if (cell.getColumnIndex() == 5) {
 						if (hasDurationCol) {
 							 switch (cell.getCellType()) {
 							 	// if the cell type is string, we expect hh:mm:ss format

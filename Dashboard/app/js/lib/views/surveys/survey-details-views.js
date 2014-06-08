@@ -222,6 +222,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
     }
     FLOW.selectedControl.set('selectedQuestionGroup', null);
     FLOW.selectedControl.set('selectedSurvey', null);
+    FLOW.surveyControl.refresh();
     FLOW.router.transitionTo('navSurveys.navSurveysMain');
   }
 });

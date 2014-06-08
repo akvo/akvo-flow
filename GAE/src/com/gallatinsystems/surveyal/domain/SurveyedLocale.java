@@ -43,6 +43,7 @@ public class SurveyedLocale extends BaseDomain {
 	private String organization;
 	private String systemIdentifier;
 	private String identifier;
+	private String displayName;
 	private String countryCode;
 	private String sublevel1;
 	private String sublevel2;
@@ -50,12 +51,14 @@ public class SurveyedLocale extends BaseDomain {
 	private String sublevel4;
 	private String sublevel5;
 	private String sublevel6;
+	private List<Long> surveyInstanceContrib;
 	private List<String> geocells;
 	private String localeType;
 	private Double latitude;
 	private Double longitude;
 	private boolean ambiguous;
 	private String currentStatus;
+	private Long surveyGroupId;
 	private Date lastSurveyedDate;
 	private Long lastSurveyalInstanceId;
 	private Long creationSurveyId;
@@ -204,6 +207,30 @@ public class SurveyedLocale extends BaseDomain {
 
 	public void setCurrentStatus(String currentStatus) {
 		this.currentStatus = currentStatus;
+	}
+
+	public Long getSurveyGroupId() {
+		return surveyGroupId;
+	}
+
+	public void setSurveyGroupId(Long surveyGroupId) {
+		this.surveyGroupId = surveyGroupId;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public List<Long> getSurveyInstanceContrib() {
+		return surveyInstanceContrib;
+	}
+
+	public void setSurveyInstanceContrib(List<Long> surveyInstanceContrib) {
+		this.surveyInstanceContrib = surveyInstanceContrib;
 	}
 
 	public String getCurrentStatus() {

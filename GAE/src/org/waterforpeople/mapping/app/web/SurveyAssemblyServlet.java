@@ -274,14 +274,23 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
 		SurveyGroup sg = surveyGroupDao.getByKey(s.getSurveyGroupId());
 		Long transactionId = randomNumber.nextLong();
-		String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey";
 		String lang = "en";
 		if (s != null && s.getDefaultLanguageCode() != null) {
 			lang = s.getDefaultLanguageCode();
 		}
 		final String version = s.getVersion() == null ? "" : "version='"
 				+ s.getVersion() + "'";
-		surveyHeader += " defaultLanguageCode='" + lang + "' " + version + ">";
+		String surveyGroupId = "";
+		String surveyGroupName = "";
+		if (sg != null){
+			surveyGroupId = "surveyGroupId=\"" + sg.getKey().getId() + "\"";
+			surveyGroupName = "surveyGroupName=\"" + sg.getCode() + "\"";
+		}
+		String sourceSurveyId = getSourceSurveyId(surveyId);
+		String sourceSurveyIdAttr = sourceSurveyId != null ? " sourceSurveyId=\"" + sourceSurveyId + "\"" : "";
+		String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey"
+				+ " defaultLanguageCode=\"" + lang + "\" " + version 
+				+ " " + surveyGroupId + " " + surveyGroupName + sourceSurveyIdAttr + ">";
 		String surveyFooter = "</survey>";
 		QuestionGroupDao qgDao = new QuestionGroupDao();
 		TreeMap<Integer, QuestionGroup> qgList = qgDao
@@ -637,6 +646,15 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 		if (q.getMandatoryFlag() != null) {
 			qXML.setMandatory(q.getMandatoryFlag().toString());
 		}
+		qXML.setLocaleNameFlag("false");
+		if (q.getLocaleNameFlag() != null) {
+			qXML.setLocaleNameFlag(q.getLocaleNameFlag().toString());
+		}
+		if (q.getLocaleLocationFlag() != null) {
+			if (q.getLocaleLocationFlag()) {
+				qXML.setLocaleLocationFlag("true");
+			}
+		}
 		Dependency dependency = objFactory.createDependency();
 		if (q.getDependentQuestionId() != null) {
 			dependency.setQuestion(q.getDependentQuestionId().toString());
@@ -698,6 +716,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 			}
 		}
 
+		if (q.getSourceId() != null) {
+			qXML.setSourceId(q.getSourceId().toString());
+		}
+
 		String questionDocument = null;
 		try {
 			questionDocument = sax.marshal(qXML);
@@ -756,5 +778,16 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
 		sendQueueMessage(SurveyAssemblyRequest.DISTRIBUTE_SURVEY, surveyId,
 				null, transactionId);
+	}
+	
+	private String getSourceSurveyId(Long surveyId) {
+		QuestionDao questionDao = new QuestionDao();
+		for (Question question : questionDao.listQuestionsBySurvey(surveyId)) {
+			if (question.getSourceId() != null) {
+				Question sourceQuestion = questionDao.getByKey(question.getSourceId());
+				return String.valueOf(sourceQuestion.getSurveyId());
+			}
+		}
+		return null;
 	}
 }

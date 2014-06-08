@@ -32,6 +32,10 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
   createdDateTime: DS.attr('string', {
     defaultValue: ''
   }),
+  monitoringGroup: DS.attr('boolean', {
+	    defaultValue: false
+	  }),
+  newLocaleSurveyId: DS.attr('number'),
   lastUpdateDateTime: DS.attr('string', {
     defaultValue: ''
   }),
@@ -103,6 +107,12 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
   allowOtherFlag: DS.attr('boolean', {
     defaultValue: false
+  }),
+  localeNameFlag: DS.attr('boolean', {
+	    defaultValue: false
+	  }),
+  localeLocationFlag: DS.attr('boolean', {
+		defaultValue: false
   }),
   allowSign: DS.attr('boolean', {
     defaultValue: false
@@ -226,10 +236,11 @@ FLOW.SurveyedLocale = DS.Model.extend({
   keyId: DS.attr('number'),
   latitude: DS.attr('number'),
   longitude: DS.attr('number'),
-  primaryKey: 'keyId',
-  typeMark: DS.attr('string', {
-    defaultValue: 'WATER_POINT'
-  })
+  displayName: DS.attr('string'),
+  lastUpdateDateTime: DS.attr('number'),
+  surveyGroupId: DS.attr('number'),
+  identifier: DS.attr('string'),
+  primaryKey: 'keyId'
 });
 
 // Explicitly avoid to use belongTo and hasMany as

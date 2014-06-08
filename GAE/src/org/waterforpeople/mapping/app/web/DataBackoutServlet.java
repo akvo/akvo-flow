@@ -104,7 +104,8 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 		} else if (DataBackoutRequest.LIST_INSTANCE_ACTION.equals(boReq
 				.getAction())) {
 			response.setMessage(listSurveyInstance(boReq.getSurveyId(),
-					boReq.getDate(), boReq.includeDate()));
+					boReq.getDate(), boReq.includeDate(),
+					boReq.getLastCollection()));
 		} else if (DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION
 				.equals(boReq.getAction())) {
 			deleteSurveyInstance(boReq.getSurveyInstanceId());
@@ -226,15 +227,23 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 	 * @return
 	 */
 	private String listSurveyInstance(Long surveyId, Date beforeDate,
-			boolean includeDate) {
+			boolean includeDate, boolean lastCollection) {
 		boolean keysOnly = true;
-		if(includeDate)
-			keysOnly=false;
-		Iterable<Entity> instances = instanceDao.listRawEntity(keysOnly, null, beforeDate, surveyId);
+		if (includeDate || lastCollection) {
+			keysOnly = false;
+		}
+		Iterable<Entity> instances = instanceDao.listRawEntity(keysOnly, null,
+				beforeDate, surveyId);
 		StringBuilder buffer = new StringBuilder();
+		List<Long> processed = new ArrayList<Long>();
 		if (instances != null) {
 			boolean isFirst = true;
-			for (Entity result : instances)  {
+			for (Entity result : instances) {
+				if (lastCollection
+						&& processed.contains((Long) result
+								.getProperty("surveyedLocaleId"))) {
+					continue; // skip
+				}
 				if (!isFirst) {
 					buffer.append(",");
 				} else {
@@ -243,7 +252,11 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 				buffer.append(result.getKey().getId());
 				if (includeDate && result.getProperty("collectionDate") != null) {
 					buffer.append("|").append(
-							OUT_FMT.get().format(result.getProperty("collectionDate")));
+							OUT_FMT.get().format(
+									result.getProperty("collectionDate")));
+				}
+				if (lastCollection) {
+					processed.add((Long) result.getProperty("surveyedLocaleId"));
 				}
 			}
 		}
@@ -265,18 +278,20 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
 		if (instance != null) {
 			instanceDao.delete(instance);
 		}
-		List<SurveyalValue> vals = localeDao.listSurveyalValuesByInstance(surveyInstanceId);
-		if(vals != null && vals.size()>0){
+		List<SurveyalValue> vals = localeDao
+				.listSurveyalValuesByInstance(surveyInstanceId);
+		if (vals != null && vals.size() > 0) {
 			Long localeId = vals.get(0).getSurveyedLocaleId();
 			localeDao.delete(vals);
-			//now see if there are any other values for the same locale
-			List<SurveyalValue> otherVals = localeDao.listValuesByLocale(localeId);
-			if(otherVals == null || otherVals.size()==0){
-				//if there are no other values, delete the locale
+			// now see if there are any other values for the same locale
+			List<SurveyalValue> otherVals = localeDao
+					.listValuesByLocale(localeId);
+			if (otherVals == null || otherVals.size() == 0) {
+				// if there are no other values, delete the locale
 				SurveyedLocale l = localeDao.getByKey(localeId);
 				localeDao.delete(l);
 			}
-		}		
+		}
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2013 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -56,7 +56,11 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
@@ -167,6 +171,53 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					logger.log(Level.WARNING, "Surveyal time column is not a number", e);
 				}
 			}
+			
+			if (parts.length >= 14) {
+				SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+				si.setSurveyedLocaleIdentifier(parts[13]);
+
+				// if we find an existing surveyedLocale with the same identifier,
+				// set the surveyedLocaleId field on the instance
+				// If we don't find it, it will be handled in SurveyalRestServlet
+				SurveyedLocale sl = slDao.getByIdentifier(parts[13]);
+				if (sl != null){
+					si.setSurveyedLocaleId(sl.getKey().getId());
+
+					// if one of the answer types is META_NAME, interpret this as the
+					// displayName information of the surveyedLocale
+					if (parts[3].equals("META_NAME")){
+						sl.setDisplayName(parts[4].trim());
+					}
+
+					// if one of the answer types is META_GEO, interpret this as the
+					// geolocation information of the surveyedLocale
+					if (parts[3].equals("META_GEO")){
+						String[] tokens = parts[4].trim().split("\\|");
+						if (tokens.length >= 2) {
+							try {
+								sl.setLatitude(Double.parseDouble(tokens[0]));
+								sl.setLongitude(Double.parseDouble(tokens[1]));
+							} catch (NumberFormatException nfe) {
+								log.log(Level.SEVERE,
+										"Could not parse lat/lon from META_GEO: " + parts[4]);
+							}
+						}
+					}
+					slDao.save(sl);
+				}
+			}
+
+			// if one of the answer types is META_GEO, interpret this as the
+			// geolocation information of the surveyedLocale
+			if (parts[3].equals("META_GEO")) {
+				si.setLocaleGeoLocation(parts[4].trim());
+			}
+
+			// if one of the answer types is META_NAME, interpret this as the
+			// displayName information of the surveyedLocale
+			if (parts[3].equals("META_NAME")) {
+				si.setSurveyedLocaleDisplayName(parts[4].trim());
+			}
 
 			// if this is the first time round, save the surveyInstance or use an existing one
 			if (si.getSurveyId() == null) {
@@ -201,6 +252,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 					sleep();
 					si = save(si);
 				}
+			}
+
+			if (parts[3].equals("META_GEO") || parts[3].equals("META_NAME")) {
+				continue; // skip processing
 			}
 
 			if (qasDao.listBySurveyInstance(si.getKey().getId(),
@@ -463,21 +518,34 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 		// The Query interface assembles a query
 		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
 				"SurveyInstance");
+		List<Filter> filters = new ArrayList<Filter>();
 		if (returnKeysOnly) {
 			q.setKeysOnly();
 		}
 
-		if (surveyId != null)
-			q.addFilter("surveyId", FilterOperator.EQUAL, surveyId);
-		if (beginDate != null)
-			q.addFilter("collectionDate", FilterOperator.GREATER_THAN_OR_EQUAL,
-					beginDate);
-		if (endDate != null)
-			q.addFilter("collectionDate", FilterOperator.LESS_THAN_OR_EQUAL,
-					endDate);
+		if (surveyId != null) {
+			filters.add(new FilterPredicate("surveyId", FilterOperator.EQUAL,
+					surveyId));
+		}
+		if (beginDate != null) {
+			filters.add(new FilterPredicate("collectionDate",
+					FilterOperator.GREATER_THAN_OR_EQUAL, beginDate));
+		}
+		if (endDate != null) {
+			filters.add(new FilterPredicate("collectionDate",
+					FilterOperator.LESS_THAN_OR_EQUAL, endDate));
+		}
+
+		if (filters.size() == 1) {
+			q.setFilter(filters.get(0));
+		}
+
+		if (filters.size() > 1) {
+			q.setFilter(CompositeFilterOperator.and(filters));
+		}
+		q.addSort("createdDateTime", SortDirection.DESCENDING);
 		PreparedQuery pq = datastore.prepare(q);
 		return pq.asIterable();
-
 	}
 
 	/**
@@ -712,8 +780,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 				.getDatastoreService();
 		com.google.appengine.api.datastore.Query q = new com.google.appengine.api.datastore.Query(
 				"SurveyInstance");
-		q.setKeysOnly();
-		q.addFilter("surveyId", FilterOperator.EQUAL, surveyId);
+		q.setKeysOnly().setFilter(new FilterPredicate("surveyId", FilterOperator.EQUAL, surveyId));
 		PreparedQuery pq = datastore.prepare(q);
 		return pq.asIterable();
 	}
@@ -791,6 +858,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
 	/** lists questionAnswerStore objects of particular types passed in
 	 */
+	@SuppressWarnings("unchecked")
 	public List<QuestionAnswerStore> listQAOptions(String cursorString, Integer pageSize, String... options){
 		PersistenceManager pm = PersistenceFilter.getManager();
 		javax.jdo.Query q = pm.newQuery(QuestionAnswerStore.class);

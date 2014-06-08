@@ -20,7 +20,6 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -84,6 +83,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final String TYPE_OPT = "exportMode";
 	private static final String RAW_ONLY_TYPE = "RAW_DATA";
 	private static final String NO_CHART_OPT = "nocharts";
+	private static final String LAST_COLLECTION_OPT = "lastCollection";
 
 	private static final String DEFAULT_IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 
@@ -118,6 +118,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private static final Map<String, String> LON_LABEL;
 	private static final Map<String, String> ELEV_LABEL;
 	private static final Map<String, String> CODE_LABEL;
+	private static final Map<String, String> IDENTIFIER_LABEL;
+	private static final Map<String, String> DISPLAY_NAME_LABEL;
+
 
 	private static final int CHART_WIDTH = 600;
 	private static final int CHART_HEIGHT = 400;
@@ -259,6 +262,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		CODE_LABEL.put("en", "Geo Code");
 		CODE_LABEL.put("es", "Código Geo");
 
+		IDENTIFIER_LABEL = new HashMap<String, String>();
+		IDENTIFIER_LABEL.put("en", "Identifier");
+		IDENTIFIER_LABEL.put("es", "Identificador");
+
+		DISPLAY_NAME_LABEL = new HashMap<String, String>();
+		DISPLAY_NAME_LABEL.put("en", "Display Name");
+		DISPLAY_NAME_LABEL.put("es", "Nombre");
 	}
 
 	private CellStyle headerStyle;
@@ -276,6 +286,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	private Object lock = new Object();
 	private boolean generateCharts;
 	private Map<Long, QuestionDto> questionsById;
+	private boolean lastCollection = false;
 
 	@Override
 	public void export(Map<String, String> criteria, File fileName,
@@ -330,7 +341,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
 				SummaryModel model = fetchAndWriteRawData(
 						criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
-						serverBase, questionMap, wb, isFullReport, fileName, criteria.get("apiKey"));
+						serverBase, questionMap, wb, isFullReport, fileName, criteria.get("apiKey"), lastCollection);
 				if (isFullReport) {
 					SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 							WRITING_SUMMARY.get(locale)));
@@ -382,7 +393,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 	protected SummaryModel fetchAndWriteRawData(String surveyId,
 			final String serverBase,
 			Map<QuestionGroupDto, List<QuestionDto>> questionMap, Workbook wb,
-			final boolean generateSummary, File outputFile, String apiKey) throws Exception {
+			final boolean generateSummary, File outputFile, String apiKey, boolean lastCollection) throws Exception {
 		final SummaryModel model = new SummaryModel();
 		final String key = apiKey;
 
@@ -410,7 +421,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				LOADING_INSTANCES.get(locale)));
 		Map<String, String> instanceMap = BulkDataServiceClient
-				.fetchInstanceIds(surveyId, serverBase, key);
+				.fetchInstanceIds(surveyId, serverBase, key, lastCollection);
 		SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
 				LOADING_INSTANCE_DETAILS.get(locale)));
 
@@ -490,6 +501,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 			SummaryModel model) throws Exception {
 		int col = 0;
 		MessageDigest digest = MessageDigest.getInstance("MD5");
+		createCell(row, col++, dto.getSurveyedLocaleIdentifier(), null);
+		createCell(row, col++, dto.getSurveyedLocaleDisplayName(), null);
 		createCell(row, col++, instanceId, null);
 		createCell(row, col++, dateString, null);
 		if (dto != null) {
@@ -614,16 +627,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		Row row = null;
 
 		row = getRow(0, sheet);
-		createCell(row, 0, INSTANCE_LABEL.get(locale), headerStyle);
-		createCell(row, 1, SUB_DATE_LABEL.get(locale), headerStyle);
-		createCell(row, 2, SUBMITTER_LABEL.get(locale), headerStyle);
-		createCell(row, 3, DURATION_LABEL.get(locale), headerStyle);
+		createCell(row, 0, IDENTIFIER_LABEL.get(locale), headerStyle);
+		createCell(row, 1, DISPLAY_NAME_LABEL.get(locale), headerStyle);
+		createCell(row, 2, INSTANCE_LABEL.get(locale), headerStyle);
+		createCell(row, 3, SUB_DATE_LABEL.get(locale), headerStyle);
+		createCell(row, 4, SUBMITTER_LABEL.get(locale), headerStyle);
+		createCell(row, 5, DURATION_LABEL.get(locale), headerStyle);
 
 		List<String> questionIdList = new ArrayList<String>();
 		List<String> nonSummarizableList = new ArrayList<String>();
 
 		if (questionMap != null) {
-			int offset = 4;
+			int offset = 6;
 			for (QuestionGroupDto group : orderedGroupList) {
 				if (questionMap.get(group) != null) {
 					for (QuestionDto q : questionMap.get(group)) {
@@ -1008,6 +1023,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 					generateCharts = false;
 				}
 			}
+			if (options.get(LAST_COLLECTION_OPT) != null
+					&& "true".equals(options.get(LAST_COLLECTION_OPT))) {
+				lastCollection = true;
+			}
 		}
 		if (locale != null) {
 			locale = locale.trim().toLowerCase();
@@ -1101,6 +1120,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 		Map<String, String> options = new HashMap<String, String>();
 		options.put(LOCALE_OPT, "en");
 		options.put(TYPE_OPT, RAW_ONLY_TYPE);
+		options.put(LAST_COLLECTION_OPT, "true");
 		criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
 		criteria.put("apiKey", args[3]);
 		exporter.export(criteria, new File(args[0]), args[1], options);

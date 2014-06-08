@@ -49,7 +49,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
  */
 public class RestAuthFilter implements Filter {
 
-	private static final long MAX_TIME = 60000;
+	private static final long MAX_TIME = 60*10*1000; // 10 minutes
 	
 	private static final Logger log = Logger.getLogger(RestAuthFilter.class
 			.getName());

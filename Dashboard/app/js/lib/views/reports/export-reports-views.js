@@ -12,7 +12,8 @@ FLOW.ReportLoader = Ember.Object.create({
       opts: {
         locale: 'en',
         exportMode: 'RAW_DATA',
-        generateTabFormat: 'false'
+        generateTabFormat: 'false',
+        lastCollection: 'false'
       }
     },
     RAW_DATA_TEXT: {
@@ -63,6 +64,8 @@ FLOW.ReportLoader = Ember.Object.create({
       criteria.opts.locale = FLOW.reportLanguageControl.get('selectedLanguage').get('value');
     }
 
+    criteria.opts.lastCollection = '' + (exportType === 'RAW_DATA' && !!FLOW.editControl.lastCollection);
+
     this.set('criteria', criteria);
     FLOW.savingMessageControl.numLoadingChange(1);
     this.requestReport();
@@ -81,7 +84,7 @@ FLOW.ReportLoader = Ember.Object.create({
       FLOW.savingMessageControl.numLoadingChange(-1);
       this.set('processing', false);
       this.set('criteria', null);
-      $('#downloader').attr('src', FLOW.Env.flowServices + '/report/' + resp.file);
+      $('#downloader').attr('src', FLOW.Env.flowServices.split(":3001")[0] + '/report/' + resp.file);
     }
   },
 
@@ -139,6 +142,10 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
       return null;
     }
   }.property('FLOW.selectedControl.selectedSurvey'),
+
+  showLastCollection: function () {
+    return FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
+  }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   showRawDataReport: function () {
 	var sId = this.get('selectedSurvey');

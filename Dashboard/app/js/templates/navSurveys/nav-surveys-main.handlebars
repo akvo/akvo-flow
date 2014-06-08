@@ -19,7 +19,7 @@
         {{#view FLOW.JavascriptSurveyGroupListView}}
           {{#each sg in FLOW.surveyGroupControl.arrangedContent}}
             {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-              <a {{action "makeSelected" target="this"}}>{{sg.code}}</a>
+              <a  {{action "makeSelected" target="this"}}> {{#if sg.monitoringGroup}}<span style="color:rgb(74, 177, 207)">M</span>&nbsp;&nbsp;{{/if}}{{sg.code}}</a>
             {{/view}}
           {{/each}} 
         {{/view}}
@@ -40,7 +40,7 @@
           <!-- show selected survey group and edit name button --> 
           <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2> 
           <a {{action "editSurveyGroupName" target="this"}} class="editGroupName">{{t _edit_name}}</a>
-          <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a> 
+          <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a>
         {{/if}}
       {{/if}}
       
@@ -60,6 +60,22 @@
 
     <!-- show all surveys of the currently selected survey group-->
     <ul class="surveyBatch">
+    
+    {{#if view.oneSelected}}
+     {{#if view.monitoringGroup}}
+		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a> 
+		      <div style="margin:0 10px 0 20px;"> <p style="text-size:1.5em;">Survey that creates new monitored entities:</p> {{view Ember.Select 
+         		contentBinding="FLOW.surveyControl.content" 
+                selectionBinding="FLOW.surveyControl.newLocaleSurvey"
+         		optionLabelPath="content.name" 
+         		optionValuePath="content.keyId"
+         		prompt=""
+         		promptBinding="Ember.STRINGS._select_survey"}}       </div>
+		  {{else}}
+		    <a {{action confirm FLOW.dialogControl.makeMonitor target="FLOW.dialogControl"}} class="makeMonitorGroup">{{t _make_monitoring_group}}</a> 
+		  {{/if}}
+    {{/if}}
+    
       {{#each survey in FLOW.surveyControl.arrangedContent}} 
         {{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
           <li class="aSurvey waterPoint">

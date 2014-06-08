@@ -32,6 +32,7 @@ public class SurveyedLocaleDto extends BaseDto {
 	private String organization;
 	private String systemIdentifier;
 	private String identifier;
+	private String displayName;
 	private String countryCode;
 	private String sublevel1;
 	private String sublevel2;
@@ -39,6 +40,7 @@ public class SurveyedLocaleDto extends BaseDto {
 	private String sublevel4;
 	private String sublevel5;
 	private String sublevel6;
+	private List<Long> surveyInstanceContrib;
 	private String localeType;
 	private Double latitude;
 	private Double longitude;
@@ -192,6 +194,22 @@ public class SurveyedLocaleDto extends BaseDto {
 
 	public String getCurrentStatus() {
 		return currentStatus;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public List<Long> getSurveyInstanceContrib() {
+		return surveyInstanceContrib;
+	}
+
+	public void setSurveyInstanceContrib(List<Long> surveyInstanceContrib) {
+		this.surveyInstanceContrib = surveyInstanceContrib;
 	}
 
 	public Long getCreationSurveyId() {
