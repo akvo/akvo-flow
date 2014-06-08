@@ -1069,16 +1069,14 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				sIsurveyId = si.getSurveyId(); // get the surveyId from the survey instance
 				sgKey = "popMonitoringFields-sISurveyGroupId-" + sIsurveyId; //create the key for the cache
 
-				if (cache != null && containsKey(cache, sgKey)) {
+				if (containsKey(cache, sgKey)) {
 					// get the surveyGroup from the cache
 					sl.setSurveyGroupId((Long) cache.get(sgKey));
 					addSl = true;
 				} else {
 					// look it up in the datastore
 					Survey s = sDao.getByKey(sIsurveyId);
-					if (cache != null) {
-						putObject(cache, sgKey, s.getSurveyGroupId());
-					}
+					putObject(cache, sgKey, s.getSurveyGroupId());
 					sl.setSurveyGroupId(s.getSurveyGroupId());
 					addSl = true;
 				}
@@ -1086,7 +1084,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 				// always populate the display names, as it might have changed
 				qKey = "popMonitoringFields-displayNameQuestions-" + sIsurveyId;
 				qList = null;
-				if (cache != null && containsKey(cache, qKey)) {
+				if (containsKey(cache, qKey)) {
 					// get the question list from the cache
 					qList = (List<Long>) cache.get(qKey);
 				} else {
@@ -1099,9 +1097,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 							qList.add(q.getKey().getId());
 						}
 					}
-					if (cache != null) {
-						putObject(cache, qKey, qList);
-					}
+					putObject(cache, qKey, qList);
 				}
 				// for each question, find the corresponding question answer store, and add it to the
 				// display name
@@ -1138,11 +1134,12 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			final String cursorParam = SurveyedLocaleDao.getCursor(results);
 			final TaskOptions options = TaskOptions.Builder
 					.withUrl("/app_worker/dataprocessor")
+					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("dataprocessor"))
 					.param(DataProcessorRequest.ACTION_PARAM,
 												DataProcessorRequest.POPULATE_MONITORING_FIELDS_LOCALE_ACTION)
 										.param(DataProcessorRequest.SURVEY_ID_PARAM,surveyId.toString())
 					.param(DataProcessorRequest.CURSOR_PARAM, cursorParam != null ? cursorParam : "");
-			Queue queue = QueueFactory.getDefaultQueue();
+			Queue queue = QueueFactory.getQueue("background-processing");
 			queue.add(options);
 		}
 	}
