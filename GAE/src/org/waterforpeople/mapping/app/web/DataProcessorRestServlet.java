@@ -1196,11 +1196,12 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			final String cursorParam = SurveyedLocaleDao.getCursor(results);
 			final TaskOptions options = TaskOptions.Builder
 					.withUrl("/app_worker/dataprocessor")
+					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("dataprocessor"))
 					.param(DataProcessorRequest.ACTION_PARAM,
 												DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION)
 										.param(DataProcessorRequest.SURVEY_ID_PARAM,surveyId.toString())
 					.param(DataProcessorRequest.CURSOR_PARAM, cursorParam != null ? cursorParam : "");
-			Queue queue = QueueFactory.getDefaultQueue();
+			Queue queue = QueueFactory.getQueue("background-processing");
 			queue.add(options);
 		}
 	}

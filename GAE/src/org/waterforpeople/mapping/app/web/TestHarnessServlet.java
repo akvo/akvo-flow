@@ -348,11 +348,12 @@ public class TestHarnessServlet extends HttpServlet {
 						// fire processing task
 						final TaskOptions options = TaskOptions.Builder.withUrl(
 								"/app_worker/dataprocessor")
-										.param(DataProcessorRequest.ACTION_PARAM,
-												DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION)
-										.param(DataProcessorRequest.SURVEY_ID_PARAM,surveyId.toString());
+									.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("dataprocessor"))
+									.param(DataProcessorRequest.ACTION_PARAM,
+											DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION)
+									.param(DataProcessorRequest.SURVEY_ID_PARAM,surveyId.toString());
 						com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-								.getDefaultQueue();
+								.getQueue("background-processing");
 						queue.add(options);
 						try {
 							resp.getWriter().print("Request Processed - Check the logs");
