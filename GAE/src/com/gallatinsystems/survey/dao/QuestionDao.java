@@ -18,6 +18,7 @@ package com.gallatinsystems.survey.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -619,7 +620,7 @@ public class QuestionDao extends BaseDAO<Question> {
 		if (results != null && results.size() > 0) {
 			return results;
 		} else {
-			return null;
+			return Collections.emptyList();
 		}
 	}
 }

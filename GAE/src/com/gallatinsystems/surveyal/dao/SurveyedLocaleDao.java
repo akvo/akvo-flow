@@ -17,6 +17,7 @@
 package com.gallatinsystems.surveyal.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -462,7 +463,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 		if (results != null && results.size() > 0) {
 			return results;
 		} else {
-			return null;
+			return Collections.emptyList();
 		}
 	}
 }
