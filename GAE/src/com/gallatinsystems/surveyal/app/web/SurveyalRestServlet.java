@@ -349,8 +349,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					locale.setIdentifier(instance.getSurveyedLocaleIdentifier());
 				} else {
 					// if we don't have an identifier, create a random UUID.
-
-					locale.setIdentifier(base32Uuid());
+					String base32Id = base32Uuid();
+					// insert dashes for readability
+					locale.setIdentifier(base32Id.substring(0, 4) + "-" + base32Id.substring(4, 8) + "-" + base32Id.substring(8));
 				}
 				if (geoPlace != null) {
 					setGeoData(geoPlace, locale);

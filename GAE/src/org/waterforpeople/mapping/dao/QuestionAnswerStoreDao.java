@@ -28,6 +28,7 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.domain.Question;
 
 public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
@@ -216,5 +217,20 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 		query.setFilter(filterString.toString());
 		query.declareParameters(paramString.toString());
 		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+	}
+
+	@SuppressWarnings("unchecked")
+	public QuestionAnswerStore getByQuestionAndSurveyInstance(Long qId, Long instanceId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+		query.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
+		query.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
+		List<QuestionAnswerStore> results = (List<QuestionAnswerStore>) query.execute(
+				instanceId,qId.toString());
+		if (results != null && results.size() > 0) {
+			return results.get(0);
+		} else {
+			return null;
+		}
 	}
 }

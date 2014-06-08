@@ -17,6 +17,7 @@
 package com.gallatinsystems.surveyal.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -448,5 +449,21 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 	 */
 	public SurveyedLocale getByIdentifier(String identifier) {
 		return findByProperty("identifier", identifier, "String");
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<SurveyedLocale> listLocalesByCreationSurvey(Long surveyId,
+			String cursor, Integer pageSize) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		String queryString = "creationSurveyId == surveyIdParam";
+		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class,queryString);
+		query.declareParameters("Long surveyIdParam");
+		prepareCursor(cursor, pageSize, query);
+		List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(surveyId);
+		if (results != null && results.size() > 0) {
+			return results;
+		} else {
+			return Collections.emptyList();
+		}
 	}
 }
