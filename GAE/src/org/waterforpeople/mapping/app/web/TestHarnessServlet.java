@@ -332,6 +332,37 @@ public class TestHarnessServlet extends HttpServlet {
 					log.log(Level.SEVERE, "surveyId provided not valid: " + req.getParameter("surveyId"));
 				}
 			}
+		} else if ("createNewIdentifiersLocales".equals(action)) {
+			if (req.getParameter("surveyId") != null){
+				try {
+					// if we have a surveyId, try to parse it to long here
+					// if we fail, we break of the whole operation
+					// we don't use the parsed value
+					Long surveyId = Long.parseLong(req.getParameter("surveyId"));
+
+					// check if the survey exists
+					SurveyDAO sDao = new SurveyDAO();
+					Survey s = sDao.getByKey(surveyId);
+					if (s != null){
+						// fire processing task
+						final TaskOptions options = TaskOptions.Builder.withUrl(
+								"/app_worker/dataprocessor")
+										.param(DataProcessorRequest.ACTION_PARAM,
+												DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION)
+										.param(DataProcessorRequest.SURVEY_ID_PARAM,surveyId.toString());
+						com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+								.getDefaultQueue();
+						queue.add(options);
+						try {
+							resp.getWriter().print("Request Processed - Check the logs");
+						} catch (Exception e) {
+							// no-op
+						}
+					}
+				} catch (NumberFormatException e){
+					log.log(Level.SEVERE, "surveyId provided not valid: " + req.getParameter("surveyId"));
+				}
+			}
 		} else if ("populateQuestionOrders".equals(action)) {
 			log.log(Level.INFO, "Populating question and question group orders: ");
 			Queue queue = QueueFactory.getDefaultQueue();

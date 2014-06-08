@@ -51,7 +51,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
-
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -76,6 +75,7 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestServlet;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -167,6 +167,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.POPULATE_MONITORING_FIELDS_LOCALE_ACTION
 				.equalsIgnoreCase(req.getAction())){
 			populateMonitoringFieldsLocale(dpReq.getCursor(),dpReq.getSurveyId());
+		} else if (DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION
+					.equalsIgnoreCase(req.getAction())){
+			createNewIdentifiersLocales(dpReq.getCursor(),dpReq.getSurveyId());
 		} else if (DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION.equalsIgnoreCase(req.getAction())) {
 			populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
 		}
@@ -968,6 +971,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			queue.add(options);
 		}
 	}
+
 	/**
 	 * populates the creationSurveyId field for existing locales
 	 * started from testharness with host/webapp/testharness?action=addCreationSurveyIdToLocale
@@ -1143,6 +1147,68 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		}
 	}
 
+	/**
+	 * Creates new identifiers for existing locales.
+	 * Handle with care! This will overwrite all existing identifiers, which might be used by users.
+	 * Only use if you are sure that this data has not been used for monitoring already, and that
+	 * identifiers are not in use.
+	 * To be conservative, if there is an existing identifier, we reshape it to fit the new style 
+	 * (xxxx-xxxx-xxxx), using the existing identifier. In that way, the method is idempotent.
+	 * Started from testharness
+	 * with host/webapp/testharness?action=createNewIdentifiersLocales&surveyId=xxxxxx
+	 * 
+	 * @param cursor
+	 * @param surveyId
+	 */
+	private void createNewIdentifiersLocales(String cursor, Long surveyId) {
+		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+		String id;
+
+		// get locales by createdSurveyId
+		final List<SurveyedLocale> results = slDao.listLocalesByCreationSurvey(surveyId, cursor,
+				LOCALE_PAGE_SIZE);
+		log.log(Level.INFO,
+				"found surveyedLocales: "
+						+ results.size());
+
+		for (SurveyedLocale sl : results) {
+			id = sl.getIdentifier();
+
+			// if the identifier has the shape 'xxxx-xxxx-xxxx', leave it alone
+			if (id.length() == 14 && (id.length() - id.replace("-", "").length() == 2)) {
+				continue;
+			}
+
+			// if it is an old style identifier, based on geolocation, reuse it
+			if (id.length() == 8) {
+				sl.setIdentifier(id.substring(0, 4) + "-" + id.substring(4, 8) + "-" + SurveyalRestServlet.base32Uuid().substring(8));
+			} else {
+				// create a new one
+				 String base32Id = SurveyalRestServlet.base32Uuid();
+			     // Put dashes between the 4-5 and 8-9 positions to increase readability
+			     sl.setIdentifier(base32Id.substring(0, 4) + "-" + base32Id.substring(4, 8) + "-" + base32Id.substring(8));
+			}
+			slList.add(sl);
+		}
+
+		// batch save all the locales that need to be saved
+		slDao.save(slList);
+
+		if (results.size() == LOCALE_PAGE_SIZE) {
+			final String cursorParam = SurveyedLocaleDao.getCursor(results);
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+												DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION)
+										.param(DataProcessorRequest.SURVEY_ID_PARAM,surveyId.toString())
+					.param(DataProcessorRequest.CURSOR_PARAM, cursorParam != null ? cursorParam : "");
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+		}
+	}
+
+	/**
 	 * runs over all surveyal value objects, and populates: the questionOrder
 	 * and questionGroupOrder fields, and the surveyId if it is not populated
 	 * This method is invoked as a URL request:
