@@ -1185,7 +1185,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			}
 
 			// if it is an old style identifier, based on geolocation, reuse it
-			if (id.length() == 8) {
+			if (id.length() == 8 || id.length() == 9) {
 				sl.setIdentifier(id.substring(0, 4) + "-" + id.substring(4, 8) + "-" + SurveyalRestServlet.base32Uuid().substring(8));
 			} else {
 				// create a new one
