@@ -1045,13 +1045,20 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
 		for (SurveyedLocale sl : results) {
 			try {
+				if (sl.getLastSurveyalInstanceId() == null){
+					log.log(Level.WARNING,
+							"lastSurveyalInstanceId null for locale: "
+									+ sl.getKey().getId());
+					continue;
+				}
+
 				SurveyInstance si = siDao.getByKey(sl
 						.getLastSurveyalInstanceId());
 				addSl = false;
 
 				if (si == null) {
 					// log an error and continue to next locale
-					log.log(Level.SEVERE,
+					log.log(Level.WARNING,
 							"Couldn't find surveyInstance: "
 									+ sl.getLastSurveyalInstanceId());
 					continue;
