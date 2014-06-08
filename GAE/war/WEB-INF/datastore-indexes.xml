@@ -430,6 +430,11 @@
 		<property name="localeType" direction="asc" />
 		<property name="latitude" direction="asc" />
 	</datastore-index>
+	 <datastore-index kind="Question" ancestor="false" source="manual">
+        <property name="localeNameFlag" direction="asc"/>
+        <property name="surveyId" direction="asc"/>
+        <property name="order" direction="asc"/>
+    </datastore-index>
 	<datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
         <property name="geocells" direction="asc"/>
         <property name="localeType" direction="asc"/>

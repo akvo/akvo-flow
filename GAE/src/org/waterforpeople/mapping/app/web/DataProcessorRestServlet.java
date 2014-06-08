@@ -164,6 +164,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE
 				.equalsIgnoreCase(dpReq.getAction())) {
 			addCreationSurveyIdToLocale(dpReq.getCursor());
+		} else if (DataProcessorRequest.POPULATE_MONITORING_FIELDS_LOCALE_ACTION
+				.equalsIgnoreCase(req.getAction())){
+			populateMonitoringFieldsLocale(dpReq.getCursor(),dpReq.getSurveyId());
 		} else if (DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION.equalsIgnoreCase(req.getAction())) {
 			populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
 		}
@@ -1003,6 +1006,143 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	}
 
 	/**
+	 * populates the displayName, surveyGroupId, and surveyInstanceContrib,
+	 * setCreationSurveyId fields for existing locales started from testharness with
+	 * host/webapp/testharness?action=populateMonitoringFieldsLocale&surveyId=xxxx
+	 * @param cursor
+	 * @param surveyId
+	 */
+	@SuppressWarnings("unchecked")
+	public static void populateMonitoringFieldsLocale(String cursor,
+			Long surveyId) {
+		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final SurveyDAO sDao = new SurveyDAO();
+		final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		final QuestionDao qDao = new QuestionDao();
+		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+		final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+
+		// get locales by createdSurveyId
+		final List<SurveyedLocale> results = slDao.listLocalesByCreationSurvey(surveyId, cursor,
+				LOCALE_PAGE_SIZE);
+		log.log(Level.INFO,
+				"found surveyedLocales: "
+						+ results.size());
+
+		Long sIsurveyId;
+		String sgKey;
+		String qKey;
+		Boolean addSl;
+		List<Long> qList;
+		String displayName;
+
+		// initialize the memcache
+		Cache cache = initCache(12 * 60 * 60); // 12 hours
+
+		for (SurveyedLocale sl : results) {
+			try {
+				SurveyInstance si = siDao.getByKey(sl
+						.getLastSurveyalInstanceId());
+				addSl = false;
+
+				if (si == null) {
+					// log an error and continue to next locale
+					log.log(Level.SEVERE,
+							"Couldn't find surveyInstance: "
+									+ sl.getLastSurveyalInstanceId());
+					continue;
+				}
+
+				// if empty, set surveyInstanceContrib
+				if (sl.getSurveyInstanceContrib() == null || sl.getSurveyInstanceContrib().size() == 0) {
+					List<Long> newList = new ArrayList<Long>();
+					newList.add(sl.getLastSurveyalInstanceId());
+					sl.setSurveyInstanceContrib(newList);
+					addSl = true;
+				}
+
+				// always set surveyGroupId, because it might have changed.
+				sIsurveyId = si.getSurveyId(); // get the surveyId from the survey instance
+				sgKey = "popMonitoringFields-sISurveyGroupId-" + sIsurveyId; //create the key for the cache
+
+				if (cache != null && containsKey(cache, sgKey)) {
+					// get the surveyGroup from the cache
+					sl.setSurveyGroupId((Long) cache.get(sgKey));
+					addSl = true;
+				} else {
+					// look it up in the datastore
+					Survey s = sDao.getByKey(sIsurveyId);
+					if (cache != null) {
+						putObject(cache, sgKey, s.getSurveyGroupId());
+					}
+					sl.setSurveyGroupId(s.getSurveyGroupId());
+					addSl = true;
+				}
+
+				// always populate the display names, as it might have changed
+				qKey = "popMonitoringFields-displayNameQuestions-" + sIsurveyId;
+				qList = null;
+				if (cache != null && containsKey(cache, qKey)) {
+					// get the question list from the cache
+					qList = (List<Long>) cache.get(qKey);
+				} else {
+					// look it up in the datastore
+					qList = new ArrayList<Long>();
+					List<Question> questions = qDao
+							.listDisplayNameQuestionsBySurveyId(sIsurveyId);
+					if (questions != null) {
+						for (Question q : questions) {
+							qList.add(q.getKey().getId());
+						}
+					}
+					if (cache != null) {
+						putObject(cache, qKey, qList);
+					}
+				}
+				// for each question, find the corresponding question answer store, and add it to the
+				// display name
+				if (qList.size() > 0) {
+					displayName = "";
+					for (Long qId : qList) {
+						QuestionAnswerStore qas = qasDao
+								.getByQuestionAndSurveyInstance(qId, si
+										.getKey().getId());
+						if (qas != null) {
+							if (displayName.length() > 0) {
+								displayName += " - ";
+							}
+							displayName += qas.getValue();
+						}
+					}
+					addSl = true;
+					sl.setDisplayName(displayName);
+				}
+
+				if (addSl) {
+					slList.add(sl);
+				}
+			} catch (Exception e) {
+				log.log(Level.SEVERE,
+						"Problem while populating monitoring fields: "
+								+ e.getMessage(), e);
+			}
+		}
+		// batch save all the locales that need to be saved
+		slDao.save(slList);
+
+		if (results.size() == LOCALE_PAGE_SIZE) {
+			final String cursorParam = SurveyedLocaleDao.getCursor(results);
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.param(DataProcessorRequest.ACTION_PARAM,
+												DataProcessorRequest.POPULATE_MONITORING_FIELDS_LOCALE_ACTION)
+										.param(DataProcessorRequest.SURVEY_ID_PARAM,surveyId.toString())
+					.param(DataProcessorRequest.CURSOR_PARAM, cursorParam != null ? cursorParam : "");
+			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+		}
+	}
+
 	 * runs over all surveyal value objects, and populates: the questionOrder
 	 * and questionGroupOrder fields, and the surveyId if it is not populated
 	 * This method is invoked as a URL request:

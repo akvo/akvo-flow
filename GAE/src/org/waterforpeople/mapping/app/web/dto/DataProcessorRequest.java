@@ -55,6 +55,7 @@ public class DataProcessorRequest extends RestRequest {
 	public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
 	public static final String RECREATE_LOCALES = "recreateLocales";
 	public static final String POP_QUESTION_ORDER_FIELDS_ACTION = "populateQuestionOrders";
+	public static final String POPULATE_MONITORING_FIELDS_LOCALE_ACTION = "populateMonitoringFieldsLocale";
 
 	private String country;
 	private String source;
