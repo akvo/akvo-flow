@@ -145,8 +145,8 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 					if (si != null){
 						siDto.setUuid(si.getUuid());
 						siDto.setSurveyId(si.getSurveyId());
+						siDto.setCollectionDate(si.getCollectionDate().getTime());
 					}
-					siDto.setCollectionDate(instanceMap.get(instanceId).get(0).getCollectionDate().getTime());
 					for (SurveyalValue sv : instanceMap.get(instanceId)){
 						String svQuestionType = sv.getQuestionType();
 						String deviceQuestionType = "VALUE";
