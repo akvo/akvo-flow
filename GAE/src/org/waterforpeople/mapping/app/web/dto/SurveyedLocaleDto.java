@@ -39,7 +39,7 @@ public class SurveyedLocaleDto extends BaseDto {
 	private Double lat;
 	private Double lon;
 	private List<SurveyInstanceDto> surveyInstances;
-	private Date lastUpdateDateTime;
+	private Long lastUpdateDateTime;
 	private String identifier;
 
 	public String getIdentifier() {
@@ -106,11 +106,15 @@ public class SurveyedLocaleDto extends BaseDto {
 		this.displayName = displayName;
 	}
 
-	public Date getLastUpdateDateTime() {
+	public Long getLastUpdateDateTime() {
 		return lastUpdateDateTime;
 	}
 
 	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
+		this.lastUpdateDateTime = lastUpdateDateTime.getTime();
+	}
+
+	public void setLastUpdateDateTime(Long lastUpdateDateTime) {
 		this.lastUpdateDateTime = lastUpdateDateTime;
 	}
 }

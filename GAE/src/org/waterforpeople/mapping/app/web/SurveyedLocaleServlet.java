@@ -138,6 +138,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 				dto.setDisplayName(sl.getDisplayName());
 				dto.setLat(sl.getLatitude());
 				dto.setLon(sl.getLongitude());
+				dto.setLastUpdateDateTime(sl.getLastUpdateDateTime());
 				SurveyInstanceDAO sDao = new SurveyInstanceDAO();
 				for (Long instanceId : instanceMap.keySet()){
 					SurveyInstanceDto siDto = new SurveyInstanceDto();
