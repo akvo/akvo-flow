@@ -5,6 +5,12 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.6.17.1
+
+## Resolved issues
+
+* Problems with automatic survey download on _WiFi only_ devices [#588]
+
 #1.6.17
 
 ## New and noteworthy

@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.jdo.PersistenceManager;
 
+import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceSurveyJobQueue;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
@@ -44,8 +45,8 @@ public class DeviceSurveyJobQueueDAO {
 		javax.jdo.Query query = pm.newQuery(DeviceSurveyJobQueue.class);
 
 		List<DeviceSurveyJobQueue> results = null;
-		//lookup by imei first
-		if (imei != null) {
+		//lookup by imei first and filter out NO_IMEI ones
+		if (imei != null && !Device.NO_IMEI.equals(imei)) {
 			query.setFilter("imei == imeiParam");
 			query.declareParameters("String imeiParam");
 			results = (List<DeviceSurveyJobQueue>) query.execute(imei);
