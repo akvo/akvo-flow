@@ -16,16 +16,12 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
-import com.gallatinsystems.framework.rest.exception.RestValidationException;
 
 /**
  * data structure for rest api calls to the point of interest service

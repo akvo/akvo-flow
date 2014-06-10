@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -106,12 +106,6 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 		if (slList != null) {
 			// set meta data
 			resp.setResultCount(slList.size());
-			if (slList.size() > 0) {
-				// slList is sorted ascending, first element is the oldest
-				resp.setLastUpdateTime(slList.get(slList.size() - 1).getLastUpdateDateTime().getTime());
-			} else {
-				resp.setLastUpdateTime(lastUpdateTime.getTime()); // return original query timestamp
-			}
 
 			// set Locale data
 			List<SurveyedLocaleDto> dtoList = new ArrayList<SurveyedLocaleDto>();
@@ -138,6 +132,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 				dto.setDisplayName(sl.getDisplayName());
 				dto.setLat(sl.getLatitude());
 				dto.setLon(sl.getLongitude());
+				dto.setLastUpdateDateTime(sl.getLastUpdateDateTime());
 				SurveyInstanceDAO sDao = new SurveyInstanceDAO();
 				for (Long instanceId : instanceMap.keySet()){
 					SurveyInstanceDto siDto = new SurveyInstanceDto();
