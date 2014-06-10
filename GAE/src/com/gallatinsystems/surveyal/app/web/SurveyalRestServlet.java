@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.jsr107cache.Cache;
 
 import org.apache.commons.lang.StringUtils;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
@@ -171,7 +170,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		} else if (SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION
 				.equalsIgnoreCase(req.getAction())) {
 			log.log(Level.INFO, "adapting cluster data");
-			adaptClusterData(sReq.getSurveyedLocaleId());
+			Boolean decrement = sReq.getDecrementClusterCount();
+			int delta = decrement ? -1 : 1; // increment by default
+			adaptClusterData(sReq.getSurveyedLocaleId(), delta);
 		}
 		return resp;
 	}
@@ -309,7 +310,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				locale.setLatitude(latitude);
 				locale.setLongitude(longitude);
 				try {
-				locale.setGeocells(GeocellManager
+					locale.setGeocells(GeocellManager
 						.generateGeoCell(new Point(latitude, longitude)));
 				} catch (Exception ex) {
 					log.log(Level.INFO,"Could not generate Geocell for locale: " + locale.getKey().getId() + " error: " + ex);
@@ -370,13 +371,13 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 		// TODO: when surveyedLocales are deleted, it needs to be substracted from the clusters
 		if(adaptClusterData) {
 			Queue defaultQueue = QueueFactory.getDefaultQueue();
-			TaskOptions to = TaskOptions.Builder
+			TaskOptions adaptClusterTaskOptions = TaskOptions.Builder
 					.withUrl("/app_worker/surveyalservlet")
 					.param(SurveyalRestRequest.ACTION_PARAM,
 							SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
 							.param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
 									Long.toString(locale.getKey().getId()));
-			defaultQueue.add(to);
+			defaultQueue.add(adaptClusterTaskOptions);
 		}
 	}
 
@@ -403,7 +404,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 	}
 
 	// this method is synchronised, because we are changing counts.
-	private synchronized void adaptClusterData(Long surveyedLocaleId) {
+	private synchronized void adaptClusterData(Long surveyedLocaleId, Integer delta) {
 		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
 		final SurveyedLocale locale = slDao.getById(surveyedLocaleId);
 
@@ -426,11 +427,15 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					.param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
 							surveyedLocaleId + "")
 					.countdownMillis(5 * 1000 * 60); // 5 minutes
+			if(delta < 0) {
+				to.param(SurveyalRestRequest.DECREMENT_CLUSTER_COUNT_PARAM,
+						Boolean.TRUE.toString());
+			}
 			queue.add(to);
 			return;
 		}
 
-		MapUtils.recomputeCluster(cache, locale, 1);
+		MapUtils.recomputeCluster(cache, locale, delta);
 	}
 
 	/**
