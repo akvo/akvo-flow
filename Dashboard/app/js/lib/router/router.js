@@ -11,6 +11,7 @@ FLOW.Router = Ember.Router.extend({
 
   resetState: function () {
     FLOW.selectedControl.set('selectedQuestionGroup', null);
+    FLOW.selectedControl.set('selectedSurveyGroup', null);
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.selectedControl.set('selectedQuestion', null);
     FLOW.surveyControl.set('content', null);
@@ -304,7 +305,6 @@ FLOW.Router = Ember.Router.extend({
           FLOW.surveyGroupControl.populate(function (item) {
                  return item.get('monitoringGroup');
           });
-          //FLOW.surveyedLocaleControl.populate();
         }
       }),
     }),

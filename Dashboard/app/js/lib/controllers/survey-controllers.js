@@ -121,15 +121,24 @@ FLOW.surveySectorTypeControl = Ember.Object.create({
   ]
 });
 
+FLOW.alwaysTrue = function () {
+  return true;
+};
 
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortProperties: ['code'],
   sortAscending: true,
   content: null,
 
+  setFilteredContent: function (f) {
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, f));
+  },
+
   // load all Survey Groups
-  populate: function () {
-    this.set('content', FLOW.store.find(FLOW.SurveyGroup));
+  populate: function (f) {
+	var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
+	FLOW.store.find(FLOW.SurveyGroup);
+	this.setFilteredContent(fn);
   },
 
   // checks if data store contains surveys within this survey group.
@@ -197,8 +206,8 @@ FLOW.surveyControl = Ember.ArrayController.create({
   },
 
   newLocale: function () {
-	  var newLocaleId = FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
-	  if(!this.get('content').get('isLoaded')) { return; }
+	  var newLocaleId = FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+	  if(!this.get('content') || !this.get('content').get('isLoaded')) { return; }
 	  this.set('newLocaleSurvey', this.find(function (item) { return item.get('keyId') === newLocaleId; }));
   }.observes('content.isLoaded'),
 

@@ -266,7 +266,10 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 				} else {
 					// for older versions of flow mobile app,
 					// if we don't have an identifier, create a random UUID.
-					locale.setIdentifier(base32Uuid());
+					String base32Id = base32Uuid();
+					// insert dashes for readability
+					locale.setIdentifier(base32Id.substring(0, 4) + "-" + base32Id.substring(4, 8) + "-" + base32Id.substring(8));
+
 				}
 
 			locale.setOrganization(PropertyUtil
@@ -305,9 +308,12 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 					|| !longitude.equals(locale.getLongitude())) {
 				locale.setLatitude(latitude);
 				locale.setLongitude(longitude);
+				try {
 				locale.setGeocells(GeocellManager
 						.generateGeoCell(new Point(latitude, longitude)));
-
+				} catch (Exception ex) {
+					log.log(Level.INFO,"Could not generate Geocell for locale: " + locale.getKey().getId() + " error: " + ex);
+				}
 				adaptClusterData = Boolean.TRUE;
 			}
 
@@ -331,7 +337,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 			surveyInstance.setSublevel5(geoPlace.getSub5());
 			surveyInstance.setSublevel6(geoPlace.getSub6());
 		}
-
 
 		if (StringUtils.isNotBlank(surveyInstance
 				.getSurveyedLocaleDisplayName())) {
