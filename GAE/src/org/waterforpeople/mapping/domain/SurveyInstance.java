@@ -19,14 +19,22 @@ package org.waterforpeople.mapping.domain;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import org.apache.commons.lang.StringUtils;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.gallatinsystems.gis.map.MapUtils;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyInstance extends BaseDomain {
@@ -294,4 +302,44 @@ public class SurveyInstance extends BaseDomain {
 		this.surveyedLocaleDisplayName = surveyedLocaleDisplayName;
 	}
 
+	/**
+	 * Extract geolocation information from a survey instance
+	 *
+	 * @param surveyInstance
+	 * @return
+	 * 		a map containing latitude and longitude entries
+	 * 		null if a null string is provided
+	 */
+	public static Map<String, Object> retrieveGeoLocation(
+			SurveyInstance surveyInstance) throws NumberFormatException {
+		Map<String, Object> geoLocationMap =  null;
+
+		// retrieve geo location string
+		String geoLocationString = null;
+		// if the GEO information was present as Meta data, get it from there
+		if (StringUtils.isNotBlank(surveyInstance.getLocaleGeoLocation())) {
+			geoLocationString = surveyInstance.getLocaleGeoLocation();
+		} else {
+			// else, try to look for a GEO question
+			List<QuestionAnswerStore> geoAnswers = new SurveyInstanceDAO()
+					.listQuestionAnswerStoreByType(surveyInstance.getKey()
+							.getId(), QuestionType.GEO.toString());
+			if (geoAnswers != null && !geoAnswers.isEmpty()) {
+				geoLocationString = geoAnswers.get(0).getValue();
+			}
+		}
+
+		String[] tokens = StringUtils.split(geoLocationString, "\\|");
+		if (tokens != null && tokens.length >= 2) {
+			geoLocationMap = new HashMap<String, Object>();
+			geoLocationMap.put(MapUtils.LATITUDE, Double.parseDouble(tokens[0]));
+			geoLocationMap.put(MapUtils.LONGITUDE, Double.parseDouble(tokens[1]));
+			//if(tokens.length > 2) {
+			// TODO: currently a string is generated for altitude. need to fix
+			//geoLocationMap.put(ALTITUDE, Long.parseLong(tokens[2]));
+			//}
+		}
+
+		return geoLocationMap;
+	}
 }

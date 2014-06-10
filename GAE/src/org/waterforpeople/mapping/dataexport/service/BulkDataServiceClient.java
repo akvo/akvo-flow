@@ -63,9 +63,9 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
  * client code for calling the apis for data processing on the server
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 public class BulkDataServiceClient {
 	private static final String DATA_SERVLET_PATH = "/databackout";
@@ -77,7 +77,7 @@ public class BulkDataServiceClient {
 	/**
 	 * lists all responses from the server for a surveyInstance submission as a
 	 * map of values keyed on questionId
-	 * 
+	 *
 	 * @param instanceId
 	 * @param serverBase
 	 * @return
@@ -274,7 +274,7 @@ public class BulkDataServiceClient {
 	/**
 	 * survey instance ids and their submission dates. Map keys are the
 	 * instances and values are the dates.
-	 * 
+	 *
 	 * @param surveyId
 	 * @param serverBase
 	 * @return
@@ -283,7 +283,7 @@ public class BulkDataServiceClient {
 	public static Map<String, String> fetchInstanceIds(String surveyId,
 			String serverBase, String apiKey, boolean lastCollection) throws Exception {
 		Map<String, String> values = new HashMap<String, String>();
-		
+
 		String instanceString = fetchDataFromServer(serverBase
 				+ DATA_SERVLET_PATH, "?action="
 				+ DataBackoutRequest.LIST_INSTANCE_ACTION + "&"
@@ -291,7 +291,7 @@ public class BulkDataServiceClient {
 				+ DataBackoutRequest.INCLUDE_DATE_PARAM + "=true" + "&"
 				+ DataBackoutRequest.LAST_COLLECTION_PARAM + "="
 				+ lastCollection, true, apiKey);
-		
+
 		if (instanceString != null && instanceString.trim().length() != 0) {
 			StringTokenizer strTok = new StringTokenizer(instanceString, ",");
 			while (strTok.hasMoreTokens()) {
@@ -327,7 +327,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * method to parse SurveyInstance response values
-	 * 
+	 *
 	 * @param data
 	 * @return
 	 */
@@ -371,7 +371,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * loads full details for a single question (options, translations, etc)
-	 * 
+	 *
 	 * @param serverBase
 	 * @param questionId
 	 * @return
@@ -399,7 +399,7 @@ public class BulkDataServiceClient {
 	 * returns an array containing 2 elements: the first is an ordered list of
 	 * questionIds (in the order they appear in the survey) and the second
 	 * element is a map of questions (keyed on id)
-	 * 
+	 *
 	 * @param surveyId
 	 * @param serverBase
 	 * @return
@@ -432,7 +432,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * gets questions from the server for a specific question group
-	 * 
+	 *
 	 * @param serverBase
 	 * @param groupId
 	 * @return
@@ -449,7 +449,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * gets a surveyInstance from the server for a specific id
-	 * 
+	 *
 	 * @param id
 	 * @param serverBase
 	 * @return
@@ -466,7 +466,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * gets question groups from the server for a specific survey
-	 * 
+	 *
 	 * @param serverBase
 	 * @param surveyId
 	 * @return
@@ -483,7 +483,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * gets question groups from the server for a specific survey
-	 * 
+	 *
 	 * @param serverBase
 	 * @param surveyId
 	 * @return
@@ -524,7 +524,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * gets survey list from the server for a specific survey
-	 * 
+	 *
 	 * @param serverBase
 	 * @param surveyId
 	 * @return
@@ -541,7 +541,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * parses a single SurveyInstanceDto from a json response string
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -594,7 +594,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * parses the question group response and forms DTOs
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -644,7 +644,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * parses the survey group response and forms DTOs
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -684,7 +684,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * parses the survey group response and forms DTOs
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -698,7 +698,7 @@ public class BulkDataServiceClient {
 				JSONObject json = arr.getJSONObject(i);
 				if (json != null) {
 					SurveyDto dto = new SurveyDto();
-					try {						
+					try {
 						if (!json.isNull("code")) {
 							dto.setCode(json.getString("code"));
 						}
@@ -806,7 +806,7 @@ public class BulkDataServiceClient {
 
 	/**
 	 * parses question responses into QuesitonDto objects
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws Exception
@@ -832,7 +832,7 @@ public class BulkDataServiceClient {
 									}
 								}
 							}
-							
+
 							if (json.has("allowMultipleFlag")
 									&& !"null".equalsIgnoreCase(json.getString("allowMultipleFlag"))) {
 									dto.setAllowMultipleFlag(json.getBoolean("allowMultipleFlag"));
@@ -861,7 +861,7 @@ public class BulkDataServiceClient {
 							if (json.has("keyId")) {
 								dto.setKeyId(json.getLong("keyId"));
 							}
-							if (json.has("collapseable") 
+							if (json.has("collapseable")
 									&& !"null".equalsIgnoreCase(json.getString("collapseable"))) {
 								dto.setCollapseable(json.getBoolean("collapseable"));
 							}
@@ -982,9 +982,9 @@ public class BulkDataServiceClient {
 									}
 									dto.setOptionContainerDto(container);
 								}
-								
+
 								// The questionDependency check below is related to the
-								// previous if statements dependentFlag, dependentQuestionId, 
+								// previous if statements dependentFlag, dependentQuestionId,
 								// dependentQuestionAnswer i.e. checks whether question is
 								// dependent on another
 								if (json.has("questionDependency")
@@ -1039,7 +1039,7 @@ public class BulkDataServiceClient {
 	 * invokes a remote REST api using the base and query string passed in. If
 	 * shouldSign is true, the queryString will be augmented with a timestamp
 	 * and hash parameter.
-	 * 
+	 *
 	 * @param baseUrl
 	 * @param queryString
 	 * @param shouldSign
@@ -1077,7 +1077,7 @@ public class BulkDataServiceClient {
 	/**
 	 * invokes a remote REST api. If the url is longer than 1900 characters,
 	 * this method will use POST since that is too long for a GET
-	 * 
+	 *
 	 * @param fullUrl
 	 * @return
 	 * @throws Exception

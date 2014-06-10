@@ -235,6 +235,11 @@ public class SurveyUtils {
 		s.setStatus(Survey.Status.NOT_PUBLISHED);
 		return sDao.save(s);
 	}
+	
+	public static Survey retrieveSurvey(Long surveyId) {
+		final SurveyDAO sDao = new SurveyDAO();
+		return sDao.getById(surveyId);
+	}	
 
 	private static String getPath(Survey s) {
 		if (s == null) {

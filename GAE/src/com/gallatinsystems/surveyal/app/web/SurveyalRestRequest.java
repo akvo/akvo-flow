@@ -22,8 +22,8 @@ import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
- * request class for the SurveyalServlet.  
- * 
+ * request class for the SurveyalServlet.
+ *
  * @author Christopher Fagiani
  *
  */
@@ -38,11 +38,13 @@ public class SurveyalRestRequest extends RestRequest {
 	public static final String SURVEY_ID_PARAM ="surveyId";
 	public static final String ADAPT_CLUSTER_DATA_ACTION = "adaptClusterData";
 	public static final String SURVEYED_LOCALE_PARAM = "surveyedLocaleId";
-	
+	public static final String DECREMENT_CLUSTER_COUNT_PARAM = "decrement";
+
 
 	private Long surveyInstanceId;
 	private Long surveyId;
 	private Long surveyedLocaleId;
+	private Boolean decrementClusterCount = Boolean.FALSE;
 
 	@Override
 	protected void populateFields(HttpServletRequest req) throws Exception {
@@ -74,6 +76,9 @@ public class SurveyalRestRequest extends RestRequest {
 			setSurveyedLocaleId(Long.parseLong(req.getParameter(SURVEYED_LOCALE_PARAM).trim()));
 		}
 
+		if(req.getParameter(DECREMENT_CLUSTER_COUNT_PARAM) != null) {
+			setDecrementClusterCount(Boolean.valueOf(req.getParameter(DECREMENT_CLUSTER_COUNT_PARAM)));
+		}
 	}
 
 	@Override
@@ -104,7 +109,12 @@ public class SurveyalRestRequest extends RestRequest {
 	public void setSurveyedLocaleId(Long surveyedLocaleId) {
 		this.surveyedLocaleId = surveyedLocaleId;
 	}
-	
-	
 
+	public Boolean getDecrementClusterCount() {
+		return decrementClusterCount;
+	}
+
+	public void setDecrementClusterCount(Boolean decrementClusterCount) {
+		this.decrementClusterCount = decrementClusterCount;
+	}
 }

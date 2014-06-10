@@ -39,7 +39,7 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
-public class SurveyReplicationImporter {	
+public class SurveyReplicationImporter {
 
 	public void executeImport(String sourceBase, Long surveyId, String apiKey) {
 		SurveyGroupDAO sgDao = new SurveyGroupDAO();
@@ -120,7 +120,7 @@ public class SurveyReplicationImporter {
 		List<QuestionDto> qgDtoList = BulkDataServiceClient.fetchQuestions(
 				serverBase, questionGroupId, apiKey);
 		List<Question> qList = new ArrayList<Question>();
-		
+
 		SurveyServiceImpl ssi = new SurveyServiceImpl();
 		for (QuestionDto dto : qgDtoList) {
 			QuestionDto dtoDetail = null;
@@ -155,7 +155,7 @@ public class SurveyReplicationImporter {
 				e.printStackTrace();
 			}
 			DtoMarshaller.copyToCanonical(canonical, dto);
-			
+
 			if (canonical instanceof Survey && dto instanceof SurveyDto) {
 				Survey s = (Survey) canonical;
 				SurveyDto d = (SurveyDto) dto;
@@ -163,7 +163,7 @@ public class SurveyReplicationImporter {
 				if(Survey.Status.PUBLISHED.equals(s.getStatus())){
 					s.setStatus(Survey.Status.NOT_PUBLISHED);
 				}
-				
+
 				//mismatch in SurveyDto and Survey property names
 				s.setDesc(d.getDescription());
 			}

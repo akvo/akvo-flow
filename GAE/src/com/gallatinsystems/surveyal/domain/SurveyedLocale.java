@@ -17,7 +17,9 @@
 package com.gallatinsystems.surveyal.domain;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
@@ -30,12 +32,12 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  * subdivisions (state/province/sector/cell, etc) where the exact definition of
  * what each level corresponds to depends on the country in which the point is
  * located.
- * 
+ *
  * Details about SurveyedLocales are stored using SurveyalValue which has a
  * loose association with this object.
- * 
+ *
  * @author Christopher Fagiani
- * 
+ *
  */
 @PersistenceCapable
 public class SurveyedLocale extends BaseDomain {
@@ -51,7 +53,7 @@ public class SurveyedLocale extends BaseDomain {
 	private String sublevel4;
 	private String sublevel5;
 	private String sublevel6;
-	private List<Long> surveyInstanceContrib;
+	private Set<Long> surveyInstanceContrib;
 	private List<String> geocells;
 	private String localeType;
 	private Double latitude;
@@ -225,12 +227,19 @@ public class SurveyedLocale extends BaseDomain {
 		this.displayName = displayName;
 	}
 
-	public List<Long> getSurveyInstanceContrib() {
+	public Set<Long> getSurveyInstanceContrib() {
 		return surveyInstanceContrib;
 	}
 
-	public void setSurveyInstanceContrib(List<Long> surveyInstanceContrib) {
-		this.surveyInstanceContrib = surveyInstanceContrib;
+	public void addContributingSurveyInstance(Long surveyInstanceId) {
+		if(surveyInstanceContrib == null) {
+			surveyInstanceContrib = new HashSet<Long>();
+		}
+		surveyInstanceContrib.add(surveyInstanceId);
+	}
+
+	public void setSurveyInstanceContrib(Set<Long> surveyInstanceIdList) {
+		this.surveyInstanceContrib.addAll(surveyInstanceIdList);
 	}
 
 	public String getCurrentStatus() {
@@ -252,5 +261,4 @@ public class SurveyedLocale extends BaseDomain {
 	public void setCreationSurveyId(Long creationSurveyId) {
 		this.creationSurveyId = creationSurveyId;
 	}
-
 }

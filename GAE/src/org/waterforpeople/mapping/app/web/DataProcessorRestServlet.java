@@ -1066,9 +1066,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
 				// if empty, set surveyInstanceContrib
 				if (sl.getSurveyInstanceContrib() == null || sl.getSurveyInstanceContrib().size() == 0) {
-					List<Long> newList = new ArrayList<Long>();
-					newList.add(sl.getLastSurveyalInstanceId());
-					sl.setSurveyInstanceContrib(newList);
+					sl.addContributingSurveyInstance(sl.getLastSurveyalInstanceId());
 					addSl = true;
 				}
 
@@ -1156,11 +1154,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 	 * Handle with care! This will overwrite all existing identifiers, which might be used by users.
 	 * Only use if you are sure that this data has not been used for monitoring already, and that
 	 * identifiers are not in use.
-	 * To be conservative, if there is an existing identifier, we reshape it to fit the new style 
+	 * To be conservative, if there is an existing identifier, we reshape it to fit the new style
 	 * (xxxx-xxxx-xxxx), using the existing identifier. In that way, the method is idempotent.
 	 * Started from testharness
 	 * with host/webapp/testharness?action=createNewIdentifiersLocales&surveyId=xxxxxx
-	 * 
+	 *
 	 * @param cursor
 	 * @param surveyId
 	 */
