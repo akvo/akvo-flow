@@ -51,7 +51,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
-
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -76,6 +75,7 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestServlet;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -164,6 +164,12 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 		} else if (DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE
 				.equalsIgnoreCase(dpReq.getAction())) {
 			addCreationSurveyIdToLocale(dpReq.getCursor());
+		} else if (DataProcessorRequest.POPULATE_MONITORING_FIELDS_LOCALE_ACTION
+				.equalsIgnoreCase(req.getAction())){
+			populateMonitoringFieldsLocale(dpReq.getCursor(),dpReq.getSurveyId());
+		} else if (DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION
+					.equalsIgnoreCase(req.getAction())){
+			createNewIdentifiersLocales(dpReq.getCursor(),dpReq.getSurveyId());
 		} else if (DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION.equalsIgnoreCase(req.getAction())) {
 			populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
 		}
@@ -965,6 +971,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 			queue.add(options);
 		}
 	}
+
 	/**
 	 * populates the creationSurveyId field for existing locales
 	 * started from testharness with host/webapp/testharness?action=addCreationSurveyIdToLocale
@@ -998,6 +1005,208 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 							DataProcessorRequest.ADD_CREATION_SURVEY_ID_TO_LOCALE)
 					.param(DataProcessorRequest.CURSOR_PARAM, cursorParam != null ? cursorParam : "");
 			Queue queue = QueueFactory.getDefaultQueue();
+			queue.add(options);
+		}
+	}
+
+	/**
+	 * populates the displayName, surveyGroupId, and surveyInstanceContrib,
+	 * setCreationSurveyId fields for existing locales started from testharness with
+	 * host/webapp/testharness?action=populateMonitoringFieldsLocale&surveyId=xxxx
+	 * @param cursor
+	 * @param surveyId
+	 */
+	@SuppressWarnings("unchecked")
+	public static void populateMonitoringFieldsLocale(String cursor,
+			Long surveyId) {
+		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final SurveyDAO sDao = new SurveyDAO();
+		final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+		final QuestionDao qDao = new QuestionDao();
+		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+		final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+
+		// get locales by createdSurveyId
+		final List<SurveyedLocale> results = slDao.listLocalesByCreationSurvey(surveyId, cursor,
+				LOCALE_PAGE_SIZE);
+		log.log(Level.INFO,
+				"found surveyedLocales: "
+						+ results.size());
+
+		Long sIsurveyId;
+		String sgKey;
+		String qKey;
+		Boolean addSl;
+		List<Long> qList;
+		String displayName;
+
+		// initialize the memcache
+		Cache cache = initCache(12 * 60 * 60); // 12 hours
+
+		for (SurveyedLocale sl : results) {
+			try {
+				if (sl.getLastSurveyalInstanceId() == null){
+					log.log(Level.WARNING,
+							"lastSurveyalInstanceId null for locale: "
+									+ sl.getKey().getId());
+					continue;
+				}
+
+				SurveyInstance si = siDao.getByKey(sl
+						.getLastSurveyalInstanceId());
+				addSl = false;
+
+				if (si == null) {
+					// log an error and continue to next locale
+					log.log(Level.WARNING,
+							"Couldn't find surveyInstance: "
+									+ sl.getLastSurveyalInstanceId());
+					continue;
+				}
+
+				// if empty, set surveyInstanceContrib
+				if (sl.getSurveyInstanceContrib() == null || sl.getSurveyInstanceContrib().size() == 0) {
+					sl.addContributingSurveyInstance(sl.getLastSurveyalInstanceId());
+					addSl = true;
+				}
+
+				// always set surveyGroupId, because it might have changed.
+				sIsurveyId = si.getSurveyId(); // get the surveyId from the survey instance
+				sgKey = "popMonitoringFields-sISurveyGroupId-" + sIsurveyId; //create the key for the cache
+
+				if (containsKey(cache, sgKey)) {
+					// get the surveyGroup from the cache
+					sl.setSurveyGroupId((Long) cache.get(sgKey));
+					addSl = true;
+				} else {
+					// look it up in the datastore
+					Survey s = sDao.getByKey(sIsurveyId);
+					putObject(cache, sgKey, s.getSurveyGroupId());
+					sl.setSurveyGroupId(s.getSurveyGroupId());
+					addSl = true;
+				}
+
+				// always populate the display names, as it might have changed
+				qKey = "popMonitoringFields-displayNameQuestions-" + sIsurveyId;
+				qList = null;
+				if (containsKey(cache, qKey)) {
+					// get the question list from the cache
+					qList = (List<Long>) cache.get(qKey);
+				} else {
+					// look it up in the datastore
+					qList = new ArrayList<Long>();
+					List<Question> questions = qDao
+							.listDisplayNameQuestionsBySurveyId(sIsurveyId);
+					if (questions != null) {
+						for (Question q : questions) {
+							qList.add(q.getKey().getId());
+						}
+					}
+					putObject(cache, qKey, qList);
+				}
+				// for each question, find the corresponding question answer store, and add it to the
+				// display name
+				if (qList.size() > 0) {
+					displayName = "";
+					for (Long qId : qList) {
+						QuestionAnswerStore qas = qasDao
+								.getByQuestionAndSurveyInstance(qId, si
+										.getKey().getId());
+						if (qas != null) {
+							if (displayName.length() > 0) {
+								displayName += " - ";
+							}
+							displayName += qas.getValue();
+						}
+					}
+					addSl = true;
+					sl.setDisplayName(displayName);
+				}
+
+				if (addSl) {
+					slList.add(sl);
+				}
+			} catch (Exception e) {
+				log.log(Level.SEVERE,
+						"Problem while populating monitoring fields: "
+								+ e.getMessage(), e);
+			}
+		}
+		// batch save all the locales that need to be saved
+		slDao.save(slList);
+
+		if (results.size() == LOCALE_PAGE_SIZE) {
+			final String cursorParam = SurveyedLocaleDao.getCursor(results);
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("dataprocessor"))
+					.param(DataProcessorRequest.ACTION_PARAM,
+												DataProcessorRequest.POPULATE_MONITORING_FIELDS_LOCALE_ACTION)
+										.param(DataProcessorRequest.SURVEY_ID_PARAM,surveyId.toString())
+					.param(DataProcessorRequest.CURSOR_PARAM, cursorParam != null ? cursorParam : "");
+			Queue queue = QueueFactory.getQueue("background-processing");
+			queue.add(options);
+		}
+	}
+
+	/**
+	 * Creates new identifiers for existing locales.
+	 * Handle with care! This will overwrite all existing identifiers, which might be used by users.
+	 * Only use if you are sure that this data has not been used for monitoring already, and that
+	 * identifiers are not in use.
+	 * To be conservative, if there is an existing identifier, we reshape it to fit the new style
+	 * (xxxx-xxxx-xxxx), using the existing identifier. In that way, the method is idempotent.
+	 * Started from testharness
+	 * with host/webapp/testharness?action=createNewIdentifiersLocales&surveyId=xxxxxx
+	 *
+	 * @param cursor
+	 * @param surveyId
+	 */
+	private void createNewIdentifiersLocales(String cursor, Long surveyId) {
+		final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+		final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
+		String id;
+
+		// get locales by createdSurveyId
+		final List<SurveyedLocale> results = slDao.listLocalesByCreationSurvey(surveyId, cursor,
+				LOCALE_PAGE_SIZE);
+		log.log(Level.INFO,
+				"found surveyedLocales: "
+						+ results.size());
+
+		for (SurveyedLocale sl : results) {
+			id = sl.getIdentifier();
+
+			// if the identifier has the shape 'xxxx-xxxx-xxxx', leave it alone
+			if (id.length() == 14 && (id.length() - id.replace("-", "").length() == 2)) {
+				continue;
+			}
+
+			// if it is an old style identifier, based on geolocation, reuse it
+			if (id.length() == 8 || id.length() == 9) {
+				sl.setIdentifier(id.substring(0, 4) + "-" + id.substring(4, 8) + "-" + SurveyalRestServlet.base32Uuid().substring(8));
+			} else {
+				// create a new one
+				 String base32Id = SurveyalRestServlet.base32Uuid();
+			     // Put dashes between the 4-5 and 8-9 positions to increase readability
+			     sl.setIdentifier(base32Id.substring(0, 4) + "-" + base32Id.substring(4, 8) + "-" + base32Id.substring(8));
+			}
+			slList.add(sl);
+		}
+
+		// batch save all the locales that need to be saved
+		slDao.save(slList);
+
+		if (results.size() == LOCALE_PAGE_SIZE) {
+			final String cursorParam = SurveyedLocaleDao.getCursor(results);
+			final TaskOptions options = TaskOptions.Builder
+					.withUrl("/app_worker/dataprocessor")
+					.header("Host", BackendServiceFactory.getBackendService().getBackendAddress("dataprocessor"))
+					.param(DataProcessorRequest.ACTION_PARAM,
+												DataProcessorRequest.CREATE_NEW_IDENTIFIERS_LOCALES_ACTION)
+										.param(DataProcessorRequest.SURVEY_ID_PARAM,surveyId.toString())
+					.param(DataProcessorRequest.CURSOR_PARAM, cursorParam != null ? cursorParam : "");
+			Queue queue = QueueFactory.getQueue("background-processing");
 			queue.add(options);
 		}
 	}

@@ -18,6 +18,7 @@ package com.gallatinsystems.survey.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -605,5 +606,21 @@ public class QuestionDao extends BaseDAO<Question> {
 	 */
 	public List<Question> listQuestionsByDependency(Long questionId) {
 		return listByProperty("dependentQuestionId", questionId, "Long");
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Question> listDisplayNameQuestionsBySurveyId(Long surveyId) {
+		PersistenceManager pm = PersistenceFilter.getManager();
+		javax.jdo.Query query = pm.newQuery(Question.class);
+		query.setFilter("surveyId == surveyIdParam && localeNameFlag == true");
+		query.declareParameters("Long surveyIdParam");
+		query.setOrdering("order asc");
+		List<Question> results = (List<Question>) query.execute(
+				surveyId);
+		if (results != null && results.size() > 0) {
+			return results;
+		} else {
+			return Collections.emptyList();
+		}
 	}
 }
