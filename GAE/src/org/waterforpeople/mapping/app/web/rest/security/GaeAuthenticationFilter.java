@@ -1,3 +1,4 @@
+
 package org.waterforpeople.mapping.app.web.rest.security;
 
 import java.io.IOException;
@@ -39,7 +40,8 @@ public class GaeAuthenticationFilter extends GenericFilterBean {
     private AuthenticationManager authenticationManager;
     private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
 
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User googleUser = UserServiceFactory.getUserService().getCurrentUser();
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -47,15 +49,17 @@ public class GaeAuthenticationFilter extends GenericFilterBean {
         if (authentication != null && !loggedInUserMatchesGaeUser(authentication, googleUser)) {
             SecurityContextHolder.clearContext();
             authentication = null;
-            ((HttpServletRequest)request).getSession().invalidate();
+            ((HttpServletRequest) request).getSession().invalidate();
         }
 
         if (authentication == null) {
             if (googleUser != null) {
                 logger.log(Level.INFO, "Currently logged on to GAE as user " + googleUser);
                 logger.log(Level.INFO, "Authenticating to Spring Security");
-                // User has returned after authenticating via GAE. Need to authenticate through Spring Security.
-                PreAuthenticatedAuthenticationToken token = new PreAuthenticatedAuthenticationToken(googleUser, null);
+                // User has returned after authenticating via GAE. Need to authenticate through
+                // Spring Security.
+                PreAuthenticatedAuthenticationToken token = new PreAuthenticatedAuthenticationToken(
+                        googleUser, null);
                 token.setDetails(ads.buildDetails((HttpServletRequest) request));
 
                 try {
@@ -63,22 +67,23 @@ public class GaeAuthenticationFilter extends GenericFilterBean {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     String logoutUrl = UserServiceFactory.getUserService().createLogoutURL("");
 
-					if (authentication.getAuthorities().contains(
-							AppRole.NEW_USER)
-							&& !logoutUrl.startsWith(httpRequest
-									.getRequestURI())
-							&& !httpRequest.getRequestURI().startsWith(
-									"/remote_api")) {
-						logger.log(Level.INFO,
-								"New user authenticated. Redirecting to registration page");
-						((HttpServletResponse) response)
-								.sendRedirect(REGISTRATION_URL);
-						return;
-					}
+                    if (authentication.getAuthorities().contains(
+                            AppRole.NEW_USER)
+                            && !logoutUrl.startsWith(httpRequest
+                                    .getRequestURI())
+                            && !httpRequest.getRequestURI().startsWith(
+                                    "/remote_api")) {
+                        logger.log(Level.INFO,
+                                "New user authenticated. Redirecting to registration page");
+                        ((HttpServletResponse) response)
+                                .sendRedirect(REGISTRATION_URL);
+                        return;
+                    }
 
                 } catch (AuthenticationException e) {
-                	logger.log(Level.SEVERE, e.getMessage(), e);
-                    failureHandler.onAuthenticationFailure((HttpServletRequest)request, (HttpServletResponse)response, e);
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    failureHandler.onAuthenticationFailure((HttpServletRequest) request,
+                            (HttpServletResponse) response, e);
                     return;
                 }
             }
@@ -95,7 +100,7 @@ public class GaeAuthenticationFilter extends GenericFilterBean {
             return false;
         }
 
-        GaeUser gaeUser = (GaeUser)authentication.getPrincipal();
+        GaeUser gaeUser = (GaeUser) authentication.getPrincipal();
 
         if (!gaeUser.getEmail().equals(googleUser.getEmail())) {
             return false;

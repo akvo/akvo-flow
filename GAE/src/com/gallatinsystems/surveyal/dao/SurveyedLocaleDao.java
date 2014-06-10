@@ -37,433 +37,429 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
  * Data access object for manipulating SurveyedLocales
  * 
  * @author Christopher Fagiani
- * 
  */
 public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
-	public SurveyedLocaleDao() {
-		super(SurveyedLocale.class);
-	}
+    public SurveyedLocaleDao() {
+        super(SurveyedLocale.class);
+    }
 
-	/**
-	 * lists the set of SurveyedLocales that are within tolerance of the lat/lon
-	 * coordinates passed in.
-	 * 
-	 * @param lat
-	 * @param lon
-	 * @param tolerance
-	 * @return
-	 */
-	public List<SurveyedLocale> listLocalesByCoordinates(String pointType,
-			double lat, double lon, double tolerance) {
-		return listLocalesByCoordinates(pointType, lat - tolerance, lon
-				- tolerance, lat + tolerance, lon + tolerance,
-				CURSOR_TYPE.all.toString(), null);
-	}
+    /**
+     * lists the set of SurveyedLocales that are within tolerance of the lat/lon coordinates passed
+     * in.
+     * 
+     * @param lat
+     * @param lon
+     * @param tolerance
+     * @return
+     */
+    public List<SurveyedLocale> listLocalesByCoordinates(String pointType,
+            double lat, double lon, double tolerance) {
+        return listLocalesByCoordinates(pointType, lat - tolerance, lon
+                - tolerance, lat + tolerance, lon + tolerance,
+                CURSOR_TYPE.all.toString(), null);
+    }
 
-	/**
-	* lists locales that fit within the bounding box geocells passed in
-	*
-	* @return
-	*/
-	@SuppressWarnings("unchecked")
-	public List<SurveyedLocale> listLocalesByGeocell(List<String> geocells, int pageSize) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		String queryString = ":p1.contains(geocells)";
-		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class,queryString);
-		prepareCursor(null, pageSize, query);
-		List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(geocells);
-	return results;
-}
+    /**
+     * lists locales that fit within the bounding box geocells passed in
+     * 
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyedLocale> listLocalesByGeocell(List<String> geocells, int pageSize) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = ":p1.contains(geocells)";
+        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class, queryString);
+        prepareCursor(null, pageSize, query);
+        List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(geocells);
+        return results;
+    }
 
-	/**
-	* lists locales that fit within the bounding box geocells passed in
-	* and that can be displayed on the public map (meaning, not household type)
-	*
-	* @return
-	*/
-	@SuppressWarnings("unchecked")
-	public List<SurveyedLocale> listPublicLocalesByGeocell(List<String> geocells, int pageSize) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		String queryString = ":p1.contains(geocells) && localeType != 'Household'";
-		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class,queryString);
-		prepareCursor(null, pageSize, query);
-		List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(geocells);
-	return results;
-}
+    /**
+     * lists locales that fit within the bounding box geocells passed in and that can be displayed
+     * on the public map (meaning, not household type)
+     * 
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyedLocale> listPublicLocalesByGeocell(List<String> geocells, int pageSize) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = ":p1.contains(geocells) && localeType != 'Household'";
+        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class, queryString);
+        prepareCursor(null, pageSize, query);
+        List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(geocells);
+        return results;
+    }
 
-	/**
-	 * lists all locales
-	 * 
-	 * @param cursor
-	 * @param pagesize
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<SurveyedLocale> listAll(String cursor, Integer pageSize) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
-		prepareCursor(cursor, pageSize, query);
-		List<SurveyedLocale> results = (List<SurveyedLocale>) query
-				.execute();
-		return results;
-	}
-	/**
-	 * lists locales that fit within the bounding box passed in
-	 * 
-	 * @param pointType
-	 * @param lat1
-	 * @param lon1
-	 * @param lat2
-	 * @param lon2
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<SurveyedLocale> listLocalesByCoordinates(String pointType,
-			Double lat1, Double lon1, Double lat2, Double lon2, String cursor,
-			Integer pageSize) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
-		Map<String, Object> paramMap = null;
+    /**
+     * lists all locales
+     * 
+     * @param cursor
+     * @param pagesize
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyedLocale> listAll(String cursor, Integer pageSize) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+        prepareCursor(cursor, pageSize, query);
+        List<SurveyedLocale> results = (List<SurveyedLocale>) query
+                .execute();
+        return results;
+    }
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
+    /**
+     * lists locales that fit within the bounding box passed in
+     * 
+     * @param pointType
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyedLocale> listLocalesByCoordinates(String pointType,
+            Double lat1, Double lon1, Double lat2, Double lon2, String cursor,
+            Integer pageSize) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+        Map<String, Object> paramMap = null;
 
-		appendNonNullParam("localeType", filterString, paramString, "String",
-				pointType, paramMap);
-		appendNonNullParam("latitude", filterString, paramString, "Double",
-				lat1, paramMap, GTE_OP);
-		appendNonNullParam("latitude", filterString, paramString, "Double",
-				lat2, paramMap, LTE_OP);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
 
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		prepareCursor(cursor, pageSize, query);
-		List<SurveyedLocale> candidates = (List<SurveyedLocale>) query
-				.executeWithMap(paramMap);
-		// since the datastore only supports an inequality check on a single
-		// parameter at a time, only look at LAT in the query. Filter on Lon
-		// afterwards.
-		List<SurveyedLocale> results = new ArrayList<SurveyedLocale>();
-		if (candidates != null) {
-			for (SurveyedLocale l : candidates) {
-				if (l.getLongitude() > (lon1) && l.getLongitude() < (lon2)) {
-					results.add(l);
-				}
-			}
-		}
-		return results;
-	}
+        appendNonNullParam("localeType", filterString, paramString, "String",
+                pointType, paramMap);
+        appendNonNullParam("latitude", filterString, paramString, "Double",
+                lat1, paramMap, GTE_OP);
+        appendNonNullParam("latitude", filterString, paramString, "Double",
+                lat2, paramMap, LTE_OP);
 
-	/**
-	 * lists all SurveyalValues for a single Locale
-	 * 
-	 * @param surveyedLocaleId
-	 * @return
-	 */
-	public List<SurveyalValue> listValuesByLocale(Long surveyedLocaleId) {
-		return listByProperty("surveyedLocaleId", surveyedLocaleId, "Long",
-				SurveyalValue.class);
-	}
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        prepareCursor(cursor, pageSize, query);
+        List<SurveyedLocale> candidates = (List<SurveyedLocale>) query
+                .executeWithMap(paramMap);
+        // since the datastore only supports an inequality check on a single
+        // parameter at a time, only look at LAT in the query. Filter on Lon
+        // afterwards.
+        List<SurveyedLocale> results = new ArrayList<SurveyedLocale>();
+        if (candidates != null) {
+            for (SurveyedLocale l : candidates) {
+                if (l.getLongitude() > (lon1) && l.getLongitude() < (lon2)) {
+                    results.add(l);
+                }
+            }
+        }
+        return results;
+    }
 
-	/**
-	 * lists all locales that match the geo constraints passed in
-	 * 
-	 * @param countryCode
-	 * @param level
-	 * @param subValue
-	 * @param type
-	 * @param org
-	 * @param cursor
-	 * @param desiredResults
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<SurveyedLocale> listBySubLevel(String countryCode,
-			Integer level, String subValue, String type, String org,
-			String cursor, Integer desiredResults) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = null;
-		paramMap = new HashMap<String, Object>();
+    /**
+     * lists all SurveyalValues for a single Locale
+     * 
+     * @param surveyedLocaleId
+     * @return
+     */
+    public List<SurveyalValue> listValuesByLocale(Long surveyedLocaleId) {
+        return listByProperty("surveyedLocaleId", surveyedLocaleId, "Long",
+                SurveyalValue.class);
+    }
 
-		appendNonNullParam("localeType", filterString, paramString, "String",
-				type, paramMap);
-		appendNonNullParam("countryCode", filterString, paramString, "String",
-				countryCode, paramMap);
-		appendNonNullParam("organization", filterString, paramString, "String",
-				org, paramMap);
-		if (level != null && level > 0 && level <= 6) {
-			appendNonNullParam("sublevel" + level, filterString, paramString,
-					"String", subValue, paramMap);
-		}
-		query.setOrdering("createdDateTime desc");
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		prepareCursor(cursor, desiredResults, query);
-		List<SurveyedLocale> results = (List<SurveyedLocale>) query
-				.executeWithMap(paramMap);
-		return results;
-	}
+    /**
+     * lists all locales that match the geo constraints passed in
+     * 
+     * @param countryCode
+     * @param level
+     * @param subValue
+     * @param type
+     * @param org
+     * @param cursor
+     * @param desiredResults
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyedLocale> listBySubLevel(String countryCode,
+            Integer level, String subValue, String type, String org,
+            String cursor, Integer desiredResults) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = null;
+        paramMap = new HashMap<String, Object>();
 
-	/**
-	 * searches for surveyedLocale based on params passed in
-	 * 
-	 * 
-	 * 
-	 * @param country
-	 * @param collDateFrom
-	 * @param collDateTo
-	 * @param type
-	 * @param metricId
-	 * @param metricValue
-	 * @param orderByField
-	 * @param orderByDir
-	 * @param pageSize
-	 * @param cursorString
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<SurveyedLocale> search(String country, Date collDateFrom,
-			Date collDateTo, String type, String orderByField,
-			String orderByDir, Integer pageSize, String cursorString) {
+        appendNonNullParam("localeType", filterString, paramString, "String",
+                type, paramMap);
+        appendNonNullParam("countryCode", filterString, paramString, "String",
+                countryCode, paramMap);
+        appendNonNullParam("organization", filterString, paramString, "String",
+                org, paramMap);
+        if (level != null && level > 0 && level <= 6) {
+            appendNonNullParam("sublevel" + level, filterString, paramString,
+                    "String", subValue, paramMap);
+        }
+        query.setOrdering("createdDateTime desc");
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        prepareCursor(cursor, desiredResults, query);
+        List<SurveyedLocale> results = (List<SurveyedLocale>) query
+                .executeWithMap(paramMap);
+        return results;
+    }
 
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+    /**
+     * searches for surveyedLocale based on params passed in
+     * 
+     * @param country
+     * @param collDateFrom
+     * @param collDateTo
+     * @param type
+     * @param metricId
+     * @param metricValue
+     * @param orderByField
+     * @param orderByDir
+     * @param pageSize
+     * @param cursorString
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyedLocale> search(String country, Date collDateFrom,
+            Date collDateTo, String type, String orderByField,
+            String orderByDir, Integer pageSize, String cursorString) {
 
-		appendNonNullParam("countryCode", filterString, paramString, "String",
-				country, paramMap);
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("localeType", filterString, paramString, "String",
-				type, paramMap);
+        appendNonNullParam("countryCode", filterString, paramString, "String",
+                country, paramMap);
 
-		appendNonNullParam("lastSurveyedDate", filterString, paramString,
-				"Date", collDateFrom, paramMap, GTE_OP);
-		appendNonNullParam("lastSurveyedDate", filterString, paramString,
-				"Date", collDateTo, paramMap, LTE_OP);
+        appendNonNullParam("localeType", filterString, paramString, "String",
+                type, paramMap);
 
-		if (orderByField != null) {
-			String ordering = orderByDir;
-			if (ordering == null) {
-				ordering = "asc";
-			}
-			query.setOrdering(orderByField + " " + ordering);
-		}
-		if (filterString.length() > 0) {
-			query.setFilter(filterString.toString());
-			query.declareParameters(paramString.toString());
-		}
-		prepareCursor(cursorString, pageSize, query);
-		if (collDateFrom != null || collDateTo != null) {
-			query.declareImports("import java.util.Date");
-			if (orderByField != null
-					&& !orderByField.trim().equals("lastSurveyedDate")) {
-				query.setOrdering("lastSurveyedDate "
-						+ (orderByDir != null ? orderByDir : "asc"));
-			}
-		}
-		return (List<SurveyedLocale>) query.executeWithMap(paramMap);
-	}
+        appendNonNullParam("lastSurveyedDate", filterString, paramString,
+                "Date", collDateFrom, paramMap, GTE_OP);
+        appendNonNullParam("lastSurveyedDate", filterString, paramString,
+                "Date", collDateTo, paramMap, LTE_OP);
 
-	/**
-	 * returns all the SurveyalValues corresponding to the metric id/value pair
-	 * passed in
-	 * 
-	 * @param metricId
-	 * @param metricValue
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<SurveyalValue> listSurveyalValueByMetric(Long metricId,
-			String metricValue, Integer pageSize, String cursor) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+        if (orderByField != null) {
+            String ordering = orderByDir;
+            if (ordering == null) {
+                ordering = "asc";
+            }
+            query.setOrdering(orderByField + " " + ordering);
+        }
+        if (filterString.length() > 0) {
+            query.setFilter(filterString.toString());
+            query.declareParameters(paramString.toString());
+        }
+        prepareCursor(cursorString, pageSize, query);
+        if (collDateFrom != null || collDateTo != null) {
+            query.declareImports("import java.util.Date");
+            if (orderByField != null
+                    && !orderByField.trim().equals("lastSurveyedDate")) {
+                query.setOrdering("lastSurveyedDate "
+                        + (orderByDir != null ? orderByDir : "asc"));
+            }
+        }
+        return (List<SurveyedLocale>) query.executeWithMap(paramMap);
+    }
 
-		appendNonNullParam("metricId", filterString, paramString, "Long",
-				metricId, paramMap);
+    /**
+     * returns all the SurveyalValues corresponding to the metric id/value pair passed in
+     * 
+     * @param metricId
+     * @param metricValue
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyalValue> listSurveyalValueByMetric(Long metricId,
+            String metricValue, Integer pageSize, String cursor) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("stringValue", filterString, paramString, "String",
-				metricValue, paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		prepareCursor(cursor, pageSize, query);
-		return (List<SurveyalValue>) query.executeWithMap(paramMap);
-	}
+        appendNonNullParam("metricId", filterString, paramString, "Long",
+                metricId, paramMap);
 
-	
-	/**
-	 * returns all the SurveyalValues corresponding to the surveyInstanceId and questionId passed in.
-	 * This uniquely identifies the surveyalValue corresponding to a single questionAnswerStore object
-	 * 
-	 * @param surveyInstanceId
-	 * @param questionId
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<SurveyalValue> listSVByQuestionAndSurveyInstance(Long surveyInstanceId,
-			Long surveyQuestionId) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+        appendNonNullParam("stringValue", filterString, paramString, "String",
+                metricValue, paramMap);
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        prepareCursor(cursor, pageSize, query);
+        return (List<SurveyalValue>) query.executeWithMap(paramMap);
+    }
 
-		appendNonNullParam("surveyInstanceId", filterString, paramString, "Long",
-				surveyInstanceId, paramMap);
+    /**
+     * returns all the SurveyalValues corresponding to the surveyInstanceId and questionId passed
+     * in. This uniquely identifies the surveyalValue corresponding to a single questionAnswerStore
+     * object
+     * 
+     * @param surveyInstanceId
+     * @param questionId
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyalValue> listSVByQuestionAndSurveyInstance(Long surveyInstanceId,
+            Long surveyQuestionId) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("surveyQuestionId", filterString, paramString, "String",
-				surveyQuestionId, paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		return (List<SurveyalValue>) query.executeWithMap(paramMap);
-	}
-	
-	
-	/**
-	 * lists all values for a given survey instance
-	 * 
-	 * @param surveyInstanceId
-	 * @return
-	 */
-	public List<SurveyalValue> listSurveyalValuesByInstance(
-			Long surveyInstanceId) {
-		return listByProperty("surveyInstanceId", surveyInstanceId, "Long",
-				"questionText, metricName asc", SurveyalValue.class);
-	}
+        appendNonNullParam("surveyInstanceId", filterString, paramString, "Long",
+                surveyInstanceId, paramMap);
 
-	/**
-	 * returns all the locales by surveyGroupId
-	 * survey instance only.
-	 *
-	 * @param surveyGroupId
-	 * @return
-	 */
-	public List<SurveyedLocale> listLocalesBySurveyGroupId(Long surveyGroupId) {
-		List<SurveyedLocale> locales = listByProperty("surveyGroupId", surveyGroupId,
-				"Long");
-		return locales;
-	}
+        appendNonNullParam("surveyQuestionId", filterString, paramString, "String",
+                surveyQuestionId, paramMap);
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        return (List<SurveyalValue>) query.executeWithMap(paramMap);
+    }
 
-	public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
-		List<SurveyedLocale> locales = listByProperty("displayName", displayName,
-				"String");
-		return locales;
-	}
+    /**
+     * lists all values for a given survey instance
+     * 
+     * @param surveyInstanceId
+     * @return
+     */
+    public List<SurveyalValue> listSurveyalValuesByInstance(
+            Long surveyInstanceId) {
+        return listByProperty("surveyInstanceId", surveyInstanceId, "Long",
+                "questionText, metricName asc", SurveyalValue.class);
+    }
 
-	/**
-	 * returns all the locales by surveyGroupId, from a certain date.
-	 * If no date is supplised, t = 0 is used.
-	 *
-	 * @param surveyGroupId
-	 * @param lastUpdateTime
-	 * @param pageSize
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<SurveyedLocale> listLocalesBySurveyGroupAndDate(Long surveyGroupId, Date lastUpdateTime, Integer pageSize) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
-		Map<String, Object> paramMap = new HashMap<String, Object>();;
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Date queryTime = null;
-		if (lastUpdateTime != null) {
-			queryTime = lastUpdateTime;
-		} else {
-			queryTime = new Date(0); // January 1st, 1970
-		}
-		appendNonNullParam("surveyGroupId", filterString, paramString, "Long",
-				surveyGroupId, paramMap);
-		appendNonNullParam("lastUpdateDateTime", filterString, paramString, "Date",
-				queryTime, paramMap, " > ");
+    /**
+     * returns all the locales by surveyGroupId survey instance only.
+     * 
+     * @param surveyGroupId
+     * @return
+     */
+    public List<SurveyedLocale> listLocalesBySurveyGroupId(Long surveyGroupId) {
+        List<SurveyedLocale> locales = listByProperty("surveyGroupId", surveyGroupId,
+                "Long");
+        return locales;
+    }
 
-		query.setOrdering("lastUpdateDateTime asc");
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		query.declareImports("import java.util.Date");
-		query.setRange(0, pageSize);
+    public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
+        List<SurveyedLocale> locales = listByProperty("displayName", displayName,
+                "String");
+        return locales;
+    }
 
-		return (List<SurveyedLocale>) query.executeWithMap(paramMap);
-	}
+    /**
+     * returns all the locales by surveyGroupId, from a certain date. If no date is supplised, t = 0
+     * is used.
+     * 
+     * @param surveyGroupId
+     * @param lastUpdateTime
+     * @param pageSize
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyedLocale> listLocalesBySurveyGroupAndDate(Long surveyGroupId,
+            Date lastUpdateTime, Integer pageSize) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        ;
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Date queryTime = null;
+        if (lastUpdateTime != null) {
+            queryTime = lastUpdateTime;
+        } else {
+            queryTime = new Date(0); // January 1st, 1970
+        }
+        appendNonNullParam("surveyGroupId", filterString, paramString, "Long",
+                surveyGroupId, paramMap);
+        appendNonNullParam("lastUpdateDateTime", filterString, paramString, "Date",
+                queryTime, paramMap, " > ");
 
-	/**
-	 * returns all the locales with the identifier passed in. If needDetails is
-	 * true, it will list the surveyalValues for the locale from the most recent
-	 * survey instance only.
-	 * 
-	 * @param identifier
-	 * @param needDetails
-	 * @return
-	 */
-	public List<SurveyedLocale> listLocalesByCode(String identifier,
-			boolean needDetails) {
-		List<SurveyedLocale> locales = listByProperty("identifier", identifier,
-				"String");
-		if (locales != null && needDetails) {
-			for (SurveyedLocale l : locales) {
-				if (l.getLastSurveyalInstanceId() != null) {
-					l.setSurveyalValues(listSurveyalValuesByInstance(l
-							.getLastSurveyalInstanceId()));
-				} else {
-					// get the most recent instance and use its id
-					l.setSurveyalValues(getSurveyalValues(l.getKey().getId()));
-				}
-			}
-		}
-		return locales;
-	}
+        query.setOrdering("lastUpdateDateTime asc");
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        query.declareImports("import java.util.Date");
+        query.setRange(0, pageSize);
 
-	public SurveyedLocale getById(Long id) {
-		final SurveyedLocale sl = getByKey(id);
-		if (sl != null){
-			sl.setSurveyalValues(getSurveyalValues(id));
-		}
-		return sl;
-	}
+        return (List<SurveyedLocale>) query.executeWithMap(paramMap);
+    }
 
-	private List<SurveyalValue> getSurveyalValues(Long id) {
-		SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
-		List<SurveyInstance> instList = instanceDao.listInstancesByLocale(id,
-				null, null, 1, null);
-		if (instList != null && instList.size() > 0) {
-			return listSurveyalValuesByInstance(instList.get(0).getKey()
-					.getId());
-		}
-		return null;
-	}
+    /**
+     * returns all the locales with the identifier passed in. If needDetails is true, it will list
+     * the surveyalValues for the locale from the most recent survey instance only.
+     * 
+     * @param identifier
+     * @param needDetails
+     * @return
+     */
+    public List<SurveyedLocale> listLocalesByCode(String identifier,
+            boolean needDetails) {
+        List<SurveyedLocale> locales = listByProperty("identifier", identifier,
+                "String");
+        if (locales != null && needDetails) {
+            for (SurveyedLocale l : locales) {
+                if (l.getLastSurveyalInstanceId() != null) {
+                    l.setSurveyalValues(listSurveyalValuesByInstance(l
+                            .getLastSurveyalInstanceId()));
+                } else {
+                    // get the most recent instance and use its id
+                    l.setSurveyalValues(getSurveyalValues(l.getKey().getId()));
+                }
+            }
+        }
+        return locales;
+    }
 
-	/**
-	 * finds a single surveyedLocale by identifier.
-	 * 
-	 * @param identifier
-	 * @return
-	 */
-	public SurveyedLocale getByIdentifier(String identifier) {
-		return findByProperty("identifier", identifier, "String");
-	}
+    public SurveyedLocale getById(Long id) {
+        final SurveyedLocale sl = getByKey(id);
+        if (sl != null) {
+            sl.setSurveyalValues(getSurveyalValues(id));
+        }
+        return sl;
+    }
 
-	@SuppressWarnings("unchecked")
-	public List<SurveyedLocale> listLocalesByCreationSurvey(Long surveyId,
-			String cursor, Integer pageSize) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		String queryString = "creationSurveyId == surveyIdParam";
-		javax.jdo.Query query = pm.newQuery(SurveyedLocale.class,queryString);
-		query.declareParameters("Long surveyIdParam");
-		prepareCursor(cursor, pageSize, query);
-		List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(surveyId);
-		if (results != null && results.size() > 0) {
-			return results;
-		} else {
-			return Collections.emptyList();
-		}
-	}
+    private List<SurveyalValue> getSurveyalValues(Long id) {
+        SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
+        List<SurveyInstance> instList = instanceDao.listInstancesByLocale(id,
+                null, null, 1, null);
+        if (instList != null && instList.size() > 0) {
+            return listSurveyalValuesByInstance(instList.get(0).getKey()
+                    .getId());
+        }
+        return null;
+    }
+
+    /**
+     * finds a single surveyedLocale by identifier.
+     * 
+     * @param identifier
+     * @return
+     */
+    public SurveyedLocale getByIdentifier(String identifier) {
+        return findByProperty("identifier", identifier, "String");
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<SurveyedLocale> listLocalesByCreationSurvey(Long surveyId,
+            String cursor, Integer pageSize) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = "creationSurveyId == surveyIdParam";
+        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class, queryString);
+        query.declareParameters("Long surveyIdParam");
+        prepareCursor(cursor, pageSize, query);
+        List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(surveyId);
+        if (results != null && results.size() > 0) {
+            return results;
+        } else {
+            return Collections.emptyList();
+        }
+    }
 }

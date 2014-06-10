@@ -56,286 +56,290 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class RawDataRestServlet extends AbstractRestApiServlet {
-	private static final Logger log = Logger.getLogger("RawDataRestServlet");
-	private static final long serialVersionUID = 2409014651721639814L;
+    private static final Logger log = Logger.getLogger("RawDataRestServlet");
+    private static final long serialVersionUID = 2409014651721639814L;
 
-	private SurveyInstanceDAO instanceDao;
+    private SurveyInstanceDAO instanceDao;
 
-	public RawDataRestServlet() {
-		instanceDao = new SurveyInstanceDAO();
-	}
+    public RawDataRestServlet() {
+        instanceDao = new SurveyInstanceDAO();
+    }
 
-	@Override
-	protected RestRequest convertRequest() throws Exception {
-		HttpServletRequest req = getRequest();
-		RestRequest restRequest = new RawDataImportRequest();
-		restRequest.populateFromHttpRequest(req);
-		return restRequest;
-	}
+    @Override
+    protected RestRequest convertRequest() throws Exception {
+        HttpServletRequest req = getRequest();
+        RestRequest restRequest = new RawDataImportRequest();
+        restRequest.populateFromHttpRequest(req);
+        return restRequest;
+    }
 
-	@Override
-	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		SurveyInstanceServiceImpl sisi = new SurveyInstanceServiceImpl();
-		RawDataImportRequest importReq = (RawDataImportRequest) req;
-		if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq
-				.getAction())) {
-			List<QuestionAnswerStoreDto> dtoList = new ArrayList<QuestionAnswerStoreDto>();
-			boolean isNew = false;
+    @Override
+    protected RestResponse handleRequest(RestRequest req) throws Exception {
+        SurveyInstanceServiceImpl sisi = new SurveyInstanceServiceImpl();
+        RawDataImportRequest importReq = (RawDataImportRequest) req;
+        if (RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION.equals(importReq
+                .getAction())) {
+            List<QuestionAnswerStoreDto> dtoList = new ArrayList<QuestionAnswerStoreDto>();
+            boolean isNew = false;
 
-			if (importReq.getSurveyInstanceId() == null
-					&& importReq.getSurveyId() != null) {
-				// if the instanceID is null, we need to create one
-				createInstance(importReq);
-				isNew = true;
-			}
+            if (importReq.getSurveyInstanceId() == null
+                    && importReq.getSurveyId() != null) {
+                // if the instanceID is null, we need to create one
+                createInstance(importReq);
+                isNew = true;
+            }
 
-			if (importReq.getSurveyInstanceId() != null
-					&& importReq.getSurveyId() != null) {
+            if (importReq.getSurveyInstanceId() != null
+                    && importReq.getSurveyId() != null) {
 
-				SurveyInstance si = new SurveyInstanceDAO().getByKey(importReq
-						.getSurveyInstanceId());
+                SurveyInstance si = new SurveyInstanceDAO().getByKey(importReq
+                        .getSurveyInstanceId());
 
-				if (si == null) {
-					MessageDao mDao = new MessageDao();
-					Message message = new Message();
+                if (si == null) {
+                    MessageDao mDao = new MessageDao();
+                    Message message = new Message();
 
-					message.setObjectId(importReq.getSurveyInstanceId());
-					message.setActionAbout("importData");
-					message.setShortMessage("Survey instance id ["
-							+ importReq.getSurveyInstanceId()
-							+ "] doesn't exist");
-					mDao.save(message);
-					return null;
-				}
+                    message.setObjectId(importReq.getSurveyInstanceId());
+                    message.setActionAbout("importData");
+                    message.setShortMessage("Survey instance id ["
+                            + importReq.getSurveyInstanceId()
+                            + "] doesn't exist");
+                    mDao.save(message);
+                    return null;
+                }
 
-				if (!si.getSurveyId().equals(importReq.getSurveyId())) {
-					MessageDao mDao = new MessageDao();
-					Message message = new Message();
+                if (!si.getSurveyId().equals(importReq.getSurveyId())) {
+                    MessageDao mDao = new MessageDao();
+                    Message message = new Message();
 
-					message.setObjectId(importReq.getSurveyInstanceId());
-					message.setActionAbout("importData");
-					message.setShortMessage("Wrong survey selected when importing instance id ["
-							+ importReq.getSurveyInstanceId() + "]");
-					mDao.save(message);
-					return null;
-				}
-			}
+                    message.setObjectId(importReq.getSurveyInstanceId());
+                    message.setActionAbout("importData");
+                    message.setShortMessage("Wrong survey selected when importing instance id ["
+                            + importReq.getSurveyInstanceId() + "]");
+                    mDao.save(message);
+                    return null;
+                }
+            }
 
-			for (Map.Entry<Long, String[]> item : importReq
-					.getQuestionAnswerMap().entrySet()) {
-				QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
-				qasDto.setQuestionID(item.getKey().toString());
-				qasDto.setSurveyInstanceId(importReq.getSurveyInstanceId());
-				qasDto.setValue(item.getValue()[0]);
-				qasDto.setType(item.getValue()[1]);
-				qasDto.setSurveyId(importReq.getSurveyId());
-				qasDto.setCollectionDate(importReq.getCollectionDate());
-				dtoList.add(qasDto);
-			}
-			
-			sisi.updateQuestions(dtoList, true, false);
-			
-			if (isNew) {
-				SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-				List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStoreByType(new Long(importReq.getSurveyInstanceId()), "GEO");
-				if (qasList != null && qasList.size() > 0)	{
-					Queue summQueue = QueueFactory.getQueue("dataSummarization");
-					summQueue.add(TaskOptions.Builder.withUrl("/app_worker/dataprocessor").param(
-							DataProcessorRequest.ACTION_PARAM, DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-							.param("surveyInstanceId", importReq.getSurveyInstanceId() + "")
-							.param("qasId", qasList.get(0).getKey().getId() + "")
-							.param("delta",1 + ""));
-				}		
-			}
-		} else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
-				.equals(importReq.getAction())) {
-			SurveyInstance instance = instanceDao.getByKey(importReq
-					.getSurveyInstanceId());
-			List<QuestionAnswerStore> oldAnswers = instanceDao
-					.listQuestionAnswerStore(importReq.getSurveyInstanceId(),
-							null);
-			if (oldAnswers != null && oldAnswers.size() > 0) {
-				instanceDao.delete(oldAnswers);
-				if (instance != null) {
-					instance.setLastUpdateDateTime(new Date());
-					if (importReq.getSubmitter() != null
-							&& importReq.getSubmitter().trim().length() > 0
-							&& !"null".equalsIgnoreCase(importReq
-									.getSubmitter().trim())) {
-						instance.setSubmitterName(importReq.getSubmitter());
-					}
-					instance.setSurveyId(importReq.getSurveyId());
-					if (importReq.getSurveyDuration() != null) {
-						instance.setSurveyalTime(importReq.getSurveyDuration());
-					}
-					instanceDao.save(instance);
-				}
-			} else {
-				if (instance == null) {
-					instance = new SurveyInstance();
-					instance.setKey(KeyFactory.createKey(
-							SurveyInstance.class.getSimpleName(),
-							importReq.getSurveyInstanceId()));
-					instance.setSurveyId(importReq.getSurveyId());
-					instance.setCollectionDate(importReq.getCollectionDate());
-					instance.setSubmitterName(importReq.getSubmitter());
-					instance.setUserID(1L);
-					instance.setUuid(UUID.randomUUID().toString());
-					if (importReq.getSurveyDuration() != null) {
-						instance.setSurveyalTime(importReq.getSurveyDuration());
-					}
-					instanceDao.save(instance);
-				} else {
-					instance.setLastUpdateDateTime(new Date());
-					if (importReq.getSubmitter() != null
-							&& importReq.getSubmitter().trim().length() > 0
-							&& !"null".equalsIgnoreCase(importReq
-									.getSubmitter().trim())) {
-						instance.setSubmitterName(importReq.getSubmitter());
-					}
-					instance.setSurveyId(importReq.getSurveyId());
-					if (importReq.getSurveyDuration() != null) {
-						instance.setSurveyalTime(importReq.getSurveyDuration());
-					}
-					instanceDao.save(instance);
-				}
-			}
-		} else if (RawDataImportRequest.SAVE_FIXED_FIELD_SURVEY_INSTANCE_ACTION
-				.equals(importReq.getAction())) {
+            for (Map.Entry<Long, String[]> item : importReq
+                    .getQuestionAnswerMap().entrySet()) {
+                QuestionAnswerStoreDto qasDto = new QuestionAnswerStoreDto();
+                qasDto.setQuestionID(item.getKey().toString());
+                qasDto.setSurveyInstanceId(importReq.getSurveyInstanceId());
+                qasDto.setValue(item.getValue()[0]);
+                qasDto.setType(item.getValue()[1]);
+                qasDto.setSurveyId(importReq.getSurveyId());
+                qasDto.setCollectionDate(importReq.getCollectionDate());
+                dtoList.add(qasDto);
+            }
 
-			if (importReq.getFixedFieldValues() != null
-					&& importReq.getFixedFieldValues().size() > 0) {
-				// this method assumes we're always creating a new instance
-				SurveyInstance inst = createInstance(importReq);
-				QuestionDao questionDao = new QuestionDao();
-				List<Question> questionList = questionDao
-						.listQuestionsBySurvey(importReq.getSurveyId());
+            sisi.updateQuestions(dtoList, true, false);
 
-				if (questionList != null
-						&& questionList.size() >= importReq
-								.getFixedFieldValues().size()) {
-					List<QuestionAnswerStore> answers = new ArrayList<QuestionAnswerStore>();
-					for (int i = 0; i < importReq.getFixedFieldValues().size(); i++) {
-						String val = importReq.getFixedFieldValues().get(i);
-						if (val != null && val.trim().length() > 0) {
-							QuestionAnswerStore ans = new QuestionAnswerStore();
-							ans.setQuestionID(questionList.get(i).getKey()
-									.getId()
-									+ "");
-							ans.setValue(val);
-							Type type = questionList.get(i).getType();
-							if (Type.GEO == type) {
-								ans.setType(QuestionType.GEO.toString());
-							} else if (Type.PHOTO == type) {
-								ans.setType("IMAGE");
-							} else {
-								ans.setType("VALUE");
-							}
-							ans.setSurveyId(importReq.getSurveyId());
-							ans.setSurveyInstanceId(importReq
-									.getSurveyInstanceId());
-							ans.setCollectionDate(importReq.getCollectionDate());
-							answers.add(ans);
-						}
-					}
-					if (answers.size() > 0) {
-						QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-						qasDao.save(answers);
-						sisi.sendProcessingMessages(inst);
-					}
+            if (isNew) {
+                SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+                List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStoreByType(new Long(
+                        importReq.getSurveyInstanceId()), "GEO");
+                if (qasList != null && qasList.size() > 0) {
+                    Queue summQueue = QueueFactory.getQueue("dataSummarization");
+                    summQueue.add(TaskOptions.Builder
+                            .withUrl("/app_worker/dataprocessor")
+                            .param(
+                                    DataProcessorRequest.ACTION_PARAM,
+                                    DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
+                            .param("surveyInstanceId", importReq.getSurveyInstanceId() + "")
+                            .param("qasId", qasList.get(0).getKey().getId() + "")
+                            .param("delta", 1 + ""));
+                }
+            }
+        } else if (RawDataImportRequest.RESET_SURVEY_INSTANCE_ACTION
+                .equals(importReq.getAction())) {
+            SurveyInstance instance = instanceDao.getByKey(importReq
+                    .getSurveyInstanceId());
+            List<QuestionAnswerStore> oldAnswers = instanceDao
+                    .listQuestionAnswerStore(importReq.getSurveyInstanceId(),
+                            null);
+            if (oldAnswers != null && oldAnswers.size() > 0) {
+                instanceDao.delete(oldAnswers);
+                if (instance != null) {
+                    instance.setLastUpdateDateTime(new Date());
+                    if (importReq.getSubmitter() != null
+                            && importReq.getSubmitter().trim().length() > 0
+                            && !"null".equalsIgnoreCase(importReq
+                                    .getSubmitter().trim())) {
+                        instance.setSubmitterName(importReq.getSubmitter());
+                    }
+                    instance.setSurveyId(importReq.getSurveyId());
+                    if (importReq.getSurveyDuration() != null) {
+                        instance.setSurveyalTime(importReq.getSurveyDuration());
+                    }
+                    instanceDao.save(instance);
+                }
+            } else {
+                if (instance == null) {
+                    instance = new SurveyInstance();
+                    instance.setKey(KeyFactory.createKey(
+                            SurveyInstance.class.getSimpleName(),
+                            importReq.getSurveyInstanceId()));
+                    instance.setSurveyId(importReq.getSurveyId());
+                    instance.setCollectionDate(importReq.getCollectionDate());
+                    instance.setSubmitterName(importReq.getSubmitter());
+                    instance.setUserID(1L);
+                    instance.setUuid(UUID.randomUUID().toString());
+                    if (importReq.getSurveyDuration() != null) {
+                        instance.setSurveyalTime(importReq.getSurveyDuration());
+                    }
+                    instanceDao.save(instance);
+                } else {
+                    instance.setLastUpdateDateTime(new Date());
+                    if (importReq.getSubmitter() != null
+                            && importReq.getSubmitter().trim().length() > 0
+                            && !"null".equalsIgnoreCase(importReq
+                                    .getSubmitter().trim())) {
+                        instance.setSubmitterName(importReq.getSubmitter());
+                    }
+                    instance.setSurveyId(importReq.getSurveyId());
+                    if (importReq.getSurveyDuration() != null) {
+                        instance.setSurveyalTime(importReq.getSurveyDuration());
+                    }
+                    instanceDao.save(instance);
+                }
+            }
+        } else if (RawDataImportRequest.SAVE_FIXED_FIELD_SURVEY_INSTANCE_ACTION
+                .equals(importReq.getAction())) {
 
-				} else {
-					log("No questions found for the survey id "
-							+ importReq.getSurveyId());
-				}
-				// todo: send processing message
-			}
-		} else if (RawDataImportRequest.UPDATE_SUMMARIES_ACTION
-				.equalsIgnoreCase(importReq.getAction())) {
-			// first rebuild the summaries
-			log.log(Level.INFO, "Rebuilding summaries for surveyId " + importReq.getSurveyId().toString());
-			TaskOptions options = TaskOptions.Builder.withUrl(
-					"/app_worker/dataprocessor").param(
-					DataProcessorRequest.ACTION_PARAM,
-					DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION);
-			String backendPub = PropertyUtil.getProperty("backendpublish");
-			if (backendPub != null && "true".equals(backendPub)) {
-				// change the host so the queue invokes the backend
-				options = options
-						.header("Host",
-								BackendServiceFactory.getBackendService()
-										.getBackendAddress("dataprocessor"));
-			}
-			Long surveyId = importReq.getSurveyId();
-			if (surveyId != null && surveyId > 0) {
-				options.param(DataProcessorRequest.SURVEY_ID_PARAM,
-						surveyId.toString());
-			}
+            if (importReq.getFixedFieldValues() != null
+                    && importReq.getFixedFieldValues().size() > 0) {
+                // this method assumes we're always creating a new instance
+                SurveyInstance inst = createInstance(importReq);
+                QuestionDao questionDao = new QuestionDao();
+                List<Question> questionList = questionDao
+                        .listQuestionsBySurvey(importReq.getSurveyId());
 
-			com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
-					.getDefaultQueue();
-			queue.add(options);
+                if (questionList != null
+                        && questionList.size() >= importReq
+                                .getFixedFieldValues().size()) {
+                    List<QuestionAnswerStore> answers = new ArrayList<QuestionAnswerStore>();
+                    for (int i = 0; i < importReq.getFixedFieldValues().size(); i++) {
+                        String val = importReq.getFixedFieldValues().get(i);
+                        if (val != null && val.trim().length() > 0) {
+                            QuestionAnswerStore ans = new QuestionAnswerStore();
+                            ans.setQuestionID(questionList.get(i).getKey()
+                                    .getId()
+                                    + "");
+                            ans.setValue(val);
+                            Type type = questionList.get(i).getType();
+                            if (Type.GEO == type) {
+                                ans.setType(QuestionType.GEO.toString());
+                            } else if (Type.PHOTO == type) {
+                                ans.setType("IMAGE");
+                            } else {
+                                ans.setType("VALUE");
+                            }
+                            ans.setSurveyId(importReq.getSurveyId());
+                            ans.setSurveyInstanceId(importReq
+                                    .getSurveyInstanceId());
+                            ans.setCollectionDate(importReq.getCollectionDate());
+                            answers.add(ans);
+                        }
+                    }
+                    if (answers.size() > 0) {
+                        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+                        qasDao.save(answers);
+                        sisi.sendProcessingMessages(inst);
+                    }
 
-			// now remap to access point
-			if (surveyId != null) {
-				SurveyServiceImpl ssi = new SurveyServiceImpl();
-				ssi.rerunAPMappings(surveyId);
-			}
-		} else if (RawDataImportRequest.SAVE_MESSAGE_ACTION
-				.equalsIgnoreCase(importReq.getAction())) {
+                } else {
+                    log("No questions found for the survey id "
+                            + importReq.getSurveyId());
+                }
+                // todo: send processing message
+            }
+        } else if (RawDataImportRequest.UPDATE_SUMMARIES_ACTION
+                .equalsIgnoreCase(importReq.getAction())) {
+            // first rebuild the summaries
+            log.log(Level.INFO, "Rebuilding summaries for surveyId "
+                    + importReq.getSurveyId().toString());
+            TaskOptions options = TaskOptions.Builder.withUrl(
+                    "/app_worker/dataprocessor").param(
+                    DataProcessorRequest.ACTION_PARAM,
+                    DataProcessorRequest.REBUILD_QUESTION_SUMMARY_ACTION);
+            String backendPub = PropertyUtil.getProperty("backendpublish");
+            if (backendPub != null && "true".equals(backendPub)) {
+                // change the host so the queue invokes the backend
+                options = options
+                        .header("Host",
+                                BackendServiceFactory.getBackendService()
+                                        .getBackendAddress("dataprocessor"));
+            }
+            Long surveyId = importReq.getSurveyId();
+            if (surveyId != null && surveyId > 0) {
+                options.param(DataProcessorRequest.SURVEY_ID_PARAM,
+                        surveyId.toString());
+            }
 
-			List<Long> ids = new ArrayList<Long>();
-			ids.add(importReq.getSurveyId());
-			SurveyUtils.notifyReportService(ids, "invalidate");
+            com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
+                    .getDefaultQueue();
+            queue.add(options);
 
-			MessageDao mdao = new MessageDao();
-			Message msg = new Message();
-			SurveyDAO sdao = new SurveyDAO();
-			Survey s = sdao.getById(importReq.getSurveyId());
+            // now remap to access point
+            if (surveyId != null) {
+                SurveyServiceImpl ssi = new SurveyServiceImpl();
+                ssi.rerunAPMappings(surveyId);
+            }
+        } else if (RawDataImportRequest.SAVE_MESSAGE_ACTION
+                .equalsIgnoreCase(importReq.getAction())) {
 
-			msg.setShortMessage("Spreadsheet processed");
-			msg.setObjectId(importReq.getSurveyId());
-			msg.setObjectTitle(s.getPath() + "/" + s.getName());
-			msg.setActionAbout("spreadsheetProcessed");
-			mdao.save(msg);
+            List<Long> ids = new ArrayList<Long>();
+            ids.add(importReq.getSurveyId());
+            SurveyUtils.notifyReportService(ids, "invalidate");
 
-		}
-		return null;
-	}
+            MessageDao mdao = new MessageDao();
+            Message msg = new Message();
+            SurveyDAO sdao = new SurveyDAO();
+            Survey s = sdao.getById(importReq.getSurveyId());
 
-	/**
-	 * constructs and persists a new surveyInstance using the data from the
-	 * import request
-	 * 
-	 * @param importReq
-	 * @return
-	 */
-	private SurveyInstance createInstance(RawDataImportRequest importReq) {
-		SurveyInstance inst = new SurveyInstance();
-		inst.setUserID(1L);
-		inst.setSurveyId(importReq.getSurveyId());
-		inst.setCollectionDate(importReq.getCollectionDate() != null ? importReq
-				.getCollectionDate() : new Date());
-		inst.setApproximateLocationFlag("False");
-		inst.setDeviceIdentifier("IMPORTER");
-		inst.setUuid(UUID.randomUUID().toString());
-		inst.setSurveyedLocaleId(importReq.getSurveyedLocaleId());
-		inst.setUuid(UUID.randomUUID().toString());
-		SurveyInstanceDAO instDao = new SurveyInstanceDAO();
-		inst = instDao.save(inst);
-		// set the key so the subsequent logic can populate it in the
-		// QuestionAnswerStore objects
-		importReq.setSurveyInstanceId(inst.getKey().getId());
-		if (importReq.getCollectionDate() == null) {
-			importReq.setCollectionDate(inst.getCollectionDate());
-		}
-		return inst;
-	}
+            msg.setShortMessage("Spreadsheet processed");
+            msg.setObjectId(importReq.getSurveyId());
+            msg.setObjectTitle(s.getPath() + "/" + s.getName());
+            msg.setActionAbout("spreadsheetProcessed");
+            mdao.save(msg);
 
-	@Override
-	protected void writeOkResponse(RestResponse resp) throws Exception {
-		// no-op
+        }
+        return null;
+    }
 
-	}
+    /**
+     * constructs and persists a new surveyInstance using the data from the import request
+     * 
+     * @param importReq
+     * @return
+     */
+    private SurveyInstance createInstance(RawDataImportRequest importReq) {
+        SurveyInstance inst = new SurveyInstance();
+        inst.setUserID(1L);
+        inst.setSurveyId(importReq.getSurveyId());
+        inst.setCollectionDate(importReq.getCollectionDate() != null ? importReq
+                .getCollectionDate() : new Date());
+        inst.setApproximateLocationFlag("False");
+        inst.setDeviceIdentifier("IMPORTER");
+        inst.setUuid(UUID.randomUUID().toString());
+        inst.setSurveyedLocaleId(importReq.getSurveyedLocaleId());
+        inst.setUuid(UUID.randomUUID().toString());
+        SurveyInstanceDAO instDao = new SurveyInstanceDAO();
+        inst = instDao.save(inst);
+        // set the key so the subsequent logic can populate it in the
+        // QuestionAnswerStore objects
+        importReq.setSurveyInstanceId(inst.getKey().getId());
+        if (importReq.getCollectionDate() == null) {
+            importReq.setCollectionDate(inst.getCollectionDate());
+        }
+        return inst;
+    }
+
+    @Override
+    protected void writeOkResponse(RestResponse resp) throws Exception {
+        // no-op
+
+    }
 
 }

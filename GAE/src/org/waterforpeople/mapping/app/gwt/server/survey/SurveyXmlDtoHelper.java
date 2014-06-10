@@ -41,163 +41,162 @@ import com.gallatinsystems.survey.xml.SurveyXMLAdapter;
  * utility class to create partially populated dtos from the survey XML
  * 
  * @author Christopher Fagiani
- * 
  */
 public class SurveyXmlDtoHelper {
 
-	public static final String FREE_QUESTION_TYPE = "free";
-	public static final String OPTION_QUESTION_TYPE = "option";
-	public static final String GEO_QUESTION_TYPE = "geo";
-	public static final String VIDEO_QUESTION_TYPE = "video";
-	public static final String PHOTO_QUESTION_TYPE = "photo";
-	public static final String SCAN_QUESTION_TYPE = "scan";
-	public static final String STRENGTH_QUESTION_TYPE = "strength";
-	public static final String DATE_QUESTION_TYPE = "date";
+    public static final String FREE_QUESTION_TYPE = "free";
+    public static final String OPTION_QUESTION_TYPE = "option";
+    public static final String GEO_QUESTION_TYPE = "geo";
+    public static final String VIDEO_QUESTION_TYPE = "video";
+    public static final String PHOTO_QUESTION_TYPE = "photo";
+    public static final String SCAN_QUESTION_TYPE = "scan";
+    public static final String STRENGTH_QUESTION_TYPE = "strength";
+    public static final String DATE_QUESTION_TYPE = "date";
 
-	/**
-	 * parses the xml and then converts the xml objects to DTOs
-	 * 
-	 * @param content
-	 * @param surveyId
-	 * @return
-	 * @throws Exception
-	 */
-	public SurveyDto parseAsDtoGraph(String content, Long surveyId)
-			throws Exception {
-		SurveyXMLAdapter xmlAdapter = new SurveyXMLAdapter();
-		Survey survey = xmlAdapter.unmarshall(content);
-		SurveyDto dto = null;
-		if (survey != null) {
-			dto = new SurveyDto();
-			dto.setKeyId(surveyId);
+    /**
+     * parses the xml and then converts the xml objects to DTOs
+     * 
+     * @param content
+     * @param surveyId
+     * @return
+     * @throws Exception
+     */
+    public SurveyDto parseAsDtoGraph(String content, Long surveyId)
+            throws Exception {
+        SurveyXMLAdapter xmlAdapter = new SurveyXMLAdapter();
+        Survey survey = xmlAdapter.unmarshall(content);
+        SurveyDto dto = null;
+        if (survey != null) {
+            dto = new SurveyDto();
+            dto.setKeyId(surveyId);
 
-			List<QuestionGroupDto> groupList = new ArrayList<QuestionGroupDto>();
-			int count = 0;
-			for (com.gallatinsystems.survey.domain.xml.QuestionGroup qg : survey
-					.getQuestionGroup()) {
-				QuestionGroupDto group = new QuestionGroupDto();
-				group.setSurveyId(dto.getKeyId());
-				group.setName(qg.getHeading() != null ? qg.getHeading()
-						.getContent() : "");
-				group.setCode(qg.getHeading() != null ? qg.getHeading()
-						.getContent() : "");
-				group.setOrder(qg.getOrder() != null ? Integer.parseInt(qg
-						.getOrder()) : count);
+            List<QuestionGroupDto> groupList = new ArrayList<QuestionGroupDto>();
+            int count = 0;
+            for (com.gallatinsystems.survey.domain.xml.QuestionGroup qg : survey
+                    .getQuestionGroup()) {
+                QuestionGroupDto group = new QuestionGroupDto();
+                group.setSurveyId(dto.getKeyId());
+                group.setName(qg.getHeading() != null ? qg.getHeading()
+                        .getContent() : "");
+                group.setCode(qg.getHeading() != null ? qg.getHeading()
+                        .getContent() : "");
+                group.setOrder(qg.getOrder() != null ? Integer.parseInt(qg
+                        .getOrder()) : count);
 
-				for (com.gallatinsystems.survey.domain.xml.Question q : qg
-						.getQuestion()) {
-					QuestionDto qDto = new QuestionDto();
-					if (q.getText() != null) {
-						qDto.setText(q.getText().getContent());
-					} else if (q.getAltText() != null
-							&& q.getAltText().size() > 0) {
-						qDto.setText(q.getAltText().get(0).getContent());
-					}
-					qDto.setKeyId(new Long(q.getId()));
-					qDto.setSurveyId(surveyId);
-					qDto.setMandatoryFlag(new Boolean(q.getMandatory()));
-					qDto.setOrder(new Integer(q.getOrder()));
-					String type = q.getType();
-					if (FREE_QUESTION_TYPE.equals(type)) {
-						qDto.setType(QuestionType.FREE_TEXT);
-					} else if (OPTION_QUESTION_TYPE.equals(type)) {
-						qDto.setType(QuestionType.OPTION);
-						OptionContainerDto optC = new OptionContainerDto();
-						if (q.getOptions() != null) {
-							optC.setAllowMultipleFlag(new Boolean(q
-									.getOptions().getAllowMultiple()));
-							optC.setAllowOtherFlag(new Boolean(q.getOptions()
-									.getAllowOther()));
+                for (com.gallatinsystems.survey.domain.xml.Question q : qg
+                        .getQuestion()) {
+                    QuestionDto qDto = new QuestionDto();
+                    if (q.getText() != null) {
+                        qDto.setText(q.getText().getContent());
+                    } else if (q.getAltText() != null
+                            && q.getAltText().size() > 0) {
+                        qDto.setText(q.getAltText().get(0).getContent());
+                    }
+                    qDto.setKeyId(new Long(q.getId()));
+                    qDto.setSurveyId(surveyId);
+                    qDto.setMandatoryFlag(new Boolean(q.getMandatory()));
+                    qDto.setOrder(new Integer(q.getOrder()));
+                    String type = q.getType();
+                    if (FREE_QUESTION_TYPE.equals(type)) {
+                        qDto.setType(QuestionType.FREE_TEXT);
+                    } else if (OPTION_QUESTION_TYPE.equals(type)) {
+                        qDto.setType(QuestionType.OPTION);
+                        OptionContainerDto optC = new OptionContainerDto();
+                        if (q.getOptions() != null) {
+                            optC.setAllowMultipleFlag(new Boolean(q
+                                    .getOptions().getAllowMultiple()));
+                            optC.setAllowOtherFlag(new Boolean(q.getOptions()
+                                    .getAllowOther()));
 
-							// set the values on the question (for backward
-							// compatibility)
-							qDto.setAllowMultipleFlag(optC
-									.getAllowMultipleFlag());
-							qDto.setAllowOtherFlag(optC.getAllowOtherFlag());
+                            // set the values on the question (for backward
+                            // compatibility)
+                            qDto.setAllowMultipleFlag(optC
+                                    .getAllowMultipleFlag());
+                            qDto.setAllowOtherFlag(optC.getAllowOtherFlag());
 
-							for (Option option : q.getOptions().getOption()) {
-								QuestionOptionDto opt = new QuestionOptionDto();
-								List<Object> contentList = option.getContent();
+                            for (Option option : q.getOptions().getOption()) {
+                                QuestionOptionDto opt = new QuestionOptionDto();
+                                List<Object> contentList = option.getContent();
 
-								for (Object o : contentList) {
-									if (o instanceof Text) {
-										opt.setText(((Text) o).getContent());
-									} else if (o instanceof String) {
-										if (opt.getText() == null
-												|| opt.getText().trim()
-														.length() == 0) {
-											opt.setText((String) o);
-										}
-									} else if (o instanceof AltText) {
-										opt
-												.addTranslation(parseTranslation((AltText) o));
-									}
-								}
-								optC.addQuestionOption(opt);
-							}
-						}
-						qDto.setOptionContainerDto(optC);
-					} else if (GEO_QUESTION_TYPE.equals(type)) {
-						qDto.setType(QuestionType.GEO);
-					} else if (VIDEO_QUESTION_TYPE.equals(type)) {
-						qDto.setType(QuestionType.VIDEO);
-					} else if (PHOTO_QUESTION_TYPE.equals(type)) {
-						qDto.setType(QuestionType.PHOTO);
-					} else if (SCAN_QUESTION_TYPE.equals(type)) {
-						qDto.setType(QuestionType.SCAN);
-					} else if (STRENGTH_QUESTION_TYPE.equals(type)) {
-						qDto.setType(QuestionType.STRENGTH);
-					}else if (DATE_QUESTION_TYPE.equals(type)){
-						qDto.setType(QuestionType.DATE);
-					}
-					for (AltText alt : q.getAltText()) {
-						qDto.addTranslation(parseTranslation(alt));
-					}
-					if (q.getHelp() != null) {
-						for (Help h : q.getHelp()) {
-							QuestionHelpDto hDto = new QuestionHelpDto();
-							if (h.getType() == null
-									|| h.getType().trim().length() == 0
-									|| "tip".equalsIgnoreCase(h.getType())) {
-								hDto.setType(Type.TEXT);
-							} else {
-								hDto.setType(Type.valueOf(h.getType()
-										.toUpperCase()));
-							}
-							hDto.setResourceUrl(h.getValue());
-							hDto.setText(hDto.getText());
-							if (h.getAltText() != null) {
-								for (AltText alt : h.getAltText()) {
-									hDto.addTranslation(parseTranslation(alt));
-								}
-							}
-							qDto.addQuestionHelp(hDto);
-						}
-					}
-					if (q.getDependency() != null) {
-						QuestionDependencyDto depDto = new QuestionDependencyDto();
-						depDto.setAnswerValue(q.getDependency()
-								.getAnswerValue());
-						depDto.setQuestionId(new Long(q.getDependency()
-								.getQuestion()));
-						qDto.setQuestionDependency(depDto);
-					}
+                                for (Object o : contentList) {
+                                    if (o instanceof Text) {
+                                        opt.setText(((Text) o).getContent());
+                                    } else if (o instanceof String) {
+                                        if (opt.getText() == null
+                                                || opt.getText().trim()
+                                                        .length() == 0) {
+                                            opt.setText((String) o);
+                                        }
+                                    } else if (o instanceof AltText) {
+                                        opt
+                                                .addTranslation(parseTranslation((AltText) o));
+                                    }
+                                }
+                                optC.addQuestionOption(opt);
+                            }
+                        }
+                        qDto.setOptionContainerDto(optC);
+                    } else if (GEO_QUESTION_TYPE.equals(type)) {
+                        qDto.setType(QuestionType.GEO);
+                    } else if (VIDEO_QUESTION_TYPE.equals(type)) {
+                        qDto.setType(QuestionType.VIDEO);
+                    } else if (PHOTO_QUESTION_TYPE.equals(type)) {
+                        qDto.setType(QuestionType.PHOTO);
+                    } else if (SCAN_QUESTION_TYPE.equals(type)) {
+                        qDto.setType(QuestionType.SCAN);
+                    } else if (STRENGTH_QUESTION_TYPE.equals(type)) {
+                        qDto.setType(QuestionType.STRENGTH);
+                    } else if (DATE_QUESTION_TYPE.equals(type)) {
+                        qDto.setType(QuestionType.DATE);
+                    }
+                    for (AltText alt : q.getAltText()) {
+                        qDto.addTranslation(parseTranslation(alt));
+                    }
+                    if (q.getHelp() != null) {
+                        for (Help h : q.getHelp()) {
+                            QuestionHelpDto hDto = new QuestionHelpDto();
+                            if (h.getType() == null
+                                    || h.getType().trim().length() == 0
+                                    || "tip".equalsIgnoreCase(h.getType())) {
+                                hDto.setType(Type.TEXT);
+                            } else {
+                                hDto.setType(Type.valueOf(h.getType()
+                                        .toUpperCase()));
+                            }
+                            hDto.setResourceUrl(h.getValue());
+                            hDto.setText(hDto.getText());
+                            if (h.getAltText() != null) {
+                                for (AltText alt : h.getAltText()) {
+                                    hDto.addTranslation(parseTranslation(alt));
+                                }
+                            }
+                            qDto.addQuestionHelp(hDto);
+                        }
+                    }
+                    if (q.getDependency() != null) {
+                        QuestionDependencyDto depDto = new QuestionDependencyDto();
+                        depDto.setAnswerValue(q.getDependency()
+                                .getAnswerValue());
+                        depDto.setQuestionId(new Long(q.getDependency()
+                                .getQuestion()));
+                        qDto.setQuestionDependency(depDto);
+                    }
 
-					group.addQuestion(qDto, qDto.getOrder());
-				}
+                    group.addQuestion(qDto, qDto.getOrder());
+                }
 
-				groupList.add(group);
-				count++;
-			}
-			dto.setQuestionGroupList(groupList);
-		}
-		return dto;
-	}
+                groupList.add(group);
+                count++;
+            }
+            dto.setQuestionGroupList(groupList);
+        }
+        return dto;
+    }
 
-	private TranslationDto parseTranslation(AltText alt) {
-		TranslationDto t = new TranslationDto();
-		t.setLangCode(alt.getLanguage());
-		t.setText(alt.getContent());
-		return t;
-	}
+    private TranslationDto parseTranslation(AltText alt) {
+        TranslationDto t = new TranslationDto();
+        t.setLangCode(alt.getLanguage());
+        t.setText(alt.getContent());
+        return t;
+    }
 }

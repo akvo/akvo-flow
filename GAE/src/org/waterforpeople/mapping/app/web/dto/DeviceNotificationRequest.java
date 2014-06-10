@@ -16,15 +16,13 @@
 
 package org.waterforpeople.mapping.app.web.dto;
 
-
-
 public class DeviceNotificationRequest extends LocationBeaconRequest {
 
-	private static final long serialVersionUID = 287773188257035166L;
+    private static final long serialVersionUID = 287773188257035166L;
 
-	@Override
-	protected void populateErrors() {
-		// intentionally overriding LocationBeaconRequest checks
-	}
+    @Override
+    protected void populateErrors() {
+        // intentionally overriding LocationBeaconRequest checks
+    }
 
 }

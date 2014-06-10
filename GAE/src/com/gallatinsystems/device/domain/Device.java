@@ -24,177 +24,174 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * 
- * domain object representing handheld devices capable of running the survey
- * application.
- * 
+ * domain object representing handheld devices capable of running the survey application.
  */
 @PersistenceCapable
 public class Device extends BaseDomain {
 
-	private static final long serialVersionUID = 4894680591207166295L;
-	public static final String NO_IMEI = "NO_IMEI";
+    private static final long serialVersionUID = 4894680591207166295L;
+    public static final String NO_IMEI = "NO_IMEI";
 
-	private DeviceType deviceType;
-	private String phoneNumber;
-	private String esn;
-	private String deviceIdentifier;
-	private Date inServiceDate;
-	private Date outServiceDate;
-	private Date lastUpdate;
-	private String osVersion;
-	private String gallatinSoftwareManifest;
-	private Double lastKnownLat;
-	private Double lastKnownLon;
-	private Double lastKnownAccuracy;
-	private Date lastLocationBeaconTime;
-	private String deviceGroup;
+    private DeviceType deviceType;
+    private String phoneNumber;
+    private String esn;
+    private String deviceIdentifier;
+    private Date inServiceDate;
+    private Date outServiceDate;
+    private Date lastUpdate;
+    private String osVersion;
+    private String gallatinSoftwareManifest;
+    private Double lastKnownLat;
+    private Double lastKnownLon;
+    private Double lastKnownAccuracy;
+    private Date lastLocationBeaconTime;
+    private String deviceGroup;
 
-	public String getDeviceIdentifier() {
-		return deviceIdentifier;
-	}
+    public String getDeviceIdentifier() {
+        return deviceIdentifier;
+    }
 
-	public void setDeviceIdentifier(String deviceIdentifier) {
-		this.deviceIdentifier = deviceIdentifier;
-	}
+    public void setDeviceIdentifier(String deviceIdentifier) {
+        this.deviceIdentifier = deviceIdentifier;
+    }
 
-	public String getDeviceGroup() {
-		return deviceGroup;
-	}
+    public String getDeviceGroup() {
+        return deviceGroup;
+    }
 
-	public void setDeviceGroup(String deviceGroup) {
-		this.deviceGroup = deviceGroup;
-	}
+    public void setDeviceGroup(String deviceGroup) {
+        this.deviceGroup = deviceGroup;
+    }
 
-	public Double getLastKnownLat() {
-		return lastKnownLat;
-	}
+    public Double getLastKnownLat() {
+        return lastKnownLat;
+    }
 
-	public void setLastKnownLat(Double lastKnownLat) {
-		this.lastKnownLat = lastKnownLat;
-	}
+    public void setLastKnownLat(Double lastKnownLat) {
+        this.lastKnownLat = lastKnownLat;
+    }
 
-	public Double getLastKnownLon() {
-		return lastKnownLon;
-	}
+    public Double getLastKnownLon() {
+        return lastKnownLon;
+    }
 
-	public void setLastKnownLon(Double lastKnownLon) {
-		this.lastKnownLon = lastKnownLon;
-	}
+    public void setLastKnownLon(Double lastKnownLon) {
+        this.lastKnownLon = lastKnownLon;
+    }
 
-	public Double getLastKnownAccuracy() {
-		return lastKnownAccuracy;
-	}
+    public Double getLastKnownAccuracy() {
+        return lastKnownAccuracy;
+    }
 
-	public void setLastKnownAccuracy(Double lastKnownAccuracy) {
-		this.lastKnownAccuracy = lastKnownAccuracy;
-	}
+    public void setLastKnownAccuracy(Double lastKnownAccuracy) {
+        this.lastKnownAccuracy = lastKnownAccuracy;
+    }
 
-	public Date getLastLocationBeaconTime() {
-		return lastLocationBeaconTime;
-	}
+    public Date getLastLocationBeaconTime() {
+        return lastLocationBeaconTime;
+    }
 
-	public void setLastLocationBeaconTime(Date lastLocationBeaconTime) {
-		this.lastLocationBeaconTime = lastLocationBeaconTime;
-	}
+    public void setLastLocationBeaconTime(Date lastLocationBeaconTime) {
+        this.lastLocationBeaconTime = lastLocationBeaconTime;
+    }
 
-	public enum DeviceType {
-		CELL_PHONE_ANDROID, TABLET_ANDROID, TABLET_PHONE_ANDROID
-	}
+    public enum DeviceType {
+        CELL_PHONE_ANDROID, TABLET_ANDROID, TABLET_PHONE_ANDROID
+    }
 
-	public DeviceType getDeviceType() {
-		return deviceType;
-	}
+    public DeviceType getDeviceType() {
+        return deviceType;
+    }
 
-	public void setDeviceType(DeviceType deviceType) {
-		this.deviceType = deviceType;
-	}
+    public void setDeviceType(DeviceType deviceType) {
+        this.deviceType = deviceType;
+    }
 
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-	public String getEsn() {
-		return esn;
-	}
+    public String getEsn() {
+        return esn;
+    }
 
-	public void setEsn(String esn) {
-		this.esn = esn;
-	}
+    public void setEsn(String esn) {
+        this.esn = esn;
+    }
 
-	public Date getInServiceDate() {
-		return inServiceDate;
-	}
+    public Date getInServiceDate() {
+        return inServiceDate;
+    }
 
-	public void setInServiceDate(Date inServiceDate) {
-		this.inServiceDate = inServiceDate;
-	}
+    public void setInServiceDate(Date inServiceDate) {
+        this.inServiceDate = inServiceDate;
+    }
 
-	public Date getOutServiceDate() {
-		return outServiceDate;
-	}
+    public Date getOutServiceDate() {
+        return outServiceDate;
+    }
 
-	public void setOutServiceDate(Date outServiceDate) {
-		this.outServiceDate = outServiceDate;
-	}
+    public void setOutServiceDate(Date outServiceDate) {
+        this.outServiceDate = outServiceDate;
+    }
 
-	public Date getLastUpdate() {
-		return lastUpdate;
-	}
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
 
-	public void setLastUpdate(Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
-	}
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
 
-	public String getOsVersion() {
-		return osVersion;
-	}
+    public String getOsVersion() {
+        return osVersion;
+    }
 
-	public void setOsVersion(String osVersion) {
-		this.osVersion = osVersion;
-	}
+    public void setOsVersion(String osVersion) {
+        this.osVersion = osVersion;
+    }
 
-	public String getGallatinSoftwareManifest() {
-		return gallatinSoftwareManifest;
-	}
+    public String getGallatinSoftwareManifest() {
+        return gallatinSoftwareManifest;
+    }
 
-	public void setGallatinSoftwareManifest(String gallatinSoftwareManifest) {
-		this.gallatinSoftwareManifest = gallatinSoftwareManifest;
-	}
+    public void setGallatinSoftwareManifest(String gallatinSoftwareManifest) {
+        this.gallatinSoftwareManifest = gallatinSoftwareManifest;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
 
-		result.append(this.getClass().getName());
-		result.append(" Object {");
-		result.append(newLine);
+        result.append(this.getClass().getName());
+        result.append(" Object {");
+        result.append(newLine);
 
-		// determine fields declared in this class only (no fields of
-		// superclass)
-		Field[] fields = this.getClass().getDeclaredFields();
+        // determine fields declared in this class only (no fields of
+        // superclass)
+        Field[] fields = this.getClass().getDeclaredFields();
 
-		// print field names paired with their values
-		for (Field field : fields) {
-			result.append("  ");
-			try {
-				result.append(field.getName());
-				result.append(": ");
-				// requires access to private field:
-				result.append(field.get(this));
-			} catch (IllegalAccessException ex) {
-				System.out.println(ex);
-			}
-			result.append(newLine);
-		}
-		result.append("}");
+        // print field names paired with their values
+        for (Field field : fields) {
+            result.append("  ");
+            try {
+                result.append(field.getName());
+                result.append(": ");
+                // requires access to private field:
+                result.append(field.get(this));
+            } catch (IllegalAccessException ex) {
+                System.out.println(ex);
+            }
+            result.append(newLine);
+        }
+        result.append("}");
 
-		return result.toString();
-	}
+        return result.toString();
+    }
 
 }

@@ -33,91 +33,87 @@ import org.apache.velocity.app.Velocity;
  * Utility for interacting with the Velocity engine.
  * 
  * @author Christopher Fagiani
- * 
  */
 public class VelocityUtil {
 
-	private static final Logger log = Logger.getLogger(VelocityUtil.class
-			.getName());
-	private static Cache templateCache;
+    private static final Logger log = Logger.getLogger(VelocityUtil.class
+            .getName());
+    private static Cache templateCache;
 
-	public static final String CACHE_KEY_PREFIX = "VELOCITY_TEMPLATE/";
+    public static final String CACHE_KEY_PREFIX = "VELOCITY_TEMPLATE/";
 
-	static {
-		Velocity.setProperty("runtime.log.logsystem.class",
-				"org.apache.velocity.runtime.log.NullLogChute");
-		try {
-			Velocity.init();
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not initialize velocity", e);
-		}
-		try {
-			templateCache = CacheManager.getInstance().getCacheFactory()
-					.createCache(Collections.EMPTY_MAP);
-		} catch (CacheException e) {
-			log.log(Level.SEVERE, "Could not initialize cache", e);
+    static {
+        Velocity.setProperty("runtime.log.logsystem.class",
+                "org.apache.velocity.runtime.log.NullLogChute");
+        try {
+            Velocity.init();
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Could not initialize velocity", e);
+        }
+        try {
+            templateCache = CacheManager.getInstance().getCacheFactory()
+                    .createCache(Collections.EMPTY_MAP);
+        } catch (CacheException e) {
+            log.log(Level.SEVERE, "Could not initialize cache", e);
 
-		}
-	}
+        }
+    }
 
-	/**
-	 * merges a hydrated context with a template identified by the templateName
-	 * passed in.
-	 * 
-	 * @param context
-	 * @param templaet
-	 * @return
-	 * @throws Exception
-	 */
-	public static String mergeContext(VelocityContext context,
-			String templateName) throws Exception {
-		return mergeContext(context, templateName, null);
-	}
+    /**
+     * merges a hydrated context with a template identified by the templateName passed in.
+     * 
+     * @param context
+     * @param templaet
+     * @return
+     * @throws Exception
+     */
+    public static String mergeContext(VelocityContext context,
+            String templateName) throws Exception {
+        return mergeContext(context, templateName, null);
+    }
 
-	/**
-	 * merges a hydrated context with a template identified by the template
-	 * name. The template will be resolved in the following order: the Cache
-	 * will be checked. If not found, the backingStore will be queried (if
-	 * backingStore is not null) then, if still not found, it will look for a
-	 * file with the name matching the template file.
-	 * 
-	 * @param context
-	 * @param templateName
-	 * @param backingStore
-	 * @return
-	 * @throws Exception
-	 */
-	public static String mergeContext(VelocityContext context,
-			String templateName, TemplateCacheBackingStore backingStore)
-			throws Exception {
-		String templateText = (String) templateCache.get(CACHE_KEY_PREFIX
-				+ templateName);
-		StringWriter writer = new StringWriter();
-		if (templateText == null && backingStore != null) {
-			templateText = backingStore.getByKey(templateName);
-			if (templateText != null) {
-				templateCache
-						.put(CACHE_KEY_PREFIX + templateName, templateText);
-			}
-		}
-		if (templateText == null) {
-			Template t = Velocity.getTemplate(templateName);
-			t.merge(context, writer);
-		} else {
-			Velocity.evaluate(context, writer, templateName, templateText);
-		}
-		return writer.toString();
-	}
+    /**
+     * merges a hydrated context with a template identified by the template name. The template will
+     * be resolved in the following order: the Cache will be checked. If not found, the backingStore
+     * will be queried (if backingStore is not null) then, if still not found, it will look for a
+     * file with the name matching the template file.
+     * 
+     * @param context
+     * @param templateName
+     * @param backingStore
+     * @return
+     * @throws Exception
+     */
+    public static String mergeContext(VelocityContext context,
+            String templateName, TemplateCacheBackingStore backingStore)
+            throws Exception {
+        String templateText = (String) templateCache.get(CACHE_KEY_PREFIX
+                + templateName);
+        StringWriter writer = new StringWriter();
+        if (templateText == null && backingStore != null) {
+            templateText = backingStore.getByKey(templateName);
+            if (templateText != null) {
+                templateCache
+                        .put(CACHE_KEY_PREFIX + templateName, templateText);
+            }
+        }
+        if (templateText == null) {
+            Template t = Velocity.getTemplate(templateName);
+            t.merge(context, writer);
+        } else {
+            Velocity.evaluate(context, writer, templateName, templateText);
+        }
+        return writer.toString();
+    }
 
-	/**
-	 * Implementors of this interface know how to look up the content identified
-	 * by the key passed in in the persistent store (to handle a cache miss).
-	 * 
-	 * @author Christopher Fagiani
-	 * 
-	 */
-	public interface TemplateCacheBackingStore {
-		public String getByKey(String key);
-	}
+    /**
+     * Implementors of this interface know how to look up the content identified by the key passed
+     * in in the persistent store (to handle a cache miss).
+     * 
+     * @author Christopher Fagiani
+     */
+    public interface TemplateCacheBackingStore {
+        public String getByKey(String key);
+    }
 
 }

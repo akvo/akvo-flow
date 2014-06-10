@@ -25,56 +25,54 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * a grouping of devices. 
- * 
- *
+ * a grouping of devices.
  */
 @PersistenceCapable
-public class DeviceGroup extends BaseDomain {  
+public class DeviceGroup extends BaseDomain {
 
-	private static final long serialVersionUID = 8941584684617286776L;
-	private String name = null;
-	private String code = null;
-	private String description = null;
-	@NotPersistent
-	private List<Device> deviceList = null;
+    private static final long serialVersionUID = 8941584684617286776L;
+    private String name = null;
+    private String code = null;
+    private String description = null;
+    @NotPersistent
+    private List<Device> deviceList = null;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public void setDeviceList(List<Device> deviceList) {
-		this.deviceList = deviceList;
-	}
+    public void setDeviceList(List<Device> deviceList) {
+        this.deviceList = deviceList;
+    }
 
-	public List<Device> getDeviceList() {
-		return deviceList;
-	}
+    public List<Device> getDeviceList() {
+        return deviceList;
+    }
 
-	public void addDevice(Device device) {
-		if (deviceList == null)
-			deviceList = new ArrayList<Device>();
-		deviceList.add(device);
-	}
+    public void addDevice(Device device) {
+        if (deviceList == null)
+            deviceList = new ArrayList<Device>();
+        deviceList.add(device);
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
 }

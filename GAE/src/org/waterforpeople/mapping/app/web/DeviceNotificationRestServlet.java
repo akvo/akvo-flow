@@ -35,84 +35,84 @@ import com.gallatinsystems.framework.rest.RestResponse;
 
 public class DeviceNotificationRestServlet extends AbstractRestApiServlet {
 
-	private static final long serialVersionUID = -2243167279214074216L;
+    private static final long serialVersionUID = -2243167279214074216L;
 
-	public DeviceNotificationRestServlet() {
-		super();
-		setMode(JSON_MODE);
-	}
+    public DeviceNotificationRestServlet() {
+        super();
+        setMode(JSON_MODE);
+    }
 
-	@Override
-	protected RestRequest convertRequest() throws Exception {
-		HttpServletRequest req = getRequest();
-		RestRequest restRequest = new DeviceNotificationRequest();
-		restRequest.populateFromHttpRequest(req);
-		return restRequest;
-	}
+    @Override
+    protected RestRequest convertRequest() throws Exception {
+        HttpServletRequest req = getRequest();
+        RestRequest restRequest = new DeviceNotificationRequest();
+        restRequest.populateFromHttpRequest(req);
+        return restRequest;
+    }
 
-	@Override
-	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		DeviceNotificationRequest dnReq = (DeviceNotificationRequest) req;
-		DeviceNotificationResponse resp = new DeviceNotificationResponse();
-		Device d = getDevice(dnReq);
+    @Override
+    protected RestResponse handleRequest(RestRequest req) throws Exception {
+        DeviceNotificationRequest dnReq = (DeviceNotificationRequest) req;
+        DeviceNotificationResponse resp = new DeviceNotificationResponse();
+        Device d = getDevice(dnReq);
 
-		if (d == null) {
-			return resp;
-		}
+        if (d == null) {
+            return resp;
+        }
 
-		DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
+        DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
 
-		List<DeviceFileJobQueue> missingByDevice = jobDao.listByDeviceId(d
-				.getKey().getId());
-		List<DeviceFileJobQueue> missingUnknown = jobDao.listByUnknownDevice();
+        List<DeviceFileJobQueue> missingByDevice = jobDao.listByDeviceId(d
+                .getKey().getId());
+        List<DeviceFileJobQueue> missingUnknown = jobDao.listByUnknownDevice();
 
-		resp.setMissingFiles(missingByDevice);
-		resp.setMissingUnknown(missingUnknown);
+        resp.setMissingFiles(missingByDevice);
+        resp.setMissingUnknown(missingUnknown);
 
-		return resp;
-	}
+        return resp;
+    }
 
-	@Override
-	protected void writeOkResponse(RestResponse resp) throws Exception {
-		getResponse().setStatus(200);
-		DeviceNotificationResponse r = (DeviceNotificationResponse) resp;
+    @Override
+    protected void writeOkResponse(RestResponse resp) throws Exception {
+        getResponse().setStatus(200);
+        DeviceNotificationResponse r = (DeviceNotificationResponse) resp;
 
-		// manually building the JSON response as the current version of the
-		// JSON library can't handle the resp object
+        // manually building the JSON response as the current version of the
+        // JSON library can't handle the resp object
 
-		JSONObject json = new JSONObject();
-		JSONArray missingFiles = new JSONArray();
-		JSONArray missingUnknown = new JSONArray();
+        JSONObject json = new JSONObject();
+        JSONArray missingFiles = new JSONArray();
+        JSONArray missingUnknown = new JSONArray();
 
-		for (String mf : r.getMissingFiles()) {
-			missingFiles.put(mf);
-		}
+        for (String mf : r.getMissingFiles()) {
+            missingFiles.put(mf);
+        }
 
-		for (String mu : r.getMissingUnknown()) {
-			missingUnknown.put(mu);
-		}
+        for (String mu : r.getMissingUnknown()) {
+            missingUnknown.put(mu);
+        }
 
-		json.put("missingFiles", missingFiles);
-		json.put("missingUnknown", missingUnknown);
+        json.put("missingFiles", missingFiles);
+        json.put("missingUnknown", missingUnknown);
 
-		getResponse().getWriter().println(json.toString());
-	}
+        getResponse().getWriter().println(json.toString());
+    }
 
-	private Device getDevice(DeviceNotificationRequest req) {
-		DeviceDAO deviceDao = new DeviceDAO();
+    private Device getDevice(DeviceNotificationRequest req) {
+        DeviceDAO deviceDao = new DeviceDAO();
 
-		if (req.getImei() != null) {
-			Device d = deviceDao.getByImei(req.getImei().trim());
-			if (d != null) {
-				return d;
-			}
-		}
+        if (req.getImei() != null) {
+            Device d = deviceDao.getByImei(req.getImei().trim());
+            if (d != null) {
+                return d;
+            }
+        }
 
-		if (req.getPhoneNumber() != null) {
-			return deviceDao.get(req.getPhoneNumber().trim());
-		}
+        if (req.getPhoneNumber() != null) {
+            return deviceDao.get(req.getPhoneNumber().trim());
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 }

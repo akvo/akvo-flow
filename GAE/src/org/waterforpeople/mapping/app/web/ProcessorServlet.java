@@ -16,8 +16,6 @@
 
 package org.waterforpeople.mapping.app.web;
 
-
-
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -35,75 +33,77 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 /**
- *
- * Servlet used by app to trigger processing of new survey data
- * TODO: move parameter name strings into constants
+ * Servlet used by app to trigger processing of new survey data TODO: move parameter name strings
+ * into constants
  */
 public class ProcessorServlet extends HttpServlet {
 
-	private static final long serialVersionUID = -7062679258542909086L;
-	private static final Logger log = Logger.getLogger(ProcessorServlet.class
-			.getName());
+    private static final long serialVersionUID = -7062679258542909086L;
+    private static final Logger log = Logger.getLogger(ProcessorServlet.class
+            .getName());
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-		String action = req.getParameter("action");
-		String fileName = req.getParameter("fileName");
-		if (action != null) {
-			log.info("	ProcessorServlet->action->" + action);
-			log.info("  ProcessorServlet->filename->" + fileName);
-			if (action.equals("submit")) {
-				if (fileName != null) {
-					String phoneNumber = req.getParameter("phoneNumber");
-					String imei = req.getParameter("imei");
-					String checksum = req.getParameter("checksum");
-					if (checksum == null) {
-						checksum = "null";
-					}
-					if (phoneNumber == null) {
-						phoneNumber = "null";
-					}
-					if (imei == null) {
-						imei = "null";
-					}
-					log.info("about to submit task for fileName: " + fileName);
-					// Submit the fileName for processing
-					Queue queue = QueueFactory.getDefaultQueue();
+    public void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        String action = req.getParameter("action");
+        String fileName = req.getParameter("fileName");
+        if (action != null) {
+            log.info("	ProcessorServlet->action->" + action);
+            log.info("  ProcessorServlet->filename->" + fileName);
+            if (action.equals("submit")) {
+                if (fileName != null) {
+                    String phoneNumber = req.getParameter("phoneNumber");
+                    String imei = req.getParameter("imei");
+                    String checksum = req.getParameter("checksum");
+                    if (checksum == null) {
+                        checksum = "null";
+                    }
+                    if (phoneNumber == null) {
+                        phoneNumber = "null";
+                    }
+                    if (imei == null) {
+                        imei = "null";
+                    }
+                    log.info("about to submit task for fileName: " + fileName);
+                    // Submit the fileName for processing
+                    Queue queue = QueueFactory.getDefaultQueue();
 
-					queue.add(TaskOptions.Builder.withUrl("/app_worker/task").param("action", "processFile").param("fileName", fileName).param("phoneNumber", phoneNumber).param("checksum", checksum).param("imei", imei));
-					log.info("submiting task for fileName: " + fileName);
-				}
-			} else if (action.equals("image")) {
-				String imei = req.getParameter("imei");
-				String phoneNumber = req.getParameter("phoneNumber");
+                    queue.add(TaskOptions.Builder.withUrl("/app_worker/task")
+                            .param("action", "processFile").param("fileName", fileName)
+                            .param("phoneNumber", phoneNumber).param("checksum", checksum)
+                            .param("imei", imei));
+                    log.info("submiting task for fileName: " + fileName);
+                }
+            } else if (action.equals("image")) {
+                String imei = req.getParameter("imei");
+                String phoneNumber = req.getParameter("phoneNumber");
 
-				Device d = null;
-				DeviceDAO dao = new DeviceDAO();
+                Device d = null;
+                DeviceDAO dao = new DeviceDAO();
 
-				if (imei != null) {
-					d = dao.getByImei(imei.trim());
-				}
+                if (imei != null) {
+                    d = dao.getByImei(imei.trim());
+                }
 
-				if (d == null && phoneNumber != null) {
-					d = dao.get(phoneNumber.trim());
-				}
+                if (d == null && phoneNumber != null) {
+                    d = dao.get(phoneNumber.trim());
+                }
 
-				if (d == null) {
-					log.severe(String.format(
-							"No device found with imei %s or phoneNumber %s",
-							imei, phoneNumber));
-					return;
-				}
+                if (d == null) {
+                    log.severe(String.format(
+                            "No device found with imei %s or phoneNumber %s",
+                            imei, phoneNumber));
+                    return;
+                }
 
-				DeviceFileJobQueueDAO dfDao = new DeviceFileJobQueueDAO();
-				List<DeviceFileJobQueue> missing = dfDao.listByDeviceAndFile(d
-						.getKey().getId(), fileName);
-				log.info(String.format(
-						"Deleting %s entities matching the fileName %s",
-						missing.size(), fileName));
-				dfDao.delete(missing);
-			}
-		}
-	}
+                DeviceFileJobQueueDAO dfDao = new DeviceFileJobQueueDAO();
+                List<DeviceFileJobQueue> missing = dfDao.listByDeviceAndFile(d
+                        .getKey().getId(), fileName);
+                log.info(String.format(
+                        "Deleting %s entities matching the fileName %s",
+                        missing.size(), fileName));
+                dfDao.delete(missing);
+            }
+        }
+    }
 
 }

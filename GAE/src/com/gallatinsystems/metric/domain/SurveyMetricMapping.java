@@ -24,45 +24,44 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  * maps survey questions to metrics
  * 
  * @author Christopher Fagiani
- * 
  */
 @PersistenceCapable
 public class SurveyMetricMapping extends BaseDomain {
-	private static final long serialVersionUID = -8714047945077756907L;
-	private Long surveyId;
-	private Long surveyQuestionId;
-	private Long questionGroupId;
-	private Long metricId;
+    private static final long serialVersionUID = -8714047945077756907L;
+    private Long surveyId;
+    private Long surveyQuestionId;
+    private Long questionGroupId;
+    private Long metricId;
 
-	public Long getQuestionGroupId() {
-		return questionGroupId;
-	}
+    public Long getQuestionGroupId() {
+        return questionGroupId;
+    }
 
-	public void setQuestionGroupId(Long questionGroupId) {
-		this.questionGroupId = questionGroupId;
-	}
+    public void setQuestionGroupId(Long questionGroupId) {
+        this.questionGroupId = questionGroupId;
+    }
 
-	public Long getSurveyId() {
-		return surveyId;
-	}
+    public Long getSurveyId() {
+        return surveyId;
+    }
 
-	public void setSurveyId(Long surveyId) {
-		this.surveyId = surveyId;
-	}
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
+    }
 
-	public Long getSurveyQuestionId() {
-		return surveyQuestionId;
-	}
+    public Long getSurveyQuestionId() {
+        return surveyQuestionId;
+    }
 
-	public void setSurveyQuestionId(Long surveyQuestionId) {
-		this.surveyQuestionId = surveyQuestionId;
-	}
+    public void setSurveyQuestionId(Long surveyQuestionId) {
+        this.surveyQuestionId = surveyQuestionId;
+    }
 
-	public Long getMetricId() {
-		return metricId;
-	}
+    public Long getMetricId() {
+        return metricId;
+    }
 
-	public void setMetricId(Long metricId) {
-		this.metricId = metricId;
-	}
+    public void setMetricId(Long metricId) {
+        this.metricId = metricId;
+    }
 }

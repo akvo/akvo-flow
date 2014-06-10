@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web;
 
 import java.util.List;
@@ -34,50 +35,50 @@ import com.gallatinsystems.framework.rest.RestResponse;
  * restful service for DeviceApplications
  * 
  * @author Christopher Fagiani
- * 
  */
 public class DeviceApplicationRestService extends AbstractRestApiServlet {
 
-	private static final long serialVersionUID = -830140106880504436L;
-	private DeviceApplicationDao devAppDao;
+    private static final long serialVersionUID = -830140106880504436L;
+    private DeviceApplicationDao devAppDao;
 
-	public DeviceApplicationRestService() {
-		setMode(JSON_MODE);
-		devAppDao = new DeviceApplicationDao();
-	}
+    public DeviceApplicationRestService() {
+        setMode(JSON_MODE);
+        devAppDao = new DeviceApplicationDao();
+    }
 
-	@Override
-	protected RestRequest convertRequest() throws Exception {
-		HttpServletRequest req = getRequest();
-		RestRequest restRequest = new DeviceApplicationRestRequest();
-		restRequest.populateFromHttpRequest(req);
-		return restRequest;
-	}
+    @Override
+    protected RestRequest convertRequest() throws Exception {
+        HttpServletRequest req = getRequest();
+        RestRequest restRequest = new DeviceApplicationRestRequest();
+        restRequest.populateFromHttpRequest(req);
+        return restRequest;
+    }
 
-	@Override
-	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		DeviceApplicationRestResponse resp = new DeviceApplicationRestResponse();
-		Properties props = System.getProperties();
-		String autoUpdateApk = props.getProperty("autoUpdateApk");
-		if (DeviceApplicationRestRequest.GET_LATEST_VERSION_ACTION
-				.equalsIgnoreCase(req.getAction()) && autoUpdateApk != null && autoUpdateApk.equalsIgnoreCase("true")) {
+    @Override
+    protected RestResponse handleRequest(RestRequest req) throws Exception {
+        DeviceApplicationRestResponse resp = new DeviceApplicationRestResponse();
+        Properties props = System.getProperties();
+        String autoUpdateApk = props.getProperty("autoUpdateApk");
+        if (DeviceApplicationRestRequest.GET_LATEST_VERSION_ACTION
+                .equalsIgnoreCase(req.getAction()) && autoUpdateApk != null
+                && autoUpdateApk.equalsIgnoreCase("true")) {
 
-			DeviceApplicationRestRequest daReq = (DeviceApplicationRestRequest) req;
-			List<DeviceApplication> devAppList = devAppDao
-					.listByDeviceTypeAndAppCode(daReq.getDeviceType(),
-							daReq.getAppCode(), 1);
-			if (devAppList != null && devAppList.size() > 0) {
-				resp.setVersion(devAppList.get(0).getVersion());
-				resp.setFileName(devAppList.get(0).getFileName());
-			}
-		}
-		return resp;
-	}
+            DeviceApplicationRestRequest daReq = (DeviceApplicationRestRequest) req;
+            List<DeviceApplication> devAppList = devAppDao
+                    .listByDeviceTypeAndAppCode(daReq.getDeviceType(),
+                            daReq.getAppCode(), 1);
+            if (devAppList != null && devAppList.size() > 0) {
+                resp.setVersion(devAppList.get(0).getVersion());
+                resp.setFileName(devAppList.get(0).getFileName());
+            }
+        }
+        return resp;
+    }
 
-	@Override
-	protected void writeOkResponse(RestResponse resp) throws Exception {
-		getResponse().setStatus(200);
-		getResponse().getWriter().println(new JSONObject(resp).toString());
-	}
+    @Override
+    protected void writeOkResponse(RestResponse resp) throws Exception {
+        getResponse().setStatus(200);
+        getResponse().getWriter().println(new JSONObject(resp).toString());
+    }
 
 }

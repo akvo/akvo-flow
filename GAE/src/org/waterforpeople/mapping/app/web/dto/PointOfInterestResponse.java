@@ -26,26 +26,25 @@ import com.gallatinsystems.framework.rest.RestResponse;
  * response for point of interest service
  * 
  * @author Christopher Fagiani
- * 
  */
 public class PointOfInterestResponse extends RestResponse {
-	private static final long serialVersionUID = 1548249617327473969L;
-	private List<PointOfInterestDto> pointsOfInterest;
-	private String cursor;
+    private static final long serialVersionUID = 1548249617327473969L;
+    private List<PointOfInterestDto> pointsOfInterest;
+    private String cursor;
 
-	public String getCursor() {
-		return cursor;
-	}
+    public String getCursor() {
+        return cursor;
+    }
 
-	public void setCursor(String cursor) {
-		this.cursor = cursor;
-	}
+    public void setCursor(String cursor) {
+        this.cursor = cursor;
+    }
 
-	public List<PointOfInterestDto> getPointsOfInterest() {
-		return pointsOfInterest;
-	}
+    public List<PointOfInterestDto> getPointsOfInterest() {
+        return pointsOfInterest;
+    }
 
-	public void setPointsOfInterest(List<PointOfInterestDto> pointsOfInterest) {
-		this.pointsOfInterest = pointsOfInterest;
-	}
+    public void setPointsOfInterest(List<PointOfInterestDto> pointsOfInterest) {
+        this.pointsOfInterest = pointsOfInterest;
+    }
 }

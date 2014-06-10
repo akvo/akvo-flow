@@ -28,59 +28,66 @@ import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyQuestionOption {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	private Key key;
-	@Persistent
-	private String value;
-	@Persistent
-	private String text;
-	public Key getKey() {
-		return key;
-	}
-	public void setKey(Key key) {
-		this.key = key;
-	}
-	public String getValue() {
-		return value;
-	}
-	public void setValue(String value) {
-		this.value = value;
-	}
-	public String getText() {
-		return text;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
+    @PrimaryKey
+    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+    private Key key;
+    @Persistent
+    private String value;
+    @Persistent
+    private String text;
 
-		result.append(this.getClass().getName());
-		result.append(" Object {");
-		result.append(newLine);
+    public Key getKey() {
+        return key;
+    }
 
-		// determine fields declared in this class only (no fields of
-		// superclass)
-		Field[] fields = this.getClass().getDeclaredFields();
+    public void setKey(Key key) {
+        this.key = key;
+    }
 
-		// print field names paired with their values
-		for (Field field : fields) {
-			result.append("  ");
-			try {
-				result.append(field.getName());
-				result.append(": ");
-				// requires access to private field:
-				result.append(field.get(this));
-			} catch (IllegalAccessException ex) {
-				System.out.println(ex);
-			}
-			result.append(newLine);
-		}
-		result.append("}");
+    public String getValue() {
+        return value;
+    }
 
-		return result.toString();
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
+
+        result.append(this.getClass().getName());
+        result.append(" Object {");
+        result.append(newLine);
+
+        // determine fields declared in this class only (no fields of
+        // superclass)
+        Field[] fields = this.getClass().getDeclaredFields();
+
+        // print field names paired with their values
+        for (Field field : fields) {
+            result.append("  ");
+            try {
+                result.append(field.getName());
+                result.append(": ");
+                // requires access to private field:
+                result.append(field.get(this));
+            } catch (IllegalAccessException ex) {
+                System.out.println(ex);
+            }
+            result.append(newLine);
+        }
+        result.append("}");
+
+        return result.toString();
+    }
 }

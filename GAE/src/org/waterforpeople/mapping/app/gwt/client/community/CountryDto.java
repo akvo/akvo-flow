@@ -22,90 +22,88 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class CountryDto extends BaseDto implements Serializable {
 
-	private static final long serialVersionUID = -4677743992145776719L;
+    private static final long serialVersionUID = -4677743992145776719L;
 
-	private String displayName = null;
-	private String name = null;
-	private String isoAlpha2Code = null;
-	private String isoAlpha3Code = null;
-	private Integer isoNumeric3Code = null;
-	private Boolean includeInKMZ;
-	private Boolean includeInExternal;
-	private Double centroidLat;
-	private Double centroidLon;
-	
-	
+    private String displayName = null;
+    private String name = null;
+    private String isoAlpha2Code = null;
+    private String isoAlpha3Code = null;
+    private Integer isoNumeric3Code = null;
+    private Boolean includeInKMZ;
+    private Boolean includeInExternal;
+    private Double centroidLat;
+    private Double centroidLon;
 
-	public Boolean getIncludeInKMZ() {
-		return includeInKMZ;
-	}
+    public Boolean getIncludeInKMZ() {
+        return includeInKMZ;
+    }
 
-	public void setIncludeInKMZ(Boolean includeInKMZ) {
-		this.includeInKMZ = includeInKMZ;
-	}
+    public void setIncludeInKMZ(Boolean includeInKMZ) {
+        this.includeInKMZ = includeInKMZ;
+    }
 
-	public Boolean getIncludeInExternal() {
-		return includeInExternal;
-	}
+    public Boolean getIncludeInExternal() {
+        return includeInExternal;
+    }
 
-	public void setIncludeInExternal(Boolean includeInExternal) {
-		this.includeInExternal = includeInExternal;
-	}
+    public void setIncludeInExternal(Boolean includeInExternal) {
+        this.includeInExternal = includeInExternal;
+    }
 
-	public Double getCentroidLat() {
-		return centroidLat;
-	}
+    public Double getCentroidLat() {
+        return centroidLat;
+    }
 
-	public void setCentroidLat(Double centroidLat) {
-		this.centroidLat = centroidLat;
-	}
+    public void setCentroidLat(Double centroidLat) {
+        this.centroidLat = centroidLat;
+    }
 
-	public Double getCentroidLon() {
-		return centroidLon;
-	}
+    public Double getCentroidLon() {
+        return centroidLon;
+    }
 
-	public void setCentroidLon(Double centroidLon) {
-		this.centroidLon = centroidLon;
-	}
+    public void setCentroidLon(Double centroidLon) {
+        this.centroidLon = centroidLon;
+    }
 
-	public String getDisplayName() {
-		return displayName != null ? displayName : name;
-	}
+    public String getDisplayName() {
+        return displayName != null ? displayName : name;
+    }
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
-	public String getIsoAlpha2Code() {
-		return isoAlpha2Code;
-	}
+    public String getIsoAlpha2Code() {
+        return isoAlpha2Code;
+    }
 
-	public void setIsoAlpha2Code(String isoAlpha2Code) {
-		this.isoAlpha2Code = isoAlpha2Code;
-	}
+    public void setIsoAlpha2Code(String isoAlpha2Code) {
+        this.isoAlpha2Code = isoAlpha2Code;
+    }
 
-	public String getIsoAlpha3Code() {
-		return isoAlpha3Code;
-	}
+    public String getIsoAlpha3Code() {
+        return isoAlpha3Code;
+    }
 
-	public void setIsoAlpha3Code(String isoAlpha3Code) {
-		this.isoAlpha3Code = isoAlpha3Code;
-	}
+    public void setIsoAlpha3Code(String isoAlpha3Code) {
+        this.isoAlpha3Code = isoAlpha3Code;
+    }
 
-	public Integer getIsoNumeric3Code() {
-		return isoNumeric3Code;
-	}
+    public Integer getIsoNumeric3Code() {
+        return isoNumeric3Code;
+    }
 
-	public void setIsoNumeric3Code(Integer isoNumeric3Code) {
-		this.isoNumeric3Code = isoNumeric3Code;
-	}
+    public void setIsoNumeric3Code(Integer isoNumeric3Code) {
+        this.isoNumeric3Code = isoNumeric3Code;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
 }

@@ -34,51 +34,50 @@ import com.google.appengine.api.datastore.Text;
  * servlet for saving stack traces posted by the devices
  * 
  * @author Christopher Fagiani
- * 
  */
 public class RemoteExceptionRestServlet extends AbstractRestApiServlet {
 
-	private static final long serialVersionUID = 1831040260541847041L;
-	private RemoteStacktraceDao stacktraceDao;
+    private static final long serialVersionUID = 1831040260541847041L;
+    private RemoteStacktraceDao stacktraceDao;
 
-	public RemoteExceptionRestServlet() {
-		stacktraceDao = new RemoteStacktraceDao();
-	}
+    public RemoteExceptionRestServlet() {
+        stacktraceDao = new RemoteStacktraceDao();
+    }
 
-	@Override
-	protected RestRequest convertRequest() throws Exception {
-		HttpServletRequest req = getRequest();
-		RestRequest exReq = new RemoteExceptionRequest();
-		exReq.populateFromHttpRequest(req);
-		return exReq;
-	}
+    @Override
+    protected RestRequest convertRequest() throws Exception {
+        HttpServletRequest req = getRequest();
+        RestRequest exReq = new RemoteExceptionRequest();
+        exReq.populateFromHttpRequest(req);
+        return exReq;
+    }
 
-	@Override
-	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		RestResponse resp = new RestResponse();
-		RemoteExceptionRequest exReq = (RemoteExceptionRequest) req;
-		//saves a stacktrace
-		if (RemoteExceptionRequest.SAVE_TRACE_ACTION.equals(req.getAction())) {
-			RemoteStacktrace trace = new RemoteStacktrace();
-			trace.setErrorDate(exReq.getDate() != null ? exReq.getDate()
-					: new Date());
-			trace.setSoftwareVersion(exReq.getVersion());
-			trace.setDeviceIdentifier(exReq.getDeviceIdent());
-			trace.setPhoneNumber(exReq.getPhoneNumber());
-			trace.setStackTrace(new Text(exReq.getStackTrace()));
-			stacktraceDao.save(trace);
-		} else {
-			throw new RestException(new RestError(RestError.BAD_DATATYPE_CODE,
-					RestError.BAD_DATATYPE_MESSAGE, "Action: "
-							+ req.getAction() + " not supported"),
-					"Bad Action value", null);
-		}
-		return resp;
-	}
+    @Override
+    protected RestResponse handleRequest(RestRequest req) throws Exception {
+        RestResponse resp = new RestResponse();
+        RemoteExceptionRequest exReq = (RemoteExceptionRequest) req;
+        // saves a stacktrace
+        if (RemoteExceptionRequest.SAVE_TRACE_ACTION.equals(req.getAction())) {
+            RemoteStacktrace trace = new RemoteStacktrace();
+            trace.setErrorDate(exReq.getDate() != null ? exReq.getDate()
+                    : new Date());
+            trace.setSoftwareVersion(exReq.getVersion());
+            trace.setDeviceIdentifier(exReq.getDeviceIdent());
+            trace.setPhoneNumber(exReq.getPhoneNumber());
+            trace.setStackTrace(new Text(exReq.getStackTrace()));
+            stacktraceDao.save(trace);
+        } else {
+            throw new RestException(new RestError(RestError.BAD_DATATYPE_CODE,
+                    RestError.BAD_DATATYPE_MESSAGE, "Action: "
+                            + req.getAction() + " not supported"),
+                    "Bad Action value", null);
+        }
+        return resp;
+    }
 
-	@Override
-	protected void writeOkResponse(RestResponse resp) throws Exception {
-		getResponse().setStatus(200);
-	}
+    @Override
+    protected void writeOkResponse(RestResponse resp) throws Exception {
+        getResponse().setStatus(200);
+    }
 
 }

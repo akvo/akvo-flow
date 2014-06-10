@@ -21,68 +21,67 @@ import java.io.Serializable;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
- * Dto for returning userConfig values to the client. Used for representing
- * things like the position of portal widgets.
+ * Dto for returning userConfig values to the client. Used for representing things like the position
+ * of portal widgets.
  * 
  * @author Christopher Fagiani
- * 
  */
 public class UserConfigDto extends BaseDto implements Serializable {
-	private static final long serialVersionUID = 4515497143926759239L;
+    private static final long serialVersionUID = 4515497143926759239L;
 
-	private String group;
-	private String name;
-	private String value;
-	private Long userId;
+    private String group;
+    private String name;
+    private String value;
+    private Long userId;
 
-	public String getGroup() {
-		return group;
-	}
+    public String getGroup() {
+        return group;
+    }
 
-	public void setGroup(String group) {
-		this.group = group;
-	}
+    public void setGroup(String group) {
+        this.group = group;
+    }
 
-	public Long getUserId() {
-		return userId;
-	}
+    public Long getUserId() {
+        return userId;
+    }
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	/**
-	 * equality is defined as having the same group, name AND value
-	 */
-	public boolean equals(Object other) {
-		if (other instanceof UserConfigDto) {
-			if (((UserConfigDto) other).group.equals(group)
-					&& ((UserConfigDto) other).name.equals(name)
-					&& ((value == null && ((UserConfigDto) other).value == null) || value
-							.equals(((UserConfigDto) other).value))) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
+    /**
+     * equality is defined as having the same group, name AND value
+     */
+    public boolean equals(Object other) {
+        if (other instanceof UserConfigDto) {
+            if (((UserConfigDto) other).group.equals(group)
+                    && ((UserConfigDto) other).name.equals(name)
+                    && ((value == null && ((UserConfigDto) other).value == null) || value
+                            .equals(((UserConfigDto) other).value))) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
 }

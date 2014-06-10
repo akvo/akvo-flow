@@ -28,64 +28,61 @@ import javax.crypto.spec.SecretKeySpec;
 import sun.misc.BASE64Encoder;
 
 /**
- * 
  * Utility to generate S3 policy signatures for use in file upload.
- * 
  */
 public class S3PolicySigner {
 
-	private String base64EncodedPolicyDocument = null;
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) throws Exception{
-		checkArgs(args);
-		S3PolicySigner signer = new S3PolicySigner();		
-		BufferedReader reader = new BufferedReader(new FileReader(args[0]));
-		String line = reader.readLine();
-		StringBuilder policyFile = new StringBuilder();
-		while(line != null){
-			if(policyFile.length()>0){
-				policyFile.append("\n");
-			}
-			policyFile.append(line);
-			line = reader.readLine();
-		}
-		
-		String[] output = signer.createPolicyString(policyFile.toString(), args[1]);
-		for(String val:output){
-			System.out.println(val);
-		}
-		reader.close();
-	}
-	
-	private static void checkArgs(String[] args){
-		if(args.length != 2){
-			System.err.println("Incorrect command line arguments.\nUsage:\n\tjava com.gallatinsystems.instancecreator.util.S3PolicySigner <policyDoc> <secretKey>");
-			System.exit(1);
-		}
-	}
+    private String base64EncodedPolicyDocument = null;
 
-	
+    /**
+     * @param args
+     */
+    public static void main(String[] args) throws Exception {
+        checkArgs(args);
+        S3PolicySigner signer = new S3PolicySigner();
+        BufferedReader reader = new BufferedReader(new FileReader(args[0]));
+        String line = reader.readLine();
+        StringBuilder policyFile = new StringBuilder();
+        while (line != null) {
+            if (policyFile.length() > 0) {
+                policyFile.append("\n");
+            }
+            policyFile.append(line);
+            line = reader.readLine();
+        }
 
-	public String[] createPolicyString(String policy_document,
-			String aws_secret_key) throws UnsupportedEncodingException,
-			NoSuchAlgorithmException, InvalidKeyException {
-		String policy = (new BASE64Encoder())
-				.encode(policy_document.getBytes("UTF-8")).replaceAll("\n", "")
-				.replaceAll("\r", "");
-		base64EncodedPolicyDocument = policy;
-		Mac hmac = Mac.getInstance("HmacSHA1");
-		hmac.init(new SecretKeySpec(aws_secret_key.getBytes("UTF-8"),
-				"HmacSHA1"));
-		String signature = (new BASE64Encoder())
-				.encode(hmac.doFinal(policy.getBytes("UTF-8")))
-				.replaceAll("\n", "").replace("\r", "");
-		String[] documents = new String[2];
-		documents[0] = signature;
-		documents[1] = base64EncodedPolicyDocument;
-		return documents;
-	}
+        String[] output = signer.createPolicyString(policyFile.toString(), args[1]);
+        for (String val : output) {
+            System.out.println(val);
+        }
+        reader.close();
+    }
+
+    private static void checkArgs(String[] args) {
+        if (args.length != 2) {
+            System.err
+                    .println("Incorrect command line arguments.\nUsage:\n\tjava com.gallatinsystems.instancecreator.util.S3PolicySigner <policyDoc> <secretKey>");
+            System.exit(1);
+        }
+    }
+
+    public String[] createPolicyString(String policy_document,
+            String aws_secret_key) throws UnsupportedEncodingException,
+            NoSuchAlgorithmException, InvalidKeyException {
+        String policy = (new BASE64Encoder())
+                .encode(policy_document.getBytes("UTF-8")).replaceAll("\n", "")
+                .replaceAll("\r", "");
+        base64EncodedPolicyDocument = policy;
+        Mac hmac = Mac.getInstance("HmacSHA1");
+        hmac.init(new SecretKeySpec(aws_secret_key.getBytes("UTF-8"),
+                "HmacSHA1"));
+        String signature = (new BASE64Encoder())
+                .encode(hmac.doFinal(policy.getBytes("UTF-8")))
+                .replaceAll("\n", "").replace("\r", "");
+        String[] documents = new String[2];
+        documents[0] = signature;
+        documents[1] = base64EncodedPolicyDocument;
+        return documents;
+    }
 
 }

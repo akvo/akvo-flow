@@ -25,19 +25,18 @@ import javax.xml.bind.annotation.XmlType;
  * wrapper for easy xml parsing
  * 
  * @author Christopher Fagiani
- * 
  */
 @XmlType
 @XmlRootElement(name = "geonames")
 public class GeoPlaces {
 
-	private List<GeoPlace> geoname;
+    private List<GeoPlace> geoname;
 
-	public List<GeoPlace> getGeoname() {
-		return geoname;
-	}
+    public List<GeoPlace> getGeoname() {
+        return geoname;
+    }
 
-	public void setGeoname(List<GeoPlace> geoname) {
-		this.geoname = geoname;
-	}
+    public void setGeoname(List<GeoPlace> geoname) {
+        this.geoname = geoname;
+    }
 }

@@ -25,44 +25,45 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("surveyinstance")
-@Deprecated // to be removed eventually
+@Deprecated
+// to be removed eventually
 public interface SurveyInstanceService extends RemoteService {
-	public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
-			Date beginDate, Date toDate, boolean unapprovedOnlyFlag, Long surveyId, String source,
-			String cursorString);	
+    public ResponseDto<ArrayList<SurveyInstanceDto>> listSurveyInstance(
+            Date beginDate, Date toDate, boolean unapprovedOnlyFlag, Long surveyId, String source,
+            String cursorString);
 
-	public List<QuestionAnswerStoreDto> updateQuestions(
-			List<QuestionAnswerStoreDto> dtoList, boolean isApproved);
+    public List<QuestionAnswerStoreDto> updateQuestions(
+            List<QuestionAnswerStoreDto> dtoList, boolean isApproved);
 
-	public ResponseDto<ArrayList<QuestionAnswerStoreDto>> listResponsesByQuestion(
-			Long questionId, String cursorString);
+    public ResponseDto<ArrayList<QuestionAnswerStoreDto>> listResponsesByQuestion(
+            Long questionId, String cursorString);
 
-	public void deleteSurveyInstance(Long instanceId);
+    public void deleteSurveyInstance(Long instanceId);
 
-	/**
-	 * saves a new survey instance and triggers processing
-	 * 
-	 * @param instance
-	 * @return
-	 */
-	public SurveyInstanceDto submitSurveyInstance(SurveyInstanceDto instance);
+    /**
+     * saves a new survey instance and triggers processing
+     * 
+     * @param instance
+     * @return
+     */
+    public SurveyInstanceDto submitSurveyInstance(SurveyInstanceDto instance);
 
-	/**
-	 * handles marking surveys as approved. Will also save updates to any
-	 * questions passed in
-	 * 
-	 * @param instance
-	 */
-	public void approveSurveyInstance(Long instanceId,
-			List<QuestionAnswerStoreDto> changedQuestions);
+    /**
+     * handles marking surveys as approved. Will also save updates to any questions passed in
+     * 
+     * @param instance
+     */
+    public void approveSurveyInstance(Long instanceId,
+            List<QuestionAnswerStoreDto> changedQuestions);
 
-	/**
-	 * lists all surveyInstances associated with the surveyedLocaleId passed in.
-	 * 
-	 * @param localeId
-	 * @return
-	 */
-	public ResponseDto<ArrayList<SurveyInstanceDto>> listInstancesByLocale(Long localeId, Date dateFrom, Date dateTo, String cursor);
+    /**
+     * lists all surveyInstances associated with the surveyedLocaleId passed in.
+     * 
+     * @param localeId
+     * @return
+     */
+    public ResponseDto<ArrayList<SurveyInstanceDto>> listInstancesByLocale(Long localeId,
+            Date dateFrom, Date dateTo, String cursor);
 
-	List<QuestionAnswerStoreDto> listQuestionsByInstance(Long instanceId);
+    List<QuestionAnswerStoreDto> listQuestionsByInstance(Long instanceId);
 }

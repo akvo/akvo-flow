@@ -22,99 +22,97 @@ import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-
 /**
  * dto that can hold surveyedLocale data
  * 
  * @author Mark Westra
- * 
  */
 public class SurveyedLocaleDto extends BaseDto {
 
-	private static final long serialVersionUID = -850583183416882347L;
+    private static final long serialVersionUID = -850583183416882347L;
 
-	private String id;
-	private Long surveyGroupId;
-	private String displayName;
-	private Double lat;
-	private Double lon;
-	private List<SurveyInstanceDto> surveyInstances;
-	private Long lastUpdateDateTime;
-	private String identifier;
+    private String id;
+    private Long surveyGroupId;
+    private String displayName;
+    private Double lat;
+    private Double lon;
+    private List<SurveyInstanceDto> surveyInstances;
+    private Long lastUpdateDateTime;
+    private String identifier;
 
-	public String getIdentifier() {
-		return identifier;
-	}
+    public String getIdentifier() {
+        return identifier;
+    }
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
-	public SurveyedLocaleDto() {
-		surveyInstances = new ArrayList<SurveyInstanceDto>();
-	}
+    public SurveyedLocaleDto() {
+        surveyInstances = new ArrayList<SurveyInstanceDto>();
+    }
 
-	public Double getLat() {
-		return lat;
-	}
+    public Double getLat() {
+        return lat;
+    }
 
-	public void setLat(Double lat) {
-		this.lat = lat;
-	}
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
 
-	public Double getLon() {
-		return lon;
-	}
+    public Double getLon() {
+        return lon;
+    }
 
-	public void setLon(Double lon) {
-		this.lon = lon;
-	}
-	
-	public List<SurveyInstanceDto> getSurveyInstances() {
-		return surveyInstances;
-	}
+    public void setLon(Double lon) {
+        this.lon = lon;
+    }
 
-	public void setSurveyInstances(List<SurveyInstanceDto> surveyInstances) {
-		this.surveyInstances = surveyInstances;
-	}
+    public List<SurveyInstanceDto> getSurveyInstances() {
+        return surveyInstances;
+    }
 
-	public void addInstance(SurveyInstanceDto siDto) {
-		surveyInstances.add(siDto);
-	}
+    public void setSurveyInstances(List<SurveyInstanceDto> surveyInstances) {
+        this.surveyInstances = surveyInstances;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public void addInstance(SurveyInstanceDto siDto) {
+        surveyInstances.add(siDto);
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public Long getSurveyGroupId() {
-		return surveyGroupId;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setSurveyGroupId(Long surveyGroupId) {
-		this.surveyGroupId = surveyGroupId;
-	}
+    public Long getSurveyGroupId() {
+        return surveyGroupId;
+    }
 
-	public String getDisplayName() {
-		return displayName;
-	}
+    public void setSurveyGroupId(Long surveyGroupId) {
+        this.surveyGroupId = surveyGroupId;
+    }
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
+    public String getDisplayName() {
+        return displayName;
+    }
 
-	public Long getLastUpdateDateTime() {
-		return lastUpdateDateTime;
-	}
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
-	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
-		this.lastUpdateDateTime = lastUpdateDateTime.getTime();
-	}
+    public Long getLastUpdateDateTime() {
+        return lastUpdateDateTime;
+    }
 
-	public void setLastUpdateDateTime(Long lastUpdateDateTime) {
-		this.lastUpdateDateTime = lastUpdateDateTime;
-	}
+    public void setLastUpdateDateTime(Date lastUpdateDateTime) {
+        this.lastUpdateDateTime = lastUpdateDateTime.getTime();
+    }
+
+    public void setLastUpdateDateTime(Long lastUpdateDateTime) {
+        this.lastUpdateDateTime = lastUpdateDateTime;
+    }
 }

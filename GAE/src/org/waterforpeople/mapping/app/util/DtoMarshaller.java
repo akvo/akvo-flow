@@ -41,66 +41,66 @@ import com.google.appengine.api.datastore.Text;
 
 public class DtoMarshaller {
 
-	public static <T extends BaseDomain, U extends BaseDto> void copyToCanonical(
-			T canonical, U dto) {
-		try {
-			configureConverters();
-			BeanUtils.copyProperties(canonical, dto);
-			if (dto.getKeyId() != null) {
-				// by default, the JDO key kind uses the Simple name
-				canonical.setKey(KeyFactory.createKey(canonical.getClass()
-						.getSimpleName(), dto.getKeyId()));
-			}
+    public static <T extends BaseDomain, U extends BaseDto> void copyToCanonical(
+            T canonical, U dto) {
+        try {
+            configureConverters();
+            BeanUtils.copyProperties(canonical, dto);
+            if (dto.getKeyId() != null) {
+                // by default, the JDO key kind uses the Simple name
+                canonical.setKey(KeyFactory.createKey(canonical.getClass()
+                        .getSimpleName(), dto.getKeyId()));
+            }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static <T extends BaseDomain, U extends BaseDto> void copyToDto(
-			T canonical, U dto) {
-		try {
-			configureConverters();
-			BeanUtils.copyProperties(dto, canonical);
-			if (canonical.getKey() != null) {
-				dto.setKeyId(canonical.getKey().getId());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public static <T extends BaseDomain, U extends BaseDto> void copyToDto(
+            T canonical, U dto) {
+        try {
+            configureConverters();
+            BeanUtils.copyProperties(dto, canonical);
+            if (canonical.getKey() != null) {
+                dto.setKeyId(canonical.getKey().getId());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	/**
-	 * sets up the converters that this marshaller should use
-	 */
-	private static void configureConverters() {
-		String pattern = "MM/dd/yy";
-		Locale locale = Locale.getDefault();
-		DateLocaleConverter converter = new DateLocaleConverter(locale, pattern);
-		converter.setLenient(true);
-		ConvertUtils.register(converter, java.util.Date.class);
+    /**
+     * sets up the converters that this marshaller should use
+     */
+    private static void configureConverters() {
+        String pattern = "MM/dd/yy";
+        Locale locale = Locale.getDefault();
+        DateLocaleConverter converter = new DateLocaleConverter(locale, pattern);
+        converter.setLenient(true);
+        ConvertUtils.register(converter, java.util.Date.class);
 
-		TypeEnumConverter enumConverter = new TypeEnumConverter();
-		ConvertUtils.register(enumConverter, Question.Type.class);
-		ConvertUtils.register(enumConverter, QuestionDto.QuestionType.class);	
-		ConvertUtils.register(enumConverter,AccessPoint.Status.class);
-		ConvertUtils.register(enumConverter,AccessPoint.AccessPointType.class);
-		ConvertUtils.register(enumConverter,UnitOfMeasure.UnitOfMeasureSystem.class);
-		ConvertUtils.register(enumConverter,UnitOfMeasure.UnitOfMeasureType.class);
-		ConvertUtils.register(enumConverter,QuestionHelpMedia.Type.class);
-		ConvertUtils.register(enumConverter,QuestionHelpDto.Type.class);
-		ConvertUtils.register(enumConverter, OGRFeatureDto.FeatureType.class);
-		ConvertUtils.register(enumConverter, Survey.Status.class);
-		ConvertUtils.register(enumConverter, Survey.Sector.class);
+        TypeEnumConverter enumConverter = new TypeEnumConverter();
+        ConvertUtils.register(enumConverter, Question.Type.class);
+        ConvertUtils.register(enumConverter, QuestionDto.QuestionType.class);
+        ConvertUtils.register(enumConverter, AccessPoint.Status.class);
+        ConvertUtils.register(enumConverter, AccessPoint.AccessPointType.class);
+        ConvertUtils.register(enumConverter, UnitOfMeasure.UnitOfMeasureSystem.class);
+        ConvertUtils.register(enumConverter, UnitOfMeasure.UnitOfMeasureType.class);
+        ConvertUtils.register(enumConverter, QuestionHelpMedia.Type.class);
+        ConvertUtils.register(enumConverter, QuestionHelpDto.Type.class);
+        ConvertUtils.register(enumConverter, OGRFeatureDto.FeatureType.class);
+        ConvertUtils.register(enumConverter, Survey.Status.class);
+        ConvertUtils.register(enumConverter, Survey.Sector.class);
 
-		// Resetting default values from zero to null
-		ConvertUtils.register(new DoubleConverter(null), Double.class);
-		ConvertUtils.register(new LongConverter(null), Long.class);
-		ConvertUtils.register(new IntegerConverter(null), Integer.class);
-		
-		DatastoreTextConverter textConverter = new DatastoreTextConverter();
-		ConvertUtils.register(textConverter,Text.class);				
-		ConvertUtils.register(textConverter,String.class);
-	}
+        // Resetting default values from zero to null
+        ConvertUtils.register(new DoubleConverter(null), Double.class);
+        ConvertUtils.register(new LongConverter(null), Long.class);
+        ConvertUtils.register(new IntegerConverter(null), Integer.class);
+
+        DatastoreTextConverter textConverter = new DatastoreTextConverter();
+        ConvertUtils.register(textConverter, Text.class);
+        ConvertUtils.register(textConverter, String.class);
+    }
 
 }

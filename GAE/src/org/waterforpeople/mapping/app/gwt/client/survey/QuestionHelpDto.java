@@ -22,62 +22,62 @@ import java.util.TreeMap;
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class QuestionHelpDto extends BaseDto {
-	
-	private static final long serialVersionUID = 1563528591253495401L;
-	private String text;
-	private String resourceUrl;
-	private Type type;
-	private Long questionId;
-	private Map<String, TranslationDto> translationMap;
 
-	public Map<String, TranslationDto> getTranslationMap() {
-		return translationMap;
-	}
+    private static final long serialVersionUID = 1563528591253495401L;
+    private String text;
+    private String resourceUrl;
+    private Type type;
+    private Long questionId;
+    private Map<String, TranslationDto> translationMap;
 
-	public void setTranslationMap(Map<String, TranslationDto> translationMap) {
-		this.translationMap = translationMap;
-	}
+    public Map<String, TranslationDto> getTranslationMap() {
+        return translationMap;
+    }
 
-	public void addTranslation(TranslationDto trans){
-		if(translationMap == null){
-			translationMap = new TreeMap<String,TranslationDto>();			
-		}
-		translationMap.put(trans.getLangCode(), trans);
-	}
+    public void setTranslationMap(Map<String, TranslationDto> translationMap) {
+        this.translationMap = translationMap;
+    }
 
-	public Long getQuestionId() {
-		return questionId;
-	}
+    public void addTranslation(TranslationDto trans) {
+        if (translationMap == null) {
+            translationMap = new TreeMap<String, TranslationDto>();
+        }
+        translationMap.put(trans.getLangCode(), trans);
+    }
 
-	public void setQuestionId(Long questionId) {
-		this.questionId = questionId;
-	}
+    public Long getQuestionId() {
+        return questionId;
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
+    }
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+    public Type getType() {
+        return type;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public void setType(Type type) {
+        this.type = type;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public String getResourceUrl() {
-		return resourceUrl;
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
 
-	public void setResourceUrl(String resourceUrl) {
-		this.resourceUrl = resourceUrl;
-	}
+    public String getResourceUrl() {
+        return resourceUrl;
+    }
 
-	public enum Type {
-		PHOTO, VIDEO, TEXT, ACTIVITY
-	}
+    public void setResourceUrl(String resourceUrl) {
+        this.resourceUrl = resourceUrl;
+    }
+
+    public enum Type {
+        PHOTO, VIDEO, TEXT, ACTIVITY
+    }
 }

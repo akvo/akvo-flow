@@ -18,11 +18,13 @@ package com.gallatinsystems.common;
 
 public class Constants {
 
-	public final static String ALL_RESULTS = "all";
-	public final static String BUILD_COUNTRY_TECH_TYPE_FRAGMENTS = "buildCountryTechTypeFragments";
-	public final static String BUILD_COUNTRY_FRAGMENTS = "buildCountry";
-	public static final String[] EXCLUDED_PROPERTIES = { "key",
-			"createdDateTime", "lastUpdateDateTime", "lastUpdateUserId",
-			"createUserId" };
+    public final static String ALL_RESULTS = "all";
+    public final static String BUILD_COUNTRY_TECH_TYPE_FRAGMENTS = "buildCountryTechTypeFragments";
+    public final static String BUILD_COUNTRY_FRAGMENTS = "buildCountry";
+    public static final String[] EXCLUDED_PROPERTIES = {
+            "key",
+            "createdDateTime", "lastUpdateDateTime", "lastUpdateUserId",
+            "createUserId"
+    };
 
 }

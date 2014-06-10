@@ -29,137 +29,133 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("surveyrpcservice")
 public interface SurveyService extends RemoteService {
 
-	public static final String DATE_ROLL_UP = "collectionDate";
-	// TODO: change this to the region field name once it's added
-	public static final String REGION_ROLL_UP = "collectionDate";
+    public static final String DATE_ROLL_UP = "collectionDate";
+    // TODO: change this to the region field name once it's added
+    public static final String REGION_ROLL_UP = "collectionDate";
 
-	public SurveyDto[] listSurvey();
+    public SurveyDto[] listSurvey();
 
-	public QuestionDto[] listSurveyQuestionByType(Long surveyId,
-			QuestionType type, boolean loadTranslations);
+    public QuestionDto[] listSurveyQuestionByType(Long surveyId,
+            QuestionType type, boolean loadTranslations);
 
-	public ResponseDto<ArrayList<SurveyGroupDto>> listSurveyGroups(
-			String cursorString, Boolean loadSurveyFlag,
-			Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag);
+    public ResponseDto<ArrayList<SurveyGroupDto>> listSurveyGroups(
+            String cursorString, Boolean loadSurveyFlag,
+            Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag);
 
-	/**
-	 * lists all surveys for a group
-	 */
-	public ArrayList<SurveyDto> listSurveysByGroup(String surveyGroupId);
+    /**
+     * lists all surveys for a group
+     */
+    public ArrayList<SurveyDto> listSurveysByGroup(String surveyGroupId);
 
-	public ArrayList<QuestionGroupDto> listQuestionGroupsBySurvey(
-			String surveyId);
+    public ArrayList<QuestionGroupDto> listQuestionGroupsBySurvey(
+            String surveyId);
 
-	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
-			String questionGroupId, boolean needDetails);
+    public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
+            String questionGroupId, boolean needDetails);
 
-	public SurveyGroupDto save(SurveyGroupDto value);
+    public SurveyGroupDto save(SurveyGroupDto value);
 
-	/**
-	 * fully hydrates a survey object
-	 * 
-	 * @param surveyId
-	 * @return
-	 */
-	public SurveyDto loadFullSurvey(Long surveyId);
+    /**
+     * fully hydrates a survey object
+     * 
+     * @param surveyId
+     * @return
+     */
+    public SurveyDto loadFullSurvey(Long surveyId);
 
-	public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupCode);
+    public List<SurveyDto> listSurveysForSurveyGroup(String surveyGroupCode);
 
-	public QuestionDto loadQuestionDetails(Long questionId);
+    public QuestionDto loadQuestionDetails(Long questionId);
 
-	public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId, boolean forceReorder);
+    public QuestionDto saveQuestion(QuestionDto value, Long questionGroupId, boolean forceReorder);
 
-	public String deleteSurveyGroup(SurveyGroupDto value);
+    public String deleteSurveyGroup(SurveyGroupDto value);
 
-	public String deleteSurvey(SurveyDto value, Long surveyGroupId);
+    public String deleteSurvey(SurveyDto value, Long surveyGroupId);
 
-	public String deleteQuestionGroup(QuestionGroupDto value, Long surveyId);
+    public String deleteQuestionGroup(QuestionGroupDto value, Long surveyId);
 
-	public String deleteQuestion(QuestionDto value, Long questionGroupId);
+    public String deleteQuestion(QuestionDto value, Long questionGroupId);
 
-	public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId);
+    public SurveyDto saveSurvey(SurveyDto surveyDto, Long surveyGroupId);
 
-	public QuestionGroupDto saveQuestionGroup(QuestionGroupDto dto,
-			Long surveyId);
+    public QuestionGroupDto saveQuestionGroup(QuestionGroupDto dto,
+            Long surveyId);
 
-	public SurveyGroupDto saveSurveyGroup(SurveyGroupDto dto);
+    public SurveyGroupDto saveSurveyGroup(SurveyGroupDto dto);
 
-	public String publishSurvey(Long surveyId);
+    public String publishSurvey(Long surveyId);
 
-	public void publishSurveyAsync(Long surveyId);
+    public void publishSurveyAsync(Long surveyId);
 
-	public List<TranslationDto> saveTranslations(
-			List<TranslationDto> translations);
+    public List<TranslationDto> saveTranslations(
+            List<TranslationDto> translations);
 
-	public void rerunAPMappings(Long surveyId);
+    public void rerunAPMappings(Long surveyId);
 
-	public List<QuestionHelpDto> listHelpByQuestion(Long questionId);
+    public List<QuestionHelpDto> listHelpByQuestion(Long questionId);
 
-	public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList);
+    public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList);
 
-	public Map<String, TranslationDto> listTranslations(Long parentId,
-			String parentType);
+    public Map<String, TranslationDto> listTranslations(Long parentId,
+            String parentType);
 
-	public List<QuestionGroupDto> saveQuestionGroups(
-			List<QuestionGroupDto> dtoList);
+    public List<QuestionGroupDto> saveQuestionGroups(
+            List<QuestionGroupDto> dtoList);
 
-	public QuestionDto copyQuestion(QuestionDto existingQuestion,
-			QuestionGroupDto newParentGroup);
+    public QuestionDto copyQuestion(QuestionDto existingQuestion,
+            QuestionGroupDto newParentGroup);
 
-	public void updateQuestionOrder(List<QuestionDto> questions);
+    public void updateQuestionOrder(List<QuestionDto> questions);
 
-	public void updateQuestionGroupOrder(List<QuestionGroupDto> groups);
+    public void updateQuestionGroupOrder(List<QuestionGroupDto> groups);
 
-	public void updateQuestionDependency(Long questionId,
-			QuestionDependencyDto dep);
+    public void updateQuestionDependency(Long questionId,
+            QuestionDependencyDto dep);
 
-	/**
-	 * returns a surveyDto populated from the published xml. This domain graph
-	 * lacks many keyIds so it is not suitable for updating the survey
-	 * structure. It is, however, suitable for rendering the survey and
-	 * collecting responses.
-	 * 
-	 * @param surveyId
-	 * @return
-	 */
-	public SurveyDto getPublishedSurvey(String surveyId);
+    /**
+     * returns a surveyDto populated from the published xml. This domain graph lacks many keyIds so
+     * it is not suitable for updating the survey structure. It is, however, suitable for rendering
+     * the survey and collecting responses.
+     * 
+     * @param surveyId
+     * @return
+     */
+    public SurveyDto getPublishedSurvey(String surveyId);
 
-	/**
-	 * fires an async request to generate a bootstrap xml file
-	 * 
-	 * @param surveyIdList
-	 * @param dbInstructions
-	 * @param notificationEmail
-	 */
-	public void generateBootstrapFile(List<Long> surveyIdList,
-			String dbInstructions, String notificationEmail);
+    /**
+     * fires an async request to generate a bootstrap xml file
+     * 
+     * @param surveyIdList
+     * @param dbInstructions
+     * @param notificationEmail
+     */
+    public void generateBootstrapFile(List<Long> surveyIdList,
+            String dbInstructions, String notificationEmail);
 
-	/**
-	 * returns a survey (core info only, not fully populated) based on its id
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public SurveyDto findSurvey(Long id);
+    /**
+     * returns a survey (core info only, not fully populated) based on its id
+     * 
+     * @param id
+     * @return
+     */
+    public SurveyDto findSurvey(Long id);
 
-	/**
-	 * marks that a set of changes to a survey are done so we can publish a
-	 * notification
-	 * 
-	 * @param id
-	 */
-	public void markSurveyChangesComplete(Long id);
-	
-	/**
-	 * lists the base question info for all questions that depend on the
-	 * questionId passed in
-	 * 
-	 * @param questionId
-	 * @return
-	 */
-	public ArrayList<QuestionDto> listQuestionsDependentOnQuestion(Long questionId);
+    /**
+     * marks that a set of changes to a survey are done so we can publish a notification
+     * 
+     * @param id
+     */
+    public void markSurveyChangesComplete(Long id);
 
-	
-	public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
-			String questionGroupId, boolean needDetails, boolean allowSideEffects);
+    /**
+     * lists the base question info for all questions that depend on the questionId passed in
+     * 
+     * @param questionId
+     * @return
+     */
+    public ArrayList<QuestionDto> listQuestionsDependentOnQuestion(Long questionId);
+
+    public ArrayList<QuestionDto> listQuestionsByQuestionGroup(
+            String questionGroupId, boolean needDetails, boolean allowSideEffects);
 }

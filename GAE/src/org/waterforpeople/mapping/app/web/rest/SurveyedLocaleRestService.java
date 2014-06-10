@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
@@ -38,42 +39,45 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 @RequestMapping("/surveyed_locales")
 public class SurveyedLocaleRestService {
 
-	@Inject
-	SurveyedLocaleDao surveyedLocaleDao;
+    @Inject
+    SurveyedLocaleDao surveyedLocaleDao;
 
-	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	public Map<String, Object> listQuestions(
-			@RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId,
-			@RequestParam(value = "identifier", defaultValue = "") String identifier,
-			@RequestParam(value = "displayName", defaultValue = "") String displayName) {
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> listQuestions(
+            @RequestParam(value = "surveyGroupId", defaultValue = "")
+            Long surveyGroupId,
+            @RequestParam(value = "identifier", defaultValue = "")
+            String identifier,
+            @RequestParam(value = "displayName", defaultValue = "")
+            String displayName) {
 
-		Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<String, Object>();
 
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("");
-		statusDto.setMessage("");
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("");
+        statusDto.setMessage("");
 
-		List<SurveyedLocale> sls = new ArrayList<SurveyedLocale>();
-		List<SurveyedLocaleDto> locales = new ArrayList<SurveyedLocaleDto>();
+        List<SurveyedLocale> sls = new ArrayList<SurveyedLocale>();
+        List<SurveyedLocaleDto> locales = new ArrayList<SurveyedLocaleDto>();
 
-		if (identifier != null && !"".equals(identifier)) {
-			sls = surveyedLocaleDao.listLocalesByCode(identifier, false);
-		} else if (displayName != null && !"".equals(displayName)) {
-			sls = surveyedLocaleDao.listLocalesByDisplayName(displayName);
-		} else {
-			sls = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
-					surveyGroupId, null, 20);
-		}
+        if (identifier != null && !"".equals(identifier)) {
+            sls = surveyedLocaleDao.listLocalesByCode(identifier, false);
+        } else if (displayName != null && !"".equals(displayName)) {
+            sls = surveyedLocaleDao.listLocalesByDisplayName(displayName);
+        } else {
+            sls = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
+                    surveyGroupId, null, 20);
+        }
 
-		for (SurveyedLocale sl : sls) {
-			SurveyedLocaleDto dto = new SurveyedLocaleDto();
-			DtoMarshaller.copyToDto(sl, dto);
-			locales.add(dto);
-		}
+        for (SurveyedLocale sl : sls) {
+            SurveyedLocaleDto dto = new SurveyedLocaleDto();
+            DtoMarshaller.copyToDto(sl, dto);
+            locales.add(dto);
+        }
 
-		response.put("surveyed_locales", locales);
-		response.put("meta", statusDto);
-		return response;
-	}
+        response.put("surveyed_locales", locales);
+        response.put("meta", statusDto);
+        return response;
+    }
 }

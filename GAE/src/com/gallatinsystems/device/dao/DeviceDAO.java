@@ -27,90 +27,89 @@ import com.gallatinsystems.framework.dao.BaseDAO;
  * data access object for devices.
  * 
  * @author Christopher Fagiani
- * 
  */
 public class DeviceDAO extends BaseDAO<Device> {
 
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(DeviceDAO.class
-			.getName());
+    @SuppressWarnings("unused")
+    private static final Logger log = Logger.getLogger(DeviceDAO.class
+            .getName());
 
-	public DeviceDAO() {
-		super(Device.class);
-	}
+    public DeviceDAO() {
+        super(Device.class);
+    }
 
-	/**
-	 * gets a single device by phoneNumber. If phone number is not unique (this
-	 * shouldn't happen), it returns the first instance found.
-	 * 
-	 * @param phoneNumber
-	 * @return
-	 */
-	public Device get(String phoneNumber) {
-		return super.findByProperty("phoneNumber", phoneNumber, STRING_TYPE);
-	}
+    /**
+     * gets a single device by phoneNumber. If phone number is not unique (this shouldn't happen),
+     * it returns the first instance found.
+     * 
+     * @param phoneNumber
+     * @return
+     */
+    public Device get(String phoneNumber) {
+        return super.findByProperty("phoneNumber", phoneNumber, STRING_TYPE);
+    }
 
-	/**
-	 * gets a single device by imei/esn. If phone number is not unique (this
-	 * shouldn't happen), it returns the first instance found.
-	 * 
-	 * @param imei
-	 * @return
-	 */
-	public Device getByImei(String imei) {
+    /**
+     * gets a single device by imei/esn. If phone number is not unique (this shouldn't happen), it
+     * returns the first instance found.
+     * 
+     * @param imei
+     * @return
+     */
+    public Device getByImei(String imei) {
         if (Device.NO_IMEI.equals(imei)) {
             // WiFi only devices could have "NO_IMEI" as value
             // We want to fall back to search by `phoneNumber` (MAC address)
             return null;
         }
-		return super.findByProperty("esn", imei, STRING_TYPE);
-	}
+        return super.findByProperty("esn", imei, STRING_TYPE);
+    }
 
-	/**
-	 * updates the device's last known position
-	 * 
-	 * @param phoneNumber
-	 * @param lat
-	 * @param lon
-	 * @param accuracy
-	 * @param version
-	 * @param deviceIdentifier
-	 * @param imei
-	 */
-	public void updateDeviceLocation(String phoneNumber, Double lat,
-			Double lon, Double accuracy, String version,
-			String deviceIdentifier, String imei, String osVersion) {
-		Device d = null;
-		if (imei != null) { // New Apps from 1.10.0 and on provide IMEI/ESN
-			d = getByImei(imei);
-		}
+    /**
+     * updates the device's last known position
+     * 
+     * @param phoneNumber
+     * @param lat
+     * @param lon
+     * @param accuracy
+     * @param version
+     * @param deviceIdentifier
+     * @param imei
+     */
+    public void updateDeviceLocation(String phoneNumber, Double lat,
+            Double lon, Double accuracy, String version,
+            String deviceIdentifier, String imei, String osVersion) {
+        Device d = null;
+        if (imei != null) { // New Apps from 1.10.0 and on provide IMEI/ESN
+            d = getByImei(imei);
+        }
 
-		if (d == null) {
-			d = get(phoneNumber); // Fall back to less-stable ID
-		}
-		if (d == null) {
-			// if device is null, we have to create it
-			d = new Device();
-			d.setCreatedDateTime(new Date());
-			d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
-			d.setPhoneNumber(phoneNumber);
-		}
-		if (lat != null && lon != null) {
-			d.setLastKnownLat(lat);
-			d.setLastKnownLon(lon);
-			d.setLastKnownAccuracy(accuracy);
-		}
-		if (deviceIdentifier != null) {
-			d.setDeviceIdentifier(deviceIdentifier);
-		}
-		if (imei != null && !Device.NO_IMEI.equals(imei)) {
-			d.setEsn(imei);
-		}
-		if (osVersion != null) {
-			d.setOsVersion(osVersion);
-		}
-		d.setLastLocationBeaconTime(new Date());
-		d.setGallatinSoftwareManifest(version);
-		save(d);
-	}
+        if (d == null) {
+            d = get(phoneNumber); // Fall back to less-stable ID
+        }
+        if (d == null) {
+            // if device is null, we have to create it
+            d = new Device();
+            d.setCreatedDateTime(new Date());
+            d.setDeviceType(DeviceType.CELL_PHONE_ANDROID);
+            d.setPhoneNumber(phoneNumber);
+        }
+        if (lat != null && lon != null) {
+            d.setLastKnownLat(lat);
+            d.setLastKnownLon(lon);
+            d.setLastKnownAccuracy(accuracy);
+        }
+        if (deviceIdentifier != null) {
+            d.setDeviceIdentifier(deviceIdentifier);
+        }
+        if (imei != null && !Device.NO_IMEI.equals(imei)) {
+            d.setEsn(imei);
+        }
+        if (osVersion != null) {
+            d.setOsVersion(osVersion);
+        }
+        d.setLastLocationBeaconTime(new Date());
+        d.setGallatinSoftwareManifest(version);
+        save(d);
+    }
 }

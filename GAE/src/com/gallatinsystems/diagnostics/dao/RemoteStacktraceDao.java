@@ -31,67 +31,66 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
  * Persists and retrieves remoteStacktrace objects from the data store
  * 
  * @author Christopher Fagiani
- * 
  */
 public class RemoteStacktraceDao extends BaseDAO<RemoteStacktrace> {
 
-	public RemoteStacktraceDao() {
-		super(RemoteStacktrace.class);
-	}
+    public RemoteStacktraceDao() {
+        super(RemoteStacktrace.class);
+    }
 
-	/**
-	 * lists all stacktrace objects in the database. If unAckOnly is true, only
-	 * unacknowledged exceptions will be returned.
-	 * 
-	 * @param phoneNumber
-	 * @param deviceId
-	 * @param unAckOnly
-	 * @param cursorString
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<RemoteStacktrace> listStacktrace(String phoneNumber,
-			String deviceId, boolean unAckOnly, String cursorString) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		List<RemoteStacktrace> results = null;
-		javax.jdo.Query q = pm.newQuery(RemoteStacktrace.class);
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+    /**
+     * lists all stacktrace objects in the database. If unAckOnly is true, only unacknowledged
+     * exceptions will be returned.
+     * 
+     * @param phoneNumber
+     * @param deviceId
+     * @param unAckOnly
+     * @param cursorString
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<RemoteStacktrace> listStacktrace(String phoneNumber,
+            String deviceId, boolean unAckOnly, String cursorString) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        List<RemoteStacktrace> results = null;
+        javax.jdo.Query q = pm.newQuery(RemoteStacktrace.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("phoneNumber", filterString, paramString, "String",
-				phoneNumber, paramMap);
-		appendNonNullParam("deviceIdentifier", filterString, paramString,
-				"String", deviceId, paramMap);
-		if (unAckOnly) {
-			appendNonNullParam("acknowleged", filterString, paramString,
-					"java.lang.Boolean", false, paramMap);
-		}
-		q.setOrdering("errorDate desc");
-		if (unAckOnly || phoneNumber != null || deviceId != null) {
-			q.setFilter(filterString.toString());
-			q.declareParameters(paramString.toString());
-			prepareCursor(cursorString, q);
-			results = (List<RemoteStacktrace>) q.executeWithMap(paramMap);
-		} else {
-			prepareCursor(cursorString, q);
-			results = (List<RemoteStacktrace>) q.execute();
-		}
-		return results;
-	}
+        appendNonNullParam("phoneNumber", filterString, paramString, "String",
+                phoneNumber, paramMap);
+        appendNonNullParam("deviceIdentifier", filterString, paramString,
+                "String", deviceId, paramMap);
+        if (unAckOnly) {
+            appendNonNullParam("acknowleged", filterString, paramString,
+                    "java.lang.Boolean", false, paramMap);
+        }
+        q.setOrdering("errorDate desc");
+        if (unAckOnly || phoneNumber != null || deviceId != null) {
+            q.setFilter(filterString.toString());
+            q.declareParameters(paramString.toString());
+            prepareCursor(cursorString, q);
+            results = (List<RemoteStacktrace>) q.executeWithMap(paramMap);
+        } else {
+            prepareCursor(cursorString, q);
+            results = (List<RemoteStacktrace>) q.execute();
+        }
+        return results;
+    }
 
-	/**
-	 * deletes all items older than the date passed in
-	 * 
-	 * @param date
-	 */
-	public long deleteItemsOlderThan(Date date) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(RemoteStacktrace.class);		
-		query.setFilter("errorDate < dateParam");
-		query.declareParameters("Date dateParam");
-		query.declareImports("import java.util.Date");
-		return query.deletePersistentAll(date);
-	}
+    /**
+     * deletes all items older than the date passed in
+     * 
+     * @param date
+     */
+    public long deleteItemsOlderThan(Date date) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(RemoteStacktrace.class);
+        query.setFilter("errorDate < dateParam");
+        query.declareParameters("Date dateParam");
+        query.declareImports("import java.util.Date");
+        return query.deletePersistentAll(date);
+    }
 
 }

@@ -22,95 +22,95 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class DeviceDto extends BaseDto {
 
-	private static final long serialVersionUID = 3197857074399585732L;
-	private String phoneNumber;
-	private String esn;
-	private Double lastKnownLat;
-	private Double lastKnownLon;
-	private Double lastKnownAccuracy;
-	private Date lastPositionDate;
-	private String gallatinSoftwareManifest;
-	private String deviceGroup;
-	private String deviceGroupName;
-	private String deviceIdentifier;
+    private static final long serialVersionUID = 3197857074399585732L;
+    private String phoneNumber;
+    private String esn;
+    private Double lastKnownLat;
+    private Double lastKnownLon;
+    private Double lastKnownAccuracy;
+    private Date lastPositionDate;
+    private String gallatinSoftwareManifest;
+    private String deviceGroup;
+    private String deviceGroupName;
+    private String deviceIdentifier;
 
-	public String getGallatinSoftwareManifest() {
-		return gallatinSoftwareManifest;
-	}
+    public String getGallatinSoftwareManifest() {
+        return gallatinSoftwareManifest;
+    }
 
-	public void setGallatinSoftwareManifest(String gallatinSoftwareManifest) {
-		this.gallatinSoftwareManifest = gallatinSoftwareManifest;
-	}
-	
-	public String getDeviceIdentifier() {
-		return deviceIdentifier;
-	}
+    public void setGallatinSoftwareManifest(String gallatinSoftwareManifest) {
+        this.gallatinSoftwareManifest = gallatinSoftwareManifest;
+    }
 
-	public void setDeviceIdentifier(String deviceIdentifier) {
-		this.deviceIdentifier = deviceIdentifier;
-	}
+    public String getDeviceIdentifier() {
+        return deviceIdentifier;
+    }
 
-	public String getDeviceGroup() {
-		return deviceGroup;
-	}
+    public void setDeviceIdentifier(String deviceIdentifier) {
+        this.deviceIdentifier = deviceIdentifier;
+    }
 
-	public void setDeviceGroup(String deviceGroup) {
-		this.deviceGroup = deviceGroup;
-	}
+    public String getDeviceGroup() {
+        return deviceGroup;
+    }
 
-	public Double getLastKnownLat() {
-		return lastKnownLat;
-	}
+    public void setDeviceGroup(String deviceGroup) {
+        this.deviceGroup = deviceGroup;
+    }
 
-	public void setLastKnownLat(Double lastKnownLat) {
-		this.lastKnownLat = lastKnownLat;
-	}
+    public Double getLastKnownLat() {
+        return lastKnownLat;
+    }
 
-	public Double getLastKnownLon() {
-		return lastKnownLon;
-	}
+    public void setLastKnownLat(Double lastKnownLat) {
+        this.lastKnownLat = lastKnownLat;
+    }
 
-	public void setLastKnownLon(Double lastKnownLon) {
-		this.lastKnownLon = lastKnownLon;
-	}
+    public Double getLastKnownLon() {
+        return lastKnownLon;
+    }
 
-	public Double getLastKnownAccuracy() {
-		return lastKnownAccuracy;
-	}
+    public void setLastKnownLon(Double lastKnownLon) {
+        this.lastKnownLon = lastKnownLon;
+    }
 
-	public void setLastKnownAccuracy(Double lastKnownAccuracy) {
-		this.lastKnownAccuracy = lastKnownAccuracy;
-	}
+    public Double getLastKnownAccuracy() {
+        return lastKnownAccuracy;
+    }
 
-	public Date getLastPositionDate() {
-		return lastPositionDate;
-	}
+    public void setLastKnownAccuracy(Double lastKnownAccuracy) {
+        this.lastKnownAccuracy = lastKnownAccuracy;
+    }
 
-	public void setLastPositionDate(Date lastPositionDate) {
-		this.lastPositionDate = lastPositionDate;
-	}
+    public Date getLastPositionDate() {
+        return lastPositionDate;
+    }
 
-	public String getEsn() {
-		return esn;
-	}
+    public void setLastPositionDate(Date lastPositionDate) {
+        this.lastPositionDate = lastPositionDate;
+    }
 
-	public void setEsn(String esn) {
-		this.esn = esn;
-	}
+    public String getEsn() {
+        return esn;
+    }
 
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
+    public void setEsn(String esn) {
+        this.esn = esn;
+    }
 
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-	public void setDeviceGroupName(String deviceGroupName) {
-		this.deviceGroupName = deviceGroupName;
-	}
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-	public String getDeviceGroupName() {
-		return deviceGroupName;
-	}
+    public void setDeviceGroupName(String deviceGroupName) {
+        this.deviceGroupName = deviceGroupName;
+    }
+
+    public String getDeviceGroupName() {
+        return deviceGroupName;
+    }
 }

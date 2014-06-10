@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
@@ -53,288 +54,298 @@ import com.gallatinsystems.survey.domain.Translation.ParentType;
 @RequestMapping("/translations")
 public class TranslationRestService {
 
-	@Inject
-	private TranslationDao tDao;
+    @Inject
+    private TranslationDao tDao;
 
-	@Inject
-	private SurveyDAO sDao;
+    @Inject
+    private SurveyDAO sDao;
 
-	Map<String, Translation> translations = new HashMap<String, Translation>();
+    Map<String, Translation> translations = new HashMap<String, Translation>();
 
-	// list translations by surveyId and questionGroupId
-	@RequestMapping(method = RequestMethod.GET, value = "")
-	@ResponseBody
-	public Map<String, Object> listTranslationsBySurveyId(
-			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
-			@RequestParam(value = "questionGroupId", defaultValue = "") Long questionGroupId) {
-		final Map<String, Object> response = new HashMap<String, Object>();
-		List<TranslationDto> results = new ArrayList<TranslationDto>();
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("");
-		statusDto.setMessage("");
+    // list translations by surveyId and questionGroupId
+    @RequestMapping(method = RequestMethod.GET, value = "")
+    @ResponseBody
+    public Map<String, Object> listTranslationsBySurveyId(
+            @RequestParam(value = "surveyId", defaultValue = "")
+            Long surveyId,
+            @RequestParam(value = "questionGroupId", defaultValue = "")
+            Long questionGroupId) {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        List<TranslationDto> results = new ArrayList<TranslationDto>();
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("");
+        statusDto.setMessage("");
 
-		if (surveyId != null) {
-			Survey survey = sDao.getById(surveyId);
-			if (survey != null && questionGroupId != null) {
-				addTranslations(Translation.ParentType.SURVEY_NAME, survey
-						.getKey().getId(), surveyId, results);
-				addTranslations(Translation.ParentType.SURVEY_DESC, survey
-						.getKey().getId(),surveyId, results);
+        if (surveyId != null) {
+            Survey survey = sDao.getById(surveyId);
+            if (survey != null && questionGroupId != null) {
+                addTranslations(Translation.ParentType.SURVEY_NAME, survey
+                        .getKey().getId(), surveyId, results);
+                addTranslations(Translation.ParentType.SURVEY_DESC, survey
+                        .getKey().getId(), surveyId, results);
 
-				// get question group translations
-				List<Translation> translations = tDao.listTranslationsByQuestionGroup(
-						questionGroupId);
-				for (Translation t : translations) {
-					TranslationDto tDto = new TranslationDto();
-					DtoMarshaller.copyToDto(t, tDto);
-					tDto.setLangCode(t.getLanguageCode());
-					tDto.setSurveyId(surveyId);
-					results.add(tDto);
-				}
-			}
-		}
-		response.put("translations", results);
-		return response;
-	}
+                // get question group translations
+                List<Translation> translations = tDao.listTranslationsByQuestionGroup(
+                        questionGroupId);
+                for (Translation t : translations) {
+                    TranslationDto tDto = new TranslationDto();
+                    DtoMarshaller.copyToDto(t, tDto);
+                    tDto.setLangCode(t.getLanguageCode());
+                    tDto.setSurveyId(surveyId);
+                    results.add(tDto);
+                }
+            }
+        }
+        response.put("translations", results);
+        return response;
+    }
 
-	private void addTranslations(ParentType parentType, long id, long surveyId,
-			List<TranslationDto> results) {
-		Map<String, Translation> translations = tDao.findTranslations(
-				parentType, id);
-		for (Translation t : translations.values()) {
-			TranslationDto tDto = new TranslationDto();
-			DtoMarshaller.copyToDto(t, tDto);
-			tDto.setLangCode(t.getLanguageCode());
-			tDto.setSurveyId(surveyId);
-			results.add(tDto);
-		}
-	}
+    private void addTranslations(ParentType parentType, long id, long surveyId,
+            List<TranslationDto> results) {
+        Map<String, Translation> translations = tDao.findTranslations(
+                parentType, id);
+        for (Translation t : translations.values()) {
+            TranslationDto tDto = new TranslationDto();
+            DtoMarshaller.copyToDto(t, tDto);
+            tDto.setLangCode(t.getLanguageCode());
+            tDto.setSurveyId(surveyId);
+            results.add(tDto);
+        }
+    }
 
-	// create new Translation
-	@RequestMapping(method = RequestMethod.POST, value = "")
-	@ResponseBody
-	public Map<String, Object> saveNewTranslation(
-			@RequestBody TranslationPayload payLoad) {
-		final TranslationDto translationDto = payLoad.getTranslation();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		TranslationDto dto = null;
+    // create new Translation
+    @RequestMapping(method = RequestMethod.POST, value = "")
+    @ResponseBody
+    public Map<String, Object> saveNewTranslation(
+            @RequestBody
+            TranslationPayload payLoad) {
+        final TranslationDto translationDto = payLoad.getTranslation();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        TranslationDto dto = null;
 
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
-		statusDto.setMessage("Cannot create translation");
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+        statusDto.setMessage("Cannot create translation");
 
-		// if the POST data contains a valid translationDto, continue.
-		// Otherwise, server will respond with 400 Bad Request
+        // if the POST data contains a valid translationDto, continue.
+        // Otherwise, server will respond with 400 Bad Request
 
-		if (translationDto != null) {
-			dto = createTranslation(translationDto);
-			statusDto.setStatus("ok");
-			statusDto.setMessage("");
-		}
-		response.put("meta", statusDto);
-		response.put("translation", dto);
-		return response;
-	}
+        if (translationDto != null) {
+            dto = createTranslation(translationDto);
+            statusDto.setStatus("ok");
+            statusDto.setMessage("");
+        }
+        response.put("meta", statusDto);
+        response.put("translation", dto);
+        return response;
+    }
 
+    // bulk create new Translation
+    @RequestMapping(method = RequestMethod.POST, value = "/bulk")
+    @ResponseBody
+    public Map<String, Object> bulkSaveNewTranslation(
+            @RequestBody
+            TranslationBulkPayload payLoad) {
+        final List<TranslationDto> translationDtoList = payLoad
+                .getTranslations();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        List<TranslationDto> results = new ArrayList<TranslationDto>();
+        TranslationDto dto = null;
 
-	// bulk create new Translation
-	@RequestMapping(method = RequestMethod.POST, value = "/bulk")
-	@ResponseBody
-	public Map<String, Object> bulkSaveNewTranslation(
-			@RequestBody TranslationBulkPayload payLoad) {
-		final List<TranslationDto> translationDtoList = payLoad
-				.getTranslations();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		List<TranslationDto> results = new ArrayList<TranslationDto>();
-		TranslationDto dto = null;
+        RestStatusDto statusDto = new RestStatusDto();
 
-		RestStatusDto statusDto = new RestStatusDto();
-	
-		Boolean stateSuccess = true;
-		for (TranslationDto tDto : translationDtoList) {
-			dto = createTranslation(tDto);
-			if (dto != null) {
-				results.add(dto);
-			} else {
-				stateSuccess = false;
-			}
-		}
-		String status = stateSuccess ? "ok" : "failed";
-		if (status.equals("failed")) {
-			statusDto.setMessage("Cannot create translation");
-		}
-		statusDto.setStatus(status);
-		response.put("meta", statusDto);
-		response.put("translations", results);
-		return response;
-	}
-	
-	
-	private TranslationDto createTranslation(TranslationDto translationDto) {
-		Translation t = new Translation();
-		BeanUtils.copyProperties(translationDto, t, new String[] {
-				"createdDateTime", "parentType", "langCode"});
-		t.setLanguageCode(translationDto.getLangCode());
-		if (translationDto.getParentType() != null) {
-			t.setParentType(Translation.ParentType.valueOf(translationDto
-					.getParentType().toString()));
-		}
-		t = tDao.save(t);
-		
-		TranslationDto tDto = new TranslationDto();
-		DtoMarshaller.copyToDto(t, tDto);
-		tDto.setLangCode(t.getLanguageCode());
-		return tDto;
-	}
+        Boolean stateSuccess = true;
+        for (TranslationDto tDto : translationDtoList) {
+            dto = createTranslation(tDto);
+            if (dto != null) {
+                results.add(dto);
+            } else {
+                stateSuccess = false;
+            }
+        }
+        String status = stateSuccess ? "ok" : "failed";
+        if (status.equals("failed")) {
+            statusDto.setMessage("Cannot create translation");
+        }
+        statusDto.setStatus(status);
+        response.put("meta", statusDto);
+        response.put("translations", results);
+        return response;
+    }
 
-	// update existing translation
-	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-	@ResponseBody
-	public Map<String, Object> saveExistingTranslation(
-			@RequestBody TranslationPayload payLoad) {
-		final TranslationDto tDto = payLoad.getTranslation();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		TranslationDto dto = null;
+    private TranslationDto createTranslation(TranslationDto translationDto) {
+        Translation t = new Translation();
+        BeanUtils.copyProperties(translationDto, t, new String[] {
+                "createdDateTime", "parentType", "langCode"
+        });
+        t.setLanguageCode(translationDto.getLangCode());
+        if (translationDto.getParentType() != null) {
+            t.setParentType(Translation.ParentType.valueOf(translationDto
+                    .getParentType().toString()));
+        }
+        t = tDao.save(t);
 
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+        TranslationDto tDto = new TranslationDto();
+        DtoMarshaller.copyToDto(t, tDto);
+        tDto.setLangCode(t.getLanguageCode());
+        return tDto;
+    }
 
-		// if the POST data contains a valid userDto, continue.
-		// Otherwise, server will respond with 400 Bad Request
-		if (tDto != null) {
-			dto = updateTranslation(tDto);
-			if (dto != null) {
-				statusDto.setStatus("ok");
-			}
-		}
-		response.put("meta", statusDto);
-		response.put("translation", dto);
-		return response;
-	}
+    // update existing translation
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    @ResponseBody
+    public Map<String, Object> saveExistingTranslation(
+            @RequestBody
+            TranslationPayload payLoad) {
+        final TranslationDto tDto = payLoad.getTranslation();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        TranslationDto dto = null;
 
-	// bulkupdate existing translation
-	@RequestMapping(method = RequestMethod.PUT, value = "/bulk")
-	@ResponseBody
-	public Map<String, Object> bulkSaveExistingTranslation(
-			@RequestBody TranslationBulkPayload payLoad) {
-		final List<TranslationDto> translationDtoList = payLoad
-				.getTranslations();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		TranslationDto dto = null;
-		RestStatusDto statusDto = new RestStatusDto();
-		List<TranslationDto> results = new ArrayList<TranslationDto>();
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
 
-		Boolean stateSuccess = true;
-		for (TranslationDto tDto : translationDtoList) {
-			dto = updateTranslation(tDto);
-			if (dto != null) {
-				results.add(dto);
-			} else {
-				stateSuccess = false;
-			}
-		}
-		String status = stateSuccess ? "ok" : "failed";
-		statusDto.setStatus(status);
+        // if the POST data contains a valid userDto, continue.
+        // Otherwise, server will respond with 400 Bad Request
+        if (tDto != null) {
+            dto = updateTranslation(tDto);
+            if (dto != null) {
+                statusDto.setStatus("ok");
+            }
+        }
+        response.put("meta", statusDto);
+        response.put("translation", dto);
+        return response;
+    }
 
-		response.put("meta", statusDto);
-		response.put("translations", results);
-		return response;
-	}
+    // bulkupdate existing translation
+    @RequestMapping(method = RequestMethod.PUT, value = "/bulk")
+    @ResponseBody
+    public Map<String, Object> bulkSaveExistingTranslation(
+            @RequestBody
+            TranslationBulkPayload payLoad) {
+        final List<TranslationDto> translationDtoList = payLoad
+                .getTranslations();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        TranslationDto dto = null;
+        RestStatusDto statusDto = new RestStatusDto();
+        List<TranslationDto> results = new ArrayList<TranslationDto>();
 
-	private TranslationDto updateTranslation(TranslationDto tDto) {
-		Long keyId = tDto.getKeyId();
-		Translation t;
+        Boolean stateSuccess = true;
+        for (TranslationDto tDto : translationDtoList) {
+            dto = updateTranslation(tDto);
+            if (dto != null) {
+                results.add(dto);
+            } else {
+                stateSuccess = false;
+            }
+        }
+        String status = stateSuccess ? "ok" : "failed";
+        statusDto.setStatus(status);
 
-		// if the tDto has a key, try to get the translation.
-		if (keyId != null) {
-			t = tDao.getByKey(keyId);
-			// if we find the translation, update it's properties
-			if (t != null) {
-				// copy the properties, except the createdDateTime property,
-				// because it is set in the Dao.
-				BeanUtils.copyProperties(tDto, t, new String[] {
-						"createdDateTime", "parentType", "langCode", "surveyId" });
+        response.put("meta", statusDto);
+        response.put("translations", results);
+        return response;
+    }
 
-				t.setLanguageCode(tDto.getLangCode());
-				if (tDto.getParentType() != null) {
-					t.setParentType(Translation.ParentType.valueOf(tDto
-							.getParentType().toString()));
-				}
+    private TranslationDto updateTranslation(TranslationDto tDto) {
+        Long keyId = tDto.getKeyId();
+        Translation t;
 
-				t = tDao.save(t);
-				TranslationDto dto = new TranslationDto();
-				BeanUtils.copyProperties(t, dto, new String[] { "parentType",
-						"languageCode" });
+        // if the tDto has a key, try to get the translation.
+        if (keyId != null) {
+            t = tDao.getByKey(keyId);
+            // if we find the translation, update it's properties
+            if (t != null) {
+                // copy the properties, except the createdDateTime property,
+                // because it is set in the Dao.
+                BeanUtils.copyProperties(tDto, t, new String[] {
+                        "createdDateTime", "parentType", "langCode", "surveyId"
+                });
 
-				dto.setLangCode(t.getLanguageCode());
-				if (t.getParentType() != null) {
-					dto.setParentType(t.getParentType().toString());
-				}
+                t.setLanguageCode(tDto.getLangCode());
+                if (tDto.getParentType() != null) {
+                    t.setParentType(Translation.ParentType.valueOf(tDto
+                            .getParentType().toString()));
+                }
 
-				if (t.getKey() != null) {
-					dto.setKeyId(t.getKey().getId());
-				}
-				
-				// the surveyId is taken directly from the input dto 
-				// as it is not stored on the object
-				dto.setSurveyId(tDto.getSurveyId());
-				
-				return dto;
-			}
-		}
-		return null;
-	}
+                t = tDao.save(t);
+                TranslationDto dto = new TranslationDto();
+                BeanUtils.copyProperties(t, dto, new String[] {
+                        "parentType",
+                        "languageCode"
+                });
 
-	// delete translation by id
-	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-	@ResponseBody
-	public Map<String, RestStatusDto> deleteTranslationById(
-			@PathVariable("id") Long id) {
-		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+                dto.setLangCode(t.getLanguageCode());
+                if (t.getParentType() != null) {
+                    dto.setParentType(t.getParentType().toString());
+                }
 
-		Translation t = tDao.getByKey(id);
-		RestStatusDto statusDto = null;
-		statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+                if (t.getKey() != null) {
+                    dto.setKeyId(t.getKey().getId());
+                }
 
-		// check if translation exists in the datastore
-		if (t != null) {
-			// delete translation
-			tDao.delete(t);
-			statusDto.setStatus("ok");
-		}
-		// }
-		response.put("meta", statusDto);
-		return response;
-	}
+                // the surveyId is taken directly from the input dto
+                // as it is not stored on the object
+                dto.setSurveyId(tDto.getSurveyId());
 
-	// bulk delete translation by id
-	@RequestMapping(method = RequestMethod.DELETE, value = "/bulk")
-	@ResponseBody
-	public Map<String, RestStatusDto> bulkDeleteTranslationById(
-			@RequestBody TranslationBulkDeletePayload payLoad) {
-		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-		final List<Number> tIds = payLoad
-				.getTranslations();
-		RestStatusDto statusDto = null;
-		Translation t = null;
-		statusDto = new RestStatusDto();
-		statusDto.setStatus("ok");
-		if (tIds != null && tIds.size() > 0) {
-			for (int i = 0; i < tIds.size(); i++) {
-				Number temp = tIds.get(i);
-				t = tDao.getByKey(temp.longValue());
-				// check if translation exists in the datastore
-				if (t != null) {
-					// delete translation
-					tDao.delete(t);
-				} else {
-					statusDto.setStatus("failed");
-				}
-			}
-		}
+                return dto;
+            }
+        }
+        return null;
+    }
 
-		response.put("meta", statusDto);
-		return response;
-	}
+    // delete translation by id
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ResponseBody
+    public Map<String, RestStatusDto> deleteTranslationById(
+            @PathVariable("id")
+            Long id) {
+        final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+
+        Translation t = tDao.getByKey(id);
+        RestStatusDto statusDto = null;
+        statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+
+        // check if translation exists in the datastore
+        if (t != null) {
+            // delete translation
+            tDao.delete(t);
+            statusDto.setStatus("ok");
+        }
+        // }
+        response.put("meta", statusDto);
+        return response;
+    }
+
+    // bulk delete translation by id
+    @RequestMapping(method = RequestMethod.DELETE, value = "/bulk")
+    @ResponseBody
+    public Map<String, RestStatusDto> bulkDeleteTranslationById(
+            @RequestBody
+            TranslationBulkDeletePayload payLoad) {
+        final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+        final List<Number> tIds = payLoad
+                .getTranslations();
+        RestStatusDto statusDto = null;
+        Translation t = null;
+        statusDto = new RestStatusDto();
+        statusDto.setStatus("ok");
+        if (tIds != null && tIds.size() > 0) {
+            for (int i = 0; i < tIds.size(); i++) {
+                Number temp = tIds.get(i);
+                t = tDao.getByKey(temp.longValue());
+                // check if translation exists in the datastore
+                if (t != null) {
+                    // delete translation
+                    tDao.delete(t);
+                } else {
+                    statusDto.setStatus("failed");
+                }
+            }
+        }
+
+        response.put("meta", statusDto);
+        return response;
+    }
 }

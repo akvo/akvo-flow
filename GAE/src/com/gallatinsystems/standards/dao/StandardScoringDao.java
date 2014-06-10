@@ -31,131 +31,125 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.standards.domain.StandardScoring;
 
 /**
- * 
- * Dao for managing scoring objects.
- *
- *TODO: need to move this or get rid of dependency on AccessPoint
+ * Dao for managing scoring objects. TODO: need to move this or get rid of dependency on AccessPoint
  */
 public class StandardScoringDao extends BaseDAO<StandardScoring> {
 
-	public StandardScoringDao() {
-		super(StandardScoring.class);
-	}
+    public StandardScoringDao() {
+        super(StandardScoring.class);
+    }
 
-	
-	public List<StandardScoring> listStandardScoring(AccessPoint ap) {
-		List<StandardScoring> ssList = new ArrayList<StandardScoring>();
-		ssList = super.listByProperty("pointType", ap.getPointType().toString(), "String");
-		return ssList;
-	}
+    public List<StandardScoring> listStandardScoring(AccessPoint ap) {
+        List<StandardScoring> ssList = new ArrayList<StandardScoring>();
+        ssList = super.listByProperty("pointType", ap.getPointType().toString(), "String");
+        return ssList;
+    }
 
-	public List<StandardScoring> listStandardScoringByBucketForAccessPoint(
-			Long scoreBucketId, AccessPoint ap) {
-		List<StandardScoring> supersetList = new ArrayList<StandardScoring>();
+    public List<StandardScoring> listStandardScoringByBucketForAccessPoint(
+            Long scoreBucketId, AccessPoint ap) {
+        List<StandardScoring> supersetList = new ArrayList<StandardScoring>();
 
-		List<StandardScoring> globalList = listGlobalStandardScoringForAccessPoint(
-				scoreBucketId, ap);
-		List<StandardScoring> localList = listLocalStandardScoringForAccessPoint(scoreBucketId, ap);
-		Collections.copy(supersetList, globalList);
-		Collections.copy(supersetList, localList);
-		return supersetList;
-	}
+        List<StandardScoring> globalList = listGlobalStandardScoringForAccessPoint(
+                scoreBucketId, ap);
+        List<StandardScoring> localList = listLocalStandardScoringForAccessPoint(scoreBucketId, ap);
+        Collections.copy(supersetList, globalList);
+        Collections.copy(supersetList, localList);
+        return supersetList;
+    }
 
-	public List<StandardScoring> listStandardScoring(Long scoreBucketId) {
-		List<StandardScoring> ssList = new ArrayList<StandardScoring>();
-		ssList = super.listByProperty("scoreBucketId", scoreBucketId, "Long");
-		return ssList;
-	}
+    public List<StandardScoring> listStandardScoring(Long scoreBucketId) {
+        List<StandardScoring> ssList = new ArrayList<StandardScoring>();
+        ssList = super.listByProperty("scoreBucketId", scoreBucketId, "Long");
+        return ssList;
+    }
 
-	@SuppressWarnings("unchecked")
-	public List<StandardScoring> listGlobalStandardScoringForAccessPoint(
-			Long scoreBucketId, AccessPoint ap) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
-		Map<String, Object> paramMap = null;
+    @SuppressWarnings("unchecked")
+    public List<StandardScoring> listGlobalStandardScoringForAccessPoint(
+            Long scoreBucketId, AccessPoint ap) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+        Map<String, Object> paramMap = null;
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("pointType", filterString, paramString, "String",
-				ap.getPointType(), paramMap);
-		appendNonNullParam("scoreBucketId", filterString, paramString, "Long",
-				scoreBucketId, paramMap);
-		appendNonNullParam("mapToObject", filterString, paramString, "String",
-				"AccessPoint", paramMap);
-		appendNonNullParam("scopeType", filterString, paramString, "String",
-				"GLOBAL", paramMap);
+        appendNonNullParam("pointType", filterString, paramString, "String",
+                ap.getPointType(), paramMap);
+        appendNonNullParam("scoreBucketId", filterString, paramString, "Long",
+                scoreBucketId, paramMap);
+        appendNonNullParam("mapToObject", filterString, paramString, "String",
+                "AccessPoint", paramMap);
+        appendNonNullParam("scopeType", filterString, paramString, "String",
+                "GLOBAL", paramMap);
 
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
 
-		List<StandardScoring> results = (List<StandardScoring>) query
-				.executeWithMap(paramMap);
-		return results;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<StandardScoring> listLocalDistanceStandardScoringForAccessPoint(
-			AccessPoint ap) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
-		Map<String, Object> paramMap = null;
+        List<StandardScoring> results = (List<StandardScoring>) query
+                .executeWithMap(paramMap);
+        return results;
+    }
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
+    @SuppressWarnings("unchecked")
+    public List<StandardScoring> listLocalDistanceStandardScoringForAccessPoint(
+            AccessPoint ap) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+        Map<String, Object> paramMap = null;
 
-		appendNonNullParam("pointType", filterString, paramString, "String",
-				ap.getPointType(), paramMap);
-		appendNonNullParam("mapToObject", filterString, paramString, "String",
-				"AccessPoint", paramMap);
-		appendNonNullParam("criteriaType", filterString, paramString, "String",
-				"Distance", paramMap);
-		appendNonNullParam("countryCode", filterString, paramString, "String",
-				ap.getCountryCode(), paramMap);
-//		ToDo: need to think about how to use the subvalue	
-//		appendNonNullParam("subValue", filterString, paramString, "String",
-//				ap.getSub1(), paramMap);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
 
-		
-		
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
+        appendNonNullParam("pointType", filterString, paramString, "String",
+                ap.getPointType(), paramMap);
+        appendNonNullParam("mapToObject", filterString, paramString, "String",
+                "AccessPoint", paramMap);
+        appendNonNullParam("criteriaType", filterString, paramString, "String",
+                "Distance", paramMap);
+        appendNonNullParam("countryCode", filterString, paramString, "String",
+                ap.getCountryCode(), paramMap);
+        // ToDo: need to think about how to use the subvalue
+        // appendNonNullParam("subValue", filterString, paramString, "String",
+        // ap.getSub1(), paramMap);
 
-		List<StandardScoring> results = (List<StandardScoring>) query
-				.executeWithMap(paramMap);
-		return results;
-	}
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
 
-	@SuppressWarnings("unchecked")
-	public List<StandardScoring> listLocalStandardScoringForAccessPoint(
-			Long scoreBucketId, AccessPoint ap) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(AccessPoint.class);
-		Map<String, Object> paramMap = null;
+        List<StandardScoring> results = (List<StandardScoring>) query
+                .executeWithMap(paramMap);
+        return results;
+    }
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
+    @SuppressWarnings("unchecked")
+    public List<StandardScoring> listLocalStandardScoringForAccessPoint(
+            Long scoreBucketId, AccessPoint ap) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(AccessPoint.class);
+        Map<String, Object> paramMap = null;
 
-		appendNonNullParam("pointType", filterString, paramString, "String",
-				ap.getPointType(), paramMap);
-		appendNonNullParam("scoreBucketId", filterString, paramString, "Long",
-				scoreBucketId, paramMap);
-		appendNonNullParam("mapToObject", filterString, paramString, "String",
-				"AccessPoint", paramMap);
-		appendNonNullParam("scopeType", filterString, paramString, "String",
-				"LOCAL", paramMap);
-		appendNonNullParam("countryCode", filterString, paramString, "String",
-				ap.getCountryCode(), paramMap);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
 
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
+        appendNonNullParam("pointType", filterString, paramString, "String",
+                ap.getPointType(), paramMap);
+        appendNonNullParam("scoreBucketId", filterString, paramString, "Long",
+                scoreBucketId, paramMap);
+        appendNonNullParam("mapToObject", filterString, paramString, "String",
+                "AccessPoint", paramMap);
+        appendNonNullParam("scopeType", filterString, paramString, "String",
+                "LOCAL", paramMap);
+        appendNonNullParam("countryCode", filterString, paramString, "String",
+                ap.getCountryCode(), paramMap);
 
-		List<StandardScoring> results = (List<StandardScoring>) query
-				.executeWithMap(paramMap);
-		return results;
-	}
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+
+        List<StandardScoring> results = (List<StandardScoring>) query
+                .executeWithMap(paramMap);
+        return results;
+    }
 
 }

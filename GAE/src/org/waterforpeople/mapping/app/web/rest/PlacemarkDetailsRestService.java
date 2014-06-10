@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
@@ -38,67 +39,66 @@ import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
-
 /**
- * This service is providing the details for a particular Placemark, due to the
- * lack of partial loading in Ember-Data See:
- * https://github.com/emberjs/data/issues/51
+ * This service is providing the details for a particular Placemark, due to the lack of partial
+ * loading in Ember-Data See: https://github.com/emberjs/data/issues/51
  */
 @Controller
 @RequestMapping("/placemark_details")
 public class PlacemarkDetailsRestService {
 
-	private static final Logger log = Logger
-			.getLogger(PlacemarkDetailsRestService.class.getName());
+    private static final Logger log = Logger
+            .getLogger(PlacemarkDetailsRestService.class.getName());
 
-	@Inject
-	SurveyedLocaleDao localeDao;
+    @Inject
+    SurveyedLocaleDao localeDao;
 
-	@RequestMapping(method = RequestMethod.GET, value = "")
-	@ResponseBody
-	public Map<String, Object> getDetails(
-			@RequestParam(value = "placemarkId", defaultValue = "") String placemarkId) {
+    @RequestMapping(method = RequestMethod.GET, value = "")
+    @ResponseBody
+    public Map<String, Object> getDetails(
+            @RequestParam(value = "placemarkId", defaultValue = "")
+            String placemarkId) {
 
-		if (StringUtils.isEmpty(placemarkId)) {
-			final String msg = "[placemarkId] is a required parameter";
-			log.log(Level.SEVERE, msg);
-			throw new HttpMessageNotReadableException(msg);
-		}
+        if (StringUtils.isEmpty(placemarkId)) {
+            final String msg = "[placemarkId] is a required parameter";
+            log.log(Level.SEVERE, msg);
+            throw new HttpMessageNotReadableException(msg);
+        }
 
-		final SurveyedLocale sl = localeDao.getById(Long.valueOf(placemarkId));
+        final SurveyedLocale sl = localeDao.getById(Long.valueOf(placemarkId));
 
-		if (sl == null) {
-			final String msg = "placemarkId : " + placemarkId + " not found";
-			log.log(Level.SEVERE, msg);
-			throw new HttpMessageNotReadableException(msg);
-		}
+        if (sl == null) {
+            final String msg = "placemarkId : " + placemarkId + " not found";
+            log.log(Level.SEVERE, msg);
+            throw new HttpMessageNotReadableException(msg);
+        }
 
-		final Map<String, Object> response = new HashMap<String, Object>();
+        final Map<String, Object> response = new HashMap<String, Object>();
 
-		response.put("placemark_details", getPlacemarkDetails(sl));
+        response.put("placemark_details", getPlacemarkDetails(sl));
 
-		return response;
-	}
+        return response;
+    }
 
-	private List<PlacemarkDetailDto> getPlacemarkDetails(SurveyedLocale sl) {
-		final List<PlacemarkDetailDto> details = new ArrayList<PlacemarkDetailDto>();
-		Integer qgOrder;
-		Integer qOrder;
+    private List<PlacemarkDetailDto> getPlacemarkDetails(SurveyedLocale sl) {
+        final List<PlacemarkDetailDto> details = new ArrayList<PlacemarkDetailDto>();
+        Integer qgOrder;
+        Integer qOrder;
 
-		if (sl.getSurveyalValues() == null) {
-			return details;
-		}
+        if (sl.getSurveyalValues() == null) {
+            return details;
+        }
 
-		for (SurveyalValue sv : sl.getSurveyalValues()) {
-			PlacemarkDetailDto pmDto = new PlacemarkDetailDto();
-			DtoMarshaller.copyToDto(sv, pmDto);
-			pmDto.setPlacemarkId(sl.getKey().getId());
-			qgOrder = sv.getQuestionGroupOrder();
-			qOrder = sv.getQuestionOrder();
-			pmDto.setOrder((qgOrder == null ? 0 : qgOrder) * 1000 + (qOrder == null ? 0 : qOrder));
-			details.add(pmDto);
-		}
+        for (SurveyalValue sv : sl.getSurveyalValues()) {
+            PlacemarkDetailDto pmDto = new PlacemarkDetailDto();
+            DtoMarshaller.copyToDto(sv, pmDto);
+            pmDto.setPlacemarkId(sl.getKey().getId());
+            qgOrder = sv.getQuestionGroupOrder();
+            qOrder = sv.getQuestionOrder();
+            pmDto.setOrder((qgOrder == null ? 0 : qgOrder) * 1000 + (qOrder == null ? 0 : qOrder));
+            details.add(pmDto);
+        }
 
-		return details;
-	}
+        return details;
+    }
 }
