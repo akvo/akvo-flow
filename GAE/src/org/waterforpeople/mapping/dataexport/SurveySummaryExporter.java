@@ -46,7 +46,6 @@ import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
 import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
-import com.google.api.server.spi.config.Api;
 
 /**
  * This exporter will write the survey "descriptive statistics" report to a file. These stats
@@ -354,6 +353,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
             setVisible(true);
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == noButton) {
                 doRollup = false;
@@ -615,7 +615,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                 min = val;
             }
             double delta = val - mean;
-            mean = mean + (delta / (double) sampleCount);
+            mean = mean + (delta / sampleCount);
             // the sumSqMean calc uses the newly updated value for mean
             sumSqMean = sumSqMean + delta * (val - mean);
             isSorted = false;
@@ -631,7 +631,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         }
 
         public double getVariance() {
-            return sumSqMean / (double) (sampleCount - 1d);
+            return sumSqMean / (sampleCount - 1d);
         }
 
         public double getMedian() {
@@ -680,7 +680,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         }
 
         public double getStandardError() {
-            return Math.sqrt(getVariance() / (double) sampleCount);
+            return Math.sqrt(getVariance() / sampleCount);
         }
 
         /**

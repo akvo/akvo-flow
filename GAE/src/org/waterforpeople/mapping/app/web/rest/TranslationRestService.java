@@ -38,14 +38,8 @@ import org.waterforpeople.mapping.app.web.rest.dto.TranslationBulkDeletePayload;
 import org.waterforpeople.mapping.app.web.rest.dto.TranslationBulkPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.TranslationPayload;
 
-import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.TranslationDao;
-import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.QuestionGroup;
-import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;

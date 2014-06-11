@@ -28,7 +28,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.domain.Question;
 
 public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 

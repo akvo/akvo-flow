@@ -126,7 +126,7 @@ public class SurveyReplicationImporter {
             QuestionDto dtoDetail = null;
             for (int i = 0; i < 3; i++) {
                 try {
-                    dtoDetail = (QuestionDto) BulkDataServiceClient
+                    dtoDetail = BulkDataServiceClient
                             .loadQuestionDetails(serverBase, dto.getKeyId(), apiKey);
                     break;
                 } catch (IOException iex) {
@@ -141,7 +141,6 @@ public class SurveyReplicationImporter {
 
     public static <T extends BaseDomain, U extends BaseDto> List<T> copyAndCreateList(
             List<T> canonicalList, List<U> dtoList, Class<T> clazz) {
-        String surveyDtoStatus = null;
 
         for (U dto : dtoList) {
             T canonical = null;

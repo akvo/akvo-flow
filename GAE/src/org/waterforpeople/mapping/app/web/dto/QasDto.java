@@ -17,9 +17,6 @@
 package org.waterforpeople.mapping.app.web.dto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Date;
 
 /**
  * dto that can hold questionanswerstore data
