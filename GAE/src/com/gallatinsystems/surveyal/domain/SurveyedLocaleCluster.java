@@ -38,7 +38,6 @@ public class SurveyedLocaleCluster extends BaseDomain {
     private Integer count;
     private Long firstSurveyedLocaleId;
     private Date firstCollectionDate;
-    private Long surveyId;
     private Double latCenter;
     private Double lonCenter;
     private Boolean showOnPublicMap;

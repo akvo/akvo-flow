@@ -33,7 +33,6 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -172,6 +171,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @return
      * @deprecated
      */
+    @Deprecated
     public List<Question> listQuestionInOrder(Long surveyId) {
         List<Question> orderedQuestionList = new ArrayList<Question>();
         List<Question> unknownOrder = listByProperty("surveyId", surveyId,
@@ -368,6 +368,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @return
      * @deprecated
      */
+    @Deprecated
     public Question findByReferenceId(String refid) {
         Question q = findByProperty("referenceIndex", refid, "String");
         return q;
@@ -406,6 +407,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * finds the base question (no child objects) by id
      */
+    @Override
     public Question getByKey(Key key) {
         return super.getByKey(key);
     }

@@ -16,10 +16,10 @@
 
 package org.waterforpeople.mapping.app.web;
 
+import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
+
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,8 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jsr107cache.Cache;
-import net.sf.jsr107cache.CacheFactory;
-import net.sf.jsr107cache.CacheManager;
 
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
@@ -47,9 +45,7 @@ import com.gallatinsystems.gis.map.domain.Geometry;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.survey.dao.SurveyDAO;
-import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
@@ -66,9 +62,6 @@ public class TestHarnessServlet extends HttpServlet {
     private static final long serialVersionUID = -5673118002247715049L;
 
     @Override
-    @SuppressWarnings({
-            "unused", "rawtypes"
-    })
     public void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String action = req.getParameter("action");
         if ("setupTestUser".equals(action)) {
@@ -252,16 +245,9 @@ public class TestHarnessServlet extends HttpServlet {
             }
 
             // initialize the memcache
-            Cache cache = null;
-            Map props = new HashMap();
-            try {
-                CacheFactory cacheFactory = CacheManager.getInstance()
-                        .getCacheFactory();
-                cache = cacheFactory.createCache(props);
+            Cache cache = initCache(60 * 60 * 1);
+            if (cache != null) {
                 cache.clear();
-            } catch (Exception e) {
-                log.log(Level.SEVERE,
-                        "Couldn't initialize cache: " + e.getMessage(), e);
             }
 
             final TaskOptions options = TaskOptions.Builder

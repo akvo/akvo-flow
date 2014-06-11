@@ -71,7 +71,6 @@ public class BulkDataServiceClient {
     public static final String RESPONSE_KEY = "dtoList";
     private static final String SURVEY_SERVLET_PATH = "/surveyrestapi";
     private static final String DEVICE_FILES_SERVLET_PATH = "/devicefilesrestapi?action=";
-    private static final String ACCESS_POINT_SERVLET_PATH = "/accesspoint?action=search";
 
     /**
      * lists all responses from the server for a surveyInstance submission as a map of values keyed
