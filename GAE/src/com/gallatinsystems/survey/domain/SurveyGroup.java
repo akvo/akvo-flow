@@ -26,84 +26,82 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * a grouping of surveys. 
- * 
- *
+ * a grouping of surveys.
  */
 @PersistenceCapable
-public class SurveyGroup extends BaseDomain {  
+public class SurveyGroup extends BaseDomain {
 
-	private static final long serialVersionUID = 8941584684617286776L;
-	private String name = null;
-	private String code = null;
-	private Boolean monitoringGroup = false;
-	private Long newLocaleSurveyId;
-	private String description = null;
-	@NotPersistent
-	private HashMap<String, Translation> altTextMap;
-	@NotPersistent
-	private List<Survey> surveyList = null;
+    private static final long serialVersionUID = 8941584684617286776L;
+    private String name = null;
+    private String code = null;
+    private Boolean monitoringGroup = false;
+    private Long newLocaleSurveyId;
+    private String description = null;
+    @NotPersistent
+    private HashMap<String, Translation> altTextMap;
+    @NotPersistent
+    private List<Survey> surveyList = null;
 
-	public HashMap<String, Translation> getAltTextMap() {
-		return altTextMap;
-	}
+    public HashMap<String, Translation> getAltTextMap() {
+        return altTextMap;
+    }
 
-	public void setAltTextMap(HashMap<String, Translation> altTextMap) {
-		this.altTextMap = altTextMap;
-	}
+    public void setAltTextMap(HashMap<String, Translation> altTextMap) {
+        this.altTextMap = altTextMap;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public void setSurveyList(List<Survey> surveyList) {
-		this.surveyList = surveyList;
-	}
+    public void setSurveyList(List<Survey> surveyList) {
+        this.surveyList = surveyList;
+    }
 
-	public List<Survey> getSurveyList() {
-		return surveyList;
-	}
+    public List<Survey> getSurveyList() {
+        return surveyList;
+    }
 
-	public void addSurvey(Survey survey) {
-		if (surveyList == null)
-			surveyList = new ArrayList<Survey>();
-		surveyList.add(survey);
-	}
+    public void addSurvey(Survey survey) {
+        if (surveyList == null)
+            surveyList = new ArrayList<Survey>();
+        surveyList.add(survey);
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public Boolean getMonitoringGroup() {
-		return monitoringGroup;
-	}
+    public Boolean getMonitoringGroup() {
+        return monitoringGroup;
+    }
 
-	public void setMonitoringGroup(Boolean monitoringGroup) {
-		this.monitoringGroup = monitoringGroup;
-	}
+    public void setMonitoringGroup(Boolean monitoringGroup) {
+        this.monitoringGroup = monitoringGroup;
+    }
 
-	public Long getNewLocaleSurveyId() {
-		return newLocaleSurveyId;
-	}
+    public Long getNewLocaleSurveyId() {
+        return newLocaleSurveyId;
+    }
 
-	public void setNewLocaleSurveyId(Long newLocaleSurveyId) {
-		this.newLocaleSurveyId = newLocaleSurveyId;
-	}
+    public void setNewLocaleSurveyId(Long newLocaleSurveyId) {
+        this.newLocaleSurveyId = newLocaleSurveyId;
+    }
 
 }

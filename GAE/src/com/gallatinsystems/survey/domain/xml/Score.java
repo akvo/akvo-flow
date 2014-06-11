@@ -30,43 +30,43 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement(name = "score")
 public class Score {
 
-	@XmlAttribute(required = true)
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	@XmlSchemaType(name = "NMTOKEN")
-	private String rangeLow;
+    @XmlAttribute(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    private String rangeLow;
 
-	@XmlAttribute(required = true)
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	@XmlSchemaType(name = "NMTOKEN")
-	private String rangeHigh;
+    @XmlAttribute(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    private String rangeHigh;
 
-	@XmlAttribute(required = true)
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	@XmlSchemaType(name = "NMTOKEN")
-	private String value;
+    @XmlAttribute(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    private String value;
 
-	public String getRangeLow() {
-		return rangeLow;
-	}
+    public String getRangeLow() {
+        return rangeLow;
+    }
 
-	public void setRangeLow(String rangeLow) {
-		this.rangeLow = rangeLow;
-	}
+    public void setRangeLow(String rangeLow) {
+        this.rangeLow = rangeLow;
+    }
 
-	public String getRangeHigh() {
-		return rangeHigh;
-	}
+    public String getRangeHigh() {
+        return rangeHigh;
+    }
 
-	public void setRangeHigh(String rangeHigh) {
-		this.rangeHigh = rangeHigh;
-	}
+    public void setRangeHigh(String rangeHigh) {
+        this.rangeHigh = rangeHigh;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
 }

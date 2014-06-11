@@ -20,23 +20,21 @@ import com.gallatinsystems.device.domain.DeviceGroup;
 import com.gallatinsystems.framework.dao.BaseDAO;
 
 /**
- * 
  * Dao for manipulating deviceGroups
- * 
  */
 public class DeviceGroupDAO extends BaseDAO<DeviceGroup> {
 
-	public DeviceGroupDAO() {
-		super(DeviceGroup.class);
-	}
+    public DeviceGroupDAO() {
+        super(DeviceGroup.class);
+    }
 
-	/**
-	 * finds a single device group by code
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public DeviceGroup findByDeviceGroupName(String name) {
-		return super.findByProperty("code", name, "String");
-	}
+    /**
+     * finds a single device group by code
+     * 
+     * @param name
+     * @return
+     */
+    public DeviceGroup findByDeviceGroupName(String name) {
+        return super.findByProperty("code", name, "String");
+    }
 }

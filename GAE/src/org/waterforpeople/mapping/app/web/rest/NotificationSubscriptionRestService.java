@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
@@ -44,167 +45,176 @@ import com.gallatinsystems.notification.domain.NotificationSubscription;
 @RequestMapping("/notification_subscriptions")
 public class NotificationSubscriptionRestService {
 
-	@Inject
-	private NotificationSubscriptionDao notificationSubscriptionDao;
+    @Inject
+    private NotificationSubscriptionDao notificationSubscriptionDao;
 
-	// TODO put in meta information?
-	// list all notificationSubscriptions
-	@RequestMapping(method = RequestMethod.GET, value = "/all")
-	@ResponseBody
-	public Map<String, List<NotificationSubscriptionDto>> listNotificationSubscriptions() {
-		final Map<String, List<NotificationSubscriptionDto>> response = new HashMap<String, List<NotificationSubscriptionDto>>();
-		List<NotificationSubscriptionDto> results = new ArrayList<NotificationSubscriptionDto>();
-		List<NotificationSubscription> notificationSubscriptions = notificationSubscriptionDao
-				.list(Constants.ALL_RESULTS);
-		if (notificationSubscriptions != null) {
-			for (NotificationSubscription s : notificationSubscriptions) {
-				NotificationSubscriptionDto dto = new NotificationSubscriptionDto();
-				DtoMarshaller.copyToDto(s, dto);
+    // TODO put in meta information?
+    // list all notificationSubscriptions
+    @RequestMapping(method = RequestMethod.GET, value = "/all")
+    @ResponseBody
+    public Map<String, List<NotificationSubscriptionDto>> listNotificationSubscriptions() {
+        final Map<String, List<NotificationSubscriptionDto>> response = new HashMap<String, List<NotificationSubscriptionDto>>();
+        List<NotificationSubscriptionDto> results = new ArrayList<NotificationSubscriptionDto>();
+        List<NotificationSubscription> notificationSubscriptions = notificationSubscriptionDao
+                .list(Constants.ALL_RESULTS);
+        if (notificationSubscriptions != null) {
+            for (NotificationSubscription s : notificationSubscriptions) {
+                NotificationSubscriptionDto dto = new NotificationSubscriptionDto();
+                DtoMarshaller.copyToDto(s, dto);
 
-				results.add(dto);
-			}
-		}
-		response.put("notification_subscriptions", results);
-		return response;
-	}
+                results.add(dto);
+            }
+        }
+        response.put("notification_subscriptions", results);
+        return response;
+    }
 
-	// TODO put in meta information?
-	// list notificationSubscriptions by survey id
-	@RequestMapping(method = RequestMethod.GET, value = "")
-	@ResponseBody
-	public Map<String, List<NotificationSubscriptionDto>> listNotificationSubscriptionBySurvey(
-			@RequestParam("surveyId") Long surveyId) {
-		final Map<String, List<NotificationSubscriptionDto>> response = new HashMap<String, List<NotificationSubscriptionDto>>();
-		List<NotificationSubscriptionDto> results = new ArrayList<NotificationSubscriptionDto>();
-		List<NotificationSubscription> notificationSubscriptions = notificationSubscriptionDao
-				.listSubscriptions(surveyId, null, false);
-		if (notificationSubscriptions != null) {
-			for (NotificationSubscription s : notificationSubscriptions) {
-				NotificationSubscriptionDto dto = new NotificationSubscriptionDto();
-				DtoMarshaller.copyToDto(s, dto);
+    // TODO put in meta information?
+    // list notificationSubscriptions by survey id
+    @RequestMapping(method = RequestMethod.GET, value = "")
+    @ResponseBody
+    public Map<String, List<NotificationSubscriptionDto>> listNotificationSubscriptionBySurvey(
+            @RequestParam("surveyId")
+            Long surveyId) {
+        final Map<String, List<NotificationSubscriptionDto>> response = new HashMap<String, List<NotificationSubscriptionDto>>();
+        List<NotificationSubscriptionDto> results = new ArrayList<NotificationSubscriptionDto>();
+        List<NotificationSubscription> notificationSubscriptions = notificationSubscriptionDao
+                .listSubscriptions(surveyId, null, false);
+        if (notificationSubscriptions != null) {
+            for (NotificationSubscription s : notificationSubscriptions) {
+                NotificationSubscriptionDto dto = new NotificationSubscriptionDto();
+                DtoMarshaller.copyToDto(s, dto);
 
-				results.add(dto);
-			}
-		}
-		response.put("notification_subscriptions", results);
-		return response;
-	}
+                results.add(dto);
+            }
+        }
+        response.put("notification_subscriptions", results);
+        return response;
+    }
 
-	// find a single notificationSubscription by the notificationSubscriptionId
-	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
-	@ResponseBody
-	public Map<String, NotificationSubscriptionDto> findNotificationSubscription(
-			@PathVariable("id") Long id) {
-		final Map<String, NotificationSubscriptionDto> response = new HashMap<String, NotificationSubscriptionDto>();
-		NotificationSubscription s = notificationSubscriptionDao.getByKey(id);
-		NotificationSubscriptionDto dto = null;
-		if (s != null) {
-			dto = new NotificationSubscriptionDto();
-			DtoMarshaller.copyToDto(s, dto);
-		}
-		response.put("notification_subscription", dto);
-		return response;
+    // find a single notificationSubscription by the notificationSubscriptionId
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    @ResponseBody
+    public Map<String, NotificationSubscriptionDto> findNotificationSubscription(
+            @PathVariable("id")
+            Long id) {
+        final Map<String, NotificationSubscriptionDto> response = new HashMap<String, NotificationSubscriptionDto>();
+        NotificationSubscription s = notificationSubscriptionDao.getByKey(id);
+        NotificationSubscriptionDto dto = null;
+        if (s != null) {
+            dto = new NotificationSubscriptionDto();
+            DtoMarshaller.copyToDto(s, dto);
+        }
+        response.put("notification_subscription", dto);
+        return response;
 
-	}
+    }
 
-	// delete notificationSubscription by id
-	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-	@ResponseBody
-	public Map<String, RestStatusDto> deleteNotificationSubscriptionById(
-			@PathVariable("id") Long id) {
-		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-		NotificationSubscription s = notificationSubscriptionDao.getByKey(id);
-		RestStatusDto statusDto = null;
-		statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+    // delete notificationSubscription by id
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ResponseBody
+    public Map<String, RestStatusDto> deleteNotificationSubscriptionById(
+            @PathVariable("id")
+            Long id) {
+        final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+        NotificationSubscription s = notificationSubscriptionDao.getByKey(id);
+        RestStatusDto statusDto = null;
+        statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
 
-		// check if notificationSubscription exists in the datastore
-		if (s != null) {
-			// delete notificationSubscription group
-			notificationSubscriptionDao.delete(s);
-			statusDto.setStatus("ok");
-		}
-		response.put("meta", statusDto);
-		return response;
-	}
+        // check if notificationSubscription exists in the datastore
+        if (s != null) {
+            // delete notificationSubscription group
+            notificationSubscriptionDao.delete(s);
+            statusDto.setStatus("ok");
+        }
+        response.put("meta", statusDto);
+        return response;
+    }
 
-	// update existing notificationSubscription
-	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-	@ResponseBody
-	public Map<String, Object> saveExistingNotificationSubscription(
-			@RequestBody NotificationSubscriptionPayload payLoad) {
-		final NotificationSubscriptionDto notificationSubscriptionDto = payLoad
-				.getNotification_subscription();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		NotificationSubscriptionDto dto = null;
+    // update existing notificationSubscription
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    @ResponseBody
+    public Map<String, Object> saveExistingNotificationSubscription(
+            @RequestBody
+            NotificationSubscriptionPayload payLoad) {
+        final NotificationSubscriptionDto notificationSubscriptionDto = payLoad
+                .getNotification_subscription();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        NotificationSubscriptionDto dto = null;
 
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
 
-		// if the POST data contains a valid notificationSubscriptionDto,
-		// continue.
-		// Otherwise,
-		// server will respond with 400 Bad Request
-		if (notificationSubscriptionDto != null) {
-			Long keyId = notificationSubscriptionDto.getKeyId();
-			NotificationSubscription s;
+        // if the POST data contains a valid notificationSubscriptionDto,
+        // continue.
+        // Otherwise,
+        // server will respond with 400 Bad Request
+        if (notificationSubscriptionDto != null) {
+            Long keyId = notificationSubscriptionDto.getKeyId();
+            NotificationSubscription s;
 
-			// if the notificationSubscriptionDto has a key, try to get the
-			// notificationSubscription.
-			if (keyId != null) {
-				s = notificationSubscriptionDao.getByKey(keyId);
-				// if we find the notificationSubscription, update it's
-				// properties
-				if (s != null) {
-					// copy the properties, except the createdDateTime property,
-					// because it is set in the Dao.
-					BeanUtils.copyProperties(notificationSubscriptionDto, s,
-							new String[] { "createdDateTime" });
-					s = notificationSubscriptionDao.save(s);
-					dto = new NotificationSubscriptionDto();
-					DtoMarshaller.copyToDto(s, dto);
-					statusDto.setStatus("ok");
-				}
-			}
-		}
-		response.put("meta", statusDto);
-		response.put("notification_subscription", dto);
-		return response;
-	}
+            // if the notificationSubscriptionDto has a key, try to get the
+            // notificationSubscription.
+            if (keyId != null) {
+                s = notificationSubscriptionDao.getByKey(keyId);
+                // if we find the notificationSubscription, update it's
+                // properties
+                if (s != null) {
+                    // copy the properties, except the createdDateTime property,
+                    // because it is set in the Dao.
+                    BeanUtils.copyProperties(notificationSubscriptionDto, s,
+                            new String[] {
+                                "createdDateTime"
+                            });
+                    s = notificationSubscriptionDao.save(s);
+                    dto = new NotificationSubscriptionDto();
+                    DtoMarshaller.copyToDto(s, dto);
+                    statusDto.setStatus("ok");
+                }
+            }
+        }
+        response.put("meta", statusDto);
+        response.put("notification_subscription", dto);
+        return response;
+    }
 
-	// create new notificationSubscription
-	@RequestMapping(method = RequestMethod.POST, value = "")
-	@ResponseBody
-	public Map<String, Object> saveNewNotificationSubscription(
-			@RequestBody NotificationSubscriptionPayload payLoad) {
-		final NotificationSubscriptionDto notificationSubscriptionDto = payLoad
-				.getNotification_subscription();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		NotificationSubscriptionDto dto = null;
+    // create new notificationSubscription
+    @RequestMapping(method = RequestMethod.POST, value = "")
+    @ResponseBody
+    public Map<String, Object> saveNewNotificationSubscription(
+            @RequestBody
+            NotificationSubscriptionPayload payLoad) {
+        final NotificationSubscriptionDto notificationSubscriptionDto = payLoad
+                .getNotification_subscription();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        NotificationSubscriptionDto dto = null;
 
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
 
-		// if the POST data contains a valid notificationSubscriptionDto,
-		// continue.
-		// Otherwise,
-		// server will respond with 400 Bad Request
-		if (notificationSubscriptionDto != null) {
-			NotificationSubscription s = new NotificationSubscription();
+        // if the POST data contains a valid notificationSubscriptionDto,
+        // continue.
+        // Otherwise,
+        // server will respond with 400 Bad Request
+        if (notificationSubscriptionDto != null) {
+            NotificationSubscription s = new NotificationSubscription();
 
-			// copy the properties, except the createdDateTime property, because
-			// it is set in the Dao.
-			BeanUtils.copyProperties(notificationSubscriptionDto, s,
-					new String[] { "createdDateTime" });
-			s = notificationSubscriptionDao.save(s);
+            // copy the properties, except the createdDateTime property, because
+            // it is set in the Dao.
+            BeanUtils.copyProperties(notificationSubscriptionDto, s,
+                    new String[] {
+                        "createdDateTime"
+                    });
+            s = notificationSubscriptionDao.save(s);
 
-			dto = new NotificationSubscriptionDto();
-			DtoMarshaller.copyToDto(s, dto);
-			statusDto.setStatus("ok");
-		}
+            dto = new NotificationSubscriptionDto();
+            DtoMarshaller.copyToDto(s, dto);
+            statusDto.setStatus("ok");
+        }
 
-		response.put("meta", statusDto);
-		response.put("notification_subscription", dto);
-		return response;
-	}
+        response.put("meta", statusDto);
+        response.put("notification_subscription", dto);
+        return response;
+    }
 }

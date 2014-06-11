@@ -31,98 +31,95 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
  * persists and finds WebActivityAuthorization objects.
  * 
  * @author Christopher Fagiani
- * 
  */
 public class WebActivityAuthorizationDao extends
-		BaseDAO<WebActivityAuthorization> {
+        BaseDAO<WebActivityAuthorization> {
 
-	public WebActivityAuthorizationDao() {
-		super(WebActivityAuthorization.class);
-	}
+    public WebActivityAuthorizationDao() {
+        super(WebActivityAuthorization.class);
+    }
 
-	/**
-	 * lists all webActivityAuthorizations associated with the token and,
-	 * optionally, activityName passed in. If the validOnly flag is true, this
-	 * list is filtered to only include "valid" items (unexpired tokens with a
-	 * useCount < maxUses).
-	 * 
-	 * @param token
-	 * @param activity
-	 * @param cursorString
-	 * @param validOnly
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<WebActivityAuthorization> listByToken(String token,
-			String activityName, String cursorString, boolean validOnly) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(WebActivityAuthorization.class);
-		Map<String, Object> paramMap = null;
+    /**
+     * lists all webActivityAuthorizations associated with the token and, optionally, activityName
+     * passed in. If the validOnly flag is true, this list is filtered to only include "valid" items
+     * (unexpired tokens with a useCount < maxUses).
+     * 
+     * @param token
+     * @param activity
+     * @param cursorString
+     * @param validOnly
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<WebActivityAuthorization> listByToken(String token,
+            String activityName, String cursorString, boolean validOnly) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(WebActivityAuthorization.class);
+        Map<String, Object> paramMap = null;
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("token", filterString, paramString, "String", token,
-				paramMap);
-		appendNonNullParam("webActivityName", filterString, paramString,
-				"String", activityName, paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		prepareCursor(cursorString, query);
+        appendNonNullParam("token", filterString, paramString, "String", token,
+                paramMap);
+        appendNonNullParam("webActivityName", filterString, paramString,
+                "String", activityName, paramMap);
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        prepareCursor(cursorString, query);
 
-		List<WebActivityAuthorization> authList = (List<WebActivityAuthorization>) query
-				.executeWithMap(paramMap);
+        List<WebActivityAuthorization> authList = (List<WebActivityAuthorization>) query
+                .executeWithMap(paramMap);
 
-		if (authList != null && validOnly) {
-			List<WebActivityAuthorization> filteredList = new ArrayList<WebActivityAuthorization>();
-			for (WebActivityAuthorization auth : authList) {
-				if (auth.isValidForAuth()) {
-					filteredList.add(auth);
-				}
-			}
-			authList = filteredList;
-		}
-		return authList;
-	}
+        if (authList != null && validOnly) {
+            List<WebActivityAuthorization> filteredList = new ArrayList<WebActivityAuthorization>();
+            for (WebActivityAuthorization auth : authList) {
+                if (auth.isValidForAuth()) {
+                    filteredList.add(auth);
+                }
+            }
+            authList = filteredList;
+        }
+        return authList;
+    }
 
-	/**
-	 * returns all VALID authorization objects for a given user/activity
-	 * combination
-	 * 
-	 * @param userId
-	 * @param activityName
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<WebActivityAuthorization> listByUser(Long userId,
-			String activityName) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(WebActivityAuthorization.class);
-		Map<String, Object> paramMap = null;
+    /**
+     * returns all VALID authorization objects for a given user/activity combination
+     * 
+     * @param userId
+     * @param activityName
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<WebActivityAuthorization> listByUser(Long userId,
+            String activityName) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(WebActivityAuthorization.class);
+        Map<String, Object> paramMap = null;
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("userId", filterString, paramString, "Long", userId,
-				paramMap);
-		appendNonNullParam("webActivityName", filterString, paramString,
-				"String", activityName, paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
+        appendNonNullParam("userId", filterString, paramString, "Long", userId,
+                paramMap);
+        appendNonNullParam("webActivityName", filterString, paramString,
+                "String", activityName, paramMap);
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
 
-		List<WebActivityAuthorization> authList = (List<WebActivityAuthorization>) query
-				.executeWithMap(paramMap);
-		if (authList != null) {
-			List<WebActivityAuthorization> filteredList = new ArrayList<WebActivityAuthorization>();
-			for (WebActivityAuthorization auth : authList) {
-				if (auth.isValidForAuth()) {
-					filteredList.add(auth);
-				}
-			}
-			authList = filteredList;
-		}
-		return authList;
-	}
+        List<WebActivityAuthorization> authList = (List<WebActivityAuthorization>) query
+                .executeWithMap(paramMap);
+        if (authList != null) {
+            List<WebActivityAuthorization> filteredList = new ArrayList<WebActivityAuthorization>();
+            for (WebActivityAuthorization auth : authList) {
+                if (auth.isValidForAuth()) {
+                    filteredList.add(auth);
+                }
+            }
+            authList = filteredList;
+        }
+        return authList;
+    }
 }

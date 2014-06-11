@@ -33,80 +33,77 @@ import com.gallatinsystems.survey.domain.xml.QuestionGroup;
 import com.gallatinsystems.survey.domain.xml.Survey;
 
 /**
- * 
- * Utility to use JaxB to marshall/unmarshall Survey xml objects into/from xml
- * strings.
- * 
+ * Utility to use JaxB to marshall/unmarshall Survey xml objects into/from xml strings.
  */
 public class SurveyXMLAdapter {
-	private static final Logger log = Logger.getLogger(SurveyXMLAdapter.class
-			.getName());
+    private static final Logger log = Logger.getLogger(SurveyXMLAdapter.class
+            .getName());
 
-	public Survey unmarshall(String xmlDoc) throws JAXBException {
-		JAXBContext jc = JAXBContext
-				.newInstance("com.gallatinsystems.survey.domain.xml");
-		Unmarshaller unmarshaller = jc.createUnmarshaller();
-		StringReader sr = new StringReader(xmlDoc);
-		Survey survey = (Survey) unmarshaller.unmarshal(sr);
-		return survey;
-	}
+    public Survey unmarshall(String xmlDoc) throws JAXBException {
+        JAXBContext jc = JAXBContext
+                .newInstance("com.gallatinsystems.survey.domain.xml");
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        StringReader sr = new StringReader(xmlDoc);
+        Survey survey = (Survey) unmarshaller.unmarshal(sr);
+        return survey;
+    }
 
-	public String marshal(Survey survey) throws JAXBException {
+    public String marshal(Survey survey) throws JAXBException {
 
-		JAXBContext jc = JAXBContext
-				.newInstance("com.gallatinsystems.survey.domain.xml");
-		java.io.StringWriter sw = new java.io.StringWriter();
-		Marshaller marshaller = jc.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-		marshaller.marshal(survey, sw);
-		return sw.toString();
-	}
+        JAXBContext jc = JAXBContext
+                .newInstance("com.gallatinsystems.survey.domain.xml");
+        java.io.StringWriter sw = new java.io.StringWriter();
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.marshal(survey, sw);
+        return sw.toString();
+    }
 
-	public String marshal(Question survey) throws JAXBException {
+    public String marshal(Question survey) throws JAXBException {
 
-		JAXBContext jc = JAXBContext
-				.newInstance("com.gallatinsystems.survey.domain.xml");
-		java.io.StringWriter sw = new java.io.StringWriter();
-		Marshaller marshaller = jc.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-		marshaller.marshal(survey, sw);
-		return sw.toString();
-	}
+        JAXBContext jc = JAXBContext
+                .newInstance("com.gallatinsystems.survey.domain.xml");
+        java.io.StringWriter sw = new java.io.StringWriter();
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.marshal(survey, sw);
+        return sw.toString();
+    }
 
-	public void printMarshalledDocument(Survey survey) {
-		log.info(survey.toString());
-		for (QuestionGroup og : survey.getQuestionGroup()) {
-			log.info(og.toString());
-			for (Question question : og.getQuestion()) {
-				log.info(question.toString());
-			}
-		}
-	}
+    public void printMarshalledDocument(Survey survey) {
+        log.info(survey.toString());
+        for (QuestionGroup og : survey.getQuestionGroup()) {
+            log.info(og.toString());
+            for (Question question : og.getQuestion()) {
+                log.info(question.toString());
+            }
+        }
+    }
 
-	public static void main(String[] args) {
-		SurveyXMLAdapter surveyXMLAdapter = new SurveyXMLAdapter();
-		try {
-			surveyXMLAdapter.unmarshall(readFileAsString(args[0]));
-		} catch (JAXBException e) {
-			log.log(Level.SEVERE, "Could not get survey from xml", e);
-		} catch (IOException e) {
-			log.log(Level.SEVERE, "Could not read file", e);
-		}
-	}
+    public static void main(String[] args) {
+        SurveyXMLAdapter surveyXMLAdapter = new SurveyXMLAdapter();
+        try {
+            surveyXMLAdapter.unmarshall(readFileAsString(args[0]));
+        } catch (JAXBException e) {
+            log.log(Level.SEVERE, "Could not get survey from xml", e);
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Could not read file", e);
+        }
+    }
 
-	private static String readFileAsString(String filePath)
-			throws java.io.IOException {
-		StringBuffer fileData = new StringBuffer(1000);
-		BufferedReader reader = new BufferedReader(new FileReader(filePath));
-		char[] buf = new char[1024];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1) {
-			String readData = String.valueOf(buf, 0, numRead);
-			fileData.append(readData);
-			buf = new char[1024];
-		}
-		reader.close();
-		return fileData.toString();
-	}
+    private static String readFileAsString(String filePath)
+            throws java.io.IOException {
+        StringBuffer fileData = new StringBuffer(1000);
+        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        char[] buf = new char[1024];
+        int numRead = 0;
+        while ((numRead = reader.read(buf)) != -1) {
+            String readData = String.valueOf(buf, 0, numRead);
+            fileData.append(readData);
+            buf = new char[1024];
+        }
+        reader.close();
+        return fileData.toString();
+    }
 
 }

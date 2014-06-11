@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
@@ -34,55 +35,57 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import com.gallatinsystems.gis.geography.dao.SubCountryDao;
 import com.gallatinsystems.gis.geography.domain.SubCountry;
 
-
 @Controller
 @RequestMapping("/sub_countrys")
 public class SubCountryRestService {
 
-	@Inject
-	SubCountryDao subCountryDao;
+    @Inject
+    SubCountryDao subCountryDao;
 
-	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	public Map<String, Object> listSubCountry(
-			@RequestParam(value = "countryCode", defaultValue = "") String countryCode,
-			@RequestParam(value = "level", defaultValue = "") Integer level,
-			@RequestParam(value = "parentId", defaultValue = "") Long parentId) {
-		final Map<String, Object> response = new HashMap<String, Object>();
-		final List<SubCountryDto> subCountryList = new ArrayList<SubCountryDto>();
-		List<SubCountry> list = new ArrayList<SubCountry>();
-		// if we ask for level 1, we give back all the level 1 items in the country.
-		if (level != null && level == 1) {
-			list = subCountryDao.listSubCountryByLevel(countryCode, level, null);
-		} else if (level != null && level >= 2) {
-			// 	if we are at level 2 or higher, we need to look at the parent
-			list = subCountryDao.listSubCountryByParent(parentId);
-		}
-		final RestStatusDto statusDto = new RestStatusDto();
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> listSubCountry(
+            @RequestParam(value = "countryCode", defaultValue = "")
+            String countryCode,
+            @RequestParam(value = "level", defaultValue = "")
+            Integer level,
+            @RequestParam(value = "parentId", defaultValue = "")
+            Long parentId) {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        final List<SubCountryDto> subCountryList = new ArrayList<SubCountryDto>();
+        List<SubCountry> list = new ArrayList<SubCountry>();
+        // if we ask for level 1, we give back all the level 1 items in the country.
+        if (level != null && level == 1) {
+            list = subCountryDao.listSubCountryByLevel(countryCode, level, null);
+        } else if (level != null && level >= 2) {
+            // if we are at level 2 or higher, we need to look at the parent
+            list = subCountryDao.listSubCountryByParent(parentId);
+        }
+        final RestStatusDto statusDto = new RestStatusDto();
 
-		if (list != null) {
-			for (SubCountry sc : list) {
-				final SubCountryDto dto = new SubCountryDto();
-				DtoMarshaller.copyToDto(sc, dto);
-				subCountryList.add(dto);
-			}
-		}
-		response.put("meta", statusDto);
-		response.put("sub_countrys", subCountryList);
-		return response;
-	}
+        if (list != null) {
+            for (SubCountry sc : list) {
+                final SubCountryDto dto = new SubCountryDto();
+                DtoMarshaller.copyToDto(sc, dto);
+                subCountryList.add(dto);
+            }
+        }
+        response.put("meta", statusDto);
+        response.put("sub_countrys", subCountryList);
+        return response;
+    }
 
-//	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
-//	@ResponseBody
-//	public Map<String, MessageDto> getMessage(@PathVariable("id") Long id) {
-//		final Map<String, MessageDto> response = new HashMap<String, MessageDto>();
-//		final MessageDto dto = new MessageDto();
-//		final Message m = messageDao.getByKey(id);
-//
-//		if (m != null) {
-//			DtoMarshaller.copyToDto(m, dto);
-//		}
-//		response.put("message", dto);
-//		return response;
-//	}
+    // @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    // @ResponseBody
+    // public Map<String, MessageDto> getMessage(@PathVariable("id") Long id) {
+    // final Map<String, MessageDto> response = new HashMap<String, MessageDto>();
+    // final MessageDto dto = new MessageDto();
+    // final Message m = messageDao.getByKey(id);
+    //
+    // if (m != null) {
+    // DtoMarshaller.copyToDto(m, dto);
+    // }
+    // response.put("message", dto);
+    // return response;
+    // }
 }

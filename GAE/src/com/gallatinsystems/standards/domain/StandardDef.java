@@ -26,37 +26,41 @@ import com.gallatinsystems.standards.domain.Standard.StandardType;
 import com.google.appengine.api.datastore.Key;
 
 public interface StandardDef {
-	public void setKey(Key key);
-	public Date getEffectiveStartDate();
+    public void setKey(Key key);
 
-	public void setEffectiveStartDate(Date effectiveStartDate) ;
+    public Date getEffectiveStartDate();
 
-	public Date getEffectiveEndDate();
+    public void setEffectiveStartDate(Date effectiveStartDate);
 
-	public void setEffectiveEndDate(Date effectiveEndDate);
+    public Date getEffectiveEndDate();
 
-	public String getStandardDescription();
+    public void setEffectiveEndDate(Date effectiveEndDate);
 
-	public void setStandardDescription(String standardDescription);
+    public String getStandardDescription();
 
-	public AccessPointType getAccessPointType() ;
+    public void setStandardDescription(String standardDescription);
 
-	public void setAccessPointType(AccessPointType accessPointType) ;
+    public AccessPointType getAccessPointType();
 
-	public StandardType getStandardType() ;
+    public void setAccessPointType(AccessPointType accessPointType);
 
-	public void setStandardType(StandardType standardType) ;
+    public StandardType getStandardType();
 
-	public String getCountryCode();
+    public void setStandardType(StandardType standardType);
 
-	public void setCountryCode(String countryCode);
+    public String getCountryCode();
 
-	public StandardScope getStandardScope() ;
+    public void setCountryCode(String countryCode);
 
-	public void setStandardScope(StandardScope standardScope);
-	
-	public void setPartOfCompoundRule(Boolean partOfCompoundRule);
-	public Boolean getPartOfCompoundRule();
-	public void setStandardComparisons(StandardComparisons sc);
-	public StandardComparisons getStandardComparisons();
+    public StandardScope getStandardScope();
+
+    public void setStandardScope(StandardScope standardScope);
+
+    public void setPartOfCompoundRule(Boolean partOfCompoundRule);
+
+    public Boolean getPartOfCompoundRule();
+
+    public void setStandardComparisons(StandardComparisons sc);
+
+    public StandardComparisons getStandardComparisons();
 }

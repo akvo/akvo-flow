@@ -20,32 +20,30 @@ import java.io.Serializable;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
-public class QuestionDependencyDto extends BaseDto implements Serializable{
+public class QuestionDependencyDto extends BaseDto implements Serializable {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -3872186127235609046L;
-	
-	private Long questionId = null;
-	private String answerValue = null;
+    private static final long serialVersionUID = -3872186127235609046L;
 
-	public void setQuestionId(Long questionId) {
-		this.questionId = questionId;
-	}
+    private Long questionId = null;
+    private String answerValue = null;
 
-	public Long getQuestionId() {
-		return questionId;
-	}
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
+    }
 
-	public void setAnswerValue(String answerValue) {
-		this.answerValue = answerValue;
-	}
+    public Long getQuestionId() {
+        return questionId;
+    }
 
-	public String getAnswerValue() {
-		return answerValue;
-	}
+    public void setAnswerValue(String answerValue) {
+        this.answerValue = answerValue;
+    }
 
-	
+    public String getAnswerValue() {
+        return answerValue;
+    }
 
 }

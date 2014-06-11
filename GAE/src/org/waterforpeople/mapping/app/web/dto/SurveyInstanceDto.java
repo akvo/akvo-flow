@@ -20,67 +20,66 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * dto that can hold surveyInstance data
  * 
  * @author Mark Westra
- * 
  */
 public class SurveyInstanceDto implements Serializable {
 
-	private static final long serialVersionUID = -850583183416882347L;
+    private static final long serialVersionUID = -850583183416882347L;
 
-	private String uuid;
-	private Long surveyId;
-	private Long collectionDate;
-	private List<QasDto> qasList;
-//	private List<Long> questionIds;
-//	private List<String> answerValues;
+    private String uuid;
+    private Long surveyId;
+    private Long collectionDate;
+    private List<QasDto> qasList;
 
-	public SurveyInstanceDto() {
-		setQasList(new ArrayList<QasDto>());
-//		setQuestionIds(new ArrayList<Long>());
-//		setAnswerValues(new ArrayList<String>());
-	}
+    // private List<Long> questionIds;
+    // private List<String> answerValues;
 
-	public String getUuid() {
-		return uuid;
-	}
+    public SurveyInstanceDto() {
+        setQasList(new ArrayList<QasDto>());
+        // setQuestionIds(new ArrayList<Long>());
+        // setAnswerValues(new ArrayList<String>());
+    }
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
+    public String getUuid() {
+        return uuid;
+    }
 
-	public Long getCollectionDate() {
-		return collectionDate;
-	}
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
-	public void setCollectionDate(Long collectionDate) {
-		this.collectionDate = collectionDate;
-	}
+    public Long getCollectionDate() {
+        return collectionDate;
+    }
 
-	public void addProperty(Long questionId, String answerValue, String deviceQuestionType) {
-		QasDto qasDto = new QasDto();
-		qasDto.setQ(questionId + "");
-		qasDto.setA(answerValue);
-		qasDto.setT(deviceQuestionType);
-		this.qasList.add(qasDto);
-	}
+    public void setCollectionDate(Long collectionDate) {
+        this.collectionDate = collectionDate;
+    }
 
-	public Long getSurveyId() {
-		return surveyId;
-	}
+    public void addProperty(Long questionId, String answerValue, String deviceQuestionType) {
+        QasDto qasDto = new QasDto();
+        qasDto.setQ(questionId + "");
+        qasDto.setA(answerValue);
+        qasDto.setT(deviceQuestionType);
+        this.qasList.add(qasDto);
+    }
 
-	public void setSurveyId(Long surveyId) {
-		this.surveyId = surveyId;
-	}
+    public Long getSurveyId() {
+        return surveyId;
+    }
 
-	public List<QasDto> getQasList() {
-		return qasList;
-	}
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
+    }
 
-	public void setQasList(List<QasDto> qasList) {
-		this.qasList = qasList;
-	}
+    public List<QasDto> getQasList() {
+        return qasList;
+    }
+
+    public void setQasList(List<QasDto> qasList) {
+        this.qasList = qasList;
+    }
 }

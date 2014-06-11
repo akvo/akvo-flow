@@ -26,20 +26,20 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 
 public class DeleteObjectUtil {
-	public void deleteAllObjects(String kind) {
-		final DatastoreService dss = DatastoreServiceFactory
-		.getDatastoreService();
+    public void deleteAllObjects(String kind) {
+        final DatastoreService dss = DatastoreServiceFactory
+                .getDatastoreService();
 
-		final Query query = new Query(kind);
+        final Query query = new Query(kind);
 
-		query.setKeysOnly();
+        query.setKeysOnly();
 
-		final ArrayList<Key> keys = new ArrayList<Key>();
+        final ArrayList<Key> keys = new ArrayList<Key>();
 
-		for (final Entity entity : dss.prepare(query).asIterable(
-				FetchOptions.Builder.withLimit(100000))) {
-			keys.add(entity.getKey());
-		}
-		dss.delete(keys);
-	}
+        for (final Entity entity : dss.prepare(query).asIterable(
+                FetchOptions.Builder.withLimit(100000))) {
+            keys.add(entity.getKey());
+        }
+        dss.delete(keys);
+    }
 }

@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
@@ -46,217 +47,235 @@ import com.gallatinsystems.survey.domain.Survey;
 @RequestMapping("/survey_instances")
 public class SurveyInstanceRestService {
 
-	@Inject
-	private SurveyInstanceDAO surveyInstanceDao;
+    @Inject
+    private SurveyInstanceDAO surveyInstanceDao;
 
-	// list survey instances
-	@RequestMapping(method = RequestMethod.GET, value = "")
-	@ResponseBody
-	public Map<String, Object> listSurveyInstances(
-			@RequestParam(value = "beginDate", defaultValue = "") Long bDate,
-			@RequestParam(value = "endDate", defaultValue = "") Long eDate,
-			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
-			@RequestParam(value = "since", defaultValue = "") String since,
-			@RequestParam(value = "unapprovedOnlyFlag",defaultValue = "") Boolean unapprovedOnlyFlag,
-			@RequestParam(value = "deviceId", defaultValue = "") String deviceId,
-			@RequestParam(value = "submitterName", defaultValue = "") String submitterName,
-			@RequestParam(value = "countryCode", defaultValue = "") String countryCode,
-			@RequestParam(value = "level1", defaultValue = "") String level1,
-			@RequestParam(value = "level2", defaultValue = "") String level2,
-			@RequestParam(value = "surveyedLocaleId", defaultValue = "") Long surveyedLocaleId) {
-		
-		// we don't want to search for empty fields
-		if ("".equals(deviceId)) {
-			deviceId = null;
-		}
-		if ("".equals(submitterName)) {
-			submitterName = null;
-		}
-		if ("".equals(countryCode)) {
-			countryCode = null;
-		}
-		if ("".equals(level1)) {
-			level1 = null;
-		}
-		if ("".equals(level2)) {
-			level2 = null;
-		}
-		
-		final Map<String, Object> response = new HashMap<String, Object>();
-		RestStatusDto statusDto = new RestStatusDto();
-		
-		// create list of surveygroup / survey
-		SurveyDAO surveyDao = new SurveyDAO();
-		List<Survey> surveyList = surveyDao.list("all");
-		HashMap<Long, String> surveyMap = new HashMap<Long, String>();
-		for (Survey s : surveyList) {
-			surveyMap.put(s.getKey().getId(), s.getPath() + "/" + s.getCode());
-		}
-		
-		// turn params into dates
-		Date beginDate = null;
-		Date endDate = null;
-		
-		if (bDate != null) {
-			beginDate = new Date(bDate);
-		}
-		
-		if (eDate != null) {
-			endDate = new Date(eDate);
-		}
-		
-		// if no begin and end date, choose begin date 1-1-1970
-		if (beginDate == null && endDate == null) {
-			//Calendar c = Calendar.getInstance();
-			//c.add(Calendar.YEAR, -90);
-			beginDate = new Date (0); //c.getTime();
-		}
-		
-		// get survey Instances
-		List<SurveyInstance> siList = null;
-		SurveyInstanceDAO dao = new SurveyInstanceDAO();
-		if (surveyedLocaleId == null) {
-			siList = dao.listByDateRangeAndSubmitter(beginDate, endDate, false,
-					surveyId, deviceId, submitterName, countryCode, level1, level2, since);
-		} else {
-			siList = dao.listInstancesByLocale(surveyedLocaleId, null, null, null);
-		}
-		Integer num = siList.size();
-		String newSince = SurveyInstanceDAO.getCursor(siList);
-		
-		// put in survey group/survey names
-		ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
-		for (SurveyInstance siItem : siList) {
-			String code = surveyMap.get(siItem.getSurveyId());
-			SurveyInstanceDto dto = new SurveyInstanceDto();
-			DtoMarshaller.copyToDto(siItem, dto);
-			if (code != null) dto.setSurveyCode(code);
-			siDtoList.add(dto);
-		}
-		
-		statusDto.setSince(newSince);
-		statusDto.setNum(num);
-		response.put("meta", statusDto);
-		response.put("survey_instances", siDtoList);
-		return response;
-	}
-	
-	// find survey instance by id
-	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
-	@ResponseBody
-	public Map<String, SurveyInstanceDto> findSurveyInstanceById(
-			@PathVariable("id") Long id) {
-		final Map<String, SurveyInstanceDto> response = new HashMap<String, SurveyInstanceDto>();
-		SurveyInstance s = surveyInstanceDao.getByKey(id);
-		SurveyInstanceDto dto = null;
-		if (s != null) {
-			dto = new SurveyInstanceDto();
-			DtoMarshaller.copyToDto(s, dto);
-		}
-		response.put("survey_instance", dto);
-		return response;
-	}
+    // list survey instances
+    @RequestMapping(method = RequestMethod.GET, value = "")
+    @ResponseBody
+    public Map<String, Object> listSurveyInstances(
+            @RequestParam(value = "beginDate", defaultValue = "")
+            Long bDate,
+            @RequestParam(value = "endDate", defaultValue = "")
+            Long eDate,
+            @RequestParam(value = "surveyId", defaultValue = "")
+            Long surveyId,
+            @RequestParam(value = "since", defaultValue = "")
+            String since,
+            @RequestParam(value = "unapprovedOnlyFlag", defaultValue = "")
+            Boolean unapprovedOnlyFlag,
+            @RequestParam(value = "deviceId", defaultValue = "")
+            String deviceId,
+            @RequestParam(value = "submitterName", defaultValue = "")
+            String submitterName,
+            @RequestParam(value = "countryCode", defaultValue = "")
+            String countryCode,
+            @RequestParam(value = "level1", defaultValue = "")
+            String level1,
+            @RequestParam(value = "level2", defaultValue = "")
+            String level2,
+            @RequestParam(value = "surveyedLocaleId", defaultValue = "")
+            Long surveyedLocaleId) {
 
-	// delete survey instance by id
-	// TODO update counts
-	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-	@ResponseBody
-	public Map<String, RestStatusDto> deleteSurveyInstanceById(
-			@PathVariable("id") Long id) {
-		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-		SurveyInstance s = surveyInstanceDao.getByKey(id);
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+        // we don't want to search for empty fields
+        if ("".equals(deviceId)) {
+            deviceId = null;
+        }
+        if ("".equals(submitterName)) {
+            submitterName = null;
+        }
+        if ("".equals(countryCode)) {
+            countryCode = null;
+        }
+        if ("".equals(level1)) {
+            level1 = null;
+        }
+        if ("".equals(level2)) {
+            level2 = null;
+        }
 
-		// check if surveyInstance exists in the datastore
-		if (s != null) {
-			surveyInstanceDao.deleteSurveyInstance(s);
-			statusDto.setStatus("ok");
-		}
-		response.put("meta", statusDto);
+        final Map<String, Object> response = new HashMap<String, Object>();
+        RestStatusDto statusDto = new RestStatusDto();
 
-		List<Long> ids = new ArrayList<Long>();
-		ids.add(id);
-		SurveyUtils.notifyReportService(ids, "invalidate");
+        // create list of surveygroup / survey
+        SurveyDAO surveyDao = new SurveyDAO();
+        List<Survey> surveyList = surveyDao.list("all");
+        HashMap<Long, String> surveyMap = new HashMap<Long, String>();
+        for (Survey s : surveyList) {
+            surveyMap.put(s.getKey().getId(), s.getPath() + "/" + s.getCode());
+        }
 
-		return response;
-	}
+        // turn params into dates
+        Date beginDate = null;
+        Date endDate = null;
 
-	// Update survey instance
-	// TODO: question - when is this used?
-	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-	@ResponseBody
-	public Map<String, Object> saveExistingSurveyInstance(
-			@RequestBody SurveyInstancePayload payLoad) {
+        if (bDate != null) {
+            beginDate = new Date(bDate);
+        }
 
-		final SurveyInstanceDto surveyInstanceDto = payLoad.getSurvey_instance();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		SurveyInstanceDto dto = null;
+        if (eDate != null) {
+            endDate = new Date(eDate);
+        }
 
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
-		
-		// if the POST data contains a valid surveyInstanceDto, continue.
-		// Otherwise, server 400 Bad Request
-		if (surveyInstanceDto != null) {
-			Long keyId = surveyInstanceDto.getKeyId();
-			SurveyInstance s;
+        // if no begin and end date, choose begin date 1-1-1970
+        if (beginDate == null && endDate == null) {
+            // Calendar c = Calendar.getInstance();
+            // c.add(Calendar.YEAR, -90);
+            beginDate = new Date(0); // c.getTime();
+        }
 
-			// if the surveyInstanceDto has a key, try to get the surveyInstance.
-			if (keyId != null) {
-				s = surveyInstanceDao.getByKey(keyId);
-				// if we find the surveyInstance, update it's properties
-				if (s != null) {
-					// copy the properties, except the properties that are set
-					// or provided by the Dao.
-					BeanUtils.copyProperties(surveyInstanceDto, s, new String[] {
-							"createdDateTime", "lastUpdateDateTime",
-							"displayName", "questionInstanceList" });
-					s = surveyInstanceDao.save(s);
+        // get survey Instances
+        List<SurveyInstance> siList = null;
+        SurveyInstanceDAO dao = new SurveyInstanceDAO();
+        if (surveyedLocaleId == null) {
+            siList = dao.listByDateRangeAndSubmitter(beginDate, endDate, false,
+                    surveyId, deviceId, submitterName, countryCode, level1, level2, since);
+        } else {
+            siList = dao.listInstancesByLocale(surveyedLocaleId, null, null, null);
+        }
+        Integer num = siList.size();
+        String newSince = SurveyInstanceDAO.getCursor(siList);
 
-					dto = new SurveyInstanceDto();
-					DtoMarshaller.copyToDto(s, dto);
-					statusDto.setStatus("ok");
-				}
-			}
-		}
-		response.put("meta", statusDto);
-		response.put("survey_instance", dto);
-		return response;
-	}
+        // put in survey group/survey names
+        ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
+        for (SurveyInstance siItem : siList) {
+            String code = surveyMap.get(siItem.getSurveyId());
+            SurveyInstanceDto dto = new SurveyInstanceDto();
+            DtoMarshaller.copyToDto(siItem, dto);
+            if (code != null)
+                dto.setSurveyCode(code);
+            siDtoList.add(dto);
+        }
 
-	// Create new survey instance
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> saveNewSurveyInstance(
-			@RequestBody SurveyInstancePayload payLoad) {
+        statusDto.setSince(newSince);
+        statusDto.setNum(num);
+        response.put("meta", statusDto);
+        response.put("survey_instances", siDtoList);
+        return response;
+    }
 
-		final SurveyInstanceDto surveyInstanceDto = payLoad.getSurvey_instance();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		SurveyInstanceDto dto = null;
-		
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+    // find survey instance by id
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    @ResponseBody
+    public Map<String, SurveyInstanceDto> findSurveyInstanceById(
+            @PathVariable("id")
+            Long id) {
+        final Map<String, SurveyInstanceDto> response = new HashMap<String, SurveyInstanceDto>();
+        SurveyInstance s = surveyInstanceDao.getByKey(id);
+        SurveyInstanceDto dto = null;
+        if (s != null) {
+            dto = new SurveyInstanceDto();
+            DtoMarshaller.copyToDto(s, dto);
+        }
+        response.put("survey_instance", dto);
+        return response;
+    }
 
-		// if the POST data contains a valid surveyInstanceDto, continue.
-		// Otherwise, server 400 Bad Request
-		if (surveyInstanceDto != null) {
-			SurveyInstance s = new SurveyInstance();
+    // delete survey instance by id
+    // TODO update counts
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ResponseBody
+    public Map<String, RestStatusDto> deleteSurveyInstanceById(
+            @PathVariable("id")
+            Long id) {
+        final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+        SurveyInstance s = surveyInstanceDao.getByKey(id);
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
 
-			// copy the properties, except the properties that are set or
-			// provided by the Dao.
-			BeanUtils.copyProperties(surveyInstanceDto, s, new String[] {
-					"createdDateTime", "lastUpdateDateTime", "displayName",
-					"questionInstanceList" });
-			s = surveyInstanceDao.save(s);
+        // check if surveyInstance exists in the datastore
+        if (s != null) {
+            surveyInstanceDao.deleteSurveyInstance(s);
+            statusDto.setStatus("ok");
+        }
+        response.put("meta", statusDto);
 
-			dto = new SurveyInstanceDto();
-			DtoMarshaller.copyToDto(s, dto);
-			statusDto.setStatus("ok");
-		}
-		response.put("meta", statusDto);
-		response.put("survey_instance", dto);
-		return response;
-	}
+        List<Long> ids = new ArrayList<Long>();
+        ids.add(id);
+        SurveyUtils.notifyReportService(ids, "invalidate");
+
+        return response;
+    }
+
+    // Update survey instance
+    // TODO: question - when is this used?
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    @ResponseBody
+    public Map<String, Object> saveExistingSurveyInstance(
+            @RequestBody
+            SurveyInstancePayload payLoad) {
+
+        final SurveyInstanceDto surveyInstanceDto = payLoad.getSurvey_instance();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        SurveyInstanceDto dto = null;
+
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+
+        // if the POST data contains a valid surveyInstanceDto, continue.
+        // Otherwise, server 400 Bad Request
+        if (surveyInstanceDto != null) {
+            Long keyId = surveyInstanceDto.getKeyId();
+            SurveyInstance s;
+
+            // if the surveyInstanceDto has a key, try to get the surveyInstance.
+            if (keyId != null) {
+                s = surveyInstanceDao.getByKey(keyId);
+                // if we find the surveyInstance, update it's properties
+                if (s != null) {
+                    // copy the properties, except the properties that are set
+                    // or provided by the Dao.
+                    BeanUtils.copyProperties(surveyInstanceDto, s, new String[] {
+                            "createdDateTime", "lastUpdateDateTime",
+                            "displayName", "questionInstanceList"
+                    });
+                    s = surveyInstanceDao.save(s);
+
+                    dto = new SurveyInstanceDto();
+                    DtoMarshaller.copyToDto(s, dto);
+                    statusDto.setStatus("ok");
+                }
+            }
+        }
+        response.put("meta", statusDto);
+        response.put("survey_instance", dto);
+        return response;
+    }
+
+    // Create new survey instance
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> saveNewSurveyInstance(
+            @RequestBody
+            SurveyInstancePayload payLoad) {
+
+        final SurveyInstanceDto surveyInstanceDto = payLoad.getSurvey_instance();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        SurveyInstanceDto dto = null;
+
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+
+        // if the POST data contains a valid surveyInstanceDto, continue.
+        // Otherwise, server 400 Bad Request
+        if (surveyInstanceDto != null) {
+            SurveyInstance s = new SurveyInstance();
+
+            // copy the properties, except the properties that are set or
+            // provided by the Dao.
+            BeanUtils.copyProperties(surveyInstanceDto, s, new String[] {
+                    "createdDateTime", "lastUpdateDateTime", "displayName",
+                    "questionInstanceList"
+            });
+            s = surveyInstanceDao.save(s);
+
+            dto = new SurveyInstanceDto();
+            DtoMarshaller.copyToDto(s, dto);
+            statusDto.setStatus("ok");
+        }
+        response.put("meta", statusDto);
+        response.put("survey_instance", dto);
+        return response;
+    }
 
 }

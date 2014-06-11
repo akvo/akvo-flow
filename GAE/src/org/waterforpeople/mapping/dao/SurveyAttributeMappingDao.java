@@ -30,105 +30,105 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
  * data access object for persisting/retrieving surveyAttributeMapping objects
  * 
  * @author Christopher Fagiani
- * 
  */
 public class SurveyAttributeMappingDao extends BaseDAO<SurveyAttributeMapping> {
 
-	public SurveyAttributeMappingDao() {
-		super(SurveyAttributeMapping.class);
-	}
+    public SurveyAttributeMappingDao() {
+        super(SurveyAttributeMapping.class);
+    }
 
-	/**
-	 * lists all mappings for a particular survey id
-	 * 
-	 * @param surveyId
-	 * @return
-	 */
-	public List<SurveyAttributeMapping> listMappingsBySurvey(Long surveyId) {
-		return listByProperty("surveyId", surveyId, "Long");
-	}
+    /**
+     * lists all mappings for a particular survey id
+     * 
+     * @param surveyId
+     * @return
+     */
+    public List<SurveyAttributeMapping> listMappingsBySurvey(Long surveyId) {
+        return listByProperty("surveyId", surveyId, "Long");
+    }
 
-	/**
-	 * lists all mappings for a particular question id
-	 * 
-	 * @param questionGroupId
-	 * @return
-	 */
-	public List<SurveyAttributeMapping> listMappingsByQuestionGroup(
-			Long questionGroupId) {
-		return listByProperty("questionGroupId", questionGroupId, "Long");
-	}
+    /**
+     * lists all mappings for a particular question id
+     * 
+     * @param questionGroupId
+     * @return
+     */
+    public List<SurveyAttributeMapping> listMappingsByQuestionGroup(
+            Long questionGroupId) {
+        return listByProperty("questionGroupId", questionGroupId, "Long");
+    }
 
-	/**
-	 * deletes all mappings for a given surveyId
-	 * 
-	 * @param surveyId
-	 */
-	public void deleteMappingsForSurvey(Long surveyId) {
-		List<SurveyAttributeMapping> mappings = listMappingsBySurvey(surveyId);
-		if (mappings != null && mappings.size() > 0) {
-			PersistenceManager pm = PersistenceFilter.getManager();
-			pm.deletePersistentAll(mappings);
-		}
-	}
+    /**
+     * deletes all mappings for a given surveyId
+     * 
+     * @param surveyId
+     */
+    public void deleteMappingsForSurvey(Long surveyId) {
+        List<SurveyAttributeMapping> mappings = listMappingsBySurvey(surveyId);
+        if (mappings != null && mappings.size() > 0) {
+            PersistenceManager pm = PersistenceFilter.getManager();
+            pm.deletePersistentAll(mappings);
+        }
+    }
 
-	/**
-	 * deletes all mappings for a given questionGroupId
-	 * 
-	 * @param surveyId
-	 */
-	public void deleteMappingsForQuestionGroup(Long questionGroupId) {
-		List<SurveyAttributeMapping> mappings = listMappingsByQuestionGroup(questionGroupId);
-		if (mappings != null && mappings.size() > 0) {
-			PersistenceManager pm = PersistenceFilter.getManager();
-			pm.deletePersistentAll(mappings);
-		}
-	}
+    /**
+     * deletes all mappings for a given questionGroupId
+     * 
+     * @param surveyId
+     */
+    public void deleteMappingsForQuestionGroup(Long questionGroupId) {
+        List<SurveyAttributeMapping> mappings = listMappingsByQuestionGroup(questionGroupId);
+        if (mappings != null && mappings.size() > 0) {
+            PersistenceManager pm = PersistenceFilter.getManager();
+            pm.deletePersistentAll(mappings);
+        }
+    }
 
-	/**
-	 * returns a single mapping object that corresponds to the attribute passed
-	 * in for a given survey.
-	 * 
-	 * @param surveyId
-	 * @param attributeName
-	 * @return - mapping or null if no match
-	 */
-	public SurveyAttributeMapping findMappingForAttribute(Long surveyId,
-			String attributeName) {
-		List<SurveyAttributeMapping> mappingList = findMappingsForAttribute(surveyId, attributeName);
-		if (mappingList != null && mappingList.size() > 0) {
-			return mappingList.get(0);
-		} else {
-			return null;
-		}	
-	}
-	
-	/**
-	 * lists multiple mappings that correspond to the attribute passed in for a given survey
-	 * @param surveyId
-	 * @param attributeName
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<SurveyAttributeMapping> findMappingsForAttribute(Long surveyId,
-			String attributeName) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		Query q = pm.newQuery(SurveyAttributeMapping.class);
-		q
-				.setFilter("surveyId == surveyIdParam && attributeName == attrNameParam");
-		q.declareParameters("Long surveyIdParam, String attrNameParam");
-		return (List<SurveyAttributeMapping>) q
-				.execute(surveyId, attributeName);
-	}
+    /**
+     * returns a single mapping object that corresponds to the attribute passed in for a given
+     * survey.
+     * 
+     * @param surveyId
+     * @param attributeName
+     * @return - mapping or null if no match
+     */
+    public SurveyAttributeMapping findMappingForAttribute(Long surveyId,
+            String attributeName) {
+        List<SurveyAttributeMapping> mappingList = findMappingsForAttribute(surveyId, attributeName);
+        if (mappingList != null && mappingList.size() > 0) {
+            return mappingList.get(0);
+        } else {
+            return null;
+        }
+    }
 
-	/**
-	 * finds the mapping for the question id passed in
-	 * 
-	 * @param questionId
-	 * @return
-	 */
-	public SurveyAttributeMapping findMappingForQuestion(String questionId) {
-		return findByProperty("surveyQuestionId", questionId, "String");
-	}
+    /**
+     * lists multiple mappings that correspond to the attribute passed in for a given survey
+     * 
+     * @param surveyId
+     * @param attributeName
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyAttributeMapping> findMappingsForAttribute(Long surveyId,
+            String attributeName) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        Query q = pm.newQuery(SurveyAttributeMapping.class);
+        q
+                .setFilter("surveyId == surveyIdParam && attributeName == attrNameParam");
+        q.declareParameters("Long surveyIdParam, String attrNameParam");
+        return (List<SurveyAttributeMapping>) q
+                .execute(surveyId, attributeName);
+    }
+
+    /**
+     * finds the mapping for the question id passed in
+     * 
+     * @param questionId
+     * @return
+     */
+    public SurveyAttributeMapping findMappingForQuestion(String questionId) {
+        return findByProperty("surveyQuestionId", questionId, "String");
+    }
 
 }

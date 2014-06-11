@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package com.gallatinsystems.survey.dao;
 
 import org.waterforpeople.mapping.domain.SurveyAssignment;
@@ -21,7 +22,7 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 
 public class SurveyAssignmentDAO extends BaseDAO<SurveyAssignment> {
 
-	public SurveyAssignmentDAO() {
-		super(SurveyAssignment.class);
-	}
+    public SurveyAssignmentDAO() {
+        super(SurveyAssignment.class);
+    }
 }

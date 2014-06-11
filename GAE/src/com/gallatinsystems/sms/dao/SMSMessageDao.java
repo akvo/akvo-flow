@@ -23,11 +23,10 @@ import com.gallatinsystems.sms.domain.SMSMessage;
  * dao to save/find incoming SMS messages
  * 
  * @author Christopher Fagiani
- * 
  */
 public class SMSMessageDao extends BaseDAO<SMSMessage> {
 
-	public SMSMessageDao() {
-		super(SMSMessage.class);
-	}
+    public SMSMessageDao() {
+        super(SMSMessage.class);
+    }
 }

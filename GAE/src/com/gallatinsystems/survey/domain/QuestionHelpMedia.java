@@ -25,74 +25,72 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * represents help media for a question. Help media is text and/or digital media
- * like photos or videos. In the case of digital media, this object only retains
- * a URL pointing to the resource. Help can optionally have translation objects
- * for the text.
+ * represents help media for a question. Help media is text and/or digital media like photos or
+ * videos. In the case of digital media, this object only retains a URL pointing to the resource.
+ * Help can optionally have translation objects for the text.
  * 
  * @author Christopher Fagiani
- * 
  */
 @PersistenceCapable
 public class QuestionHelpMedia extends BaseDomain {
 
-	private static final long serialVersionUID = 7035250558880867571L;
-	private String resourceUrl = null;
-	private Type type = null;
-	private String text = null;
-	private Long questionId;
-	@NotPersistent
-	private Map<String, Translation> translationMap;
+    private static final long serialVersionUID = 7035250558880867571L;
+    private String resourceUrl = null;
+    private Type type = null;
+    private String text = null;
+    private Long questionId;
+    @NotPersistent
+    private Map<String, Translation> translationMap;
 
-	public enum Type {
-		PHOTO, VIDEO, TEXT, ACTIVITY
-	}
+    public enum Type {
+        PHOTO, VIDEO, TEXT, ACTIVITY
+    }
 
-	public Long getQuestionId() {
-		return questionId;
-	}
+    public Long getQuestionId() {
+        return questionId;
+    }
 
-	public void setQuestionId(Long questionId) {
-		this.questionId = questionId;
-	}
+    public void setQuestionId(Long questionId) {
+        this.questionId = questionId;
+    }
 
-	public Map<String, Translation> getTranslationMap() {
-		return translationMap;
-	}
+    public Map<String, Translation> getTranslationMap() {
+        return translationMap;
+    }
 
-	public void setTranslationMap(Map<String, Translation> translationMap) {
-		this.translationMap = translationMap;
-	}
+    public void setTranslationMap(Map<String, Translation> translationMap) {
+        this.translationMap = translationMap;
+    }
 
-	public String getResourceUrl() {
-		return resourceUrl;
-	}
+    public String getResourceUrl() {
+        return resourceUrl;
+    }
 
-	public void setResourceUrl(String url) {
-		this.resourceUrl = url;
-	}
+    public void setResourceUrl(String url) {
+        this.resourceUrl = url;
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public Type getType() {
+        return type;
+    }
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+    public void setType(Type type) {
+        this.type = type;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public void addTranslation(Translation t) {
-		if (translationMap == null) {
-			translationMap = new HashMap<String, Translation>();
-		}
-		translationMap.put(t.getLanguageCode(), t);
-	}
+    public void addTranslation(Translation t) {
+        if (translationMap == null) {
+            translationMap = new HashMap<String, Translation>();
+        }
+        translationMap.put(t.getLanguageCode(), t);
+    }
 
 }

@@ -24,31 +24,31 @@ import com.gallatinsystems.framework.rest.RestResponse;
 
 public class DeviceNotificationResponse extends RestResponse {
 
-	private static final long serialVersionUID = -5674899264132126425L;
+    private static final long serialVersionUID = -5674899264132126425L;
 
-	List<String> missingFiles = new ArrayList<String>();
-	List<String> missingFilesUnknown = new ArrayList<String>();
+    List<String> missingFiles = new ArrayList<String>();
+    List<String> missingFilesUnknown = new ArrayList<String>();
 
-	public void setMissingFiles(List<DeviceFileJobQueue> byDevice) {
-		missingFiles = new ArrayList<String>();
-		for (DeviceFileJobQueue df : byDevice) {
-			missingFiles.add(df.getFileName());
-		}
-	}
+    public void setMissingFiles(List<DeviceFileJobQueue> byDevice) {
+        missingFiles = new ArrayList<String>();
+        for (DeviceFileJobQueue df : byDevice) {
+            missingFiles.add(df.getFileName());
+        }
+    }
 
-	public void setMissingUnknown(List<DeviceFileJobQueue> unknown) {
-		missingFilesUnknown = new ArrayList<String>();
-		for (DeviceFileJobQueue df : unknown) {
-			missingFilesUnknown.add(df.getFileName());
-		}
-	}
+    public void setMissingUnknown(List<DeviceFileJobQueue> unknown) {
+        missingFilesUnknown = new ArrayList<String>();
+        for (DeviceFileJobQueue df : unknown) {
+            missingFilesUnknown.add(df.getFileName());
+        }
+    }
 
-	public List<String> getMissingFiles() {
-		return missingFiles;
-	}
+    public List<String> getMissingFiles() {
+        return missingFiles;
+    }
 
-	public List<String> getMissingUnknown() {
-		return missingFilesUnknown;
-	}
+    public List<String> getMissingUnknown() {
+        return missingFilesUnknown;
+    }
 
 }

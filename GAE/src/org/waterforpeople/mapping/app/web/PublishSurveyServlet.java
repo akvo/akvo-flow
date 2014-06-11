@@ -28,19 +28,19 @@ import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 
 public class PublishSurveyServlet extends HttpServlet {
 
-	private static final long serialVersionUID = -8625535651028940339L;
+    private static final long serialVersionUID = -8625535651028940339L;
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		final String surveyId = req.getParameter("surveyId");
-		final PrintWriter pw = resp.getWriter();
-		if (surveyId == null || "".equals(surveyId)) {
-			pw.write("surveyId parameter is required");
-			return;
-		}
-		new SurveyServiceImpl().publishSurveyAsync(Long.valueOf(surveyId));
-		pw.write("Request processed. Check [View Messages] in the Dashboard");
-	}
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        final String surveyId = req.getParameter("surveyId");
+        final PrintWriter pw = resp.getWriter();
+        if (surveyId == null || "".equals(surveyId)) {
+            pw.write("surveyId parameter is required");
+            return;
+        }
+        new SurveyServiceImpl().publishSurveyAsync(Long.valueOf(surveyId));
+        pw.write("Request processed. Check [View Messages] in the Dashboard");
+    }
 
 }

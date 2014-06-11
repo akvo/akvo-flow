@@ -33,33 +33,33 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlType
 @XmlRootElement(name = "scoring")
 public class Scoring {
-	@XmlElement(required = true)
-	protected List<Score> score;
-	@XmlAttribute
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	@XmlSchemaType(name = "NMTOKEN")
-	protected String type;
+    @XmlElement(required = true)
+    protected List<Score> score;
+    @XmlAttribute
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    protected String type;
 
-	public List<Score> getScore() {
-		return score;
-	}
+    public List<Score> getScore() {
+        return score;
+    }
 
-	public void setScore(List<Score> score) {
-		this.score = score;
-	}
+    public void setScore(List<Score> score) {
+        this.score = score;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
-	
-	public void addScore(Score s){
-		if(score == null){
-			score = new ArrayList<Score>();
-		}
-		score.add(s);
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void addScore(Score s) {
+        if (score == null) {
+            score = new ArrayList<Score>();
+        }
+        score.add(s);
+    }
 }

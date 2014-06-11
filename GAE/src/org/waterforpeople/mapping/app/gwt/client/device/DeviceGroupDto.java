@@ -24,74 +24,74 @@ import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 
 public class DeviceGroupDto extends BaseDto implements NamedObject {
 
-	private static final long serialVersionUID = -2235565143615667202L;
+    private static final long serialVersionUID = -2235565143615667202L;
 
-	private String description;
-	private String name;
-	private String code;
-	private Date createdDateTime;
-	private Date lastUpdateDateTime;
+    private String description;
+    private String name;
+    private String code;
+    private Date createdDateTime;
+    private Date lastUpdateDateTime;
 
-	private ArrayList<DeviceDto> deviceList = null;
+    private ArrayList<DeviceDto> deviceList = null;
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public Date getCreatedDateTime() {
-		return createdDateTime;
-	}
+    public Date getCreatedDateTime() {
+        return createdDateTime;
+    }
 
-	public void setCreatedDateTime(Date createdDateTime) {
-		this.createdDateTime = createdDateTime;
-	}
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
 
-	public Date getLastUpdateDateTime() {
-		return lastUpdateDateTime;
-	}
+    public Date getLastUpdateDateTime() {
+        return lastUpdateDateTime;
+    }
 
-	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
-		this.lastUpdateDateTime = lastUpdateDateTime;
-	}
+    public void setLastUpdateDateTime(Date lastUpdateDateTime) {
+        this.lastUpdateDateTime = lastUpdateDateTime;
+    }
 
-	public void setDeviceList(ArrayList<DeviceDto> deviceList) {
-		this.deviceList = deviceList;
-	}
+    public void setDeviceList(ArrayList<DeviceDto> deviceList) {
+        this.deviceList = deviceList;
+    }
 
-	public ArrayList<DeviceDto> getDeviceList() {
-		return deviceList;
-	}
+    public ArrayList<DeviceDto> getDeviceList() {
+        return deviceList;
+    }
 
-	public void addDevice(DeviceDto item) {
-		if (deviceList == null) {
-			deviceList = new ArrayList<DeviceDto>();
-		}
-		deviceList.add(item);
-	}
+    public void addDevice(DeviceDto item) {
+        if (deviceList == null) {
+            deviceList = new ArrayList<DeviceDto>();
+        }
+        deviceList.add(item);
+    }
 
-	@Override
-	public String getDisplayName() {
-		return getCode();
-	}
+    @Override
+    public String getDisplayName() {
+        return getCode();
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
 }

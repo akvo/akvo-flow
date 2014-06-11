@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.HashMap;
@@ -39,107 +40,110 @@ import com.gallatinsystems.survey.domain.QuestionOption;
 @RequestMapping("/question_options")
 public class QuestionOptionRestService {
 
-	@Inject
-	private QuestionOptionDao questionOptionDao;
+    @Inject
+    private QuestionOptionDao questionOptionDao;
 
-	
-	// find a single questionOption by the questionOptionId
-	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
-	@ResponseBody
-	public Map<String, QuestionOptionDto> findQuestionOption(@PathVariable("id") Long id) {
-		final Map<String, QuestionOptionDto> response = new HashMap<String, QuestionOptionDto>();
-		QuestionOption qo = questionOptionDao.getByKey(id);
-		QuestionOptionDto dto = null;
-		if (qo != null) {
-			dto = new QuestionOptionDto();
-			DtoMarshaller.copyToDto(qo, dto);
-		}
-		response.put("question_option", dto);
-		return response;
+    // find a single questionOption by the questionOptionId
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    @ResponseBody
+    public Map<String, QuestionOptionDto> findQuestionOption(@PathVariable("id")
+    Long id) {
+        final Map<String, QuestionOptionDto> response = new HashMap<String, QuestionOptionDto>();
+        QuestionOption qo = questionOptionDao.getByKey(id);
+        QuestionOptionDto dto = null;
+        if (qo != null) {
+            dto = new QuestionOptionDto();
+            DtoMarshaller.copyToDto(qo, dto);
+        }
+        response.put("question_option", dto);
+        return response;
 
-	}
+    }
 
-	// delete questionOption by id
-	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-	@ResponseBody
-	public Map<String, RestStatusDto> deleteQuestionOptionById(@PathVariable("id") Long id) {
-		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-		QuestionOption qo = questionOptionDao.getByKey(id);
-		RestStatusDto statusDto = null;
-		statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+    // delete questionOption by id
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ResponseBody
+    public Map<String, RestStatusDto> deleteQuestionOptionById(@PathVariable("id")
+    Long id) {
+        final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+        QuestionOption qo = questionOptionDao.getByKey(id);
+        RestStatusDto statusDto = null;
+        statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
 
-		// check if questionOption exists in the datastore
-		if (qo != null) {
-			// delete questionOption group
-			questionOptionDao.delete(qo);
-			statusDto.setStatus("ok");
-		}
-		response.put("meta", statusDto);
-		return response;
-	}
+        // check if questionOption exists in the datastore
+        if (qo != null) {
+            // delete questionOption group
+            questionOptionDao.delete(qo);
+            statusDto.setStatus("ok");
+        }
+        response.put("meta", statusDto);
+        return response;
+    }
 
-	// update existing questionOption
-	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-	@ResponseBody
-	public Map<String, Object> saveExistingQuestionOption(@RequestBody QuestionOptionPayload payLoad) {
-		final QuestionOptionDto questionOptionDto = payLoad.getQuestion_option();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		QuestionOptionDto dto = null;
+    // update existing questionOption
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    @ResponseBody
+    public Map<String, Object> saveExistingQuestionOption(@RequestBody
+    QuestionOptionPayload payLoad) {
+        final QuestionOptionDto questionOptionDto = payLoad.getQuestion_option();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        QuestionOptionDto dto = null;
 
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
 
-		// if the POST data contains a valid questionOptionDto, continue.
-		// Otherwise, server will respond with 400 Bad Request
-		if (questionOptionDto != null) {
-			Long keyId = questionOptionDto.getKeyId();
-			QuestionOption qo;
+        // if the POST data contains a valid questionOptionDto, continue.
+        // Otherwise, server will respond with 400 Bad Request
+        if (questionOptionDto != null) {
+            Long keyId = questionOptionDto.getKeyId();
+            QuestionOption qo;
 
-			// if the questionOptionDto has a key, try to get the questionOption.
-			if (keyId != null) {
-				qo = questionOptionDao.getByKey(keyId);
-				// if we find the questionOption, update it's properties
-				if (qo != null) {
-					BeanUtils.copyProperties(questionOptionDto, qo);
-					qo = questionOptionDao.save(qo);
-					dto = new QuestionOptionDto();
-					DtoMarshaller.copyToDto(qo, dto);
-					statusDto.setStatus("ok");
-				}
-			}
-		}
-		response.put("meta", statusDto);
-		response.put("question_option", dto);
-		return response;
-	}
+            // if the questionOptionDto has a key, try to get the questionOption.
+            if (keyId != null) {
+                qo = questionOptionDao.getByKey(keyId);
+                // if we find the questionOption, update it's properties
+                if (qo != null) {
+                    BeanUtils.copyProperties(questionOptionDto, qo);
+                    qo = questionOptionDao.save(qo);
+                    dto = new QuestionOptionDto();
+                    DtoMarshaller.copyToDto(qo, dto);
+                    statusDto.setStatus("ok");
+                }
+            }
+        }
+        response.put("meta", statusDto);
+        response.put("question_option", dto);
+        return response;
+    }
 
-	// create new questionOption
-	@RequestMapping(method = RequestMethod.POST, value = "")
-	@ResponseBody
-	public Map<String, Object> saveNewQuestionOption(@RequestBody QuestionOptionPayload payLoad) {
-		final QuestionOptionDto questionOptionDto = payLoad.getQuestion_option();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		QuestionOptionDto dto = null;
+    // create new questionOption
+    @RequestMapping(method = RequestMethod.POST, value = "")
+    @ResponseBody
+    public Map<String, Object> saveNewQuestionOption(@RequestBody
+    QuestionOptionPayload payLoad) {
+        final QuestionOptionDto questionOptionDto = payLoad.getQuestion_option();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        QuestionOptionDto dto = null;
 
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
 
-		// if the POST data contains a valid questionOptionDto, continue.
-		// Otherwise, server will respond with 400 Bad Request
-		if (questionOptionDto != null) {
-			QuestionOption qo = new QuestionOption();
+        // if the POST data contains a valid questionOptionDto, continue.
+        // Otherwise, server will respond with 400 Bad Request
+        if (questionOptionDto != null) {
+            QuestionOption qo = new QuestionOption();
 
-			BeanUtils.copyProperties(questionOptionDto, qo);
-			qo = questionOptionDao.save(qo);
+            BeanUtils.copyProperties(questionOptionDto, qo);
+            qo = questionOptionDao.save(qo);
 
-			dto = new QuestionOptionDto();
-			DtoMarshaller.copyToDto(qo, dto);
-			statusDto.setStatus("ok");
-		}
+            dto = new QuestionOptionDto();
+            DtoMarshaller.copyToDto(qo, dto);
+            statusDto.setStatus("ok");
+        }
 
-		response.put("meta", statusDto);
-		response.put("question_option", dto);
-		return response;
-	}
+        response.put("meta", statusDto);
+        response.put("question_option", dto);
+        return response;
+    }
 }

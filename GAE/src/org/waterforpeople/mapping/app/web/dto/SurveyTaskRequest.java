@@ -22,58 +22,57 @@ import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 
 public class SurveyTaskRequest extends RestRequest {
-	public static final String ID_PARAM = "id";
-	public static final String ID_LIST_PARAM = "idList";
-	public static final String DELETE_SURVEY_ACTION = "deleteSurvey";
-	public static final String DELETE_QUESTION_GROUP_ACTION = "deleteQuestionGroup";
-	public static final String DELETE_QUESTION_ACTION = "deleteQuestion";
-	public static final String DELETE_QUESTION_HELP_ACTION = "deleteQuestionHelp";
-	public static final String DELETE_QUESTION_TRANSLATION_ACTION = "deleteQuestionTranslation";
-	public static final String DELETE_QUESTION_OPTION_ACTION = "deleteQuestionOptions";
-	public static final String REMAP_SURVEY_INSTANCE ="reprocessMapSurveyInstance";
+    public static final String ID_PARAM = "id";
+    public static final String ID_LIST_PARAM = "idList";
+    public static final String DELETE_SURVEY_ACTION = "deleteSurvey";
+    public static final String DELETE_QUESTION_GROUP_ACTION = "deleteQuestionGroup";
+    public static final String DELETE_QUESTION_ACTION = "deleteQuestion";
+    public static final String DELETE_QUESTION_HELP_ACTION = "deleteQuestionHelp";
+    public static final String DELETE_QUESTION_TRANSLATION_ACTION = "deleteQuestionTranslation";
+    public static final String DELETE_QUESTION_OPTION_ACTION = "deleteQuestionOptions";
+    public static final String REMAP_SURVEY_INSTANCE = "reprocessMapSurveyInstance";
 
-	private static final long serialVersionUID = 8374278438245797012L;
-	
-	private Long id;
-	private String idList;	
-	
+    private static final long serialVersionUID = 8374278438245797012L;
 
-	@Override
-	protected void populateErrors() {
-		if (getAction() == null) {
-			String errorMsg = ACTION_PARAM + " is mandatory";
-			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
-		}
-		if (getId() == null) {
-			String errorMsg = "Id is mandatory";
-			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
-		}
-	}
+    private Long id;
+    private String idList;
 
-	@Override
-	protected void populateFields(HttpServletRequest req) throws Exception {
-		if (req.getParameter(ID_PARAM) != null){
-			setId(new Long(req.getParameter(ID_PARAM)));
-		}
-		idList = req.getParameter(ID_LIST_PARAM);
-	}
+    @Override
+    protected void populateErrors() {
+        if (getAction() == null) {
+            String errorMsg = ACTION_PARAM + " is mandatory";
+            addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+                    RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
+        }
+        if (getId() == null) {
+            String errorMsg = "Id is mandatory";
+            addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+                    RestError.MISSING_PARAM_ERROR_MESSAGE, errorMsg));
+        }
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Override
+    protected void populateFields(HttpServletRequest req) throws Exception {
+        if (req.getParameter(ID_PARAM) != null) {
+            setId(new Long(req.getParameter(ID_PARAM)));
+        }
+        idList = req.getParameter(ID_LIST_PARAM);
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getIdList() {
-		return idList;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setIdList(String idList) {
-		this.idList = idList;
-	}
+    public String getIdList() {
+        return idList;
+    }
+
+    public void setIdList(String idList) {
+        this.idList = idList;
+    }
 
 }

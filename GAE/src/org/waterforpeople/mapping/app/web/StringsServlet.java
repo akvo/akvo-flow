@@ -39,82 +39,82 @@ import org.json.JSONObject;
 
 public class StringsServlet extends HttpServlet {
 
-	private static final long serialVersionUID = -5814616069972956097L;
-	private static final Logger log = Logger.getLogger(StringsServlet.class
-			.getClass().getName());
+    private static final long serialVersionUID = -5814616069972956097L;
+    private static final Logger log = Logger.getLogger(StringsServlet.class
+            .getClass().getName());
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
-		final InputStream is_strings = this.getClass().getResourceAsStream(
-				"/locale/ui-strings.properties");
+        final InputStream is_strings = this.getClass().getResourceAsStream(
+                "/locale/ui-strings.properties");
 
-		final InputStream is_en = this.getClass().getResourceAsStream(
-				"/locale/en.properties");
-		final InputStream is_fr = this.getClass().getResourceAsStream(
-				"/locale/fr.properties");
-		final InputStream is_es = this.getClass().getResourceAsStream(
-				"/locale/es.properties");
+        final InputStream is_en = this.getClass().getResourceAsStream(
+                "/locale/en.properties");
+        final InputStream is_fr = this.getClass().getResourceAsStream(
+                "/locale/fr.properties");
+        final InputStream is_es = this.getClass().getResourceAsStream(
+                "/locale/es.properties");
 
-		final Properties strings = new Properties();
-		final Properties en = new Properties();
-		final Properties fr = new Properties();
-		final Properties es = new Properties();
+        final Properties strings = new Properties();
+        final Properties en = new Properties();
+        final Properties fr = new Properties();
+        final Properties es = new Properties();
 
-		strings.load(is_strings);
-		en.load(is_en);
-		es.load(is_es);
-		fr.load(is_fr);
+        strings.load(is_strings);
+        en.load(is_en);
+        es.load(is_es);
+        fr.load(is_fr);
 
-		final VelocityEngine engine = new VelocityEngine();
-		engine.setProperty("runtime.log.logsystem.class",
-				"org.apache.velocity.runtime.log.NullLogChute");
-		try {
-			engine.init();
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not initialize velocity", e);
-		}
+        final VelocityEngine engine = new VelocityEngine();
+        engine.setProperty("runtime.log.logsystem.class",
+                "org.apache.velocity.runtime.log.NullLogChute");
+        try {
+            engine.init();
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Could not initialize velocity", e);
+        }
 
-		Template t = null;
-		try {
-			t = engine.getTemplate("Strings.vm");
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not get the template `CurrentUser`", e);
-			return;
-		}
+        Template t = null;
+        try {
+            t = engine.getTemplate("Strings.vm");
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Could not get the template `CurrentUser`", e);
+            return;
+        }
 
-		final VelocityContext context = new VelocityContext();
+        final VelocityContext context = new VelocityContext();
 
-		context.put("en", new JSONObject(strings).toString());
-		context.put("es", new JSONObject(translateKeys(strings, es)).toString());
-		context.put("fr", new JSONObject(translateKeys(strings, fr)).toString());
+        context.put("en", new JSONObject(strings).toString());
+        context.put("es", new JSONObject(translateKeys(strings, es)).toString());
+        context.put("fr", new JSONObject(translateKeys(strings, fr)).toString());
 
-		final StringWriter writer = new StringWriter();
-		t.merge(context, writer);
+        final StringWriter writer = new StringWriter();
+        t.merge(context, writer);
 
-		resp.setContentType("application/javascript;charset=UTF-8");
+        resp.setContentType("application/javascript;charset=UTF-8");
 
-		final PrintWriter pw = resp.getWriter();
-		pw.println(writer.toString());
-		pw.close();
+        final PrintWriter pw = resp.getWriter();
+        pw.println(writer.toString());
+        pw.close();
 
-	}
+    }
 
-	private Map<String, String> translateKeys(Properties strings, Properties tr) {
-		final Map<String, String> result = new HashMap<String, String>();
-		Iterator<Object> keys = strings.keySet().iterator();
-		while (keys.hasNext()) {
-			String k = (String) keys.next();
-			String v = tr.getProperty(strings.getProperty(k));
-			if (v == null) {
-				//log.log(Level.WARNING, "Translation for term " + k
-				//		+ " not found, using English term");
-				result.put(k, strings.getProperty(k));
-			} else {
-				result.put(k, v);
-			}
-		}
-		return result;
-	}
+    private Map<String, String> translateKeys(Properties strings, Properties tr) {
+        final Map<String, String> result = new HashMap<String, String>();
+        Iterator<Object> keys = strings.keySet().iterator();
+        while (keys.hasNext()) {
+            String k = (String) keys.next();
+            String v = tr.getProperty(strings.getProperty(k));
+            if (v == null) {
+                // log.log(Level.WARNING, "Translation for term " + k
+                // + " not found, using English term");
+                result.put(k, strings.getProperty(k));
+            } else {
+                result.put(k, v);
+            }
+        }
+        return result;
+    }
 }

@@ -22,136 +22,138 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+
 @PersistenceCapable
 public class CompoundStandard extends BaseDomain {
-	public enum Operator {
-		AND, OR, NOT
-	}
-	
-	public enum RuleType {
-		DISTANCE,NONDISTANCE
-	}
-	/**
+    public enum Operator {
+        AND, OR, NOT
+    }
+
+    public enum RuleType {
+        DISTANCE, NONDISTANCE
+    }
+
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 5812262258895279483L;
-	private String name = null;
-	private Long standardIdLeft = null;
-	private RuleType standardLeftRuleType = null;
-	private Long standardIdRight = null;
-	private RuleType standardRightRuleType = null;
-	@NotPersistent
-	private StandardDef standardLeft = null;
-	@NotPersistent
-	private StandardDef standardRight = null;
+    private static final long serialVersionUID = 5812262258895279483L;
+    private String name = null;
+    private Long standardIdLeft = null;
+    private RuleType standardLeftRuleType = null;
+    private Long standardIdRight = null;
+    private RuleType standardRightRuleType = null;
+    @NotPersistent
+    private StandardDef standardLeft = null;
+    @NotPersistent
+    private StandardDef standardRight = null;
 
-	private Operator operator = null;
-	
-	private Standard.StandardType standardType = null;
-	
+    private Operator operator = null;
 
-	public RuleType getStandardLeftRuleType() {
-		return standardLeftRuleType;
-	}
+    private Standard.StandardType standardType = null;
 
-	public void setStandardLeftRuleType(RuleType standardLeftRuleType) {
-		this.standardLeftRuleType = standardLeftRuleType;
-	}
+    public RuleType getStandardLeftRuleType() {
+        return standardLeftRuleType;
+    }
 
-	public RuleType getStandardRightRuleType() {
-		return standardRightRuleType;
-	}
+    public void setStandardLeftRuleType(RuleType standardLeftRuleType) {
+        this.standardLeftRuleType = standardLeftRuleType;
+    }
 
-	public void setStandardRightRuleType(RuleType standardRightRuleType) {
-		this.standardRightRuleType = standardRightRuleType;
-	}
+    public RuleType getStandardRightRuleType() {
+        return standardRightRuleType;
+    }
 
-	public Standard.StandardType getStandardType() {
-		return standardType;
-	}
+    public void setStandardRightRuleType(RuleType standardRightRuleType) {
+        this.standardRightRuleType = standardRightRuleType;
+    }
 
-	public void setStandardType(Standard.StandardType standardType) {
-		this.standardType = standardType;
-	}
-	
-	public Long getStandardIdLeft() {
-		return standardIdLeft;
-	}
+    public Standard.StandardType getStandardType() {
+        return standardType;
+    }
 
-	public void setStandardIdLeft(Long standardIdLeft) {
-		this.standardIdLeft = standardIdLeft;
-	}
+    public void setStandardType(Standard.StandardType standardType) {
+        this.standardType = standardType;
+    }
 
-	public Long getStandardIdRight() {
-		return standardIdRight;
-	}
+    public Long getStandardIdLeft() {
+        return standardIdLeft;
+    }
 
-	public void setStandardIdRight(Long standardIdRight) {
-		this.standardIdRight = standardIdRight;
-	}
+    public void setStandardIdLeft(Long standardIdLeft) {
+        this.standardIdLeft = standardIdLeft;
+    }
 
-	public StandardDef getStandardLeft() {
-		return standardLeft;
-	}
+    public Long getStandardIdRight() {
+        return standardIdRight;
+    }
 
-	public void setStandardLeft(StandardDef standardScoreLeft) {
-		this.standardLeft = standardScoreLeft;
-		this.standardLeft.setPartOfCompoundRule(true);
-	}
+    public void setStandardIdRight(Long standardIdRight) {
+        this.standardIdRight = standardIdRight;
+    }
 
-	public StandardDef getStandardRight() {
-		return standardRight;
-	}
+    public StandardDef getStandardLeft() {
+        return standardLeft;
+    }
 
-	public void setStandardRight(StandardDef standardScoreRight) {
-		this.standardRight = standardScoreRight;
-		this.standardRight.setPartOfCompoundRule(true);
-	}
+    public void setStandardLeft(StandardDef standardScoreLeft) {
+        this.standardLeft = standardScoreLeft;
+        this.standardLeft.setPartOfCompoundRule(true);
+    }
 
-	public Operator getOperator() {
-		return operator;
-	}
+    public StandardDef getStandardRight() {
+        return standardRight;
+    }
 
-	public void setOperator(Operator operator) {
-		this.operator = operator;
-	}
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
+    public void setStandardRight(StandardDef standardScoreRight) {
+        this.standardRight = standardScoreRight;
+        this.standardRight.setPartOfCompoundRule(true);
+    }
 
-		result.append(this.getClass().getName());
-		result.append(" Object {");
-		result.append(newLine);
+    public Operator getOperator() {
+        return operator;
+    }
 
-		// determine fields declared in this class only (no fields of
-		// superclass)
-		Field[] fields = this.getClass().getDeclaredFields();
+    public void setOperator(Operator operator) {
+        this.operator = operator;
+    }
 
-		// print field names paired with their values
-		for (Field field : fields) {
-			field.setAccessible(true);
-			result.append("  ");
-			try {
-				result.append(field.getName());
-				result.append(": ");
-				// requires access to private field:
-				result.append(field.get(this));
-			} catch (IllegalAccessException ex) {
-				System.out.println(ex);
-			}
-			result.append(newLine);
-		}
-		result.append("}");
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
 
-		return result.toString();
-	}
+        result.append(this.getClass().getName());
+        result.append(" Object {");
+        result.append(newLine);
 
-	public void setName(String name) {
-		this.name = name;
-	}
+        // determine fields declared in this class only (no fields of
+        // superclass)
+        Field[] fields = this.getClass().getDeclaredFields();
 
-	public String getName() {
-		return name;
-	}
+        // print field names paired with their values
+        for (Field field : fields) {
+            field.setAccessible(true);
+            result.append("  ");
+            try {
+                result.append(field.getName());
+                result.append(": ");
+                // requires access to private field:
+                result.append(field.get(this));
+            } catch (IllegalAccessException ex) {
+                System.out.println(ex);
+            }
+            result.append(newLine);
+        }
+        result.append("}");
+
+        return result.toString();
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

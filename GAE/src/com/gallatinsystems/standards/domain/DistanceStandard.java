@@ -32,114 +32,114 @@ import com.gallatinsystems.standards.domain.Standard.StandardType;
 @PersistenceCapable
 public class DistanceStandard extends BaseDomain implements StandardDef {
 
-	/**
-	 * ds.setAccessPointType(AccessPointType.WATER_POINT);
-		ds.setStandardType(StandardType.WaterPointLevelOfService);
-		ds.setStandardScope(StandardScope.Local);
-		ds.setCountry("BO");
-	 */
-	private static final long serialVersionUID = -9111026583324258277L;
+    /**
+     * ds.setAccessPointType(AccessPointType.WATER_POINT);
+     * ds.setStandardType(StandardType.WaterPointLevelOfService);
+     * ds.setStandardScope(StandardScope.Local); ds.setCountry("BO");
+     */
+    private static final long serialVersionUID = -9111026583324258277L;
 
-	private AccessPoint.LocationType locationType = null;
-	private Integer maxDistance = null;
-	private AccessPointType accessPointType = null;
-	private StandardType standardType = null;
-	private String countryCode = null;
-	private StandardScope standardScope = null;
-	private String standardDescription = null;
-	private Date effectiveStartDate = null;
-	private Date effectiveEndDate = null;
-	private Boolean partOfCompoundRule = null;
-	public Date getEffectiveStartDate() {
-		return effectiveStartDate;
-	}
+    private AccessPoint.LocationType locationType = null;
+    private Integer maxDistance = null;
+    private AccessPointType accessPointType = null;
+    private StandardType standardType = null;
+    private String countryCode = null;
+    private StandardScope standardScope = null;
+    private String standardDescription = null;
+    private Date effectiveStartDate = null;
+    private Date effectiveEndDate = null;
+    private Boolean partOfCompoundRule = null;
 
-	public void setEffectiveStartDate(Date effectiveStartDate) {
-		this.effectiveStartDate = effectiveStartDate;
-	}
+    public Date getEffectiveStartDate() {
+        return effectiveStartDate;
+    }
 
-	public Date getEffectiveEndDate() {
-		return effectiveEndDate;
-	}
+    public void setEffectiveStartDate(Date effectiveStartDate) {
+        this.effectiveStartDate = effectiveStartDate;
+    }
 
-	public void setEffectiveEndDate(Date effectiveEndDate) {
-		this.effectiveEndDate = effectiveEndDate;
-	}
+    public Date getEffectiveEndDate() {
+        return effectiveEndDate;
+    }
 
-	public String getStandardDescription() {
-		return standardDescription;
-	}
+    public void setEffectiveEndDate(Date effectiveEndDate) {
+        this.effectiveEndDate = effectiveEndDate;
+    }
 
-	public void setStandardDescription(String standardDescription) {
-		this.standardDescription = standardDescription;
-	}
+    public String getStandardDescription() {
+        return standardDescription;
+    }
 
-	public AccessPointType getAccessPointType() {
-		return accessPointType;
-	}
+    public void setStandardDescription(String standardDescription) {
+        this.standardDescription = standardDescription;
+    }
 
-	public void setAccessPointType(AccessPointType accessPointType) {
-		this.accessPointType = accessPointType;
-	}
+    public AccessPointType getAccessPointType() {
+        return accessPointType;
+    }
 
-	public StandardType getStandardType() {
-		return standardType;
-	}
+    public void setAccessPointType(AccessPointType accessPointType) {
+        this.accessPointType = accessPointType;
+    }
 
-	public void setStandardType(StandardType standardType) {
-		this.standardType = standardType;
-	}
+    public StandardType getStandardType() {
+        return standardType;
+    }
 
-	public String getCountryCode() {
-		return countryCode;
-	}
+    public void setStandardType(StandardType standardType) {
+        this.standardType = standardType;
+    }
 
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
-	}
+    public String getCountryCode() {
+        return countryCode;
+    }
 
-	public StandardScope getStandardScope() {
-		return standardScope;
-	}
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
 
-	public void setStandardScope(StandardScope standardScope) {
-		this.standardScope = standardScope;
-	}
+    public StandardScope getStandardScope() {
+        return standardScope;
+    }
 
-	public LocationType getLocationType() {
-		return locationType;
-	}
+    public void setStandardScope(StandardScope standardScope) {
+        this.standardScope = standardScope;
+    }
 
-	public void setLocationType(LocationType locationType) {
-		this.locationType = locationType;
-	}
+    public LocationType getLocationType() {
+        return locationType;
+    }
 
-	public Integer getMaxDistance() {
-		return maxDistance;
-	}
+    public void setLocationType(LocationType locationType) {
+        this.locationType = locationType;
+    }
 
-	public void setMaxDistance(Integer maxDistance) {
-		this.maxDistance = maxDistance;
-	}
+    public Integer getMaxDistance() {
+        return maxDistance;
+    }
 
-	@Override
-	public void setPartOfCompoundRule(Boolean partOfCompoundRule) {
-		this.partOfCompoundRule= partOfCompoundRule;
-	}
+    public void setMaxDistance(Integer maxDistance) {
+        this.maxDistance = maxDistance;
+    }
 
-	@Override
-	public Boolean getPartOfCompoundRule() {
-		// TODO Auto-generated method stub
-		return partOfCompoundRule;
-	}
+    @Override
+    public void setPartOfCompoundRule(Boolean partOfCompoundRule) {
+        this.partOfCompoundRule = partOfCompoundRule;
+    }
 
-	@Override
-	public void setStandardComparisons(StandardComparisons sc) {
-	}
+    @Override
+    public Boolean getPartOfCompoundRule() {
+        // TODO Auto-generated method stub
+        return partOfCompoundRule;
+    }
 
-	@Override
-	public StandardComparisons getStandardComparisons() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public void setStandardComparisons(StandardComparisons sc) {
+    }
+
+    @Override
+    public StandardComparisons getStandardComparisons() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

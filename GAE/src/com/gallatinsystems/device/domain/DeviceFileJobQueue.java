@@ -22,41 +22,39 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * 
  * Persistent class for storing missing files for a particular device
- * 
  */
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class DeviceFileJobQueue extends BaseDomain {
 
-	private static final long serialVersionUID = 6528982503828359519L;
+    private static final long serialVersionUID = 6528982503828359519L;
 
-	Long deviceId;
-	Long qasId;
-	String fileName;
+    Long deviceId;
+    Long qasId;
+    String fileName;
 
-	public Long getDeviceId() {
-		return deviceId;
-	}
+    public Long getDeviceId() {
+        return deviceId;
+    }
 
-	public void setDeviceId(Long deviceId) {
-		this.deviceId = deviceId;
-	}
+    public void setDeviceId(Long deviceId) {
+        this.deviceId = deviceId;
+    }
 
-	public Long getQasId() {
-		return qasId;
-	}
+    public Long getQasId() {
+        return qasId;
+    }
 
-	public void setQasId(Long qasId) {
-		this.qasId = qasId;
-	}
+    public void setQasId(Long qasId) {
+        this.qasId = qasId;
+    }
 
-	public String getFileName() {
-		return fileName;
-	}
+    public String getFileName() {
+        return fileName;
+    }
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 }

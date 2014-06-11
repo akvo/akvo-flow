@@ -26,270 +26,270 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
 public class StandardScoring extends BaseDomain {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 2361133441074173260L;
-	private Boolean globalStandard = null;
-	private String countryCode = null;
-	private String subValue = null;
-	private String pointType = null;
-	private String displayName = null;
-	// AccessPoint or Survey
-	private String mapToObject = null;
-	private String evaluateField = null;
-	private String positiveCriteria = null;
-	private String positiveOperator = null;
-	private String positiveMessage = null;
-	private String criteriaType = null;
-	private Integer positiveScore = null;
-	private String negativeCriteria = null;
-	private String negativeOperator = null;
-	private Integer negativeScore = null;
-	private String neutralCriteria = null;
-	private String negativeMessage = null;
-	private Integer neutralScore = null;
-	private String neutralMessage = null;
-	private Scope scoreScope  = null;
-	private Date effectiveStartDate = null;
-	private Date effectiveEndDate = null;
-	private Long scoreBucketId = null;
-	private String scoreBucket = null;
-	private Boolean negativeOverride = null;
-	
+    private static final long serialVersionUID = 2361133441074173260L;
+    private Boolean globalStandard = null;
+    private String countryCode = null;
+    private String subValue = null;
+    private String pointType = null;
+    private String displayName = null;
+    // AccessPoint or Survey
+    private String mapToObject = null;
+    private String evaluateField = null;
+    private String positiveCriteria = null;
+    private String positiveOperator = null;
+    private String positiveMessage = null;
+    private String criteriaType = null;
+    private Integer positiveScore = null;
+    private String negativeCriteria = null;
+    private String negativeOperator = null;
+    private Integer negativeScore = null;
+    private String neutralCriteria = null;
+    private String negativeMessage = null;
+    private Integer neutralScore = null;
+    private String neutralMessage = null;
+    private Scope scoreScope = null;
+    private Date effectiveStartDate = null;
+    private Date effectiveEndDate = null;
+    private Long scoreBucketId = null;
+    private String scoreBucket = null;
+    private Boolean negativeOverride = null;
 
-	
-	public enum Scope {GLOBAL,COUNTRY,SUB_COUNTRY};
-	
-	public String getPositiveMessage() {
-		return positiveMessage;
-	}
+    public enum Scope {
+        GLOBAL, COUNTRY, SUB_COUNTRY
+    };
 
-	public void setPositiveMessage(String positiveMessage) {
-		this.positiveMessage = positiveMessage;
-	}
+    public String getPositiveMessage() {
+        return positiveMessage;
+    }
 
-	public String getNegativeMessage() {
-		return negativeMessage;
-	}
+    public void setPositiveMessage(String positiveMessage) {
+        this.positiveMessage = positiveMessage;
+    }
 
-	public void setNegativeMessage(String negativeMessage) {
-		this.negativeMessage = negativeMessage;
-	}
+    public String getNegativeMessage() {
+        return negativeMessage;
+    }
 
-	public String getNeutralMessage() {
-		return neutralMessage;
-	}
+    public void setNegativeMessage(String negativeMessage) {
+        this.negativeMessage = negativeMessage;
+    }
 
-	public void setNeutralMessage(String neutralMessage) {
-		this.neutralMessage = neutralMessage;
-	}
+    public String getNeutralMessage() {
+        return neutralMessage;
+    }
 
-	
-	public Boolean getGlobalStandard() {
-		return globalStandard;
-	}
+    public void setNeutralMessage(String neutralMessage) {
+        this.neutralMessage = neutralMessage;
+    }
 
-	public String getPositiveOperator() {
-		return positiveOperator;
-	}
+    public Boolean getGlobalStandard() {
+        return globalStandard;
+    }
 
-	public void setPositiveOperator(String positiveOperator) {
-		this.positiveOperator = positiveOperator;
-	}
+    public String getPositiveOperator() {
+        return positiveOperator;
+    }
 
-	public String getNegativeOperator() {
-		return negativeOperator;
-	}
+    public void setPositiveOperator(String positiveOperator) {
+        this.positiveOperator = positiveOperator;
+    }
 
-	public void setNegativeOperator(String negativeOperator) {
-		this.negativeOperator = negativeOperator;
-	}
+    public String getNegativeOperator() {
+        return negativeOperator;
+    }
 
-	public void setGlobalStandard(Boolean globalStandard) {
-		this.globalStandard = globalStandard;
-	}
+    public void setNegativeOperator(String negativeOperator) {
+        this.negativeOperator = negativeOperator;
+    }
 
-	public String getCountryCode() {
-		return countryCode;
-	}
+    public void setGlobalStandard(Boolean globalStandard) {
+        this.globalStandard = globalStandard;
+    }
 
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
-	}
+    public String getCountryCode() {
+        return countryCode;
+    }
 
-	public String getSubValue() {
-		return subValue;
-	}
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
 
-	public void setSubValue(String subValue) {
-		this.subValue = subValue;
-	}
+    public String getSubValue() {
+        return subValue;
+    }
 
-	public String getPointType() {
-		return pointType;
-	}
+    public void setSubValue(String subValue) {
+        this.subValue = subValue;
+    }
 
-	public void setPointType(String pointType) {
-		this.pointType = pointType;
-	}
+    public String getPointType() {
+        return pointType;
+    }
 
-	public String getDisplayName() {
-		return displayName;
-	}
+    public void setPointType(String pointType) {
+        this.pointType = pointType;
+    }
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
+    public String getDisplayName() {
+        return displayName;
+    }
 
-	public String getMapToObject() {
-		return mapToObject;
-	}
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
-	public void setMapToObject(String mapToObject) {
-		this.mapToObject = mapToObject;
-	}
+    public String getMapToObject() {
+        return mapToObject;
+    }
 
-	public String getEvaluateField() {
-		return evaluateField;
-	}
+    public void setMapToObject(String mapToObject) {
+        this.mapToObject = mapToObject;
+    }
 
-	public void setEvaluateField(String evaluateField) {
-		this.evaluateField = evaluateField;
-	}
+    public String getEvaluateField() {
+        return evaluateField;
+    }
 
-	public String getPositiveCriteria() {
-		return positiveCriteria;
-	}
+    public void setEvaluateField(String evaluateField) {
+        this.evaluateField = evaluateField;
+    }
 
-	public void setPositiveCriteria(String positiveCriteria) {
-		this.positiveCriteria = positiveCriteria;
-	}
+    public String getPositiveCriteria() {
+        return positiveCriteria;
+    }
 
-	public Integer getPositiveScore() {
-		return positiveScore;
-	}
+    public void setPositiveCriteria(String positiveCriteria) {
+        this.positiveCriteria = positiveCriteria;
+    }
 
-	public void setPositiveScore(Integer positiveScore) {
-		this.positiveScore = positiveScore;
-	}
+    public Integer getPositiveScore() {
+        return positiveScore;
+    }
 
-	public String getNegativeCriteria() {
-		return negativeCriteria;
-	}
+    public void setPositiveScore(Integer positiveScore) {
+        this.positiveScore = positiveScore;
+    }
 
-	public void setNegativeCriteria(String negativeCriteria) {
-		this.negativeCriteria = negativeCriteria;
-	}
+    public String getNegativeCriteria() {
+        return negativeCriteria;
+    }
 
-	public Integer getNegativeScore() {
-		return negativeScore;
-	}
+    public void setNegativeCriteria(String negativeCriteria) {
+        this.negativeCriteria = negativeCriteria;
+    }
 
-	public void setNegativeScore(Integer negativeScore) {
-		this.negativeScore = negativeScore;
-	}
+    public Integer getNegativeScore() {
+        return negativeScore;
+    }
 
-	public String getNeutralCriteria() {
-		return neutralCriteria;
-	}
+    public void setNegativeScore(Integer negativeScore) {
+        this.negativeScore = negativeScore;
+    }
 
-	public void setNeutralCriteria(String neutralCriteria) {
-		this.neutralCriteria = neutralCriteria;
-	}
+    public String getNeutralCriteria() {
+        return neutralCriteria;
+    }
 
-	public Integer getNeutralScore() {
-		return neutralScore;
-	}
+    public void setNeutralCriteria(String neutralCriteria) {
+        this.neutralCriteria = neutralCriteria;
+    }
 
-	public void setNeutralScore(Integer neutralScore) {
-		this.neutralScore = neutralScore;
-	}
+    public Integer getNeutralScore() {
+        return neutralScore;
+    }
 
-	public Date getEffectiveStartDate() {
-		return effectiveStartDate;
-	}
+    public void setNeutralScore(Integer neutralScore) {
+        this.neutralScore = neutralScore;
+    }
 
-	public void setEffectiveStartDate(Date effectiveStartDate) {
-		this.effectiveStartDate = effectiveStartDate;
-	}
+    public Date getEffectiveStartDate() {
+        return effectiveStartDate;
+    }
 
-	public Date getEffectiveEndDate() {
-		return effectiveEndDate;
-	}
+    public void setEffectiveStartDate(Date effectiveStartDate) {
+        this.effectiveStartDate = effectiveStartDate;
+    }
 
-	public void setEffectiveEndDate(Date effectiveEndDate) {
-		this.effectiveEndDate = effectiveEndDate;
-	}
+    public Date getEffectiveEndDate() {
+        return effectiveEndDate;
+    }
 
-	public void setCriteriaType(String criteriaType) {
-		this.criteriaType = criteriaType;
-	}
+    public void setEffectiveEndDate(Date effectiveEndDate) {
+        this.effectiveEndDate = effectiveEndDate;
+    }
 
-	public String getCriteriaType() {
-		return criteriaType;
-	}
+    public void setCriteriaType(String criteriaType) {
+        this.criteriaType = criteriaType;
+    }
 
-	public void setScoreBucketId(Long scoreBucketId) {
-		this.scoreBucketId = scoreBucketId;
-	}
+    public String getCriteriaType() {
+        return criteriaType;
+    }
 
-	public Long getScoreBucketId() {
-		return scoreBucketId;
-	}
+    public void setScoreBucketId(Long scoreBucketId) {
+        this.scoreBucketId = scoreBucketId;
+    }
 
-	public void setNegativeOverride(Boolean negativeOverride) {
-		this.negativeOverride = negativeOverride;
-	}
+    public Long getScoreBucketId() {
+        return scoreBucketId;
+    }
 
-	public Boolean getNegativeOverride() {
-		return negativeOverride;
-	}
+    public void setNegativeOverride(Boolean negativeOverride) {
+        this.negativeOverride = negativeOverride;
+    }
 
-	public void setScoreScope(Scope scoreScope) {
-		this.scoreScope = scoreScope;
-	}
+    public Boolean getNegativeOverride() {
+        return negativeOverride;
+    }
 
-	public Scope getScoreScope() {
-		return scoreScope;
-	}
+    public void setScoreScope(Scope scoreScope) {
+        this.scoreScope = scoreScope;
+    }
 
-	public void setScoreBucket(String scoreBucket) {
-		this.scoreBucket = scoreBucket;
-	}
+    public Scope getScoreScope() {
+        return scoreScope;
+    }
 
-	public String getScoreBucket() {
-		return scoreBucket;
-	}
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
+    public void setScoreBucket(String scoreBucket) {
+        this.scoreBucket = scoreBucket;
+    }
 
-		result.append(this.getClass().getName());
-		result.append(" Object {");
-		result.append(newLine);
+    public String getScoreBucket() {
+        return scoreBucket;
+    }
 
-		// determine fields declared in this class only (no fields of
-		// superclass)
-		Field[] fields = this.getClass().getDeclaredFields();
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
 
-		// print field names paired with their values
-		for (Field field : fields) {
-			field.setAccessible(true);
-			result.append("  ");
-			try {
-				result.append(field.getName());
-				result.append(": ");
-				// requires access to private field:
-				result.append(field.get(this));
-			} catch (IllegalAccessException ex) {
-				System.out.println(ex);
-			}
-			result.append(newLine);
-		}
-		result.append("}");
+        result.append(this.getClass().getName());
+        result.append(" Object {");
+        result.append(newLine);
 
-		return result.toString();
-	}
+        // determine fields declared in this class only (no fields of
+        // superclass)
+        Field[] fields = this.getClass().getDeclaredFields();
+
+        // print field names paired with their values
+        for (Field field : fields) {
+            field.setAccessible(true);
+            result.append("  ");
+            try {
+                result.append(field.getName());
+                result.append(": ");
+                // requires access to private field:
+                result.append(field.get(this));
+            } catch (IllegalAccessException ex) {
+                System.out.println(ex);
+            }
+            result.append(newLine);
+        }
+        result.append("}");
+
+        return result.toString();
+    }
 }

@@ -21,42 +21,45 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
-
 /**
  * dto that can hold questionanswerstore data
  * 
  * @author Mark Westra
- * 
  */
 public class QasDto implements Serializable {
 
-	private static final long serialVersionUID = -850583183416882347L;
+    private static final long serialVersionUID = -850583183416882347L;
 
-	// questions ids
-	private String q;
+    // questions ids
+    private String q;
 
-	// answers
-	private String a;
+    // answers
+    private String a;
 
-	// question type
-	private String t;
+    // question type
+    private String t;
 
-	public String getQ() {
-		return q;
-	}
-	public void setQ(String q) {
-		this.q = q;
-	}
-	public String getA() {
-		return a;
-	}
-	public void setA(String a) {
-		this.a = a;
-	}
-	public String getT() {
-		return t;
-	}
-	public void setT(String t) {
-		this.t = t;
-	}
+    public String getQ() {
+        return q;
+    }
+
+    public void setQ(String q) {
+        this.q = q;
+    }
+
+    public String getA() {
+        return a;
+    }
+
+    public void setA(String a) {
+        this.a = a;
+    }
+
+    public String getT() {
+        return t;
+    }
+
+    public void setT(String t) {
+        this.t = t;
+    }
 }

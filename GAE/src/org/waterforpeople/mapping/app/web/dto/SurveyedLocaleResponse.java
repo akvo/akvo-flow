@@ -24,18 +24,17 @@ import com.gallatinsystems.framework.rest.RestResponse;
  * response for recordData service
  * 
  * @author Mark Westra
- * 
  */
 public class SurveyedLocaleResponse extends RestResponse {
-	private static final long serialVersionUID = 1548249617327473969L;
-	private List<SurveyedLocaleDto> surveyedLocaleData;
+    private static final long serialVersionUID = 1548249617327473969L;
+    private List<SurveyedLocaleDto> surveyedLocaleData;
 
-	public List<SurveyedLocaleDto> getSurveyedLocaleData() {
-		return surveyedLocaleData;
-	}
+    public List<SurveyedLocaleDto> getSurveyedLocaleData() {
+        return surveyedLocaleData;
+    }
 
-	public void setSurveyedLocaleData(List<SurveyedLocaleDto> surveyedLocaleData) {
-		this.surveyedLocaleData = surveyedLocaleData;
-	}
+    public void setSurveyedLocaleData(List<SurveyedLocaleDto> surveyedLocaleData) {
+        this.surveyedLocaleData = surveyedLocaleData;
+    }
 
 }

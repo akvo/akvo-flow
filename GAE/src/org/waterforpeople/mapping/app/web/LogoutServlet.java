@@ -28,15 +28,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.google.appengine.api.users.UserServiceFactory;
 
 public class LogoutServlet extends HttpServlet {
-	private static final long serialVersionUID = -1911557320125276573L;
+    private static final long serialVersionUID = -1911557320125276573L;
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		SecurityContextHolder.clearContext();
-		req.getSession().invalidate();
-		resp.sendRedirect(UserServiceFactory.getUserService().createLogoutURL(
-				"/"));
-	}
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        SecurityContextHolder.clearContext();
+        req.getSession().invalidate();
+        resp.sendRedirect(UserServiceFactory.getUserService().createLogoutURL(
+                "/"));
+    }
 
 }

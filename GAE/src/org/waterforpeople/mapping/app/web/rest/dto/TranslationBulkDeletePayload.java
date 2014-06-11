@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest.dto;
 
 import java.io.Serializable;
@@ -20,14 +21,14 @@ import java.util.List;
 
 public class TranslationBulkDeletePayload implements Serializable {
 
-	private static final long serialVersionUID = 19271574362911287L;
-	List<Number> translations = null;
+    private static final long serialVersionUID = 19271574362911287L;
+    List<Number> translations = null;
 
-	public List<Number> getTranslations() {
-		return translations;
-	}
+    public List<Number> getTranslations() {
+        return translations;
+    }
 
-	public void setTranslations(List<Number> translations) {
-		this.translations = translations;
-	}
+    public void setTranslations(List<Number> translations) {
+        this.translations = translations;
+    }
 }

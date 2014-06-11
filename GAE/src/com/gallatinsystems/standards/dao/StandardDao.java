@@ -31,50 +31,51 @@ import com.gallatinsystems.standards.domain.Standard;
 import com.gallatinsystems.standards.domain.Standard.StandardType;
 
 public class StandardDao extends BaseDAO<Standard> {
-	public StandardDao(){
-		super(Standard.class);
-	}
-	
-	
-	public List<Standard> listByAccessPointType(AccessPointType accessPointType){
-		return super.listByProperty("accessPointType", accessPointType, "String");
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<Standard> listByAccessPointTypeAndStandardType(AccessPointType accessPointType, StandardType standardType){
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(Standard.class);
-		Map<String, Object> paramMap = null;
+    public StandardDao() {
+        super(Standard.class);
+    }
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
+    public List<Standard> listByAccessPointType(AccessPointType accessPointType) {
+        return super.listByProperty("accessPointType", accessPointType, "String");
+    }
 
-		appendNonNullParam("accessPointType", filterString, paramString, "String", accessPointType,
-				paramMap);
-		appendNonNullParam("standardType", filterString, paramString,
-				"String", standardType, paramMap);
-		//appendNonNullParam("partOfCompoundRule", filterString, paramString, "Boolean", false, paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
+    @SuppressWarnings("unchecked")
+    public List<Standard> listByAccessPointTypeAndStandardType(AccessPointType accessPointType,
+            StandardType standardType) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(Standard.class);
+        Map<String, Object> paramMap = null;
 
-		List<Standard> standardList = (List<Standard>) query
-				.executeWithMap(paramMap);
-		return standardList;
-	}
-	
-	@SuppressWarnings("unused")
-	private void delete(Long id){
-		Standard standard = this.getByKey(id);
-		if(standard!=null){
-			if(standard.getPartOfCompoundRule()){
-				CompoundStandardDao csDao = new CompoundStandardDao();
-				List<CompoundStandard> csList = csDao.listByChildStandard(id);
-				for(CompoundStandard csItem : csList){
-					csDao.delete(csItem);
-				}
-				super.delete(standard);
-			}
-		}
-	}
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
+
+        appendNonNullParam("accessPointType", filterString, paramString, "String", accessPointType,
+                paramMap);
+        appendNonNullParam("standardType", filterString, paramString,
+                "String", standardType, paramMap);
+        // appendNonNullParam("partOfCompoundRule", filterString, paramString, "Boolean", false,
+        // paramMap);
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+
+        List<Standard> standardList = (List<Standard>) query
+                .executeWithMap(paramMap);
+        return standardList;
+    }
+
+    @SuppressWarnings("unused")
+    private void delete(Long id) {
+        Standard standard = this.getByKey(id);
+        if (standard != null) {
+            if (standard.getPartOfCompoundRule()) {
+                CompoundStandardDao csDao = new CompoundStandardDao();
+                List<CompoundStandard> csList = csDao.listByChildStandard(id);
+                for (CompoundStandard csItem : csList) {
+                    csDao.delete(csItem);
+                }
+                super.delete(standard);
+            }
+        }
+    }
 }

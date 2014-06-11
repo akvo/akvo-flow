@@ -99,28 +99,29 @@ public class MapUtils {
                 final Long count = cellMap.get("count");
 
                 if (count == 1 && delta == -1) {
-					// the cluster needs to be deleted, because the count will
-					// become zero
-					cache.remove(cell);
+                    // the cluster needs to be deleted, because the count will
+                    // become zero
+                    cache.remove(cell);
                     SurveyedLocaleCluster clusterInStore = slcDao.getByKey(cellMap.get("id"));
                     if (clusterInStore != null) {
-						slcDao.delete(clusterInStore);
+                        slcDao.delete(clusterInStore);
                     }
                 } else {
-					latTotal = cellMap.get("lat") + Math.round(locale.getLatitude() * MULT * delta);
-					lonTotal = cellMap.get("lon") + Math.round(locale.getLongitude() * MULT * delta);
+                    latTotal = cellMap.get("lat") + Math.round(locale.getLatitude() * MULT * delta);
+                    lonTotal = cellMap.get("lon")
+                            + Math.round(locale.getLongitude() * MULT * delta);
 
-					addToCache(cache, cell, cellMap.get("id"), count + delta,
-							latTotal, lonTotal);
+                    addToCache(cache, cell, cellMap.get("id"), count + delta,
+                            latTotal, lonTotal);
 
-					SurveyedLocaleCluster clusterInStore = slcDao.getByKey(cellMap.get("id"));
+                    SurveyedLocaleCluster clusterInStore = slcDao.getByKey(cellMap.get("id"));
 
-					if (clusterInStore != null) {
-						clusterInStore.setCount(cellMap.get("count").intValue() + delta);
-						clusterInStore.setLatCenter(REVMULT * latTotal / (count + delta));
-						clusterInStore.setLonCenter(REVMULT * lonTotal / (count + delta));
-						slcDao.save(clusterInStore);
-					}
+                    if (clusterInStore != null) {
+                        clusterInStore.setCount(cellMap.get("count").intValue() + delta);
+                        clusterInStore.setLatCenter(REVMULT * latTotal / (count + delta));
+                        clusterInStore.setLonCenter(REVMULT * lonTotal / (count + delta));
+                        slcDao.save(clusterInStore);
+                    }
                 }
 
             } else {
@@ -130,29 +131,30 @@ public class MapUtils {
                         .getGeocells().get(i), showOnPublicMap);
 
                 if (clusterInStore != null) {
-					if (clusterInStore.getCount() == 1 && delta == -1) {
-						// the cluster needs to be deleted
-						// as we didn't find it in the cache, we only need to delete it in the datastore
+                    if (clusterInStore.getCount() == 1 && delta == -1) {
+                        // the cluster needs to be deleted
+                        // as we didn't find it in the cache, we only need to delete it in the
+                        // datastore
                         slcDao.delete(clusterInStore);
-					} else {
-						final Long count = clusterInStore.getCount().longValue();
-						latCenter = (clusterInStore.getLatCenter() * count + locale.getLatitude() * delta)
-                            / (count + delta);
-						lonCenter = (clusterInStore.getLonCenter() * count + locale.getLongitude() * delta)
-                            / (count + delta);
+                    } else {
+                        final Long count = clusterInStore.getCount().longValue();
+                        latCenter = (clusterInStore.getLatCenter() * count + locale.getLatitude()
+                                * delta)
+                                / (count + delta);
+                        lonCenter = (clusterInStore.getLonCenter() * count + locale.getLongitude()
+                                * delta)
+                                / (count + delta);
 
+                        addToCache(cache, cell, clusterInStore.getKey().getId(),
+                                clusterInStore.getCount() + delta,
+                                Math.round(MULT * latCenter * (count + delta)),
+                                Math.round(MULT * lonCenter * (count + delta)));
 
-						addToCache(cache, cell, clusterInStore.getKey().getId(),
-								clusterInStore.getCount() + delta,
-								Math.round(MULT * latCenter * (count + delta)),
-								Math.round(MULT * lonCenter * (count + delta)));
-
-
-						clusterInStore.setCount(clusterInStore.getCount() + delta);
-						clusterInStore.setLatCenter(latCenter);
-						clusterInStore.setLonCenter(lonCenter);
-						slcDao.save(clusterInStore);
-					}
+                        clusterInStore.setCount(clusterInStore.getCount() + delta);
+                        clusterInStore.setLatCenter(latCenter);
+                        clusterInStore.setLonCenter(lonCenter);
+                        slcDao.save(clusterInStore);
+                    }
                 } else {
                     // create a new one
                     SurveyedLocaleCluster slcNew = new SurveyedLocaleCluster(locale.getLatitude(),
@@ -163,9 +165,9 @@ public class MapUtils {
                     slcDao.save(slcNew);
 
                     if (cache != null) {
-						addToCache(cache, cell, slcNew.getKey().getId(), 1,
-                            Math.round(MULT * locale.getLatitude()),
-                            Math.round(MULT * locale.getLongitude()));
+                        addToCache(cache, cell, slcNew.getKey().getId(), 1,
+                                Math.round(MULT * locale.getLatitude()),
+                                Math.round(MULT * locale.getLongitude()));
                     }
                 }
             }

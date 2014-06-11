@@ -24,28 +24,28 @@ import com.gallatinsystems.framework.rest.RestResponse;
 
 public class PlacemarkRestResponse extends RestResponse {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 2200987559778306217L;
-	private List<PlacemarkDto> placemarks;
-	
-	private String cursor;
+    private static final long serialVersionUID = 2200987559778306217L;
+    private List<PlacemarkDto> placemarks;
 
-	public String getCursor() {
-		return cursor;
-	}
+    private String cursor;
 
-	public void setCursor(String cursor) {
-		this.cursor = cursor;
-	}
+    public String getCursor() {
+        return cursor;
+    }
 
-	public void setPlacemarks(List<PlacemarkDto> placemarks) {
-		this.placemarks = placemarks;
-	}
+    public void setCursor(String cursor) {
+        this.cursor = cursor;
+    }
 
-	public List<PlacemarkDto> getPlacemarks() {
-		return placemarks;
-	}
-	
+    public void setPlacemarks(List<PlacemarkDto> placemarks) {
+        this.placemarks = placemarks;
+    }
+
+    public List<PlacemarkDto> getPlacemarks() {
+        return placemarks;
+    }
+
 }

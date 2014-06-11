@@ -13,23 +13,23 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest.dto;
 
 import java.io.Serializable;
 
 import com.gallatinsystems.notification.app.gwt.client.NotificationSubscriptionDto;
 
-
 public class NotificationSubscriptionPayload implements Serializable {
 
-	private static final long serialVersionUID = -621221364953360051L;
-	NotificationSubscriptionDto notification_subscription = null;
+    private static final long serialVersionUID = -621221364953360051L;
+    NotificationSubscriptionDto notification_subscription = null;
 
-	public NotificationSubscriptionDto getNotification_subscription() {
-		return notification_subscription;
-	}
+    public NotificationSubscriptionDto getNotification_subscription() {
+        return notification_subscription;
+    }
 
-	public void setNotification_subscription(NotificationSubscriptionDto notification_subscription) {
-		this.notification_subscription = notification_subscription;
-	}
+    public void setNotification_subscription(NotificationSubscriptionDto notification_subscription) {
+        this.notification_subscription = notification_subscription;
+    }
 }
