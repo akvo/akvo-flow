@@ -381,7 +381,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         appendNonNullParam("surveyGroupId", filterString, paramString, "Long",
                 surveyGroupId, paramMap);
         appendNonNullParam("lastUpdateDateTime", filterString, paramString, "Date",
-                queryTime, paramMap, " > ");
+                queryTime, paramMap, " >= ");
 
         query.setOrdering("lastUpdateDateTime asc");
         query.setFilter(filterString.toString());
