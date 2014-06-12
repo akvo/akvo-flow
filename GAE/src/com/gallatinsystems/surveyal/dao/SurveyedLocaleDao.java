@@ -369,19 +369,13 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
         Map<String, Object> paramMap = new HashMap<String, Object>();
-        ;
         StringBuilder filterString = new StringBuilder();
         StringBuilder paramString = new StringBuilder();
-        Date queryTime = null;
-        if (lastUpdateTime != null) {
-            queryTime = lastUpdateTime;
-        } else {
-            queryTime = new Date(0); // January 1st, 1970
-        }
+        
         appendNonNullParam("surveyGroupId", filterString, paramString, "Long",
                 surveyGroupId, paramMap);
         appendNonNullParam("lastUpdateDateTime", filterString, paramString, "Date",
-                queryTime, paramMap, " >= ");
+                lastUpdateTime, paramMap, " >= ");
 
         query.setOrdering("lastUpdateDateTime asc");
         query.setFilter(filterString.toString());
