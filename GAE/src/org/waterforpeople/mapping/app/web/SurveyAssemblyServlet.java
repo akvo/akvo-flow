@@ -321,14 +321,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 surveyDao.save(s);
                 String messageText = "Published.  Please check: " + uc.getUrl();
                 message.setShortMessage(messageText);
-                if (qgList != null && qgList.size() > 0) {
-                    for (QuestionGroup g : qgList.values()) {
-                        if (g.getPath() != null) {
-                            message.setObjectTitle(g.getPath());
-                            break;
-                        }
-                    }
-                }
                 message.setTransactionUUID(transactionId.toString());
                 MessageDao messageDao = new MessageDao();
                 messageDao.save(message);
