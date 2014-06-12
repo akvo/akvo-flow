@@ -283,7 +283,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             do {
                 List<SurveyInstance> siList = siDao.listSurveyInstanceBySurvey(surveyId,
                         QAS_PAGE_SIZE, cursor);
-                List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
                 if (siList != null && siList.size() > 0) {
                     for (SurveyInstance si : siList) {
                         if (si.getSurveyedLocaleId() != null) {
@@ -295,12 +294,12 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                                 if (sl.getLocaleType() == null
                                         || !sl.getLocaleType().equals(localeType)) {
                                     sl.setLocaleType(localeType);
-                                    slList.add(sl);
+                                    // Ensure the save time is unique. See https://github.com/akvo/akvo-flow/issues/605
+                                    slDao.save(sl);
                                 }
                             }
                         }
                     }
-                    slDao.save(slList);
                     if (siList.size() == QAS_PAGE_SIZE) {
                         cursor = SurveyInstanceDAO.getCursor(siList);
                     } else {
@@ -995,7 +994,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     public static void addCreationSurveyIdToLocale(String cursor) {
         final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
         final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-        final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
         final List<SurveyedLocale> results = slDao.listAll(cursor, LOCALE_PAGE_SIZE);
 
         for (SurveyedLocale sl : results) {
@@ -1005,12 +1003,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 SurveyInstance si = siDao.getByKey(sl.getLastSurveyalInstanceId());
                 if (si != null) {
                     sl.setCreationSurveyId(si.getSurveyId());
-                    slList.add(sl);
+                    // Ensure the save time is unique. See https://github.com/akvo/akvo-flow/issues/605
+                    slDao.save(sl);
                 }
             }
         }
-
-        slDao.save(slList);
 
         if (results.size() == LOCALE_PAGE_SIZE) {
             final String cursorParam = SurveyedLocaleDao.getCursor(results);
@@ -1040,7 +1037,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         final SurveyDAO sDao = new SurveyDAO();
         final SurveyInstanceDAO siDao = new SurveyInstanceDAO();
         final QuestionDao qDao = new QuestionDao();
-        final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
         // get locales by createdSurveyId
@@ -1144,7 +1140,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 }
 
                 if (addSl) {
-                    slList.add(sl);
+                    // Ensure the save time is unique. See https://github.com/akvo/akvo-flow/issues/605
+                    slDao.save(sl);
                 }
             } catch (Exception e) {
                 log.log(Level.SEVERE,
@@ -1152,8 +1149,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                                 + e.getMessage(), e);
             }
         }
-        // batch save all the locales that need to be saved
-        slDao.save(slList);
 
         if (results.size() == LOCALE_PAGE_SIZE) {
             final String cursorParam = SurveyedLocaleDao.getCursor(results);
@@ -1186,7 +1181,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      */
     private void createNewIdentifiersLocales(String cursor, Long surveyId) {
         final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        final List<SurveyedLocale> slList = new ArrayList<SurveyedLocale>();
         String id;
 
         // get locales by createdSurveyId
@@ -1215,11 +1209,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 sl.setIdentifier(base32Id.substring(0, 4) + "-" + base32Id.substring(4, 8) + "-"
                         + base32Id.substring(8));
             }
-            slList.add(sl);
+            // Ensure the save time is unique. See https://github.com/akvo/akvo-flow/issues/605
+            slDao.save(sl);
         }
-
-        // batch save all the locales that need to be saved
-        slDao.save(slList);
 
         if (results.size() == LOCALE_PAGE_SIZE) {
             final String cursorParam = SurveyedLocaleDao.getCursor(results);
