@@ -62,7 +62,8 @@
     <ul class="surveyBatch">
     
     {{#if view.oneSelected}}
-     {{#if view.monitoringGroup}}
+      {{#if FLOW.Env.showMonitoringFeature }}
+        {{#if view.monitoringGroup}}
 		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a> 
 		      <div style="margin:0 10px 0 20px;"> <p style="text-size:1.5em;">Survey that creates new monitored entities:</p> {{view Ember.Select 
          		contentBinding="FLOW.surveyControl.content" 
@@ -70,10 +71,11 @@
          		optionLabelPath="content.name" 
          		optionValuePath="content.keyId"
          		prompt=""
-         		promptBinding="Ember.STRINGS._select_survey"}}       </div>
-		  {{else}}
-		    <a {{action confirm FLOW.dialogControl.makeMonitor target="FLOW.dialogControl"}} class="makeMonitorGroup">{{t _make_monitoring_group}}</a> 
-		  {{/if}}
+                promptBinding="Ember.STRINGS._select_survey"}}</div>
+        {{else}}
+          <a {{action confirm FLOW.dialogControl.makeMonitor target="FLOW.dialogControl"}} class="makeMonitorGroup">{{t _make_monitoring_group}}</a>
+        {{/if}}
+      {{/if}}
     {{/if}}
     
       {{#each survey in FLOW.surveyControl.arrangedContent}} 

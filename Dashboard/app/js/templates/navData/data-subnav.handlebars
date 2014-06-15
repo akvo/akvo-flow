@@ -13,7 +13,9 @@
     {{#view view.NavItemView item="dataCleaning" }}
     <a {{action doDataCleaning}}>{{t _data_cleaning}}</a>
     {{/view}}
-    {{#view view.NavItemView item="monitoringData" }}
-    <a {{action doMonitoringData}}>{{t _monitoring}}</a>
-    {{/view}} 
+    {{#if FLOW.Env.showMonitoringFeature}}
+      {{#view view.NavItemView item="monitoringData" }}
+        <a {{action doMonitoringData}}>{{t _monitoring}}</a>
+      {{/view}}
+    {{/if}}
 </ul>
