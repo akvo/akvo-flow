@@ -31,16 +31,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 
 @Controller
 @RequestMapping("/question_groups")
@@ -51,6 +55,15 @@ public class QuestionGroupRestService {
 
     @Inject
     private QuestionDao questionDao;
+
+    @Inject
+    private SurveyDAO surveyDao;
+
+    @Inject
+    private SurveyalValueDao svDao;
+
+    @Inject
+    private QuestionAnswerStoreDao qasDao;
 
     // TODO put in meta information?
     // list all questionGroups
@@ -132,24 +145,24 @@ public class QuestionGroupRestService {
             @PathVariable("id")
             Long questionGroupId) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-        QuestionGroup s = questionGroupDao.getByKey(questionGroupId);
+        QuestionGroup group = questionGroupDao.getByKey(questionGroupId);
         RestStatusDto statusDto = null;
         statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
 
         // check if questionGroup exists in the datastore
-        if (s != null) {
-            // check if questions are in this group
-            List<Question> questions = questionDao
-                    .listQuestionsInOrderForGroup(questionGroupId);
-            if (questions.size() > 0) {
+        if (group != null) {
+            // check if there are responses associated with this group's survey
+            if (qasDao.listBySurvey(group.getSurveyId()).size() > 0
+                    && svDao.listBySurvey(group.getSurveyId(), null, null).size() > 0) {
                 statusDto.setStatus("failed");
                 statusDto.setMessage("Cannot delete question group "
-                        + "because there are questions inside. "
-                        + "Please remove the questions first.");
+                        + "because there are associated survey responses inside. "
+                        + "Please delete the survey responses first.");
             } else {
-                // delete questionGroup
-                questionGroupDao.delete(s);
+                // delete questionGroup & questions
+                questionDao.delete(questionDao.listQuestionsBySurvey(group.getSurveyId()));
+                questionGroupDao.delete(group);
                 statusDto.setStatus("ok");
             }
         }
