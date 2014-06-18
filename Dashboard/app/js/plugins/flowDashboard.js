@@ -56,7 +56,10 @@ function makePlaceholders(){
 	}
 		
 (function($){})(window.jQuery);
+
+
 $(document).ready(function() {
+  
 	$("nav#topnav li.current").prev("nav#topnav li").css("background", "none");
 	$("nav#topnav li").hover( function (){
 		$(this).prev().css("background", "none");
@@ -176,3 +179,4 @@ $(document).ready(function() {
 				});
 			});
 });
+

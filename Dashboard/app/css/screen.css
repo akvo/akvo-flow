@@ -4,10 +4,7 @@ Author: 	loic@akvo.org
 */
 
 /* import stylesheets and hide from ie/mac \*/
-@import url("reset.css");
 @import url("main.css");
 @import url("form.css");
-@import url("css3-support.css");
-@import url("ie.css");
 @import url("custom-theme/jquery-ui-1.8.21.custom.css");
 /* end import/hide 

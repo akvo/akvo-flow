@@ -38,7 +38,7 @@ form {
 	padding:0;
 }
 input, textarea, button, select {
-	color:rgb(102,102,102);
+	color:rgb(32,32,32);
 	font-weight:normal;
 	font-size:1.1em;
 	
@@ -64,14 +64,13 @@ input[disabled="disabled"], textarea[disabled="disabled"] {
 textarea {
 	overflow: auto;
 	resize: vertical;
-	font-family:sans-serif;
+	font-family:Open Sans, sans-serif;
 }
 input:hover, textarea:hover {
 	border: 1px solid rgb(114,205,255);
 	background:rgb(224,224,224);
 	background:-webkit-linear-gradient(rgb(245,245,245), rgb(234,234,234));
-	background:-moz-linear-gradient(rgb(245,245,245), rgb(234,234,234));
-	background:-o-linear-gradient(rgb(245,245,245), rgb(234,234,234));
+	background:-webkit-gradient(linear, left top, left bottom, from(rgb(245,245,245)), to(rgb(234,234,234)));
 	background:linear-gradient(rgb(245,245,245), rgb(234,234,234));
 }
 input[disabled="disabled"]:hover, textarea[disabled="disabled"]:hover {
@@ -135,6 +134,8 @@ button[disabled], input[disabled] { cursor: default; }
  */
 
 input[type="checkbox"], input[type="radio"] {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	/* MTW added */
 	-webkit-appearance: checkbox;
@@ -158,8 +159,7 @@ input[type="search"] {
 	border: 1px solid rgb(218,218,218);
 	background:rgb(255,255,255) url(../images/search-icon.png) no-repeat 3px right;
 	background:url(../images/search-icon.png) no-repeat top right, -webkit-linear-gradient(rgb(255,255,255), rgb(224,224,224));
-	background:url(../images/search-icon.png) no-repeat top right, -moz-linear-gradient(rgb(255,255,255), rgb(224,224,224));
-	background:url(../images/search-icon.png) no-repeat top right, -o-linear-gradient(rgb(255,255,255), rgb(224,224,224));
+	background:url(../images/search-icon.png) no-repeat top right, -webkit-gradient(linear, left top, left bottom, from(rgb(255,255,255)), to(rgb(224,224,224)));
 	background:url(../images/search-icon.png) no-repeat top right, linear-gradient(rgb(255,255,255), rgb(224,224,224));
 	}
 
@@ -184,8 +184,7 @@ input[type="search"]:hover {
 	border: 1px solid rgb(114,  205, 255);
 	background:rgb(224,224,224) url(../images/search-icon.png) no-repeat top right;
 	background:url(../images/search-icon.png) no-repeat top right, -webkit-linear-gradient(rgb(255,255,255), rgb(244,244,244));
-	background:url(../images/search-icon.png) no-repeat top right, -moz-linear-gradient(rgb(255,255,255), rgb(244,244,244));
-	background:url(../images/search-icon.png) no-repeat top right, -o-linear-gradient(rgb(255,255,255), rgb(244,244,244));
+	background:url(../images/search-icon.png) no-repeat top right, -webkit-gradient(linear, left top, left bottom, from(rgb(255,255,255)), to(rgb(244,244,244)));
 	background:url(../images/search-icon.png) no-repeat top right, linear-gradient(rgb(255,255,255), rgb(244,244,244));
 }
 input[type="search"]:focus {
@@ -203,6 +202,7 @@ input[type="submit"]:hover {
 	}
 select {
 	display:block;
+	padding:5px;
 	}
 /* =============================================================================
 							DEVICES TAB

@@ -25,7 +25,7 @@
 
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>/rest/*</url-pattern>
 	</filter-mapping>
 	<servlet>
 		<servlet-name>DeviceApplicationRestService</servlet-name>
