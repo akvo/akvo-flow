@@ -1897,11 +1897,12 @@ ul.surveyInfo li.responseNumber p {
     display: inline;
     float: left;
     margin: 0 2px 0 0;
-    border-radius: 5px;
-    background: rgb(235, 235, 235);
+    border-radius: 3px;
+    background: rgba(235, 235, 235,1);
+    transition: background 0.2s ease-in;
 }
 .aSurvey nav ul li:hover {
-    background: rgb(74, 177, 207);
+    background: rgba(235, 235, 235,0.5);
 }
 .aSurvey nav ul li a {
     display: block;
