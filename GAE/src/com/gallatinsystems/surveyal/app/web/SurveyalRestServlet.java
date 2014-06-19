@@ -71,7 +71,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
  * RESTFul servlet that can handle handle operations on SurveyedLocale and related domain objects.
  * TODO: consider storing survey question list, metrics and mappings in a Soft-Reference map to
  * speed up processing.
- * 
+ *
  * @author Christopher Fagiani
  */
 public class SurveyalRestServlet extends AbstractRestApiServlet {
@@ -174,7 +174,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
     /**
      * reruns the locale hydration for a survey
-     * 
+     *
      * @param surveyId
      */
     private void rerunForSurvey(Long surveyId) {
@@ -235,7 +235,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * Create or update a surveyedLocale based on the Geo data that is retrieved from a
      * surveyInstance. This method is unlikely to run in under 1 minute (based on datastore latency)
      * so it is best invoked via a task queue
-     * 
+     *
      * @param surveyInstanceId
      */
     private void ingestSurveyInstance(SurveyInstance surveyInstance) {
@@ -437,7 +437,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
     /**
      * tries several methods to resolve the lat/lon to a GeoPlace. If a geoPlace is found, looks for
      * the country in the database and creates it if not found
-     * 
+     *
      * @param lat
      * @param lon
      * @return
@@ -467,7 +467,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
     /**
      * uses the geolocationService to determine the geographic sub-regions and country for a given
      * point
-     * 
+     *
      * @param l
      */
     private void setGeoData(GeoPlace geoPlace, SurveyedLocale l) {
@@ -486,7 +486,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * converts QuestionAnswerStore objects into SurveyalValues, copying the overlapping values from
      * SurveyedLocale as needed. The surveydLocale must have been saved prior to calling this method
      * if one expects the surveyedLocaleId member to be populated.
-     * 
+     *
      * @param l
      * @param answers
      * @return
@@ -652,7 +652,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * and longitude. New surveyedLocales will have these fields populated automatically, this
      * method is to update legacy data. This method is invoked as a URL request:
      * http://..../rest/actions?action=populateGeocellsForLocale
-     * 
+     *
      * @param cursor
      */
     private void populateGeocellsForLocale(String cursor) {
@@ -667,16 +667,18 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             for (SurveyedLocale sl : slList) {
                 // populate geocells
                 if (sl.getGeocells() == null || sl.getGeocells().size() == 0) {
-                    if (sl.getLatitude() != null && sl.getLongitude() != null
-                            && sl.getLongitude() < 180
-                            && sl.getLatitude() < 180) {
-                        try {
-                            sl.setGeocells(GeocellManager.generateGeoCell(new Point(
-                                    sl.getLatitude(), sl.getLongitude())));
-                        } catch (Exception ex) {
-                            log.log(Level.INFO, "Could not generate Geocell for AP: "
-                                    + sl.getKey().getId() + " error: " + ex);
-                        }
+                    if(sl.getLatitude() == null && sl.getLongitude() == null) {
+                        log.log(Level.INFO, "Could not populate Geocells for SurveyedLocale: "
+                                + sl.getKey().getId() + ". No lat/lon values set");
+                        continue;
+                    }
+
+                    try {
+                        sl.setGeocells(GeocellManager.generateGeoCell(new Point(sl.getLatitude(),
+                                sl.getLongitude())));
+                    } catch (Exception ex) {
+                        log.log(Level.INFO, "Could not generate Geocell for SurveyedLocale: "
+                                + sl.getKey().getId() + " error: " + ex);
                     }
                 }
                 slDao.save(sl);
