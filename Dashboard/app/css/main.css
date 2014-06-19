@@ -187,14 +187,14 @@ h6 {
     font-weight: normal;
 }
 h1 {
-    font-size: 2.4em;
+    font-size: 1.8em;
 }
 h2 {
     color: rgb(44, 42, 116);
-    font-size: 1.8em;
+    font-size: 1.7em;
 }
 h3 {
-    font-size: 1.8em;
+    font-size: 1.6em;
     line-height: 1;
 }
 h4 {
@@ -690,7 +690,7 @@ label[for=newDeviceGroupName] {
 .leftSidebar {
     position: fixed;
     float: left;
-    width: 240px;
+    width:calc(20em);
 }
 .rightSidebar {
     position: relative;
@@ -700,8 +700,8 @@ label[for=newDeviceGroupName] {
 .mainRight {
     position: relative;
     float: right;
-    width: calc(100% - 240px);
-    margin-left: 240px;
+    width: calc(100% - 20em);
+    margin-left: 20em;
 }
 .mainLeft {
     position: relative;
@@ -717,12 +717,7 @@ label[for=newDeviceGroupName] {
     padding: 0 0 0 0;
     width: 98%;
 }
-.whiteBg {
-    position: relative;
-    margin: 0.5em 0.5%;
-    width: 99%;
-    background: rgb(255, 255, 255);
-}
+
 /* .header
 --------------------------------------------- */
 
@@ -1418,7 +1413,7 @@ th.action {
     border: thin solid rgb(224, 224, 224);
     background: rgb(255,255,255);
 }
-#tabs section h1, .messagesList h1, .usersList h1 {
+#tabs section h1, .messagesList h1, .usersList h1, .surveyTranslation > h1 {
     display: block;
     margin: 0.5em 0 0.5em 0.5em;
     color:rgb(246,160,26);
@@ -1531,6 +1526,7 @@ th.action {
 --------------------------------------------- */
 
 .leftSidebar {
+    border-radius:3px;
     padding: 0 0 5px 0;
     background: rgb(58, 58, 58);
 }
@@ -1677,7 +1673,7 @@ section.topBar ~ * {
     text-align: center;
     color: rgb(204, 204, 204);
     padding: 1em 3em;
-    text-shadow: 0px 1px 1px rgba(247, 242, 229, 0.5);
+    text-shadow: 0px 2px 1px rgba(247, 242, 229, 0.5);
 }
 section.topBar h2 {
     display: inline-table;
@@ -1704,18 +1700,13 @@ nav.menuTopbar {
     right: 0;
     display: inline;
 }
-nav.menuTopbar ul {
-    padding: 0 0 0 15px;
-    height: 35px;
-    /* background: url(../images/topbarSeperator.png) left center no-repeat; */
-}
 #surveyCreator nav.menuTopbar ul {
     background: none;
 }
 nav.menuTopbar ul li {
     display: inline;
     float: left;
-    margin: 15px 10px 0 0;
+    margin: 10px 0 0 0;
 }
 nav.menuTopbar ul li:last-child {
     display: inline;
@@ -1764,12 +1755,19 @@ a.addGroup:hover {
     background: url(../images/IconAddGroupOrange.svg) left center no-repeat;
 }
 a.addSurvey {
-    background: url(../images/topnavSurveys.svg) left center no-repeat;
+    color:white;
+    background:rgba(74, 177, 207,1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
+    padding:4px 7px 11px 21px;
+    border-radius: 3px;
+    background-size:19px 19px;
+    transition:color 0.2s ease-in, background-color 0.2s ease-in;
 }
 a.addSurvey:hover {
-    background: url(../images/topnavSurveysOrange.svg) left center no-repeat;
+    color:white;
+    background:rgba(246, 160, 26, 1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
+    background-size:19px 19px;
 }
-a.stepBack {
+a.stepBack {    
     background: transparent url(../images/IconBack.svg) left center no-repeat;
 }
 a.stepBack:hover {
@@ -1820,9 +1818,10 @@ li.aSurvey {
     display: block;
     margin: 0.5em auto 1em;
     padding: 0.5em 1%;
-    min-height: 150px;
+    min-height: 115px;
     width: 96%;
-    background: rgb(245, 245, 245);
+    background: rgb(245, 245, 245) url(../images/carret.svg) right center no-repeat;
+    background-size:45px 45px;
     cursor: pointer;
     -webkit-border-radius: 0.3em;
     -moz-border-radius: 0.3em;
@@ -1834,12 +1833,7 @@ li.aSurvey {
     transition: all 0.4s linear;
 }
 li.aSurvey:hover {
-    background: rgb(235, 235, 235);
-}
-li.aSurvey:nth-child(4n+1),
-li.aSurvey.firstOfRow {} li.aSurvey:nth-child(4n),
-li.aSurvey.endOfRow {
-    background-image: none;
+    background:;
 }
 li.aSurvey h2 {
     display: inline-block;
@@ -1848,146 +1842,108 @@ li.aSurvey h2 {
 }
 ul.surveyInfo {
     position: relative;
+    display: inline;
+    float: left;
     padding: 0;
-    width: 50%;
+    width: calc(100% - 50% - 30px);
+    margin-top:20px;
 }
 ul.surveyInfo li {
     position: relative;
+    float:left;
     display: inline-block;
-    margin-top: 3px;
+    margin:0 3px 0 0;
+    width:calc(20% - 3px);
 }
-ul.surveyInfo li.dateCreated {
+
+ul.surveyInfo li span {
+    display: block;
+    color:rgb(128,130,133);
+    text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;    
 }
-ul.surveyInfo li.dateCreated span {
-    
+ul.surveyInfo li time {
+    font-weight: bold;
+    color:black;
 }
-ul.surveyInfo li.responseNumber {
-    
+ul.surveyInfo li p {
+    display: block;
+    font-weight: bold;
 }
-ul.surveyInfo li.responseNumber span {
-   
+ul.surveyInfo li.surveyLanguage p {
+    color:rgb(107, 134, 141);	
+}
+ul.surveyInfo li.surveyType p {
+    color:rgb(227, 27, 35);
 }
 ul.surveyInfo li.responseNumber p {
-    display: inline;
-}
-li.aSurvey:hover h2 {
-    color: rgb(57, 102, 128);
-}
-.waterPoint ul.surveyInfo li.responseNumber,
-li.aSurvey.waterPoint:hover h2 {} .houseHold ul.surveyInfo li.responseNumber,
-li.aSurvey.houseHold:hover h2 {} .school ul.surveyInfo li.responseNumber,
-li.aSurvey.school:hover h2 {} .sanitationPoint ul.surveyInfo li.responseNumber,
-li.aSurvey.sanitationPoint:hover h2 {} .waterPoint ul.surveyInfo li.responseNumber span {} .houseHold ul.surveyInfo li.responseNumber span {} .school ul.surveyInfo li.responseNumber span {} .sanitationPoint ul.surveyInfo li.responseNumber span {} .aSurvey dl {
-    position: relative;
-    display: block;
-    margin: 5px auto;
-    padding-bottom: 5px;
-    width: 100%;
-    border-bottom: thin dotted transparent;
-}
-.aSurvey:hover dl {
-    border-bottom: thin dotted rgb(255, 255, 255);
-}
-.aSurvey dl dt,
-.aSurvey dl dd {
-    display: inline-block;
-    margin: 0 0 2px 0;
-    vertical-align: top;
-    line-height: 1.2em;
-}
-.aSurvey dl dt {
-    overflow: hidden;
-    padding: 2px 0 2px 2%;
-    width: 25%;
-    color: rgb(153, 153, 153);
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    line-height: 1.2em;
-}
-.aSurvey dl dd {
-    padding: 2px 0 2px 2%;
-    width: 67%;
-    text-align: right;
-}
-.waterPoint dl dd:nth-of-type(2) {
-    color: rgb(57, 102, 128);
-}
-.houseHold dl dd:nth-of-type(2) {
-    color: rgb(222, 137, 41);
-}
-.school dl dd:nth-of-type(2) {
-    color: rgb(227, 27, 35);
-}
-.sanitationPoint dl dd:nth-of-type(2) {
-    color: rgb(119, 97, 0);
+    color:rgb(225, 237, 195);	
 }
 .aSurvey nav {
+    box-sizing:border-box;
     position: relative;
-    width: 100%;
-    opacity: 1;
-    -webkit-transition: opacity 0.4s linear;
-    -moz-transition: opacity 0.4s linear;
-    transition: opacity 0.4s linear;
-}
-.aSurvey:hover nav {
-    background: rgb(158, 158, 158);
-    opacity: 1;
+    display: inline;
+    float: right;
+    width: calc(30%);
+    padding-right: 30px;
 }
 .aSurvey nav ul {
-    width: 100%;
+    display: inline-flex;
+    float:right;
 }
 .aSurvey nav ul li {
     display: inline;
     float: left;
-    overflow: hidden;
-    margin: 0.2em 2% 0 0;
-    width: 49%;
-    border-radius: 0.2em;
-    /* background: url(../images/aSurveyNavSep.png) right center no-repeat; */
+    margin: 0 2px 0 0;
+    border-radius: 5px;
     background: rgb(235, 235, 235);
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 .aSurvey nav ul li:hover {
     background: rgb(74, 177, 207);
 }
-.aSurvey nav ul li:nth-child(2n) {
-    margin: 0.2em 0 0 0;
-}
 .aSurvey nav ul li a {
     display: block;
-    overflow: hidden;
-    padding: 2px 0 7px 22px;
-    height: 8px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    width:60px;
+    height:20px;
+    padding-top: 40px;
+    text-align: center;
 }
 .aSurvey nav ul li a:hover {
     color: rgb(246,160,26);
 }
 .aSurvey nav ul li.editSurvey a {
-    background: url(../images/IconEdit.svg) left 2px no-repeat;
+    background: url(../images/IconEdit.svg) center 5px no-repeat;
+    background-size:35px 35px;
 }
 .aSurvey nav ul li.previewSurvey a {
-    background: url(../images/IconPreview.svg) left 2px no-repeat;
+    background: url(../images/IconPreview.svg) center 5px no-repeat;
+    background-size:35px 35px;
 }
 .aSurvey nav ul li.deleteSurvey a {
-    background: url(../images/IconDelete.svg) left 2px no-repeat;
+    background: url(../images/IconDelete.svg) center 5px no-repeat;
+    background-size:35px 35px;
 }
 .aSurvey nav ul li.copySurvey a {
-    background: url(../images/IconCopy.svg) left 2px no-repeat;
+    background: url(../images/IconCopy.svg) center 5px no-repeat;
+    background-size:35px 35px;
 }
 .aSurvey nav ul li.editSurvey a:hover {
-    background: url(../images/IconEditOrange.svg) left 2px no-repeat;
+    background: url(../images/IconEditOrange.svg) center 5px no-repeat;
+    background-size:35px 35px;
 }
 .aSurvey nav ul li.previewSurvey a:hover {
-    background: url(../images/IconPreviewOrange.svg) left 2px no-repeat;
+    background: url(../images/IconPreviewOrange.svg) center 5px no-repeat;
+    background-size:35px 35px;
 }
 .aSurvey nav ul li.deleteSurvey a:hover {
-    background: url(../images/IconDeleteOrange.svg) left 2px no-repeat;
+    background: url(../images/IconDeleteOrange.svg) center 5px no-repeat;
+    background-size:35px 35px;
 }
 .aSurvey nav ul li.copySurvey a:hover {
-    background: url(../images/IconCopyOrange.svg) left 2px no-repeat;
+    background: url(../images/IconCopyOrange.svg) center 5px no-repeat;
+    background-size:35px 35px;
 }
 /*----------------------------------------------------------------------------------------------------------------
 										 Survey Creation & Editing
@@ -2243,6 +2199,9 @@ span.qtnGroupHead {
     font-style: italic;
     font-family: Georgia, "Times New Roman", Times, serif;
 }
+.qtnGroupTitle {
+    margin: 3px 0 0.5em;
+}
 .aQuestionSet header h1.qtnGroupTitle {
     display: inline-block;
     overflow: hidden;
@@ -2412,7 +2371,7 @@ nav.questionActionMenu a:hover {
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {} .aQuestionSet header nav.qtnGroupMenu {
     position: absolute;
-    top: 20px;
+    top: 30px;
     right: 5px;
 }
 .aQuestionSet header nav.qtnGroupMenu ul {
@@ -2428,17 +2387,17 @@ nav.questionActionMenu a:hover {
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a {
     display: block;
-    padding: 5px;
-    /* color: rgb(227, 27, 35); */
     text-transform: uppercase;
+    padding:1px 0 1px 0;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
-    padding: 5px 5px 5px 15px;
-    background: url(../images/shownCollapse.png) left top no-repeat;
+    background: url(../images/IconShow.svg) left center no-repeat;
     text-align: left;
+    padding-left:17px;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
-    background: url(../images/shownCollapse.png) left bottom no-repeat;
+    color:rgb(246,160,26);
+    background: url(../images/IconShowOrange.svg) left center no-repeat;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li:last-child {
     margin: 0;
@@ -2550,19 +2509,19 @@ nav.questionActionMenu a:hover {
     height: 10px;
 }
 nav.smallMenu ul li a.editQuestion {
-    background: url(../images/editQuestion.png) left top no-repeat;
+    background: url(../images/IconEdit.svg) left center no-repeat;
 }
 nav.smallMenu ul li a.deleteQuestion {
-    background: url(../images/deleteQuestion.png) left top no-repeat;
+    background: url(../images/IconDelete.svg) left center no-repeat;
 }
 nav.smallMenu ul li a.moveQuestion {
-    background: url(../images/moveQuestion.png) left top no-repeat;
+    background: url(../images/IconMove.svg) left center no-repeat;
 }
 nav.smallMenu ul li a.copyQuestion {
-    background: url(../images/duplicateQuestion.png) left top no-repeat;
+    background: url(../images/IconCopy.svg) left center no-repeat;
 }
 nav.smallMenu ul li a.showQuestion {
-    background: url(../images/showQuestion.png) left top no-repeat;
+    background: url(../images/IconShow.svg) left center no-repeat;
 }
 nav.smallMenu ul li a.editQuestion:hover {
     background: url(../images/editQuestion.png) left bottom no-repeat;
@@ -3649,9 +3608,6 @@ table.surveyTranslate textarea {
 }
 table.surveyTranslate input {
     width: 88%;
-}
-.qtnGroupTitle {
-    margin: 0.5em 0 0.5em 0;
 }
 table.surveyTranslate .questionNbr span {
     background: transparent;

@@ -85,18 +85,17 @@
               <li class="dateCreated"> <span>{{t _created}}</span>
                 <time>{{#with survey}}{{date createdDateTime}}{{/with}}<time>
               </li>
-              <li class="responseNumber"><span>{{survey.instanceCount}}</span>
-                <p>{{t _responses}}</p>
+              <li class="responseNumber"><span>{{t _responses}}</span>
+                <p>{{survey.instanceCount}}</p>
               </li>
+              <li class="dateModified"><span>{{t _modified}}</span>
+              <time>{{#with survey}}{{date lastUpdateDateTime}}{{/with}}</time></li>
+              <li class="surveyType"><span>{{t _type}}</span>
+              <p>{{#with survey}}{{toPointType pointType}}{{/with}}</p></li>
+              <li class="surveyLanguage"><span>{{t _language}}</span>
+              <p>{{#with survey}}{{toLanguage defaultLanguageCode}}{{/with}}</p></li>
             </ul>
-            <dl class="floats-in">
-              <dt>{{t _modified}}</dt>
-              <dd>{{#with survey}}{{date lastUpdateDateTime}}{{/with}}</dd>
-              <dt>{{t _type}}</dt>
-              <dd>{{#with survey}}{{toPointType pointType}}{{/with}}</dd>
-              <dt>{{t _language}}</dt>
-              <dd>{{#with survey}}{{toLanguage defaultLanguageCode}}{{/with}}</dd>
-            </dl>
+            
             <nav>
               {{#if survey.allowEdit}}
               <ul>              
