@@ -656,41 +656,44 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * @param cursor
      */
     private void populateGeocellsForLocale(String cursor) {
-        log.log(Level.INFO, "creating geocells, at least, trying " + cursor);
-        List<SurveyedLocale> slList = null;
+        log.log(Level.INFO, "Populating geocells for locales");
         SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        slList = slDao.list(cursor);
-        String newCursor = SurveyedLocaleDao.getCursor(slList);
-        Integer num = slList.size();
+        List<SurveyedLocale> surveyedLocaleList = slDao.list(cursor);
+        String newCursor = SurveyedLocaleDao.getCursor(surveyedLocaleList);
 
-        if (slList != null && slList.size() > 0) {
-            for (SurveyedLocale sl : slList) {
-                // populate geocells
-                if (sl.getGeocells() == null || sl.getGeocells().size() == 0) {
-                    if(sl.getLatitude() == null && sl.getLongitude() == null) {
-                        log.log(Level.INFO, "Could not populate Geocells for SurveyedLocale: "
-                                + sl.getKey().getId() + ". No lat/lon values set");
-                        continue;
-                    }
+        if (surveyedLocaleList == null || surveyedLocaleList.size() == 0) {
+            log.log(Level.INFO, "No locales found");
+            return;
+        }
 
-                    try {
-                        sl.setGeocells(GeocellManager.generateGeoCell(new Point(sl.getLatitude(),
-                                sl.getLongitude())));
-                    } catch (Exception ex) {
-                        log.log(Level.INFO, "Could not generate Geocell for SurveyedLocale: "
-                                + sl.getKey().getId() + " error: " + ex);
-                    }
-                }
-                slDao.save(sl);
+        for (SurveyedLocale sl : surveyedLocaleList) {
+            if (sl.getGeocells() != null && sl.getGeocells().size() > 0) {
+                continue;
             }
+
+            if (sl.getLatitude() == null && sl.getLongitude() == null) {
+                log.log(Level.INFO, "Could not populate Geocells for SurveyedLocale: "
+                        + sl.getKey().getId() + ". No lat/lon values set");
+                continue;
+            }
+
+            // populate geocells
+            try {
+                sl.setGeocells(GeocellManager.generateGeoCell(new Point(sl.getLatitude(),
+                        sl.getLongitude())));
+            } catch (Exception ex) {
+                log.log(Level.INFO, "Could not generate Geocell for SurveyedLocale: "
+                        + sl.getKey().getId() + " error: " + ex);
+            }
+            slDao.save(sl);
         }
-        if (num > 0) {
-            Queue queue = QueueFactory.getDefaultQueue();
-            queue.add(TaskOptions.Builder
-                    .withUrl("/app_worker/surveyalservlet")
-                    .param(SurveyalRestRequest.ACTION_PARAM,
-                            SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION)
-                    .param("cursor", newCursor));
-        }
+
+        // launch task for remaining locales
+        Queue queue = QueueFactory.getDefaultQueue();
+        queue.add(TaskOptions.Builder
+                .withUrl("/app_worker/surveyalservlet")
+                .param(SurveyalRestRequest.ACTION_PARAM,
+                        SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION)
+                .param("cursor", newCursor));
     }
 }
