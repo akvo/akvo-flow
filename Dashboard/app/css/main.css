@@ -1689,7 +1689,7 @@ section.topBar > a {
     display: inline-block;
 }
 section.topBar > a:hover {
-    color: rgb(222, 137, 41);
+    color:rgb(246,160,26);
 }
 section.topBar > a.smallBtn {
     margin: 0 10px;
