@@ -16,7 +16,7 @@ Akvo Primary Colours:
 		rgb(107, 134, 141);			Akvo Blueish Green link color
 		rgb(246, 160, 26);			Flow Orange
 		rgb(38, 8, 89);				Flow Purple
-	
+	    rgb(246,160,26);     Orange
 Akvo Secondary Colours:
 	
 		rgb(225, 237, 195);			Akvo very Light green	
@@ -338,6 +338,7 @@ a:visited {
     text-decoration: none;
     cursor: pointer;
 }
+a,
 a:link,
 a:visited {
     -moz-transition: color .2s linear;
@@ -346,8 +347,7 @@ a:visited {
     transition: color .2s linear;
 }
 a:hover {
-    color: rgb(0, 123, 182);
-    color: rgba(55, 146, 179, .8);
+    color:rgb(246,160,26);
 }
 /* Custom text-selection colors (remove any text shadows: twitter.com/miketaylr/status/12228805301) */
 
@@ -403,7 +403,7 @@ input[type="submit"] {
 }
 a.standardBtn:hover,
 input[type="submit"]:hover {
-    background: rgb(39, 94, 139);
+    background: rgb(246,160,26);
     color: rgb(255, 255, 255);
 }
 a.smallBtn {
@@ -413,14 +413,14 @@ a.smallBtn {
     -moz-border-radius: 3px;
     border-radius: 3px;
     background: rgb(0, 123, 182);
-    color: rgb(235, 235, 235);
+    color: rgb(255,255,255);
     text-align: center;
     text-transform: uppercase;
     font-size: 1em;
     -o-border-radius: 3px;
 }
 a.smallBtn:hover {
-    background: rgb(39, 94, 139);
+    background: rgb(246,160,26);
     color: rgb(255, 255, 255);
 }
 .selectinLabel a.helpIcon {
@@ -1816,10 +1816,10 @@ ul.surveyBatch {
 li.aSurvey {
     position: relative;
     display: block;
-    margin: 0.5em auto 1em;
-    padding: 0.5em 1%;
+    margin: 0.5em 0 1em 1%;
+    padding: 0.5em 0 0.5em 1%;
     min-height: 115px;
-    width: 96%;
+    width: 98%;
     background: rgb(245, 245, 245) url(../images/carret.svg) right center no-repeat;
     background-size:45px 45px;
     cursor: pointer;
@@ -1873,7 +1873,7 @@ ul.surveyInfo li p {
     font-weight: bold;
 }
 ul.surveyInfo li.surveyLanguage p {
-    color:rgb(107, 134, 141);	
+    color:rgb(107, 174, 61);	
 }
 ul.surveyInfo li.surveyType p {
     color:rgb(227, 27, 35);
@@ -2154,17 +2154,16 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 .aQuestionSet .questionSetContent a.addQuestion {
     position: relative;
     display: block;
-    overflow: hidden;
     margin: 15px 0 15px 15px;
-    padding: 0.85em 0.5em 0.75em 35px;
-    width: 15%;
-    background: url(../images/insertQuestion.png) 10px center no-repeat;
+    padding: 0.85em 0.5em 0.75em 30px;
+    background: url(../images/IconInsert.svg) left center no-repeat;
+    background-size:25px 25px;
     text-transform: uppercase;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 .aQuestionSet .questionSetContent a.addQuestion:hover {
-    background: url(../images/insertQuestion.png) 10px center no-repeat;
+    color:rgb(246, 160, 26);
+    background: url(../images/IconInsertOrange.svg) left center no-repeat;
+    background-size:25px 25px;
 }
 .aQuestionSet .questionSetContent a.addQuestion:first-child {
     margin: 20px 0 20px 5px;
@@ -2271,7 +2270,7 @@ nav.groupActionMenu ul {
     position: relative;
     display: block;
     margin: 0 auto;
-    width: 19%;
+    width: 30%;
     text-align: center;
 }
 nav.moveMenu ul li,
@@ -2280,43 +2279,19 @@ nav.copyMenu ul li {
     margin: 0 10px 0 0;
     text-align: center;
 }
-nav.groupActionMenu a.smallBtn {
-    margin: 0 0 0.3em 0;
-    background: rgb(246, 160, 26);
-    color: rgb(255, 255, 255);
-}
-nav.groupActionMenu a.smallBtn:hover {
-    background: rgb(58, 58, 58);
-    color: rgb(255, 255, 255);
-}
-nav.groupActionMenu a {
-    color: rgb(246, 160, 26);
-}
-nav.groupActionMenu a:hover {
-    color: rgb(58, 58, 58);
-}
 nav.groupActionMenu.insertMenu ul {
-    position: relative;
-    display: block;
     margin: 0 0 0 1%;
     text-align: left;
 }
 nav.groupActionMenu.insertMenu a {
     display: inline-block;
-    padding: 0.5em 0.5em 0.5em 1.5em;
-    width: 13em;
+    padding: 1px 5px 9px 19px;
     height: 8px;
-    -webkit-border-radius: 0.3em;
-    -moz-border-radius: 0.3em;
-    border-radius: 0.3em;
-    background: transparent url(../images/insertGroupIcn.png) left top no-repeat;
-    color: rgb(246, 160, 26);
+    background: transparent url(../images/IconPlus.svg) left top no-repeat;
     text-transform: uppercase;
-    -o-border-radius: 0.3em;
 }
 nav.groupActionMenu.insertMenu a:hover {
-    background: rgb(58, 58, 58) url(../images/insertGroupIcn.png) left bottom no-repeat;
-    color: rgb(255, 255, 255);
+    background: url(../images/IconPlusOrange.svg) left top no-repeat;
 }
 nav.questionActionMenu {
     display: block;
@@ -2396,15 +2371,21 @@ nav.questionActionMenu a:hover {
     text-align: left;
     padding-left:17px;
 }
+.aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup:hover {
+    background: url(../images/IconShowHover.svg) left center no-repeat;
+    text-align: left;
+    padding-left:17px;
+}
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
     color:rgb(246,160,26);
     background: url(../images/IconShowOrange.svg) left center no-repeat;
+    padding-left:17px;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li:last-child {
     margin: 0;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a:hover {
-    text-decoration: underline;
+    color:rgb(246,160,26);
 }
 .menuCentre {
     position: relative;
@@ -2435,26 +2416,6 @@ nav.questionActionMenu a:hover {
     right: 1px;
     margin: 0;
     padding: 0.5em 0.1em 0.5em 0.5em;
-    border-radius: 0 0 0 5px;
-    background: rgb(230, 230, 230);
-    /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(229, 229, 229, 1) 100%);
-    /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255, 255, 255, 1)), color-stop(100%, rgba(229, 229, 229, 1)));
-    /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(229, 229, 229, 1) 100%);
-    /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(229, 229, 229, 1) 100%);
-    /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgba(255, 255, 255, 1) 0%, rgba(229, 229, 229, 1) 100%);
-    /* IE10+ */
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(229, 229, 229, 1) 100%);
-    /* W3C */
-    box-shadow: -1px 1px 0 rgb(222, 222, 222);
-    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e5e5e5', GradientType=0);
-    /* IE6-8 */
-    /* IE9 SVG, needs conditional override of 'filter' to 'none' */
-    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlNWU1ZTUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
 }
 .innerContent nav {
     display: block;
@@ -2482,32 +2443,18 @@ nav.questionActionMenu a:hover {
     width: 100%;
 }
 .innerContent nav.smallMenu ul li {
-    display: inline;
     float: right;
-    margin: 0 0 0 0;
-    padding: 0 0 0 5px;
-    border-right: 1px solid rgb(208, 208, 208);
-    border-left: 1px solid rgb(245, 245, 245);
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
     background: transparent;
     text-align: right;
     transition: background 0.4s ease-in;
 }
-.innerContent nav.smallMenu ul li:first-child {
-    border-right: none;
-}
-.innerContent nav.smallMenu ul li:last-child {
-    border-left: none;
-}
-.innerContent nav.smallMenu ul li:hover {
-    background: rgb(224, 224, 224);
-}
 .innerContent nav.smallMenu ul li a {
     display: block;
-    padding: 7px 10px 3px 20px;
+    padding:0px 10px 6px 18px;
     height: 10px;
+}
+.innerContent nav.smallMenu ul li a:hover {
+    color:rgba(246, 160, 26, 1);
 }
 nav.smallMenu ul li a.editQuestion {
     background: url(../images/IconEdit.svg) left center no-repeat;
@@ -2525,19 +2472,19 @@ nav.smallMenu ul li a.showQuestion {
     background: url(../images/IconShow.svg) left center no-repeat;
 }
 nav.smallMenu ul li a.editQuestion:hover {
-    background: url(../images/editQuestion.png) left bottom no-repeat;
+    background: url(../images/IconEditOrange.svg) left center no-repeat;
 }
 nav.smallMenu ul li a.deleteQuestion:hover {
-    background: url(../images/deleteQuestion.png) left bottom no-repeat;
+    background: url(../images/IconDeleteOrange.svg) left center no-repeat;
 }
 nav.smallMenu ul li a.moveQuestion:hover {
-    background: url(../images/moveQuestion.png) left bottom no-repeat;
+    background: url(../images/IconMoveOrange.svg) left center no-repeat;
 }
 nav.smallMenu ul li a.copyQuestion:hover {
-    background: url(../images/duplicateQuestion.png) left bottom no-repeat;
+    background: url(../images/IconCopyOrange.svg) left center no-repeat;
 }
 nav.smallMenu ul li a.showQuestion:hover {
-    background: url(../images/showQuestion.png) left bottom no-repeat;
+    background: url(../images/IconShowOrange.svg) left center no-repeat;
 }
 /*-------------------------------------------------------------------------------------------------------------------------------
 											New Survey Settings
@@ -2617,9 +2564,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 .innerContent h1 {
     display: block;
-    margin: 0 0 1em 0.5em;
-    color: rgb(38, 8, 89);
-    font-weight: bold;
+    margin: 0.5em 0 1em 0.5em;
     font-size: 1.5em;
 }
 .innerContent h1:after {
@@ -2640,16 +2585,9 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 .questionNbr span {
     display: inline-block;
-    margin: -10px 0.6em 0 0;
-    padding: 0.3em 0.6em;
-    border-radius: 0.75em;
-    background: rgb(58, 58, 58);
-    color: rgb(223, 223, 223);
+    margin: 0 0.1em 0 0;
+    padding: 0.1em 0.3em;
     text-align: center;
-    -moz-box-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 rgb(255, 255, 255);
-    -webkit-box-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 rgb(255, 255, 255);
-    -o-box-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 rgb(255, 255, 255);
-    box-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 rgb(255, 255, 255);
 }
 .innerContent input {
     display: block;
@@ -3004,17 +2942,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     margin: 0 auto;
     padding: 0.5em 1em;
     width: 10%;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-    background-color: rgb(0, 123, 182);
-    color: rgb(235, 235, 235);
     text-align: center;
-    -o-border-radius: 3px;
-}
-.filterData a.findData:hover {
-    background-color: rgb(58, 58, 58);
-    color: rgb(255, 255, 255);
 }
 /******************************************************************************
 									FLOW MAP
@@ -3227,25 +3155,23 @@ footer.bottomPage small {
     text-align: center;
     font-weight: normal;
 }
-footer.bottomPage nav {
+footer.bottomPage nav.footItems {
     display: block;
     width: 100%;
     text-align: center;
 }
-footer.bottomPage nav ul {
-    display: inline-block;
+footer.bottomPage nav.footItems ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content:center;
     margin: 1em auto 1em auto;
     text-align: center;
 }
-footer.bottomPage nav ul li {
-    display: inline;
-    float: left;
-    margin: 5px 1.5em 0 0;
+footer.bottomPage nav.footItems ul li.footLink {
     text-align: center;
 }
-footer.bottomPage nav ul li:last-child {
-    margin: 5px 0 0 0;
-}
+
 footer.bottomPage nav ul li a {
     display: block;
     padding: 5px 7px;
