@@ -144,7 +144,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedSurvey'),
 
   showLastCollection: function () {
-    return FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
+    return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   showRawDataReport: function () {
