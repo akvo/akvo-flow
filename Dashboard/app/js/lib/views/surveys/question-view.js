@@ -55,6 +55,11 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   },
 
+  showMetaConfig: function () {
+    var monitoringGroup = FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
+    return FLOW.Env.showMonitoringFeature && monitoringGroup;
+  }.property('FLOW.selectedControl.selectedSurveyGroup'),
+
   amOpenQuestion: function () {
     var selected = FLOW.selectedControl.get('selectedQuestion');
     if (selected && this.get('content')) {
