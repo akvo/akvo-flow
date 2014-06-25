@@ -274,7 +274,6 @@ pre {
     max-width: 15%;
     background: rgb(255, 255, 165);
     -webkit-box-shadow: 0 0 2px rgb(0, 0, 0);
-    -moz-box-shadow: 0 0 2px rgb(0, 0, 0);
     box-shadow: 0 0 2px rgb(0, 0, 0);
     font-size: 1.5em;
     font-family: Georgia, "Times New Roman", Times, serif;
@@ -304,7 +303,6 @@ pre {
     width: 98%;
     background: rgb(255, 255, 255);
     -webkit-box-shadow: 0 0 2px rgb(230, 230, 230);
-    -moz-box-shadow: 0 0 2px rgb(230, 230, 230);
     box-shadow: 0 0 2px rgb(230, 230, 230);
     -o-box-shadow: 0 0 2px rgb(230, 230, 230);
 }
@@ -341,9 +339,7 @@ a:visited {
 a,
 a:link,
 a:visited {
-    -moz-transition: color .2s linear;
     -webkit-transition: color .2s linear;
-    -o-transition: color .2s linear;
     transition: color .2s linear;
 }
 a:hover {
@@ -396,8 +392,6 @@ input[type="submit"] {
     text-align: center;
     text-transform: uppercase;
     font-size: 1.1em;
-    -webkit-border-radius: 0.3em;
-    -moz-border-radius: 0.3em;
     -o-border-radius: 0.3em;
     border-radius: 0.3em;
 }
@@ -409,8 +403,6 @@ input[type="submit"]:hover {
 a.smallBtn {
     display: inline-block;
     padding: 6px 7px 5px 7px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
     border-radius: 3px;
     background: rgb(0, 123, 182);
     color: rgb(255,255,255);
@@ -470,8 +462,6 @@ a.AddBtn:hover {}
     display: block;
     width: 20px;
     height: 16px;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
     border-radius: 6px;
     background: url(../images/closeDialog.png) center top no-repeat;
     text-indent: -9999px;
@@ -564,9 +554,7 @@ a.AddBtn:hover {}
     opacity: 0.0;
     -webkit-transition: opacity 2s;
     /* Safari and Chrome */
-    -moz-transition: opacity 2s;
     /* Firefox 4 */
-    -o-transition: opacity 2s;
     /* Opera */
     transition: opacity 2s;
 }
@@ -606,8 +594,6 @@ a.AddBtn:hover {}
     min-width: 500px;
     width: 25%;
     border: thin solid rgb(153, 153, 153);
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
     border-radius: 6px;
     background: rgb(255, 255, 255);
     -o-border-radius: 6px;
@@ -625,8 +611,6 @@ a.AddBtn:hover {}
     max-height: 500px;
     width: 60%;
     border: thin solid rgb(153, 153, 153);
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
     border-radius: 4px;
     background: white;
     -o-border-radius: 4px;
@@ -669,11 +653,21 @@ label[for=newDeviceGroupName] {
     position: relative;
     margin: 0 auto 0 auto;
     padding: 0;
-    width: 90%;
+    width: 100%;
     min-width: 768px;
+}
+header.top.top-nav-collapse + .belowHeader {
+    padding-top: 110px;
+    padding-bottom: 110px;
+    background: white;
 }
 .belowHeader {
     padding-top: 110px;
+    padding-bottom: 110px;
+    background: white;
+}
+header.top.top-nav-collapse > div > .belowHeader {
+    padding-top: 50px;
     padding-bottom: 110px;
     background: white;
 }
@@ -681,16 +675,24 @@ label[for=newDeviceGroupName] {
     position: relative;
     margin: 0 auto 0 auto;
     padding: 0;
-    width: 90%;
+    width:100%;
     min-width: 768px;
 }
 .middleSection {
     margin: 0 0 20px 0;
 }
 .leftSidebar {
-    position: fixed;
-    float: left;
+    /*position: fixed;
     width:calc(20em);
+    max-height: 100%;
+    overflow-y:scroll;*/
+    float: left;
+	left: 20em;
+	margin-left: -20em;
+	position: fixed;
+	width: 20em;
+	overflow-y: auto;
+    min-height: calc(100%-220px);
 }
 .rightSidebar {
     position: relative;
@@ -698,10 +700,14 @@ label[for=newDeviceGroupName] {
     width: 22%;
 }
 .mainRight {
-    position: relative;
+    float:left;
+    width:calc(100% - 20em);
+    margin-left: 20em;
+    overflow-y: auto;
+    /*position: relative;
     float: right;
     width: calc(100% - 20em);
-    margin-left: 20em;
+    margin-left: 20em;*/
 }
 .mainLeft {
     position: relative;
@@ -715,7 +721,7 @@ label[for=newDeviceGroupName] {
 .mainContent {
     margin: 0 auto;
     padding: 0 0 0 0;
-    width: 98%;
+    width: 99%;
 }
 
 /* .header
@@ -723,29 +729,41 @@ label[for=newDeviceGroupName] {
 
 header.top {
     position: fixed;
-    padding: 0;
+    padding: 20px 0; 
     top: 0;
     width: 100%;
-    height: 80px;
+    height: 40px;
     /* background: rgb(58,58,58); */
     border-bottom: 1px solid rgb(240, 240, 240);
     background: rgb(248, 248, 248);
     z-index: 9999;
+    -webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.1);
     box-shadow: 0 0 1px rgba(32, 32, 36, 0.1);
     border-top: 2px solid rgb(44, 42, 116);
+    -webkit-transition:all 0.2s ease-in;
+    transition:all 0.2s ease-in;
+}
+header.top.top-nav-collapse {
+    padding: 0;
+    border-bottom:1px solid rgb(232, 232, 245);
 }
 header.top h1 {
     position: absolute;
-    top: 20px;
+    top: 0;
     left: 0px;
     width: 169px;
     height: 60px;
-    background: url(../images/akvoFlowLogo2.png) no-repeat center top;
+    background: url(../images/akvoFlowLogo2.png) no-repeat 5px top;
     text-indent: -9999px;
 }
-header.top h1:hover {
-    background: url(../images/akvoFlowLogo2.png) no-repeat center top;
+header.top.top-nav-collapse h1 {
+    width: 169px;
+    height: inherit;
+    background: url(../images/akvoFlowLogo2.png) no-repeat 10px center;
+    -webkit-background-size:80% auto;
+    background-size:80% auto;
 }
+
 header.top h1 a {
     display: block;
     width: 169px;
@@ -755,7 +773,7 @@ header.top h1 a {
 .loginSection {
     display: none;
     position: absolute;
-    top: 10px;
+    top: 0;
     right: 0;
 }
 .loginSection ul li {
@@ -766,7 +784,7 @@ header.top h1 a {
 }
 .languageSelector {
     position: absolute;
-    top: 10px;
+    top: 0;
     right: 0;
 }
 .languageSelector .labelText {
@@ -775,6 +793,16 @@ header.top h1 a {
 }
 .languageSelector select {
     display: block;
+    font-size: 0.9em;
+    padding: 5px;
+}
+header.top.top-nav-collapse .languageSelector {top:8px;}
+header.top.top-nav-collapse .languageSelector .labelText {
+    display: inline;
+    margin: 0 0.25em 0 0em;
+}
+header.top.top-nav-collapse .languageSelector select {
+    display:inline;
     font-size: 0.9em;
     padding: 5px;
 }
@@ -811,6 +839,7 @@ nav.appNav ul li:hover {
 }
 nav.appNav ul li a {
     font-size: 1em;
+    margin-top:-20px;
     display: block;
     padding: 41px 4px 23px 8px;
     color: rgb(74, 177, 207);
@@ -818,14 +847,25 @@ nav.appNav ul li a {
     vertical-align: middle;
     text-transform: uppercase;
     cursor: pointer;
-    -webkit-transition: background-color .4s linear;
-    -moz-transition: background-color .4s linear;
-    -o-transition: background-color .4s linear;
-    transition: background-color .4s linear;
+    
+}
+
+header.top.top-nav-collapse nav.appNav ul li a {
+    margin-top:0;
+    padding: 18px 4px 3px 8px;
+    background-position:center 2px;
+    -webkit-background-size: 18px auto;
+    background-size: 18px auto;
+}
+header.top.top-nav-collapse nav.appNav ul li a:hover {
+    margin-top:0;
+    padding: 18px 4px 4px 8px;
+    background-position:center 2px;
+    -webkit-background-size: 18px auto;
+    background-size: 18px auto;
 }
 nav.appNav ul li.current a {
     -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
-    -moz-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
     -o-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
     box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
     border-radius: 0 0 5px 5px;
@@ -835,123 +875,153 @@ nav.appNav ul li.current a {
     color: rgb(246, 160, 26);
 }
 nav.appNav ul li.navHome a {
-    background: url(../images/topnavDashboards.svg) center 12px no-repeat;
+    background: url(../images/topnavDashboards.svg);
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navHome a:hover {
     background: rgb(232, 232, 232) url(../images/topnavDashboardsOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navHome.current a {
     background: #F7F2E5 url(../images/topnavDashboardsOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navMessages a {
     background: url(../images/topnavMessages.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navMessages a:hover {
     background: #F7F2E5 url(../images/topnavMessagesOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navMessages.current a {
     background: #F7F2E5 url(../images/topnavMessagesOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navSurveys a {
     background: url(../images/topnavSurveys.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navSurveys a:hover {
     background: rgb(232, 232, 232) url(../images/topnavSurveysOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navSurveys.current a {
     background: #F7F2E5 url(../images/topnavSurveysOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navData a {
     background: url(../images/topnavData.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navData a:hover {
     background: rgb(232, 232, 232) url(../images/topnavDataOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navData.current a {
     background: #F7F2E5 url(../images/topnavDataOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navDashboards a {
     background: url(../images/topnavDashboards.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navDashboards a:hover {
     background: rgb(232, 232, 232) url(../images/topnavDashboardsOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navDashboards.current a {
     background: #F7F2E5 url(../images/topnavDashboardsOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navMaps a {
     background: url(../images/topnavMaps.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navMaps a:hover {
     background: rgb(232, 232, 232) url(../images/topnavMapsOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navMaps.current a {
     background: #F7F2E5 url(../images/topnavMapsOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navDevices a {
     background: url(../images/topnavDevices.svg) center 10px no-repeat;
+    -webkit-background-size: 25px auto;
     background-size: 25px auto;
 }
 nav.appNav ul li.navDevices a:hover {
     background: rgb(232, 232, 232) url(../images/topnavDevicesOrange.svg) center 10px no-repeat;
+    -webkit-background-size: 25px auto;
     background-size: 25px auto;
 }
 nav.appNav ul li.navDevices.current a {
     background: #F7F2E5 url(../images/topnavDevicesOrange.svg) center 10px no-repeat;
+    -webkit-background-size: 25px auto;
     background-size: 25px auto;
 }
 nav.appNav ul li.navUsers a {
     background: url(../images/topnavUsers.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navUsers a:hover {
     background: rgb(232, 232, 232) url(../images/topnavUsersOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navUsers.current a {
     background: #F7F2E5 url(../images/topnavUsersOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navReports a {
     background: url(../images/topnavReports.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navReports a:hover {
     background: rgb(232, 232, 232) url(../images/topnavReportsOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navReports.current a {
     background: #F7F2E5 url(../images/topnavReportsOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navAdmin a {
     background: url(../images/topnavAdmin.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navAdmin a:hover {
     background: rgb(232, 232, 232) url(../images/topnavAdminOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 nav.appNav ul li.navAdmin.current a {
     background: #F7F2E5 url(../images/topnavAdminOrange.svg) center 12px no-repeat;
+    -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
 /*--------------------------------------------- 
@@ -982,8 +1052,6 @@ table.dataTable tbody tr {
     border-bottom: thin solid rgb(255, 255, 255);
     background: rgb(255, 255, 255);
     -webkit-transition: background-color .4s linear;
-    -moz-transition: background-color .4s linear;
-    -o-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
 table.dataTable tbody tr:nth-child(2n+1),
@@ -991,16 +1059,12 @@ table.dataTable tbody tr.odd {
     border-bottom: thin solid rgb(255, 255, 255);
     background: rgb(255, 255, 255);
     -webkit-transition: background-color .4s linear;
-    -moz-transition: background-color .4s linear;
-    -o-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
 table.dataTable tbody tr:nth-child(2n),
 table.dataTable tbody tr.even {
     background: rgb(232, 230, 220);
     -webkit-transition: background-color .4s linear;
-    -moz-transition: background-color .4s linear;
-    -o-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
 table.dataTable tbody tr:hover,
@@ -1133,17 +1197,11 @@ tfoot tr {
     color: rgb(0, 123, 182);
     font-size: 1.1em;
     -webkit-transition: all 0.2s ease;
-    -moz-transition: all 0.2s ease;
-    -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
-    -webkit-border-radius: 0.3em;
-    -moz-border-radius: 0.3em;
     -o-border-radius: 0.3em;
     border-radius: 0.3em;
 }
 .dataTabMenu ul li a:hover {
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
     border-radius: 2px;
     background: rgb(74, 177, 207);
     color: rgb(255, 255, 255);
@@ -1151,8 +1209,6 @@ tfoot tr {
 }
 .dataTabMenu ul li a:hover.disabled,
 .dataTabMenu ul li a.disabled {
-    -webkit-border-radius: 0;
-    -moz-border-radius: 0;
     border-radius: 0;
     background: transparent;
     color: grey;
@@ -1209,9 +1265,7 @@ input.hasDatepicker {
     width: 95%;
     background: rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
 }
-#inspectData input.hasDatepicker {
-    width: inherit;
-}
+
 .dateRange div.activeDate,
 .dateRange div.expireDate {
     width: 50%;
@@ -1321,14 +1375,10 @@ table.previewList {
     float: right;
     padding: 5px 3px;
     width: 10%;
-    -webkit-border-radius: 0 0 5px 5px;
-    -moz-border-radius: 0 0 5px 5px;
     border-radius: 0 0 5px 5px;
     background: rgb(0, 123, 182);
     color: rgb(255, 255, 255);
     -webkit-transition: background 0.5s ease-in;
-    -moz-transition: background 0.5s ease-in;
-    -o-transition: background 0.5s ease-in;
     transition: background 0.5s ease-in;
     -o-border-radius: 0 0 5px 5px;
 }
@@ -1438,30 +1488,25 @@ th.action {
     display: inline;
     float: left;
     margin: 0 1px 0 0;
-    -webkit-border-radius: 5px 5px 0 0;
-    -moz-border-radius: 5px 5px 0 0;
     border-radius: 5px 5px 0 0;
     background: rgb(201, 201, 201);
     /* Old browsers */
-    background: -moz-linear-gradient(top, rgb(201, 201, 201) 0%, rgb(223, 223, 223) 83%, rgb(206, 206, 206) 100%);
     /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgb(201, 201, 201)), color-stop(83%, rgb(223, 223, 223)), color-stop(100%, rgb(206, 206, 206)));
     /* Chrome,Safari4+ */
     background: -webkit-linear-gradient(top, rgb(201, 201, 201) 0%, rgb(223, 223, 223) 83%, rgb(206, 206, 206) 100%);
     /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgb(201, 201, 201) 0%, rgb(223, 223, 223) 83%, rgb(206, 206, 206) 100%);
     /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgb(201, 201, 201) 0%, rgb(223, 223, 223) 83%, rgb(206, 206, 206) 100%);
     /* IE10+ */
+    background: -webkit-gradient(linear, left top, left bottom, from(rgb(201, 201, 201)), color-stop(83%, rgb(223, 223, 223)), to(rgb(206, 206, 206)));
     background: linear-gradient(to bottom, rgb(201, 201, 201) 0%, rgb(223, 223, 223) 83%, rgb(206, 206, 206) 100%);
     /* W3C */
     background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2M5YzljOSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjgzJSIgc3RvcC1jb2xvcj0iI2RmZGZkZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjZWNlY2UiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    -webkit-background-clip: padding-box;
     background-clip: padding-box;
     filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#c9c9c9', endColorstr='#cecece', GradientType=0);
     /* IE6-8 */
     -webkit-transition: none;
-    -moz-transition: none;
-    -o-transition: none;
     transition: none;
     /* IE9 SVG, needs conditional override of 'filter' to 'none' */
     -moz-background-clip: padding;
@@ -1474,16 +1519,14 @@ th.action {
 #tabs nav.tabNav ul li.active:hover {
     background: rgb(69, 72, 77);
     /* Old browsers */
-    background: -moz-linear-gradient(top, rgb(69, 72, 77) 0%, rgb(0, 0, 0) 100%);
     /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgb(69, 72, 77)), color-stop(100%, rgb(0, 0, 0)));
     /* Chrome,Safari4+ */
     background: -webkit-linear-gradient(top, rgb(69, 72, 77) 0%, rgb(0, 0, 0) 100%);
     /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgb(69, 72, 77) 0%, rgb(0, 0, 0) 100%);
     /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgb(69, 72, 77) 0%, rgb(0, 0, 0) 100%);
     /* IE10+ */
+    background: -webkit-gradient(linear, left top, left bottom, from(rgb(69, 72, 77)), to(rgb(0, 0, 0)));
     background: linear-gradient(top, rgb(69, 72, 77) 0%, rgb(0, 0, 0) 100%);
     /* W3C */
     filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#45484d', endColorstr='#000000', GradientType=0);
@@ -1497,7 +1540,6 @@ th.action {
     color: rgb(147, 145, 144);
     text-transform: uppercase;
     -webkit-transition: none;
-    -moz-transition: none;
     transition: none;
     -webkit-text-shadow: 1px 1px 0 rgb(235, 235, 235);
     -moz-text-shadow: 1px 1px 0 rgb(235, 235, 235);
@@ -1627,8 +1669,6 @@ a.scrollUp {
     text-align: center;
     text-indent: -9999px;
     -webkit-transition: background 0.4s ease-in;
-    -moz-transition: background 0.4s ease-in;
-    -o-transition: background 0.4s ease-in;
     transition: background 0.4s ease-in;
 }
 a.scrollDown {
@@ -1641,8 +1681,6 @@ a.scrollDown {
     text-align: center;
     text-indent: -9999px;
     -webkit-transition: background 0.4s ease-in;
-    -moz-transition: background 0.4s ease-in;
-    -o-transition: background 0.4s ease-in;
     transition: background 0.4s ease-in;
 }
 a.scrollUp:hover {
@@ -1759,12 +1797,15 @@ a.addSurvey {
     background:rgba(74, 177, 207,1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
     padding:4px 7px 11px 21px;
     border-radius: 3px;
+    -webkit-background-size:19px 19px;
     background-size:19px 19px;
+    -webkit-transition:color 0.2s ease-in, background-color 0.2s ease-in;
     transition:color 0.2s ease-in, background-color 0.2s ease-in;
 }
 a.addSurvey:hover {
     color:white;
     background:rgba(246, 160, 26, 1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
+    -webkit-background-size:19px 19px;
     background-size:19px 19px;
 }
 a.stepBack {    
@@ -1821,15 +1862,12 @@ li.aSurvey {
     min-height: 115px;
     width: 98%;
     background: rgb(245, 245, 245) url(../images/carret.svg) right center no-repeat;
+    -webkit-background-size:45px 45px;
     background-size:45px 45px;
     cursor: pointer;
-    -webkit-border-radius: 0.3em;
-    -moz-border-radius: 0.3em;
     -o-border-radius: 0.3em;
     border-radius: 0.3em;
     -webkit-transition: all 0.4s linear;
-    -moz-transition: all 0.4s linear;
-    -o-transition: all 0.4s linear;
     transition: all 0.4s linear;
 }
 li.aSurvey:hover {
@@ -1882,6 +1920,8 @@ ul.surveyInfo li.responseNumber p {
     color:rgb(225, 237, 195);	
 }
 .aSurvey nav {
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
     box-sizing:border-box;
     position: relative;
     display: inline;
@@ -1890,6 +1930,9 @@ ul.surveyInfo li.responseNumber p {
     padding-right: 30px;
 }
 .aSurvey nav ul {
+    display: -webkit-inline-box;
+    display: -webkit-inline-flex;
+    display: -ms-inline-flexbox;
     display: inline-flex;
     float:right;
 }
@@ -1899,6 +1942,7 @@ ul.surveyInfo li.responseNumber p {
     margin: 0 2px 0 0;
     border-radius: 3px;
     background: rgba(235, 235, 235,1);
+    -webkit-transition: background 0.2s ease-in;
     transition: background 0.2s ease-in;
 }
 .aSurvey nav ul li:hover {
@@ -1916,41 +1960,49 @@ ul.surveyInfo li.responseNumber p {
 }
 .aSurvey nav ul li.editSurvey a {
     background: url(../images/IconEdit.svg) center 5px no-repeat;
+    -webkit-background-size:35px 35px;
     background-size:35px 35px;
 }
 .aSurvey nav ul li.previewSurvey a {
     background: url(../images/IconPreview.svg) center 5px no-repeat;
+    -webkit-background-size:35px 35px;
     background-size:35px 35px;
 }
 .aSurvey nav ul li.deleteSurvey a {
     background: url(../images/IconDelete.svg) center 5px no-repeat;
+    -webkit-background-size:35px 35px;
     background-size:35px 35px;
 }
 .aSurvey nav ul li.copySurvey a {
     background: url(../images/IconCopy.svg) center 5px no-repeat;
+    -webkit-background-size:35px 35px;
     background-size:35px 35px;
 }
 .aSurvey nav ul li.editSurvey a:hover {
     background: url(../images/IconEditOrange.svg) center 5px no-repeat;
+    -webkit-background-size:35px 35px;
     background-size:35px 35px;
 }
 .aSurvey nav ul li.previewSurvey a:hover {
     background: url(../images/IconPreviewOrange.svg) center 5px no-repeat;
+    -webkit-background-size:35px 35px;
     background-size:35px 35px;
 }
 .aSurvey nav ul li.deleteSurvey a:hover {
     background: url(../images/IconDeleteOrange.svg) center 5px no-repeat;
+    -webkit-background-size:35px 35px;
     background-size:35px 35px;
 }
 .aSurvey nav ul li.copySurvey a:hover {
     background: url(../images/IconCopyOrange.svg) center 5px no-repeat;
+    -webkit-background-size:35px 35px;
     background-size:35px 35px;
 }
 /*----------------------------------------------------------------------------------------------------------------
 										 Survey Creation & Editing
 ----------------------------------------------------------------------------------------------------------------*/
 
-#newSurveyInfo h2 {
+.leftSidebar h2 {
     display: block;
     overflow: hidden;
     margin: 0.5em 0 0.1em 4%;
@@ -1958,60 +2010,58 @@ ul.surveyInfo li.responseNumber p {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-#newSurveyInfo form {
+.leftSidebar form {
     position: relative;
     padding: 5px 2%;
 }
-#newSurveyInfo label,
-#newSurveyInfo input,
-#newSurveyInfo textarea,
-#newSurveyInfo select {
+.leftSidebar label,
+.leftSidebar input,
+.leftSidebar textarea,
+.leftSidebar select {
     display: block;
 }
-#newSurveyInfo input[type=checkbox] {
+.leftSidebar input[type=checkbox] {
     display: inline;
     margin: 0.3em 0.1em 0 0.2em;
     width: 13px;
 }
-#newSurveyInfo label {
+.leftSidebar label {
     margin: 1em 2px 0.2em 2px;
     color: rgb(255, 255, 255);
     text-transform: uppercase;
 }
-#newSurveyInfo label:first-child {
+.leftSidebar label:first-child {
     margin: 0.5em 2px 10px 2px;
     color: rgb(255, 255, 255);
 }
-#newSurveyInfo input {
+.leftSidebar input {
     margin: 0.2em auto 0 auto;
     padding: 0.5em 1.5%;
     width: 96%;
 }
-#newSurveyInfo textarea {
+.leftSidebar textarea {
     margin: 0.2em auto 0 auto;
     padding: 0.5em 1.5%;
     width: 96%;
 }
-#newSurveyInfo form select {
+.leftSidebar form select {
     margin: 0.2em auto 0 auto;
     width: 100%;
 }
-#newSurveyInfo form select option {
+.leftSidebar form select option {
     padding: 0 1.5%;
     background: rgb(255, 255, 255);
 }
-#newSurveyInfo dl {
+.leftSidebar dl {
     position: relative;
     margin: 1em auto;
     padding: 0.2em 2% 0.7em 2%;
     width: 92%;
-    -webkit-border-radius: 0.2em;
-    -moz-border-radius: 0.2em;
     border-radius: 0.2em;
     background: rgb(78, 78, 78);
     -o-border-radius: 0.2em;
 }
-#newSurveyInfo dt {
+.leftSidebar dt {
     position: relative;
     display: table-cell;
     float: left;
@@ -2020,7 +2070,7 @@ ul.surveyInfo li.responseNumber p {
     width: 52%;
     color: rgb(204, 204, 204);
 }
-#newSurveyInfo dd {
+.leftSidebar dd {
     position: relative;
     display: table-cell;
     float: right;
@@ -2030,7 +2080,7 @@ ul.surveyInfo li.responseNumber p {
     color: rgb(255, 255, 255);
     font-weight: bold;
 }
-#newSurveyInfo .helpIcon {
+.leftSidebar .helpIcon {
     position: absolute;
     right: 3%;
     margin: -3px 0 0 0;
@@ -2051,8 +2101,6 @@ a.manageNotifications span {
     margin: 1.2em auto 0.2em auto;
     padding: 15px 0%;
     width: 94%;
-    -webkit-border-radius: 0.4em;
-    -moz-border-radius: 0.4em;
     border-radius: 0.4em;
     background: rgb(33, 33, 33);
     -o-border-radius: 0.4em;
@@ -2157,12 +2205,14 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
     margin: 15px 0 15px 15px;
     padding: 0.85em 0.5em 0.75em 30px;
     background: url(../images/IconInsert.svg) left center no-repeat;
+    -webkit-background-size:25px 25px;
     background-size:25px 25px;
     text-transform: uppercase;
 }
 .aQuestionSet .questionSetContent a.addQuestion:hover {
     color:rgb(246, 160, 26);
     background: url(../images/IconInsertOrange.svg) left center no-repeat;
+    -webkit-background-size:25px 25px;
     background-size:25px 25px;
 }
 .aQuestionSet .questionSetContent a.addQuestion:first-child {
@@ -2223,8 +2273,6 @@ span.qtnGroupHead {
     margin: 5px 0;
     width: 25%;
     border: thin solid rgb(224, 224, 224);
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
     border-radius: 3px;
     -o-border-radius: 3px;
 }
@@ -2246,8 +2294,6 @@ span.qtnGroupHead {
     margin: 0.25% 1% 0.25% auto;
     padding: 0.50em 0.5em 0.35em 25px;
     width: 7%;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
     border-radius: 3px;
     background: rgb(235, 235, 235) url(../images/addSet.png) left center no-repeat;
     color: rgb(227, 27, 35);
@@ -2337,8 +2383,6 @@ nav.questionActionMenu a:hover {
     padding: 15px 0.1%;
     width: 99.8%;
     border: thin solid rgb(224, 224, 224);
-    -webkit-border-radius: 0 0 5px 0;
-    -moz-border-radius: 0 0 5px 0;
     border-radius: 0 0 5px 0;
     background: rgb(248, 248, 248);/* -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *
     /* -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
@@ -2347,7 +2391,7 @@ nav.questionActionMenu a:hover {
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {} .aQuestionSet header nav.qtnGroupMenu {
     position: absolute;
-    top: 30px;
+    top: 0px;
     right: 5px;
 }
 .aQuestionSet header nav.qtnGroupMenu ul {
@@ -2446,6 +2490,7 @@ nav.questionActionMenu a:hover {
     float: right;
     background: transparent;
     text-align: right;
+    -webkit-transition: background 0.4s ease-in;
     transition: background 0.4s ease-in;
 }
 .innerContent nav.smallMenu ul li a {
@@ -2564,7 +2609,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 }
 .innerContent h1 {
     display: block;
-    margin: 0.5em 0 1em 0.5em;
+    margin: 1em 0 1em 0.5em;
     font-size: 1.5em;
 }
 .innerContent h1:after {
@@ -2757,16 +2802,12 @@ table.dataTable.notificationTable tbody tr {
     border-bottom: thin solid rgb(255, 255, 255);
     background: rgb(255, 255, 255);
     -webkit-transition: background-color .4s linear;
-    -moz-transition: background-color .4s linear;
-    -o-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
 table.dataTable.notificationTable tbody tr:nth-child(2n+1),
 table.dataTable.notificationTable tbody tr.odd {
     background: rgb(232, 230, 220);
     -webkit-transition: background-color .4s linear;
-    -moz-transition: background-color .4s linear;
-    -o-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
 table.dataTable.notificationTable tbody tr:hover,
@@ -2791,6 +2832,7 @@ table.dataTable.notificationTable thead tr th {
 .dataSection table.dataTable.notificationTable thead tr th {
     padding: 9px 1em 9px 1em;
 }
+
 table.dataTable.notificationTable thead tr th.noArrows {
     background: #3A3A3A;
 }
@@ -2826,8 +2868,8 @@ table.dataTable.notificationTable thead tr th a:visited {
     position: relative;
     display: block;
     float: left;
-    margin: 0 1% 2em 0;
-    width: 49%;
+    margin: 0 1% 2em 0.5em;
+    width: 48%;
     height: 20px;
 }
 .filterData div.chooseLocationData {
@@ -2853,13 +2895,18 @@ table.dataTable.notificationTable thead tr th a:visited {
     margin: 0 0 2em 0;
     width: 50%;
     height: 20px;
-    text-align: right;
+    text-align: left;
 }
+.collectedFrom span {display:block;}
+.collectedTo span {display:block;}
+
 .filterData div.dataCollectedDate label {
     width: 48%;
+    float:left;
+    margin-top:-20px;
 }
 .filterData div.dataCollectedDate label input {
-    width: 35%;
+    width: 97%;
 }
 .filterData div.dataDeviceId {
     display: block;
@@ -3050,8 +3097,6 @@ div.drawHandle {
     text-transform: uppercase;
     font-weight: bold;
     cursor: pointer;
-    -webkit-border-radius: 0.2em;
-    -moz-border-radius: 0.2em;
     -o-border-radius: 0.2em;
     border-radius: 0.2em;
 }
@@ -3128,6 +3173,7 @@ footer.bottomPage {
     padding: 0;
     width: 100%;
     background: rgb(36, 48, 50);
+    -webkit-box-shadow: 0 -2px 2px rgba(58, 58, 58, 0.5);
     box-shadow: 0 -2px 2px rgba(58, 58, 58, 0.5);
 }
 footer.bottomPage div:nth-child(1n) {
@@ -3161,11 +3207,23 @@ footer.bottomPage nav.footItems {
     text-align: center;
 }
 footer.bottomPage nav.footItems ul {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
     flex-direction: row;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
     flex-wrap: wrap;
+    -webkit-box-pack:center;
+    -webkit-justify-content:center;
+    -ms-flex-pack:center;
     justify-content:center;
-    margin: 1em auto 1em auto;
+    margin: 0 auto;
     text-align: center;
 }
 footer.bottomPage nav.footItems ul li.footLink {
@@ -3201,6 +3259,7 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
 }
 .fixedMenu {
     background: none repeat scroll 0 0 #FFFFFF;
+    -webkit-box-shadow: 0 1px 3px #F2F2F2;
     box-shadow: 0 1px 3px #F2F2F2;
     height: 35px;
     padding: 10px 0;
@@ -3310,8 +3369,6 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     margin: 0.5em auto 1.5em auto;
     background: rgb(240, 240, 240);
     padding: 1em 1%;
-    -moz-border-radius: 0.3em;
-    -webkit-border-radius: 0.3em;
     -o-border-radius: 0.3em;
     border-radius: 0.3em;
 }
@@ -3373,47 +3430,7 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
 .chartSetting .groupChartSelect input {
     display: inline;
 }
-/*---------------------------------------------
-				  Back to top
---------------------------------------------- */
 
-#back-top {
-    position: fixed;
-    right: 1em;
-    bottom: 5.3em;
-}
-#back-top a {
-    display: block;
-    width: 75px;
-    color: rgb(158, 158, 158);
-    text-align: center;
-    text-decoration: none;
-    text-transform: uppercase;
-    font: 0.8em/100% Arial, Helvetica, sans-serif;
-    -webkit-transition: 1s;
-    -moz-transition: 1s;
-    transition: 1s;
-    )
-}
-#back-top a:hover {
-    color: rgb(55, 146, 179);
-}
-#back-top span {
-    display: block;
-    margin: 0 auto 4px auto;
-    width: 40px;
-    height: 20px;
-    -webkit-border-radius: 0.3em;
-    -moz-border-radius: 0.3em;
-    border-radius: 0.3em;
-    background: rgb(158, 158, 158) url(../images/up-arrow.png) no-repeat center center;
-    -webkit-transition: 1s;
-    -moz-transition: 1s;
-    transition: 1s;
-}
-#back-top a:hover span {
-    background-color: rgb(55, 146, 179);
-}
 /* ------------------------------------------------------------------------------------------
 									 .Translate Surveys
 ------------------------------------------------------------------------------------------ */
@@ -3463,8 +3480,6 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
 }
 table#languageOption {
     background: rgb(242, 242, 242);
-    -webkit-border-radius: 0.25em;
-    -moz-border-radius: 0.25em;
     -o-border-radius: 0.25em;
     border-radius: 0.25em;
 }
@@ -3494,8 +3509,6 @@ table#languageOption td.formTitle {
     height: 60px;
 }
 table.surveyTranslate {
-    -webkit-border-radius: 0.25em;
-    -moz-border-radius: 0.25em;
     -o-border-radius: 0.25em;
     border-radius: 0.25em;
     background: rgb(255, 255, 255) url(../images/borderMiddle.png) center top repeat-y;
@@ -3538,10 +3551,9 @@ table.surveyTranslate input {
 }
 table.surveyTranslate .questionNbr span {
     background: transparent;
-    -webkit-border-radius: inherit;
-    -moz-border-radius: inherit;
     -o-border-radius: inherit;
     border-radius: inherit;
+    -webkit-box-shadow: none;
     box-shadow: none;
     color: inherit;
     display: inline;
@@ -3556,10 +3568,9 @@ table.surveyTranslate .questionNbr span {
 }
 table.surveyTranslate tr.indented .questionNbr span {
     background: transparent;
-    -webkit-border-radius: inherit;
-    -moz-border-radius: inherit;
     -o-border-radius: inherit;
     border-radius: inherit;
+    -webkit-box-shadow: none;
     box-shadow: none;
     color: rgb(227, 27, 35);
     display: inline;
@@ -3662,23 +3673,19 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     /* Old browsers */
     /* IE9 SVG, needs conditional override of 'filter' to 'none' */
     background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VhYjkyZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjNzk4MTAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-    background: -moz-linear-gradient(top, rgba(234, 185, 45, 1) 0%, rgba(199, 152, 16, 1) 100%);
     /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(234, 185, 45, 1)), color-stop(100%, rgba(199, 152, 16, 1)));
     /* Chrome,Safari4+ */
     background: -webkit-linear-gradient(top, rgba(234, 185, 45, 1) 0%, rgba(199, 152, 16, 1) 100%);
     /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgba(234, 185, 45, 1) 0%, rgba(199, 152, 16, 1) 100%);
     /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgba(234, 185, 45, 1) 0%, rgba(199, 152, 16, 1) 100%);
     /* IE10+ */
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(234, 185, 45, 1)), to(rgba(199, 152, 16, 1)));
     background: linear-gradient(to bottom, rgba(234, 185, 45, 1) 0%, rgba(199, 152, 16, 1) 100%);
     /* W3C */
     filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#eab92d', endColorstr='#c79810', GradientType=0);
     /* IE6-8 */
     position: relative;
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
     -o-border-radius: 0.5em;
     border-radius: 0.5em;
 }
@@ -3691,24 +3698,20 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     /* Old browsers */
     /* IE9 SVG, needs conditional override of 'filter' to 'none' */
     background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2JmZDI1NSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzhlYjkyYSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUxJSIgc3RvcC1jb2xvcj0iIzcyYWEwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM5ZWNiMmQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-    background: -moz-linear-gradient(top, rgba(191, 210, 85, 1) 0%, rgba(142, 185, 42, 1) 50%, rgba(114, 170, 0, 1) 51%, rgba(158, 203, 45, 1) 100%);
     /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(191, 210, 85, 1)), color-stop(50%, rgba(142, 185, 42, 1)), color-stop(51%, rgba(114, 170, 0, 1)), color-stop(100%, rgba(158, 203, 45, 1)));
     /* Chrome,Safari4+ */
     background: -webkit-linear-gradient(top, rgba(191, 210, 85, 1) 0%, rgba(142, 185, 42, 1) 50%, rgba(114, 170, 0, 1) 51%, rgba(158, 203, 45, 1) 100%);
     /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgba(191, 210, 85, 1) 0%, rgba(142, 185, 42, 1) 50%, rgba(114, 170, 0, 1) 51%, rgba(158, 203, 45, 1) 100%);
     /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgba(191, 210, 85, 1) 0%, rgba(142, 185, 42, 1) 50%, rgba(114, 170, 0, 1) 51%, rgba(158, 203, 45, 1) 100%);
     /* IE10+ */
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(191, 210, 85, 1)), color-stop(50%, rgba(142, 185, 42, 1)), color-stop(51%, rgba(114, 170, 0, 1)), to(rgba(158, 203, 45, 1)));
     background: linear-gradient(to bottom, rgba(191, 210, 85, 1) 0%, rgba(142, 185, 42, 1) 50%, rgba(114, 170, 0, 1) 51%, rgba(158, 203, 45, 1) 100%);
     /* W3C */
     filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#bfd255', endColorstr='#9ecb2d', GradientType=0);
     /* IE6-8 */
     width: 0;
     border-right: 1px solid rgb(255, 255, 255);
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
     -o-border-radius: 0.5em;
     border-radius: 0.5em;
 }
@@ -3825,6 +3828,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 }
 .marker-cluster {
     background-color: rgba(253, 156, 115, 0.6);
+    -webkit-background-clip: padding-box;
     background-clip: padding-box;
     border-radius: 20px;
 }

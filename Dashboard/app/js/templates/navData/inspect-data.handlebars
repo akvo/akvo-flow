@@ -6,10 +6,10 @@
             {{view Ember.Select contentBinding="FLOW.surveyGroupControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.code" optionValuePath="content.keyId" prompt="" promptBinding="Ember.STRINGS._select_survey_group"}} {{view Ember.Select contentBinding="FLOW.surveyControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurvey" optionLabelPath="content.code" optionValuePath="content.keyId" prompt="" promptBinding="Ember.STRINGS._select_survey"}}
         </div>
         <div class="dataCollectedDate">
-            <label class="collectedFrom">{{t _collected_from}}: {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="Collected from" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+            <label class="collectedFrom"><span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="Collected from" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
             </label>
 
-            <label class="collectedTo">{{t _to}}: {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="To" placeholderBinding="Ember.STRINGS._to" size=30}}
+            <label class="collectedTo"><span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="To" placeholderBinding="Ember.STRINGS._to" size=30}}
             </label>
         </div>
         <div class="dataDeviceId">
