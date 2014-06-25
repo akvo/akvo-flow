@@ -38,28 +38,17 @@ form {
 	padding:0;
 }
 input, textarea, button, select {
-	color:rgb(32,32,32);
 	font-weight:normal;
-	font-size:1.1em;
-	
+	padding:3px 5px;
 }
 input, textarea {
-	border: thin solid rgb(245, 245, 245);
+	border: thin solid transparent;
 	background: rgb(250, 244, 230);
-/*	-moz-box-shadow:0 0 1px rgba(0, 0, 0, 0.3) inset;
-	-webkit-box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
-	-o-box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
-	box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
-*/	padding:3px 5px;	
+	border-radius: 2px;
 }
 input[disabled="disabled"], textarea[disabled="disabled"] {
 	border: thin solid rgb(235, 235, 235);
 	background: rgb(235, 235, 235);
-/*	-moz-box-shadow:0 0 1px rgba(0, 0, 0, 0.3) inset;
-	-webkit-box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
-	-o-box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
-	box-shadow:0 0px 1px rgba(0, 0, 0, 0.3) inset;
-*/	padding:3px 5px;	
 }
 textarea {
 	overflow: auto;
@@ -77,10 +66,6 @@ input[disabled="disabled"]:hover, textarea[disabled="disabled"]:hover {
 	border: 1px solid rgb(235, 235, 235);
 	background:rgb(235, 235, 235);
 }
-
-.leftSidebar input, .leftSidebar textarea {
-	border:1px solid rgb(28,28,28);
-	}
 :invalid {
 }
 :valid {
@@ -91,10 +76,7 @@ input:focus, textarea:focus {
 	border: 1px solid rgb(205,205,205);
 	background:rgb(245,255,216);
 }
-input[disabled="disabled"]:focus, textarea[disabled="disabled"]:focus {
-	border: 1px solid rgb(235, 235, 235);
-	background:rgb(235, 235, 235);
-}
+
 fieldset {
 	border: 0;
 	margin: 0;
@@ -204,6 +186,24 @@ select {
 	display:block;
 	padding:5px;
 	}
-/* =============================================================================
-							DEVICES TAB
-========================================================================== */
+
+
+&.placeholder{
+    color: rgb(232,232,232);
+  }
+  &:-moz-placeholder{
+    color: rgb(232,232,232);
+  }
+  &::-webkit-input-placeholder{
+    color: rgb(232,232,232);
+  }
+  &:-ms-input-placeholder{
+    color: rgb(232,232,232);
+  }
+  &::-moz-placeholder {
+    color: rgb(232,232,232);
+  }
+  &::-moz-placeholder {
+    /* Firefox 19+ */
+    color: rgb(232,232,232);
+  }

@@ -420,13 +420,17 @@ a.smallBtn:hover {
 }
 a.helpIcon {
     display: inline-block;
+    font-size: 0.9em;
+    font-family: baskerville;
     width: 14px;
     height: 14px;
-    background: url(../images/helpIcon.png) center top no-repeat;
-    text-indent: -9999px;
+    border-radius:7px;
+    background: rgb(74, 177, 207);
+    color:rgb(255,255,255);
+    text-align: center;
 }
 a.helpIcon:hover {
-    background: url(../images/helpIcon.png) center bottom no-repeat;
+    background: rgb(246,160,26);
 }
 a.AddBtn {
     display: inline-block;
@@ -682,17 +686,17 @@ header.top.top-nav-collapse > div > .belowHeader {
     margin: 0 0 20px 0;
 }
 .leftSidebar {
-    /*position: fixed;
-    width:calc(20em);
-    max-height: 100%;
-    overflow-y:scroll;*/
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     float: left;
 	left: 20em;
 	margin-left: -20em;
 	position: fixed;
 	width: 20em;
-	overflow-y: auto;
-    min-height: calc(100%-220px);
+	overflow-y: scroll;
+    overflow-x: hidden;
+    min-height: calc(100% - 197px);
 }
 .rightSidebar {
     position: relative;
@@ -704,10 +708,7 @@ header.top.top-nav-collapse > div > .belowHeader {
     width:calc(100% - 20em);
     margin-left: 20em;
     overflow-y: auto;
-    /*position: relative;
-    float: right;
-    width: calc(100% - 20em);
-    margin-left: 20em;*/
+
 }
 .mainLeft {
     position: relative;
@@ -1768,7 +1769,7 @@ a.editGroupName
     margin: 0 10px 0 20px;
 }
 a.addGroup {
-    margin: 0 0 15px 10px;
+    margin:0 0 5px 5px;
     padding: 1px 0 7px 19px;
 }
 a.addGroup:hover,
@@ -1964,7 +1965,7 @@ ul.surveyInfo li.responseNumber p {
     background-size:35px 35px;
 }
 .aSurvey nav ul li.previewSurvey a {
-    background: url(../images/IconPreview.svg) center 5px no-repeat;
+    background: url(../images/IconPreview_big.svg) center 5px no-repeat;
     -webkit-background-size:35px 35px;
     background-size:35px 35px;
 }
@@ -1984,7 +1985,7 @@ ul.surveyInfo li.responseNumber p {
     background-size:35px 35px;
 }
 .aSurvey nav ul li.previewSurvey a:hover {
-    background: url(../images/IconPreviewOrange.svg) center 5px no-repeat;
+    background: url(../images/IconPreviewOrange_big.svg) center 5px no-repeat;
     -webkit-background-size:35px 35px;
     background-size:35px 35px;
 }
@@ -2002,88 +2003,104 @@ ul.surveyInfo li.responseNumber p {
 										 Survey Creation & Editing
 ----------------------------------------------------------------------------------------------------------------*/
 
+.leftSidebar {
+    border-radius:3px;
+    background: rgb(58, 58, 58);  
+}
 .leftSidebar h2 {
     display: block;
-    overflow: hidden;
-    margin: 0.5em 0 0.1em 4%;
-    width: 96%;
+    overflow: hidden; 
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: rgb(246, 160, 26);
+    margin: 0 0 0 5px;
+}
+.leftSidebar.surveyDetailSideBar h2 {
+    margin-bottom:5px;
 }
 .leftSidebar form {
     position: relative;
-    padding: 5px 2%;
+}
+.leftSidebar label {
+    margin-top:10px;
+    margin-bottom:10px;
 }
 .leftSidebar label,
 .leftSidebar input,
 .leftSidebar textarea,
 .leftSidebar select {
     display: block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width:98%;
+    margin-right:auto;
+    margin-left:auto;
 }
 .leftSidebar input[type=checkbox] {
     display: inline;
-    margin: 0.3em 0.1em 0 0.2em;
     width: 13px;
 }
-.leftSidebar label {
-    margin: 1em 2px 0.2em 2px;
-    color: rgb(255, 255, 255);
-    text-transform: uppercase;
+.leftSidebar label > span {
+    color:rgb(225, 237, 195);
+    font-size: 0.9em;
+    margin: 3px 0 3px 3px;
 }
-.leftSidebar label:first-child {
-    margin: 0.5em 2px 10px 2px;
-    color: rgb(255, 255, 255);
-}
+
 .leftSidebar input {
-    margin: 0.2em auto 0 auto;
-    padding: 0.5em 1.5%;
-    width: 96%;
 }
 .leftSidebar textarea {
-    margin: 0.2em auto 0 auto;
-    padding: 0.5em 1.5%;
-    width: 96%;
+    height:35px;
 }
 .leftSidebar form select {
-    margin: 0.2em auto 0 auto;
-    width: 100%;
 }
 .leftSidebar form select option {
-    padding: 0 1.5%;
     background: rgb(255, 255, 255);
 }
 .leftSidebar dl {
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
     position: relative;
-    margin: 1em auto;
-    padding: 0.2em 2% 0.7em 2%;
-    width: 92%;
-    border-radius: 0.2em;
-    background: rgb(78, 78, 78);
-    -o-border-radius: 0.2em;
+    margin: 10px auto;
+    padding:3px;
+    width: 96%;
+    background: rgb(33, 33, 33);
 }
 .leftSidebar dt {
+     -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
     position: relative;
     display: table-cell;
     float: left;
     clear: left;
     padding: 0.5em 0 0 2%;
-    width: 52%;
+    width: 45%;
     color: rgb(204, 204, 204);
 }
 .leftSidebar dd {
+     -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
     position: relative;
     display: table-cell;
     float: right;
     clear: right;
     padding: 0.5em 0 0 0;
-    width: 40%;
+    width: 55%;
     color: rgb(255, 255, 255);
-    font-weight: bold;
+    text-align:left;
 }
 .leftSidebar .helpIcon {
     position: absolute;
-    right: 3%;
-    margin: -3px 0 0 0;
+    right: 3px;
+    margin: 0;
+}
+.manageStuff li {
+    display: inline;
+    float: left;
+    width:50%;
 }
 a.manageNotifications {
     display: block;
@@ -2098,29 +2115,26 @@ a.manageNotifications span {
     font-weight: bold;
 }
 .newSurveyInfoUl {
-    margin: 1.2em auto 0.2em auto;
-    padding: 15px 0%;
-    width: 94%;
-    border-radius: 0.4em;
+    margin: 5px auto;
+    padding: 2px 1%;
+    width: 96%;
     background: rgb(33, 33, 33);
-    -o-border-radius: 0.4em;
 }
 .newSurveyInfoUl li {
     position: relative;
-    margin: 0.01em auto 0.5em auto;
-    padding: 0.01em 2%;
+    margin: 0.01em auto 0.05em auto;
     width: 92%;
     color: rgb(153, 153, 153);
 }
 .newSurveyInfoUl li h3 {
-    margin-bottom: 1em;
+    font-size:1.2em;
     color: rgb(204, 204, 204);
+    margin:3px 0;
 }
 .newSurveyInfoUl li > span {
     position: absolute;
     right: 5px;
     color: rgb(255, 255, 255);
-    font-weight: bold;
 }
 .newSurveyInfoUl li > span.surveyNotPublished {
     color: rgb(227, 27, 35);
@@ -2154,31 +2168,40 @@ nav.newSurveyNav ul li:last-child {
 }
 nav.newSurveyNav ul li a {
     display: block;
-    padding: 10px 0% 12px 40%;
-    width: 60%;
+    padding:9px 0 11px 30px;
     height: 8px;
     overflow: hidden;
 }
-nav.newSurveyNav li a:hover {
-    color: rgb(255, 255, 255);
-}
+
 nav.newSurveyNav ul li a.saveNewSurvey {
-    background: url(../images/saveNewSurvey.png) 1px top no-repeat;
+    background: url(../images/IconSave.svg) left top no-repeat;
+    -webkit-background-size:35px 35px;
+    background-size:35px 35px;
 }
 nav.newSurveyNav ul li a.previewNewSurvey {
-    background: url(../images/previewNewSurvey.png) -3px top no-repeat;
+    background: url(../images/IconPreview.svg) left top no-repeat;
+    -webkit-background-size:35px 35px;
+    background-size:35px 35px;
 }
 nav.newSurveyNav ul li a.publishNewSurvey {
-    background: url(../images/publishNewSurvey.png) 1px top no-repeat;
+    background: url(../images/IconPublish.svg) left top no-repeat;
+    -webkit-background-size:35px 35px;
+    background-size:35px 35px;
 }
 nav.newSurveyNav ul li a.saveNewSurvey:hover {
-    background: url(../images/saveNewSurvey.png) 1px bottom no-repeat;
+    background: url(../images/IconSaveOrange.svg) left top no-repeat;
+    -webkit-background-size:35px 35px;
+    background-size:35px 35px;
 }
 nav.newSurveyNav ul li a.previewNewSurvey:hover {
-    background: url(../images/previewNewSurvey.png) -3px bottom no-repeat;
+    background: url(../images/IconPreviewOrange.svg) left top no-repeat;
+    -webkit-background-size:35px 35px;
+    background-size:35px 35px;
 }
 nav.newSurveyNav ul li a.publishNewSurvey:hover {
-    background: url(../images/publishNewSurvey.png) 1px bottom no-repeat;
+    background: url(../images/IconPublishOrange.svg) left top no-repeat;
+    -webkit-background-size:35px 35px;
+    background-size:35px 35px;
 }
 /*****
 		A New Question Form
@@ -2187,9 +2210,9 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 .aQuestionSet .questionSetContent {
     position: relative;
     display: block;
-    margin: 0 0.75%;
-    padding: 1.5em 0.75% 1em 0.75%;
-    width: 97%;
+    margin: 0 auto;
+    padding: 1.5em 0.5% 1em 0.5%;
+    width: 99%;
 }
 .aQuestionSet .questionSetContent:before {
     display: block;
@@ -2221,9 +2244,9 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
 .aQuestionSet header {
     position: relative;
     display: block;
-    margin: 0 0.75%;
-    padding: 0 0.75% 0 0.75%;
-    width: 97%;
+    margin: 0 auto;
+    padding: 0 0.5% 0 0.5%;
+    width: 99%;
     background: rgb(240, 240, 240);
 }
 .aQuestionSet > div > div.ember-view:first-child header {} div.questionGroupBlock {
@@ -2255,7 +2278,6 @@ span.qtnGroupHead {
 .aQuestionSet header h1.qtnGroupTitle {
     display: inline-block;
     overflow: hidden;
-    width: 36%;
     text-overflow: ellipsis;
     white-space: pre-wrap;
 }
@@ -2384,15 +2406,13 @@ nav.questionActionMenu a:hover {
     width: 99.8%;
     border: thin solid rgb(224, 224, 224);
     border-radius: 0 0 5px 0;
-    background: rgb(248, 248, 248);/* -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.05); *
-    /* -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
-    /* box-shadow: 0 1px 1px rgba(0,0,0,0.05); */
+    background: rgb(248, 248, 248);
     -o-border-radius: 0 0 5px 0;
 }
 .aQuestionSet .questionSetContent div.innerContent:focus {} .aQuestionSet header nav.qtnGroupMenu {
     position: absolute;
     top: 0px;
-    right: 5px;
+    right: 10px;
 }
 .aQuestionSet header nav.qtnGroupMenu ul {
     margin: 0;
