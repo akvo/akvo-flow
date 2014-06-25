@@ -36,7 +36,7 @@ public class SurveyalValueDao extends BaseDAO<SurveyalValue> {
 
     /**
      * lists all surveyalValues for a certain surveyId
-     * 
+     *
      * @param cursor
      * @param pagesize
      * @param surveyId
@@ -58,5 +58,15 @@ public class SurveyalValueDao extends BaseDAO<SurveyalValue> {
         List<SurveyalValue> results = (List<SurveyalValue>) query
                 .executeWithMap(paramMap);
         return results;
+    }
+
+    /**
+     * List the surveyal values associated with a specific question
+     *
+     * @param questionId
+     * @return
+     */
+    public List<SurveyalValue> listByQuestion(Long questionId) {
+        return listByProperty("surveyQuestionId", questionId, "Long");
     }
 }
