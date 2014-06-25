@@ -64,6 +64,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
         return super.getByKey(key);
     }
 
+    @Override
     public Survey getByKey(Key key) {
         return super.getByKey(key);
     }
@@ -71,7 +72,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
     /**
      * loads a full survey object (whole object graph, including questions). This method can only be
      * called reliably from a background task or backend
-     * 
+     *
      * @param id
      * @return
      */
@@ -84,7 +85,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * saves a surveyContainer containing the xml representation of the survey document.
-     * 
+     *
      * @param surveyId
      * @param surveyDocument
      * @return
@@ -101,7 +102,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * returns a Survey xml pojo obtained after unmarshalling the SurveyContainer
-     * 
+     *
      * @param id
      * @return
      */
@@ -121,7 +122,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * gets a document from the surveyContainer
-     * 
+     *
      * @param id
      * @return
      */
@@ -132,7 +133,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * lists all survey container objects
-     * 
+     *
      * @return
      */
     public List<SurveyContainer> listSurveyContainers() {
@@ -149,7 +150,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * lists all survey groups
-     * 
+     *
      * @param cursorString
      * @return
      */
@@ -159,7 +160,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * lists all surveys in a given surveyGroup
-     * 
+     *
      * @param surveyGroupId
      * @return
      */
@@ -169,7 +170,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * gets a survey by the surveyGroupId and survey code
-     * 
+     *
      * @param code
      * @param surveyGroupId
      * @return
@@ -191,7 +192,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * gets a single survey by code and path. path is defined as "surveyGroupName"
-     * 
+     *
      * @param code
      * @param path
      * @return
@@ -212,7 +213,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * increments the survey version by 1
-     * 
+     *
      * @param surveyId
      */
     public void incrementVersion(Long surveyId) {
@@ -230,37 +231,20 @@ public class SurveyDAO extends BaseDAO<Survey> {
     }
 
     /**
-     * deletes a survey and spawns delete questionGroup tasks to delete all children asynchronously.
-     * 
-     * @param item
+     * Deletes a survey
+     *
+     * @param survey
      * @throws IllegalDeletionException - if the system contains responses for this survey
      */
-    public void delete(Survey item) throws IllegalDeletionException {
-        // Check to see if there are any surveys for this first
-        item = getByKey(item.getKey());
-        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        if (qasDao.listBySurvey(new Long(item.getKey().getId())).size() == 0) {
-            QuestionGroupDao qgDao = new QuestionGroupDao();
-            for (Map.Entry<Integer, QuestionGroup> qgItem : qgDao
-                    .listQuestionGroupsBySurvey(item.getKey().getId())
-                    .entrySet()) {
-                SurveyTaskUtil.spawnDeleteTask("deleteQuestionGroup", qgItem
-                        .getValue().getKey().getId());
-            }
-            super.delete(item);
-        } else {
-            throw new IllegalDeletionException(
-                    "Cannot delete surveyId: "
-                            + item.getKey().getId()
-                            + " surveyCode:"
-                            + item.getCode()
-                            + " because there are already survey responses for this survey. Please delete all survey responses first");
-        }
+    public void delete(Survey survey) throws IllegalDeletionException {
+        QuestionGroupDao qgDao = new QuestionGroupDao();
+        qgDao.deleteGroupsForSurvey(survey.getKey().getId());
+        super.delete(survey);
     }
 
     /**
      * lists all survey ids
-     * 
+     *
      * @return
      */
     @SuppressWarnings("unchecked")

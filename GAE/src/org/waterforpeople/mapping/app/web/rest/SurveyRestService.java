@@ -35,6 +35,8 @@ import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
+import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
@@ -47,6 +49,9 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 @Controller
 @RequestMapping("/surveys")
@@ -63,12 +68,6 @@ public class SurveyRestService {
 
     @Inject
     private QuestionAnswerStoreDao qasDao;
-
-    @Inject
-    private QuestionDao qDao;
-
-    @Inject
-    private QuestionGroupDao qgDao;
 
     // TODO put in meta information?
     // list all surveys
@@ -192,7 +191,12 @@ public class SurveyRestService {
 
     }
 
-    // delete surve y by id
+    /**
+     * Spawns a task to delete a survey by survey id
+     *
+     * @param surveyId
+     * @return
+     */
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
     public Map<String, RestStatusDto> deleteSurveyById(
@@ -207,16 +211,18 @@ public class SurveyRestService {
         // check if survey exists in the datastore
         if (survey != null) {
             try {
-                // delete all survey related elements
-                qDao.delete(qDao.listQuestionsBySurvey(surveyId));
-                qgDao.delete(qgDao.listQuestionGroupBySurvey(surveyId));
-                surveyDao.delete(survey);
+                TaskOptions deleteSurveyTask = TaskOptions.Builder.withUrl("/app_worker/surveytask")
+                        .param(SurveyTaskRequest.ACTION_PARAM, SurveyTaskRequest.DELETE_SURVEY_ACTION)
+                        .param(SurveyTaskRequest.ID_PARAM, surveyId.toString());
+                QueueFactory.getQueue("deletequeue").add(deleteSurveyTask);
                 statusDto.setStatus("ok");
-            } catch (IllegalDeletionException e) {
+                statusDto.setMessage("deleted");
+            } catch (Exception e) {
                 statusDto.setStatus("failed");
                 statusDto.setMessage(e.getMessage());
             }
         }
+
         response.put("meta", statusDto);
         return response;
     }
