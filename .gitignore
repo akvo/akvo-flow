@@ -79,3 +79,5 @@ tests/clojure/akvo-tests/bin
 tests/clojure/akvo-tests/target
 
 *.codekit
+
+*.scssc

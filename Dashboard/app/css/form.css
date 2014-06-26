@@ -1,35 +1,3 @@
-/* 
-	Author:     Loic Sans, loic@akvo.org
-	Copyright:  2012, Akvo. All rights reserved.
-*/
-
-/* Colours 
----------------------------
-	
-Akvo Primary Colours:
-	
-	rgb(44, 42, 116);		Akvo Purplish Blue
-	rgb(114,  205, 255);	Akvo very light blue
-	rgb(222, 137, 41);		Akvo Orange / light Brown
-	rgb(153, 153, 153);		Akvo Mid grey
-	rgb(57, 102, 128);		Akvo Darker shade Blue from light blue
-	rgb(107, 134, 141);		Akvo Blueish Green link color
-	
-Akvo Secondary Colours:
-	
-	rgb(225, 237, 195);		Akvo very Light green
-	rgb(227, 27, 35);		Akvo red
-	rgb(219, 135, 201);		Akvo Pink
-	rgb(255, 210, 0);		Akvo Yellow
-	rgb(125, 125, 125);		Akvo Darker Grey
-	rgb(66, 76, 43);		Akvo Very dark Green (Military)
-	rgb(119, 97, 0);		Akvo Kaki (Greenish Brown)
-	rgb(242, 240, 230);		Akvo Off White
-*/
-
-/* Common Form Styles 
------------------------------------------------*/
-
 /* =============================================================================
 							   Forms
 ========================================================================== */
@@ -82,7 +50,6 @@ fieldset {
 	margin: 0;
 	padding: 0;
 }
-/* Indicate that 'label' will shift focus to the associated form element */
 label {
 	cursor: pointer;
 	display:block;
@@ -95,34 +62,21 @@ legend {
 	white-space: normal;
 }
 button, input { line-height: normal; }
-/*
- * 1. Display hand cursor for clickable form elements
- * 2. Allow styling of clickable form elements in iOS
- * 3. Correct inner spacing displayed oddly in IE7 (doesn't effect IE6)
- */
 
 button, input[type="button"], input[type="reset"], input[type="submit"] {
 	cursor: pointer;
 	-webkit-appearance: button;
 *overflow: visible;
 }
-/*
- * Re-set default cursor for disabled elements
- */
+
 
 button[disabled], input[disabled] { cursor: default; }
-/*
- * Consistent box sizing and appearance
- */
 
 input[type="checkbox"], input[type="radio"] {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	/* MTW added */
 	-webkit-appearance: checkbox;
-	/* end MTW added */
-	
 	padding: 0;
 	width: 13px;
 	height: 13px;
@@ -131,7 +85,6 @@ input[type="checkbox"], input[type="radio"] {
 input[type="checkbox"] + label, input[type="radio"] + label {
 	display:inline;
 }
-
 input[type="search"] {
 	-webkit-appearance: textfield;
 	-moz-box-sizing: content-box;
@@ -144,24 +97,13 @@ input[type="search"] {
 	background:url(../images/search-icon.png) no-repeat top right, -webkit-gradient(linear, left top, left bottom, from(rgb(255,255,255)), to(rgb(224,224,224)));
 	background:url(../images/search-icon.png) no-repeat top right, linear-gradient(rgb(255,255,255), rgb(224,224,224));
 	}
-
 input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button {
 	-webkit-appearance: none;
 	}
-
-/*
- * Remove inner padding and border in FF3/4: h5bp.com/l
- */
-
 button::-moz-focus-inner, input::-moz-focus-inner {
 	border: 0;
 	padding: 0;
 }
-/*
- * 1. Remove default vertical scrollbar in IE6/7/8/9
- * 2. Allow only vertical resizing
- */
-
 input[type="search"]:hover {
 	border: 1px solid rgb(114,  205, 255);
 	background:rgb(224,224,224) url(../images/search-icon.png) no-repeat top right;
@@ -182,12 +124,6 @@ input[type="submit"]:hover {
 	padding:5px 10px;
 	border:none;
 	}
-select {
-	display:block;
-	padding:5px;
-	}
-
-
 &.placeholder{
     color: rgb(232,232,232);
   }

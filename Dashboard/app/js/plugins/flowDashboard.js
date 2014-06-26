@@ -60,17 +60,16 @@ function makePlaceholders(){
 
 $(document).ready(function() {
     
-   //jQuery to collapse the navbar on scroll
+//jQuery to collapse the navbar on scroll
 $(window).scroll(function() {
-    if ($(".top").offset().top > 200) {
+    if ($(".top").offset().top > 50) {
         $(".top").addClass("top-nav-collapse");
-        $(".belowHeader").css("padding-top", "45px")
+        $(".belowHeader").css("padding-top", "69px")
     } else {
         $(".top").removeClass("top-nav-collapse");
         $(".belowHeader").css("padding-top", "110px")
-
-    }
-});
+        }
+    });
     
     
 	$("nav#topnav li.current").prev("nav#topnav li").css("background", "none");
