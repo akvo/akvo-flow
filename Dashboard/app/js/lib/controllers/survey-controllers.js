@@ -274,7 +274,34 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
       });
       return allSaved;
     }
-  }.property('content.@each.isSaving')
+  }.property('content.@each.isSaving'),
+
+  // execute group delete
+  deleteQuestionGroup: function (questionGroupId) {
+    var questionGroup, questionsGroupsInSurvey, sId, qgOrder;
+    sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
+    qgOrder = questionGroup.get('order');
+
+    questionGroup.deleteRecord();
+
+    // restore order of remaining groups
+    questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
+      return item.get('surveyId') == sId;
+    });
+
+    // restore order
+    questionGroupsInSurvey.forEach(function (item) {
+      if (item.get('order') > qgOrder) {
+        item.set('order', item.get('order') - 1);
+      }
+    });
+
+    // restore order in case the order has gone haywire
+    FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
+    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
+    FLOW.store.commit();
+  }
 });
 
 

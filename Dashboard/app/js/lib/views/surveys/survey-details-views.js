@@ -336,42 +336,14 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
   // execute group delete
   deleteQuestionGroup: function () {
-    var qgDeleteId, questionGroup, questionsGroupsInSurvey, sId, qgOrder, questionsInGroup;
-    qgDeleteId = this.content.get('keyId');
-    sId = this.content.get('surveyId');
-    questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
-    qgOrder = questionGroup.get('order');
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgDeleteId;
+    var qgId = this.content.get('id');
+    var questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgId);
+
+    // do preflight check if deleting this question group is allowed
+    FLOW.store.findQuery(FLOW.QuestionGroup, {
+      preflight: 'delete',
+      questionGroupId: qgId
     });
-
-    if (questionsInGroup.get('content').length > 0) {
-      FLOW.dialogControl.set('activeAction', "ignore");
-      FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_questiongroup'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_questiongroup_text'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-      return;
-    }
-
-    // if we are here, we can safely delete
-    questionGroup.deleteRecord();
-    // restore order
-    questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == sId;
-    });
-
-    // restore order
-    questionGroupsInSurvey.forEach(function (item) {
-      if (item.get('order') > qgOrder) {
-        item.set('order', item.get('order') - 1);
-      }
-    });
-    // restore order in case the order has gone haywire
-    FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
-    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    FLOW.store.commit();
-
   },
 
   // insert group

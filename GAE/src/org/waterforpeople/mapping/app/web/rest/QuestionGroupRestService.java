@@ -33,14 +33,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 @Controller
 @RequestMapping("/question_groups")
@@ -51,6 +57,15 @@ public class QuestionGroupRestService {
 
     @Inject
     private QuestionDao questionDao;
+
+    @Inject
+    private SurveyDAO surveyDao;
+
+    @Inject
+    private SurveyalValueDao svDao;
+
+    @Inject
+    private QuestionAnswerStoreDao qasDao;
 
     // TODO put in meta information?
     // list all questionGroups
@@ -77,30 +92,62 @@ public class QuestionGroupRestService {
         return response;
     }
 
-    // TODO put in meta information?
-    // list questionGroups by survey id
+    /** list questionGroups by survey id
+     *  Perform preflight check for deletion of question group
+     *
+     * @param surveyId
+     * @param preflight
+     * @param questionGroupId
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
-    public Map<String, List<QuestionGroupDto>> listQuestionGroupBySurvey(
-            @RequestParam("surveyId")
-            Long surveyId) {
-        final Map<String, List<QuestionGroupDto>> response = new HashMap<String, List<QuestionGroupDto>>();
-        List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
-        List<QuestionGroup> questionGroups = questionGroupDao
-                .listQuestionGroupBySurvey(surveyId);
-        if (questionGroups != null) {
-            for (QuestionGroup s : questionGroups) {
-                QuestionGroupDto dto = new QuestionGroupDto();
-                DtoMarshaller.copyToDto(s, dto);
+    public Map<String, Object> listQuestionGroupBySurvey(
+            @RequestParam(value = "surveyId", defaultValue = "")
+            Long surveyId,
+            @RequestParam(value = "preflight", defaultValue = "")
+            String preflight,
+            @RequestParam(value = "questionGroupId", defaultValue = "")
+            Long questionGroupId) {
+        final Map<String, Object> response = new HashMap<String, Object>();
 
-                // needed because of different names for description in
-                // questionGroup
-                // and questionGroupDto
-                dto.setDescription(s.getDesc());
-                results.add(dto);
+        final RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("");
+        statusDto.setMessage("");
+
+        if (preflight != null && preflight.equals("delete") && questionGroupId != null) {
+            statusDto.setStatus("preflight-delete-questiongroup");
+            statusDto.setMessage("can_delete");
+            statusDto.setKeyId(questionGroupId);
+
+            for(Question q : questionDao.listQuestionsByQuestionGroup(questionGroupId, Boolean.FALSE).values()) {
+                if (qasDao.listByQuestion(q.getKey().getId()).size() > 0
+                        && svDao.listByQuestion(q.getKey().getId()).size() > 0) {
+                    statusDto.setMessage("cannot_delete");
+                    statusDto.setKeyId(null);
+                }
+            }
+        }
+
+        final List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
+        if(surveyId != null) {
+            final List<QuestionGroup> questionGroups = questionGroupDao
+                    .listQuestionGroupBySurvey(surveyId);
+            if (questionGroups != null) {
+                for (QuestionGroup s : questionGroups) {
+                    QuestionGroupDto dto = new QuestionGroupDto();
+                    DtoMarshaller.copyToDto(s, dto);
+
+                    // needed because of different names for description in
+                    // questionGroup
+                    // and questionGroupDto
+                    dto.setDescription(s.getDesc());
+                    results.add(dto);
+                }
             }
         }
         response.put("question_groups", results);
+        response.put("meta", statusDto);
         return response;
     }
 
@@ -132,27 +179,26 @@ public class QuestionGroupRestService {
             @PathVariable("id")
             Long questionGroupId) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-        QuestionGroup s = questionGroupDao.getByKey(questionGroupId);
+        QuestionGroup group = questionGroupDao.getByKey(questionGroupId);
         RestStatusDto statusDto = null;
         statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
 
         // check if questionGroup exists in the datastore
-        if (s != null) {
-            // check if questions are in this group
-            List<Question> questions = questionDao
-                    .listQuestionsInOrderForGroup(questionGroupId);
-            if (questions.size() > 0) {
-                statusDto.setStatus("failed");
-                statusDto.setMessage("Cannot delete question group "
-                        + "because there are questions inside. "
-                        + "Please remove the questions first.");
-            } else {
-                // delete questionGroup
-                questionGroupDao.delete(s);
+        if (group != null) {
+            try {
+                TaskOptions deleteQuestionGroupTask = TaskOptions.Builder.withUrl("/app_worker/surveytask")
+                        .param(SurveyTaskRequest.ACTION_PARAM, SurveyTaskRequest.DELETE_QUESTION_GROUP_ACTION)
+                        .param(SurveyTaskRequest.ID_PARAM, Long.toString(group.getKey().getId()));
+                QueueFactory.getQueue("deletequeue").add(deleteQuestionGroupTask);
                 statusDto.setStatus("ok");
+                statusDto.setMessage("deleted");
+            } catch(Exception e) {
+                statusDto.setStatus("failed");
+                statusDto.setMessage(e.getMessage());
             }
         }
+
         response.put("meta", statusDto);
         return response;
     }

@@ -181,6 +181,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         return surveyDtos;
     }
 
+    @Override
     public ResponseDto<ArrayList<SurveyGroupDto>> listSurveyGroups(
             String cursorString, Boolean loadSurveyFlag,
             Boolean loadQuestionGroupFlag, Boolean loadQuestionFlag) {
@@ -235,6 +236,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
     /**
      * This method will return a list of all the questions that have a specific type code
      */
+    @Override
     public QuestionDto[] listSurveyQuestionByType(Long surveyId,
             QuestionType type, boolean loadTranslations) {
 
@@ -506,6 +508,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
     /**
      * fully hydrates a single survey object
      */
+    @Override
     public SurveyDto loadFullSurvey(Long surveyId) {
         Survey survey = surveyDao.loadFullSurvey(surveyId);
         SurveyDto dto = null;
@@ -1025,7 +1028,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
     public String deleteQuestionGroup(QuestionGroupDto value, Long surveyId) {
         if (value != null) {
             QuestionGroupDao qgDao = new QuestionGroupDao();
-            qgDao.delete(qgDao.getByKey(value.getKeyId()));
+            try {
+                qgDao.delete(qgDao.getByKey(value.getKeyId()));
+            } catch (IllegalDeletionException e) {
+                // ignore
+            }
         }
         return null;
     }
@@ -1133,6 +1140,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         return dtoList;
     }
 
+    @Override
     public List<QuestionHelpDto> saveHelp(List<QuestionHelpDto> helpList) {
         QuestionHelpMediaDao helpDao = new QuestionHelpMediaDao();
         Set<Long> questionIdSet = new HashSet<Long>();
@@ -1162,6 +1170,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         return helpList;
     }
 
+    @Override
     public Map<String, TranslationDto> listTranslations(Long parentId,
             String parentType) {
         TranslationDao transDao = new TranslationDao();
@@ -1170,6 +1179,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
         return marshalTranslations(transMap);
     }
 
+    @Override
     public QuestionDto copyQuestion(QuestionDto existingQuestion,
             QuestionGroupDto newParentGroup) {
         Question questionToSave = marshalQuestion(existingQuestion);
@@ -1235,11 +1245,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
     /**
      * updates the order for the list of questions passed in
-     * 
+     *
      * @param q1
      * @param q2
      * @return
      */
+    @Override
     public void updateQuestionOrder(List<QuestionDto> questions) {
         if (questions != null) {
             List<Question> questionList = new ArrayList<Question>();
@@ -1257,11 +1268,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
     /**
      * updates the order for the list of question groups passed in
-     * 
+     *
      * @param q1
      * @param q2
      * @return
      */
+    @Override
     public void updateQuestionGroupOrder(List<QuestionGroupDto> groups) {
         if (groups != null) {
             List<QuestionGroup> groupList = new ArrayList<QuestionGroup>();
@@ -1280,10 +1292,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
     /**
      * updates a question with new dependency information.
-     * 
+     *
      * @param questionId
      * @param dep
      */
+    @Override
     public void updateQuestionDependency(Long questionId,
             QuestionDependencyDto dep) {
         QuestionDao qDao = new QuestionDao();
@@ -1303,10 +1316,11 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
      * returns a surveyDto populated from the published xml. This domain graph lacks many keyIds so
      * it is not suitable for updating the survey structure. It is, however, suitable for rendering
      * the survey and collecting responses.
-     * 
+     *
      * @param surveyId
      * @return
      */
+    @Override
     public SurveyDto getPublishedSurvey(String surveyId) {
         SurveyDto dto = null;
         try {
@@ -1355,11 +1369,12 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
     /**
      * fires an async request to generate a bootstrap xml file
-     * 
+     *
      * @param surveyIdList
      * @param dbInstructions
      * @param notificationEmail
      */
+    @Override
     public void generateBootstrapFile(List<Long> surveyIdList,
             String dbInstructions, String notificationEmail) {
         StringBuilder buf = new StringBuilder();
@@ -1386,6 +1401,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
     /**
      * returns a survey (core info only). If you need all data, use loadFullSurvey.
      */
+    @Override
     public SurveyDto findSurvey(Long id) {
         SurveyDto dto = null;
         if (id != null) {
@@ -1403,7 +1419,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
      * saves a Message indicating that the survey has been updated and needs to be republished. If
      * there is already a message of this type for the surveyId passed in, the last update time
      * stamp of the message is updated instead of creating a duplicate message.
-     * 
+     *
      * @param surveyId
      */
     private void saveSurveyUpdateMessage(Long surveyId) {
@@ -1441,9 +1457,10 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
     /**
      * marks that a set of changes to a survey are done so we can publish a notification
-     * 
+     *
      * @param id
      */
+    @Override
     public void markSurveyChangesComplete(Long surveyId) {
         Message m = null;
         Survey s = surveyDao.getByKey(surveyId);
@@ -1471,7 +1488,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
     /**
      * lists the base question info for all questions that depend on the questionId passed in
-     * 
+     *
      * @param questionId
      * @return
      */
