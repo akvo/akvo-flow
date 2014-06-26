@@ -64,10 +64,12 @@ $(document).ready(function() {
 $(window).scroll(function() {
     if ($(".top").offset().top > 50) {
         $(".top").addClass("top-nav-collapse");
-        $(".belowHeader").css("padding-top", "69px")
+        $(".belowHeader").css("padding-top", "68px")
+        $(".leftSidebar").css("top","43px");
     } else {
         $(".top").removeClass("top-nav-collapse");
         $(".belowHeader").css("padding-top", "110px")
+        $(".leftSidebar").css("top","85px");
         }
     });
     

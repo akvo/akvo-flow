@@ -42,6 +42,9 @@ $akvoOrange: rgb(222, 137, 41);
 $midGrey:rgb(153, 153, 153); 
 $akvoDarkBlue:rgb(57, 102, 128);		
 $linkColor: rgb(107, 134, 141);		
+
+$anchorLink: rgb(74, 177, 207);
+$anchorLinkHover:  rgb(246,160,26);
 	
 
 @mixin border-radius($property) {
@@ -79,8 +82,8 @@ $linkColor: rgb(107, 134, 141);
 	filter: alpha(opacity=$opacity-ie); //IE8
 }
 
-/* Media Queries
-  ========================================================================== */
+
+
 $width-small:  768px;
 $width-medium: 992px;
 $width-large:  1200px;
@@ -106,8 +109,9 @@ $width-large:  1200px;
   }
 }
 
-/* Placeholder
-  ========================================================================== */
+
+
+
 @mixin placeholder-color($color){
   &.placeholder{
     color: $color;

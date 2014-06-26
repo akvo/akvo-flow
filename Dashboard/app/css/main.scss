@@ -120,6 +120,8 @@ textarea,
 button {
     padding: 0;
 }
+@import	'form.scss';
+
 /*--------------------------------------------------------------
 
    * Default Typography.
@@ -296,9 +298,9 @@ pre {
 /* links 
 ---------------------------------------------------------------*/
 
-a {
+a, a:link, a:visited {
     outline: none;
-    color: #4ab1cf;
+    color: $anchorLink;
     text-decoration: none;
     cursor: pointer;
     -webkit-transition: color 0.2s linear;
@@ -307,7 +309,7 @@ a {
         -webkit-tap-highlight-color: #fcd700;
     }
     &:hover {
-        color: #f6a01a;
+        color: $anchorLinkHover;
     }
     &.standardBtn {
         display: inline-block;
@@ -618,11 +620,13 @@ label[for=newDeviceGroupName] {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    float: left;
-    left: 20em;
-    margin-left: -20em;
-    margin-top:-30px;
+    left: 0;
+    /*margin-left: -20em;
+    margin-top: -30px;*/
+    top:85px;
+    bottom:56px;
     position: fixed;
+    float:left;
     width: 20em;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -679,7 +683,7 @@ header.top {
     &.top-nav-collapse {
         padding: 0;
         border-bottom: 1px solid rgb(232, 232, 245);
-        border-top:none;
+        border-top: none;
         h1 {
             width: 169px;
             height: inherit;
@@ -756,6 +760,7 @@ header.top {
 }
 /* Top navigation styles 
 --------------------------------------------- */
+
 nav.appNav {
     position: absolute;
     top: 0px;
@@ -774,8 +779,12 @@ nav.appNav {
                 box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
                 border-radius: 0 0 5px 5px;
                 color: rgb(246, 160, 26);
-                }
-            &:hover, &:last-child, &:last-child:hover, &.current, &.current:hover {
+            }
+            &:hover,
+            &:last-child,
+            &:last-child:hover,
+            &.current,
+            &.current:hover {
                 background-image: none;
             }
             a {
@@ -783,7 +792,6 @@ nav.appNav {
                 margin-top: -20px;
                 display: block;
                 padding: 41px 4px 23px 8px;
-                color: rgb(74, 177, 207);
                 vertical-align: bottom;
                 vertical-align: middle;
                 text-transform: uppercase;
@@ -935,32 +943,33 @@ nav.appNav ul li.navAdmin.current a {
 /*--------------------------------------------- 
 					Data Table
 -----------------------------------------------*/
+
 table.dataTable {
     position: relative;
-    margin: 1px auto;
+    margin: 1em auto 0;
     width: 100%;
     border-collapse: collapse;
     color: #606060;
     text-align: left;
     thead tr {
-         border-bottom: none;
-         background: rgb(58, 58, 58);
-         th {
-             position: relative;
-             padding: 9px 1em 9px 1em;
-             border-right: thin solid rgb(12, 12, 12);
-             background: url(../images/sortTableArrows.png) right center no-repeat;
-             color: rgb(255, 210, 0);
-             text-align: center;
-             text-transform: uppercase;
-             font-weight: normal;
-             &.noArrows {
+        border-bottom: none;
+        background: rgb(58, 58, 58);
+        th {
+            position: relative;
+            padding: 9px 1em 9px 1em;
+            border-right: thin solid rgb(12, 12, 12);
+            background: url(../images/sortTableArrows.png) right center no-repeat;
+            color: rgb(255, 210, 0);
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: normal;
+            &.noArrows {
                 background: #3A3A3A;
-             }
-              input[type="checkbox"] {
+            }
+            input[type="checkbox"] {
                 margin: 0;
-              }
-         }
+            }
+        }
     }
     td {
         overflow: hidden;
@@ -972,13 +981,16 @@ table.dataTable {
         }
     }
 }
-table.dataTable tbody tr,table.dataTable tbody tr:nth-child(2n+1), table.dataTable tbody tr.odd {
+table.dataTable tbody tr,
+table.dataTable tbody tr:nth-child(2n+1),
+table.dataTable tbody tr.odd {
     border-bottom: thin solid rgb(255, 255, 255);
     background: rgb(255, 255, 255);
     -webkit-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
-table.dataTable tbody tr:nth-child(2n), table.dataTable tbody tr.even {
+table.dataTable tbody tr:nth-child(2n),
+table.dataTable tbody tr.even {
     background: rgb(232, 230, 220);
     -webkit-transition: background-color .4s linear;
     transition: background-color .4s linear;
@@ -1021,48 +1033,52 @@ tfoot tr {
     display: none;
     background: transparent;
 }
-#devicesListTable .macAddress {
-    width: 14%;
-    text-transform: uppercase;
+#devicesListTable {
+    .macAddress {
+        width: 14%;
+        text-transform: uppercase;
+    }
+    .action {
+        width: 10%;
+    }
+    .deviceName {
+        width: 17%;
+    }
+    .extraName {
+        width: 17%;
+    }
+    .joinDate {
+        width: 10%;
+    }
+    .latitude {
+        width: 16%;
+    }
+    .longitude {
+        width: 16%;
+    }
 }
-#devicesListTable .action {
-    width: 10%;
-}
-#devicesListTable .deviceName {
-    width: 17%;
-}
-#devicesListTable .extraName {
-    width: 17%;
-}
-#devicesListTable .joinDate {
-    width: 10%;
-}
-#devicesListTable .latitude {
-    width: 16%;
-}
-#devicesListTable .longitude {
-    width: 16%;
-}
-#usersListTable .userName {
-    width: 35%;
-}
-#usersListTable .emailAdr {
-    width: 35%;
-}
-#usersListTable .permLevel {
-    width: 20%;
-}
-#usersListTable .action {
-    width: 10%;
-}
-#usersListTable .notFound {
-    color: rgb(227, 27, 35);
-}
-#usersListTable .Admin {
-    color: rgb(219, 135, 201);
-}
-#usersListTable .User {
-    color: rgb(119, 97, 0);
+#usersListTable {
+    .userName {
+        width: 35%;
+    }
+    .emailAdr {
+        width: 35%;
+    }
+    .permLevel {
+        width: 20%;
+    }
+    .action {
+        width: 10%;
+    }
+    .notFound {
+        color: rgb(227, 27, 35);
+    }
+    .Admin {
+        color: rgb(219, 135, 201);
+    }
+    .User {
+        color: rgb(119, 97, 0);
+    }
 }
 #inspectData {
     border: thin solid rgb(224, 224, 224);
@@ -1073,32 +1089,45 @@ tfoot tr {
     background-image: url("../images/addPlus.png") left center no-repeat;
 }
 .dataTabMenu {
-    position: absolute;
-    top: 1.75em;
-    right: 1em;
-}
-.dataTabMenu ul {} .dataTabMenu ul li {
-    display: inline;
-    float: left;
-    margin: 0 0.5em 0 0;
-}
-.dataTabMenu ul li a {
-    display: block;
-    padding: 0.4em 0.8em;
-    background: transparent;
-    color: rgb(0, 123, 182);
-    font-size: 1.1em;
-    -webkit-transition: all 0.2s ease;
-    transition: all 0.2s ease;
-    -o-border-radius: 0.3em;
-    border-radius: 0.3em;
-}
-.dataTabMenu ul li a:hover {
-    border-radius: 2px;
-    background: rgb(74, 177, 207);
-    color: rgb(255, 255, 255);
-    -o-border-radius: 2px;
-}
+    ul {
+        li {
+            display: inline;
+            float: left;
+            margin: 0 0.5em 0 0;
+            a {
+                display: block;
+                padding: 0.4em 0.8em;
+                background: transparent;
+                color: rgb(0, 123, 182);
+                font-size: 1.1em;
+                -webkit-transition: all 0.2s ease;
+                transition: all 0.2s ease;
+                -o-border-radius: 0.3em;
+                border-radius: 0.3em;
+                &.disabled {
+                        border-radius: 0;
+                        background: transparent;
+                        color: grey;
+                        -o-border-radius: 0;   
+                  }
+                :hover {
+                    border-radius: 2px;
+                    background: rgb(74, 177, 207);
+                    color: rgb(255, 255, 255);
+                    -o-border-radius: 2px;
+                    &.disabled {
+                        border-radius: 0;
+                        background: transparent;
+                        color: grey;
+                        -o-border-radius: 0;   
+                    }
+                    }
+                }
+            }
+        }
+    }
+
+
 .dataTabMenu ul li a:hover.disabled,
 .dataTabMenu ul li a.disabled {
     border-radius: 0;
@@ -1874,7 +1903,6 @@ ul.surveyInfo li.responseNumber p {
 ----------------------------------------------------------------------------------------------------------------*/
 
 .leftSidebar {
-    border-radius:0 0 3px 3px;
     background: rgb(58, 58, 58);
     padding: 10px 0;
 }
@@ -1884,17 +1912,17 @@ ul.surveyInfo li.responseNumber p {
     text-overflow: ellipsis;
     white-space: nowrap;
     color: rgb(246, 160, 26);
-    margin: 5px 0 0 5px;
+    margin: 10px 0 0 5px;
 }
 .leftSidebar.surveyDetailSideBar h2 {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 .leftSidebar form {
     position: relative;
 }
 .leftSidebar label {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 .leftSidebar label,
 .leftSidebar input,
@@ -1916,10 +1944,10 @@ ul.surveyInfo li.responseNumber p {
     color: rgb(225, 237, 195);
     margin: 3px 0 3px 5px;
 }
-.leftSidebar input {} .leftSidebar textarea {
+.leftSidebar textarea {
     height: 35px;
 }
-.leftSidebar form select {} .leftSidebar form select option {
+.leftSidebar form select option {
     background: rgb(255, 255, 255);
 }
 .leftSidebar dl {
@@ -2261,10 +2289,10 @@ nav.questionActionMenu a:hover {
     width: 99.8%;
     border: thin solid rgb(224, 224, 224);
     border-radius: 0 0 5px 0;
-    background: rgb(255,255,255);
+    background: rgb(255, 255, 255);
     -o-border-radius: 0 0 5px 0;
 }
-.aQuestionSet .questionSetContent div.innerContent:focus {} .aQuestionSet header nav.qtnGroupMenu {
+.aQuestionSet header nav.qtnGroupMenu {
     position: absolute;
     top: 0px;
     right: 10px;
@@ -2858,7 +2886,7 @@ table.dataTable.notificationTable thead tr th a:visited {
 }
 .filterData a.findData {
     display: block;
-    margin: 0 auto;
+    margin: 1em auto;
     padding: 0.5em 1em;
     width: 10%;
     text-align: center;
