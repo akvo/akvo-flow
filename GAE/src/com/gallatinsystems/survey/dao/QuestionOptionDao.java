@@ -28,7 +28,7 @@ import com.gallatinsystems.survey.domain.Translation;
 
 /**
  * Dao for manipulating questionOptions
- * 
+ *
  * @author Christopher Fagiani
  */
 public class QuestionOptionDao extends BaseDAO<QuestionOption> {
@@ -42,7 +42,7 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 
     /**
      * lists all options for a given question id, including the translations (if any)
-     * 
+     *
      * @param questionId
      * @return
      */
@@ -64,21 +64,20 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
     }
 
     /**
-     * deletes all options associated with a given question
-     * 
+     * Deletes all options associated with a given question
+     *
      * @param questionId
      */
     public void deleteOptionsForQuestion(Long questionId) {
         List<QuestionOption> oList = listByProperty("questionId", questionId,
                 "Long");
         if (oList != null) {
-            PersistenceManager pm = PersistenceFilter.getManager();
             TranslationDao tDao = new TranslationDao();
             for (QuestionOption opt : oList) {
                 tDao.deleteTranslationsForParent(opt.getKey().getId(),
                         Translation.ParentType.QUESTION_OPTION);
-                pm.deletePersistent(opt);
             }
+            super.delete(oList);
         }
     }
 }

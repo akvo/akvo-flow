@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -25,7 +26,7 @@ import com.gallatinsystems.survey.domain.Translation;
 
 /**
  * dao for manipulation of HelpMedia objects
- * 
+ *
  * @author Christopher Fagiani
  */
 public class QuestionHelpMediaDao extends BaseDAO<QuestionHelpMedia> {
@@ -39,7 +40,7 @@ public class QuestionHelpMediaDao extends BaseDAO<QuestionHelpMedia> {
 
     /**
      * lists all help objects for a given question, including any translations.
-     * 
+     *
      * @param questionId
      * @return
      */
@@ -58,5 +59,20 @@ public class QuestionHelpMediaDao extends BaseDAO<QuestionHelpMedia> {
             }
         }
         return map;
+    }
+
+    /**
+     * Delete all the question help media items associated with a specific question
+     *
+     * @param questionId
+     */
+    public void deleteHelpMediaForQuestion(Long questionId) {
+        TranslationDao tDao = new TranslationDao();
+        Collection<QuestionHelpMedia> helpMediaList = listHelpByQuestion(questionId).values();
+        for (QuestionHelpMedia helpMedia : helpMediaList) {
+            tDao.deleteTranslationsForParent(helpMedia.getKey().getId(),
+                    Translation.ParentType.QUESTION_HELP_MEDIA_TEXT);
+        }
+        super.delete(helpMediaList);
     }
 }

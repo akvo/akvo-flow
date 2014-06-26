@@ -18,6 +18,7 @@ package com.gallatinsystems.survey.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import com.gallatinsystems.survey.domain.QuestionHelpMedia;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -64,7 +66,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * lists all questions filtered by type optionally filtered by surveyId as well.
-     * 
+     *
      * @param surveyId
      * @param type
      * @return
@@ -92,7 +94,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * loads the Question object but NOT any associated options
-     * 
+     *
      * @param id
      * @return
      */
@@ -103,7 +105,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * lists minimal question information by surveyId
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -111,50 +113,78 @@ public class QuestionDao extends BaseDAO<Question> {
         return listByProperty("surveyId", surveyId, "Long", "order", "asc");
     }
 
+    /**
+     * Delete question from data store.
+     * @param question
+     */
     public void delete(Question question) throws IllegalDeletionException {
-        if (question != null) {
-            QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-            if (qasDao.listByQuestion(question.getKey().getId()).size() == 0) {
-                for (Map.Entry<Integer, QuestionOption> qoItem : optionDao
-                        .listOptionByQuestion(question.getKey().getId())
-                        .entrySet()) {
-                    SurveyTaskUtil.spawnDeleteTask("deleteQuestionOptions",
-                            qoItem.getValue().getKey().getId());
-                }
-                TranslationDao tDao = new TranslationDao();
-                tDao.deleteTranslationsForParent(question.getKey().getId(),
-                        Translation.ParentType.QUESTION_TEXT);
-                // TODO:Implement help media delete
-                Question q = getByKey(question.getKey());
-                if (q != null) {
-                    int order = q.getOrder();
-                    Long groupId = q.getQuestionGroupId();
-                    super.delete(q);
-                    // now adjust other orders
-                    TreeMap<Integer, Question> groupQs = listQuestionsByQuestionGroup(
-                            groupId, false);
-                    if (groupQs != null) {
-                        for (Question gq : groupQs.values()) {
-                            if (gq.getOrder() >= order) {
-                                gq.setOrder(gq.getOrder() - 1);
-                            }
-                        }
+        delete(question, Boolean.TRUE);
+    }
+
+    /**
+     * Delete a question and adjust the question order for the remaining questions if specified
+     *
+     * @param question
+     * @param adjustQuestionOrder
+     * @throws IllegalDeletionException
+     */
+    public void delete(Question question, Boolean adjustQuestionOrder)
+            throws IllegalDeletionException {
+        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+        SurveyalValueDao svDao = new SurveyalValueDao();
+        if (qasDao.listByQuestion(question.getKey().getId()).size() > 0
+                || svDao.listByQuestion(question.getKey().getId()).size() > 0) {
+            throw new IllegalDeletionException(
+                    "Cannot delete question with id "
+                            + question.getKey().getId()
+                            + " ("
+                            + question.getText()
+                            + ") because there are already survey responses stored for this question. Please delete all survey responses first.");
+        }
+
+        helpDao.deleteHelpMediaForQuestion(question.getKey().getId());
+
+        optionDao.deleteOptionsForQuestion(question.getKey().getId());
+
+        translationDao.deleteTranslationsForParent(question.getKey().getId(),
+                Translation.ParentType.QUESTION_TEXT);
+
+        // to use later when adjust question order
+        Long deletedQuestionGroupId = question.getQuestionGroupId();
+        Integer deletedQuestionOrder = question.getOrder();
+
+        // only delete after extracting group ID and order
+        super.delete(question);
+
+        if(adjustQuestionOrder != null && adjustQuestionOrder) {
+            // update question order
+            TreeMap<Integer, Question> groupQs = listQuestionsByQuestionGroup(
+                    deletedQuestionGroupId, false);
+            if (groupQs != null) {
+                for (Question gq : groupQs.values()) {
+                    if (gq.getOrder() >= deletedQuestionOrder) {
+                        gq.setOrder(gq.getOrder() - 1);
                     }
                 }
-            } else {
-                throw new IllegalDeletionException(
-                        "Cannot delete question with id "
-                                + question.getKey().getId()
-                                + " ("
-                                + question.getText()
-                                + ") because there are already survey responses stored for this question. Please delete all survey responses first.");
             }
         }
     }
 
     /**
+     * Delete all the questions in a group
+     *
+     * @param surveyId
+     * @throws IllegalDeletionException
+     */
+    public void deleteQuestionsForGroup(Long questionGroupId) throws IllegalDeletionException {
+        for (Question q : listQuestionsByQuestionGroup(questionGroupId, Boolean.TRUE).values()) {
+            delete(q, Boolean.FALSE);
+        }
+    }
+
+    /**
      * lists all questions in a group and orders them by their sortOrder
-     * 
+     *
      * @param groupId
      * @return
      */
@@ -166,7 +196,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * lists all questions for a survey and orders them by sort order. THIS METHOD SHOULD NOT BE
      * USED AS SORT ORDERS MAY BE DUPLICATED ACROSS QUESTIONGROUPS SO THE ORDERING IS UNDEFINED
-     * 
+     *
      * @param surveyId
      * @return
      * @deprecated
@@ -192,7 +222,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * list questions in order, by using question groups. Optionally filtered by type author: Mark
      * Tiele Westra
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -220,7 +250,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * Lists questions by questionGroupId and type
-     * 
+     *
      * @param questionGroupId
      * @param type
      * @return
@@ -242,7 +272,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * saves a question object in a transaction
-     * 
+     *
      * @param q
      * @return
      */
@@ -289,7 +319,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * saves a question, including its question options, translations, and help media (if any).
-     * 
+     *
      * @param question
      * @param questionGroupId
      * @return
@@ -363,7 +393,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * finds a question by its reference id
-     * 
+     *
      * @param refid
      * @return
      * @deprecated
@@ -377,7 +407,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * finds a question by its id. If needDetails is true, all child objects (options, help,
      * translations) will also be loaded.
-     * 
+     *
      * @param id
      * @param needDetails
      * @return
@@ -414,7 +444,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * lists questions within a group ordered by creation date
-     * 
+     *
      * @param questionGroupId
      * @return
      */
@@ -428,7 +458,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * lists questions within a group. If needDetails flag is true, the child objects will be loaded
      * for each question. Due to processing constraints on GAE, needDetails should only be true when
      * calling this method if being called from a backend or task.
-     * 
+     *
      * @param questionGroupId
      * @param needDetails
      * @return
@@ -442,7 +472,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * lists all the questions in a group, optionally loading details. If allowSideEffects is true,
      * it will attempt to reorder any duplicated question orderings on retrieval. New users of this
      * method should ALWAY call this with allowSideEffects = false
-     * 
+     *
      * @param questionGroupId
      * @param needDetails
      * @param allowSideEffects
@@ -494,7 +524,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * finds q question by its path and order. Path is defined as the name of the
      * "surveyGroupName/surveyName/QuestionGroupName"
-     * 
+     *
      * @param order
      * @param path
      * @return
@@ -515,7 +545,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * finds a question within a group by matching on the questionText passed in
-     * 
+     *
      * @param questionGroupId
      * @param questionText
      * @return
@@ -539,7 +569,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * finds a question by groupId and order. If there are questions with duplicated orders, the
      * first is returned.
-     * 
+     *
      * @param questionGroupId
      * @param order
      * @return
@@ -562,7 +592,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * updates ONLY the order field within the question object for the questions passed in. All
      * questions must exist in the datastore
-     * 
+     *
      * @param questionList
      */
     public void updateQuestionOrder(List<Question> questionList) {
@@ -579,7 +609,7 @@ public class QuestionDao extends BaseDAO<Question> {
     /**
      * updates ONLY the order field within the question group object for the questions passed in.
      * All question groups must exist in the datastore
-     * 
+     *
      * @param questionList
      */
     public void updateQuestionGroupOrder(List<QuestionGroup> groupList) {
@@ -596,7 +626,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * lists all questions that depend on the id passed in
-     * 
+     *
      * @param questionId
      * @return
      */

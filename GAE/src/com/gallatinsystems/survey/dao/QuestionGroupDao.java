@@ -23,6 +23,7 @@ import java.util.TreeMap;
 import javax.jdo.PersistenceManager;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
@@ -38,7 +39,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * saves a question group and associates it with the survey specified
-     * 
+     *
      * @param item
      * @param surveyId
      * @param order
@@ -53,14 +54,15 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
     }
 
     /**
-     * deletes a group
-     * 
-     * @param item
+     * Deletes all question groups associated with a survey
+     *
      * @param surveyId
+     * @throws IllegalDeletionException
      */
-    public void delete(QuestionGroup item, Long surveyId) {
-
-        delete(item);
+    public void deleteGroupsForSurvey(Long surveyId) throws IllegalDeletionException {
+        for (QuestionGroup group : listQuestionGroupBySurvey(surveyId)) {
+            delete(group);
+        }
     }
 
     public List<QuestionGroup> listQuestionGroupsByName(String code) {
@@ -69,7 +71,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * lists all question groups within a survey
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -99,7 +101,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * lists all question groups by survey, ordered by the order field
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -110,7 +112,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * gets a group by its code and survey id
-     * 
+     *
      * @param code
      * @param surveyId
      * @return
@@ -133,7 +135,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * finds a group by code and path. Path is "surveyGroupName/surveyName"
-     * 
+     *
      * @param code
      * @param path
      * @return
@@ -154,26 +156,15 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
     }
 
     /**
-     * deletes a questionGroup and spawns an asynchronous task to delete all the questions for that
-     * group. NOTE: it is possible for the group to be deleted and the questions to remain (if there
-     * are existing answers in the system, the question delete will fail). This is permissible since
-     * we need to keep the questions around to be able to display the question text when rendering
-     * the results but we don't need to keep the question permanently attached to the group.
-     * 
-     * @param item
+     * Deletes a questionGroup
+     *
+     * @param group
+     * @throws IllegalDeletionException
      */
-    public void delete(QuestionGroup item) {
+    public void delete(QuestionGroup group) throws IllegalDeletionException {
         QuestionDao qDao = new QuestionDao();
-        for (Map.Entry<Integer, Question> qItem : qDao
-                .listQuestionsByQuestionGroup(item.getKey().getId(), false)
-                .entrySet()) {
-            SurveyTaskUtil.spawnDeleteTask("deleteQuestion", qItem.getValue()
-                    .getKey().getId());
-        }
-        QuestionGroup group = getByKey(item.getKey());
-        if (group != null) {
-            super.delete(item);
-        }
+        qDao.deleteQuestionsForGroup(group.getKey().getId());
+        super.delete(group);
     }
 
 }
