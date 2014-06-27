@@ -132,7 +132,7 @@ html {
     width: 100%;
     overflow-y: scroll;
     border-top: 3px solid rgb(38, 8, 89);
-    background: rgb(255, 255, 255);
+    background: white;
 }
 body {
     width: 100%;
@@ -271,7 +271,7 @@ pre {
     margin: 1em 1% 0.5em 1%;
     padding: 1em 1%;
     width: 98%;
-    background: rgb(255, 255, 255);
+    background: white;
     -webkit-box-shadow: 0 0 2px rgb(230, 230, 230);
     box-shadow: 0 0 2px rgb(230, 230, 230);
     -o-box-shadow: 0 0 2px rgb(230, 230, 230);
@@ -322,8 +322,8 @@ a, a:link, a:visited {
         -o-border-radius: 0.3em;
         border-radius: 0.3em;
         &:hover {
-            background: rgb(246, 160, 26);
-            color: rgb(255, 255, 255);
+            background:$anchorLinkHover;
+            color: white;
         }
     }
     &.smallBtn {
@@ -331,14 +331,14 @@ a, a:link, a:visited {
         padding: 6px 7px 5px 7px;
         border-radius: 3px;
         background: rgb(0, 123, 182);
-        color: rgb(255, 255, 255);
+        color: white;
         text-align: center;
         text-transform: uppercase;
         font-size: 1em;
         -o-border-radius: 3px;
         &:hover {
-            background: rgb(246, 160, 26);
-            color: rgb(255, 255, 255);
+            background:$anchorLinkHover;
+            color: white;
         }
     }
     &.helpIcon {
@@ -348,11 +348,11 @@ a, a:link, a:visited {
         width: 14px;
         height: 14px;
         border-radius: 7px;
-        background: rgb(74, 177, 207);
-        color: rgb(255, 255, 255);
+        background:$anchorLink;
+        color: white;
         text-align: center;
         &:hover {
-            background: rgb(246, 160, 26);
+            background:$anchorLinkHover;
         }
         .selectinLabel & {
             line-height: 1.5em;
@@ -411,7 +411,7 @@ mark {
     color: rgb(153, 153, 153);
 }
 .selectInfo {
-    color: rgb(58, 58, 58);
+    color: $darkGrey;
 }
 .visible {
     visibility: hidden;
@@ -429,7 +429,7 @@ input[type="submit"] {
     width: 99.7%;
     position: relative;
     padding: 1px 0.15%;
-    background: rgb(255, 255, 255);
+    background: white;
 }
 .btnAboveTable {
     margin: 1.5em 1.5em 1.5em 1em;
@@ -461,7 +461,7 @@ input[type="submit"] {
     margin: 0 auto;
     padding: 1em 2% 1.5em 2%;
     width: 96%;
-    background: rgb(58, 58, 58);
+    background: $darkGrey;
     .prevBtn {
         position: absolute;
         top: 0;
@@ -554,7 +554,7 @@ input[type="submit"] {
     width: 25%;
     border: thin solid rgb(153, 153, 153);
     border-radius: 6px;
-    background: rgb(255, 255, 255);
+    background: white;
     -o-border-radius: 6px;
 }
 .dialogWide {
@@ -686,10 +686,11 @@ header.top {
         border-top: none;
         h1 {
             width: 169px;
+            top:2px;
             height: inherit;
-            background: url(../images/akvoFlowLogo2.png) no-repeat 10px center;
-            -webkit-background-size: 80% auto;
-            background-size: 80% auto;
+            background: url(../images/akvoFlowLogo.svg) no-repeat 10px center;
+            -webkit-background-size: 85% auto;
+            background-size: 85% auto;
         }
         & + .belowHeader {
             padding-top: 110px;
@@ -704,12 +705,13 @@ header.top {
     }
     h1 {
         position: absolute;
-        top: 0;
+        top: 2px;
         left: 0px;
+        height:60px;
         width: 169px;
-        height: 60px;
-        background: url(../images/akvoFlowLogo2.png) no-repeat 5px top;
+        background: url(../images/akvoFlowLogo.svg) no-repeat 5px top;
         text-indent: -9999px;
+        background-size:95% auto;
         a {
             display: block;
             width: 169px;
@@ -777,8 +779,7 @@ nav.appNav {
                 -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
                 -o-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
                 box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
-                border-radius: 0 0 5px 5px;
-                color: rgb(246, 160, 26);
+                color:$anchorLinkHover;
             }
             &:hover,
             &:last-child,
@@ -798,7 +799,7 @@ nav.appNav {
                 cursor: pointer;
                 header.top.top-nav-collapse & {
                     margin-top: 0;
-                    padding: 18px 4px 3px 8px;
+                    padding:18px 4px 5px 8px;
                     background-position: center 2px;
                     -webkit-background-size: 18px auto;
                     background-size: 18px auto;
@@ -820,126 +821,176 @@ nav.appNav {
     -webkit-background-size: 28px auto;
     background-size: 28px auto;
 }
-nav.appNav ul li.navHome a {
-    background: url(../images/topnavDashboards.svg);
-    @include bgDetails;
+
+nav.appNav{
+    ul {
+        li {
+            &.navHome {
+                a{
+                    background: url(../images/topnavDashboards.svg);
+                    @include bgDetails;
+                    &:hover {
+                        background:$lightGrey url(../images/topnavDashboardsOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+                &.current {
+                    a {
+                        background: $navCurrent url(../images/topnavDashboardsOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+            }           
+            
+            &.navMessages {
+                a{
+                    background: url(../images/topnavMessages.svg);
+                    @include bgDetails;
+                    &:hover {
+                        background:$lightGrey url(../images/topnavMessagesOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+                &.current {
+                    a {
+                        background: $navCurrent url(../images/topnavMessagesOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+            }
+            &.navData {
+                a{
+                    background: url(../images/topnavData.svg);
+                    @include bgDetails;
+                    &:hover {
+                        background:$lightGrey url(../images/topnavDataOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+                &.current {
+                    a {
+                        background: $navCurrent url(../images/topnavDataOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+            }
+            &.navDashboards {
+                a{
+                    background: url(../images/topnavDashboards.svg);
+                    @include bgDetails;
+                    &:hover {
+                        background:$lightGrey url(../images/topnavDashboardsOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+                &.current {
+                    a {
+                        background: $navCurrent url(../images/topnavDashboardsOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+            }
+            &.navMaps {
+                a{
+                    background: url(../images/topnavMaps.svg);
+                    @include bgDetails;
+                    &:hover {
+                        background:$lightGrey url(../images/topnavMapsOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+                &.current {
+                    a {
+                        background: $navCurrent url(../images/topnavMapsOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+            }
+            &.navDevices {
+                a{
+                    background: url(../images/topnavDevices.svg);
+                    @include bgDetails;
+                    &:hover {
+                        background:$lightGrey url(../images/topnavDevicesOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+                &.current {
+                    a {
+                        background: $navCurrent url(../images/topnavDevicesOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+            }
+            &.navUsers {
+                a{
+                    background: url(../images/topnavUsers.svg);
+                    @include bgDetails;
+                    &:hover {
+                        background:$lightGrey url(../images/topnavUsersOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+                &.current {
+                    a {
+                        background: $navCurrent url(../images/topnavUsersOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+            }
+            &.navReports {
+                a{
+                    background: url(../images/topnavReports.svg);
+                    @include bgDetails;
+                    &:hover {
+                        background:$lightGrey url(../images/topnavReportsOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+                &.current {
+                    a {
+                        background: $navCurrent url(../images/topnavReportsOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+            }
+            &.navAdmin {
+                a{
+                    background: url(../images/topnavAdmin.svg);
+                    @include bgDetails;
+                    &:hover {
+                        background:$lightGrey url(../images/topnavAdminOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+                &.current {
+                    a {
+                        background: $navCurrent url(../images/topnavAdminOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+            }
+            &.navSurveys {
+                a{
+                    background: url(../images/topnavSurveys.svg);
+                    @include bgDetails;
+                    &:hover {
+                        background:$lightGrey url(../images/topnavSurveysOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+                &.current {
+                    a {
+                        background: $navCurrent url(../images/topnavSurveysOrange.svg);
+                        @include bgDetails;                    
+                    }
+                }
+            }
+
+        }
+    }
 }
-nav.appNav ul li.navHome a:hover {
-    background: rgb(232, 232, 232) url(../images/topnavDashboardsOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navHome.current a {
-    background: #F7F2E5 url(../images/topnavDashboardsOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navMessages a {
-    background: url(../images/topnavMessages.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navMessages a:hover {
-    background: #F7F2E5 url(../images/topnavMessagesOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navMessages.current a {
-    background: #F7F2E5 url(../images/topnavMessagesOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navSurveys a {
-    background: url(../images/topnavSurveys.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navSurveys a:hover {
-    background: rgb(232, 232, 232) url(../images/topnavSurveysOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navSurveys.current a {
-    background: #F7F2E5 url(../images/topnavSurveysOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navData a {
-    background: url(../images/topnavData.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navData a:hover {
-    background: rgb(232, 232, 232) url(../images/topnavDataOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navData.current a {
-    background: #F7F2E5 url(../images/topnavDataOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navDashboards a {
-    background: url(../images/topnavDashboards.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navDashboards a:hover {
-    background: rgb(232, 232, 232) url(../images/topnavDashboardsOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navDashboards.current a {
-    background: #F7F2E5 url(../images/topnavDashboardsOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navMaps a {
-    background: url(../images/topnavMaps.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navMaps a:hover {
-    background: rgb(232, 232, 232) url(../images/topnavMapsOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navMaps.current a {
-    background: #F7F2E5 url(../images/topnavMapsOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navDevices a {
-    background: url(../images/topnavDevices.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navDevices a:hover {
-    background: rgb(232, 232, 232) url(../images/topnavDevicesOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navDevices.current a {
-    background: #F7F2E5 url(../images/topnavDevicesOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navUsers a {
-    background: url(../images/topnavUsers.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navUsers a:hover {
-    background: rgb(232, 232, 232) url(../images/topnavUsersOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navUsers.current a {
-    background: #F7F2E5 url(../images/topnavUsersOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navReports a {
-    background: url(../images/topnavReports.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navReports a:hover {
-    background: rgb(232, 232, 232) url(../images/topnavReportsOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navReports.current a {
-    background: #F7F2E5 url(../images/topnavReportsOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navAdmin a {
-    background: url(../images/topnavAdmin.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navAdmin a:hover {
-    background: rgb(232, 232, 232) url(../images/topnavAdminOrange.svg);
-    @include bgDetails;
-}
-nav.appNav ul li.navAdmin.current a {
-    background: #F7F2E5 url(../images/topnavAdminOrange.svg);
-    @include bgDetails;
-}
+
 /*--------------------------------------------- 
 					Data Table
 -----------------------------------------------*/
@@ -953,7 +1004,7 @@ table.dataTable {
     text-align: left;
     thead tr {
         border-bottom: none;
-        background: rgb(58, 58, 58);
+        background: $darkGrey;
         th {
             position: relative;
             padding: 9px 1em 9px 1em;
@@ -984,8 +1035,8 @@ table.dataTable {
 table.dataTable tbody tr,
 table.dataTable tbody tr:nth-child(2n+1),
 table.dataTable tbody tr.odd {
-    border-bottom: thin solid rgb(255, 255, 255);
-    background: rgb(255, 255, 255);
+    border-bottom: thin solid white;
+    background: white;
     -webkit-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
@@ -1082,11 +1133,17 @@ tfoot tr {
 }
 #inspectData {
     border: thin solid rgb(224, 224, 224);
-    border-top: 1px solid rgb(255, 255, 255);
+    border-top: 1px solid white;
     background: rgb(224, 224, 224);
 }
 .greyBg a.standardBtn {
     background-image: url("../images/addPlus.png") left center no-repeat;
+}
+@mixin disabledMix {
+    border-radius: 0;
+    background: transparent;
+    color: grey;
+    -o-border-radius: 0;   
 }
 .dataTabMenu {
     position:absolute;
@@ -1108,36 +1165,22 @@ tfoot tr {
                 -o-border-radius: 0.3em;
                 border-radius: 0.3em;
                 &.disabled {
-                        border-radius: 0;
-                        background: transparent;
-                        color: grey;
-                        -o-border-radius: 0;   
+                       @include disabledMix;
                   }
                 &:hover {
                     border-radius: 2px;
-                    background: rgb(74, 177, 207);
-                    color: rgb(255, 255, 255);
+                    background:$anchorLink;
+                    color: white;
                     -o-border-radius: 2px;
                     &.disabled {
-                        border-radius: 0;
-                        background: transparent;
-                        color: grey;
-                        -o-border-radius: 0;   
-                    }
+                        @include disabledMix;
+                        }
                     }
                 }
             }
         }
     }
 
-
-.dataTabMenu ul li a:hover.disabled,
-.dataTabMenu ul li a.disabled {
-    border-radius: 0;
-    background: transparent;
-    color: grey;
-    -o-border-radius: 0;
-}
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys h2 {
@@ -1157,7 +1200,7 @@ tfoot tr {
     width: 98%;
 }
 fieldset#assignmentDetails {
-    background: rgb(255, 255, 255);
+    background: white;
 }
 #assignSurveys input {
     padding: 3px 5px;
@@ -1209,7 +1252,7 @@ input.hasDatepicker {
     background: rgb(242, 242, 242) url(../images/FieldSetSep.png) center center no-repeat;
 }
 .fieldSetWrap.makeWhite {
-    background: rgb(255, 255, 255) url(../images/FieldSetSep.png) center center no-repeat;
+    background: white url(../images/FieldSetSep.png) center center no-repeat;
 }
 #assignSurveys .fieldSetWrap fieldset {
     display: inline;
@@ -1269,14 +1312,14 @@ table.previewList {
     background: rgb(230, 230, 230);
 }
 #assignSurveys .fieldSetWrap fieldset table tr:nth-child(2n) {
-    background: rgb(255, 255, 255);
+    background: white;
 }
 #assignSurveys .fieldSetWrap fieldset table tr:last-child {
     background: transparent;
 }
 #assignSurveys .fieldSetWrap fieldset table td {
     padding: 0 0 0 1.5%;
-    border-right: thin solid rgb(255, 255, 255);
+    border-right: thin solid white;
     vertical-align: middle;
     text-align: left;
 }
@@ -1299,7 +1342,7 @@ table.previewList {
     padding: 5px 3px;
     width: 10%;
     background: rgb(0, 123, 182);
-    color: rgb(255, 255, 255);
+    color: white;
     -webkit-transition: background 0.5s ease-in;
     transition: background 0.5s ease-in;
     -o-border-radius: 0 0 5px 5px;
@@ -1307,7 +1350,7 @@ table.previewList {
 }
 #assignSurveys .fieldSetWrap fieldset table tfoot td a:hover {
     background: rgb(107, 134, 141);
-    color: rgb(255, 255, 255);
+    color: white;
 }
 .groupPreview {
     width: 37.5%;
@@ -1384,7 +1427,7 @@ th.action {
 
 #tabs div > section {
     border: thin solid rgb(224, 224, 224);
-    background: rgb(255, 255, 255);
+    background: white;
 }
 #tabs section h1,
 .messagesList h1,
@@ -1392,15 +1435,15 @@ th.action {
 .surveyTranslation > h1 {
     display: block;
     margin: 0.5em 0 0.5em 0.5em;
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
     font-size: 1.8em;
     font-weight: 400;
 }
 #tabs div > section h3 {
-    -moz-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 rgb(255, 255, 255);
-    -webkit-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 rgb(255, 255, 255);
-    -o-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 rgb(255, 255, 255);
-    text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 rgb(255, 255, 255);
+    -moz-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+    -webkit-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+    -o-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
+    text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
 }
 #tabs nav.tabNav {
     display: block;
@@ -1416,23 +1459,15 @@ th.action {
     margin: 0 1px 0 0;
     border-radius: 5px 5px 0 0;
     background: rgb(201, 201, 201);
-    /* Old browsers */
-    /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgb(201, 201, 201)), color-stop(83%, rgb(223, 223, 223)), color-stop(100%, rgb(206, 206, 206)));
-    /* Chrome,Safari4+ */
     background: -webkit-linear-gradient(top, rgb(201, 201, 201) 0%, rgb(223, 223, 223) 83%, rgb(206, 206, 206) 100%);
-    /* Chrome10+,Safari5.1+ */
-    /* Opera 11.10+ */
-    /* IE10+ */
     background: -webkit-gradient(linear, left top, left bottom, from(rgb(201, 201, 201)), color-stop(83%, rgb(223, 223, 223)), to(rgb(206, 206, 206)));
     background: linear-gradient(to bottom, rgb(201, 201, 201) 0%, rgb(223, 223, 223) 83%, rgb(206, 206, 206) 100%);
-    /* W3C */
     background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2M5YzljOSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjgzJSIgc3RvcC1jb2xvcj0iI2RmZGZkZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjZWNlY2UiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
     -webkit-transition: none;
     transition: none;
-    /* IE9 SVG, needs conditional override of 'filter' to 'none' */
     -moz-background-clip: padding;
     -webkit-background-clip: padding-box;
 }
@@ -1461,13 +1496,13 @@ th.action {
 }
 #tabs nav.tabNav ul li.active a,
 #tabs nav.tabNav ul li.active a:hover {
-    color: rgb(255, 255, 255);
+    color: white;
     text-shadow: none;
     -webkit-text-shadow: none;
     -moz-text-shadow: none;
 }
 #tabs nav.tabNav ul li a:hover {
-    color: rgb(255, 255, 255);
+    color: white;
     text-shadow: none;
     -webkit-text-shadow: none;
     -moz-text-shadow: none;
@@ -1539,8 +1574,8 @@ nav.menuGroupWrap ul.menuGroup li a span.monitorIcn {
     font-weight: bold;
     font-size: 0.8em;
     line-height: 21px;
-    color: rgb(255, 255, 255);
-    background-color: rgb(0, 167, 157);
+    color: white;
+    background-color:$monitorGreen;
     display: inline-block;
     border-radius: 10px;
     width: 16px;
@@ -1556,7 +1591,7 @@ nav.menuGroupWrap ul.menuGroup li.current a:hover,
 nav.menuGroupWrap ul.menuGroup li.current a {
     /* border-left: thin solid rgb(255,255,255); */
     background: url(../images/selectIndictr.png) right -61px no-repeat;
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
 }
 .scrollWrap {
     display: block;
@@ -1604,7 +1639,7 @@ section.topBar {
     margin: 0 0 20px 0;
     z-index: 9999;
     width: 100%;
-    background: rgb(255, 255, 255);
+    background: white;
 }
 section.topBar ~ * {
     margin-top: 80px;
@@ -1632,7 +1667,7 @@ section.topBar > a {
     display: inline-block;
 }
 section.topBar > a:hover {
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
 }
 section.topBar > a.smallBtn {
     margin: 0 10px;
@@ -1640,7 +1675,7 @@ section.topBar > a.smallBtn {
 }
 nav.menuTopbar {
     position: absolute;
-    right: 0;
+    right: 5px;
     display: inline;
 }
 #surveyCreator nav.menuTopbar ul {
@@ -1682,16 +1717,16 @@ a.editGroupName:hover,
 a.deleteGroup:hover,
 a.manageNotifications:hover,
 a.makeMonitorGroup[data-ember-action]:hover {
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
 }
 a.makeMonitorGroup[data-ember-action] {
-    color: rgb(74, 177, 207);
+    color:$anchorLink;
 }
 a.makeMonitorGroup {
-    color: rgb(0, 167, 157);
+    color:$monitorGreen;
 }
 a.makeMonitorGroup:hover {
-    color: rgb(0, 167, 157);
+    color:$monitorGreen;
 }
 a.addGroup {
     background: url(../images/IconAddGroup.svg) left center no-repeat;
@@ -1701,7 +1736,7 @@ a.addGroup:hover {
 }
 a.addSurvey {
     color: white;
-    background: rgba(74, 177, 207, 1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
+    background: rgba($anchorLink, 1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
     padding: 4px 7px 11px 21px;
     border-radius: 3px;
     -webkit-background-size: 19px 19px;
@@ -1711,7 +1746,7 @@ a.addSurvey {
 }
 a.addSurvey:hover {
     color: white;
-    background: rgba(246, 160, 26, 1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
+    background: rgba($anchorLinkHover, 1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
     -webkit-background-size: 19px 19px;
     background-size: 19px 19px;
 }
@@ -1764,10 +1799,11 @@ ul.surveyBatch {
 li.aSurvey {
     position: relative;
     display: block;
-    margin: 0.5em 0 1em 1%;
+    box-sizing: border-box;
+    margin: 0.5em auto 1em auto;
     padding: 0.5em 0 0.5em 1%;
     min-height: 115px;
-    width: 98%;
+    width: 99%;
     background: rgb(245, 245, 245) url(../images/carret.svg) right center no-repeat;
     -webkit-background-size: 45px 45px;
     background-size: 45px 45px;
@@ -1780,7 +1816,7 @@ li.aSurvey {
 li.aSurvey h2 {
     display: inline-block;
     width: 98%;
-    color: rgb(74, 177, 207);
+    color:$anchorLink;
 }
 ul.surveyInfo {
     position: relative;
@@ -1859,7 +1895,7 @@ ul.surveyInfo li.responseNumber p {
     text-align: center;
 }
 .aSurvey nav ul li a:hover {
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
 }
 .aSurvey nav ul li.editSurvey a {
     background: url(../images/IconEdit.svg) center 5px no-repeat;
@@ -1906,7 +1942,7 @@ ul.surveyInfo li.responseNumber p {
 ----------------------------------------------------------------------------------------------------------------*/
 
 .leftSidebar {
-    background: rgb(58, 58, 58);
+    background: $darkGrey;
     padding: 10px 0;
 }
 .leftSidebar h2 {
@@ -1914,9 +1950,10 @@ ul.surveyInfo li.responseNumber p {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: rgb(246, 160, 26);
+    color: $anchorLinkHover;
     margin: 10px 0 0 5px;
 }
+
 .leftSidebar.surveyDetailSideBar h2 {
     margin-bottom: 10px;
 }
@@ -1951,7 +1988,7 @@ ul.surveyInfo li.responseNumber p {
     height: 35px;
 }
 .leftSidebar form select option {
-    background: rgb(255, 255, 255);
+    background: white;
 }
 .leftSidebar dl {
     -webkit-box-sizing: border-box;
@@ -1985,7 +2022,7 @@ ul.surveyInfo li.responseNumber p {
     clear: right;
     padding: 0.5em 0 0 0;
     width: 55%;
-    color: rgb(255, 255, 255);
+    color: white;
     text-align: left;
 }
 .leftSidebar .helpIcon {
@@ -2030,7 +2067,7 @@ a.manageNotifications span {
 .newSurveyInfoUl li > span {
     position: absolute;
     right: 5px;
-    color: rgb(255, 255, 255);
+    color: white;
 }
 .newSurveyInfoUl li > span.surveyNotPublished {
     color: rgb(227, 27, 35);
@@ -2106,7 +2143,7 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
     margin: 0px auto 5px auto;
     width: 100%;
     border-top: 1px solid rgb(228, 228, 228);
-    border-bottom: 1px solid rgb(255, 255, 255);
+    border-bottom: 1px solid white;
     content: "";
 }
 .aQuestionSet .questionSetContent a.addQuestion {
@@ -2120,7 +2157,7 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
     text-transform: uppercase;
 }
 .aQuestionSet .questionSetContent a.addQuestion:hover {
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
     background: url(../images/IconInsertOrange.svg) left center no-repeat;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
@@ -2155,7 +2192,7 @@ span.qtnGroupHead {
     display: block;
     margin: 0.75em 0 0.25em 0;
     width: 100%;
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
     font-size: 1.2em;
 }
 .qtnGroupTitle {
@@ -2269,17 +2306,17 @@ nav.copyQMenu ul li {
 }
 nav.questionActionMenu a.smallBtn {
     background: rgb(39, 94, 110);
-    color: rgb(255, 255, 255);
+    color: white;
 }
 nav.questionActionMenu a.smallBtn:hover {
-    background: rgb(58, 58, 58);
-    color: rgb(255, 255, 255);
+    background: $darkGrey;
+    color: white;
 }
 nav.questionActionMenu a {
     color: rgb(39, 94, 110);
 }
 nav.questionActionMenu a:hover {
-    color: rgb(58, 58, 58);
+    color: $darkGrey;
 }
 /*---------------------------------------------------------------------------------
 								A New Question Form
@@ -2292,7 +2329,7 @@ nav.questionActionMenu a:hover {
     width: 99.8%;
     border: thin solid rgb(224, 224, 224);
     border-radius: 0 0 5px 0;
-    background: rgb(255, 255, 255);
+    background: white;
     -o-border-radius: 0 0 5px 0;
 }
 .aQuestionSet header nav.qtnGroupMenu {
@@ -2326,7 +2363,7 @@ nav.questionActionMenu a:hover {
     padding-left: 17px;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
     background: url(../images/IconShowOrange.svg) left center no-repeat;
     padding-left: 17px;
 }
@@ -2334,7 +2371,7 @@ nav.questionActionMenu a:hover {
     margin: 0;
 }
 .aQuestionSet header nav.qtnGroupMenu ul li a:hover {
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
 }
 .menuCentre {
     position: relative;
@@ -2595,7 +2632,7 @@ nav.smallMenu ul li a.showQuestion:hover {
     margin: 1em auto;
     width: 98%;
     border-top: 1px solid rgb(228, 228, 228);
-    border-bottom: 1px solid rgb(255, 255, 255);
+    border-bottom: 1px solid white;
     content: "";
 }
 .innerContent .minValNumb,
@@ -2703,8 +2740,8 @@ table.dataTable.notificationTable td:hover {
     font-weight: normal;
 }
 table.dataTable.notificationTable tbody tr {
-    border-bottom: thin solid rgb(255, 255, 255);
-    background: rgb(255, 255, 255);
+    border-bottom: thin solid white;
+    background: white;
     -webkit-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
@@ -2912,10 +2949,10 @@ table.dataTable.notificationTable thead tr th a:visited {
     padding: 4px 1.25% 0 1.25%;
     width: 97.5%;
     height: 23px;
-    background: rgb(58, 58, 58);
+    background: $darkGrey;
 }
 #dropdown-holder label {
-    color: rgb(255, 255, 255);
+    color: white;
 }
 #dropdown-holder select {
     display: inline;
@@ -2964,10 +3001,10 @@ table.dataTable.notificationTable thead tr th a:visited {
     padding: 5px 0 5px 0.75%;
     width: 44.25%;
     color: rgb(124, 124, 124);
-    -webkit-text-shadow: 0px 1px 0 rgb(255, 255, 255), 0 -1px 0 rgb(154, 164, 164);
-    -moz-text-shadow: 0px 1px 0 rgb(255, 255, 255), 0 -1px 0 rgb(154, 164, 164);
-    -o-text-shadow: 0px 1px 0 rgb(255, 255, 255), 0 -1px 0 rgb(154, 164, 164);
-    text-shadow: 0px 1px 0 rgb(255, 255, 255), 0 -1px 0 rgb(154, 164, 164);
+    -webkit-text-shadow: 0px 1px 0 white, 0 -1px 0 rgb(154, 164, 164);
+    -moz-text-shadow: 0px 1px 0 white, 0 -1px 0 rgb(154, 164, 164);
+    -o-text-shadow: 0px 1px 0 white, 0 -1px 0 rgb(154, 164, 164);
+    text-shadow: 0px 1px 0 white, 0 -1px 0 rgb(154, 164, 164);
 }
 #pointDetails dl div.defListWrap dd {
     display: table-cell;
@@ -2995,7 +3032,7 @@ div.drawHandle {
     display: block;
     padding:4px 7px 15px 7px;
     height: 3px;
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
     text-transform: uppercase;
     font-weight: bold;
     cursor: pointer;
@@ -3004,10 +3041,10 @@ div.drawHandle {
     margin: 2em auto;
     text-align: center;
     color: rgb(147, 145, 144);
-    -webkit-text-shadow: 2px 2px 0 rgb(255, 255, 255);
-    -moz-text-shadow: 2px 2px 0 rgb(255, 255, 255);
-    -o-text-shadow: 2px 2px 0 rgb(255, 255, 255);
-    text-shadow: 2px 2px 0 rgb(255, 255, 255);
+    -webkit-text-shadow: 2px 2px 0 white;
+    -moz-text-shadow: 2px 2px 0 white;
+    -o-text-shadow: 2px 2px 0 white;
+    text-shadow: 2px 2px 0 white;
 }
 #pointDetails .imgContainer {
     position: relative;
@@ -3031,7 +3068,7 @@ div.drawHandle {
     clear: both;
     padding: 5px 1%;
     width: 98%;
-    border-top: 1px solid rgb(255, 255, 255);
+    border-top: 1px solid white;
     background: rgb(234, 234, 234);
 }
 .placeMarkBasicInfo {
@@ -3058,7 +3095,7 @@ div.drawHandle {
 }
 .placeMarkPointCode {
     margin: 0 0 0 5px;
-    color: rgb(58, 58, 58);
+    color: $darkGrey;
     text-transform: uppercase;
     font-weight: bold;
 }
@@ -3147,7 +3184,7 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     display: block;
     margin: 1em 0 0.5em 0.1em;
     width: 100%;
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
     font-style: italic;
     font-family: Georgia, "Times New Roman", Times, serif;
 }
@@ -3255,7 +3292,7 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     margin: 0.5em auto 0 auto;
     padding: 0.5em 0 0.3em 0;
     width: 97.5%;
-    color: rgb(246, 160, 26);
+    color:$anchorLinkHover;
 }
 .reportTools div.block {
     display: block;
@@ -3346,7 +3383,7 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     position: relative;
     padding: 0.5% 0;
     width: 49%;
-    background: rgb(255, 255, 255);
+    background: white;
 }
 .twoColumns > div:first-child,
 .twoColumns > section:first-child {
@@ -3405,7 +3442,7 @@ table#languageOption td.formTitle {
 table.surveyTranslate {
     -o-border-radius: 0.25em;
     border-radius: 0.25em;
-    background: rgb(255, 255, 255) url(../images/borderMiddle.png) center top repeat-y;
+    background: white url(../images/borderMiddle.png) center top repeat-y;
 }
 table.surveyTranslate td {
     position: relative;
@@ -3534,7 +3571,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     font-size: 1.6em;
     text-align: center;
     color: rgb(32, 32, 36);
-    background-color: rgb(255, 255, 255);
+    background-color: white;
     background-color: rgba(44, 42, 116, 0.1);
     border: thin solid rgb(171, 170, 200);
     border-radius: 0.25em;
@@ -3592,7 +3629,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     background: -webkit-gradient(linear, left top, left bottom, from(rgba(191, 210, 85, 1)), color-stop(50%, rgba(142, 185, 42, 1)), color-stop(51%, rgba(114, 170, 0, 1)), to(rgba(158, 203, 45, 1)));
     background: linear-gradient(to bottom, rgba(191, 210, 85, 1) 0%, rgba(142, 185, 42, 1) 50%, rgba(114, 170, 0, 1) 51%, rgba(158, 203, 45, 1) 100%);
     width: 0;
-    border-right: 1px solid rgb(255, 255, 255);
+    border-right: 1px solid white;
     -o-border-radius: 0.5em;
     border-radius: 0.5em;
 }

@@ -4,33 +4,7 @@
 		Author:         Loic Sans, loic@akvo.org
 	
 ---------------------------------------------------------------------------------*/
-/* Colours 
----------------------------
-Akvo Primary Colours:
-
-		rgb(44, 42, 116);   		Akvo Purplish Blue
-		rgb(114,  205, 255);		Akvo very light blue
-		rgb(222, 137, 41);			Akvo Orange / light Brown
-		rgb(153, 153, 153); 		Akvo Mid grey
-		rgb(57, 102, 128);			Akvo Darker shade Blue from light blue
-		rgb(107, 134, 141);			Akvo Blueish Green link color
-		rgb(246, 160, 26);			Flow Orange
-		rgb(38, 8, 89);				Flow Purple
-	    rgb(246,160,26);     Orange
-Akvo Secondary Colours:
-	
-		rgb(225, 237, 195);			Akvo very Light green	
-		rgb(227, 27, 35);			Akvo red
-		rgb(219, 135, 201);			Akvo Pink
-		rgb(255, 210, 0);			Akvo Yellow
-		rgb(125, 125, 125); 		Akvo Darker Grey
-		rgb(66, 76, 43);			Akvo Very dark Green (Military)
-		rgb(119, 97, 0);			Akvo Kaki (Greenish Brown)
-		rgb(242, 240, 230);			Akvo Off White
-		rgb(74, 177, 207);			Blue Light
-
-
-*/
+/*!!!!!!!!!!!  PLEASE NEVER EDIT main.css directly !!!!!!!!!!!!!*/
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, hgroup, header, footer, nav, aside, article, section {
   margin: 0;
   padding: 0;
@@ -683,10 +657,11 @@ header.top {
     border-top: none; }
     header.top.top-nav-collapse h1 {
       width: 169px;
+      top: 2px;
       height: inherit;
-      background: url(../images/akvoFlowLogo2.png) no-repeat 10px center;
-      -webkit-background-size: 80% auto;
-      background-size: 80% auto; }
+      background: url(../images/akvoFlowLogo.svg) no-repeat 10px center;
+      -webkit-background-size: 85% auto;
+      background-size: 85% auto; }
     header.top.top-nav-collapse + .belowHeader {
       padding-top: 110px;
       padding-bottom: 110px;
@@ -697,12 +672,13 @@ header.top {
       background: white; }
   header.top h1 {
     position: absolute;
-    top: 0;
+    top: 2px;
     left: 0px;
-    width: 169px;
     height: 60px;
-    background: url(../images/akvoFlowLogo2.png) no-repeat 5px top;
-    text-indent: -9999px; }
+    width: 169px;
+    background: url(../images/akvoFlowLogo.svg) no-repeat 5px top;
+    text-indent: -9999px;
+    background-size: 95% auto; }
     header.top h1 a {
       display: block;
       width: 169px;
@@ -759,7 +735,6 @@ nav.appNav {
         -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
         -o-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
         box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
-        border-radius: 0 0 5px 5px;
         color: #f6a01a; }
       nav.appNav ul li:hover, nav.appNav ul li:last-child, nav.appNav ul li:last-child:hover, nav.appNav ul li.current, nav.appNav ul li.current:hover {
         background-image: none; }
@@ -774,7 +749,7 @@ nav.appNav {
         cursor: pointer; }
         header.top.top-nav-collapse nav.appNav ul li a {
           margin-top: 0;
-          padding: 18px 4px 3px 8px;
+          padding: 18px 4px 5px 8px;
           background-position: center 2px;
           -webkit-background-size: 18px auto;
           background-size: 18px auto; }
@@ -791,205 +766,176 @@ nav.appNav ul li.navHome a {
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navHome a:hover {
-  background: #e8e8e8 url(../images/topnavDashboardsOrange.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
+  nav.appNav ul li.navHome a:hover {
+    background: #e8e8e8 url(../images/topnavDashboardsOrange.svg);
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto; }
 nav.appNav ul li.navHome.current a {
   background: #F7F2E5 url(../images/topnavDashboardsOrange.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
 nav.appNav ul li.navMessages a {
   background: url(../images/topnavMessages.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navMessages a:hover {
-  background: #F7F2E5 url(../images/topnavMessagesOrange.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
+  nav.appNav ul li.navMessages a:hover {
+    background: #e8e8e8 url(../images/topnavMessagesOrange.svg);
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto; }
 nav.appNav ul li.navMessages.current a {
   background: #F7F2E5 url(../images/topnavMessagesOrange.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navSurveys a {
-  background: url(../images/topnavSurveys.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
-nav.appNav ul li.navSurveys a:hover {
-  background: #e8e8e8 url(../images/topnavSurveysOrange.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
-nav.appNav ul li.navSurveys.current a {
-  background: #F7F2E5 url(../images/topnavSurveysOrange.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
 nav.appNav ul li.navData a {
   background: url(../images/topnavData.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navData a:hover {
-  background: #e8e8e8 url(../images/topnavDataOrange.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
+  nav.appNav ul li.navData a:hover {
+    background: #e8e8e8 url(../images/topnavDataOrange.svg);
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto; }
 nav.appNav ul li.navData.current a {
   background: #F7F2E5 url(../images/topnavDataOrange.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
 nav.appNav ul li.navDashboards a {
   background: url(../images/topnavDashboards.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navDashboards a:hover {
-  background: #e8e8e8 url(../images/topnavDashboardsOrange.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
+  nav.appNav ul li.navDashboards a:hover {
+    background: #e8e8e8 url(../images/topnavDashboardsOrange.svg);
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto; }
 nav.appNav ul li.navDashboards.current a {
   background: #F7F2E5 url(../images/topnavDashboardsOrange.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
 nav.appNav ul li.navMaps a {
   background: url(../images/topnavMaps.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navMaps a:hover {
-  background: #e8e8e8 url(../images/topnavMapsOrange.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
+  nav.appNav ul li.navMaps a:hover {
+    background: #e8e8e8 url(../images/topnavMapsOrange.svg);
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto; }
 nav.appNav ul li.navMaps.current a {
   background: #F7F2E5 url(../images/topnavMapsOrange.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
 nav.appNav ul li.navDevices a {
   background: url(../images/topnavDevices.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navDevices a:hover {
-  background: #e8e8e8 url(../images/topnavDevicesOrange.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
+  nav.appNav ul li.navDevices a:hover {
+    background: #e8e8e8 url(../images/topnavDevicesOrange.svg);
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto; }
 nav.appNav ul li.navDevices.current a {
   background: #F7F2E5 url(../images/topnavDevicesOrange.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
 nav.appNav ul li.navUsers a {
   background: url(../images/topnavUsers.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navUsers a:hover {
-  background: #e8e8e8 url(../images/topnavUsersOrange.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
+  nav.appNav ul li.navUsers a:hover {
+    background: #e8e8e8 url(../images/topnavUsersOrange.svg);
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto; }
 nav.appNav ul li.navUsers.current a {
   background: #F7F2E5 url(../images/topnavUsersOrange.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
 nav.appNav ul li.navReports a {
   background: url(../images/topnavReports.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navReports a:hover {
-  background: #e8e8e8 url(../images/topnavReportsOrange.svg);
-  background-repeat: no-repeat;
-  background-position: center 12px;
-  -webkit-background-size: 28px auto;
-  background-size: 28px auto; }
-
+  nav.appNav ul li.navReports a:hover {
+    background: #e8e8e8 url(../images/topnavReportsOrange.svg);
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto; }
 nav.appNav ul li.navReports.current a {
   background: #F7F2E5 url(../images/topnavReportsOrange.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
 nav.appNav ul li.navAdmin a {
   background: url(../images/topnavAdmin.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navAdmin a:hover {
-  background: #e8e8e8 url(../images/topnavAdminOrange.svg);
+  nav.appNav ul li.navAdmin a:hover {
+    background: #e8e8e8 url(../images/topnavAdminOrange.svg);
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto; }
+nav.appNav ul li.navAdmin.current a {
+  background: #F7F2E5 url(../images/topnavAdminOrange.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
-
-nav.appNav ul li.navAdmin.current a {
-  background: #F7F2E5 url(../images/topnavAdminOrange.svg);
+nav.appNav ul li.navSurveys a {
+  background: url(../images/topnavSurveys.svg);
+  background-repeat: no-repeat;
+  background-position: center 12px;
+  -webkit-background-size: 28px auto;
+  background-size: 28px auto; }
+  nav.appNav ul li.navSurveys a:hover {
+    background: #e8e8e8 url(../images/topnavSurveysOrange.svg);
+    background-repeat: no-repeat;
+    background-position: center 12px;
+    -webkit-background-size: 28px auto;
+    background-size: 28px auto; }
+nav.appNav ul li.navSurveys.current a {
+  background: #F7F2E5 url(../images/topnavSurveysOrange.svg);
   background-repeat: no-repeat;
   background-position: center 12px;
   -webkit-background-size: 28px auto;
@@ -1145,12 +1091,6 @@ tfoot tr {
           background: transparent;
           color: grey;
           -o-border-radius: 0; }
-
-.dataTabMenu ul li a:hover.disabled, .dataTabMenu ul li a.disabled {
-  border-radius: 0;
-  background: transparent;
-  color: grey;
-  -o-border-radius: 0; }
 
 /**************** Assign Survey to devices. **************/
 #assignSurveys h2 {
@@ -1423,23 +1363,15 @@ th.action {
   margin: 0 1px 0 0;
   border-radius: 5px 5px 0 0;
   background: #c9c9c9;
-  /* Old browsers */
-  /* FF3.6+ */
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #c9c9c9), color-stop(83%, #dfdfdf), color-stop(100%, #cecece));
-  /* Chrome,Safari4+ */
   background: -webkit-linear-gradient(top, #c9c9c9 0%, #dfdfdf 83%, #cecece 100%);
-  /* Chrome10+,Safari5.1+ */
-  /* Opera 11.10+ */
-  /* IE10+ */
   background: -webkit-gradient(linear, left top, left bottom, from(#c9c9c9), color-stop(83%, #dfdfdf), to(#cecece));
   background: linear-gradient(to bottom, #c9c9c9 0%, #dfdfdf 83%, #cecece 100%);
-  /* W3C */
   background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2M5YzljOSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjgzJSIgc3RvcC1jb2xvcj0iI2RmZGZkZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjZWNlY2UiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
   -webkit-transition: none;
   transition: none;
-  /* IE9 SVG, needs conditional override of 'filter' to 'none' */
   -moz-background-clip: padding;
   -webkit-background-clip: padding-box; }
 
@@ -1642,7 +1574,7 @@ section.topBar > a.smallBtn {
 
 nav.menuTopbar {
   position: absolute;
-  right: 0;
+  right: 5px;
   display: inline; }
 
 #surveyCreator nav.menuTopbar ul {
@@ -1754,10 +1686,11 @@ ul.surveyBatch {
 li.aSurvey {
   position: relative;
   display: block;
-  margin: 0.5em 0 1em 1%;
+  box-sizing: border-box;
+  margin: 0.5em auto 1em auto;
   padding: 0.5em 0 0.5em 1%;
   min-height: 115px;
-  width: 98%;
+  width: 99%;
   background: whitesmoke url(../images/carret.svg) right center no-repeat;
   -webkit-background-size: 45px 45px;
   background-size: 45px 45px;
