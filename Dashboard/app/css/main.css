@@ -1112,35 +1112,39 @@ tfoot tr {
 .greyBg a.standardBtn {
   background-image: url("../images/addPlus.png") left center no-repeat; }
 
-.dataTabMenu ul li {
-  display: inline;
-  float: left;
-  margin: 0 0.5em 0 0; }
-  .dataTabMenu ul li a {
-    display: block;
-    padding: 0.4em 0.8em;
-    background: transparent;
-    color: #007bb6;
-    font-size: 1.1em;
-    -webkit-transition: all 0.2s ease;
-    transition: all 0.2s ease;
-    -o-border-radius: 0.3em;
-    border-radius: 0.3em; }
-    .dataTabMenu ul li a.disabled {
-      border-radius: 0;
+.dataTabMenu {
+  position: absolute;
+  top: 1.75em;
+  right: 1em; }
+  .dataTabMenu ul li {
+    display: inline;
+    float: left;
+    margin: 0 0.5em 0 0; }
+    .dataTabMenu ul li a {
+      display: block;
+      padding: 0.4em 0.8em;
       background: transparent;
-      color: grey;
-      -o-border-radius: 0; }
-    .dataTabMenu ul li a :hover {
-      border-radius: 2px;
-      background: #4ab1cf;
-      color: white;
-      -o-border-radius: 2px; }
-      .dataTabMenu ul li a :hover.disabled {
+      color: #007bb6;
+      font-size: 1.1em;
+      -webkit-transition: all 0.2s ease;
+      transition: all 0.2s ease;
+      -o-border-radius: 0.3em;
+      border-radius: 0.3em; }
+      .dataTabMenu ul li a.disabled {
         border-radius: 0;
         background: transparent;
         color: grey;
         -o-border-radius: 0; }
+      .dataTabMenu ul li a:hover {
+        border-radius: 2px;
+        background: #4ab1cf;
+        color: white;
+        -o-border-radius: 2px; }
+        .dataTabMenu ul li a:hover.disabled {
+          border-radius: 0;
+          background: transparent;
+          color: grey;
+          -o-border-radius: 0; }
 
 .dataTabMenu ul li a:hover.disabled, .dataTabMenu ul li a.disabled {
   border-radius: 0;
@@ -2951,19 +2955,16 @@ div#drawHandleWrap {
 
 div.drawHandle {
   position: absolute;
-  top: 5px;
+  top: 1px;
   right: 5px;
   z-index: 99999;
   display: block;
-  padding: 4px 7px 9px 7px;
+  padding: 4px 7px 15px 7px;
   height: 3px;
-  background: #626262;
   color: #f6a01a;
   text-transform: uppercase;
   font-weight: bold;
-  cursor: pointer;
-  -o-border-radius: 0.2em;
-  border-radius: 0.2em; }
+  cursor: pointer; }
 
 .noDetails {
   margin: 2em auto;
@@ -2973,8 +2974,6 @@ div.drawHandle {
   -moz-text-shadow: 2px 2px 0 white;
   -o-text-shadow: 2px 2px 0 white;
   text-shadow: 2px 2px 0 white; }
-
-
 
 #pointDetails .imgContainer {
   position: relative;
@@ -3038,7 +3037,7 @@ footer.bottomPage {
   margin: 20px 0 0 0;
   padding: 0;
   width: 100%;
-  background: #243032;
+  background: #f8f8f8;
   -webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.5);
   box-shadow: 0 0 -1px rgba(32, 32, 36, 0.5); }
 
@@ -3047,24 +3046,20 @@ footer.bottomPage div:nth-child(1n) {
   margin: 0 auto;
   padding: 0;
   width: 90%;
-  min-width: 768px;
-  color: white; }
+  min-width: 768px; }
 
 footer.bottomPage div:nth-child(2n) {
-  color: white;
   position: relative;
   min-width: inherit;
   max-width: none;
-  width: 100%;
-  background: #434343; }
+  width: 100%; }
 
 footer.bottomPage small {
   position: relative;
   display: block;
   padding: 0.5em 0;
   width: 100%;
-  text-align: center;
-  font-weight: normal; }
+  text-align: center; }
 
 footer.bottomPage nav.footItems {
   display: block;
@@ -3100,9 +3095,9 @@ footer.bottomPage nav ul li a {
   text-transform: uppercase; }
 
 footer.bottomPage nav ul li a.akvoDotOrg {
-  margin: -1px 0 0 0;
-  width: 39px;
-  background: url(../images/akvo.org_footer1.png) center center no-repeat;
+  margin: 0;
+  width: 42px;
+  background: url(../images/akvo.orgLogo.svg) center center no-repeat;
   text-indent: -9999px; }
 
 

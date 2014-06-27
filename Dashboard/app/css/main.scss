@@ -1089,6 +1089,9 @@ tfoot tr {
     background-image: url("../images/addPlus.png") left center no-repeat;
 }
 .dataTabMenu {
+    position:absolute;
+    top: 1.75em;
+    right: 1em;
     ul {
         li {
             display: inline;
@@ -1110,7 +1113,7 @@ tfoot tr {
                         color: grey;
                         -o-border-radius: 0;   
                   }
-                :hover {
+                &:hover {
                     border-radius: 2px;
                     background: rgb(74, 177, 207);
                     color: rgb(255, 255, 255);
@@ -2986,19 +2989,16 @@ div#drawHandleWrap {
 }
 div.drawHandle {
     position: absolute;
-    top: 5px;
+    top: 1px;
     right: 5px;
     z-index: 99999;
     display: block;
-    padding: 4px 7px 9px 7px;
+    padding:4px 7px 15px 7px;
     height: 3px;
-    background: rgb(98, 98, 98);
     color: rgb(246, 160, 26);
     text-transform: uppercase;
     font-weight: bold;
     cursor: pointer;
-    -o-border-radius: 0.2em;
-    border-radius: 0.2em;
 }
 .noDetails {
     margin: 2em auto;
@@ -3009,7 +3009,7 @@ div.drawHandle {
     -o-text-shadow: 2px 2px 0 rgb(255, 255, 255);
     text-shadow: 2px 2px 0 rgb(255, 255, 255);
 }
-div.drawHandle.hideMapD {} div.drawHandle.showMapD {} #pointDetails .imgContainer {
+#pointDetails .imgContainer {
     position: relative;
     margin: 10px 5px 10px 1px;
     padding: 1px;
@@ -3072,7 +3072,7 @@ footer.bottomPage {
     margin: 20px 0 0 0;
     padding: 0;
     width: 100%;
-    background: rgb(36, 48, 50);
+    background:rgb(248, 248, 248);
     -webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.5);
     box-shadow: 0 0 -1px rgba(32, 32, 36, 0.5);
 }
@@ -3082,15 +3082,12 @@ footer.bottomPage div:nth-child(1n) {
     padding: 0;
     width: 90%;
     min-width: 768px;
-    color: rgb(255, 255, 255);
 }
 footer.bottomPage div:nth-child(2n) {
-    color: white;
     position: relative;
     min-width: inherit;
     max-width: none;
     width: 100%;
-    background: rgb(67, 67, 67);
 }
 footer.bottomPage small {
     position: relative;
@@ -3098,7 +3095,6 @@ footer.bottomPage small {
     padding: 0.5em 0;
     width: 100%;
     text-align: center;
-    font-weight: normal;
 }
 footer.bottomPage nav.footItems {
     display: block;
@@ -3134,9 +3130,9 @@ footer.bottomPage nav ul li a {
     text-transform: uppercase;
 }
 footer.bottomPage nav ul li a.akvoDotOrg {
-    margin: -1px 0 0 0;
-    width: 39px;
-    background: url(../images/akvo.org_footer1.png) center center no-repeat;
+    margin:0;
+    width: 42px;
+    background: url(../images/akvo.orgLogo.svg) center center no-repeat;
     text-indent: -9999px;
 }
 footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
