@@ -5,6 +5,26 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.0
+
+## New and noteworthy
+
+* Monitoring features
+* Control Mononitoring UI based on config property [#607]
+
+## Resolved issues
+
+* Fix typo in home screen [#615]
+* Validate lat/long data while creating geocells [#613]
+* SurveyedLocale's lastModified timestamp might not be unique [#605]
+* Remove code that sets wrong path [#602]
+* Adds lastUpdateDateTime on SurveyedLocale [#591]
+* Get collectionDate from surveyInstance as well [#583]
+* Add dashes to identifiers created in the server [#582]
+* Retrieving Available Surveys for a Device Fails [#578]
+* Bulk update monitoring fields on surveyedLocales [#575]
+* Enable deletion of entire surveys and question groups [#368]
+
 #1.6.17.1
 
 ## Resolved issues
