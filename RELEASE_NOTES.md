@@ -9,8 +9,8 @@ Akvo FLOW Dashboard release notes
 
 ## New and noteworthy
 
-* Monitoring features
-* Control Mononitoring UI based on config property [#607]
+* Monitoring features — Monitoring features enable users to download data on existing points on their phones, and add information to these points. Regular survey forms can be used to register entities, so they can be retrieved later for further data collection. This makes it possible to see how data has changed over time, or to collect new properties of the same entity. 
+
 
 ## Resolved issues
 
@@ -24,6 +24,7 @@ Akvo FLOW Dashboard release notes
 * Retrieving Available Surveys for a Device Fails [#578]
 * Bulk update monitoring fields on surveyedLocales [#575]
 * Enable deletion of entire surveys and question groups [#368]
+* Control Mononitoring UI based on config property [#607]
 
 #1.6.17.1
 
