@@ -90,8 +90,9 @@ FLOW.Router = Ember.Router.extend({
           router.get('navSurveysController').connectOutlet({
             name: 'navSurveysMain'
           });
-          router.resetState();
           FLOW.surveyGroupControl.populate();
+          FLOW.selectedControl.set('selectedQuestionGroup', null);
+          FLOW.selectedControl.set('selectedSurvey', null);
         }
       }),
 
