@@ -23,9 +23,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.waterforpeople.mapping.app.util.json.JSONObject;
-//import org.json.JSONArray;
-//import org.json.JSONObject;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONObject;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
@@ -48,7 +47,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 /**
  * JSON service for returning the list of records for a specific surveyId
- * 
+ *
  * @author Mark Tiele Westra
  */
 public class SurveyedLocaleServlet extends AbstractRestApiServlet {
@@ -101,7 +100,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
     /**
      * converts the domain objects to dtos and then installs them in a RecordDataResponse object
-     * 
+     *
      * @param lastUpdateTime
      */
     protected SurveyedLocaleResponse convertToResponse(List<SurveyedLocale> slList,
@@ -203,8 +202,10 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
     protected void writeOkResponse(RestResponse resp) throws Exception {
         getResponse().setStatus(200);
         SurveyedLocaleResponse slResp = (SurveyedLocaleResponse) resp;
-        JSONObject result = new JSONObject(slResp);
 
-        getResponse().getWriter().println(result.toString());
+        ObjectMapper jsonMapper = new ObjectMapper();
+        jsonMapper.writeValue(getResponse().getWriter(), slResp);
+
+        getResponse().getWriter().println();
     }
 }
