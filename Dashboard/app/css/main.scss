@@ -124,7 +124,7 @@ button {
 
 /*--------------------------------------------------------------
 
-   * Default Typography.
+                    * Default Typography.
 
 -------------------------------------------------------------- */
 
@@ -343,11 +343,11 @@ a, a:link, a:visited {
     }
     &.helpIcon {
         display: inline-block;
-        font-size: 0.9em;
+        font-size: 1em;
         font-family: baskerville;
-        width: 14px;
-        height: 14px;
-        border-radius: 7px;
+        width: 18px;
+        height: 18px;
+        border-radius: 9px;
         background:$anchorLink;
         color: white;
         text-align: center;
@@ -1558,15 +1558,13 @@ nav.menuGroupWrap ul.menuGroup li.current {
 }
 nav.menuGroupWrap ul.menuGroup li a {
     display: block;
-    overflow: hidden;
     padding: 10px 1% 10px 2%;
     width: 97%;
     height: 23px;
     background: url(../images/selectIndictr.png) right 5px no-repeat;
     color: rgb(153, 153, 153);
     color: rgba(255, 255, 255, 0.6);
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    @include noWrapTxt;
     font-size: 1.2em;
     cursor: pointer;
 }
@@ -1657,9 +1655,7 @@ section.topBar h2 {
     display: inline-table;
     max-width: 45%;
     color: rgb(44, 42, 116);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    @include noWrapTxt;
     margin: 5px 0 0 15px;
 }
 section.topBar > a {
@@ -1831,15 +1827,13 @@ ul.surveyInfo li {
     float: left;
     display: inline-block;
     margin: 0 3px 0 0;
-    width: calc(20% - 3px);
+    width: calc(25% - 3px);
 }
 ul.surveyInfo li span {
     display: block;
     color: rgb(128, 130, 133);
     text-transform: uppercase;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    @include noWrapTxt;
 }
 ul.surveyInfo li time {
     font-weight: bold;
@@ -1855,8 +1849,11 @@ ul.surveyInfo li.surveyLanguage p {
 ul.surveyInfo li.surveyType p {
     color: rgb(227, 27, 35);
 }
-ul.surveyInfo li.responseNumber p {
+ul.surveyInfo li.responseNumber {
+    display:none;
+    p {
     color: rgb(225, 237, 195);
+}
 }
 .aSurvey nav {
     -webkit-box-sizing: border-box;
@@ -1947,9 +1944,7 @@ ul.surveyInfo li.responseNumber p {
 }
 .leftSidebar h2 {
     display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    @include noWrapTxt;
     color: $anchorLinkHover;
     margin: 10px 0 0 5px;
 }
@@ -2029,6 +2024,9 @@ ul.surveyInfo li.responseNumber p {
     position: absolute;
     right: 3px;
     margin: 0;
+}
+label[for="surveyLanguage"]  a.helpIcon {
+    right:10px;
 }
 .manageStuff li {
     display: inline;
@@ -2200,9 +2198,7 @@ span.qtnGroupHead {
 }
 .aQuestionSet header h1.qtnGroupTitle {
     display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: pre-wrap;
+    @include noWrapTxt;
 }
 .aQuestionSet header h1.qtnGroupTitle a {
     color: rgb(38, 8, 89);
@@ -2235,7 +2231,6 @@ span.qtnGroupHead {
 .aQuestionSet footer a.addSet {
     position: relative;
     display: block;
-    overflow: hidden;
     margin: 0.25% 1% 0.25% auto;
     padding: 0.50em 0.5em 0.35em 25px;
     width: 7%;
@@ -2243,8 +2238,7 @@ span.qtnGroupHead {
     background: rgb(235, 235, 235) url(../images/addSet.png) left center no-repeat;
     color: rgb(227, 27, 35);
     text-transform: uppercase;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    @include noWrapTxt;
 }
 .aQuestionSet footer a.addSet:hover {
     background: rgb(214, 214, 214) url(../images/addSet.png) left center no-repeat;

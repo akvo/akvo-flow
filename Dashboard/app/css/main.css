@@ -1,10 +1,10 @@
-/*---------------------------------------------------------------------------------
+/*-------------------------------------------------------------------------------------------------------------
  
-		Title:          SASS library and Style Guide for Akvo Flow dashboard.
-		Author:         Loic Sans, loic@akvo.org
+                    Title:          SASS library and Style Guide for Akvo Flow dashboard.
+		            Author:         Loic Sans, loic@akvo.org
 	
----------------------------------------------------------------------------------*/
-/*!!!!!!!!!!!  PLEASE NEVER EDIT main.css directly !!!!!!!!!!!!!*/
+-------------------------------------------------------------------------------------------------------------*/
+/*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  PLEASE NEVER EDIT main.css directly  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  */
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, hgroup, header, footer, nav, aside, article, section {
   margin: 0;
   padding: 0;
@@ -149,7 +149,7 @@ input[type="submit"] {
 
 /*--------------------------------------------------------------
 
-   * Default Typography.
+                    * Default Typography.
 
 -------------------------------------------------------------- */
 html {
@@ -342,11 +342,11 @@ a, a:link, a:visited {
       color: white; }
   a.helpIcon, a:link.helpIcon, a:visited.helpIcon {
     display: inline-block;
-    font-size: 0.9em;
+    font-size: 1em;
     font-family: baskerville;
-    width: 14px;
-    height: 14px;
-    border-radius: 7px;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
     background: #4ab1cf;
     color: white;
     text-align: center; }
@@ -1459,13 +1459,13 @@ nav.menuGroupWrap ul.menuGroup li.current {
 
 nav.menuGroupWrap ul.menuGroup li a {
   display: block;
-  overflow: hidden;
   padding: 10px 1% 10px 2%;
   width: 97%;
   height: 23px;
   background: url(../images/selectIndictr.png) right 5px no-repeat;
   color: #999999;
   color: rgba(255, 255, 255, 0.6);
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 1.2em;
@@ -1718,7 +1718,7 @@ ul.surveyInfo li {
   float: left;
   display: inline-block;
   margin: 0 3px 0 0;
-  width: calc(20% - 3px); }
+  width: calc(25% - 3px); }
 
 ul.surveyInfo li span {
   display: block;
@@ -1742,8 +1742,10 @@ ul.surveyInfo li.surveyLanguage p {
 ul.surveyInfo li.surveyType p {
   color: #e31b23; }
 
-ul.surveyInfo li.responseNumber p {
-  color: #e1edc3; }
+ul.surveyInfo li.responseNumber {
+  display: none; }
+  ul.surveyInfo li.responseNumber p {
+    color: #e1edc3; }
 
 .aSurvey nav {
   -webkit-box-sizing: border-box;
@@ -1911,6 +1913,9 @@ ul.surveyInfo li.responseNumber p {
   position: absolute;
   right: 3px;
   margin: 0; }
+
+label[for="surveyLanguage"] a.helpIcon {
+  right: 10px; }
 
 .manageStuff li {
   display: inline;
@@ -2084,7 +2089,7 @@ span.qtnGroupHead {
   display: inline-block;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: pre-wrap; }
+  white-space: nowrap; }
 
 .aQuestionSet header h1.qtnGroupTitle a {
   color: #260859; }
@@ -2117,7 +2122,6 @@ span.qtnGroupHead {
 .aQuestionSet footer a.addSet {
   position: relative;
   display: block;
-  overflow: hidden;
   margin: 0.25% 1% 0.25% auto;
   padding: 0.5em 0.5em 0.35em 25px;
   width: 7%;
@@ -2125,6 +2129,7 @@ span.qtnGroupHead {
   background: #ebebeb url(../images/addSet.png) left center no-repeat;
   color: #e31b23;
   text-transform: uppercase;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap; }
 
