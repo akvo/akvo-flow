@@ -5,6 +5,27 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.0
+
+## New and noteworthy
+
+* Monitoring features — Monitoring features enable users to download data on existing points on their phones, and add information to these points. Regular survey forms can be used to register entities, so they can be retrieved later for further data collection. This makes it possible to see how data has changed over time, or to collect new properties of the same entity. 
+
+
+## Resolved issues
+
+* Fix typo in home screen [#615]
+* Validate lat/long data while creating geocells [#613]
+* SurveyedLocale's lastModified timestamp might not be unique [#605]
+* Remove code that sets wrong path [#602]
+* Adds lastUpdateDateTime on SurveyedLocale [#591]
+* Get collectionDate from surveyInstance as well [#583]
+* Add dashes to identifiers created in the server [#582]
+* Retrieving Available Surveys for a Device Fails [#578]
+* Bulk update monitoring fields on surveyedLocales [#575]
+* Enable deletion of entire surveys and question groups [#368]
+* Control Mononitoring UI based on config property [#607]
+
 #1.6.17.1
 
 ## Resolved issues
