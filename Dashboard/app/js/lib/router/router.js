@@ -93,6 +93,9 @@ FLOW.Router = Ember.Router.extend({
           FLOW.surveyGroupControl.populate();
           FLOW.selectedControl.set('selectedQuestionGroup', null);
           FLOW.selectedControl.set('selectedSurvey', null);
+          FLOW.selectedControl.set('selectedQuestion', null);
+          FLOW.questionControl.set('OPTIONcontent', null);
+
         }
       }),
 
