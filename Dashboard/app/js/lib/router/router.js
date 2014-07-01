@@ -205,6 +205,7 @@ FLOW.Router = Ember.Router.extend({
           FLOW.deviceGroupControl.populate();
           FLOW.deviceControl.populate();
           FLOW.surveyAssignmentControl.populate();
+          FLOW.surveyGroupControl.populate();
           router.resetState();
           router.set('devicesSubnavController.selected', 'currentDevices');
         }
