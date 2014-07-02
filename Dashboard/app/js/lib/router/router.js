@@ -109,7 +109,8 @@ FLOW.Router = Ember.Router.extend({
             "defaultLanguageCode": "en",
             "requireApproval": false,
             "status": "NOT_PUBLISHED",
-            "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId')
+            "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
+            "version":"1.0"
           });
 
           FLOW.selectedControl.set('selectedSurvey', newSurvey);

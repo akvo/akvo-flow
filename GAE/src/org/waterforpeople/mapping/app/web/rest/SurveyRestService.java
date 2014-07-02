@@ -352,6 +352,9 @@ public class SurveyRestService {
         if (dto.getSector() != null) {
             s.setSector(Survey.Sector.valueOf(dto.getSector()));
         }
+        if(dto.getVersion() != null) {
+            s.setVersion(Double.valueOf(dto.getVersion()));
+        }
 
         return s;
     }
