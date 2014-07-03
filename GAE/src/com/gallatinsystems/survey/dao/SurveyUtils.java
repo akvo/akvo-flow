@@ -63,6 +63,7 @@ public class SurveyUtils {
 
         tmp.setStatus(Survey.Status.COPYING);
         tmp.setPath(getPath(tmp));
+        tmp.setVersion(Double.valueOf("1.0"));
 
         log.log(Level.INFO, "Copying `Survey` " + source.getKey().getId());
         final Survey newSurvey = sDao.save(tmp);
@@ -294,7 +295,7 @@ public class SurveyUtils {
     /**
      * Sends a POST request of a collection of surveyIds to a server defined by the `flowServices`
      * property The property `alias` define the baseURL property that is sent in the request
-     * 
+     *
      * @param surveyIds Collection of ids (Long) that requires processing
      * @param action A string indicating the action that will be used, this string is used for
      *            building the URL, with the `flowServices` property + / + action
