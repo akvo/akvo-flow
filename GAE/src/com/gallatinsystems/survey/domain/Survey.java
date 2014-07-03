@@ -66,7 +66,7 @@ public class Survey extends BaseDomain {
 
     public void incrementVersion() {
         if(version == null) {
-            version = Double.valueOf("1.0");
+            getVersion();
         } else {
             version++;
         }
@@ -137,6 +137,11 @@ public class Survey extends BaseDomain {
     }
 
     public Double getVersion() {
+        if(version == null) {
+            // existing survey without version number is a
+            // newly created one so return 1.0
+            version = Double.valueOf("1.0");
+        }
         return version;
     }
 

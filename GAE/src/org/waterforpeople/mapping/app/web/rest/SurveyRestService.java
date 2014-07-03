@@ -352,8 +352,9 @@ public class SurveyRestService {
         if (dto.getSector() != null) {
             s.setSector(Survey.Sector.valueOf(dto.getSector()));
         }
-        // ignore version number sent by Dashboard and increment
-        s.incrementVersion();
+
+        // ignore version number sent by Dashboard and initialise
+        s.getVersion();
 
         return s;
     }
