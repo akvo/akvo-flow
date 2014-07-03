@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
@@ -56,6 +58,8 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 @Controller
 @RequestMapping("/surveys")
 public class SurveyRestService {
+
+    private static final Logger log = Logger.getLogger(SurveyRestService.class.getName());
 
     @Inject
     private SurveyDAO surveyDao;
@@ -262,11 +266,20 @@ public class SurveyRestService {
                     s.setDesc(surveyDto.getDescription());
 
                     if (surveyDto.getStatus() != null) {
+                        // increment version for surveys already published
+                        if (s.getStatus().equals(Survey.Status.PUBLISHED)
+                                && !s.getStatus().equals(
+                                        Survey.Status.valueOf(surveyDto.getStatus()))) {
+                            s.incrementVersion();
+                        }
                         s.setStatus(Survey.Status
                                 .valueOf(surveyDto.getStatus().toString()));
                     }
                     if (surveyDto.getSector() != null) {
                         s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
+                    }
+                    if(!surveyDto.getVersion().equals(s.getVersion().toString())) {
+                        log.log(Level.WARNING, "Survey version does not match (dashboard=" + surveyDto.getVersion()+ " datastore=" + s.getVersion() + ")");
                     }
 
                     s = surveyDao.save(s);
