@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.app.util.json.JSONObject;
 //import org.json.JSONArray;
@@ -96,7 +97,11 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
                 }
             }
         }
-        return convertToResponse(slList, slReq.getSurveyGroupId(), slReq.getLastUpdateTime());
+        // A valid assignment has not been found for the given device
+        RestResponse res = new RestResponse();
+        res.setCode(String.valueOf(HttpServletResponse.SC_FORBIDDEN));
+        res.setMessage("Invalid assignment");
+        return res;
     }
 
     /**
@@ -201,10 +206,22 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
      */
     @Override
     protected void writeOkResponse(RestResponse resp) throws Exception {
-        getResponse().setStatus(200);
-        SurveyedLocaleResponse slResp = (SurveyedLocaleResponse) resp;
-        JSONObject result = new JSONObject(slResp);
-
-        getResponse().getWriter().println(result.toString());
+        if (resp instanceof SurveyedLocaleResponse) {
+            getResponse().setStatus(200);
+            SurveyedLocaleResponse slResp = (SurveyedLocaleResponse) resp;
+            JSONObject result = new JSONObject(slResp);
+            getResponse().getWriter().println(result.toString());
+        } else {
+            // Something went wrong. TODO: Should 'writeOkResponse' have a broader meaning?
+            int sc;
+            try {
+            	sc = Integer.valueOf(resp.getCode());
+            } catch (NumberFormatException ignored) {
+            	// Status code was not properly set in the RestResponse
+            	sc = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            }
+            getResponse().setStatus(sc);
+            getResponse().getWriter().println(resp.getMessage());
+        }
     }
 }
