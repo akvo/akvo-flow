@@ -64,6 +64,14 @@ public class Survey extends BaseDomain {
         requireApproval = false;
     }
 
+    public void incrementVersion() {
+        if(version == null) {
+            version = Double.valueOf("1.0");
+        } else {
+            version++;
+        }
+    }
+
     public Long getSurveyGroupId() {
         return surveyGroupId;
     }
