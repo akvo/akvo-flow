@@ -24,7 +24,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONObject;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
@@ -205,7 +204,6 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
 
         ObjectMapper jsonMapper = new ObjectMapper();
         jsonMapper.writeValue(getResponse().getWriter(), slResp);
-
         getResponse().getWriter().println();
     }
 }
