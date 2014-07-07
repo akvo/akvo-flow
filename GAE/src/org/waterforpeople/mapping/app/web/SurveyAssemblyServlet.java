@@ -180,7 +180,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * uploads full survey XML to S3
-     * 
+     *
      * @param surveyId
      */
     private void uploadSurvey(Long surveyId, Long transactionId) {
@@ -215,7 +215,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         if (uploadedFile && uploadedZip) {
             // increment the version so devices know to pick up the changes
             SurveyDAO surveyDao = new SurveyDAO();
-            surveyDao.incrementVersion(surveyId);
 
             String messageText = "Published.  Please check: "
                     + props.getProperty(SURVEY_UPLOAD_URL)
@@ -244,7 +243,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * deletes fragments for the survey
-     * 
+     *
      * @param surveyId
      */
     private void cleanupFragments(Long surveyId, Long transactionId) {
@@ -276,7 +275,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         if (s != null && s.getDefaultLanguageCode() != null) {
             lang = s.getDefaultLanguageCode();
         }
-        final String version = s.getVersion() == null ? "" : "version='"
+        final String versionAttribute = s.getVersion() == null ? "" : "version='"
                 + s.getVersion() + "'";
         String surveyGroupId = "";
         String surveyGroupName = "";
@@ -288,7 +287,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         String sourceSurveyIdAttr = sourceSurveyId != null ? " sourceSurveyId=\"" + sourceSurveyId
                 + "\"" : "";
         String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey"
-                + " defaultLanguageCode=\"" + lang + "\" " + version
+                + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute
                 + " " + surveyGroupId + " " + surveyGroupName + sourceSurveyIdAttr + ">";
         String surveyFooter = "</survey>";
         QuestionGroupDao qgDao = new QuestionGroupDao();
@@ -316,7 +315,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             if (uc.getUploadedFile() && uc.getUploadedZip()) {
                 // increment the version so devices know to pick up the changes
                 log.warn("Finishing assembly of " + surveyId);
-                surveyDao.incrementVersion(surveyId);
                 s.setStatus(Survey.Status.PUBLISHED);
                 surveyDao.save(s);
                 String messageText = "Published.  Please check: " + uc.getUrl();
@@ -413,7 +411,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * sends a message to the task queue for survey assembly
-     * 
+     *
      * @param action
      * @param surveyId
      * @param questionGroups
