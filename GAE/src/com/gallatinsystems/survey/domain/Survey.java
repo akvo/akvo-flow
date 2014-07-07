@@ -140,7 +140,7 @@ public class Survey extends BaseDomain {
         if(version == null) {
             // existing survey without version number is a
             // newly created one so return 1.0
-            version = Double.valueOf("1.0");
+            version = 1.0d;
         }
         return version;
     }
