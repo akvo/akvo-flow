@@ -37,6 +37,9 @@ import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.TranslationDao;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.survey.domain.Survey;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -70,15 +73,24 @@ public class SurveyTaskServlet extends AbstractRestApiServlet {
         log.log(Level.INFO, "action: " + stReq.getAction() + " id: " + id);
         if (stReq.getAction().equals(SurveyTaskRequest.DELETE_SURVEY_ACTION)) {
             SurveyDAO surveyDao = new SurveyDAO();
-            surveyDao.delete(surveyDao.getByKey(id));
+            Survey s = surveyDao.getByKey(id);
+            if(s != null) {
+                surveyDao.delete(s);
+            }
         } else if (stReq.getAction().equals(
                 SurveyTaskRequest.DELETE_QUESTION_GROUP_ACTION)) {
             QuestionGroupDao qgDao = new QuestionGroupDao();
-            qgDao.delete(qgDao.getByKey(id));
+            QuestionGroup qg = qgDao.getByKey(id);
+            if(qg != null) {
+                qgDao.delete(qg);
+            }
         } else if (stReq.getAction().equals(
                 SurveyTaskRequest.DELETE_QUESTION_ACTION)) {
             QuestionDao qDao = new QuestionDao();
-            qDao.delete(qDao.getByKey(id));
+            Question q = qDao.getByKey(id);
+            if( q != null) {
+                qDao.delete(q);
+            }
         } else if (stReq.getAction().equals(
                 SurveyTaskRequest.DELETE_QUESTION_OPTION_ACTION)) {
             QuestionOptionDao qoDao = new QuestionOptionDao();
