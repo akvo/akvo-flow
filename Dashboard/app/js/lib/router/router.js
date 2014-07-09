@@ -109,7 +109,8 @@ FLOW.Router = Ember.Router.extend({
             "defaultLanguageCode": "en",
             "requireApproval": false,
             "status": "NOT_PUBLISHED",
-            "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId')
+            "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
+            "version":"1.0"
           });
 
           FLOW.selectedControl.set('selectedSurvey', newSurvey);
@@ -202,10 +203,11 @@ FLOW.Router = Ember.Router.extend({
         route: '/current-devices',
         connectOutlets: function (router, context) {
           router.get('navDevicesController').connectOutlet('currentDevices');
+          router.resetState();
           FLOW.deviceGroupControl.populate();
           FLOW.deviceControl.populate();
           FLOW.surveyAssignmentControl.populate();
-          router.resetState();
+          FLOW.surveyGroupControl.populate();
           router.set('devicesSubnavController.selected', 'currentDevices');
         }
       }),

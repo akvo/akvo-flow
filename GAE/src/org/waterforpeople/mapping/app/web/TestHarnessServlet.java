@@ -155,7 +155,7 @@ public class TestHarnessServlet extends HttpServlet {
 
                 deleteSurveyResponses(
                         Long.parseLong(req.getParameter("surveyId")),
-                        Integer.parseInt(req.getParameter("count")));
+                        req.getParameter("count") != null ? Integer.parseInt(req.getParameter("count")) : null);
             }
         } else if ("changeLocaleType".equals(action)) {
             String surveyId = req
