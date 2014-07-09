@@ -5,7 +5,6 @@
 // Generated on: 2010.08.05 at 05:55:36 PM MDT 
 //
 
-
 package com.gallatinsystems.survey.domain.xml;
 
 import java.util.ArrayList;
@@ -20,11 +19,11 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 /**
- * <p>Java class for anonymous complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -39,13 +38,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "heading",
-    "question"
+        "heading",
+        "question"
 })
 @XmlRootElement(name = "questionGroup")
 public class QuestionGroup {
@@ -62,26 +59,20 @@ public class QuestionGroup {
     /**
      * Gets the value of the heading property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Heading }
-     *     
+     * @return possible object is {@link Heading }
      */
     public Heading getHeading() {
         return heading;
     }
 
     public void setQuestion(List<Question> question) {
-		this.question = question;
-	}
+        this.question = question;
+    }
 
-	/**
+    /**
      * Sets the value of the heading property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Heading }
-     *     
+     * @param value allowed object is {@link Heading }
      */
     public void setHeading(Heading value) {
         this.heading = value;
@@ -89,25 +80,18 @@ public class QuestionGroup {
 
     /**
      * Gets the value of the question property.
-     * 
      * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the question property.
-     * 
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+     * modification you make to the returned list will be present inside the JAXB object. This is
+     * why there is not a <CODE>set</CODE> method for the question property.
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getQuestion().add(newItem);
+     * getQuestion().add(newItem);
      * </pre>
-     * 
-     * 
      * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Question }
-     * 
-     * 
+     * Objects of the following type(s) are allowed in the list {@link Question }
      */
     public List<Question> getQuestion() {
         if (question == null) {
@@ -119,10 +103,7 @@ public class QuestionGroup {
     /**
      * Gets the value of the order property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
      */
     public String getOrder() {
         return order;
@@ -131,10 +112,7 @@ public class QuestionGroup {
     /**
      * Sets the value of the order property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
      */
     public void setOrder(String value) {
         this.order = value;

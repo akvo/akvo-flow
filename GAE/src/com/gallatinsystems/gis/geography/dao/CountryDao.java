@@ -28,59 +28,58 @@ import com.gallatinsystems.gis.geography.domain.Country;
  * dao for saving/finding countries
  * 
  * @author Christopher Fagiani
- * 
  */
 public class CountryDao extends BaseDAO<Country> {
 
-	public CountryDao() {
-		super(Country.class);
-	}
+    public CountryDao() {
+        super(Country.class);
+    }
 
-	/**
-	 * returns a sorted list of countries
-	 * 
-	 * @param orderByCol
-	 * @param direction
-	 * @param cursorString
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Country> list(String orderByCol, String direction,
-			String cursorString) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(Country.class);
-		query.setOrdering(orderByCol + " " + direction);
-		prepareCursor(cursorString, query);
+    /**
+     * returns a sorted list of countries
+     * 
+     * @param orderByCol
+     * @param direction
+     * @param cursorString
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<Country> list(String orderByCol, String direction,
+            String cursorString) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(Country.class);
+        query.setOrdering(orderByCol + " " + direction);
+        prepareCursor(cursorString, query);
 
-		List<Country> results = (List<Country>) query.execute();
+        List<Country> results = (List<Country>) query.execute();
 
-		return results;
+        return results;
 
-	}
+    }
 
-	/**
-	 * finds a single country by its code (either 2 letter or 3 letter)
-	 * 
-	 * @param code
-	 * @return
-	 */
-	public Country findByCode(String code) {
-		String propertyName = null;
-		String propertyType = null;
-		// Todo create a scanner and test for number
+    /**
+     * finds a single country by its code (either 2 letter or 3 letter)
+     * 
+     * @param code
+     * @return
+     */
+    public Country findByCode(String code) {
+        String propertyName = null;
+        String propertyType = null;
+        // Todo create a scanner and test for number
 
-		if (code.trim().length() == 2) {
-			propertyName = "isoAlpha2Code";
-			propertyType = "String";
-		} else if (code.trim().length() == 3) {
-			propertyName = "isoAlpha3Code";
-			propertyType = "String";
-		}
-		Country country = super
-				.findByProperty(propertyName, code, propertyType);
-		if (country != null)
-			return country;
-		else
-			return null;
-	}
+        if (code.trim().length() == 2) {
+            propertyName = "isoAlpha2Code";
+            propertyType = "String";
+        } else if (code.trim().length() == 3) {
+            propertyName = "isoAlpha3Code";
+            propertyType = "String";
+        }
+        Country country = super
+                .findByProperty(propertyName, code, propertyType);
+        if (country != null)
+            return country;
+        else
+            return null;
+    }
 }

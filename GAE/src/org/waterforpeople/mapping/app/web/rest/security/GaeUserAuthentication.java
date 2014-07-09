@@ -1,3 +1,4 @@
+
 package org.waterforpeople.mapping.app.web.rest.security;
 
 import java.util.Collection;
@@ -9,12 +10,12 @@ import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 
 /**
  * Authentication object representing a fully-authenticated user.
- *
+ * 
  * @author Luke Taylor
  */
 public class GaeUserAuthentication implements Authentication {
-	private static final long serialVersionUID = 7819156935996796844L;
-	private final GaeUser principal;
+    private static final long serialVersionUID = 7819156935996796844L;
+    private final GaeUser principal;
     private final Object details;
     private boolean authenticated;
 

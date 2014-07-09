@@ -27,72 +27,72 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class TechnologyType extends BaseDomain {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -8154443508946694329L;
+    private static final long serialVersionUID = -8154443508946694329L;
 
-	private String name = null;
-	private String code = null;
-	private String description = null;
-	private Date effectiveStartDate = null;
+    private String name = null;
+    private String code = null;
+    private String description = null;
+    private Date effectiveStartDate = null;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public Date getEffectiveStartDate() {
-		return effectiveStartDate;
-	}
+    public Date getEffectiveStartDate() {
+        return effectiveStartDate;
+    }
 
-	public void setEffectiveStartDate(Date effectiveStartDate) {
-		this.effectiveStartDate = effectiveStartDate;
-	}
+    public void setEffectiveStartDate(Date effectiveStartDate) {
+        this.effectiveStartDate = effectiveStartDate;
+    }
 
-	public Date getEffectiveEndDate() {
-		return effectiveEndDate;
-	}
+    public Date getEffectiveEndDate() {
+        return effectiveEndDate;
+    }
 
-	public void setEffectiveEndDate(Date effectiveEndDate) {
-		this.effectiveEndDate = effectiveEndDate;
-	}
+    public void setEffectiveEndDate(Date effectiveEndDate) {
+        this.effectiveEndDate = effectiveEndDate;
+    }
 
-	public ArrayList<String> getPhotoUrlList() {
-		return photoUrlList;
-	}
+    public ArrayList<String> getPhotoUrlList() {
+        return photoUrlList;
+    }
 
-	public void setPhotoUrlList(ArrayList<String> photoUrlList) {
-		this.photoUrlList = photoUrlList;
-	}
+    public void setPhotoUrlList(ArrayList<String> photoUrlList) {
+        this.photoUrlList = photoUrlList;
+    }
 
-	public void addPhotoUrl(String photoUrl) {
-		if (photoUrlList == null) {
-			photoUrlList = new ArrayList<String>();
-		}
-		photoUrlList.add(photoUrl);
-	}
+    public void addPhotoUrl(String photoUrl) {
+        if (photoUrlList == null) {
+            photoUrlList = new ArrayList<String>();
+        }
+        photoUrlList.add(photoUrl);
+    }
 
-	private Date effectiveEndDate = null;
-	private ArrayList<String> photoUrlList = null;
+    private Date effectiveEndDate = null;
+    private ArrayList<String> photoUrlList = null;
 
 }

@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
@@ -32,200 +33,254 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 @Controller
 @RequestMapping("/question_groups")
 public class QuestionGroupRestService {
 
-	@Inject
-	private QuestionGroupDao questionGroupDao;
-	
-	@Inject
-	private QuestionDao questionDao;
+    @Inject
+    private QuestionGroupDao questionGroupDao;
 
-	// TODO put in meta information?
-	// list all questionGroups
-	@RequestMapping(method = RequestMethod.GET, value = "/all")
-	@ResponseBody
-	public Map<String, List<QuestionGroupDto>> listQuestionGroups() {
-		final Map<String, List<QuestionGroupDto>> response = new HashMap<String, List<QuestionGroupDto>>();
-		List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
-		List<QuestionGroup> questionGroups = questionGroupDao
-				.list(Constants.ALL_RESULTS);
-		if (questionGroups != null) {
-			for (QuestionGroup s : questionGroups) {
-				QuestionGroupDto dto = new QuestionGroupDto();
-				DtoMarshaller.copyToDto(s, dto);
+    @Inject
+    private QuestionDao questionDao;
 
-				// needed because of different names for description in
-				// questionGroup
-				// and questionGroupDto
-				dto.setDescription(s.getDesc());
-				results.add(dto);
-			}
-		}
-		response.put("question_groups", results);
-		return response;
-	}
+    @Inject
+    private SurveyDAO surveyDao;
 
-	// TODO put in meta information?
-	// list questionGroups by survey id
-	@RequestMapping(method = RequestMethod.GET, value = "")
-	@ResponseBody
-	public Map<String, List<QuestionGroupDto>> listQuestionGroupBySurvey(
-			@RequestParam("surveyId") Long surveyId) {
-		final Map<String, List<QuestionGroupDto>> response = new HashMap<String, List<QuestionGroupDto>>();
-		List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
-		List<QuestionGroup> questionGroups = questionGroupDao
-				.listQuestionGroupBySurvey(surveyId);
-		if (questionGroups != null) {
-			for (QuestionGroup s : questionGroups) {
-				QuestionGroupDto dto = new QuestionGroupDto();
-				DtoMarshaller.copyToDto(s, dto);
+    @Inject
+    private SurveyalValueDao svDao;
 
-				// needed because of different names for description in
-				// questionGroup
-				// and questionGroupDto
-				dto.setDescription(s.getDesc());
-				results.add(dto);
-			}
-		}
-		response.put("question_groups", results);
-		return response;
-	}
+    @Inject
+    private QuestionAnswerStoreDao qasDao;
 
-	// find a single questionGroup by the questionGroupId
-	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
-	@ResponseBody
-	public Map<String, QuestionGroupDto> findQuestionGroup(
-			@PathVariable("id") Long id) {
-		final Map<String, QuestionGroupDto> response = new HashMap<String, QuestionGroupDto>();
-		QuestionGroup s = questionGroupDao.getByKey(id);
-		QuestionGroupDto dto = null;
-		if (s != null) {
-			dto = new QuestionGroupDto();
-			DtoMarshaller.copyToDto(s, dto);
-			// needed because of different names for description in
-			// questionGroup and questionGroupDto
-			dto.setDescription(s.getDesc());
-		}
-		response.put("question_group", dto);
-		return response;
+    // TODO put in meta information?
+    // list all questionGroups
+    @RequestMapping(method = RequestMethod.GET, value = "/all")
+    @ResponseBody
+    public Map<String, List<QuestionGroupDto>> listQuestionGroups() {
+        final Map<String, List<QuestionGroupDto>> response = new HashMap<String, List<QuestionGroupDto>>();
+        List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
+        List<QuestionGroup> questionGroups = questionGroupDao
+                .list(Constants.ALL_RESULTS);
+        if (questionGroups != null) {
+            for (QuestionGroup s : questionGroups) {
+                QuestionGroupDto dto = new QuestionGroupDto();
+                DtoMarshaller.copyToDto(s, dto);
 
-	}
+                // needed because of different names for description in
+                // questionGroup
+                // and questionGroupDto
+                dto.setDescription(s.getDesc());
+                results.add(dto);
+            }
+        }
+        response.put("question_groups", results);
+        return response;
+    }
 
-	// delete questionGroup by id
-	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-	@ResponseBody
-	public Map<String, RestStatusDto> deleteQuestionGroupById(
-			@PathVariable("id") Long questionGroupId) {
-		final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-		QuestionGroup s = questionGroupDao.getByKey(questionGroupId);
-		RestStatusDto statusDto = null;
-		statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
+    /** list questionGroups by survey id
+     *  Perform preflight check for deletion of question group
+     *
+     * @param surveyId
+     * @param preflight
+     * @param questionGroupId
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "")
+    @ResponseBody
+    public Map<String, Object> listQuestionGroupBySurvey(
+            @RequestParam(value = "surveyId", defaultValue = "")
+            Long surveyId,
+            @RequestParam(value = "preflight", defaultValue = "")
+            String preflight,
+            @RequestParam(value = "questionGroupId", defaultValue = "")
+            Long questionGroupId) {
+        final Map<String, Object> response = new HashMap<String, Object>();
 
-		// check if questionGroup exists in the datastore
-		if (s != null) {
-			// check if questions are in this group
-			List<Question> questions = questionDao
-					.listQuestionsInOrderForGroup(questionGroupId);
-			if (questions.size() > 0 ) {
-				statusDto.setStatus("failed");
-				statusDto.setMessage("Cannot delete question group "
-						+ "because there are questions inside. "
-						+ "Please remove the questions first.");
-			} else {
-				// delete questionGroup
-				questionGroupDao.delete(s);		
-				statusDto.setStatus("ok");
-			}
-		}
-		response.put("meta", statusDto);
-		return response;
-	}
+        final RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("");
+        statusDto.setMessage("");
 
-	// update existing questionGroup
-	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-	@ResponseBody
-	public Map<String, Object> saveExistingQuestionGroup(
-			@RequestBody QuestionGroupPayload payLoad) {
-		final QuestionGroupDto questionGroupDto = payLoad.getQuestion_group();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		QuestionGroupDto dto = null;
+        if (preflight != null && preflight.equals("delete") && questionGroupId != null) {
+            statusDto.setStatus("preflight-delete-questiongroup");
+            statusDto.setMessage("can_delete");
+            statusDto.setKeyId(questionGroupId);
 
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
-		statusDto.setMessage("Cannot find question group");
+            for(Question q : questionDao.listQuestionsByQuestionGroup(questionGroupId, Boolean.FALSE).values()) {
+                if (qasDao.listByQuestion(q.getKey().getId()).size() > 0
+                        && svDao.listByQuestion(q.getKey().getId()).size() > 0) {
+                    statusDto.setMessage("cannot_delete");
+                    statusDto.setKeyId(null);
+                }
+            }
+        }
 
-		// if the POST data contains a valid questionGroupDto, continue.
-		// Otherwise,
-		// server will respond with 400 Bad Request
-		if (questionGroupDto != null) {
-			Long keyId = questionGroupDto.getKeyId();
-			QuestionGroup qg;
+        final List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
+        if(surveyId != null) {
+            final List<QuestionGroup> questionGroups = questionGroupDao
+                    .listQuestionGroupBySurvey(surveyId);
+            if (questionGroups != null) {
+                for (QuestionGroup s : questionGroups) {
+                    QuestionGroupDto dto = new QuestionGroupDto();
+                    DtoMarshaller.copyToDto(s, dto);
 
-			// if the questionGroupDto has a key, try to get the questionGroup.
-			if (keyId != null) {
-				qg = questionGroupDao.getByKey(keyId);
-				// if we find the questionGroup, update it's properties
-				if (qg != null) {
-					//Integer origOrder = qg.getOrder();
-					BeanUtils.copyProperties(questionGroupDto, qg,
-							new String[] { "createdDateTime"});
-					qg = questionGroupDao.save(qg);
+                    // needed because of different names for description in
+                    // questionGroup
+                    // and questionGroupDto
+                    dto.setDescription(s.getDesc());
+                    results.add(dto);
+                }
+            }
+        }
+        response.put("question_groups", results);
+        response.put("meta", statusDto);
+        return response;
+    }
 
-					dto = new QuestionGroupDto();
-					DtoMarshaller.copyToDto(qg, dto);
-					statusDto.setStatus("ok");
-					statusDto.setMessage("");
-				}
-			}
-		}
-		response.put("meta", statusDto);
-		response.put("question_group", dto);
-		return response;
-	}
+    // find a single questionGroup by the questionGroupId
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    @ResponseBody
+    public Map<String, QuestionGroupDto> findQuestionGroup(
+            @PathVariable("id")
+            Long id) {
+        final Map<String, QuestionGroupDto> response = new HashMap<String, QuestionGroupDto>();
+        QuestionGroup s = questionGroupDao.getByKey(id);
+        QuestionGroupDto dto = null;
+        if (s != null) {
+            dto = new QuestionGroupDto();
+            DtoMarshaller.copyToDto(s, dto);
+            // needed because of different names for description in
+            // questionGroup and questionGroupDto
+            dto.setDescription(s.getDesc());
+        }
+        response.put("question_group", dto);
+        return response;
 
-	// create new questionGroup
-	@RequestMapping(method = RequestMethod.POST, value = "")
-	@ResponseBody
-	public Map<String, Object> saveNewQuestionGroup(
-			@RequestBody QuestionGroupPayload payLoad) {
-		final QuestionGroupDto questionGroupDto = payLoad.getQuestion_group();
-		final Map<String, Object> response = new HashMap<String, Object>();
-		QuestionGroupDto dto = null;
+    }
 
-		RestStatusDto statusDto = new RestStatusDto();
-		statusDto.setStatus("failed");
-		statusDto.setMessage("Cannot create question group");
+    // delete questionGroup by id
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ResponseBody
+    public Map<String, RestStatusDto> deleteQuestionGroupById(
+            @PathVariable("id")
+            Long questionGroupId) {
+        final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+        QuestionGroup group = questionGroupDao.getByKey(questionGroupId);
+        RestStatusDto statusDto = null;
+        statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
 
-		// if the POST data contains a valid questionGroupDto, continue.
-		// Otherwise, server will respond with 400 Bad Request
-		if (questionGroupDto != null) {
-			QuestionGroup s = new QuestionGroup();
+        // check if questionGroup exists in the datastore
+        if (group != null) {
+            try {
+                TaskOptions deleteQuestionGroupTask = TaskOptions.Builder.withUrl("/app_worker/surveytask")
+                        .param(SurveyTaskRequest.ACTION_PARAM, SurveyTaskRequest.DELETE_QUESTION_GROUP_ACTION)
+                        .param(SurveyTaskRequest.ID_PARAM, Long.toString(group.getKey().getId()));
+                QueueFactory.getQueue("deletequeue").add(deleteQuestionGroupTask);
+                statusDto.setStatus("ok");
+                statusDto.setMessage("deleted");
+            } catch(Exception e) {
+                statusDto.setStatus("failed");
+                statusDto.setMessage(e.getMessage());
+            }
+        }
 
-			// copy the properties, except the createdDateTime property, because
-			// it is set in the Dao.
-			BeanUtils.copyProperties(questionGroupDto, s, new String[] {
-					"createdDateTime" });
-			s = questionGroupDao.save(s);
-			dto = new QuestionGroupDto();
-			DtoMarshaller.copyToDto(s, dto);
-			statusDto.setStatus("ok");
-			statusDto.setMessage("");
-		}
+        response.put("meta", statusDto);
+        return response;
+    }
 
-		response.put("meta", statusDto);
-		response.put("question_group", dto);
-		return response;
-	}
+    // update existing questionGroup
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    @ResponseBody
+    public Map<String, Object> saveExistingQuestionGroup(
+            @RequestBody
+            QuestionGroupPayload payLoad) {
+        final QuestionGroupDto questionGroupDto = payLoad.getQuestion_group();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        QuestionGroupDto dto = null;
+
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+        statusDto.setMessage("Cannot find question group");
+
+        // if the POST data contains a valid questionGroupDto, continue.
+        // Otherwise,
+        // server will respond with 400 Bad Request
+        if (questionGroupDto != null) {
+            Long keyId = questionGroupDto.getKeyId();
+            QuestionGroup qg;
+
+            // if the questionGroupDto has a key, try to get the questionGroup.
+            if (keyId != null) {
+                qg = questionGroupDao.getByKey(keyId);
+                // if we find the questionGroup, update it's properties
+                if (qg != null) {
+                    // Integer origOrder = qg.getOrder();
+                    BeanUtils.copyProperties(questionGroupDto, qg,
+                            new String[] {
+                                "createdDateTime"
+                            });
+                    qg = questionGroupDao.save(qg);
+
+                    dto = new QuestionGroupDto();
+                    DtoMarshaller.copyToDto(qg, dto);
+                    statusDto.setStatus("ok");
+                    statusDto.setMessage("");
+                }
+            }
+        }
+        response.put("meta", statusDto);
+        response.put("question_group", dto);
+        return response;
+    }
+
+    // create new questionGroup
+    @RequestMapping(method = RequestMethod.POST, value = "")
+    @ResponseBody
+    public Map<String, Object> saveNewQuestionGroup(
+            @RequestBody
+            QuestionGroupPayload payLoad) {
+        final QuestionGroupDto questionGroupDto = payLoad.getQuestion_group();
+        final Map<String, Object> response = new HashMap<String, Object>();
+        QuestionGroupDto dto = null;
+
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+        statusDto.setMessage("Cannot create question group");
+
+        // if the POST data contains a valid questionGroupDto, continue.
+        // Otherwise, server will respond with 400 Bad Request
+        if (questionGroupDto != null) {
+            QuestionGroup s = new QuestionGroup();
+
+            // copy the properties, except the createdDateTime property, because
+            // it is set in the Dao.
+            BeanUtils.copyProperties(questionGroupDto, s, new String[] {
+                    "createdDateTime"
+                });
+            s = questionGroupDao.save(s);
+            dto = new QuestionGroupDto();
+            DtoMarshaller.copyToDto(s, dto);
+            statusDto.setStatus("ok");
+            statusDto.setMessage("");
+        }
+
+        response.put("meta", statusDto);
+        response.put("question_group", dto);
+        return response;
+    }
 }

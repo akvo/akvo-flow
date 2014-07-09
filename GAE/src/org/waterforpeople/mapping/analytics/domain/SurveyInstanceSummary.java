@@ -27,62 +27,60 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  * data structure for country/community/day roll-ups of survey instances
  * 
  * @author Christopher Fagiani
- * 
  */
 @PersistenceCapable
 public class SurveyInstanceSummary extends BaseDomain {
-	private static final long serialVersionUID = -1512678535036285469L;
+    private static final long serialVersionUID = -1512678535036285469L;
 
-	@Persistent
-	private Date collectionDate;
-	@Persistent
-	private Long surveyId;
-	@Persistent
-	private String countryCode;
-	@Persistent
-	private String communityCode;
-	@Persistent
-	private Long count;
+    @Persistent
+    private Date collectionDate;
+    @Persistent
+    private Long surveyId;
+    @Persistent
+    private String countryCode;
+    @Persistent
+    private String communityCode;
+    @Persistent
+    private Long count;
 
-	public String getCountryCode() {
-		return countryCode;
-	}
+    public String getCountryCode() {
+        return countryCode;
+    }
 
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
-	}
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
 
-	public String getCommunityCode() {
-		return communityCode;
-	}
+    public String getCommunityCode() {
+        return communityCode;
+    }
 
-	public void setCommunityCode(String communityCode) {
-		this.communityCode = communityCode;
-	}
+    public void setCommunityCode(String communityCode) {
+        this.communityCode = communityCode;
+    }
 
-	public Long getCount() {
-		return count;
-	}
+    public Long getCount() {
+        return count;
+    }
 
-	public void setCount(Long count) {
-		this.count = count;
-	}
+    public void setCount(Long count) {
+        this.count = count;
+    }
 
-	public Long getSurveyId() {
-		return surveyId;
-	}
+    public Long getSurveyId() {
+        return surveyId;
+    }
 
-	public void setSurveyId(Long surveyId) {
-		this.surveyId = surveyId;
-	}
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
+    }
 
-	
-	public Date getCollectionDate() {
-		return collectionDate;
-	}
+    public Date getCollectionDate() {
+        return collectionDate;
+    }
 
-	public void setCollectionDate(Date collectionDate) {
-		this.collectionDate = collectionDate;
-	}
+    public void setCollectionDate(Date collectionDate) {
+        this.collectionDate = collectionDate;
+    }
 
 }

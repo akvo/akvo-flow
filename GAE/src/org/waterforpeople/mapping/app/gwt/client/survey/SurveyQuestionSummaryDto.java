@@ -15,45 +15,44 @@
  */
 
 package org.waterforpeople.mapping.app.gwt.client.survey;
+
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
  * Dto structure for roll-up of survey question responses
  * 
  * @author Mark Westra
- * 
  */
 public class SurveyQuestionSummaryDto extends BaseDto {
 
-	private static final long serialVersionUID = -8084700199272031995L;
+    private static final long serialVersionUID = -8084700199272031995L;
 
+    private String questionId;
+    private String response;
+    private Long count;
 
-	private String questionId;
-	private String response;
-	private Long count;
+    public String getQuestionId() {
+        return questionId;
+    }
 
-	public String getQuestionId() {
-		return questionId;
-	}
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
+    }
 
-	public void setQuestionId(String questionId) {
-		this.questionId = questionId;
-	}
+    public String getResponse() {
+        return response;
+    }
 
-	public String getResponse() {
-		return response;
-	}
+    public void setResponse(String response) {
+        this.response = response;
+    }
 
-	public void setResponse(String response) {
-		this.response = response;
-	}
+    public Long getCount() {
+        return count;
+    }
 
-	public Long getCount() {
-		return count;
-	}
-
-	public void setCount(Long count) {
-		this.count = count;
-	}
+    public void setCount(Long count) {
+        this.count = count;
+    }
 
 }

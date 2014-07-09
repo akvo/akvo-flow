@@ -5,7 +5,6 @@
 // Generated on: 2010.08.05 at 05:55:36 PM MDT 
 //
 
-
 package com.gallatinsystems.survey.domain.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,11 +16,11 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 /**
- * <p>Java class for anonymous complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -37,8 +36,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
@@ -73,10 +70,7 @@ public class ValidationRule {
     /**
      * Gets the value of the minVal property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
      */
     public String getMinVal() {
         return minVal;
@@ -85,10 +79,7 @@ public class ValidationRule {
     /**
      * Sets the value of the minVal property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
      */
     public void setMinVal(String value) {
         this.minVal = value;
@@ -97,10 +88,7 @@ public class ValidationRule {
     /**
      * Gets the value of the allowDecimal property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
      */
     public String getAllowDecimal() {
         return allowDecimal;
@@ -109,10 +97,7 @@ public class ValidationRule {
     /**
      * Sets the value of the allowDecimal property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
      */
     public void setAllowDecimal(String value) {
         this.allowDecimal = value;
@@ -121,10 +106,7 @@ public class ValidationRule {
     /**
      * Gets the value of the validationType property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
      */
     public String getValidationType() {
         return validationType;
@@ -133,10 +115,7 @@ public class ValidationRule {
     /**
      * Sets the value of the validationType property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
      */
     public void setValidationType(String value) {
         this.validationType = value;
@@ -145,10 +124,7 @@ public class ValidationRule {
     /**
      * Gets the value of the signed property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
      */
     public String getSigned() {
         return signed;
@@ -157,10 +133,7 @@ public class ValidationRule {
     /**
      * Sets the value of the signed property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
      */
     public void setSigned(String value) {
         this.signed = value;
@@ -169,10 +142,7 @@ public class ValidationRule {
     /**
      * Gets the value of the maxLength property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
      */
     public String getMaxLength() {
         return maxLength;
@@ -181,10 +151,7 @@ public class ValidationRule {
     /**
      * Sets the value of the maxLength property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
      */
     public void setMaxLength(String value) {
         this.maxLength = value;
@@ -193,10 +160,7 @@ public class ValidationRule {
     /**
      * Gets the value of the maxVal property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
      */
     public String getMaxVal() {
         return maxVal;
@@ -205,10 +169,7 @@ public class ValidationRule {
     /**
      * Sets the value of the maxVal property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
      */
     public void setMaxVal(String value) {
         this.maxVal = value;

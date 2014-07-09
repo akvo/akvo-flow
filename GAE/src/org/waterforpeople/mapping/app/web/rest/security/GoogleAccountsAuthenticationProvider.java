@@ -1,3 +1,4 @@
+
 package org.waterforpeople.mapping.app.web.rest.security;
 
 import java.util.EnumSet;
@@ -22,25 +23,29 @@ import com.gallatinsystems.user.dao.UserDao;
 import com.google.appengine.api.users.User;
 
 /**
- * A simple authentication provider which interacts with {@code User} returned by the GAE {@code UserService},
- * and also the local persistent {@code UserRegistry} to build an application user principal.
+ * A simple authentication provider which interacts with {@code User} returned by the GAE
+ * {@code UserService}, and also the local persistent {@code UserRegistry} to build an application
+ * user principal.
  * <p>
- * If the user has been authenticated through google accounts, it will check if they are already registered
- * and either load the existing user information or assign them a temporary identity with limited access until they
- * have registered.
+ * If the user has been authenticated through google accounts, it will check if they are already
+ * registered and either load the existing user information or assign them a temporary identity with
+ * limited access until they have registered.
  * <p>
  * If the account has been disabled, a {@code DisabledException} will be raised.
- *
+ * 
  * @author Luke Taylor
  */
-public class GoogleAccountsAuthenticationProvider implements AuthenticationProvider, MessageSourceAware {
+public class GoogleAccountsAuthenticationProvider implements AuthenticationProvider,
+        MessageSourceAware {
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
-    private static final Logger log = Logger.getLogger(GoogleAccountsAuthenticationProvider.class.getName());
+    private static final Logger log = Logger.getLogger(GoogleAccountsAuthenticationProvider.class
+            .getName());
 
     @Inject
     UserDao userDao;
 
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException {
         User googleUser = (User) authentication.getPrincipal();
 
         GaeUser user = findUser(googleUser.getEmail());
@@ -58,7 +63,8 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     }
 
     private GaeUser findUser(String email) {
-        final com.gallatinsystems.user.domain.User user = userDao.findUserByEmail(email.toLowerCase());
+        final com.gallatinsystems.user.domain.User user = userDao.findUserByEmail(email
+                .toLowerCase());
 
         if (user == null) {
             return null;
@@ -81,14 +87,14 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     }
 
     private int getAuthorityLevel(com.gallatinsystems.user.domain.User user) {
-        if(user.isSuperAdmin() != null && user.isSuperAdmin()) {
+        if (user.isSuperAdmin() != null && user.isSuperAdmin()) {
             return AppRole.SUPER_ADMIN.getLevel();
         }
         try {
             final int level = Integer.parseInt(user.getPermissionList());
             return level;
         } catch (Exception e) {
-           log.log(Level.WARNING, "Error getting role level, setting USER role", e);
+            log.log(Level.WARNING, "Error getting role level, setting USER role", e);
         }
         return AppRole.USER.getLevel();
     }
@@ -99,7 +105,6 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     public final boolean supports(Class<?> authentication) {
         return PreAuthenticatedAuthenticationToken.class.isAssignableFrom(authentication);
     }
-
 
     public void setMessageSource(MessageSource messageSource) {
         this.messages = new MessageSourceAccessor(messageSource);

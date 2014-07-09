@@ -25,175 +25,186 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * 
- * Survey are a collection of questionGroups (that, in turn, have collections of
- * questions). A survey belongs to exactly 1 survey group. Surveys can have a
- * default language that indicates what language is considered primary.
- * 
+ * Survey are a collection of questionGroups (that, in turn, have collections of questions). A
+ * survey belongs to exactly 1 survey group. Surveys can have a default language that indicates what
+ * language is considered primary.
  */
 @PersistenceCapable
 public class Survey extends BaseDomain {
 
-	private static final long serialVersionUID = -8638039212962768687L;
-	@NotPersistent
-	private HashMap<String, Translation> translationMap;
-	private String code = null;
-	private String name = null;
-	private String desc = null;
-	private Status status = null;
-	private Sector sector = null;
-	@NotPersistent
-	private TreeMap<Integer, QuestionGroup> questionGroupMap = null;
-	private Double version = null;
-	@NotPersistent
-	private Long instanceCount;
-	private String path = null;
-	private Long surveyGroupId;
-	private String pointType;
-	private String defaultLanguageCode;
-	private Boolean requireApproval;
+    private static final long serialVersionUID = -8638039212962768687L;
+    @NotPersistent
+    private HashMap<String, Translation> translationMap;
+    private String code = null;
+    private String name = null;
+    private String desc = null;
+    private Status status = null;
+    private Sector sector = null;
+    @NotPersistent
+    private TreeMap<Integer, QuestionGroup> questionGroupMap = null;
+    private Double version = null;
+    @NotPersistent
+    private Long instanceCount;
+    private String path = null;
+    private Long surveyGroupId;
+    private String pointType;
+    private String defaultLanguageCode;
+    private Boolean requireApproval;
 
-	public enum Status {
-		PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED, COPYING
-	};
-	
-	public enum Sector {
-		WASH, EDUC, ECONDEV, HEALTH, ICT, FOODSEC, OTHER
-	};
+    public enum Status {
+        PUBLISHED, NOT_PUBLISHED, IMPORTED, VERIFIED, COPYING
+    };
 
-	public Survey() {
-		questionGroupMap = new TreeMap<Integer, QuestionGroup>();
-		requireApproval = false;
-	}
+    public enum Sector {
+        WASH, EDUC, ECONDEV, HEALTH, ICT, FOODSEC, OTHER
+    };
 
-	public Long getSurveyGroupId() {
-		return surveyGroupId;
-	}
+    public Survey() {
+        questionGroupMap = new TreeMap<Integer, QuestionGroup>();
+        requireApproval = false;
+    }
 
-	public void setSurveyGroupId(Long surveyGroupId) {
-		this.surveyGroupId = surveyGroupId;
-	}
+    public void incrementVersion() {
+        if(version == null) {
+            getVersion();
+        } else {
+            version++;
+        }
+    }
 
-	public void setInstanceCount(Long instanceCount) {
-		this.instanceCount = instanceCount;
-	}
+    public Long getSurveyGroupId() {
+        return surveyGroupId;
+    }
 
-	public Long getInstanceCount() {
-		return instanceCount;
-	}
-	
-	public HashMap<String, Translation> getTranslationMap() {
-		return translationMap;
-	}
+    public void setSurveyGroupId(Long surveyGroupId) {
+        this.surveyGroupId = surveyGroupId;
+    }
 
-	public void setTranslationMap(HashMap<String, Translation> translationMap) {
-		this.translationMap = translationMap;
-	}
+    public void setInstanceCount(Long instanceCount) {
+        this.instanceCount = instanceCount;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getInstanceCount() {
+        return instanceCount;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public HashMap<String, Translation> getTranslationMap() {
+        return translationMap;
+    }
 
-	public String getDesc() {
-		return desc;
-	}
+    public void setTranslationMap(HashMap<String, Translation> translationMap) {
+        this.translationMap = translationMap;
+    }
 
-	public void setDesc(String desc) {
-		this.desc = desc;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public String getDesc() {
+        return desc;
+    }
 
-	public Status getStatus() {
-		return status;
-	}
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-	
-	public Sector getSector() {
-		return sector;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setSector(Sector sector) {
-		this.sector = sector;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public Double getVersion() {
-		return version;
-	}
+    public Status getStatus() {
+        return status;
+    }
 
-	public void setVersion(Double version) {
-		this.version = version;
-	}
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
-	public void setQuestionGroupMap(
-			TreeMap<Integer, QuestionGroup> questionGroupMap) {
-		this.questionGroupMap = questionGroupMap;
-	}
+    public Sector getSector() {
+        return sector;
+    }
 
-	public TreeMap<Integer, QuestionGroup> getQuestionGroupMap() {
-		return questionGroupMap;
-	}
+    public void setSector(Sector sector) {
+        this.sector = sector;
+    }
 
-	public void addQuestionGroup(Integer order, QuestionGroup questionGroup) {
+    public Double getVersion() {
+        if(version == null) {
+            // existing survey without version number is a
+            // newly created one so return 1.0
+            version = 1.0d;
+        }
+        return version;
+    }
 
-		questionGroupMap.put(order, questionGroup);
-	}
+    public void setVersion(Double version) {
+        this.version = version;
+    }
 
-	public void addQuestionGroup(QuestionGroup questionGroup) {
-		addQuestionGroup(
-				questionGroup.getOrder() != null ? questionGroup.getOrder()
-						: getQuestionGroupMap().size() + 1, questionGroup);
-	}
+    public void setQuestionGroupMap(
+            TreeMap<Integer, QuestionGroup> questionGroupMap) {
+        this.questionGroupMap = questionGroupMap;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public TreeMap<Integer, QuestionGroup> getQuestionGroupMap() {
+        return questionGroupMap;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public void addQuestionGroup(Integer order, QuestionGroup questionGroup) {
 
-	public void addTranslation(Translation t) {
-		if (translationMap == null) {
-			translationMap = new HashMap<String, Translation>();
-		}
-		translationMap.put(t.getLanguageCode(), t);
-	}
+        questionGroupMap.put(order, questionGroup);
+    }
 
-	public String getPointType() {
-		return pointType;
-	}
+    public void addQuestionGroup(QuestionGroup questionGroup) {
+        addQuestionGroup(
+                questionGroup.getOrder() != null ? questionGroup.getOrder()
+                        : getQuestionGroupMap().size() + 1, questionGroup);
+    }
 
-	public void setPointType(String pointType) {
-		this.pointType = pointType;
-	}
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	public void setDefaultLanguageCode(String defaultLanguageCode) {
-		this.defaultLanguageCode = defaultLanguageCode;
-	}
+    public String getPath() {
+        return path;
+    }
 
-	public String getDefaultLanguageCode() {
-		return defaultLanguageCode;
-	}
+    public void addTranslation(Translation t) {
+        if (translationMap == null) {
+            translationMap = new HashMap<String, Translation>();
+        }
+        translationMap.put(t.getLanguageCode(), t);
+    }
 
-	public void setRequireApproval(Boolean requireApproval) {
-		this.requireApproval = requireApproval;
-	}
+    public String getPointType() {
+        return pointType;
+    }
 
-	public Boolean getRequireApproval() {
-		return requireApproval;
-	}
+    public void setPointType(String pointType) {
+        this.pointType = pointType;
+    }
+
+    public void setDefaultLanguageCode(String defaultLanguageCode) {
+        this.defaultLanguageCode = defaultLanguageCode;
+    }
+
+    public String getDefaultLanguageCode() {
+        return defaultLanguageCode;
+    }
+
+    public void setRequireApproval(Boolean requireApproval) {
+        this.requireApproval = requireApproval;
+    }
+
+    public Boolean getRequireApproval() {
+        return requireApproval;
+    }
 }

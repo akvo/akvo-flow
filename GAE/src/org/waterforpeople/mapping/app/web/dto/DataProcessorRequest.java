@@ -25,163 +25,165 @@ import com.gallatinsystems.framework.rest.RestRequest;
  * Handles requests to the DataProcessing Rest Service
  * 
  * @author Christopher Fagiani
- * 
  */
 public class DataProcessorRequest extends RestRequest {
-	private static final long serialVersionUID = -4553663867954174523L;
-	public static final String PROJECT_FLAG_UPDATE_ACTION = "projectFlagUpdate";
-	public static final String REBUILD_QUESTION_SUMMARY_ACTION = "rebuildQuestionSummary";
-	public static final String IMPORT_REMOTE_SURVEY_ACTION = "importRemoteSurvey";
-	public static final String COPY_SURVEY = "copySurvey";
-	public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
-	public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
-	public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
-	public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
-	public static final String RECOMPUTE_LOCALE_CLUSTERS = "recomputeLocaleClusters";
-	public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
-	public static final String TRIM_OPTIONS = "trimOptions";
-	public static final String RESCORE_AP_ACTION = "rescoreAp";
-	public static final String SOURCE_PARAM = "source";
-	public static final String COUNTRY_PARAM = "country";
-	public static final String SURVEY_ID_PARAM = "surveyId";
-	public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
-	public static final String QAS_ID_PARAM = "qasId";
-	public static final String DELTA_PARAM = "delta";
-	public static final String API_KEY_PARAM = "apiKey";
-	public static final String OFFSET_PARAM = "offset";
-	public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
-	public static final String ADD_CREATION_SURVEY_ID_TO_LOCALE = "addCreationSurveyIdToLocale";
-	public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
-	public static final String RECREATE_LOCALES = "recreateLocales";
-	public static final String POP_QUESTION_ORDER_FIELDS_ACTION = "populateQuestionOrders";
+    private static final long serialVersionUID = -4553663867954174523L;
+    public static final String PROJECT_FLAG_UPDATE_ACTION = "projectFlagUpdate";
+    public static final String REBUILD_QUESTION_SUMMARY_ACTION = "rebuildQuestionSummary";
+    public static final String IMPORT_REMOTE_SURVEY_ACTION = "importRemoteSurvey";
+    public static final String COPY_SURVEY = "copySurvey";
+    public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
+    public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
+    public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
+    public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
+    public static final String RECOMPUTE_LOCALE_CLUSTERS = "recomputeLocaleClusters";
+    public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
+    public static final String TRIM_OPTIONS = "trimOptions";
+    public static final String RESCORE_AP_ACTION = "rescoreAp";
+    public static final String SOURCE_PARAM = "source";
+    public static final String COUNTRY_PARAM = "country";
+    public static final String SURVEY_ID_PARAM = "surveyId";
+    public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
+    public static final String QAS_ID_PARAM = "qasId";
+    public static final String DELTA_PARAM = "delta";
+    public static final String API_KEY_PARAM = "apiKey";
+    public static final String OFFSET_PARAM = "offset";
+    public static final String CHANGE_LOCALE_TYPE_ACTION = "changeLocaleType";
+    public static final String ADD_SURVEY_INSTANCE_TO_LOCALES_ACTION = "addSurveyInstanceToLocales";
+    public static final String ADD_CREATION_SURVEY_ID_TO_LOCALE = "addCreationSurveyIdToLocale";
+    public static final String ADD_TRANSLATION_FIELDS = "addTranslationFields";
+    public static final String RECREATE_LOCALES = "recreateLocales";
+    public static final String POP_QUESTION_ORDER_FIELDS_ACTION = "populateQuestionOrders";
+    public static final String POPULATE_MONITORING_FIELDS_LOCALE_ACTION = "populateMonitoringFieldsLocale";
+    public static final String CREATE_NEW_IDENTIFIERS_LOCALES_ACTION = "createNewIdentifiersLocales";
 
-	private String country;
-	private String source;
-	private Long surveyId;
-	private Long surveyInstanceId;
-	private Long qasId;
-	private Integer delta;
-	private String apiKey;
-	private Long offset = 0L;
+    private String country;
+    private String source;
+    private Long surveyId;
+    private Long surveyInstanceId;
+    private Long qasId;
+    private Integer delta;
+    private String apiKey;
+    private Long offset = 0L;
 
-	@Override
-	protected void populateFields(HttpServletRequest req) throws Exception {
-		country = req.getParameter(COUNTRY_PARAM);
-		source = req.getParameter(SOURCE_PARAM);
-		if (req.getParameter(SURVEY_ID_PARAM) != null) {
-			try {
-				surveyId = new Long(req.getParameter(SURVEY_ID_PARAM).trim());
-			} catch (Exception e) {
-				addError(new RestError(RestError.BAD_DATATYPE_CODE,
-						RestError.BAD_DATATYPE_MESSAGE, SURVEY_ID_PARAM
-								+ " must be an integer"));
-			}
-		}
-		if (req.getParameter(SURVEY_INSTANCE_PARAM) != null) {
-			try {
-				setSurveyInstanceId(new Long(req.getParameter(SURVEY_INSTANCE_PARAM).trim()));
-			} catch (Exception e) {
-				addError(new RestError(RestError.BAD_DATATYPE_CODE,
-						RestError.BAD_DATATYPE_MESSAGE, SURVEY_INSTANCE_PARAM
-								+ " must be an integer"));
-			}
-		}
-		if (req.getParameter(QAS_ID_PARAM) != null) {
-			try {
-				setQasId(new Long(req.getParameter(QAS_ID_PARAM).trim()));
-			} catch (Exception e) {
-				addError(new RestError(RestError.BAD_DATATYPE_CODE,
-						RestError.BAD_DATATYPE_MESSAGE, QAS_ID_PARAM
-								+ " must be an integer"));
-			}
-		}
-		
-		if (req.getParameter(DELTA_PARAM) != null) {
-			try {
-				setDelta(new Integer(req.getParameter(DELTA_PARAM).trim()));
-			} catch (Exception e) {
-				addError(new RestError(RestError.BAD_DATATYPE_CODE,
-						RestError.BAD_DATATYPE_MESSAGE, DELTA_PARAM
-								+ " must be an integer"));
-			}
-		}
+    @Override
+    protected void populateFields(HttpServletRequest req) throws Exception {
+        country = req.getParameter(COUNTRY_PARAM);
+        source = req.getParameter(SOURCE_PARAM);
+        if (req.getParameter(SURVEY_ID_PARAM) != null) {
+            try {
+                surveyId = new Long(req.getParameter(SURVEY_ID_PARAM).trim());
+            } catch (Exception e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE,
+                        RestError.BAD_DATATYPE_MESSAGE, SURVEY_ID_PARAM
+                                + " must be an integer"));
+            }
+        }
+        if (req.getParameter(SURVEY_INSTANCE_PARAM) != null) {
+            try {
+                setSurveyInstanceId(new Long(req.getParameter(SURVEY_INSTANCE_PARAM).trim()));
+            } catch (Exception e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE,
+                        RestError.BAD_DATATYPE_MESSAGE, SURVEY_INSTANCE_PARAM
+                                + " must be an integer"));
+            }
+        }
+        if (req.getParameter(QAS_ID_PARAM) != null) {
+            try {
+                setQasId(new Long(req.getParameter(QAS_ID_PARAM).trim()));
+            } catch (Exception e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE,
+                        RestError.BAD_DATATYPE_MESSAGE, QAS_ID_PARAM
+                                + " must be an integer"));
+            }
+        }
 
-		if (req.getParameter(API_KEY_PARAM) != null) {
-			setApiKey(req.getParameter(API_KEY_PARAM).trim());
-		}
+        if (req.getParameter(DELTA_PARAM) != null) {
+            try {
+                setDelta(new Integer(req.getParameter(DELTA_PARAM).trim()));
+            } catch (Exception e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE,
+                        RestError.BAD_DATATYPE_MESSAGE, DELTA_PARAM
+                                + " must be an integer"));
+            }
+        }
 
-		if (req.getParameter(OFFSET_PARAM) != null) {
-			setOffset(Long.valueOf(req.getParameter(OFFSET_PARAM).trim()));
-		}
-	}
+        if (req.getParameter(API_KEY_PARAM) != null) {
+            setApiKey(req.getParameter(API_KEY_PARAM).trim());
+        }
 
-	@Override
-	protected void populateErrors() {
-		// no-op
+        if (req.getParameter(OFFSET_PARAM) != null) {
+            setOffset(Long.valueOf(req.getParameter(OFFSET_PARAM).trim()));
+        }
+    }
 
-	}
+    @Override
+    protected void populateErrors() {
+        // no-op
 
-	public String getCountry() {
-		return country;
-	}
+    }
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
+    public String getCountry() {
+        return country;
+    }
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+    public void setCountry(String country) {
+        this.country = country;
+    }
 
-	public String getSource() {
-		return source;
-	}
+    public void setSource(String source) {
+        this.source = source;
+    }
 
-	public void setSurveyId(Long surveyId) {
-		this.surveyId = surveyId;
-	}
+    public String getSource() {
+        return source;
+    }
 
-	public Long getSurveyId() {
-		return surveyId;
-	}
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
+    }
 
-	public Long getSurveyInstanceId() {
-		return surveyInstanceId;
-	}
+    public Long getSurveyId() {
+        return surveyId;
+    }
 
-	public void setSurveyInstanceId(Long surveyInstanceId) {
-		this.surveyInstanceId = surveyInstanceId;
-	}
+    public Long getSurveyInstanceId() {
+        return surveyInstanceId;
+    }
 
-	public Long getQasId() {
-		return qasId;
-	}
+    public void setSurveyInstanceId(Long surveyInstanceId) {
+        this.surveyInstanceId = surveyInstanceId;
+    }
 
-	public void setQasId(Long qasId) {
-		this.qasId = qasId;
-	}
+    public Long getQasId() {
+        return qasId;
+    }
 
-	public Integer getDelta() {
-		return delta;
-	}
+    public void setQasId(Long qasId) {
+        this.qasId = qasId;
+    }
 
-	public void setDelta(Integer delta) {
-		this.delta = delta;
-	}
+    public Integer getDelta() {
+        return delta;
+    }
 
-	public String getApiKey() {
-		return apiKey;
-	}
+    public void setDelta(Integer delta) {
+        this.delta = delta;
+    }
 
-	public void setApiKey(String apiKey) {
-		this.apiKey = apiKey;
-	}
+    public String getApiKey() {
+        return apiKey;
+    }
 
-	public Long getOffset() {
-		return offset;
-	}
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
 
-	public void setOffset(Long offset) {
-		this.offset = offset;
-	}
+    public Long getOffset() {
+        return offset;
+    }
+
+    public void setOffset(Long offset) {
+        this.offset = offset;
+    }
 }

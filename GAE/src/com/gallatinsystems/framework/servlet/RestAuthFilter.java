@@ -40,139 +40,138 @@ import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
- * Handles verifying that the incoming request is authorized by checking the
- * hash.
- * 
+ * Handles verifying that the incoming request is authorized by checking the hash.
  * 
  * @author Christopher Fagiani
- * 
  */
 public class RestAuthFilter implements Filter {
 
-	private static final long MAX_TIME = 60000;
-	
-	private static final Logger log = Logger.getLogger(RestAuthFilter.class
-			.getName());
-	private static final String ENABLED_PROP = "enableRestSecurity";
-	private static final String REST_PRIVATE_KEY_PROP = "restPrivateKey";
-	private String privateKey;
-	private boolean isEnabled = false;
+    private static final long MAX_TIME = 60 * 10 * 1000; // 10 minutes
 
-	/**
-	 * checks to see if auth is
-	 */
-	@Override
-	public void doFilter(ServletRequest req, ServletResponse res,
-			FilterChain chain) throws IOException, ServletException {
-		if (isEnabled) {
-			try {
-				if (isAuthorized(req)) {
-					chain.doFilter(req, res);
-				} else {
-					HttpServletResponse response = (HttpServletResponse) res;
-					response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-							"Authorization failed");
-				}
-			} catch (Exception e) {
-				log.severe("Auth failure " + e.getMessage());
-				HttpServletResponse response = (HttpServletResponse) res;
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-						"Authorization failed");
-			}
-		} else {
-			chain.doFilter(req, res);
-		}
-	}
+    private static final Logger log = Logger.getLogger(RestAuthFilter.class
+            .getName());
+    private static final String ENABLED_PROP = "enableRestSecurity";
+    private static final String REST_PRIVATE_KEY_PROP = "restPrivateKey";
+    private String privateKey;
+    private boolean isEnabled = false;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private boolean isAuthorized(ServletRequest req) throws Exception {
+    /**
+     * checks to see if auth is
+     */
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse res,
+            FilterChain chain) throws IOException, ServletException {
+        if (isEnabled) {
+            try {
+                if (isAuthorized(req)) {
+                    chain.doFilter(req, res);
+                } else {
+                    HttpServletResponse response = (HttpServletResponse) res;
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                            "Authorization failed");
+                }
+            } catch (Exception e) {
+                log.severe("Auth failure " + e.getMessage());
+                HttpServletResponse response = (HttpServletResponse) res;
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                        "Authorization failed");
+            }
+        } else {
+            chain.doFilter(req, res);
+        }
+    }
 
-		Map paramMap = req.getParameterMap();
-		String incomingHash = null;
-		long incomingTimestamp = 0;
-		List<String> names = new ArrayList<String>();
-		if (paramMap != null) {
-			names.addAll(paramMap.keySet());
-			Collections.sort(names);
-			StringBuilder builder = new StringBuilder();
-			for (String name : names) {
-				if (!RestRequest.HASH_PARAM.equals(name)) {
-					if (builder.length() > 0) {
-						builder.append("&");
-					}
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
+    private boolean isAuthorized(ServletRequest req) throws Exception {
 
-					if (RestRequest.TIMESTAMP_PARAM.equals(name)) {
-						String timestamp = ((String[]) paramMap.get(name))[0];
-						try {
-							DateFormat df = new SimpleDateFormat(
-									"yyyy/MM/dd HH:mm:ss");
-							df.setTimeZone(TimeZone.getTimeZone("GMT"));
-							incomingTimestamp = df.parse(timestamp).getTime();
-						} catch (Exception e) {
-							log.warning("Recived rest api request with invalid timestamp");
-							return false;
-						}
-					}
-					String [] vals = ((String[]) paramMap.get(name));
-					int count = 0;
-					for (String v : vals) {
-						if (count > 0) {
-							builder.append("&");
-						}
-						builder.append(name).append("=").append(URLEncoder.encode(v, "UTF-8"));
-						count++;
-					}
-				} else {
-					incomingHash = ((String[]) paramMap.get(name))[0];
-					incomingHash = incomingHash.replaceAll(" ", "+");
-				}
-			}
+        Map paramMap = req.getParameterMap();
+        String incomingHash = null;
+        long incomingTimestamp = 0;
+        List<String> names = new ArrayList<String>();
+        if (paramMap != null) {
+            names.addAll(paramMap.keySet());
+            Collections.sort(names);
+            StringBuilder builder = new StringBuilder();
+            for (String name : names) {
+                if (!RestRequest.HASH_PARAM.equals(name)) {
+                    if (builder.length() > 0) {
+                        builder.append("&");
+                    }
 
-			if (incomingHash != null) {
-				String ourHash = MD5Util.generateHMAC(builder.toString(),
-						privateKey);
-				if (ourHash == null) {
-					// Do something but for now return false;
-					return false;
-				}
+                    if (RestRequest.TIMESTAMP_PARAM.equals(name)) {
+                        String timestamp = ((String[]) paramMap.get(name))[0];
+                        try {
+                            DateFormat df = new SimpleDateFormat(
+                                    "yyyy/MM/dd HH:mm:ss");
+                            df.setTimeZone(TimeZone.getTimeZone("GMT"));
+                            incomingTimestamp = df.parse(timestamp).getTime();
+                        } catch (Exception e) {
+                            log.warning("Recived rest api request with invalid timestamp");
+                            return false;
+                        }
+                    }
+                    String[] vals = ((String[]) paramMap.get(name));
+                    int count = 0;
+                    for (String v : vals) {
+                        if (count > 0) {
+                            builder.append("&");
+                        }
+                        builder.append(name).append("=").append(URLEncoder.encode(v, "UTF-8"));
+                        count++;
+                    }
+                } else {
+                    incomingHash = ((String[]) paramMap.get(name))[0];
+                    incomingHash = incomingHash.replaceAll(" ", "+");
+                }
+            }
 
-				if (ourHash.equals(incomingHash)) {
-					return isTimestampValid(incomingTimestamp);
-				} else {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		}
-		return false;
-	}
+            if (incomingHash != null) {
+                String ourHash = MD5Util.generateHMAC(builder.toString(),
+                        privateKey);
+                if (ourHash == null) {
+                    // Do something but for now return false;
+                    return false;
+                }
 
-	private boolean isTimestampValid(long theirTime) {
-		long time = System.currentTimeMillis();
-		if (Math.abs(time - theirTime) > MAX_TIME) {
-			return false;
-		} else {
-			return true;
-		}
-	}
+                if (ourHash.equals(incomingHash)) {
+                    return isTimestampValid(incomingTimestamp);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public void init(FilterConfig arg) throws ServletException {
-		String enabledFlag = PropertyUtil.getProperty(ENABLED_PROP);
-		if (enabledFlag != null) {
-			try {
-				isEnabled = Boolean.parseBoolean(enabledFlag.trim());
-			} catch (Exception e) {
-				log.severe("Could not parse " + ENABLED_PROP + " value of "
-						+ enabledFlag);
-				isEnabled = false;
-			}
-		}
-		privateKey = PropertyUtil.getProperty(REST_PRIVATE_KEY_PROP);
-	}
+    private boolean isTimestampValid(long theirTime) {
+        long time = System.currentTimeMillis();
+        if (Math.abs(time - theirTime) > MAX_TIME) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
-	@Override
-	public void destroy() {
-	}
+    @Override
+    public void init(FilterConfig arg) throws ServletException {
+        String enabledFlag = PropertyUtil.getProperty(ENABLED_PROP);
+        if (enabledFlag != null) {
+            try {
+                isEnabled = Boolean.parseBoolean(enabledFlag.trim());
+            } catch (Exception e) {
+                log.severe("Could not parse " + ENABLED_PROP + " value of "
+                        + enabledFlag);
+                isEnabled = false;
+            }
+        }
+        privateKey = PropertyUtil.getProperty(REST_PRIVATE_KEY_PROP);
+    }
+
+    @Override
+    public void destroy() {
+    }
 }

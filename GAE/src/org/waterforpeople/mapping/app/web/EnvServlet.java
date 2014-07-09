@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
@@ -44,88 +45,95 @@ import com.gallatinsystems.gis.geography.domain.Country;
 
 public class EnvServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 7830536065252808839L;
-	private static final Logger log = Logger.getLogger(EnvServlet.class
-			.getName());
+    private static final long serialVersionUID = 7830536065252808839L;
+    private static final Logger log = Logger.getLogger(EnvServlet.class
+            .getName());
 
-	private static final ArrayList<String> properties = new ArrayList<String>();
+    private static final ArrayList<String> properties = new ArrayList<String>();
 
-	static {
-		properties.add("photo_url_root");
-		properties.add("imageroot");
-		properties.add("flowServices");
-		properties.add("surveyuploadurl");
-		properties.add("showStatisticsFeature");
-	}
+    static {
+        properties.add("photo_url_root");
+        properties.add("imageroot");
+        properties.add("flowServices");
+        properties.add("surveyuploadurl");
+        properties.add("showStatisticsFeature");
+        properties.add("showMonitoringFeature");
+    }
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
-		final VelocityEngine engine = new VelocityEngine();
-		engine.setProperty("runtime.log.logsystem.class",
-				"org.apache.velocity.runtime.log.NullLogChute");
-		try {
-			engine.init();
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not initialize velocity", e);
-		}
+        final VelocityEngine engine = new VelocityEngine();
+        engine.setProperty("runtime.log.logsystem.class",
+                "org.apache.velocity.runtime.log.NullLogChute");
+        try {
+            engine.init();
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Could not initialize velocity", e);
+        }
 
-		Template t = null;
-		try {
-			t = engine.getTemplate("Env.vm");
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not get the template `CurrentUser`", e);
-			return;
-		}
+        Template t = null;
+        try {
+            t = engine.getTemplate("Env.vm");
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Could not get the template `CurrentUser`", e);
+            return;
+        }
 
-		final VelocityContext context = new VelocityContext();
-		final Map<String, String> props = PropertyUtil
-				.getPropertiesMap(properties);
+        final VelocityContext context = new VelocityContext();
+        final Map<String, String> props = PropertyUtil
+                .getPropertiesMap(properties);
 
-		// if the showStatisticsFeature is not present in appengine-web.xml, we want it to be false.
-		if (props.get("showStatisticsFeature") == null) props.put("showStatisticsFeature", "false");
+        // if the showStatisticsFeature is not present in appengine-web.xml, we want it to be false.
+        if (props.get("showStatisticsFeature") == null) {
+            props.put("showStatisticsFeature", "false");
+        }
 
-		final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
-		final JSONArray jsonArray = new JSONArray();
-		for (Country c : countryDAO.list(Constants.ALL_RESULTS)) {
-			if (c.getIncludeInExternal() != null
-					&& c.getIncludeInExternal()
-					&& (c.getCentroidLat().equals(0d) || c.getCentroidLon()
-							.equals(0d))) {
-				log.log(Level.SEVERE,
-						"Country "
-								+ c.getIsoAlpha2Code()
-								+ " was configured to show in the map, but doesn't have proper centroids");
-				continue;
-			}
-			if (c.getIncludeInExternal() != null && c.getIncludeInExternal()) {
-				jsonArray.put(new JSONObject(c));
-			}
-		}
-		props.put("countries", jsonArray.toString());
+        if (props.get("showMonitoringFeature") == null) {
+            props.put("showMonitoringFeature", "false");
+        }
 
-		context.put("env", props);
+        final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
+        final JSONArray jsonArray = new JSONArray();
+        for (Country c : countryDAO.list(Constants.ALL_RESULTS)) {
+            if (c.getIncludeInExternal() != null
+                    && c.getIncludeInExternal()
+                    && (c.getCentroidLat().equals(0d) || c.getCentroidLon()
+                            .equals(0d))) {
+                log.log(Level.SEVERE,
+                        "Country "
+                                + c.getIsoAlpha2Code()
+                                + " was configured to show in the map, but doesn't have proper centroids");
+                continue;
+            }
+            if (c.getIncludeInExternal() != null && c.getIncludeInExternal()) {
+                jsonArray.put(new JSONObject(c));
+            }
+        }
+        props.put("countries", jsonArray.toString());
 
-		final List<Map<String, String>> roles = new ArrayList<Map<String, String>>();
-		for (AppRole r : AppRole.values()) {
-			if (r.getLevel() < 10) {
-				continue; // don't expose NEW_USER, nor SUPER_USER
-			}
-			Map<String, String> role = new HashMap<String, String>();
-			role.put("value", String.valueOf(r.getLevel()));
-			role.put("label", "_" + r.toString());
-			roles.add(role);
-		}
-		context.put("roles", roles);
+        context.put("env", props);
 
-		final StringWriter writer = new StringWriter();
-		t.merge(context, writer);
+        final List<Map<String, String>> roles = new ArrayList<Map<String, String>>();
+        for (AppRole r : AppRole.values()) {
+            if (r.getLevel() < 10) {
+                continue; // don't expose NEW_USER, nor SUPER_USER
+            }
+            Map<String, String> role = new HashMap<String, String>();
+            role.put("value", String.valueOf(r.getLevel()));
+            role.put("label", "_" + r.toString());
+            roles.add(role);
+        }
+        context.put("roles", roles);
 
-		resp.setContentType("application/javascript;charset=UTF-8");
+        final StringWriter writer = new StringWriter();
+        t.merge(context, writer);
 
-		final PrintWriter pw = resp.getWriter();
-		pw.println(writer.toString());
-		pw.close();
-	}
+        resp.setContentType("application/javascript;charset=UTF-8");
+
+        final PrintWriter pw = resp.getWriter();
+        pw.println(writer.toString());
+        pw.close();
+    }
 }

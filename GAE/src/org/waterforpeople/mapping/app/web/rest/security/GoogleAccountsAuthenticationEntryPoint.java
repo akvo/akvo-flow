@@ -1,3 +1,4 @@
+
 package org.waterforpeople.mapping.app.web.rest.security;
 
 import java.io.IOException;
@@ -14,7 +15,8 @@ import com.google.appengine.api.users.UserServiceFactory;
 
 public class GoogleAccountsAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException authException)
             throws IOException, ServletException {
         UserService userService = UserServiceFactory.getUserService();
 

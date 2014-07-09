@@ -30,36 +30,36 @@ import org.waterforpeople.mapping.domain.DeviceApplication;
 
 public class ApkRedirectServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 8394168365501522124L;
-	private static final String ANDROID = "androidPhone";
-	private static final String FIELDSURVEY = "fieldSurvey";
-	private static final String SATSTAT = "satStat";
-	private static final String GPS_APP_PATH = "/gps";
-	private static final String FLOW_APP_PATH = "/app";
+    private static final long serialVersionUID = 8394168365501522124L;
+    private static final String ANDROID = "androidPhone";
+    private static final String FIELDSURVEY = "fieldSurvey";
+    private static final String SATSTAT = "satStat";
+    private static final String GPS_APP_PATH = "/gps";
+    private static final String FLOW_APP_PATH = "/app";
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-			IOException {
-	    final DeviceApplicationDao dao = new DeviceApplicationDao();
-	    String servletPath = req.getServletPath();
-	    String appCode = "";
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
+            IOException {
+        final DeviceApplicationDao dao = new DeviceApplicationDao();
+        String servletPath = req.getServletPath();
+        String appCode = "";
 
-	    if(FLOW_APP_PATH.equals(servletPath)) {
-		appCode = FIELDSURVEY;
-	    } else if(GPS_APP_PATH.equals(servletPath)) {
-		appCode = SATSTAT;
-	    }
+        if (FLOW_APP_PATH.equals(servletPath)) {
+            appCode = FIELDSURVEY;
+        } else if (GPS_APP_PATH.equals(servletPath)) {
+            appCode = SATSTAT;
+        }
 
-	    final List<DeviceApplication> apps = dao
-		    .listByDeviceTypeAndAppCode(ANDROID, appCode, 1);
-	    if (apps == null
-		    || apps.size() == 0
-		    || StringUtils.isBlank(apps.get(0).getFileName())) {
-		resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-		resp.getWriter().append("NOT FOUND");
-		return;
-	    }
+        final List<DeviceApplication> apps = dao
+                .listByDeviceTypeAndAppCode(ANDROID, appCode, 1);
+        if (apps == null
+                || apps.size() == 0
+                || StringUtils.isBlank(apps.get(0).getFileName())) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            resp.getWriter().append("NOT FOUND");
+            return;
+        }
 
-	    resp.sendRedirect(apps.get(0).getFileName());
-	}
+        resp.sendRedirect(apps.get(0).getFileName());
+    }
 }

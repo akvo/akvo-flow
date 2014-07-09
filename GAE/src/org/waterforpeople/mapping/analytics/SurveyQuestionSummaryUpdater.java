@@ -28,58 +28,56 @@ import com.gallatinsystems.survey.domain.Question;
  * handles updates to questionSummary objects
  * 
  * @author Christopher Fagiani
- * 
  */
 public class SurveyQuestionSummaryUpdater implements DataSummarizer {
 
-	public SurveyQuestionSummaryUpdater() {
-	}
+    public SurveyQuestionSummaryUpdater() {
+    }
 
-	@Override
-	public String getCursor() {
-		return null;
-	}
+    @Override
+    public String getCursor() {
+        return null;
+    }
 
-	/**
-	 * handles changes to question responses by using the DataChangeRecord to
-	 * decrement the question response counts for the oldValue and increment the
-	 * counts for the newValue in the SurveyQuestionSummary.
-	 */
-	@Override
-	public boolean performSummarization(String key, String type, String value,
-			Integer offset, String cursor) {
+    /**
+     * handles changes to question responses by using the DataChangeRecord to decrement the question
+     * response counts for the oldValue and increment the counts for the newValue in the
+     * SurveyQuestionSummary.
+     */
+    @Override
+    public boolean performSummarization(String key, String type, String value,
+            Integer offset, String cursor) {
 
-		DataChangeRecord changeRecord = new DataChangeRecord(value);
-		QuestionDao qDao = new QuestionDao();
-		Question q = qDao.getByKey(new Long(changeRecord.getId()));
-		if (q != null && Question.Type.OPTION.equals(q.getType())) {
-			SurveyQuestionSummaryDao
-					.incrementCount(
-							constructQAS(changeRecord.getId(),
-									changeRecord.getOldVal()), -1);
-			if (changeRecord.getNewVal() != null
-					&& changeRecord.getNewVal().trim().length() > 0) {
-				SurveyQuestionSummaryDao.incrementCount(
-						constructQAS(changeRecord.getId(),
-								changeRecord.getNewVal()), 1);
-			}
-		}
+        DataChangeRecord changeRecord = new DataChangeRecord(value);
+        QuestionDao qDao = new QuestionDao();
+        Question q = qDao.getByKey(new Long(changeRecord.getId()));
+        if (q != null && Question.Type.OPTION.equals(q.getType())) {
+            SurveyQuestionSummaryDao
+                    .incrementCount(
+                            constructQAS(changeRecord.getId(),
+                                    changeRecord.getOldVal()), -1);
+            if (changeRecord.getNewVal() != null
+                    && changeRecord.getNewVal().trim().length() > 0) {
+                SurveyQuestionSummaryDao.incrementCount(
+                        constructQAS(changeRecord.getId(),
+                                changeRecord.getNewVal()), 1);
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * helper method to create a new QuestionAnswerStore object using the values
-	 * passed in.
-	 * 
-	 * @param id
-	 * @param value
-	 * @return
-	 */
-	private QuestionAnswerStore constructQAS(String id, String value) {
-		QuestionAnswerStore qas = new QuestionAnswerStore();
-		qas.setQuestionID(id);
-		qas.setValue(value);
-		return qas;
-	}
+    /**
+     * helper method to create a new QuestionAnswerStore object using the values passed in.
+     * 
+     * @param id
+     * @param value
+     * @return
+     */
+    private QuestionAnswerStore constructQAS(String id, String value) {
+        QuestionAnswerStore qas = new QuestionAnswerStore();
+        qas.setQuestionID(id);
+        qas.setValue(value);
+        return qas;
+    }
 }

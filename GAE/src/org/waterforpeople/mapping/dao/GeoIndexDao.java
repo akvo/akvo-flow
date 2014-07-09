@@ -33,86 +33,81 @@ import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.io.WKTReader;
 
 /**
- * This data access object will persist and retrieve Geo information from the
- * GIS index. This implementation uses JTS (see
- * http://www.vividsolutions.com/jts/jtshome.htm).
+ * This data access object will persist and retrieve Geo information from the GIS index. This
+ * implementation uses JTS (see http://www.vividsolutions.com/jts/jtshome.htm).
  * 
  * @author Christopher Fagiani
- * 
  */
 public class GeoIndexDao {
-	private static final Logger log = Logger.getLogger(GeoIndexDao.class
-			.getName());
+    private static final Logger log = Logger.getLogger(GeoIndexDao.class
+            .getName());
 
-	private static final String INDEX_BASE_URL = "http://dru-test.s3.amazonaws.com/gis/index/";
+    private static final String INDEX_BASE_URL = "http://dru-test.s3.amazonaws.com/gis/index/";
 
-	/**
-	 * this will create (or replace) a geo index for each of the regions passed
-	 * in.
-	 * 
-	 * @param regions
-	 *            - map with regions uuid as key and POLYGON WellKnownFormat
-	 *            strings as values
-	 */
-	public void saveRegionIndex(Map<String, String> regions) {
-		GeometryFactory factory;
-		STRtree index = new STRtree();
-		try {
-			S3Driver s3Driver = new S3Driver();
-			for (String region : regions.keySet()) {
-				factory = new GeometryFactory();
-				WKTReader reader = new WKTReader(factory);
-				Polygon regionPolygon = (Polygon) reader.read(regions
-						.get(region));
+    /**
+     * this will create (or replace) a geo index for each of the regions passed in.
+     * 
+     * @param regions - map with regions uuid as key and POLYGON WellKnownFormat strings as values
+     */
+    public void saveRegionIndex(Map<String, String> regions) {
+        GeometryFactory factory;
+        STRtree index = new STRtree();
+        try {
+            S3Driver s3Driver = new S3Driver();
+            for (String region : regions.keySet()) {
+                factory = new GeometryFactory();
+                WKTReader reader = new WKTReader(factory);
+                Polygon regionPolygon = (Polygon) reader.read(regions
+                        .get(region));
 
-				index
-						.insert(regionPolygon.getEnvelopeInternal(),
-								regionPolygon);
+                index
+                        .insert(regionPolygon.getEnvelopeInternal(),
+                                regionPolygon);
 
-				index.build();
+                index.build();
 
-				ByteArrayOutputStream byteArr = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(byteArr);
-				oos.writeObject(index);
-				
-				// NOTE: this will give an exception in the Dev environment due
-				// to a bug with the GAE local implementation. It'll work on the
-				// server.
-				s3Driver.uploadFile("dru-test", "gis/index/" + region, byteArr
-						.toByteArray());
+                ByteArrayOutputStream byteArr = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(byteArr);
+                oos.writeObject(index);
 
-				oos.close();
-			}
+                // NOTE: this will give an exception in the Dev environment due
+                // to a bug with the GAE local implementation. It'll work on the
+                // server.
+                s3Driver.uploadFile("dru-test", "gis/index/" + region, byteArr
+                        .toByteArray());
 
-		} catch (Exception e) {
-			log.log(Level.WARNING, "Could not upload index", e);
-		}
-	}
+                oos.close();
+            }
 
-	/**
-	 * fetches a pre-generated index
-	 * 
-	 * @param regionUUID
-	 * @return
-	 */
-	public STRtree findGeoIndex(String regionUUID) {
-		STRtree index = null;
-		ObjectInputStream ois = null;
-		try {
-			URL url = new URL(INDEX_BASE_URL + regionUUID);
-			ois = new ObjectInputStream(url.openStream());
-			index = (STRtree) ois.readObject();
-		} catch (Exception e) {
-			log.log(Level.WARNING, "Could not download index", e);
-		} finally {
-			if (ois != null) {
-				try {
-					ois.close();
-				} catch (IOException e) {
-					// no-op
-				}
-			}
-		}
-		return index;
-	}
+        } catch (Exception e) {
+            log.log(Level.WARNING, "Could not upload index", e);
+        }
+    }
+
+    /**
+     * fetches a pre-generated index
+     * 
+     * @param regionUUID
+     * @return
+     */
+    public STRtree findGeoIndex(String regionUUID) {
+        STRtree index = null;
+        ObjectInputStream ois = null;
+        try {
+            URL url = new URL(INDEX_BASE_URL + regionUUID);
+            ois = new ObjectInputStream(url.openStream());
+            index = (STRtree) ois.readObject();
+        } catch (Exception e) {
+            log.log(Level.WARNING, "Could not download index", e);
+        } finally {
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    // no-op
+                }
+            }
+        }
+        return index;
+    }
 }

@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.domain;
 
 import javax.jdo.annotations.PersistenceCapable;
@@ -22,44 +23,42 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
 public class DeviceApplication extends BaseDomain {
 
-	private static final long serialVersionUID = -190410750699633199L;
-	private String deviceType;
-	private String appCode;
-	private String version;
-	private String fileName;
+    private static final long serialVersionUID = -190410750699633199L;
+    private String deviceType;
+    private String appCode;
+    private String version;
+    private String fileName;
 
-	public String getDeviceType() {
-		return deviceType;
-	}
+    public String getDeviceType() {
+        return deviceType;
+    }
 
-	public void setDeviceType(String deviceType) {
-		this.deviceType = deviceType;
-	}
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
 
-	public String getAppCode() {
-		return appCode;
-	}
+    public String getAppCode() {
+        return appCode;
+    }
 
-	public void setAppCode(String appCode) {
-		this.appCode = appCode;
-	}
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
+    }
 
-	public String getVersion() {
-		return version;
-	}
+    public String getVersion() {
+        return version;
+    }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
-	public String getFileName() {
-		return fileName;
-	}
+    public String getFileName() {
+        return fileName;
+    }
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-	
-	
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
 }

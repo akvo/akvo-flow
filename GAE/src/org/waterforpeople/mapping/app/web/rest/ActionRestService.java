@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.Date;
@@ -31,16 +32,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
+import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.DeviceApplicationDao;
-import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.DeviceApplication;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -58,254 +58,251 @@ import com.google.appengine.api.utils.SystemProperty;
 @RequestMapping("/actions")
 public class ActionRestService {
 
-	@Inject
-	private SurveyDAO surveyDao;
+    @Inject
+    private SurveyDAO surveyDao;
 
-	@Inject
-	private QuestionDao questionDao;
+    @Inject
+    private QuestionDao questionDao;
 
-	@RequestMapping(method = RequestMethod.GET, value = "")
-	@ResponseBody
-	public Map<String, Object> doAction(
-			@RequestParam(value = "action", defaultValue = "") String action,
-			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
-			@RequestParam(value = "surveyIds[]", defaultValue = "") Long[] surveyIds,
-			@RequestParam(value = "email", defaultValue = "") String email,
-			@RequestParam(value = "version", defaultValue = "") String version,
-			@RequestParam(value = "dbInstructions", defaultValue = "") String dbInstructions) {
-		String status = "failed";
-		String message = "";
-		final Map<String, Object> response = new HashMap<String, Object>();
-		RestStatusDto statusDto = new RestStatusDto();
+    @RequestMapping(method = RequestMethod.GET, value = "")
+    @ResponseBody
+    public Map<String, Object> doAction(
+            @RequestParam(value = "action", defaultValue = "")
+            String action,
+            @RequestParam(value = "surveyId", defaultValue = "")
+            Long surveyId,
+            @RequestParam(value = "surveyIds[]", defaultValue = "")
+            Long[] surveyIds,
+            @RequestParam(value = "email", defaultValue = "")
+            String email,
+            @RequestParam(value = "version", defaultValue = "")
+            String version,
+            @RequestParam(value = "dbInstructions", defaultValue = "")
+            String dbInstructions) {
+        String status = "failed";
+        String message = "";
+        final Map<String, Object> response = new HashMap<String, Object>();
+        RestStatusDto statusDto = new RestStatusDto();
 
-		// perform the required action
-		if ("recomputeSurveyInstanceSummaries".equals(action)) {
-			status = recomputeSurveyInstanceSummaries();
-		} else if ("publishSurvey".equals(action) && surveyId != null) {
-			status = publishSurvey(surveyId);
-		} else if ("generateBootstrapFile".equals(action) && surveyIds != null
-				&& email != null) {
-			message = generateBootstrapFile(surveyIds, dbInstructions, email);
-			status = "ok";
-			statusDto.setMessage(message);
-		} else if ("removeZeroValues".equals(action)) {
-			status = removeZeroMinMaxValues();
-		} else if ("fixOptions2Values".equals(action)){
-			status = fixOptions2Values();
-		} else if ("newApkVersion".equals(action)){
-			String path = newApkVersion(version);
-			if (path.length() > 0){
-				status = "success";
-				statusDto.setMessage("Created entry for " + path);
-			}
-		} else if ("populateGeocellsForLocale".equals(action)){
-			status = computeGeocellsForLocales();
-		} else if ("createTestLocales".equals(action)){
-			status = createTestLocales();
-		}
-		statusDto.setStatus(status);
-		response.put("actions", "[]");
-		response.put("meta", statusDto);
-		return response;
-	}
+        // perform the required action
+        if ("recomputeSurveyInstanceSummaries".equals(action)) {
+            status = recomputeSurveyInstanceSummaries();
+        } else if ("publishSurvey".equals(action) && surveyId != null) {
+            status = publishSurvey(surveyId);
+        } else if ("generateBootstrapFile".equals(action) && surveyIds != null
+                && email != null) {
+            message = generateBootstrapFile(surveyIds, dbInstructions, email);
+            status = "ok";
+            statusDto.setMessage(message);
+        } else if ("removeZeroValues".equals(action)) {
+            status = removeZeroMinMaxValues();
+        } else if ("fixOptions2Values".equals(action)) {
+            status = fixOptions2Values();
+        } else if ("newApkVersion".equals(action)) {
+            String path = newApkVersion(version);
+            if (path.length() > 0) {
+                status = "success";
+                statusDto.setMessage("Created entry for " + path);
+            }
+        } else if ("populateGeocellsForLocale".equals(action)) {
+            status = computeGeocellsForLocales();
+        } else if ("createTestLocales".equals(action)) {
+            status = createTestLocales();
+        }
+        statusDto.setStatus(status);
+        response.put("actions", "[]");
+        response.put("meta", statusDto);
+        return response;
+    }
 
-	/**
-	*  Used to create test locales. The only field populated is surveyId,
-	* which is set to 1.
-	* To be used only to test clustering during development
-	* in order to speed this up, it is advisable to 
-	* comment out the code in SurveyalRestServlet which computes
-	* the geoplace while running this method.
-	**/ 
-	private String createTestLocales(){
-		double latc;
-		double lonc;
-		double lat;
-		double lon;
+    /**
+     * Used to create test locales. The only field populated is surveyId, which is set to 1. To be
+     * used only to test clustering during development in order to speed this up, it is advisable to
+     * comment out the code in SurveyalRestServlet which computes the geoplace while running this
+     * method.
+     **/
+    private String createTestLocales() {
+        double latc;
+        double lonc;
+        double lat;
+        double lon;
 
-		SurveyInstanceDAO sDao = new SurveyInstanceDAO();
-		QuestionAnswerStoreDao qaDao = new QuestionAnswerStoreDao();
-		Random generator = new Random();
-		// create random points, in clusters.
-		for (int i = 0 ; i < 1 ; i++){
-			latc = generator.nextDouble() * 120 - 60;
-			lonc = generator.nextDouble() * 360 - 180;
-			for (int j = 0; j < 100; j++){
-				SurveyInstance newSI = new SurveyInstance();
-				newSI.setSurveyId(1L);
-				newSI.setCollectionDate(new Date());
-				newSI = sDao.save(newSI);
-				QuestionAnswerStore newQAS = new QuestionAnswerStore();
-				newQAS.setSurveyInstanceId(newSI.getKey().getId());
-				newQAS.setType("GEO");
-				newQAS.setCollectionDate(new Date());
-				lat = latc + generator.nextDouble() * 10 - 5;
-				lon = lonc + generator.nextDouble() * 10 - 5;
-				String geoloc = lat + "|" + lon + "|" + 0 + "|" + "aaaaaa";
-				newQAS.setValue(geoloc);
-				newQAS = sDao.save(newQAS);
+        SurveyInstanceDAO sDao = new SurveyInstanceDAO();
+        Random generator = new Random();
+        // create random points, in clusters.
+        for (int i = 0; i < 1; i++) {
+            latc = generator.nextDouble() * 120 - 60;
+            lonc = generator.nextDouble() * 360 - 180;
+            for (int j = 0; j < 100; j++) {
+                SurveyInstance newSI = new SurveyInstance();
+                newSI.setSurveyId(1L);
+                newSI.setCollectionDate(new Date());
+                newSI = sDao.save(newSI);
+                QuestionAnswerStore newQAS = new QuestionAnswerStore();
+                newQAS.setSurveyInstanceId(newSI.getKey().getId());
+                newQAS.setType("GEO");
+                newQAS.setCollectionDate(new Date());
+                lat = latc + generator.nextDouble() * 10 - 5;
+                lon = lonc + generator.nextDouble() * 10 - 5;
+                String geoloc = lat + "|" + lon + "|" + 0 + "|" + "aaaaaa";
+                newQAS.setValue(geoloc);
+                newQAS = sDao.save(newQAS);
 
-				Queue queue = QueueFactory.getDefaultQueue();
-				queue.add(TaskOptions.Builder
-					.withUrl("/app_worker/surveyalservlet")
-					.param(SurveyalRestRequest.ACTION_PARAM,
-						SurveyalRestRequest.INGEST_INSTANCE_ACTION)
-					.param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
-							newSI.getKey().getId() + ""));
-			}
-		}
-		return "ok";
-	}
+                Queue queue = QueueFactory.getDefaultQueue();
+                queue.add(TaskOptions.Builder
+                        .withUrl("/app_worker/surveyalservlet")
+                        .param(SurveyalRestRequest.ACTION_PARAM,
+                                SurveyalRestRequest.INGEST_INSTANCE_ACTION)
+                        .param(SurveyalRestRequest.SURVEY_INSTANCE_PARAM,
+                                newSI.getKey().getId() + ""));
+            }
+        }
+        return "ok";
+    }
 
-	/**
-	* runs over all surveydLocale objects, and populates:
-	* the Geocells field based on the latitude and longitude.
-	*
-	* New surveyedLocales will have these fields populated automatically, this
-	* method is to update legacy data.
-	*
-	* This method is invoked as a URL request:
-	* http://..../rest/actions?action=populateGeocellsForLocale
-	* 
-	* Clusters are not automatically computed.This is done by
-	* 1) deleting all the cluster objects by hand
-	* 2) running recomputeLocaleClusters in the dataProcessorRestServlet.
-	**/
-	private String computeGeocellsForLocales(){
-		Queue queue = QueueFactory.getDefaultQueue();
-		queue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet")
-				.param(SurveyalRestRequest.ACTION_PARAM,
-				SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION)
-				.param("cursor", ""));
-		return "Done";
-	}
+    /**
+     * runs over all surveydLocale objects, and populates: the Geocells field based on the latitude
+     * and longitude. New surveyedLocales will have these fields populated automatically, this
+     * method is to update legacy data. This method is invoked as a URL request:
+     * http://..../rest/actions?action=populateGeocellsForLocale Clusters are not automatically
+     * computed.This is done by 1) deleting all the cluster objects by hand 2) running
+     * recomputeLocaleClusters in the dataProcessorRestServlet.
+     **/
+    private String computeGeocellsForLocales() {
+        Queue queue = QueueFactory.getDefaultQueue();
+        queue.add(TaskOptions.Builder.withUrl("/app_worker/surveyalservlet")
+                .param(SurveyalRestRequest.ACTION_PARAM,
+                        SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION)
+                .param("cursor", ""));
+        return "Done";
+    }
 
-	// remove zero minVal and maxVal values
-	// that were the result of a previous bug
-	private String removeZeroMinMaxValues() {
-		List<Question> questions = questionDao.list(Constants.ALL_RESULTS);
-		int counter = 0;
-		if (questions != null) {
-			Double epsilon = 0.000001;
-			for (Question q : questions) {
-				if (q.getMinVal() != null && q.getMaxVal() != null) {
-					if (Math.abs(q.getMinVal()) < epsilon
-							&& Math.abs(q.getMaxVal()) < epsilon) {
-						q.setMinVal(null);
-						q.setMaxVal(null);
-						questionDao.save(q);
-						counter +=1;
-					}
-				}
-			}
-		}
-		return "updated " + counter + " questions";
-	}
+    // remove zero minVal and maxVal values
+    // that were the result of a previous bug
+    private String removeZeroMinMaxValues() {
+        List<Question> questions = questionDao.list(Constants.ALL_RESULTS);
+        int counter = 0;
+        if (questions != null) {
+            Double epsilon = 0.000001;
+            for (Question q : questions) {
+                if (q.getMinVal() != null && q.getMaxVal() != null) {
+                    if (Math.abs(q.getMinVal()) < epsilon
+                            && Math.abs(q.getMaxVal()) < epsilon) {
+                        q.setMinVal(null);
+                        q.setMaxVal(null);
+                        questionDao.save(q);
+                        counter += 1;
+                    }
+                }
+            }
+        }
+        return "updated " + counter + " questions";
+    }
 
-	@SuppressWarnings("unused")
-	private String recomputeSurveyInstanceSummaries() {
-		List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
-		String status = "failed";
-		if (surveys != null) {
-			SurveyInstanceSummary sis = null;
-			SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
-			for (Survey s : surveys) {
+    @SuppressWarnings("unused")
+    private String recomputeSurveyInstanceSummaries() {
+        List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
+        String status = "failed";
+        if (surveys != null) {
+            SurveyInstanceSummary sis = null;
+            SurveyInstanceSummaryDao sisDao = new SurveyInstanceSummaryDao();
+            for (Survey s : surveys) {
 
-				// need to do it per page
-				Iterable<Entity> siList = null;
-				SurveyInstanceDAO dao = new SurveyInstanceDAO();
-				siList = dao.listSurveyInstanceKeysBySurveyId(s.getKey()
-						.getId());
+                // need to do it per page
+                Iterable<Entity> siList = null;
+                SurveyInstanceDAO dao = new SurveyInstanceDAO();
+                siList = dao.listSurveyInstanceKeysBySurveyId(s.getKey()
+                        .getId());
 
-				Long count = 0L;
-				for (Entity si : siList) {
-					count++;
-				}
+                Long count = 0L;
+                for (Entity si : siList) {
+                    count++;
+                }
 
-				sis = sisDao.findBySurveyId(s.getKey().getId());
+                sis = sisDao.findBySurveyId(s.getKey().getId());
 
-				if (sis == null) {
-					sis = new SurveyInstanceSummary();
-					sis.setCount(count);
-					sis.setSurveyId(s.getKey().getId());
-				} else {
-					sis.setCount(count);
-				}
-				sisDao.save(sis);
-			}
-			status = "success";
-		}
-		return status;
-	}
+                if (sis == null) {
+                    sis = new SurveyInstanceSummary();
+                    sis.setCount(count);
+                    sis.setSurveyId(s.getKey().getId());
+                } else {
+                    sis.setCount(count);
+                }
+                sisDao.save(sis);
+            }
+            status = "success";
+        }
+        return status;
+    }
 
-	private String publishSurvey(Long surveyId) {
-		SurveyServiceImpl surveyService = new SurveyServiceImpl();
-		surveyService.publishSurveyAsync(surveyId);
-		return "publishing requested";
-	}
+    private String publishSurvey(Long surveyId) {
+        SurveyServiceImpl surveyService = new SurveyServiceImpl();
+        surveyService.publishSurveyAsync(surveyId);
+        return "publishing requested";
+    }
 
-	private String fixOptions2Values() {
-		Queue queue = QueueFactory.getDefaultQueue();
-		TaskOptions options = TaskOptions.Builder
-				.withUrl("/app_worker/dataprocessor")
-				.param(DataProcessorRequest.ACTION_PARAM,
-						DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION);
-		queue.add(options);
-		
-		return "fixing opions to values in surveyInstances requested";
-	}
-	
-	
-	private String generateBootstrapFile(Long[] surveyIdList,
-			String dbInstructions, String notificationEmail) {
+    private String fixOptions2Values() {
+        Queue queue = QueueFactory.getDefaultQueue();
+        TaskOptions options = TaskOptions.Builder
+                .withUrl("/app_worker/dataprocessor")
+                .param(DataProcessorRequest.ACTION_PARAM,
+                        DataProcessorRequest.FIX_OPTIONS2VALUES_ACTION);
+        queue.add(options);
 
-		StringBuilder buf = new StringBuilder();
+        return "fixing opions to values in surveyInstances requested";
+    }
 
-		if (surveyIdList != null && surveyIdList[0] != null) {
-			for (int i = 0; i < surveyIdList.length; i++) {
-				if (i > 0) {
-					buf.append(BootstrapGeneratorRequest.DELMITER);
-				}
-				buf.append(String.valueOf(surveyIdList[i]));
-			}
-		}
+    private String generateBootstrapFile(Long[] surveyIdList,
+            String dbInstructions, String notificationEmail) {
 
-		Queue queue = QueueFactory.getQueue("background-processing");
-		queue.add(TaskOptions.Builder
-				.withUrl("/app_worker/bootstrapgen")
-				.param(BootstrapGeneratorRequest.ACTION_PARAM,
-						BootstrapGeneratorRequest.GEN_ACTION)
-				.param(BootstrapGeneratorRequest.SURVEY_ID_LIST_PARAM,
-						buf.toString())
-				.param(BootstrapGeneratorRequest.EMAIL_PARAM, notificationEmail)
-				.param(BootstrapGeneratorRequest.DB_PARAM,
-						dbInstructions != null ? dbInstructions : ""));
-		return "_request_submitted_email_will_be_sent";
-	}
-	/**
-	 * Create datastore entry for new apk version object
-	 * called as: http://host/rest/actions?action=newApkVersion&version=x.y.z
-	 * appCode and deviceType properties are defaults.
-	 * @Param version
-	 *
-	 */
-	private String newApkVersion(String version){
-		Properties props = System.getProperties();
-		String apkS3Path = props.getProperty("apkS3Path");
-		// apkS3Path property in appengine-web.xml has a trailing slash
-		apkS3Path += SystemProperty.applicationId.get() + "/";
+        StringBuilder buf = new StringBuilder();
 
-		if (version != null && version.length() > 0 && apkS3Path != null && apkS3Path.length() > 0){
-			DeviceApplicationDao daDao = new DeviceApplicationDao();
-			DeviceApplication da = new DeviceApplication();
-			da.setAppCode("fieldSurvey");
-			da.setDeviceType("androidPhone");
-			da.setVersion(version);
-			da.setFileName(apkS3Path + "fieldsurvey-" + version + ".apk");
-			daDao.save(da);
-			return da.getFileName();
-		} else {
-			return "";
-		}
-	}
+        if (surveyIdList != null && surveyIdList[0] != null) {
+            for (int i = 0; i < surveyIdList.length; i++) {
+                if (i > 0) {
+                    buf.append(BootstrapGeneratorRequest.DELMITER);
+                }
+                buf.append(String.valueOf(surveyIdList[i]));
+            }
+        }
+
+        Queue queue = QueueFactory.getQueue("background-processing");
+        queue.add(TaskOptions.Builder
+                .withUrl("/app_worker/bootstrapgen")
+                .param(BootstrapGeneratorRequest.ACTION_PARAM,
+                        BootstrapGeneratorRequest.GEN_ACTION)
+                .param(BootstrapGeneratorRequest.SURVEY_ID_LIST_PARAM,
+                        buf.toString())
+                .param(BootstrapGeneratorRequest.EMAIL_PARAM, notificationEmail)
+                .param(BootstrapGeneratorRequest.DB_PARAM,
+                        dbInstructions != null ? dbInstructions : ""));
+        return "_request_submitted_email_will_be_sent";
+    }
+
+    /**
+     * Create datastore entry for new apk version object called as:
+     * http://host/rest/actions?action=newApkVersion&version=x.y.z appCode and deviceType properties
+     * are defaults.
+     * 
+     * @Param version
+     */
+    private String newApkVersion(String version) {
+        Properties props = System.getProperties();
+        String apkS3Path = props.getProperty("apkS3Path");
+        // apkS3Path property in appengine-web.xml has a trailing slash
+        apkS3Path += SystemProperty.applicationId.get() + "/";
+
+        if (version != null && version.length() > 0 && apkS3Path != null && apkS3Path.length() > 0) {
+            DeviceApplicationDao daDao = new DeviceApplicationDao();
+            DeviceApplication da = new DeviceApplication();
+            da.setAppCode("fieldSurvey");
+            da.setDeviceType("androidPhone");
+            da.setVersion(version);
+            da.setFileName(apkS3Path + "fieldsurvey-" + version + ".apk");
+            daDao.save(da);
+            return da.getFileName();
+        } else {
+            return "";
+        }
+    }
 }

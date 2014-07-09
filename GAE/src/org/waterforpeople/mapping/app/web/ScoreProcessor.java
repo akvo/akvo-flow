@@ -16,8 +16,6 @@
 
 package org.waterforpeople.mapping.app.web;
 
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -47,106 +45,110 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class ScoreProcessor extends HttpServlet {
 
-	public static final String ASYNC_TASK_TIMEOUT = "asyncTaskTimeout";
-	/**
+    public static final String ASYNC_TASK_TIMEOUT = "asyncTaskTimeout";
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 5500271297082259592L;
-	public static final String OBJECT_TASK_URL = "/app_worker/scoreprocessor";
-	public static final String ACCESSPOINT_QUEUE_NAME = "accesspointscorequeue";
-	private static final Logger log = Logger.getLogger(ScoreProcessor.class
-			.getName());
+    private static final long serialVersionUID = 5500271297082259592L;
+    public static final String OBJECT_TASK_URL = "/app_worker/scoreprocessor";
+    public static final String ACCESSPOINT_QUEUE_NAME = "accesspointscorequeue";
+    private static final Logger log = Logger.getLogger(ScoreProcessor.class
+            .getName());
 
-	public void doPost(HttpServletRequest req, HttpServletResponse resp){
-		this.scorePoints(req);
-	}
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
-		this.scorePoints(req);
-	}
-	static Integer executionCount = 0;
-	private void scorePoints(HttpServletRequest req){
-		final Integer timeoutSeconds = Integer.parseInt(PropertyUtil.getProperty(ASYNC_TASK_TIMEOUT));
-		executionCount++;
-		log.info("Execution Count: " + executionCount);
-		int scored_count = 0;
-		final  Integer FETCH_NUM_RECORDS = 10;
-		boolean is_finished = false;
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        this.scorePoints(req);
+    }
 
-		AccessPointHelper aph = new AccessPointHelper();
-		AccessPointDao apDao = new AccessPointDao();
-		final DatastoreService dss = DatastoreServiceFactory
-				.getDatastoreService();
-		final long start = System.currentTimeMillis();
-		PreparedQuery pquery;
-		Cursor endCursor=null;
-		while (System.currentTimeMillis() - start < timeoutSeconds) {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        this.scorePoints(req);
+    }
 
-			final Query query = new Query("AccessPoint");
+    static Integer executionCount = 0;
 
-			query.setKeysOnly();
+    private void scorePoints(HttpServletRequest req) {
+        final Integer timeoutSeconds = Integer.parseInt(PropertyUtil
+                .getProperty(ASYNC_TASK_TIMEOUT));
+        executionCount++;
+        log.info("Execution Count: " + executionCount);
+        int scored_count = 0;
+        final Integer FETCH_NUM_RECORDS = 10;
+        boolean is_finished = false;
 
-			final ArrayList<Key> keys = new ArrayList<Key>();
-			String cursor = req.getParameter("cursor");
-		
-			pquery = dss.prepare(query);			
-			cursor = cursor.trim();
-			FetchOptions fetchOptions = null;
-			if(cursor !=null&&!cursor.equalsIgnoreCase("null")&&!cursor.equals("")){
-				Cursor c = Cursor.fromWebSafeString(cursor);
-				fetchOptions = FetchOptions.Builder.withLimit(FETCH_NUM_RECORDS).startCursor(c);
-			}else{
-				fetchOptions =FetchOptions.Builder.withLimit(FETCH_NUM_RECORDS);				
-			}
-			QueryResultIterator<Entity> list = pquery.asQueryResultIterator(fetchOptions);
-			while(list.hasNext()) {
-				keys.add(list.next().getKey());
-			}
-			
-			endCursor = list.getCursor(); 
-			keys.trimToSize();
+        AccessPointHelper aph = new AccessPointHelper();
+        AccessPointDao apDao = new AccessPointDao();
+        final DatastoreService dss = DatastoreServiceFactory
+                .getDatastoreService();
+        final long start = System.currentTimeMillis();
+        PreparedQuery pquery;
+        Cursor endCursor = null;
+        while (System.currentTimeMillis() - start < timeoutSeconds) {
 
-			if (keys.size() == 0) {
-				is_finished = true;
-				break;
-			}
+            final Query query = new Query("AccessPoint");
 
-			
-			while (System.currentTimeMillis() - start < timeoutSeconds) {
+            query.setKeysOnly();
 
-				try {
-					final Key apKey = keys.get(scored_count);
-					final AccessPoint ap = apDao.getByKey(apKey);
-					aph.scoreAccessPointNew(ap);
-					log.info("Scored :  " + ap.getKeyString());
-					scored_count++;
-					if(keys.size()-1==scored_count++){
-						break;
-					}
-				} catch (Throwable ignore) {
-					continue;
-				}
-			}
-		}
+            final ArrayList<Key> keys = new ArrayList<Key>();
+            String cursor = req.getParameter("cursor");
 
-		if (is_finished) {
-			System.err.println("*** score job for AccessPoint is completed.");
-		} else {
+            pquery = dss.prepare(query);
+            cursor = cursor.trim();
+            FetchOptions fetchOptions = null;
+            if (cursor != null && !cursor.equalsIgnoreCase("null") && !cursor.equals("")) {
+                Cursor c = Cursor.fromWebSafeString(cursor);
+                fetchOptions = FetchOptions.Builder.withLimit(FETCH_NUM_RECORDS).startCursor(c);
+            } else {
+                fetchOptions = FetchOptions.Builder.withLimit(FETCH_NUM_RECORDS);
+            }
+            QueryResultIterator<Entity> list = pquery.asQueryResultIterator(fetchOptions);
+            while (list.hasNext()) {
+                keys.add(list.next().getKey());
+            }
 
-			final Integer taskcount;
-			String taskCount = req.getParameter("taskCount");
-			final String tcs = taskCount;
-			if (tcs == null) {
-				taskcount = 0;
-			} else {
-				taskcount = Integer.parseInt(tcs) + 1;
-			}			
-			Queue deleteQueue = QueueFactory.getQueue(ACCESSPOINT_QUEUE_NAME);
-			deleteQueue.add(TaskOptions.Builder.withUrl(OBJECT_TASK_URL).param(
-					DeleteTaskRequest.TASK_COUNT_PARAM, taskcount.toString()).param("cursor", endCursor.toWebSafeString()));
-			System.err.println("*** finished scoring " + scored_count + " APs");
-			System.err.println("*** score task # " + taskcount + " for "
-					+ "AccessPoint" + " is queued.");
-		}
-	}
+            endCursor = list.getCursor();
+            keys.trimToSize();
+
+            if (keys.size() == 0) {
+                is_finished = true;
+                break;
+            }
+
+            while (System.currentTimeMillis() - start < timeoutSeconds) {
+
+                try {
+                    final Key apKey = keys.get(scored_count);
+                    final AccessPoint ap = apDao.getByKey(apKey);
+                    aph.scoreAccessPointNew(ap);
+                    log.info("Scored :  " + ap.getKeyString());
+                    scored_count++;
+                    if (keys.size() - 1 == scored_count++) {
+                        break;
+                    }
+                } catch (Throwable ignore) {
+                    continue;
+                }
+            }
+        }
+
+        if (is_finished) {
+            System.err.println("*** score job for AccessPoint is completed.");
+        } else {
+
+            final Integer taskcount;
+            String taskCount = req.getParameter("taskCount");
+            final String tcs = taskCount;
+            if (tcs == null) {
+                taskcount = 0;
+            } else {
+                taskcount = Integer.parseInt(tcs) + 1;
+            }
+            Queue deleteQueue = QueueFactory.getQueue(ACCESSPOINT_QUEUE_NAME);
+            deleteQueue.add(TaskOptions.Builder.withUrl(OBJECT_TASK_URL).param(
+                    DeleteTaskRequest.TASK_COUNT_PARAM, taskcount.toString())
+                    .param("cursor", endCursor.toWebSafeString()));
+            System.err.println("*** finished scoring " + scored_count + " APs");
+            System.err.println("*** score task # " + taskcount + " for "
+                    + "AccessPoint" + " is queued.");
+        }
+    }
 }

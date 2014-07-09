@@ -29,62 +29,61 @@ import javax.jdo.annotations.PrimaryKey;
 import com.google.appengine.api.datastore.Key;
 
 /**
- * base class for all persistent objects. It defines 5 fields common to all
- * persistent objects (key plus 4 audit fields).
+ * base class for all persistent objects. It defines 5 fields common to all persistent objects (key
+ * plus 4 audit fields).
  * 
  * @author Christopher Fagiani
- * 
  */
 @PersistenceCapable
 @Inheritance(strategy = InheritanceStrategy.SUBCLASS_TABLE)
 public abstract class BaseDomain implements Serializable {
 
-	private static final long serialVersionUID = 7824199813334027150L;
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-	protected Key key;
-	protected Date createdDateTime;
-	protected Date lastUpdateDateTime;
-	protected Long lastUpdateUserId;
-	protected Long createUserId;
+    private static final long serialVersionUID = 7824199813334027150L;
+    @PrimaryKey
+    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+    protected Key key;
+    protected Date createdDateTime;
+    protected Date lastUpdateDateTime;
+    protected Long lastUpdateUserId;
+    protected Long createUserId;
 
-	public Key getKey() {
-		return key;
-	}
+    public Key getKey() {
+        return key;
+    }
 
-	public void setKey(Key key) {
-		this.key = key;
-	}
+    public void setKey(Key key) {
+        this.key = key;
+    }
 
-	public Date getCreatedDateTime() {
-		return createdDateTime;
-	}
+    public Date getCreatedDateTime() {
+        return createdDateTime;
+    }
 
-	public void setCreatedDateTime(Date createdDateTime) {
-		this.createdDateTime = createdDateTime;
-	}
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
 
-	public Date getLastUpdateDateTime() {
-		return lastUpdateDateTime;
-	}
+    public Date getLastUpdateDateTime() {
+        return lastUpdateDateTime;
+    }
 
-	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
-		this.lastUpdateDateTime = lastUpdateDateTime;
-	}
+    public void setLastUpdateDateTime(Date lastUpdateDateTime) {
+        this.lastUpdateDateTime = lastUpdateDateTime;
+    }
 
-	public Long getLastUpdateUserId() {
-		return lastUpdateUserId;
-	}
+    public Long getLastUpdateUserId() {
+        return lastUpdateUserId;
+    }
 
-	public void setLastUpdateUserId(Long lastUpdateUserId) {
-		this.lastUpdateUserId = lastUpdateUserId;
-	}
+    public void setLastUpdateUserId(Long lastUpdateUserId) {
+        this.lastUpdateUserId = lastUpdateUserId;
+    }
 
-	public Long getCreateUserId() {
-		return createUserId;
-	}
+    public Long getCreateUserId() {
+        return createUserId;
+    }
 
-	public void setCreateUserId(Long createUserId) {
-		this.createUserId = createUserId;
-	}
+    public void setCreateUserId(Long createUserId) {
+        this.createUserId = createUserId;
+    }
 }

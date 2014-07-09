@@ -24,167 +24,167 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 
 public class SurveyDto extends BaseDto implements NamedObject {
-	private static final long serialVersionUID = 6593732844403807030L;
-	private String name;
-	private String code;
-	private String version;
-	private String description;
-	private String status;
-	private String sector;
-	private List<QuestionGroupDto> questionGroupList;
-	private String path;
-	private Long surveyGroupId = null;
-	private Long instanceCount;
-	private String pointType;
-	private String defaultLanguageCode;
-	private Boolean requireApproval;
-	private Date createdDateTime;
-	private Date lastUpdateDateTime;
-	private Long sourceId = null;
+    private static final long serialVersionUID = 6593732844403807030L;
+    private String name;
+    private String code;
+    private String version;
+    private String description;
+    private String status;
+    private String sector;
+    private List<QuestionGroupDto> questionGroupList;
+    private String path;
+    private Long surveyGroupId = null;
+    private Long instanceCount;
+    private String pointType;
+    private String defaultLanguageCode;
+    private Boolean requireApproval;
+    private Date createdDateTime;
+    private Date lastUpdateDateTime;
+    private Long sourceId = null;
 
-	public String getPath() {
-		return path;
-	}
+    public String getPath() {
+        return path;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	public Date getCreatedDateTime() {
-		return createdDateTime;
-	}
+    public Date getCreatedDateTime() {
+        return createdDateTime;
+    }
 
-	public void setCreatedDateTime(Date createdDateTime) {
-		this.createdDateTime = createdDateTime;
-	}
+    public void setCreatedDateTime(Date createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
 
-	public Date getLastUpdateDateTime() {
-		return lastUpdateDateTime;
-	}
+    public Date getLastUpdateDateTime() {
+        return lastUpdateDateTime;
+    }
 
-	public void setLastUpdateDateTime(Date lastUpdateDateTime) {
-		this.lastUpdateDateTime = lastUpdateDateTime;
-	}
+    public void setLastUpdateDateTime(Date lastUpdateDateTime) {
+        this.lastUpdateDateTime = lastUpdateDateTime;
+    }
 
-	public void addQuestionGroup(QuestionGroupDto questionGroup) {
-		if (questionGroupList == null) {
-			questionGroupList = new ArrayList<QuestionGroupDto>();
-		}
-		questionGroupList.add(questionGroup);
-	}
+    public void addQuestionGroup(QuestionGroupDto questionGroup) {
+        if (questionGroupList == null) {
+            questionGroupList = new ArrayList<QuestionGroupDto>();
+        }
+        questionGroupList.add(questionGroup);
+    }
 
-	public List<QuestionGroupDto> getQuestionGroupList() {
-		return questionGroupList;
-	}
+    public List<QuestionGroupDto> getQuestionGroupList() {
+        return questionGroupList;
+    }
 
-	public void setQuestionGroupList(List<QuestionGroupDto> questionGroupList) {
-		this.questionGroupList = questionGroupList;
-	}
+    public void setQuestionGroupList(List<QuestionGroupDto> questionGroupList) {
+        this.questionGroupList = questionGroupList;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getVersion() {
-		return version;
-	}
+    public String getVersion() {
+        return version;
+    }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
-	public String getSector() {
-		return sector;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public void setSector(String sector) {
-		this.sector = sector;
-	}
+    public String getSector() {
+        return sector;
+    }
 
-	@Override
-	public String getDisplayName() {
-		String display = name;
-		if (display == null || display.trim().length() == 0) {
-			display = getKeyId().toString();
-		}
-		display = display + " - v." + getVersion();
-		return display;
-	}
+    public void setSector(String sector) {
+        this.sector = sector;
+    }
 
-	public void setSurveyGroupId(Long surveyGroupId) {
-		this.surveyGroupId = surveyGroupId;
-	}
+    @Override
+    public String getDisplayName() {
+        String display = name;
+        if (display == null || display.trim().length() == 0) {
+            display = getKeyId().toString();
+        }
+        display = display + " - v." + getVersion();
+        return display;
+    }
 
-	public Long getSurveyGroupId() {
-		return surveyGroupId;
-	}
+    public void setSurveyGroupId(Long surveyGroupId) {
+        this.surveyGroupId = surveyGroupId;
+    }
 
-	public void setInstanceCount(Long instanceCount) {
-		this.instanceCount = instanceCount;
-	}
+    public Long getSurveyGroupId() {
+        return surveyGroupId;
+    }
 
-	public Long getInstanceCount() {
-		return instanceCount;
-	}
-	
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setInstanceCount(Long instanceCount) {
+        this.instanceCount = instanceCount;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public Long getInstanceCount() {
+        return instanceCount;
+    }
 
-	public String getPointType() {
-		return pointType;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public void setPointType(String pointType) {
-		this.pointType = pointType;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public void setDefaultLanguageCode(String defaultLanguageCode) {
-		this.defaultLanguageCode = defaultLanguageCode;
-	}
+    public String getPointType() {
+        return pointType;
+    }
 
-	public String getDefaultLanguageCode() {
-		return defaultLanguageCode;
-	}
+    public void setPointType(String pointType) {
+        this.pointType = pointType;
+    }
 
-	public void setRequireApproval(Boolean requireApproval) {
-		this.requireApproval = requireApproval;
-	}
+    public void setDefaultLanguageCode(String defaultLanguageCode) {
+        this.defaultLanguageCode = defaultLanguageCode;
+    }
 
-	public Boolean getRequireApproval() {
-		return requireApproval;
-	}
+    public String getDefaultLanguageCode() {
+        return defaultLanguageCode;
+    }
 
-	public Long getSourceId() {
-		return sourceId;
-	}
+    public void setRequireApproval(Boolean requireApproval) {
+        this.requireApproval = requireApproval;
+    }
 
-	public void setSourceId(Long sourceId) {
-		this.sourceId = sourceId;
-	}
+    public Boolean getRequireApproval() {
+        return requireApproval;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
 
 }

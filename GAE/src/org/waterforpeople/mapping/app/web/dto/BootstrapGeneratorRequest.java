@@ -29,84 +29,83 @@ import com.gallatinsystems.framework.rest.RestRequest;
  * encapsulates requests to the bootstrap generator servlet
  * 
  * @author Christopher Fagiani
- * 
  */
 public class BootstrapGeneratorRequest extends RestRequest {
-	
-	private static final long serialVersionUID = 9041460970737380174L;
-	
-	public static final String GEN_ACTION = "generate";
-	public static final String SURVEY_ID_LIST_PARAM = "surveyIds";
-	public static final String EMAIL_PARAM = "email";
-	public static final String DB_PARAM = "dbInstructions";
-	public static final String DELMITER = "||";
 
-	private String email;
-	private String dbInstructions;
-	private List<Long> surveyIds;
+    private static final long serialVersionUID = 9041460970737380174L;
 
-	@Override
-	protected void populateErrors() {
-		if (surveyIds == null || surveyIds.size() == 0) {
-			if(dbInstructions== null || dbInstructions.trim().length()==0){
-			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PARAM_ERROR_MESSAGE, SURVEY_ID_LIST_PARAM
-							+ " cannot be null or empty if "+DB_PARAM+" is also null"));
-			}
-		}
-		if (email == null) {
-			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PARAM_ERROR_MESSAGE, EMAIL_PARAM
-							+ " cannot be null or empty"));
-		}
-	}
+    public static final String GEN_ACTION = "generate";
+    public static final String SURVEY_ID_LIST_PARAM = "surveyIds";
+    public static final String EMAIL_PARAM = "email";
+    public static final String DB_PARAM = "dbInstructions";
+    public static final String DELMITER = "||";
 
-	@Override
-	protected void populateFields(HttpServletRequest req) throws Exception {
-		email = req.getParameter(EMAIL_PARAM);
-		dbInstructions = req.getParameter(DB_PARAM);
-		String ids = req.getParameter(SURVEY_ID_LIST_PARAM);
-		if (ids != null && ids.trim().length()>0) {
-			surveyIds = new ArrayList<Long>();
-			StringTokenizer strTok = new StringTokenizer(ids, DELMITER);
-			while (strTok.hasMoreTokens()) {
-				String id = strTok.nextToken().trim();
-				try {
-					surveyIds.add(new Long(id));
-				} catch (NumberFormatException e) {
-					addError(new RestError(
-							RestError.BAD_DATATYPE_CODE,
-							RestError.BAD_DATATYPE_MESSAGE,
-							SURVEY_ID_LIST_PARAM
-									+ " must only contain integers delimited by "
-									+ DELMITER));
-				}
-			}
-		}
-	}
+    private String email;
+    private String dbInstructions;
+    private List<Long> surveyIds;
 
-	public String getEmail() {
-		return email;
-	}
+    @Override
+    protected void populateErrors() {
+        if (surveyIds == null || surveyIds.size() == 0) {
+            if (dbInstructions == null || dbInstructions.trim().length() == 0) {
+                addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+                        RestError.MISSING_PARAM_ERROR_MESSAGE, SURVEY_ID_LIST_PARAM
+                                + " cannot be null or empty if " + DB_PARAM + " is also null"));
+            }
+        }
+        if (email == null) {
+            addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+                    RestError.MISSING_PARAM_ERROR_MESSAGE, EMAIL_PARAM
+                            + " cannot be null or empty"));
+        }
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    @Override
+    protected void populateFields(HttpServletRequest req) throws Exception {
+        email = req.getParameter(EMAIL_PARAM);
+        dbInstructions = req.getParameter(DB_PARAM);
+        String ids = req.getParameter(SURVEY_ID_LIST_PARAM);
+        if (ids != null && ids.trim().length() > 0) {
+            surveyIds = new ArrayList<Long>();
+            StringTokenizer strTok = new StringTokenizer(ids, DELMITER);
+            while (strTok.hasMoreTokens()) {
+                String id = strTok.nextToken().trim();
+                try {
+                    surveyIds.add(new Long(id));
+                } catch (NumberFormatException e) {
+                    addError(new RestError(
+                            RestError.BAD_DATATYPE_CODE,
+                            RestError.BAD_DATATYPE_MESSAGE,
+                            SURVEY_ID_LIST_PARAM
+                                    + " must only contain integers delimited by "
+                                    + DELMITER));
+                }
+            }
+        }
+    }
 
-	public String getDbInstructions() {
-		return dbInstructions;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setDbInstructions(String dbInstructions) {
-		this.dbInstructions = dbInstructions;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public List<Long> getSurveyIds() {
-		return surveyIds;
-	}
+    public String getDbInstructions() {
+        return dbInstructions;
+    }
 
-	public void setSurveyIds(List<Long> surveyIds) {
-		this.surveyIds = surveyIds;
-	}
+    public void setDbInstructions(String dbInstructions) {
+        this.dbInstructions = dbInstructions;
+    }
+
+    public List<Long> getSurveyIds() {
+        return surveyIds;
+    }
+
+    public void setSurveyIds(List<Long> surveyIds) {
+        this.surveyIds = surveyIds;
+    }
 
 }

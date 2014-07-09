@@ -28,118 +28,119 @@ import com.google.appengine.api.datastore.Key;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyQuestion extends BaseDomain {
-		
-	private static final long serialVersionUID = 6756349508244348272L;
-	@Persistent
-	private String id;
-	@Persistent
-	private Long order;
-	@Persistent
-	private Boolean manadatory;
-	@Persistent
-	private QuestionAnswerType type;
-	@Persistent
-	private String text;
-	@Persistent
-	private ArrayList<SurveyQuestionOption> options;
-	@Persistent
-	private String optionsAllowOthers;
 
-	public enum QuestionAnswerType {
-		free, geo, photo, option
-	}
+    private static final long serialVersionUID = 6756349508244348272L;
+    @Persistent
+    private String id;
+    @Persistent
+    private Long order;
+    @Persistent
+    private Boolean manadatory;
+    @Persistent
+    private QuestionAnswerType type;
+    @Persistent
+    private String text;
+    @Persistent
+    private ArrayList<SurveyQuestionOption> options;
+    @Persistent
+    private String optionsAllowOthers;
 
-	public Key getKey() {
-		return key;
-	}
+    public enum QuestionAnswerType {
+        free, geo, photo, option
+    }
 
-	public void setKey(Key key) {
-		this.key = key;
-	}
+    public Key getKey() {
+        return key;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public void setKey(Key key) {
+        this.key = key;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public Long getOrder() {
-		return order;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setOrder(Long order) {
-		this.order = order;
-	}
+    public Long getOrder() {
+        return order;
+    }
 
-	public Boolean getManadatory() {
-		return manadatory;
-	}
+    public void setOrder(Long order) {
+        this.order = order;
+    }
 
-	public void setManadatory(Boolean manadatory) {
-		this.manadatory = manadatory;
-	}
+    public Boolean getManadatory() {
+        return manadatory;
+    }
 
-	public QuestionAnswerType getType() {
-		return type;
-	}
+    public void setManadatory(Boolean manadatory) {
+        this.manadatory = manadatory;
+    }
 
-	public void setType(QuestionAnswerType type) {
-		this.type = type;
-	}
+    public QuestionAnswerType getType() {
+        return type;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public void setType(QuestionAnswerType type) {
+        this.type = type;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public ArrayList<SurveyQuestionOption> getOptions() {
-		return options;
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
 
-	public void setOptions(ArrayList<SurveyQuestionOption> options) {
-		this.options = options;
-	}
+    public ArrayList<SurveyQuestionOption> getOptions() {
+        return options;
+    }
 
-	public String getOptionsAllowOthers() {
-		return optionsAllowOthers;
-	}
+    public void setOptions(ArrayList<SurveyQuestionOption> options) {
+        this.options = options;
+    }
 
-	public void setOptionsAllowOthers(String optionsAllowOthers) {
-		this.optionsAllowOthers = optionsAllowOthers;
-	}
-	@Override
-	public String toString() {
-		StringBuilder result = new StringBuilder();
-		String newLine = System.getProperty("line.separator");
+    public String getOptionsAllowOthers() {
+        return optionsAllowOthers;
+    }
 
-		result.append(this.getClass().getName());
-		result.append(" Object {");
-		result.append(newLine);
+    public void setOptionsAllowOthers(String optionsAllowOthers) {
+        this.optionsAllowOthers = optionsAllowOthers;
+    }
 
-		// determine fields declared in this class only (no fields of
-		// superclass)
-		Field[] fields = this.getClass().getDeclaredFields();
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
 
-		// print field names paired with their values
-		for (Field field : fields) {
-			result.append("  ");
-			try {
-				result.append(field.getName());
-				result.append(": ");
-				// requires access to private field:
-				result.append(field.get(this));
-			} catch (IllegalAccessException ex) {
-				System.out.println(ex);
-			}
-			result.append(newLine);
-		}
-		result.append("}");
+        result.append(this.getClass().getName());
+        result.append(" Object {");
+        result.append(newLine);
 
-		return result.toString();
-	}
+        // determine fields declared in this class only (no fields of
+        // superclass)
+        Field[] fields = this.getClass().getDeclaredFields();
+
+        // print field names paired with their values
+        for (Field field : fields) {
+            result.append("  ");
+            try {
+                result.append(field.getName());
+                result.append(": ");
+                // requires access to private field:
+                result.append(field.get(this));
+            } catch (IllegalAccessException ex) {
+                System.out.println(ex);
+            }
+            result.append(newLine);
+        }
+        result.append("}");
+
+        return result.toString();
+    }
 }

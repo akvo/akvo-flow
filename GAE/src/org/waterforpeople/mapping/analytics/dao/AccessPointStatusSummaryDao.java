@@ -37,129 +37,126 @@ import com.google.appengine.api.datastore.DatastoreTimeoutException;
  * updates access point status summary objects
  * 
  * @author Christopher Fagiani
- * 
  */
 public class AccessPointStatusSummaryDao extends
-		BaseDAO<AccessPointStatusSummary> {
+        BaseDAO<AccessPointStatusSummary> {
 
-	public AccessPointStatusSummaryDao() {
-		super(AccessPointStatusSummary.class);
-	}
+    public AccessPointStatusSummaryDao() {
+        super(AccessPointStatusSummary.class);
+    }
 
-	/**
-	 * synchronized static method so that only 1 thread can be updating a
-	 * summary at a time. This is inefficient but is the only way we can be sure
-	 * we're keeping the count consistent since there is no "select for update"
-	 * or sql dml-like construct
-	 * 
-	 * @param answer
-	 */
-	@SuppressWarnings("rawtypes")
-	public static synchronized void incrementCount(AccessPoint ap, Country c,
-			int unit) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(AccessPointStatusSummary.class);
-		query
-				.setFilter("year == yearParam && status == statusParam && community == communityParam && type == typeParam");
-		query
-				.declareParameters("String yearParam, String statusParam, String communityParam, String typeParam");
-		String yearString = null;
-		if (ap.getCollectionDate() != null) {
-			GregorianCalendar cal = new GregorianCalendar();
-			cal.setTime(ap.getCollectionDate());
-			yearString = cal.get(Calendar.YEAR) + "";
-		}
-		List results = (List) query.executeWithArray(yearString, ap
-				.getPointStatus(), ap.getCommunityCode(), ap.getPointType());
-		AccessPointStatusSummary summary = null;
-		if ((results == null || results.size() == 0) && unit > 0) {
-			summary = new AccessPointStatusSummary();
-			summary.setCount(1L);
-			summary.setYear(yearString);
-			summary.setStatus(ap.getPointStatus());
-			if (ap.getCountryCode() != null) {
-				summary.setCountry(ap.getCountryCode());
-			} else {
-				summary.setCountry(c.getIsoAlpha2Code());
-			}
-			summary.setCommunity(ap.getCommunityCode());
-			summary.setType(ap.getPointType() != null ? ap.getPointType()
-					.toString() : "UNKNOWN");
-		} else if (unit > 0) {
-			summary = (AccessPointStatusSummary) results.get(0);
-			summary.setCount(summary.getCount() + unit);
-		}
-		if (summary != null) {
-			AccessPointStatusSummaryDao thisDao = new AccessPointStatusSummaryDao();
-			if (summary.getCount() == 0 && summary.getKey() != null) {
-				thisDao.delete(summary);
-			} else if (summary.getCount() > 0) {
-				try {
-					thisDao.save(summary);
-				} catch (DatastoreTimeoutException te) {					
-						sleep();
-						thisDao.save(summary);					
-				}
-			}
-		}
-	}
+    /**
+     * synchronized static method so that only 1 thread can be updating a summary at a time. This is
+     * inefficient but is the only way we can be sure we're keeping the count consistent since there
+     * is no "select for update" or sql dml-like construct
+     * 
+     * @param answer
+     */
+    @SuppressWarnings("rawtypes")
+    public static synchronized void incrementCount(AccessPoint ap, Country c,
+            int unit) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(AccessPointStatusSummary.class);
+        query
+                .setFilter("year == yearParam && status == statusParam && community == communityParam && type == typeParam");
+        query
+                .declareParameters("String yearParam, String statusParam, String communityParam, String typeParam");
+        String yearString = null;
+        if (ap.getCollectionDate() != null) {
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTime(ap.getCollectionDate());
+            yearString = cal.get(Calendar.YEAR) + "";
+        }
+        List results = (List) query.executeWithArray(yearString, ap
+                .getPointStatus(), ap.getCommunityCode(), ap.getPointType());
+        AccessPointStatusSummary summary = null;
+        if ((results == null || results.size() == 0) && unit > 0) {
+            summary = new AccessPointStatusSummary();
+            summary.setCount(1L);
+            summary.setYear(yearString);
+            summary.setStatus(ap.getPointStatus());
+            if (ap.getCountryCode() != null) {
+                summary.setCountry(ap.getCountryCode());
+            } else {
+                summary.setCountry(c.getIsoAlpha2Code());
+            }
+            summary.setCommunity(ap.getCommunityCode());
+            summary.setType(ap.getPointType() != null ? ap.getPointType()
+                    .toString() : "UNKNOWN");
+        } else if (unit > 0) {
+            summary = (AccessPointStatusSummary) results.get(0);
+            summary.setCount(summary.getCount() + unit);
+        }
+        if (summary != null) {
+            AccessPointStatusSummaryDao thisDao = new AccessPointStatusSummaryDao();
+            if (summary.getCount() == 0 && summary.getKey() != null) {
+                thisDao.delete(summary);
+            } else if (summary.getCount() > 0) {
+                try {
+                    thisDao.save(summary);
+                } catch (DatastoreTimeoutException te) {
+                    sleep();
+                    thisDao.save(summary);
+                }
+            }
+        }
+    }
 
-	/**
-	 * lists access point summary objects that match the criteria passed in, any
-	 * of which are nullable.
-	 * 
-	 * @param country
-	 * @param community
-	 * @param year
-	 * @param type
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<AccessPointStatusSummary> listByLocationAndYear(String country,
-			String community, String type, String year, String status) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(AccessPointStatusSummary.class);
+    /**
+     * lists access point summary objects that match the criteria passed in, any of which are
+     * nullable.
+     * 
+     * @param country
+     * @param community
+     * @param year
+     * @param type
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<AccessPointStatusSummary> listByLocationAndYear(String country,
+            String community, String type, String year, String status) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(AccessPointStatusSummary.class);
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("country", filterString, paramString, "String",
-				country, paramMap);
-		appendNonNullParam("community", filterString, paramString, "String",
-				community, paramMap);
-		appendNonNullParam("year", filterString, paramString, "String", year,
-				paramMap);
-		appendNonNullParam("type", filterString, paramString, "String", type,
-				paramMap);
-		appendNonNullParam("status", filterString, paramString, "String",
-				status, paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		return (List<AccessPointStatusSummary>) query.executeWithMap(paramMap);
-	}
+        appendNonNullParam("country", filterString, paramString, "String",
+                country, paramMap);
+        appendNonNullParam("community", filterString, paramString, "String",
+                community, paramMap);
+        appendNonNullParam("year", filterString, paramString, "String", year,
+                paramMap);
+        appendNonNullParam("type", filterString, paramString, "String", type,
+                paramMap);
+        appendNonNullParam("status", filterString, paramString, "String",
+                status, paramMap);
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        return (List<AccessPointStatusSummary>) query.executeWithMap(paramMap);
+    }
 
-	/**
-	 * lists the summary objects for a country with a creation date on or after
-	 * the data passed in
-	 * 
-	 * @param country
-	 * @param creationDate
-	 * @param cursorString
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<AccessPointStatusSummary> listByCountryAndCreationDate(
-			String country, Date creationDate, String cursorString) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(AccessPointStatusSummary.class);
-		query
-				.setFilter("country == countryParam && createdDateTime > dateParam");
-		query.declareParameters("String countryParam, Date dateParam");
-		query.declareImports("import java.util.Date");
-		prepareCursor(cursorString, query);
-		return (List<AccessPointStatusSummary>) query.execute(country,
-				creationDate);
-	}
+    /**
+     * lists the summary objects for a country with a creation date on or after the data passed in
+     * 
+     * @param country
+     * @param creationDate
+     * @param cursorString
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<AccessPointStatusSummary> listByCountryAndCreationDate(
+            String country, Date creationDate, String cursorString) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(AccessPointStatusSummary.class);
+        query
+                .setFilter("country == countryParam && createdDateTime > dateParam");
+        query.declareParameters("String countryParam, Date dateParam");
+        query.declareImports("import java.util.Date");
+        prepareCursor(cursorString, query);
+        return (List<AccessPointStatusSummary>) query.execute(country,
+                creationDate);
+    }
 
 }

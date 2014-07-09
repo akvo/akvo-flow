@@ -11,6 +11,8 @@ FLOW.QuestionView = FLOW.View.extend({
   allowDecimal: null,
   allowMultipleFlag: null,
   allowOtherFlag: null,
+  localeNameFlag:false,
+  localeLocationFlag:false,
   geoLocked: null,
   requireDoubleEntry: null,
   dependentFlag: false,
@@ -53,6 +55,11 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   },
 
+  showMetaConfig: function () {
+    var monitoringGroup = FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
+    return FLOW.Env.showMonitoringFeature && monitoringGroup;
+  }.property('FLOW.selectedControl.selectedSurveyGroup'),
+
   amOpenQuestion: function () {
     var selected = FLOW.selectedControl.get('selectedQuestion');
     if (selected && this.get('content')) {
@@ -90,12 +97,31 @@ FLOW.QuestionView = FLOW.View.extend({
 	  }.property('this.type').cacheable(),
 
   amGeoType: function () {
+	    var options;
 	    if (this.type) {
 	      return this.type.get('value') == 'GEO';
 	    } else {
 	      return false;
 	    }
 	  }.property('this.type').cacheable(),
+
+  
+  amFreetextType: function () {
+	    var options;
+	    if (this.type) {
+	      return this.type.get('value') == 'FREE_TEXT';
+	    } else {
+	      return false;
+	    }
+	  }.property('this.type').cacheable(),
+
+  amNumberType: function () {
+    if (this.type) {
+      return this.type.get('value') == 'NUMBER';
+    } else {
+      return false;
+    }
+  }.property('this.type').cacheable(),
 
   amNoOptionsType: function () {
     var val;
@@ -105,6 +131,14 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  // when we change the question type to GEO, we turn on the
+  // localeLocationFLag by default. If we change to something else, we
+  // turn the flag of.
+  enableLocaleLocation: function() {
+	  this.set('localeLocationFlag', this.type.get('value') == 'GEO');
+  }.observes('this.type'),
+  
+  
   // TODO dependencies
   // TODO options
   doQuestionEdit: function () {
@@ -131,6 +165,8 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('allowDecimal', FLOW.selectedControl.selectedQuestion.get('allowDecimal'));
     this.set('allowMultipleFlag', FLOW.selectedControl.selectedQuestion.get('allowMultipleFlag'));
     this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
+    this.set('localeNameFlag', FLOW.selectedControl.selectedQuestion.get('localeNameFlag'));
+    this.set('localeLocationFlag', FLOW.selectedControl.selectedQuestion.get('localeLocationFlag'));
     this.set('geoLocked', FLOW.selectedControl.selectedQuestion.get('geoLocked'));
     this.set('requireDoubleEntry', FLOW.selectedControl.selectedQuestion.get('requireDoubleEntry'));
     this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
@@ -261,6 +297,8 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('allowDecimal', this.get('allowDecimal'));
     FLOW.selectedControl.selectedQuestion.set('allowMultipleFlag', this.get('allowMultipleFlag'));
     FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
+    FLOW.selectedControl.selectedQuestion.set('localeNameFlag', this.get('localeNameFlag'));
+    FLOW.selectedControl.selectedQuestion.set('localeLocationFlag', this.get('localeLocationFlag'));
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
     FLOW.selectedControl.selectedQuestion.set('requireDoubleEntry', this.get('requireDoubleEntry'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));

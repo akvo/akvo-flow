@@ -3,12 +3,9 @@
         <param-name>contextConfigLocation</param-name>
 		<param-value>/WEB-INF/webapp-context.xml /WEB-INF/webapp-security.xml</param-value>
     </context-param>
-
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-
-
     <servlet>
         <servlet-name>rest</servlet-name>
         <servlet-class>
@@ -167,6 +164,15 @@
 		<servlet-name>SurveyalServlet</servlet-name>
 		<url-pattern>/app_worker/surveyalservlet</url-pattern>
 	</servlet-mapping>
+	   <servlet>
+        <servlet-name>SurveyedLocaleServlet</servlet-name>
+        <servlet-class>org.waterforpeople.mapping.app.web.SurveyedLocaleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SurveyedLocaleServlet</servlet-name>
+        <url-pattern>/surveyedlocale</url-pattern>
+    </servlet-mapping>
+
 	<servlet>
 		<servlet-name>Task</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.TaskServlet</servlet-class>
@@ -473,6 +479,10 @@
 		<filter-name>restAuthFilter</filter-name>
 		<url-pattern>/databackout</url-pattern>
 	</filter-mapping>
+	<filter-mapping>
+    <filter-name>restAuthFilter</filter-name>
+    <url-pattern>/surveyedlocale</url-pattern>
+</filter-mapping>
 	<filter-mapping>
 		<filter-name>restAuthFilter</filter-name>
 		<url-pattern>/surveyrestapi</url-pattern>

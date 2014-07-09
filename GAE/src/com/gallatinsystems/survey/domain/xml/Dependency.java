@@ -5,7 +5,6 @@
 // Generated on: 2010.08.05 at 05:55:36 PM MDT 
 //
 
-
 package com.gallatinsystems.survey.domain.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,11 +16,11 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 /**
- * <p>Java class for anonymous complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -33,8 +32,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
@@ -53,10 +50,7 @@ public class Dependency {
     /**
      * Gets the value of the answerValue property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
      */
     public String getAnswerValue() {
         return answerValue;
@@ -65,10 +59,7 @@ public class Dependency {
     /**
      * Sets the value of the answerValue property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
      */
     public void setAnswerValue(String value) {
         this.answerValue = value;
@@ -77,10 +68,7 @@ public class Dependency {
     /**
      * Gets the value of the question property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
      */
     public String getQuestion() {
         return question;
@@ -89,10 +77,7 @@ public class Dependency {
     /**
      * Sets the value of the question property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
      */
     public void setQuestion(String value) {
         this.question = value;

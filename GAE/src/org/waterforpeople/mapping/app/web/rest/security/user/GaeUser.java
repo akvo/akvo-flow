@@ -1,3 +1,4 @@
+
 package org.waterforpeople.mapping.app.web.rest.security.user;
 
 import java.io.Serializable;
@@ -7,23 +8,20 @@ import java.util.Set;
 
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
-
 /**
  * Custom user object for the application.
- *
+ * 
  * @author Luke Taylor
  */
 public class GaeUser implements Serializable {
-	private static final long serialVersionUID = -381882633758542764L;
+    private static final long serialVersionUID = -381882633758542764L;
     private final String email;
     private final String userName;
     private final Set<AppRole> authorities;
     private final boolean enabled;
 
     /**
-     * Pre-registration constructor.
-     *
-     * Assigns the user the "NEW_USER" role only.
+     * Pre-registration constructor. Assigns the user the "NEW_USER" role only.
      */
     public GaeUser(String userName, String email) {
         this.authorities = EnumSet.of(AppRole.NEW_USER);
@@ -41,7 +39,6 @@ public class GaeUser implements Serializable {
         this.authorities = authorities;
         this.enabled = enabled;
     }
-
 
     public boolean isEnabled() {
         return enabled;

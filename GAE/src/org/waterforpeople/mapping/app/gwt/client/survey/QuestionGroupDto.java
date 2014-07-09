@@ -23,90 +23,90 @@ import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 
 public class QuestionGroupDto extends BaseDto implements NamedObject {
 
-	private static final long serialVersionUID = -7253934961271624253L;
+    private static final long serialVersionUID = -7253934961271624253L;
 
-	private TreeMap<Integer, QuestionDto> questionMap = null;
+    private TreeMap<Integer, QuestionDto> questionMap = null;
 
-	private String code;
-	private String description;
-	private Long surveyId;
-	private Integer order;
-	private String path;
-	private String name;
-	
-	public Integer getOrder() {
-		return order;
-	}
+    private String code;
+    private String description;
+    private Long surveyId;
+    private Integer order;
+    private String path;
+    private String name;
 
-	public void setOrder(Integer order) {
-		this.order = order;
-	}
+    public Integer getOrder() {
+        return order;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public String getPath() {
+        return path;
+    }
 
-	public Long getSurveyId() {
-		return surveyId;
-	}
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	public void setSurveyId(Long surveyId) {
-		this.surveyId = surveyId;
-	}
+    public Long getSurveyId() {
+        return surveyId;
+    }
 
-	public String getCode() {
-		return code;
-	}
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public String getCode() {
+        return code;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setQuestionMap(TreeMap<Integer, QuestionDto> questionMap) {
-		this.questionMap = questionMap;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public TreeMap<Integer, QuestionDto> getQuestionMap() {
-		return questionMap;
-	}
+    public void setQuestionMap(TreeMap<Integer, QuestionDto> questionMap) {
+        this.questionMap = questionMap;
+    }
 
-	public void addQuestion(QuestionDto item, Integer position) {
-		if (questionMap == null) {
-			questionMap = new TreeMap<Integer, QuestionDto>();
-			questionMap.put(position, item);
-		} else {
-			questionMap.put(position, item);
+    public TreeMap<Integer, QuestionDto> getQuestionMap() {
+        return questionMap;
+    }
 
-		}
-	}
+    public void addQuestion(QuestionDto item, Integer position) {
+        if (questionMap == null) {
+            questionMap = new TreeMap<Integer, QuestionDto>();
+            questionMap.put(position, item);
+        } else {
+            questionMap.put(position, item);
 
-	@Override
-	public String getDisplayName() {
-		return getCode();
-	}
+        }
+    }
 
-	@Override
-	public Long getKeyId(){
-		return super.getKeyId();
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Override
+    public String getDisplayName() {
+        return getCode();
+    }
 
-	public String getName() {
-		return name;
-	}
+    @Override
+    public Long getKeyId() {
+        return super.getKeyId();
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

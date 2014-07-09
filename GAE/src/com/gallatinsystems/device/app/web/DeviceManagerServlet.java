@@ -33,81 +33,80 @@ import com.gallatinsystems.survey.dao.DeviceSurveyJobQueueDAO;
 /**
  * Servlet class to handle the device (handheld) related management tasks.
  * 
- *@deprecated
+ * @deprecated
  */
 public class DeviceManagerServlet extends HttpServlet {
-	private static final long serialVersionUID = 1979457951988807893L;
-	private static final Logger log = Logger
-			.getLogger(DeviceManagerServlet.class.getName());
-	private DeviceDAO deviceDao = new DeviceDAO();
+    private static final long serialVersionUID = 1979457951988807893L;
+    private static final Logger log = Logger
+            .getLogger(DeviceManagerServlet.class.getName());
+    private DeviceDAO deviceDao = new DeviceDAO();
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
-		String action = req.getParameter("action");
-		if ("listDevices".equals(action)) {
-			DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
-			List<DeviceSurveyJobQueue> jobs = dsjqDAO.listAllJobsInQueue();
-			for (DeviceSurveyJobQueue item : jobs) {
-				try {
-					resp.getWriter().print(item.toString());
-				} catch (IOException e) {
-					log.log(Level.SEVERE, "Could not execute list device", e);
-				}
-			}
-		} else {
-			try {
-				resp.getWriter().print("need an action");
-			} catch (IOException e) {
-				log.log(Level.SEVERE, "Could not write error", e);
-			}
-		}
-	}
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        String action = req.getParameter("action");
+        if ("listDevices".equals(action)) {
+            DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
+            List<DeviceSurveyJobQueue> jobs = dsjqDAO.listAllJobsInQueue();
+            for (DeviceSurveyJobQueue item : jobs) {
+                try {
+                    resp.getWriter().print(item.toString());
+                } catch (IOException e) {
+                    log.log(Level.SEVERE, "Could not execute list device", e);
+                }
+            }
+        } else {
+            try {
+                resp.getWriter().print("need an action");
+            } catch (IOException e) {
+                log.log(Level.SEVERE, "Could not write error", e);
+            }
+        }
+    }
 
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
-		String action = req.getParameter("action");
-		String outputString = null;
-		if ("saveDevice".equals(action)) {
-			outputString = createDevice(req);
-		} else {
-			String devicePhoneNumber = req.getParameter("devicePhoneNumber");
-			Long surveyId = new Long(req.getParameter("surveyId"));
-			DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
-			DeviceSurveyJobQueue dsjq = new DeviceSurveyJobQueue();
-			dsjq.setDevicePhoneNumber(devicePhoneNumber);
-			dsjq.setSurveyID(surveyId);
-			Long deviceId = dsjqDAO.save(dsjq);
-			resp.setContentType("text/html");
-			outputString = "Device: " + deviceId + " created";
-		}
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        String action = req.getParameter("action");
+        String outputString = null;
+        if ("saveDevice".equals(action)) {
+            outputString = createDevice(req);
+        } else {
+            String devicePhoneNumber = req.getParameter("devicePhoneNumber");
+            Long surveyId = new Long(req.getParameter("surveyId"));
+            DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
+            DeviceSurveyJobQueue dsjq = new DeviceSurveyJobQueue();
+            dsjq.setDevicePhoneNumber(devicePhoneNumber);
+            dsjq.setSurveyID(surveyId);
+            Long deviceId = dsjqDAO.save(dsjq);
+            resp.setContentType("text/html");
+            outputString = "Device: " + deviceId + " created";
+        }
 
-		try {
-			resp.getWriter().print(outputString);
-		} catch (IOException e) {
-			log.log(Level.SEVERE, "Could not execute device operation", e);
-		}
-	}
+        try {
+            resp.getWriter().print(outputString);
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Could not execute device operation", e);
+        }
+    }
 
-	@SuppressWarnings("unused")
-	private String createDevice(HttpServletRequest req) {
-		StringBuilder sb = new StringBuilder();
-		String deviceType = req.getParameter("deviceType");
-		String esn = req.getParameter("esn");
-		String inServiceDateString = req.getParameter("inServiceDateString");
-		String osVersion = req.getParameter("osVersion");
-		String countryIdString = req.getParameter("countryIdString");
-		String phoneNumber = req.getParameter("devicePhoneNumber");
-		String outServiceDateString = req.getParameter("outServiceDateString");
-		
-		
-		phoneNumber = phoneNumber.replace("-", "");
-		Device device = new Device();
+    @SuppressWarnings("unused")
+    private String createDevice(HttpServletRequest req) {
+        StringBuilder sb = new StringBuilder();
+        String deviceType = req.getParameter("deviceType");
+        String esn = req.getParameter("esn");
+        String inServiceDateString = req.getParameter("inServiceDateString");
+        String osVersion = req.getParameter("osVersion");
+        String countryIdString = req.getParameter("countryIdString");
+        String phoneNumber = req.getParameter("devicePhoneNumber");
+        String outServiceDateString = req.getParameter("outServiceDateString");
 
-		device.setDeviceType(Device.DeviceType.CELL_PHONE_ANDROID);
+        phoneNumber = phoneNumber.replace("-", "");
+        Device device = new Device();
 
-		device.setEsn(esn);
-		device.setPhoneNumber(phoneNumber);		
-		deviceDao.save(device);
-		sb.append(device.toString());
-		return sb.toString();
-	}
+        device.setDeviceType(Device.DeviceType.CELL_PHONE_ANDROID);
+
+        device.setEsn(esn);
+        device.setPhoneNumber(phoneNumber);
+        deviceDao.save(device);
+        sb.append(device.toString());
+        return sb.toString();
+    }
 
 }

@@ -24,106 +24,107 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * Domain structure to hold cluster info on clustered surveyedLocales
- * we use the geohash as an index to cluster on.
- * the geocells field holds all the geocells up to but not including
- * the clusterGeocell field.
- * 
+ * Domain structure to hold cluster info on clustered surveyedLocales we use the geohash as an index
+ * to cluster on. the geocells field holds all the geocells up to but not including the
+ * clusterGeocell field.
  */
 @PersistenceCapable
 public class SurveyedLocaleCluster extends BaseDomain {
-	private static final long serialVersionUID = 86240917705953798L;
+    private static final long serialVersionUID = 86240917705953798L;
 
-	private String clusterGeocell;
-	private List<String> geocells;
-	private Integer level;
-	private Integer count;
-	private Long firstSurveyedLocaleId;
-	private Date firstCollectionDate;
-	private Long surveyId;
-	private Double latCenter;
-	private Double lonCenter;
-	private Boolean showOnPublicMap;
-	
-	public SurveyedLocaleCluster(Double lat, Double lon, List<String> geocells, 
-			String cGeocell, Integer level, Long firstSurveyedLocaleId, Boolean showOnPublicMap, Date firstCollectionDate){
-		setClusterGeocell(cGeocell);
-		setGeocells(geocells);
-		setLatCenter(lat);
-		setLonCenter(lon);
-		setLevel(level);
-		setCount(1);
-		setFirstSurveyedLocaleId(firstSurveyedLocaleId);
-		setFirstCollectionDate(firstCollectionDate);
-		setShowOnPublicMap(showOnPublicMap);
-	}
-	
-	public Integer getCount() {
-		return count;
-	}
-	public void setCount(Integer count) {
-		this.count = count;
-	}
-	public Double getLatCenter() {
-		return latCenter;
-	}
-	public void setLatCenter(Double latCenter) {
-		this.latCenter = latCenter;
-	}
-	public Double getLonCenter() {
-		return lonCenter;
-	}
-	public void setLonCenter(Double lonCenter) {
-		this.lonCenter = lonCenter;
-	}
+    private String clusterGeocell;
+    private List<String> geocells;
+    private Integer level;
+    private Integer count;
+    private Long firstSurveyedLocaleId;
+    private Date firstCollectionDate;
+    private Double latCenter;
+    private Double lonCenter;
+    private Boolean showOnPublicMap;
 
-	public Integer getLevel() {
-		return level;
-	}
+    public SurveyedLocaleCluster(Double lat, Double lon, List<String> geocells,
+            String cGeocell, Integer level, Long firstSurveyedLocaleId, Boolean showOnPublicMap,
+            Date firstCollectionDate) {
+        setClusterGeocell(cGeocell);
+        setGeocells(geocells);
+        setLatCenter(lat);
+        setLonCenter(lon);
+        setLevel(level);
+        setCount(1);
+        setFirstSurveyedLocaleId(firstSurveyedLocaleId);
+        setFirstCollectionDate(firstCollectionDate);
+        setShowOnPublicMap(showOnPublicMap);
+    }
 
-	public void setLevel(Integer level) {
-		this.level = level;
-	}
+    public Integer getCount() {
+        return count;
+    }
 
-	public List<String> getGeocells() {
-		return geocells;
-	}
+    public void setCount(Integer count) {
+        this.count = count;
+    }
 
-	public void setGeocells(List<String> geocells) {
-		this.geocells = geocells;
-	}
+    public Double getLatCenter() {
+        return latCenter;
+    }
 
+    public void setLatCenter(Double latCenter) {
+        this.latCenter = latCenter;
+    }
 
-	public String getClusterGeocell() {
-		return clusterGeocell;
-	}
+    public Double getLonCenter() {
+        return lonCenter;
+    }
 
+    public void setLonCenter(Double lonCenter) {
+        this.lonCenter = lonCenter;
+    }
 
-	public void setClusterGeocell(String clusterGeocell) {
-		this.clusterGeocell = clusterGeocell;
-	}
+    public Integer getLevel() {
+        return level;
+    }
 
-	public Boolean getShowOnPublicMap() {
-		return showOnPublicMap;
-	}
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
-	public void setShowOnPublicMap(Boolean showOnPublicMap) {
-		this.showOnPublicMap = showOnPublicMap;
-	}
+    public List<String> getGeocells() {
+        return geocells;
+    }
 
-	public Long getFirstSurveyedLocaleId() {
-		return firstSurveyedLocaleId;
-	}
+    public void setGeocells(List<String> geocells) {
+        this.geocells = geocells;
+    }
 
-	public void setFirstSurveyedLocaleId(Long firstSurveyedLocaleId) {
-		this.firstSurveyedLocaleId = firstSurveyedLocaleId;
-	}
+    public String getClusterGeocell() {
+        return clusterGeocell;
+    }
 
-	public Date getFirstCollectionDate() {
-		return firstCollectionDate;
-	}
+    public void setClusterGeocell(String clusterGeocell) {
+        this.clusterGeocell = clusterGeocell;
+    }
 
-	public void setFirstCollectionDate(Date firstCollectionDate) {
-		this.firstCollectionDate = firstCollectionDate;
-	}
+    public Boolean getShowOnPublicMap() {
+        return showOnPublicMap;
+    }
+
+    public void setShowOnPublicMap(Boolean showOnPublicMap) {
+        this.showOnPublicMap = showOnPublicMap;
+    }
+
+    public Long getFirstSurveyedLocaleId() {
+        return firstSurveyedLocaleId;
+    }
+
+    public void setFirstSurveyedLocaleId(Long firstSurveyedLocaleId) {
+        this.firstSurveyedLocaleId = firstSurveyedLocaleId;
+    }
+
+    public Date getFirstCollectionDate() {
+        return firstCollectionDate;
+    }
+
+    public void setFirstCollectionDate(Date firstCollectionDate) {
+        this.firstCollectionDate = firstCollectionDate;
+    }
 }

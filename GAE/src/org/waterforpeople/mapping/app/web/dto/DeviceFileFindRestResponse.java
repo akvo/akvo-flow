@@ -22,28 +22,28 @@ import com.gallatinsystems.framework.rest.RestResponse;
 
 public class DeviceFileFindRestResponse extends RestResponse {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -5516233980214584505L;
-	
-	private Boolean foundFlag = false;
-	
-	private DeviceFilesDto deviceFile = null;
+    private static final long serialVersionUID = -5516233980214584505L;
 
-	public Boolean getFoundFlag() {
-		return foundFlag;
-	}
+    private Boolean foundFlag = false;
 
-	public void setFoundFlag(Boolean foundFlag) {
-		this.foundFlag = foundFlag;
-	}
+    private DeviceFilesDto deviceFile = null;
 
-	public DeviceFilesDto getDeviceFile() {
-		return deviceFile;
-	}
+    public Boolean getFoundFlag() {
+        return foundFlag;
+    }
 
-	public void setDeviceFile(DeviceFilesDto deviceFile) {
-		this.deviceFile = deviceFile;
-	}
+    public void setFoundFlag(Boolean foundFlag) {
+        this.foundFlag = foundFlag;
+    }
+
+    public DeviceFilesDto getDeviceFile() {
+        return deviceFile;
+    }
+
+    public void setDeviceFile(DeviceFilesDto deviceFile) {
+        this.deviceFile = deviceFile;
+    }
 }

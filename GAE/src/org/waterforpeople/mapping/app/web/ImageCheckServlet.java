@@ -38,100 +38,98 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class ImageCheckServlet extends AbstractRestApiServlet {
-	private static final Logger log = Logger.getLogger(ImageCheckServlet.class
-			.getName());
-	private static final long serialVersionUID = 9187987692591327059L;
-	private static final long MAX_ATTEMPTS = 3;
-	private static final long DELAY = 1000 * 60 * 5; // 5min
+    private static final Logger log = Logger.getLogger(ImageCheckServlet.class
+            .getName());
+    private static final long serialVersionUID = 9187987692591327059L;
+    private static final long MAX_ATTEMPTS = 3;
+    private static final long DELAY = 1000 * 60 * 5; // 5min
 
-	@Override
-	protected RestRequest convertRequest() throws Exception {
-		HttpServletRequest req = getRequest();
-		RestRequest restRequest = new ImageCheckRequest();
-		restRequest.populateFromHttpRequest(req);
-		return restRequest;
-	}
+    @Override
+    protected RestRequest convertRequest() throws Exception {
+        HttpServletRequest req = getRequest();
+        RestRequest restRequest = new ImageCheckRequest();
+        restRequest.populateFromHttpRequest(req);
+        return restRequest;
+    }
 
-	@Override
-	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		final ImageCheckRequest checkReq = (ImageCheckRequest) req;
+    @Override
+    protected RestResponse handleRequest(RestRequest req) throws Exception {
+        final ImageCheckRequest checkReq = (ImageCheckRequest) req;
 
-		if (checkReq.getFileName() == null || checkReq.getFileName().equals("")) {
-			log.log(Level.SEVERE, "No filename was provided, aborting check");
-			return new RestResponse();
-		}
+        if (checkReq.getFileName() == null || checkReq.getFileName().equals("")) {
+            log.log(Level.SEVERE, "No filename was provided, aborting check");
+            return new RestResponse();
+        }
 
-		if (checkReq.getAttempt() == null || checkReq.getAttempt().equals("")) {
-			log.log(Level.SEVERE,
-					"No attempt number was specified, aborting check");
-			return new RestResponse();
-		}
+        if (checkReq.getAttempt() == null || checkReq.getAttempt().equals("")) {
+            log.log(Level.SEVERE,
+                    "No attempt number was specified, aborting check");
+            return new RestResponse();
+        }
 
-		// NOTE: baseUrl contains a trailing slash
-		final String baseUrl = PropertyUtil.getProperty("photo_url_root");
-		final String imageUrl = baseUrl + checkReq.getFileName();
+        // NOTE: baseUrl contains a trailing slash
+        final String baseUrl = PropertyUtil.getProperty("photo_url_root");
+        final String imageUrl = baseUrl + checkReq.getFileName();
 
-		// MalformedURLException exception caught by method signature
-		final URL url = new URL(imageUrl);
+        // MalformedURLException exception caught by method signature
+        final URL url = new URL(imageUrl);
 
-		try {
+        try {
 
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setConnectTimeout(TaskServlet.CONNECTION_TIMEOUT);
-			conn.setRequestMethod("HEAD");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(TaskServlet.CONNECTION_TIMEOUT);
+            conn.setRequestMethod("HEAD");
 
-			if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-				if (checkReq.getAttempt() == MAX_ATTEMPTS) {
-					log.log(Level.INFO, "Adding file as missing: " + checkReq);
-					DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
-					DeviceFileJobQueue df = new DeviceFileJobQueue();
-					df.setFileName(checkReq.getFileName());
-					df.setDeviceId(checkReq.getDeviceId());
-					df.setQasId(checkReq.getQasId());
-					jobDao.save(df);
-				} else {
-					rescheduleTask(checkReq, true);
-				}
-			}
-		} catch (SocketTimeoutException timeout) {
-			// reschedule the task without delay
-			// Possible a hiccup in GAE side
-			rescheduleTask(checkReq, false);
-		} catch (IOException e) {
-			// IOException possible a http 403, reschedule the task
-			rescheduleTask(checkReq, true);
-		}
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                if (checkReq.getAttempt() == MAX_ATTEMPTS) {
+                    log.log(Level.INFO, "Adding file as missing: " + checkReq);
+                    DeviceFileJobQueueDAO jobDao = new DeviceFileJobQueueDAO();
+                    DeviceFileJobQueue df = new DeviceFileJobQueue();
+                    df.setFileName(checkReq.getFileName());
+                    df.setDeviceId(checkReq.getDeviceId());
+                    df.setQasId(checkReq.getQasId());
+                    jobDao.save(df);
+                } else {
+                    rescheduleTask(checkReq, true);
+                }
+            }
+        } catch (SocketTimeoutException timeout) {
+            // reschedule the task without delay
+            // Possible a hiccup in GAE side
+            rescheduleTask(checkReq, false);
+        } catch (IOException e) {
+            // IOException possible a http 403, reschedule the task
+            rescheduleTask(checkReq, true);
+        }
 
-		return new RestResponse();
-	}
+        return new RestResponse();
+    }
 
-	@Override
-	protected void writeOkResponse(RestResponse resp) throws Exception {
-		getResponse().setStatus(200);
-	}
+    @Override
+    protected void writeOkResponse(RestResponse resp) throws Exception {
+        getResponse().setStatus(200);
+    }
 
-	/**
-	 *
-	 * Reschedules the CheckImage task with a possible delay<br>
-	 * delay = 3 min * attempt number
-	 *
-	 */
-	private void rescheduleTask(ImageCheckRequest req, boolean delay) {
+    /**
+     * Reschedules the CheckImage task with a possible delay<br>
+     * delay = 3 min * attempt number
+     */
+    private void rescheduleTask(ImageCheckRequest req, boolean delay) {
 
-		int attempt = delay ? req.getAttempt() + 1 : req.getAttempt();
+        int attempt = delay ? req.getAttempt() + 1 : req.getAttempt();
 
-		log.log(Level.INFO, "Rescheduling image check: " + req);
+        log.log(Level.INFO, "Rescheduling image check: " + req);
 
-		Queue queue = QueueFactory.getQueue("background-processing");
-		TaskOptions to = TaskOptions.Builder
-				.withUrl("/app_worker/imagecheck")
-				.param(ImageCheckRequest.FILENAME_PARAM, req.getFileName())
-				.param(ImageCheckRequest.DEVICE_ID_PARAM,
-						String.valueOf(req.getDeviceId()))
-				.param(ImageCheckRequest.QAS_ID_PARAM,
-						String.valueOf(req.getQasId()))
-				.param(ImageCheckRequest.ATTEMPT_PARAM, String.valueOf(attempt))
-				.countdownMillis(delay ? DELAY * req.getAttempt() : 0);
-		queue.add(to);
-	}
+        Queue queue = QueueFactory.getQueue("background-processing");
+        TaskOptions to = TaskOptions.Builder
+                .withUrl("/app_worker/imagecheck")
+                .param(ImageCheckRequest.FILENAME_PARAM, req.getFileName())
+                .param(ImageCheckRequest.DEVICE_ID_PARAM,
+                        String.valueOf(req.getDeviceId()))
+                .param(ImageCheckRequest.QAS_ID_PARAM,
+                        String.valueOf(req.getQasId()))
+                .param(ImageCheckRequest.ATTEMPT_PARAM, String.valueOf(attempt))
+                .countdownMillis(delay ? DELAY * req.getAttempt() : 0);
+        queue.add(to);
+    }
 }

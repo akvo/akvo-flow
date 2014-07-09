@@ -1,0 +1,184 @@
+{{#view FLOW.MonitoringDataTableView}}
+<section class="fullWidth" id="monitoringData">
+    <div class="floats-in" id="dataFilter">
+      <h1>{{t _choose_survey_data_to_display}}:</h1>
+      <div class="chooseSurveyData">
+        {{view Ember.Select 
+          contentBinding="FLOW.surveyGroupControl.arrangedContent"
+          selectionBinding="view.selectedSurveyGroup"
+          optionLabelPath="content.code" 
+          optionValuePath="content.keyId"
+          prompt=""
+          promptBinding="Ember.STRINGS._select_survey_group"}}
+	  </div>
+	  <div class="dataCollectedDate">
+	  </div>
+		<div class="dataDeviceId">
+		<label  class="devideId"> {{t _identifier}}:</label>
+	    {{view Ember.TextField
+          valueBinding="view.identifier"
+          placeholder=""
+          placeholderBinding="Ember.STRINGS._identifier"
+          size=30}}
+        <label  class="devideId"> {{t _display_name}}:</label>
+        {{view Ember.TextField 
+          valueBinding="view.displayName"
+          placeholder=""
+          placeholderBinding="Ember.STRINGS._display_name"
+          size=30}}
+			</div>
+      <a {{action "findSurveyedLocale" target="this"}} class="findData"> {{t _find}}</a>
+    </div>
+    <section class="fullWidth " id="devicesList">
+      <table class="dataTable" id="surveyDataTable">
+        <thead>
+          <tr>
+              <th class="noArrows"></th>
+              <th class="noArrows">{{t _survey_group}}</th>
+              <th class="noArrows">{{t _identifier}}</th>
+              <th class="noArrows">{{t _display_name}}</th>
+              <th class="noArrows">{{t _last_update}}</th>
+              <th class="noArrows">{{t _action}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each sl in FLOW.surveyedLocaleControl.content}}
+            <tr>
+              <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
+              <td class="surveyGroup" style="text-align:left;">{{#with sl}}{{sgName surveyGroupId}}{{/with}}</td>
+              <td class="identifier" style="text-align:left;">{{sl.identifier}}</td>
+              <td class="displayName" style="text-align:left;">{{sl.displayName}}</td>
+              <td class="collected">{{#with sl}}{{date1 lastUpdateDateTime}}{{/with}}</td>
+              <td class="action">
+                <a {{action showDetailsDialog sl target="this" }}>
+                  {{t _view_details}}
+                </a>
+              </td>
+            </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="7"><small>This is the footer.</small></td>
+          </tr>
+        </tfoot>
+      </table>
+      <ul class="prevNext">
+        <li class="prevBtn">{{#if view.hasPrevPage}}
+          <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
+        </li>
+        <li class="nextBtn">{{#if view.hasNextPage}}
+          <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
+        </li>
+      </ul>
+    </section>
+
+    <!-- surveyInstance details Dialog -->
+    <div {{bindAttr class="view.showingDetailsDialog:display :overlay"}}>
+      <div class="blanketWide"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialogWide">
+		     <a {{action "closeDetailsDialog" target="this"}} class="ok clodeDialog">close window</a>
+
+          <h2>{{t _details}}</h2>
+            <nav class="editAnswerMenu"> 
+          </nav>
+        <p></p>
+<section class="fullWidth " id="devicesList">
+      <table class="dataTable" id="surveyDataTable">
+        <thead>
+          <tr>
+              <th class="noArrows"></th>
+              <th class="noArrows">{{t _id}}</th>
+              <th class="noArrows">{{t _survey}}</th>
+              <th class="noArrows">{{t _submitter}}</th>
+              <th class="noArrows">{{t _device}}</th>
+              <th class="noArrows">{{t _collected}}</th>
+              <th class="noArrows">{{t _action}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each SI in FLOW.surveyInstanceControl.currentContents}}
+            <tr>
+              <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
+              <td class="device">{{SI.keyId}}</td>
+              <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
+              <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
+              <td class="device">{{SI.deviceIdentifier}}</td>
+              <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
+              <td class="action">
+                <a {{action showSurveyInstanceDetails SI target="this"}}>
+                  {{t _view_details}}
+                </a>
+              </td>
+            </tr>
+            <tr class="si_details" style="background: #fff; display:none;" data-flow-id="si_details_{{unbound SI.id}}">
+              <td colspan="7">
+              <table class="dataTable" id="surveyDataTable">
+            <!-- TABLE HEADER-->
+            <thead>
+                <tr>
+                    <th class="noArrows">{{t _id}}</th>
+                    <th class="noArrows">{{t _question}}</th>
+                    <th class="noArrows">{{t _answer}}</th>                
+                </tr>
+            </thead>
+            <!-- TABLE BODY: MAIN CONTENT-->
+            <tbody>
+                {{#each QA in FLOW.questionAnswerControl}}
+                  {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
+                    <tr>
+                      <td class="device">{{QA.keyId}}</td>
+                      <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
+                    
+                    <td class="submitter" style="text-align:left;">
+                      {{#if view.isNotEditable}}
+                        {{#if view.isPhotoType}}
+                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open photo</a> 
+                        {{else}}
+                          {{QA.value}}
+                        {{/if}}
+                      {{else}}
+                        {{#if view.isDateType}}
+                        <span>{{#with QA}}{{date3 value}}{{/with}}</span>
+                        {{else}}
+                          <span>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</span>
+                        {{/if}}
+                      {{/if}}
+                    </td>
+                    </tr>
+                    {{/view}}
+                {{/each}}
+            </tbody>
+            <!-- TABLE FOOTER-->
+            <tfoot>
+                <tr>
+                    <td colspan="7"><small>This is the footer.</small></td>
+                </tr>
+            </tfoot>
+        </table>
+              </td>
+            </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="7"><small>This is the footer.</small></td>
+          </tr>
+        </tfoot>
+      </table>
+      <ul class="prevNext">
+        <li class="prevBtn">{{#if view.hasPrevPage}}
+          <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
+        </li>
+        <li class="nextBtn">{{#if view.hasNextPage}}
+          <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
+        </li>
+      </ul>
+    </section>
+         </div>
+      </div>
+    </div>
+</section>
+{{/view}}

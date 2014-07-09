@@ -5,7 +5,6 @@
 // Generated on: 2010.08.05 at 05:55:36 PM MDT 
 //
 
-
 package com.gallatinsystems.survey.domain.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,11 +13,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-
 /**
- * <p>Java class for anonymous complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * Java class for anonymous complex type.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -28,12 +27,10 @@ import javax.xml.bind.annotation.XmlValue;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "content"
+        "content"
 })
 @XmlRootElement(name = "heading")
 public class Heading {
@@ -44,10 +41,7 @@ public class Heading {
     /**
      * Gets the value of the content property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * @return possible object is {@link String }
      */
     public String getContent() {
         return content;
@@ -56,10 +50,7 @@ public class Heading {
     /**
      * Sets the value of the content property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * @param value allowed object is {@link String }
      */
     public void setContent(String value) {
         this.content = value;

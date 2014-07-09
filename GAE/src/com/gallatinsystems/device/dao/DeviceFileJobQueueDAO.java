@@ -24,33 +24,33 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 
 public class DeviceFileJobQueueDAO extends BaseDAO<DeviceFileJobQueue> {
 
-	public DeviceFileJobQueueDAO() {
-		super(DeviceFileJobQueue.class);
-	}
+    public DeviceFileJobQueueDAO() {
+        super(DeviceFileJobQueue.class);
+    }
 
-	public List<DeviceFileJobQueue> listByDeviceId(Long deviceId) {
-		return super.listByProperty("deviceId", deviceId, "Long");
-	}
+    public List<DeviceFileJobQueue> listByDeviceId(Long deviceId) {
+        return super.listByProperty("deviceId", deviceId, "Long");
+    }
 
-	public List<DeviceFileJobQueue> listByUnknownDevice() {
-		return listByDeviceId(null);
-	}
+    public List<DeviceFileJobQueue> listByUnknownDevice() {
+        return listByDeviceId(null);
+    }
 
-	public List<DeviceFileJobQueue> listByDeviceAndFile(Long deviceId,
-			String fileName) {
+    public List<DeviceFileJobQueue> listByDeviceAndFile(Long deviceId,
+            String fileName) {
 
-		List<DeviceFileJobQueue> list = super.listByProperty("fileName",
-				fileName, "String");
-		List<DeviceFileJobQueue> result = new ArrayList<DeviceFileJobQueue>();
+        List<DeviceFileJobQueue> list = super.listByProperty("fileName",
+                fileName, "String");
+        List<DeviceFileJobQueue> result = new ArrayList<DeviceFileJobQueue>();
 
-		for (DeviceFileJobQueue e : list) {
-			// deviceId is null when we don't know the source of the image
-			// some device is "reclaiming" it
-			if (e.getDeviceId() == null || e.getDeviceId().equals(deviceId)) {
-				result.add(e);
-			}
-		}
+        for (DeviceFileJobQueue e : list) {
+            // deviceId is null when we don't know the source of the image
+            // some device is "reclaiming" it
+            if (e.getDeviceId() == null || e.getDeviceId().equals(deviceId)) {
+                result.add(e);
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 }

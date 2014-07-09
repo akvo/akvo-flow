@@ -35,46 +35,46 @@ import services.S3Driver;
 
 public class PhotoUpload extends HttpServlet {
 
-	private static final long serialVersionUID = 4496360086104690603L;
-	private static final Logger log = Logger.getLogger(PhotoUpload.class
-			.getName());
+    private static final long serialVersionUID = 4496360086104690603L;
+    private static final Logger log = Logger.getLogger(PhotoUpload.class
+            .getName());
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) {
 
-	}
+    }
 
-	public void doPost(HttpServletRequest req, HttpServletResponse resp) {
-		Properties props = System.getProperties();
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        Properties props = System.getProperties();
 
-		String bucket = props.getProperty("s3bucket");
-		ServletFileUpload upload = new ServletFileUpload();
-		try {
-			FileItemIterator iterator = upload.getItemIterator(req);
-			while (iterator.hasNext()) {
-				FileItemStream item = iterator.next();
-				InputStream in = item.openStream();
-				ByteArrayOutputStream out = null;
-				try {
+        String bucket = props.getProperty("s3bucket");
+        ServletFileUpload upload = new ServletFileUpload();
+        try {
+            FileItemIterator iterator = upload.getItemIterator(req);
+            while (iterator.hasNext()) {
+                FileItemStream item = iterator.next();
+                InputStream in = item.openStream();
+                ByteArrayOutputStream out = null;
+                try {
 
-					in = item.openStream();
-					out = new ByteArrayOutputStream();
-					byte[] buffer = new byte[8096];
-					int size;
+                    in = item.openStream();
+                    out = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[8096];
+                    int size;
 
-					while ((size = in.read(buffer, 0, buffer.length)) != -1) {
-						out.write(buffer, 0, size);
-					}
-				} catch (IOException e) {
-					log.log(Level.SEVERE, "Could not rotate image", e);
-				}
-				S3Driver s3 = new S3Driver();
-				s3.uploadFile(bucket, "images/" + item.getName(), out
-						.toByteArray());
-			}
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not save image", e);
-		}
+                    while ((size = in.read(buffer, 0, buffer.length)) != -1) {
+                        out.write(buffer, 0, size);
+                    }
+                } catch (IOException e) {
+                    log.log(Level.SEVERE, "Could not rotate image", e);
+                }
+                S3Driver s3 = new S3Driver();
+                s3.uploadFile(bucket, "images/" + item.getName(), out
+                        .toByteArray());
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Could not save image", e);
+        }
 
-	}
+    }
 
 }

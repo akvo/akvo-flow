@@ -28,127 +28,121 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * wrapper class to facilitate generation of zip files
- * 
- * 
  */
 public class ZipUtil {
 
-	/**
-	 * zips the contents of the string passed in into a file called
-	 * "waterforpeoplemapping.kml"
-	 * 
-	 * @param kmlContents
-	 * @return
-	 * @deprecated
-	 */
-	public static ByteArrayOutputStream generateZip(String kmlContents) {
-		return generateZip(kmlContents, "waterforpeoplemapping.kml");
-	}
+    /**
+     * zips the contents of the string passed in into a file called "waterforpeoplemapping.kml"
+     * 
+     * @param kmlContents
+     * @return
+     * @deprecated
+     */
+    public static ByteArrayOutputStream generateZip(String kmlContents) {
+        return generateZip(kmlContents, "waterforpeoplemapping.kml");
+    }
 
-	/**
-	 * generates a zip file containg the content of the content string into a
-	 * file named filename.
-	 * 
-	 * @param content
-	 * @param filename
-	 * @return ByteArrayOutputStream of the zip encoded file
-	 */
-	public static ByteArrayOutputStream generateZip(String content,
-			String filename) {
-		ZipOutputStream zipOut = null;
-		ByteArrayOutputStream bos = null;
-		try {
-			bos = new ByteArrayOutputStream();
-			zipOut = new ZipOutputStream(bos);
-			zipOut.setLevel(ZipOutputStream.DEFLATED);
-			ZipEntry entry = new ZipEntry(filename);
-			zipOut.putNextEntry(entry);
-			zipOut.write(content.getBytes("UTF-8"));
-			zipOut.closeEntry();
-			zipOut.close();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return bos;
+    /**
+     * generates a zip file containg the content of the content string into a file named filename.
+     * 
+     * @param content
+     * @param filename
+     * @return ByteArrayOutputStream of the zip encoded file
+     */
+    public static ByteArrayOutputStream generateZip(String content,
+            String filename) {
+        ZipOutputStream zipOut = null;
+        ByteArrayOutputStream bos = null;
+        try {
+            bos = new ByteArrayOutputStream();
+            zipOut = new ZipOutputStream(bos);
+            zipOut.setLevel(ZipOutputStream.DEFLATED);
+            ZipEntry entry = new ZipEntry(filename);
+            zipOut.putNextEntry(entry);
+            zipOut.write(content.getBytes("UTF-8"));
+            zipOut.closeEntry();
+            zipOut.close();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bos;
 
-	}
+    }
 
-	/**
-	 * generates a zip containing multiple entries
-	 * 
-	 * @param contents
-	 *            - map of data to zip. Keys are filenames for the entry and
-	 *            values is the content that will be written as an UTF-8 string
-	 * @return
-	 */
-	public static ByteArrayOutputStream generateZip(Map<String, String> contents) {
-		ZipOutputStream zipOut = null;
-		ByteArrayOutputStream bos = null;
-		try {
-			bos = new ByteArrayOutputStream();
-			zipOut = new ZipOutputStream(bos);
-			zipOut.setLevel(ZipOutputStream.DEFLATED);
-			for (Entry<String, String> contentEntry : contents.entrySet()) {
-				ZipEntry entry = new ZipEntry(contentEntry.getKey());
-				zipOut.putNextEntry(entry);
-				zipOut.write(contentEntry.getValue().getBytes("UTF-8"));
-				zipOut.closeEntry();
-			}
-			zipOut.close();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return bos;
-	}
+    /**
+     * generates a zip containing multiple entries
+     * 
+     * @param contents - map of data to zip. Keys are filenames for the entry and values is the
+     *            content that will be written as an UTF-8 string
+     * @return
+     */
+    public static ByteArrayOutputStream generateZip(Map<String, String> contents) {
+        ZipOutputStream zipOut = null;
+        ByteArrayOutputStream bos = null;
+        try {
+            bos = new ByteArrayOutputStream();
+            zipOut = new ZipOutputStream(bos);
+            zipOut.setLevel(ZipOutputStream.DEFLATED);
+            for (Entry<String, String> contentEntry : contents.entrySet()) {
+                ZipEntry entry = new ZipEntry(contentEntry.getKey());
+                zipOut.putNextEntry(entry);
+                zipOut.write(contentEntry.getValue().getBytes("UTF-8"));
+                zipOut.closeEntry();
+            }
+            zipOut.close();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bos;
+    }
 
-	/**
-	 * decodes the byte array representing the zip file into a string. This
-	 * assumes the zip contains only 1 file.
-	 * 
-	 * @param contents
-	 * @return
-	 * @throws IOException
-	 */
-	public static String unZip(byte[] contents) throws IOException {
-		return unZip(contents, null);
-	}
+    /**
+     * decodes the byte array representing the zip file into a string. This assumes the zip contains
+     * only 1 file.
+     * 
+     * @param contents
+     * @return
+     * @throws IOException
+     */
+    public static String unZip(byte[] contents) throws IOException {
+        return unZip(contents, null);
+    }
 
-	/**
-	 * unzips a single zip entry (file within a zip) and returns the content as
-	 * a string.
-	 * 
-	 * @param contents
-	 * @param entryName
-	 * @return
-	 * @throws IOException
-	 */
-	public static String unZip(byte[] contents, String entryName)
-			throws IOException {
-		ByteArrayInputStream zipContents = new ByteArrayInputStream(contents);
-		ZipInputStream zis = new ZipInputStream(zipContents);
-		ZipEntry entry;
-		StringBuilder line = new StringBuilder();
-		while ((entry = zis.getNextEntry()) != null) {
-			if (entryName == null
-					|| entryName.equalsIgnoreCase(entry.getName())) {
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				byte[] buffer = new byte[2048];
-				int size;
-				while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
-					out.write(buffer, 0, size);
-				}
-				line.append(out.toString());
+    /**
+     * unzips a single zip entry (file within a zip) and returns the content as a string.
+     * 
+     * @param contents
+     * @param entryName
+     * @return
+     * @throws IOException
+     */
+    public static String unZip(byte[] contents, String entryName)
+            throws IOException {
+        ByteArrayInputStream zipContents = new ByteArrayInputStream(contents);
+        ZipInputStream zis = new ZipInputStream(zipContents);
+        ZipEntry entry;
+        StringBuilder line = new StringBuilder();
+        while ((entry = zis.getNextEntry()) != null) {
+            if (entryName == null
+                    || entryName.equalsIgnoreCase(entry.getName())) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                byte[] buffer = new byte[2048];
+                int size;
+                while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
+                    out.write(buffer, 0, size);
+                }
+                line.append(out.toString());
 
-				out.close();
-			}
-		}
-		zis.closeEntry();
+                out.close();
+            }
+        }
+        zis.closeEntry();
 
-		return line.toString();
-	}
+        return line.toString();
+    }
 
 }

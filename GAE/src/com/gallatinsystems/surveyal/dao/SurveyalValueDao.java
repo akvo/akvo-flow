@@ -25,40 +25,48 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 
-
 /**
  * Data access object for manipulating SurveyalValues
- * 
  */
 public class SurveyalValueDao extends BaseDAO<SurveyalValue> {
 
-	public SurveyalValueDao() {
-		super(SurveyalValue.class);
-	}
-	
-	/**
-	 * lists all surveyalValues for a certain surveyId
-	 * 
-	 * @param cursor
-	 * @param pagesize
-	 * @param surveyId
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<SurveyalValue> listBySurvey(Long surveyId, String cursor, Integer pageSize) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
+    public SurveyalValueDao() {
+        super(SurveyalValue.class);
+    }
 
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		appendNonNullParam("surveyId", filterString, paramString, "Long",
-				surveyId, paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		prepareCursor(cursor, pageSize, query);
-		List<SurveyalValue> results = (List<SurveyalValue>) query
-				.executeWithMap(paramMap);
-		return results;
-	}
+    /**
+     * lists all surveyalValues for a certain surveyId
+     *
+     * @param cursor
+     * @param pagesize
+     * @param surveyId
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyalValue> listBySurvey(Long surveyId, String cursor, Integer pageSize) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyalValue.class);
+
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        appendNonNullParam("surveyId", filterString, paramString, "Long",
+                surveyId, paramMap);
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        prepareCursor(cursor, pageSize, query);
+        List<SurveyalValue> results = (List<SurveyalValue>) query
+                .executeWithMap(paramMap);
+        return results;
+    }
+
+    /**
+     * List the surveyal values associated with a specific question
+     *
+     * @param questionId
+     * @return
+     */
+    public List<SurveyalValue> listByQuestion(Long questionId) {
+        return listByProperty("surveyQuestionId", questionId, "Long");
+    }
 }

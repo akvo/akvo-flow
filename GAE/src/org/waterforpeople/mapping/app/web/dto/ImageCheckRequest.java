@@ -24,53 +24,53 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 public class ImageCheckRequest extends RestRequest {
 
-	private static final long serialVersionUID = 5103416013238572162L;
+    private static final long serialVersionUID = 5103416013238572162L;
 
-	public static final String FILENAME_PARAM = "fileName";
-	public static final String ATTEMPT_PARAM = "attempt";
-	public static final String QAS_ID_PARAM = "qasId";
-	public static final String DEVICE_ID_PARAM = "deviceId";
+    public static final String FILENAME_PARAM = "fileName";
+    public static final String ATTEMPT_PARAM = "attempt";
+    public static final String QAS_ID_PARAM = "qasId";
+    public static final String DEVICE_ID_PARAM = "deviceId";
 
-	String fileName;
-	Integer attempt;
-	Long qasId;
-	Long deviceId;
+    String fileName;
+    Integer attempt;
+    Long qasId;
+    Long deviceId;
 
-	public String getFileName() {
-		return fileName;
-	}
+    public String getFileName() {
+        return fileName;
+    }
 
-	public Integer getAttempt() {
-		return attempt;
-	}
+    public Integer getAttempt() {
+        return attempt;
+    }
 
-	public Long getQasId() {
-		return qasId;
-	}
+    public Long getQasId() {
+        return qasId;
+    }
 
-	public Long getDeviceId() {
-		return deviceId;
-	}
+    public Long getDeviceId() {
+        return deviceId;
+    }
 
-	@Override
-	protected void populateFields(HttpServletRequest req) throws Exception {
-		fileName = req.getParameter(FILENAME_PARAM);
-		attempt = Integer.valueOf(req.getParameter(ATTEMPT_PARAM));
-		qasId = Long.valueOf(req.getParameter(QAS_ID_PARAM));
-        
-		String deviceIdParam = req.getParameter(DEVICE_ID_PARAM);
-		if (deviceIdParam != null && !"null".equalsIgnoreCase(deviceIdParam)) {
-			deviceId = Long.valueOf(deviceIdParam);
-		}
-	}
+    @Override
+    protected void populateFields(HttpServletRequest req) throws Exception {
+        fileName = req.getParameter(FILENAME_PARAM);
+        attempt = Integer.valueOf(req.getParameter(ATTEMPT_PARAM));
+        qasId = Long.valueOf(req.getParameter(QAS_ID_PARAM));
 
-	@Override
-	protected void populateErrors() {
-	}
+        String deviceIdParam = req.getParameter(DEVICE_ID_PARAM);
+        if (deviceIdParam != null && !"null".equalsIgnoreCase(deviceIdParam)) {
+            deviceId = Long.valueOf(deviceIdParam);
+        }
+    }
 
-	@Override
-	public String toString() {
-		return new JSONObject(this).toString();
-	}
+    @Override
+    protected void populateErrors() {
+    }
+
+    @Override
+    public String toString() {
+        return new JSONObject(this).toString();
+    }
 
 }

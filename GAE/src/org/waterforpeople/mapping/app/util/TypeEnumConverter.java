@@ -18,9 +18,8 @@ package org.waterforpeople.mapping.app.util;
 
 import org.apache.commons.beanutils.converters.AbstractConverter;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
-import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
-import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.QuestionHelpDto;
 import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
 import org.waterforpeople.mapping.domain.AccessPoint;
 
@@ -33,55 +32,54 @@ import com.gallatinsystems.weightsmeasures.domain.UnitOfMeasure;
  * converts enumerated types
  * 
  * @author Christopher Fagiani
- * 
  */
 @SuppressWarnings("rawtypes")
 public class TypeEnumConverter extends AbstractConverter {
 
-	@Override
-	protected Object convertToType(Class type, Object value) throws Throwable {
-		if (value != null) {
-			if (type == Question.Type.class) {
+    @Override
+    protected Object convertToType(Class type, Object value) throws Throwable {
+        if (value != null) {
+            if (type == Question.Type.class) {
 
-				return Question.Type.valueOf(value.toString());
+                return Question.Type.valueOf(value.toString());
 
-			} else if (type == QuestionDto.QuestionType.class) {
+            } else if (type == QuestionDto.QuestionType.class) {
 
-				return QuestionDto.QuestionType.valueOf(value.toString());
+                return QuestionDto.QuestionType.valueOf(value.toString());
 
-			} else if (type == AccessPoint.Status.class) {
+            } else if (type == AccessPoint.Status.class) {
 
-				return AccessPoint.Status.valueOf(value.toString());
+                return AccessPoint.Status.valueOf(value.toString());
 
-			} else if (type == AccessPoint.AccessPointType.class) {
-				return AccessPoint.AccessPointType.valueOf(value.toString());
-			} else if (type == UnitOfMeasure.UnitOfMeasureSystem.class) {
-				return UnitOfMeasure.UnitOfMeasureSystem.valueOf(value
-						.toString());
-			} else if (type == UnitOfMeasure.UnitOfMeasureType.class) {
-				return UnitOfMeasure.UnitOfMeasureType
-						.valueOf(value.toString());
-			} else if (type == QuestionHelpMedia.Type.class) {
-				return QuestionHelpMedia.Type.valueOf(value.toString());
-			} else if (type == QuestionHelpDto.Type.class) {
-				return QuestionHelpDto.Type.valueOf(value.toString());
-			} else if (type == OGRFeatureDto.FeatureType.class) {
-				return OGRFeatureDto.FeatureType.valueOf(value.toString());
-			} else if (type == Survey.Status.class){
-				return Survey.Status.valueOf(value.toString());
-			}
-		}
-		return null;
-	}
+            } else if (type == AccessPoint.AccessPointType.class) {
+                return AccessPoint.AccessPointType.valueOf(value.toString());
+            } else if (type == UnitOfMeasure.UnitOfMeasureSystem.class) {
+                return UnitOfMeasure.UnitOfMeasureSystem.valueOf(value
+                        .toString());
+            } else if (type == UnitOfMeasure.UnitOfMeasureType.class) {
+                return UnitOfMeasure.UnitOfMeasureType
+                        .valueOf(value.toString());
+            } else if (type == QuestionHelpMedia.Type.class) {
+                return QuestionHelpMedia.Type.valueOf(value.toString());
+            } else if (type == QuestionHelpDto.Type.class) {
+                return QuestionHelpDto.Type.valueOf(value.toString());
+            } else if (type == OGRFeatureDto.FeatureType.class) {
+                return OGRFeatureDto.FeatureType.valueOf(value.toString());
+            } else if (type == Survey.Status.class) {
+                return Survey.Status.valueOf(value.toString());
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public Object handleMissing(Class type) {
-		return null;
-	}
+    @Override
+    public Object handleMissing(Class type) {
+        return null;
+    }
 
-	@Override
-	protected Class getDefaultType() {
-		return QuestionType.class;
-	}
+    @Override
+    protected Class getDefaultType() {
+        return QuestionType.class;
+    }
 
 }

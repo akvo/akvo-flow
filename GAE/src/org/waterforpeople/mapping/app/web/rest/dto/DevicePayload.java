@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest.dto;
 
 import java.io.Serializable;
@@ -21,14 +22,14 @@ import org.waterforpeople.mapping.app.gwt.client.device.DeviceDto;
 
 public class DevicePayload implements Serializable {
 
-	private static final long serialVersionUID = 1927125743629112187L;
-	DeviceDto device = null;
+    private static final long serialVersionUID = 1927125743629112187L;
+    DeviceDto device = null;
 
-	public DeviceDto getDevice() {
-		return device;
-	}
+    public DeviceDto getDevice() {
+        return device;
+    }
 
-	public void setDevice(DeviceDto device) {
-		this.device = device;
-	}
+    public void setDevice(DeviceDto device) {
+        this.device = device;
+    }
 }

@@ -34,7 +34,7 @@ FLOW.notificationOptionControl = Ember.Object.create({
       label: Ember.String.loc('_link'),
       value: "LINK"
     }), Ember.Object.create({
-      label: Ember.String.loc('_attachment'),
+      label: "attachment",
       value: "ATTACHMENT"
     })
   ]
@@ -94,21 +94,51 @@ FLOW.surveyPointTypeControl = Ember.Object.create({
   ]
 });
 
+FLOW.surveySectorTypeControl = Ember.Object.create({
+  content: [
+    Ember.Object.create({
+      label: "Water and Sanitation",
+      value: "WASH"
+    }), Ember.Object.create({
+      label: "Education",
+      value: "EDUC"
+    }), Ember.Object.create({
+      label: "Economic development",
+      value: "ECONDEV"
+    }), Ember.Object.create({
+      label: "Health care",
+      value: "HEALTH"
+    }), Ember.Object.create({
+      label: "IT and Communication",
+      value: "ICT"
+    }), Ember.Object.create({
+      label: "Food security",
+      value: "FOODSEC"
+    }), Ember.Object.create({
+      label: "Other",
+      value: "OTHER"
+    })
+  ]
+});
+
+FLOW.alwaysTrue = function () {
+  return true;
+};
+
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortProperties: ['code'],
   sortAscending: true,
   content: null,
 
-  setFilteredContent: function () {
-    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function (item) {
-      return true;
-    }));
+  setFilteredContent: function (f) {
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, f));
   },
 
   // load all Survey Groups
-  populate: function () {
-    FLOW.store.find(FLOW.SurveyGroup);
-    this.setFilteredContent();
+  populate: function (f) {
+	var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
+	FLOW.store.find(FLOW.SurveyGroup);
+	this.setFilteredContent(fn);
   },
 
   // checks if data store contains surveys within this survey group.
@@ -140,18 +170,6 @@ FLOW.surveyControl = Ember.ArrayController.create({
   sortProperties: ['name'],
   sortAscending: true,
 
-  setFilteredContent: function () {
-    var sgId;
-    if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
-      sgId = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
-      this.set('content', FLOW.store.filter(FLOW.Survey, function (item) {
-        return item.get('surveyGroupId') == sgId;
-      }));
-    } else {
-      this.set('content', null);
-    }
-  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
-
   setPublishedContent: function () {
     var sgId;
     if (FLOW.selectedControl.get('selectedSurveyGroup') && FLOW.selectedControl.selectedSurveyGroup.get('keyId') > 0) {
@@ -174,11 +192,26 @@ FLOW.surveyControl = Ember.ArrayController.create({
       id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
       // this content is actualy not used, the data ends up in the store
       // and is accessed through the filtered content above
-      FLOW.store.findQuery(FLOW.Survey, {
+      this.set('content', FLOW.store.findQuery(FLOW.Survey, {
         surveyGroupId: id
-      });
+      }));
+    } else {
+      this.set('content', null);
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  refresh: function () {
+	  var sg = FLOW.selectedControl.get('selectedSurveyGroup');
+	  this.set('content', FLOW.store.filter(FLOW.Survey, function (item) {
+		  return item.get('surveyGroupId') === sg.get('keyId');
+	  }));
+  },
+
+  newLocale: function () {
+	  var newLocaleId = FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('newLocaleSurveyId');
+	  if(!this.get('content') || !this.get('content').get('isLoaded')) { return; }
+	  this.set('newLocaleSurvey', this.find(function (item) { return item.get('keyId') === newLocaleId; }));
+  }.observes('content.isLoaded'),
 
   publishSurvey: function () {
     var surveyId;
@@ -194,6 +227,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     survey = FLOW.store.find(FLOW.Survey, keyId);
     survey.deleteRecord();
     FLOW.store.commit();
+    this.refresh();
   }
 });
 
@@ -242,7 +276,34 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
       });
       return allSaved;
     }
-  }.property('content.@each.isSaving')
+  }.property('content.@each.isSaving'),
+
+  // execute group delete
+  deleteQuestionGroup: function (questionGroupId) {
+    var questionGroup, questionsGroupsInSurvey, sId, qgOrder;
+    sId = FLOW.selectedControl.selectedSurvey.get('keyId');
+    questionGroup = FLOW.store.find(FLOW.QuestionGroup, questionGroupId);
+    qgOrder = questionGroup.get('order');
+
+    questionGroup.deleteRecord();
+
+    // restore order of remaining groups
+    questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
+      return item.get('surveyId') == sId;
+    });
+
+    // restore order
+    questionGroupsInSurvey.forEach(function (item) {
+      if (item.get('order') > qgOrder) {
+        item.set('order', item.get('order') - 1);
+      }
+    });
+
+    // restore order in case the order has gone haywire
+    FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
+    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
+    FLOW.store.commit();
+  }
 });
 
 
@@ -917,7 +978,7 @@ FLOW.translationControl = Ember.ArrayController.create({
 	      }
 	  });
       if (unsaved){
-    	  FLOW.dialogControl.set('activeAction', 'ignore');
+    	FLOW.dialogControl.set('activeAction', 'ignore');
         FLOW.dialogControl.set('header', Ember.String.loc('_unsaved_translations_present'));
         FLOW.dialogControl.set('message', Ember.String.loc('_unsaved_translations_present_text'));
         FLOW.dialogControl.set('showCANCEL', false);

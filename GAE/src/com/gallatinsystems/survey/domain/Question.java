@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -28,317 +28,341 @@ import javax.jdo.annotations.PersistenceCapable;
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
- * 
  * Represents a Question on a survey. A question belongs to exactly 1 questionGroup.
- *
  */
 @PersistenceCapable
 public class Question extends BaseDomain {
 
-	private static final long serialVersionUID = -9123426646238761996L;
+    private static final long serialVersionUID = -9123426646238761996L;
 
-	public enum Type {
-		FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE
-	};
+    public enum Type {
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE
+    };
 
-	private Type type = null;
-	private String tip = null;
-	private String text = null;
-	@NotPersistent
-	private Map<String, Translation> translationMap;
-	private Boolean dependentFlag = null;
-	private Boolean allowMultipleFlag = null;
-	private Boolean allowOtherFlag = null;
-	private Boolean collapseable = false;
-	private Boolean geoLocked = null;
-	private Boolean requireDoubleEntry = null;
-	private Boolean immutable = false;
-	private Long dependentQuestionId;
-	private String dependentQuestionAnswer;
-	private Long metricId;
-	@NotPersistent
-	private TreeMap<Integer, QuestionOption> questionOptionMap = null;
-	
-	@NotPersistent
-	private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
-	private Long questionGroupId;
-	private Long surveyId;
-	private Integer order = null;
-	private Boolean mandatoryFlag = null;
-	private String path = null;
-	private String referenceId;
-	@NotPersistent
-	private List<ScoringRule> scoringRules = null;
-	private Boolean allowDecimal;
-	private Boolean allowSign;
-	private Double minVal;
-	private Double maxVal;
-	private Boolean isName;
+    private Type type = null;
+    private String tip = null;
+    private String text = null;
+    @NotPersistent
+    private Map<String, Translation> translationMap;
+    private Boolean dependentFlag = null;
+    private Boolean allowMultipleFlag = null;
+    private Boolean allowOtherFlag = null;
+    private Boolean collapseable = false;
+    private Boolean geoLocked = null;
+    private Boolean requireDoubleEntry = null;
+    private Boolean immutable = false;
+    private Long dependentQuestionId;
+    private String dependentQuestionAnswer;
+    private Long metricId;
+    @NotPersistent
+    private TreeMap<Integer, QuestionOption> questionOptionMap = null;
 
-	public Boolean getAllowDecimal() {
-		return allowDecimal;
-	}
+    @NotPersistent
+    private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
+    private Long questionGroupId;
+    private Long surveyId;
+    private Integer order = null;
+    private Boolean mandatoryFlag = null;
+    private String path = null;
+    private String referenceId;
+    @NotPersistent
+    private List<ScoringRule> scoringRules = null;
+    private Boolean allowDecimal;
+    private Boolean allowSign;
+    private Double minVal;
+    private Double maxVal;
+    private Boolean isName;
+    private Long sourceId;
+    private Boolean localeNameFlag;
+    private Boolean localeLocationFlag;
 
-	public void setAllowDecimal(Boolean allowDecimal) {
-		this.allowDecimal = allowDecimal;
-	}
+    public Boolean getAllowDecimal() {
+        return allowDecimal;
+    }
 
-	public Boolean getAllowSign() {
-		return allowSign;
-	}
+    public void setAllowDecimal(Boolean allowDecimal) {
+        this.allowDecimal = allowDecimal;
+    }
 
-	public void setAllowSign(Boolean allowSign) {
-		this.allowSign = allowSign;
-	}
+    public Boolean getAllowSign() {
+        return allowSign;
+    }
 
-	public Double getMinVal() {
-		return minVal;
-	}
+    public void setAllowSign(Boolean allowSign) {
+        this.allowSign = allowSign;
+    }
 
-	public void setMinVal(Double minVal) {
-		this.minVal = minVal;
-	}
+    public Double getMinVal() {
+        return minVal;
+    }
 
-	public Double getMaxVal() {
-		return maxVal;
-	}
+    public void setMinVal(Double minVal) {
+        this.minVal = minVal;
+    }
 
-	public void setMaxVal(Double maxVal) {
-		this.maxVal = maxVal;
-	}
+    public Double getMaxVal() {
+        return maxVal;
+    }
 
-	public Boolean getIsName() {
-		return isName;
-	}
+    public void setMaxVal(Double maxVal) {
+        this.maxVal = maxVal;
+    }
 
-	public void setIsName(Boolean isName) {
-		this.isName = isName;
-	}
+    public Boolean getIsName() {
+        return isName;
+    }
 
-	public Long getSurveyId() {
-		return surveyId;
-	}
+    public void setIsName(Boolean isName) {
+        this.isName = isName;
+    }
 
-	public void setSurveyId(Long surveyId) {
-		this.surveyId = surveyId;
-	}
+    public Long getSurveyId() {
+        return surveyId;
+    }
 
-	public String getReferenceId() {
-		return referenceId;
-	}
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
+    }
 
-	public void setReferenceId(String referenceId) {
-		this.referenceId = referenceId;
-	}
+    public String getReferenceId() {
+        return referenceId;
+    }
 
-	public String getDependentQuestionAnswer() {
-		return dependentQuestionAnswer;
-	}
+    public void setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
+    }
 
-	public void setDependentQuestionAnswer(String dependentQuestionAnswer) {
-		this.dependentQuestionAnswer = dependentQuestionAnswer;
-	}
+    public String getDependentQuestionAnswer() {
+        return dependentQuestionAnswer;
+    }
 
-	public Long getDependentQuestionId() {
-		return dependentQuestionId;
-	}
+    public void setDependentQuestionAnswer(String dependentQuestionAnswer) {
+        this.dependentQuestionAnswer = dependentQuestionAnswer;
+    }
 
-	public void setDependentQuestionId(Long dependentQuestionId) {
-		this.dependentQuestionId = dependentQuestionId;
-	}
+    public Long getDependentQuestionId() {
+        return dependentQuestionId;
+    }
 
-	public Long getMetricId() {
-		return metricId;
-	}
+    public void setDependentQuestionId(Long dependentQuestionId) {
+        this.dependentQuestionId = dependentQuestionId;
+    }
 
-	public void setMetricId(Long metricId) {
-		this.metricId = metricId;
-	}
-	
-	public Long getQuestionGroupId() {
-		return questionGroupId;
-	}
+    public Long getMetricId() {
+        return metricId;
+    }
 
-	public void setQuestionGroupId(Long questionGroupId) {
-		this.questionGroupId = questionGroupId;
-	}
+    public void setMetricId(Long metricId) {
+        this.metricId = metricId;
+    }
 
-	public Map<String, Translation> getTranslationMap() {
-		return translationMap;
-	}
+    public Long getQuestionGroupId() {
+        return questionGroupId;
+    }
 
-	public void setTranslationMap(Map<String, Translation> translationMap) {
-		this.translationMap = translationMap;
-	}
+    public void setQuestionGroupId(Long questionGroupId) {
+        this.questionGroupId = questionGroupId;
+    }
 
-	public void setTranslationMap(HashMap<String, Translation> transMap) {
-		if (transMap != null) {
-			translationMap = new TreeMap<String, Translation>(transMap);
-		}
-	}
+    public Map<String, Translation> getTranslationMap() {
+        return translationMap;
+    }
 
-	public void addQuestionOption(QuestionOption questionOption) {
-		if (getQuestionOptionMap() == null)
-			setQuestionOptionMap(new TreeMap<Integer, QuestionOption>());
-		getQuestionOptionMap().put(
-				questionOption.getOrder() != null ? questionOption.getOrder()
-						: getQuestionOptionMap().size() + 1, questionOption);
-	}
+    public void setTranslationMap(Map<String, Translation> translationMap) {
+        this.translationMap = translationMap;
+    }
 
-	public void addHelpMedia(Integer order, QuestionHelpMedia questionHelpMedia) {
-		if (getQuestionHelpMediaMap() == null)
-			setQuestionHelpMediaMap(new TreeMap<Integer, QuestionHelpMedia>());
-		getQuestionHelpMediaMap().put(order, questionHelpMedia);
-	}
+    public void setTranslationMap(HashMap<String, Translation> transMap) {
+        if (transMap != null) {
+            translationMap = new TreeMap<String, Translation>(transMap);
+        }
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public void addQuestionOption(QuestionOption questionOption) {
+        if (getQuestionOptionMap() == null)
+            setQuestionOptionMap(new TreeMap<Integer, QuestionOption>());
+        getQuestionOptionMap().put(
+                questionOption.getOrder() != null ? questionOption.getOrder()
+                        : getQuestionOptionMap().size() + 1, questionOption);
+    }
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+    public void addHelpMedia(Integer order, QuestionHelpMedia questionHelpMedia) {
+        if (getQuestionHelpMediaMap() == null)
+            setQuestionHelpMediaMap(new TreeMap<Integer, QuestionHelpMedia>());
+        getQuestionHelpMediaMap().put(order, questionHelpMedia);
+    }
 
-	public Boolean getDependentFlag() {
-		return dependentFlag;
-	}
+    public Type getType() {
+        return type;
+    }
 
-	public void setDependentFlag(Boolean dependentFlag) {
-		this.dependentFlag = dependentFlag;
-	}
+    public void setType(Type type) {
+        this.type = type;
+    }
 
-	public Boolean getAllowMultipleFlag() {
-		return allowMultipleFlag;
-	}
+    public Boolean getDependentFlag() {
+        return dependentFlag;
+    }
 
-	public void setAllowMultipleFlag(Boolean allowMultipleFlag) {
-		this.allowMultipleFlag = allowMultipleFlag;
-	}
+    public void setDependentFlag(Boolean dependentFlag) {
+        this.dependentFlag = dependentFlag;
+    }
 
-	public Boolean getAllowOtherFlag() {
-		return allowOtherFlag;
-	}
+    public Boolean getAllowMultipleFlag() {
+        return allowMultipleFlag;
+    }
 
-	public void setAllowOtherFlag(Boolean allowOtherFlag) {
-		this.allowOtherFlag = allowOtherFlag;
-	}
+    public void setAllowMultipleFlag(Boolean allowMultipleFlag) {
+        this.allowMultipleFlag = allowMultipleFlag;
+    }
 
-	
-	public void setQuestionOptionMap(
-			TreeMap<Integer, QuestionOption> questionOptionMap) {
-		this.questionOptionMap = questionOptionMap;
-	}
+    public Boolean getAllowOtherFlag() {
+        return allowOtherFlag;
+    }
 
-	public TreeMap<Integer, QuestionOption> getQuestionOptionMap() {
-		return questionOptionMap;
-	}
+    public void setAllowOtherFlag(Boolean allowOtherFlag) {
+        this.allowOtherFlag = allowOtherFlag;
+    }
 
-	public void setQuestionHelpMediaMap(
-			TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap) {
-		this.questionHelpMediaMap = questionHelpMediaMap;
-	}
+    public void setQuestionOptionMap(
+            TreeMap<Integer, QuestionOption> questionOptionMap) {
+        this.questionOptionMap = questionOptionMap;
+    }
 
-	public TreeMap<Integer, QuestionHelpMedia> getQuestionHelpMediaMap() {
-		return questionHelpMediaMap;
-	}
+    public TreeMap<Integer, QuestionOption> getQuestionOptionMap() {
+        return questionOptionMap;
+    }
 
-	public void setOrder(Integer order) {
-		this.order = order;
-	}
+    public void setQuestionHelpMediaMap(
+            TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap) {
+        this.questionHelpMediaMap = questionHelpMediaMap;
+    }
 
-	public Integer getOrder() {
-		return order;
-	}
+    public TreeMap<Integer, QuestionHelpMedia> getQuestionHelpMediaMap() {
+        return questionHelpMediaMap;
+    }
 
-	public void setMandatoryFlag(Boolean mandatoryFlag) {
-		this.mandatoryFlag = mandatoryFlag;
-	}
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
 
-	public Boolean getMandatoryFlag() {
-		return mandatoryFlag;
-	}
+    public Integer getOrder() {
+        return order;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public void setMandatoryFlag(Boolean mandatoryFlag) {
+        this.mandatoryFlag = mandatoryFlag;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public Boolean getMandatoryFlag() {
+        return mandatoryFlag;
+    }
 
-	public void setTip(String tip) {
-		this.tip = tip;
-	}
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	/**
-	 * use helpMedia instead
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	public String getTip() {
-		return tip;
-	}
+    public String getPath() {
+        return path;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public void setTip(String tip) {
+        this.tip = tip;
+    }
 
-	public String getText() {
-		return text;
-	}
+    /**
+     * use helpMedia instead
+     * 
+     * @return
+     */
+    @Deprecated
+    public String getTip() {
+        return tip;
+    }
 
-	public void addTranslation(Translation t) {
-		if (translationMap == null) {
-			translationMap = new TreeMap<String, Translation>();
-		}
-		translationMap.put(t.getLanguageCode(), t);
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
 
-	public List<ScoringRule> getScoringRules() {
-		return scoringRules;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public void addScoringRule(ScoringRule rule) {
-		if (scoringRules == null) {
-			scoringRules = new ArrayList<ScoringRule>();
-		}
-		scoringRules.add(rule);
-	}
+    public void addTranslation(Translation t) {
+        if (translationMap == null) {
+            translationMap = new TreeMap<String, Translation>();
+        }
+        translationMap.put(t.getLanguageCode(), t);
+    }
 
-	public void setScoringRules(List<ScoringRule> scoringRules) {
-		this.scoringRules = scoringRules;
-	}
+    public List<ScoringRule> getScoringRules() {
+        return scoringRules;
+    }
 
-	public void setCollapseable(Boolean collapseable) {
-		this.collapseable = collapseable;
-	}
+    public void addScoringRule(ScoringRule rule) {
+        if (scoringRules == null) {
+            scoringRules = new ArrayList<ScoringRule>();
+        }
+        scoringRules.add(rule);
+    }
 
-	public Boolean getCollapseable() {
-		return collapseable;
-	}
+    public void setScoringRules(List<ScoringRule> scoringRules) {
+        this.scoringRules = scoringRules;
+    }
 
-	public void setImmutable(Boolean immutable) {
-		this.immutable = immutable;
-	}
+    public void setCollapseable(Boolean collapseable) {
+        this.collapseable = collapseable;
+    }
 
-	public Boolean getImmutable() {
-		return immutable;
-	}
+    public Boolean getCollapseable() {
+        return collapseable;
+    }
 
-	public Boolean getGeoLocked() {
-		return geoLocked;
-	}
+    public void setImmutable(Boolean immutable) {
+        this.immutable = immutable;
+    }
 
-	public void setGeoLocked(Boolean geoLocked) {
-		this.geoLocked = geoLocked;
-	}
+    public Boolean getImmutable() {
+        return immutable;
+    }
 
-	public Boolean getRequireDoubleEntry() {
-		return requireDoubleEntry;
-	}
+    public Boolean getGeoLocked() {
+        return geoLocked;
+    }
 
-	public void setRequireDoubleEntry(Boolean requireDoubleEntry) {
-		this.requireDoubleEntry = requireDoubleEntry;
-	}
+    public Boolean getLocaleNameFlag() {
+        return localeNameFlag;
+    }
+
+    public void setLocaleNameFlag(Boolean localeNameFlag) {
+        this.localeNameFlag = localeNameFlag;
+    }
+
+    public void setGeoLocked(Boolean geoLocked) {
+        this.geoLocked = geoLocked;
+    }
+
+    public Boolean getRequireDoubleEntry() {
+        return requireDoubleEntry;
+    }
+
+    public void setRequireDoubleEntry(Boolean requireDoubleEntry) {
+        this.requireDoubleEntry = requireDoubleEntry;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public Boolean getLocaleLocationFlag() {
+        return localeLocationFlag;
+    }
+
+    public void setLocaleLocationFlag(Boolean localeLocationFlag) {
+        this.localeLocationFlag = localeLocationFlag;
+    }
 }

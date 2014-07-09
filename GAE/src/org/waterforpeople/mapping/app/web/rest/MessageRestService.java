@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
@@ -39,46 +40,48 @@ import com.gallatinsystems.messaging.domain.Message;
 @RequestMapping("/messages")
 public class MessageRestService {
 
-	@Inject
-	MessageDao messageDao;
+    @Inject
+    MessageDao messageDao;
 
-	@RequestMapping(method = RequestMethod.GET)
-	@ResponseBody
-	public Map<String, Object> listMessages(
-			@RequestParam(value = "since", defaultValue = "") String since) {
-		final Map<String, Object> response = new HashMap<String, Object>();
-		final List<MessageDto> messageList = new ArrayList<MessageDto>();
-		final List<Message> list = messageDao.listBySubject(null, null, since);
-		final RestStatusDto statusDto = new RestStatusDto();
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> listMessages(
+            @RequestParam(value = "since", defaultValue = "")
+            String since) {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        final List<MessageDto> messageList = new ArrayList<MessageDto>();
+        final List<Message> list = messageDao.listBySubject(null, null, since);
+        final RestStatusDto statusDto = new RestStatusDto();
 
-		if (list != null) {
-			final String newSince = MessageDao.getCursor(list);
+        if (list != null) {
+            final String newSince = MessageDao.getCursor(list);
 
-			for (Message m : list) {
-				final MessageDto dto = new MessageDto();
-				DtoMarshaller.copyToDto(m, dto);
-				messageList.add(dto);
-			}
+            for (Message m : list) {
+                final MessageDto dto = new MessageDto();
+                DtoMarshaller.copyToDto(m, dto);
+                messageList.add(dto);
+            }
 
-			statusDto.setSince(newSince);
-			statusDto.setNum(list.size());
-		}
-		response.put("meta", statusDto);
-		response.put("messages", messageList);
-		return response;
-	}
+            statusDto.setSince(newSince);
+            statusDto.setNum(list.size());
+        }
+        response.put("meta", statusDto);
+        response.put("messages", messageList);
+        return response;
+    }
 
-	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
-	@ResponseBody
-	public Map<String, MessageDto> getMessage(@PathVariable("id") Long id) {
-		final Map<String, MessageDto> response = new HashMap<String, MessageDto>();
-		final MessageDto dto = new MessageDto();
-		final Message m = messageDao.getByKey(id);
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    @ResponseBody
+    public Map<String, MessageDto> getMessage(@PathVariable("id")
+    Long id) {
+        final Map<String, MessageDto> response = new HashMap<String, MessageDto>();
+        final MessageDto dto = new MessageDto();
+        final Message m = messageDao.getByKey(id);
 
-		if (m != null) {
-			DtoMarshaller.copyToDto(m, dto);
-		}
-		response.put("message", dto);
-		return response;
-	}
+        if (m != null) {
+            DtoMarshaller.copyToDto(m, dto);
+        }
+        response.put("message", dto);
+        return response;
+    }
 }

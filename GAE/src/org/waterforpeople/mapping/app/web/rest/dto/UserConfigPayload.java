@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest.dto;
 
 import java.io.Serializable;
@@ -21,14 +22,14 @@ import com.gallatinsystems.user.app.gwt.client.UserConfigDto;
 
 public class UserConfigPayload implements Serializable {
 
-	private static final long serialVersionUID = -111144003580928338L;
-	UserConfigDto user_config= null;
+    private static final long serialVersionUID = -111144003580928338L;
+    UserConfigDto user_config = null;
 
-	public UserConfigDto getUser_config() {
-		return user_config;
-	}
+    public UserConfigDto getUser_config() {
+        return user_config;
+    }
 
-	public void setUser_config(UserConfigDto user_config) {
-		this.user_config = user_config;
-	}
+    public void setUser_config(UserConfigDto user_config) {
+        this.user_config = user_config;
+    }
 }

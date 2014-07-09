@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web;
 
 import java.io.IOException;
@@ -35,45 +36,45 @@ import com.google.appengine.api.users.UserServiceFactory;
 
 public class CurrentUserServlet extends HttpServlet {
 
-	private static final long serialVersionUID = -430515593814261770L;
-	private static final Logger log = Logger.getLogger(CurrentUserServlet.class
-			.getName());
+    private static final long serialVersionUID = -430515593814261770L;
+    private static final Logger log = Logger.getLogger(CurrentUserServlet.class
+            .getName());
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
-		final VelocityEngine engine = new VelocityEngine();
-		engine.setProperty("runtime.log.logsystem.class",
-				"org.apache.velocity.runtime.log.NullLogChute");
-		try {
-			engine.init();
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not initialize velocity", e);
-		}
+        final VelocityEngine engine = new VelocityEngine();
+        engine.setProperty("runtime.log.logsystem.class",
+                "org.apache.velocity.runtime.log.NullLogChute");
+        try {
+            engine.init();
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Could not initialize velocity", e);
+        }
 
-		Template t = null;
-		try {
-			t = engine.getTemplate("CurrentUser.vm");
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Could not get the template `CurrentUser`", e);
-			return;
-		}
+        Template t = null;
+        try {
+            t = engine.getTemplate("CurrentUser.vm");
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Could not get the template `CurrentUser`", e);
+            return;
+        }
 
-		final VelocityContext context = new VelocityContext();
-		final UserDao uDao = new UserDao();
+        final VelocityContext context = new VelocityContext();
+        final UserDao uDao = new UserDao();
 
-		context.put("user", uDao.findUserByEmail(UserServiceFactory.getUserService()
-				.getCurrentUser().getEmail().toLowerCase()));
+        context.put("user", uDao.findUserByEmail(UserServiceFactory.getUserService()
+                .getCurrentUser().getEmail().toLowerCase()));
 
-		final StringWriter writer = new StringWriter();
-		t.merge(context, writer);
+        final StringWriter writer = new StringWriter();
+        t.merge(context, writer);
 
-		resp.setContentType("application/javascript;charset=UTF-8");
+        resp.setContentType("application/javascript;charset=UTF-8");
 
-		final PrintWriter pw = resp.getWriter();
-		pw.println(writer.toString());
-		pw.close();
-	}
+        final PrintWriter pw = resp.getWriter();
+        pw.println(writer.toString());
+        pw.close();
+    }
 
 }

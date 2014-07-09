@@ -36,59 +36,58 @@ import com.gallatinsystems.sms.domain.SMSMessage;
  * this servlet will process incoming messages forwarded by an SMS gateway
  * 
  * @author Christopher Fagiani
- * 
  */
 public class SMSReceiverServlet extends AbstractRestApiServlet {
 
-	private static final long serialVersionUID = 4059925726791884167L;
-	private static final Map<String, AccessPoint.Status> STATUS_MAP = new HashMap<String, AccessPoint.Status>() {
-		private static final long serialVersionUID = -549152350427462282L;
+    private static final long serialVersionUID = 4059925726791884167L;
+    private static final Map<String, AccessPoint.Status> STATUS_MAP = new HashMap<String, AccessPoint.Status>() {
+        private static final long serialVersionUID = -549152350427462282L;
 
-		{
-			put("A", Status.FUNCTIONING_HIGH);
-			put("B", Status.FUNCTIONING_WITH_PROBLEMS);
-			put("C", Status.BROKEN_DOWN);
-		}
-	};
+        {
+            put("A", Status.FUNCTIONING_HIGH);
+            put("B", Status.FUNCTIONING_WITH_PROBLEMS);
+            put("C", Status.BROKEN_DOWN);
+        }
+    };
 
-	private AccessPointDao apDao;
-	private SMSMessageDao smsDao;
+    private AccessPointDao apDao;
+    private SMSMessageDao smsDao;
 
-	@Override
-	protected RestRequest convertRequest() throws Exception {
-		HttpServletRequest req = getRequest();
-		RestRequest restRequest = new SMSRestRequest();
-		restRequest.populateFromHttpRequest(req);
-		return restRequest;
-	}
+    @Override
+    protected RestRequest convertRequest() throws Exception {
+        HttpServletRequest req = getRequest();
+        RestRequest restRequest = new SMSRestRequest();
+        restRequest.populateFromHttpRequest(req);
+        return restRequest;
+    }
 
-	@Override
-	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		SMSRestRequest smsReq = (SMSRestRequest) req;
-		SMSMessage message = new SMSMessage();
-		message.setFrom(smsReq.getFrom());
-		message.setText(smsReq.getText());
-		message.setSentDate(smsReq.getTimestamp());
-		smsDao.save(message);
-		String[] parts = message.getText().split(" ");
-		if (parts.length == 2) {
-			AccessPoint ap = apDao.findAccessPointBySMSCode(parts[0]);
-			if (ap != null) {
-				Status status = STATUS_MAP.get(parts[1]);
-				if (status != null) {
-					ap.setPointStatus(status);
-					apDao.save(ap);
-				}
-			}
-		}
-		RestResponse resp = new RestResponse();
-		resp.setCode("200");
-		return resp;
-	}
+    @Override
+    protected RestResponse handleRequest(RestRequest req) throws Exception {
+        SMSRestRequest smsReq = (SMSRestRequest) req;
+        SMSMessage message = new SMSMessage();
+        message.setFrom(smsReq.getFrom());
+        message.setText(smsReq.getText());
+        message.setSentDate(smsReq.getTimestamp());
+        smsDao.save(message);
+        String[] parts = message.getText().split(" ");
+        if (parts.length == 2) {
+            AccessPoint ap = apDao.findAccessPointBySMSCode(parts[0]);
+            if (ap != null) {
+                Status status = STATUS_MAP.get(parts[1]);
+                if (status != null) {
+                    ap.setPointStatus(status);
+                    apDao.save(ap);
+                }
+            }
+        }
+        RestResponse resp = new RestResponse();
+        resp.setCode("200");
+        return resp;
+    }
 
-	@Override
-	protected void writeOkResponse(RestResponse resp) throws Exception {
-		resp.setCode("200");
-	}
+    @Override
+    protected void writeOkResponse(RestResponse resp) throws Exception {
+        resp.setCode("200");
+    }
 
 }

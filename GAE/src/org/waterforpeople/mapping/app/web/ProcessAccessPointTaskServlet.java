@@ -36,124 +36,123 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class ProcessAccessPointTaskServlet extends AbstractRestApiServlet {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 5116204674096200848L;
-	private static final String OBJECT_TASK_URL = "/app_worker/processaccesspointtaskservlet";
-	private static final String ACCESSPOINT_QUEUE_NAME = "accesspointqueue";
+    private static final long serialVersionUID = 5116204674096200848L;
+    private static final String OBJECT_TASK_URL = "/app_worker/processaccesspointtaskservlet";
+    private static final String ACCESSPOINT_QUEUE_NAME = "accesspointqueue";
 
-	/**
+    /**
 	 * 
 	 */
 
-	@Override
-	protected RestRequest convertRequest() throws Exception {
-		HttpServletRequest req = getRequest();
-		RestRequest restRequest = new DeleteTaskRequest();
-		restRequest.populateFromHttpRequest(req);
-		return restRequest;
-	}
-	
-	@Override
-	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		DeleteTaskRequest dtReq = (DeleteTaskRequest) req;
-		String newCursor = null;
-		if (dtReq.getKey().equals("secret")) {
-			final String kind = dtReq.getObjectName();
+    @Override
+    protected RestRequest convertRequest() throws Exception {
+        HttpServletRequest req = getRequest();
+        RestRequest restRequest = new DeleteTaskRequest();
+        restRequest.populateFromHttpRequest(req);
+        return restRequest;
+    }
 
-			int deleted_count = 0;
-			boolean is_finished = false;
+    @Override
+    protected RestResponse handleRequest(RestRequest req) throws Exception {
+        DeleteTaskRequest dtReq = (DeleteTaskRequest) req;
+        String newCursor = null;
+        if (dtReq.getKey().equals("secret")) {
+            final String kind = dtReq.getObjectName();
 
-			final DatastoreService dss = DatastoreServiceFactory
-					.getDatastoreService();			
+            int deleted_count = 0;
+            boolean is_finished = false;
 
-			
-			final Query query = new Query(kind);
-			int limit = 10;
-			if (dtReq.getCursor() != null) {
-				limit = 150;
-			}
+            final DatastoreService dss = DatastoreServiceFactory
+                    .getDatastoreService();
 
-			FetchOptions fetchOptions = FetchOptions.Builder.withLimit(limit);
-			if (dtReq.getCursor() != null) {
-				fetchOptions.startCursor(Cursor.fromWebSafeString(dtReq
-						.getCursor()));
-			}
+            final Query query = new Query(kind);
+            int limit = 10;
+            if (dtReq.getCursor() != null) {
+                limit = 150;
+            }
 
-			query.setKeysOnly();
-			
-			QueryResultList<Entity> results = dss.prepare(query)
-					.asQueryResultList(fetchOptions);
-			newCursor = results.getCursor().toWebSafeString();
+            FetchOptions fetchOptions = FetchOptions.Builder.withLimit(limit);
+            if (dtReq.getCursor() != null) {
+                fetchOptions.startCursor(Cursor.fromWebSafeString(dtReq
+                        .getCursor()));
+            }
 
-			if (results.isEmpty()) {
-				is_finished = true;
-			} else {
-				final Integer taskcount;
-				final String tcs = dtReq.getTaskCount();
-				if (tcs == null) {
-					taskcount = 0;
-				} else {
-					taskcount = Integer.parseInt(tcs) + 1;
-				}
-				for (Entity entity : results) {
-					Queue deleteQueue = QueueFactory
-							.getQueue("accesspointmetricsummqueue");
+            query.setKeysOnly();
 
-					deleteQueue.add(TaskOptions.Builder
-							.withUrl("/app_worker/accesspointmetricprocessor")
-							.param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
-							.param(DeleteTaskRequest.KEY_PARAM,
-									String.valueOf(entity.getKey().getId()))
-							.param(DeleteTaskRequest.CURSOR_PARAM, newCursor)
-							.param("itemnum", String.valueOf(deleted_count))
-							.param(DeleteTaskRequest.TASK_COUNT_PARAM,
-									taskcount.toString()));
+            QueryResultList<Entity> results = dss.prepare(query)
+                    .asQueryResultList(fetchOptions);
+            newCursor = results.getCursor().toWebSafeString();
 
-					++deleted_count;
-				}
-			}
-			System.err.println("*** processed " + deleted_count
-					+ " entities form " + kind);
+            if (results.isEmpty()) {
+                is_finished = true;
+            } else {
+                final Integer taskcount;
+                final String tcs = dtReq.getTaskCount();
+                if (tcs == null) {
+                    taskcount = 0;
+                } else {
+                    taskcount = Integer.parseInt(tcs) + 1;
+                }
+                for (Entity entity : results) {
+                    Queue deleteQueue = QueueFactory
+                            .getQueue("accesspointmetricsummqueue");
 
-			if (is_finished) {
-				System.err.println("*** process job for " + kind
-						+ " is completed.");
-			} else {
-				final Integer taskcount;
-				final String tcs = dtReq.getTaskCount();
-				if (tcs == null) {
-					taskcount = 0;
-				} else {
-					taskcount = Integer.parseInt(tcs) + 1;
-				}
+                    deleteQueue.add(TaskOptions.Builder
+                            .withUrl("/app_worker/accesspointmetricprocessor")
+                            .param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
+                            .param(DeleteTaskRequest.KEY_PARAM,
+                                    String.valueOf(entity.getKey().getId()))
+                            .param(DeleteTaskRequest.CURSOR_PARAM, newCursor)
+                            .param("itemnum", String.valueOf(deleted_count))
+                            .param(DeleteTaskRequest.TASK_COUNT_PARAM,
+                                    taskcount.toString()));
 
-				Queue deleteQueue = QueueFactory
-						.getQueue(ACCESSPOINT_QUEUE_NAME);
-				deleteQueue.add(TaskOptions.Builder
-						.withUrl(OBJECT_TASK_URL)
-						.param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
-						.param(DeleteTaskRequest.KEY_PARAM, dtReq.getKey())
-						.param(DeleteTaskRequest.CURSOR_PARAM, newCursor)
-						.param(DeleteTaskRequest.TASK_COUNT_PARAM,
-								taskcount.toString()));
+                    ++deleted_count;
+                }
+            }
+            System.err.println("*** processed " + deleted_count
+                    + " entities form " + kind);
 
-				System.err.println("*** process task # " + taskcount + " for "
-						+ kind + " is queued.");
+            if (is_finished) {
+                System.err.println("*** process job for " + kind
+                        + " is completed.");
+            } else {
+                final Integer taskcount;
+                final String tcs = dtReq.getTaskCount();
+                if (tcs == null) {
+                    taskcount = 0;
+                } else {
+                    taskcount = Integer.parseInt(tcs) + 1;
+                }
 
-			}
-		}
+                Queue deleteQueue = QueueFactory
+                        .getQueue(ACCESSPOINT_QUEUE_NAME);
+                deleteQueue.add(TaskOptions.Builder
+                        .withUrl(OBJECT_TASK_URL)
+                        .param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
+                        .param(DeleteTaskRequest.KEY_PARAM, dtReq.getKey())
+                        .param(DeleteTaskRequest.CURSOR_PARAM, newCursor)
+                        .param(DeleteTaskRequest.TASK_COUNT_PARAM,
+                                taskcount.toString()));
 
-		return null;
-	}
+                System.err.println("*** process task # " + taskcount + " for "
+                        + kind + " is queued.");
 
-	@Override
-	protected void writeOkResponse(RestResponse resp) throws Exception {
-		getResponse().setStatus(200);
-		if (resp != null) {
-			getResponse().getWriter().println("ok");
-		}
-	}
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void writeOkResponse(RestResponse resp) throws Exception {
+        getResponse().setStatus(200);
+        if (resp != null) {
+            getResponse().getWriter().println("ok");
+        }
+    }
 
 }

@@ -20,10 +20,8 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * <p>
  * Java class for anonymous complex type.
- * 
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -36,60 +34,52 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "questionGroup" })
+@XmlType(name = "", propOrder = {
+    "questionGroup"
+})
 @XmlRootElement(name = "survey")
 public class Survey {
 
-	@XmlAttribute(required = false)
-	protected String defaultLanguageCode;
+    @XmlAttribute(required = false)
+    protected String defaultLanguageCode;
 
-	@XmlElement(required = true)
-	protected List<QuestionGroup> questionGroup;
+    @XmlElement(required = true)
+    protected List<QuestionGroup> questionGroup;
 
-	/**
-	 * Gets the value of the questionGroup property.
-	 * 
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a
-	 * snapshot. Therefore any modification you make to the returned list will
-	 * be present inside the JAXB object. This is why there is not a
-	 * <CODE>set</CODE> method for the questionGroup property.
-	 * 
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 * 
-	 * <pre>
-	 * getQuestionGroup().add(newItem);
-	 * </pre>
-	 * 
-	 * 
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list
-	 * {@link QuestionGroup }
-	 * 
-	 * 
-	 */
-	public List<QuestionGroup> getQuestionGroup() {
-		if (questionGroup == null) {
-			questionGroup = new ArrayList<QuestionGroup>();
-		}
-		return this.questionGroup;
-	}
+    /**
+     * Gets the value of the questionGroup property.
+     * <p>
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+     * modification you make to the returned list will be present inside the JAXB object. This is
+     * why there is not a <CODE>set</CODE> method for the questionGroup property.
+     * <p>
+     * For example, to add a new item, do as follows:
+     * 
+     * <pre>
+     * getQuestionGroup().add(newItem);
+     * </pre>
+     * <p>
+     * Objects of the following type(s) are allowed in the list {@link QuestionGroup }
+     */
+    public List<QuestionGroup> getQuestionGroup() {
+        if (questionGroup == null) {
+            questionGroup = new ArrayList<QuestionGroup>();
+        }
+        return this.questionGroup;
+    }
 
-	public void setQuestionGroup(List<QuestionGroup> questionGroup) {
-		this.questionGroup = questionGroup;
-	}
+    public void setQuestionGroup(List<QuestionGroup> questionGroup) {
+        this.questionGroup = questionGroup;
+    }
 
-	public String getDefaultLanguageCode() {
-		return defaultLanguageCode;
-	}
+    public String getDefaultLanguageCode() {
+        return defaultLanguageCode;
+    }
 
-	public void setDefaultLanguageCode(String defaultLanguageCode) {
-		this.defaultLanguageCode = defaultLanguageCode;
-	}
+    public void setDefaultLanguageCode(String defaultLanguageCode) {
+        this.defaultLanguageCode = defaultLanguageCode;
+    }
 
 }

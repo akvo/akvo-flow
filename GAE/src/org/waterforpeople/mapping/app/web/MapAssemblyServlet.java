@@ -29,46 +29,46 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 
 public class MapAssemblyServlet extends AbstractRestApiServlet {
-	@SuppressWarnings("unused")
-	private static final Logger log = Logger.getLogger(MapAssemblyServlet.class
-			.getName());
-	
-	private static final long serialVersionUID = 7615652730572144228L;
+    @SuppressWarnings("unused")
+    private static final Logger log = Logger.getLogger(MapAssemblyServlet.class
+            .getName());
 
-	@Override
-	protected RestRequest convertRequest() throws Exception {
-		HttpServletRequest req = getRequest();
-		RestRequest restRequest = new MapAssemblyRestRequest();
-		restRequest.populateFromHttpRequest(req);
-		return restRequest;
-	}
+    private static final long serialVersionUID = 7615652730572144228L;
 
-	@Override
-	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		MapAssemblyRestRequest importReq = (MapAssemblyRestRequest) req;
-		KMLHelper kmlHelper = new KMLHelper();
+    @Override
+    protected RestRequest convertRequest() throws Exception {
+        HttpServletRequest req = getRequest();
+        RestRequest restRequest = new MapAssemblyRestRequest();
+        restRequest.populateFromHttpRequest(req);
+        return restRequest;
+    }
 
-		if ("buildMap".equals(importReq.getAction())) {
-			kmlHelper.buildMap();
-		} else if (Constants.BUILD_COUNTRY_FRAGMENTS.equals(importReq
-				.getAction())) {
-			String countryCode = importReq.getCountryCode();
-			if (countryCode != null)
-				kmlHelper.buildCountryFragments(countryCode);
-		} else if (Constants.BUILD_COUNTRY_TECH_TYPE_FRAGMENTS.equals(importReq
-				.getAction())) {
-			String countryCode = importReq.getCountryCode();
-			String techType = importReq.getTechType();
-			if (techType != null && countryCode != null)
-				kmlHelper.buildCountryTechTypeFragment(countryCode, techType);
-		}
-		return null;
-	}
+    @Override
+    protected RestResponse handleRequest(RestRequest req) throws Exception {
+        MapAssemblyRestRequest importReq = (MapAssemblyRestRequest) req;
+        KMLHelper kmlHelper = new KMLHelper();
 
-	@Override
-	protected void writeOkResponse(RestResponse resp) throws Exception {
-		// no-op
+        if ("buildMap".equals(importReq.getAction())) {
+            kmlHelper.buildMap();
+        } else if (Constants.BUILD_COUNTRY_FRAGMENTS.equals(importReq
+                .getAction())) {
+            String countryCode = importReq.getCountryCode();
+            if (countryCode != null)
+                kmlHelper.buildCountryFragments(countryCode);
+        } else if (Constants.BUILD_COUNTRY_TECH_TYPE_FRAGMENTS.equals(importReq
+                .getAction())) {
+            String countryCode = importReq.getCountryCode();
+            String techType = importReq.getTechType();
+            if (techType != null && countryCode != null)
+                kmlHelper.buildCountryTechTypeFragment(countryCode, techType);
+        }
+        return null;
+    }
 
-	}
+    @Override
+    protected void writeOkResponse(RestResponse resp) throws Exception {
+        // no-op
+
+    }
 
 }

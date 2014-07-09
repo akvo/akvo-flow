@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.dto;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,53 +25,52 @@ import com.gallatinsystems.framework.rest.RestRequest;
  * encapsulates request to the devapp service
  * 
  * @author Christopher Fagiani
- * 
  */
 public class DeviceApplicationRestRequest extends RestRequest {
 
-	private static final long serialVersionUID = -158448412036367889L;
+    private static final long serialVersionUID = -158448412036367889L;
 
-	public static final String GET_LATEST_VERSION_ACTION = "getLatestVersion";
-	public static final String DEV_TYPE_PARAM = "deviceType";
-	public static final String APP_CODE_PARAM = "appCode";
+    public static final String GET_LATEST_VERSION_ACTION = "getLatestVersion";
+    public static final String DEV_TYPE_PARAM = "deviceType";
+    public static final String APP_CODE_PARAM = "appCode";
 
-	private String deviceType;
-	private String appCode;
+    private String deviceType;
+    private String appCode;
 
-	@Override
-	protected void populateFields(HttpServletRequest req) throws Exception {
-		deviceType = req.getParameter(DEV_TYPE_PARAM);
-		appCode = req.getParameter(APP_CODE_PARAM);
-	}
+    @Override
+    protected void populateFields(HttpServletRequest req) throws Exception {
+        deviceType = req.getParameter(DEV_TYPE_PARAM);
+        appCode = req.getParameter(APP_CODE_PARAM);
+    }
 
-	@Override
-	protected void populateErrors() {
-		if (deviceType == null) {
-			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PARAM_ERROR_MESSAGE, DEV_TYPE_PARAM
-							+ " cannot be null"));
-		}
-		if (appCode == null) {
-			addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
-					RestError.MISSING_PARAM_ERROR_MESSAGE, APP_CODE_PARAM
-							+ " cannot be null"));
-		}
-	}
+    @Override
+    protected void populateErrors() {
+        if (deviceType == null) {
+            addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+                    RestError.MISSING_PARAM_ERROR_MESSAGE, DEV_TYPE_PARAM
+                            + " cannot be null"));
+        }
+        if (appCode == null) {
+            addError(new RestError(RestError.MISSING_PARAM_ERROR_CODE,
+                    RestError.MISSING_PARAM_ERROR_MESSAGE, APP_CODE_PARAM
+                            + " cannot be null"));
+        }
+    }
 
-	public String getDeviceType() {
-		return deviceType;
-	}
+    public String getDeviceType() {
+        return deviceType;
+    }
 
-	public void setDeviceType(String deviceType) {
-		this.deviceType = deviceType;
-	}
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
 
-	public String getAppCode() {
-		return appCode;
-	}
+    public String getAppCode() {
+        return appCode;
+    }
 
-	public void setAppCode(String appCode) {
-		this.appCode = appCode;
-	}
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
+    }
 
 }
