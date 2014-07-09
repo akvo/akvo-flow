@@ -203,11 +203,11 @@ FLOW.Router = Ember.Router.extend({
         route: '/current-devices',
         connectOutlets: function (router, context) {
           router.get('navDevicesController').connectOutlet('currentDevices');
+          router.resetState();
           FLOW.deviceGroupControl.populate();
           FLOW.deviceControl.populate();
           FLOW.surveyAssignmentControl.populate();
           FLOW.surveyGroupControl.populate();
-          router.resetState();
           router.set('devicesSubnavController.selected', 'currentDevices');
         }
       }),
