@@ -137,7 +137,19 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         } else if (SurveyRestRequest.GET_SURVEY_GROUP_ACTION.equals(surveyReq
                 .getAction())) {
             List<SurveyGroupDto> sgList = new ArrayList<SurveyGroupDto>();
-            sgList.add(getSurveyGroup(surveyReq.getSurveyGroupId()));
+            Long sgId = surveyReq.getSurveyGroupId();
+            if (sgId != null) {
+                sgList.add(getSurveyGroup(sgId));
+            } else {
+                // Trying to get it using Survey ID
+                Long sId = surveyReq.getSurveyId();
+                if (sId != null) {
+                    Survey s = surveyDao.getById(sId);
+                    if (s != null) {
+                        sgList.add(getSurveyGroup(s.getSurveyGroupId()));
+                    }
+                }
+            }
             response.setDtoList(sgList);
         } else if (SurveyRestRequest.LIST_SURVEYS_ACTION.equals(surveyReq
                 .getAction())) {
