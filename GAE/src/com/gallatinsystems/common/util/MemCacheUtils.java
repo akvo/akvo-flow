@@ -32,9 +32,11 @@ public class MemCacheUtils {
 
     private static Logger log = Logger.getLogger(MemCacheUtils.class.getName());
 
+    public static String SURVEY_QUESTIONS_PREFIX = "survey-questions-";
+
     /**
      * Initialize a Cache object with a expiration delta defined in seconds
-     * 
+     *
      * @param expirySeconds Expiration delta defined in seconds
      * @return A Cache object or <b>null</b> when the runtime couldn't initialize the object
      */
@@ -62,7 +64,7 @@ public class MemCacheUtils {
      * The current implementation of Cache.put always return null, therefore this method doesn't
      * return any value. <b>NOTE:</b> A failed put operation will get logged but also fail silently
      * to the executing program
-     * 
+     *
      * @param cache An initialized Cache object
      * @param key The key (must implement java.io.Serializable)
      * @param value The value (must implement java.io.Serializable)
@@ -82,7 +84,7 @@ public class MemCacheUtils {
     /**
      * Delegates testing to `Cache.containsKey`, handles runtime exceptions.<br>
      * The runtime could raise an exception on "too long" requests, or partial service outage
-     * 
+     *
      * @param cache Initialized Cache object
      * @param key Key to search (must implement java.io.Serializable)
      * @return true|false depending if the Cache contains that key.<br>

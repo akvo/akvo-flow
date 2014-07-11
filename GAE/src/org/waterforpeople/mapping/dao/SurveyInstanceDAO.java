@@ -39,6 +39,7 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFiles;
@@ -92,18 +93,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 
-        Cache cache = null;
-        Map props = new HashMap();
-        props.put(GCacheFactory.EXPIRATION_DELTA, 15 * 60); // 15min
-        props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
-        try {
-            CacheFactory cacheFactory = CacheManager.getInstance()
-                    .getCacheFactory();
-            cache = cacheFactory.createCache(props);
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    "Couldn't initialize cache: " + e.getMessage(), e);
-        }
+        Cache cache = MemCacheUtils.initCache(60 * 60); // 1 hour - enough time to process large batch of surveys?
 
         for (String line : unparsedLines) {
 
@@ -321,15 +311,24 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         si.setQuestionAnswersStore(qasList);
 
         QuestionDao questionDao = new QuestionDao();
-        List<Question> qOptionList = questionDao.listQuestionByType(si.getSurveyId(),
-                Question.Type.OPTION);
+
+        Map<Long, Question> surveyQuestionMap = null;
+        String questionListKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + si.getSurveyId();
+
+        if (MemCacheUtils.containsKey(cache,questionListKey)) {
+            surveyQuestionMap = (Map<Long, Question>) cache.get(questionListKey);
+        } else {
+            surveyQuestionMap = questionDao.mapQuestionsBySurvey(si.getSurveyId());
+            MemCacheUtils.putObject(cache, questionListKey, surveyQuestionMap);
+        }
 
         for (QuestionAnswerStore qas : qasList) {
             if (Question.Type.GEO.toString().equals(qas.getType())) {
                 geoQasId = qas.getKey().getId();
             }
-            // update count of questionAnswerSummary objects
-            if (isSummarizable(qas, qOptionList)) {
+            // update count of questionAnswerSummary objects for option questions
+            Question question = surveyQuestionMap.get(Long.parseLong(qas.getQuestionID()));
+            if (Question.Type.OPTION.equals(question.getType())) {
                 SurveyQuestionSummaryDao.incrementCount(qas, 1);
             }
 
@@ -374,28 +373,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                     .param("delta", 1 + ""));
         }
         return si;
-    }
-
-    /**
-     * returns true if the question type for the answer object is an OPTION type
-     *
-     * @param answer
-     * @param questions
-     * @return
-     */
-    private boolean isSummarizable(QuestionAnswerStore answer,
-            List<Question> questions) {
-        if (questions != null && answer != null) {
-            long id = Long.parseLong(answer.getQuestionID());
-            for (Question q : questions) {
-                if (q.getKey().getId() == id) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return false;
-        }
     }
 
     public SurveyInstanceDAO() {

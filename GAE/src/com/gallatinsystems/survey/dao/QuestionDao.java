@@ -18,8 +18,8 @@ package com.gallatinsystems.survey.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -111,6 +111,21 @@ public class QuestionDao extends BaseDAO<Question> {
      */
     public List<Question> listQuestionsBySurvey(Long surveyId) {
         return listByProperty("surveyId", surveyId, "Long", "order", "asc");
+    }
+
+    /**
+     * Returns a map of questions by surveyId with the question id as key
+     * and question object as value
+     *
+     * @param surveyId
+     * @return
+     */
+    public Map<Long, Question> mapQuestionsBySurvey(Long surveyId) {
+        Map<Long, Question> questionMap = new LinkedHashMap<Long, Question>();
+        for(Question q : listByProperty("surveyId", surveyId, "Long", "order", "asc")) {
+            questionMap.put(q.getKey().getId(), q);
+        }
+        return questionMap;
     }
 
     /**
