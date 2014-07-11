@@ -335,11 +335,11 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
                     SurveyGroupDto dto = new SurveyGroupDto();
 
-                    if (o.has("name") && o.isNull("name")) {
+                    if (!o.isNull("name")) {
                         dto.setName(o.getString("name"));
                     }
 
-                    if (!o.has("monitoringGroup") || o.isNull("monitoringGroup")) {
+                    if (o.isNull("monitoringGroup")) {
                         dto.setMonitoringGroup(false);
                     } else {
                         dto.setMonitoringGroup(o.getBoolean("monitoringGroup"));
