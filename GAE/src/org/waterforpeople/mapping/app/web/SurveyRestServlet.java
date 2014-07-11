@@ -139,14 +139,20 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             List<SurveyGroupDto> sgList = new ArrayList<SurveyGroupDto>();
             Long sgId = surveyReq.getSurveyGroupId();
             if (sgId != null) {
-                sgList.add(getSurveyGroup(sgId));
+                SurveyGroupDto dto = getSurveyGroup(sgId);
+                if (dto != null) {
+                    sgList.add(dto);
+                }
             } else {
                 // Trying to get it using Survey ID
                 Long sId = surveyReq.getSurveyId();
                 if (sId != null) {
                     Survey s = surveyDao.getById(sId);
                     if (s != null) {
-                        sgList.add(getSurveyGroup(s.getSurveyGroupId()));
+                        SurveyGroupDto dto = getSurveyGroup(s.getSurveyGroupId());
+                        if (dto != null) {
+                            sgList.add(dto);
+                        }
                     }
                 }
             }
@@ -266,7 +272,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     private SurveyGroupDto getSurveyGroup(Long surveyGroupId) {
         SurveyGroupDAO surveyGroupDao = new SurveyGroupDAO();
         SurveyGroupDto dto = new SurveyGroupDto();
-        DtoMarshaller.copyToDto(surveyGroupDao.getByKey(surveyGroupId), dto);
+        SurveyGroup sg = surveyGroupDao.getByKey(surveyGroupId);
+        if (sg == null) {
+            return null;
+        }
+        DtoMarshaller.copyToDto(sg, dto);
         return dto;
     }
 
