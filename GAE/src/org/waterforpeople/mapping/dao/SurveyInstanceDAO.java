@@ -378,7 +378,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * returns true if the question type for the answer object is an OPTION type
-     * 
+     *
      * @param answer
      * @param questions
      * @return
@@ -509,7 +509,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /***********************
      * returns raw entities
-     * 
+     *
      * @param returnKeysOnly
      * @param beginDate
      * @param endDate
@@ -556,7 +556,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * finds a questionAnswerStore object for the surveyInstance and questionId passed in (if it
      * exists)
-     * 
+     *
      * @param surveyInstanceId
      * @param questionId
      * @return
@@ -580,7 +580,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * lists all questionAnswerStore objects for a single surveyInstance, optionally filtered by
      * type
-     * 
+     *
      * @param surveyInstanceId - mandatory
      * @param type - optional
      * @return
@@ -616,7 +616,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists all questionAnswerStore objects for a survey instance
-     * 
+     *
      * @param instanceId
      * @return
      */
@@ -635,7 +635,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists all questionAnswerStore objects for a specific question
-     * 
+     *
      * @param questionId
      * @return
      */
@@ -653,7 +653,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * Deletes a surveyInstance and all its related questionAnswerStore objects Based on the version
      * in DataBackoutServlet
-     * 
+     *
      * @param item
      * @return
      */
@@ -752,7 +752,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists all surveyInstance records for a given survey
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -794,7 +794,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists instances for the given surveyedLocale optionally filtered by the dates passed in
-     * 
+     *
      * @param surveyedLocaleId
      * @return
      */
@@ -806,7 +806,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists instances for the given surveyedLocale optionally filtered by the dates passed in
-     * 
+     *
      * @param surveyedLocaleId
      * @return
      */
@@ -844,7 +844,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists all survey instances by the submitter passed in
-     * 
+     *
      * @param submitter
      * @return
      */
@@ -880,7 +880,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * finds a single survey instance by uuid. This method will NOT load all QuestionAnswerStore
      * objects.
-     * 
+     *
      * @param uuid
      * @return
      */
