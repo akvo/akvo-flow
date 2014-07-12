@@ -64,7 +64,7 @@ FLOW.ReportLoader = Ember.Object.create({
       criteria.opts.locale = FLOW.reportLanguageControl.get('selectedLanguage').get('value');
     }
 
-    criteria.opts.lastCollection = '' + (exportType === 'RAW_DATA' && !!FLOW.editControl.lastCollection);
+    criteria.opts.lastCollection = '' + (exportType === 'RAW_DATA' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
 
     this.set('criteria', criteria);
     FLOW.savingMessageControl.numLoadingChange(1);
@@ -84,7 +84,7 @@ FLOW.ReportLoader = Ember.Object.create({
       FLOW.savingMessageControl.numLoadingChange(-1);
       this.set('processing', false);
       this.set('criteria', null);
-      $('#downloader').attr('src', FLOW.Env.flowServices.split(":3001")[0] + '/report/' + resp.file);
+      $('#downloader').attr('src', FLOW.Env.flowServices + '/report/' + resp.file);
     }
   },
 
