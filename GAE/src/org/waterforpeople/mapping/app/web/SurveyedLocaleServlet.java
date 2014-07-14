@@ -25,8 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.waterforpeople.mapping.app.util.json.JSONObject;
-//import org.json.JSONArray;
-//import org.json.JSONObject;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
@@ -114,90 +112,93 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         SurveyedLocaleResponse resp = new SurveyedLocaleResponse();
         SurveyedLocaleDao slDao = new SurveyedLocaleDao();
         QuestionDao qDao = new QuestionDao();
-        if (slList != null) {
-            // set meta data
-            resp.setResultCount(slList.size());
+        if (slList == null) {
+            resp.setCode(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+            return resp;
+        }
+        // set meta data
+        resp.setCode(String.valueOf(HttpServletResponse.SC_OK));
+        resp.setResultCount(slList.size());
 
-            // set Locale data
-            List<SurveyedLocaleDto> dtoList = new ArrayList<SurveyedLocaleDto>();
-            HashMap<Long, String> questionTypeMap = new HashMap<Long, String>();
-            // for each surveyedLocale, get the surveyalValues and store them in a map
-            for (SurveyedLocale sl : slList) {
-                List<SurveyalValue> svList = slDao.listValuesByLocale(sl.getKey().getId());
-                HashMap<Long, List<SurveyalValue>> instanceMap = new HashMap<Long, List<SurveyalValue>>();
-                if (svList != null && svList.size() > 0) {
-                    for (SurveyalValue sv : svList) {
-                        // put them in a map with the surveyInstance as key
-                        if (instanceMap.containsKey(sv.getSurveyInstanceId())) {
-                            instanceMap.get(sv.getSurveyInstanceId()).add(sv);
-                        } else {
-                            instanceMap.put(sv.getSurveyInstanceId(),
-                                    new ArrayList<SurveyalValue>());
-                            instanceMap.get(sv.getSurveyInstanceId()).add(sv);
-                        }
+        // set Locale data
+        List<SurveyedLocaleDto> dtoList = new ArrayList<SurveyedLocaleDto>();
+        HashMap<Long, String> questionTypeMap = new HashMap<Long, String>();
+        // for each surveyedLocale, get the surveyalValues and store them in a map
+        for (SurveyedLocale sl : slList) {
+            List<SurveyalValue> svList = slDao.listValuesByLocale(sl.getKey().getId());
+            HashMap<Long, List<SurveyalValue>> instanceMap = new HashMap<Long, List<SurveyalValue>>();
+            if (svList != null && svList.size() > 0) {
+                for (SurveyalValue sv : svList) {
+                    // put them in a map with the surveyInstance as key
+                    if (instanceMap.containsKey(sv.getSurveyInstanceId())) {
+                        instanceMap.get(sv.getSurveyInstanceId()).add(sv);
+                    } else {
+                        instanceMap.put(sv.getSurveyInstanceId(),
+                                new ArrayList<SurveyalValue>());
+                        instanceMap.get(sv.getSurveyInstanceId()).add(sv);
                     }
                 }
-                // put them in the dto
-                SurveyedLocaleDto dto = new SurveyedLocaleDto();
-                dto.setId(sl.getIdentifier());
-                dto.setSurveyGroupId(surveyGroupId);
-                dto.setDisplayName(sl.getDisplayName());
-                dto.setLat(sl.getLatitude());
-                dto.setLon(sl.getLongitude());
-                dto.setLastUpdateDateTime(sl.getLastUpdateDateTime());
-                SurveyInstanceDAO sDao = new SurveyInstanceDAO();
-                for (Long instanceId : instanceMap.keySet()) {
-                    SurveyInstanceDto siDto = new SurveyInstanceDto();
-                    SurveyInstance si = sDao.getByKey(instanceId);
-                    if (si != null) {
-                        siDto.setUuid(si.getUuid());
-                        siDto.setSurveyId(si.getSurveyId());
-                        siDto.setCollectionDate(si.getCollectionDate().getTime());
-                    }
-                    for (SurveyalValue sv : instanceMap.get(instanceId)) {
-                        String svQuestionType = sv.getQuestionType();
-                        String deviceQuestionType = "VALUE";
-                        if (svQuestionType.equals("DATE")) {
-                            deviceQuestionType = "DATE";
-                        } else if (svQuestionType.equals("GEO")) {
-                            deviceQuestionType = "GEO";
-                        } else if (svQuestionType.equals("PHOTO")) {
-                            deviceQuestionType = "IMAGE";
-                        } else if (svQuestionType.equals("VIDEO")) {
-                            deviceQuestionType = "VIDEO";
-                        } else if (svQuestionType.equals("SCAN")) {
-                            deviceQuestionType = "SCAN";
-                        } else if (svQuestionType.equals("OPTION")) {
-                            // first see if we have the question in the map already
-                            if (questionTypeMap.containsKey(sv.getSurveyQuestionId())) {
-                                deviceQuestionType = questionTypeMap.get(sv.getSurveyQuestionId());
-                            } else {
-                                // find question by id
-                                Question q = qDao.getByKey(sv.getSurveyQuestionId());
-                                if (q != null) {
-                                    // if the question has the allowOtherFlag set,
-                                    // use OTHER as the device question type
-                                    if (q.getAllowOtherFlag()) {
-                                        deviceQuestionType = "OTHER";
-                                    }
-                                    questionTypeMap.put(sv.getSurveyQuestionId(),
-                                            deviceQuestionType);
+            }
+            // put them in the dto
+            SurveyedLocaleDto dto = new SurveyedLocaleDto();
+            dto.setId(sl.getIdentifier());
+            dto.setSurveyGroupId(surveyGroupId);
+            dto.setDisplayName(sl.getDisplayName());
+            dto.setLat(sl.getLatitude());
+            dto.setLon(sl.getLongitude());
+            dto.setLastUpdateDateTime(sl.getLastUpdateDateTime());
+            SurveyInstanceDAO sDao = new SurveyInstanceDAO();
+            for (Long instanceId : instanceMap.keySet()) {
+                SurveyInstanceDto siDto = new SurveyInstanceDto();
+                SurveyInstance si = sDao.getByKey(instanceId);
+                if (si != null) {
+                    siDto.setUuid(si.getUuid());
+                    siDto.setSurveyId(si.getSurveyId());
+                    siDto.setCollectionDate(si.getCollectionDate().getTime());
+                }
+                for (SurveyalValue sv : instanceMap.get(instanceId)) {
+                    String svQuestionType = sv.getQuestionType();
+                    String deviceQuestionType = "VALUE";
+                    if (svQuestionType.equals("DATE")) {
+                        deviceQuestionType = "DATE";
+                    } else if (svQuestionType.equals("GEO")) {
+                        deviceQuestionType = "GEO";
+                    } else if (svQuestionType.equals("PHOTO")) {
+                        deviceQuestionType = "IMAGE";
+                    } else if (svQuestionType.equals("VIDEO")) {
+                        deviceQuestionType = "VIDEO";
+                    } else if (svQuestionType.equals("SCAN")) {
+                        deviceQuestionType = "SCAN";
+                    } else if (svQuestionType.equals("OPTION")) {
+                        // first see if we have the question in the map already
+                        if (questionTypeMap.containsKey(sv.getSurveyQuestionId())) {
+                            deviceQuestionType = questionTypeMap.get(sv.getSurveyQuestionId());
+                        } else {
+                            // find question by id
+                            Question q = qDao.getByKey(sv.getSurveyQuestionId());
+                            if (q != null) {
+                                // if the question has the allowOtherFlag set,
+                                // use OTHER as the device question type
+                                if (q.getAllowOtherFlag()) {
+                                    deviceQuestionType = "OTHER";
                                 }
+                                questionTypeMap.put(sv.getSurveyQuestionId(),
+                                        deviceQuestionType);
                             }
                         }
-                        if (!sv.getQuestionType().equals("IMAGE")) {
-                            // add question type
-                            siDto.addProperty(sv.getSurveyQuestionId(),
-                                    sv.getStringValue() != null ? sv.getStringValue() : "",
-                                    deviceQuestionType);
-                        }
                     }
-                    dto.getSurveyInstances().add(siDto);
+                    if (!sv.getQuestionType().equals("IMAGE")) {
+                        // add question type
+                        siDto.addProperty(sv.getSurveyQuestionId(),
+                                sv.getStringValue() != null ? sv.getStringValue() : "",
+                                deviceQuestionType);
+                    }
                 }
-                dtoList.add(dto);
+                dto.getSurveyInstances().add(siDto);
             }
-            resp.setSurveyedLocaleData(dtoList);
+            dtoList.add(dto);
         }
+        resp.setSurveyedLocaleData(dtoList);
         return resp;
     }
 
@@ -206,22 +207,21 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
      */
     @Override
     protected void writeOkResponse(RestResponse resp) throws Exception {
-        if (resp instanceof SurveyedLocaleResponse) {
-            getResponse().setStatus(200);
-            SurveyedLocaleResponse slResp = (SurveyedLocaleResponse) resp;
-            JSONObject result = new JSONObject(slResp);
-            getResponse().getWriter().println(result.toString());
-        } else {
-            // Something went wrong. TODO: Should 'writeOkResponse' have a broader meaning?
-            int sc;
-            try {
-            	sc = Integer.valueOf(resp.getCode());
-            } catch (NumberFormatException ignored) {
-            	// Status code was not properly set in the RestResponse
-            	sc = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            }
-            getResponse().setStatus(sc);
-            getResponse().getWriter().println(resp.getMessage());
+        int sc;
+        try {
+            sc = Integer.valueOf(resp.getCode());
+        } catch (NumberFormatException ignored) {
+            // Status code was not properly set in the RestResponse
+            sc = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         }
+        String body;
+        if (sc == HttpServletResponse.SC_OK) {
+            JSONObject result = new JSONObject(resp);
+            body = result.toString();
+        } else {
+            body = resp.getMessage();
+        }
+        getResponse().setStatus(sc);
+        getResponse().getWriter().println(body);
     }
 }
