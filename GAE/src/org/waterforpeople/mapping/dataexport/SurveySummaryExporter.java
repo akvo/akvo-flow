@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -200,6 +201,16 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
     }
 
+    protected List<SurveyGroupDto> fetchSurveyGroup(String surveyId, String serverBase,
+            String apiKey) throws Exception {
+
+        return parseSurveyGroups(BulkDataServiceClient.fetchDataFromServer(
+                serverBase + SERVLET_URL, "action="
+                        + SurveyRestRequest.GET_SURVEY_GROUP_ACTION + "&"
+                        + SurveyRestRequest.SURVEY_ID_PARAM + "="
+                        + surveyId, true, apiKey));
+    }
+
     protected Map<QuestionGroupDto, List<QuestionDto>> loadAllQuestions(
             String surveyId, boolean performRollups, String serverBase, String apiKey)
             throws Exception {
@@ -306,6 +317,42 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                 }
             }
         }
+        return dtoList;
+    }
+
+    protected List<SurveyGroupDto> parseSurveyGroups(String response) throws Exception {
+        List<SurveyGroupDto> dtoList = new ArrayList<SurveyGroupDto>();
+        JSONArray jsonArray = getJsonArray(response);
+
+        if (jsonArray == null) {
+            return dtoList;
+        }
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject o = jsonArray.getJSONObject(i);
+            if (o != null) {
+                try {
+
+                    SurveyGroupDto dto = new SurveyGroupDto();
+
+                    if (!o.isNull("name")) {
+                        dto.setName(o.getString("name"));
+                    }
+
+                    if (o.isNull("monitoringGroup")) {
+                        dto.setMonitoringGroup(false);
+                    } else {
+                        dto.setMonitoringGroup(o.getBoolean("monitoringGroup"));
+                    }
+
+                    dtoList.add(dto);
+                } catch (Exception e) {
+                    System.out.println("Error in json parsing: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+
         return dtoList;
     }
 

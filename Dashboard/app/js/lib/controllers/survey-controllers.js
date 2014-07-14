@@ -195,6 +195,8 @@ FLOW.surveyControl = Ember.ArrayController.create({
       this.set('content', FLOW.store.findQuery(FLOW.Survey, {
         surveyGroupId: id
       }));
+    } else {
+      this.set('content', null);
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 

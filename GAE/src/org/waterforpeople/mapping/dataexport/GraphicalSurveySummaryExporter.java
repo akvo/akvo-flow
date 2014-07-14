@@ -59,6 +59,7 @@ import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyRestRequest;
@@ -284,6 +285,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
+    private boolean monitoringGroup = false;
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -303,6 +305,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         try {
             SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                     LOADING_QUESTIONS.get(locale)));
+
+            List<SurveyGroupDto> sgs = fetchSurveyGroup(
+                    criteria.get(SurveyRestRequest.SURVEY_ID_PARAM), serverBase,
+                    criteria.get("apiKey"));
+
+            if (sgs != null && !sgs.isEmpty()) {
+                monitoringGroup = sgs.get(0).getMonitoringGroup();
+            }
+
             Map<QuestionGroupDto, List<QuestionDto>> questionMap = loadAllQuestions(
                     criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
                     performGeoRollup, serverBase, criteria.get("apiKey"));
@@ -431,6 +442,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             final String dateString = instanceEntry.getValue();
             started++;
             threadPool.execute(new Runnable() {
+                @Override
                 public void run() {
                     int attempts = 0;
                     boolean done = false;
@@ -625,18 +637,24 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Row row = null;
 
         row = getRow(0, sheet);
-        createCell(row, 0, IDENTIFIER_LABEL.get(locale), headerStyle);
-        createCell(row, 1, DISPLAY_NAME_LABEL.get(locale), headerStyle);
-        createCell(row, 2, INSTANCE_LABEL.get(locale), headerStyle);
-        createCell(row, 3, SUB_DATE_LABEL.get(locale), headerStyle);
-        createCell(row, 4, SUBMITTER_LABEL.get(locale), headerStyle);
-        createCell(row, 5, DURATION_LABEL.get(locale), headerStyle);
+
+        int columnIdx = 0;
+
+        if (monitoringGroup) {
+            createCell(row, columnIdx++, IDENTIFIER_LABEL.get(locale), headerStyle);
+            createCell(row, columnIdx++, DISPLAY_NAME_LABEL.get(locale), headerStyle);
+        }
+
+        createCell(row, columnIdx++, INSTANCE_LABEL.get(locale), headerStyle);
+        createCell(row, columnIdx++, SUB_DATE_LABEL.get(locale), headerStyle);
+        createCell(row, columnIdx++, SUBMITTER_LABEL.get(locale), headerStyle);
+        createCell(row, columnIdx++, DURATION_LABEL.get(locale), headerStyle);
 
         List<String> questionIdList = new ArrayList<String>();
         List<String> nonSummarizableList = new ArrayList<String>();
 
         if (questionMap != null) {
-            int offset = 6;
+            int offset = columnIdx + 1;
             for (QuestionGroupDto group : orderedGroupList) {
                 if (questionMap.get(group) != null) {
                     for (QuestionDto q : questionMap.get(group)) {
@@ -817,7 +835,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         if (sampleTotal > 0) {
                             createCell(row, 2,
                                     PCT_FMT.format((Double.parseDouble(values
-                                            .get(i)) / (double) sampleTotal)),
+                                            .get(i)) / sampleTotal)),
                                     null);
                         } else {
                             createCell(row, 2, PCT_FMT.format(0), null);
@@ -1133,6 +1151,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             this.step = step;
         }
 
+        @Override
         public void run() {
             if (!GraphicsEnvironment.isHeadless()) {
                 progressDialog.update(step, msg);

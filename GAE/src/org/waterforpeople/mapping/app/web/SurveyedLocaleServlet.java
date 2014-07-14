@@ -24,7 +24,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.waterforpeople.mapping.app.util.json.JSONObject;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.web.dto.SurveyInstanceDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleRequest;
@@ -214,14 +214,13 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
             // Status code was not properly set in the RestResponse
             sc = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         }
-        String body;
-        if (sc == HttpServletResponse.SC_OK) {
-            JSONObject result = new JSONObject(resp);
-            body = result.toString();
-        } else {
-            body = resp.getMessage();
-        }
         getResponse().setStatus(sc);
-        getResponse().getWriter().println(body);
+        if (sc == HttpServletResponse.SC_OK) {
+            ObjectMapper jsonMapper = new ObjectMapper();
+            jsonMapper.writeValue(getResponse().getWriter(), resp);
+            getResponse().getWriter().println();
+        } else {
+            getResponse().getWriter().println(resp.getMessage());
+        }
     }
 }

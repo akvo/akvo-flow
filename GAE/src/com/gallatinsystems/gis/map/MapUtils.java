@@ -62,7 +62,7 @@ public class MapUtils {
         Long surveyId = null;
         String surveyIdString = "";
 
-        if (locale.getGeocells() == null) {
+        if (locale.getGeocells() == null || locale.getGeocells().size() == 0) {
             // nothing to do
             return;
         }

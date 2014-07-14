@@ -5,6 +5,18 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.0.2
+
+## Resolved issues
+
+* Survey response values longer than 500 characters cannot be stored [#656]
+
+#1.7.0.1
+
+## Resolved issues
+
+* Survey response values longer than 500 characters cannot be stored [#656]
+
 #1.7.0
 
 ## New and noteworthy

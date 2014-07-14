@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -23,7 +23,9 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class QuestionAnswerStore extends BaseDomain {
@@ -37,6 +39,12 @@ public class QuestionAnswerStore extends BaseDomain {
     private String type;
     @Persistent
     private String value;
+    /**
+     * This property holds the value response value when exceeds 500 characters<br>
+     * See: https://developers
+     * .google.com/appengine/docs/java/javadoc/com/google/appengine/api/datastore/Text
+     */
+    private Text valueText;
     private Date collectionDate;
     private Long surveyId;
     private Long surveyInstanceId;
@@ -100,11 +108,25 @@ public class QuestionAnswerStore extends BaseDomain {
     }
 
     public String getValue() {
-        return value;
+        if (value != null) {
+            return value;
+        }
+        if (valueText != null) {
+            return valueText.getValue();
+        }
+        return null;
     }
 
     public void setValue(String value) {
-        this.value = value;
+        // Explicitly set the non used property to null
+        // to avoid problems when reading the value
+        if (value != null && value.length() > Constants.MAX_LENGTH) {
+            this.value = null;
+            this.valueText = new Text(value);
+        } else {
+            this.valueText = null;
+            this.value = value;
+        }
     }
 
     public String getQuestionID() {

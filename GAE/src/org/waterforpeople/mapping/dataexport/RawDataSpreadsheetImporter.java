@@ -178,12 +178,24 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                     continue; // move to next row (data)
                 }
                 digest.reset();
+
                 String instanceId = null;
                 String dateString = null;
                 String submitter = null;
-                StringBuilder sb = new StringBuilder();
                 String duration = null;
                 String durationSeconds = null;
+                StringBuilder sb = new StringBuilder();
+
+                // Monitoring headers
+                // [identifier, displayName, instanceId, date, submitter, duration, questions...]
+
+                // Non-monitoring headers
+                // [instanceId, date, submitter, duration, questions...]
+
+                int instanceIdx = firstQuestionCol - 4;
+                int dateIdx = firstQuestionCol - 3;
+                int submitterIdx = firstQuestionCol - 2;
+                int durationIdx = firstQuestionCol - 1;
 
                 sb.append("action="
                         + RawDataImportRequest.SAVE_SURVEY_INSTANCE_ACTION
@@ -192,7 +204,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 boolean needUpload = true;
 
                 for (Cell cell : row) {
-                    if (cell.getColumnIndex() == 2) {
+                    if (cell.getColumnIndex() == instanceIdx) {
                         if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
                             instanceId = new Double(cell.getNumericCellValue())
                                     .intValue() + "";
@@ -205,7 +217,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                     + "=" + instanceId + "&");
                         }
                     }
-                    if (cell.getColumnIndex() == 3) {
+                    if (cell.getColumnIndex() == dateIdx) {
                         if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
                             dateString = cell.getStringCellValue();
                         } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -220,7 +232,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                     + "&");
                         }
                     }
-                    if (cell.getColumnIndex() == 4) {
+                    if (cell.getColumnIndex() == submitterIdx) {
                         if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
                             submitter = cell.getStringCellValue();
                             sb.append("submitter="
@@ -229,7 +241,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                         }
                     }
                     // Survey Duration
-                    if (cell.getColumnIndex() == 5) {
+                    if (cell.getColumnIndex() == durationIdx) {
                         if (hasDurationCol) {
                             switch (cell.getCellType()) {
                             // if the cell type is string, we expect hh:mm:ss format
@@ -490,6 +502,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             final String key) {
         threadPool.execute(new Runnable() {
 
+            @Override
             public void run() {
                 try {
                     SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
@@ -587,6 +600,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             this.isComplete = isComplete;
         }
 
+        @Override
         public void run() {
             if (progressDialog != null) {
                 progressDialog.update(step, msg, isComplete);
