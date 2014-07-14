@@ -114,6 +114,7 @@ public class SurveyedLocaleServlet extends AbstractRestApiServlet {
         QuestionDao qDao = new QuestionDao();
         if (slList == null) {
             resp.setCode(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+            resp.setMessage("Internal Server Error");
             return resp;
         }
         // set meta data
