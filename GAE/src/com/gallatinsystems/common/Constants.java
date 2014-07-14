@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -26,5 +26,6 @@ public class Constants {
             "createdDateTime", "lastUpdateDateTime", "lastUpdateUserId",
             "createUserId"
     };
+    public final static int MAX_LENGTH = 500;
 
 }
