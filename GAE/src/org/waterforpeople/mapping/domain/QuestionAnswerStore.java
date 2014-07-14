@@ -24,10 +24,12 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Text;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class QuestionAnswerStore extends BaseDomain {
     private static final long serialVersionUID = 3726562582080475960L;
+    private static final int MAX_LENGTH = 500;
 
     @Persistent
     private Long arbitratyNumber;
@@ -37,6 +39,12 @@ public class QuestionAnswerStore extends BaseDomain {
     private String type;
     @Persistent
     private String value;
+    /**
+     * This property holds the value response value when exceeds 500 characters<br>
+     * See: https://developers
+     * .google.com/appengine/docs/java/javadoc/com/google/appengine/api/datastore/Text
+     */
+    private Text valueText;
     private Date collectionDate;
     private Long surveyId;
     private Long surveyInstanceId;
@@ -100,11 +108,25 @@ public class QuestionAnswerStore extends BaseDomain {
     }
 
     public String getValue() {
-        return value;
+        if (value != null) {
+            return value;
+        }
+        if (valueText != null) {
+            return valueText.getValue();
+        }
+        return null;
     }
 
     public void setValue(String value) {
-        this.value = value;
+        // Explicitly set the non used property to null
+        // to avoid problems when reading the value
+        if (value != null && value.length() > MAX_LENGTH) {
+            this.value = null;
+            this.valueText = new Text(value);
+        } else {
+            this.valueText = null;
+            this.value = value;
+        }
     }
 
     public String getQuestionID() {
