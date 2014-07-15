@@ -217,8 +217,7 @@ public class RawDataImportRequest extends RestRequest {
         }
         if (req.getParameter(DURATION_PARAM) != null) {
             try {
-                Double duration = Double.valueOf(req.getParameter(DURATION_PARAM));
-                setSurveyDuration(duration.longValue());
+                setSurveyDuration(Long.valueOf(req.getParameter(DURATION_PARAM)));
             } catch (NumberFormatException e) {
                 setSurveyDuration(0L);
             }
