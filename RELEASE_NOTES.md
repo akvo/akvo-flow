@@ -5,6 +5,13 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.0.3
+
+## Resolved issues
+
+* Submitter name missing when importing RAW DATA spreadsheet [#662]
+
+
 #1.7.0.2
 
 ## Resolved issues
