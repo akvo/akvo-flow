@@ -512,10 +512,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             SummaryModel model) throws Exception {
         int col = 0;
         MessageDigest digest = MessageDigest.getInstance("MD5");
-        createCell(row, col++, dto.getSurveyedLocaleIdentifier(), null);
-        createCell(row, col++, dto.getSurveyedLocaleDisplayName(), null);
+
+        if (monitoringGroup) {
+            createCell(row, col++, dto.getSurveyedLocaleIdentifier(), null);
+            createCell(row, col++, dto.getSurveyedLocaleDisplayName(), null);
+        }
+
         createCell(row, col++, instanceId, null);
         createCell(row, col++, dateString, null);
+
         if (dto != null) {
             String name = dto.getSubmitterName();
             if (name != null) {
@@ -654,7 +659,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         List<String> nonSummarizableList = new ArrayList<String>();
 
         if (questionMap != null) {
-            int offset = columnIdx + 1;
+            int offset = columnIdx;
             for (QuestionGroupDto group : orderedGroupList) {
                 if (questionMap.get(group) != null) {
                     for (QuestionDto q : questionMap.get(group)) {
