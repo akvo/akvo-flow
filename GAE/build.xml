@@ -169,9 +169,12 @@
 
 		<echo message="Rebuilding Dashboard..." />
 
-		<exec dir="../Dashboard" executable="rake" failonerror="true">
+		<exec dir="../Dashboard" executable="bundle" failonerror="true">
 		    <env key="RAKEP_MODE" value="production" />
+		    <arg value="exec" />
+		    <arg value="rake" />
 		    <arg value="build" />
+		    <arg value="--trace" />
 		</exec>
 
 		<exec dir="../" executable="git" outputproperty="app.version">
