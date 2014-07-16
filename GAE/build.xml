@@ -165,8 +165,6 @@
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
 		</delete>
 
-		<delete file="war/PlacemarksNewLook.vm" failonerror="false" />
-
 		<echo message="Rebuilding Dashboard..." />
 
 		<exec dir="../Dashboard" executable="rake" failonerror="true">
