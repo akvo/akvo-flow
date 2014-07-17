@@ -61,8 +61,8 @@ import com.gallatinsystems.instancecreator.util.S3PolicySigner;
  * 
  * derived quantities are: * s3bucket - the root directory on S3 for this instance - assumed to be
  * same as instance name * dataUploadUrl - url used for data uploads (assumed to be the root of the
- * S3 account ... http://instanceName.s3.amazonaws.com/) * serverBase - base url for the instance
- * (assumed to be http://instanceName.appspot.com)
+ * S3 account ... https://instanceName.s3.amazonaws.com/) * serverBase - base url for the instance
+ * (assumed to be https://instanceName.appspot.com)
  */
 public class InstanceConfigurator {
     private VelocityEngine engine = null;
@@ -87,10 +87,10 @@ public class InstanceConfigurator {
         ic.addAttribute("s3Id", args[1]);
         ic.addAttribute("signingKey", args[5]);
         ic.addAttribute("instanceName", instanceName);
-        ic.addAttribute("dataUploadUrl", "http://" + instanceName + ".s3.amazonaws.com");
-        ic.addAttribute("serverBase", "http://" + instanceName + ".appspot.com");
-        ic.addAttribute("surveyS3Url", "http://" + instanceName + ".s3.amazonaws.com/surveys");
-        ic.addAttribute("s3urldevicezip", "http://" + instanceName + ".s3.amazonaws.com/devicezip");
+        ic.addAttribute("dataUploadUrl", "https://" + instanceName + ".s3.amazonaws.com");
+        ic.addAttribute("serverBase", "https://" + instanceName + ".appspot.com");
+        ic.addAttribute("surveyS3Url", "https://" + instanceName + ".s3.amazonaws.com/surveys");
+        ic.addAttribute("s3urldevicezip", "https://" + instanceName + ".s3.amazonaws.com/devicezip");
         ic.addAttribute("storepass", args[6]);
         ic.addAttribute("keypass", args[7]);
         ic.addAttribute("alias", args[8]);
@@ -98,8 +98,8 @@ public class InstanceConfigurator {
         ic.addAttribute("reportsEmailAddress", args[9]);
         ic.addAttribute("scoreAPFlag", args[10]);
         ic.addAttribute("organization", args[11]);
-        ic.addAttribute("s3Url", "http://" + instanceName + ".s3.amazonaws.com");
-        ic.addAttribute("s3url", "http://" + instanceName + ".s3.amazonaws.com");
+        ic.addAttribute("s3Url", "https://" + instanceName + ".s3.amazonaws.com");
+        ic.addAttribute("s3url", "https://" + instanceName + ".s3.amazonaws.com");
         String localLocation = args[12];
         ic.addAttribute("keystore", args[13]);
         ic.addAttribute("mapsApiKey", args[14]);
