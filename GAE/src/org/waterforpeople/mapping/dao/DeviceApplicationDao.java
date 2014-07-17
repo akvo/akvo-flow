@@ -1,9 +1,7 @@
 
 package org.waterforpeople.mapping.dao;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
@@ -20,24 +18,24 @@ public class DeviceApplicationDao extends BaseDAO<DeviceApplication> {
 
     @SuppressWarnings("unchecked")
     public List<DeviceApplication> listByDeviceTypeAndAppCode(
-            String deviceType, String appCode, int maxResults) {
+            String deviceType, String[] appCode, int maxResults) {
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(DeviceApplication.class);
-        Map<String, Object> paramMap = null;
 
-        StringBuilder filterString = new StringBuilder();
-        StringBuilder paramString = new StringBuilder();
-        paramMap = new HashMap<String, Object>();
-
-        appendNonNullParam("deviceType", filterString, paramString, "String",
-                deviceType, paramMap);
-        appendNonNullParam("appCode", filterString, paramString, "String",
-                appCode, paramMap);
-        query.setFilter(filterString.toString());
+        StringBuilder filter = new StringBuilder();
+        filter.append("deviceType == '").append(deviceType).append("'");
+        filter.append(" && (");
+        for (int i=0; i < appCode.length; i++) {
+            filter.append("appCode == '").append(appCode[i]).append("'");
+            if (i < appCode.length - 1) {
+                filter.append(" || ");
+            }
+        }
+        filter.append(")");
+        query.setFilter(filter.toString());
         query.setOrdering("createdDateTime desc");
-        query.declareParameters(paramString.toString());
         query.setRange(0, maxResults);
-        return (List<DeviceApplication>) query.executeWithMap(paramMap);
+        return (List<DeviceApplication>) query.execute();
     }
 
 }

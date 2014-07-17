@@ -66,7 +66,7 @@ public class DeviceApplicationRestService extends AbstractRestApiServlet {
             DeviceApplicationRestRequest daReq = (DeviceApplicationRestRequest) req;
             List<DeviceApplication> devAppList = devAppDao
                     .listByDeviceTypeAndAppCode(daReq.getDeviceType(),
-                            daReq.getAppCode(), 1);
+                            new String[]{daReq.getAppCode()}, 1);
             if (devAppList != null && devAppList.size() > 0) {
                 resp.setVersion(devAppList.get(0).getVersion());
                 resp.setFileName(devAppList.get(0).getFileName());
