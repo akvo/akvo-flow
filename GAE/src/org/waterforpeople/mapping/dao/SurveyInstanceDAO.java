@@ -313,13 +313,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         QuestionDao questionDao = new QuestionDao();
 
         Map<Long, Question> surveyQuestionMap = null;
-        String questionListKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + si.getSurveyId();
+        String questionsKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + si.getSurveyId();
 
-        if (MemCacheUtils.containsKey(cache,questionListKey)) {
-            surveyQuestionMap = (Map<Long, Question>) cache.get(questionListKey);
+        if (MemCacheUtils.containsKey(cache,questionsKey)) {
+            surveyQuestionMap = (Map<Long, Question>) cache.get(questionsKey);
         } else {
             surveyQuestionMap = questionDao.mapQuestionsBySurvey(si.getSurveyId());
-            MemCacheUtils.putObject(cache, questionListKey, surveyQuestionMap);
+            MemCacheUtils.putObject(cache, questionsKey, surveyQuestionMap);
         }
 
         for (QuestionAnswerStore qas : qasList) {
@@ -328,7 +328,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             }
             // update count of questionAnswerSummary objects for option questions
             Question question = surveyQuestionMap.get(Long.parseLong(qas.getQuestionID()));
-            if (Question.Type.OPTION.equals(question.getType())) {
+            if (question != null && Question.Type.OPTION.equals(question.getType())) {
                 SurveyQuestionSummaryDao.incrementCount(qas, 1);
             }
 
