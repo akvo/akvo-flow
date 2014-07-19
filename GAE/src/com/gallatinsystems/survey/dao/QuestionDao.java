@@ -28,8 +28,11 @@ import java.util.logging.Level;
 import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.NotPersistent;
 
+import net.sf.jsr107cache.Cache;
+
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
+import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -55,6 +58,7 @@ public class QuestionDao extends BaseDAO<Question> {
     private QuestionHelpMediaDao helpDao;
     private TranslationDao translationDao;
     private ScoringRuleDao scoringRuleDao;
+    private Cache cache;
 
     public QuestionDao() {
         super(Question.class);
@@ -62,6 +66,7 @@ public class QuestionDao extends BaseDAO<Question> {
         helpDao = new QuestionHelpMediaDao();
         translationDao = new TranslationDao();
         scoringRuleDao = new ScoringRuleDao();
+        cache = MemCacheUtils.initCache(4 * 60 * 60); // cache questions list for 4 hours
     }
 
     /**
@@ -105,12 +110,27 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * lists minimal question information by surveyId
+     * retrieves question list from the cache whenever possible
      *
      * @param surveyId
      * @return
      */
     public List<Question> listQuestionsBySurvey(Long surveyId) {
-        return listByProperty("surveyId", surveyId, "Long", "order", "asc");
+        String surveyQuestionsCacheKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + surveyId;
+        List<Question> questionsList = null;
+
+        if (MemCacheUtils.containsKey(cache, surveyQuestionsCacheKey)) {
+            questionsList = (List<Question>) cache.get(surveyQuestionsCacheKey);
+        } else {
+            questionsList = (List<Question>) listByProperty("surveyId", surveyId, "Long", "order", "asc");
+            MemCacheUtils.putObject(cache, surveyQuestionsCacheKey, questionsList);
+        }
+
+        if(questionsList == null) {
+            return Collections.emptyList();
+        }
+
+        return questionsList;
     }
 
     /**
