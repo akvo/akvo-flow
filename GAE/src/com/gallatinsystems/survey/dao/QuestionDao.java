@@ -18,6 +18,7 @@ package com.gallatinsystems.survey.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -126,9 +127,7 @@ public class QuestionDao extends BaseDAO<Question> {
             MemCacheUtils.putObject(cache, surveyQuestionsCacheKey, questionsList);
         }
 
-        if(questionsList == null) {
-            return Collections.emptyList();
-        }
+        if(questionsList == null) return Collections.emptyList();
 
         return questionsList;
     }
@@ -146,6 +145,16 @@ public class QuestionDao extends BaseDAO<Question> {
             questionMap.put(q.getKey().getId(), q);
         }
         return questionMap;
+    }
+
+    /**
+     * Delete a list of questions
+     *
+     * @param qList
+     */
+    public void delete(List<Question> qList) {
+        super.delete(qList);
+        uncache(qList);
     }
 
     /**
@@ -190,6 +199,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
         // only delete after extracting group ID and order
         super.delete(question);
+        uncache(Arrays.asList(question));
 
         if(adjustQuestionOrder != null && adjustQuestionOrder) {
             // update question order
@@ -348,7 +358,9 @@ public class QuestionDao extends BaseDAO<Question> {
 
         Key key = datastore.put(question);
         q.setKey(key);
+        cache(Arrays.asList(q));
         txn.commit();
+
         return q;
     }
 
@@ -394,7 +406,7 @@ public class QuestionDao extends BaseDAO<Question> {
                             t.setParentId(opt.getKey().getId());
                         }
                     }
-                    save(opt.getTranslationMap().values());
+                    super.save(opt.getTranslationMap().values());
                 }
             }
         }
@@ -404,7 +416,7 @@ public class QuestionDao extends BaseDAO<Question> {
                     t.setParentId(question.getKey().getId());
                 }
             }
-            save(question.getTranslationMap().values());
+            super.save(question.getTranslationMap().values());
         }
 
         if (question.getQuestionHelpMediaMap() != null) {
@@ -419,11 +431,73 @@ public class QuestionDao extends BaseDAO<Question> {
                             t.setParentId(help.getKey().getId());
                         }
                     }
-                    save(help.getTranslationMap().values());
+                    super.save(help.getTranslationMap().values());
                 }
             }
         }
         return question;
+    }
+
+    /**
+     * Saves question and update cache
+     *
+     * @param question
+     */
+    public Question save(Question question) {
+        // first save and get Id
+        Question savedQuestion = super.save(question);
+        cache(Arrays.asList(savedQuestion));
+        return savedQuestion;
+    }
+
+    /**
+     * Save a collection of questions and cache
+     *
+     * @param qList
+     * @return
+     */
+    public List<Question> save(List<Question> qList) {
+        List<Question> savedQuestions = (List<Question>) super.save(qList);
+        cache(savedQuestions);
+        return savedQuestions;
+    }
+
+    /**
+     * Add a collection of questions to the cache
+     *
+     * @param qList
+     */
+    public void cache(List<Question> qList) {
+        if(qList == null || qList.isEmpty()) {
+            return;
+        }
+
+        String surveyQuestionsCacheKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + qList.get(0).getSurveyId();
+        if(MemCacheUtils.containsKey(cache, surveyQuestionsCacheKey)){
+            List<Question> cachedList = (List<Question>) cache.get(surveyQuestionsCacheKey);
+            cachedList.addAll(qList);
+            MemCacheUtils.putObject(cache, surveyQuestionsCacheKey, cachedList);
+        }
+
+    }
+
+    /**
+     * Remove a collection of questions from the cache
+     *
+     * @param qList
+     */
+    public void uncache(List<Question> qList) {
+        if(qList == null || qList.isEmpty()) {
+            return;
+        }
+
+        String surveyQuestionsCacheKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + qList.get(0).getSurveyId();
+        if(MemCacheUtils.containsKey(cache, surveyQuestionsCacheKey)){
+            List<Question> cachedList = (List<Question>) cache.get(surveyQuestionsCacheKey);
+            cachedList.removeAll(qList);
+            MemCacheUtils.putObject(cache, surveyQuestionsCacheKey, cachedList);
+        }
+
     }
 
     /**
