@@ -29,12 +29,16 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
 import org.apache.commons.lang.StringUtils;
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.gis.map.MapUtils;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyInstance extends BaseDomain {
@@ -304,7 +308,7 @@ public class SurveyInstance extends BaseDomain {
 
     /**
      * Extract geolocation information from a survey instance
-     * 
+     *
      * @param surveyInstance
      * @return a map containing latitude and longitude entries null if a null string is provided
      */
@@ -339,5 +343,48 @@ public class SurveyInstance extends BaseDomain {
         }
 
         return geoLocationMap;
+    }
+
+    /**
+     * Update counts of SurveyQuestionSummary entities related to responses from this survey
+     * instance.
+     */
+    public void updateSummaryCounts(boolean increment) {
+
+        // retrieve all summary objects
+        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
+        Map<String, SurveyQuestionSummary> surveySummaries = summaryDao.mapSurveyQuestionSummary(surveyId);
+        Map<Long, Question> surveyQuestionsMap = new QuestionDao().mapQuestionsBySurvey(surveyId);
+
+        for(QuestionAnswerStore response : questionAnswersStore) {
+            Long questionId = Long.parseLong(response.getQuestionID());
+            Question question = surveyQuestionsMap.get(questionId);
+            if (!question.canBeCharted()) {
+                continue;
+            }
+
+            final String responseValue = response.getValue();
+            SurveyQuestionSummary summary = null;
+            if(surveySummaries.containsKey(responseValue)) {
+                summary = surveySummaries.get(responseValue);
+            } else {
+                summary = new SurveyQuestionSummary();
+                summary.setQuestionId(response.getQuestionID());
+                summary.setResponse(responseValue);
+                summary.setCount(0L);
+            }
+
+
+            // update and save or delete
+            if(increment) {
+                summary.setCount(summary.getCount() + 1);
+                surveySummaries.put(responseValue, summary);
+            } else {
+                surveySummaries.remove(responseValue);
+            }
+        }
+
+        // cache all objects and save in datastore
+        summaryDao.save(surveySummaries.values());
     }
 }

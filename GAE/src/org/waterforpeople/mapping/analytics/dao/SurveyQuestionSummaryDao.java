@@ -16,32 +16,43 @@
 
 package org.waterforpeople.mapping.analytics.dao;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jdo.PersistenceManager;
+
+import net.sf.jsr107cache.Cache;
 
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
+import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
 
 /**
  * updates survey question objects
- * 
+ *
  * @author Christopher Fagiani
  */
 public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 
+    private Cache cache;
+
     public SurveyQuestionSummaryDao() {
         super(SurveyQuestionSummary.class);
+        cache = MemCacheUtils.initCache(4 * 60 * 60); // cache summary objects list for 4 hours
     }
 
     /**
      * synchronized static method so that only 1 thread can be updating a summary at a time. This is
      * inefficient but is the only way we can be sure we're keeping the count consistent since there
      * is no "select for update" or sql dml-like construct
-     * 
+     *
      * @param answer
      */
     @SuppressWarnings("rawtypes")
@@ -99,4 +110,35 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
         return listByProperty("questionId", qId, "String");
     }
 
+    /**
+     * List all the summary objects for a given survey id
+     */
+    public List<SurveyQuestionSummary> listBySurvey(Long surveyId) {
+        List<SurveyQuestionSummary> summaryList = new ArrayList<SurveyQuestionSummary>();
+        for(Question q : new QuestionDao().listQuestionsBySurvey(surveyId)) {
+            String questionIdStr = Long.toString(q.getKey().getId());
+            List<SurveyQuestionSummary> questionSummaryList = listByProperty("questionId", questionIdStr, "String");
+            if(questionSummaryList != null && !questionSummaryList.isEmpty()) {
+                summaryList.addAll(questionSummaryList);
+            }
+        }
+        return summaryList;
+    }
+
+    /**
+     * This method returns a map containing all the summary objects for a survey. The
+     * keys are the strings of the question option text.
+     *
+     * @param surveyId
+     * @return
+     */
+    public Map<String, SurveyQuestionSummary> mapSurveyQuestionSummary(Long surveyId) {
+        List<SurveyQuestionSummary> surveyQuestionSummaryList = listBySurvey(surveyId);
+
+        Map<String, SurveyQuestionSummary> questionSummary = new HashMap<String, SurveyQuestionSummary>();
+        for(SurveyQuestionSummary summary : surveyQuestionSummaryList) {
+            questionSummary.put(summary.getResponse(), summary);
+        }
+        return questionSummary;
+    }
 }

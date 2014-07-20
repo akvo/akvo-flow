@@ -141,7 +141,7 @@ public class QuestionDao extends BaseDAO<Question> {
      */
     public Map<Long, Question> mapQuestionsBySurvey(Long surveyId) {
         Map<Long, Question> questionMap = new LinkedHashMap<Long, Question>();
-        for(Question q : listByProperty("surveyId", surveyId, "Long", "order", "asc")) {
+        for(Question q : listQuestionsBySurvey(surveyId)) {
             questionMap.put(q.getKey().getId(), q);
         }
         return questionMap;

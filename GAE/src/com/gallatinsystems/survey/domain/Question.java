@@ -76,6 +76,20 @@ public class Question extends BaseDomain {
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
 
+    /**
+     * Return true of a question can be visualised on a chart.  This is limited
+     * to option questions that do not allow the possibility for multiple selection
+     * in the responses
+     *
+     * @return true if can be charted else false.
+     */
+    public boolean canBeCharted() {
+        if(!Type.OPTION.equals(type) || allowMultipleFlag) {
+            return false;
+        }
+        return true;
+    }
+
     public Boolean getAllowDecimal() {
         return allowDecimal;
     }
@@ -272,7 +286,7 @@ public class Question extends BaseDomain {
 
     /**
      * use helpMedia instead
-     * 
+     *
      * @return
      */
     @Deprecated

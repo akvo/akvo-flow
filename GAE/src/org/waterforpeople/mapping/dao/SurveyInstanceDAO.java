@@ -93,7 +93,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
 
-        Cache cache = MemCacheUtils.initCache(60 * 60); // 1 hour - enough time to process large batch of surveys?
+        Cache cache = MemCacheUtils.initCache(4 * 60 * 60); // 4 hours - enough time to process large batch of surveys?
 
         for (String line : unparsedLines) {
 
@@ -310,26 +310,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         }
         si.setQuestionAnswersStore(qasList);
 
-        QuestionDao questionDao = new QuestionDao();
-
-        Map<Long, Question> surveyQuestionMap = null;
-        String questionsKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + si.getSurveyId();
-
-        if (MemCacheUtils.containsKey(cache,questionsKey)) {
-            surveyQuestionMap = (Map<Long, Question>) cache.get(questionsKey);
-        } else {
-            surveyQuestionMap = questionDao.mapQuestionsBySurvey(si.getSurveyId());
-            MemCacheUtils.putObject(cache, questionsKey, surveyQuestionMap);
-        }
+        boolean increment = true;
+        si.updateSummaryCounts(increment);
 
         for (QuestionAnswerStore qas : qasList) {
             if (Question.Type.GEO.toString().equals(qas.getType())) {
                 geoQasId = qas.getKey().getId();
-            }
-            // update count of questionAnswerSummary objects for option questions
-            Question question = surveyQuestionMap.get(Long.parseLong(qas.getQuestionID()));
-            if (question != null && Question.Type.OPTION.equals(question.getType())) {
-                SurveyQuestionSummaryDao.incrementCount(qas, 1);
             }
 
             if ("IMAGE".equals(qas.getType())) {
