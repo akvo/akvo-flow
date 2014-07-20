@@ -153,8 +153,8 @@ public class QuestionDao extends BaseDAO<Question> {
      * @param qList
      */
     public void delete(List<Question> qList) {
-        super.delete(qList);
         uncache(qList);
+        super.delete(qList);
     }
 
     /**
@@ -197,9 +197,10 @@ public class QuestionDao extends BaseDAO<Question> {
         Long deletedQuestionGroupId = question.getQuestionGroupId();
         Integer deletedQuestionOrder = question.getOrder();
 
+        uncache(Arrays.asList(question)); // clear from cached first
+
         // only delete after extracting group ID and order
         super.delete(question);
-        uncache(Arrays.asList(question));
 
         if(adjustQuestionOrder != null && adjustQuestionOrder) {
             // update question order
@@ -463,7 +464,8 @@ public class QuestionDao extends BaseDAO<Question> {
     }
 
     /**
-     * Add a collection of questions to the cache
+     * Add a collection of Question objects to the cache. If the objects already exists in the
+     * cached survey questions list, they are replaced by the ones passed in through this list
      *
      * @param qList
      */
@@ -475,10 +477,15 @@ public class QuestionDao extends BaseDAO<Question> {
         String surveyQuestionsCacheKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + qList.get(0).getSurveyId();
         if(MemCacheUtils.containsKey(cache, surveyQuestionsCacheKey)){
             List<Question> cachedList = (List<Question>) cache.get(surveyQuestionsCacheKey);
-            cachedList.addAll(qList);
+            for(Question q : qList) {
+                if(cachedList.contains(q)) {
+                    cachedList.set(cachedList.indexOf(q), q);
+                } else {
+                    cachedList.add(q);
+                }
+            }
             MemCacheUtils.putObject(cache, surveyQuestionsCacheKey, cachedList);
         }
-
     }
 
     /**
