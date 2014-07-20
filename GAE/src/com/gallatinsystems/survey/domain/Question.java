@@ -365,4 +365,14 @@ public class Question extends BaseDomain {
     public void setLocaleLocationFlag(Boolean localeLocationFlag) {
         this.localeLocationFlag = localeLocationFlag;
     }
+
+    /**
+     * Compare question entities  based on Key
+     *
+     * @param q
+     * @return true if the Key of the two entities is the same
+     */
+    public boolean equals(Question q) {
+        return key != null && q.getKey() != null && key.equals(q.getKey());
+    }
 }
