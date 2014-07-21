@@ -775,7 +775,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         List<Question> qList = questionDao.listQuestionsBySurvey(surveyId);
         if(!qList.isEmpty()) {
             Question sourceQuestion = questionDao.getByKey(qList.get(0).getSourceId());
-            if (sourceQuestion != null) { return sourceQuestion.getSurveyId().toString(); }
+            if (sourceQuestion != null) {
+                return sourceQuestion.getSurveyId().toString();
+            }
         }
         return null;
     }
