@@ -5,6 +5,7 @@
 		<rate>5/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -13,6 +14,7 @@
 		<bucket-size>10</bucket-size>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -20,6 +22,7 @@
 		<rate>5/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -27,6 +30,7 @@
 		<rate>5/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -34,6 +38,7 @@
 		<rate>5/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -41,6 +46,7 @@
 		<rate>5/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -50,6 +56,7 @@
 		<max-concurrent-requests>10</max-concurrent-requests>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -57,6 +64,7 @@
 		<rate>5/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -64,6 +72,7 @@
 		<rate>5/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -71,6 +80,7 @@
 		<rate>10/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -78,6 +88,7 @@
 		<rate>10/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -85,6 +96,7 @@
 		<rate>10/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 	<queue>
@@ -92,6 +104,7 @@
 		<rate>5/s</rate>
         <retry-parameters>
           <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
 	</queue>
 </queue-entries>
