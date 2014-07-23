@@ -32,6 +32,7 @@ import com.gallatinsystems.common.domain.UploadStatusContainer;
  * construction it binds a DataoutputStream to the output stream passed into the constructor. All
  * the "writeXXX" methods will write to this output stream.
  */
+@Deprecated
 public class UploadUtil {
     private static final String BOUNDRY = "***xxx";
     private static final int UPLOAD_TIMEOUT_MS = 120000;
@@ -123,7 +124,7 @@ public class UploadUtil {
             throws java.io.IOException {
         HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
         if (urlConn instanceof HttpURLConnection) {
-            HttpURLConnection httpConn = (HttpURLConnection) urlConn;
+            HttpURLConnection httpConn = urlConn;
             httpConn.setRequestMethod("POST");
         }
         // connection level settings. This doesn't seem to have any effect with
