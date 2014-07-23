@@ -26,6 +26,7 @@ public class Constants {
             "createdDateTime", "lastUpdateDateTime", "lastUpdateUserId",
             "createUserId"
     };
-    public final static int MAX_LENGTH = 500;
+    public static final int MAX_LENGTH = 500;
+    public static final int CONNECTION_TIMEOUT = 5 * 60 * 1000; // 5min
 
 }
