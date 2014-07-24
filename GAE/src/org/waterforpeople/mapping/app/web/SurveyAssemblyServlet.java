@@ -180,7 +180,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * uploads full survey XML to S3
-     * 
+     *
      * @param surveyId
      */
     private void uploadSurvey(Long surveyId, Long transactionId) {
@@ -243,7 +243,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * deletes fragments for the survey
-     * 
+     *
      * @param surveyId
      */
     private void cleanupFragments(Long surveyId, Long transactionId) {
@@ -411,7 +411,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * sends a message to the task queue for survey assembly
-     * 
+     *
      * @param action
      * @param surveyId
      * @param questionGroups
@@ -773,7 +773,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     private String getSourceSurveyId(Long surveyId) {
         QuestionDao questionDao = new QuestionDao();
         List<Question> qList = questionDao.listQuestionsBySurvey(surveyId);
-        if (!qList.isEmpty()) {
+        if (!qList.isEmpty() && qList.get(0).getSourceId() != null) {
             Question sourceQuestion = questionDao.getByKey(qList.get(0).getSourceId());
             if (sourceQuestion != null) {
                 return sourceQuestion.getSurveyId().toString();
