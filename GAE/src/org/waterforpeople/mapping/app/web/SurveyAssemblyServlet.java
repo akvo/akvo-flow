@@ -279,15 +279,19 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 + s.getVersion() + "'";
         String surveyGroupId = "";
         String surveyGroupName = "";
+        String registrationForm = "";
         if (sg != null) {
             surveyGroupId = "surveyGroupId=\"" + sg.getKey().getId() + "\"";
             surveyGroupName = "surveyGroupName=\"" + sg.getCode() + "\"";
+            if (Boolean.TRUE.equals(sg.getMonitoringGroup())) {
+                registrationForm = " registrationSurvey=\"" + String.valueOf(sg.getNewLocaleSurveyId()) + "\"";
+            }
         }
         String sourceSurveyId = getSourceSurveyId(surveyId);
         String sourceSurveyIdAttr = sourceSurveyId != null ? " sourceSurveyId=\"" + sourceSurveyId
                 + "\"" : "";
         String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey"
-                + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute
+                + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute + registrationForm
                 + " " + surveyGroupId + " " + surveyGroupName + sourceSurveyIdAttr + ">";
         String surveyFooter = "</survey>";
         QuestionGroupDao qgDao = new QuestionGroupDao();
