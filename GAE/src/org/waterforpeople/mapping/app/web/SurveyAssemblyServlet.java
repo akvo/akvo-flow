@@ -283,7 +283,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         if (sg != null) {
             surveyGroupId = "surveyGroupId=\"" + sg.getKey().getId() + "\"";
             surveyGroupName = "surveyGroupName=\"" + sg.getCode() + "\"";
-            if (sg.getMonitoringGroup() != null && sg.getMonitoringGroup()) {
+            if (Boolean.TRUE.equals(sg.getMonitoringGroup())) {
                 registrationForm = " registrationSurvey=\"" + String.valueOf(sg.getNewLocaleSurveyId()) + "\"";
             }
         }
