@@ -87,7 +87,8 @@ public class S3Util {
         final String md5 = Base64.encodeBase64String(MD5Util.md5(data)).trim();
         final String date = getDate();
         final String payloadStr = isPublic ? PUT_PAYLOAD_PUBLIC : PUT_PAYLOAD_PRIVATE;
-        final String payload = String.format(payloadStr, md5, contentType, date, bucketName, objectKey);
+        final String payload = String.format(payloadStr, md5, contentType, date, bucketName,
+                objectKey);
         final String signature = MD5Util.generateHMAC(payload, awsSecretKey);
         final URL url = new URL(String.format(S3_URL, bucketName, objectKey));
 
