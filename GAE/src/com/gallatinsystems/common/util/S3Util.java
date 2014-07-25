@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 
 public class S3Util {
@@ -42,8 +43,7 @@ public class S3Util {
     private static final String S3_URL = "https://%s.s3.amazonaws.com/%s";
     private static final String GET_PAYLOAD = "GET\n\n\n%s\n/%s/%s";
     private static final String PUT_PAYLOAD_PUBLIC = "PUT\n%s\n%s\n%s\nx-amz-acl:public-read\n/%s/%s";
-    // FIXME: recover original payload "PUT\n%s\n%s\n%s\n/%s/%s";
-    private static final String PUT_PAYLOAD_PRIVATE = "PUT\n\n%s\n%s\n/%s/%s";
+    private static final String PUT_PAYLOAD_PRIVATE = "PUT\n%s\n%s\n%s\n/%s/%s";
 
     public static URLConnection getConnection(String bucketName, String objectKey)
             throws IOException {
@@ -84,11 +84,10 @@ public class S3Util {
     public static boolean put(String bucketName, String objectKey, byte[] data, String contentType,
             boolean isPublic, String awsAccessId, String awsSecretKey) throws IOException {
 
-        // FIXME: Include md5 hash
-        // final String md5 = Base64.encodeBase64String(MD5Util.generateChecksum(data).getBytes());
+        final String md5 = Base64.encodeBase64String(MD5Util.md5(data)).trim();
         final String date = getDate();
         final String payloadStr = isPublic ? PUT_PAYLOAD_PUBLIC : PUT_PAYLOAD_PRIVATE;
-        final String payload = String.format(payloadStr, contentType, date, bucketName, objectKey);
+        final String payload = String.format(payloadStr, md5, contentType, date, bucketName, objectKey);
         final String signature = MD5Util.generateHMAC(payload, awsSecretKey);
         final URL url = new URL(String.format(S3_URL, bucketName, objectKey));
 
@@ -98,8 +97,7 @@ public class S3Util {
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("PUT");
-            // FIXME: include checksum in request
-            // conn.setRequestProperty("Content-MD5", md5);
+            conn.setRequestProperty("Content-MD5", md5);
             conn.setRequestProperty("Content-Type", contentType);
             conn.setRequestProperty("Date", date);
 
