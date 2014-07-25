@@ -24,13 +24,16 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Base64;
@@ -40,8 +43,10 @@ public class S3Util {
 
     private static Logger log = Logger.getLogger(S3Util.class.getName());
 
+    private static final long EXPIRE_DATE = 2145916800; // 2038-01-01 00:00:00 +000
     private static final String S3_URL = "https://%s.s3.amazonaws.com/%s";
     private static final String GET_PAYLOAD = "GET\n\n\n%s\n/%s/%s";
+    private static final String BROWSER_GET_PAYLOAD = "GET\n\n\n" + EXPIRE_DATE + "\n/%s/%s";
     private static final String PUT_PAYLOAD_PUBLIC = "PUT\n%s\n%s\n%s\nx-amz-acl:public-read\n/%s/%s";
     private static final String PUT_PAYLOAD_PRIVATE = "PUT\n%s\n%s\n%s\n/%s/%s";
 
@@ -127,6 +132,33 @@ public class S3Util {
             }
             IOUtils.closeQuietly(out);
         }
+    }
+
+    public static String getBrowserLink(String bucketName, String objectKey) {
+
+        final String awsAccessId = PropertyUtil.getProperty(AWS_ACCESS_ID);
+        final String awsSecretKey = PropertyUtil.getProperty(AWS_SECRET_KEY);
+
+        return getBrowserLink(bucketName, objectKey, awsAccessId, awsSecretKey);
+    }
+
+    public static String getBrowserLink(String bucketName, String objectKey, String awsAccessId,
+            String awsSecretKey) {
+
+        final String payload = String.format(BROWSER_GET_PAYLOAD, bucketName, objectKey);
+        final String signature = MD5Util.generateHMAC(payload, awsSecretKey);
+
+        final StringBuffer sb = new StringBuffer(String.format(S3_URL, bucketName, objectKey));
+        sb.append("?AWSAccessKeyId=").append(awsAccessId);
+        sb.append("&Expires=").append(EXPIRE_DATE);
+
+        try {
+            sb.append("&Signature=").append(URLEncoder.encode(signature, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            log.log(Level.SEVERE, "Error generating signature for browser URL: " + e.getMessage());
+        }
+
+        return sb.toString();
     }
 
     private static String getDate() {
