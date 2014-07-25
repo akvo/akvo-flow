@@ -89,7 +89,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     /**
      * opens a file input stream using the file passed in and tries to return the first worksheet in
      * that file
-     * 
+     *
      * @param file
      * @return
      * @throws Exception
@@ -155,6 +155,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
             }
 
             boolean hasDurationCol = true;
+            boolean setFirstQuestionColumnIdx = true;
             int firstQuestionCol = 0;
 
             currentStep = 0;
@@ -164,15 +165,16 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 if (row.getRowNum() == 0) {
                     // Process headers
                     for (Cell cell : row) {
-                        if (cell.getStringCellValue().indexOf("|") == -1) {
-                            firstQuestionCol++;
-                            continue; // iterate over the common headers
-                        }
+                        if (cell.getStringCellValue().indexOf("|") > -1) {
+                            if (setFirstQuestionColumnIdx) {
+                                firstQuestionCol = cell.getColumnIndex();
+                                setFirstQuestionColumnIdx = false;
+                            }
 
-                        if (cell.getColumnIndex() >= firstQuestionCol) {
-                            // load questionIds
                             String[] parts = cell.getStringCellValue().split("\\|");
-                            questionIDColMap.put(cell.getColumnIndex(), parts[0]);
+                            if (parts[0].trim().length() > 0) {
+                                questionIDColMap.put(cell.getColumnIndex(), parts[0].trim());
+                            }
                         }
                     }
                     continue; // move to next row (data)
@@ -492,7 +494,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     /**
      * handles calling invokeURL twice (once to reset the instance and again to save the new one) as
      * a separate job submitted to the thread pool
-     * 
+     *
      * @param serverBase
      * @param resetUrlString
      * @param saveUrlString
@@ -522,7 +524,7 @@ public class RawDataSpreadsheetImporter implements DataImporter {
 
     /**
      * calls a remote api by posting to the url passed in.
-     * 
+     *
      * @param serverBase
      * @param urlString
      * @throws Exception
