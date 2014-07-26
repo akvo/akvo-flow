@@ -16,6 +16,8 @@
 
 package com.gallatinsystems.common.util;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -82,6 +84,25 @@ public class MemCacheUtils {
     }
 
     /**
+     * Puts a set of objects in the cache, the expiration is already defined in the cache object.<br>
+     *
+     * @param cache An initialized Cache object
+     * @param objects A map containing objects to be cached along with their corresponding cache
+     *            keys. The keys and objects must implement java.io.Serializable.
+     */
+    public static void putObjects(Cache cache, Map<Object, Object> objects) {
+        try {
+            if (cache == null) {
+                log.log(Level.WARNING, "Attempting to use an not initialized cache object");
+                return;
+            }
+            cache.putAll(objects);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to store values in memcache: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Delegates testing to `Cache.containsKey`, handles runtime exceptions.<br>
      * The runtime could raise an exception on "too long" requests, or partial service outage
      *
@@ -101,5 +122,24 @@ public class MemCacheUtils {
             log.log(Level.SEVERE, "Failed testing containsKey: " + e.getMessage(), e);
         }
         return false;
+    }
+
+    /**
+     * Takes in a list of keys and returns the objects which are found in the cache
+     *
+     * @param keys
+     * @return
+     */
+    public static Map getObjects(Cache cache, Collection keys) {
+        try {
+            if (cache == null) {
+                log.log(Level.WARNING, "Attempting to use an uninitialized cache object");
+                return Collections.emptyMap();
+            }
+            return cache.getAll(keys);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to retrieve values from memcache: " + e.getMessage(), e);
+        }
+        return Collections.emptyMap();
     }
 }
