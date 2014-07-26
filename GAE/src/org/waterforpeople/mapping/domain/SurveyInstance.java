@@ -353,38 +353,41 @@ public class SurveyInstance extends BaseDomain {
 
         // retrieve all summary objects
         SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
-        Map<String, SurveyQuestionSummary> surveySummaries = summaryDao.mapSurveyQuestionSummary(surveyId);
         Map<Long, Question> surveyQuestionsMap = new QuestionDao().mapQuestionsBySurvey(surveyId);
 
         for(QuestionAnswerStore response : questionAnswersStore) {
-            Long questionId = Long.parseLong(response.getQuestionID());
+            final String questionIdStr = response.getQuestionID();
+            Long questionId = Long.parseLong(questionIdStr);
             Question question = surveyQuestionsMap.get(questionId);
             if (!question.canBeCharted()) {
                 continue;
             }
 
-            final String responseValue = response.getValue();
-            SurveyQuestionSummary summary = null;
-            if(surveySummaries.containsKey(responseValue)) {
-                summary = surveySummaries.get(responseValue);
-            } else {
-                summary = new SurveyQuestionSummary();
-                summary.setQuestionId(response.getQuestionID());
-                summary.setResponse(responseValue);
-                summary.setCount(0L);
+            List<SurveyQuestionSummary> questionSummaryList = summaryDao.listByQuestion(questionIdStr);
+            SurveyQuestionSummary questionSummary = null;
+            for(SurveyQuestionSummary s : questionSummaryList) {
+                if(response.getValue().equals(s.getResponse())) {
+                    questionSummary = s;
+                }
             }
 
+            if (questionSummary == null) {
+                questionSummary = new SurveyQuestionSummary();
+                questionSummary.setQuestionId(response.getQuestionID());
+                questionSummary.setResponse(questionIdStr);
+                questionSummary.setCount(0L);
+            }
 
             // update and save or delete
-            if(increment) {
-                summary.setCount(summary.getCount() + 1);
-                surveySummaries.put(responseValue, summary);
+            long count = questionSummary.getCount();
+            count = increment ? ++count : --count;
+            questionSummary.setCount(count);
+
+            if(count > 0) {
+                summaryDao.save(questionSummary);
             } else {
-                surveySummaries.remove(responseValue);
+                summaryDao.delete(questionSummary);
             }
         }
-
-        // cache all objects and save in datastore
-        summaryDao.save(surveySummaries.values());
     }
 }
