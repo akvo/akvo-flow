@@ -37,8 +37,7 @@ import java.util.StringTokenizer;
 import javax.swing.SwingUtilities;
 
 import com.gallatinsystems.common.util.FileUtil;
-import com.gallatinsystems.common.util.ImageUtil;
-import com.gallatinsystems.common.util.UploadUtil;
+import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
@@ -147,28 +146,15 @@ public class SurveyBulkUploader implements DataImporter {
 
                     if (fx.getName().endsWith(".jpg")) {
                         if (uploadImage) {
-                            File resizedFile = ImageUtil.resizeImage(fx,
-                                    tempDir.getAbsolutePath(), 500, 500);
-                            UploadUtil.upload(
-                                    FileUtil.readFileBytes(resizedFile),
-                                    resizedFile.getName(), "images",
-                                    criteria.get(UPLOAD_BASE_KEY),
-                                    criteria.get(AWS_ID_KEY),
-                                    criteria.get(IMAGE_POLICY_KEY),
-                                    criteria.get(IMAGE_SIG_KEY), "image/jpeg",
-                                    null);
-                            // now delete the temp file
-                            resizedFile.delete();
+                            // FIXME: bucketName
+                            S3Util.put("", "images/" + fx.getName(), FileUtil.readFileBytes(fx),
+                                    "image/jpeg", true);
                         }
                     } else {
                         if (processZip) {
-                            boolean success = UploadUtil.upload(FileUtil.readFileBytes(fx),
-                                    fx.getName(), "devicezip",
-                                    criteria.get(UPLOAD_BASE_KEY),
-                                    criteria.get(AWS_ID_KEY),
-                                    criteria.get(DATA_POLICY_KEY),
-                                    criteria.get(DATA_SIG_KEY),
-                                    "application/zip", null);
+                            // FIXME: bucketName
+                            boolean success = S3Util.put("", "devicezip/" + fx.getName(),
+                                    FileUtil.readFileBytes(fx), "application/zip", false);
 
                             if (success) {
                                 // now notify the server that a new file is there
@@ -184,7 +170,6 @@ public class SurveyBulkUploader implements DataImporter {
                     processedList.add(fx.getName());
                     i++;
                 } catch (Exception e) {
-                    // TODO report error to ui
                     e.printStackTrace();
                 }
             }
@@ -366,6 +351,7 @@ public class SurveyBulkUploader implements DataImporter {
             this.isComplete = isComplete;
         }
 
+        @Override
         public void run() {
             if (!GraphicsEnvironment.isHeadless()) {
                 progressDialog.update(step, msg, isComplete);

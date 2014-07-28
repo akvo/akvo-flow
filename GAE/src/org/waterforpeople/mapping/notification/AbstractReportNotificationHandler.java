@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -49,8 +49,6 @@ public abstract class AbstractReportNotificationHandler extends
     private static final Logger log = Logger.getLogger(AbstractReportNotificationHandler.class
             .getName());
     private static final String LINK_OPT = "LINK";
-    protected static final String REPORT_S3_SIG = "reportS3Sig";
-    protected static final String REPORT_S3_POLICY = "reportS3Policy";
     protected static final String AWS_IDENTIFIER = "aws_identifier";
     protected static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     protected static final String REPORT_S3_PATH = "reportS3Path";
