@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -63,12 +63,6 @@ public class SurveyBulkUploader implements DataImporter {
     private static final String IMAGE_TEMP_DIR = "resized";
     private static final String OSX_RESOURCE_DIR = "__MACOSX";
 
-    private static final String IMAGE_POLICY_KEY = "imagePolicy";
-    private static final String IMAGE_SIG_KEY = "imageSig";
-    private static final String DATA_POLICY_KEY = "dataPolicy";
-    private static final String DATA_SIG_KEY = "dataSig";
-    private static final String AWS_ID_KEY = "awsId";
-    private static final String UPLOAD_BASE_KEY = "uploadBase";
     private static final String DEFAULT_LOCALE = "en";
     private static Map<String, String> UPLOADING;
     private static Map<String, String> COMPLETE;
