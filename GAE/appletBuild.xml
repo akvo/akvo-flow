@@ -43,7 +43,8 @@
     </path>
 
     <target name="compile" depends="makedir">
-        <javac classpathref="project.classpath" srcdir="${src}" destdir="${build}" debug="true" source="1.5" encoding="utf-8">
+        <javac source="1.7" target="1.7" encoding="UTF8" includeantruntime="false"
+               classpathref="project.classpath" srcdir="${src}" destdir="${build}" debug="true">
             <include name="com/gallatinsystems/gis/app/**" />
             <include name="com/gallatinsystems/framework/dataexport/**" />
             <include name="com/gallatinsystems/framework/gwt/dto/client/**" />

@@ -121,7 +121,7 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-		<javac source="1.6" target="1.6" encoding="UTF8" srcdir="src" destdir="${app_classes_dir}"
+		<javac source="1.7" target="1.7" encoding="UTF8" srcdir="src" destdir="${app_classes_dir}"
 			   classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
 
@@ -165,13 +165,14 @@
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
 		</delete>
 
-		<delete file="war/PlacemarksNewLook.vm" failonerror="false" />
-
 		<echo message="Rebuilding Dashboard..." />
 
-		<exec dir="../Dashboard" executable="rake" failonerror="true">
+		<exec dir="../Dashboard" executable="bundle" failonerror="true">
 		    <env key="RAKEP_MODE" value="production" />
+		    <arg value="exec" />
+		    <arg value="rake" />
 		    <arg value="build" />
+		    <arg value="--trace" />
 		</exec>
 
 		<exec dir="../" executable="git" outputproperty="app.version">
@@ -180,12 +181,12 @@
 
 		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
 
-		<exec dir="." executable="sh">
+		<exec dir="." executable="sh" failonerror="true">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} --passin &lt; ${pwd} update war" />
 		</exec>
 
-		<exec dir="." executable="sh">
+		<exec dir="." executable="sh" failonerror="true">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh backends war update" />
 		</exec>
@@ -197,6 +198,10 @@
 
 	<target name="rollback" depends="datanucleusenhance" description="Rolls back an interrupted application update.">
 		<appcfg action="rollback" war="war" />
+		<exec dir="." executable="sh" failonerror="true">
+		    <arg value="-c" />
+		    <arg value="${sdk.dir}/bin/appcfg.sh backends rollback war" />
+		</exec>
 	</target>
 
 	<target name="request_logs" description="Downloads log data from App Engine for the application.">
