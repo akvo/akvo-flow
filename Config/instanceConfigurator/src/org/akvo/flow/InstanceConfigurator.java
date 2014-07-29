@@ -73,18 +73,13 @@ public class InstanceConfigurator {
         String awsAccessKey = cli.getOptionValue("ak");
         String awsSecret = cli.getOptionValue("as");
         String bucketName = cli.getOptionValue("bn");
-        String gaeServer = cli.getOptionValue("gae");
+        String gaeId = cli.getOptionValue("gae");
         String outFolder = cli.getOptionValue("o");
         String flowServices = cli.getOptionValue("fs");
         String alias = cli.getOptionValue("a");
-        String instanceId = cli.hasOption("id") ? cli.getOptionValue("id") : null;
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
         String orgName = cli.getOptionValue("on");
-
-        if (gaeServer.indexOf("https://") != 0) {
-            System.err.println("WARNING: Consider using HTTPS protocol for GAE server");
-        }
 
         File out = new File(outFolder);
 
@@ -188,7 +183,7 @@ public class InstanceConfigurator {
         apkData.put("awsBucket", bucketName);
         apkData.put("awsAccessKeyId", accessKeys.get(apkUser).getAccessKeyId());
         apkData.put("awsSecretAccessKey", accessKeys.get(apkUser).getSecretAccessKey());
-        apkData.put("serverBase", "https://" + bucketName + ".appspot.com");
+        apkData.put("serverBase", "https://" + gaeId + ".appspot.com");
         apkData.put("restApiKey", apiKey);
 
         Template t3 = cfg.getTemplate("survey.properties.ftl");
@@ -200,7 +195,7 @@ public class InstanceConfigurator {
         gaeData.put("awsBucket", bucketName);
         gaeData.put("awsAccessKeyId", accessKeys.get(gaeUser).getAccessKeyId());
         gaeData.put("awsSecretAccessKey", accessKeys.get(gaeUser).getSecretAccessKey());
-        gaeData.put("serverBase", "https://" + bucketName + ".appspot.com");
+        gaeData.put("serverBase", "https://" + gaeId + ".appspot.com");
         gaeData.put("apiKey", apiKey);
 
         Template t4 = cfg.getTemplate("UploadConstants.properties.ftl");
@@ -213,7 +208,7 @@ public class InstanceConfigurator {
         webData.put("awsAccessKeyId", accessKeys.get(gaeUser).getAccessKeyId());
         webData.put("awsSecretAccessKey", accessKeys.get(gaeUser).getSecretAccessKey());
         webData.put("s3url", "https://" + bucketName + ".s3.amazonaws.com");
-        webData.put("instanceId", instanceId == null ? bucketName : instanceId);
+        webData.put("instanceId", gaeId);
         webData.put("alias", alias);
         webData.put("flowServices", flowServices);
         webData.put("apiKey", apiKey);
@@ -252,8 +247,8 @@ public class InstanceConfigurator {
         bucketName.setArgs(1);
         bucketName.setRequired(true);
 
-        Option gaeServer = new Option("gae", "GAE base server - https://x.appspot.com");
-        gaeServer.setLongOpt("gaeServer");
+        Option gaeServer = new Option("gae", "GAE instance id - The `x` in https://x.appspot.com");
+        gaeServer.setLongOpt("gaeId");
         gaeServer.setArgs(1);
         gaeServer.setRequired(true);
 
@@ -284,11 +279,6 @@ public class InstanceConfigurator {
         alias.setArgs(1);
         alias.setRequired(true);
 
-        Option instanceId = new Option("id", "GAE instance id - Optional: defaults to bucket name");
-        instanceId.setLongOpt("instanceId");
-        instanceId.setArgs(1);
-        instanceId.setRequired(false);
-
         options.addOption(orgName);
         options.addOption(awsId);
         options.addOption(awsSecret);
@@ -299,7 +289,6 @@ public class InstanceConfigurator {
         options.addOption(outputFolder);
         options.addOption(flowServices);
         options.addOption(alias);
-        options.addOption(instanceId);
 
         return options;
     }
