@@ -75,6 +75,12 @@ public class InstanceConfigurator {
         String bucketName = cli.getOptionValue("bn");
         String gaeServer = cli.getOptionValue("gae");
         String outFolder = cli.getOptionValue("o");
+        String flowServices = cli.getOptionValue("fs");
+        String alias = cli.getOptionValue("a");
+        String instanceId = cli.hasOption("id") ? cli.getOptionValue("id") : null;
+        String emailFrom = cli.getOptionValue("ef");
+        String emailTo = cli.getOptionValue("et");
+        String orgName = cli.getOptionValue("on");
 
         if (gaeServer.indexOf("https://") != 0) {
             System.err.println("WARNING: Consider using HTTPS protocol for GAE server");
@@ -95,6 +101,8 @@ public class InstanceConfigurator {
 
         // Creating bucket
 
+        System.out.println("Creating bucket: " + bucketName);
+
         try {
             if (s3Client.doesBucketExist(bucketName)) {
                 System.out.println(bucketName + " already exists, skipping creation");
@@ -114,10 +122,16 @@ public class InstanceConfigurator {
 
         // GAE
 
+        System.out.println("Creating group: " + gaeUser);
         iamClient.createGroup(new CreateGroupRequest(gaeUser));
+
+        System.out.println("Creating user: " + gaeUser);
         iamClient.createUser(new CreateUserRequest(gaeUser));
+
+        System.out.println("Adding user " + gaeUser + " to group " + gaeUser);
         iamClient.addUserToGroup(new AddUserToGroupRequest(gaeUser, gaeUser));
 
+        System.out.println("Requesting security credentials for " + gaeUser);
         CreateAccessKeyRequest gaeAccessRequest = new CreateAccessKeyRequest();
         gaeAccessRequest.setUserName(gaeUser);
 
@@ -126,20 +140,26 @@ public class InstanceConfigurator {
 
         // APK
 
+        System.out.println("Creating group: " + apkUser);
         iamClient.createGroup(new CreateGroupRequest(apkUser));
+
+        System.out.println("Creating user: " + apkUser);
         iamClient.createUser(new CreateUserRequest(apkUser));
+
+        System.out.println("Adding user " + apkUser + " to group " + apkUser);
         iamClient.addUserToGroup(new AddUserToGroupRequest(apkUser, apkUser));
 
+        System.out.println("Requesting security credentials for " + apkUser);
         CreateAccessKeyRequest apkAccessRequest = new CreateAccessKeyRequest();
         apkAccessRequest.setUserName(apkUser);
 
         CreateAccessKeyResult apkAccessResult = iamClient.createAccessKey(apkAccessRequest);
         accessKeys.put(apkUser, apkAccessResult.getAccessKey());
 
-        // Configuring policies
+        System.out.println("Configuring security policies...");
 
         Configuration cfg = new Configuration();
-        cfg.setClassForTemplateLoading(InstanceConfigurator.class, "org/akvo/templates");
+        cfg.setClassForTemplateLoading(InstanceConfigurator.class, "/org/akvo/flow/templates");
         cfg.setObjectWrapper(new DefaultObjectWrapper());
         cfg.setDefaultEncoding("UTF-8");
 
@@ -161,12 +181,12 @@ public class InstanceConfigurator {
         iamClient.putGroupPolicy(new PutGroupPolicyRequest(gaeUser, gaeUser, Policy.fromJson(
                 gaePolicy.toString()).toJson()));
 
-        // Creating configuration properties
+        System.out.println("Creating configuration files...");
 
         // survey.properties
         Map<String, Object> apkData = new HashMap<String, Object>();
-        apkData.put("bucketName", bucketName);
-        apkData.put("awsAcessKeyId", accessKeys.get(apkUser).getAccessKeyId());
+        apkData.put("awsBucket", bucketName);
+        apkData.put("awsAccessKeyId", accessKeys.get(apkUser).getAccessKeyId());
         apkData.put("awsSecretAccessKey", accessKeys.get(apkUser).getSecretAccessKey());
         apkData.put("serverBase", "https://" + bucketName + ".appspot.com");
         apkData.put("restApiKey", apiKey);
@@ -177,9 +197,9 @@ public class InstanceConfigurator {
 
         // UploadConstants.properties
         Map<String, Object> gaeData = new HashMap<String, Object>();
-        gaeData.put("bucketName", bucketName);
+        gaeData.put("awsBucket", bucketName);
         gaeData.put("awsAccessKeyId", accessKeys.get(gaeUser).getAccessKeyId());
-        gaeData.put("awsSecretAccessKey", accessKeys.get(gaeAccessRequest).getSecretAccessKey());
+        gaeData.put("awsSecretAccessKey", accessKeys.get(gaeUser).getSecretAccessKey());
         gaeData.put("serverBase", "https://" + bucketName + ".appspot.com");
         gaeData.put("apiKey", apiKey);
 
@@ -187,6 +207,25 @@ public class InstanceConfigurator {
         FileWriter fw2 = new FileWriter(new File(out, "/UploadConstants.properties"));
         t4.process(gaeData, fw2);
 
+        // appengine-web.xml
+        Map<String, Object> webData = new HashMap<String, Object>();
+        webData.put("awsBucket", bucketName);
+        webData.put("awsAccessKeyId", accessKeys.get(gaeUser).getAccessKeyId());
+        webData.put("awsSecretAccessKey", accessKeys.get(gaeUser).getSecretAccessKey());
+        webData.put("s3url", "https://" + bucketName + ".s3.amazonaws.com");
+        webData.put("instanceId", instanceId == null ? bucketName : instanceId);
+        webData.put("alias", alias);
+        webData.put("flowServices", flowServices);
+        webData.put("apiKey", apiKey);
+        webData.put("emailFrom", emailFrom);
+        webData.put("emailTo", emailTo);
+        webData.put("organization", orgName);
+
+        Template t5 = cfg.getTemplate("appengine-web.xml.ftl");
+        FileWriter fw3 = new FileWriter(new File(out, "/appengine-web.xml"));
+        t5.process(webData, fw3);
+
+        System.out.println("Done");
     }
 
     private static Options getOptions() {
@@ -227,16 +266,28 @@ public class InstanceConfigurator {
         Option emailTo = new Option("et", "Recipient email of error notifications");
         emailTo.setLongOpt("emailTo");
         emailTo.setArgs(1);
-        emailTo.setRequired(false);
+        emailTo.setRequired(true);
 
-        Option flowServices = new Option("fs", "FLOW Services url");
+        Option flowServices = new Option("fs",
+                "FLOW Services url, e.g. http://services.akvoflow.org");
         flowServices.setLongOpt("flowServices");
         flowServices.setArgs(1);
-        flowServices.setRequired(false);
+        flowServices.setRequired(true);
 
         Option outputFolder = new Option("o", "Output folder for configuration files");
         outputFolder.setLongOpt("outFolder");
+        outputFolder.setArgs(1);
         outputFolder.setRequired(true);
+
+        Option alias = new Option("a", "Instance alias, e.g. instance.akvoflow.org");
+        alias.setLongOpt("alias");
+        alias.setArgs(1);
+        alias.setRequired(true);
+
+        Option instanceId = new Option("id", "GAE instance id - Optional: defaults to bucket name");
+        instanceId.setLongOpt("instanceId");
+        instanceId.setArgs(1);
+        instanceId.setRequired(false);
 
         options.addOption(orgName);
         options.addOption(awsId);
@@ -245,6 +296,10 @@ public class InstanceConfigurator {
         options.addOption(gaeServer);
         options.addOption(emailFrom);
         options.addOption(emailTo);
+        options.addOption(outputFolder);
+        options.addOption(flowServices);
+        options.addOption(alias);
+        options.addOption(instanceId);
 
         return options;
     }

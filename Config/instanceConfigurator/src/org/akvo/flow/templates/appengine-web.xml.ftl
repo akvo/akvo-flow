@@ -15,21 +15,21 @@
         <property name="autoUpdateApk" value="true" />
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
         <property name="aws_secret_key" value="${awsAccessKeyId}" />
-        <property name="aws_identifier" value="${awsAccessKeySecret}" />
+        <property name="aws_identifier" value="${awsSecretAccessKey}" />
         <property name="photo_url_root" value="${s3url}/images/" />
         <property name="alias" value="${alias}" />
-        <property name="flowServices" value="http://services.akvoflow.org" />
-        <property name="s3bucket" value="${bucketName}" />
+        <property name="flowServices" value="${flowServices}" />
+        <property name="s3bucket" value="${awsBucket}" />
         <property name="surveyuploadurl" value="${s3url}/" />
         <property name="surveyuploaddir" value="surveys" />
         <property name="deviceZipPath" value="${s3url}/devicezip/" />
-        <property name="emailFromAddress" value="reports@akvoflow.org" />
-        <property name="recipientListString" value="support@akvoflow.org;FLOW Support Portal" />
+        <property name="emailFromAddress" value="${emailFrom}" />
+        <property name="recipientListString" value="${emailTo};FLOW Errors recipient" />
         <property name="defaultPhotoCaption" value="${organization}" />
         <property name="attachreport" value="true" />
         <property name="bootstrapdir" value="bootstrap"/>
         <property name="imageroot" value="https://${instanceId}.appspot.com"/>
-        <property name="mapiconimageroot" value="https://${bucketName}.s3.amazonaws.com/images/mapicons"/>
+        <property name="mapiconimageroot" value="${s3url}/images/mapicons"/>
         <property name="scoreAPFlag" value="true"/>
         <property name="organization" value="${organization}"/>
         <property name="allowUnsignedData" value="true" />
@@ -46,7 +46,7 @@
         <property name="scoreAPDynamicFlag" value="false"/>
         <property name="asyncTaskTimeout" value="16384"/>
         <property name="enableRestSecurity" value="true"/>
-        <property name="restPrivateKey" value="${restApiKey}"/>
+        <property name="restPrivateKey" value="${apiKey}"/>
         <property name="useTabRDRFlag" value="false"/>
         <property name="showStatisticsFeature" value="false"/>
         <property name="showMonitoringFeature" value="false"/>
