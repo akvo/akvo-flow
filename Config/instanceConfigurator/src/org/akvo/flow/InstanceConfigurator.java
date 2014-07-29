@@ -1,0 +1,251 @@
+/*
+ *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+ *
+ *  This file is part of Akvo FLOW.
+ *
+ *  Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+ *  the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+ *  either version 3 of the License or any later version.
+ *
+ *  Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU Affero General Public License included below for more details.
+ *
+ *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+ */
+
+package org.akvo.flow;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.policy.Policy;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
+import com.amazonaws.services.identitymanagement.model.AccessKey;
+import com.amazonaws.services.identitymanagement.model.AddUserToGroupRequest;
+import com.amazonaws.services.identitymanagement.model.CreateAccessKeyRequest;
+import com.amazonaws.services.identitymanagement.model.CreateAccessKeyResult;
+import com.amazonaws.services.identitymanagement.model.CreateGroupRequest;
+import com.amazonaws.services.identitymanagement.model.CreateUserRequest;
+import com.amazonaws.services.identitymanagement.model.PutGroupPolicyRequest;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.Region;
+
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+
+public class InstanceConfigurator {
+
+    private static final String GAE_SUFFIX = "-gae";
+    private static final String APK_SUFFIX = "-apk";
+
+    public static void main(String[] args) throws Exception {
+
+        Options opts = getOptions();
+        CommandLineParser parser = new BasicParser();
+        CommandLine cli = null;
+
+        try {
+            cli = parser.parse(opts, args);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp(InstanceConfigurator.class.getName(), opts);
+            System.exit(1);
+        }
+
+        String awsAccessKey = cli.getOptionValue("ak");
+        String awsSecret = cli.getOptionValue("as");
+        String bucketName = cli.getOptionValue("bn");
+        String gaeServer = cli.getOptionValue("gae");
+        String outFolder = cli.getOptionValue("o");
+
+        if (gaeServer.indexOf("https://") != 0) {
+            System.err.println("WARNING: Consider using HTTPS protocol for GAE server");
+        }
+
+        File out = new File(outFolder);
+
+        if (!out.exists()) {
+            out.mkdirs();
+        }
+
+        Map<String, AccessKey> accessKeys = new HashMap<String, AccessKey>();
+        String apiKey = UUID.randomUUID().toString().replaceAll("-", "");
+
+        AWSCredentials creds = new BasicAWSCredentials(awsAccessKey, awsSecret);
+        AmazonIdentityManagementClient iamClient = new AmazonIdentityManagementClient(creds);
+        AmazonS3Client s3Client = new AmazonS3Client(creds);
+
+        // Creating bucket
+
+        try {
+            if (s3Client.doesBucketExist(bucketName)) {
+                System.out.println(bucketName + " already exists, skipping creation");
+            } else {
+                s3Client.createBucket(bucketName, Region.EU_Ireland);
+            }
+        } catch (Exception e) {
+            System.err.println("Error trying to create bucket " + bucketName + " : "
+                    + e.getMessage());
+            System.exit(1);
+        }
+
+        // Creating users and groups
+
+        String gaeUser = bucketName + GAE_SUFFIX;
+        String apkUser = bucketName + APK_SUFFIX;
+
+        // GAE
+
+        iamClient.createGroup(new CreateGroupRequest(gaeUser));
+        iamClient.createUser(new CreateUserRequest(gaeUser));
+        iamClient.addUserToGroup(new AddUserToGroupRequest(gaeUser, gaeUser));
+
+        CreateAccessKeyRequest gaeAccessRequest = new CreateAccessKeyRequest();
+        gaeAccessRequest.setUserName(gaeUser);
+
+        CreateAccessKeyResult gaeAccessResult = iamClient.createAccessKey(gaeAccessRequest);
+        accessKeys.put(gaeUser, gaeAccessResult.getAccessKey());
+
+        // APK
+
+        iamClient.createGroup(new CreateGroupRequest(apkUser));
+        iamClient.createUser(new CreateUserRequest(apkUser));
+        iamClient.addUserToGroup(new AddUserToGroupRequest(apkUser, apkUser));
+
+        CreateAccessKeyRequest apkAccessRequest = new CreateAccessKeyRequest();
+        apkAccessRequest.setUserName(apkUser);
+
+        CreateAccessKeyResult apkAccessResult = iamClient.createAccessKey(apkAccessRequest);
+        accessKeys.put(apkUser, apkAccessResult.getAccessKey());
+
+        // Configuring policies
+
+        Configuration cfg = new Configuration();
+        cfg.setClassForTemplateLoading(InstanceConfigurator.class, "org/akvo/templates");
+        cfg.setObjectWrapper(new DefaultObjectWrapper());
+        cfg.setDefaultEncoding("UTF-8");
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("bucketName", bucketName);
+        data.put("version", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        data.put("accessKey", accessKeys);
+
+        Template t1 = cfg.getTemplate("apk-s3-policy.ftl");
+        StringWriter apkPolicy = new StringWriter();
+        t1.process(data, apkPolicy);
+
+        Template t2 = cfg.getTemplate("gae-s3-policy.ftl");
+        StringWriter gaePolicy = new StringWriter();
+        t2.process(data, gaePolicy);
+
+        iamClient.putGroupPolicy(new PutGroupPolicyRequest(apkUser, apkUser, Policy.fromJson(
+                apkPolicy.toString()).toJson()));
+        iamClient.putGroupPolicy(new PutGroupPolicyRequest(gaeUser, gaeUser, Policy.fromJson(
+                gaePolicy.toString()).toJson()));
+
+        // Creating configuration properties
+
+        // survey.properties
+        Map<String, Object> apkData = new HashMap<String, Object>();
+        apkData.put("bucketName", bucketName);
+        apkData.put("awsAcessKeyId", accessKeys.get(apkUser).getAccessKeyId());
+        apkData.put("awsSecretAccessKey", accessKeys.get(apkUser).getSecretAccessKey());
+        apkData.put("serverBase", "https://" + bucketName + ".appspot.com");
+        apkData.put("restApiKey", apiKey);
+
+        Template t3 = cfg.getTemplate("survey.properties.ftl");
+        FileWriter fw = new FileWriter(new File(out, "/survey.properties"));
+        t3.process(apkData, fw);
+
+        // UploadConstants.properties
+        Map<String, Object> gaeData = new HashMap<String, Object>();
+        gaeData.put("bucketName", bucketName);
+        gaeData.put("awsAccessKeyId", accessKeys.get(gaeUser).getAccessKeyId());
+        gaeData.put("awsSecretAccessKey", accessKeys.get(gaeAccessRequest).getSecretAccessKey());
+        gaeData.put("serverBase", "https://" + bucketName + ".appspot.com");
+        gaeData.put("apiKey", apiKey);
+
+        Template t4 = cfg.getTemplate("UploadConstants.properties.ftl");
+        FileWriter fw2 = new FileWriter(new File(out, "/UploadConstants.properties"));
+        t4.process(gaeData, fw2);
+
+    }
+
+    private static Options getOptions() {
+
+        Options options = new Options();
+
+        Option orgName = new Option("on", "Organzation name");
+        orgName.setLongOpt("orgName");
+        orgName.setArgs(1);
+        orgName.setRequired(true);
+
+        Option awsId = new Option("ak", "AWS Access Key");
+        awsId.setLongOpt("awsKey");
+        awsId.setArgs(1);
+        awsId.setRequired(true);
+
+        Option awsSecret = new Option("as", "AWS Access Secret");
+        awsSecret.setLongOpt("awsSecret");
+        awsSecret.setArgs(1);
+        awsSecret.setRequired(true);
+
+        Option bucketName = new Option("bn", "AWS S3 bucket name");
+        bucketName.setLongOpt("bucketName");
+        bucketName.setArgs(1);
+        bucketName.setRequired(true);
+
+        Option gaeServer = new Option("gae", "GAE base server - https://x.appspot.com");
+        gaeServer.setLongOpt("gaeServer");
+        gaeServer.setArgs(1);
+        gaeServer.setRequired(true);
+
+        Option emailFrom = new Option("ef",
+                "Sender email - NOTE: Must be developer in GAE instance");
+        emailFrom.setLongOpt("emailFrom");
+        emailFrom.setArgs(1);
+        emailFrom.setRequired(false);
+
+        Option emailTo = new Option("et", "Recipient email of error notifications");
+        emailTo.setLongOpt("emailTo");
+        emailTo.setArgs(1);
+        emailTo.setRequired(false);
+
+        Option flowServices = new Option("fs", "FLOW Services url");
+        flowServices.setLongOpt("flowServices");
+        flowServices.setArgs(1);
+        flowServices.setRequired(false);
+
+        Option outputFolder = new Option("o", "Output folder for configuration files");
+        outputFolder.setLongOpt("outFolder");
+        outputFolder.setRequired(true);
+
+        options.addOption(orgName);
+        options.addOption(awsId);
+        options.addOption(awsSecret);
+        options.addOption(bucketName);
+        options.addOption(gaeServer);
+        options.addOption(emailFrom);
+        options.addOption(emailTo);
+
+        return options;
+    }
+}
