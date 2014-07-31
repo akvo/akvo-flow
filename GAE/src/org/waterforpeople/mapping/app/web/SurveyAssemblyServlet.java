@@ -193,7 +193,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         try {
             uploadedFile = S3Util.put(bucketName,
                     props.getProperty(SURVEY_UPLOAD_DIR) + "/" + sc.getSurveyId() + ".xml",
-                    document.getBytes(), "text/xml", false);
+                    document.getBytes(), "text/xml", true);
         } catch (IOException e) {
             log.error("Error uploading file " + e.getMessage(), e);
         }
@@ -205,7 +205,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             uploadedZip = S3Util.put(bucketName,
                     props.getProperty(SURVEY_UPLOAD_DIR) + "/" + sc.getSurveyId() + ".zip",
                     os.toByteArray(),
-                    "application/zip", false);
+                    "application/zip", true);
         } catch (Exception e) {
             log.error("Error uploading zip file: " + e.getMessage(), e);
         }
@@ -354,7 +354,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         try {
             uploadedFile = S3Util.put(bucketName, props.getProperty(SURVEY_UPLOAD_DIR) + "/"
                     + surveyId
-                    + ".xml", document.getBytes(), "text/xml", false);
+                    + ".xml", document.getBytes(), "text/xml", true);
         } catch (IOException e) {
             log.error("Error uploading file: " + e.getMessage(), e);
         }
@@ -366,7 +366,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
         try {
             uploadedZip = S3Util.put(bucketName, props.getProperty(SURVEY_UPLOAD_DIR) + "/"
-                    + surveyId + ".zip", os.toByteArray(), "application/zip", false);
+                    + surveyId + ".zip", os.toByteArray(), "application/zip", true);
         } catch (IOException e) {
             log.error("Error uploading file: " + e.getMessage(), e);
         }
