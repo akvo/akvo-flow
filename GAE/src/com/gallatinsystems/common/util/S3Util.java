@@ -20,9 +20,11 @@ import static com.gallatinsystems.common.Constants.AWS_ACCESS_ID;
 import static com.gallatinsystems.common.Constants.AWS_SECRET_KEY;
 import static com.gallatinsystems.common.Constants.CONNECTION_TIMEOUT;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -49,6 +51,22 @@ public class S3Util {
     private static final String BROWSER_GET_PAYLOAD = "GET\n\n\n" + EXPIRE_DATE + "\n/%s/%s";
     private static final String PUT_PAYLOAD_PUBLIC = "PUT\n%s\n%s\n%s\nx-amz-acl:public-read\n/%s/%s";
     private static final String PUT_PAYLOAD_PRIVATE = "PUT\n%s\n%s\n%s\n/%s/%s";
+    private static final String PUT_PAYLOAD_ACL = "PUT\n\n\n%s\nx-amz-acl:%s\n/%s/%s?acl";
+    private static final String GET_PAYLOAD_ACL = "GET\n\n\n%s\n/%s/%s?acl";
+
+    public enum ACL {
+        PRIVATE("private"), PUBLIC_READ("public-read");
+        private String val;
+
+        ACL(String v) {
+            this.val = v;
+        }
+
+        @Override
+        public String toString() {
+            return val;
+        }
+    }
 
     public static URLConnection getConnection(String bucketName, String objectKey)
             throws IOException {
@@ -159,6 +177,86 @@ public class S3Util {
         }
 
         return sb.toString();
+    }
+
+    public static boolean putObjectAcl(String bucketName, String objectKey, ACL acl)
+            throws IOException {
+
+        final String awsAccessId = PropertyUtil.getProperty(AWS_ACCESS_ID);
+        final String awsSecretKey = PropertyUtil.getProperty(AWS_SECRET_KEY);
+
+        return putObjectAcl(bucketName, objectKey, acl, awsAccessId, awsSecretKey);
+    }
+
+    public static boolean putObjectAcl(String bucketName, String objectKey, ACL acl,
+            String awsAccessId, String awsSecretKey) throws IOException {
+
+        final String date = getDate();
+        final URL url = new URL(String.format(S3_URL, bucketName, objectKey) + "?acl");
+        final String payload = String.format(PUT_PAYLOAD_ACL, date, acl.toString(), bucketName,
+                objectKey);
+        final String signature = MD5Util.generateHMAC(payload, awsSecretKey);
+        HttpURLConnection conn = null;
+        try {
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("PUT");
+            conn.setRequestProperty("Date", date);
+            conn.setRequestProperty("x-amz-acl", acl.toString());
+            conn.setRequestProperty("Authorization", "AWS " + awsAccessId + ":" + signature);
+
+            int status = conn.getResponseCode();
+
+            if (status >= 400) {
+                log.severe("Error setting ACL for: " + url.toString());
+                log.severe(IOUtils.toString(conn.getInputStream()));
+                return false;
+            }
+            return true;
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
+    public static String getObjectAcl(String bucketName, String objectKey) throws IOException {
+
+        final String awsAccessId = PropertyUtil.getProperty(AWS_ACCESS_ID);
+        final String awsSecretKey = PropertyUtil.getProperty(AWS_SECRET_KEY);
+
+        return getObjectAcl(bucketName, objectKey, awsAccessId, awsSecretKey);
+    }
+
+    public static String getObjectAcl(String bucketName, String objectKey, String awsAccessId,
+            String awsSecretKey) throws IOException {
+
+        final String date = getDate();
+        final URL url = new URL(String.format(S3_URL, bucketName, objectKey) + "?acl");
+        final String payload = String.format(GET_PAYLOAD_ACL, date, bucketName, objectKey);
+        final String signature = MD5Util.generateHMAC(payload, awsSecretKey);
+
+        InputStream in = null;
+        HttpURLConnection conn = null;
+        try {
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Date", date);
+            conn.setRequestProperty("Authorization", "AWS " + awsAccessId + ":" + signature);
+
+            in = new BufferedInputStream(conn.getInputStream());
+
+            return IOUtils.toString(in);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error getting ACL for : " + url.toString(), e);
+            return null;
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+            IOUtils.closeQuietly(in);
+        }
     }
 
     private static String getDate() {
