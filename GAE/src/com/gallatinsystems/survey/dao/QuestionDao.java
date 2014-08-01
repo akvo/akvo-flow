@@ -20,7 +20,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,7 +33,6 @@ import net.sf.jsr107cache.Cache;
 
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
-import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -49,6 +48,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
+
+import static com.gallatinsystems.common.util.MemCacheUtils.*;
 
 /**
  * saves/finds question objects
@@ -67,7 +68,7 @@ public class QuestionDao extends BaseDAO<Question> {
         helpDao = new QuestionHelpMediaDao();
         translationDao = new TranslationDao();
         scoringRuleDao = new ScoringRuleDao();
-        cache = MemCacheUtils.initCache(4 * 60 * 60); // cache questions list for 4 hours
+        cache = initCache(4 * 60 * 60); // cache questions list for 4 hours
     }
 
     /**
@@ -111,40 +112,21 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * lists minimal question information by surveyId
-     * retrieves question list from the cache whenever possible
      *
      * @param surveyId
      * @return
      */
     public List<Question> listQuestionsBySurvey(Long surveyId) {
-        String surveyQuestionsCacheKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + surveyId;
-        List<Question> questionsList = null;
+        List<Question> questionsList = (List<Question>) listByProperty("surveyId", surveyId,
+                "Long", "order", "asc");
 
-        if (MemCacheUtils.containsKey(cache, surveyQuestionsCacheKey)) {
-            questionsList = (List<Question>) cache.get(surveyQuestionsCacheKey);
-        } else {
-            questionsList = (List<Question>) listByProperty("surveyId", surveyId, "Long", "order", "asc");
-            MemCacheUtils.putObject(cache, surveyQuestionsCacheKey, questionsList);
+        if (questionsList == null) {
+            return Collections.emptyList();
         }
 
-        if(questionsList == null) return Collections.emptyList();
+        cache(questionsList);
 
         return questionsList;
-    }
-
-    /**
-     * Returns a map of questions by surveyId with the question id as key
-     * and question object as value
-     *
-     * @param surveyId
-     * @return
-     */
-    public Map<Long, Question> mapQuestionsBySurvey(Long surveyId) {
-        Map<Long, Question> questionMap = new LinkedHashMap<Long, Question>();
-        for(Question q : listQuestionsBySurvey(surveyId)) {
-            questionMap.put(q.getKey().getId(), q);
-        }
-        return questionMap;
     }
 
     /**
@@ -159,6 +141,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
     /**
      * Delete question from data store.
+     *
      * @param question
      */
     public void delete(Question question) throws IllegalDeletionException {
@@ -202,7 +185,7 @@ public class QuestionDao extends BaseDAO<Question> {
         // only delete after extracting group ID and order
         super.delete(question);
 
-        if(adjustQuestionOrder != null && adjustQuestionOrder) {
+        if (adjustQuestionOrder != null && adjustQuestionOrder) {
             // update question order
             TreeMap<Integer, Question> groupQs = listQuestionsByQuestionGroup(
                     deletedQuestionGroupId, false);
@@ -464,28 +447,23 @@ public class QuestionDao extends BaseDAO<Question> {
     }
 
     /**
-     * Add a collection of Question objects to the cache. If the objects already exists in the
-     * cached survey questions list, they are replaced by the ones passed in through this list
+     * Add a collection of Question objects to the cache. If the object already exists in the cached
+     * questions list, they are replaced by the ones passed in through this list
      *
      * @param qList
      */
-    public void cache(List<Question> qList) {
-        if(qList == null || qList.isEmpty()) {
+    private void cache(List<Question> qList) {
+        if (qList == null || qList.isEmpty()) {
             return;
         }
 
-        String surveyQuestionsCacheKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + qList.get(0).getSurveyId();
-        if(MemCacheUtils.containsKey(cache, surveyQuestionsCacheKey)){
-            List<Question> cachedList = (List<Question>) cache.get(surveyQuestionsCacheKey);
-            for(Question q : qList) {
-                if(cachedList.contains(q)) {
-                    cachedList.set(cachedList.indexOf(q), q);
-                } else {
-                    cachedList.add(q);
-                }
-            }
-            MemCacheUtils.putObject(cache, surveyQuestionsCacheKey, cachedList);
+        Map<Object, Object> cacheMap = new HashMap<Object, Object>();
+        for (Question qn : qList) {
+            String cacheKey = getCacheKey(this, Long.toString(qn.getKey().getId()));
+            cacheMap.put(cacheKey, qn);
         }
+
+        putObjects(cache, cacheMap);
     }
 
     /**
@@ -493,18 +471,17 @@ public class QuestionDao extends BaseDAO<Question> {
      *
      * @param qList
      */
-    public void uncache(List<Question> qList) {
-        if(qList == null || qList.isEmpty()) {
+    private void uncache(List<Question> qList) {
+        if (qList == null || qList.isEmpty()) {
             return;
         }
 
-        String surveyQuestionsCacheKey = MemCacheUtils.SURVEY_QUESTIONS_PREFIX + qList.get(0).getSurveyId();
-        if(MemCacheUtils.containsKey(cache, surveyQuestionsCacheKey)){
-            List<Question> cachedList = (List<Question>) cache.get(surveyQuestionsCacheKey);
-            cachedList.removeAll(qList);
-            MemCacheUtils.putObject(cache, surveyQuestionsCacheKey, cachedList);
+        for (Question qn : qList) {
+            String cacheKey = getCacheKey(this, Long.toString(qn.getKey().getId()));
+            if (containsKey(cache, cacheKey)) {
+                cache.remove(cacheKey);
+            }
         }
-
     }
 
     /**
@@ -556,6 +533,22 @@ public class QuestionDao extends BaseDAO<Question> {
     @Override
     public Question getByKey(Key key) {
         return super.getByKey(key);
+    }
+
+    /**
+     * Find a question based on the id in string form
+     */
+    @Override
+    public Question getByKey(Long questionId) {
+        String cacheKey = getCacheKey(this, questionId.toString());
+        Question qn = null;
+        if (containsKey(cache, cacheKey)) {
+            qn = (Question) cache.get(cacheKey);
+        } else {
+            qn = super.getByKey(questionId);
+            putObject(cache, cacheKey, qn);
+        }
+        return qn;
     }
 
     /**

@@ -27,6 +27,7 @@ import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 
@@ -141,5 +142,16 @@ public class MemCacheUtils {
             log.log(Level.SEVERE, "Failed to retrieve values from memcache: " + e.getMessage(), e);
         }
         return Collections.emptyMap();
+    }
+
+    /**
+     * Return consistent format for cache keys
+     *
+     * @param dao
+     * @param objectId
+     * @return
+     */
+    public static String getCacheKey(BaseDAO dao, String objectId) {
+        return dao.getClass().getSimpleName() + "-" + objectId;
     }
 }
