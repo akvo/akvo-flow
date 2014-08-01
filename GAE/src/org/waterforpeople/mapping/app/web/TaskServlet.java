@@ -122,6 +122,13 @@ public class TaskServlet extends AbstractRestApiServlet {
 
             DeviceFilesDao dfDao = new DeviceFilesDao();
             String url = DEVICE_FILE_PATH + fileName;
+
+            try {
+                S3Util.putObjectAcl(BUCKET_NAME, OBJECTKEY_PREFIX + fileName, S3Util.ACL.PRIVATE);
+            } catch (IOException e) {
+                log.log(Level.SEVERE, "Error trying to secure zip file: " + e.getMessage(), e);
+            }
+
             URLConnection conn = S3Util.getConnection(BUCKET_NAME, OBJECTKEY_PREFIX + fileName);
 
             BufferedInputStream bis = null;
