@@ -459,7 +459,7 @@ public class QuestionDao extends BaseDAO<Question> {
 
         Map<Object, Object> cacheMap = new HashMap<Object, Object>();
         for (Question qn : qList) {
-            String cacheKey = getCacheKey(this, Long.toString(qn.getKey().getId()));
+            String cacheKey = getCacheKey(Long.toString(qn.getKey().getId()));
             cacheMap.put(cacheKey, qn);
         }
 
@@ -477,7 +477,7 @@ public class QuestionDao extends BaseDAO<Question> {
         }
 
         for (Question qn : qList) {
-            String cacheKey = getCacheKey(this, Long.toString(qn.getKey().getId()));
+            String cacheKey = getCacheKey(Long.toString(qn.getKey().getId()));
             if (containsKey(cache, cacheKey)) {
                 cache.remove(cacheKey);
             }
@@ -540,7 +540,7 @@ public class QuestionDao extends BaseDAO<Question> {
      */
     @Override
     public Question getByKey(Long questionId) {
-        String cacheKey = getCacheKey(this, questionId.toString());
+        String cacheKey = getCacheKey(questionId.toString());
         Question qn = null;
         if (containsKey(cache, cacheKey)) {
             qn = (Question) cache.get(cacheKey);
