@@ -16,6 +16,9 @@
 
 package org.waterforpeople.mapping.analytics.dao;
 
+import static com.gallatinsystems.common.util.MemCacheUtils.containsKey;
+import static com.gallatinsystems.common.util.MemCacheUtils.putObjects;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,8 +129,84 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
     }
 
     /**
-     * This method returns a map containing all the summary objects for a survey. The
-     * keys are the strings of the question option text.
+     * Retrieve the survey question summary object by response. If possible retrieve from cache
+     *
+     * @param questionId
+     * @param questionResponse
+     * @return
+     */
+    public List<SurveyQuestionSummary> listByResponse(String questionId, String questionResponse) {
+        List<SurveyQuestionSummary> result = null;
+        String cacheKey = getCacheKey(questionId + "-" + questionResponse);
+        if (MemCacheUtils.containsKey(cache, cacheKey)) {
+            result = new ArrayList<SurveyQuestionSummary>();
+            result.add((SurveyQuestionSummary) cache.get(cacheKey));
+            return result;
+        }
+
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyQuestionSummary.class);
+
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = null;
+        paramMap = new HashMap<String, Object>();
+
+        appendNonNullParam("questionId", filterString, paramString, "String", questionId, paramMap);
+        appendNonNullParam("response", filterString, paramString, "String", questionResponse,
+                paramMap);
+
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+
+        result = (List<SurveyQuestionSummary>) query.executeWithMap(paramMap);
+        cache(result);
+
+        return result;
+    }
+
+    /**
+     * Add a collection of SurveyQuestionSummary objects to the cache. If the object already exists
+     * in the cached SurveyQuestionSummarys list, they are replaced by the ones passed in through
+     * this list
+     *
+     * @param summaryList
+     */
+    private void cache(List<SurveyQuestionSummary> summaryList) {
+        if (summaryList == null || summaryList.isEmpty()) {
+            return;
+        }
+
+        Map<Object, Object> cacheMap = new HashMap<Object, Object>();
+        for (SurveyQuestionSummary summary : summaryList) {
+            String cacheKey = getCacheKey(Long.toString(summary.getKey().getId()));
+            cacheMap.put(cacheKey, summary);
+        }
+
+        putObjects(cache, cacheMap);
+    }
+
+    /**
+     * Remove a collection of SurveyQuestionSummarys from the cache
+     *
+     * @param summaryList
+     */
+    private void uncache(List<SurveyQuestionSummary> summaryList) {
+        if (summaryList == null || summaryList.isEmpty()) {
+            return;
+        }
+
+        for (SurveyQuestionSummary summary : summaryList) {
+            String cacheKey = getCacheKey(Long.toString(summary.getKey().getId()));
+            if (containsKey(cache, cacheKey)) {
+                cache.remove(cacheKey);
+            }
+        }
+    }
+
+    /**
+     * This method returns a map containing all the summary objects for a survey. The keys are the
+     * strings of the question option text.
      *
      * @param surveyId
      * @return
