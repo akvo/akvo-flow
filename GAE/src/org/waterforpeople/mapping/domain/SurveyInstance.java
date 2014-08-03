@@ -353,29 +353,26 @@ public class SurveyInstance extends BaseDomain {
 
         // retrieve all summary objects
         SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
-        Map<Long, Question> surveyQuestionsMap = new QuestionDao().mapQuestionsBySurvey(surveyId);
+        QuestionDao qDao = new QuestionDao();
 
         for(QuestionAnswerStore response : questionAnswersStore) {
             final String questionIdStr = response.getQuestionID();
-            Long questionId = Long.parseLong(questionIdStr);
-            Question question = surveyQuestionsMap.get(questionId);
+            final String questionResponse = response.getValue();
+            Question question = qDao.getByKey(questionIdStr);
             if (!question.canBeCharted()) {
                 continue;
             }
 
-            List<SurveyQuestionSummary> questionSummaryList = summaryDao.listByQuestion(questionIdStr);
+            List<SurveyQuestionSummary> questionSummaryList = summaryDao
+                    .listByResponse(questionIdStr, questionResponse);
             SurveyQuestionSummary questionSummary = null;
-            for(SurveyQuestionSummary s : questionSummaryList) {
-                if(response.getValue().equals(s.getResponse())) {
-                    questionSummary = s;
-                }
-            }
-
-            if (questionSummary == null) {
+            if (questionSummaryList.isEmpty()) {
                 questionSummary = new SurveyQuestionSummary();
                 questionSummary.setQuestionId(response.getQuestionID());
                 questionSummary.setResponse(questionIdStr);
                 questionSummary.setCount(0L);
+            } else {
+                questionSummary = questionSummaryList.get(0);
             }
 
             // update and save or delete
