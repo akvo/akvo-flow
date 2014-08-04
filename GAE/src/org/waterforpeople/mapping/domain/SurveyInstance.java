@@ -358,7 +358,9 @@ public class SurveyInstance extends BaseDomain {
         for(QuestionAnswerStore response : questionAnswersStore) {
             final String questionIdStr = response.getQuestionID();
             final String questionResponse = response.getValue();
-            Question question = qDao.getByKey(questionIdStr);
+            final Long questionId = Long.parseLong(response.getQuestionID());
+
+            Question question = qDao.getByKey(questionId);
             if (!question.canBeCharted()) {
                 continue;
             }
@@ -369,7 +371,7 @@ public class SurveyInstance extends BaseDomain {
             if (questionSummaryList.isEmpty()) {
                 questionSummary = new SurveyQuestionSummary();
                 questionSummary.setQuestionId(response.getQuestionID());
-                questionSummary.setResponse(questionIdStr);
+                questionSummary.setResponse(questionResponse);
                 questionSummary.setCount(0L);
             } else {
                 questionSummary = questionSummaryList.get(0);

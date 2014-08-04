@@ -20,6 +20,7 @@ import static com.gallatinsystems.common.util.MemCacheUtils.containsKey;
 import static com.gallatinsystems.common.util.MemCacheUtils.putObjects;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
             answers = answerText.split("\\|");
         } else {
             answers = new String[] {
-                answerText
+                    answerText
             };
         }
         for (int i = 0; i < answers.length; i++) {
@@ -205,6 +206,27 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
     }
 
     /**
+     * Save and cache question summary
+     *
+     * @param summary
+     */
+    public SurveyQuestionSummary save(SurveyQuestionSummary summary) {
+        SurveyQuestionSummary savedSummary = super.save(summary);
+        cache(Arrays.asList(savedSummary));
+        return savedSummary;
+    }
+
+    /**
+     * Delete from cache and datastore
+     *
+     * @param summary
+     */
+    public void delete(SurveyQuestionSummary summary) {
+        uncache(Arrays.asList(summary));
+        super.delete(summary);
+    }
+
+    /**
      * This method returns a map containing all the summary objects for a survey. The keys are the
      * strings of the question option text.
      *
@@ -215,7 +237,7 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
         List<SurveyQuestionSummary> surveyQuestionSummaryList = listBySurvey(surveyId);
 
         Map<String, SurveyQuestionSummary> questionSummary = new HashMap<String, SurveyQuestionSummary>();
-        for(SurveyQuestionSummary summary : surveyQuestionSummaryList) {
+        for (SurveyQuestionSummary summary : surveyQuestionSummaryList) {
             questionSummary.put(summary.getResponse(), summary);
         }
         return questionSummary;
