@@ -28,8 +28,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
@@ -41,7 +41,6 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
@@ -57,9 +56,6 @@ public class QuestionGroupRestService {
 
     @Inject
     private QuestionDao questionDao;
-
-    @Inject
-    private SurveyDAO surveyDao;
 
     @Inject
     private SurveyalValueDao svDao;
@@ -92,9 +88,9 @@ public class QuestionGroupRestService {
         return response;
     }
 
-    /** list questionGroups by survey id
-     *  Perform preflight check for deletion of question group
-     *
+    /**
+     * list questionGroups by survey id Perform preflight check for deletion of question group
+     * 
      * @param surveyId
      * @param preflight
      * @param questionGroupId
@@ -120,7 +116,8 @@ public class QuestionGroupRestService {
             statusDto.setMessage("can_delete");
             statusDto.setKeyId(questionGroupId);
 
-            for(Question q : questionDao.listQuestionsByQuestionGroup(questionGroupId, Boolean.FALSE).values()) {
+            for (Question q : questionDao.listQuestionsByQuestionGroup(questionGroupId,
+                    Boolean.FALSE).values()) {
                 if (qasDao.listByQuestion(q.getKey().getId()).size() > 0
                         && svDao.listByQuestion(q.getKey().getId()).size() > 0) {
                     statusDto.setMessage("cannot_delete");
@@ -130,7 +127,7 @@ public class QuestionGroupRestService {
         }
 
         final List<QuestionGroupDto> results = new ArrayList<QuestionGroupDto>();
-        if(surveyId != null) {
+        if (surveyId != null) {
             final List<QuestionGroup> questionGroups = questionGroupDao
                     .listQuestionGroupBySurvey(surveyId);
             if (questionGroups != null) {
@@ -187,13 +184,15 @@ public class QuestionGroupRestService {
         // check if questionGroup exists in the datastore
         if (group != null) {
             try {
-                TaskOptions deleteQuestionGroupTask = TaskOptions.Builder.withUrl("/app_worker/surveytask")
-                        .param(SurveyTaskRequest.ACTION_PARAM, SurveyTaskRequest.DELETE_QUESTION_GROUP_ACTION)
+                TaskOptions deleteQuestionGroupTask = TaskOptions.Builder
+                        .withUrl("/app_worker/surveytask")
+                        .param(SurveyTaskRequest.ACTION_PARAM,
+                                SurveyTaskRequest.DELETE_QUESTION_GROUP_ACTION)
                         .param(SurveyTaskRequest.ID_PARAM, Long.toString(group.getKey().getId()));
                 QueueFactory.getQueue("deletequeue").add(deleteQuestionGroupTask);
                 statusDto.setStatus("ok");
                 statusDto.setMessage("deleted");
-            } catch(Exception e) {
+            } catch (Exception e) {
                 statusDto.setStatus("failed");
                 statusDto.setMessage(e.getMessage());
             }
@@ -271,7 +270,7 @@ public class QuestionGroupRestService {
             // it is set in the Dao.
             BeanUtils.copyProperties(questionGroupDto, s, new String[] {
                     "createdDateTime"
-                });
+            });
             s = questionGroupDao.save(s);
             dto = new QuestionGroupDto();
             DtoMarshaller.copyToDto(s, dto);

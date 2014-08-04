@@ -279,15 +279,19 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 + s.getVersion() + "'";
         String surveyGroupId = "";
         String surveyGroupName = "";
+        String registrationForm = "";
         if (sg != null) {
             surveyGroupId = "surveyGroupId=\"" + sg.getKey().getId() + "\"";
             surveyGroupName = "surveyGroupName=\"" + sg.getCode() + "\"";
+            if (Boolean.TRUE.equals(sg.getMonitoringGroup())) {
+                registrationForm = " registrationSurvey=\"" + String.valueOf(sg.getNewLocaleSurveyId()) + "\"";
+            }
         }
         String sourceSurveyId = getSourceSurveyId(surveyId);
         String sourceSurveyIdAttr = sourceSurveyId != null ? " sourceSurveyId=\"" + sourceSurveyId
                 + "\"" : "";
         String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey"
-                + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute
+                + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute + registrationForm
                 + " " + surveyGroupId + " " + surveyGroupName + sourceSurveyIdAttr + ">";
         String surveyFooter = "</survey>";
         QuestionGroupDao qgDao = new QuestionGroupDao();
@@ -772,10 +776,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     private String getSourceSurveyId(Long surveyId) {
         QuestionDao questionDao = new QuestionDao();
-        for (Question question : questionDao.listQuestionsBySurvey(surveyId)) {
-            if (question.getSourceId() != null) {
-                Question sourceQuestion = questionDao.getByKey(question.getSourceId());
-                return String.valueOf(sourceQuestion.getSurveyId());
+        List<Question> qList = questionDao.listQuestionsBySurvey(surveyId);
+        if (!qList.isEmpty() && qList.get(0).getSourceId() != null) {
+            Question sourceQuestion = questionDao.getByKey(qList.get(0).getSourceId());
+            if (sourceQuestion != null) {
+                return sourceQuestion.getSurveyId().toString();
             }
         }
         return null;

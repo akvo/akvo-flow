@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,7 +20,9 @@ import java.util.Date;
 
 import javax.jdo.annotations.PersistenceCapable;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
+import com.google.appengine.api.datastore.Text;
 
 /**
  * domain structure to represent the value of an surveyed metric for one surveyed locale at a given
@@ -54,6 +56,7 @@ public class SurveyalValue extends BaseDomain {
     private Double score;
     private String valueType;
     private String stringValue;
+    private Text stringValueText;
     private Double numericValue;
     private String organization;
     private String countryCode;
@@ -252,11 +255,25 @@ public class SurveyalValue extends BaseDomain {
     }
 
     public String getStringValue() {
-        return stringValue;
+        if (stringValue != null) {
+            return stringValue;
+        }
+
+        if (stringValueText != null) {
+            return stringValueText.getValue();
+        }
+
+        return null;
     }
 
     public void setStringValue(String stringValue) {
-        this.stringValue = stringValue;
+        if (stringValue != null && stringValue.length() > Constants.MAX_LENGTH) {
+            this.stringValue = null;
+            this.stringValueText = new Text(stringValue);
+        } else {
+            this.stringValue = stringValue;
+            this.stringValueText = null;
+        }
     }
 
     public Double getNumericValue() {

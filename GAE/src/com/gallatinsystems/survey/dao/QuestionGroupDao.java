@@ -17,7 +17,6 @@
 package com.gallatinsystems.survey.dao;
 
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 import javax.jdo.PersistenceManager;
@@ -25,7 +24,6 @@ import javax.jdo.PersistenceManager;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 
 /**
@@ -39,7 +37,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * saves a question group and associates it with the survey specified
-     *
+     * 
      * @param item
      * @param surveyId
      * @param order
@@ -55,7 +53,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * Deletes all question groups associated with a survey
-     *
+     * 
      * @param surveyId
      * @throws IllegalDeletionException
      */
@@ -71,7 +69,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * lists all question groups within a survey
-     *
+     * 
      * @param surveyId
      * @return
      */
@@ -101,7 +99,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * lists all question groups by survey, ordered by the order field
-     *
+     * 
      * @param surveyId
      * @return
      */
@@ -112,7 +110,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * gets a group by its code and survey id
-     *
+     * 
      * @param code
      * @param surveyId
      * @return
@@ -135,7 +133,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * finds a group by code and path. Path is "surveyGroupName/surveyName"
-     *
+     * 
      * @param code
      * @param path
      * @return
@@ -157,7 +155,7 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
 
     /**
      * Deletes a questionGroup
-     *
+     * 
      * @param group
      * @throws IllegalDeletionException
      */

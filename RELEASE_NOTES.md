@@ -5,6 +5,50 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.1
+
+## New and noteworthy
+
+* Added support for storing more than 500 characters in a response [#656]
+* Added support for exporting _RAW DATA_ report for monitoring and non-monitoring groups [#653]
+
+## Resolved issues
+
+* Limit the number of retries for queues [#688]
+* Use https connections when possible [#680]
+* Publish Survey fails for Copied Surveys [#664]
+* Submitter name missing in new records [#662]
+* Update survey.properties file for the new APK version [#660]
+* Code cleanup - Remove custom JSON* classes from the code [#585]
+* Dashboard deployment enhancements
+  * Upgrade gem bundle for Ember part of Dashboard build [#678]
+  * Critical build tasks that fail should also fail the main build process [#675]
+  * Dashboard rollback task should also rollback failed backends [#672]
+  * Ensure Dashboard build uses Java 7 [#668]
+  * Update RubyGems sources for Dashboard build to prevent deprecation warnings [#667]
+  * Ember build should ensure bundled rake is used [#665]
+  * Ensure Dashboard can be built with GAE SDK 1.9.1 [#483]
+
+
+#1.7.0.3
+
+## Resolved issues
+
+* Submitter name missing when importing RAW DATA spreadsheet [#662]
+
+
+#1.7.0.2
+
+## Resolved issues
+
+* Survey response values longer than 500 characters cannot be stored [#656]
+
+#1.7.0.1
+
+## Resolved issues
+
+* Survey response values longer than 500 characters cannot be stored [#656]
+
 #1.7.0
 
 ## New and noteworthy
