@@ -35,8 +35,6 @@ public class MemCacheUtils {
 
     private static Logger log = Logger.getLogger(MemCacheUtils.class.getName());
 
-    public static String SURVEY_QUESTIONS_PREFIX = "survey-questions-";
-
     /**
      * Initialize a Cache object with a expiration delta defined in seconds
      *

@@ -35,8 +35,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.domain.Question;
 
 /**
  * updates survey question objects
@@ -112,21 +110,6 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      */
     public List<SurveyQuestionSummary> listByQuestion(String qId) {
         return listByProperty("questionId", qId, "String");
-    }
-
-    /**
-     * List all the summary objects for a given survey id
-     */
-    public List<SurveyQuestionSummary> listBySurvey(Long surveyId) {
-        List<SurveyQuestionSummary> summaryList = new ArrayList<SurveyQuestionSummary>();
-        for(Question q : new QuestionDao().listQuestionsBySurvey(surveyId)) {
-            String questionIdStr = Long.toString(q.getKey().getId());
-            List<SurveyQuestionSummary> questionSummaryList = listByProperty("questionId", questionIdStr, "String");
-            if(questionSummaryList != null && !questionSummaryList.isEmpty()) {
-                summaryList.addAll(questionSummaryList);
-            }
-        }
-        return summaryList;
     }
 
     /**
@@ -224,22 +207,5 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
     public void delete(SurveyQuestionSummary summary) {
         uncache(Arrays.asList(summary));
         super.delete(summary);
-    }
-
-    /**
-     * This method returns a map containing all the summary objects for a survey. The keys are the
-     * strings of the question option text.
-     *
-     * @param surveyId
-     * @return
-     */
-    public Map<String, SurveyQuestionSummary> mapSurveyQuestionSummary(Long surveyId) {
-        List<SurveyQuestionSummary> surveyQuestionSummaryList = listBySurvey(surveyId);
-
-        Map<String, SurveyQuestionSummary> questionSummary = new HashMap<String, SurveyQuestionSummary>();
-        for (SurveyQuestionSummary summary : surveyQuestionSummaryList) {
-            questionSummary.put(summary.getResponse(), summary);
-        }
-        return questionSummary;
     }
 }
