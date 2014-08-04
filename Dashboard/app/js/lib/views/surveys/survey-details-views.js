@@ -154,13 +154,17 @@ FLOW.SurveySidebarView = FLOW.View.extend({
   },
   
   doSaveSurvey: function () {
-    var survey;
+    var survey, re = /,/g;
     if (this.surveyNotComplete()){
 		return;
 	}
     survey = FLOW.selectedControl.get('selectedSurvey');
-    survey.set('name', this.get('surveyTitle'));
-    survey.set('code', this.get('surveyTitle'));
+
+    // Silently replace commas (,)
+    // See: https://github.com/akvo/akvo-flow/issues/707
+    survey.set('name', this.get('surveyTitle').replace(re, ' '));
+    survey.set('code', this.get('surveyTitle').replace(re, ' '));
+
     survey.set('status', 'NOT_PUBLISHED');
     survey.set('path', FLOW.selectedControl.selectedSurveyGroup.get('code'));
     survey.set('description', this.get('surveyDescription'));
