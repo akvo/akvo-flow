@@ -163,7 +163,8 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 
         Map<Object, Object> cacheMap = new HashMap<Object, Object>();
         for (SurveyQuestionSummary summary : summaryList) {
-            String cacheKey = getCacheKey(Long.toString(summary.getKey().getId()));
+            String cacheKey = getCacheKey(Long.toString(summary.getKey().getId()) + "-"
+                    + summary.getResponse());
             cacheMap.put(cacheKey, summary);
         }
 
@@ -181,7 +182,8 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
         }
 
         for (SurveyQuestionSummary summary : summaryList) {
-            String cacheKey = getCacheKey(Long.toString(summary.getKey().getId()));
+            String cacheKey = getCacheKey(Long.toString(summary.getKey().getId()) + "-"
+                    + summary.getResponse());
             if (containsKey(cache, cacheKey)) {
                 cache.remove(cacheKey);
             }
@@ -200,6 +202,18 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
     }
 
     /**
+     * Save and cache question summary list
+     *
+     * @param summary
+     */
+    public List<SurveyQuestionSummary> save(List<SurveyQuestionSummary> summary) {
+        List<SurveyQuestionSummary> savedSummaryList = (List<SurveyQuestionSummary>) super
+                .save(summary);
+        cache(savedSummaryList);
+        return savedSummaryList;
+    }
+
+    /**
      * Delete from cache and datastore
      *
      * @param summary
@@ -207,5 +221,15 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
     public void delete(SurveyQuestionSummary summary) {
         uncache(Arrays.asList(summary));
         super.delete(summary);
+    }
+
+    /**
+     * Delete summary list from cache and datastore
+     *
+     * @param summaryList
+     */
+    public void delete(List<SurveyQuestionSummary> summaryList) {
+        uncache(summaryList);
+        super.delete(summaryList);
     }
 }

@@ -355,6 +355,9 @@ public class SurveyInstance extends BaseDomain {
         SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
         QuestionDao qDao = new QuestionDao();
 
+        List<SurveyQuestionSummary> saveList = new ArrayList<SurveyQuestionSummary>();
+        List<SurveyQuestionSummary> deleteList = new ArrayList<SurveyQuestionSummary>();
+
         for(QuestionAnswerStore response : questionAnswersStore) {
             final String questionIdStr = response.getQuestionID();
             final String questionResponse = response.getValue();
@@ -383,10 +386,13 @@ public class SurveyInstance extends BaseDomain {
             questionSummary.setCount(count);
 
             if(count > 0) {
-                summaryDao.save(questionSummary);
+                saveList.add(questionSummary);
             } else {
-                summaryDao.delete(questionSummary);
+                deleteList.add(questionSummary);
             }
         }
+
+        summaryDao.save(saveList);
+        summaryDao.delete(deleteList);
     }
 }
