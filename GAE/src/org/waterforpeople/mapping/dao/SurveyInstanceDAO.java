@@ -86,7 +86,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         si.setDeviceFile(deviceFile);
         si.setUserID(userID);
         String delimiter = "\t";
-        Boolean surveyInstanceIsNew = true;
+        boolean surveyInstanceIsNew = true;
         Long geoQasId = null;
         DeviceDAO deviceDao = new DeviceDAO();
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
@@ -225,6 +225,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                             SurveyInstance existingSi = findByUUID(uuid);
                             if (existingSi != null) {
                                 // SurveyInstance found, reuse it to process missing data
+                                surveyInstanceIsNew = false;
                                 si = existingSi;
                                 si.setDeviceFile(deviceFile);
                             } else {
@@ -251,35 +252,26 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 continue; // skip processing
             }
 
-            if (qasDao.listBySurveyInstance(si.getKey().getId(),
-                    si.getSurveyId(), parts[2].trim()).size() != 0) {
+            // now we have instance id check which responses already present
+            final String questionIdStr = parts[2].trim();
+            final Long surveyInstanceId = si.getKey().getId();
+
+            if (!surveyInstanceIsNew && qasList.isEmpty()) {
+                qasList.addAll(qasDao.listBySurveyInstance(surveyInstanceId));
+            }
+
+            if (qasDao.isCached(Long.valueOf(questionIdStr), surveyInstanceId)) {
                 log.log(Level.INFO,
                         "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
-                                + si.getKey().getId() + ", " + si.getSurveyId() + ", "
-                                + parts[2].trim());
+                                + surveyInstanceId + ", " + si.getSurveyId() + ", "
+                                + questionIdStr);
                 continue; // skip processing
             }
 
-            if (cache != null) {
-                Map<Long, Long> ck = new HashMap<Long, Long>();
-                // {surveyInstanceId, questionID}
-                ck.put(si.getKey().getId(), Long.valueOf(parts[2].trim()));
-
-                if (cache.containsKey(ck)) {
-                    log.log(Level.INFO,
-                            "Skipping QAS already present in temporary cache [SurveyInstance, Survey, Question]: "
-                                    + si.getKey().getId() + ", "
-                                    + si.getSurveyId() + ", " + parts[2].trim());
-                    continue; // skip processing
-                } else {
-                    cache.put(ck, true);
-                }
-            }
-
             qas.setSurveyId(si.getSurveyId());
-            qas.setSurveyInstanceId(si.getKey().getId());
+            qas.setSurveyInstanceId(surveyInstanceId);
             qas.setArbitratyNumber(new Long(parts[1].trim()));
-            qas.setQuestionID(parts[2].trim());
+            qas.setQuestionID(questionIdStr);
             qas.setType(parts[3].trim());
             qas.setCollectionDate(collDate);
 
@@ -294,11 +286,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             }
             qasList.add(qas);
         }
+
+        // batch save all responses
         try {
-            save(qasList);
+            qasDao.save(qasList);
         } catch (DatastoreTimeoutException te) {
             sleep();
-            save(qasList);
+            qasDao.save(qasList);
         }
         deviceFile.setSurveyInstanceId(si.getKey().getId());
         if (!hasErrors) {
