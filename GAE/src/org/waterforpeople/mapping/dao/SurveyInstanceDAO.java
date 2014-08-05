@@ -87,11 +87,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         si.setUserID(userID);
         String delimiter = "\t";
         boolean surveyInstanceIsNew = true;
+        boolean listExistingResponses = true;
         Long geoQasId = null;
         DeviceDAO deviceDao = new DeviceDAO();
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
-        ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
+        ArrayList<QuestionAnswerStore> newResponses = new ArrayList<QuestionAnswerStore>();
 
         Cache cache = MemCacheUtils.initCache(4 * 60 * 60); // 4 hours - enough time to process large batch of surveys?
 
@@ -256,8 +257,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             final String questionIdStr = parts[2].trim();
             final Long surveyInstanceId = si.getKey().getId();
 
-            if (!surveyInstanceIsNew && qasList.isEmpty()) {
-                qasList.addAll(qasDao.listBySurveyInstance(surveyInstanceId));
+            if (listExistingResponses) {
+                qasDao.listBySurveyInstance(surveyInstanceId);
+                listExistingResponses = false;
             }
 
             if (qasDao.isCached(Long.valueOf(questionIdStr), surveyInstanceId)) {
@@ -284,15 +286,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             if (parts.length >= 11) {
                 qas.setStrength(parts[10].trim());
             }
-            qasList.add(qas);
+            newResponses.add(qas);
         }
 
         // batch save all responses
         try {
-            qasDao.save(qasList);
+            qasDao.save(newResponses);
         } catch (DatastoreTimeoutException te) {
             sleep();
-            qasDao.save(qasList);
+            qasDao.save(newResponses);
         }
         deviceFile.setSurveyInstanceId(si.getKey().getId());
         if (!hasErrors) {
@@ -302,12 +304,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             si.getDeviceFile().setProcessedStatus(
                     StatusCode.PROCESSED_WITH_ERRORS);
         }
-        si.setQuestionAnswersStore(qasList);
+        si.setQuestionAnswersStore(newResponses);
 
         boolean increment = true;
         si.updateSummaryCounts(increment);
 
-        for (QuestionAnswerStore qas : qasList) {
+        for (QuestionAnswerStore qas : newResponses) {
             if (Question.Type.GEO.toString().equals(qas.getType())) {
                 geoQasId = qas.getKey().getId();
             }
