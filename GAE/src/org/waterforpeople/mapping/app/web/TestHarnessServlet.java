@@ -422,8 +422,8 @@ public class TestHarnessServlet extends HttpServlet {
 
             qas2 = dao.save(qas2);
 
-            assert dao.listBySurveyInstance(0L, 0L, "0").get(0).getValue().equals(val1);
-            assert dao.listBySurveyInstance(1L, 1L, "1").get(0).getValue().equals(val2);
+            assert dao.getByQuestionAndSurveyInstance(0L, 0L).getValue().equals(val1);
+            assert dao.getByQuestionAndSurveyInstance(1L, 1L).getValue().equals(val2);
 
             qas1.setValue(val2);
             qas2.setValue(val1);
@@ -431,8 +431,8 @@ public class TestHarnessServlet extends HttpServlet {
             qas1 = dao.save(qas1);
             qas2 = dao.save(qas2);
 
-            assert dao.listBySurveyInstance(0L, 0L, "0").get(0).getValue().equals(val2);
-            assert dao.listBySurveyInstance(1L, 1L, "1").get(0).getValue().equals(val1);
+            assert dao.getByQuestionAndSurveyInstance(0L, 0L).getValue().equals(val2);
+            assert dao.getByQuestionAndSurveyInstance(1L, 1L).getValue().equals(val1);
 
             dao.delete(qas1);
             dao.delete(qas2);
