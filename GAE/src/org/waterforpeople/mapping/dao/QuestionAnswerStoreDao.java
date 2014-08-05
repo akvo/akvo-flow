@@ -16,6 +16,11 @@
 
 package org.waterforpeople.mapping.dao;
 
+import static com.gallatinsystems.common.util.MemCacheUtils.containsKey;
+import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
+import static com.gallatinsystems.common.util.MemCacheUtils.putObjects;
+
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +29,8 @@ import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 
+import net.sf.jsr107cache.Cache;
+
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -31,8 +38,11 @@ import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
 public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
+    private Cache cache;
+
     public QuestionAnswerStoreDao() {
         super(QuestionAnswerStore.class);
+        cache = initCache(4 * 60 * 60); // cache questions list for 4 hours
     }
 
     public List<QuestionAnswerStore> listBySurvey(Long surveyId) {
@@ -67,7 +77,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
     /**
      * lists all the QuestionAnswerStore objects that match the type passed in
-     * 
+     *
      * @param type
      * @param cursor
      * @param pageSize
@@ -123,7 +133,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
     /**
      * lists all the QuestionAnswerStore objects that match the type passed in
-     * 
+     *
      * @param sinceDate
      * @param cursor
      * @param pageSize
@@ -178,7 +188,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
     /**
      * lists all the QuestionAnswerStore objects that match the type passed in
-     * 
+     *
      * @param sinceDate
      * @param cursor
      * @param pageSize
@@ -196,41 +206,117 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<QuestionAnswerStore> listBySurveyInstance(
-            Long surveyInstanceId, Long surveyId, String questionID) {
-
-        final PersistenceManager pm = PersistenceFilter.getManager();
-        final javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
-
-        final Map<String, Object> paramMap = new HashMap<String, Object>();
-
-        StringBuilder filterString = new StringBuilder();
-        StringBuilder paramString = new StringBuilder();
-
-        appendNonNullParam("surveyInstanceId", filterString, paramString,
-                "Long", surveyInstanceId, paramMap);
-        appendNonNullParam("surveyId", filterString, paramString, "Long",
-                surveyId, paramMap);
-        appendNonNullParam("questionID", filterString, paramString, "String",
-                questionID, paramMap);
-
-        query.setFilter(filterString.toString());
-        query.declareParameters(paramString.toString());
-        return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+    public List<QuestionAnswerStore> listBySurveyInstance(Long surveyInstanceId) {
+        List<QuestionAnswerStore> responses = super.listByProperty("surveyInstanceId", surveyInstanceId, "Long");
+        cache(responses);
+        return responses;
     }
 
     @SuppressWarnings("unchecked")
-    public QuestionAnswerStore getByQuestionAndSurveyInstance(Long qId, Long instanceId) {
+    public QuestionAnswerStore getByQuestionAndSurveyInstance(Long questionId, Long instanceId) {
+        String cacheKey = getCacheKey(instanceId + "-" + questionId);
+        if (containsKey(cache, cacheKey)) {
+            return (QuestionAnswerStore) cache.get(cacheKey);
+        }
+
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
         query.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
         query.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
         List<QuestionAnswerStore> results = (List<QuestionAnswerStore>) query.execute(
-                instanceId, qId.toString());
+                instanceId, questionId.toString());
         if (results != null && results.size() > 0) {
             return results.get(0);
         } else {
             return null;
+        }
+    }
+
+    public boolean isCached(Long questionId, Long instanceId) {
+        return containsKey(cache, getCacheKey(instanceId + "-" + questionId));
+    }
+
+    /**
+     * Saves response and update cache
+     *
+     * @param reponse
+     */
+    public QuestionAnswerStore save(QuestionAnswerStore reponse) {
+        // first save and get Id
+        QuestionAnswerStore savedResponse = super.save(reponse);
+        cache(Arrays.asList(savedResponse));
+        return savedResponse;
+    }
+
+    /**
+     * Save a collection of responses and cache
+     *
+     * @param responseList
+     * @return
+     */
+    public List<QuestionAnswerStore> save(List<QuestionAnswerStore> responseList) {
+        List<QuestionAnswerStore> savedResponses = (List<QuestionAnswerStore>) super
+                .save(responseList);
+        cache(savedResponses);
+        return savedResponses;
+    }
+
+    /**
+     * Delete from cache and datastore
+     *
+     * @param response
+     */
+    public void delete(QuestionAnswerStore response) {
+        uncache(Arrays.asList(response));
+        super.delete(response);
+    }
+
+    /**
+     * Delete response list from cache and datastore
+     *
+     * @param responsesList
+     */
+    public void delete(List<QuestionAnswerStore> responsesList) {
+        uncache(responsesList);
+        super.delete(responsesList);
+    }
+
+    /**
+     * Add a collection of QuestionAnswerStore objects to the cache
+     *
+     * @param responseList
+     */
+    private void cache(List<QuestionAnswerStore> responseList) {
+        if (responseList == null || responseList.isEmpty()) {
+            return;
+        }
+
+        Map<Object, Object> cacheMap = new HashMap<Object, Object>();
+        for (QuestionAnswerStore response : responseList) {
+            String cacheKey = getCacheKey(response.getSurveyInstanceId() + "-"
+                    + response.getQuestionID());
+            cacheMap.put(cacheKey, response);
+        }
+
+        putObjects(cache, cacheMap);
+    }
+
+    /**
+     * Remove a collection of responses from the cache
+     *
+     * @param responsesList
+     */
+    private void uncache(List<QuestionAnswerStore> responsesList) {
+        if (responsesList == null || responsesList.isEmpty()) {
+            return;
+        }
+
+        for (QuestionAnswerStore response : responsesList) {
+            String cacheKey = getCacheKey(response.getSurveyInstanceId() + "-"
+                    + response.getQuestionID());
+            if (containsKey(cache, cacheKey)) {
+                cache.remove(cacheKey);
+            }
         }
     }
 }
