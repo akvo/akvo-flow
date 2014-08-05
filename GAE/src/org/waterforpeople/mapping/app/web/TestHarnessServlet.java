@@ -403,6 +403,7 @@ public class TestHarnessServlet extends HttpServlet {
 
             final String val1 = sb.toString();
             final String val2 = "TEST";
+            String testResult = "OK";
 
             QuestionAnswerStore qas1 = new QuestionAnswerStore();
             qas1.setArbitratyNumber(0L);
@@ -434,12 +435,20 @@ public class TestHarnessServlet extends HttpServlet {
             assert dao.getByQuestionAndSurveyInstance(0L, 0L).getValue().equals(val2);
             assert dao.getByQuestionAndSurveyInstance(1L, 1L).getValue().equals(val1);
 
+            if (!dao.isCached(0L, 0L) || !dao.isCached(1L, 1L)) {
+                testResult = "NOK";
+            }
+
             dao.delete(qas1);
             dao.delete(qas2);
 
+            if (dao.isCached(0L, 0L) || dao.isCached(1L, 1L)) {
+                testResult = "NOK";
+            }
+
             try {
                 PrintWriter w = resp.getWriter();
-                w.write("OK");
+                w.write(testResult);
                 w.flush();
             } catch (IOException e) {
                 e.printStackTrace();
