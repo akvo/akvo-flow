@@ -41,7 +41,7 @@ public class MemCacheUtils {
      * @return A Cache object or <b>null</b> when the runtime couldn't initialize the object
      */
     @SuppressWarnings({
-            "unchecked", "rawtypes"
+        "unchecked", "rawtypes"
     })
     public static Cache initCache(Integer expirySeconds) {
         Cache cache = null;
@@ -128,6 +128,8 @@ public class MemCacheUtils {
      * @param keys
      * @return
      */
+
+    @SuppressWarnings("rawtypes")
     public static Map getObjects(Cache cache, Collection keys) {
         try {
             if (cache == null) {
