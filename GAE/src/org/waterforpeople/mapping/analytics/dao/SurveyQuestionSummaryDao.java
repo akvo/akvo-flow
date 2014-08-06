@@ -24,10 +24,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 
 import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
 
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
@@ -121,11 +123,16 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      */
     public List<SurveyQuestionSummary> listByResponse(String questionId, String questionResponse) {
         List<SurveyQuestionSummary> result = null;
-        String cacheKey = getCacheKey(questionId + "-" + questionResponse);
-        if (MemCacheUtils.containsKey(cache, cacheKey)) {
-            result = new ArrayList<SurveyQuestionSummary>();
-            result.add((SurveyQuestionSummary) cache.get(cacheKey));
-            return result;
+        String cacheKey = null;
+        try {
+            cacheKey = getCacheKey(questionId + "-" + questionResponse);
+            if (MemCacheUtils.containsKey(cache, cacheKey)) {
+                result = new ArrayList<SurveyQuestionSummary>();
+                result.add((SurveyQuestionSummary) cache.get(cacheKey));
+                return result;
+            }
+        } catch (CacheException e) {
+            log.log(Level.WARNING, e.getMessage());
         }
 
         PersistenceManager pm = PersistenceFilter.getManager();
@@ -163,9 +170,13 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 
         Map<Object, Object> cacheMap = new HashMap<Object, Object>();
         for (SurveyQuestionSummary summary : summaryList) {
-            String cacheKey = getCacheKey(Long.toString(summary.getKey().getId()) + "-"
-                    + summary.getResponse());
-            cacheMap.put(cacheKey, summary);
+            String cacheKey;
+            try {
+                cacheKey = getCacheKey(summary);
+                cacheMap.put(cacheKey, summary);
+            } catch (CacheException e) {
+                log.log(Level.WARNING, e.getMessage());
+            }
         }
 
         putObjects(cache, cacheMap);
@@ -182,10 +193,14 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
         }
 
         for (SurveyQuestionSummary summary : summaryList) {
-            String cacheKey = getCacheKey(Long.toString(summary.getKey().getId()) + "-"
-                    + summary.getResponse());
-            if (containsKey(cache, cacheKey)) {
-                cache.remove(cacheKey);
+            String cacheKey;
+            try {
+                cacheKey = getCacheKey(summary);
+                if (containsKey(cache, cacheKey)) {
+                    cache.remove(cacheKey);
+                }
+            } catch (CacheException e) {
+                log.log(Level.WARNING, e.getMessage());
             }
         }
     }
@@ -231,5 +246,21 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
     public void delete(List<SurveyQuestionSummary> summaryList) {
         uncache(summaryList);
         super.delete(summaryList);
+    }
+
+    /**
+     * Construct cache key for SurveyQuestionSummary objects. Assumes the combination of questionId
+     * and questionResponse are unique across all SurveyQuestionSummary entities.
+     *
+     * @param summary
+     * @return
+     * @throws CacheException
+     */
+    public String getCacheKey(SurveyQuestionSummary summary) throws CacheException {
+        if (summary.getQuestionId() == null || summary.getResponse() == null) {
+            throw new CacheException("Cannnot create cache key without questionId and response");
+        }
+        return summary.getClass().getSimpleName() + "-" + summary.getQuestionId() + "-"
+                + summary.getResponse();
     }
 }

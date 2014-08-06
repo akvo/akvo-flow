@@ -30,6 +30,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.NotPersistent;
 
 import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
 
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
@@ -117,7 +118,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @return
      */
     public List<Question> listQuestionsBySurvey(Long surveyId) {
-        List<Question> questionsList = (List<Question>) listByProperty("surveyId", surveyId,
+        List<Question> questionsList = listByProperty("surveyId", surveyId,
                 "Long", "order", "asc");
 
         if (questionsList == null) {
@@ -459,8 +460,13 @@ public class QuestionDao extends BaseDAO<Question> {
 
         Map<Object, Object> cacheMap = new HashMap<Object, Object>();
         for (Question qn : qList) {
-            String cacheKey = getCacheKey(Long.toString(qn.getKey().getId()));
-            cacheMap.put(cacheKey, qn);
+            String cacheKey = null;
+            try {
+                cacheKey = getCacheKey(qn);
+                cacheMap.put(cacheKey, qn);
+            } catch (CacheException e) {
+                log.log(Level.WARNING, e.getMessage());
+            }
         }
 
         putObjects(cache, cacheMap);
@@ -477,9 +483,14 @@ public class QuestionDao extends BaseDAO<Question> {
         }
 
         for (Question qn : qList) {
-            String cacheKey = getCacheKey(Long.toString(qn.getKey().getId()));
-            if (containsKey(cache, cacheKey)) {
-                cache.remove(cacheKey);
+            String cacheKey;
+            try {
+                cacheKey = getCacheKey(qn);
+                if (containsKey(cache, cacheKey)) {
+                    cache.remove(cacheKey);
+                }
+            } catch (CacheException e) {
+                log.log(Level.WARNING, e.getMessage());
             }
         }
     }
@@ -540,15 +551,24 @@ public class QuestionDao extends BaseDAO<Question> {
      */
     @Override
     public Question getByKey(Long questionId) {
-        String cacheKey = getCacheKey(questionId.toString());
-        Question qn = null;
-        if (containsKey(cache, cacheKey)) {
-            qn = (Question) cache.get(cacheKey);
-        } else {
-            qn = super.getByKey(questionId);
-            putObject(cache, cacheKey, qn);
+        Question question = null;
+        String cacheKey = null;
+
+        // retrieve from cache
+        try {
+            cacheKey = getCacheKey(questionId.toString());
+            if (containsKey(cache, cacheKey)) {
+                return (Question) cache.get(cacheKey);
+            }
+        } catch (CacheException e) {
+            log.log(Level.WARNING, e.getMessage());
         }
-        return qn;
+
+        // else from datastore and attempt to cache
+        question = super.getByKey(questionId);
+        cache(Arrays.asList(question));
+
+        return question;
     }
 
     /**

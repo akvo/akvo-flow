@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 
+import net.sf.jsr107cache.CacheException;
+
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
 
 import com.gallatinsystems.common.Constants;
@@ -603,10 +605,28 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * Default format for cache key string
      *
+     * @param object
+     * @return
+     * @throws CacheException
+     */
+    public String getCacheKey(BaseDomain object) throws CacheException {
+        if (object.getKey() == null) {
+            throw new CacheException("Trying to get cache key from an unsaved object");
+        }
+        return object.getClass().getSimpleName() + "-" + object.getKey().getId();
+    }
+
+    /**
+     * Default format for cache key string
+     *
      * @param objectId
      * @return
+     * @throws CacheException
      */
-    public String getCacheKey(String objectId) {
+    public String getCacheKey(String objectId) throws CacheException {
+        if (objectId == null) {
+            throw new CacheException("Trying to get cache key from an unsaved object");
+        }
         return concreteClass.getSimpleName() + "-" + objectId;
     }
 }

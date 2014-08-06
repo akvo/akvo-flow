@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import javax.jdo.PersistenceManager;
 
 import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
 
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
@@ -205,18 +206,27 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
         return (List<QuestionAnswerStore>) query.execute();
     }
 
-    @SuppressWarnings("unchecked")
     public List<QuestionAnswerStore> listBySurveyInstance(Long surveyInstanceId) {
-        List<QuestionAnswerStore> responses = super.listByProperty("surveyInstanceId", surveyInstanceId, "Long");
+        List<QuestionAnswerStore> responses = super.listByProperty("surveyInstanceId",
+                surveyInstanceId, "Long");
         cache(responses);
         return responses;
     }
 
     @SuppressWarnings("unchecked")
     public QuestionAnswerStore getByQuestionAndSurveyInstance(Long questionId, Long instanceId) {
-        String cacheKey = getCacheKey(instanceId + "-" + questionId);
-        if (containsKey(cache, cacheKey)) {
-            return (QuestionAnswerStore) cache.get(cacheKey);
+        QuestionAnswerStore response = new QuestionAnswerStore();
+        response.setSurveyId(instanceId);
+        response.setQuestionID(questionId.toString());
+
+        String cacheKey;
+        try {
+            cacheKey = getCacheKey(response);
+            if (containsKey(cache, cacheKey)) {
+                return (QuestionAnswerStore) cache.get(cacheKey);
+            }
+        } catch (CacheException e) {
+            log.log(Level.WARNING, e.getMessage());
         }
 
         PersistenceManager pm = PersistenceFilter.getManager();
@@ -232,8 +242,17 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
         }
     }
 
-    public boolean isCached(Long questionId, Long instanceId) {
-        return containsKey(cache, getCacheKey(instanceId + "-" + questionId));
+    public boolean isCached(Long questionId, Long surveyInstanceId) {
+        QuestionAnswerStore response = new QuestionAnswerStore();
+        response.setSurveyInstanceId(surveyInstanceId);
+        response.setQuestionID(questionId.toString());
+
+        try {
+            return containsKey(cache, getCacheKey(response));
+        } catch (CacheException e) {
+            // ignore
+        }
+        return false;
     }
 
     /**
@@ -293,9 +312,13 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
         Map<Object, Object> cacheMap = new HashMap<Object, Object>();
         for (QuestionAnswerStore response : responseList) {
-            String cacheKey = getCacheKey(response.getSurveyInstanceId() + "-"
-                    + response.getQuestionID());
-            cacheMap.put(cacheKey, response);
+            String cacheKey = null;
+            try {
+                cacheKey = getCacheKey(response);
+                cacheMap.put(cacheKey, response);
+            } catch (CacheException e) {
+                log.log(Level.WARNING, e.getMessage());
+            }
         }
 
         putObjects(cache, cacheMap);
@@ -312,11 +335,32 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
         }
 
         for (QuestionAnswerStore response : responsesList) {
-            String cacheKey = getCacheKey(response.getSurveyInstanceId() + "-"
-                    + response.getQuestionID());
-            if (containsKey(cache, cacheKey)) {
-                cache.remove(cacheKey);
+            String cacheKey = null;
+            try {
+                cacheKey = getCacheKey(response);
+                if (containsKey(cache, cacheKey)) {
+                    cache.remove(cacheKey);
+                }
+            } catch (CacheException e) {
+                log.log(Level.WARNING, e.getMessage());
             }
         }
+    }
+
+    /**
+     * Construct cache key for QuestionAnswerStore objects. Assumes the combination of
+     * surveyInstanceId and questionId are unique across all QuestionAnswerStore entities.
+     *
+     * @param response
+     * @return
+     * @throws CacheException
+     */
+    public String getCacheKey(QuestionAnswerStore response) throws CacheException {
+        if (response.getSurveyInstanceId() == null || response.getQuestionID() == null) {
+            throw new CacheException(
+                    "Cannnot create cache key without surveyInstanceId and questionId");
+        }
+        return response.getClass().getSimpleName() + "-" + response.getSurveyInstanceId() + "-"
+                + response.getQuestionID();
     }
 }
