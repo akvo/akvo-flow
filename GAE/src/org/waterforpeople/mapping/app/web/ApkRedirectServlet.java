@@ -33,7 +33,6 @@ public class ApkRedirectServlet extends HttpServlet {
     private static final long serialVersionUID = 8394168365501522124L;
     private static final String ANDROID = "androidPhone";
     private static final String FIELDSURVEY = "fieldSurvey";
-    private static final String FLOWAPP = "flowapp";
     private static final String SATSTAT = "satStat";
     private static final String GPS_APP_PATH = "/gps";
     private static final String FLOW_APP_PATH = "/app";
@@ -43,12 +42,12 @@ public class ApkRedirectServlet extends HttpServlet {
             IOException {
         final DeviceApplicationDao dao = new DeviceApplicationDao();
         String servletPath = req.getServletPath();
-        String[] appCode = new String[] {};
+        String appCode = "";
 
         if (FLOW_APP_PATH.equals(servletPath)) {
-            appCode = new String[] { FIELDSURVEY, FLOWAPP };
+            appCode = FIELDSURVEY;
         } else if (GPS_APP_PATH.equals(servletPath)) {
-            appCode = new String[] { SATSTAT };
+            appCode = SATSTAT;
         }
 
         final List<DeviceApplication> apps = dao
