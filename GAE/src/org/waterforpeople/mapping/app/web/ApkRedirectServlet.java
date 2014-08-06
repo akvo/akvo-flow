@@ -33,9 +33,11 @@ public class ApkRedirectServlet extends HttpServlet {
     private static final long serialVersionUID = 8394168365501522124L;
     private static final String ANDROID = "androidPhone";
     private static final String FIELDSURVEY = "fieldSurvey";
+    private static final String FLOWAPP = "flowapp";
     private static final String SATSTAT = "satStat";
     private static final String GPS_APP_PATH = "/gps";
     private static final String FLOW_APP_PATH = "/app";
+    private static final String FLOW_APP2_PATH = "/app2";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
@@ -46,6 +48,8 @@ public class ApkRedirectServlet extends HttpServlet {
 
         if (FLOW_APP_PATH.equals(servletPath)) {
             appCode = FIELDSURVEY;
+        } else if (FLOW_APP2_PATH.equals(servletPath)) {
+            appCode = FLOWAPP;
         } else if (GPS_APP_PATH.equals(servletPath)) {
             appCode = SATSTAT;
         }
