@@ -36,6 +36,7 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
 /**
@@ -256,7 +257,9 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
      * @return
      * @throws CacheException
      */
-    public String getCacheKey(SurveyQuestionSummary summary) throws CacheException {
+    @Override
+    public String getCacheKey(BaseDomain object) throws CacheException {
+        SurveyQuestionSummary summary = (SurveyQuestionSummary) object;
         if (summary.getQuestionId() == null || summary.getResponse() == null) {
             throw new CacheException("Cannnot create cache key without questionId and response");
         }

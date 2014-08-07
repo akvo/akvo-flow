@@ -35,6 +35,7 @@ import net.sf.jsr107cache.CacheException;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
 public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
@@ -214,14 +215,10 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
     }
 
     @SuppressWarnings("unchecked")
-    public QuestionAnswerStore getByQuestionAndSurveyInstance(Long questionId, Long instanceId) {
-        QuestionAnswerStore response = new QuestionAnswerStore();
-        response.setSurveyId(instanceId);
-        response.setQuestionID(questionId.toString());
-
+    public QuestionAnswerStore getByQuestionAndSurveyInstance(Long questionId, Long surveyInstanceId) {
         String cacheKey;
         try {
-            cacheKey = getCacheKey(response);
+            cacheKey = getCacheKey(surveyInstanceId + "-" + questionId);
             if (containsKey(cache, cacheKey)) {
                 return (QuestionAnswerStore) cache.get(cacheKey);
             }
@@ -234,7 +231,7 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
         query.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
         query.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
         List<QuestionAnswerStore> results = (List<QuestionAnswerStore>) query.execute(
-                instanceId, questionId.toString());
+                surveyInstanceId, questionId.toString());
         if (results != null && results.size() > 0) {
             return results.get(0);
         } else {
@@ -243,12 +240,8 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
     }
 
     public boolean isCached(Long questionId, Long surveyInstanceId) {
-        QuestionAnswerStore response = new QuestionAnswerStore();
-        response.setSurveyInstanceId(surveyInstanceId);
-        response.setQuestionID(questionId.toString());
-
         try {
-            return containsKey(cache, getCacheKey(response));
+            return containsKey(cache, getCacheKey(surveyInstanceId + "-" + questionId));
         } catch (CacheException e) {
             // ignore
         }
@@ -355,7 +348,9 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
      * @return
      * @throws CacheException
      */
-    public String getCacheKey(QuestionAnswerStore response) throws CacheException {
+    @Override
+    public String getCacheKey(BaseDomain object) throws CacheException {
+        QuestionAnswerStore response = (QuestionAnswerStore) object;
         if (response.getSurveyInstanceId() == null || response.getQuestionID() == null) {
             throw new CacheException(
                     "Cannnot create cache key without surveyInstanceId and questionId");
