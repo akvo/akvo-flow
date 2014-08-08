@@ -89,6 +89,7 @@ public class S3Util {
 
         conn.setConnectTimeout(CONNECTION_TIMEOUT);
         conn.setReadTimeout(CONNECTION_TIMEOUT);
+        conn.addRequestProperty("Cache-Control", "no-cache,max-age=0");
         conn.setRequestProperty("Date", date);
         conn.setRequestProperty("Authorization", "AWS " + awsAccessKeyId + ":" + signature);
 
