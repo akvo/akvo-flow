@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,16 +17,19 @@
 package org.waterforpeople.mapping.notification;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.gallatinsystems.common.util.MD5Util;
 import com.gallatinsystems.common.util.MailUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
-import com.gallatinsystems.common.util.UploadUtil;
+import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.notification.NotificationRequest;
 import com.gallatinsystems.notification.dao.NotificationSubscriptionDao;
 import com.gallatinsystems.notification.domain.NotificationHistory;
@@ -43,9 +46,9 @@ import com.gallatinsystems.survey.domain.Survey;
  */
 public abstract class AbstractReportNotificationHandler extends
         BaseNotificationHandler {
+    private static final Logger log = Logger.getLogger(AbstractReportNotificationHandler.class
+            .getName());
     private static final String LINK_OPT = "LINK";
-    protected static final String REPORT_S3_SIG = "reportS3Sig";
-    protected static final String REPORT_S3_POLICY = "reportS3Policy";
     protected static final String AWS_IDENTIFIER = "aws_identifier";
     protected static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     protected static final String REPORT_S3_PATH = "reportS3Path";
@@ -71,6 +74,8 @@ public abstract class AbstractReportNotificationHandler extends
                 + survey.getName();
         String emailBody = getEmailBody() + survey.getPath() + "/"
                 + survey.getName() + " ";
+        String bucketName = PropertyUtil.getProperty("s3bucket");
+        String keyPrefix = PropertyUtil.getProperty(REPORT_S3_PATH);
         if (bos.size() > 0) {
             if (hist.getChecksum() == null
                     || !hist.getChecksum().equals(newChecksum)) {
@@ -95,13 +100,17 @@ public abstract class AbstractReportNotificationHandler extends
 
                 if (linkAddrList.size() > 0) {
                     String fileName = getFileName(entityId.toString());
-                    UploadUtil.upload(bos, fileName,
-                            PropertyUtil.getProperty(REPORT_S3_PATH),
-                            PropertyUtil.getProperty(SURVEY_UPLOAD_URL),
-                            PropertyUtil.getProperty(AWS_IDENTIFIER),
-                            PropertyUtil.getProperty(REPORT_S3_POLICY),
-                            PropertyUtil.getProperty(REPORT_S3_SIG),
-                            "text/plain", null);
+                    boolean success = false;
+                    try {
+                        success = S3Util.put(bucketName, keyPrefix + "/" + fileName,
+                                bos.toByteArray(), "text/plain", false);
+                    } catch (IOException e) {
+                        log.log(Level.SEVERE, "Error uploading file: " + e.getMessage(), e);
+                    }
+
+                    if (!success) {
+                        return; // skip email
+                    }
 
                     sendMail(
                             linkAddrList,

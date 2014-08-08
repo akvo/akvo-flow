@@ -19,9 +19,11 @@ package org.waterforpeople.mapping.app.web;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,7 +31,7 @@ import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 
 import com.gallatinsystems.common.util.MailUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
-import com.gallatinsystems.common.util.UploadUtil;
+import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -45,14 +47,11 @@ import com.gallatinsystems.survey.domain.Survey;
  */
 public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
 
+    private static final Logger log = Logger.getLogger(BootstrapGeneratorServlet.class.getName());
+
     private static final long serialVersionUID = -6645180848307957119L;
-    private static final String AWS_IDENTIFIER = "aws_identifier";
     private static final String DB_INST_ENTRY = "dbinstructions.sql";
-    private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
-    private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
     private static final String BOOTSTRAP_UPLOAD_DIR = "bootstrapdir";
-    private static final String BOOTSTRAP_UPLOAD_POLICY = "bootstraps3policy";
-    private static final String BOOTSTRAP_UPLOAD_SIG = "bootstraps3sig";
     private static final String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
     private static final String EMAIL_SUB = "FLOW Bootstrap File";
     private static final String EMAIL_BODY = "Click the link to download the bootstrap file";
@@ -92,20 +91,18 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
     private void generateFile(BootstrapGeneratorRequest req) {
         Map<String, String> contentMap = new HashMap<String, String>();
         StringBuilder errors = new StringBuilder();
+        String bucketName = PropertyUtil.getProperty("s3bucket");
+        String keyPrefix = PropertyUtil.getProperty("surveyuploaddir");
         if (req.getSurveyIds() != null) {
             for (Long id : req.getSurveyIds()) {
                 try {
                     Survey s = surveyDao.getById(id);
                     String name = s.getName().replaceAll(" ", "_");
                     StringBuilder buf = new StringBuilder();
-
-                    URL url = new URL(PropertyUtil
-                            .getProperty(SURVEY_UPLOAD_URL)
-                            + PropertyUtil.getProperty(SURVEY_UPLOAD_DIR)
-                            + "/"
-                            + +s.getKey().getId() + ".xml");
+                    URLConnection conn = S3Util.getConnection(bucketName, keyPrefix + "/"
+                            + s.getKey().getId() + ".xml");
                     BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(url.openStream(), "UTF-8"));
+                            new InputStreamReader(conn.getInputStream(), "UTF-8"));
                     String line;
                     while ((line = reader.readLine()) != null) {
                         buf.append(line).append("\n");
@@ -122,22 +119,25 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
                 && req.getDbInstructions().trim().length() > 0) {
             contentMap.put(DB_INST_ENTRY, req.getDbInstructions().trim());
         }
+
         ByteArrayOutputStream os = ZipUtil.generateZip(contentMap);
+
         String filename = System.currentTimeMillis() + "-bs.zip";
-        UploadUtil.upload(os, filename, PropertyUtil
-                .getProperty(BOOTSTRAP_UPLOAD_DIR), PropertyUtil
-                .getProperty(SURVEY_UPLOAD_URL), PropertyUtil
-                .getProperty(AWS_IDENTIFIER), PropertyUtil
-                .getProperty(BOOTSTRAP_UPLOAD_POLICY), PropertyUtil
-                .getProperty(BOOTSTRAP_UPLOAD_SIG), "application/zip", null);
+        String objectKey = PropertyUtil.getProperty(BOOTSTRAP_UPLOAD_DIR) + "/" + filename;
+
+        try {
+            S3Util.put(bucketName, objectKey, os.toByteArray(), "application/zip", false);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error uploading bootstrap file: " + e.getMessage(), e);
+            return; // skip the email
+        }
 
         String body = EMAIL_BODY;
+
         if (errors.toString().trim().length() > 0) {
             body = ERROR_BODY + "\n\n" + errors.toString();
         } else {
-            body += "\n\n" + PropertyUtil.getProperty(SURVEY_UPLOAD_URL)
-                    + PropertyUtil.getProperty(BOOTSTRAP_UPLOAD_DIR) + "/"
-                    + filename;
+            body += "\n\n" + S3Util.getBrowserLink(bucketName, objectKey);
         }
         MailUtil.sendMail(PropertyUtil.getProperty(EMAIL_FROM_ADDRESS_KEY),
                 "FLOW", req.getEmail(), EMAIL_SUB, body);

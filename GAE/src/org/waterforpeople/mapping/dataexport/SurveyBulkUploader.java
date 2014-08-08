@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -37,8 +37,7 @@ import java.util.StringTokenizer;
 import javax.swing.SwingUtilities;
 
 import com.gallatinsystems.common.util.FileUtil;
-import com.gallatinsystems.common.util.ImageUtil;
-import com.gallatinsystems.common.util.UploadUtil;
+import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
@@ -49,9 +48,10 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
  * all zip files in a single directory into a single ZIP taking care not to have any duplicate
  * survey instances. After uploading a zip file, this utility will call the server to kick off
  * processing
- * 
+ *
  * @author Christopher Fagiani
  */
+@Deprecated
 public class SurveyBulkUploader implements DataImporter {
 
     private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
@@ -64,16 +64,12 @@ public class SurveyBulkUploader implements DataImporter {
     private static final String IMAGE_TEMP_DIR = "resized";
     private static final String OSX_RESOURCE_DIR = "__MACOSX";
 
-    private static final String IMAGE_POLICY_KEY = "imagePolicy";
-    private static final String IMAGE_SIG_KEY = "imageSig";
-    private static final String DATA_POLICY_KEY = "dataPolicy";
-    private static final String DATA_SIG_KEY = "dataSig";
-    private static final String AWS_ID_KEY = "awsId";
-    private static final String UPLOAD_BASE_KEY = "uploadBase";
     private static final String DEFAULT_LOCALE = "en";
     private static Map<String, String> UPLOADING;
     private static Map<String, String> COMPLETE;
     private List<File> filesToUpload;
+
+    public static final String BUCKET_NAME = "bucketName";
 
     static {
         UPLOADING = new HashMap<String, String>();
@@ -147,28 +143,15 @@ public class SurveyBulkUploader implements DataImporter {
 
                     if (fx.getName().endsWith(".jpg")) {
                         if (uploadImage) {
-                            File resizedFile = ImageUtil.resizeImage(fx,
-                                    tempDir.getAbsolutePath(), 500, 500);
-                            UploadUtil.upload(
-                                    FileUtil.readFileBytes(resizedFile),
-                                    resizedFile.getName(), "images",
-                                    criteria.get(UPLOAD_BASE_KEY),
-                                    criteria.get(AWS_ID_KEY),
-                                    criteria.get(IMAGE_POLICY_KEY),
-                                    criteria.get(IMAGE_SIG_KEY), "image/jpeg",
-                                    null);
-                            // now delete the temp file
-                            resizedFile.delete();
+                            S3Util.put(criteria.get(BUCKET_NAME), "images/" + fx.getName(),
+                                    FileUtil.readFileBytes(fx),
+                                    "image/jpeg", true);
                         }
                     } else {
                         if (processZip) {
-                            boolean success = UploadUtil.upload(FileUtil.readFileBytes(fx),
-                                    fx.getName(), "devicezip",
-                                    criteria.get(UPLOAD_BASE_KEY),
-                                    criteria.get(AWS_ID_KEY),
-                                    criteria.get(DATA_POLICY_KEY),
-                                    criteria.get(DATA_SIG_KEY),
-                                    "application/zip", null);
+                            boolean success = S3Util.put(criteria.get(BUCKET_NAME), "devicezip/"
+                                    + fx.getName(),
+                                    FileUtil.readFileBytes(fx), "application/zip", false);
 
                             if (success) {
                                 // now notify the server that a new file is there
@@ -184,7 +167,6 @@ public class SurveyBulkUploader implements DataImporter {
                     processedList.add(fx.getName());
                     i++;
                 } catch (Exception e) {
-                    // TODO report error to ui
                     e.printStackTrace();
                 }
             }
@@ -366,6 +348,7 @@ public class SurveyBulkUploader implements DataImporter {
             this.isComplete = isComplete;
         }
 
+        @Override
         public void run() {
             if (!GraphicsEnvironment.isHeadless()) {
                 progressDialog.update(step, msg, isComplete);

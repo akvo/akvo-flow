@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,6 +17,7 @@
 package org.waterforpeople.mapping.app.web;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ import org.waterforpeople.mapping.dao.SurveyContainerDao;
 
 import com.gallatinsystems.common.domain.UploadStatusContainer;
 import com.gallatinsystems.common.util.PropertyUtil;
-import com.gallatinsystems.common.util.UploadUtil;
+import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
@@ -95,9 +96,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
-    private static final String SURVEY_UPLOAD_SIG = "surveyuploadsig";
-    private static final String SURVEY_UPLOAD_POLICY = "surveyuploadpolicy";
-    private static final String S3_ID = "aws_identifier";
 
     private Random randomNumber = new Random();
 
@@ -180,7 +178,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * uploads full survey XML to S3
-     *
+     * 
      * @param surveyId
      */
     private void uploadSurvey(Long surveyId, Long transactionId) {
@@ -188,20 +186,29 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         SurveyContainer sc = scDao.findBySurveyId(surveyId);
         Properties props = System.getProperties();
         String document = sc.getSurveyDocument().getValue();
-        boolean uploadedFile = UploadUtil.sendStringAsFile(sc.getSurveyId()
-                + ".xml", document, props.getProperty(SURVEY_UPLOAD_DIR),
-                props.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
-                props.getProperty(SURVEY_UPLOAD_POLICY),
-                props.getProperty(SURVEY_UPLOAD_SIG), "text/xml");
+        String bucketName = props.getProperty("s3bucket");
+        boolean uploadedFile = false;
+        boolean uploadedZip = false;
+
+        try {
+            uploadedFile = S3Util.put(bucketName,
+                    props.getProperty(SURVEY_UPLOAD_DIR) + "/" + sc.getSurveyId() + ".xml",
+                    document.getBytes(), "text/xml", true);
+        } catch (IOException e) {
+            log.error("Error uploading file " + e.getMessage(), e);
+        }
 
         ByteArrayOutputStream os = ZipUtil.generateZip(document,
                 sc.getSurveyId() + ".xml");
 
-        boolean uploadedZip = UploadUtil.upload(os, sc.getSurveyId() + ".zip",
-                props.getProperty(SURVEY_UPLOAD_DIR),
-                props.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
-                props.getProperty(SURVEY_UPLOAD_POLICY),
-                props.getProperty(SURVEY_UPLOAD_SIG), "application/zip", null);
+        try {
+            uploadedZip = S3Util.put(bucketName,
+                    props.getProperty(SURVEY_UPLOAD_DIR) + "/" + sc.getSurveyId() + ".zip",
+                    os.toByteArray(),
+                    "application/zip", true);
+        } catch (Exception e) {
+            log.error("Error uploading zip file: " + e.getMessage(), e);
+        }
 
         sendQueueMessage(SurveyAssemblyRequest.CLEANUP, surveyId, null,
                 transactionId);
@@ -209,8 +216,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         Message message = new Message();
         message.setActionAbout("surveyAssembly");
         message.setObjectId(surveyId);
-        // String messageText = CONSTANTS.surveyPublishOkMessage() + " "
-        // + url;
 
         if (uploadedFile && uploadedZip) {
             // increment the version so devices know to pick up the changes
@@ -231,8 +236,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             MessageDao messageDao = new MessageDao();
             messageDao.save(message);
         } else {
-            // String messageText =
-            // CONSTANTS.surveyPublishErrorMessage();
             String messageText = "Failed to publish: " + surveyId + "\n";
             message.setTransactionUUID(transactionId.toString());
             message.setShortMessage(messageText);
@@ -243,7 +246,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * deletes fragments for the survey
-     *
+     * 
      * @param surveyId
      */
     private void cleanupFragments(Long surveyId, Long transactionId) {
@@ -284,7 +287,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             surveyGroupId = "surveyGroupId=\"" + sg.getKey().getId() + "\"";
             surveyGroupName = "surveyGroupName=\"" + sg.getCode() + "\"";
             if (Boolean.TRUE.equals(sg.getMonitoringGroup())) {
-                registrationForm = " registrationSurvey=\"" + String.valueOf(sg.getNewLocaleSurveyId()) + "\"";
+                registrationForm = " registrationSurvey=\""
+                        + String.valueOf(sg.getNewLocaleSurveyId()) + "\"";
             }
         }
         String sourceSurveyId = getSourceSurveyId(surveyId);
@@ -342,21 +346,30 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     public UploadStatusContainer uploadSurveyXML(Long surveyId, String surveyXML) {
         Properties props = System.getProperties();
+        String bucketName = props.getProperty("s3bucket");
         String document = surveyXML;
-        Boolean uploadedFile = UploadUtil.sendStringAsFile(surveyId + ".xml",
-                document, props.getProperty(SURVEY_UPLOAD_DIR),
-                props.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
-                props.getProperty(SURVEY_UPLOAD_POLICY),
-                props.getProperty(SURVEY_UPLOAD_SIG), "text/xml");
+        boolean uploadedFile = false;
+        boolean uploadedZip = false;
+
+        try {
+            uploadedFile = S3Util.put(bucketName, props.getProperty(SURVEY_UPLOAD_DIR) + "/"
+                    + surveyId
+                    + ".xml", document.getBytes(), "text/xml", true);
+        } catch (IOException e) {
+            log.error("Error uploading file: " + e.getMessage(), e);
+        }
 
         ByteArrayOutputStream os = ZipUtil.generateZip(document, surveyId
                 + ".xml");
+
         UploadStatusContainer uc = new UploadStatusContainer();
-        Boolean uploadedZip = UploadUtil.upload(os, surveyId + ".zip",
-                props.getProperty(SURVEY_UPLOAD_DIR),
-                props.getProperty(SURVEY_UPLOAD_URL), props.getProperty(S3_ID),
-                props.getProperty(SURVEY_UPLOAD_POLICY),
-                props.getProperty(SURVEY_UPLOAD_SIG), "application/zip", uc);
+
+        try {
+            uploadedZip = S3Util.put(bucketName, props.getProperty(SURVEY_UPLOAD_DIR) + "/"
+                    + surveyId + ".zip", os.toByteArray(), "application/zip", true);
+        } catch (IOException e) {
+            log.error("Error uploading file: " + e.getMessage(), e);
+        }
         uc.setUploadedFile(uploadedFile);
         uc.setUploadedZip(uploadedZip);
         uc.setUrl(props.getProperty(SURVEY_UPLOAD_URL)
@@ -415,7 +428,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * sends a message to the task queue for survey assembly
-     *
+     * 
      * @param action
      * @param surveyId
      * @param questionGroups
