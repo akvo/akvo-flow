@@ -48,9 +48,10 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
  * all zip files in a single directory into a single ZIP taking care not to have any duplicate
  * survey instances. After uploading a zip file, this utility will call the server to kick off
  * processing
- * 
+ *
  * @author Christopher Fagiani
  */
+@Deprecated
 public class SurveyBulkUploader implements DataImporter {
 
     private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
@@ -67,6 +68,8 @@ public class SurveyBulkUploader implements DataImporter {
     private static Map<String, String> UPLOADING;
     private static Map<String, String> COMPLETE;
     private List<File> filesToUpload;
+
+    public static final String BUCKET_NAME = "bucketName";
 
     static {
         UPLOADING = new HashMap<String, String>();
@@ -140,14 +143,14 @@ public class SurveyBulkUploader implements DataImporter {
 
                     if (fx.getName().endsWith(".jpg")) {
                         if (uploadImage) {
-                            // FIXME: bucketName
-                            S3Util.put("", "images/" + fx.getName(), FileUtil.readFileBytes(fx),
+                            S3Util.put(criteria.get(BUCKET_NAME), "images/" + fx.getName(),
+                                    FileUtil.readFileBytes(fx),
                                     "image/jpeg", true);
                         }
                     } else {
                         if (processZip) {
-                            // FIXME: bucketName
-                            boolean success = S3Util.put("", "devicezip/" + fx.getName(),
+                            boolean success = S3Util.put(criteria.get(BUCKET_NAME), "devicezip/"
+                                    + fx.getName(),
                                     FileUtil.readFileBytes(fx), "application/zip", false);
 
                             if (success) {
