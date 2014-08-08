@@ -18,8 +18,9 @@ package com.gallatinsystems.survey.dao;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,6 +28,9 @@ import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.NotPersistent;
+
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
 
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
@@ -46,6 +50,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
 
+import static com.gallatinsystems.common.util.MemCacheUtils.*;
+
 /**
  * saves/finds question objects
  */
@@ -55,6 +61,7 @@ public class QuestionDao extends BaseDAO<Question> {
     private QuestionHelpMediaDao helpDao;
     private TranslationDao translationDao;
     private ScoringRuleDao scoringRuleDao;
+    private Cache cache;
 
     public QuestionDao() {
         super(Question.class);
@@ -62,6 +69,7 @@ public class QuestionDao extends BaseDAO<Question> {
         helpDao = new QuestionHelpMediaDao();
         translationDao = new TranslationDao();
         scoringRuleDao = new ScoringRuleDao();
+        cache = initCache(4 * 60 * 60); // cache questions list for 4 hours
     }
 
     /**
@@ -110,11 +118,31 @@ public class QuestionDao extends BaseDAO<Question> {
      * @return
      */
     public List<Question> listQuestionsBySurvey(Long surveyId) {
-        return listByProperty("surveyId", surveyId, "Long", "order", "asc");
+        List<Question> questionsList = listByProperty("surveyId", surveyId,
+                "Long", "order", "asc");
+
+        if (questionsList == null) {
+            return Collections.emptyList();
+        }
+
+        cache(questionsList);
+
+        return questionsList;
+    }
+
+    /**
+     * Delete a list of questions
+     *
+     * @param qList
+     */
+    public void delete(List<Question> qList) {
+        uncache(qList);
+        super.delete(qList);
     }
 
     /**
      * Delete question from data store.
+     *
      * @param question
      */
     public void delete(Question question) throws IllegalDeletionException {
@@ -153,10 +181,12 @@ public class QuestionDao extends BaseDAO<Question> {
         Long deletedQuestionGroupId = question.getQuestionGroupId();
         Integer deletedQuestionOrder = question.getOrder();
 
+        uncache(Arrays.asList(question)); // clear from cached first
+
         // only delete after extracting group ID and order
         super.delete(question);
 
-        if(adjustQuestionOrder != null && adjustQuestionOrder) {
+        if (adjustQuestionOrder != null && adjustQuestionOrder) {
             // update question order
             TreeMap<Integer, Question> groupQs = listQuestionsByQuestionGroup(
                     deletedQuestionGroupId, false);
@@ -313,7 +343,9 @@ public class QuestionDao extends BaseDAO<Question> {
 
         Key key = datastore.put(question);
         q.setKey(key);
+        cache(Arrays.asList(q));
         txn.commit();
+
         return q;
     }
 
@@ -359,7 +391,7 @@ public class QuestionDao extends BaseDAO<Question> {
                             t.setParentId(opt.getKey().getId());
                         }
                     }
-                    save(opt.getTranslationMap().values());
+                    super.save(opt.getTranslationMap().values());
                 }
             }
         }
@@ -369,7 +401,7 @@ public class QuestionDao extends BaseDAO<Question> {
                     t.setParentId(question.getKey().getId());
                 }
             }
-            save(question.getTranslationMap().values());
+            super.save(question.getTranslationMap().values());
         }
 
         if (question.getQuestionHelpMediaMap() != null) {
@@ -384,11 +416,83 @@ public class QuestionDao extends BaseDAO<Question> {
                             t.setParentId(help.getKey().getId());
                         }
                     }
-                    save(help.getTranslationMap().values());
+                    super.save(help.getTranslationMap().values());
                 }
             }
         }
         return question;
+    }
+
+    /**
+     * Saves question and update cache
+     *
+     * @param question
+     */
+    public Question save(Question question) {
+        // first save and get Id
+        Question savedQuestion = super.save(question);
+        cache(Arrays.asList(savedQuestion));
+        return savedQuestion;
+    }
+
+    /**
+     * Save a collection of questions and cache
+     *
+     * @param qList
+     * @return
+     */
+    public List<Question> save(List<Question> qList) {
+        List<Question> savedQuestions = (List<Question>) super.save(qList);
+        cache(savedQuestions);
+        return savedQuestions;
+    }
+
+    /**
+     * Add a collection of Question objects to the cache. If the object already exists in the cached
+     * questions list, they are replaced by the ones passed in through this list
+     *
+     * @param qList
+     */
+    private void cache(List<Question> qList) {
+        if (qList == null || qList.isEmpty()) {
+            return;
+        }
+
+        Map<Object, Object> cacheMap = new HashMap<Object, Object>();
+        for (Question qn : qList) {
+            String cacheKey = null;
+            try {
+                cacheKey = getCacheKey(qn);
+                cacheMap.put(cacheKey, qn);
+            } catch (CacheException e) {
+                log.log(Level.WARNING, e.getMessage());
+            }
+        }
+
+        putObjects(cache, cacheMap);
+    }
+
+    /**
+     * Remove a collection of questions from the cache
+     *
+     * @param qList
+     */
+    private void uncache(List<Question> qList) {
+        if (qList == null || qList.isEmpty()) {
+            return;
+        }
+
+        for (Question qn : qList) {
+            String cacheKey;
+            try {
+                cacheKey = getCacheKey(qn);
+                if (containsKey(cache, cacheKey)) {
+                    cache.remove(cacheKey);
+                }
+            } catch (CacheException e) {
+                log.log(Level.WARNING, e.getMessage());
+            }
+        }
     }
 
     /**
@@ -440,6 +544,31 @@ public class QuestionDao extends BaseDAO<Question> {
     @Override
     public Question getByKey(Key key) {
         return super.getByKey(key);
+    }
+
+    /**
+     * Find a question based on the id in string form
+     */
+    @Override
+    public Question getByKey(Long questionId) {
+        Question question = null;
+        String cacheKey = null;
+
+        // retrieve from cache
+        try {
+            cacheKey = getCacheKey(questionId.toString());
+            if (containsKey(cache, cacheKey)) {
+                return (Question) cache.get(cacheKey);
+            }
+        } catch (CacheException e) {
+            log.log(Level.WARNING, e.getMessage());
+        }
+
+        // else from datastore and attempt to cache
+        question = super.getByKey(questionId);
+        cache(Arrays.asList(question));
+
+        return question;
     }
 
     /**
