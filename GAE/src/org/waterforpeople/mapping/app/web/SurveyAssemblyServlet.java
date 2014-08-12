@@ -178,7 +178,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * uploads full survey XML to S3
-     * 
+     *
      * @param surveyId
      */
     private void uploadSurvey(Long surveyId, Long transactionId) {
@@ -246,7 +246,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
     /**
      * deletes fragments for the survey
-     * 
+     *
      * @param surveyId
      */
     private void cleanupFragments(Long surveyId, Long transactionId) {
@@ -285,10 +285,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         String registrationForm = "";
         if (sg != null) {
             surveyGroupId = "surveyGroupId=\"" + sg.getKey().getId() + "\"";
-            surveyGroupName = "surveyGroupName=\"" + sg.getCode() + "\"";
+            surveyGroupName = "surveyGroupName=\"" + StringEscapeUtils.escapeXml(sg.getCode())
+                    + "\"";
             if (Boolean.TRUE.equals(sg.getMonitoringGroup())) {
                 registrationForm = " registrationSurvey=\""
-                        + String.valueOf(sg.getNewLocaleSurveyId()) + "\"";
+                        + sg.getNewLocaleSurveyId() + "\"";
             }
         }
         String sourceSurveyId = getSourceSurveyId(surveyId);
