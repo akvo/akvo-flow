@@ -6,7 +6,13 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
-    <http use-expressions="true" entry-point-ref="gaeEntryPoint">
+
+	<http pattern="/api/v1/**" use-expressions="true" authentication-manager-ref="basicAuthenticationManager">
+		<intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+		<http-basic/>
+	</http>
+
+    <http use-expressions="true" entry-point-ref="gaeEntryPoint" authentication-manager-ref="authenticationManager">
         <intercept-url pattern="/remote_api**" access="permitAll"/>
         <intercept-url pattern="/admin/logout.html" access="permitAll"/>
         <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
@@ -21,6 +27,14 @@
         <logout logout-success-url="/" delete-cookies="JSESSIONID"/>
 		<custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
     </http>
+
+	<authentication-manager id="basicAuthenticationManager">
+		<authentication-provider>
+			<user-service>
+				<user name="testuser" password="testpass" authorities="ROLE_USER"/>
+			</user-service>
+		</authentication-provider>
+	</authentication-manager>
 
     <b:bean id="gaeEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.GoogleAccountsAuthenticationEntryPoint" />
 
@@ -37,7 +51,7 @@
         </b:property>
     </b:bean>
 
-    <authentication-manager alias="authenticationManager">
+    <authentication-manager id="authenticationManager">
         <authentication-provider ref="gaeAuthenticationProvider"/>
     </authentication-manager>
 
