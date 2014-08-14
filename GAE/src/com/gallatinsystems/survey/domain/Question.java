@@ -77,14 +77,13 @@ public class Question extends BaseDomain {
     private Boolean localeLocationFlag;
 
     /**
-     * Return true of a question can be visualised on a chart.  This is limited
-     * to option questions that do not allow the possibility for multiple selection
-     * in the responses
+     * Return true of a question can be visualised on a chart. This is limited to option questions
+     * that do not allow the possibility for multiple selection in the responses
      *
      * @return true if can be charted else false.
      */
     public boolean canBeCharted() {
-        if(!Type.OPTION.equals(type) || allowMultipleFlag) {
+        if (!Type.OPTION.equals(type)) {
             return false;
         }
         return true;
@@ -381,7 +380,7 @@ public class Question extends BaseDomain {
     }
 
     /**
-     * Compare question entities  based on Key
+     * Compare question entities based on Key
      *
      * @param q
      * @return true if the Key of the two entities is the same
