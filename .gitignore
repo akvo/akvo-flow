@@ -10,6 +10,9 @@
 .project
 .settings
 
+# Emacs files
+*~
+
 # Build config and output paths
 .gradle
 .gwt-log
@@ -77,3 +80,4 @@ reports/target
 tests/clojure/akvo-tests/.lein*
 tests/clojure/akvo-tests/bin
 tests/clojure/akvo-tests/target
+

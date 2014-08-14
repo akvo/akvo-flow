@@ -7,9 +7,9 @@
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 
-	<http pattern="/api/v1/**" use-expressions="true" authentication-manager-ref="basicAuthenticationManager">
-		<intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
-		<http-basic/>
+	<http pattern="/api/v1/**" use-expressions="true" entry-point-ref="apiEntryPoint" authentication-manager-ref="apiAuthenticationManager" >
+		<intercept-url pattern="/**" access="hasRole('USER')"/>
+		<custom-filter position="PRE_AUTH_FILTER" ref="apiFilter"/>
 	</http>
 
     <http use-expressions="true" entry-point-ref="gaeEntryPoint" authentication-manager-ref="authenticationManager">
@@ -28,13 +28,22 @@
 		<custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
     </http>
 
-	<authentication-manager id="basicAuthenticationManager">
-		<authentication-provider>
-			<user-service>
-				<user name="testuser" password="testpass" authorities="ROLE_USER"/>
-			</user-service>
-		</authentication-provider>
+
+	<!-- API Authentication -->
+	
+	<b:bean id="apiEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationEntryPoint"/>
+	
+	<b:bean id="apiFilter" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationFilter">
+		<b:property name="authenticationManager" ref="apiAuthenticationManager"></b:property>
+	</b:bean>
+	
+	<authentication-manager id="apiAuthenticationManager">
+		<authentication-provider ref="apiAuthenticationProvider"/>
 	</authentication-manager>
+	
+	<b:bean id="apiAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationProvider"/>
+
+	<!-- GAE Authentication -->
 
     <b:bean id="gaeEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.GoogleAccountsAuthenticationEntryPoint" />
 
