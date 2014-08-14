@@ -14,8 +14,8 @@
         <property name="apkS3Path" value="https://akvoflow.s3.amazonaws.com/apk/" />
         <property name="autoUpdateApk" value="true" />
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
-        <property name="aws_secret_key" value="${awsAccessKeyId}" />
-        <property name="aws_identifier" value="${awsSecretAccessKey}" />
+        <property name="aws_secret_key" value="${awsSecretAccessKey}" />
+        <property name="aws_identifier" value="${awsAccessKeyId}" />
         <property name="photo_url_root" value="${s3url}/images/" />
         <property name="alias" value="${alias}" />
         <property name="flowServices" value="${flowServices}" />
