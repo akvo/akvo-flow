@@ -43,7 +43,7 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
 			long serverTime = new Date().getTime();
 			long timeDelta = 600000; // +/- 10 minutes
 			
-			if (clientSignature == serverSignature &&
+			if (clientSignature.equals(serverSignature) &&
 				serverTime - timeDelta < clientTime &&
 				clientTime < serverTime + timeDelta) {
 				// Successful authentication
