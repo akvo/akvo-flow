@@ -303,6 +303,10 @@ public class SurveyedLocale extends BaseDomain {
     public static String generateBase32Uuid(String oldStyleIdentifier) {
         String base32Uuid = SurveyedLocale.generateBase32Uuid();
 
+        if (oldStyleIdentifier.length() < 8) {
+            return base32Uuid;
+        }
+
         return String.format("%s-%s-%s", oldStyleIdentifier.substring(0, 4),
                 oldStyleIdentifier.substring(4, 8),
                 base32Uuid.substring(10));
