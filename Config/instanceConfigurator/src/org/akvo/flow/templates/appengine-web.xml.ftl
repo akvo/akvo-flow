@@ -32,6 +32,7 @@
         <property name="mapiconimageroot" value="${s3url}/images/mapicons"/>
         <property name="scoreAPFlag" value="true"/>
         <property name="organization" value="${organization}"/>
+        <property name="signingKey" value="${signingKey}" />
         <property name="allowUnsignedData" value="true" />
         <property name="defaultOrg" value="${organization}" />
         <property name="domainType" value="locale" />
