@@ -24,36 +24,34 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication)
 	    throws AuthenticationException {
 
+	@SuppressWarnings("unchecked")
 	Map<String, String> details = (Map<String, String>) authentication
 		.getDetails();
 	String[] credentials = parseCredentials(details.get("Authorization"));
 	String accessKey = credentials[0];
 	String clientSignature = credentials[1];
 
-	Date date = parseDate(details.get("Date"));
-
 	ApiUser apiUser = findUser(accessKey);
 
-	String payload = buildPayload(date, details.get("Resource"));
-
-	if (apiUser == null) {
-	    throw new BadCredentialsException("Authorization Required");
-	} else {
-	    String serverSignature = MD5Util.generateHMAC(payload,
-		    apiUser.getSecret());
+	if (apiUser != null) {
+	    Date date = parseDate(details.get("Date"));
 	    long clientTime = date.getTime();
 	    long serverTime = new Date().getTime();
 	    long timeDelta = 600000; // +/- 10 minutes
 
-	    if (clientSignature.equals(serverSignature)
-		    && serverTime - timeDelta < clientTime
+	    if (serverTime - timeDelta < clientTime
 		    && clientTime < serverTime + timeDelta) {
-		// Successful authentication
-		return new ApiUserAuthentication(apiUser);
-	    } else {
-		throw new BadCredentialsException("Authorization Required");
+		String payload = buildPayload(date, details.get("Resource"));
+		String serverSignature = MD5Util.generateHMAC(payload,
+			apiUser.getSecret());
+		if (clientSignature.equals(serverSignature)) {
+		    // Successful authentication
+		    return new ApiUserAuthentication(apiUser);
+		}
 	    }
 	}
+	// Unsuccessful authentication
+	throw new BadCredentialsException("Authorization Required");
     }
 
     private ApiUser findUser(String accessKey) {
