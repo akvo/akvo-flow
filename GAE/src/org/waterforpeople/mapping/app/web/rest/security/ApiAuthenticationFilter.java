@@ -19,36 +19,40 @@ import org.waterforpeople.mapping.app.web.rest.security.user.ApiUser;
 
 public class ApiAuthenticationFilter extends GenericFilterBean {
 
-	private AuthenticationManager authenticationManager;
-	
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-		
-		HttpServletRequest httpRequest = (HttpServletRequest) request;
-		Map<String, String> details = new HashMap<String, String>();
+    private AuthenticationManager authenticationManager;
 
-		details.put("HTTP-Verb", "GET");
-		details.put("Date", httpRequest.getHeader("Date"));
-		details.put("Authorization", httpRequest.getHeader("Authorization"));
-		details.put("Resource", httpRequest.getRequestURI());
-		
-		try {
-			Authentication authentication = authenticationManager.authenticate(new ApiUserAuthentication(new ApiUser(), details));
-			// Successful authentication
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-		} catch (AuthenticationException e) {
-			// Unsuccessful authentication
-		}
-		
-		chain.doFilter(request, response);
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response,
+	    FilterChain chain) throws IOException, ServletException {
+
+	HttpServletRequest httpRequest = (HttpServletRequest) request;
+	Map<String, String> details = new HashMap<String, String>();
+
+	details.put("HTTP-Verb", "GET");
+	details.put("Date", httpRequest.getHeader("Date"));
+	details.put("Authorization", httpRequest.getHeader("Authorization"));
+	details.put("Resource", httpRequest.getRequestURI());
+
+	try {
+	    Authentication authentication = authenticationManager
+		    .authenticate(new ApiUserAuthentication(new ApiUser(),
+			    details));
+	    // Successful authentication
+	    SecurityContextHolder.getContext()
+		    .setAuthentication(authentication);
+	} catch (AuthenticationException e) {
+	    // Unsuccessful authentication
 	}
 
-	public AuthenticationManager getAuthenticationManager() {
-		return authenticationManager;
-	}
+	chain.doFilter(request, response);
+    }
 
-	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-		this.authenticationManager = authenticationManager;
-	}
+    public AuthenticationManager getAuthenticationManager() {
+	return authenticationManager;
+    }
+
+    public void setAuthenticationManager(
+	    AuthenticationManager authenticationManager) {
+	this.authenticationManager = authenticationManager;
+    }
 }
