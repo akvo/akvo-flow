@@ -8,7 +8,15 @@
 
 
 	<http pattern="/api/v1/**" use-expressions="true" entry-point-ref="apiEntryPoint" authentication-manager-ref="apiAuthenticationManager" >
-		<intercept-url pattern="/**" access="hasRole('USER')"/>
+		<intercept-url pattern="/survey_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/surveys/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/question_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/questions/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/survey_assignments/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/surveyed_locales/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/survey_instances/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/device_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/devices/**" method="GET" access="hasRole('USER')"/>
 		<custom-filter position="PRE_AUTH_FILTER" ref="apiFilter"/>
 	</http>
 
