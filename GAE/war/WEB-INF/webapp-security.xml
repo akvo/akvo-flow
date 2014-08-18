@@ -12,6 +12,7 @@
 		<intercept-url pattern="/surveys/**" method="GET" access="hasRole('USER')"/>
 		<intercept-url pattern="/question_groups/**" method="GET" access="hasRole('USER')"/>
 		<intercept-url pattern="/questions/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/question_answers" method="GET" access="hasRole('USER')"/>
 		<intercept-url pattern="/survey_assignments/**" method="GET" access="hasRole('USER')"/>
 		<intercept-url pattern="/surveyed_locales/**" method="GET" access="hasRole('USER')"/>
 		<intercept-url pattern="/survey_instances/**" method="GET" access="hasRole('USER')"/>
