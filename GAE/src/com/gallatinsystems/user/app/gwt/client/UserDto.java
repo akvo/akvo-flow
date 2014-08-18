@@ -39,6 +39,7 @@ public class UserDto extends BaseDto {
     private boolean admin = false;
     private boolean superAdmin = false;
     private String permissionList;
+    private String accessKey;
 
     public String getPermissionList() {
         return permissionList;
@@ -117,5 +118,13 @@ public class UserDto extends BaseDto {
                 return false;
             }
         }
+    }
+
+    public String getAccessKey() {
+	return accessKey;
+    }
+
+    public void setAccessKey(String accessKey) {
+	this.accessKey = accessKey;
     }
 }

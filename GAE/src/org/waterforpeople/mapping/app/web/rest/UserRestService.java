@@ -286,6 +286,6 @@ public class UserRestService {
         SecureRandom secureRandom = new SecureRandom();
         byte bytes[] = new byte[32];
         secureRandom.nextBytes(bytes);
-        return Base64.encodeBase64String(bytes);
+        return Base64.encodeBase64String(bytes).trim();
     }
 }
