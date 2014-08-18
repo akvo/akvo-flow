@@ -8,16 +8,18 @@
 
 
 	<http pattern="/api/v1/**" use-expressions="true" entry-point-ref="apiEntryPoint" authentication-manager-ref="apiAuthenticationManager" >
-		<intercept-url pattern="/survey_groups/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/surveys/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/question_groups/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/questions/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/question_answers" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/survey_assignments/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/surveyed_locales/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/survey_instances/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/device_groups/**" method="GET" access="hasRole('USER')"/>
-		<intercept-url pattern="/devices/**" method="GET" access="hasRole('USER')"/>
+
+		<intercept-url pattern="/api/v1/survey_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/surveys/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/question_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/questions/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/question_answers" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/survey_assignments/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/surveyed_locales/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/survey_instances/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/device_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/devices/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/**" access="denyAll"/>
 		<custom-filter position="PRE_AUTH_FILTER" ref="apiFilter"/>
 	</http>
 
