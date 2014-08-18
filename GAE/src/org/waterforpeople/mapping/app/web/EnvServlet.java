@@ -57,6 +57,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("flowServices");
         properties.add("surveyuploadurl");
         properties.add("showStatisticsFeature");
+        properties.add("showMonitoringFeature");
     }
 
     @Override
@@ -85,8 +86,13 @@ public class EnvServlet extends HttpServlet {
                 .getPropertiesMap(properties);
 
         // if the showStatisticsFeature is not present in appengine-web.xml, we want it to be false.
-        if (props.get("showStatisticsFeature") == null)
+        if (props.get("showStatisticsFeature") == null) {
             props.put("showStatisticsFeature", "false");
+        }
+
+        if (props.get("showMonitoringFeature") == null) {
+            props.put("showMonitoringFeature", "false");
+        }
 
         final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
         final JSONArray jsonArray = new JSONArray();

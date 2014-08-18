@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.device.domain.DeviceFileJobQueue;
@@ -77,7 +78,7 @@ public class ImageCheckServlet extends AbstractRestApiServlet {
         try {
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(TaskServlet.CONNECTION_TIMEOUT);
+            conn.setConnectTimeout(Constants.CONNECTION_TIMEOUT);
             conn.setRequestMethod("HEAD");
 
             if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {

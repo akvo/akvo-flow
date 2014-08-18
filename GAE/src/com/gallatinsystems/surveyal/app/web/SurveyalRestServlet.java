@@ -22,7 +22,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -71,7 +70,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
  * RESTFul servlet that can handle handle operations on SurveyedLocale and related domain objects.
  * TODO: consider storing survey question list, metrics and mappings in a Soft-Reference map to
  * speed up processing.
- * 
+ *
  * @author Christopher Fagiani
  */
 public class SurveyalRestServlet extends AbstractRestApiServlet {
@@ -174,7 +173,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
     /**
      * reruns the locale hydration for a survey
-     * 
+     *
      * @param surveyId
      */
     private void rerunForSurvey(Long surveyId) {
@@ -235,7 +234,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * Create or update a surveyedLocale based on the Geo data that is retrieved from a
      * surveyInstance. This method is unlikely to run in under 1 minute (based on datastore latency)
      * so it is best invoked via a task queue
-     * 
+     *
      * @param surveyInstanceId
      */
     private void ingestSurveyInstance(SurveyInstance surveyInstance) {
@@ -258,13 +257,8 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
                     .getSurveyedLocaleIdentifier())) {
                 locale.setIdentifier(surveyInstance.getSurveyedLocaleIdentifier());
             } else {
-                // for older versions of flow mobile app,
                 // if we don't have an identifier, create a random UUID.
-                String base32Id = base32Uuid();
-                // insert dashes for readability
-                locale.setIdentifier(base32Id.substring(0, 4) + "-" + base32Id.substring(4, 8)
-                        + "-" + base32Id.substring(8));
-
+                locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
             }
 
             locale.setOrganization(PropertyUtil
@@ -376,29 +370,6 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
         }
     }
 
-    /*
-     * Creates a base32 version of a UUID. in the output, it replaces the following letters: l, o, i
-     * are replace by w, x, y, to avoid confusion with 1 and 0 we don't use the z as it can easily
-     * be confused with 2, especially in handwriting. If we can't form the base32 version, we return
-     * an empty string. The same code is used in the FLOW Mobile app:
-     * https://github.com/akvo/akvo-flow-mobile/blob/feature/pointupdates/survey/
-     * src/com/gallatinsystems/survey/device/util/Base32.java
-     */
-    public static String base32Uuid() {
-        final String uuid = UUID.randomUUID().toString();
-        String strippedUUID = (uuid.substring(0, 13) + uuid.substring(24, 27)).replace("-", "");
-        String result = null;
-        try {
-            Long id = Long.parseLong(strippedUUID, 16);
-            result = Long.toString(id, 32).replace("l", "w").replace("o", "x").replace("i", "y");
-        } catch (NumberFormatException e) {
-            // if we can't create the base32 UUID string, return the original uuid.
-            result = uuid;
-        }
-
-        return result;
-    }
-
     // this method is synchronised, because we are changing counts.
     private synchronized void adaptClusterData(Long surveyedLocaleId, Integer delta) {
         final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
@@ -437,7 +408,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
     /**
      * tries several methods to resolve the lat/lon to a GeoPlace. If a geoPlace is found, looks for
      * the country in the database and creates it if not found
-     * 
+     *
      * @param lat
      * @param lon
      * @return
@@ -467,7 +438,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
     /**
      * uses the geolocationService to determine the geographic sub-regions and country for a given
      * point
-     * 
+     *
      * @param l
      */
     private void setGeoData(GeoPlace geoPlace, SurveyedLocale l) {
@@ -486,7 +457,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * converts QuestionAnswerStore objects into SurveyalValues, copying the overlapping values from
      * SurveyedLocale as needed. The surveydLocale must have been saved prior to calling this method
      * if one expects the surveyedLocaleId member to be populated.
-     * 
+     *
      * @param l
      * @param answers
      * @return
@@ -652,43 +623,48 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * and longitude. New surveyedLocales will have these fields populated automatically, this
      * method is to update legacy data. This method is invoked as a URL request:
      * http://..../rest/actions?action=populateGeocellsForLocale
-     * 
+     *
      * @param cursor
      */
     private void populateGeocellsForLocale(String cursor) {
-        log.log(Level.INFO, "creating geocells, at least, trying " + cursor);
-        List<SurveyedLocale> slList = null;
+        log.log(Level.INFO, "Populating geocells for locales");
         SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        slList = slDao.list(cursor);
-        String newCursor = SurveyedLocaleDao.getCursor(slList);
-        Integer num = slList.size();
+        List<SurveyedLocale> surveyedLocaleList = slDao.list(cursor);
+        String newCursor = SurveyedLocaleDao.getCursor(surveyedLocaleList);
 
-        if (slList != null && slList.size() > 0) {
-            for (SurveyedLocale sl : slList) {
-                // populate geocells
-                if (sl.getGeocells() == null || sl.getGeocells().size() == 0) {
-                    if (sl.getLatitude() != null && sl.getLongitude() != null
-                            && sl.getLongitude() < 180
-                            && sl.getLatitude() < 180) {
-                        try {
-                            sl.setGeocells(GeocellManager.generateGeoCell(new Point(
-                                    sl.getLatitude(), sl.getLongitude())));
-                        } catch (Exception ex) {
-                            log.log(Level.INFO, "Could not generate Geocell for AP: "
-                                    + sl.getKey().getId() + " error: " + ex);
-                        }
-                    }
-                }
-                slDao.save(sl);
+        if (surveyedLocaleList == null || surveyedLocaleList.size() == 0) {
+            log.log(Level.INFO, "No locales found");
+            return;
+        }
+
+        for (SurveyedLocale sl : surveyedLocaleList) {
+            if (sl.getGeocells() != null && sl.getGeocells().size() > 0) {
+                continue;
             }
+
+            if (sl.getLatitude() == null && sl.getLongitude() == null) {
+                log.log(Level.INFO, "Could not populate Geocells for SurveyedLocale: "
+                        + sl.getKey().getId() + ". No lat/lon values set");
+                continue;
+            }
+
+            // populate geocells
+            try {
+                sl.setGeocells(GeocellManager.generateGeoCell(new Point(sl.getLatitude(),
+                        sl.getLongitude())));
+            } catch (Exception ex) {
+                log.log(Level.INFO, "Could not generate Geocell for SurveyedLocale: "
+                        + sl.getKey().getId() + " error: " + ex);
+            }
+            slDao.save(sl);
         }
-        if (num > 0) {
-            Queue queue = QueueFactory.getDefaultQueue();
-            queue.add(TaskOptions.Builder
-                    .withUrl("/app_worker/surveyalservlet")
-                    .param(SurveyalRestRequest.ACTION_PARAM,
-                            SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION)
-                    .param("cursor", newCursor));
-        }
+
+        // launch task for remaining locales
+        Queue queue = QueueFactory.getDefaultQueue();
+        queue.add(TaskOptions.Builder
+                .withUrl("/app_worker/surveyalservlet")
+                .param(SurveyalRestRequest.ACTION_PARAM,
+                        SurveyalRestRequest.POP_GEOCELLS_FOR_LOCALE_ACTION)
+                .param("cursor", newCursor));
     }
 }

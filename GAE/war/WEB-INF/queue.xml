@@ -3,56 +3,108 @@
 	<queue>
 		<name>default</name>
 		<rate>5/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>mail-queue</name>
 		<rate>2000/d</rate>
 		<bucket-size>10</bucket-size>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>background-processing</name>
 		<rate>5/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>dataSummarization</name>
 		<rate>5/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>dataUpdate</name>
 		<rate>5/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>spreadsheetImport</name>
 		<rate>5/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>surveyAssembly</name>
 		<rate>5/s</rate>
 		<bucket-size>20</bucket-size>
 		<max-concurrent-requests>10</max-concurrent-requests>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>mapAssembly</name>
 		<rate>5/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>notification</name>
 		<rate>5/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>deletequeue</name>
 		<rate>10/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>accesspointqueue</name>
 		<rate>10/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>accesspointmetricsummqueue</name>
 		<rate>10/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 	<queue>
 		<name>accesspointscorequeue</name>
 		<rate>5/s</rate>
+        <retry-parameters>
+          <task-retry-limit>10</task-retry-limit>
+          <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
 	</queue>
 </queue-entries>

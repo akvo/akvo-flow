@@ -19,10 +19,7 @@ package com.gallatinsystems.survey.dao;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.jdo.PersistenceManager;
-
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Translation;
 
@@ -64,7 +61,7 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
     }
 
     /**
-     * deletes all options associated with a given question
+     * Deletes all options associated with a given question
      * 
      * @param questionId
      */
@@ -72,13 +69,12 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
         List<QuestionOption> oList = listByProperty("questionId", questionId,
                 "Long");
         if (oList != null) {
-            PersistenceManager pm = PersistenceFilter.getManager();
             TranslationDao tDao = new TranslationDao();
             for (QuestionOption opt : oList) {
                 tDao.deleteTranslationsForParent(opt.getKey().getId(),
                         Translation.ParentType.QUESTION_OPTION);
-                pm.deletePersistent(opt);
             }
+            super.delete(oList);
         }
     }
 }

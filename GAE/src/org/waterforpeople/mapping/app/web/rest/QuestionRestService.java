@@ -34,11 +34,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
-import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
@@ -46,6 +46,9 @@ import com.gallatinsystems.survey.dao.QuestionOptionDao;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 @Controller
 @RequestMapping("/questions")
@@ -89,10 +92,12 @@ public class QuestionRestService {
         if (preflight != null && preflight.equals("delete")
                 && questionId != null) {
             QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+            SurveyalValueDao svDao = new SurveyalValueDao();
             statusDto.setStatus("preflight-delete-question");
             statusDto.setMessage("cannot_delete");
 
-            if (qasDao.listByQuestion(questionId).size() == 0) {
+            if (qasDao.listByQuestion(questionId).size() == 0
+                    && svDao.listByQuestion(questionId).size() == 0) {
                 statusDto.setMessage("can_delete");
                 statusDto.setKeyId(questionId);
             }
@@ -119,7 +124,7 @@ public class QuestionRestService {
                             QuestionOptionDto qoDto = new QuestionOptionDto();
                             BeanUtils.copyProperties(qo, qoDto, new String[] {
                                     "translationMap"
-                                });
+                            });
                             qoDto.setKeyId(qo.getKey().getId());
                             qoList.add(qo.getKey().getId());
                             qoResults.add(qoDto);
@@ -156,7 +161,7 @@ public class QuestionRestService {
                     QuestionOptionDto qoDto = new QuestionOptionDto();
                     BeanUtils.copyProperties(qo, qoDto, new String[] {
                             "translationMap"
-                        });
+                    });
                     qoDto.setKeyId(qo.getKey().getId());
                     qoList.add(qo.getKey().getId());
                     qoResults.add(qoDto);
@@ -175,9 +180,9 @@ public class QuestionRestService {
     @ResponseBody
     public Map<String, RestStatusDto> deleteQuestionById(
             @PathVariable("id")
-            Long id) {
+            Long questionId) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-        Question q = questionDao.getByKey(id);
+        Question q = questionDao.getByKey(questionId);
         RestStatusDto statusDto = null;
         statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
@@ -185,23 +190,21 @@ public class QuestionRestService {
 
         // check if question exists in the datastore
         if (q != null) {
-            // delete question
             try {
-                // first try delete, to see if it is allowed
-                questionDao.delete(q);
-
-                // if successful, we can delete the options and metric mappings
-                // as well
-                questionOptionDao.deleteOptionsForQuestion(id);
-                surveyMetricMappingDao.deleteMetricMapping(id);
-
+                TaskOptions deleteQuestionTask = TaskOptions.Builder
+                        .withUrl("/app_worker/surveytask")
+                        .param(SurveyTaskRequest.ACTION_PARAM,
+                                SurveyTaskRequest.DELETE_QUESTION_ACTION)
+                        .param(SurveyTaskRequest.ID_PARAM, questionId.toString());
+                QueueFactory.getQueue("deletequeue").add(deleteQuestionTask);
                 statusDto.setStatus("ok");
-                statusDto.setMessage("");
-            } catch (IllegalDeletionException e) {
+                statusDto.setMessage("deleted");
+            } catch (Exception e) {
                 statusDto.setStatus("failed");
                 statusDto.setMessage(e.getMessage());
             }
         }
+
         response.put("meta", statusDto);
         return response;
     }
@@ -307,7 +310,7 @@ public class QuestionRestService {
                     QuestionOptionDto qoDto = new QuestionOptionDto();
                     BeanUtils.copyProperties(qo, qoDto, new String[] {
                             "translationMap"
-                        });
+                    });
                     qoDto.setKeyId(qo.getKey().getId());
                     qoList.add(qo.getKey().getId());
                     qoResults.add(qoDto);

@@ -51,6 +51,20 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         return;
       }
 
+      if (status === 'preflight-delete-questiongroup') {
+        if (msg === 'can_delete') {
+          // do deletion
+          FLOW.questionGroupControl.deleteQuestionGroup(keyId);
+        } else {
+          FLOW.dialogControl.set('activeAction', 'ignore');
+          FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_questiongroup'));
+          FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_questiongroup_text'));
+          FLOW.dialogControl.set('showCANCEL', false);
+          FLOW.dialogControl.set('showDialog', true);
+        }
+        return;
+      }
+
       if (status === 'preflight-delete-survey') {
         if (msg === 'can_delete') {
           // do deletion

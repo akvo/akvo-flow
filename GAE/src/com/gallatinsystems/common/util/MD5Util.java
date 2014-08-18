@@ -35,6 +35,17 @@ import com.google.gdata.util.common.util.Base64;
 public class MD5Util {
     private static final Logger log = Logger.getLogger(MD5Util.class.getName());
 
+    public static byte[] md5(byte[] arr) {
+        try {
+            MessageDigest complete = MessageDigest.getInstance("MD5");
+            complete.update(arr);
+            return complete.digest();
+        } catch (NoSuchAlgorithmException e) {
+            log.log(Level.SEVERE, "Could not generate checksum", e);
+        }
+        return null;
+    }
+
     /**
      * generates a checksum based on an MD5 message digest
      * 
@@ -42,18 +53,14 @@ public class MD5Util {
      * @return
      */
     public static String generateChecksum(byte[] arr) {
-        try {
-            MessageDigest complete = MessageDigest.getInstance("MD5");
-            complete.update(arr);
-            byte[] digest = complete.digest();
+        byte[] digest = md5(arr);
+        if (digest != null) {
             String result = "";
             for (int i = 0; i < digest.length; i++) {
                 result += Integer.toString((digest[i] & 0xff) + 0x100, 16)
                         .substring(1);
             }
             return result;
-        } catch (NoSuchAlgorithmException e) {
-            log.log(Level.SEVERE, "Could not generate checksum", e);
         }
         return null;
     }

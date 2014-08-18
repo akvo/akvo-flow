@@ -17,20 +17,17 @@
 package com.gallatinsystems.survey.dao;
 
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.xml.bind.JAXBException;
 
-import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyContainer;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -64,6 +61,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
         return super.getByKey(key);
     }
 
+    @Override
     public Survey getByKey(Key key) {
         return super.getByKey(key);
     }
@@ -211,51 +209,15 @@ public class SurveyDAO extends BaseDAO<Survey> {
     }
 
     /**
-     * increments the survey version by 1
+     * Deletes a survey
      * 
-     * @param surveyId
-     */
-    public void incrementVersion(Long surveyId) {
-        Survey s = getByKey(surveyId);
-        if (s != null) {
-            Double v = s.getVersion();
-            if (v == null) {
-                v = new Double(2);
-            } else {
-                v++;
-            }
-            s.setVersion(v);
-            save(s);
-        }
-    }
-
-    /**
-     * deletes a survey and spawns delete questionGroup tasks to delete all children asynchronously.
-     * 
-     * @param item
+     * @param survey
      * @throws IllegalDeletionException - if the system contains responses for this survey
      */
-    public void delete(Survey item) throws IllegalDeletionException {
-        // Check to see if there are any surveys for this first
-        item = getByKey(item.getKey());
-        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        if (qasDao.listBySurvey(new Long(item.getKey().getId())).size() == 0) {
-            QuestionGroupDao qgDao = new QuestionGroupDao();
-            for (Map.Entry<Integer, QuestionGroup> qgItem : qgDao
-                    .listQuestionGroupsBySurvey(item.getKey().getId())
-                    .entrySet()) {
-                SurveyTaskUtil.spawnDeleteTask("deleteQuestionGroup", qgItem
-                        .getValue().getKey().getId());
-            }
-            super.delete(item);
-        } else {
-            throw new IllegalDeletionException(
-                    "Cannot delete surveyId: "
-                            + item.getKey().getId()
-                            + " surveyCode:"
-                            + item.getCode()
-                            + " because there are already survey responses for this survey. Please delete all survey responses first");
-        }
+    public void delete(Survey survey) throws IllegalDeletionException {
+        QuestionGroupDao qgDao = new QuestionGroupDao();
+        qgDao.deleteGroupsForSurvey(survey.getKey().getId());
+        super.delete(survey);
     }
 
     /**

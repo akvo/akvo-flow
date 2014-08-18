@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -26,5 +26,9 @@ public class Constants {
             "createdDateTime", "lastUpdateDateTime", "lastUpdateUserId",
             "createUserId"
     };
+    public static final int MAX_LENGTH = 500;
+    public static final int CONNECTION_TIMEOUT = 5 * 60 * 1000; // 5min
+    public static final String AWS_ACCESS_ID = "aws_identifier";
+    public static final String AWS_SECRET_KEY = "aws_secret_key";
 
 }

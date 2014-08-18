@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="InstanceConfigurator" default="makejar" basedir=".">
+	<property name="build" value="bin" />
+	<property name="dist" value="dist" />
+	<property name="lib" value="lib" />
+
+	<path id="project.classpath">
+		<fileset dir="${lib}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	
+	<target name="makedir">
+        <mkdir dir="${build}" />
+        <mkdir dir="${dist}" />
+    </target>
+    
+	<target name="makejar" depends="makedir">
+		<javac source="1.7" target="1.7" encoding="UTF-8" srcdir="src" destdir="${build}"
+		    classpathref="project.classpath" debug="on" includeantruntime="false" />
+
+		<copy todir="bin">
+		    <fileset dir="src">
+		        <include name="**/*.ftl"/>
+		    </fileset>
+		</copy>
+		
+		<copy todir="${dist}">
+		    <fileset dir="${lib}">
+		        <include name="**/*.jar" />
+		    </fileset>
+		</copy>
+		
+		<path id="tmp.classpath">
+		    <fileset dir="${dist}">
+		        <include name="**/*.jar" />
+		    </fileset>
+		</path>
+		
+		<exec dir="." executable="git" outputproperty="app.version">
+			<arg value="describe"/>
+		</exec>
+
+		<manifestclasspath property="jar.classpath" jarfile="${dist}/instanceConfigurator-${app.version}.jar">
+		    <classpath refid="tmp.classpath" />
+		</manifestclasspath>
+		
+		<jar destfile="${dist}/instanceConfigurator-${app.version}.jar">
+		    <fileset dir="${build}" includes="**/*.*"/>
+		    <fileset dir="${lib}" includes="**/*.jar"/>
+		    <manifest>
+		        <attribute name="Main-Class"
+		            value="org.akvo.flow.InstanceConfigurator"/>
+		        <attribute name="Class-Path"
+		            value="${jar.classpath}"/>
+		    </manifest>
+		</jar>
+    </target>
+</project>

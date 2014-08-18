@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
@@ -35,25 +37,36 @@ import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
+import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
+import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
 import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
-import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 @Controller
 @RequestMapping("/surveys")
 public class SurveyRestService {
+
+    private static final Logger log = Logger.getLogger(SurveyRestService.class.getName());
 
     @Inject
     private SurveyDAO surveyDao;
 
     @Inject
     private SurveyInstanceSummaryDao sisDao;
+
+    @Inject
+    private SurveyalValueDao svDao;
+
+    @Inject
+    private QuestionAnswerStoreDao qasDao;
 
     // TODO put in meta information?
     // list all surveys
@@ -84,8 +97,6 @@ public class SurveyRestService {
         return response;
     }
 
-    // TODO put in meta information?
-    // list surveys by surveyGroup id
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listSurveysByGroupId(
@@ -107,11 +118,11 @@ public class SurveyRestService {
 
         // if this is a pre-flight delete check, handle that
         if (preflight != null && preflight.equals("delete") && surveyId != null) {
-            QuestionDao qDao = new QuestionDao();
             statusDto.setStatus("preflight-delete-survey");
             statusDto.setMessage("cannot_delete");
 
-            if (qDao.listQuestionsBySurvey(surveyId).size() == 0) {
+            if (qasDao.listBySurvey(surveyId).size() == 0
+                    && svDao.listBySurvey(surveyId, null, null).size() == 0) {
                 statusDto.setMessage("can_delete");
                 statusDto.setKeyId(surveyId);
             }
@@ -178,29 +189,40 @@ public class SurveyRestService {
 
     }
 
-    // delete survey by id
+    /**
+     * Spawns a task to delete a survey by survey id
+     * 
+     * @param surveyId
+     * @return
+     */
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
     public Map<String, RestStatusDto> deleteSurveyById(
             @PathVariable("id")
-            Long id) {
+            Long surveyId) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-        Survey s = surveyDao.getByKey(id);
+        Survey survey = surveyDao.getByKey(surveyId);
         RestStatusDto statusDto = null;
         statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
 
         // check if survey exists in the datastore
-        if (s != null) {
-            // delete survey group
+        if (survey != null) {
             try {
-                surveyDao.delete(s);
+                TaskOptions deleteSurveyTask = TaskOptions.Builder
+                        .withUrl("/app_worker/surveytask")
+                        .param(SurveyTaskRequest.ACTION_PARAM,
+                                SurveyTaskRequest.DELETE_SURVEY_ACTION)
+                        .param(SurveyTaskRequest.ID_PARAM, surveyId.toString());
+                QueueFactory.getQueue("deletequeue").add(deleteSurveyTask);
                 statusDto.setStatus("ok");
-            } catch (IllegalDeletionException e) {
+                statusDto.setMessage("deleted");
+            } catch (Exception e) {
                 statusDto.setStatus("failed");
                 statusDto.setMessage(e.getMessage());
             }
         }
+
         response.put("meta", statusDto);
         return response;
     }
@@ -240,11 +262,21 @@ public class SurveyRestService {
                     s.setDesc(surveyDto.getDescription());
 
                     if (surveyDto.getStatus() != null) {
+                        // increment version for surveys already published
+                        if (s.getStatus().equals(Survey.Status.PUBLISHED)
+                                && !s.getStatus().equals(
+                                        Survey.Status.valueOf(surveyDto.getStatus()))) {
+                            s.incrementVersion();
+                        }
                         s.setStatus(Survey.Status
                                 .valueOf(surveyDto.getStatus().toString()));
                     }
                     if (surveyDto.getSector() != null) {
                         s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
+                    }
+                    if (!surveyDto.getVersion().equals(s.getVersion().toString())) {
+                        log.log(Level.WARNING, "Survey version does not match (dashboard="
+                                + surveyDto.getVersion() + " datastore=" + s.getVersion() + ")");
                     }
 
                     s = surveyDao.save(s);
@@ -330,6 +362,9 @@ public class SurveyRestService {
         if (dto.getSector() != null) {
             s.setSector(Survey.Sector.valueOf(dto.getSector()));
         }
+
+        // ignore version number sent by Dashboard and initialise
+        s.getVersion();
 
         return s;
     }
