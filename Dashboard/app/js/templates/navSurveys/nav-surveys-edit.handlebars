@@ -1,79 +1,74 @@
 <!-- we are within navSurveysEditView -->
- {{#view FLOW.SurveySidebarView}}
-<section class="leftSidebar" id="newSurveyInfo">
-  <h2>{{t _edit_survey}}</h2>
+{{#view FLOW.SurveySidebarView}}
+<section class="leftSidebar surveyDetailSideBar" id="newSurveyInfo">
+    <h2>{{t _edit_survey}}</h2>
 
-  <form>
-    <label for="newSurveyName">{{t _title}}<span class="isRequired">({{t _required}})</span>:
-      {{view Ember.TextField
-             valueBinding="view.surveyTitle"
-             placeholder="Type in the name of your survey"
-             placeholderBinding="Ember.STRINGS._type_the_name_of_your_survey"
-             size=30}} </label>
-    <label for="newSurveyDesc">{{t _description}}:
-      {{view Ember.TextArea
-             valueBinding="view.surveyDescription"
-             placeholder="Type in a description of your survey"
-             placeholderBinding="Ember.STRINGS._type_a_description_of_your_survey"
-             size=30 rows="3" }} </label>
-   <!--  <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireApproval"}}{{t _require_approval}} </label> -->
-	  <dl class="floats-in">
-              <dt>{{t _version_number}}:</dt>
-              <dd><span id="versionNbr">{{FLOW.selectedControl.selectedSurvey.version}}</span>{{tooltip _version_numbers_helps}}</dd>
-              <dt>{{t _id_number}}:</dt>
-              <dd><span id="surveyIdNbr">{{FLOW.selectedControl.selectedSurvey.keyId}}</span></dd>
-            </dl>   
-    <label for="surveyType">{{t _type}}<span class="isRequired">({{t _required}})</span>:
-      {{view Ember.Select 
-      contentBinding="FLOW.surveyPointTypeControl.content" 
-      optionLabelPath="content.label" 
-      optionValuePath="content.value" 
-      selectionBinding="view.surveyPointType" 
-      prompt=""
-      promptBinding="Ember.STRINGS._select_survey_type"}}
-    </label>
-    
-    <label for="surveyLanguage">{{t _master_language}}:{{tooltip _master_lang_no_change}}</span>
-     {{view Ember.Select
-         contentBinding="FLOW.translationControl.isoLangs"
-         selectionBinding="view.language"
-         optionLabelPath="content.labelShort"
-         optionValuePath="content.value"
-         prompt=""
-         promptBinding="Ember.STRINGS._select_language"}}
-    </label>
-  </form>
-  <a {{action "doManageTranslations" target="this"}} class="manageNotifications"><span>+</span>{{t _manage_translations}}</a>
-  <a {{action "doManageNotifications" target="this"}} class="manageNotifications"><span>+</span>{{t _manage_notifications}}</a>
-  <ul class="newSurveyInfoUl" id="">
-    <li>
-      <h3>{{t _survey_summary}}</h3>
-    </li>
-    <li>{{t _number_of_question_groups}}: <span id="numberQuestionSet">{{view.numberQuestionGroups}}</span> </li>
-    <li>{{t _number_of_questions}}: <span id="numberQuestion">{{view.numberQuestions}}</span> </li>
-    <li>{{t _status}}: {{#if view.isPublished}} <span class="surveyPublished">
+    <form>
+        <label for="newSurveyName"><span>{{t _title}}<span class="isRequired">({{t _required}})</span>:</span>
+            {{view Ember.TextField valueBinding="view.surveyTitle" placeholder="Type in the name of your survey" placeholderBinding="Ember.STRINGS._type_the_name_of_your_survey" size=30}}</label>
+        <label for="newSurveyDesc"><span>{{t _description}}:</span>
+            {{view Ember.TextArea valueBinding="view.surveyDescription" placeholder="Type in a description of your survey" placeholderBinding="Ember.STRINGS._type_a_description_of_your_survey" size=30 rows="3" }}</label>
+        <!--  <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireApproval"}}{{t _require_approval}} </label> -->
+        <dl class="floats-in">
+            <dt>{{t _version_number}}:</dt>
+            <dd><span id="versionNbr">{{FLOW.selectedControl.selectedSurvey.version}}</span>{{tooltip _version_numbers_helps}}</dd>
+            <dt>{{t _id_number}}:</dt>
+            <dd><span id="surveyIdNbr">{{FLOW.selectedControl.selectedSurvey.keyId}}</span>
+            </dd>
+        </dl>
+        <label for="surveyType"><span>{{t _type}}<span class="isRequired">({{t _required}})</span>:</span>
+            {{view Ember.Select contentBinding="FLOW.surveyPointTypeControl.content" optionLabelPath="content.label" optionValuePath="content.value" selectionBinding="view.surveyPointType" prompt="" promptBinding="Ember.STRINGS._select_survey_type"}}
+        </label>
+
+        <label for="surveyLanguage"><span>{{t _master_language}}:</span>{{tooltip _master_lang_no_change}} {{view Ember.Select contentBinding="FLOW.translationControl.isoLangs" selectionBinding="view.language" optionLabelPath="content.labelShort" optionValuePath="content.value" prompt="" promptBinding="Ember.STRINGS._select_language"}}
+        </label>
+    </form>
+
+    <ul class="manageStuff floats-in">
+        <li>
+            <a {{action "doManageTranslations" target="this" }} class="manageNotifications"><span>+</span>{{t _manage_translations}}</a>
+        </li>
+        <li>
+            <a {{action "doManageNotifications" target="this" }} class="manageNotifications"><span>+</span>{{t _manage_notifications}}</a>
+        </li>
+    </ul>
+  
+    <ul class="newSurveyInfoUl" id="">
+        <li>
+            <h3>{{t _survey_summary}}</h3>
+        </li>
+        <li>{{t _number_of_question_groups}}: <span id="numberQuestionSet">{{view.numberQuestionGroups}}</span> 
+        </li>
+        <li>{{t _number_of_questions}}: <span id="numberQuestion">{{view.numberQuestions}}</span> 
+        </li>
+        <li>{{t _status}}: {{#if view.isPublished}} <span class="surveyPublished">
       {{t _published}}</span> {{else}} <span class="surveyNotPublished">
       {{t _not_published}}</span> {{/if}}
-    </li>
-  </ul>
-  <nav class="newSurveyNav">
-    <ul>
-      <li><a {{action doSaveSurvey target="this"}} class="saveNewSurvey">{{t _save}}</a></li>
-      <li><a {{action doPreviewSurvey target="this"}} class="previewNewSurvey">{{t _preview}}</a></li>
-      <li><a {{action doPublishSurvey target="this"}} class="publishNewSurvey">{{t _publish}}</a></li>
+        </li>
     </ul>
-  </nav>
- 
+    <nav class="newSurveyNav">
+        <ul>
+            <li><a {{action doSaveSurvey target="this" }} class="saveNewSurvey">{{t _save}}</a>
+            </li>
+            <li><a {{action doPreviewSurvey target="this" }} class="previewNewSurvey">{{t _preview}}</a>
+            </li>
+            <li><a {{action doPublishSurvey target="this" }} class="publishNewSurvey">{{t _publish}}</a>
+            </li>
+        </ul>
+    </nav>
+
 </section>
 <section class="mainRight" id="surveyCreator">
-  <section class="topBar">
-    <nav class="menuTopbar">
-      <ul class="">
-        <li><a {{action "doSurveysMain" target="this"}} class="stepBack">{{t _go_back_to_survey_overview}}</a></li>
-      </ul>
-    </nav>
-  </section>
-  
-{{outlet}}
+    <section class="topBar">
+        <nav class="menuTopbar">
+            <ul class="">
+                <li><a {{action "doSurveysMain" target="this" }} class="stepBack">{{t _go_back_to_survey_overview}}</a>
+                </li>
+            </ul>
+        </nav>
+    </section>
+
+    {{outlet}}
 </section>
- {{/view }} <!-- end of FLOW.SurveySideBarView --> 
+{{/view }}
+<!-- end of FLOW.SurveySideBarView -->
