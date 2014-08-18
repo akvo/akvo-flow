@@ -80,6 +80,7 @@ public class InstanceConfigurator {
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
         String orgName = cli.getOptionValue("on");
+        String signingKey = cli.getOptionValue("sk");
 
         File out = new File(outFolder);
 
@@ -215,6 +216,7 @@ public class InstanceConfigurator {
         webData.put("emailFrom", emailFrom);
         webData.put("emailTo", emailTo);
         webData.put("organization", orgName);
+        webData.put("signingKey", signingKey);
 
         Template t5 = cfg.getTemplate("appengine-web.xml.ftl");
         FileWriter fw3 = new FileWriter(new File(out, "/appengine-web.xml"));
@@ -279,6 +281,11 @@ public class InstanceConfigurator {
         alias.setArgs(1);
         alias.setRequired(true);
 
+        Option signingKey = new Option("sk", "Signing Key");
+        signingKey.setLongOpt("signingKey");
+        signingKey.setArgs(1);
+        signingKey.setRequired(true);
+
         options.addOption(orgName);
         options.addOption(awsId);
         options.addOption(awsSecret);
@@ -289,6 +296,7 @@ public class InstanceConfigurator {
         options.addOption(outputFolder);
         options.addOption(flowServices);
         options.addOption(alias);
+        options.addOption(signingKey);
 
         return options;
     }
