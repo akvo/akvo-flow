@@ -1,13 +1,13 @@
-/* 
+/*
 	Title:      Akvo Flow Styles for Desktop
 	Author:     Loic Sans, loic@akvo.org
 */
 
 
-/* Colours 
+/* Colours
 ---------------------------
-	
-Akvo Primary Colours: 
+
+Akvo Primary Colours:
 
 		rgb(44, 42, 116);   		Akvo Purplish Blue
 		rgb(114,  205, 255);		Akvo very light blue
@@ -17,10 +17,10 @@ Akvo Primary Colours:
 		rgb(107, 134, 141);			Akvo Blueish Green link color
 		rgb(246, 160, 26);			Flow Orange
 		rgb(38, 8, 89);				Flow Purple
-	
+
 Akvo Secondary Colours:
-	
-		rgb(225, 237, 195);			Akvo very Light green	
+
+		rgb(225, 237, 195);			Akvo very Light green
 		rgb(227, 27, 35);			Akvo red
 		rgb(219, 135, 201);			Akvo Pink
 		rgb(255, 210, 0);			Akvo Yellow
@@ -39,7 +39,7 @@ Akvo Secondary Colours:
 
 /* Default font settings.
    The font-size percentage is of 16px. (0.625 * 16px = 10px) */
-   
+
 html {
 	overflow-y: scroll;
 	border-top: 3px solid rgb(38, 8, 89);
@@ -53,7 +53,7 @@ body {
 	font-size: 62.5%;
 	font-family: Helmet, Freesans, sans-serif;
 }
-/*-------------------------------------------------------------- 
+/*--------------------------------------------------------------
 							Headings
 -------------------------------------------------------------- */
 
@@ -97,13 +97,13 @@ p {
 /* misc.
 --------------------------------------------- */
 img, object, video, embed { max-width: 100%; }
-/* Sine the map pin need no max-width */ 
+/* Sine the map pin need no max-width */
 #flowMap img { max-width: none; }
 .hidden { display: none !important; }
 .shown { display: block !important; }
 hr, .hide { display: none; }
 a img { border: none; }
-/* self-clear floats 
+/* self-clear floats
 	I use a class named .floats-in > This implicitely says that each time a container contains floated elements within. We can clear those by applying this class to that container.
 */
 
@@ -190,7 +190,7 @@ pre {
 	width: 90%;
 }
 .noBG { background-image: none !important; }
-/* links 
+/* links
 ---------------------------------------------------------------*/
 
 a, a:link, a:visited {
@@ -597,7 +597,7 @@ header.top hgroup h1 a {
 /* #home page
 --------------------------------------------- */
 
-/* Top navigation styles 
+/* Top navigation styles
 --------------------------------------------- */
 
 nav#topnav {
@@ -667,7 +667,7 @@ nav#topnav ul li.navReports.current a { background: rgb(245,245,245) url(../imag
 nav#topnav ul li.navAdmin a { background: url(../images/topnavAdmin.png) center -18px no-repeat; }
 nav#topnav ul li.navAdmin a:hover { background: rgb(232, 232, 232) url(../images/topnavAdmin.png) center -18px no-repeat; }
 nav#topnav ul li.navAdmin.current a { background: rgb(245,245,245) url(../images/topnavAdmin.png) center bottom no-repeat; }
-/*--------------------------------------------- 
+/*---------------------------------------------
 			Top Header Search input
 --------------------------------------------- */
 header input[type="search"] {
@@ -681,12 +681,12 @@ header input[type="search"] {
 	transition: width 0.1s linear;
 }
 header input[type="search"]:focus { width: 14%; }
-/*--------------------------------------------- 
+/*---------------------------------------------
 					main styles
 --------------------------------------------- */
 
 
-/*--------------------------------------------- 
+/*---------------------------------------------
 					Data Table
 -----------------------------------------------*/
 
@@ -931,6 +931,14 @@ input.hasDatepicker {
 	text-indent: -99999px;
 }
 .action a.edit:hover { background: url(../images/editList.png) center bottom no-repeat; }
+.action a.api {
+	display: inline-block;
+	width: 13px;
+	height: 13px;
+	background: url(../images/apiList.png) center top no-repeat;
+	text-indent: -99999px;
+}
+.action a.api:hover { background: url(../images/apiList.png) center bottom no-repeat; }
 table.previewList { color: rgb(209,84,95); }
 #assignSurveys .fieldSetWrap fieldset table tbody { border: thin solid rgb(230,230,230); }
 #assignSurveys .fieldSetWrap fieldset table th {
@@ -1035,7 +1043,7 @@ th.action { width: 7%; }
 	margin: 0 15px 0 0;
 }
 .menuConfirm ul li a { display: inline-block; }
-/*-------------------------------------------------------------------- 
+/*--------------------------------------------------------------------
 							Tabs Styling
 ----------------------------------------------------------------------*/
 #tabs div > section {
@@ -1168,7 +1176,7 @@ th.action { width: 7%; }
 .no-textshadow #groupBar h2, .no-textshadow #newSurveyInfo h2 { color: rgb(125, 125, 125); }
 nav.menuGroupWrap {
 	overflow-y: hidden;
-	 height: 361px; 
+	 height: 361px;
 	background: rgb(58,58,58);
 }
 nav.menuGroupWrap ul.menuGroup { }
@@ -1204,7 +1212,7 @@ nav.menuGroupWrap ul.menuGroup li a:hover {
 	background: rgba(255,255,255,0.05) url(../images/selectIndictr.png) right 50% no-repeat;
 	color: rgb(114,  205, 255);
 }
-/********* MTW changed nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current to 
+/********* MTW changed nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current to
 "nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a" to select li item instead of a ********/
 
 nav.menuGroupWrap ul.menuGroup li.current a:hover, nav.menuGroupWrap ul.menuGroup li.current a {
@@ -2077,7 +2085,7 @@ nav.smallMenu ul li a.showQuestion:hover { background: url(../images/showQuestio
 	text-align: center;
 	color: rgb(153,153,153);
 }
-/********************************************* To remove when Create new survey setting page confirmed deleted. *******************************************/	
+/********************************************* To remove when Create new survey setting page confirmed deleted. *******************************************/
 .innerContent dl {
 	position: relative;
 	margin: 0 0 0 1%;
@@ -2642,7 +2650,7 @@ div.drawHandle.showMapD { }
 	text-transform: uppercase;
 	font-weight: bold;
 }
-/*--------------------------------------------- 
+/*---------------------------------------------
 					Footer
 -----------------------------------------------*/
 footer.bottomPage {

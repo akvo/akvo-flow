@@ -32,7 +32,7 @@
             {{#view FLOW.SingleUserView contentBinding="user"}}
               <span {{bindAttr class="view.roleClass"}}>{{view.roleLabel}}</span>
              {{/view}}
-            <td class="action"> <a {{action "showEditUserDialog" user target="this"}} class="edit">{{t _edit}}</a> {{#view FLOW.UserView contentBinding="user"}}<a {{action confirm FLOW.dialogControl.delUser target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>{{/view}}<a {{action "showManageApiKeysDialog" user target="this"}}>api</a>
+            <td class="action"> <a {{action "showEditUserDialog" user target="this"}} class="edit">{{t _edit}}</a> {{#view FLOW.UserView contentBinding="user"}}<a {{action confirm FLOW.dialogControl.delUser target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>{{/view}}<a {{action "showManageApiKeysDialog" user target="this"}} class="api">api</a>
 
             </td>
           </tr>
@@ -124,6 +124,7 @@
           {{#if FLOW.editControl.showSecret}}
             <label for="manageSecret">Secret:</label>
             {{view Ember.TextField valueBinding="FLOW.editControl.manageSecret" size=40}}
+            <p>The secret key will never be shown again! If it's lost a new one must be generated</p>
           {{/if}}
           <a {{action "doGenerateNewApiKey" target="this"}} class="ok smallBtn">(Re)generate</a>
           <a {{action "doRevokeApiKey" target="this"}} class="ok smallBtn">Revoke</a>
