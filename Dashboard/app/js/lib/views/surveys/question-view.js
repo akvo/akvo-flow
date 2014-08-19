@@ -249,6 +249,15 @@ FLOW.QuestionView = FLOW.View.extend({
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
     // validation
+    if (!this.get('questionId').match(/^[A-Za-z0-9_\-]*$/)) {
+      FLOW.dialogControl.set('activeAction', 'ignore');
+      FLOW.dialogControl.set('header', 'Invalid question ID format');
+      FLOW.dialogControl.set('message', 'The question id "' + this.get('questionId') + '" is not valid.');
+      FLOW.dialogControl.set('showCANCEL', false);
+      FLOW.dialogControl.set('showDialog', true);
+      return;
+    }
+
     if (this.type.get('value') == 'NUMBER') {
       if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))) {
 
