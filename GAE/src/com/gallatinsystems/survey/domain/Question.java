@@ -61,6 +61,7 @@ public class Question extends BaseDomain {
     private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
     private Long questionGroupId;
     private Long surveyId;
+    private String questionId;
     private Integer order = null;
     private Boolean mandatoryFlag = null;
     private String path = null;
@@ -388,5 +389,13 @@ public class Question extends BaseDomain {
      */
     public boolean equals(Question q) {
         return key != null && q.getKey() != null && key.equals(q.getKey());
+    }
+
+    public String getQuestionId() {
+	return questionId;
+    }
+
+    public void setQuestionId(String questionId) {
+	this.questionId = questionId;
     }
 }

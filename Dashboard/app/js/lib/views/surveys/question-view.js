@@ -1,6 +1,7 @@
 FLOW.QuestionView = FLOW.View.extend({
   templateName: 'navSurveys/question-view',
   content: null,
+  questionId: null,
   text: null,
   tip: null,
   type: null,
@@ -105,7 +106,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	    }
 	  }.property('this.type').cacheable(),
 
-  
+
   amFreetextType: function () {
 	    var options;
 	    if (this.type) {
@@ -137,8 +138,8 @@ FLOW.QuestionView = FLOW.View.extend({
   enableLocaleLocation: function() {
 	  this.set('localeLocationFlag', this.type.get('value') == 'GEO');
   }.observes('this.type'),
-  
-  
+
+
   // TODO dependencies
   // TODO options
   doQuestionEdit: function () {
@@ -156,6 +157,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.init();
 
     FLOW.selectedControl.set('selectedQuestion', this.get('content'));
+    this.set('questionId', FLOW.selectedControl.selectedQuestion.get('questionId'));
     this.set('text', FLOW.selectedControl.selectedQuestion.get('text'));
     this.set('tip', FLOW.selectedControl.selectedQuestion.get('tip'));
     this.set('mandatoryFlag', FLOW.selectedControl.selectedQuestion.get('mandatoryFlag'));
@@ -283,6 +285,7 @@ FLOW.QuestionView = FLOW.View.extend({
         this.set('requireDoubleEntry', false);
     }
     path = FLOW.selectedControl.selectedSurveyGroup.get('code') + "/" + FLOW.selectedControl.selectedSurvey.get('name') + "/" + FLOW.selectedControl.selectedQuestionGroup.get('code');
+    FLOW.selectedControl.selectedQuestion.set('questionId', this.get('questionId'));
     FLOW.selectedControl.selectedQuestion.set('text', this.get('text'));
     FLOW.selectedControl.selectedQuestion.set('tip', this.get('tip'));
     FLOW.selectedControl.selectedQuestion.set('mandatoryFlag', this.get('mandatoryFlag'));
@@ -408,8 +411,8 @@ FLOW.QuestionView = FLOW.View.extend({
         FLOW.dialogControl.set('showCANCEL', false);
         FLOW.dialogControl.set('showDialog', true);
    	 	return;
-    } 
-   
+    }
+
     // check if deleting this question is allowed
     // if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
     FLOW.store.findQuery(FLOW.Question, {
@@ -425,7 +428,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	});
 	return question.content.length > 0;
   },
-  
+
   // move question to selected location
   doQuestionMoveHere: function () {
     var selectedOrder, insertAfterOrder, selectedQ, useMoveQuestion;
@@ -436,7 +439,7 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       insertAfterOrder = this.content.get('order');
     }
-    
+
     // check if anything is being saved at the moment
      if (this.checkQuestionsBeingSaved()) {
     	 FLOW.dialogControl.set('activeAction', 'ignore');
@@ -446,7 +449,7 @@ FLOW.QuestionView = FLOW.View.extend({
          FLOW.dialogControl.set('showDialog', true);
     	 return;
      }
-    
+
     // check to see if we are trying to move the question to another question group
     if (FLOW.selectedControl.selectedForMoveQuestion.get('questionGroupId') != FLOW.selectedControl.selectedQuestionGroup.get('keyId')) {
       selectedQ = FLOW.store.find(FLOW.Question, FLOW.selectedControl.selectedForMoveQuestion.get('keyId'));
@@ -464,7 +467,7 @@ FLOW.QuestionView = FLOW.View.extend({
           return item.get('questionGroupId') == qgIdDest;
         });
 
-        // restore order in source group, where the question dissapears 
+        // restore order in source group, where the question dissapears
         questionsInSourceGroup.forEach(function (item) {
           if (item.get('order') > selectedOrder) {
             item.set('order', item.get('order') - 1);
@@ -593,7 +596,7 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.questionControl.restoreOrder(questionsInGroup);
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
-    
+
     FLOW.selectedControl.set('selectedForCopyQuestion', null);
   },
 
@@ -616,9 +619,9 @@ FLOW.QuestionView = FLOW.View.extend({
         FLOW.dialogControl.set('showCANCEL', false);
         FLOW.dialogControl.set('showDialog', true);
    	 	return;
-    } 
-    
-    
+    }
+
+
     // restore order
     qgId = FLOW.selectedControl.selectedQuestionGroup.get('keyId');
     questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
