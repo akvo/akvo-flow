@@ -371,7 +371,16 @@ public class TaskServlet extends AbstractRestApiServlet {
         // check the signature if we have it
         String allowUnsigned = PropertyUtil.getProperty(ALLOW_UNSIGNED);
 
-        if ("false".equalsIgnoreCase(allowUnsigned) && surveyDataOnly != null && dataSig != null) {
+        if ("false".equalsIgnoreCase(allowUnsigned)) {
+
+            if (dataSig == null) {
+                throw new SignedDataException("Datafile does not have a signature");
+            }
+
+            if (surveyDataOnly == null) {
+                throw new SignedDataException("data.txt not found in data zip");
+            }
+
             try {
                 MessageDigest sha1Digest = MessageDigest.getInstance("SHA1");
                 byte[] digest = sha1Digest.digest(surveyDataOnly
@@ -392,11 +401,6 @@ public class TaskServlet extends AbstractRestApiServlet {
             } catch (GeneralSecurityException e) {
                 throw new SignedDataException("Could not calculate signature", e);
             }
-
-        } else if (surveyDataOnly != null) {
-            // if there is no signature, check the configuration to see if we
-            // are allowed to proceed
-            throw new SignedDataException("Datafile does not have a signature");
         }
 
         return lines;
