@@ -623,7 +623,7 @@ FLOW.translationControl = Ember.ArrayController.create({
     });
   },
 
-  // determine which languages are present in the translation objects, 
+  // determine which languages are present in the translation objects,
   // so we can show the proper items
   determineAvailableTranslations: function () {
     var tempDict = {};
@@ -1025,3 +1025,5 @@ FLOW.translationControl = Ember.ArrayController.create({
     this.set('toBeDeletedTranslations', []);
   }
 });
+
+FLOW.QuestionIdTextArea = Ember.TextField.extend({});
