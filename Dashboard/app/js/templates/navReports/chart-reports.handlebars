@@ -1,4 +1,4 @@
- <section class="fullWidth" id="reportBlocks">
+ <section class="fullWidth reportTools" id="reportBlocks">
     {{#view FLOW.chartView}}
         <h1>{{t _chart_builder}}</h1>
         {{view Ember.Select 
@@ -47,7 +47,7 @@
     {{/if}}
      	<h3 class="chartTitle">{{FLOW.selectedControl.selectedQuestion.text}}</h3>
     {{#unless view.hideChart}}
-        <div id="piechart">
+        <div id="piechart" class="chartPie">
 			<p>{{t _choose_a_question}}</p>
 		</div>
     {{/unless}}

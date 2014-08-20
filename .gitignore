@@ -81,3 +81,6 @@ tests/clojure/akvo-tests/.lein*
 tests/clojure/akvo-tests/bin
 tests/clojure/akvo-tests/target
 
+*.codekit
+*.scssc
+dwsync.xml
