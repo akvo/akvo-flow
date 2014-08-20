@@ -1025,5 +1025,3 @@ FLOW.translationControl = Ember.ArrayController.create({
     this.set('toBeDeletedTranslations', []);
   }
 });
-
-FLOW.QuestionIdTextArea = Ember.TextField.extend({});
