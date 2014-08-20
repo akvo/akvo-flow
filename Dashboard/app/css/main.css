@@ -17,33 +17,6 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 header, footer, nav, aside, article, section {
   display: block; }
 
-<<<<<<< HEAD
-/* Colours
----------------------------
-
-Akvo Primary Colours:
-
-		rgb(44, 42, 116);   		Akvo Purplish Blue
-		rgb(114,  205, 255);		Akvo very light blue
-		rgb(222, 137, 41);			Akvo Orange / light Brown
-		rgb(153, 153, 153); 		Akvo Mid grey
-		rgb(57, 102, 128);			Akvo Darker shade Blue from light blue
-		rgb(107, 134, 141);			Akvo Blueish Green link color
-		rgb(246, 160, 26);			Flow Orange
-		rgb(38, 8, 89);				Flow Purple
-
-Akvo Secondary Colours:
-
-		rgb(225, 237, 195);			Akvo very Light green
-		rgb(227, 27, 35);			Akvo red
-		rgb(219, 135, 201);			Akvo Pink
-		rgb(255, 210, 0);			Akvo Yellow
-		rgb(125, 125, 125); 		Akvo Darker Grey
-		rgb(66, 76, 43);			Akvo Very dark Green (Military)
-		rgb(119, 97, 0);			Akvo Kaki (Greenish Brown)
-		rgb(242, 240, 230);			Akvo Off White
-		rgb(74, 177, 207);			Blue Light
-=======
 body {
   line-height: 1; }
 
@@ -124,7 +97,6 @@ legend {
 
 button, input {
   line-height: normal; }
->>>>>>> develop
 
 button, input[type="button"], input[type="reset"], input[type="submit"] {
   cursor: pointer;
@@ -180,13 +152,6 @@ input[type="submit"] {
                     * Default Typography.
 
 -------------------------------------------------------------- */
-<<<<<<< HEAD
-
-/* Default font settings.
-   The font-size percentage is of 16px. (0.625 * 16px = 10px) */
-
-=======
->>>>>>> develop
 html {
   width: 100%;
   overflow-y: scroll;
@@ -194,13 +159,6 @@ html {
   background: white; }
 
 body {
-<<<<<<< HEAD
-	color: rgb(36, 48, 50);
-	font-size: 62.5%;
-	font-family: Helmet, Freesans, sans-serif;
-}
-/*--------------------------------------------------------------
-=======
   width: 100%;
   height: 100%;
   color: #243032;
@@ -210,7 +168,6 @@ body {
   font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
 /*-------------------------------------------------------------- 
->>>>>>> develop
 							Headings
 -------------------------------------------------------------- */
 h1, h2, h3, h4, h5, h6 {
@@ -251,18 +208,6 @@ em {
 
 /* misc.
 --------------------------------------------- */
-<<<<<<< HEAD
-img, object, video, embed { max-width: 100%; }
-/* Sine the map pin need no max-width */
-#flowMap img { max-width: none; }
-.hidden { display: none !important; }
-.shown { display: block !important; }
-hr, .hide { display: none; }
-a img { border: none; }
-/* self-clear floats
-	I use a class named .floats-in > This implicitely says that each time a container contains floated elements within. We can clear those by applying this class to that container.
-*/
-=======
 img, object, video, embed {
   max-width: 100%; }
 
@@ -281,7 +226,6 @@ hr, .hide {
 
 a img {
   border: none; }
->>>>>>> develop
 
 .floats-in:after {
   display: block;
@@ -348,16 +292,6 @@ pre {
   text-align: center; }
 
 .infoText {
-<<<<<<< HEAD
-	display: block;
-	margin: 0.5em 0 0 0;
-	padding: 0.2em;
-	color: rgb(153,153,153);
-	width: 90%;
-}
-.noBG { background-image: none !important; }
-/* links
-=======
   display: block;
   margin: 0.5em 0 0 0;
   padding: 0.2em;
@@ -368,7 +302,6 @@ pre {
   background-image: none !important; }
 
 /* links 
->>>>>>> develop
 ---------------------------------------------------------------*/
 a, a:link, a:visited {
   outline: none;
@@ -827,93 +760,6 @@ nav.appNav {
             -webkit-background-size: 18px auto;
             background-size: 18px auto; }
 
-<<<<<<< HEAD
-nav#topnav {
-	position: absolute;
-	top: 0px;
-	left: 210px;
-}
-nav#topnav ul {
-	position: relative;
-	width: 100%;
-}
-nav#topnav ul li {
-	display: inline;
-	float: left;
-	margin: 2px 0 0 0;
-	padding: 0 2px 0 0;/* background: url(../images/navSeparator.png) right center no-repeat; */
-}
-nav#topnav ul li:last-child, nav#topnav ul li:last-child:hover, nav#topnav ul li.current, nav#topnav ul li.current:hover { background-image: none; }
-nav#topnav ul li:hover { background: none; }
-nav#topnav ul li a {
-	display: block;
-	padding: 46px 8px 23px 8px;
-	color: rgb(74, 177, 207);
-	vertical-align: bottom;
-	vertical-align: middle;
-	text-transform: uppercase;
-	font-size: 1.2em;
-	cursor: pointer;
-	-webkit-transition: background-color .4s linear;
-	-moz-transition: background-color .4s linear;
-	-o-transition: background-color .4s linear;
-	transition: background-color .4s linear;
-}
-nav#topnav ul li.current a {
-	-webkit-box-shadow: 0 0 2px rgba(20,20,20,0.1);
-	-moz-box-shadow: 0 0 2px rgba(20,20,20,0.1);
-	-o-box-shadow: 0 0 2px rgba(20,20,20,0.1);
-	box-shadow: 0 0 2px rgba(20,20,20,0.1);
-}
-nav#topnav ul li a:hover, nav#topnav ul li.current a { color: rgb(246, 160, 26); }
-nav#topnav ul li.navHome a { background: url(../images/topnavDashboards.png) center -18px no-repeat; }
-nav#topnav ul li.navHome a:hover { background: rgb(232, 232, 232) url(../images/topnavDashboards.png) center -18px no-repeat; }
-nav#topnav ul li.navHome.current a { background: rgb(245,245,245) url(../images/topnavDashboards.png) center bottom no-repeat; }
-nav#topnav ul li.navMessages a { background: url(../images/topnavMessages.png) center -18px no-repeat; }
-nav#topnav ul li.navMessages.current a { background: rgb(245,245,245) url(../images/topnavMessages.png) center bottom no-repeat; }
-nav#topnav ul li.navSurveys a { background: url(../images/topnavSurveys.png) center -18px no-repeat; }
-nav#topnav ul li.navSurveys a:hover { background: rgb(232, 232, 232) url(../images/topnavSurveys.png) center -18px no-repeat; }
-nav#topnav ul li.navSurveys.current a { background: rgb(245,245,245) url(../images/topnavSurveys.png) center bottom no-repeat; }
-nav#topnav ul li.navData a { background: url(../images/topnavData.png) center -18px no-repeat; }
-nav#topnav ul li.navData a:hover { background: rgb(232, 232, 232) url(../images/topnavData.png) center -18px no-repeat; }
-nav#topnav ul li.navData.current a { background: rgb(245,245,245)url(../images/topnavData.png) center bottom no-repeat; }
-nav#topnav ul li.navDashboards a { background: url(../images/topnavDashboards.png) center -18px no-repeat; }
-nav#topnav ul li.navDashboards a:hover { background: rgb(232, 232, 232) url(../images/topnavDashboards.png) center -18px no-repeat; }
-nav#topnav ul li.navDashboards.current a { background: rgb(245,245,245) url(../images/topnavDashboards.png) center bottom no-repeat; }
-nav#topnav ul li.navMaps a { background: url(../images/topnavMaps.png) center -18px no-repeat; }
-nav#topnav ul li.navMaps a:hover { background: rgb(232, 232, 232) url(../images/topnavMaps.png) center -18px no-repeat; }
-nav#topnav ul li.navMaps.current a { background: rgb(245,245,245) url(../images/topnavMaps.png) center bottom no-repeat; }
-nav#topnav ul li.navDevices a { background: url(../images/topnavDevices.png) center -18px no-repeat; }
-nav#topnav ul li.navDevices a:hover { background: rgb(232, 232, 232) url(../images/topnavDevices.png) center -18px no-repeat; }
-nav#topnav ul li.navDevices.current a { background: rgb(245,245,245) url(../images/topnavDevices.png) center bottom no-repeat; }
-nav#topnav ul li.navUsers a { background: url(../images/topnavUsers.png) center -18px no-repeat; }
-nav#topnav ul li.navUsers a:hover { background: rgb(232, 232, 232) url(../images/topnavUsers.png) center -18px no-repeat; }
-nav#topnav ul li.navUsers.current a { background: rgb(245,245,245) url(../images/topnavUsers.png) center bottom no-repeat; }
-nav#topnav ul li.navReports a { background: url(../images/topnavReports.png) center -18px no-repeat; }
-nav#topnav ul li.navReports a:hover { background: rgb(232, 232, 232) url(../images/topnavReports.png) center -18px no-repeat; }
-nav#topnav ul li.navReports.current a { background: rgb(245,245,245) url(../images/topnavReports.png) center bottom no-repeat; }
-nav#topnav ul li.navAdmin a { background: url(../images/topnavAdmin.png) center -18px no-repeat; }
-nav#topnav ul li.navAdmin a:hover { background: rgb(232, 232, 232) url(../images/topnavAdmin.png) center -18px no-repeat; }
-nav#topnav ul li.navAdmin.current a { background: rgb(245,245,245) url(../images/topnavAdmin.png) center bottom no-repeat; }
-/*---------------------------------------------
-			Top Header Search input
---------------------------------------------- */
-header input[type="search"] {
-	position: absolute;
-	top: 36px;
-	right: 0px;
-	width: 10%;
-	-webkit-transition: width 0.1s linear;
-	-moz-transition: width 0.1s linear;
-	-o-transition: width 0.1s linear;
-	transition: width 0.1s linear;
-}
-header input[type="search"]:focus { width: 14%; }
-/*---------------------------------------------
-					main styles
---------------------------------------------- */
-
-=======
 nav.appNav ul li.navHome a {
   background: url(../images/topnavDashboards.svg);
   background-repeat: no-repeat;
@@ -1094,7 +940,6 @@ nav.appNav ul li.navSurveys.current a {
   background-position: center 12px;
   -webkit-background-size: 28px auto;
   background-size: 28px auto; }
->>>>>>> develop
 
 /*--------------------------------------------- 
 					Data Table
@@ -1348,25 +1193,6 @@ input.hasDatepicker {
   background: url(../images/removeList.png) center bottom no-repeat; }
 
 .action a.edit {
-<<<<<<< HEAD
-	display: inline-block;
-	width: 13px;
-	height: 13px;
-	background: url(../images/editList.png) center top no-repeat;
-	text-indent: -99999px;
-}
-.action a.edit:hover { background: url(../images/editList.png) center bottom no-repeat; }
-.action a.api {
-	display: inline-block;
-	width: 13px;
-	height: 13px;
-	background: url(../images/apiList.png) center top no-repeat;
-	text-indent: -99999px;
-}
-.action a.api:hover { background: url(../images/apiList.png) center bottom no-repeat; }
-table.previewList { color: rgb(209,84,95); }
-#assignSurveys .fieldSetWrap fieldset table tbody { border: thin solid rgb(230,230,230); }
-=======
   display: inline-block;
   width: 13px;
   height: 13px;
@@ -1382,7 +1208,6 @@ table.previewList {
 #assignSurveys .fieldSetWrap fieldset table tbody {
   border: thin solid #e6e6e6; }
 
->>>>>>> develop
 #assignSurveys .fieldSetWrap fieldset table th {
   padding: 5px 0 5px 5px;
   background: #f2f2f2;
@@ -1498,13 +1323,6 @@ th.action {
   text-align: center; }
 
 .menuConfirm ul li {
-<<<<<<< HEAD
-	display: inline;
-	margin: 0 15px 0 0;
-}
-.menuConfirm ul li a { display: inline-block; }
-/*--------------------------------------------------------------------
-=======
   display: inline;
   margin: 0 15px 0 0; }
 
@@ -1512,7 +1330,6 @@ th.action {
   display: inline-block; }
 
 /*-------------------------------------------------------------------- 
->>>>>>> develop
 							Tabs Styling
 ----------------------------------------------------------------------*/
 #tabs div > section {
@@ -1624,18 +1441,10 @@ th.action {
   color: #7d7d7d; }
 
 nav.menuGroupWrap {
-<<<<<<< HEAD
-	overflow-y: hidden;
-	 height: 361px;
-	background: rgb(58,58,58);
-}
-nav.menuGroupWrap ul.menuGroup { }
-=======
   overflow-y: hidden;
   height: 361px; }
 
 
->>>>>>> develop
 nav.menuGroupWrap ul.menuGroup li {
   margin: 2px 1% 1px 1%;
   width: 98%;
@@ -1675,18 +1484,9 @@ nav.menuGroupWrap ul.menuGroup li a span.monitorIcn {
   padding: 0 0 0 4px; }
 
 nav.menuGroupWrap ul.menuGroup li a:hover {
-<<<<<<< HEAD
-	background: rgb(80,80,80) url(../images/selectIndictr.png) right 50% no-repeat;
-	background: rgba(255,255,255,0.05) url(../images/selectIndictr.png) right 50% no-repeat;
-	color: rgb(114,  205, 255);
-}
-/********* MTW changed nav ul.menuGroup li a.current:hover, nav ul.menuGroup li a.current to
-"nav ul.menuGroup li.current a:hover, nav ul.menuGroup li.current a" to select li item instead of a ********/
-=======
   background: #505050 url(../images/selectIndictr.png) right 50% no-repeat;
   background: rgba(255, 255, 255, 0.05) url(../images/selectIndictr.png) right 50% no-repeat;
   color: #72cdff; }
->>>>>>> develop
 
 nav.menuGroupWrap ul.menuGroup li.current a:hover, nav.menuGroupWrap ul.menuGroup li.current a {
   /* border-left: thin solid rgb(255,255,255); */
@@ -2589,19 +2389,11 @@ nav.smallMenu ul li a.showQuestion:hover {
   color: #275e6e; }
 
 .innerContent p.noOptions {
-<<<<<<< HEAD
-	margin: 0 auto;
-	padding: 0.5em 0.5%;
-	text-align: center;
-	color: rgb(153,153,153);
-}
-=======
   margin: 0 auto;
   padding: 0.5em 0.5%;
   text-align: center;
   color: #999999; }
 
->>>>>>> develop
 /********************************************* To remove when Create new survey setting page confirmed deleted. *******************************************/
 .innerContent dl {
   position: relative;
@@ -3169,21 +2961,12 @@ div.drawHandle {
   font-weight: bold; }
 
 .placeMarkPointCode {
-<<<<<<< HEAD
-	margin: 0 0 0 5px;
-	color: rgb58, 58, 58);
-	text-transform: uppercase;
-	font-weight: bold;
-}
-/*---------------------------------------------
-=======
   margin: 0 0 0 5px;
   color: #3a3a3a;
   text-transform: uppercase;
   font-weight: bold; }
 
 /*--------------------------------------------- 
->>>>>>> develop
 					Footer
 -----------------------------------------------*/
 footer.bottomPage {
