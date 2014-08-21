@@ -10,6 +10,9 @@
 .project
 .settings
 
+# Emacs files
+*~
+
 # Build config and output paths
 .gradle
 .gwt-log

@@ -156,7 +156,7 @@ FLOW.Question = FLOW.BaseModel.extend({
   type: DS.attr('string', {
 	defaultValue: "FREE_TEXT"
   }),
-  // This attribute is used for the 'Copy Survey' functionality 
+  // This attribute is used for the 'Copy Survey' functionality
   // Most of the times is `null`
   sourceId: DS.attr('number', {
 	 defaultValue: null
@@ -303,7 +303,8 @@ FLOW.User = FLOW.BaseModel.extend({
   superAdmin: DS.attr('boolean', {
     defaultValue: 0
   }),
-  permissionList: DS.attr('string')
+  permissionList: DS.attr('string'),
+  accessKey: DS.attr('string')
 });
 
 FLOW.UserConfig = FLOW.BaseModel.extend({
