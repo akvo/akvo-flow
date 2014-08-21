@@ -44,7 +44,7 @@ public class ApiAuthenticationFilter extends GenericFilterBean {
 	HttpServletRequest httpRequest = (HttpServletRequest) request;
 	Map<String, String> details = new HashMap<String, String>();
 
-	details.put("HTTP-Verb", "GET");
+	details.put("HTTP-Verb", httpRequest.getMethod());
 	details.put("Date", httpRequest.getHeader("Date"));
 	details.put("Authorization", httpRequest.getHeader("Authorization"));
 	details.put("Resource", httpRequest.getRequestURI());

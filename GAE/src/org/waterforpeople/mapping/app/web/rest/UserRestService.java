@@ -247,19 +247,18 @@ public class UserRestService {
 
         User user = userDao.getByKey(id);
 
-        if (user != null) {
-            String accessKey = createRandomKey();
-            String secret = createRandomKey();
-            user.setAccessKey(accessKey);
-            user.setSecret(secret);
-            userDao.save(user);
-            result.put("secret", secret);
-            result.put("accessKey", accessKey);
-            response.put("apikeys", result);
-            return response;
-        } else {
+        if (user == null) {
             throw new ResourceNotFoundException();
         }
+        String accessKey = createRandomKey();
+        String secret = createRandomKey();
+        user.setAccessKey(accessKey);
+        user.setSecret(secret);
+        userDao.save(user);
+        result.put("secret", secret);
+        result.put("accessKey", accessKey);
+        response.put("apikeys", result);
+        return response;
     }
 
     // Delete existing API keys
@@ -271,15 +270,14 @@ public class UserRestService {
 
 	User user = userDao.getByKey(id);
 
-	if (user != null) {
-	    user.setAccessKey(null);
-	    user.setSecret(null);
-	    userDao.save(user);
-	    response.put("apikeys", "deleted");
-	    return response;
-        } else {
+	if (user == null) {
             throw new ResourceNotFoundException();
-        }
+	}
+	user.setAccessKey(null);
+	user.setSecret(null);
+	userDao.save(user);
+	response.put("apikeys", "deleted");
+	return response;
     }
 
     static String createRandomKey() {

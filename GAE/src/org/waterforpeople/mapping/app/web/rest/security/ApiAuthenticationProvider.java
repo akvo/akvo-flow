@@ -49,21 +49,24 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
 
 	ApiUser apiUser = findUser(accessKey);
 
-	if (apiUser != null) {
-	    Date date = parseDate(details.get("Date"));
-	    long clientTime = date.getTime();
-	    long serverTime = new Date().getTime();
-	    long timeDelta = 600000; // +/- 10 minutes
+	if (apiUser == null) {
+	    throw new BadCredentialsException("Authorization Required");
+	}
 
-	    if (serverTime - timeDelta < clientTime
-		    && clientTime < serverTime + timeDelta) {
-		String payload = buildPayload(date, details.get("Resource"));
-		String serverSignature = MD5Util.generateHMAC(payload,
-			apiUser.getSecret());
-		if (clientSignature.equals(serverSignature)) {
-		    // Successful authentication
-		    return new ApiUserAuthentication(apiUser);
-		}
+	Date date = parseDate(details.get("Date"));
+	long clientTime = date.getTime();
+	long serverTime = new Date().getTime();
+	long timeDelta = 600000; // +/- 10 minutes
+
+	if (serverTime - timeDelta < clientTime
+		&& clientTime < serverTime + timeDelta) {
+	    String payload = buildPayload(details.get("HTTP-Verb"), date,
+		    details.get("Resource"));
+	    String serverSignature = MD5Util.generateHMAC(payload,
+		    apiUser.getSecret());
+	    if (clientSignature.equals(serverSignature)) {
+		// Successful authentication
+		return new ApiUserAuthentication(apiUser);
 	    }
 	}
 	// Unsuccessful authentication
@@ -82,8 +85,6 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-	// TODO from GoogleAccountsAuthenticationProvider:
-	// PreAuthenticatedAuthenticationToken.class.isAssignableFrom(authentication);
 	return true;
     }
 
@@ -93,8 +94,12 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
 
 	String[] credentials = credentialsString.split(":");
 
-	if (credentials.length != 2)
+	if (credentials.length != 2) {
 	    throw new BadCredentialsException("Authorization required");
+	}
+
+	credentials[0] = credentials[0].trim();
+	credentials[1] = credentials[1].trim();
 
 	return credentials;
     }
@@ -108,9 +113,9 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
 	}
     }
 
-    private String buildPayload(Date date, String resource) {
+    private String buildPayload(String httpVerb, Date date, String resource) {
 	// date.getTime() is millisecond based and epoch is seconds based
-	return "GET\n" + String.valueOf(date.getTime() / 1000) + "\n"
+	return httpVerb + "\n" + String.valueOf(date.getTime() / 1000) + "\n"
 		+ resource;
     }
 }
