@@ -5,6 +5,25 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+
+#1.7.2
+
+## New and noteworthy
+
+* The new APK v2.0 is now available in `http://instance.akvoflow.org/app2` [#666]
+* Introduced more consistent counts, fixing inaccuracies between the Dashboard's 
+  chart builder and the _RAW DATA_ report. [#651]
+* Revamped the way of transferring data to/from _Object Store_ (Amazon S3) [#690]
+
+## Resolved issues
+
+* Code cleanup - Monitoring related code [#643]
+* Adapt _bootstrap_ files to support _Monitoring_ features [#695]
+* Spreadsheet importer for the RAW DATA report misidentifies the columns [#697]
+* Disallow the usage of commas in _Survey Group_ names [#707]
+* Invalid XML characters in survey group name breaks the survey definition [#714]
+* signingKey is a required system properties [#725]
+
 #1.7.1
 
 ## New and noteworthy
