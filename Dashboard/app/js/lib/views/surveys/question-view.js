@@ -396,8 +396,9 @@ FLOW.QuestionView = FLOW.View.extend({
   validateQuestionId: function(args) {
     var questionKeyId = FLOW.selectedControl.selectedQuestion.get('keyId');
     var questionId = this.get('questionId');
-
-    if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
+    if (FLOW.Env.mandatoryQuestionID && (questionId === null || questionId.match(/^\s*$/))) {
+      args.failure("The question id is mandatory");
+    } else if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
       args.failure('The question id can only contain alphanumeric characters')
     } else {
       var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
@@ -419,7 +420,6 @@ FLOW.QuestionView = FLOW.View.extend({
 	    }
 	  });
 	}, 1000);
-
       } else {
 	var otherQuestionIds = FLOW.store.filter(FLOW.Question, function(question) {
 	  return questionKeyId !== question.get('keyId');
