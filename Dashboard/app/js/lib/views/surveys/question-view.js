@@ -391,6 +391,8 @@ FLOW.QuestionView = FLOW.View.extend({
    * not, the uniqueness constraint only covers the survey and can
    * be checked on the client.
    */
+  throttleTimer: null,
+
   validateQuestionId: function(args) {
     var questionKeyId = FLOW.selectedControl.selectedQuestion.get('keyId');
     var questionId = this.get('questionId');
@@ -400,20 +402,24 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
       if (monitoring) {
-	$.ajax({
-	  url: '/rest/questions/' + questionKeyId + '/validate?questionId=' + questionId,
-	  type: 'POST',
-	  success: function(data) {
-	    if (data.success) {
-	      args.success();
-	    } else {
-	      args.failure(data.reason);
+	clearTimeout(this.throttleTimer);
+	this.throttleTimer = setTimeout(function () {
+	  $.ajax({
+	    url: '/rest/questions/' + questionKeyId + '/validate?questionId=' + questionId,
+	    type: 'POST',
+	    success: function(data) {
+	      if (data.success) {
+		args.success();
+	      } else {
+		args.failure(data.reason);
+	      }
+	    },
+	    error: function() {
+	      args.failure('Could not validate Question id with server');
 	    }
-	  },
-	  error: function() {
-	    args.failure('Could not validate Question id with server');
-	  }
-	});
+	  });
+	}, 1000);
+
       } else {
 	var otherQuestionIds = FLOW.store.filter(FLOW.Question, function(question) {
 	  return questionKeyId !== question.get('keyId');
@@ -475,7 +481,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	    self.onEditSuccess();
 	  }
 	});
-      },
+      }
     });
   },
 
@@ -783,22 +789,17 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('showAddAttributeDialogBool', false);
   },
 
-  timer:null,
-
   validateQuestionIdObserver: function() {
     var self = this;
-    clearTimeout(this.timer);
-    this.timer = setTimeout(function() {
-      self.validateQuestionId({
-	success: function() {
-	  self.set('questionIdValidationFailure', false);
-	  self.set('questionIdValidationFailureReason', null);
-	},
-	failure: function(msg) {
-	  self.set('questionIdValidationFailure', true);
-	  self.set('questionIdValidationFailureReason', msg);
-	}
-      });
-    }, 1000);
+    self.validateQuestionId({
+      success: function() {
+	self.set('questionIdValidationFailure', false);
+	self.set('questionIdValidationFailureReason', null);
+      },
+      failure: function(msg) {
+	self.set('questionIdValidationFailure', true);
+	self.set('questionIdValidationFailureReason', msg);
+      }
+    });
   }.observes('this.questionId')
 });
