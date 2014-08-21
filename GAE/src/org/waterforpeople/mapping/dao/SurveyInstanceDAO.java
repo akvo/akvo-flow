@@ -39,6 +39,7 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFiles;
@@ -85,25 +86,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         si.setDeviceFile(deviceFile);
         si.setUserID(userID);
         String delimiter = "\t";
-        Boolean surveyInstanceIsNew = true;
+        boolean surveyInstanceIsNew = true;
+        boolean listExistingResponses = true;
         Long geoQasId = null;
         DeviceDAO deviceDao = new DeviceDAO();
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
-        ArrayList<QuestionAnswerStore> qasList = new ArrayList<QuestionAnswerStore>();
+        ArrayList<QuestionAnswerStore> newResponses = new ArrayList<QuestionAnswerStore>();
 
-        Cache cache = null;
-        Map props = new HashMap();
-        props.put(GCacheFactory.EXPIRATION_DELTA, 15 * 60); // 15min
-        props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
-        try {
-            CacheFactory cacheFactory = CacheManager.getInstance()
-                    .getCacheFactory();
-            cache = cacheFactory.createCache(props);
-        } catch (Exception e) {
-            log.log(Level.SEVERE,
-                    "Couldn't initialize cache: " + e.getMessage(), e);
-        }
+        Cache cache = MemCacheUtils.initCache(4 * 60 * 60); // 4 hours - enough time to process large batch of surveys?
 
         for (String line : unparsedLines) {
 
@@ -235,6 +226,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                             SurveyInstance existingSi = findByUUID(uuid);
                             if (existingSi != null) {
                                 // SurveyInstance found, reuse it to process missing data
+                                surveyInstanceIsNew = false;
                                 si = existingSi;
                                 si.setDeviceFile(deviceFile);
                             } else {
@@ -261,35 +253,27 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 continue; // skip processing
             }
 
-            if (qasDao.listBySurveyInstance(si.getKey().getId(),
-                    si.getSurveyId(), parts[2].trim()).size() != 0) {
+            // now we have instance id check which responses already present
+            final String questionIdStr = parts[2].trim();
+            final Long surveyInstanceId = si.getKey().getId();
+
+            if (listExistingResponses) {
+                qasDao.listBySurveyInstance(surveyInstanceId);
+                listExistingResponses = false;
+            }
+
+            if (qasDao.isCached(Long.valueOf(questionIdStr), surveyInstanceId)) {
                 log.log(Level.INFO,
                         "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
-                                + si.getKey().getId() + ", " + si.getSurveyId() + ", "
-                                + parts[2].trim());
+                                + surveyInstanceId + ", " + si.getSurveyId() + ", "
+                                + questionIdStr);
                 continue; // skip processing
             }
 
-            if (cache != null) {
-                Map<Long, Long> ck = new HashMap<Long, Long>();
-                // {surveyInstanceId, questionID}
-                ck.put(si.getKey().getId(), Long.valueOf(parts[2].trim()));
-
-                if (cache.containsKey(ck)) {
-                    log.log(Level.INFO,
-                            "Skipping QAS already present in temporary cache [SurveyInstance, Survey, Question]: "
-                                    + si.getKey().getId() + ", "
-                                    + si.getSurveyId() + ", " + parts[2].trim());
-                    continue; // skip processing
-                } else {
-                    cache.put(ck, true);
-                }
-            }
-
             qas.setSurveyId(si.getSurveyId());
-            qas.setSurveyInstanceId(si.getKey().getId());
+            qas.setSurveyInstanceId(surveyInstanceId);
             qas.setArbitratyNumber(new Long(parts[1].trim()));
-            qas.setQuestionID(parts[2].trim());
+            qas.setQuestionID(questionIdStr);
             qas.setType(parts[3].trim());
             qas.setCollectionDate(collDate);
 
@@ -302,13 +286,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             if (parts.length >= 11) {
                 qas.setStrength(parts[10].trim());
             }
-            qasList.add(qas);
+            newResponses.add(qas);
         }
+
+        // batch save all responses
         try {
-            save(qasList);
+            qasDao.save(newResponses);
         } catch (DatastoreTimeoutException te) {
             sleep();
-            save(qasList);
+            qasDao.save(newResponses);
         }
         deviceFile.setSurveyInstanceId(si.getKey().getId());
         if (!hasErrors) {
@@ -318,19 +304,14 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             si.getDeviceFile().setProcessedStatus(
                     StatusCode.PROCESSED_WITH_ERRORS);
         }
-        si.setQuestionAnswersStore(qasList);
+        si.setQuestionAnswersStore(newResponses);
 
-        QuestionDao questionDao = new QuestionDao();
-        List<Question> qOptionList = questionDao.listQuestionByType(si.getSurveyId(),
-                Question.Type.OPTION);
+        boolean increment = true;
+        si.updateSummaryCounts(increment);
 
-        for (QuestionAnswerStore qas : qasList) {
+        for (QuestionAnswerStore qas : newResponses) {
             if (Question.Type.GEO.toString().equals(qas.getType())) {
                 geoQasId = qas.getKey().getId();
-            }
-            // update count of questionAnswerSummary objects
-            if (isSummarizable(qas, qOptionList)) {
-                SurveyQuestionSummaryDao.incrementCount(qas, 1);
             }
 
             if ("IMAGE".equals(qas.getType())) {
@@ -374,28 +355,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                     .param("delta", 1 + ""));
         }
         return si;
-    }
-
-    /**
-     * returns true if the question type for the answer object is an OPTION type
-     * 
-     * @param answer
-     * @param questions
-     * @return
-     */
-    private boolean isSummarizable(QuestionAnswerStore answer,
-            List<Question> questions) {
-        if (questions != null && answer != null) {
-            long id = Long.parseLong(answer.getQuestionID());
-            for (Question q : questions) {
-                if (q.getKey().getId() == id) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return false;
-        }
     }
 
     public SurveyInstanceDAO() {
@@ -509,7 +468,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /***********************
      * returns raw entities
-     * 
+     *
      * @param returnKeysOnly
      * @param beginDate
      * @param endDate
@@ -556,7 +515,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * finds a questionAnswerStore object for the surveyInstance and questionId passed in (if it
      * exists)
-     * 
+     *
      * @param surveyInstanceId
      * @param questionId
      * @return
@@ -580,7 +539,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * lists all questionAnswerStore objects for a single surveyInstance, optionally filtered by
      * type
-     * 
+     *
      * @param surveyInstanceId - mandatory
      * @param type - optional
      * @return
@@ -616,7 +575,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists all questionAnswerStore objects for a survey instance
-     * 
+     *
      * @param instanceId
      * @return
      */
@@ -635,7 +594,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists all questionAnswerStore objects for a specific question
-     * 
+     *
      * @param questionId
      * @return
      */
@@ -653,7 +612,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * Deletes a surveyInstance and all its related questionAnswerStore objects Based on the version
      * in DataBackoutServlet
-     * 
+     *
      * @param item
      * @return
      */
@@ -752,7 +711,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists all surveyInstance records for a given survey
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -794,7 +753,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists instances for the given surveyedLocale optionally filtered by the dates passed in
-     * 
+     *
      * @param surveyedLocaleId
      * @return
      */
@@ -806,7 +765,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists instances for the given surveyedLocale optionally filtered by the dates passed in
-     * 
+     *
      * @param surveyedLocaleId
      * @return
      */
@@ -844,7 +803,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     /**
      * lists all survey instances by the submitter passed in
-     * 
+     *
      * @param submitter
      * @return
      */
@@ -880,7 +839,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     /**
      * finds a single survey instance by uuid. This method will NOT load all QuestionAnswerStore
      * objects.
-     * 
+     *
      * @param uuid
      * @return
      */

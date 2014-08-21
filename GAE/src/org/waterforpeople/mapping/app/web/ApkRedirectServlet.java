@@ -37,18 +37,21 @@ public class ApkRedirectServlet extends HttpServlet {
     private static final String SATSTAT = "satStat";
     private static final String GPS_APP_PATH = "/gps";
     private static final String FLOW_APP_PATH = "/app";
+    private static final String FLOW_APP2_PATH = "/app2";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
             IOException {
         final DeviceApplicationDao dao = new DeviceApplicationDao();
         String servletPath = req.getServletPath();
-        String[] appCode = new String[] {};
+        String appCode = "";
 
         if (FLOW_APP_PATH.equals(servletPath)) {
-            appCode = new String[] { FIELDSURVEY, FLOWAPP };
+            appCode = FIELDSURVEY;
+        } else if (FLOW_APP2_PATH.equals(servletPath)) {
+            appCode = FLOWAPP;
         } else if (GPS_APP_PATH.equals(servletPath)) {
-            appCode = new String[] { SATSTAT };
+            appCode = SATSTAT;
         }
 
         final List<DeviceApplication> apps = dao

@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
 import javax.jdo.PersistenceManager;
@@ -75,7 +77,6 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Translation;
-import com.gallatinsystems.surveyal.app.web.SurveyalRestServlet;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -91,7 +92,7 @@ import static com.gallatinsystems.common.util.MemCacheUtils.*;
 
 /**
  * Restful servlet to do bulk data update operations
- * 
+ *
  * @author Christopher Fagiani
  */
 public class DataProcessorRestServlet extends AbstractRestApiServlet {
@@ -294,7 +295,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                                 if (sl.getLocaleType() == null
                                         || !sl.getLocaleType().equals(localeType)) {
                                     sl.setLocaleType(localeType);
-                                    // Ensure the save time is unique. See https://github.com/akvo/akvo-flow/issues/605
+                                    // Ensure the save time is unique. See
+                                    // https://github.com/akvo/akvo-flow/issues/605
                                     slDao.save(sl);
                                 }
                             }
@@ -438,7 +440,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     /**
      * This recomputes all Locale clusters. Clusters are deleted in the testharnessservlet. The keys
      * are first removed in the testharnessservlet.
-     * 
+     *
      * @param offset
      */
     private void recomputeLocaleClusters(String cursor) {
@@ -481,7 +483,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
     /**
      * this method re-runs scoring on all access points for a country
-     * 
+     *
      * @param country
      */
     private void rescoreAp(String country) {
@@ -582,7 +584,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     /**
      * iterates over the new summary counts and updates the records in the datastore. Where
      * appropriate, new records will be created and defunct records will be removed.
-     * 
+     *
      * @param summaryMap
      */
     private void saveSummaries(Map<String, Map<String, Long>> summaryMap) {
@@ -639,7 +641,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     /**
      * loads all the summarizable QuestionAnswerStore instances from the data store and accrues
      * counts by value occurrence in a map keyed on the questionId
-     * 
+     *
      * @param sinceDate
      * @return
      */
@@ -715,7 +717,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                         answers = val.split("\\|");
                     } else {
                         answers = new String[] {
-                            val
+                                val
                         };
                     }
 
@@ -744,7 +746,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     /**
      * iterates over all AccessPoints in a country and applies a static set of rules to determine
      * the proper value of the WFPProjectFlag
-     * 
+     *
      * @param country
      * @param cursor
      */
@@ -802,7 +804,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
     /**
      * Sends a message to a task queue to start or continue the processing of the AP Project Flag
-     * 
+     *
      * @param country
      * @param cursor
      */
@@ -824,7 +826,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      * excel file, the type of the answer is set according to the type of the question, while the
      * device sets the type according to a different convention. The action handles QAS_PAGE_SIZE
      * items in one call, and invokes new tasks as necessary if there are more items.
-     * 
+     *
      * @param cursor
      * @author M.T. Westra
      */
@@ -988,7 +990,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     /**
      * populates the creationSurveyId field for existing locales started from testharness with
      * host/webapp/testharness?action=addCreationSurveyIdToLocale
-     * 
+     *
      * @param cursor
      */
     public static void addCreationSurveyIdToLocale(String cursor) {
@@ -1003,7 +1005,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 SurveyInstance si = siDao.getByKey(sl.getLastSurveyalInstanceId());
                 if (si != null) {
                     sl.setCreationSurveyId(si.getSurveyId());
-                    // Ensure the save time is unique. See https://github.com/akvo/akvo-flow/issues/605
+                    // Ensure the save time is unique. See
+                    // https://github.com/akvo/akvo-flow/issues/605
                     slDao.save(sl);
                 }
             }
@@ -1026,7 +1029,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      * populates the displayName, surveyGroupId, and surveyInstanceContrib, setCreationSurveyId
      * fields for existing locales started from testharness with
      * host/webapp/testharness?action=populateMonitoringFieldsLocale&surveyId=xxxx
-     * 
+     *
      * @param cursor
      * @param surveyId
      */
@@ -1140,7 +1143,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 }
 
                 if (addSl) {
-                    // Ensure the save time is unique. See https://github.com/akvo/akvo-flow/issues/605
+                    // Ensure the save time is unique. See
+                    // https://github.com/akvo/akvo-flow/issues/605
                     slDao.save(sl);
                 }
             } catch (Exception e) {
@@ -1175,40 +1179,36 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      * (xxxx-xxxx-xxxx), using the existing identifier. In that way, the method is idempotent.
      * Started from testharness with
      * host/webapp/testharness?action=createNewIdentifiersLocales&surveyId=xxxxxx
-     * 
+     *
      * @param cursor
      * @param surveyId
      */
     private void createNewIdentifiersLocales(String cursor, Long surveyId) {
         final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        String id;
+        final Pattern localeIdPattern = Pattern.compile(SurveyedLocale.IDENTIFIER_PATTERN);
 
         // get locales by createdSurveyId
         final List<SurveyedLocale> results = slDao.listLocalesByCreationSurvey(surveyId, cursor,
                 LOCALE_PAGE_SIZE);
         log.log(Level.INFO,
-                "found surveyedLocales: "
-                        + results.size());
+                "Found " + results.size() + " surveyedLocales for surveyId=" + surveyId);
 
         for (SurveyedLocale sl : results) {
-            id = sl.getIdentifier();
+            if (sl.getIdentifier() != null) {
+                final String identifier = sl.getIdentifier();
 
-            // if the identifier has the shape 'xxxx-xxxx-xxxx', leave it alone
-            if (id.length() == 14 && (id.length() - id.replace("-", "").length() == 2)) {
-                continue;
-            }
+                // if the identifier has the shape 'xxxx-xxxx-xxxx', leave it alone
+                final Matcher localeIdMatcher = localeIdPattern.matcher(identifier);
+                if (localeIdMatcher.matches()) {
+                    continue;
+                }
 
-            // if it is an old style identifier, based on geolocation, reuse it
-            if (id.length() == 8 || id.length() == 9) {
-                sl.setIdentifier(id.substring(0, 4) + "-" + id.substring(4, 8) + "-"
-                        + SurveyalRestServlet.base32Uuid().substring(8));
+                // if it is an old style identifier, based on geolocation, reuse it if possible
+                sl.setIdentifier(SurveyedLocale.generateBase32Uuid(identifier));
             } else {
-                // create a new one
-                String base32Id = SurveyalRestServlet.base32Uuid();
-                // Put dashes between the 4-5 and 8-9 positions to increase readability
-                sl.setIdentifier(base32Id.substring(0, 4) + "-" + base32Id.substring(4, 8) + "-"
-                        + base32Id.substring(8));
+                sl.setIdentifier(SurveyedLocale.generateBase32Uuid());
             }
+
             // Ensure the save time is unique. See https://github.com/akvo/akvo-flow/issues/605
             slDao.save(sl);
         }
@@ -1234,7 +1234,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      * runs over all surveyal value objects, and populates: the questionOrder and questionGroupOrder
      * fields, and the surveyId if it is not populated This method is invoked as a URL request:
      * http://..../webapp/testharness?action=populateQuestionOrders with optional parameter surveyId
-     * 
+     *
      * @param cursor
      */
     @SuppressWarnings("unchecked")

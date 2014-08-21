@@ -19,7 +19,6 @@ package org.waterforpeople.mapping.app.web;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.net.URLConnection;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -53,8 +52,10 @@ import org.waterforpeople.mapping.helper.SurveyEventHelper;
 
 import services.S3Driver;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.MailUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.exceptions.SignedDataException;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -78,6 +79,7 @@ public class TaskServlet extends AbstractRestApiServlet {
     private static final String SIGNING_ALGORITHM = "HmacSHA1";
     private static String DEVICE_FILE_PATH;
     private static String FROM_ADDRESS;
+    private static String BUCKET_NAME;
     private static final String REGION_FLAG = "regionFlag=true";
     private static final long serialVersionUID = -2607990749512391457L;
     private static final Logger log = Logger.getLogger(TaskServlet.class
@@ -86,13 +88,14 @@ public class TaskServlet extends AbstractRestApiServlet {
     private SurveyInstanceDAO siDao;
     private final static String EMAIL_FROM_ADDRESS_KEY = "emailFromAddress";
     private TreeMap<String, String> recepientList = null;
-    public static final int CONNECTION_TIMEOUT = 5 * 60 * 1000; // 5min
+    private static final String OBJECTKEY_PREFIX = "devicezip/";
 
     public TaskServlet() {
         DEVICE_FILE_PATH = com.gallatinsystems.common.util.PropertyUtil
                 .getProperty("deviceZipPath");
         FROM_ADDRESS = com.gallatinsystems.common.util.PropertyUtil
                 .getProperty(EMAIL_FROM_ADDRESS_KEY);
+        BUCKET_NAME = com.gallatinsystems.common.util.PropertyUtil.getProperty("s3bucket");
         aph = new AccessPointHelper();
         siDao = new SurveyInstanceDAO();
         recepientList = MailUtil.loadRecipientList();
@@ -100,7 +103,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 
     /**
      * Retrieve the file from S3 storage and persist the data to the data store
-     * 
+     *
      * @param fileName
      * @param phoneNumber
      * @param imei
@@ -116,12 +119,17 @@ public class TaskServlet extends AbstractRestApiServlet {
         ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
 
         try {
-            DeviceFilesDao dfDao = new DeviceFilesDao();
 
-            URL url = new URL(DEVICE_FILE_PATH + fileName);
-            URLConnection conn = url.openConnection();
-            conn.setConnectTimeout(CONNECTION_TIMEOUT);
-            conn.setReadTimeout(CONNECTION_TIMEOUT);
+            DeviceFilesDao dfDao = new DeviceFilesDao();
+            String url = DEVICE_FILE_PATH + fileName;
+
+            try {
+                S3Util.putObjectAcl(BUCKET_NAME, OBJECTKEY_PREFIX + fileName, S3Util.ACL.PRIVATE);
+            } catch (IOException e) {
+                log.log(Level.SEVERE, "Error trying to secure zip file: " + e.getMessage(), e);
+            }
+
+            URLConnection conn = S3Util.getConnection(BUCKET_NAME, OBJECTKEY_PREFIX + fileName);
 
             BufferedInputStream bis = null;
 
@@ -137,7 +145,7 @@ public class TaskServlet extends AbstractRestApiServlet {
                         .param("imei", imei)
                         .param("checksum", checksum)
                         .param("offset", offset.toString())
-                        .countdownMillis(CONNECTION_TIMEOUT));
+                        .countdownMillis(Constants.CONNECTION_TIMEOUT));
 
                 throw new Exception(e);
             }
@@ -145,7 +153,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             ZipInputStream zis = new ZipInputStream(bis);
             List<DeviceFiles> dfList = null;
             DeviceFiles deviceFile = null;
-            dfList = dfDao.listByUri(url.toURI().toString());
+            dfList = dfDao.listByUri(url);
             if (dfList != null && dfList.size() > 0) {
                 deviceFile = dfList.get(0);
             }
@@ -154,7 +162,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             }
             deviceFile.setProcessDate(getNowDateTimeFormatted());
             deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
-            deviceFile.setURI(url.toURI().toString());
+            deviceFile.setURI(url);
             if (phoneNumber == null || phoneNumber.equals("null")) {
                 deviceFile.setPhoneNumber(null);
             } else {
@@ -359,8 +367,20 @@ public class TaskServlet extends AbstractRestApiServlet {
             }
             zis.closeEntry();
         }
+
         // check the signature if we have it
-        if (surveyDataOnly != null && dataSig != null) {
+        String allowUnsigned = PropertyUtil.getProperty(ALLOW_UNSIGNED);
+
+        if ("false".equalsIgnoreCase(allowUnsigned)) {
+
+            if (dataSig == null) {
+                throw new SignedDataException("Datafile does not have a signature");
+            }
+
+            if (surveyDataOnly == null) {
+                throw new SignedDataException("data.txt not found in data zip");
+            }
+
             try {
                 MessageDigest sha1Digest = MessageDigest.getInstance("SHA1");
                 byte[] digest = sha1Digest.digest(surveyDataOnly
@@ -375,29 +395,11 @@ public class TaskServlet extends AbstractRestApiServlet {
                 String encodedHmac = com.google.gdata.util.common.util.Base64
                         .encode(hmac);
                 if (!encodedHmac.trim().equals(dataSig.trim())) {
-                    String allowUnsigned = PropertyUtil
-                            .getProperty(ALLOW_UNSIGNED);
-                    if (allowUnsigned != null
-                            && allowUnsigned.trim().equalsIgnoreCase("false")) {
-                        throw new SignedDataException(
-                                "Computed signature does not match the one submitted with the data");
-                    } else {
-                        log.warning("Signatures don't match. Processing anyway since allow unsigned is true");
-                    }
+                    throw new SignedDataException(
+                            "Computed signature does not match the one submitted with the data");
                 }
             } catch (GeneralSecurityException e) {
-                throw new SignedDataException("Could not calculate signature",
-                        e);
-            }
-
-        } else if (surveyDataOnly != null) {
-            // if there is no signature, check the configuration to see if we
-            // are allowed to proceed
-            String allowUnsigned = PropertyUtil.getProperty(ALLOW_UNSIGNED);
-            if (allowUnsigned != null
-                    && allowUnsigned.trim().equalsIgnoreCase("false")) {
-                throw new SignedDataException(
-                        "Datafile does not have a signature");
+                throw new SignedDataException("Could not calculate signature", e);
             }
         }
 
@@ -459,7 +461,7 @@ public class TaskServlet extends AbstractRestApiServlet {
      * handles the callback from the device indicating that a new data file is available. This
      * method will call processFile to retrieve the file and persist the data to the data store it
      * will then add access points for each water point in the survey responses.
-     * 
+     *
      * @param req
      */
     @SuppressWarnings("rawtypes")

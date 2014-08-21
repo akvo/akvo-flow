@@ -29,12 +29,16 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
 import org.apache.commons.lang.StringUtils;
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.gis.map.MapUtils;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.domain.Question;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyInstance extends BaseDomain {
@@ -304,7 +308,7 @@ public class SurveyInstance extends BaseDomain {
 
     /**
      * Extract geolocation information from a survey instance
-     * 
+     *
      * @param surveyInstance
      * @return a map containing latitude and longitude entries null if a null string is provided
      */
@@ -339,5 +343,58 @@ public class SurveyInstance extends BaseDomain {
         }
 
         return geoLocationMap;
+    }
+
+    /**
+     * Update counts of SurveyQuestionSummary entities related to responses from this survey
+     * instance.
+     */
+    public void updateSummaryCounts(boolean increment) {
+
+        // retrieve all summary objects
+        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
+        QuestionDao qDao = new QuestionDao();
+
+        List<SurveyQuestionSummary> saveList = new ArrayList<SurveyQuestionSummary>();
+        List<SurveyQuestionSummary> deleteList = new ArrayList<SurveyQuestionSummary>();
+
+        for (QuestionAnswerStore response : questionAnswersStore) {
+            final String questionIdStr = response.getQuestionID();
+            final String[] questionResponse = response.getValue().split("\\|");
+            final Long questionId = Long.parseLong(response.getQuestionID());
+
+            Question question = qDao.getByKey(questionId);
+            if (!question.canBeCharted()) {
+                continue;
+            }
+
+            for (int i = 0; i < questionResponse.length; i++) {
+                List<SurveyQuestionSummary> questionSummaryList = summaryDao
+                        .listByResponse(questionIdStr, questionResponse[i]);
+                SurveyQuestionSummary questionSummary = null;
+                if (questionSummaryList.isEmpty()) {
+                    questionSummary = new SurveyQuestionSummary();
+                    questionSummary.setQuestionId(response.getQuestionID());
+                    questionSummary.setResponse(questionResponse[i]);
+                    questionSummary.setCount(0L);
+                } else {
+                    questionSummary = questionSummaryList.get(0);
+                }
+
+                // update and save or delete
+                long count = questionSummary.getCount();
+                count = increment ? ++count : --count;
+                questionSummary.setCount(count);
+
+                if (count > 0) {
+                    saveList.add(questionSummary);
+                } else {
+                    deleteList.add(questionSummary);
+                }
+            }
+        }
+
+        summaryDao.save(saveList);
+        summaryDao.delete(deleteList);
     }
 }

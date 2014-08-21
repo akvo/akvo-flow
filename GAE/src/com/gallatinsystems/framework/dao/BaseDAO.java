@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
 
+import net.sf.jsr107cache.CacheException;
+
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
 
 import com.gallatinsystems.common.Constants;
@@ -39,7 +41,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
  * list).
- * 
+ *
  * @author Christopher Fagiani
  * @param <T> a persistent class that extends BaseDomain
  */
@@ -66,7 +68,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * Injected version of the actual Class to pass for the persistentClass in the query creation.
      * This must be set before using this implementation class or any derived class.
-     * 
+     *
      * @param e an instance of the type of object to use for this instance of the DAO
      *            implementation.
      */
@@ -77,7 +79,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * saves an object to the data store. This method will set the lastUpdateDateTime on the domain
      * object prior to saving and will set the createdDateTime (if it is null).
-     * 
+     *
      * @param <E>
      * @param obj
      * @return
@@ -97,7 +99,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * saves an object and then flushes the persistence manager. In most cases, this method should
      * <b>NOT</b> be used (prefer the normal save method instead).
-     * 
+     *
      * @param <E>
      * @param obj
      * @return
@@ -117,7 +119,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * saves all instances contained within the collection passed in. This will set the
      * lastUpdateDateTime for the objects prior to saving.
-     * 
+     *
      * @param <E>
      * @param objList
      * @return
@@ -142,7 +144,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * gets the core persistent object for the dao concrete class using the string key (obtained
      * from KeyFactory.stringFromKey())
-     * 
+     *
      * @param keyString
      * @return
      */
@@ -152,7 +154,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * gets an object by key
-     * 
+     *
      * @param key
      * @return
      */
@@ -162,7 +164,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * convenience method to allow loading of other persistent objects by key from this dao
-     * 
+     *
      * @param keyString
      * @return
      */
@@ -181,7 +183,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * gets a single object identified by the key passed in.
-     * 
+     *
      * @param <E>
      * @param key
      * @param clazz
@@ -202,7 +204,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * gets a single object by key where the key is represented as a Long
-     * 
+     *
      * @param id
      * @return
      */
@@ -213,7 +215,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * gets a single object by key where the key is represented as a Long and the type is the class
      * passed in via clazz
-     * 
+     *
      * @param <E>
      * @param id
      * @param clazz
@@ -234,7 +236,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * lists all of the concreteClass instances in the datastore, using a page size.
-     * 
+     *
      * @return
      */
     public List<T> list(String cursorString, Integer pageSize) {
@@ -244,7 +246,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * lists all of the concreteClass instances in the datastore. if we think we'll use this on
      * large tables, we should use Extents
-     * 
+     *
      * @return
      */
     public List<T> list(String cursorString) {
@@ -261,7 +263,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * lists all of the type passed in. if we think we'll use this on large tables, we should use
      * Extents
-     * 
+     *
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -292,7 +294,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * returns a single object based on the property value
-     * 
+     *
      * @param propertyName
      * @param propertyValue
      * @param propertyType
@@ -311,7 +313,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * gets a List of object by key where the key is represented as a Long
-     * 
+     *
      * @param ids Array of Long representing the keys of objects
      * @return null if ids is null, otherwise a list of objects
      */
@@ -334,7 +336,7 @@ public class BaseDAO<T extends BaseDomain> {
      * passed in since using this requires the caller know the persistence data type of the field
      * and the field name, this method is protected so that it can only be used by subclass DAOs. We
      * don't want those details to leak into higher layers of the code.
-     * 
+     *
      * @param propertyName
      * @param propertyValue
      * @param propertyType
@@ -348,7 +350,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * lists all objects of type class that have the property name/value passed in
-     * 
+     *
      * @param <E>
      * @param propertyName
      * @param propertyValue
@@ -367,7 +369,7 @@ public class BaseDAO<T extends BaseDomain> {
      * lists all instances of type clazz that have the property equal to the value passed in and
      * orders the results by the field specified. NOTE: for this to work on the datastore, you may
      * need to have an index defined.
-     * 
+     *
      * @param <E>
      * @param propertyName
      * @param propertyValue
@@ -387,7 +389,7 @@ public class BaseDAO<T extends BaseDomain> {
      * lists all instances that have the property name/value matching those passed in optionally
      * sorted by the order by column and direction. NOTE: depending on the sort being done, you may
      * need an index in the datastore for this to work.
-     * 
+     *
      * @param propertyName
      * @param propertyValue
      * @param propertyType
@@ -405,7 +407,7 @@ public class BaseDAO<T extends BaseDomain> {
      * lists all instances that have the property name/value matching those passed in optionally
      * sorted by the order by column. NOTE: depending on the sort being done, you may need an index
      * in the datastore for this to work.
-     * 
+     *
      * @param propertyName
      * @param propertyValue
      * @param propertyType
@@ -423,7 +425,7 @@ public class BaseDAO<T extends BaseDomain> {
      * using this requires the caller know the persistence data type of the field and the field
      * name, this method is protected so that it can only be used by subclass DAOs. We don't want
      * those details to leak into higher layers of the code.
-     * 
+     *
      * @param propertyName
      * @param propertyValue
      * @param propertyType
@@ -459,7 +461,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * deletes an object from the db
-     * 
+     *
      * @param <E>
      * @param obj
      */
@@ -478,7 +480,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * utility method to form a hash map of query parameters using an equality operator
-     * 
+     *
      * @param paramName - name of object property
      * @param filter - in/out stringBuilder of query filters
      * @param param -in/out stringBuilder of param names
@@ -495,7 +497,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * utility method to form a hash map of query parameters
-     * 
+     *
      * @param paramName - name of object property
      * @param filter - in/out stringBuilder of query filters
      * @param param -in/out stringBuilder of param names
@@ -524,7 +526,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * gets a GAE datastore cursor based on the results list passed in. The list must be a non-null
      * list of persistent entities (entites retrived from the datastore in the same session).
-     * 
+     *
      * @param results
      * @return
      */
@@ -545,7 +547,7 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * sets up the cursor with the given page size (or no page size if the cursor string is set to
      * the ALL_RESULTS constant)
-     * 
+     *
      * @param cursorString
      * @param pageSize
      * @param query
@@ -581,7 +583,7 @@ public class BaseDAO<T extends BaseDomain> {
 
     /**
      * sets up the cursor using the default page size
-     * 
+     *
      * @param cursorString
      * @param query
      */
@@ -598,5 +600,33 @@ public class BaseDAO<T extends BaseDomain> {
         } catch (InterruptedException e) {
             // no-op
         }
+    }
+
+    /**
+     * Default format for cache key string
+     *
+     * @param object
+     * @return
+     * @throws CacheException
+     */
+    public String getCacheKey(BaseDomain object) throws CacheException {
+        if (object.getKey() == null) {
+            throw new CacheException("Trying to get cache key from an unsaved object");
+        }
+        return object.getClass().getSimpleName() + "-" + object.getKey().getId();
+    }
+
+    /**
+     * Default format for cache key string
+     *
+     * @param objectId
+     * @return
+     * @throws CacheException
+     */
+    public String getCacheKey(String objectId) throws CacheException {
+        if (objectId == null) {
+            throw new CacheException("Trying to get cache key from an unsaved object");
+        }
+        return concreteClass.getSimpleName() + "-" + objectId;
     }
 }

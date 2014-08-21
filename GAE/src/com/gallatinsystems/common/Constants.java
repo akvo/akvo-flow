@@ -26,6 +26,9 @@ public class Constants {
             "createdDateTime", "lastUpdateDateTime", "lastUpdateUserId",
             "createUserId"
     };
-    public final static int MAX_LENGTH = 500;
+    public static final int MAX_LENGTH = 500;
+    public static final int CONNECTION_TIMEOUT = 5 * 60 * 1000; // 5min
+    public static final String AWS_ACCESS_ID = "aws_identifier";
+    public static final String AWS_SECRET_KEY = "aws_secret_key";
 
 }

@@ -19,16 +19,13 @@ package com.gallatinsystems.survey.dao;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.jdo.PersistenceManager;
-
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Translation;
 
 /**
  * Dao for manipulating questionOptions
- *
+ * 
  * @author Christopher Fagiani
  */
 public class QuestionOptionDao extends BaseDAO<QuestionOption> {
@@ -42,7 +39,7 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 
     /**
      * lists all options for a given question id, including the translations (if any)
-     *
+     * 
      * @param questionId
      * @return
      */
@@ -65,7 +62,7 @@ public class QuestionOptionDao extends BaseDAO<QuestionOption> {
 
     /**
      * Deletes all options associated with a given question
-     *
+     * 
      * @param questionId
      */
     public void deleteOptionsForQuestion(Long questionId) {

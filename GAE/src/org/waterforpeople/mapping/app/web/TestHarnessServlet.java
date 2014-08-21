@@ -20,6 +20,7 @@ import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
 
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
@@ -403,6 +405,7 @@ public class TestHarnessServlet extends HttpServlet {
 
             final String val1 = sb.toString();
             final String val2 = "TEST";
+            String testResult = "OK";
 
             QuestionAnswerStore qas1 = new QuestionAnswerStore();
             qas1.setArbitratyNumber(0L);
@@ -422,8 +425,8 @@ public class TestHarnessServlet extends HttpServlet {
 
             qas2 = dao.save(qas2);
 
-            assert dao.listBySurveyInstance(0L, 0L, "0").get(0).getValue().equals(val1);
-            assert dao.listBySurveyInstance(1L, 1L, "1").get(0).getValue().equals(val2);
+            assert dao.getByQuestionAndSurveyInstance(0L, 0L).getValue().equals(val1);
+            assert dao.getByQuestionAndSurveyInstance(1L, 1L).getValue().equals(val2);
 
             qas1.setValue(val2);
             qas2.setValue(val1);
@@ -431,20 +434,44 @@ public class TestHarnessServlet extends HttpServlet {
             qas1 = dao.save(qas1);
             qas2 = dao.save(qas2);
 
-            assert dao.listBySurveyInstance(0L, 0L, "0").get(0).getValue().equals(val2);
-            assert dao.listBySurveyInstance(1L, 1L, "1").get(0).getValue().equals(val1);
+            assert dao.getByQuestionAndSurveyInstance(0L, 0L).getValue().equals(val2);
+            assert dao.getByQuestionAndSurveyInstance(1L, 1L).getValue().equals(val1);
+
+            if (!dao.isCached(0L, 0L) || !dao.isCached(1L, 1L)) {
+                testResult = "NOK";
+            }
 
             dao.delete(qas1);
             dao.delete(qas2);
 
+            if (dao.isCached(0L, 0L) || dao.isCached(1L, 1L)) {
+                testResult = "NOK";
+            }
+
             try {
                 PrintWriter w = resp.getWriter();
-                w.write("OK");
+                w.write(testResult);
                 w.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+        } else if ("testCacheKey".equals(action)) {
+            try {
+                Writer w = resp.getWriter();
+                Survey s = new Survey();
+                SurveyDAO dao = new SurveyDAO();
+                try {
+                    w.write(dao.getCacheKey(s));
+                } catch (CacheException e) {
+                    log.log(Level.WARNING, e.getMessage());
+                }
+                w.write("\n");
+                w.flush();
+                w.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
