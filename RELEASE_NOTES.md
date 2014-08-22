@@ -6,6 +6,12 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 Akvo FLOW Dashboard release notes
 ----
 
+#1.7.2.1
+
+## Resolved issues
+
+* Data points show up as "Unknown" on non-monitoring groups [#735]
+
 #1.7.2
 
 ## New and noteworthy
