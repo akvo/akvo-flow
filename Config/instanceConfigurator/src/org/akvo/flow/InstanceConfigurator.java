@@ -37,12 +37,12 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.policy.Policy;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
 import com.amazonaws.services.identitymanagement.model.AccessKey;
-import com.amazonaws.services.identitymanagement.model.AddUserToGroupRequest;
 import com.amazonaws.services.identitymanagement.model.CreateAccessKeyRequest;
 import com.amazonaws.services.identitymanagement.model.CreateAccessKeyResult;
-import com.amazonaws.services.identitymanagement.model.CreateGroupRequest;
 import com.amazonaws.services.identitymanagement.model.CreateUserRequest;
-import com.amazonaws.services.identitymanagement.model.PutGroupPolicyRequest;
+import com.amazonaws.services.identitymanagement.model.GetUserRequest;
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
+import com.amazonaws.services.identitymanagement.model.PutUserPolicyRequest;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Region;
 
@@ -118,16 +118,20 @@ public class InstanceConfigurator {
 
         // GAE
 
-        System.out.println("Creating group: " + gaeUser);
-        iamClient.createGroup(new CreateGroupRequest(gaeUser));
-
         System.out.println("Creating user: " + gaeUser);
-        iamClient.createUser(new CreateUserRequest(gaeUser));
 
-        System.out.println("Adding user " + gaeUser + " to group " + gaeUser);
-        iamClient.addUserToGroup(new AddUserToGroupRequest(gaeUser, gaeUser));
+        GetUserRequest gaeUserRequest = new GetUserRequest();
+        gaeUserRequest.setUserName(gaeUser);
+
+        try {
+            iamClient.getUser(gaeUserRequest);
+            System.out.println("User already exists, skipping creation");
+        } catch (NoSuchEntityException e) {
+            iamClient.createUser(new CreateUserRequest(gaeUser));
+        }
 
         System.out.println("Requesting security credentials for " + gaeUser);
+
         CreateAccessKeyRequest gaeAccessRequest = new CreateAccessKeyRequest();
         gaeAccessRequest.setUserName(gaeUser);
 
@@ -136,16 +140,20 @@ public class InstanceConfigurator {
 
         // APK
 
-        System.out.println("Creating group: " + apkUser);
-        iamClient.createGroup(new CreateGroupRequest(apkUser));
-
         System.out.println("Creating user: " + apkUser);
-        iamClient.createUser(new CreateUserRequest(apkUser));
 
-        System.out.println("Adding user " + apkUser + " to group " + apkUser);
-        iamClient.addUserToGroup(new AddUserToGroupRequest(apkUser, apkUser));
+        GetUserRequest apkUserRequest = new GetUserRequest();
+        apkUserRequest.setUserName(apkUser);
+
+        try {
+            iamClient.getUser(apkUserRequest);
+            System.out.println("User already exists, skipping creation");
+        } catch (NoSuchEntityException e) {
+            iamClient.createUser(new CreateUserRequest(apkUser));
+        }
 
         System.out.println("Requesting security credentials for " + apkUser);
+
         CreateAccessKeyRequest apkAccessRequest = new CreateAccessKeyRequest();
         apkAccessRequest.setUserName(apkUser);
 
@@ -172,9 +180,10 @@ public class InstanceConfigurator {
         StringWriter gaePolicy = new StringWriter();
         t2.process(data, gaePolicy);
 
-        iamClient.putGroupPolicy(new PutGroupPolicyRequest(apkUser, apkUser, Policy.fromJson(
+        iamClient.putUserPolicy(new PutUserPolicyRequest(apkUser, apkUser, Policy.fromJson(
                 apkPolicy.toString()).toJson()));
-        iamClient.putGroupPolicy(new PutGroupPolicyRequest(gaeUser, gaeUser, Policy.fromJson(
+
+        iamClient.putUserPolicy(new PutUserPolicyRequest(gaeUser, gaeUser, Policy.fromJson(
                 gaePolicy.toString()).toJson()));
 
         System.out.println("Creating configuration files...");
