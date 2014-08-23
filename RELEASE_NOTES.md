@@ -6,6 +6,12 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 Akvo FLOW Dashboard release notes
 ----
 
+#1.7.2.2
+
+## Resolved issues
+
+* Deployment enhancements - Instance Configurator [#724]
+
 #1.7.2.1
 
 ## Resolved issues
