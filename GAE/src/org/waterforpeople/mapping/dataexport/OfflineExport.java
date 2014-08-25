@@ -59,6 +59,7 @@ public class OfflineExport extends GraphicalSurveySummaryExporter {
     public void export(Map<String, String> criteria, File outputFile,
             String serverBase, Map<String, String> options) {
         try {
+            boolean useQuestionId = "true".equals(criteria.get("useQuestionId"));
             SurveyBulkUploader up = new SurveyBulkUploader();
             criteria.put(SurveyBulkUploader.MODE_KEY,
                     SurveyBulkUploader.MERGE_ONLY_MODE);
@@ -75,7 +76,7 @@ public class OfflineExport extends GraphicalSurveySummaryExporter {
                 Sheet sheet = wb.createSheet();
                 processOptions(options);
                 List<String> questionIds = (List<String>) createRawDataHeader(
-                        wb, sheet, questionMap)[0];
+                        wb, sheet, questionMap, useQuestionId)[0];
                 // now read in the files
                 for (File f : inputFiles) {
                     if (f.getName().toLowerCase().endsWith(".zip")) {
