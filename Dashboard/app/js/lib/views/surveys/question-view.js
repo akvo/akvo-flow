@@ -397,9 +397,9 @@ FLOW.QuestionView = FLOW.View.extend({
     var questionKeyId = FLOW.selectedControl.selectedQuestion.get('keyId');
     var questionId = this.get('questionId');
     if (FLOW.Env.mandatoryQuestionID && (questionId === null || questionId.match(/^\s*$/))) {
-      args.failure("The question id is mandatory");
+      args.failure(Ember.String.loc('_question_id_mandatory'));
     } else if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
-      args.failure('The question id can only contain alphanumeric characters')
+      args.failure(Ember.String.loc('_question_id_only_alphanumeric'))
     } else {
       var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
       if (monitoring) {
@@ -416,7 +416,7 @@ FLOW.QuestionView = FLOW.View.extend({
 	      }
 	    },
 	    error: function() {
-	      args.failure('Could not validate Question id with server');
+	      args.failure(Ember.String.loc('_could_not_validate_question_id_with_server'));
 	    }
 	  });
 	}, 1000);
