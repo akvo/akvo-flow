@@ -302,6 +302,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         currentStep = 1;
         this.serverBase = serverBase;
         PrintWriter pw = null;
+        boolean useQuestionId = "true".equals(criteria.get("useQuestionId"));
         try {
             SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                     LOADING_QUESTIONS.get(locale)));
@@ -350,7 +351,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 SummaryModel model = fetchAndWriteRawData(
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
                         serverBase, questionMap, wb, isFullReport, fileName,
-                        criteria.get("apiKey"), lastCollection);
+                        criteria.get("apiKey"), lastCollection, useQuestionId);
                 if (isFullReport) {
                     SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                             WRITING_SUMMARY.get(locale)));
@@ -402,7 +403,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     protected SummaryModel fetchAndWriteRawData(String surveyId,
             final String serverBase,
             Map<QuestionGroupDto, List<QuestionDto>> questionMap, Workbook wb,
-            final boolean generateSummary, File outputFile, String apiKey, boolean lastCollection)
+            final boolean generateSummary, File outputFile, String apiKey, boolean lastCollection,
+            boolean useQuestionId)
             throws Exception {
         final SummaryModel model = new SummaryModel();
         final String key = apiKey;
@@ -424,7 +426,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
 
-        Object[] results = createRawDataHeader(wb, sheet, questionMap);
+        Object[] results = createRawDataHeader(wb, sheet, questionMap, useQuestionId);
         final List<String> questionIdList = (List<String>) results[0];
         final List<String> unsummarizable = (List<String>) results[1];
 
@@ -638,7 +640,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      *         NUMBER questions)
      */
     protected Object[] createRawDataHeader(Workbook wb, Sheet sheet,
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap) {
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
+            boolean useQuestionId) {
         Row row = null;
 
         row = getRow(0, sheet);
@@ -675,15 +678,22 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             createCell(row, offset++, "--GEOCODE--|"
                                     + CODE_LABEL.get(locale), headerStyle);
                         } else {
+                            String header = "";
+                            if (useQuestionId) {
+                                header = q.getQuestionId();
+                            } else {
+                                header = q.getKeyId().toString()
+                                        + "|"
+                                        + getLocalizedText(q.getText(),
+                                                q.getTranslationMap())
+                                                .replaceAll("\n", "")
+                                                .trim();
+                            }
                             createCell(
                                     row,
                                     offset++,
-                                    q.getKeyId().toString()
-                                            + "|"
-                                            + getLocalizedText(q.getText(),
-                                                    q.getTranslationMap())
-                                                    .replaceAll("\n", "")
-                                                    .trim(), headerStyle);
+                                    header,
+                                    headerStyle);
                         }
                         if (!(QuestionType.NUMBER == q.getType() || QuestionType.OPTION == q
                                 .getType())) {

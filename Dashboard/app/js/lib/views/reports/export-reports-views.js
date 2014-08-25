@@ -13,7 +13,8 @@ FLOW.ReportLoader = Ember.Object.create({
         locale: 'en',
         exportMode: 'RAW_DATA',
         generateTabFormat: 'false',
-        lastCollection: 'false'
+        lastCollection: 'false',
+        useQuestionId: 'false'
       }
     },
     RAW_DATA_TEXT: {
@@ -65,6 +66,7 @@ FLOW.ReportLoader = Ember.Object.create({
     }
 
     criteria.opts.lastCollection = '' + (exportType === 'RAW_DATA' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
+    criteria.opts.useQuestionId = '' + !!FLOW.editControl.useQuestionId;
 
     this.set('criteria', criteria);
     FLOW.savingMessageControl.numLoadingChange(1);
@@ -155,7 +157,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     }
     FLOW.ReportLoader.load('RAW_DATA', sId);
   },
-  
+
   showRawTextFileExport: function () {
 	var sId = this.get('selectedSurvey');
     if (!sId) {
