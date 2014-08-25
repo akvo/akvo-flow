@@ -1152,6 +1152,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "true");
         criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
+        criteria.put("useQuestionId", "true");
         criteria.put("apiKey", args[3]);
         exporter.export(criteria, new File(args[0]), args[1], options);
     }
