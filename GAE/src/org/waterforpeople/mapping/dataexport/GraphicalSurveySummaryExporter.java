@@ -302,7 +302,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         currentStep = 1;
         this.serverBase = serverBase;
         PrintWriter pw = null;
-        boolean useQuestionId = "true".equals(criteria.get("useQuestionId"));
+        boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         try {
             SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                     LOADING_QUESTIONS.get(locale)));
