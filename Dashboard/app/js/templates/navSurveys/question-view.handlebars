@@ -4,7 +4,7 @@
   {{#if view.amOpenQuestion}}
     <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
     <label>
-      Question id:
+      {{t _question_id}}: {{tooltip _question_id_tooltip}}
       {{#if view.questionIdValidationFailure }}
       <span style="color:red">{{view.questionIdValidationFailureReason}}</span>
       {{/if}}
