@@ -50,5 +50,6 @@
         <property name="useTabRDRFlag" value="false"/>
         <property name="showStatisticsFeature" value="false"/>
         <property name="showMonitoringFeature" value="false"/>
+        <property name="mandatoryQuestionID" value="false"/>
     </system-properties>
 </appengine-web-app>
