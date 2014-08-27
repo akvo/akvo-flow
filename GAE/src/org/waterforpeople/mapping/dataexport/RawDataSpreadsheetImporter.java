@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -539,6 +540,37 @@ public class RawDataSpreadsheetImporter implements DataImporter {
     @Override
     public Map<Integer, String> validate(File file) {
         Map<Integer, String> errorMap = new HashMap<Integer, String>();
+
+        try {
+	    Sheet sheet = getDataSheet(file);
+	    Row headerRow = sheet.getRow(0);
+	    boolean firstQuestionFound = false;
+
+	    for (Cell cell : headerRow) {
+		String cellValue = cell.getStringCellValue();
+		if (firstQuestionFound && !cellValue.matches(".+\\|.+")) {
+		    errorMap.put(cell.getColumnIndex(),
+			    String.format("The header \"%s\" can not be imported", cellValue));
+		    break;
+		} else {
+		    if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
+			firstQuestionFound = true;
+			int idx = cell.getColumnIndex();
+			if (!(idx == 4 || idx == 6)) {
+			    errorMap.put(idx, "Found the first question at the wrong column index");
+			    break;
+			}
+		    }
+		}
+	    }
+	    if (!firstQuestionFound) {
+		errorMap.put(-1, "A question could not be found");
+	    }
+
+	} catch (Exception e) {
+	    errorMap.put(-1, e.getMessage());
+	}
+
         return errorMap;
     }
 
