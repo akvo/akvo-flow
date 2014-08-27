@@ -667,22 +667,38 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 if (questionMap.get(group) != null) {
                     for (QuestionDto q : questionMap.get(group)) {
                         questionIdList.add(q.getKeyId().toString());
+
+                        String questionId = q.getQuestionId();
+                        boolean useQID = useQuestionId
+                                && questionId != null
+                                && !questionId.equals("");
+
+                        String columnLocale = useQID ? "en" : locale;
+
                         if (QuestionType.GEO == q.getType()) {
-                            createCell(row, offset++, q.getKeyId().toString()
-                                    + "|" + LAT_LABEL.get(useQuestionId ? "en" : locale), headerStyle);
                             createCell(row, offset++,
-                                    "--GEOLON--|" + LON_LABEL.get(useQuestionId ? "en" : locale),
+                                    String.format("%s|%s",
+                                            useQID ? questionId : q.getKeyId().toString(),
+                                            LAT_LABEL.get(columnLocale)),
                                     headerStyle);
-                            createCell(row, offset++, "--GEOELE--|"
-                                    + ELEV_LABEL.get(useQuestionId ? "en" : locale), headerStyle);
-                            createCell(row, offset++, "--GEOCODE--|"
-                                    + CODE_LABEL.get(useQuestionId ? "en" : locale), headerStyle);
+                            createCell(row, offset++,
+                                    String.format("%s|%s",
+                                            useQID ? questionId : "--GEOLON--",
+                                            LON_LABEL.get(columnLocale)),
+                                    headerStyle);
+                            createCell(row, offset++,
+                                    String.format("%s|%s",
+                                            useQID ? questionId : "--GEOELE--",
+                                            ELEV_LABEL.get(columnLocale)),
+                                    headerStyle);
+                            createCell(row, offset++,
+                                    String.format("%s|%s",
+                                            useQID ? questionId : "--GEOCODE--",
+                                            CODE_LABEL.get(columnLocale)),
+                                    headerStyle);
                         } else {
                             String header = "";
-                            String questionId = q.getQuestionId();
-                            if (useQuestionId
-                                    && questionId != null
-                                    && !questionId.equals("")) {
+                            if (useQID) {
                                 header = questionId;
                             } else {
                                 header = q.getKeyId().toString()
@@ -1151,8 +1167,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put(LOCALE_OPT, "en");
         options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "true");
+        options.put("useQuestionId", "true");
         criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
-        criteria.put("useQuestionId", "true");
         criteria.put("apiKey", args[3]);
         exporter.export(criteria, new File(args[0]), args[1], options);
     }
