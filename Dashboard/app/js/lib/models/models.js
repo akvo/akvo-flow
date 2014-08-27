@@ -33,8 +33,8 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
     defaultValue: ''
   }),
   monitoringGroup: DS.attr('boolean', {
-	    defaultValue: false
-	  }),
+    defaultValue: false
+  }),
   newLocaleSurveyId: DS.attr('number'),
   lastUpdateDateTime: DS.attr('string', {
     defaultValue: ''
@@ -150,6 +150,7 @@ FLOW.Question = FLOW.BaseModel.extend({
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),
+  questionId: DS.attr('string'),
   metricId: DS.attr('number'),
   text: DS.attr('string'),
   tip: DS.attr('string'),

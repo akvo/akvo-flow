@@ -1,29 +1,26 @@
 // Akvo Flow DashBoard Interaction
 // loic@akvo.org
 this.tooltip = function () {
-    /* CONFIG */
-    xOffset = 10;
-    yOffset = 20;
-    // these 2 variable determine popup's distance from the cursor
-    // you might want to adjust to get the right result
-    /* END CONFIG */
-    var titleAttr = $("a.tooltip").attr("title");
-    $("a.tooltip").hover(function (e) {
-            this.t = this.title;
-            $("body").append("<p id='tooltip'>" + this.t + "</p>");
-            $("#tooltip").css("top", (e.pageY - xOffset) + "px").css("left", (e.pageX + yOffset) + "px").fadeIn("fast");
-            this.title = "";
-        },
-
-        function () {
-            $("a.tooltip").attr("title", titleAttr);
-            $("#tooltip").remove();
-        });
-    $("a.tooltip").mousemove(function (e) {
-        $("#tooltip")
-            .css("top", (e.pageY - xOffset) + "px")
-            .css("left", (e.pageX + yOffset) + "px");
-    });
+  /* CONFIG */
+  var xOffset = 10;
+  var yOffset = 20;
+  // these 2 variable determine popup's distance from the cursor
+  // you might want to adjust to get the right result
+  /* END CONFIG */
+  var t = "";
+  $("a.tooltip").hover(function (e) {
+    t = this.title;
+    $("body").append("<p id='tooltip'>" + t + "</p>");
+    $("#tooltip").css("top", (e.pageY - xOffset) + "px").css("left", (e.pageX + yOffset) + "px").fadeIn("fast");
+  }, function () {
+    this.title = t;
+    $("#tooltip").remove();
+  });
+  $("a.tooltip").mousemove(function (e) {
+    $("#tooltip")
+      .css("top", (e.pageY - xOffset) + "px")
+      .css("left", (e.pageX + yOffset) + "px");
+  });
 };
 
 function makePlaceholders() {

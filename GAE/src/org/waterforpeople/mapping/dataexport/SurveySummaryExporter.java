@@ -309,6 +309,10 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                             dto.setType(QuestionType.valueOf(json
                                     .getString("questionTypeString")));
                         }
+                        if (!json.isNull("questionId")
+                                && !"null".equals(json.getString("questionId"))) {
+                            dto.setQuestionId(json.getString("questionId"));
+                        }
                         dtoList.add(dto);
                     } catch (Exception e) {
                         System.out.println("Error in json parsing: " + e);
