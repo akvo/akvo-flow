@@ -192,25 +192,13 @@ public class InstanceConfigurator {
         Map<String, Object> apkData = new HashMap<String, Object>();
         apkData.put("awsBucket", bucketName);
         apkData.put("awsAccessKeyId", accessKeys.get(apkUser).getAccessKeyId());
-        apkData.put("awsSecretAccessKey", accessKeys.get(apkUser).getSecretAccessKey());
+        apkData.put("awsSecretKey", accessKeys.get(apkUser).getSecretAccessKey());
         apkData.put("serverBase", "https://" + gaeId + ".appspot.com");
         apkData.put("restApiKey", apiKey);
 
         Template t3 = cfg.getTemplate("survey.properties.ftl");
         FileWriter fw = new FileWriter(new File(out, "/survey.properties"));
         t3.process(apkData, fw);
-
-        // UploadConstants.properties
-        Map<String, Object> gaeData = new HashMap<String, Object>();
-        gaeData.put("awsBucket", bucketName);
-        gaeData.put("awsAccessKeyId", accessKeys.get(gaeUser).getAccessKeyId());
-        gaeData.put("awsSecretAccessKey", accessKeys.get(gaeUser).getSecretAccessKey());
-        gaeData.put("serverBase", "https://" + gaeId + ".appspot.com");
-        gaeData.put("apiKey", apiKey);
-
-        Template t4 = cfg.getTemplate("UploadConstants.properties.ftl");
-        FileWriter fw2 = new FileWriter(new File(out, "/UploadConstants.properties"));
-        t4.process(gaeData, fw2);
 
         // appengine-web.xml
         Map<String, Object> webData = new HashMap<String, Object>();
