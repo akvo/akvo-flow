@@ -126,6 +126,12 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq
                 .getAction())) {
             copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
+        } else if (DataProcessorRequest.COPY_QUESTION_GROUP.equalsIgnoreCase(dpReq
+                .getAction())) {
+            QuestionGroup group = new QuestionGroupDao().getByKey(dpReq.getQuestionGroupId());
+            if (group != null) {
+                copyQuestionGroup(group);
+            }
         } else if (DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             SurveyReplicationImporter sri = new SurveyReplicationImporter();
@@ -537,6 +543,18 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 + originalSurvey.getName() + ") completed");
         mDao.save(message);
 
+    }
+
+    /**
+     * Copy a question group within the same survey
+     *
+     * @param questionGroup
+     */
+    private void copyQuestionGroup(QuestionGroup questionGroup) {
+        final Map<Long, Long> qMap = new HashMap<Long, Long>(); // TODO: remove this param as it
+                                                                // seems redundant.
+        SurveyUtils.copyQuestionGroup(questionGroup, questionGroup.getSurveyId(),
+                questionGroup.getOrder(), qMap);
     }
 
     /**
