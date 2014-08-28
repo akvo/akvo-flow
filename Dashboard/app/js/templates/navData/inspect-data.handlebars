@@ -21,7 +21,7 @@
 
         <div class="chooseLocationData">
             {{#if FLOW.Env.showStatisticsFeature}} {{view Ember.Select contentBinding="FLOW.countryController.content" selectionBinding="FLOW.locationControl.selectedCountry" optionLabelPath="content.label" prompt="select country" promptBinding="Ember.STRINGS._select_country"}} {{view Ember.Select contentBinding="FLOW.locationControl.level1Content" selectionBinding="FLOW.locationControl.selectedLevel1" optionLabelPath="content.name" prompt="select sublevel 1" promptBinding="Ember.STRINGS._select_sublevel_1"}} {{view Ember.Select contentBinding="FLOW.locationControl.level2Content" selectionBinding="FLOW.locationControl.selectedLevel2" optionLabelPath="content.name" prompt="select sublevel 2" promptBinding="Ember.STRINGS._select_sublevel_2"}} {{/if}}
-            <a {{action "doFindSurveyInstances" target="this" }} class="findData standardBtn"> {{t _find}}</a>
+            <a {{action "doFindSurveyInstances" target="this" }} class="findData standardBtn btnAboveTable"> {{t _find}}</a>
         </div>
     </div>
     <section class="fullWidth " id="devicesList">
