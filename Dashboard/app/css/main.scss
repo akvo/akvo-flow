@@ -1531,90 +1531,86 @@ th.action {
 nav.menuGroupWrap {
     overflow-y: hidden;
     height: 361px;
-}
-nav.menuGroupWrap ul.menuGroup {} nav.menuGroupWrap ul.menuGroup li {
-    margin: 2px 1% 1px 1%;
-    width: 98%;
-    border-bottom: thin solid rgb(55, 55, 55);
-    background: rgb(70, 70, 70);
-    background: rgba(255, 255, 255, 0.05);
-}
-nav.menuGroupWrap ul.menuGroup li.current {
-    border-bottom: thin solid rgb(55, 55, 55);
-    background: rgb(90, 90, 90);
-    background: rgba(255, 255, 255, 0.15);
-}
-nav.menuGroupWrap ul.menuGroup li a {
-    display: block;
-    padding: 10px 1% 10px 2%;
-    width: 97%;
-    height: 23px;
-    background: url(../images/selectIndictr.png) right 5px no-repeat;
-    color: rgb(153, 153, 153);
-    color: rgba(255, 255, 255, 0.6);
-    @include noWrapTxt;
-    font-size: 1.2em;
-    cursor: pointer;
-}
-nav.menuGroupWrap ul.menuGroup li a span.monitorIcn {
-    font-weight: bold;
-    font-size: 0.8em;
-    line-height: 21px;
-    color: white;
-    background-color:$monitorGreen;
-    display: inline-block;
-    border-radius: 10px;
-    width: 16px;
-    height: 20px;
-    padding: 0 0 0 4px;
-}
-nav.menuGroupWrap ul.menuGroup li a:hover {
-    background: rgb(80, 80, 80) url(../images/selectIndictr.png) right 50% no-repeat;
-    background: rgba(255, 255, 255, 0.05) url(../images/selectIndictr.png) right 50% no-repeat;
-    color: rgb(114, 205, 255);
-}
-nav.menuGroupWrap ul.menuGroup li.current a:hover,
-nav.menuGroupWrap ul.menuGroup li.current a {
-    /* border-left: thin solid rgb(255,255,255); */
-    background: url(../images/selectIndictr.png) right -61px no-repeat;
-    color:$anchorLinkHover;
-}
+    ul.menuGroup {
+        li {
+            margin: 2px 1% 1px 1%;
+            width: 98%;
+            border-bottom: thin solid rgb(55, 55, 55);
+            background: rgb(70, 70, 70);
+            background: rgba(255, 255, 255, 0.05);
+            &.current {
+                border-bottom: thin solid rgb(55, 55, 55);
+                background: rgb(90, 90, 90);
+                background: rgba(255, 255, 255, 0.15);
+                a, a:hover {
+                    background: url(../images/selectIndictr.png) right -61px no-repeat;
+                    color:$anchorLinkHover;                    
+                    }
+                }
+            a {
+                display: block;
+                text-transform: uppercase;
+                padding: 10px 1% 10px 2%;
+                width: 97%;
+                height: 23px;
+                background: url(../images/selectIndictr.png) right 5px no-repeat;
+                color: rgb(153, 153, 153);
+                color: rgba(255, 255, 255, 0.6);
+                @include noWrapTxt;
+                font-size: 1.2em;
+                cursor: pointer;
+                &:hover {
+                    background: rgb(80, 80, 80) url(../images/selectIndictr.png) right 50% no-repeat;
+                    background: rgba(255, 255, 255, 0.05) url(../images/selectIndictr.png) right 50% no-repeat;
+                    color: rgb(114, 205, 255);
+                }
+                span.monitorIcn {
+                    font-weight: bold;
+                    font-size: 0.8em;
+                    line-height: 21px;
+                    color: white;
+                    background-color:$monitorGreen;
+                    display: inline-block;
+                    border-radius: 10px;
+                    width: 16px;
+                    height: 20px;
+                    padding: 0 0 0 4px;
+                }
+            }
+        }
+    }
+} 
 .scrollWrap {
     display: block;
     margin: 4px auto;
     width: 100%;
     height: 15px;
+    a{
+        display: block;
+        margin: 0 auto 0 auto;
+        width: 50%;
+        height: 15px;
+        text-align: center;
+        text-indent: -9999px;
+        -webkit-transition: background 0.4s ease-in;
+        transition: background 0.4s ease-in;
+        &.scrollUp {
+            border-radius: 5px 5px 0 0;
+            background: rgb(31, 31, 31) url(../images/scrollUp.png) center center no-repeat;
+            &:hover {
+                background: rgb(107, 134, 141) url(../images/scrollUp.png) center center no-repeat;
+            }
+        }
+        &.scrollDown {
+            border-radius: 0 0 5px 5px;
+            background: rgb(31, 31, 31) url(../images/scrollDown.png) center center no-repeat;
+            &:hover {
+                background: rgb(107, 134, 141) url(../images/scrollDown.png) center center no-repeat;
+            }        
+        }
+    }
 }
-a.scrollUp {
-    display: block;
-    margin: 0 auto 0 auto;
-    width: 50%;
-    height: 15px;
-    border-radius: 5px 5px 0 0;
-    background: rgb(31, 31, 31) url(../images/scrollUp.png) center center no-repeat;
-    text-align: center;
-    text-indent: -9999px;
-    -webkit-transition: background 0.4s ease-in;
-    transition: background 0.4s ease-in;
-}
-a.scrollDown {
-    display: block;
-    margin: 0 auto 0 auto;
-    width: 50%;
-    height: 15px;
-    border-radius: 0 0 5px 5px;
-    background: rgb(31, 31, 31) url(../images/scrollDown.png) center center no-repeat;
-    text-align: center;
-    text-indent: -9999px;
-    -webkit-transition: background 0.4s ease-in;
-    transition: background 0.4s ease-in;
-}
-a.scrollUp:hover {
-    background: rgb(107, 134, 141) url(../images/scrollUp.png) center center no-repeat;
-}
-a.scrollDown:hover {
-    background: rgb(107, 134, 141) url(../images/scrollDown.png) center center no-repeat;
-}
+
 a.FadeIt {
     display: none;
 }
@@ -1677,6 +1673,7 @@ nav.menuTopbar ul li:last-child {
     text-transform: uppercase;
 }
 ul.folderMenu {
+    margin:10px auto 35px;
     li {
         width:48%;
         padding:10px 1%;
@@ -2766,7 +2763,7 @@ table.dataTable.notificationTable thead tr th a:visited {
         }
     a.findData {
         display: block;
-        margin: 0 auto;
+        margin: 5px auto 10px;
         padding: 0.5em 1em;
         width: 10%;
         text-align: center;

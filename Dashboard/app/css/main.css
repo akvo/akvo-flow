@@ -1569,91 +1569,73 @@ th.action {
 nav.menuGroupWrap {
   overflow-y: hidden;
   height: 361px; }
-
-nav.menuGroupWrap ul.menuGroup li {
-  margin: 2px 1% 1px 1%;
-  width: 98%;
-  border-bottom: thin solid #373737;
-  background: #464646;
-  background: rgba(255, 255, 255, 0.05); }
-
-nav.menuGroupWrap ul.menuGroup li.current {
-  border-bottom: thin solid #373737;
-  background: #5a5a5a;
-  background: rgba(255, 255, 255, 0.15); }
-
-nav.menuGroupWrap ul.menuGroup li a {
-  display: block;
-  padding: 10px 1% 10px 2%;
-  width: 97%;
-  height: 23px;
-  background: url(../images/selectIndictr.png) right 5px no-repeat;
-  color: #999999;
-  color: rgba(255, 255, 255, 0.6);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 1.2em;
-  cursor: pointer; }
-
-nav.menuGroupWrap ul.menuGroup li a span.monitorIcn {
-  font-weight: bold;
-  font-size: 0.8em;
-  line-height: 21px;
-  color: white;
-  background-color: #00a79d;
-  display: inline-block;
-  border-radius: 10px;
-  width: 16px;
-  height: 20px;
-  padding: 0 0 0 4px; }
-
-nav.menuGroupWrap ul.menuGroup li a:hover {
-  background: #505050 url(../images/selectIndictr.png) right 50% no-repeat;
-  background: rgba(255, 255, 255, 0.05) url(../images/selectIndictr.png) right 50% no-repeat;
-  color: #72cdff; }
-
-nav.menuGroupWrap ul.menuGroup li.current a:hover,
-nav.menuGroupWrap ul.menuGroup li.current a {
-  /* border-left: thin solid rgb(255,255,255); */
-  background: url(../images/selectIndictr.png) right -61px no-repeat;
-  color: #f6a01a; }
+  nav.menuGroupWrap ul.menuGroup li {
+    margin: 2px 1% 1px 1%;
+    width: 98%;
+    border-bottom: thin solid #373737;
+    background: #464646;
+    background: rgba(255, 255, 255, 0.05); }
+    nav.menuGroupWrap ul.menuGroup li.current {
+      border-bottom: thin solid #373737;
+      background: #5a5a5a;
+      background: rgba(255, 255, 255, 0.15); }
+      nav.menuGroupWrap ul.menuGroup li.current a, nav.menuGroupWrap ul.menuGroup li.current a:hover {
+        background: url(../images/selectIndictr.png) right -61px no-repeat;
+        color: #f6a01a; }
+    nav.menuGroupWrap ul.menuGroup li a {
+      display: block;
+      text-transform: uppercase;
+      padding: 10px 1% 10px 2%;
+      width: 97%;
+      height: 23px;
+      background: url(../images/selectIndictr.png) right 5px no-repeat;
+      color: #999999;
+      color: rgba(255, 255, 255, 0.6);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 1.2em;
+      cursor: pointer; }
+      nav.menuGroupWrap ul.menuGroup li a:hover {
+        background: #505050 url(../images/selectIndictr.png) right 50% no-repeat;
+        background: rgba(255, 255, 255, 0.05) url(../images/selectIndictr.png) right 50% no-repeat;
+        color: #72cdff; }
+      nav.menuGroupWrap ul.menuGroup li a span.monitorIcn {
+        font-weight: bold;
+        font-size: 0.8em;
+        line-height: 21px;
+        color: white;
+        background-color: #00a79d;
+        display: inline-block;
+        border-radius: 10px;
+        width: 16px;
+        height: 20px;
+        padding: 0 0 0 4px; }
 
 .scrollWrap {
   display: block;
   margin: 4px auto;
   width: 100%;
   height: 15px; }
-
-a.scrollUp {
-  display: block;
-  margin: 0 auto 0 auto;
-  width: 50%;
-  height: 15px;
-  border-radius: 5px 5px 0 0;
-  background: #1f1f1f url(../images/scrollUp.png) center center no-repeat;
-  text-align: center;
-  text-indent: -9999px;
-  -webkit-transition: background 0.4s ease-in;
-  transition: background 0.4s ease-in; }
-
-a.scrollDown {
-  display: block;
-  margin: 0 auto 0 auto;
-  width: 50%;
-  height: 15px;
-  border-radius: 0 0 5px 5px;
-  background: #1f1f1f url(../images/scrollDown.png) center center no-repeat;
-  text-align: center;
-  text-indent: -9999px;
-  -webkit-transition: background 0.4s ease-in;
-  transition: background 0.4s ease-in; }
-
-a.scrollUp:hover {
-  background: #6b868d url(../images/scrollUp.png) center center no-repeat; }
-
-a.scrollDown:hover {
-  background: #6b868d url(../images/scrollDown.png) center center no-repeat; }
+  .scrollWrap a {
+    display: block;
+    margin: 0 auto 0 auto;
+    width: 50%;
+    height: 15px;
+    text-align: center;
+    text-indent: -9999px;
+    -webkit-transition: background 0.4s ease-in;
+    transition: background 0.4s ease-in; }
+    .scrollWrap a.scrollUp {
+      border-radius: 5px 5px 0 0;
+      background: #1f1f1f url(../images/scrollUp.png) center center no-repeat; }
+      .scrollWrap a.scrollUp:hover {
+        background: #6b868d url(../images/scrollUp.png) center center no-repeat; }
+    .scrollWrap a.scrollDown {
+      border-radius: 0 0 5px 5px;
+      background: #1f1f1f url(../images/scrollDown.png) center center no-repeat; }
+      .scrollWrap a.scrollDown:hover {
+        background: #6b868d url(../images/scrollDown.png) center center no-repeat; }
 
 a.FadeIt {
   display: none; }
@@ -1717,12 +1699,14 @@ nav.menuTopbar ul li:last-child {
   margin: 10px 15px 0 0;
   text-transform: uppercase; }
 
-ul.folderMenu li {
-  width: 48%;
-  padding: 10px 1%;
-  display: inline;
-  float: left;
-  background: rgba(0, 0, 0, 0.1); }
+ul.folderMenu {
+  margin: 10px auto 35px; }
+  ul.folderMenu li {
+    width: 48%;
+    padding: 10px 1%;
+    display: inline;
+    float: left;
+    background: rgba(0, 0, 0, 0.1); }
 
 a.addGroup,
 a.addSurvey,
@@ -2806,7 +2790,7 @@ table.dataTable.notificationTable thead tr th a:visited {
   font-weight: bold; }
 .filterData a.findData {
   display: block;
-  margin: 0 auto;
+  margin: 5px auto 10px;
   padding: 0.5em 1em;
   width: 10%;
   text-align: center; }
