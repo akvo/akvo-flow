@@ -8,14 +8,19 @@ this.tooltip = function () {
   // you might want to adjust to get the right result
   /* END CONFIG */
   var t = "";
-  $("a.tooltip").hover(function (e) {
+
+  $("a.tooltip").off("mouseenter").on("mouseenter", function (e) {
     t = this.title;
+    this.title = "";
     $("body").append("<p id='tooltip'>" + t + "</p>");
     $("#tooltip").css("top", (e.pageY - xOffset) + "px").css("left", (e.pageX + yOffset) + "px").fadeIn("fast");
-  }, function () {
+  });
+
+  $("a.tooltip").off("mouseleave").on("mouseleave", function () {
     this.title = t;
     $("#tooltip").remove();
   });
+
   $("a.tooltip").mousemove(function (e) {
     $("#tooltip")
       .css("top", (e.pageY - xOffset) + "px")
