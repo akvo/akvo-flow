@@ -171,6 +171,9 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
 
         Map<Object, Object> cacheMap = new HashMap<Object, Object>();
         for (SurveyQuestionSummary summary : summaryList) {
+            if (summary == null) {
+                continue;
+            }
             String cacheKey;
             try {
                 cacheKey = getCacheKey(summary);
@@ -194,6 +197,9 @@ public class SurveyQuestionSummaryDao extends BaseDAO<SurveyQuestionSummary> {
         }
 
         for (SurveyQuestionSummary summary : summaryList) {
+            if (summary == null) {
+                continue;
+            }
             String cacheKey;
             try {
                 cacheKey = getCacheKey(summary);

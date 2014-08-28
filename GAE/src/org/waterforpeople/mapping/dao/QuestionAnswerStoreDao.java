@@ -305,6 +305,9 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
         Map<Object, Object> cacheMap = new HashMap<Object, Object>();
         for (QuestionAnswerStore response : responseList) {
+            if (response == null) {
+                continue;
+            }
             String cacheKey = null;
             try {
                 cacheKey = getCacheKey(response);
@@ -328,6 +331,9 @@ public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
         }
 
         for (QuestionAnswerStore response : responsesList) {
+            if (response == null) {
+                continue;
+            }
             String cacheKey = null;
             try {
                 cacheKey = getCacheKey(response);

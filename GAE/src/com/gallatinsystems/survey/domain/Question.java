@@ -73,7 +73,6 @@ public class Question extends BaseDomain {
     private Double minVal;
     private Double maxVal;
     private Boolean isName;
-    private Long sourceId;
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
 
@@ -364,14 +363,6 @@ public class Question extends BaseDomain {
         this.requireDoubleEntry = requireDoubleEntry;
     }
 
-    public Long getSourceId() {
-        return sourceId;
-    }
-
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
-    }
-
     public Boolean getLocaleLocationFlag() {
         return localeLocationFlag;
     }
@@ -391,10 +382,10 @@ public class Question extends BaseDomain {
     }
 
     public String getQuestionId() {
-	return questionId;
+        return questionId;
     }
 
     public void setQuestionId(String questionId) {
-	this.questionId = questionId;
+        this.questionId = questionId;
     }
 }
