@@ -313,7 +313,7 @@ a, a:link, a:visited {
     }
     &.standardBtn {
         display: inline-block;
-        padding: 0.5em 1em;
+        padding: 0.25em 0.5em;
         background-color: rgb(0, 123, 182);
         color: rgb(235, 235, 235);
         text-align: center;
@@ -432,7 +432,7 @@ input[type="submit"] {
     background: white;
 }
 .btnAboveTable {
-    margin: 1.5em 1.5em 1.5em 1em;
+    margin: 7px 0 7px 5px;
     .usersList & {
         margin: 0;
         position: absolute;
@@ -586,7 +586,6 @@ input[type="submit"] {
     input {
         display: block;
         margin: 5px auto;
-        width: 98%;
     }
 }
 label[for=newDeviceGroupName] {
@@ -792,7 +791,7 @@ nav.appNav {
                 font-size: 1em;
                 margin-top: -20px;
                 display: block;
-                padding: 41px 4px 23px 8px;
+                padding: 41px 10px 23px 8px;
                 vertical-align: bottom;
                 vertical-align: middle;
                 text-transform: uppercase;
@@ -997,7 +996,7 @@ nav.appNav{
 
 table.dataTable {
     position: relative;
-    margin: 1em auto 0;
+    margin: 0 auto;
     width: 100%;
     border-collapse: collapse;
     color: #606060;
@@ -1147,8 +1146,9 @@ tfoot tr {
 }
 .dataTabMenu {
     position:absolute;
-    top: 1.75em;
-    right: 1em;
+    top:7px;
+    right: 5px;
+    text-transform: uppercase;
     ul {
         li {
             display: inline;
@@ -1159,11 +1159,9 @@ tfoot tr {
                 padding: 0.4em 0.8em;
                 background: transparent;
                 color: rgb(0, 123, 182);
-                font-size: 1.1em;
-                -webkit-transition: all 0.2s ease;
-                transition: all 0.2s ease;
-                -o-border-radius: 0.3em;
-                border-radius: 0.3em;
+                font-size: 1em;
+                @include transition(all 0.2s ease);
+                @include border-radius(0.3em);
                 &.disabled {
                        @include disabledMix;
                   }
@@ -1457,13 +1455,8 @@ th.action {
     display: inline;
     float: left;
     margin: 0 1px 0 0;
-    border-radius: 5px 5px 0 0;
+    @include border-radius(2px 2px 0 0);
     background: rgb(201, 201, 201);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgb(201, 201, 201)), color-stop(83%, rgb(223, 223, 223)), color-stop(100%, rgb(206, 206, 206)));
-    background: -webkit-linear-gradient(top, rgb(201, 201, 201) 0%, rgb(223, 223, 223) 83%, rgb(206, 206, 206) 100%);
-    background: -webkit-gradient(linear, left top, left bottom, from(rgb(201, 201, 201)), color-stop(83%, rgb(223, 223, 223)), to(rgb(206, 206, 206)));
-    background: linear-gradient(to bottom, rgb(201, 201, 201) 0%, rgb(223, 223, 223) 83%, rgb(206, 206, 206) 100%);
-    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2M5YzljOSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjgzJSIgc3RvcC1jb2xvcj0iI2RmZGZkZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjZWNlY2UiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
     -webkit-transition: none;
@@ -1476,12 +1469,7 @@ th.action {
 }
 #tabs nav.tabNav ul li.active,
 #tabs nav.tabNav ul li.active:hover {
-    background: rgb(69, 72, 77);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgb(69, 72, 77)), color-stop(100%, rgb(0, 0, 0)));
-    background: -webkit-linear-gradient(top, rgb(69, 72, 77) 0%, rgb(0, 0, 0) 100%);
-    background: -webkit-gradient(linear, left top, left bottom, from(rgb(69, 72, 77)), to(rgb(0, 0, 0)));
-    background: linear-gradient(top, rgb(69, 72, 77) 0%, rgb(0, 0, 0) 100%);
-    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzQ1NDg0ZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMDAwMDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: rgb(0,0,0);
 }
 #tabs nav.tabNav ul li a {
     display: block;
@@ -1543,90 +1531,86 @@ th.action {
 nav.menuGroupWrap {
     overflow-y: hidden;
     height: 361px;
-}
-nav.menuGroupWrap ul.menuGroup {} nav.menuGroupWrap ul.menuGroup li {
-    margin: 2px 1% 1px 1%;
-    width: 98%;
-    border-bottom: thin solid rgb(55, 55, 55);
-    background: rgb(70, 70, 70);
-    background: rgba(255, 255, 255, 0.05);
-}
-nav.menuGroupWrap ul.menuGroup li.current {
-    border-bottom: thin solid rgb(55, 55, 55);
-    background: rgb(90, 90, 90);
-    background: rgba(255, 255, 255, 0.15);
-}
-nav.menuGroupWrap ul.menuGroup li a {
-    display: block;
-    padding: 10px 1% 10px 2%;
-    width: 97%;
-    height: 23px;
-    background: url(../images/selectIndictr.png) right 5px no-repeat;
-    color: rgb(153, 153, 153);
-    color: rgba(255, 255, 255, 0.6);
-    @include noWrapTxt;
-    font-size: 1.2em;
-    cursor: pointer;
-}
-nav.menuGroupWrap ul.menuGroup li a span.monitorIcn {
-    font-weight: bold;
-    font-size: 0.8em;
-    line-height: 21px;
-    color: white;
-    background-color:$monitorGreen;
-    display: inline-block;
-    border-radius: 10px;
-    width: 16px;
-    height: 20px;
-    padding: 0 0 0 4px;
-}
-nav.menuGroupWrap ul.menuGroup li a:hover {
-    background: rgb(80, 80, 80) url(../images/selectIndictr.png) right 50% no-repeat;
-    background: rgba(255, 255, 255, 0.05) url(../images/selectIndictr.png) right 50% no-repeat;
-    color: rgb(114, 205, 255);
-}
-nav.menuGroupWrap ul.menuGroup li.current a:hover,
-nav.menuGroupWrap ul.menuGroup li.current a {
-    /* border-left: thin solid rgb(255,255,255); */
-    background: url(../images/selectIndictr.png) right -61px no-repeat;
-    color:$anchorLinkHover;
-}
+    ul.menuGroup {
+        li {
+            margin: 2px 1% 1px 1%;
+            width: 98%;
+            border-bottom: thin solid rgb(55, 55, 55);
+            background: rgb(70, 70, 70);
+            background: rgba(255, 255, 255, 0.05);
+            &.current {
+                border-bottom: thin solid rgb(55, 55, 55);
+                background: rgb(90, 90, 90);
+                background: rgba(255, 255, 255, 0.15);
+                a, a:hover {
+                    background: url(../images/selectIndictr.png) right -61px no-repeat;
+                    color:$anchorLinkHover;                    
+                    }
+                }
+            a {
+                display: block;
+                text-transform: uppercase;
+                padding: 10px 1% 10px 2%;
+                width: 97%;
+                height: 23px;
+                background: url(../images/selectIndictr.png) right 5px no-repeat;
+                color: rgb(153, 153, 153);
+                color: rgba(255, 255, 255, 0.6);
+                @include noWrapTxt;
+                font-size: 1.2em;
+                cursor: pointer;
+                &:hover {
+                    background: rgb(80, 80, 80) url(../images/selectIndictr.png) right 50% no-repeat;
+                    background: rgba(255, 255, 255, 0.05) url(../images/selectIndictr.png) right 50% no-repeat;
+                    color: rgb(114, 205, 255);
+                }
+                span.monitorIcn {
+                    font-weight: bold;
+                    font-size: 0.8em;
+                    line-height: 21px;
+                    color: white;
+                    background-color:$monitorGreen;
+                    display: inline-block;
+                    border-radius: 10px;
+                    width: 16px;
+                    height: 20px;
+                    padding: 0 0 0 4px;
+                }
+            }
+        }
+    }
+} 
 .scrollWrap {
     display: block;
     margin: 4px auto;
     width: 100%;
     height: 15px;
+    a{
+        display: block;
+        margin: 0 auto 0 auto;
+        width: 50%;
+        height: 15px;
+        text-align: center;
+        text-indent: -9999px;
+        -webkit-transition: background 0.4s ease-in;
+        transition: background 0.4s ease-in;
+        &.scrollUp {
+            border-radius: 5px 5px 0 0;
+            background: rgb(31, 31, 31) url(../images/scrollUp.png) center center no-repeat;
+            &:hover {
+                background: rgb(107, 134, 141) url(../images/scrollUp.png) center center no-repeat;
+            }
+        }
+        &.scrollDown {
+            border-radius: 0 0 5px 5px;
+            background: rgb(31, 31, 31) url(../images/scrollDown.png) center center no-repeat;
+            &:hover {
+                background: rgb(107, 134, 141) url(../images/scrollDown.png) center center no-repeat;
+            }        
+        }
+    }
 }
-a.scrollUp {
-    display: block;
-    margin: 0 auto 0 auto;
-    width: 50%;
-    height: 15px;
-    border-radius: 5px 5px 0 0;
-    background: rgb(31, 31, 31) url(../images/scrollUp.png) center center no-repeat;
-    text-align: center;
-    text-indent: -9999px;
-    -webkit-transition: background 0.4s ease-in;
-    transition: background 0.4s ease-in;
-}
-a.scrollDown {
-    display: block;
-    margin: 0 auto 0 auto;
-    width: 50%;
-    height: 15px;
-    border-radius: 0 0 5px 5px;
-    background: rgb(31, 31, 31) url(../images/scrollDown.png) center center no-repeat;
-    text-align: center;
-    text-indent: -9999px;
-    -webkit-transition: background 0.4s ease-in;
-    transition: background 0.4s ease-in;
-}
-a.scrollUp:hover {
-    background: rgb(107, 134, 141) url(../images/scrollUp.png) center center no-repeat;
-}
-a.scrollDown:hover {
-    background: rgb(107, 134, 141) url(../images/scrollDown.png) center center no-repeat;
-}
+
 a.FadeIt {
     display: none;
 }
@@ -1688,46 +1672,38 @@ nav.menuTopbar ul li:last-child {
     margin: 10px 15px 0 0;
     text-transform: uppercase;
 }
+ul.folderMenu {
+    margin:10px auto 35px;
+    li {
+        width:48%;
+        padding:10px 1%;
+        display:inline;
+        float: left;
+        background:$blackOpac;
+    }
+}
 a.addGroup,
 a.addSurvey,
 a.stepBack,
 a.editGroupName,
-a.makeMonitorGroup,
-a.deleteGroup {
+a.makeMonitorGroup,a.manageNotifications,
+a.deleteGroup, a.addFolder, a.editFolder {
     display: block;
     padding: 1px 0 7px 21px;
     height: 10px;
     text-transform: uppercase;
-}
-a.editGroupName {
-    margin: 0 10px 0 20px;
+    &:hover {
+         color:$anchorLinkHover;
+    }
 }
 a.addGroup {
     margin: 0 0 5px 5px;
     padding: 1px 0 7px 19px;
 }
-a.addGroup:hover,
-a.addSurvey:hover,
-a.stepBack:hover,
-a.editGroupName:hover,
-a.deleteGroup:hover,
-a.manageNotifications:hover,
-a.makeMonitorGroup[data-ember-action]:hover {
-    color:$anchorLinkHover;
-}
-a.makeMonitorGroup[data-ember-action] {
-    color:$anchorLink;
-}
-a.makeMonitorGroup {
-    color:$monitorGreen;
-}
-a.makeMonitorGroup:hover {
-    color:$monitorGreen;
-}
-a.addGroup {
+a.addGroup, a.addFolder {
     background: url(../images/IconAddGroup.svg) left center no-repeat;
 }
-a.addGroup:hover {
+a.addGroup:hover, a.addFolder:hover {
     background: url(../images/IconAddGroupOrange.svg) left center no-repeat;
 }
 a.addSurvey {
@@ -1764,10 +1740,10 @@ a.makeMonitorGroup {
 a.makeMonitorGroup:hover {
     background: transparent url(../images/IconMonitorEnable.svg) left center no-repeat;
 }
-a.editGroupName {
+a.editGroupName, a.editFolder {
     background: transparent url(../images/IconEdit.svg) left center no-repeat;
 }
-a.editGroupName:hover {
+a.editGroupName:hover, a.editFolder:hover {
     background: url(../images/IconEditOrange.svg) left center no-repeat;
 }
 a.deleteGroup {
@@ -2779,11 +2755,22 @@ table.dataTable.notificationTable thead tr th a:visited {
 /****** Data Page
 ****************************************************************************/
 
-.filterData {} .filterData h3 {
-    margin: 0 0 5px 5px;
-    color: #666;
-    font-weight: bold;
-}
+.filterData {
+    h3 {
+        margin: 0 0 5px 5px;
+        color: #666;
+        font-weight: bold;
+        }
+    a.findData {
+        display: block;
+        margin: 5px auto 10px;
+        padding: 0.5em 1em;
+        width: 10%;
+        text-align: center;
+        }
+    } 
+
+
 .filterData div.dataCollectedDate input {
     display: inline;
     height: 20px;
@@ -2918,13 +2905,7 @@ table.dataTable.notificationTable thead tr th a:visited {
 .dataSection label {
     font-weight: normal;
 }
-.filterData a.findData {
-    display: block;
-    margin: 1em auto;
-    padding: 0.5em 1em;
-    width: 10%;
-    text-align: center;
-}
+
 /******************************************************************************
 									FLOW MAP
 ******************************************************************************/
@@ -3334,7 +3315,6 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
 .chartSetting {
     display: block;
     clear: both;
-    width: 98%;
     padding: 0.5em 0;
     margin: 1em auto;
     border-bottom: thin solid rgb(198, 198, 198);
