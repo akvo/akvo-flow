@@ -395,38 +395,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         return sb.toString() + "</questionGroup>";
     }
 
-    @SuppressWarnings("unused")
-    private void assembleSurvey(Long surveyId) {
-
-        /**************
-         * 1, Select survey based on surveyId 2. Retrieve all question groups fire off queue tasks
-         */
-        QuestionGroupDao qgDao = new QuestionGroupDao();
-        TreeMap<Integer, QuestionGroup> qgList = qgDao
-                .listQuestionGroupsBySurvey(surveyId);
-        if (qgList != null) {
-            ArrayList<Long> questionGroupIdList = new ArrayList<Long>();
-            StringBuilder builder = new StringBuilder();
-            int count = 1;
-            for (QuestionGroup item : qgList.values()) {
-                questionGroupIdList.add(item.getKey().getId());
-                builder.append(item.getKey().getId());
-                if (count < qgList.size()) {
-                    builder.append(",");
-                }
-                count++;
-            }
-            count = 0;
-            Long transactionId = randomNumber.nextLong();
-            sendQueueMessage(
-                    SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP,
-                    surveyId, builder.toString(), transactionId);
-        }
-    }
-
     /**
      * sends a message to the task queue for survey assembly
-     * 
+     *
      * @param action
      * @param surveyId
      * @param questionGroups
