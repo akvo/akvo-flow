@@ -134,6 +134,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
 
   didInsertElement: function () {
     FLOW.selectedControl.set('selectedSurvey', null);
+    FLOW.editControl.set('useQuestionId', false);
     FLOW.uploader.registerEvents();
   },
 
