@@ -661,7 +661,7 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
                 questionGroup.setOrder(1);
             }
         }
-        questionGroup = questionGroupDao.save(questionGroup, surveyId, null);
+        questionGroup = questionGroupDao.save(questionGroup, surveyId);
         saveSurveyUpdateMessage(questionGroup.getSurveyId());
         DtoMarshaller.copyToDto(questionGroup, dto);
         return dto;

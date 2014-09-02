@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
-import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.SurveyTaskRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.QuestionGroupPayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -42,10 +41,10 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
-import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
@@ -265,20 +264,28 @@ public class QuestionGroupRestService {
             return response;
         }
 
-        QuestionGroup questionGroup = new QuestionGroup();
-        BeanUtils.copyProperties(questionGroupDto, questionGroup, new String[] {
-                "createdDateTime"
-        });
+        QuestionGroup questionGroup = null;
+        if (questionGroupDto.getSourceId() != null) {
+            // copy question group
+            final QuestionGroupDao qgDao = new QuestionGroupDao();
+            final Map<Long, Long> qMap = new HashMap<Long, Long>();
+
+            QuestionGroup sourceQuestionGroup = qgDao.getByKey(questionGroupDto.getSourceId());
+            questionGroup = SurveyUtils.copyQuestionGroup(sourceQuestionGroup,
+                    sourceQuestionGroup.getSurveyId(), qMap);
+            questionGroup.setOrder(questionGroupDto.getOrder());
+        } else {
+            // new question group
+            questionGroup = new QuestionGroup();
+            BeanUtils.copyProperties(questionGroupDto, questionGroup, new String[] {
+                    "createdDateTime"
+            });
+        }
 
         questionGroup = questionGroupDao.save(questionGroup);
 
         if (questionGroup == null) {
             return response;
-        }
-
-        boolean copyQuestionGroup = false;
-        if (copyQuestionGroup) {
-            copyQuestionGroup(questionGroup);
         }
 
         QuestionGroupDto dto = new QuestionGroupDto();
@@ -289,24 +296,5 @@ public class QuestionGroupRestService {
         response.put("meta", statusDto);
         response.put("question_group", dto);
         return response;
-    }
-
-    /**
-     * Copy an existing question group
-     *
-     * @param questionGroupId
-     * @param surveyId
-     * @return
-     */
-    private void copyQuestionGroup(QuestionGroup questionGroup) {
-        final Queue queue = QueueFactory.getDefaultQueue();
-
-        final TaskOptions options = TaskOptions.Builder
-                .withUrl("/app_worker/dataprocessor")
-                .param(DataProcessorRequest.ACTION_PARAM,
-                        DataProcessorRequest.COPY_QUESTION_GROUP)
-                .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
-                        Long.toString(questionGroup.getKey().getId()));
-        queue.add(options);
     }
 }

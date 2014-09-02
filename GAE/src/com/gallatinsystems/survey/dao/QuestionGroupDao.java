@@ -40,10 +40,9 @@ public class QuestionGroupDao extends BaseDAO<QuestionGroup> {
      * 
      * @param item
      * @param surveyId
-     * @param order
      * @return
      */
-    public QuestionGroup save(QuestionGroup item, Long surveyId, Integer order) {
+    public QuestionGroup save(QuestionGroup item, Long surveyId) {
         if (item.getSurveyId() == null || item.getSurveyId() == 0) {
             item.setSurveyId(surveyId);
         }
