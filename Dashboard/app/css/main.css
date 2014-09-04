@@ -1712,7 +1712,7 @@ a.addGroup,
 a.addSurvey,
 a.stepBack,
 a.editGroupName,
-a.makeMonitorGroup, a.manageNotifications,
+a.makeMonitorGroup,
 a.deleteGroup, a.addFolder, a.editFolder {
   display: block;
   padding: 1px 0 7px 21px;
@@ -1722,7 +1722,7 @@ a.deleteGroup, a.addFolder, a.editFolder {
   a.addSurvey:hover,
   a.stepBack:hover,
   a.editGroupName:hover,
-  a.makeMonitorGroup:hover, a.manageNotifications:hover,
+  a.makeMonitorGroup:hover,
   a.deleteGroup:hover, a.addFolder:hover, a.editFolder:hover {
     color: #f6a01a; }
 
@@ -2674,7 +2674,8 @@ nav.smallMenu ul li a.showQuestion:hover {
 .notificationAdd {
   position: relative;
   overflow: auto;
-  width: 100%; }
+  width: 99%;
+  margin-left: 1%; }
 
 .notificationAdd fieldset {
   float: left;
@@ -2723,7 +2724,7 @@ a.addNotification span {
 
 table.dataTable.notificationTable {
   margin: 1.5em auto;
-  width: 100%;
+  width: 99%;
   border-collapse: collapse;
   border-top: 1px solid #e6e6e6;
   color: #606060;
@@ -3394,9 +3395,10 @@ footer.bottomPage nav ul li a.akvoDotOrg {
   border-bottom: none; }
 
 .surveyTranslation table {
-  width: 98.5%;
+  width: calc(98.5% - 2px);
   margin: 0.5% 0.75% 0.1% 0.75%;
-  text-align: left; }
+  text-align: left;
+  border: 1px solid #e6e6e6; }
 
 table#languageOption {
   background: #f2f2f2;
