@@ -41,6 +41,8 @@ public class User extends BaseDomain {
     private Boolean superAdmin;
     @Persistent
     private List<UserConfig> config;
+    private String accessKey;
+    private String secret;
 
     public String getPermissionList() {
         return permissionList;
@@ -81,5 +83,21 @@ public class User extends BaseDomain {
     public void setSuperAdmin(Boolean superAdmin) {
         this.superAdmin = superAdmin;
     }
+
+	public String getAccessKey() {
+		return accessKey;
+	}
+
+	public void setAccessKey(String accessKey) {
+		this.accessKey = accessKey;
+	}
+
+	public String getSecret() {
+		return secret;
+	}
+
+	public void setSecret(String secret) {
+		this.secret = secret;
+	}
 
 }

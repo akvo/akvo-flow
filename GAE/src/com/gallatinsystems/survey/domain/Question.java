@@ -61,6 +61,7 @@ public class Question extends BaseDomain {
     private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
     private Long questionGroupId;
     private Long surveyId;
+    private String questionId;
     private Integer order = null;
     private Boolean mandatoryFlag = null;
     private String path = null;
@@ -72,7 +73,6 @@ public class Question extends BaseDomain {
     private Double minVal;
     private Double maxVal;
     private Boolean isName;
-    private Long sourceId;
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
 
@@ -363,14 +363,6 @@ public class Question extends BaseDomain {
         this.requireDoubleEntry = requireDoubleEntry;
     }
 
-    public Long getSourceId() {
-        return sourceId;
-    }
-
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
-    }
-
     public Boolean getLocaleLocationFlag() {
         return localeLocationFlag;
     }
@@ -387,5 +379,13 @@ public class Question extends BaseDomain {
      */
     public boolean equals(Question q) {
         return key != null && q.getKey() != null && key.equals(q.getKey());
+    }
+
+    public String getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
     }
 }

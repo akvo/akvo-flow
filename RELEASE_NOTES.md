@@ -5,6 +5,24 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.3
+Date: 5 September 2014
+
+## New and noteworthy
+* Implement read API [#717] - Akvo FLOW now has a full read API! Details can be found [here](https://github.com/akvo/akvo-flow/wiki/Akvo-FLOW-API)
+* Stylesheet cleaning and refactor [#609, #612] - The user interface has been given a makeover. In addition to various other details, surveys are now displayed in a list, which makes finding them easier. 
+* Introduce textual question identifier [#650] - A question can now be given a textual identifier, which can be used as a column heading when exporting data, and which is present in the read API. This makes it easier to transfer FLOW data to other databases.
+
+## Resolved issues
+* RAW DATA export keeps using "use question id" in Data Cleaning tab [#756] 
+* Copying a copied survey across instances breaks survey publishing [#744] 
+* Non-specified surveyGroupId query param in SurveyedLocaleRestService causes a JDOUserException [#727] 		
+* Various small UI changes:
+	* Change of wording: "record" => "data point" [#753, #740] 
+	* Monitoring tab style is broken [#751] 
+	* Dashboard tooltips are shown twice  [#745] 
+	* Footer layout breaks using Spanish|French and low resolution [#570] 
+	* Master language tooltip incorrect [#442] 
 
 #1.7.2.2
 

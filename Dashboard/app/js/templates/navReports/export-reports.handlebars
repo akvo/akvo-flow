@@ -1,23 +1,23 @@
 <div class="greyBg">
-<section class="fullWidth" id="reportBlocks">
+<section class="fullWidth reportTools" id="reportBlocks">
 {{#view FLOW.ExportReportsAppletView}}
   <h1>{{t _export_data}}</h1>
- {{view Ember.Select 
+ {{view Ember.Select
       contentBinding="FLOW.surveyGroupControl.arrangedContent"
-      selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
-      optionLabelPath="content.code" 
+      selectionBinding="FLOW.selectedControl.selectedSurveyGroup"
+      optionLabelPath="content.code"
       optionValuePath="content.keyId"
       prompt=""
       promptBinding="Ember.STRINGS._select_survey_group"}}
 
-      {{view Ember.Select 
+      {{view Ember.Select
         contentBinding="FLOW.surveyControl.arrangedContent"
         selectionBinding="FLOW.selectedControl.selectedSurvey"
-        optionLabelPath="content.code" 
-        optionValuePath="content.keyId" 
+        optionLabelPath="content.code"
+        optionValuePath="content.keyId"
         prompt=""
         promptBinding="Ember.STRINGS._select_survey"}}
-        
+
   {{view Ember.Select
         contentBinding="FLOW.reportLanguageControl.arrangedContent"
         selectionBinding="FLOW.reportLanguageControl.selectedLanguage"
@@ -32,7 +32,9 @@
     {{#if view.showLastCollection}}
     <p><label for="lastCollection">{{t _export_only_last_collection}}:</label> {{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}</p>
     {{/if}}
+    <label for="useQuestionId">{{t _use_question_id_as_table_headers}}</label> {{view Ember.Checkbox checkedBinding="FLOW.editControl.useQuestionId" id="useQuestionId"}}<br/>
     <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
+
 </div>
 <div class="comprehensiveReport block">
   <h3>{{t _export_comprehensive_report}}</h3>
@@ -46,7 +48,7 @@
  <p>{{t _google_earth_applet_text_}}</p>
 
 
-  <a {{action showGoogleEarthFile target="this"}} class="standardBtn"> {{t _google_earth_file}} </a>  
+  <a {{action showGoogleEarthFile target="this"}} class="standardBtn"> {{t _google_earth_file}} </a>
 </div>
 {{/if}}
 

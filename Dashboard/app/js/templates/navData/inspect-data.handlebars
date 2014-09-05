@@ -1,236 +1,144 @@
 {{#view FLOW.inspectDataTableView}}
-  <section class="fullWidth" id="inspectData">
-    <div class="floats-in" id="dataFilter">
-      <h1>{{t _choose_survey_data_to_display}}:</h1>
-      <div class="chooseSurveyData">
-        {{view Ember.Select 
-          contentBinding="FLOW.surveyGroupControl.arrangedContent"
-          selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
-          optionLabelPath="content.code" 
-          optionValuePath="content.keyId"
-          prompt=""
-          promptBinding="Ember.STRINGS._select_survey_group"}}
+<section class="fullWidth" id="inspectData">
+    <div class="floats-in filterData" id="dataFilter">
+        <h1>{{t _choose_survey_data_to_display}}:</h1>
+        <div class="chooseSurveyData">
+            {{view Ember.Select contentBinding="FLOW.surveyGroupControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.code" optionValuePath="content.keyId" prompt="" promptBinding="Ember.STRINGS._select_survey_group"}} {{view Ember.Select contentBinding="FLOW.surveyControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurvey" optionLabelPath="content.code" optionValuePath="content.keyId" prompt="" promptBinding="Ember.STRINGS._select_survey"}}
+        </div>
+        <div class="dataCollectedDate">
+            <label class="collectedFrom"><span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="Collected from" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+            </label>
 
-        {{view Ember.Select 
-          contentBinding="FLOW.surveyControl.arrangedContent"
-          selectionBinding="FLOW.selectedControl.selectedSurvey" 
-          optionLabelPath="content.code" 
-          optionValuePath="content.keyId"
-          prompt=""
-          promptBinding="Ember.STRINGS._select_survey"}}
-			</div>
-			<div class="dataCollectedDate">
-        <label class="collectedFrom"> {{t _collected_from}}:
-          {{view FLOW.DateField
-            minDate=false
-            valueBinding="FLOW.dateControl.fromDate"
-            elementId="from_date"
-            placeholder="Collected from"
-            placeholderBinding="Ember.STRINGS._collected_from"
-            size=30}}
-        </label>
+            <label class="collectedTo"><span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="To" placeholderBinding="Ember.STRINGS._to" size=30}}
+            </label>
+        </div>
+        <div class="dataDeviceId">
+            <label class="devideId">{{t _device_id}}:</label>
+            {{view Ember.TextField valueBinding="view.deviceId" placeholder="" placeholderBinding="Ember.STRINGS._device_id" size=30}}
+            <label class="submitterName">{{t _submitter_name}}:</label>
+            {{view Ember.TextField valueBinding="view.submitterName" placeholder="" placeholderBinding="Ember.STRINGS._submitter_name" size=30}}
+        </div>
 
-        <label class="collectedTo"> {{t _to}}:
-          {{view FLOW.DateField
-            minDate=false
-            valueBinding="FLOW.dateControl.toDate"
-            elementId="to_date"
-            placeholder="To"
-            placeholderBinding="Ember.STRINGS._to"
-            size=30}}
-        </label>
-			</div>
-			<div class="dataDeviceId">
-        <label  class="devideId"> {{t _device_id}}:</label> 
-        {{view Ember.TextField 
-          valueBinding="view.deviceId" 
-          placeholder=""
-          placeholderBinding="Ember.STRINGS._device_id"
-          size=30}} 
-        <label class="submitterName"> {{t _submitter_name}}:</label> 
-        {{view Ember.TextField 
-          valueBinding="view.submitterName"
-          placeholder=""
-          placeholderBinding="Ember.STRINGS._submitter_name"
-          size=30}}
-			</div>
-
-      <div class="chooseLocationData">
-      {{#if FLOW.Env.showStatisticsFeature}}
-           {{view Ember.Select 
-            contentBinding="FLOW.countryController.content" 
-            selectionBinding="FLOW.locationControl.selectedCountry"
-            optionLabelPath="content.label"
-            prompt="select country"
-            promptBinding="Ember.STRINGS._select_country"}}
-    
-           {{view Ember.Select 
-            contentBinding="FLOW.locationControl.level1Content" 
-            selectionBinding="FLOW.locationControl.selectedLevel1"
-            optionLabelPath="content.name"
-            prompt="select sublevel 1"
-            promptBinding="Ember.STRINGS._select_sublevel_1"}}
-   
-           {{view Ember.Select 
-            contentBinding="FLOW.locationControl.level2Content" 
-            selectionBinding="FLOW.locationControl.selectedLevel2"
-            optionLabelPath="content.name"
-            prompt="select sublevel 2"
-            promptBinding="Ember.STRINGS._select_sublevel_2"}}
-       {{/if}}
-             <a {{action "doFindSurveyInstances" target="this"}} class="findData"> {{t _find}}</a>
-      </div>
+        <div class="chooseLocationData">
+            {{#if FLOW.Env.showStatisticsFeature}} {{view Ember.Select contentBinding="FLOW.countryController.content" selectionBinding="FLOW.locationControl.selectedCountry" optionLabelPath="content.label" prompt="select country" promptBinding="Ember.STRINGS._select_country"}} {{view Ember.Select contentBinding="FLOW.locationControl.level1Content" selectionBinding="FLOW.locationControl.selectedLevel1" optionLabelPath="content.name" prompt="select sublevel 1" promptBinding="Ember.STRINGS._select_sublevel_1"}} {{view Ember.Select contentBinding="FLOW.locationControl.level2Content" selectionBinding="FLOW.locationControl.selectedLevel2" optionLabelPath="content.name" prompt="select sublevel 2" promptBinding="Ember.STRINGS._select_sublevel_2"}} {{/if}}
+            <a {{action "doFindSurveyInstances" target="this" }} class="findData standardBtn btnAboveTable"> {{t _find}}</a>
+        </div>
     </div>
     <section class="fullWidth " id="devicesList">
-      <table class="dataTable" id="surveyDataTable">
-        <thead>
-          <tr>
-              <th class="noArrows"></th>
-              <th class="noArrows">{{t _id}}</th>
-              <th class="noArrows">{{t _survey}}</th>
-              <th class="noArrows">{{t _submitter}}</th>
-              <th class="noArrows">{{t _device}}</th>
-              <th class="noArrows">{{t _collected}}</th>
-              <th class="noArrows">{{t _action}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each SI in FLOW.surveyInstanceControl.currentContents}}
-            <tr>
-              <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
-              <td class="device">{{SI.keyId}}</td>
-              <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
-              <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
-              <td class="device">{{SI.deviceIdentifier}}</td>
-              <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
-              <td class="action">
-                <a {{action showEditSurveyInstanceWindow SI target="this" }}>
-                  {{t _edit}}
-                </a>
-                {{#if FLOW.role.ADMIN }}
-                {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl"}} >
-                  {{t _delete}}
-                </a>{{/view}}
-                {{/if}}
-              </td>
-            </tr>
-            {{/each}}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="7"><small></small></td>
-          </tr>
-        </tfoot>
-      </table>
-      <ul class="prevNext">
-        <li class="prevBtn">{{#if view.hasPrevPage}}
-          <a {{action doPrevPage target='this'}}> &lsaquo; {{t _previous}}</a> {{/if}}
-        </li>
-        <li class="nextBtn">{{#if view.hasNextPage}}
-          <a {{action doNextPage target='this'}}>{{t _next}} &rsaquo;</a>{{/if}}
-        </li>
-      </ul>
-    </section>
-
-    <!-- edit surveyInstance popup-->
-    <div {{bindAttr class="view.showEditSurveyInstanceWindowBool:display :overlay"}}>
-      <div class="blanketWide"></div>
-          <div class="dialogWrap">
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialogWide">
-		     <a {{action "doCloseEditSIWindow" target="this"}} class="ok clodeDialog">{{t _close_window}}</a>
-
-          <h2>{{t _edit_answers}}</h2>
-            <nav class="editAnswerMenu"> 
-            <ul>  
-              <li class="prevBtn"><a {{action "doPreviousSI" target="this"}}>&lsaquo; {{t _previous_record}}</a></li>
-              {{#if FLOW.role.ADMIN }}
-                <li class="deleteBtn"><a {{action confirm FLOW.dialogControl.delSI target="FLOW.dialogControl"}} class="smallBtn">{{t _delete}}</a></li>
-              {{/if}}
-             <!--  <li class="saveBtn"><a {{action "doSaveSI" target="this"}} class="smallBtn">{{t _save}}</a></li> -->
-              <li class="nextBtn"><a {{action "doNextSI" target="this"}}>{{t _next_record}} &rsaquo;</a></li>
-            </ul>
-          </nav>
-        <p>{{view.siString}}</p>
-
- <table class="dataTable" id="surveyDataTable">
-            <!-- TABLE HEADER-->
+        <table class="dataTable" id="surveyDataTable">
             <thead>
                 <tr>
+                    <th class="noArrows"></th>
                     <th class="noArrows">{{t _id}}</th>
-                    <th class="noArrows">{{t _question}}</th>
-                    <th class="noArrows">{{t _answer}}</th>                
+                    <th class="noArrows">{{t _survey}}</th>
+                    <th class="noArrows">{{t _submitter}}</th>
+                    <th class="noArrows">{{t _device}}</th>
+                    <th class="noArrows">{{t _collected}}</th>
+                    <th class="noArrows">{{t _action}}</th>
                 </tr>
             </thead>
-            <!-- TABLE BODY: MAIN CONTENT-->
             <tbody>
-                {{#each QA in FLOW.questionAnswerControl}}
-                  {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
-                    <tr>
-                      <td class="device">{{QA.keyId}}</td>
-                      <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
-                    
-                    <td class="submitter" style="text-align:left;">
-                    {{#if view.inEditMode}}
-                      {{#if view.isOptionType}}
-                        {{view Ember.Select
-                          contentBinding="view.optionsList"
-                          optionLabelPath="content.value"
-                          optionValuePath="content.value"
-                          selectionBinding="view.optionChoice"}}
-                        {{else}}
-                          {{#if view.isNumberType}}
-                            {{view Ember.TextField valueBinding="view.numberValue" size=10 }}
-                          {{else}}
-                            {{#if view.isTextType}}
-                              {{view Ember.TextField valueBinding="view.value" size=10 }}
-                            {{else}}
-                              {{#if view.isDateType}}
-                                {{view FLOW.DateField2 valueBinding="view.date" size=30}}
-                              {{else}}
-                                {{#if view.isBarcodeType}}
-                                  {{t _the_barcode_app_on_the_device_is_used_here}}
-                                  {{view Ember.TextField valueBinding="view.value" size=10 }}
-                                {{/if}}
-                              {{/if}}
-                            {{/if}}
-                          {{/if}}
-                        {{/if}}
-                      <a {{action doSave target="this"}} class="smallBtn">{{t _save}}</a> <a {{action doCancel target="this"}}>{{t _cancel}}</a>
-                    {{else}}
-                      {{#if view.isNotEditable}}
-                        {{#if view.isPhotoType}}
-                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
-                        {{else}}
-                          {{#if view.isVideoType}}
-                            {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_video}}</a>
-                          {{else}}
-                            {{QA.value}}
-                          {{/if}}
-                        {{/if}}
-                      {{else}}
-                        {{#if view.isDateType}}
-                        <a {{action doEdit target="this"}}>{{#with QA}}{{date3 value}}{{/with}}</a>
-                        {{else}}
-                          <a {{action doEdit target="this"}}>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</a>
-                        {{/if}}
-                      {{/if}}
-                    {{/if}}
+                {{#each SI in FLOW.surveyInstanceControl.currentContents}}
+                <tr>
+                    <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
+                    <td class="device">{{SI.keyId}}</td>
+                    <td class="survey" style="text-align:left;">{{SI.surveyCode}}</td>
+                    <td class="submitter" style="text-align:left;">{{SI.submitterName}}</td>
+                    <td class="device">{{SI.deviceIdentifier}}</td>
+                    <td class="collected">{{#with SI}}{{date1 collectionDate}}{{/with}}</td>
+                    <td class="action">
+                        <a {{action showEditSurveyInstanceWindow SI target="this" }}>
+                  {{t _edit}}
+                </a>
+                        {{#if FLOW.role.ADMIN }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
+                  {{t _delete}}
+                </a>{{/view}} {{/if}}
                     </td>
-                    </tr>
-                    {{/view}}
+                </tr>
                 {{/each}}
             </tbody>
-            <!-- TABLE FOOTER-->
             <tfoot>
                 <tr>
-                    <td colspan="7"><small></small></td>
+                    <td colspan="7"><small></small>
+                    </td>
                 </tr>
             </tfoot>
         </table>
+        <ul class="prevNext">
+            <li class="prevBtn">{{#if view.hasPrevPage}}
+                <a {{action doPrevPage target='this' }}> &lsaquo; {{t _previous}}</a> {{/if}}
+            </li>
+            <li class="nextBtn">{{#if view.hasNextPage}}
+                <a {{action doNextPage target='this' }}>{{t _next}} &rsaquo;</a>{{/if}}
+            </li>
+        </ul>
+    </section>
 
+    <!-- edit surveyInstance popup-->
+    <div {{bindAttr class="view.showEditSurveyInstanceWindowBool:display :overlay" }}>
+        <div class="blanketWide"></div>
+        <div class="dialogWrap">
+            <!-- the dialog contents -->
+            <div class="confirmDialog dialogWide">
+                <a {{action "doCloseEditSIWindow" target="this" }} class="ok clodeDialog">{{t _close_window}}</a>
+
+                <h2>{{t _edit_answers}}</h2>
+                <nav class="editAnswerMenu">
+                    <ul>
+                        <li class="prevBtn"><a {{action "doPreviousSI" target="this" }}>&lsaquo; {{t _previous_record}}</a>
+                        </li>
+                        {{#if FLOW.role.ADMIN }}
+                        <li class="deleteBtn"><a {{action confirm FLOW.dialogControl.delSI target="FLOW.dialogControl" }} class="smallBtn">{{t _delete}}</a>
+                        </li>
+                        {{/if}}
+                        <!--  <li class="saveBtn"><a {{action "doSaveSI" target="this"}} class="smallBtn">{{t _save}}</a></li> -->
+                        <li class="nextBtn"><a {{action "doNextSI" target="this" }}>{{t _next_record}} &rsaquo;</a>
+                        </li>
+                    </ul>
+                </nav>
+                <p>{{view.siString}}</p>
+
+                <table class="dataTable" id="surveyDataTable">
+                    <!-- TABLE HEADER-->
+                    <thead>
+                        <tr>
+                            <th class="noArrows">{{t _id}}</th>
+                            <th class="noArrows">{{t _question}}</th>
+                            <th class="noArrows">{{t _answer}}</th>
+                        </tr>
+                    </thead>
+                    <!-- TABLE BODY: MAIN CONTENT-->
+                    <tbody>
+                        {{#each QA in FLOW.questionAnswerControl}} {{#view FLOW.QuestionAnswerView contentBinding="QA"}}
+                        <tr>
+                            <td class="device">{{QA.keyId}}</td>
+                            <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
+
+                            <td class="submitter" style="text-align:left;">
+                                {{#if view.inEditMode}} {{#if view.isOptionType}} {{view Ember.Select contentBinding="view.optionsList" optionLabelPath="content.value" optionValuePath="content.value" selectionBinding="view.optionChoice"}} {{else}} {{#if view.isNumberType}} {{view Ember.TextField valueBinding="view.numberValue" size=10 }} {{else}} {{#if view.isTextType}} {{view Ember.TextField valueBinding="view.value" size=10 }} {{else}} {{#if view.isDateType}} {{view FLOW.DateField2 valueBinding="view.date" size=30}} {{else}} {{#if view.isBarcodeType}} {{t _the_barcode_app_on_the_device_is_used_here}} {{view Ember.TextField valueBinding="view.value" size=10 }} {{/if}} {{/if}} {{/if}} {{/if}} {{/if}}
+                                <a {{action doSave target="this" }} class="smallBtn">{{t _save}}</a>  <a {{action doCancel target="this" }}>{{t _cancel}}</a>
+                                {{else}} {{#if view.isNotEditable}} {{#if view.isPhotoType}} {{QA.value}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_photo}}</a>
+                                {{else}} {{#if view.isVideoType}} {{QA.value}} <a {{bindAttr href="view.photoUrl" }} target="_blank">{{t _open_video}}</a>
+                                {{else}} {{QA.value}} {{/if}} {{/if}} {{else}} {{#if view.isDateType}}
+                                <a {{action doEdit target="this" }}>{{#with QA}}{{date3 value}}{{/with}}</a>
+                                {{else}}
+                                <a {{action doEdit target="this" }}>{{QA.value}} {{#with QA}}{{if_blank value}}{{/with}}</a>
+                                {{/if}} {{/if}} {{/if}}
+                            </td>
+                        </tr>
+                        {{/view}} {{/each}}
+                    </tbody>
+                    <!-- TABLE FOOTER-->
+                    <tfoot>
+                        <tr>
+                            <td colspan="7"><small></small>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
         </div>
-      </div>
     </div>
 
 </section>

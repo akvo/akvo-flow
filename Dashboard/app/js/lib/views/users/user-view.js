@@ -1,6 +1,7 @@
 FLOW.UserListView = FLOW.View.extend({
   showAddUserBool: false,
   showEditUserBool: false,
+  showManageApiKeysBool: false,
 
   showAddUserDialog: function () {
     var userPerm;
@@ -95,6 +96,62 @@ FLOW.UserListView = FLOW.View.extend({
     FLOW.dialogControl.set('message', Ember.String.loc('_cant_set_superadmin'));
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
+  },
+
+  showManageApiKeysDialog: function (event) {
+    FLOW.editControl.set('manageAccessKey', event.context.get('accessKey'));
+    FLOW.editControl.set('showSecret', false);
+    FLOW.editControl.set('manageApiUserId', event.context.get('keyId'));
+    this.set('showManageApiKeysBool', true);
+  },
+
+  doGenerateNewApiKey: function (event) {
+
+    var userId = FLOW.editControl.get('manageApiUserId');
+
+    $.ajax({
+      url: '/rest/users/' + userId + '/apikeys',
+      type: 'POST',
+      success: function(data) {
+        var user = FLOW.store.find(FLOW.User, userId);
+        var accessKey = data.apikeys.accessKey;
+        var secret = data.apikeys.secret;
+
+        user.set('accessKey', accessKey);
+
+        FLOW.editControl.set('manageAccessKey', accessKey);
+        FLOW.editControl.set('manageSecret', secret);
+        FLOW.editControl.set('showSecret', true);
+      },
+      error: function() {
+        console.error('Could not create apikeys');
+      }
+    });
+  },
+
+  doRevokeApiKey: function(event) {
+
+    var userId = FLOW.editControl.get('manageApiUserId');
+
+    $.ajax({
+      url: '/rest/users/' + userId + '/apikeys',
+      type: 'DELETE',
+      success: function(data) {
+        var user = FLOW.store.find(FLOW.User, userId);
+        user.set('accessKey', null);
+
+        FLOW.editControl.set('manageAccessKey', null);
+        FLOW.editControl.set('manageSecret', null);
+        FLOW.editControl.set('showSecret', false);
+      },
+      error: function() {
+        console.error('Could not delete apikeys.')
+      }
+    });
+  },
+
+  cancelManageApiKeys: function() {
+    this.set('showManageApiKeysBool', false);
   }
 });
 

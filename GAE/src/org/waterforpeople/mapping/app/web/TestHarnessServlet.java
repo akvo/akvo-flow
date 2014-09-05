@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -484,6 +485,8 @@ public class TestHarnessServlet extends HttpServlet {
         }
         user.setSuperAdmin(true);
         user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
+        user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
+        user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
         userDao.save(user);
     }
 

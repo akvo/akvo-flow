@@ -460,6 +460,9 @@ public class QuestionDao extends BaseDAO<Question> {
 
         Map<Object, Object> cacheMap = new HashMap<Object, Object>();
         for (Question qn : qList) {
+            if (qn == null) {
+                continue;
+            }
             String cacheKey = null;
             try {
                 cacheKey = getCacheKey(qn);
@@ -483,6 +486,9 @@ public class QuestionDao extends BaseDAO<Question> {
         }
 
         for (Question qn : qList) {
+            if (qn == null) {
+                continue;
+            }
             String cacheKey;
             try {
                 cacheKey = getCacheKey(qn);
