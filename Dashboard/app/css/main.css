@@ -1330,6 +1330,16 @@ input.hasDatepicker {
 .action a.edit:hover {
   background: url(../images/editList.png) center bottom no-repeat; }
 
+.action a.api {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  background: url(../images/apiList.png) center top no-repeat;
+  text-indent: -99999px; }
+
+.action a.api:hover {
+  background: url(../images/apiList.png) center bottom no-repeat; }
+
 table.previewList {
   color: #d1545f; }
 

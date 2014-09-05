@@ -394,8 +394,8 @@ FLOW.QuestionView = FLOW.View.extend({
 
   validateQuestionId: function(args) {
     var questionKeyId = FLOW.selectedControl.selectedQuestion.get('keyId');
-    var questionId = this.get('questionId');
-    if (FLOW.Env.mandatoryQuestionID && (questionId === null || questionId.match(/^\s*$/))) {
+    var questionId = this.get('questionId') || "";
+    if (FLOW.Env.mandatoryQuestionID && questionId.match(/^\s*$/)) {
       args.failure(Ember.String.loc('_question_id_mandatory'));
     } else if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
       args.failure(Ember.String.loc('_question_id_only_alphanumeric'))
