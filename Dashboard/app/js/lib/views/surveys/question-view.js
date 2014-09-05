@@ -397,7 +397,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var questionId = this.get('questionId') || "";
     if (FLOW.Env.mandatoryQuestionID && questionId.match(/^\s*$/)) {
       args.failure(Ember.String.loc('_question_id_mandatory'));
-    } if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
+    } else if (!questionId.match(/^[A-Za-z0-9_\-]*$/)) {
       args.failure(Ember.String.loc('_question_id_only_alphanumeric'))
     } else {
       var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
