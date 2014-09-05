@@ -269,9 +269,11 @@ public class SurveyUtils {
      * Sends a POST request of a collection of surveyIds to a server defined by the `flowServices`
      * property The property `alias` define the baseURL property that is sent in the request
      *
-     * @param surveyIds Collection of ids (Long) that requires processing
-     * @param action A string indicating the action that will be used, this string is used for
-     *            building the URL, with the `flowServices` property + / + action
+     * @param surveyIds
+     *            Collection of ids (Long) that requires processing
+     * @param action
+     *            A string indicating the action that will be used, this string is used for building
+     *            the URL, with the `flowServices` property + / + action
      * @return The response from the server or null when `flowServices` is not defined, or an error
      *         in the request happens
      */
