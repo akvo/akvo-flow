@@ -255,6 +255,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
             // now we have instance id check which responses already present
             final String questionIdStr = parts[2].trim();
+            final Long questionId = Long.valueOf(questionIdStr);
+
+            QuestionDao qDao = new QuestionDao();
+            if (qDao.getByKey(questionId) == null) {
+                continue; // skip processing already logged in getByKey method
+            }
             final Long surveyInstanceId = si.getKey().getId();
 
             if (listExistingResponses) {
@@ -262,7 +268,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 listExistingResponses = false;
             }
 
-            if (qasDao.isCached(Long.valueOf(questionIdStr), surveyInstanceId)) {
+            if (qasDao.isCached(questionId, surveyInstanceId)) {
                 log.log(Level.INFO,
                         "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
                                 + surveyInstanceId + ", " + si.getSurveyId() + ", "
