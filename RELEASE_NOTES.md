@@ -5,6 +5,12 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.3.1
+Date: 7 September 2014
+
+## Resolved issues
+* Survey responses not processed when a question is deleted from survey definition [#771]
+
 #1.7.3
 Date: 5 September 2014
 
