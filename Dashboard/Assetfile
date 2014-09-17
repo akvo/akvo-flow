@@ -41,8 +41,8 @@ class CSSMinFilter < Filter
   def generate_output(inputs, output)
     inputs.each do |input|
       result = input.read
-      result.gsub!(/href="css\/(.*)\.css"/, 'href="css/\1.min.css"') # index.xml
-      result.gsub!(/url\("(.*).css"\)/, 'url("\1.min.css")') # screen.css
+      result.gsub!(/href="css\/(.*)\.css"/, 'href="css/\1.min.css"') # index.html
+      result.gsub!(/url\("(.*?).css"\)/, 'url("\1.min.css")') # screen.css
       output.write(result)
     end
   end
@@ -107,6 +107,10 @@ input 'app' do
     if ENV['RAKEP_MODE'] == 'production'
       yui_css
       filter CSSMinFilter
+    else
+      concat do |input|
+        input
+      end
     end
   end
 
