@@ -1827,7 +1827,7 @@ li.aSurvey {
 li.aSurvey h2 {
   display: inline-block;
   width: 98%;
-  color: #4ab1cf; }
+  text-transform: uppercase; }
 
 ul.surveyInfo {
   position: relative;
