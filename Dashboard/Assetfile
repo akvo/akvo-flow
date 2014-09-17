@@ -39,7 +39,11 @@ end
 
 output '../GAE/war/admin'
 input 'app' do
-  
+
+  match 'css/main.scss' do
+    scss
+  end
+
   match 'dashboard.html' do
     copy 'index.html'
   end
@@ -98,7 +102,7 @@ input 'app' do
     end
   end
 
-  match "css/**/*" do
+  match "css/**/*.css" do
     concat do |input|
       input
     end
