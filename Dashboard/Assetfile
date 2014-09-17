@@ -37,6 +37,17 @@ class HandlebarsFilter < Filter
   end
 end
 
+class CSSMinFilter < Filter
+  def generate_output(inputs, output)
+    inputs.each do |input|
+      result = input.read
+      result.gsub!(/href="css\/(.*)\.css"/, 'href="css/\1.min.css"') # index.xml
+      result.gsub!(/url\("(.*).css"\)/, 'url("\1.min.css")') # screen.css
+      output.write(result)
+    end
+  end
+end
+
 output '../GAE/war/admin'
 input 'app' do
 
@@ -45,6 +56,9 @@ input 'app' do
   end
 
   match 'dashboard.html' do
+    if ENV['RAKEP_MODE'] == 'production'
+      filter CSSMinFilter
+    end
     copy 'index.html'
   end
 
@@ -60,19 +74,6 @@ input 'app' do
     end
     concat 'js/app.js'
   end
-
-  # match 'js/vendor/**/*.js' do
-  #   filter LoaderFilter,
-  #     :module_id_generator => proc { |input|
-  #       input.path.sub(/^js\/vendor\//, "vendor/").sub(/\.js$/, '')
-  #     }
-
-  #   if ENV['RAKEP_MODE'] == 'production'
-  #     filter EmberAssertFilter
-  #     uglify {|input| input}
-  #   end
-  #   concat 'js/app.js'
-  # end
 
   match 'js/plugins/**/*.js' do
     if ENV['RAKEP_MODE'] == 'production'
@@ -103,16 +104,11 @@ input 'app' do
   end
 
   match "css/**/*.css" do
-    concat do |input|
-      input
+    if ENV['RAKEP_MODE'] == 'production'
+      yui_css
+      filter CSSMinFilter
     end
   end
-
- # match "js/vendor/**/*.js" do
- #   concat do |input|
- #     input
- #   end
- # end
 
 end
 
