@@ -41,7 +41,7 @@ class CSSMinFilter < Filter
   def generate_output(inputs, output)
     inputs.each do |input|
       result = input.read
-      result.gsub!(/href="\/publicmap\/css\/(.*)\.css"/, 'href="publicmap\/css/\1.min.css"') # index.html
+      result.gsub!(/href="\/publicmap\/css\/(.*)\.css"/, 'href="/publicmap/css/\1.min.css"') # index.html
       result.gsub!(/url\("(.*?).css"\)/, 'url("\1.min.css")') # screen.css
       output.write(result)
     end
