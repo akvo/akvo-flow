@@ -33,8 +33,8 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
     defaultValue: ''
   }),
   monitoringGroup: DS.attr('boolean', {
-	    defaultValue: false
-	  }),
+    defaultValue: false
+  }),
   newLocaleSurveyId: DS.attr('number'),
   lastUpdateDateTime: DS.attr('string', {
     defaultValue: ''
@@ -153,13 +153,14 @@ FLOW.Question = FLOW.BaseModel.extend({
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),
+  questionId: DS.attr('string'),
   metricId: DS.attr('number'),
   text: DS.attr('string'),
   tip: DS.attr('string'),
   type: DS.attr('string', {
 	defaultValue: "FREE_TEXT"
   }),
-  // This attribute is used for the 'Copy Survey' functionality 
+  // This attribute is used for the 'Copy Survey' functionality
   // Most of the times is `null`
   sourceId: DS.attr('number', {
 	 defaultValue: null
@@ -306,7 +307,8 @@ FLOW.User = FLOW.BaseModel.extend({
   superAdmin: DS.attr('boolean', {
     defaultValue: 0
   }),
-  permissionList: DS.attr('string')
+  permissionList: DS.attr('string'),
+  accessKey: DS.attr('string')
 });
 
 FLOW.UserConfig = FLOW.BaseModel.extend({

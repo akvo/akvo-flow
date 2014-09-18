@@ -49,6 +49,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     private Long metricId;
     private QuestionDependencyDto questionDependency = null;
     private Long surveyId;
+    private String questionId;
     private Long questionGroupId;
     private Boolean collapseable;
     private Boolean immutable;
@@ -402,5 +403,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
     public void setRequireDoubleEntry(Boolean requireDoubleEntry) {
         this.requireDoubleEntry = requireDoubleEntry;
+    }
+
+    public String getQuestionId() {
+	return questionId;
+    }
+
+    public void setQuestionId(String questionId) {
+	this.questionId = questionId;
     }
 }

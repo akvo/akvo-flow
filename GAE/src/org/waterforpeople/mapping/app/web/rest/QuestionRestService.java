@@ -43,9 +43,13 @@ import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionOption;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -62,6 +66,12 @@ public class QuestionRestService {
 
     @Inject
     private SurveyMetricMappingDao surveyMetricMappingDao;
+
+    @Inject
+    private SurveyDAO surveyDao;
+
+    @Inject
+    private SurveyGroupDAO surveyGroupDao;
 
     // list questions by questionGroup or by survey.
     // if optionQuestionHeadersOnly is true, only the option questions are returned
@@ -323,6 +333,51 @@ public class QuestionRestService {
         response.put("question", dto);
 
         return response;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/{id}/validate")
+    @ResponseBody
+    public Map<String, Object> validateQuestionId(
+	    @PathVariable("id") Long id,
+	    @RequestParam(value = "questionId") String questionId) {
+
+	Question question = questionDao.getByKey(id);
+
+	Long surveyId = question.getSurveyId();
+	Survey survey = surveyDao.getById(surveyId);
+
+	Long surveyGroupId = survey.getSurveyGroupId();
+	SurveyGroup surveyGroup = surveyGroupDao.getByKey(surveyGroupId);
+
+	boolean isMonitoringGroup = surveyGroup.getMonitoringGroup();
+
+	List<Survey> surveys = new ArrayList<Survey>();
+
+	if (isMonitoringGroup) {
+	    surveys = surveyDao.listSurveysByGroup(surveyGroupId);
+	} else {
+	    surveys.add(survey);
+	}
+
+	List<Question> questions = new ArrayList<Question>();
+
+	for (Survey s : surveys) {
+	    questions.addAll(questionDao.listQuestionsBySurvey(s.getKey().getId()));
+	}
+
+	Map<String, Object> result = new HashMap<String, Object>();
+
+	for (Question q : questions) {
+	    if (questionId.equals(q.getQuestionId())
+		    && !question.getKey().equals(q.getKey())) {
+		result.put("success", false);
+		result.put("reason", "Question id not unique");
+		return result;
+	    }
+	}
+
+	result.put("success", true);
+	return result;
     }
 
     private Question copyQuestion(QuestionDto dto) {

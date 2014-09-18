@@ -39,7 +39,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFiles;
@@ -93,8 +92,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
         ArrayList<QuestionAnswerStore> newResponses = new ArrayList<QuestionAnswerStore>();
-
-        Cache cache = MemCacheUtils.initCache(4 * 60 * 60); // 4 hours - enough time to process large batch of surveys?
 
         for (String line : unparsedLines) {
 
@@ -255,6 +252,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
             // now we have instance id check which responses already present
             final String questionIdStr = parts[2].trim();
+            final Long questionId = Long.valueOf(questionIdStr);
+
+            QuestionDao qDao = new QuestionDao();
+            if (qDao.getByKey(questionId) == null) {
+                continue; // skip processing already logged in getByKey method
+            }
             final Long surveyInstanceId = si.getKey().getId();
 
             if (listExistingResponses) {
@@ -262,7 +265,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 listExistingResponses = false;
             }
 
-            if (qasDao.isCached(Long.valueOf(questionIdStr), surveyInstanceId)) {
+            if (qasDao.isCached(questionId, surveyInstanceId)) {
                 log.log(Level.INFO,
                         "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
                                 + surveyInstanceId + ", " + si.getSurveyId() + ", "
@@ -540,8 +543,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
      * lists all questionAnswerStore objects for a single surveyInstance, optionally filtered by
      * type
      *
-     * @param surveyInstanceId - mandatory
-     * @param type - optional
+     * @param surveyInstanceId
+     *            - mandatory
+     * @param type
+     *            - optional
      * @return
      */
     @SuppressWarnings("unchecked")

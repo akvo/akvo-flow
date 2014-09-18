@@ -65,7 +65,7 @@ public class SurveyedLocaleRestService {
             sls = surveyedLocaleDao.listLocalesByCode(identifier, false);
         } else if (displayName != null && !"".equals(displayName)) {
             sls = surveyedLocaleDao.listLocalesByDisplayName(displayName);
-        } else {
+        } else if (surveyGroupId != null) {
             sls = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
                     surveyGroupId, null, 20);
         }

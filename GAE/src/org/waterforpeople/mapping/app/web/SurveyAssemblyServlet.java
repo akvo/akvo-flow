@@ -280,6 +280,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
         final String versionAttribute = s.getVersion() == null ? "" : "version='"
                 + s.getVersion() + "'";
+        String name = s.getName();
         String surveyGroupId = "";
         String surveyGroupName = "";
         String registrationForm = "";
@@ -292,12 +293,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                         + sg.getNewLocaleSurveyId() + "\"";
             }
         }
-        String sourceSurveyId = getSourceSurveyId(surveyId);
-        String sourceSurveyIdAttr = sourceSurveyId != null ? " sourceSurveyId=\"" + sourceSurveyId
-                + "\"" : "";
         String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey"
-                + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute + registrationForm
-                + " " + surveyGroupId + " " + surveyGroupName + sourceSurveyIdAttr + ">";
+                + " name=\"" + StringEscapeUtils.escapeXml(name) 
+                + "\"" + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute 
+                + registrationForm + " " + surveyGroupId + " " + surveyGroupName + ">";
         String surveyFooter = "</survey>";
         QuestionGroupDao qgDao = new QuestionGroupDao();
         TreeMap<Integer, QuestionGroup> qgList = qgDao
@@ -398,38 +397,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         return sb.toString() + "</questionGroup>";
     }
 
-    @SuppressWarnings("unused")
-    private void assembleSurvey(Long surveyId) {
-
-        /**************
-         * 1, Select survey based on surveyId 2. Retrieve all question groups fire off queue tasks
-         */
-        QuestionGroupDao qgDao = new QuestionGroupDao();
-        TreeMap<Integer, QuestionGroup> qgList = qgDao
-                .listQuestionGroupsBySurvey(surveyId);
-        if (qgList != null) {
-            ArrayList<Long> questionGroupIdList = new ArrayList<Long>();
-            StringBuilder builder = new StringBuilder();
-            int count = 1;
-            for (QuestionGroup item : qgList.values()) {
-                questionGroupIdList.add(item.getKey().getId());
-                builder.append(item.getKey().getId());
-                if (count < qgList.size()) {
-                    builder.append(",");
-                }
-                count++;
-            }
-            count = 0;
-            Long transactionId = randomNumber.nextLong();
-            sendQueueMessage(
-                    SurveyAssemblyRequest.DISPATCH_ASSEMBLE_QUESTION_GROUP,
-                    surveyId, builder.toString(), transactionId);
-        }
-    }
-
     /**
      * sends a message to the task queue for survey assembly
-     * 
+     *
      * @param action
      * @param surveyId
      * @param questionGroups
@@ -724,10 +694,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             }
         }
 
-        if (q.getSourceId() != null) {
-            qXML.setSourceId(q.getSourceId().toString());
-        }
-
         String questionDocument = null;
         try {
             questionDocument = sax.marshal(qXML);
@@ -786,17 +752,5 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
 
         sendQueueMessage(SurveyAssemblyRequest.DISTRIBUTE_SURVEY, surveyId,
                 null, transactionId);
-    }
-
-    private String getSourceSurveyId(Long surveyId) {
-        QuestionDao questionDao = new QuestionDao();
-        List<Question> qList = questionDao.listQuestionsBySurvey(surveyId);
-        if (!qList.isEmpty() && qList.get(0).getSourceId() != null) {
-            Question sourceQuestion = questionDao.getByKey(qList.get(0).getSourceId());
-            if (sourceQuestion != null) {
-                return sourceQuestion.getSurveyId().toString();
-            }
-        }
-        return null;
     }
 }

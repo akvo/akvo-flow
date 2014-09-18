@@ -61,6 +61,7 @@ public class Question extends BaseDomain {
     private TreeMap<Integer, QuestionHelpMedia> questionHelpMediaMap = null;
     private Long questionGroupId;
     private Long surveyId;
+    private String questionId;
     private Integer order = null;
     private Boolean mandatoryFlag = null;
     private String path = null;
@@ -72,19 +73,17 @@ public class Question extends BaseDomain {
     private Double minVal;
     private Double maxVal;
     private Boolean isName;
-    private Long sourceId;
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
 
     /**
-     * Return true of a question can be visualised on a chart.  This is limited
-     * to option questions that do not allow the possibility for multiple selection
-     * in the responses
+     * Return true of a question can be visualised on a chart. This is limited to option questions
+     * that do not allow the possibility for multiple selection in the responses
      *
      * @return true if can be charted else false.
      */
     public boolean canBeCharted() {
-        if(!Type.OPTION.equals(type) || allowMultipleFlag) {
+        if (!Type.OPTION.equals(type)) {
             return false;
         }
         return true;
@@ -364,14 +363,6 @@ public class Question extends BaseDomain {
         this.requireDoubleEntry = requireDoubleEntry;
     }
 
-    public Long getSourceId() {
-        return sourceId;
-    }
-
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
-    }
-
     public Boolean getLocaleLocationFlag() {
         return localeLocationFlag;
     }
@@ -381,12 +372,20 @@ public class Question extends BaseDomain {
     }
 
     /**
-     * Compare question entities  based on Key
+     * Compare question entities based on Key
      *
      * @param q
      * @return true if the Key of the two entities is the same
      */
     public boolean equals(Question q) {
         return key != null && q.getKey() != null && key.equals(q.getKey());
+    }
+
+    public String getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
     }
 }

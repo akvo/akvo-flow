@@ -302,6 +302,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         currentStep = 1;
         this.serverBase = serverBase;
         PrintWriter pw = null;
+        boolean useQuestionId = "true".equals(options.get("useQuestionId"));
         try {
             SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                     LOADING_QUESTIONS.get(locale)));
@@ -350,7 +351,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 SummaryModel model = fetchAndWriteRawData(
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
                         serverBase, questionMap, wb, isFullReport, fileName,
-                        criteria.get("apiKey"), lastCollection);
+                        criteria.get("apiKey"), lastCollection, useQuestionId);
                 if (isFullReport) {
                     SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                             WRITING_SUMMARY.get(locale)));
@@ -402,7 +403,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     protected SummaryModel fetchAndWriteRawData(String surveyId,
             final String serverBase,
             Map<QuestionGroupDto, List<QuestionDto>> questionMap, Workbook wb,
-            final boolean generateSummary, File outputFile, String apiKey, boolean lastCollection)
+            final boolean generateSummary, File outputFile, String apiKey, boolean lastCollection,
+            boolean useQuestionId)
             throws Exception {
         final SummaryModel model = new SummaryModel();
         final String key = apiKey;
@@ -424,7 +426,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             }
         }
 
-        Object[] results = createRawDataHeader(wb, sheet, questionMap);
+        Object[] results = createRawDataHeader(wb, sheet, questionMap, useQuestionId);
         final List<String> questionIdList = (List<String>) results[0];
         final List<String> unsummarizable = (List<String>) results[1];
 
@@ -638,7 +640,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      *         NUMBER questions)
      */
     protected Object[] createRawDataHeader(Workbook wb, Sheet sheet,
-            Map<QuestionGroupDto, List<QuestionDto>> questionMap) {
+            Map<QuestionGroupDto, List<QuestionDto>> questionMap,
+            boolean useQuestionId) {
         Row row = null;
 
         row = getRow(0, sheet);
@@ -664,26 +667,52 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 if (questionMap.get(group) != null) {
                     for (QuestionDto q : questionMap.get(group)) {
                         questionIdList.add(q.getKeyId().toString());
+
+                        String questionId = q.getQuestionId();
+                        boolean useQID = useQuestionId
+                                && questionId != null
+                                && !questionId.equals("");
+
+                        String columnLocale = useQID ? "en" : locale;
+
                         if (QuestionType.GEO == q.getType()) {
-                            createCell(row, offset++, q.getKeyId().toString()
-                                    + "|" + LAT_LABEL.get(locale), headerStyle);
                             createCell(row, offset++,
-                                    "--GEOLON--|" + LON_LABEL.get(locale),
+                                    String.format("%s|%s",
+                                            useQID ? questionId : q.getKeyId().toString(),
+                                            LAT_LABEL.get(columnLocale)),
                                     headerStyle);
-                            createCell(row, offset++, "--GEOELE--|"
-                                    + ELEV_LABEL.get(locale), headerStyle);
-                            createCell(row, offset++, "--GEOCODE--|"
-                                    + CODE_LABEL.get(locale), headerStyle);
+                            createCell(row, offset++,
+                                    String.format("%s|%s",
+                                            useQID ? questionId : "--GEOLON--",
+                                            LON_LABEL.get(columnLocale)),
+                                    headerStyle);
+                            createCell(row, offset++,
+                                    String.format("%s|%s",
+                                            useQID ? questionId : "--GEOELE--",
+                                            ELEV_LABEL.get(columnLocale)),
+                                    headerStyle);
+                            createCell(row, offset++,
+                                    String.format("%s|%s",
+                                            useQID ? questionId : "--GEOCODE--",
+                                            CODE_LABEL.get(columnLocale)),
+                                    headerStyle);
                         } else {
+                            String header = "";
+                            if (useQID) {
+                                header = questionId;
+                            } else {
+                                header = q.getKeyId().toString()
+                                        + "|"
+                                        + getLocalizedText(q.getText(),
+                                                q.getTranslationMap())
+                                                .replaceAll("\n", "")
+                                                .trim();
+                            }
                             createCell(
                                     row,
                                     offset++,
-                                    q.getKeyId().toString()
-                                            + "|"
-                                            + getLocalizedText(q.getText(),
-                                                    q.getTranslationMap())
-                                                    .replaceAll("\n", "")
-                                                    .trim(), headerStyle);
+                                    header,
+                                    headerStyle);
                         }
                         if (!(QuestionType.NUMBER == q.getType() || QuestionType.OPTION == q
                                 .getType())) {
@@ -1138,6 +1167,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         options.put(LOCALE_OPT, "en");
         options.put(TYPE_OPT, RAW_ONLY_TYPE);
         options.put(LAST_COLLECTION_OPT, "true");
+        options.put("useQuestionId", "true");
         criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
         criteria.put("apiKey", args[3]);
         exporter.export(criteria, new File(args[0]), args[1], options);

@@ -1263,13 +1263,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                     continue;
                 }
 
-                // if it is an old style identifier, based on geolocation, reuse it
-                if (identifier.length() == 8 || identifier.length() == 9) {
-                    sl.setIdentifier(SurveyedLocale.generateBase32Uuid(identifier));
-                } else {
-                    // not likely but a catchall
-                    sl.setIdentifier(SurveyedLocale.generateBase32Uuid());
-                }
+                // if it is an old style identifier, based on geolocation, reuse it if possible
+                sl.setIdentifier(SurveyedLocale.generateBase32Uuid(identifier));
             } else {
                 sl.setIdentifier(SurveyedLocale.generateBase32Uuid());
             }

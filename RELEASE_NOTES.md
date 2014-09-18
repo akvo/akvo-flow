@@ -5,6 +5,61 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.3.1
+Date: 7 September 2014
+
+## Resolved issues
+* Survey responses not processed when a question is deleted from survey definition [#771]
+
+#1.7.3
+Date: 5 September 2014
+
+## New and noteworthy
+* Implement read API [#717] - Akvo FLOW now has a full read API! Details can be found [here](https://github.com/akvo/akvo-flow/wiki/Akvo-FLOW-API)
+* Stylesheet cleaning and refactor [#609, #612] - The user interface has been given a makeover. In addition to various other details, surveys are now displayed in a list, which makes finding them easier. 
+* Introduce textual question identifier [#650] - A question can now be given a textual identifier, which can be used as a column heading when exporting data, and which is present in the read API. This makes it easier to transfer FLOW data to other databases.
+
+## Resolved issues
+* RAW DATA export keeps using "use question id" in Data Cleaning tab [#756] 
+* Copying a copied survey across instances breaks survey publishing [#744] 
+* Non-specified surveyGroupId query param in SurveyedLocaleRestService causes a JDOUserException [#727] 		
+* Various small UI changes:
+	* Change of wording: "record" => "data point" [#753, #740] 
+	* Monitoring tab style is broken [#751] 
+	* Dashboard tooltips are shown twice  [#745] 
+	* Footer layout breaks using Spanish|French and low resolution [#570] 
+	* Master language tooltip incorrect [#442] 
+
+#1.7.2.2
+
+## Resolved issues
+
+* Deployment enhancements - Instance Configurator [#724]
+
+#1.7.2.1
+
+## Resolved issues
+
+* Data points show up as "Unknown" on non-monitoring groups [#735]
+
+#1.7.2
+
+## New and noteworthy
+
+* The new APK v2.0 is now available in `http://instance.akvoflow.org/app2` [#666]
+* Introduced more consistent counts, fixing inaccuracies between the Dashboard's 
+  chart builder and the _RAW DATA_ report. [#651]
+* Revamped the way of transferring data to/from _Object Store_ (Amazon S3) [#690]
+
+## Resolved issues
+
+* Code cleanup - Monitoring related code [#643]
+* Adapt _bootstrap_ files to support _Monitoring_ features [#695]
+* Spreadsheet importer for the RAW DATA report misidentifies the columns [#697]
+* Disallow the usage of commas in _Survey Group_ names [#707]
+* Invalid XML characters in survey group name breaks the survey definition [#714]
+* signingKey is a required system properties [#725]
+
 #1.7.1
 
 ## New and noteworthy

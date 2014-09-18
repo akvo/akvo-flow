@@ -1,7 +1,7 @@
 {{#view FLOW.TranslationsView}}
 <div class="manageTranslationsBlock">
-    <section id="manageTranslations" class="mainContent mainRight">
-       <section class="floats-in surveyTranslation greyBg">
+    <section id="manageTranslations" class="">
+       <section class="floats-in surveyTranslation">
     <h1>{{t _survey_translation}}</h1>
     <table id="languageOption">
       <!-- TABLE HEADER-->
@@ -87,7 +87,7 @@
     <header style="heigh:40px; padding: 10px 0 10px 0">
       <nav class="qtnGroupMenu">
         <ul>
-          <li style="text-align:right;margin:0 10px 0 0;"><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
+          <li style="text-align:center;margin:0 10px 0 0;"><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
         </ul>
       </nav>
     </header>
@@ -185,5 +185,6 @@
       </ul>
     </nav>
     </section>
+      </section>
 </div>
 {{/view}}

@@ -103,7 +103,7 @@ public class TaskServlet extends AbstractRestApiServlet {
 
     /**
      * Retrieve the file from S3 storage and persist the data to the data store
-     * 
+     *
      * @param fileName
      * @param phoneNumber
      * @param imei
@@ -367,8 +367,20 @@ public class TaskServlet extends AbstractRestApiServlet {
             }
             zis.closeEntry();
         }
+
         // check the signature if we have it
-        if (surveyDataOnly != null && dataSig != null) {
+        String allowUnsigned = PropertyUtil.getProperty(ALLOW_UNSIGNED);
+
+        if ("false".equalsIgnoreCase(allowUnsigned)) {
+
+            if (dataSig == null) {
+                throw new SignedDataException("Datafile does not have a signature");
+            }
+
+            if (surveyDataOnly == null) {
+                throw new SignedDataException("data.txt not found in data zip");
+            }
+
             try {
                 MessageDigest sha1Digest = MessageDigest.getInstance("SHA1");
                 byte[] digest = sha1Digest.digest(surveyDataOnly
@@ -383,29 +395,11 @@ public class TaskServlet extends AbstractRestApiServlet {
                 String encodedHmac = com.google.gdata.util.common.util.Base64
                         .encode(hmac);
                 if (!encodedHmac.trim().equals(dataSig.trim())) {
-                    String allowUnsigned = PropertyUtil
-                            .getProperty(ALLOW_UNSIGNED);
-                    if (allowUnsigned != null
-                            && allowUnsigned.trim().equalsIgnoreCase("false")) {
-                        throw new SignedDataException(
-                                "Computed signature does not match the one submitted with the data");
-                    } else {
-                        log.warning("Signatures don't match. Processing anyway since allow unsigned is true");
-                    }
+                    throw new SignedDataException(
+                            "Computed signature does not match the one submitted with the data");
                 }
             } catch (GeneralSecurityException e) {
-                throw new SignedDataException("Could not calculate signature",
-                        e);
-            }
-
-        } else if (surveyDataOnly != null) {
-            // if there is no signature, check the configuration to see if we
-            // are allowed to proceed
-            String allowUnsigned = PropertyUtil.getProperty(ALLOW_UNSIGNED);
-            if (allowUnsigned != null
-                    && allowUnsigned.trim().equalsIgnoreCase("false")) {
-                throw new SignedDataException(
-                        "Datafile does not have a signature");
+                throw new SignedDataException("Could not calculate signature", e);
             }
         }
 
@@ -467,7 +461,7 @@ public class TaskServlet extends AbstractRestApiServlet {
      * handles the callback from the device indicating that a new data file is available. This
      * method will call processFile to retrieve the file and persist the data to the data store it
      * will then add access points for each water point in the survey responses.
-     * 
+     *
      * @param req
      */
     @SuppressWarnings("rawtypes")

@@ -2,7 +2,7 @@
   <section id="groupBar" class="leftSidebar">
     <h2>{{t _survey_groups}}</h2>
 	<a {{action "addGroup" target="this"}} class="addGroup">{{t _add_new_group}}</a>
-    <nav>
+    <nav class="surveyGroupNav">
       <!-- show new group field, show when 'add a group' is selected -->
       {{#if view.showNewGroupField}}
         {{view Ember.TextField valueBinding="view.surveyGroupName" size=30}}
@@ -19,7 +19,7 @@
         {{#view FLOW.JavascriptSurveyGroupListView}}
           {{#each sg in FLOW.surveyGroupControl.arrangedContent}}
             {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-              <a  {{action "makeSelected" target="this"}}> {{#if sg.monitoringGroup}}<span style="color:rgb(74, 177, 207)">M</span>&nbsp;&nbsp;{{/if}}{{sg.code}}</a>
+              <a  {{action "makeSelected" target="this"}}> {{#if sg.monitoringGroup}}<span class="monitorIcn">M</span>&nbsp;&nbsp;{{/if}}{{sg.code}}</a>
             {{/view}}
           {{/each}} 
         {{/view}}
@@ -38,9 +38,9 @@
        <a {{action "cancelSurveyGroupNameEdit" target="this"}}>{{t _cancel}}</a>
         {{else}}
           <!-- show selected survey group and edit name button --> 
-          <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2> 
-          <a {{action "editSurveyGroupName" target="this"}} class="editGroupName">{{t _edit_name}}</a>
-          <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a>
+            <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2> 
+            <a {{action "editSurveyGroupName" target="this"}} class="editGroupName">{{t _edit_name}}</a>
+            <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a>
         {{/if}}
       {{/if}}
       
@@ -57,15 +57,12 @@
     {{#unless view.oneSelected}}
         <p class="surveyLandingText">{{t _survey_intro_text}}</p>
     {{/unless}}
-
-    <!-- show all surveys of the currently selected survey group-->
-    <ul class="surveyBatch">
-    
+    <div class="monitorSwitch">
     {{#if view.oneSelected}}
       {{#if FLOW.Env.showMonitoringFeature }}
         {{#if view.monitoringGroup}}
 		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a> 
-		      <div style="margin:0 10px 0 20px;"> <p style="text-size:1.5em;">Survey that creates new monitored entities:</p> {{view Ember.Select 
+		      <div> <p>{{t _select_monitoring_survey}}:</p> {{view Ember.Select
          		contentBinding="FLOW.surveyControl.content" 
                 selectionBinding="FLOW.surveyControl.newLocaleSurvey"
          		optionLabelPath="content.name" 
@@ -77,6 +74,10 @@
         {{/if}}
       {{/if}}
     {{/if}}
+    </div>
+    <!-- show all surveys of the currently selected survey group-->
+    <ul class="surveyBatch">
+    
     
       {{#each survey in FLOW.surveyControl.arrangedContent}} 
         {{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
@@ -86,18 +87,17 @@
               <li class="dateCreated"> <span>{{t _created}}</span>
                 <time>{{#with survey}}{{date createdDateTime}}{{/with}}<time>
               </li>
-              <li class="responseNumber"><span>{{survey.instanceCount}}</span>
-                <p>{{t _responses}}</p>
+              <li class="responseNumber"><span>{{t _responses}}</span>
+                <p>{{survey.instanceCount}}</p>
               </li>
+              <li class="dateModified"><span>{{t _modified}}</span>
+              <time>{{#with survey}}{{date lastUpdateDateTime}}{{/with}}</time></li>
+              <li class="surveyType"><span>{{t _type}}</span>
+              <p>{{#with survey}}{{toPointType pointType}}{{/with}}</p></li>
+              <li class="surveyLanguage"><span>{{t _language}}</span>
+              <p>{{#with survey}}{{toLanguage defaultLanguageCode}}{{/with}}</p></li>
             </ul>
-            <dl class="floats-in">
-              <dt>{{t _modified}}</dt>
-              <dd>{{#with survey}}{{date lastUpdateDateTime}}{{/with}}</dd>
-              <dt>{{t _type}}</dt>
-              <dd>{{#with survey}}{{toPointType pointType}}{{/with}}</dd>
-              <dt>{{t _language}}</dt>
-              <dd>{{#with survey}}{{toLanguage defaultLanguageCode}}{{/with}}</dd>
-            </dl>
+            
             <nav>
               {{#if survey.allowEdit}}
               <ul>              

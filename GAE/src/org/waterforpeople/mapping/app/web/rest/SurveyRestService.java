@@ -70,10 +70,8 @@ public class SurveyRestService {
 
     // TODO put in meta information?
     // list all surveys
-    @RequestMapping(method = RequestMethod.GET, value = "/all")
-    @ResponseBody
-    public Map<String, List<SurveyDto>> listSurveys() {
-        final Map<String, List<SurveyDto>> response = new HashMap<String, List<SurveyDto>>();
+    public Map<String, Object> listSurveys() {
+        final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyDto> results = new ArrayList<SurveyDto>();
         SurveyInstanceSummary sis = null;
         List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
@@ -108,6 +106,15 @@ public class SurveyRestService {
             String preflight,
             @RequestParam(value = "surveyId", defaultValue = "")
             Long surveyId) {
+
+	// If none of the optional query params are specified, return all surveys
+	if (surveyGroupId == null
+		&& ids[0] == null
+		&& preflight.equals("")
+		&& surveyId == null) {
+	    return listSurveys();
+	}
+
         final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyDto> results = new ArrayList<SurveyDto>();
         List<Survey> surveys = null;
@@ -156,6 +163,7 @@ public class SurveyRestService {
                 results.add(dto);
             }
         }
+
         response.put("surveys", results);
         return response;
     }

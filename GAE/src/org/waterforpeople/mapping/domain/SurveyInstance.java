@@ -358,9 +358,9 @@ public class SurveyInstance extends BaseDomain {
         List<SurveyQuestionSummary> saveList = new ArrayList<SurveyQuestionSummary>();
         List<SurveyQuestionSummary> deleteList = new ArrayList<SurveyQuestionSummary>();
 
-        for(QuestionAnswerStore response : questionAnswersStore) {
+        for (QuestionAnswerStore response : questionAnswersStore) {
             final String questionIdStr = response.getQuestionID();
-            final String questionResponse = response.getValue();
+            final String[] questionResponse = response.getValue().split("\\|");
             final Long questionId = Long.parseLong(response.getQuestionID());
 
             Question question = qDao.getByKey(questionId);
@@ -368,27 +368,29 @@ public class SurveyInstance extends BaseDomain {
                 continue;
             }
 
-            List<SurveyQuestionSummary> questionSummaryList = summaryDao
-                    .listByResponse(questionIdStr, questionResponse);
-            SurveyQuestionSummary questionSummary = null;
-            if (questionSummaryList.isEmpty()) {
-                questionSummary = new SurveyQuestionSummary();
-                questionSummary.setQuestionId(response.getQuestionID());
-                questionSummary.setResponse(questionResponse);
-                questionSummary.setCount(0L);
-            } else {
-                questionSummary = questionSummaryList.get(0);
-            }
+            for (int i = 0; i < questionResponse.length; i++) {
+                List<SurveyQuestionSummary> questionSummaryList = summaryDao
+                        .listByResponse(questionIdStr, questionResponse[i]);
+                SurveyQuestionSummary questionSummary = null;
+                if (questionSummaryList.isEmpty()) {
+                    questionSummary = new SurveyQuestionSummary();
+                    questionSummary.setQuestionId(response.getQuestionID());
+                    questionSummary.setResponse(questionResponse[i]);
+                    questionSummary.setCount(0L);
+                } else {
+                    questionSummary = questionSummaryList.get(0);
+                }
 
-            // update and save or delete
-            long count = questionSummary.getCount();
-            count = increment ? ++count : --count;
-            questionSummary.setCount(count);
+                // update and save or delete
+                long count = questionSummary.getCount();
+                count = increment ? ++count : --count;
+                questionSummary.setCount(count);
 
-            if(count > 0) {
-                saveList.add(questionSummary);
-            } else {
-                deleteList.add(questionSummary);
+                if (count > 0) {
+                    saveList.add(questionSummary);
+                } else {
+                    deleteList.add(questionSummary);
+                }
             }
         }
 

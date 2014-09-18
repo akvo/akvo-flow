@@ -1,7 +1,7 @@
 {{#view FLOW.UserListView}}
 <!-- Available roles: {{t _ADMIN}} {{t _SUPER_ADMIN}} {{t _USER}} -->
 <div class="greyBg">
-  <section id="" class="fullWidth usersList"> 
+  <section id="" class="fullWidth usersList">
 	<h1>{{t _manage_users_and_user_rights}}</h1>
  <a {{action "showAddUserDialog" target="this"}}class="standardBtn btnAboveTable" >{{t _add_new_user}}</a>
     <!-- userS TABLE-->
@@ -25,21 +25,21 @@
       <!-- TABLE BODY: MAIN CONTENT-->
       <tbody>
         {{#each user in FLOW.userControl}}
-        
+
           <tr>
             <td class="userName" style="text-align:left; padding:0 0 0 20px;">{{user.userName}}</td>
             <td class="emailAdr" style="text-align:left;">{{user.emailAddress}}</td>
             {{#view FLOW.SingleUserView contentBinding="user"}}
               <span {{bindAttr class="view.roleClass"}}>{{view.roleLabel}}</span>
              {{/view}}
-            <td class="action"> <a {{action "showEditUserDialog" user target="this"}} class="edit">{{t _edit}}</a> {{#view FLOW.UserView contentBinding="user"}}<a {{action confirm FLOW.dialogControl.delUser target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>{{/view}}
-        
+            <td class="action"> <a {{action "showEditUserDialog" user target="this"}} class="edit">{{t _edit}}</a> {{#view FLOW.UserView contentBinding="user"}}<a {{action confirm FLOW.dialogControl.delUser target="FLOW.dialogControl"}} class="remove">{{t _remove}}</a>{{/view}}<a {{action "showManageApiKeysDialog" user target="this"}} class="api">{{t _api}}</a>
+
             </td>
           </tr>
-         
+
         {{/each}}
       </tbody>
-      
+
       <!-- TABLE FOOTER-->
       <tfoot>
         <tr>
@@ -58,20 +58,20 @@
         <div class="confirmDialog dialog">
           <h2>{{t _add_new_user}}</h2>
           <p class="dialogMsg">{{t _please_provide_a_user_name_}}.</p>
-          
+
           <label for="newUserName">{{t _username}}:</label> {{view Ember.TextField valueBinding="FLOW.editControl.newUserName" id="newUserName" size=40}}<br/>
            <label for="newEmail">{{t _email_address}}:</label> {{view Ember.TextField valueBinding="FLOW.editControl.newEmailAddress" id="newEmail" size=40}}<br/>
-          
-            {{view Ember.Select 
-            contentBinding="FLOW.permissionLevelControl.content" 
-            selectionBinding="FLOW.editControl.newPermissionLevel" 
-            optionLabelPath="content.label" 
+
+            {{view Ember.Select
+            contentBinding="FLOW.permissionLevelControl.content"
+            selectionBinding="FLOW.editControl.newPermissionLevel"
+            optionLabelPath="content.label"
             optionValuePath="content.value"
             prompt=""
             promptBinding="Ember.STRINGS._select_permission_level"}}
- 
-          <div class="buttons menuCentre"> 
-            <ul>  
+
+          <div class="buttons menuCentre">
+            <ul>
                <li><a {{action "doAddUser" target="this"}} class="ok smallBtn">{{t _save}}</a></li>
               <li><a {{action "cancelAddUser" target="this"}}} class="cancel">{{t _cancel}}</a></li>
             </ul>
@@ -90,19 +90,46 @@
           <p class="dialogMsg">{{t _please_edit_the_username_}}.</p>
           <label for="editUserName">{{t _username}}:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editUserName" id="editUserName" size=40}}<br/>
            <label for="editEmail">{{t _email_address}}:</label> {{view Ember.TextField valueBinding="FLOW.editControl.editEmailAddress" id="editEmail" size=40}}<br/>
-          
-            {{view Ember.Select 
-            contentBinding="FLOW.permissionLevelControl.content" 
-            selectionBinding="FLOW.editControl.editPermissionLevel" 
-            optionLabelPath="content.label" 
+
+            {{view Ember.Select
+            contentBinding="FLOW.permissionLevelControl.content"
+            selectionBinding="FLOW.editControl.editPermissionLevel"
+            optionLabelPath="content.label"
             optionValuePath="content.value"
             prompt=""
             promptBinding="Ember.STRINGS._select_permission_level"}}
- 
-          <div class="buttons menuCentre"> 
-            <ul>  
+
+          <div class="buttons menuCentre">
+            <ul>
                <li><a {{action "doEditUser" target="this"}} class="ok smallBtn">{{t _save}}</a></li>
               <li><a {{action "cancelEditUser" target="this"}}} class="cancel">{{t _cancel}}</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manage api keys dialog -->
+    <div {{bindAttr class="view.showManageApiKeysBool:display :overlay"}}>
+      <div class="blanket"></div>
+          <div class="dialogWrap">
+        <!-- the dialog contents -->
+        <div class="confirmDialog dialog">
+          <h2>{{t _manage_api_keys}}</h2>
+          <p class="dialogMsg">{{t _regenerate_or_revoke_api_keys}}</p>
+
+          <label for="manageAccessKey">{{t _access_key}}:</label>
+          {{view Ember.TextField valueBinding="FLOW.editControl.manageAccessKey" size=40 readOnly="true"}}
+          {{#if FLOW.editControl.showSecret}}
+            <label for="manageSecret">{{t _secret}}:</label>
+            {{view Ember.TextField valueBinding="FLOW.editControl.manageSecret" size=40}}
+            <p>{{t _secret_will_never_be_shown_again}}</p>
+          {{/if}}
+          <a {{action "doGenerateNewApiKey" target="this"}} class="ok smallBtn">{{t _regenerate}}</a>
+          <a {{action "doRevokeApiKey" target="this"}} class="ok smallBtn">{{t _revoke}}</a>
+          <div class="buttons menuCentre">
+            <ul>
+              <li><a {{action "cancelManageApiKeys" target="this"}}} class="cancel">{{t _close}}</a></li>
             </ul>
           </div>
         </div>

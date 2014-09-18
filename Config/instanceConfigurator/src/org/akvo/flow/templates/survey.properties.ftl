@@ -1,5 +1,5 @@
 awsBucket = ${awsBucket}
 awsAccessKeyId = ${awsAccessKeyId}
-awsSecretAccessKey = ${awsSecretAccessKey}
+awsSecretKey = ${awsSecretKey}
 serverBase = ${serverBase}
 apiKey = ${restApiKey}

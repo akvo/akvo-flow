@@ -1,4 +1,12 @@
 GIT
+  remote: https://github.com/wycats/rake-pipeline-web-filters.git
+  revision: 1da44c399c11766064638d58d0348f61c3cc473f
+  specs:
+    rake-pipeline-web-filters (0.6.0)
+      rack
+      rake-pipeline (~> 0.6)
+
+GIT
   remote: https://github.com/livingsocial/rake-pipeline.git
   revision: a75d96fbadcc659a35a0ae59212e0bc60b58cc54
   specs:
@@ -6,14 +14,6 @@ GIT
       json
       rake (~> 10.1.0)
       thor
-
-GIT
-  remote: https://github.com/wycats/rake-pipeline-web-filters.git
-  revision: 1da44c399c11766064638d58d0348f61c3cc473f
-  specs:
-    rake-pipeline-web-filters (0.6.0)
-      rack
-      rake-pipeline (~> 0.6)
 
 GEM
   remote: https://rubygems.org/
