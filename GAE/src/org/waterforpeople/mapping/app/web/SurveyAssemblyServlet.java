@@ -280,6 +280,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
         final String versionAttribute = s.getVersion() == null ? "" : "version='"
                 + s.getVersion() + "'";
+        String name = s.getName();
         String surveyGroupId = "";
         String surveyGroupName = "";
         String registrationForm = "";
@@ -293,8 +294,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             }
         }
         String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey"
-                + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute + registrationForm
-                + " " + surveyGroupId + " " + surveyGroupName + ">";
+                + " name=\"" + StringEscapeUtils.escapeXml(name) 
+                + "\"" + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute 
+                + registrationForm + " " + surveyGroupId + " " + surveyGroupName + ">";
         String surveyFooter = "</survey>";
         QuestionGroupDao qgDao = new QuestionGroupDao();
         TreeMap<Integer, QuestionGroup> qgList = qgDao
