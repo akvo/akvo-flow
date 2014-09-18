@@ -546,16 +546,18 @@ input[type="submit"] {
 }
 .dialog {
     position: absolute;
-    top: 20%;
+    top: 5%;
     left: 35%;
     display: block;
     padding: 1em 2em;
     min-width: 500px;
+    max-height: 90%;
     width: 25%;
     border: thin solid rgb(153, 153, 153);
     border-radius: 6px;
     background: white;
     -o-border-radius: 6px;
+    overflow-y:scroll;
 }
 .dialogWide {
     position: absolute;
@@ -1796,8 +1798,7 @@ li.aSurvey {
 li.aSurvey h2 {
     display: inline-block;
     width: 98%;
-    color:$anchorLink;
-}
+    text-transform: uppercase;}
 ul.surveyInfo {
     position: relative;
     display: inline;
