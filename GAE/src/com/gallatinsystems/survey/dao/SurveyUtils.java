@@ -136,7 +136,7 @@ public class SurveyUtils {
         final String[] questionExcludedProps = {
                 "questionOptionMap",
                 "questionHelpMediaMap", "scoringRules", "translationMap",
-                "order"
+                "order", "questionId"
         };
 
         final String[] allExcludedProps = (String[]) ArrayUtils.addAll(
@@ -144,6 +144,7 @@ public class SurveyUtils {
 
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
+        tmp.setQuestionId(source.getQuestionId() + "_copy");
         log.log(Level.INFO, "Copying `Question` " + source.getKey().getId());
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
