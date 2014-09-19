@@ -517,7 +517,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
       "name": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
       "path": path,
-      "surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId')
+      "surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId'),
+      "sourceId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('keyId')
     });
 
       // get the question groups again, now it contains the new one as well

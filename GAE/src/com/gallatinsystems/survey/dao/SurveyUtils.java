@@ -93,10 +93,9 @@ public class SurveyUtils {
     }
 
     public static QuestionGroup copyQuestionGroup(QuestionGroup source,
-            Long newSurveyId, Integer order, Map<Long, Long> qMap) {
+            Long newSurveyId, Map<Long, Long> qMap) {
 
         final QuestionGroupDao qgDao = new QuestionGroupDao();
-        final QuestionDao qDao = new QuestionDao();
         final QuestionGroup tmp = new QuestionGroup();
 
         BeanUtils.copyProperties(source, tmp, Constants.EXCLUDED_PROPERTIES);
@@ -106,49 +105,23 @@ public class SurveyUtils {
         log.log(Level.INFO, "Copying `QuestionGroup` "
                 + source.getKey().getId());
 
-        final QuestionGroup newQuestionGroup = qgDao.save(tmp, newSurveyId,
-                order);
+        final QuestionGroup newQuestionGroup = qgDao.save(tmp, newSurveyId);
 
         log.log(Level.INFO, "New `QuestionGroup` ID: "
                 + newQuestionGroup.getKey().getId());
 
-        SurveyUtils.copyTranslation(source.getKey().getId(), newQuestionGroup
-                .getKey().getId(), newSurveyId, newQuestionGroup.getKey().getId(),
-                ParentType.QUESTION_GROUP_NAME,
-                ParentType.QUESTION_GROUP_DESC);
+        final Queue queue = QueueFactory.getDefaultQueue();
 
-        List<Question> qList = qDao.listQuestionsInOrderForGroup(source
-                .getKey().getId());
+        final TaskOptions options = TaskOptions.Builder
+                .withUrl("/app_worker/dataprocessor")
+                .param(DataProcessorRequest.ACTION_PARAM,
+                        DataProcessorRequest.COPY_QUESTION_GROUP)
+                .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
+                        String.valueOf(newQuestionGroup.getKey().getId()))
+                .param(DataProcessorRequest.SOURCE_PARAM,
+                        String.valueOf(source.getKey().getId()));
 
-        if (qList == null) {
-            return newQuestionGroup;
-        }
-
-        log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
-
-        final List<Question> dependentQuestionList = new ArrayList<Question>();
-
-        int qCount = 1;
-        for (Question q : qList) {
-            final Question qTmp = SurveyUtils.copyQuestion(q, newQuestionGroup
-                    .getKey().getId(), qCount++, newSurveyId);
-            qMap.put(q.getKey().getId(), qTmp.getKey().getId());
-            if (qTmp.getDependentFlag() != null && qTmp.getDependentFlag()) {
-                dependentQuestionList.add(qTmp);
-            }
-        }
-
-        // fixing dependencies
-
-        log.log(Level.INFO,
-                "Fixing dependencies for " + dependentQuestionList.size()
-                        + " `Question`");
-
-        for (Question nQ : dependentQuestionList) {
-            nQ.setDependentQuestionId(qMap.get(nQ.getDependentQuestionId()));
-        }
-
-        qDao.save(dependentQuestionList);
+        queue.add(options);
 
         return newQuestionGroup;
     }
@@ -163,7 +136,7 @@ public class SurveyUtils {
         final String[] questionExcludedProps = {
                 "questionOptionMap",
                 "questionHelpMediaMap", "scoringRules", "translationMap",
-                "order"
+                "order", "questionId"
         };
 
         final String[] allExcludedProps = (String[]) ArrayUtils.addAll(
@@ -171,6 +144,7 @@ public class SurveyUtils {
 
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
+        tmp.setQuestionId(source.getQuestionId() + "_copy");
         log.log(Level.INFO, "Copying `Question` " + source.getKey().getId());
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);

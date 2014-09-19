@@ -33,6 +33,7 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
     private Integer order;
     private String path;
     private String name;
+    private Long sourceId;
 
     public Integer getOrder() {
         return order;
@@ -108,5 +109,13 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 
     public String getName() {
         return name;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
     }
 }
