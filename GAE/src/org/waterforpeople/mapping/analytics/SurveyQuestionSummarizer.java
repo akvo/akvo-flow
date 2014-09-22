@@ -27,71 +27,71 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
 
 /**
- * This class will summarize survey information by updating counts by response
- * type by survey. The key should be a key of a survey instance object
+ * This class will summarize survey information by updating counts by response type by survey. The
+ * key should be a key of a survey instance object
  * 
  * @author Christopher Fagiani
- * 
  */
 public class SurveyQuestionSummarizer implements DataSummarizer {
 
-	@Override
-	public boolean performSummarization(String key, String type, String value,
-			Integer offset, String cursor) {
-		if (key != null) {
-			SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
-			List<QuestionAnswerStore> answers = instanceDao
-					.listQuestionAnswerStoreByType(new Long(key), "VALUE");
-			if (answers != null && answers.size() > 0) {
-				QuestionDao questionDao = new QuestionDao();
-				List<Question> qList = questionDao.listQuestionByType(answers
-						.get(0).getSurveyId(), Question.Type.OPTION);
-				int i = 0;
-				if (offset != null) {
-					i = offset;
-				} else {
-					offset = 0;
-				}
-				// process BATCH_SIZE items
-				while (i < answers.size() && i < offset + BATCH_SIZE) {
-					if (isSummarizable(answers.get(i), qList)) {
-						SurveyQuestionSummaryDao.incrementCount(answers.get(i),
-								1);
-					}
-					i++;
-				}
-				// if we still have more answers to process, return false
-				if (i < answers.size()) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+    @Override
+    public boolean performSummarization(String key, String type, String value,
+            Integer offset, String cursor) {
+        if (key != null) {
+            SurveyInstanceDAO instanceDao = new SurveyInstanceDAO();
+            List<QuestionAnswerStore> answers = instanceDao
+                    .listQuestionAnswerStoreByType(new Long(key), "VALUE");
+            if (answers != null && answers.size() > 0) {
+                QuestionDao questionDao = new QuestionDao();
+                List<Question> qList = questionDao.listQuestionByType(answers
+                        .get(0).getSurveyId(), Question.Type.OPTION);
+                int i = 0;
+                if (offset != null) {
+                    i = offset;
+                } else {
+                    offset = 0;
+                }
+                // process BATCH_SIZE items
+                while (i < answers.size() && i < offset + BATCH_SIZE) {
+                    if (isSummarizable(answers.get(i), qList)) {
+                        SurveyQuestionSummaryDao.incrementCount(answers.get(i),
+                                1);
+                    }
+                    i++;
+                }
+                // if we still have more answers to process, return false
+                if (i < answers.size()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-	/**
-	 * returns true if the question type for the answer object is an OPTION type
-	 * @param answer
-	 * @param questions
-	 * @return
-	 */
-	private boolean isSummarizable(QuestionAnswerStore answer,
-			List<Question> questions) {
-		if (questions != null && answer != null) {
-			long id = Long.parseLong(answer.getQuestionID());
-			for (Question q : questions) {
-				if (q.getKey().getId() == id) {
-					return true;
-				}
-			}
-			return false;
-		} else {
-			return false;
-		}
-	}
+    /**
+     * returns true if the question type for the answer object is an OPTION type
+     * 
+     * @param answer
+     * @param questions
+     * @return
+     */
+    private boolean isSummarizable(QuestionAnswerStore answer,
+            List<Question> questions) {
+        if (questions != null && answer != null) {
+            long id = Long.parseLong(answer.getQuestionID());
+            for (Question q : questions) {
+                if (q.getKey().getId() == id) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
 
-	@Override
-	public String getCursor() {
-		return null;
-	}
+    @Override
+    public String getCursor() {
+        return null;
+    }
 }

@@ -100,6 +100,19 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   }
 });
 
+FLOW.surveyedLocaleControl = Ember.ArrayController.create({
+  sortProperties: ['collectionDate'],
+  sortAscending: false,
+  selectedSurvey: null,
+  content: null,
+  sinceArray: [],
+  pageNumber: 0,
+
+  populate: function () {
+    this.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
+    this.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, {}));
+  }
+});
 
 FLOW.questionAnswerControl = Ember.ArrayController.create({
   content: null,

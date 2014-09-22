@@ -8,6 +8,16 @@ FLOW.Router = Ember.Router.extend({
   loggedIn: false,
   location: 'none',
   //'hash'or 'none' for URLs
+
+  resetState: function () {
+    FLOW.selectedControl.set('selectedQuestionGroup', null);
+    FLOW.selectedControl.set('selectedSurveyGroup', null);
+    FLOW.selectedControl.set('selectedSurvey', null);
+    FLOW.selectedControl.set('selectedQuestion', null);
+    FLOW.surveyControl.set('content', null);
+    FLOW.questionControl.set('OPTIONcontent', null);
+  },
+
   root: Ember.Route.extend({
     doNavSurveys: function (router, context) {
       router.transitionTo('navSurveys.index');
@@ -83,6 +93,9 @@ FLOW.Router = Ember.Router.extend({
           FLOW.surveyGroupControl.populate();
           FLOW.selectedControl.set('selectedQuestionGroup', null);
           FLOW.selectedControl.set('selectedSurvey', null);
+          FLOW.selectedControl.set('selectedQuestion', null);
+          FLOW.questionControl.set('OPTIONcontent', null);
+
         }
       }),
 
@@ -96,7 +109,8 @@ FLOW.Router = Ember.Router.extend({
             "defaultLanguageCode": "en",
             "requireApproval": false,
             "status": "NOT_PUBLISHED",
-            "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId')
+            "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
+            "version":"1.0"
           });
 
           FLOW.selectedControl.set('selectedSurvey', newSurvey);
@@ -113,11 +127,6 @@ FLOW.Router = Ember.Router.extend({
           // all questions should be closed when we enter
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.attributeControl.populate();
-
-          if (!Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))) {
-            // questionGroups are already loaded in controller automatically
-            FLOW.questionControl.populateAllQuestions();
-          }
         },
 
         doEditQuestions: function (router, event) {
@@ -194,9 +203,11 @@ FLOW.Router = Ember.Router.extend({
         route: '/current-devices',
         connectOutlets: function (router, context) {
           router.get('navDevicesController').connectOutlet('currentDevices');
+          router.resetState();
           FLOW.deviceGroupControl.populate();
           FLOW.deviceControl.populate();
           FLOW.surveyAssignmentControl.populate();
+          FLOW.surveyGroupControl.populate();
           router.set('devicesSubnavController.selected', 'currentDevices');
         }
       }),
@@ -247,6 +258,9 @@ FLOW.Router = Ember.Router.extend({
       doDataCleaning: function (router, event) {
         router.transitionTo('navData.dataCleaning');
       },
+      doMonitoringData: function (router, event) {
+        router.transitionTo('navData.monitoringData');
+      },
 
       index: Ember.Route.extend({
         route: '/',
@@ -258,6 +272,7 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function (router, context) {
           router.get('navDataController').connectOutlet('inspectData');
           router.set('datasubnavController.selected', 'inspectData');
+          router.resetState();
           FLOW.surveyGroupControl.populate();
           FLOW.surveyInstanceControl.populate();
         }
@@ -286,7 +301,18 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('dataCleaning');
           router.set('datasubnavController.selected', 'dataCleaning');
         }
-      })
+      }),
+      
+      monitoringData: Ember.Route.extend({
+        route: '/monitoringdata',
+        connectOutlets: function (router, context) {
+          router.get('navDataController').connectOutlet('monitoringData');
+          router.set('datasubnavController.selected', 'monitoringData');
+          FLOW.surveyGroupControl.populate(function (item) {
+                 return item.get('monitoringGroup');
+          });
+        }
+      }),
     }),
 
     // ************************** REPORTS ROUTER **********************************
@@ -295,12 +321,7 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function (router, context) {
         router.get('applicationController').connectOutlet('navReports');
         FLOW.surveyGroupControl.populate();
-        FLOW.selectedControl.set('selectedSurveyGroup', null);
-        FLOW.selectedControl.set('selectedSurvey', null);
-        FLOW.selectedControl.set('selectedQuestion', null);
-        FLOW.surveyControl.set('content', null);
-        FLOW.questionControl.set('OPTIONcontent', null);
-
+        router.resetState();
         router.set('navigationController.selected', 'navReports');
       },
 
@@ -326,7 +347,7 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function (router, context) {
           router.get('navReportsController').connectOutlet('exportReports');
           router.set('reportsSubnavController.selected', 'exportReports');
-          FLOW.selectedControl.set('selectedSurveyGroup', null);
+          router.resetState();
         }
       }),
 
@@ -341,8 +362,7 @@ FLOW.Router = Ember.Router.extend({
       statistics: Ember.Route.extend({
         route: '/statistics',
         connectOutlets: function(router, context) {
-          FLOW.selectedControl.set('selectedSurvey',null);
-          FLOW.selectedControl.set('selectedSurveyGroup',null);
+          router.resetState();
           router.get('navReportsController').connectOutlet('statistics');
           router.set('reportsSubnavController.selected', 'statistics');
           FLOW.surveyGroupControl.populate();
@@ -376,8 +396,7 @@ FLOW.Router = Ember.Router.extend({
         router.get('applicationController').connectOutlet('navMessages');
         router.set('navigationController.selected', 'navMessages');
         FLOW.messageControl.populate();
-        FLOW.selectedControl.set('selectedSurveyGroup', null);
-        FLOW.selectedControl.set('selectedSurvey', null);
+        router.resetState();
       }
     }),
 

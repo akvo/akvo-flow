@@ -31,64 +31,103 @@ import com.gallatinsystems.survey.domain.Translation;
  * dao for manipulating Translation objects
  * 
  * @author Christohper Fagiani
- * 
  */
 public class TranslationDao extends BaseDAO<Translation> {
 
-	public TranslationDao() {
-		super(Translation.class);
-	}
+    public TranslationDao() {
+        super(Translation.class);
+    }
 
-	/**
-	 * gets all translations for a given id and parentType combination. The map
-	 * returned is keyed on language code.
-	 * 
-	 * @param parentType
-	 * @param parentId
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Translation> findTranslations(
-			Translation.ParentType parentType, Long parentId) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(Translation.class);
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = null;
-		paramMap = new HashMap<String, Object>();
+    /**
+     * gets all translations for a given id and parentType combination. The map returned is keyed on
+     * language code.
+     * 
+     * @param parentType
+     * @param parentId
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public HashMap<String, Translation> findTranslations(
+            Translation.ParentType parentType, Long parentId) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(Translation.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = null;
+        paramMap = new HashMap<String, Object>();
 
-		appendNonNullParam("parentType", filterString, paramString, "String",
-				parentType, paramMap);
-		appendNonNullParam("parentId", filterString, paramString, "Long",
-				parentId, paramMap);
+        appendNonNullParam("parentType", filterString, paramString, "String",
+                parentType, paramMap);
+        appendNonNullParam("parentId", filterString, paramString, "Long",
+                parentId, paramMap);
 
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
 
-		HashMap<String, Translation> translations = new HashMap<String, Translation>();
-		List<Translation> translationList = (List<Translation>) query
-				.executeWithMap(paramMap);
-		if (translationList != null) {
-			for (Translation t : translationList) {
-				translations.put(t.getLanguageCode(), t);
-			}
-		}
-		return translations;
-	}
+        HashMap<String, Translation> translations = new HashMap<String, Translation>();
+        List<Translation> translationList = (List<Translation>) query
+                .executeWithMap(paramMap);
+        if (translationList != null) {
+            for (Translation t : translationList) {
+                translations.put(t.getLanguageCode(), t);
+            }
+        }
+        return translations;
+    }
 
-	/**
-	 * deletes all items translations for a given parent
-	 * 
-	 * @param parentId
-	 * @param parentType
-	 */
-	public void deleteTranslationsForParent(Long parentId,
-			Translation.ParentType parentType) {
-		HashMap<String, Translation> trans = findTranslations(parentType,
-				parentId);
-		Collection<Translation> values = trans.values();
-		if (values != null && values.size() > 0) {
-			delete(trans.values());
-		}
-	}
+    /**
+     * Finds all translations for a certain question group
+     * 
+     * @param questionGroupId
+     */
+    @SuppressWarnings("unchecked")
+    public List<Translation> listTranslationsByQuestionGroup(long questionGroupId) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(Translation.class);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = null;
+        paramMap = new HashMap<String, Object>();
+
+        appendNonNullParam("questionGroupId", filterString, paramString, "Long",
+                questionGroupId, paramMap);
+
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+
+        List<Translation> result = (List<Translation>) query
+                .executeWithMap(paramMap);
+        return result;
+    }
+
+    /**
+     * deletes all items translations for a given parent
+     * 
+     * @param parentId
+     * @param parentType
+     */
+    public void deleteTranslationsForParent(Long parentId,
+            Translation.ParentType parentType) {
+        HashMap<String, Translation> trans = findTranslations(parentType,
+                parentId);
+        Collection<Translation> values = trans.values();
+        if (values != null && values.size() > 0) {
+            delete(trans.values());
+        }
+    }
+
+    /**
+     * list all translations
+     * 
+     * @param cursor
+     * @param count
+     */
+    @SuppressWarnings("unchecked")
+    public List<Translation> listTranslations(Integer count, String cursorString) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query q = pm.newQuery(Translation.class);
+        prepareCursor(cursorString, count, q);
+        List<Translation> tList = (List<Translation>) q.execute();
+        return tList;
+    }
 }

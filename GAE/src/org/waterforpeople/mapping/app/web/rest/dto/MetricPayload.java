@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest.dto;
 
 import java.io.Serializable;
@@ -21,14 +22,14 @@ import org.waterforpeople.mapping.app.gwt.client.survey.MetricDto;
 
 public class MetricPayload implements Serializable {
 
-	private static final long serialVersionUID = 4860651872541157075L;
-	MetricDto metric = null;
+    private static final long serialVersionUID = 4860651872541157075L;
+    MetricDto metric = null;
 
-	public MetricDto getMetric() {
-		return metric;
-	}
+    public MetricDto getMetric() {
+        return metric;
+    }
 
-	public void setMetric(MetricDto metric) {
-		this.metric = metric;
-	}
+    public void setMetric(MetricDto metric) {
+        this.metric = metric;
+    }
 }

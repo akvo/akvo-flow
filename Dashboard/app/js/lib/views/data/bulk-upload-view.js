@@ -8,7 +8,7 @@ FLOW.uploader = Ember.Object.create({
   r: new Resumable({
     target: FLOW.Env.flowServices + '/upload',
     uploadDomain: FLOW.Env.surveyuploadurl.split('/')[2],
-    simultaneousUploads: 4,
+    simultaneousUploads: 1,
     testChunks: false,
     throttleProgressCallbacks: 1, // 1s
     chunkRetryInterval: 1000, // 1s
@@ -103,12 +103,14 @@ FLOW.uploader = Ember.Object.create({
 
       // Reflect that the file upload has completed
       $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html('(completed)');
-      $.ajax({
+
+      setTimeout($.ajax({
         url: this.opts.target,
         cache: false,
         type: 'POST',
         data: data
-      });
+      }), 500);
+
     });
 
     r.on('fileError', function (file, message) {

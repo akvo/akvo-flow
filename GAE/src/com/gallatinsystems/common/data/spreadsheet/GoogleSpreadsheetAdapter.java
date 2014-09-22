@@ -46,202 +46,200 @@ import com.google.gdata.util.ServiceException;
 
 /**
  * Wrapper class for interacting with a Google Docs Spreadsheet
- * 
  */
 public class GoogleSpreadsheetAdapter {
-	private static final Logger log = Logger
-			.getLogger(GoogleSpreadsheetAdapter.class.getName());
+    private static final Logger log = Logger
+            .getLogger(GoogleSpreadsheetAdapter.class.getName());
 
-	private String google_spreadsheet_url;
-	private static final String RANDOM_SPREADSHEET_NAME = "exampleCo-exampleApp-1.0";
+    private String google_spreadsheet_url;
+    private static final String RANDOM_SPREADSHEET_NAME = "exampleCo-exampleApp-1.0";
 
-	private SpreadsheetService service;
-	private SpreadsheetFeed feed = null;
+    private SpreadsheetService service;
+    private SpreadsheetFeed feed = null;
 
-	public GoogleSpreadsheetAdapter(String sessionToken, PrivateKey privateKey)
-			throws IOException, ServiceException {
-		google_spreadsheet_url = PropertyUtil
-				.getProperty("google_spreadsheet_url");
-		if (service == null) {
-			service = new SpreadsheetService(RANDOM_SPREADSHEET_NAME);
-			service.setAuthSubToken(sessionToken, privateKey);
-		}
-		if (metafeedUrl == null) {
-			metafeedUrl = new URL(google_spreadsheet_url);
-		}
-		if (feed == null) {
-			try {
-				feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
-			} catch (IOException iex) {
-				try {
-					wait(1000);
-				} catch (InterruptedException e) {
-					log.log(Level.SEVERE, "Interrupted while waiting for feed",
-							e);
-				}
-				feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
-			}
-		}
+    public GoogleSpreadsheetAdapter(String sessionToken, PrivateKey privateKey)
+            throws IOException, ServiceException {
+        google_spreadsheet_url = PropertyUtil
+                .getProperty("google_spreadsheet_url");
+        if (service == null) {
+            service = new SpreadsheetService(RANDOM_SPREADSHEET_NAME);
+            service.setAuthSubToken(sessionToken, privateKey);
+        }
+        if (metafeedUrl == null) {
+            metafeedUrl = new URL(google_spreadsheet_url);
+        }
+        if (feed == null) {
+            try {
+                feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
+            } catch (IOException iex) {
+                try {
+                    wait(1000);
+                } catch (InterruptedException e) {
+                    log.log(Level.SEVERE, "Interrupted while waiting for feed",
+                            e);
+                }
+                feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
+            }
+        }
 
-	}
+    }
 
-	@SuppressWarnings("unused")
-	public static void main(String[] args) throws IOException, ServiceException {
-		String spreadsheetName = args[0];
-		String googleUserName = args[1];
-		String googlePassword = args[2];
+    @SuppressWarnings("unused")
+    public static void main(String[] args) throws IOException, ServiceException {
+        String spreadsheetName = args[0];
+        String googleUserName = args[1];
+        String googlePassword = args[2];
 
-		new GoogleSpreadsheetAdapter(null, null)
-				.loadSpreadsheet(spreadsheetName);
-	}
+        new GoogleSpreadsheetAdapter(null, null)
+                .loadSpreadsheet(spreadsheetName);
+    }
 
-	public SpreadsheetContainer getSpreadsheetContents(String spreadsheetName)
-			throws IOException, ServiceException {
-		return loadSpreadsheet(spreadsheetName);
-	}
+    public SpreadsheetContainer getSpreadsheetContents(String spreadsheetName)
+            throws IOException, ServiceException {
+        return loadSpreadsheet(spreadsheetName);
+    }
 
-	public ArrayList<String> listColumns(String spreadsheetName)
-			throws IOException, ServiceException {
-		SpreadsheetFeed feed = service.getFeed(metafeedUrl,
-				SpreadsheetFeed.class);
+    public ArrayList<String> listColumns(String spreadsheetName)
+            throws IOException, ServiceException {
+        SpreadsheetFeed feed = service.getFeed(metafeedUrl,
+                SpreadsheetFeed.class);
 
-		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
-		for (int i = 0; i < spreadsheets.size(); i++) {
-			SpreadsheetEntry entry = spreadsheets.get(i);
-			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
-				List<WorksheetEntry> worksheets = entry.getWorksheets();
-				// for (int j = 0; j < worksheets.size(); j++) {
-				WorksheetEntry worksheet = worksheets.get(0);
-				return listColumns(worksheet);
-				// }
-			}
-		}
-		return null;
-	}
+        List<SpreadsheetEntry> spreadsheets = feed.getEntries();
+        for (int i = 0; i < spreadsheets.size(); i++) {
+            SpreadsheetEntry entry = spreadsheets.get(i);
+            if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
+                List<WorksheetEntry> worksheets = entry.getWorksheets();
+                // for (int j = 0; j < worksheets.size(); j++) {
+                WorksheetEntry worksheet = worksheets.get(0);
+                return listColumns(worksheet);
+                // }
+            }
+        }
+        return null;
+    }
 
-	public ArrayList<String> listSpreasheets(String feedURL)
-			throws IOException, ServiceException, GeneralSecurityException {
+    public ArrayList<String> listSpreasheets(String feedURL)
+            throws IOException, ServiceException, GeneralSecurityException {
 
-		log.info("created spreadsheetfeed");
+        log.info("created spreadsheetfeed");
 
-		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
-		log.info("got spreadsheet entry list: " + spreadsheets.size());
-		ArrayList<String> spreadsheetNamesList = new ArrayList<String>();
-		for (int i = 0; i < spreadsheets.size(); i++) {
-			SpreadsheetEntry entry = spreadsheets.get(i);
-			String title = entry.getTitle().getPlainText();
-			spreadsheetNamesList.add(title);
-		}
-		return spreadsheetNamesList;
-	}
+        List<SpreadsheetEntry> spreadsheets = feed.getEntries();
+        log.info("got spreadsheet entry list: " + spreadsheets.size());
+        ArrayList<String> spreadsheetNamesList = new ArrayList<String>();
+        for (int i = 0; i < spreadsheets.size(); i++) {
+            SpreadsheetEntry entry = spreadsheets.get(i);
+            String title = entry.getTitle().getPlainText();
+            spreadsheetNamesList.add(title);
+        }
+        return spreadsheetNamesList;
+    }
 
-	private URL metafeedUrl;
+    private URL metafeedUrl;
 
-	private ArrayList<String> listColumns(WorksheetEntry worksheetEntry)
-			throws IOException, ServiceException {
-		URL listFeedUrl = worksheetEntry.getListFeedUrl();
-		ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
-		ArrayList<String> columns = new ArrayList<String>();
+    private ArrayList<String> listColumns(WorksheetEntry worksheetEntry)
+            throws IOException, ServiceException {
+        URL listFeedUrl = worksheetEntry.getListFeedUrl();
+        ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
+        ArrayList<String> columns = new ArrayList<String>();
 
-		for (ListEntry entry : feed.getEntries()) {
-			// row
-			for (String tag : entry.getCustomElements().getTags()) {
-				columns.add(tag);
-			}
-			break;
-		}
-		return columns;
-	}
+        for (ListEntry entry : feed.getEntries()) {
+            // row
+            for (String tag : entry.getCustomElements().getTags()) {
+                columns.add(tag);
+            }
+            break;
+        }
+        return columns;
+    }
 
-	/**
-	 * Gets a list of spreadsheets using the feed and then iterates over the
-	 * list until it finds one that matches the name passed in. If found, it
-	 * will then get spreadsheet content.
-	 * 
-	 * @param spreadsheetName
-	 * @return
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-	private SpreadsheetContainer loadSpreadsheet(String spreadsheetName)
-			throws IOException, ServiceException {
-		List<SpreadsheetEntry> spreadsheets = feed.getEntries();
-		for (int i = 0; i < spreadsheets.size(); i++) {
-			SpreadsheetEntry entry = spreadsheets.get(i);
-			if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
-				List<WorksheetEntry> worksheets = entry.getWorksheets();
-				WorksheetEntry worksheet = worksheets.get(0);
-				return getListFeed(worksheet);
-			}
-		}
-		return null;
-	}
+    /**
+     * Gets a list of spreadsheets using the feed and then iterates over the list until it finds one
+     * that matches the name passed in. If found, it will then get spreadsheet content.
+     * 
+     * @param spreadsheetName
+     * @return
+     * @throws IOException
+     * @throws ServiceException
+     */
+    private SpreadsheetContainer loadSpreadsheet(String spreadsheetName)
+            throws IOException, ServiceException {
+        List<SpreadsheetEntry> spreadsheets = feed.getEntries();
+        for (int i = 0; i < spreadsheets.size(); i++) {
+            SpreadsheetEntry entry = spreadsheets.get(i);
+            if (entry.getTitle().getPlainText().equals(spreadsheetName)) {
+                List<WorksheetEntry> worksheets = entry.getWorksheets();
+                WorksheetEntry worksheet = worksheets.get(0);
+                return getListFeed(worksheet);
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * gets the content for a single Worksheet using its feedURL
-	 * 
-	 * @param worksheetEntry
-	 * @return
-	 * @throws IOException
-	 * @throws ServiceException
-	 */
-	private SpreadsheetContainer getListFeed(WorksheetEntry worksheetEntry)
-			throws IOException, ServiceException {
-		URL listFeedUrl = worksheetEntry.getListFeedUrl();
-		ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
-		SpreadsheetContainer sbc = new SpreadsheetContainer();
+    /**
+     * gets the content for a single Worksheet using its feedURL
+     * 
+     * @param worksheetEntry
+     * @return
+     * @throws IOException
+     * @throws ServiceException
+     */
+    private SpreadsheetContainer getListFeed(WorksheetEntry worksheetEntry)
+            throws IOException, ServiceException {
+        URL listFeedUrl = worksheetEntry.getListFeedUrl();
+        ListFeed feed = service.getFeed(listFeedUrl, ListFeed.class);
+        SpreadsheetContainer sbc = new SpreadsheetContainer();
 
-		for (ListEntry entry : feed.getEntries()) {
-			// row
-			RowContainer row = new RowContainer();
-			ArrayList<ColumnContainer> colList = new ArrayList<ColumnContainer>();
-			for (String tag : entry.getCustomElements().getTags()) {
-				// col in row
-				ColumnContainer col = new ColumnContainer();
+        for (ListEntry entry : feed.getEntries()) {
+            // row
+            RowContainer row = new RowContainer();
+            ArrayList<ColumnContainer> colList = new ArrayList<ColumnContainer>();
+            for (String tag : entry.getCustomElements().getTags()) {
+                // col in row
+                ColumnContainer col = new ColumnContainer();
 
-				col.setColName(tag);
-				String val = entry.getCustomElements().getValue(tag);
-				if (val != null && val.length() > 500) {
-					val = val.substring(0, 500);
-				}
-				col.setColContents(val);
-				colList.add(col);
-			}
-			row.setColumnContainersList(colList);
-			sbc.addRowContainer(row);
-		}
-		return sbc;
-	}
+                col.setColName(tag);
+                String val = entry.getCustomElements().getValue(tag);
+                if (val != null && val.length() > 500) {
+                    val = val.substring(0, 500);
+                }
+                col.setColContents(val);
+                colList.add(col);
+            }
+            row.setColumnContainersList(colList);
+            sbc.addRowContainer(row);
+        }
+        return sbc;
+    }
 
-	private TableEntry createTableFeed(SpreadsheetEntry spreadsheetEntry)
-			throws IOException, ServiceException {
-		TableEntry tableEntry = new TableEntry();
+    private TableEntry createTableFeed(SpreadsheetEntry spreadsheetEntry)
+            throws IOException, ServiceException {
+        TableEntry tableEntry = new TableEntry();
 
-		FeedURLFactory factory = FeedURLFactory.getDefault();
-		URL tableFeedUrl = factory.getTableFeedUrl(spreadsheetEntry.getKey());
+        FeedURLFactory factory = FeedURLFactory.getDefault();
+        URL tableFeedUrl = factory.getTableFeedUrl(spreadsheetEntry.getKey());
 
-		// Specify a basic table:
-		tableEntry.setTitle(new PlainTextConstruct("New Table"));
-		tableEntry.setWorksheet(new Worksheet("Sheet1"));
-		tableEntry.setHeader(new Header(1));
+        // Specify a basic table:
+        tableEntry.setTitle(new PlainTextConstruct("New Table"));
+        tableEntry.setWorksheet(new Worksheet("Sheet1"));
+        tableEntry.setHeader(new Header(1));
 
-		// Specify columns in the table, start row, number of rows.
-		Data tableData = new Data();
-		tableData.setNumberOfRows(0);
-		// Start row index cannot overlap with header row.
-		tableData.setStartIndex(2);
-		// This table has only one column.
-		tableData.addColumn(new Column("A", "Column A"));
+        // Specify columns in the table, start row, number of rows.
+        Data tableData = new Data();
+        tableData.setNumberOfRows(0);
+        // Start row index cannot overlap with header row.
+        tableData.setStartIndex(2);
+        // This table has only one column.
+        tableData.addColumn(new Column("A", "Column A"));
 
-		tableEntry.setData(tableData);
-		service.insert(tableFeedUrl, tableEntry);
-		return tableEntry;
-	}
+        tableEntry.setData(tableData);
+        service.insert(tableFeedUrl, tableEntry);
+        return tableEntry;
+    }
 
-	@SuppressWarnings("unused")
-	private void getTableFeed(SpreadsheetEntry spreadsheetEntry)
-			throws IOException, ServiceException {
-		TableEntry tableEntry = createTableFeed(spreadsheetEntry);
+    @SuppressWarnings("unused")
+    private void getTableFeed(SpreadsheetEntry spreadsheetEntry)
+            throws IOException, ServiceException {
+        TableEntry tableEntry = createTableFeed(spreadsheetEntry);
 
-	}
+    }
 }

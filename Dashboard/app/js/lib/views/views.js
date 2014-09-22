@@ -12,6 +12,7 @@ require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/data/inspect-data-table-views');
 require('akvo-flow/views/data/data-attribute-views');
 require('akvo-flow/views/data/bulk-upload-view');
+require('akvo-flow/views/data/monitoring-data-table-view');
 require('akvo-flow/views/surveys/question-view');
 require('akvo-flow/views/data/question-answer-view');
 require('akvo-flow/views/reports/report-views');
@@ -29,26 +30,9 @@ FLOW.ApplicationView = Ember.View.extend({
   templateName: 'application/application',
 
   init: function () {
-    var locale;
-
+    var locale = localStorage.locale || 'en';
     this._super();
-
-    // If available set language from local storage
-    locale = localStorage.locale;
-    if (typeof locale === 'undefined') {
-      locale = 'en';
-    }
-    switch (locale) {
-    case 'fr':
-      Ember.STRINGS = Ember.STRINGS_FR;
-      break;
-    case 'es':
-      Ember.STRINGS = Ember.STRINGS_ES;
-      break;
-    default:
-      Ember.STRINGS = Ember.STRINGS_EN;
-      break;
-    }
+    Ember.STRINGS = Ember['STRINGS_' + locale.toUpperCase()];
   }
 });
 
@@ -253,6 +237,14 @@ Ember.Handlebars.registerHelper("getServer", function () {
   var loc = window.location.href,
     pos = loc.indexOf("/admin");
   return loc.substring(0, pos);
+});
+
+Ember.Handlebars.registerHelper('sgName', function (property) {
+  var sgId = Ember.get(this, property),
+      sg = FLOW.surveyGroupControl.find(function (item) {
+        return item.get && item.get('keyId') === sgId;
+      });
+  return sg && sg.get('name') || sgId;
 });
 
 // Register a Handlebars helper that instantiates `view`.
@@ -498,6 +490,11 @@ FLOW.BulkUploadView = Ember.View.extend({
 FLOW.DataCleaningView = Ember.View.extend({
   templateName: 'navData/data-cleaning'
 });
+
+FLOW.MonitoringDataView = Ember.View.extend({
+  templateName: 'navData/monitoring-data'
+});
+
 
 // reports views
 FLOW.NavReportsView = Ember.View.extend({

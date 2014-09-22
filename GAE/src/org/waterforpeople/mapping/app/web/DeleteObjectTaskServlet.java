@@ -16,8 +16,6 @@
 
 package org.waterforpeople.mapping.app.web;
 
-
-
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,105 +37,105 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class DeleteObjectTaskServlet extends AbstractRestApiServlet {
 
-	private static final String DELETE_OBJECT_TASK_URL = "/app_worker/deleteobjecttask";
-	private static final String DELETE_QUEUE_NAME = "deletequeue";
-	/**
+    private static final String DELETE_OBJECT_TASK_URL = "/app_worker/deleteobjecttask";
+    private static final String DELETE_QUEUE_NAME = "deletequeue";
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -7978453807761868626L;
+    private static final long serialVersionUID = -7978453807761868626L;
 
-	@Override
-	protected RestRequest convertRequest() throws Exception {
-		HttpServletRequest req = getRequest();
-		RestRequest restRequest = new DeleteTaskRequest();
-		restRequest.populateFromHttpRequest(req);
-		return restRequest;
-	}
-	
-	@Override
-	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		DeleteTaskRequest dtReq = (DeleteTaskRequest) convertRequest();
-		if (dtReq.getKey().equals("secret")) {
-			deleteObject(dtReq.getObjectName(), dtReq.getTaskCount(), dtReq.getApiKey());
-		}
+    @Override
+    protected RestRequest convertRequest() throws Exception {
+        HttpServletRequest req = getRequest();
+        RestRequest restRequest = new DeleteTaskRequest();
+        restRequest.populateFromHttpRequest(req);
+        return restRequest;
+    }
 
-		return null;
-	}
+    @Override
+    protected RestResponse handleRequest(RestRequest req) throws Exception {
+        DeleteTaskRequest dtReq = (DeleteTaskRequest) convertRequest();
+        if (dtReq.getKey().equals("secret")) {
+            deleteObject(dtReq.getObjectName(), dtReq.getTaskCount(), dtReq.getApiKey());
+        }
 
-	@Override
-	protected void writeOkResponse(RestResponse resp) throws Exception {
-		getResponse().setStatus(200);
-		if (resp != null) {
-			getResponse().getWriter().println("ok");
-		}
-	}
+        return null;
+    }
 
-	private void deleteObject(String objectName, String taskCount, String key) {
-		final String kind = objectName;
+    @Override
+    protected void writeOkResponse(RestResponse resp) throws Exception {
+        getResponse().setStatus(200);
+        if (resp != null) {
+            getResponse().getWriter().println("ok");
+        }
+    }
 
-		int deleted_count = 0;
-		boolean is_finished = false;
+    private void deleteObject(String objectName, String taskCount, String key) {
+        final String kind = objectName;
 
-		final DatastoreService dss = DatastoreServiceFactory
-				.getDatastoreService();
-		final long start = System.currentTimeMillis();
-		while (System.currentTimeMillis() - start < 16384) {
+        int deleted_count = 0;
+        boolean is_finished = false;
 
-			final Query query = new Query(kind);
+        final DatastoreService dss = DatastoreServiceFactory
+                .getDatastoreService();
+        final long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 16384) {
 
-			query.setKeysOnly();
+            final Query query = new Query(kind);
 
-			final ArrayList<Key> keys = new ArrayList<Key>();
+            query.setKeysOnly();
 
-			for (final Entity entity : dss.prepare(query).asIterable(
-					FetchOptions.Builder.withLimit(128))) {
-				keys.add(entity.getKey());
-			}
+            final ArrayList<Key> keys = new ArrayList<Key>();
 
-			keys.trimToSize();
+            for (final Entity entity : dss.prepare(query).asIterable(
+                    FetchOptions.Builder.withLimit(128))) {
+                keys.add(entity.getKey());
+            }
 
-			if (keys.size() == 0) {
-				is_finished = true;
-				break;
-			}
+            keys.trimToSize();
 
-			while (System.currentTimeMillis() - start < 16384) {
+            if (keys.size() == 0) {
+                is_finished = true;
+                break;
+            }
 
-				try {
-					dss.delete(keys);
-					deleted_count += keys.size();
-					break;
-				} catch (Throwable ignore) {
-					continue;
-				}
-			}
-		}
-		System.err.println("*** deleted " + deleted_count + " entities form "
-				+ kind);
+            while (System.currentTimeMillis() - start < 16384) {
 
-		if (is_finished) {
-			System.err.println("*** deletion job for " + kind
-					+ " is completed.");
-		} else {
-			final Integer taskcount;
-			final String tcs = taskCount;
-			if (tcs == null) {
-				taskcount = 0;
-			} else {
-				taskcount = Integer.parseInt(tcs) + 1;
-			}
+                try {
+                    dss.delete(keys);
+                    deleted_count += keys.size();
+                    break;
+                } catch (Throwable ignore) {
+                    continue;
+                }
+            }
+        }
+        System.err.println("*** deleted " + deleted_count + " entities form "
+                + kind);
 
-			Queue deleteQueue = QueueFactory.getQueue(DELETE_QUEUE_NAME);
-			deleteQueue.add(TaskOptions.Builder.withUrl(DELETE_OBJECT_TASK_URL)
-					.param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
-					.param(DeleteTaskRequest.KEY_PARAM, key)
-					.param(DeleteTaskRequest.TASK_COUNT_PARAM,
-							taskcount.toString()));
+        if (is_finished) {
+            System.err.println("*** deletion job for " + kind
+                    + " is completed.");
+        } else {
+            final Integer taskcount;
+            final String tcs = taskCount;
+            if (tcs == null) {
+                taskcount = 0;
+            } else {
+                taskcount = Integer.parseInt(tcs) + 1;
+            }
 
-			System.err.println("*** deletion task # " + taskcount + " for "
-					+ kind + " is queued.");
+            Queue deleteQueue = QueueFactory.getQueue(DELETE_QUEUE_NAME);
+            deleteQueue.add(TaskOptions.Builder.withUrl(DELETE_OBJECT_TASK_URL)
+                    .param(DeleteTaskRequest.OBJECT_PARAM, kind + "")
+                    .param(DeleteTaskRequest.KEY_PARAM, key)
+                    .param(DeleteTaskRequest.TASK_COUNT_PARAM,
+                            taskcount.toString()));
 
-		}
-	}
+            System.err.println("*** deletion task # " + taskcount + " for "
+                    + kind + " is queued.");
+
+        }
+    }
 
 }

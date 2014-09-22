@@ -34,55 +34,56 @@ import com.gallatinsystems.framework.rest.RestResponse;
 
 public class SurveyInstanceServlet extends AbstractRestApiServlet {
 
-	private static final String UUID = "UUID";
-	private static final String GEO = "GEO";
-	/**
+    private static final String UUID = "UUID";
+    private static final String GEO = "GEO";
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -7690514561766005021L;
+    private static final long serialVersionUID = -7690514561766005021L;
 
-	@Override
-	protected RestRequest convertRequest() throws Exception {
-		HttpServletRequest req = getRequest();
-		RestRequest restRequest = new SurveyInstanceRequest();
-		restRequest.populateFromHttpRequest(req);
-		return restRequest;
-	}
+    @Override
+    protected RestRequest convertRequest() throws Exception {
+        HttpServletRequest req = getRequest();
+        RestRequest restRequest = new SurveyInstanceRequest();
+        restRequest.populateFromHttpRequest(req);
+        return restRequest;
+    }
 
-	@Override
-	protected RestResponse handleRequest(RestRequest req) throws Exception {
-		SurveyInstanceRequest siReq = (SurveyInstanceRequest) req;
-		SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-		QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-		if (siReq.getFieldName().equalsIgnoreCase(GEO)) {
-			List<QuestionAnswerStore> qasList = qasDao.listByTypeValue(siReq.getFieldName(), siReq.getValue());
-			if(qasList!=null && qasList.size()>0){
-				SurveyInstanceResponse sir = new SurveyInstanceResponse();
-				sir.setSurveyInstanceId(qasList.get(0).getSurveyInstanceId());
-				sir.setCreatedDateTime(qasList.get(0).getCreatedDateTime());
-				return sir;
-			}
-		} else if (siReq.getFieldName().equalsIgnoreCase(UUID)) {
-			SurveyInstance si = siDao.findByUUID(siReq.getValue());
-			if (si != null) {
-				SurveyInstanceResponse sir = new SurveyInstanceResponse();
-				sir.setSurveyInstanceId(si.getKey().getId());
-				sir.setCreatedDateTime(si.getCreatedDateTime());
-				return sir;
-			}
-		}
-		SurveyInstanceResponse sir = new SurveyInstanceResponse();
-		sir.setSurveyInstanceId(null);
-		sir.setCreatedDateTime(null);
-		return sir;
-	}
+    @Override
+    protected RestResponse handleRequest(RestRequest req) throws Exception {
+        SurveyInstanceRequest siReq = (SurveyInstanceRequest) req;
+        SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+        if (siReq.getFieldName().equalsIgnoreCase(GEO)) {
+            List<QuestionAnswerStore> qasList = qasDao.listByTypeValue(siReq.getFieldName(),
+                    siReq.getValue());
+            if (qasList != null && qasList.size() > 0) {
+                SurveyInstanceResponse sir = new SurveyInstanceResponse();
+                sir.setSurveyInstanceId(qasList.get(0).getSurveyInstanceId());
+                sir.setCreatedDateTime(qasList.get(0).getCreatedDateTime());
+                return sir;
+            }
+        } else if (siReq.getFieldName().equalsIgnoreCase(UUID)) {
+            SurveyInstance si = siDao.findByUUID(siReq.getValue());
+            if (si != null) {
+                SurveyInstanceResponse sir = new SurveyInstanceResponse();
+                sir.setSurveyInstanceId(si.getKey().getId());
+                sir.setCreatedDateTime(si.getCreatedDateTime());
+                return sir;
+            }
+        }
+        SurveyInstanceResponse sir = new SurveyInstanceResponse();
+        sir.setSurveyInstanceId(null);
+        sir.setCreatedDateTime(null);
+        return sir;
+    }
 
-	@Override
-	protected void writeOkResponse(RestResponse resp) throws Exception {
-		getResponse().setStatus(200);
-		SurveyInstanceResponse sir = (SurveyInstanceResponse)resp;
-		JSONObject result = new JSONObject(sir);
-		getResponse().getWriter().println(result.toString());
-	}
+    @Override
+    protected void writeOkResponse(RestResponse resp) throws Exception {
+        getResponse().setStatus(200);
+        SurveyInstanceResponse sir = (SurveyInstanceResponse) resp;
+        JSONObject result = new JSONObject(sir);
+        getResponse().getWriter().println(result.toString());
+    }
 
 }

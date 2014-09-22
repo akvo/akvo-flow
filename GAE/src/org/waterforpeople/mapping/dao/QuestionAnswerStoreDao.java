@@ -16,6 +16,11 @@
 
 package org.waterforpeople.mapping.dao;
 
+import static com.gallatinsystems.common.util.MemCacheUtils.containsKey;
+import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
+import static com.gallatinsystems.common.util.MemCacheUtils.putObjects;
+
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,197 +29,339 @@ import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
 
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
+
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 
 public class QuestionAnswerStoreDao extends BaseDAO<QuestionAnswerStore> {
 
-	public QuestionAnswerStoreDao() {
-		super(QuestionAnswerStore.class);
-	}
+    private Cache cache;
 
-	public List<QuestionAnswerStore> listBySurvey(Long surveyId) {
-		return super.listByProperty("surveyId", surveyId, "Long");
+    public QuestionAnswerStoreDao() {
+        super(QuestionAnswerStore.class);
+        cache = initCache(4 * 60 * 60); // cache questions list for 4 hours
+    }
 
-	}
+    public List<QuestionAnswerStore> listBySurvey(Long surveyId) {
+        return super.listByProperty("surveyId", surveyId, "Long");
 
-	public List<QuestionAnswerStore> listByQuestion(Long questionId) {
-		return super.listByProperty("questionID", questionId.toString(),
-				"String", "createdDateTime");
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	public List<QuestionAnswerStore> listByQuestion(Long questionId, String cursor, Integer pageSize) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+    public List<QuestionAnswerStore> listByQuestion(Long questionId) {
+        return super.listByProperty("questionID", questionId.toString(),
+                "String", "createdDateTime");
+    }
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		Map<String, Object> paramMap = new HashMap<String, Object>();
+    @SuppressWarnings("unchecked")
+    public List<QuestionAnswerStore> listByQuestion(Long questionId, String cursor, Integer pageSize) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
 
-		appendNonNullParam("questionID", filterString, paramString, "String", String.valueOf(questionId),
-				paramMap);
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        Map<String, Object> paramMap = new HashMap<String, Object>();
 
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		query.setOrdering("createdDateTime");
-		prepareCursor(cursor, pageSize, query);
-		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
-	}
+        appendNonNullParam("questionID", filterString, paramString, "String",
+                String.valueOf(questionId),
+                paramMap);
 
-	/**
-	 * lists all the QuestionAnswerStore objects that match the type passed in
-	 *
-	 * @param type
-	 * @param cursor
-	 * @param pageSize
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<QuestionAnswerStore> listByTypeAndDate(String type,
-			Long surveyId, Date sinceDate, String cursor, Integer pageSize) {
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        query.setOrdering("createdDateTime");
+        prepareCursor(cursor, pageSize, query);
+        return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+    }
 
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+    /**
+     * lists all the QuestionAnswerStore objects that match the type passed in
+     *
+     * @param type
+     * @param cursor
+     * @param pageSize
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<QuestionAnswerStore> listByTypeAndDate(String type,
+            Long surveyId, Date sinceDate, String cursor, Integer pageSize) {
 
-		Map<String, Object> paramMap = null;
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
+        Map<String, Object> paramMap = null;
 
-		appendNonNullParam("type", filterString, paramString, "String", type,
-				paramMap);
-		appendNonNullParam("surveyId", filterString, paramString, "Long",
-				surveyId, paramMap);
-		appendNonNullParam("lastUpdateDateTime", filterString, paramString,
-				"Date", sinceDate, paramMap, GTE_OP);
-		if (sinceDate != null) {
-			query.declareImports("import java.util.Date");
-		}
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		prepareCursor(cursor, pageSize, query);
-		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
-	}
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
 
-	@SuppressWarnings("unchecked")
-	public List<QuestionAnswerStore> listByTypeValue(String type, String value) {
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+        appendNonNullParam("type", filterString, paramString, "String", type,
+                paramMap);
+        appendNonNullParam("surveyId", filterString, paramString, "Long",
+                surveyId, paramMap);
+        appendNonNullParam("lastUpdateDateTime", filterString, paramString,
+                "Date", sinceDate, paramMap, GTE_OP);
+        if (sinceDate != null) {
+            query.declareImports("import java.util.Date");
+        }
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        prepareCursor(cursor, pageSize, query);
+        return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+    }
 
-		Map<String, Object> paramMap = null;
+    @SuppressWarnings("unchecked")
+    public List<QuestionAnswerStore> listByTypeValue(String type, String value) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
+        Map<String, Object> paramMap = null;
 
-		appendNonNullParam("type", filterString, paramString, "String", type,
-				paramMap);
-		appendNonNullParam("value", filterString, paramString, "String", value,
-				paramMap);
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
-	}
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
 
-	/**
-	 * lists all the QuestionAnswerStore objects that match the type passed in
-	 *
-	 * @param sinceDate
-	 * @param cursor
-	 * @param pageSize
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<QuestionAnswerStore> listByNotNullCollectionDateBefore(
-			Date sinceDate, String cursor, Integer pageSize) {
+        appendNonNullParam("type", filterString, paramString, "String", type,
+                paramMap);
+        appendNonNullParam("value", filterString, paramString, "String", value,
+                paramMap);
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+    }
 
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+    /**
+     * lists all the QuestionAnswerStore objects that match the type passed in
+     *
+     * @param sinceDate
+     * @param cursor
+     * @param pageSize
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<QuestionAnswerStore> listByNotNullCollectionDateBefore(
+            Date sinceDate, String cursor, Integer pageSize) {
 
-		Map<String, Object> paramMap = null;
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
-		appendNonNullParam("collectionDate", filterString, paramString, "Date",
-				sinceDate, paramMap, LTE_OP);
-		if (sinceDate != null) {
-			query.declareImports("import java.util.Date");
-		}
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		prepareCursor(cursor, pageSize, query);
-		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
-	}
+        Map<String, Object> paramMap = null;
 
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
+        appendNonNullParam("collectionDate", filterString, paramString, "Date",
+                sinceDate, paramMap, LTE_OP);
+        if (sinceDate != null) {
+            query.declareImports("import java.util.Date");
+        }
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        prepareCursor(cursor, pageSize, query);
+        return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+    }
 
-	@SuppressWarnings("unchecked")
-	public List<QuestionAnswerStore> listByNotNullCollectionDateAfter(
-			Date sinceDate, String cursor, Integer pageSize) {
+    @SuppressWarnings("unchecked")
+    public List<QuestionAnswerStore> listByNotNullCollectionDateAfter(
+            Date sinceDate, String cursor, Integer pageSize) {
 
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
 
-		Map<String, Object> paramMap = null;
+        Map<String, Object> paramMap = null;
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
-		paramMap = new HashMap<String, Object>();
-		appendNonNullParam("collectionDate", filterString, paramString, "Date",
-				sinceDate, paramMap, GTE_OP);
-		if (sinceDate != null) {
-			query.declareImports("import java.util.Date");
-		}
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		//prepareCursor(cursor, pageSize, query);
-		log.log(Level.INFO,query.toString());
-		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
-	}
-	/**
-	 * lists all the QuestionAnswerStore objects that match the type passed in
-	 *
-	 * @param sinceDate
-	 * @param cursor
-	 * @param pageSize
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<QuestionAnswerStore> listByExactDateString() {
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
+        appendNonNullParam("collectionDate", filterString, paramString, "Date",
+                sinceDate, paramMap, GTE_OP);
+        if (sinceDate != null) {
+            query.declareImports("import java.util.Date");
+        }
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+        // prepareCursor(cursor, pageSize, query);
+        log.log(Level.INFO, query.toString());
+        return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
+    }
 
-		PersistenceManager pm = PersistenceFilter.getManager();
-		javax.jdo.Query query = pm.newQuery("select from "
-				+ QuestionAnswerStore.class.getName()
-				+ " where collectionDate == 5674906531303000000");
-		log.log(Level.INFO,query.toString());
-		return (List<QuestionAnswerStore>) query.execute();
-	}
+    /**
+     * lists all the QuestionAnswerStore objects that match the type passed in
+     *
+     * @param sinceDate
+     * @param cursor
+     * @param pageSize
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<QuestionAnswerStore> listByExactDateString() {
 
-	@SuppressWarnings("unchecked")
-	public List<QuestionAnswerStore> listBySurveyInstance(
-			Long surveyInstanceId, Long surveyId, String questionID) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery("select from "
+                + QuestionAnswerStore.class.getName()
+                + " where collectionDate == 5674906531303000000");
+        log.log(Level.INFO, query.toString());
+        return (List<QuestionAnswerStore>) query.execute();
+    }
 
-		final PersistenceManager pm = PersistenceFilter.getManager();
-		final javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+    public List<QuestionAnswerStore> listBySurveyInstance(Long surveyInstanceId) {
+        List<QuestionAnswerStore> responses = super.listByProperty("surveyInstanceId",
+                surveyInstanceId, "Long");
+        cache(responses);
+        return responses;
+    }
 
-		final Map<String, Object> paramMap = new HashMap<String, Object>();
+    @SuppressWarnings("unchecked")
+    public QuestionAnswerStore getByQuestionAndSurveyInstance(Long questionId, Long surveyInstanceId) {
+        String cacheKey;
+        try {
+            cacheKey = getCacheKey(surveyInstanceId + "-" + questionId);
+            if (containsKey(cache, cacheKey)) {
+                return (QuestionAnswerStore) cache.get(cacheKey);
+            }
+        } catch (CacheException e) {
+            log.log(Level.WARNING, e.getMessage());
+        }
 
-		StringBuilder filterString = new StringBuilder();
-		StringBuilder paramString = new StringBuilder();
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(QuestionAnswerStore.class);
+        query.setFilter("surveyInstanceId == surveyInstanceIdParam && questionID == questionIdParam");
+        query.declareParameters("Long surveyInstanceIdParam, String questionIdParam");
+        List<QuestionAnswerStore> results = (List<QuestionAnswerStore>) query.execute(
+                surveyInstanceId, questionId.toString());
+        if (results != null && results.size() > 0) {
+            return results.get(0);
+        } else {
+            return null;
+        }
+    }
 
-		appendNonNullParam("surveyInstanceId", filterString, paramString,
-				"Long", surveyInstanceId, paramMap);
-		appendNonNullParam("surveyId", filterString, paramString, "Long",
-				surveyId, paramMap);
-		appendNonNullParam("questionID", filterString, paramString, "String",
-				questionID, paramMap);
+    public boolean isCached(Long questionId, Long surveyInstanceId) {
+        try {
+            return containsKey(cache, getCacheKey(surveyInstanceId + "-" + questionId));
+        } catch (CacheException e) {
+            // ignore
+        }
+        return false;
+    }
 
-		query.setFilter(filterString.toString());
-		query.declareParameters(paramString.toString());
-		return (List<QuestionAnswerStore>) query.executeWithMap(paramMap);
-	}
+    /**
+     * Saves response and update cache
+     *
+     * @param reponse
+     */
+    public QuestionAnswerStore save(QuestionAnswerStore reponse) {
+        // first save and get Id
+        QuestionAnswerStore savedResponse = super.save(reponse);
+        cache(Arrays.asList(savedResponse));
+        return savedResponse;
+    }
+
+    /**
+     * Save a collection of responses and cache
+     *
+     * @param responseList
+     * @return
+     */
+    public List<QuestionAnswerStore> save(List<QuestionAnswerStore> responseList) {
+        List<QuestionAnswerStore> savedResponses = (List<QuestionAnswerStore>) super
+                .save(responseList);
+        cache(savedResponses);
+        return savedResponses;
+    }
+
+    /**
+     * Delete from cache and datastore
+     *
+     * @param response
+     */
+    public void delete(QuestionAnswerStore response) {
+        uncache(Arrays.asList(response));
+        super.delete(response);
+    }
+
+    /**
+     * Delete response list from cache and datastore
+     *
+     * @param responsesList
+     */
+    public void delete(List<QuestionAnswerStore> responsesList) {
+        uncache(responsesList);
+        super.delete(responsesList);
+    }
+
+    /**
+     * Add a collection of QuestionAnswerStore objects to the cache
+     *
+     * @param responseList
+     */
+    private void cache(List<QuestionAnswerStore> responseList) {
+        if (responseList == null || responseList.isEmpty()) {
+            return;
+        }
+
+        Map<Object, Object> cacheMap = new HashMap<Object, Object>();
+        for (QuestionAnswerStore response : responseList) {
+            if (response == null) {
+                continue;
+            }
+            String cacheKey = null;
+            try {
+                cacheKey = getCacheKey(response);
+                cacheMap.put(cacheKey, response);
+            } catch (CacheException e) {
+                log.log(Level.WARNING, e.getMessage());
+            }
+        }
+
+        putObjects(cache, cacheMap);
+    }
+
+    /**
+     * Remove a collection of responses from the cache
+     *
+     * @param responsesList
+     */
+    private void uncache(List<QuestionAnswerStore> responsesList) {
+        if (responsesList == null || responsesList.isEmpty()) {
+            return;
+        }
+
+        for (QuestionAnswerStore response : responsesList) {
+            if (response == null) {
+                continue;
+            }
+            String cacheKey = null;
+            try {
+                cacheKey = getCacheKey(response);
+                if (containsKey(cache, cacheKey)) {
+                    cache.remove(cacheKey);
+                }
+            } catch (CacheException e) {
+                log.log(Level.WARNING, e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Construct cache key for QuestionAnswerStore objects. Assumes the combination of
+     * surveyInstanceId and questionId are unique across all QuestionAnswerStore entities.
+     *
+     * @param response
+     * @return
+     * @throws CacheException
+     */
+    @Override
+    public String getCacheKey(BaseDomain object) throws CacheException {
+        QuestionAnswerStore response = (QuestionAnswerStore) object;
+        if (response.getSurveyInstanceId() == null || response.getQuestionID() == null) {
+            throw new CacheException(
+                    "Cannnot create cache key without surveyInstanceId and questionId");
+        }
+        return response.getClass().getSimpleName() + "-" + response.getSurveyInstanceId() + "-"
+                + response.getQuestionID();
+    }
 }

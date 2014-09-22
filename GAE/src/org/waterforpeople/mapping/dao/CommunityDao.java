@@ -27,93 +27,91 @@ import com.gallatinsystems.gis.geography.domain.Country;
  * Data access methods for communities and countries
  * 
  * @author Christopher Fagiani
- * 
  */
 public class CommunityDao extends BaseDAO<Community> {
 
-	public enum MAP_TYPE {
-		PUBLIC, KMZ
-	};
+    public enum MAP_TYPE {
+        PUBLIC, KMZ
+    };
 
-	public CommunityDao() {
-		super(Community.class);
-	}
+    public CommunityDao() {
+        super(Community.class);
+    }
 
-	/**
-	 * looks up a community using the name
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public Community findCommunityByName(String name) {
-		return findByProperty("name", name, "String");
-	}
+    /**
+     * looks up a community using the name
+     * 
+     * @param name
+     * @return
+     */
+    public Community findCommunityByName(String name) {
+        return findByProperty("name", name, "String");
+    }
 
-	/**
-	 * finds a single country that is attached to the community identified by
-	 * the code
-	 * 
-	 * @param communityCode
-	 * @return
-	 */
-	public Country findCountryByCommunity(String communityCode) {
-		Community comm = findCommunityByCode(communityCode);
-		if (comm != null) {
-			return findCountryByCode(comm.getCountryCode());
-		} else {
-			return null;
-		}
-	}
+    /**
+     * finds a single country that is attached to the community identified by the code
+     * 
+     * @param communityCode
+     * @return
+     */
+    public Country findCountryByCommunity(String communityCode) {
+        Community comm = findCommunityByCode(communityCode);
+        if (comm != null) {
+            return findCountryByCode(comm.getCountryCode());
+        } else {
+            return null;
+        }
+    }
 
-	/**
-	 * finds a single community by its code
-	 * 
-	 * @param communityCode
-	 * @return
-	 */
-	public Community findCommunityByCode(String communityCode) {
-		return findByProperty("communityCode", communityCode, "String");
-	}
+    /**
+     * finds a single community by its code
+     * 
+     * @param communityCode
+     * @return
+     */
+    public Community findCommunityByCode(String communityCode) {
+        return findByProperty("communityCode", communityCode, "String");
+    }
 
-	/**
-	 * finds a country by its country code
-	 * 
-	 * @param code
-	 * @return
-	 */
-	public Country findCountryByCode(String code) {
-		if (code != null) {
-			List<Country> cList = listByProperty("isoAlpha2Code", code,
-					"String", Country.class);
-			if (cList != null && cList.size() > 0) {
-				return cList.get(0);
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
+    /**
+     * finds a country by its country code
+     * 
+     * @param code
+     * @return
+     */
+    public Country findCountryByCode(String code) {
+        if (code != null) {
+            List<Country> cList = listByProperty("isoAlpha2Code", code,
+                    "String", Country.class);
+            if (cList != null && cList.size() > 0) {
+                return cList.get(0);
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
 
-	public List<Country> listMapCountries(MAP_TYPE type) {
-		if (type == MAP_TYPE.PUBLIC) {
-			return listByProperty("includeInExternal", true, "Boolean",
-					Country.class);
-		} else {
-			return listByProperty("includeInKMZ", true, "Boolean",
-					Country.class);
-		}
-	}
+    public List<Country> listMapCountries(MAP_TYPE type) {
+        if (type == MAP_TYPE.PUBLIC) {
+            return listByProperty("includeInExternal", true, "Boolean",
+                    Country.class);
+        } else {
+            return listByProperty("includeInKMZ", true, "Boolean",
+                    Country.class);
+        }
+    }
 
-	/**
-	 * lists all communities within a specific country.
-	 * 
-	 * @param countryCode
-	 * @return
-	 */
-	public List<Community> listCommunityByCountry(String countryCode) {
-		return (List<Community>) listByProperty("countryCode", countryCode,
-				"String");
-	}
+    /**
+     * lists all communities within a specific country.
+     * 
+     * @param countryCode
+     * @return
+     */
+    public List<Community> listCommunityByCountry(String countryCode) {
+        return (List<Community>) listByProperty("countryCode", countryCode,
+                "String");
+    }
 
 }

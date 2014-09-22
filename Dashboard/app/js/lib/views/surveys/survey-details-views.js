@@ -154,13 +154,17 @@ FLOW.SurveySidebarView = FLOW.View.extend({
   },
   
   doSaveSurvey: function () {
-    var survey;
+    var survey, re = /,/g;
     if (this.surveyNotComplete()){
 		return;
 	}
     survey = FLOW.selectedControl.get('selectedSurvey');
-    survey.set('name', this.get('surveyTitle'));
-    survey.set('code', this.get('surveyTitle'));
+
+    // Silently replace commas (,)
+    // See: https://github.com/akvo/akvo-flow/issues/707
+    survey.set('name', this.get('surveyTitle').replace(re, ' '));
+    survey.set('code', this.get('surveyTitle').replace(re, ' '));
+
     survey.set('status', 'NOT_PUBLISHED');
     survey.set('path', FLOW.selectedControl.selectedSurveyGroup.get('code'));
     survey.set('description', this.get('surveyDescription'));
@@ -222,6 +226,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
     }
     FLOW.selectedControl.set('selectedQuestionGroup', null);
     FLOW.selectedControl.set('selectedSurvey', null);
+    FLOW.surveyControl.refresh();
     FLOW.router.transitionTo('navSurveys.navSurveysMain');
   }
 });
@@ -335,42 +340,14 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
   // execute group delete
   deleteQuestionGroup: function () {
-    var qgDeleteId, questionGroup, questionsGroupsInSurvey, sId, qgOrder, questionsInGroup;
-    qgDeleteId = this.content.get('keyId');
-    sId = this.content.get('surveyId');
-    questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgDeleteId);
-    qgOrder = questionGroup.get('order');
-    questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-      return item.get('questionGroupId') == qgDeleteId;
+    var qgId = this.content.get('id');
+    var questionGroup = FLOW.store.find(FLOW.QuestionGroup, qgId);
+
+    // do preflight check if deleting this question group is allowed
+    FLOW.store.findQuery(FLOW.QuestionGroup, {
+      preflight: 'delete',
+      questionGroupId: qgId
     });
-
-    if (questionsInGroup.get('content').length > 0) {
-      FLOW.dialogControl.set('activeAction', "ignore");
-      FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_questiongroup'));
-      FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_questiongroup_text'));
-      FLOW.dialogControl.set('showCANCEL', false);
-      FLOW.dialogControl.set('showDialog', true);
-      return;
-    }
-
-    // if we are here, we can safely delete
-    questionGroup.deleteRecord();
-    // restore order
-    questionGroupsInSurvey = FLOW.store.filter(FLOW.QuestionGroup, function (item) {
-      return item.get('surveyId') == sId;
-    });
-
-    // restore order
-    questionGroupsInSurvey.forEach(function (item) {
-      if (item.get('order') > qgOrder) {
-        item.set('order', item.get('order') - 1);
-      }
-    });
-    // restore order in case the order has gone haywire
-    FLOW.questionControl.restoreOrder(questionGroupsInSurvey);
-    FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
-    FLOW.store.commit();
-
   },
 
   // insert group
@@ -400,8 +377,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
       // create new QuestionGroup item in the store
       FLOW.store.createRecord(FLOW.QuestionGroup, {
-        "code": "New group - please change name",
-        "name": "New group - please change name",
+        "code": Ember.String.loc('_new_group_please_change_name'),
+        "name": Ember.String.loc('_new_group_please_change_name'),
         "order": insertAfterOrder + 1,
         "path": path,
         "surveyId": FLOW.selectedControl.selectedSurvey.get('keyId')
@@ -540,7 +517,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "code": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
       "name": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
       "path": path,
-      "surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId')
+      "surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId'),
+      "sourceId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('keyId')
     });
 
       // get the question groups again, now it contains the new one as well

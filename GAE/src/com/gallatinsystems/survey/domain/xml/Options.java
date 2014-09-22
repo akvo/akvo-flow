@@ -22,10 +22,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * <p>
  * Java class for anonymous complex type.
- * 
  * <p>
- * The following schema fragment specifies the expected content contained within
- * this class.
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -41,123 +39,107 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "option" })
+@XmlType(name = "", propOrder = {
+    "option"
+})
 @XmlRootElement(name = "options")
 public class Options {
 
-	@XmlElement(required = true)
-	protected List<Option> option;
-	@XmlAttribute(required = true)
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	@XmlSchemaType(name = "NMTOKEN")
-	protected String allowOther;
-	@XmlAttribute
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	@XmlSchemaType(name = "NMTOKEN")
-	protected String allowMultiple;
-	@XmlAttribute
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	@XmlSchemaType(name = "NMTOKEN")
-	protected String renderType;
+    @XmlElement(required = true)
+    protected List<Option> option;
+    @XmlAttribute(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    protected String allowOther;
+    @XmlAttribute
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    protected String allowMultiple;
+    @XmlAttribute
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    protected String renderType;
 
-	/**
-	 * Gets the value of the option property.
-	 * 
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a
-	 * snapshot. Therefore any modification you make to the returned list will
-	 * be present inside the JAXB object. This is why there is not a
-	 * <CODE>set</CODE> method for the option property.
-	 * 
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 * 
-	 * <pre>
-	 * getOption().add(newItem);
-	 * </pre>
-	 * 
-	 * 
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link Option }
-	 * 
-	 * 
-	 */
-	public List<Option> getOption() {
-		if (option == null) {
-			option = new ArrayList<Option>();
-		}
-		return this.option;
-	}
+    /**
+     * Gets the value of the option property.
+     * <p>
+     * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+     * modification you make to the returned list will be present inside the JAXB object. This is
+     * why there is not a <CODE>set</CODE> method for the option property.
+     * <p>
+     * For example, to add a new item, do as follows:
+     * 
+     * <pre>
+     * getOption().add(newItem);
+     * </pre>
+     * <p>
+     * Objects of the following type(s) are allowed in the list {@link Option }
+     */
+    public List<Option> getOption() {
+        if (option == null) {
+            option = new ArrayList<Option>();
+        }
+        return this.option;
+    }
 
-	public void setOption(List<Option> option) {
-		this.option = option;
-	}
+    public void setOption(List<Option> option) {
+        this.option = option;
+    }
 
-	/**
-	 * Gets the value of the allowOther property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
-	public String getAllowOther() {
-		return allowOther;
-	}
+    /**
+     * Gets the value of the allowOther property.
+     * 
+     * @return possible object is {@link String }
+     */
+    public String getAllowOther() {
+        return allowOther;
+    }
 
-	/**
-	 * Sets the value of the allowOther property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public void setAllowOther(String value) {
-		this.allowOther = value;
-	}
+    /**
+     * Sets the value of the allowOther property.
+     * 
+     * @param value allowed object is {@link String }
+     */
+    public void setAllowOther(String value) {
+        this.allowOther = value;
+    }
 
-	/**
-	 * Gets the value of the allowMultiple property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
-	public String getAllowMultiple() {
-		return allowMultiple;
-	}
+    /**
+     * Gets the value of the allowMultiple property.
+     * 
+     * @return possible object is {@link String }
+     */
+    public String getAllowMultiple() {
+        return allowMultiple;
+    }
 
-	/**
-	 * Sets the value of the allowMultiple property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public void setAllowMultiple(String value) {
-		this.allowMultiple = value;
-	}
+    /**
+     * Sets the value of the allowMultiple property.
+     * 
+     * @param value allowed object is {@link String }
+     */
+    public void setAllowMultiple(String value) {
+        this.allowMultiple = value;
+    }
 
-	/**
-	 * Gets the value of the renderType property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
-	public String getRenderType() {
-		return renderType;
-	}
+    /**
+     * Gets the value of the renderType property.
+     * 
+     * @return possible object is {@link String }
+     */
+    public String getRenderType() {
+        return renderType;
+    }
 
-	/**
-	 * Sets the value of the renderType property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public void setRenderType(String value) {
-		this.renderType = value;
-	}
+    /**
+     * Sets the value of the renderType property.
+     * 
+     * @param value allowed object is {@link String }
+     */
+    public void setRenderType(String value) {
+        this.renderType = value;
+    }
 
 }

@@ -5,6 +5,263 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.3.1
+Date: 7 September 2014
+
+## Resolved issues
+* Survey responses not processed when a question is deleted from survey definition [#771]
+
+#1.7.3
+Date: 5 September 2014
+
+## New and noteworthy
+* Implement read API [#717] - Akvo FLOW now has a full read API! Details can be found [here](https://github.com/akvo/akvo-flow/wiki/Akvo-FLOW-API)
+* Stylesheet cleaning and refactor [#609, #612] - The user interface has been given a makeover. In addition to various other details, surveys are now displayed in a list, which makes finding them easier. 
+* Introduce textual question identifier [#650] - A question can now be given a textual identifier, which can be used as a column heading when exporting data, and which is present in the read API. This makes it easier to transfer FLOW data to other databases.
+
+## Resolved issues
+* RAW DATA export keeps using "use question id" in Data Cleaning tab [#756] 
+* Copying a copied survey across instances breaks survey publishing [#744] 
+* Non-specified surveyGroupId query param in SurveyedLocaleRestService causes a JDOUserException [#727] 		
+* Various small UI changes:
+	* Change of wording: "record" => "data point" [#753, #740] 
+	* Monitoring tab style is broken [#751] 
+	* Dashboard tooltips are shown twice  [#745] 
+	* Footer layout breaks using Spanish|French and low resolution [#570] 
+	* Master language tooltip incorrect [#442] 
+
+#1.7.2.2
+
+## Resolved issues
+
+* Deployment enhancements - Instance Configurator [#724]
+
+#1.7.2.1
+
+## Resolved issues
+
+* Data points show up as "Unknown" on non-monitoring groups [#735]
+
+#1.7.2
+
+## New and noteworthy
+
+* The new APK v2.0 is now available in `http://instance.akvoflow.org/app2` [#666]
+* Introduced more consistent counts, fixing inaccuracies between the Dashboard's 
+  chart builder and the _RAW DATA_ report. [#651]
+* Revamped the way of transferring data to/from _Object Store_ (Amazon S3) [#690]
+
+## Resolved issues
+
+* Code cleanup - Monitoring related code [#643]
+* Adapt _bootstrap_ files to support _Monitoring_ features [#695]
+* Spreadsheet importer for the RAW DATA report misidentifies the columns [#697]
+* Disallow the usage of commas in _Survey Group_ names [#707]
+* Invalid XML characters in survey group name breaks the survey definition [#714]
+* signingKey is a required system properties [#725]
+
+#1.7.1
+
+## New and noteworthy
+
+* Added support for storing more than 500 characters in a response [#656]
+* Added support for exporting _RAW DATA_ report for monitoring and non-monitoring groups [#653]
+
+## Resolved issues
+
+* Limit the number of retries for queues [#688]
+* Use https connections when possible [#680]
+* Publish Survey fails for Copied Surveys [#664]
+* Submitter name missing in new records [#662]
+* Update survey.properties file for the new APK version [#660]
+* Code cleanup - Remove custom JSON* classes from the code [#585]
+* Dashboard deployment enhancements
+  * Upgrade gem bundle for Ember part of Dashboard build [#678]
+  * Critical build tasks that fail should also fail the main build process [#675]
+  * Dashboard rollback task should also rollback failed backends [#672]
+  * Ensure Dashboard build uses Java 7 [#668]
+  * Update RubyGems sources for Dashboard build to prevent deprecation warnings [#667]
+  * Ember build should ensure bundled rake is used [#665]
+  * Ensure Dashboard can be built with GAE SDK 1.9.1 [#483]
+
+
+#1.7.0.3
+
+## Resolved issues
+
+* Submitter name missing when importing RAW DATA spreadsheet [#662]
+
+
+#1.7.0.2
+
+## Resolved issues
+
+* Survey response values longer than 500 characters cannot be stored [#656]
+
+#1.7.0.1
+
+## Resolved issues
+
+* Survey response values longer than 500 characters cannot be stored [#656]
+
+#1.7.0
+
+## New and noteworthy
+
+* Monitoring features — Monitoring features enable users to download data on existing points on their phones, and add information to these points. Regular survey forms can be used to register entities, so they can be retrieved later for further data collection. This makes it possible to see how data has changed over time, or to collect new properties of the same entity. 
+
+
+## Resolved issues
+
+* Fix typo in home screen [#615]
+* Validate lat/long data while creating geocells [#613]
+* SurveyedLocale's lastModified timestamp might not be unique [#605]
+* Remove code that sets wrong path [#602]
+* Adds lastUpdateDateTime on SurveyedLocale [#591]
+* Get collectionDate from surveyInstance as well [#583]
+* Add dashes to identifiers created in the server [#582]
+* Retrieving Available Surveys for a Device Fails [#578]
+* Bulk update monitoring fields on surveyedLocales [#575]
+* Enable deletion of entire surveys and question groups [#368]
+* Control Mononitoring UI based on config property [#607]
+
+#1.6.17.1
+
+## Resolved issues
+
+* Problems with automatic survey download on _WiFi only_ devices [#588]
+
+#1.6.17
+
+## New and noteworthy
+
+* The Dashboard now has a direct link which lets users download the mobile app, you
+  can find it in the footer __"Download FLOW app"__ [#565]
+* When showing the details of a _data point_ on the map, the questions
+  are sorted based on the survey definition (previously they were sorted
+  alphabetically) [#239]
+
+## Resolved issues
+
+* Survey transfer issues [#420]
+* Add a survey name to the survey id when copying [#399]
+* Removed GWT config file generation from InstanceConfigurator [#453]
+* Removing responses under the data tab should update the map [#523]
+* Adds URI to download a GPS status app [#572]
+
+#1.6.16
+
+## New and noteworthy
+
+* WiFi only devices (e.g. Tablets with no SIM card) are now
+  distinguished by MAC address [#320]
+
+## Resolved issues
+
+* Removed obsolete GWT code [#497]
+* When transferring surveys across instances, settings like _other_,
+  _allow multiple_ and _dependencies_ are now copied [#504]
+
+## Known issues
+
+* Some survey configuration settings are still missing when copying,
+  see [#420]
+
+#1.6.15
+
+## Resolved issues
+* Fixed issue of performing the same data request 2 times on
+  Survey preview/edit [#527]
+
+#1.6.14.4
+
+## Resolved issues
+* Fixed wrong computation of cache value for cluster locations [#519]
+
+#1.6.14.3
+
+## Resolved issues
+* Avoid NPE when lastSurveyalInstanceId field is null (as happens on old data) [#516]
+
+#1.6.14.2
+
+## Enhancements
+* Show more detailed clusters at a lower zoomlevel [#363]
+
+#1.6.14.1
+
+## Resolved issues
+* Compute lat / lon of cluster as average over all containing placemarks [#508]
+* Use cluster Id as key id to ensure all clusers have a unique id on all zoomlevels [#509]
+* Avoid keyId collision between clusters and individual placemarks [#510]
+* Perform adapt cluster data as separate task, to deal with non-availability of memcache [#363]
+
+#1.6.14
+
+## Enhancements
+* Implement server-side clustering of markers on maps [#363]
+
+## Resolved issues
+* fixed translations in chart builder [#494]
+* fixed link to FLOW terms of use [#432]
+
+
+# 1.6.13
+
+## Enhancements
+* Prepare the Dashboard for responding to _Monitoring_ related requests [#487]
+
+## Resolved issues
+* Fixed: Deleting an assingment didn't clean all related data [#490]
+
+
+# 1.6.12
+
+## Enhancements
+* Completed translations for all UI elements in French and Spanish. Thanks Iñigo, Iván, Valentin, and Emeline! [#474, #436, #440]
+* Add K'iche', the second dominant language in Guatemala, as an available translation language [#473]
+* Enhance build process: automatically rebuild dashboard code when updating an instance [#478]
+
+## Resolved issues
+* A change in dashboard language now refreshes the whole page, to prevent rendering issues [#474, #163]
+
+# 1.6.11
+
+Release date: 6 March 2014
+
+## Enhancements
+* Increase loading speed of translations [#455]
+
+## Resolved issues
+* Fixed: Failing uploads due to race condition on bulk upload process in some browsers [#465]
+* Fixed: Ignore __MACOSX folders created by MacOS in zip files during bulk upload [#464]
+* Fixed: Missing translation key in translation tab [#449]
+
+## Known issues
+* When working with translations, if the first question group contains a large number of
+  questions (30+) the UI locks up for a few seconds. See [#469]
+
+# 1.6.10
+
+Release Date: 18 February 2014
+
+The enhancements and resolved issues described work with apk version 1.13.0.
+
+## Enhancements
+* Automatically download new APK versions (#457). From now on, whenever there is a new version of the FLOW app, the user will be notified and can download and install the new version
+* Implement a way of checking if an image is present in the remote object store (#456). When images don't make it to S3, there is now a fallback system that guarantees that images are retrieved from devices.
+* Warn user that a survey group and survey have not been selected when trying to upload data (#461)
+* Implement double entry functionality (#427)
+
+## Resolved issues
+* Fixed: On importing data, information on the original upload is discarded (#458)
+* Fixed: Change geonames api call (#454)
+* Fixed: Spreadsheet importer needs to handle empty columns (#445)
+* Fixed: Remote survey importer fails when there is a large amount of survey groups (#444)
+* Fixed: Deprecate the GWT and applet code compilation (#448)
+* Fixed: Path to video in raw data export should point to S3 (#462)
+* Fixed: When viewing the map, video links are not shown on survey points (#403)
+
 # 1.6.9
 
 Release Date: 08 January 2014

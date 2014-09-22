@@ -21,13 +21,12 @@ import com.gallatinsystems.survey.domain.SurveyContainer;
 
 public class SurveyContainerDao extends BaseDAO<SurveyContainer> {
 
-	public SurveyContainerDao(){
-		super(SurveyContainer.class);
-	}
-	
-	public SurveyContainer findBySurveyId(Long surveyId){
-		return super.findByProperty("surveyId", surveyId, "Long");
-	}
-	
+    public SurveyContainerDao() {
+        super(SurveyContainer.class);
+    }
+
+    public SurveyContainer findBySurveyId(Long surveyId) {
+        return super.findByProperty("surveyId", surveyId, "Long");
+    }
 
 }

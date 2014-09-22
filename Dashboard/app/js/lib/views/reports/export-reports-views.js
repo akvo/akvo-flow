@@ -12,7 +12,9 @@ FLOW.ReportLoader = Ember.Object.create({
       opts: {
         locale: 'en',
         exportMode: 'RAW_DATA',
-        generateTabFormat: 'false'
+        generateTabFormat: 'false',
+        lastCollection: 'false',
+        useQuestionId: 'false'
       }
     },
     RAW_DATA_TEXT: {
@@ -62,6 +64,9 @@ FLOW.ReportLoader = Ember.Object.create({
     if (criteria.opts.locale && FLOW.reportLanguageControl.get('selectedLanguage')) {
       criteria.opts.locale = FLOW.reportLanguageControl.get('selectedLanguage').get('value');
     }
+
+    criteria.opts.lastCollection = '' + (exportType === 'RAW_DATA' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
+    criteria.opts.useQuestionId = '' + !!FLOW.editControl.useQuestionId;
 
     this.set('criteria', criteria);
     FLOW.savingMessageControl.numLoadingChange(1);
@@ -129,12 +134,21 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
 
   didInsertElement: function () {
     FLOW.selectedControl.set('selectedSurvey', null);
+    FLOW.editControl.set('useQuestionId', false);
     FLOW.uploader.registerEvents();
   },
 
   selectedSurvey: function () {
-	  return FLOW.selectedControl.selectedSurvey.get('keyId');
+    if (!Ember.none(FLOW.selectedControl.get('selectedSurvey')) && !Ember.none(FLOW.selectedControl.selectedSurvey.get('keyId'))){
+      return FLOW.selectedControl.selectedSurvey.get('keyId');
+    } else {
+      return null;
+    }
   }.property('FLOW.selectedControl.selectedSurvey'),
+
+  showLastCollection: function () {
+    return FLOW.Env.showMonitoringFeature && FLOW.selectedControl.selectedSurveyGroup && FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup');
+  }.property('FLOW.selectedControl.selectedSurveyGroup'),
 
   showRawDataReport: function () {
 	var sId = this.get('selectedSurvey');
@@ -144,7 +158,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     }
     FLOW.ReportLoader.load('RAW_DATA', sId);
   },
-  
+
   showRawTextFileExport: function () {
 	var sId = this.get('selectedSurvey');
     if (!sId) {

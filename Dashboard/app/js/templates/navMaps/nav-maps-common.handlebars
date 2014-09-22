@@ -1,17 +1,6 @@
-<section id="main" class="mapFlow floats-in" role="main">
+<section id="main" class="mapFlow floats-in middleSection" role="main">
   {{! <div id="drawHandleWrap"></div>}}
   <div id="dropdown-holder">
-    {{#view FLOW.countryView controllerBinding="FLOW.countryController"}}
-      {{#if FLOW.countryController.content}}
-        <label for="country"><span class="inlined">{{t _country}}:</span>
-          {{view Ember.Select
-          contentBinding="FLOW.countryController.content"
-          valueBinding="FLOW.countryController.selected"
-          optionLabelPath="content.label"
-          selectionBinding="FLOW.countryController.country"}}
-        </label>
-      {{/if}}
-    {{/view}}
     <div id="mapDetailsHideShow" class="drawHandle hideMapD">{{t _hide}} &rsaquo;</div>
   </div>
 
@@ -23,14 +12,10 @@
           <li>
             <span>{{t _collected_on}}:</span>
             <div class="placeMarkCollectionDate">
-              {{date2 FLOW.placemarkController.selected.collectionDate}}
+              {{date2 collectionDate}}
             </div>
           </li>
-          <li>
-            <div class="placeMarkPointCode"> 
-              {{FLOW.placemarkDetailController.selectedPointCode}}
-            </div>
-          </li>
+          <li></li>
         </ul>
         <div {{bindAttr class=":imgContainer photoUrl:shown:hidden"}}>
           {{#each photo in photoUrl}}
@@ -53,7 +38,7 @@
     </div>
   {{/view}}
   <div id="flowMapLegend">
-    <h1>LEGEND</h1>
+    <h1>{{t _legend}}</h1>
   </div>
 </section>
 

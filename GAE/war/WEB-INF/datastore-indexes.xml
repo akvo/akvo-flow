@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <datastore-indexes autoGenerate="true">
+    <datastore-index kind="DeviceApplication" ancestor="false" source="manual">
+        <property name="appCode" direction="asc"/>
+        <property name="deviceType" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
+    </datastore-index>
 	<datastore-index kind="AccessPoint" ancestor="false"
 		source="manual">
 		<property name="pointType" direction="asc" />
@@ -425,7 +430,15 @@
 		<property name="localeType" direction="asc" />
 		<property name="latitude" direction="asc" />
 	</datastore-index>
-	
+	 <datastore-index kind="Question" ancestor="false" source="manual">
+        <property name="localeNameFlag" direction="asc"/>
+        <property name="surveyId" direction="asc"/>
+        <property name="order" direction="asc"/>
+    </datastore-index>
+	<datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="geocells" direction="asc"/>
+        <property name="localeType" direction="asc"/>
+    </datastore-index>
 	 <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
         <property name="countryCode" direction="asc"/>
         <property name="localeType" direction="asc"/>
@@ -441,8 +454,11 @@
 		source="manual">
 		<property name="__key__" direction="desc" />
 	</datastore-index> 
-	
-	
+   <datastore-index kind="SurveyedLocale" ancestor="false"
+		source="manual">
+		<property name="surveyGroupId" direction="asc" />
+		<property name="lastUpdateDateTime" direction="asc" />
+	</datastore-index> 
 	<datastore-index kind="SurveyInstance" ancestor="false" >
         <property name="surveyId" direction="asc"/>
         <property name="collectionDate" direction="desc"/>
@@ -450,6 +466,10 @@
 	<datastore-index kind="SurveyInstance" ancestor="false" source="manual">
         <property name="surveyId" direction="asc"/>
         <property name="createdDateTime" direction="asc"/>
+    </datastore-index>
+    <datastore-index kind="SurveyInstance" ancestor="false" source="manual">
+        <property name="surveyId" direction="asc"/>
+        <property name="createdDateTime" direction="desc"/>
     </datastore-index>
     <datastore-index kind="SurveyInstance" ancestor="false"
 		source="auto">

@@ -8,6 +8,4 @@ imageS3Sig = $imagesS3Sig
 dataUploadUrl = $dataUploadUrl/ 
 serverBase = $serverBase
 surveyS3Url = $dataUploadUrl/surveys/
-useInternalStorage = false
-includeOptionalIcons = false
-promptOnOptionChange = false
+apiKey = $restApiKey

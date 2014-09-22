@@ -25,15 +25,14 @@ import com.gallatinsystems.user.domain.UserConfig;
  * Dao for UserConfig objects
  * 
  * @author Mark Westra
- * 
  */
 public class UserConfigDao extends BaseDAO<UserConfig> {
 
-	public UserConfigDao() {
-		super(UserConfig.class);
-	}
-	
-	public List<UserConfig> listConfigsByUser(Long userId) {
-		return listByProperty("userId", userId, "Long");
-	}
+    public UserConfigDao() {
+        super(UserConfig.class);
+    }
+
+    public List<UserConfig> listConfigsByUser(Long userId) {
+        return listByProperty("userId", userId, "Long");
+    }
 }

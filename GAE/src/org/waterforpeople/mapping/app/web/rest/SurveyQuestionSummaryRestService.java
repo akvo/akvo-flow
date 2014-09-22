@@ -13,6 +13,7 @@
  *
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
+
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
@@ -39,74 +40,77 @@ import com.gallatinsystems.survey.domain.Question;
 @RequestMapping("/survey_question_summarys")
 public class SurveyQuestionSummaryRestService {
 
-	@Inject
-	private SurveyQuestionSummaryDao surveyQuestionSummaryDao;
+    @Inject
+    private SurveyQuestionSummaryDao surveyQuestionSummaryDao;
 
-	@Inject
-	private QuestionDao questionDao;
+    @Inject
+    private QuestionDao questionDao;
 
-	// list questionSummaries by question id (if the questionId parameter is
-	// passed)
-	// or, if the surveyId is passed and 'metricOnly=true', only for the
-	// questions which have a metric.
-	// if metricOnly = false, all SQS objects are returned for the survey.
-	@RequestMapping(method = RequestMethod.GET, value = "")
-	@ResponseBody
-	public Map<String, List<SurveyQuestionSummaryDto>> listSurveyAnswerSummary(
-			@RequestParam(value = "questionId", defaultValue = "") Long questionId,
-			@RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
-			@RequestParam(value = "metricOnly", defaultValue = "") Boolean metricOnly) {
-		final Map<String, List<SurveyQuestionSummaryDto>> response = new HashMap<String, List<SurveyQuestionSummaryDto>>();
-		List<SurveyQuestionSummaryDto> results = new ArrayList<SurveyQuestionSummaryDto>();
-		List<SurveyQuestionSummary> surveyQuestionSummaries = new ArrayList<SurveyQuestionSummary>();
-		Boolean include;
-		Boolean includeMetricOnly;
-		if (questionId != null) {
-			surveyQuestionSummaries = surveyQuestionSummaryDao
-					.listByQuestion(questionId.toString());
-			if (surveyQuestionSummaries != null) {
-				for (SurveyQuestionSummary s : surveyQuestionSummaries) {
-					SurveyQuestionSummaryDto dto = new SurveyQuestionSummaryDto();
-					DtoMarshaller.copyToDto(s, dto);
-					results.add(dto);
-				}
-			}
-		} else {
-			if (surveyId != null) {
-				// get all questions for this survey
-				List<Question> questions = new ArrayList<Question>();
-				// TODO this can be improved: we are now getting all questions,
-				// while
-				// we only need those which have a metricId != null.
-				questions = questionDao.listQuestionsBySurvey(surveyId);
-				if (metricOnly != null && metricOnly) {
-					includeMetricOnly = true;
-				} else {
-					includeMetricOnly = false;
-				}
-				if (questions != null && questions.size() > 0) {
-					for (Question question : questions) {
-						include = true;
-						 if (includeMetricOnly && question.getMetricId() == null){
-							include = false;
-						}
-						if (include) {
-							surveyQuestionSummaries = surveyQuestionSummaryDao
-									.listByQuestion(String.valueOf(question
-											.getKey().getId()));
-							if (surveyQuestionSummaries != null) {
-								for (SurveyQuestionSummary s : surveyQuestionSummaries) {
-									SurveyQuestionSummaryDto dto = new SurveyQuestionSummaryDto();
-									DtoMarshaller.copyToDto(s, dto);
-									results.add(dto);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		response.put("survey_question_summarys", results);
-		return response;
-	}
+    // list questionSummaries by question id (if the questionId parameter is
+    // passed)
+    // or, if the surveyId is passed and 'metricOnly=true', only for the
+    // questions which have a metric.
+    // if metricOnly = false, all SQS objects are returned for the survey.
+    @RequestMapping(method = RequestMethod.GET, value = "")
+    @ResponseBody
+    public Map<String, List<SurveyQuestionSummaryDto>> listSurveyAnswerSummary(
+            @RequestParam(value = "questionId", defaultValue = "")
+            Long questionId,
+            @RequestParam(value = "surveyId", defaultValue = "")
+            Long surveyId,
+            @RequestParam(value = "metricOnly", defaultValue = "")
+            Boolean metricOnly) {
+        final Map<String, List<SurveyQuestionSummaryDto>> response = new HashMap<String, List<SurveyQuestionSummaryDto>>();
+        List<SurveyQuestionSummaryDto> results = new ArrayList<SurveyQuestionSummaryDto>();
+        List<SurveyQuestionSummary> surveyQuestionSummaries = new ArrayList<SurveyQuestionSummary>();
+        Boolean include;
+        Boolean includeMetricOnly;
+        if (questionId != null) {
+            surveyQuestionSummaries = surveyQuestionSummaryDao
+                    .listByQuestion(questionId.toString());
+            if (surveyQuestionSummaries != null) {
+                for (SurveyQuestionSummary s : surveyQuestionSummaries) {
+                    SurveyQuestionSummaryDto dto = new SurveyQuestionSummaryDto();
+                    DtoMarshaller.copyToDto(s, dto);
+                    results.add(dto);
+                }
+            }
+        } else {
+            if (surveyId != null) {
+                // get all questions for this survey
+                List<Question> questions = new ArrayList<Question>();
+                // TODO this can be improved: we are now getting all questions,
+                // while
+                // we only need those which have a metricId != null.
+                questions = questionDao.listQuestionsBySurvey(surveyId);
+                if (metricOnly != null && metricOnly) {
+                    includeMetricOnly = true;
+                } else {
+                    includeMetricOnly = false;
+                }
+                if (questions != null && questions.size() > 0) {
+                    for (Question question : questions) {
+                        include = true;
+                        if (includeMetricOnly && question.getMetricId() == null) {
+                            include = false;
+                        }
+                        if (include) {
+                            surveyQuestionSummaries = surveyQuestionSummaryDao
+                                    .listByQuestion(String.valueOf(question
+                                            .getKey().getId()));
+                            if (surveyQuestionSummaries != null) {
+                                for (SurveyQuestionSummary s : surveyQuestionSummaries) {
+                                    SurveyQuestionSummaryDto dto = new SurveyQuestionSummaryDto();
+                                    DtoMarshaller.copyToDto(s, dto);
+                                    results.add(dto);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        response.put("survey_question_summarys", results);
+        return response;
+    }
 }

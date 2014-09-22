@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -24,111 +24,138 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 public class SurveyInstanceDto extends BaseDto {
 
-	private static final long serialVersionUID = 8484584703637564931L;
+    private static final long serialVersionUID = 8484584703637564931L;
 
-	private Long userID;
+    private Long userID;
 
-	private Date collectionDate;
+    private Date collectionDate;
 
-	private List<QuestionAnswerStoreDto> questionAnswersStore;
+    private List<QuestionAnswerStoreDto> questionAnswersStore;
 
-	private Long surveyId;
+    private Long surveyId;
 
-	/**
-	 * Initialize surveyalTime to enhance backwards compatibility
-	 */
-	private Long surveyalTime = 0L;
+    /**
+     * Initialize surveyalTime to enhance backwards compatibility
+     */
+    private Long surveyalTime = 0L;
 
-	private String submitterName;
-	private String deviceIdentifier;
-	private String surveyCode;
-	private String approvedFlag;
-	private String approximateLocationFlag;
+    private String submitterName;
+    private String deviceIdentifier;
+    private String surveyCode;
+    private String approvedFlag;
+    private String approximateLocationFlag;
+    private Long surveyedLocaleId;
+    private String surveyedLocaleIdentifier;
+    private String surveyedLocaleDisplayName;
 
-	public String getApproximateLocationFlag() {
-		return approximateLocationFlag;
-	}
+    public String getApproximateLocationFlag() {
+        return approximateLocationFlag;
+    }
 
-	public void setApproximateLocationFlag(String approximateLocationFlag) {
-		this.approximateLocationFlag = approximateLocationFlag;
-	}
+    public void setApproximateLocationFlag(String approximateLocationFlag) {
+        this.approximateLocationFlag = approximateLocationFlag;
+    }
 
-	public String getApprovedFlag() {
-		return approvedFlag;
-	}
+    public String getApprovedFlag() {
+        return approvedFlag;
+    }
 
-	public void setApprovedFlag(String approvedFlag) {
-		this.approvedFlag = approvedFlag;
-	}
+    public void setApprovedFlag(String approvedFlag) {
+        this.approvedFlag = approvedFlag;
+    }
 
-	public String getSubmitterName() {
-		return submitterName;
-	}
+    public String getSubmitterName() {
+        return submitterName;
+    }
 
-	public void setSubmitterName(String submitterName) {
-		this.submitterName = submitterName;
-	}
+    public void setSubmitterName(String submitterName) {
+        this.submitterName = submitterName;
+    }
 
-	public String getDeviceIdentifier() {
-		return deviceIdentifier;
-	}
+    public String getDeviceIdentifier() {
+        return deviceIdentifier;
+    }
 
-	public void setDeviceIdentifier(String deviceIdentifier) {
-		this.deviceIdentifier = deviceIdentifier;
-	}
+    public void setDeviceIdentifier(String deviceIdentifier) {
+        this.deviceIdentifier = deviceIdentifier;
+    }
 
-	public Long getSurveyId() {
-		return surveyId;
-	}
+    public Long getSurveyId() {
+        return surveyId;
+    }
 
-	public void setSurveyId(Long surveyId) {
-		this.surveyId = surveyId;
-	}
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
+    }
 
-	public Long getUserID() {
-		return userID;
-	}
+    public Long getUserID() {
+        return userID;
+    }
 
-	public void setUserID(Long userID) {
-		this.userID = userID;
-	}
+    public void setUserID(Long userID) {
+        this.userID = userID;
+    }
 
-	public Date getCollectionDate() {
-		return collectionDate;
-	}
+    public Date getCollectionDate() {
+        return collectionDate;
+    }
 
-	public void setCollectionDate(Date collectionDate) {
-		this.collectionDate = collectionDate;
-	}
+    public void setCollectionDate(Date collectionDate) {
+        this.collectionDate = collectionDate;
+    }
 
-	public List<QuestionAnswerStoreDto> getQuestionAnswersStore() {
-		return questionAnswersStore;
-	}
+    public List<QuestionAnswerStoreDto> getQuestionAnswersStore() {
+        return questionAnswersStore;
+    }
 
-	public void setQuestionAnswersStore(
-			List<QuestionAnswerStoreDto> questionAnswersStore) {
-		this.questionAnswersStore = questionAnswersStore;
-	}
+    public void setQuestionAnswersStore(
+            List<QuestionAnswerStoreDto> questionAnswersStore) {
+        this.questionAnswersStore = questionAnswersStore;
+    }
 
-	public void addQuestionAnswerStore(QuestionAnswerStoreDto item) {
-		if (questionAnswersStore == null)
-			questionAnswersStore = new ArrayList<QuestionAnswerStoreDto>();
-		questionAnswersStore.add(item);
-	}
+    public void addQuestionAnswerStore(QuestionAnswerStoreDto item) {
+        if (questionAnswersStore == null)
+            questionAnswersStore = new ArrayList<QuestionAnswerStoreDto>();
+        questionAnswersStore.add(item);
+    }
 
-	public void setSurveyCode(String surveyCode) {
-		this.surveyCode = surveyCode;
-	}
+    public void setSurveyCode(String surveyCode) {
+        this.surveyCode = surveyCode;
+    }
 
-	public String getSurveyCode() {
-		return surveyCode;
-	}
-	
-	public void setSurveyalTime(Long surveyalTime) {
-		this.surveyalTime = surveyalTime;
-	}
-	
-	public Long getSurveyalTime() {
-		return surveyalTime;
-	}
+    public String getSurveyCode() {
+        return surveyCode;
+    }
+
+    public void setSurveyalTime(Long surveyalTime) {
+        this.surveyalTime = surveyalTime;
+    }
+
+    public Long getSurveyalTime() {
+        return surveyalTime;
+    }
+
+    public Long getSurveyedLocaleId() {
+        return surveyedLocaleId;
+    }
+
+    public void setSurveyedLocaleId(Long surveyedLocaleId) {
+        this.surveyedLocaleId = surveyedLocaleId;
+    }
+
+    public String getSurveyedLocaleIdentifier() {
+        return surveyedLocaleIdentifier;
+    }
+
+    public void setSurveyedLocaleIdentifier(String surveyedLocaleIdentifier) {
+        this.surveyedLocaleIdentifier = surveyedLocaleIdentifier;
+    }
+
+    public String getSurveyedLocaleDisplayName() {
+        return surveyedLocaleDisplayName;
+    }
+
+    public void setSurveyedLocaleDisplayName(String surveyedLocaleDisplayName) {
+        this.surveyedLocaleDisplayName = surveyedLocaleDisplayName;
+    }
 }

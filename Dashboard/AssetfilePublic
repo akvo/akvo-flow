@@ -37,10 +37,28 @@ class HandlebarsFilter < Filter
   end
 end
 
+class CSSMinFilter < Filter
+  def generate_output(inputs, output)
+    inputs.each do |input|
+      result = input.read
+      result.gsub!(/href="\/publicmap\/css\/(.*)\.css"/, 'href="/publicmap/css/\1.min.css"') # index.html
+      result.gsub!(/url\("(.*?).css"\)/, 'url("\1.min.css")') # screen.css
+      output.write(result)
+    end
+  end
+end
+
 output '../GAE/war/publicmap'
 input 'app' do
-  
+
+  match 'css/main.scss' do
+    scss
+  end
+
   match 'public.html' do
+    if ENV['RAKEP_MODE'] == 'production'
+      filter CSSMinFilter
+    end
     copy '../index.html'
   end
 
@@ -110,9 +128,14 @@ input 'app' do
     end
   end
 
-  match "css/**/*" do
-    concat do |input|
-      input
+  match "css/**/*.css" do
+    if ENV['RAKEP_MODE'] == 'production'
+      yui_css
+      filter CSSMinFilter
+    else
+      concat do |input|
+        input
+      end
     end
   end
 

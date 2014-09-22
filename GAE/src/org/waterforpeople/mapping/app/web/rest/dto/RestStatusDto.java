@@ -22,56 +22,55 @@ import java.io.Serializable;
  * transfer object for transfering Rest status messages
  * 
  * @author Mark Tiele Westra
- * 
  */
 public class RestStatusDto implements Serializable {
 
-	private static final long serialVersionUID = -5905705837362187943L;
+    private static final long serialVersionUID = -5905705837362187943L;
 
-	private String status = "";
-	private String message = "";
-	private String since = "";
-	private Integer num;
-	private Long keyId;
+    private String status = "";
+    private String message = "";
+    private String since = "";
+    private Integer num;
+    private Long keyId;
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public String getStatus() {
-		return status;
-	}
-	
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public String getMessage() {
-		return message;
-	}
-	
-	public void setSince(String since) {
-		this.since = since;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-	public String getSince() {
-		return since;
-	}
-	
-	public void setNum(Integer num) {
-		this.num = num;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public Integer getnum() {
-		return num;
-	}
-	
-	public void setKeyId(Long keyId) {
-		this.keyId = keyId;
-	}
+    public void setSince(String since) {
+        this.since = since;
+    }
 
-	public Long getKeyId() {
-		return keyId;
-	}
+    public String getSince() {
+        return since;
+    }
+
+    public void setNum(Integer num) {
+        this.num = num;
+    }
+
+    public Integer getnum() {
+        return num;
+    }
+
+    public void setKeyId(Long keyId) {
+        this.keyId = keyId;
+    }
+
+    public Long getKeyId() {
+        return keyId;
+    }
 
 }

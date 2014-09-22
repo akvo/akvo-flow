@@ -20,15 +20,15 @@ import java.io.Serializable;
 
 public class SurveyAssignmentPayload implements Serializable {
 
-	private static final long serialVersionUID = -4133374465777431202L;
+    private static final long serialVersionUID = -4133374465777431202L;
 
-	private SurveyAssignmentDto survey_assignment;
+    private SurveyAssignmentDto survey_assignment;
 
-	public SurveyAssignmentDto getSurvey_assignment() {
-		return survey_assignment;
-	}
+    public SurveyAssignmentDto getSurvey_assignment() {
+        return survey_assignment;
+    }
 
-	public void setSurvey_assignment(SurveyAssignmentDto survey_assignment) {
-		this.survey_assignment = survey_assignment;
-	}
+    public void setSurvey_assignment(SurveyAssignmentDto survey_assignment) {
+        this.survey_assignment = survey_assignment;
+    }
 }

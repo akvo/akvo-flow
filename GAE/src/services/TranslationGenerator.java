@@ -29,140 +29,142 @@ import org.apache.commons.io.FileUtils;
 
 public class TranslationGenerator {
 
-	private static final Map<String, String> PATTERNS = new HashMap<String, String>();
+    private static final Map<String, String> PATTERNS = new HashMap<String, String>();
 
-	static {
-		PATTERNS.put("{{t ", "}}");
-		PATTERNS.put("{{tooltip ", "}}");
-		PATTERNS.put("promptBinding=\"Ember.STRINGS.", "\"");
-		PATTERNS.put("placeholderBinding=\"Ember.STRINGS.", "\"");
-		PATTERNS.put("String.loc('", "'");
-	}
+    static {
+        PATTERNS.put("{{t ", "}}");
+        PATTERNS.put("{{tooltip ", "}}");
+        PATTERNS.put("promptBinding=\"Ember.STRINGS.", "\"");
+        PATTERNS.put("placeholderBinding=\"Ember.STRINGS.", "\"");
+        PATTERNS.put("String.loc('", "'");
+    }
 
-	private static final String[] EXTS = { "handlebars", "js" };
+    private static final String[] EXTS = {
+            "handlebars", "js"
+    };
 
-	@SuppressWarnings("unchecked")
-	public static void main(String[] args) throws Exception {
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) throws Exception {
 
-		if (args.length < 2) {
-			System.err.println("<Dashboard> and <output> directories are required");
-			return;
-		}
+        if (args.length < 2) {
+            System.err.println("<Dashboard> and <output> directories are required");
+            return;
+        }
 
-		final File sources = new File(args[0]);
-		final File output = new File(args[1]);
+        final File sources = new File(args[0]);
+        final File output = new File(args[1]);
 
-		final Properties ui_strings = new Properties();
-		ui_strings.load(new FileInputStream(new File(output,
-				"/ui-strings.properties")));
+        final Properties ui_strings = new Properties();
+        ui_strings.load(new FileInputStream(new File(output,
+                "/ui-strings.properties")));
 
-		final Map<String, String> trlKeys = new HashMap<String, String>();
-		final List<String> enValues = new ArrayList<String>();
+        final Map<String, String> trlKeys = new HashMap<String, String>();
+        final List<String> enValues = new ArrayList<String>();
 
-		for (File f : (List<File>) FileUtils.listFiles(sources, EXTS, true)) {
-			if (f.getAbsolutePath().contains("vendor")
-					|| f.getAbsolutePath().contains("plugins")
-					|| f.getAbsolutePath().contains("tests")) {
-				continue; // skipping
-			}
+        for (File f : (List<File>) FileUtils.listFiles(sources, EXTS, true)) {
+            if (f.getAbsolutePath().contains("vendor")
+                    || f.getAbsolutePath().contains("plugins")
+                    || f.getAbsolutePath().contains("tests")) {
+                continue; // skipping
+            }
 
-			final List<String> lines = FileUtils.readLines(f, "UTF-8");
+            final List<String> lines = FileUtils.readLines(f, "UTF-8");
 
-			for (String line : lines) {
-				if (containsTranslatableKeys(line)) {
-					final List<String> keys = getKeys(line);
-					if (!keys.isEmpty()) {
-						for (String k : keys) {
-							if (trlKeys.containsKey(k)) {
-								continue; // skip
-							}
-							final String en = ui_strings.getProperty(k);
-							if (en == null) {
-								System.err.println("Translation key `"
-												+ k
-												+ "` not found in ui-strings.properties");
-								ui_strings.put(k, "");
-							}
+            for (String line : lines) {
+                if (containsTranslatableKeys(line)) {
+                    final List<String> keys = getKeys(line);
+                    if (!keys.isEmpty()) {
+                        for (String k : keys) {
+                            if (trlKeys.containsKey(k)) {
+                                continue; // skip
+                            }
+                            final String en = ui_strings.getProperty(k);
+                            if (en == null) {
+                                System.err.println("Translation key `"
+                                        + k
+                                        + "` not found in ui-strings.properties");
+                                ui_strings.put(k, "");
+                            }
 
-							trlKeys.put(k, (en == null ? "" : en));
+                            trlKeys.put(k, (en == null ? "" : en));
 
-							if (en != null && !"".equals(en)
-									&& !enValues.contains(en)) {
-								enValues.add(en);
-							}
-						}
-					}
-				}
-			}
-		}
+                            if (en != null && !"".equals(en)
+                                    && !enValues.contains(en)) {
+                                enValues.add(en);
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-		Collections.sort(enValues);
-		StringBuffer sb = new StringBuffer();
-		for (String val : enValues) {
-			sb.append(val.replaceAll(" ", "\\\\ ")).append(" = ").append(val)
-					.append("\n");
-		}
-		FileUtils.writeStringToFile(new File(output, "/en.properties"),
-				sb.toString(), "UTF-8");
+        Collections.sort(enValues);
+        StringBuffer sb = new StringBuffer();
+        for (String val : enValues) {
+            sb.append(val.replaceAll(" ", "\\\\ ")).append(" = ").append(val)
+                    .append("\n");
+        }
+        FileUtils.writeStringToFile(new File(output, "/en.properties"),
+                sb.toString(), "ISO-8859-1");
 
-		final List<String> tmp = new ArrayList<String>(trlKeys.keySet());
-		Collections.sort(tmp);
-		final StringBuffer uisource = new StringBuffer();
-		for (String ui : tmp) {
-			uisource.append(ui).append(" = ").append(trlKeys.get(ui))
-					.append("\n");
-		}
-		FileUtils.writeStringToFile(new File(output, "/ui-strings.properties"),
-				uisource.toString(), "UTF-8");
-	}
+        final List<String> tmp = new ArrayList<String>(trlKeys.keySet());
+        Collections.sort(tmp);
+        final StringBuffer uisource = new StringBuffer();
+        for (String ui : tmp) {
+            uisource.append(ui).append(" = ").append(trlKeys.get(ui))
+                    .append("\n");
+        }
+        FileUtils.writeStringToFile(new File(output, "/ui-strings.properties"),
+                uisource.toString(), "ISO-8859-1");
+    }
 
-	private static boolean containsTranslatableKeys(String line) {
-		for (String pattern : PATTERNS.keySet()) {
-			if (line.contains(pattern)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    private static boolean containsTranslatableKeys(String line) {
+        for (String pattern : PATTERNS.keySet()) {
+            if (line.contains(pattern)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private static List<String> getKeys(String line) {
+    private static List<String> getKeys(String line) {
 
-		if (!containsTranslatableKeys(line)) {
-			return Collections.emptyList();
-		}
+        if (!containsTranslatableKeys(line)) {
+            return Collections.emptyList();
+        }
 
-		final List<String> keys = new ArrayList<String>();
-		for (String pattern : PATTERNS.keySet()) {
-			keys.addAll(getKeysFromLine(line, pattern, PATTERNS.get(pattern)));
-		}
+        final List<String> keys = new ArrayList<String>();
+        for (String pattern : PATTERNS.keySet()) {
+            keys.addAll(getKeysFromLine(line, pattern, PATTERNS.get(pattern)));
+        }
 
-		return keys;
-	}
+        return keys;
+    }
 
-	private static List<String> getKeysFromLine(String line, String prefix,
-			String suffix) {
+    private static List<String> getKeysFromLine(String line, String prefix,
+            String suffix) {
 
-		final List<String> keys = new ArrayList<String>();
+        final List<String> keys = new ArrayList<String>();
 
-		int start = line.indexOf(prefix);
-		int end = -1;
+        int start = line.indexOf(prefix);
+        int end = -1;
 
-		if (start != -1) {
-			start += prefix.length();
-			end = line.indexOf(suffix, start);
-		}
+        if (start != -1) {
+            start += prefix.length();
+            end = line.indexOf(suffix, start);
+        }
 
-		while (start > 0 && end > 0) {
-			keys.add(line.substring(start, end));
-			start = line.indexOf(prefix, end + 1);
-			if (start == -1) {
-				break;
-			}
-			start = start + prefix.length();
-			end = line.indexOf(suffix, start);
-		}
+        while (start > 0 && end > 0) {
+            keys.add(line.substring(start, end));
+            start = line.indexOf(prefix, end + 1);
+            if (start == -1) {
+                break;
+            }
+            start = start + prefix.length();
+            end = line.indexOf(suffix, start);
+        }
 
-		return keys;
-	}
+        return keys;
+    }
 
 }

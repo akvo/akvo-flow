@@ -83,8 +83,6 @@
 		<copy file="${config}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
 		<copy file="${config}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
 		<copy file="${config}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>
-		<copy file="${config}/portal.gwt.xml" tofile="src/org/waterforpeople/mapping/portal/portal.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
-		<copy file="${config}/surveyentry.gwt.xml" tofile="src/org/waterforpeople/mapping/surveyentry/surveyentry.gwt.xml" overwrite="true" verbose="true" failonerror="false"/>
 		<copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false"/>
 		<copy file="${config}/images/wsp_logo.gif" tofile="war/images/wfp-logo.gif" overwrite="true" verbose="true" failonerror="false"/>
 		<copy file="${config}/images/wsp_logo.jpg" tofile="war/images/wfp_flow.jpg" overwrite="true" verbose="true" failonerror="false"/>
@@ -116,21 +114,6 @@
 		</copy>
 	</target>
 
-	<target name="GWTcompile" depends="copyjars,compile">
-		<fail message="GWT compilation is deprecated. You can force it with: ant GWTCompile -Dforce=yes">
-			<condition>
-				<not>
-					<isset property="force" />
-				</not>
-			</condition>
-		</fail>
-		<java classpathref="project.classpath" classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true" maxmemory="512m">
-			<arg value="org.waterforpeople.mapping.portal.portal" />
-			<arg value="com.gallatinsystems.framework.gwt.PortletFramework" />
-			<arg value="org.waterforpeople.mapping.surveyentry.surveyentry" />
-		</java>
-	</target>
-
 	<target name="compile" depends="copyjars" description="Compiles Java source and copies other source files to the WAR.">
 		<mkdir dir="${app_classes_dir}" />
 		<copy todir="${app_classes_dir}">
@@ -138,7 +121,7 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-		<javac source="1.6" target="1.6" encoding="UTF8" srcdir="src" destdir="${app_classes_dir}"
+		<javac source="1.7" target="1.7" encoding="UTF8" srcdir="src" destdir="${app_classes_dir}"
 			   classpathref="project.classpath" debug="on" includeantruntime="false" />
 	</target>
 
@@ -169,14 +152,7 @@
 		</dev_appserver>
 	</target>
 
-	<target name="version" description="Extracts the version using git describe and modifies war/admin/js/app.js">
-		<exec dir="../" executable="git" outputproperty="app.version">
-			<arg value="describe"/>
-		</exec>
-		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
-	</target>
-
-	<target name="update" depends="datanucleusenhance,version" description="Uploads the application to App Engine.">
+	<target name="update" depends="compile,datanucleusenhance" description="Uploads the application to App Engine.">
 		<fail message="[pwd] property is not present, e.g.: ant update -Dpwd=/path/to/password.txt">
 			<condition>
 				<not>
@@ -189,13 +165,28 @@
 			<fileset dir="${app_dir}/deploy" includes="**/*.symbolMap"/>
 		</delete>
 
-		<delete file="war/PlacemarksNewLook.vm" failonerror="false" />
+		<echo message="Rebuilding Dashboard..." />
 
-		<exec dir="." executable="sh">
+		<exec dir="../Dashboard" executable="bundle" failonerror="true">
+		    <env key="RAKEP_MODE" value="production" />
+		    <arg value="exec" />
+		    <arg value="rake" />
+		    <arg value="build" />
+		    <arg value="--trace" />
+		</exec>
+
+		<exec dir="../" executable="git" outputproperty="app.version">
+			<arg value="describe"/>
+		</exec>
+
+		<replace file="./war/admin/js/app.js" token="__VERSION__" value="${app.version}" />
+
+		<exec dir="." executable="sh" failonerror="true">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh --enable_jar_splitting --email=${email.address} --passin &lt; ${pwd} update war" />
 		</exec>
-		<exec dir="." executable="sh">
+
+		<exec dir="." executable="sh" failonerror="true">
 		    <arg value="-c" />
 		    <arg value="${sdk.dir}/bin/appcfg.sh backends war update" />
 		</exec>
@@ -207,6 +198,10 @@
 
 	<target name="rollback" depends="datanucleusenhance" description="Rolls back an interrupted application update.">
 		<appcfg action="rollback" war="war" />
+		<exec dir="." executable="sh" failonerror="true">
+		    <arg value="-c" />
+		    <arg value="${sdk.dir}/bin/appcfg.sh backends rollback war" />
+		</exec>
 	</target>
 
 	<target name="request_logs" description="Downloads log data from App Engine for the application.">

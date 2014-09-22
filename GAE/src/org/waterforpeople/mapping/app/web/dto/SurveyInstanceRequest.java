@@ -22,47 +22,47 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 public class SurveyInstanceRequest extends RestRequest {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 6642806619258697157L;
-	private static final String FIELD_NAME_PARAM = "fieldName";
-	private static final String VALUE_NAME_PARAM = "value";
-	
-	private String fieldName = null;
-	public String getFieldName() {
-		return fieldName;
-	}
+    private static final long serialVersionUID = 6642806619258697157L;
+    private static final String FIELD_NAME_PARAM = "fieldName";
+    private static final String VALUE_NAME_PARAM = "value";
 
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
-	}
+    private String fieldName = null;
 
-	public String getValue() {
-		return value;
-	}
+    public String getFieldName() {
+        return fieldName;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
 
-	private String value=null;
-	
+    public String getValue() {
+        return value;
+    }
 
-	@Override
-	protected void populateFields(HttpServletRequest req) throws Exception {
-		if(req.getParameter(FIELD_NAME_PARAM)!=null){
-			setFieldName(req.getParameter(FIELD_NAME_PARAM));
-		}
-		if(req.getParameter(VALUE_NAME_PARAM)!=null){
-			setValue(req.getParameter(VALUE_NAME_PARAM));
-		}
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	@Override
-	protected void populateErrors() {
-		// TODO Auto-generated method stub
-		
-	}
+    private String value = null;
+
+    @Override
+    protected void populateFields(HttpServletRequest req) throws Exception {
+        if (req.getParameter(FIELD_NAME_PARAM) != null) {
+            setFieldName(req.getParameter(FIELD_NAME_PARAM));
+        }
+        if (req.getParameter(VALUE_NAME_PARAM) != null) {
+            setValue(req.getParameter(VALUE_NAME_PARAM));
+        }
+    }
+
+    @Override
+    protected void populateErrors() {
+        // TODO Auto-generated method stub
+
+    }
 
 }

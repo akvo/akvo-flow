@@ -25,50 +25,49 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  * Data structure for user configuration/personalization information.
  * 
  * @author Christopher Fagiani
- * 
  */
 @PersistenceCapable
 public class UserConfig extends BaseDomain {
 
-	private static final long serialVersionUID = 515991819240493160L;
-	@Persistent
-	private String group;
-	@Persistent
-	private String name;
-	@Persistent
-	private String value;
-	@Persistent
-	private Long userId;
-	
-	public Long getUserId() {
-		return userId;
-	}
+    private static final long serialVersionUID = 515991819240493160L;
+    @Persistent
+    private String group;
+    @Persistent
+    private String name;
+    @Persistent
+    private String value;
+    @Persistent
+    private Long userId;
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-	
-	public String getGroup() {
-		return group;
-	}
+    public Long getUserId() {
+        return userId;
+    }
 
-	public void setGroup(String group) {
-		this.group = group;
-	}
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getGroup() {
+        return group;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setGroup(String group) {
+        this.group = group;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

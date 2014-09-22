@@ -12,16 +12,6 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     }
   }),
 
-  buildURL: function (record, suffix) {
-    var url;
-
-    url = this._super(record, suffix);
-    if (record === 'placemark') {
-      return url + '?country=' + FLOW.countryController.get('countryCode');
-    }
-    return url;
-  },
-
   sideload: function (store, type, json, root) {
     var msg, status, metaObj;
     this._super(store, type, json, root);
@@ -55,6 +45,20 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
           FLOW.dialogControl.set('activeAction', 'ignore');
           FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_question'));
           FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_question_text'));
+          FLOW.dialogControl.set('showCANCEL', false);
+          FLOW.dialogControl.set('showDialog', true);
+        }
+        return;
+      }
+
+      if (status === 'preflight-delete-questiongroup') {
+        if (msg === 'can_delete') {
+          // do deletion
+          FLOW.questionGroupControl.deleteQuestionGroup(keyId);
+        } else {
+          FLOW.dialogControl.set('activeAction', 'ignore');
+          FLOW.dialogControl.set('header', Ember.String.loc('_cannot_delete_questiongroup'));
+          FLOW.dialogControl.set('message', Ember.String.loc('_cannot_delete_questiongroup_text'));
           FLOW.dialogControl.set('showCANCEL', false);
           FLOW.dialogControl.set('showDialog', true);
         }

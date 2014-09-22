@@ -22,73 +22,98 @@ import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
- * request class for the SurveyalServlet.  
+ * request class for the SurveyalServlet.
  * 
  * @author Christopher Fagiani
- *
  */
 public class SurveyalRestRequest extends RestRequest {
 
-	private static final long serialVersionUID = -1002622416183902696L;
-	public static final String INGEST_INSTANCE_ACTION = "ingestInstance";
-	public static final String RERUN_ACTION = "rerun";
-	public static final String REINGEST_INSTANCE_ACTION="reingestInstance";
-	public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
-	public static final String SURVEY_ID_PARAM ="surveyId";
-	
+    private static final long serialVersionUID = -1002622416183902696L;
+    public static final String INGEST_INSTANCE_ACTION = "ingestInstance";
+    public static final String RERUN_ACTION = "rerun";
+    public static final String REINGEST_INSTANCE_ACTION = "reingestInstance";
+    public static final String POP_GEOCELLS_FOR_LOCALE_ACTION = "populateGeocellsForLocale";
+    public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
+    public static final String SURVEY_ID_PARAM = "surveyId";
+    public static final String ADAPT_CLUSTER_DATA_ACTION = "adaptClusterData";
+    public static final String SURVEYED_LOCALE_PARAM = "surveyedLocaleId";
+    public static final String DECREMENT_CLUSTER_COUNT_PARAM = "decrement";
 
-	private Long surveyInstanceId;
-	private Long surveyId;
+    private Long surveyInstanceId;
+    private Long surveyId;
+    private Long surveyedLocaleId;
+    private Boolean decrementClusterCount = Boolean.FALSE;
 
-	@Override
-	protected void populateFields(HttpServletRequest req) throws Exception {
-		if (req.getParameter(SURVEY_INSTANCE_PARAM) != null) {
-			try {
-				surveyInstanceId = Long.parseLong(req.getParameter(
-						SURVEY_INSTANCE_PARAM).trim());
-			} catch (Exception e) {
-				addError(new RestError(RestError.BAD_DATATYPE_CODE,
-						RestError.BAD_DATATYPE_MESSAGE, SURVEY_INSTANCE_PARAM
-								+ " must be an Integer"));
-			}
-		}
-		if(req.getParameter(SURVEY_ID_PARAM)!=null){
-			try {
-				setSurveyId(Long.parseLong(req.getParameter(
-						SURVEY_ID_PARAM).trim()));
-			} catch (Exception e) {
-				addError(new RestError(RestError.BAD_DATATYPE_CODE,
-						RestError.BAD_DATATYPE_MESSAGE, SURVEY_ID_PARAM
-								+ " must be an Integer"));
-			}
-		}
-		if(req.getParameter(SURVEY_INSTANCE_PARAM)!=null){
-			setSurveyInstanceId(Long.parseLong(req.getParameter(SURVEY_INSTANCE_PARAM).trim()));
-		}
+    @Override
+    protected void populateFields(HttpServletRequest req) throws Exception {
+        if (req.getParameter(SURVEY_INSTANCE_PARAM) != null) {
+            try {
+                surveyInstanceId = Long.parseLong(req.getParameter(
+                        SURVEY_INSTANCE_PARAM).trim());
+            } catch (Exception e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE,
+                        RestError.BAD_DATATYPE_MESSAGE, SURVEY_INSTANCE_PARAM
+                                + " must be an Integer"));
+            }
+        }
+        if (req.getParameter(SURVEY_ID_PARAM) != null) {
+            try {
+                setSurveyId(Long.parseLong(req.getParameter(
+                        SURVEY_ID_PARAM).trim()));
+            } catch (Exception e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE,
+                        RestError.BAD_DATATYPE_MESSAGE, SURVEY_ID_PARAM
+                                + " must be an Integer"));
+            }
+        }
+        if (req.getParameter(SURVEY_INSTANCE_PARAM) != null) {
+            setSurveyInstanceId(Long.parseLong(req.getParameter(SURVEY_INSTANCE_PARAM).trim()));
+        }
 
-	}
+        if (req.getParameter(SURVEYED_LOCALE_PARAM) != null) {
+            setSurveyedLocaleId(Long.parseLong(req.getParameter(SURVEYED_LOCALE_PARAM).trim()));
+        }
 
-	@Override
-	protected void populateErrors() {
+        if (req.getParameter(DECREMENT_CLUSTER_COUNT_PARAM) != null) {
+            setDecrementClusterCount(Boolean.valueOf(req
+                    .getParameter(DECREMENT_CLUSTER_COUNT_PARAM)));
+        }
+    }
 
-	}
+    @Override
+    protected void populateErrors() {
 
-	public Long getSurveyInstanceId() {
-		return surveyInstanceId;
-	}
+    }
 
-	public void setSurveyInstanceId(Long surveyInstanceId) {
-		this.surveyInstanceId = surveyInstanceId;
-	}
+    public Long getSurveyInstanceId() {
+        return surveyInstanceId;
+    }
 
-	public void setSurveyId(Long surveyId) {
-		this.surveyId = surveyId;
-	}
+    public void setSurveyInstanceId(Long surveyInstanceId) {
+        this.surveyInstanceId = surveyInstanceId;
+    }
 
-	public Long getSurveyId() {
-		return surveyId;
-	}
-	
-	
+    public void setSurveyId(Long surveyId) {
+        this.surveyId = surveyId;
+    }
 
+    public Long getSurveyId() {
+        return surveyId;
+    }
+
+    public Long getSurveyedLocaleId() {
+        return surveyedLocaleId;
+    }
+
+    public void setSurveyedLocaleId(Long surveyedLocaleId) {
+        this.surveyedLocaleId = surveyedLocaleId;
+    }
+
+    public Boolean getDecrementClusterCount() {
+        return decrementClusterCount;
+    }
+
+    public void setDecrementClusterCount(Boolean decrementClusterCount) {
+        this.decrementClusterCount = decrementClusterCount;
+    }
 }

@@ -33,105 +33,102 @@ import com.gallatinsystems.framework.analytics.summarization.DataSummarizer;
 import com.gallatinsystems.framework.domain.DataChangeRecord;
 
 /**
- * updates access points based on the old/new values passed in via the logical
- * change record.
+ * updates access points based on the old/new values passed in via the logical change record.
  * 
  * @author Christopher Fagiani
- * 
  */
 public class AccessPointUpdater implements DataSummarizer {
-	private static Logger logger = Logger.getLogger(AccessPointUpdater.class
-			.getName());
-	private static final String IDENTIFIER_ATTR = "communityCode";
-	private SurveyAttributeMappingDao mappingDao;
-	private AccessPointDao apDao;
-	private SurveyInstanceDAO instanceDao;
+    private static Logger logger = Logger.getLogger(AccessPointUpdater.class
+            .getName());
+    private static final String IDENTIFIER_ATTR = "communityCode";
+    private SurveyAttributeMappingDao mappingDao;
+    private AccessPointDao apDao;
+    private SurveyInstanceDAO instanceDao;
 
-	public AccessPointUpdater() {
-		mappingDao = new SurveyAttributeMappingDao();
-		apDao = new AccessPointDao();
-		instanceDao = new SurveyInstanceDAO();
-	}
+    public AccessPointUpdater() {
+        mappingDao = new SurveyAttributeMappingDao();
+        apDao = new AccessPointDao();
+        instanceDao = new SurveyInstanceDAO();
+    }
 
-	@Override
-	public String getCursor() {
-		// no-op
-		return null;
-	}
+    @Override
+    public String getCursor() {
+        // no-op
+        return null;
+    }
 
-	/**
-	 * populates a DataChangeRecord from the input value passed in and uses it
-	 * to determine whether or not anything needs to be done: if the change to
-	 * the access point included a change to the country or community, then it
-	 * will decrement the count from the AccessPointSummary for the old value
-	 * then increment the count for the new.
-	 */
-	@Override
-	public boolean performSummarization(String key, String type, String value,
-			Integer offset, String cursor) {
-		DataChangeRecord lcr = new DataChangeRecord(value);
-		String[] ids = lcr.getId().split("\\|");
-		if (ids.length == 4) {
-			Long surveyId = new Long(ids[0]);
-			Long questionId = new Long(ids[1]);
-			Long instanceId = new Long(ids[2]);
-			Long mappingId = new Long(ids[3]);
-			AccessPointMappingHistory apmh = new AccessPointMappingHistory();
-			apmh.setSurveyId(surveyId);
-			apmh.setQuestionId(questionId);
-			apmh.setSurveyInstanceId(instanceId);
-			apmh.setSource(this.getClass().getName());
-			apmh.setSurveyResponse(value);
+    /**
+     * populates a DataChangeRecord from the input value passed in and uses it to determine whether
+     * or not anything needs to be done: if the change to the access point included a change to the
+     * country or community, then it will decrement the count from the AccessPointSummary for the
+     * old value then increment the count for the new.
+     */
+    @Override
+    public boolean performSummarization(String key, String type, String value,
+            Integer offset, String cursor) {
+        DataChangeRecord lcr = new DataChangeRecord(value);
+        String[] ids = lcr.getId().split("\\|");
+        if (ids.length == 4) {
+            Long surveyId = new Long(ids[0]);
+            Long questionId = new Long(ids[1]);
+            Long instanceId = new Long(ids[2]);
+            Long mappingId = new Long(ids[3]);
+            AccessPointMappingHistory apmh = new AccessPointMappingHistory();
+            apmh.setSurveyId(surveyId);
+            apmh.setQuestionId(questionId);
+            apmh.setSurveyInstanceId(instanceId);
+            apmh.setSource(this.getClass().getName());
+            apmh.setSurveyResponse(value);
 
-			SurveyAttributeMapping identifierMapping = mappingDao
-					.findMappingForAttribute(surveyId, IDENTIFIER_ATTR);
-			SurveyAttributeMapping questionMapping = mappingDao
-					.getByKey(mappingId);
-			if (identifierMapping != null && questionMapping != null) {
-				QuestionAnswerStore changedAnswer = null;
-				List<QuestionAnswerStore> answers = instanceDao
-						.listQuestionAnswerStore(instanceId, null);
-				if (answers != null) {
-					String communityCode = null;
-					if (questionId == Long.parseLong(identifierMapping
-							.getSurveyQuestionId())) {
-						communityCode = lcr.getOldVal();
-					} else {
-						for (QuestionAnswerStore qas : answers) {
-							if (qas.getQuestionID().equals(
-									identifierMapping.getSurveyQuestionId())) {
-								communityCode = qas.getValue();
-							} else if (qas.getQuestionID().equals(
-									questionId.toString())) {
-								changedAnswer = qas;
-							}
-							if (communityCode != null && changedAnswer != null) {
-								break;
-							}
-						}
-					}
-					if (communityCode != null && changedAnswer != null) {
-						List<AccessPoint> pointList = apDao.searchAccessPoints(
-								null, communityCode, null, null, null, null,
-								null, null, "collectionDate", "desc", null,
-								null);
-						if (pointList != null && pointList.size() > 0) {
-							AccessPoint point = pointList.get(0);
-							try {
-								AccessPointHelper.setAccessPointField(point,
-										changedAnswer, questionMapping, apmh);
-								logger.info("Estimated pop is: "
-										+ point.getExtimatedPopulation());
-								apDao.save(point);
-							} catch (Exception e) {
-								logger.log(Level.SEVERE,
-										"Could not update AP field", e);
-							}
-						}
-					}
-				}
-			}
-		}
-		return true;
-	}
+            SurveyAttributeMapping identifierMapping = mappingDao
+                    .findMappingForAttribute(surveyId, IDENTIFIER_ATTR);
+            SurveyAttributeMapping questionMapping = mappingDao
+                    .getByKey(mappingId);
+            if (identifierMapping != null && questionMapping != null) {
+                QuestionAnswerStore changedAnswer = null;
+                List<QuestionAnswerStore> answers = instanceDao
+                        .listQuestionAnswerStore(instanceId, null);
+                if (answers != null) {
+                    String communityCode = null;
+                    if (questionId == Long.parseLong(identifierMapping
+                            .getSurveyQuestionId())) {
+                        communityCode = lcr.getOldVal();
+                    } else {
+                        for (QuestionAnswerStore qas : answers) {
+                            if (qas.getQuestionID().equals(
+                                    identifierMapping.getSurveyQuestionId())) {
+                                communityCode = qas.getValue();
+                            } else if (qas.getQuestionID().equals(
+                                    questionId.toString())) {
+                                changedAnswer = qas;
+                            }
+                            if (communityCode != null && changedAnswer != null) {
+                                break;
+                            }
+                        }
+                    }
+                    if (communityCode != null && changedAnswer != null) {
+                        List<AccessPoint> pointList = apDao.searchAccessPoints(
+                                null, communityCode, null, null, null, null,
+                                null, null, "collectionDate", "desc", null,
+                                null);
+                        if (pointList != null && pointList.size() > 0) {
+                            AccessPoint point = pointList.get(0);
+                            try {
+                                AccessPointHelper.setAccessPointField(point,
+                                        changedAnswer, questionMapping, apmh);
+                                logger.info("Estimated pop is: "
+                                        + point.getExtimatedPopulation());
+                                apDao.save(point);
+                            } catch (Exception e) {
+                                logger.log(Level.SEVERE,
+                                        "Could not update AP field", e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
 }

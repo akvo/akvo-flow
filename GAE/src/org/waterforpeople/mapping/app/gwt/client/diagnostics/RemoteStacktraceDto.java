@@ -24,65 +24,64 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
  * dto for use with the remote exception service
  * 
  * @author Christopher Fagiani
- * 
  */
 public class RemoteStacktraceDto extends BaseDto {
 
-	private static final long serialVersionUID = 8104104669231012653L;
-	
-	private String deviceIdentifier;
-	private String phoneNumber;
-	private String stackTrace;
-	private String softwareVersion;
-	private Boolean acknowleged;	
-	private Date errorDate;
+    private static final long serialVersionUID = 8104104669231012653L;
 
-	public String getDeviceIdentifier() {
-		return deviceIdentifier;
-	}
+    private String deviceIdentifier;
+    private String phoneNumber;
+    private String stackTrace;
+    private String softwareVersion;
+    private Boolean acknowleged;
+    private Date errorDate;
 
-	public void setDeviceIdentifier(String deviceIdentifier) {
-		this.deviceIdentifier = deviceIdentifier;
-	}
+    public String getDeviceIdentifier() {
+        return deviceIdentifier;
+    }
 
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
+    public void setDeviceIdentifier(String deviceIdentifier) {
+        this.deviceIdentifier = deviceIdentifier;
+    }
 
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-	public String getStackTrace() {
-		return stackTrace;
-	}
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-	public void setStackTrace(String stackTrace) {
-		this.stackTrace = stackTrace;
-	}
+    public String getStackTrace() {
+        return stackTrace;
+    }
 
-	public String getSoftwareVersion() {
-		return softwareVersion;
-	}
+    public void setStackTrace(String stackTrace) {
+        this.stackTrace = stackTrace;
+    }
 
-	public void setSoftwareVersion(String softwareVersion) {
-		this.softwareVersion = softwareVersion;
-	}
+    public String getSoftwareVersion() {
+        return softwareVersion;
+    }
 
-	public Boolean getAcknowleged() {
-		return acknowleged;
-	}
+    public void setSoftwareVersion(String softwareVersion) {
+        this.softwareVersion = softwareVersion;
+    }
 
-	public void setAcknowleged(Boolean acknowleged) {
-		this.acknowleged = acknowleged;
-	}
+    public Boolean getAcknowleged() {
+        return acknowleged;
+    }
 
-	public Date getErrorDate() {
-		return errorDate;
-	}
+    public void setAcknowleged(Boolean acknowleged) {
+        this.acknowleged = acknowleged;
+    }
 
-	public void setErrorDate(Date errorDate) {
-		this.errorDate = errorDate;
-	}
+    public Date getErrorDate() {
+        return errorDate;
+    }
+
+    public void setErrorDate(Date errorDate) {
+        this.errorDate = errorDate;
+    }
 
 }

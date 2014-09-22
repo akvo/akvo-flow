@@ -32,6 +32,10 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
   createdDateTime: DS.attr('string', {
     defaultValue: ''
   }),
+  monitoringGroup: DS.attr('boolean', {
+    defaultValue: false
+  }),
+  newLocaleSurveyId: DS.attr('number'),
   lastUpdateDateTime: DS.attr('string', {
     defaultValue: ''
   }),
@@ -88,7 +92,10 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
   name: DS.attr('string'),
   path: DS.attr('string'),
   code: DS.attr('string'),
-  surveyId: DS.attr('number')
+  surveyId: DS.attr('number'),
+  sourceId: DS.attr('number', {
+    defaultValue: null
+  })
 });
 
 
@@ -104,12 +111,21 @@ FLOW.Question = FLOW.BaseModel.extend({
   allowOtherFlag: DS.attr('boolean', {
     defaultValue: false
   }),
+  localeNameFlag: DS.attr('boolean', {
+	    defaultValue: false
+	  }),
+  localeLocationFlag: DS.attr('boolean', {
+		defaultValue: false
+  }),
   allowSign: DS.attr('boolean', {
     defaultValue: false
   }),
   geoLocked: DS.attr('boolean', {
 	    defaultValue: false
 	  }),
+  requireDoubleEntry: DS.attr('boolean', {
+    defaultValue: false
+  }),
   collapseable: DS.attr('boolean', {
     defaultValue: false
   }),
@@ -137,13 +153,14 @@ FLOW.Question = FLOW.BaseModel.extend({
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),
+  questionId: DS.attr('string'),
   metricId: DS.attr('number'),
   text: DS.attr('string'),
   tip: DS.attr('string'),
   type: DS.attr('string', {
 	defaultValue: "FREE_TEXT"
   }),
-  // This attribute is used for the 'Copy Survey' functionality 
+  // This attribute is used for the 'Copy Survey' functionality
   // Most of the times is `null`
   sourceId: DS.attr('number', {
 	 defaultValue: null
@@ -226,10 +243,11 @@ FLOW.SurveyedLocale = DS.Model.extend({
   keyId: DS.attr('number'),
   latitude: DS.attr('number'),
   longitude: DS.attr('number'),
-  primaryKey: 'keyId',
-  typeMark: DS.attr('string', {
-    defaultValue: 'WATER_POINT'
-  })
+  displayName: DS.attr('string'),
+  lastUpdateDateTime: DS.attr('number'),
+  surveyGroupId: DS.attr('number'),
+  identifier: DS.attr('string'),
+  primaryKey: 'keyId'
 });
 
 // Explicitly avoid to use belongTo and hasMany as
@@ -238,6 +256,7 @@ FLOW.SurveyedLocale = DS.Model.extend({
 FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
   placemarkId: DS.attr('number'),
   collectionDate: DS.attr('number'),
+  order: DS.attr('number'),
   questionText: DS.attr('string'),
   metricName: DS.attr('string'),
   stringValue: DS.attr('string'),
@@ -245,12 +264,13 @@ FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
 });
 
 FLOW.Placemark = FLOW.BaseModel.extend({
-  latitude: DS.attr('number'),
-  longitude: DS.attr('number'),
-  collectionDate: DS.attr('number'),
-  markType: DS.attr('string', {
-    defaultValue: 'WATER_POINT'
-  })
+	latitude: DS.attr('number'),
+	longitude: DS.attr('number'),
+	count: DS.attr('number'),
+	level: DS.attr('number'),
+	surveyId: DS.attr('number'),
+	detailsId: DS.attr('number'),
+	collectionDate: DS.attr('number')
 });
 
 FLOW.SurveyInstance = FLOW.BaseModel.extend({
@@ -290,7 +310,8 @@ FLOW.User = FLOW.BaseModel.extend({
   superAdmin: DS.attr('boolean', {
     defaultValue: 0
   }),
-  permissionList: DS.attr('string')
+  permissionList: DS.attr('string'),
+  accessKey: DS.attr('string')
 });
 
 FLOW.UserConfig = FLOW.BaseModel.extend({
@@ -345,6 +366,7 @@ FLOW.Translation = FLOW.BaseModel.extend({
   parentType: DS.attr('string'),
   parentId: DS.attr('string'),
   surveyId: DS.attr('string'),
+  questionGroupId: DS.attr('string'),
   text: DS.attr('string'),
   langCode: DS.attr('string')
 });

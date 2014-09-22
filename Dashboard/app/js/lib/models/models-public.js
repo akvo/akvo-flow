@@ -58,6 +58,7 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
   placemarkId: DS.attr('number'),
   collectionDate: DS.attr('number'),
+  order: DS.attr('number'),
   questionText: DS.attr('string'),
   metricName: DS.attr('string'),
   stringValue: DS.attr('string'),
@@ -67,8 +68,9 @@ FLOW.PlacemarkDetail = FLOW.BaseModel.extend({
 FLOW.Placemark = FLOW.BaseModel.extend({
   latitude: DS.attr('number'),
   longitude: DS.attr('number'),
-  collectionDate: DS.attr('number'),
-  markType: DS.attr('string', {
-    defaultValue: 'WATER_POINT'
-  })
+  count: DS.attr('number'),
+  level: DS.attr('number'),
+  surveyId: DS.attr('number'),
+  detailsId: DS.attr('number'),
+  collectionDate: DS.attr('number')
 });

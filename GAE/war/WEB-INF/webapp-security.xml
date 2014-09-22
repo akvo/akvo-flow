@@ -6,7 +6,24 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
-    <http use-expressions="true" entry-point-ref="gaeEntryPoint">
+
+	<http pattern="/api/v1/**" use-expressions="true" entry-point-ref="apiEntryPoint" authentication-manager-ref="apiAuthenticationManager" >
+
+		<intercept-url pattern="/api/v1/survey_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/surveys/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/question_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/questions/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/question_answers" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/survey_assignments/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/surveyed_locales/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/survey_instances/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/device_groups/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/api/v1/devices/**" method="GET" access="hasRole('USER')"/>
+		<intercept-url pattern="/**" access="denyAll"/>
+		<custom-filter position="PRE_AUTH_FILTER" ref="apiFilter"/>
+	</http>
+
+    <http use-expressions="true" entry-point-ref="gaeEntryPoint" authentication-manager-ref="authenticationManager">
         <intercept-url pattern="/remote_api**" access="permitAll"/>
         <intercept-url pattern="/admin/logout.html" access="permitAll"/>
         <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
@@ -21,6 +38,23 @@
         <logout logout-success-url="/" delete-cookies="JSESSIONID"/>
 		<custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
     </http>
+
+
+	<!-- API Authentication -->
+	
+	<b:bean id="apiEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationEntryPoint"/>
+	
+	<b:bean id="apiFilter" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationFilter">
+		<b:property name="authenticationManager" ref="apiAuthenticationManager"></b:property>
+	</b:bean>
+	
+	<authentication-manager id="apiAuthenticationManager">
+		<authentication-provider ref="apiAuthenticationProvider"/>
+	</authentication-manager>
+	
+	<b:bean id="apiAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationProvider"/>
+
+	<!-- GAE Authentication -->
 
     <b:bean id="gaeEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.GoogleAccountsAuthenticationEntryPoint" />
 
@@ -37,7 +71,7 @@
         </b:property>
     </b:bean>
 
-    <authentication-manager alias="authenticationManager">
+    <authentication-manager id="authenticationManager">
         <authentication-provider ref="gaeAuthenticationProvider"/>
     </authentication-manager>
 

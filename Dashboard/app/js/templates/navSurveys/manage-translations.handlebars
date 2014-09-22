@@ -1,7 +1,7 @@
 {{#view FLOW.TranslationsView}}
 <div class="manageTranslationsBlock">
-    <section id="manageTranslations" class="mainContent mainRight">
-       <section class="floats-in surveyTranslation greyBg">
+    <section id="manageTranslations" class="">
+       <section class="floats-in surveyTranslation">
     <h1>{{t _survey_translation}}</h1>
     <table id="languageOption">
       <!-- TABLE HEADER-->
@@ -28,10 +28,11 @@
          selectionBinding="FLOW.translationControl.selectedLanguage" 
          optionLabelPath="content.labelLong" 
          optionValuePath="content.value"
-         prompt="select language"}} 
-            <a {{action "addTranslation" target="FLOW.translationControl"}} class="smallBtn">Add</a>
+         prompt="Select language"
+         promptBinding="Ember.STRINGS._select_language"}}
+            <a {{action "addTranslation" target="FLOW.translationControl"}} class="smallBtn">{{t _add}}</a>
             {{#if FLOW.translationControl.newSelected}}
-              <a {{action "cancelAddTranslation" target="FLOW.translationControl"}} class="smallBtn">Cancel</a>
+              <a {{action "cancelAddTranslation" target="FLOW.translationControl"}} class="smallBtn">{{t _cancel}}</a>
            {{/if}}</td>
         </tr>
       {{#unless FLOW.translationControl.newSelected}}
@@ -86,7 +87,7 @@
     <header style="heigh:40px; padding: 10px 0 10px 0">
       <nav class="qtnGroupMenu">
         <ul>
-          <li style="text-align:right;margin:0 10px 0 0;"><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
+          <li style="text-align:center;margin:0 10px 0 0;"><a  {{action "saveTranslations" target="FLOW.translationControl"}} class="standardBtn">{{t _save_translations}}</a> </li>
         </ul>
       </nav>
     </header>
@@ -184,5 +185,6 @@
       </ul>
     </nav>
     </section>
+      </section>
 </div>
 {{/view}}
