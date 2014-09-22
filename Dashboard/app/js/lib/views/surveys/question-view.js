@@ -71,7 +71,6 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('FLOW.selectedControl.selectedQuestion', 'content.keyId').cacheable(),
 
   amOptionType: function () {
-    var options;
     if (this.type) {
       return this.type.get('value') == 'OPTION';
     } else {
@@ -96,19 +95,8 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type').cacheable(),
 
   amGeoType: function () {
-    var options;
     if (this.type) {
       return this.type.get('value') == 'GEO';
-    } else {
-      return false;
-    }
-  }.property('this.type').cacheable(),
-
-
-  amFreetextType: function () {
-    var options;
-    if (this.type) {
-      return this.type.get('value') == 'FREE_TEXT';
     } else {
       return false;
     }
