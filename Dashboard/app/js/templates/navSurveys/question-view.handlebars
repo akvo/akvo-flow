@@ -76,7 +76,9 @@
     {{/if}}
     
     {{#if view.amTextType}}
-      <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.allowExternalSources"}}{{t _allow_external_sources}}</label>
+      {{#if FLOW.Env.showExternalSourcesFeature}}
+        <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.allowExternalSources"}}{{t _allow_external_sources}}</label>
+      {{/if}}
     {{/if}}
 
     {{#if view.amNoOptionsType}}
