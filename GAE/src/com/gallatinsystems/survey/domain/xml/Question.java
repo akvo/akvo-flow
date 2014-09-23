@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * Java class for anonymous complex type.
  * <p>
  * The following schema fragment specifies the expected content contained within this class.
- *
+ * 
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -126,7 +126,7 @@ public class Question {
 
     /**
      * Gets the value of the dependency property.
-     *
+     * 
      * @return possible object is {@link Dependency }
      */
     public Dependency getDependency() {
@@ -135,9 +135,8 @@ public class Question {
 
     /**
      * Sets the value of the dependency property.
-     *
-     * @param value
-     *            allowed object is {@link Dependency }
+     * 
+     * @param value allowed object is {@link Dependency }
      */
     public void setDependency(Dependency value) {
         this.dependency = value;
@@ -145,7 +144,7 @@ public class Question {
 
     /**
      * Gets the value of the help property.
-     *
+     * 
      * @return possible object is {@link Help }
      */
     public List<Help> getHelp() {
@@ -154,9 +153,8 @@ public class Question {
 
     /**
      * Sets the value of the help property.
-     *
-     * @param value
-     *            allowed object is {@link Help }
+     * 
+     * @param value allowed object is {@link Help }
      */
     public void setHelp(List<Help> value) {
         this.help = value;
@@ -164,7 +162,7 @@ public class Question {
 
     /**
      * Gets the value of the options property.
-     *
+     * 
      * @return possible object is {@link Options }
      */
     public Options getOptions() {
@@ -173,9 +171,8 @@ public class Question {
 
     /**
      * Sets the value of the options property.
-     *
-     * @param value
-     *            allowed object is {@link Options }
+     * 
+     * @param value allowed object is {@link Options }
      */
     public void setOptions(Options value) {
         this.options = value;
@@ -183,7 +180,7 @@ public class Question {
 
     /**
      * Gets the value of the text property.
-     *
+     * 
      * @return possible object is {@link Text }
      */
     public Text getText() {
@@ -192,9 +189,8 @@ public class Question {
 
     /**
      * Sets the value of the text property.
-     *
-     * @param value
-     *            allowed object is {@link Text }
+     * 
+     * @param value allowed object is {@link Text }
      */
     public void setText(Text value) {
         this.text = value;
@@ -202,7 +198,7 @@ public class Question {
 
     /**
      * Gets the value of the validationRule property.
-     *
+     * 
      * @return possible object is {@link ValidationRule }
      */
     public ValidationRule getValidationRule() {
@@ -211,9 +207,8 @@ public class Question {
 
     /**
      * Sets the value of the validationRule property.
-     *
-     * @param value
-     *            allowed object is {@link ValidationRule }
+     * 
+     * @param value allowed object is {@link ValidationRule }
      */
     public void setValidationRule(ValidationRule value) {
         this.validationRule = value;
@@ -221,7 +216,7 @@ public class Question {
 
     /**
      * Gets the value of the order property.
-     *
+     * 
      * @return possible object is {@link String }
      */
     public String getOrder() {
@@ -230,9 +225,8 @@ public class Question {
 
     /**
      * Sets the value of the order property.
-     *
-     * @param value
-     *            allowed object is {@link String }
+     * 
+     * @param value allowed object is {@link String }
      */
     public void setOrder(String value) {
         this.order = value;
@@ -240,7 +234,7 @@ public class Question {
 
     /**
      * Gets the value of the locked property.
-     *
+     * 
      * @return possible object is {@link String }
      */
     public String getLocked() {
@@ -249,9 +243,8 @@ public class Question {
 
     /**
      * Sets the value of the locked property.
-     *
-     * @param value
-     *            allowed object is {@link String }
+     * 
+     * @param value allowed object is {@link String }
      */
     public void setLocked(String value) {
         this.locked = value;
@@ -259,9 +252,8 @@ public class Question {
 
     /**
      * Sets the value of the requireDoubleEntry property.
-     *
-     * @param value
-     *            allowed object is {@link String }
+     * 
+     * @param value allowed object is {@link String }
      */
     public void setRequireDoubleEntry(String value) {
         this.requireDoubleEntry = value;
@@ -269,7 +261,7 @@ public class Question {
 
     /**
      * Gets the value of the requireDoubleEntry property.
-     *
+     * 
      * @return possible object is {@link String }
      */
     public String getRequireDoubleEntry() {
@@ -278,7 +270,7 @@ public class Question {
 
     /**
      * Gets the value of the type property.
-     *
+     * 
      * @return possible object is {@link String }
      */
     public String getType() {
@@ -287,9 +279,8 @@ public class Question {
 
     /**
      * Sets the value of the type property.
-     *
-     * @param value
-     *            allowed object is {@link String }
+     * 
+     * @param value allowed object is {@link String }
      */
     public void setType(String value) {
         this.type = value;
@@ -297,7 +288,7 @@ public class Question {
 
     /**
      * Gets the value of the mandatory property.
-     *
+     * 
      * @return possible object is {@link String }
      */
     public String getMandatory() {
@@ -306,9 +297,8 @@ public class Question {
 
     /**
      * Sets the value of the mandatory property.
-     *
-     * @param value
-     *            allowed object is {@link String }
+     * 
+     * @param value allowed object is {@link String }
      */
     public void setMandatory(String value) {
         this.mandatory = value;
@@ -316,7 +306,7 @@ public class Question {
 
     /**
      * Gets the value of the localeName property.
-     *
+     * 
      * @return possible object is {@link String }
      */
     public String getLocaleNameFlag() {
@@ -325,9 +315,8 @@ public class Question {
 
     /**
      * Sets the value of the localeName property.
-     *
-     * @param value
-     *            allowed object is {@link String }
+     * 
+     * @param value allowed object is {@link String }
      */
     public void setLocaleNameFlag(String value) {
         this.localeNameFlag = value;
@@ -335,7 +324,7 @@ public class Question {
 
     /**
      * Gets the value of the localeLocation property.
-     *
+     * 
      * @return possible object is {@link String }
      */
     public String getLocaleLocationFlag() {
@@ -344,9 +333,8 @@ public class Question {
 
     /**
      * Sets the value of the localeLocation property.
-     *
-     * @param value
-     *            allowed object is {@link String }
+     * 
+     * @param value allowed object is {@link String }
      */
     public void setLocaleLocationFlag(String value) {
         this.localeLocationFlag = value;
@@ -354,7 +342,7 @@ public class Question {
 
     /**
      * Gets the value of the id property.
-     *
+     * 
      * @return possible object is {@link String }
      */
     public String getId() {
@@ -363,20 +351,19 @@ public class Question {
 
     /**
      * Sets the value of the id property.
-     *
-     * @param value
-     *            allowed object is {@link String }
+     * 
+     * @param value allowed object is {@link String }
      */
     public void setId(String value) {
         this.id = value;
-	}
-    
-	public String getAllowExternalSources() {
-		return allowExternalSources;
-	}
+    }
 
-	public void setAllowExternalSources(String allowExternalSources) {
-		this.allowExternalSources = allowExternalSources;
+    public String getAllowExternalSources() {
+        return allowExternalSources;
+    }
+
+    public void setAllowExternalSources(String allowExternalSources) {
+        this.allowExternalSources = allowExternalSources;
     }
 
     public Scoring getScoring() {
