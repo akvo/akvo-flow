@@ -286,6 +286,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
     private boolean monitoringGroup = false;
+    private List<Long> displayNameQuestionIds = new ArrayList<Long>();
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -322,6 +323,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 for (List<QuestionDto> qList : questionMap.values()) {
                     for (QuestionDto q : qList) {
                         questionsById.put(q.getKeyId(), q);
+                        if (q.getLocaleNameFlag() != null && q.getLocaleNameFlag()) {
+                            displayNameQuestionIds.add(q.getKeyId());
+                        }
                     }
                 }
             }
@@ -517,7 +521,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         if (monitoringGroup) {
             createCell(row, col++, dto.getSurveyedLocaleIdentifier(), null);
-            createCell(row, col++, dto.getSurveyedLocaleDisplayName(), null);
+            createCell(row, col++, generateDisplayName(responseMap), null);
         }
 
         createCell(row, col++, instanceId, null);
@@ -630,8 +634,27 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     /**
+     * Generate the display name for responses of a specific survey instance
+     *
+     * @param responseMap
+     * @return
+     */
+    private String generateDisplayName(Map<String, String> surveyInstanceResponses) {
+        StringBuilder displayName = new StringBuilder();
+        for (int i = 0; i < displayNameQuestionIds.size(); i++) {
+            Long questionId = displayNameQuestionIds.get(i);
+            displayName.append(surveyInstanceResponses.get(questionId.toString()));
+            if (i < displayNameQuestionIds.size() - 1) {
+                displayName.append(" - ");
+            }
+        }
+
+        return displayName.toString();
+    }
+
+    /**
      * creates the header for the raw data tab
-     * 
+     *
      * @param row
      * @param questionMap
      * @return - returns a 2 element array. The first element is a List of String objects

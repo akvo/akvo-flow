@@ -892,6 +892,9 @@ public class BulkDataServiceClient {
                                     && !"null".equalsIgnoreCase(json.getString("isName"))) {
                                 dto.setIsName(json.getBoolean("isName"));
                             }
+                            if (!json.isNull("localeNameFlag")) {
+                                dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
+                            }
                             if (json.has("mandatoryFlag")
                                     && !"null".equalsIgnoreCase(json.getString("mandatoryFlag"))) {
                                 dto.setMandatoryFlag(json.getBoolean("mandatoryFlag"));
