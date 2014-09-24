@@ -71,7 +71,7 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
- * 
+ *
  * @author Christopher Fagiani
  */
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
@@ -1037,7 +1037,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     /**
      * finds or creates the row at the given index
-     * 
+     *
      * @param index
      * @param rowLocalMax
      * @param sheet
@@ -1063,7 +1063,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     /**
      * sets instance variables to the values passed in in the Option map. If the option is not set,
      * the default values are used.
-     * 
+     *
      * @param options
      */
     protected void processOptions(Map<String, String> options) {
@@ -1119,7 +1119,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     /**
      * call the server to augment the data already loaded in each QuestionDto in the map passed in.
-     * 
+     *
      * @param questionMap
      */
     private void loadFullQuestions(
@@ -1144,7 +1144,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     /**
      * uses the locale and the translation map passed in to determine what value to use for the
      * string
-     * 
+     *
      * @param text
      * @param translationMap
      * @return
