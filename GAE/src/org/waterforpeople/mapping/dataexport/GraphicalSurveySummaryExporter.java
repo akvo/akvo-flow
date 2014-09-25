@@ -641,13 +641,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
      */
     private String generateDisplayName(Map<String, String> surveyInstanceResponses) {
         StringBuilder displayName = new StringBuilder();
-        for (int i = 0; i < displayNameQuestionIds.size(); i++) {
-            Long questionId = displayNameQuestionIds.get(i);
-            displayName.append(surveyInstanceResponses.get(questionId.toString()));
-            if (i < displayNameQuestionIds.size() - 1) {
-                displayName.append(" - ");
-            }
+        for (Long questionId : displayNameQuestionIds) {
+            displayName.append(surveyInstanceResponses.get(questionId.toString())).append(" - ");
         }
+        int length = displayName.length();
+        displayName.delete(length - 3, length);
 
         return displayName.toString();
     }
