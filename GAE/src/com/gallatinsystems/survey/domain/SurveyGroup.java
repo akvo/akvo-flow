@@ -35,8 +35,10 @@ public class SurveyGroup extends BaseDomain {
     private String name = null;
     private String code = null;
     private Boolean monitoringGroup = false;
+    private Long projectFolderId;
     private Long newLocaleSurveyId;
     private String description = null;
+
     @NotPersistent
     private HashMap<String, Translation> altTextMap;
     @NotPersistent
@@ -102,6 +104,14 @@ public class SurveyGroup extends BaseDomain {
 
     public void setNewLocaleSurveyId(Long newLocaleSurveyId) {
         this.newLocaleSurveyId = newLocaleSurveyId;
+    }
+
+    public Long getProjectFolderId() {
+	return projectFolderId;
+    }
+
+    public void setProjectFolderId(Long projectFolderId) {
+	this.projectFolderId = projectFolderId;
     }
 
 }
