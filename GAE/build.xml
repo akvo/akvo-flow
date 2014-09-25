@@ -80,7 +80,6 @@
 				</not>
 			</condition>
 		</fail>
-		<copy file="${config}/UploadConstants.properties" tofile="src/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" overwrite="true" verbose="true" />
 		<copy file="${config}/appengine-web.xml" tofile="${app_dir}/appengine-web.xml" overwrite="true" verbose="true" />
 		<copy file="${config}/survey.properties" tofile="../WFPMapping/device/survey/res/raw/survey.properties" overwrite="true" verbose="true"/>
 		<copy file="${config}/index.html" tofile="war/index.html" overwrite="true" verbose="true" failonerror="false"/>

@@ -268,6 +268,7 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
             if (survey != null) {
                 locale.setLocaleType(survey.getPointType());
                 locale.setSurveyGroupId(survey.getSurveyGroupId());
+                locale.setCreationSurveyId(survey.getKey().getId());
             }
         }
 

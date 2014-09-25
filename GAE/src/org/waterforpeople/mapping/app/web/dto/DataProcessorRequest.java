@@ -23,7 +23,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
  * Handles requests to the DataProcessing Rest Service
- * 
+ *
  * @author Christopher Fagiani
  */
 public class DataProcessorRequest extends RestRequest {
@@ -32,6 +32,7 @@ public class DataProcessorRequest extends RestRequest {
     public static final String REBUILD_QUESTION_SUMMARY_ACTION = "rebuildQuestionSummary";
     public static final String IMPORT_REMOTE_SURVEY_ACTION = "importRemoteSurvey";
     public static final String COPY_SURVEY = "copySurvey";
+    public static final String COPY_QUESTION_GROUP = "copyQuestionGroup";
     public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
     public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
     public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
@@ -43,6 +44,7 @@ public class DataProcessorRequest extends RestRequest {
     public static final String SOURCE_PARAM = "source";
     public static final String COUNTRY_PARAM = "country";
     public static final String SURVEY_ID_PARAM = "surveyId";
+    public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
     public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
     public static final String QAS_ID_PARAM = "qasId";
     public static final String DELTA_PARAM = "delta";
@@ -61,6 +63,7 @@ public class DataProcessorRequest extends RestRequest {
     private String source;
     private Long surveyId;
     private Long surveyInstanceId;
+    private Long questionGroupId;
     private Long qasId;
     private Integer delta;
     private String apiKey;
@@ -77,6 +80,15 @@ public class DataProcessorRequest extends RestRequest {
                 addError(new RestError(RestError.BAD_DATATYPE_CODE,
                         RestError.BAD_DATATYPE_MESSAGE, SURVEY_ID_PARAM
                                 + " must be an integer"));
+            }
+        }
+        if (req.getParameter(QUESTION_GROUP_ID_PARAM) != null) {
+            try {
+                questionGroupId = new Long(req.getParameter(QUESTION_GROUP_ID_PARAM).trim());
+            } catch (Exception e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE,
+                        RestError.BAD_DATATYPE_MESSAGE, QUESTION_GROUP_ID_PARAM
+                                + " must be a number"));
             }
         }
         if (req.getParameter(SURVEY_INSTANCE_PARAM) != null) {
@@ -155,6 +167,14 @@ public class DataProcessorRequest extends RestRequest {
         this.surveyInstanceId = surveyInstanceId;
     }
 
+    public Long getQuestionGroupId() {
+        return questionGroupId;
+    }
+
+    public void setQuestionGroupId(Long questionGroupId) {
+        this.questionGroupId = questionGroupId;
+    }
+
     public Long getQasId() {
         return qasId;
     }
@@ -171,10 +191,12 @@ public class DataProcessorRequest extends RestRequest {
         this.delta = delta;
     }
 
+    @Override
     public String getApiKey() {
         return apiKey;
     }
 
+    @Override
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }

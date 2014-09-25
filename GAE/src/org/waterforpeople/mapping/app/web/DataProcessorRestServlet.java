@@ -77,6 +77,7 @@ import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.Translation;
+import com.gallatinsystems.survey.domain.Translation.ParentType;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -126,6 +127,15 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.COPY_SURVEY.equalsIgnoreCase(dpReq
                 .getAction())) {
             copySurvey(dpReq.getSurveyId(), Long.valueOf(dpReq.getSource()));
+        } else if (DataProcessorRequest.COPY_QUESTION_GROUP.equalsIgnoreCase(dpReq
+                .getAction())) {
+            QuestionGroup newQuestionGroup = new QuestionGroupDao().getByKey(dpReq
+                    .getQuestionGroupId());
+            QuestionGroup originalQuestionGroup = new QuestionGroupDao()
+                    .getByKey(Long.valueOf(dpReq.getSource()));
+            if (originalQuestionGroup != null && newQuestionGroup != null) {
+                copyQuestionGroup(originalQuestionGroup, newQuestionGroup);
+            }
         } else if (DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             SurveyReplicationImporter sri = new SurveyReplicationImporter();
@@ -520,7 +530,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
         int qgOrder = 1;
         for (final QuestionGroup sourceQG : qgList) {
-            SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId, qgOrder++, qMap);
+            SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId, qMap);
         }
 
         final SurveyDAO sDao = new SurveyDAO();
@@ -537,6 +547,56 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 + originalSurvey.getName() + ") completed");
         mDao.save(message);
 
+    }
+
+    /**
+     * Copy a question group within the same survey
+     *
+     * @param questionGroup
+     */
+    private void copyQuestionGroup(QuestionGroup sourceQuestionGroup, QuestionGroup newQuestionGroup) {
+        final Map<Long, Long> qMap = new HashMap<Long, Long>(); // TODO: remove this param as it
+                                                                // seems redundant.
+        final QuestionDao qDao = new QuestionDao();
+
+        final Long surveyId = sourceQuestionGroup.getSurveyId();
+
+        SurveyUtils.copyTranslation(sourceQuestionGroup.getKey().getId(), newQuestionGroup
+                .getKey().getId(), surveyId, newQuestionGroup.getKey().getId(),
+                ParentType.QUESTION_GROUP_NAME,
+                ParentType.QUESTION_GROUP_DESC);
+
+        List<Question> qList = qDao.listQuestionsInOrderForGroup(sourceQuestionGroup
+                .getKey().getId());
+
+        if (qList == null) {
+            return;
+        }
+
+        log.log(Level.INFO, "Copying " + qList.size() + " `Question`");
+
+        final List<Question> dependentQuestionList = new ArrayList<Question>();
+
+        int qCount = 1;
+        for (Question q : qList) {
+            final Question qTmp = SurveyUtils.copyQuestion(q, newQuestionGroup
+                    .getKey().getId(), qCount++, surveyId);
+            qMap.put(q.getKey().getId(), qTmp.getKey().getId());
+            if (qTmp.getDependentFlag() != null && qTmp.getDependentFlag()) {
+                dependentQuestionList.add(qTmp);
+            }
+        }
+
+        // fixing dependencies
+        log.log(Level.INFO,
+                "Fixing dependencies for " + dependentQuestionList.size()
+                        + " `Question`");
+
+        for (Question nQ : dependentQuestionList) {
+            nQ.setDependentQuestionId(qMap.get(nQ.getDependentQuestionId()));
+        }
+
+        qDao.save(dependentQuestionList);
     }
 
     /**

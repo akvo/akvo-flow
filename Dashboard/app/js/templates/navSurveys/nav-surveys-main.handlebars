@@ -62,7 +62,7 @@
       {{#if FLOW.Env.showMonitoringFeature }}
         {{#if view.monitoringGroup}}
 		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a> 
-		      <div> <p>Survey that creates new monitored entities:</p> {{view Ember.Select 
+		      <div> <p>{{t _select_monitoring_survey}}:</p> {{view Ember.Select
          		contentBinding="FLOW.surveyControl.content" 
                 selectionBinding="FLOW.surveyControl.newLocaleSurvey"
          		optionLabelPath="content.name" 
