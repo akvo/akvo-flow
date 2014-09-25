@@ -51,7 +51,7 @@ import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
 /**
  * This exporter will write the survey "descriptive statistics" report to a file. These stats
  * include a breakdown of question response frequencies for each question in a survey.
- * 
+ *
  * @author Christopher Fagiani
  */
 public class SurveySummaryExporter extends AbstractDataExporter {
@@ -175,7 +175,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * builds the keys to use for roll-ups. So if the rollupOrder contains 2 questions, say State
      * and District, it will form strings that look like: "<StateResponse>" and
      * "<StateResponse>|<DistrictResponse>"
-     * 
+     *
      * @param responseMap
      * @return
      */
@@ -312,6 +312,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         if (!json.isNull("questionId")
                                 && !"null".equals(json.getString("questionId"))) {
                             dto.setQuestionId(json.getString("questionId"));
+                        }
+                        if (!json.isNull("localeNameFlag")) {
+                            dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
@@ -737,7 +740,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
         /**
          * outputs stats in the following order (tab delimited): Mean, Median, Mode, Std Dev, Std
          * Err, Range
-         * 
+         *
          * @return
          */
         public String getStatsString() {
