@@ -5,6 +5,25 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.4
+Date: 25 September 2014
+
+## New and noteworthy
+
+* Enable double entry for number questions [#759] - in survey definitions, it is now possible to also select the double entry verification option for number questions
+
+## Resolved issues
+
+* CreationSurveyId not set on new surveyedLocales [#798]
+* Screen does not scroll up [#778]
+* Remove hyperlink from survey title [#775]
+* Dashboard Translation for Monitoring Features Text [#774]
+* Add css generation to the dashboard build process [#768]
+* Use Akvo FLOW Favicon [#739]
+* Data points show up as "Unknown" [#735]
+* Copy functionality on Question Groups [#435]
+* Add survey title and question group name to survey xml so their translation can be viewed on the device [#299]
+
 #1.7.3.1
 Date: 7 September 2014
 
