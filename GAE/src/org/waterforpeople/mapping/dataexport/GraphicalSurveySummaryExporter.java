@@ -644,8 +644,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         for (Long questionId : displayNameQuestionIds) {
             displayName.append(surveyInstanceResponses.get(questionId.toString())).append(" - ");
         }
-        int length = displayName.length();
-        displayName.delete(length - 3, length);
+        if (displayName.toString().endsWith(" - ")) {
+            int length = displayName.length();
+            displayName.delete(length - 3, length);
+        }
 
         return displayName.toString();
     }
