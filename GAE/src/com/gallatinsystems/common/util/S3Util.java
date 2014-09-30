@@ -139,7 +139,7 @@ public class S3Util {
             out.flush();
 
             int status = conn.getResponseCode();
-            if (status >= 400) {
+            if (status != 200 && status != 201) {
                 log.severe("Error uploading file: " + url.toString());
                 log.severe(IOUtils.toString(conn.getInputStream()));
                 return false;
@@ -210,7 +210,7 @@ public class S3Util {
 
             int status = conn.getResponseCode();
 
-            if (status >= 400) {
+            if (status != 200 && status != 201) {
                 log.severe("Error setting ACL for: " + url.toString());
                 log.severe(IOUtils.toString(conn.getInputStream()));
                 return false;
