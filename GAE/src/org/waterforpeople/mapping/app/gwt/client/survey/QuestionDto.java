@@ -60,6 +60,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     private Boolean allowOtherFlag = null;
     private Boolean allowDecimal;
     private Boolean allowSign;
+    private Boolean allowExternalSources;
     private Double minVal;
     private Double maxVal;
     private Boolean isName;
@@ -389,6 +390,14 @@ public class QuestionDto extends BaseDto implements NamedObject {
         this.localeNameFlag = localeNameFlag;
     }
 
+    public Boolean getAllowExternalSources() {
+        return allowExternalSources;
+    }
+
+    public void setAllowExternalSources(Boolean allowExternalSources) {
+        this.allowExternalSources = allowExternalSources;
+    }
+
     public Boolean getLocaleLocationFlag() {
         return localeLocationFlag;
     }
@@ -406,10 +415,10 @@ public class QuestionDto extends BaseDto implements NamedObject {
     }
 
     public String getQuestionId() {
-	return questionId;
+        return questionId;
     }
 
     public void setQuestionId(String questionId) {
-	this.questionId = questionId;
+        this.questionId = questionId;
     }
 }

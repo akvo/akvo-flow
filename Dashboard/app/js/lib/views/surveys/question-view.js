@@ -12,6 +12,7 @@ FLOW.QuestionView = FLOW.View.extend({
   allowDecimal: null,
   allowMultipleFlag: null,
   allowOtherFlag: null,
+  allowExternalSources: false,
   localeNameFlag:false,
   localeLocationFlag:false,
   geoLocked: null,
@@ -70,6 +71,13 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedQuestion', 'content.keyId').cacheable(),
 
+  amTextType: function () {
+    if (this.type) {
+      return this.type.get('value') == 'FREE_TEXT';
+    } else {
+      return false;
+    }
+  }.property('this.type').cacheable(),
   amOptionType: function () {
     if (this.type) {
       return this.type.get('value') == 'OPTION';
@@ -151,6 +159,7 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('allowDecimal', FLOW.selectedControl.selectedQuestion.get('allowDecimal'));
     this.set('allowMultipleFlag', FLOW.selectedControl.selectedQuestion.get('allowMultipleFlag'));
     this.set('allowOtherFlag', FLOW.selectedControl.selectedQuestion.get('allowOtherFlag'));
+    this.set('allowExternalSources', FLOW.selectedControl.selectedQuestion.get('allowExternalSources'));
     this.set('localeNameFlag', FLOW.selectedControl.selectedQuestion.get('localeNameFlag'));
     this.set('localeLocationFlag', FLOW.selectedControl.selectedQuestion.get('localeLocationFlag'));
     this.set('geoLocked', FLOW.selectedControl.selectedQuestion.get('geoLocked'));
@@ -267,6 +276,9 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
     FLOW.selectedControl.selectedQuestion.set('requireDoubleEntry', this.get('requireDoubleEntry'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
+    
+    var allowExternalSources = (this.type.get('value') !== 'FREE_TEXT') ? false : this.get('allowExternalSources');
+    FLOW.selectedControl.selectedQuestion.set('allowExternalSources', allowExternalSources);
 
     dependentQuestionAnswer = "";
     first = true;
