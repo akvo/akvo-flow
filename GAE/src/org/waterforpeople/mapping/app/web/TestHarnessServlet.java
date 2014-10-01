@@ -45,13 +45,17 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
@@ -473,6 +477,8 @@ public class TestHarnessServlet extends HttpServlet {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else if ("projectMigration".equals(action)) {
+            projectMigration();
         }
     }
 
@@ -503,5 +509,43 @@ public class TestHarnessServlet extends HttpServlet {
             return true;
         }
         return false;
+    }
+
+    private static void projectMigration() {
+
+        SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
+        SurveyDAO surveyDAO = new SurveyDAO();
+
+        List<SurveyGroup> surveyGroups = surveyGroupDAO
+                .list(Constants.ALL_RESULTS);
+
+        for (SurveyGroup surveyGroup : surveyGroups) {
+
+            List<Survey> surveys = surveyDAO.listSurveysByGroup(surveyGroup
+                    .getKey().getId());
+
+            if (surveyGroup.getMonitoringGroup() || surveys.size() <= 1) {
+                if (surveyGroup.getProjectType() == null) {
+                    surveyGroup.setProjectType(ProjectType.PROJECT);
+                    surveyGroupDAO.save(surveyGroup);
+                }
+                continue;
+            }
+
+            for (Survey survey : surveys) {
+                surveyGroup.setProjectType(ProjectType.PROJECT_FOLDER);
+                surveyGroupDAO.save(surveyGroup);
+
+                SurveyGroup newSurveyGroup = new SurveyGroup();
+                newSurveyGroup.setName(survey.getName());
+                newSurveyGroup.setCode(survey.getCode());
+                newSurveyGroup.setParent(surveyGroup.getKey().getId());
+                newSurveyGroup.setMonitoringGroup(false);
+                newSurveyGroup.setProjectType(ProjectType.PROJECT);
+                surveyGroupDAO.save(newSurveyGroup);
+                survey.setSurveyGroupId(newSurveyGroup.getKey().getId());
+                surveyDAO.save(survey);
+            }
+        }
     }
 }

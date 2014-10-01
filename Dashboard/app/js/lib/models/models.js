@@ -42,7 +42,16 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
   // the code field is used as name
   code: DS.attr('string', {
     defaultValue: ''
+  }),
+
+  parent: DS.attr('number', {
+    defaultValue: null
+  }),
+
+  projectType: DS.attr('string', {
+    defaultValue: "PROJECT"
   })
+
 });
 
 

@@ -36,11 +36,17 @@ public class SurveyGroup extends BaseDomain {
     private String code = null;
     private Boolean monitoringGroup = false;
     private Long newLocaleSurveyId;
+    private Long parent; // parent survey group id
     private String description = null;
+    private ProjectType projectType;
     @NotPersistent
     private HashMap<String, Translation> altTextMap;
     @NotPersistent
     private List<Survey> surveyList = null;
+
+    public enum ProjectType {
+        PROJECT_FOLDER, PROJECT
+    }
 
     public HashMap<String, Translation> getAltTextMap() {
         return altTextMap;
@@ -102,6 +108,22 @@ public class SurveyGroup extends BaseDomain {
 
     public void setNewLocaleSurveyId(Long newLocaleSurveyId) {
         this.newLocaleSurveyId = newLocaleSurveyId;
+    }
+
+    public Long getParent() {
+        return parent;
+    }
+
+    public void setParent(Long parent) {
+        this.parent = parent;
+    }
+
+    public ProjectType getProjectType() {
+        return projectType;
+    }
+
+    public void setProjectType(ProjectType projectType) {
+        this.projectType = projectType;
     }
 
 }

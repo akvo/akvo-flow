@@ -21,6 +21,7 @@ import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
 public class SurveyGroupDto extends BaseDto implements NamedObject {
 
@@ -33,6 +34,8 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     private Long newLocaleSurveyId;
     private Date createdDateTime;
     private Date lastUpdateDateTime;
+    private ProjectType projectType;
+    private Long parent;
 
     private ArrayList<SurveyDto> surveyList = null;
 
@@ -110,6 +113,22 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 
     public void setNewLocaleSurveyId(Long newLocaleSurveyId) {
         this.newLocaleSurveyId = newLocaleSurveyId;
+    }
+
+    public ProjectType getProjectType() {
+        return projectType;
+    }
+
+    public void setProjectType(ProjectType projectType) {
+        this.projectType = projectType;
+    }
+
+    public Long getParent() {
+        return parent;
+    }
+
+    public void setParent(Long parent) {
+        this.parent = parent;
     }
 
 }
