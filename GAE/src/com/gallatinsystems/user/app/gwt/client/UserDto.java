@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,15 +16,17 @@
 
 package com.gallatinsystems.user.app.gwt.client;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
+import com.gallatinsystems.user.domain.UserRole;
 
 /**
  * dto representing the user objects. When returned, this object usually will have a set of
  * UserConfigDtos enumerating the per-user configuration as well as a list of UserPermissionDtos
- * 
+ *
  * @author Christopher Fagiani
  */
 public class UserDto extends BaseDto {
@@ -40,6 +42,7 @@ public class UserDto extends BaseDto {
     private boolean superAdmin = false;
     private String permissionList;
     private String accessKey;
+    private List<UserRole> roles;
 
     public String getPermissionList() {
         return permissionList;
@@ -121,10 +124,18 @@ public class UserDto extends BaseDto {
     }
 
     public String getAccessKey() {
-	return accessKey;
+        return accessKey;
     }
 
     public void setAccessKey(String accessKey) {
-	this.accessKey = accessKey;
+        this.accessKey = accessKey;
+    }
+
+    public List<UserRole> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<UserRole> roles) {
+        this.roles = roles;
     }
 }

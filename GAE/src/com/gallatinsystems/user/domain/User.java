@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -26,7 +26,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 /**
  * User of the web application. This object also can be used to persist (via a cascade save)
  * UserConfig.
- * 
+ *
  * @author Christopher Fagiani
  */
 @PersistenceCapable
@@ -43,6 +43,7 @@ public class User extends BaseDomain {
     private List<UserConfig> config;
     private String accessKey;
     private String secret;
+    private List<UserRole> roles;
 
     public String getPermissionList() {
         return permissionList;
@@ -84,20 +85,28 @@ public class User extends BaseDomain {
         this.superAdmin = superAdmin;
     }
 
-	public String getAccessKey() {
-		return accessKey;
-	}
+    public String getAccessKey() {
+        return accessKey;
+    }
 
-	public void setAccessKey(String accessKey) {
-		this.accessKey = accessKey;
-	}
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
 
-	public String getSecret() {
-		return secret;
-	}
+    public String getSecret() {
+        return secret;
+    }
 
-	public void setSecret(String secret) {
-		this.secret = secret;
-	}
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public List<UserRole> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<UserRole> roles) {
+        this.roles = roles;
+    }
 
 }

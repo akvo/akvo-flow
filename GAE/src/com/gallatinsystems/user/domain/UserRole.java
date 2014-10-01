@@ -31,6 +31,8 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 @PersistenceCapable
 public class UserRole extends BaseDomain {
 
+    private static final long serialVersionUID = 7519627602488288941L;
+
     private String name;
 
     private Set<Permission> permissions;
