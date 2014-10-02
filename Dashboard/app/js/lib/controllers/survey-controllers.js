@@ -136,9 +136,17 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 
   // load all Survey Groups
   populate: function (f) {
-	var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
-	FLOW.store.find(FLOW.SurveyGroup);
-	this.setFilteredContent(fn);
+    //	var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
+    //  this.set('content', FLOW.store.find(FLOW.SurveyGroup));
+    //	this.setFilteredContent(fn);
+    FLOW.store.find(FLOW.SurveyGroup);
+    this.currentProjects(null);
+  },
+
+  currentProjects: function(parentId) {
+    this.set('content', FLOW.store.find(FLOW.SurveyGroup).filter(function(sg) {
+      return sg.get('parent') === parentId;
+    }));
   },
 
   // checks if data store contains surveys within this survey group.

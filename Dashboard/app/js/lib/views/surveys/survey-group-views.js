@@ -10,7 +10,7 @@ if (!String.prototype.trim) {
 FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   content: null,
   tagName: 'li',
-  classNameBindings: 'amSelected:current'.w(),
+  classNames: ['aSurvey', 'waterPoint'], //'aSurvey waterPoint'.w(), //'amSelected:current'.w(),
   monitoringGroup: false,
 
   // true if the survey group is selected. Used to set proper display class
@@ -24,9 +24,21 @@ FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedSurveyGroup', 'content').cacheable(),
 
+  amFolder: function () {
+    return this.content.get('projectType') === 'PROJECT_FOLDER';
+  }.property('this.projectType').cacheable(),
+
+  amMonitoringGroup: function () {
+    return this.content.get('monitoringGroup');
+  }.property('this.monitoringGroup').cacheable(),
+
   // fired when a survey group is clicked
   makeSelected: function () {
-    FLOW.selectedControl.set('selectedSurveyGroup', this.content);
+    if (this.content.get('projectType') === "PROJECT_FOLDER") {
+      FLOW.surveyGroupControl.currentProjects(this.content.get('keyId'));
+    } else {
+      FLOW.selectedControl.set('selectedSurveyGroup', this.content);
+    }
   }
 });
 
