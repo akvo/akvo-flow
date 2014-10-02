@@ -19,6 +19,10 @@ FLOW.Router = Ember.Router.extend({
   },
 
   root: Ember.Route.extend({
+    doNavProjects: function(router, context) {
+      router.transitionTo('navProjects');
+    },
+
     doNavSurveys: function (router, context) {
       router.transitionTo('navSurveys.index');
     },
@@ -55,6 +59,16 @@ FLOW.Router = Ember.Router.extend({
     index: Ember.Route.extend({
       route: '/',
       redirectsTo: 'navSurveys.index'
+    }),
+
+    // ************************** PROJECTS ROUTER *****************************
+    navProjects: Ember.Route.extend({
+      route: '/projects',
+      connectOutlets: function (router, event) {
+        router.get('applicationController').connectOutlet({name: 'navProjects'});
+        router.set('navigationController.selected', 'navProjects');
+        FLOW.projectControl.populate();
+      }
     }),
 
     // ******************* SURVEYS ROUTER ********************
@@ -302,7 +316,7 @@ FLOW.Router = Ember.Router.extend({
           router.set('datasubnavController.selected', 'dataCleaning');
         }
       }),
-      
+
       monitoringData: Ember.Route.extend({
         route: '/monitoringdata',
         connectOutlets: function (router, context) {

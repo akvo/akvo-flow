@@ -10,18 +10,18 @@
           <a {{action "saveNewSurveyGroupName" target="this"}} class="smallBtn">{{t _save}}</a>
           <a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a>
         </nav>
-      {{/if}}   	 
+      {{/if}}
 <div class="scrollWrap"><a href="#" class="scrollUp" id="scrollUpId">up</a></div>
- 
+
 <nav class="menuGroupWrap">
-      <!-- show all survey groups --> 
+      <!-- show all survey groups -->
 	 <ul class="menuGroup">
         {{#view FLOW.JavascriptSurveyGroupListView}}
           {{#each sg in FLOW.surveyGroupControl.arrangedContent}}
             {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-              <a  {{action "makeSelected" target="this"}}> {{#if sg.monitoringGroup}}<span class="monitorIcn">M</span>&nbsp;&nbsp;{{/if}}{{sg.code}}</a>
+              <a {{action "makeSelected" target="this"}}> {{#if sg.monitoringGroup}}<span class="monitorIcn">M</span>&nbsp;&nbsp;{{/if}}{{sg.code}}</a>
             {{/view}}
-          {{/each}} 
+          {{/each}}
         {{/view}}
       </ul>
 </nav>
@@ -33,25 +33,25 @@
       {{#if view.oneSelected}}
         {{#if view.showEditField}}
           {{view Ember.TextField valueBinding="view.surveyGroupName" size=45}}
-    
+
       <a {{action "saveSurveyGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a></li>
        <a {{action "cancelSurveyGroupNameEdit" target="this"}}>{{t _cancel}}</a>
         {{else}}
-          <!-- show selected survey group and edit name button --> 
-            <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2> 
+          <!-- show selected survey group and edit name button -->
+            <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2>
             <a {{action "editSurveyGroupName" target="this"}} class="editGroupName">{{t _edit_name}}</a>
             <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a>
         {{/if}}
       {{/if}}
-      
-      <!-- show delete group, add new group, and create new survey buttons--> 
+
+      <!-- show delete group, add new group, and create new survey buttons-->
       <nav class="menuTopbar">
         <ul class="">
           {{#if view.oneSelected}}
             <li><a {{action "doNewSurvey"}} class="addSurvey">{{t _create_a_new_survey}}</a></li>
           {{/if}}
         </ul>
-      </nav>    
+      </nav>
     </section>
 
     {{#unless view.oneSelected}}
@@ -61,11 +61,11 @@
     {{#if view.oneSelected}}
       {{#if FLOW.Env.showMonitoringFeature }}
         {{#if view.monitoringGroup}}
-		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a> 
+		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a>
 		      <div> <p>{{t _select_monitoring_survey}}:</p> {{view Ember.Select
-         		contentBinding="FLOW.surveyControl.content" 
+         		contentBinding="FLOW.surveyControl.content"
                 selectionBinding="FLOW.surveyControl.newLocaleSurvey"
-         		optionLabelPath="content.name" 
+         		optionLabelPath="content.name"
          		optionValuePath="content.keyId"
          		prompt=""
                 promptBinding="Ember.STRINGS._select_survey"}}</div>
@@ -77,9 +77,9 @@
     </div>
     <!-- show all surveys of the currently selected survey group-->
     <ul class="surveyBatch">
-    
-    
-      {{#each survey in FLOW.surveyControl.arrangedContent}} 
+
+
+      {{#each survey in FLOW.surveyControl.arrangedContent}}
         {{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
           <li class="aSurvey waterPoint">
             <h2 class="">{{survey.name}}</h2>
@@ -97,10 +97,10 @@
               <li class="surveyLanguage"><span>{{t _language}}</span>
               <p>{{#with survey}}{{toLanguage defaultLanguageCode}}{{/with}}</p></li>
             </ul>
-            
+
             <nav>
               {{#if survey.allowEdit}}
-              <ul>              
+              <ul>
                 <li class="editSurvey"><a {{action "doEditSurvey" survey}}>{{t _edit}}</a></li> <!-- this hands control over to the router -->
                 <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>{{t _preview}}</a></li>
                 <li class="deleteSurvey"> <a  {{action confirm FLOW.dialogControl.delS target="FLOW.dialogControl"}}>{{t _delete}}</a> </li>
@@ -111,22 +111,22 @@
           </li>
         {{/view}}
       {{/each}}
-    </ul>   
+    </ul>
 
  <!-- Copy survey dialog-->
    <div {{bindAttr class="view.showCopySurveyDialogBool:display :overlay"}}>
      <div class="blanket"></div>
-     <div class="dialogWrap"> 
+     <div class="dialogWrap">
        <!-- the dialog contents -->
        <div class="confirmDialog dialog">
          <h2>{{t _copy_a_survey}}</h2>
          <p class="dialogMsg">{{t _new_surveyName}}: {{view Ember.TextField valueBinding="view.newSurveyName" size=30}}</p>
          <p class="dialogMsg">{{t _choose_the_destination_survey_group}}</p>
          <br/>
-         {{view Ember.Select 
-         contentBinding="FLOW.surveyGroupControl.arrangedContent" 
-         selectionBinding="view.selectedSurveyGroup" 
-         optionLabelPath="content.code" 
+         {{view Ember.Select
+         contentBinding="FLOW.surveyGroupControl.arrangedContent"
+         selectionBinding="view.selectedSurveyGroup"
+         optionLabelPath="content.code"
          optionValuePath="content.keyId"
          prompt=""
          promptBinding="Ember.STRINGS._select_survey_group"}}
@@ -138,7 +138,7 @@
          </div>
        </div>
      </div>
-   </div> 
+   </div>
 
 
 
