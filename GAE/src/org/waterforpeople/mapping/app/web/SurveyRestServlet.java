@@ -220,7 +220,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
      * constructs a Google Charts API url for creating an image chart using the data in the data
      * store for the selected question TODO: support other graph types. Right now, we always return
      * pie charts
-     * 
+     *
      * @param questionId
      * @param graphType
      * @return
@@ -306,7 +306,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
     /**
      * gets all questionGroups for a given survey
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -326,7 +326,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
     /**
      * gets all surveyGroups for a given survey
-     * 
+     *
      * @param surveyId
      * @return
      */
@@ -350,7 +350,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
     /**
      * gets the full details of the base surveyInstance object (no answers)
-     * 
+     *
      * @param surveyInstanceId
      * @return
      */
@@ -397,7 +397,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
     /**
      * loads all details (dependency, translation, options, etc) for a single question
-     * 
+     *
      * @param questionId
      * @return
      */
@@ -412,7 +412,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
     /**
      * lsits all the SurveyQuestionSummary objects associated with a given questionDI
-     * 
+     *
      * @param questionId
      * @return
      */
@@ -702,7 +702,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     /**
      * constructs a translation map based on the contents of the lang param. The parameters are
      * tuples of <b>langCode|text</b> with multiple tuples separated by a ;
-     * 
+     *
      * @param scoringParam
      * @return
      */
@@ -726,7 +726,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
      * constructs a list of ScoringRules based on the contents of the scoringParam string. This
      * string is a packed-value string consisting of the following 3-tuples: <b>min|max|value</b>
      * Multiple rules are delimited by a ;
-     * 
+     *
      * @param scoringParam
      * @return
      */
@@ -754,7 +754,7 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     /**
      * handles parsing of the "old" style question options that only have a single language. The
      * language will be defaulted to English
-     * 
+     *
      * @param option
      * @return
      */
@@ -797,11 +797,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
 
         public void setLangCode(String langCode) {
             this.langCode = langCode;
-        }
-
-        @SuppressWarnings("unused")
-        public String getLangCode() {
-            return langCode;
         }
 
         public void setOption(String option) {
