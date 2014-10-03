@@ -5,6 +5,14 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.4.1
+Date: 25 September 2014
+
+## Resolved issues
+
+* Display Name column empty in the RAW DATA report [#797]
+* Question id" value when copying questions [#807]
+
 #1.7.4
 Date: 25 September 2014
 
