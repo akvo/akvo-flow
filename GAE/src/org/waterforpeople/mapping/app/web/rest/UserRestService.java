@@ -40,7 +40,9 @@ import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.User;
+import com.gallatinsystems.user.domain.UserRole;
 import com.google.appengine.api.users.UserServiceFactory;
 
 @Controller
@@ -49,6 +51,9 @@ public class UserRestService {
 
     @Inject
     private UserDao userDao;
+
+    @Inject
+    private UserRoleDao userRoleDao;
 
     // TODO put in meta information?
     // list all users
@@ -285,5 +290,36 @@ public class UserRestService {
         byte bytes[] = new byte[32];
         secureRandom.nextBytes(bytes);
         return Base64.encodeBase64String(bytes).trim();
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/roles")
+    @ResponseBody
+    public Map<String, Object> createUserRole(@RequestBody UserRole role) {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        RestStatusDto statusDto = new RestStatusDto();
+
+        UserRole newRole = userRoleDao.findUserRoleByName(role.getName());
+        if (newRole == null) {
+            newRole = userRoleDao.save(role);
+            statusDto.setStatus("ok");
+            statusDto.setMessage("_role_created");
+        } else {
+            statusDto.setStatus("failed");
+            statusDto.setMessage("_role_exists");
+        }
+        response.put("meta", statusDto);
+        response.put("role", role);
+        return response;
+    }
+
+    /**
+     * Retrieve the list of all user roles defined
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/roles/all")
+    @ResponseBody
+    public List<UserRole> listUserRoles() {
+        return userRoleDao.listAllRoles();
     }
 }
