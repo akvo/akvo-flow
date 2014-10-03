@@ -69,6 +69,8 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.Translation.ParentType;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.google.appengine.api.datastore.KeyFactory;
 
 public class SurveyRestServlet extends AbstractRestApiServlet {
@@ -358,13 +360,23 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         if (instance != null) {
             dto = new SurveyInstanceDto();
             DtoMarshaller.copyToDto(instance, dto);
+
+            SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+            SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
+            if (sl != null) {
+                dto.setSurveyedLocaleIdentifier(sl.getIdentifier() == null ? "" : sl
+                        .getIdentifier());
+                dto.setSurveyedLocaleDisplayName(sl.getDisplayName() == null ? "" : sl
+                        .getDisplayName());
+            }
+
         }
         return dto;
     }
 
     /**
      * lists all questions for a given questionGroup
-     * 
+     *
      * @param groupId
      * @return
      */
