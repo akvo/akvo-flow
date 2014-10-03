@@ -144,7 +144,9 @@ public class SurveyUtils {
 
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
-        tmp.setQuestionId(source.getQuestionId() + "_copy");
+        if (source.getQuestionId() != null) {
+            tmp.setQuestionId(source.getQuestionId() + "_copy");
+        }
         log.log(Level.INFO, "Copying `Question` " + source.getKey().getId());
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
