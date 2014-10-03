@@ -361,14 +361,11 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             dto = new SurveyInstanceDto();
             DtoMarshaller.copyToDto(instance, dto);
 
-            if (instance.getSurveyedLocaleDisplayName() == null
-                    || instance.getSurveyedLocaleIdentifier() == null) {
-                SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-                SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
-                if (sl != null) {
-                    dto.setSurveyedLocaleIdentifier(sl.getIdentifier());
-                    dto.setSurveyedLocaleDisplayName(sl.getDisplayName());
-                }
+            SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+            SurveyedLocale sl = slDao.getById(instance.getSurveyedLocaleId());
+            if (sl != null) {
+                dto.setSurveyedLocaleIdentifier(sl.getIdentifier());
+                dto.setSurveyedLocaleDisplayName(sl.getDisplayName());
             }
 
         }
