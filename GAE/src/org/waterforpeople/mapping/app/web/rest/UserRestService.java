@@ -319,7 +319,72 @@ public class UserRestService {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/roles/all")
     @ResponseBody
-    public List<UserRole> listUserRoles() {
-        return userRoleDao.listAllRoles();
+    public Map<String, Object> listUserRoles() {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        response.put("roles", userRoleDao.listAllRoles());
+        return response;
+    }
+
+    /**
+     * Retrieve a role by its id.
+     *
+     * @param roleId
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/roles/{roleId}")
+    @ResponseBody
+    public Map<String, Object> findUserRole(@PathVariable Long roleId) {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("ok");
+
+        UserRole role = userRoleDao.getByKey(roleId);
+        if (role == null) {
+            statusDto.setMessage("_role_not_found");
+            response.put("meta", statusDto);
+        }
+        response.put("role", role);
+        return response;
+    }
+
+    /**
+     * Update an existing user role
+     *
+     * @param role
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/roles/{roleId}")
+    @ResponseBody
+    public Map<String, Object> updateUserRole(@PathVariable Long roleId, @RequestBody UserRole role) {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        RestStatusDto statusDto = new RestStatusDto();
+
+        UserRole existingRole = userRoleDao.getByKey(roleId);
+        if (existingRole == null) {
+            statusDto.setMessage("_role_not_found");
+            statusDto.setStatus("failed");
+            response.put("meta", statusDto);
+            return response;
+        }
+
+        if (!existingRole.getName().equals(role.getName())) {
+            UserRole duplicateRoleName = userRoleDao.findUserRoleByName(role.getName());
+            if (duplicateRoleName != null) {
+                statusDto.setMessage("_duplicate_role_name");
+                statusDto.setStatus("failed");
+                response.put("meta", statusDto);
+                return response;
+            }
+        }
+
+        BeanUtils.copyProperties(role, existingRole, new String[] {
+                "createdDateTime"
+        });
+        response.put("role", userRoleDao.save(existingRole));
+
+        statusDto.setStatus("ok");
+        response.put("meta", statusDto);
+
+        return response;
     }
 }
