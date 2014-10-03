@@ -28,6 +28,7 @@
     <bean id="translationDao" class="com.gallatinsystems.survey.dao.TranslationDao" />
     <bean id="userConfigDao" class="com.gallatinsystems.user.dao.UserConfigDao" />
     <bean id="userDao" class="com.gallatinsystems.user.dao.UserDao" />
+    <bean id="userRoleDao" class="com.gallatinsystems.user.dao.UserRoleDao" />
 
 	<context:annotation-config/>
 </beans>
