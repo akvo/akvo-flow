@@ -56,6 +56,9 @@ FLOW.NavMapsView = FLOW.View.extend({
       'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
     }).addTo(this.map);
 
+    // add scale indication to map
+    L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
+
     // couple listener to end of zoom or drag
     this.map.on('moveend', function (e) {
       self.redoMap();
