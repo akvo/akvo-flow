@@ -1,148 +1,65 @@
-{{#view FLOW.SurveyGroupMainView}}
-  <section id="groupBar" class="leftSidebar">
-    <h2>{{t _survey_groups}}</h2>
-	<a {{action "addGroup" target="this"}} class="addGroup">{{t _add_new_group}}</a>
-    <nav class="surveyGroupNav">
-      <!-- show new group field, show when 'add a group' is selected -->
-      {{#if view.showNewGroupField}}
-        {{view Ember.TextField valueBinding="view.surveyGroupName" size=30}}
-        <nav class="menuCentre">
-          <a {{action "saveNewSurveyGroupName" target="this"}} class="smallBtn">{{t _save}}</a>
-          <a {{action "cancelNewSurveyGroupName" target="this"}}>{{t _cancel}}</a>
-        </nav>
-      {{/if}}   	 
-<div class="scrollWrap"><a href="#" class="scrollUp" id="scrollUpId">up</a></div>
- 
-<nav class="menuGroupWrap">
-      <!-- show all survey groups --> 
-	 <ul class="menuGroup">
-        {{#view FLOW.JavascriptSurveyGroupListView}}
-          {{#each sg in FLOW.surveyGroupControl.arrangedContent}}
-            {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-              <a  {{action "makeSelected" target="this"}}> {{#if sg.monitoringGroup}}<span class="monitorIcn">M</span>&nbsp;&nbsp;{{/if}}{{sg.code}}</a>
-            {{/view}}
-          {{/each}} 
-        {{/view}}
+<style>
+.aFolder {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  margin: 0.5em auto 1em auto;
+  padding: 0.5em 0 0.5em 1%;
+  min-height: 115px;
+  width: 99%;
+  background: lightblue url(../images/carret.svg) right center no-repeat;
+  -webkit-background-size: 45px 45px;
+  background-size: 45px 45px;
+  cursor: pointer;
+  -o-border-radius: 0.3em;
+  border-radius: 0.3em;
+  -webkit-transition: all 0.4s linear;
+  transition: all 0.4s linear;
+}
+</style>
+
+{{#view FLOW.ProjectMainView}}
+
+  {{#view FLOW.ProjectBreadCrumbView}}
+    {{#each sg in FLOW.breadCrumbControl}}
+      <a {{action "selectProject" sg target="this"}}>
+        {{#if sg}}
+          {{sg.code}}
+        {{else}}
+          Root
+        {{/if}}
+      </a>
+      &gt;
+    {{/each}}
+  {{/view}}
+
+  {{#if view.showProjectList}}
+    {{#view FLOW.ProjectListView}}
+    <section id="allSurvey" class="mainRight surveysList">
+
+      <br/>
+      <a {{action "createFolder" target="this"}}>Add folder</a>
+      <a {{action "createProject" target="this"}}>Create project</a>
+    <nav>
+      <!-- show all survey groups -->
+      <ul>
+        {{#each sg in FLOW.surveyGroupControl.arrangedContent}}
+          {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
+            <a {{action "makeSelected" sg target="this"}}>
+              <h2>
+                {{sg.code}}
+              </h2>
+            </a>
+          {{/view}}
+        {{/each}}
       </ul>
-</nav>
-<div class="scrollWrap"><a href="#" class="scrollDown" id="scrollDownId">down</a></div>
-  </section>
-
-  <section id="allSurvey" class="mainRight surveysList">
-    <section class="topBar">
-      {{#if view.oneSelected}}
-        {{#if view.showEditField}}
-          {{view Ember.TextField valueBinding="view.surveyGroupName" size=45}}
-    
-      <a {{action "saveSurveyGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a></li>
-       <a {{action "cancelSurveyGroupNameEdit" target="this"}}>{{t _cancel}}</a>
-        {{else}}
-          <!-- show selected survey group and edit name button --> 
-            <h2>{{FLOW.selectedControl.selectedSurveyGroup.code}}</h2> 
-            <a {{action "editSurveyGroupName" target="this"}} class="editGroupName">{{t _edit_name}}</a>
-            <a {{action confirm FLOW.dialogControl.delSG target="FLOW.dialogControl"}} class="deleteGroup">{{t _delete_this_group}}</a>
-        {{/if}}
-      {{/if}}
-      
-      <!-- show delete group, add new group, and create new survey buttons--> 
-      <nav class="menuTopbar">
-        <ul class="">
-          {{#if view.oneSelected}}
-            <li><a {{action "doNewSurvey"}} class="addSurvey">{{t _create_a_new_survey}}</a></li>
-          {{/if}}
-        </ul>
-      </nav>    
+    </nav>
     </section>
+    {{/view}}
+  {{/if}}
 
-    {{#unless view.oneSelected}}
-        <p class="surveyLandingText">{{t _survey_intro_text}}</p>
-    {{/unless}}
-    <div class="monitorSwitch">
-    {{#if view.oneSelected}}
-      {{#if FLOW.Env.showMonitoringFeature }}
-        {{#if view.monitoringGroup}}
-		    <a class="makeMonitorGroup">{{t _monitoring_enabled}}</a> 
-		      <div> <p>{{t _select_monitoring_survey}}:</p> {{view Ember.Select
-         		contentBinding="FLOW.surveyControl.content" 
-                selectionBinding="FLOW.surveyControl.newLocaleSurvey"
-         		optionLabelPath="content.name" 
-         		optionValuePath="content.keyId"
-         		prompt=""
-                promptBinding="Ember.STRINGS._select_survey"}}</div>
-        {{else}}
-          <a {{action confirm FLOW.dialogControl.makeMonitor target="FLOW.dialogControl"}} class="makeMonitorGroup">{{t _make_monitoring_group}}</a>
-        {{/if}}
-      {{/if}}
-    {{/if}}
-    </div>
-    <!-- show all surveys of the currently selected survey group-->
-    <ul class="surveyBatch">
-    
-    
-      {{#each survey in FLOW.surveyControl.arrangedContent}} 
-        {{#view FLOW.SurveyGroupSurveyView contentBinding="survey"}}
-          <li class="aSurvey waterPoint">
-            <h2 class="">{{survey.name}}</h2>
-            <ul class="surveyInfo floats-in">
-              <li class="dateCreated"> <span>{{t _created}}</span>
-                <time>{{#with survey}}{{date createdDateTime}}{{/with}}<time>
-              </li>
-              <li class="responseNumber"><span>{{t _responses}}</span>
-                <p>{{survey.instanceCount}}</p>
-              </li>
-              <li class="dateModified"><span>{{t _modified}}</span>
-              <time>{{#with survey}}{{date lastUpdateDateTime}}{{/with}}</time></li>
-              <li class="surveyType"><span>{{t _type}}</span>
-              <p>{{#with survey}}{{toPointType pointType}}{{/with}}</p></li>
-              <li class="surveyLanguage"><span>{{t _language}}</span>
-              <p>{{#with survey}}{{toLanguage defaultLanguageCode}}{{/with}}</p></li>
-            </ul>
-            
-            <nav>
-              {{#if survey.allowEdit}}
-              <ul>              
-                <li class="editSurvey"><a {{action "doEditSurvey" survey}}>{{t _edit}}</a></li> <!-- this hands control over to the router -->
-                <li class="previewSurvey"><a {{action "previewSurvey" target="this"}}>{{t _preview}}</a></li>
-                <li class="deleteSurvey"> <a  {{action confirm FLOW.dialogControl.delS target="FLOW.dialogControl"}}>{{t _delete}}</a> </li>
-                <li class="copySurvey"><a {{action "showCopySurveyDialog" survey target="view.parentView"}}>{{t _copy}}</a></li>
-              </ul>
-              {{/if}}
-            </nav>
-          </li>
-        {{/view}}
-      {{/each}}
-    </ul>   
+  {{#if view.showProject}}
+    <h2>Project {{view.currentProject.code}}</h2>
+  {{/if}}
 
- <!-- Copy survey dialog-->
-   <div {{bindAttr class="view.showCopySurveyDialogBool:display :overlay"}}>
-     <div class="blanket"></div>
-     <div class="dialogWrap"> 
-       <!-- the dialog contents -->
-       <div class="confirmDialog dialog">
-         <h2>{{t _copy_a_survey}}</h2>
-         <p class="dialogMsg">{{t _new_surveyName}}: {{view Ember.TextField valueBinding="view.newSurveyName" size=30}}</p>
-         <p class="dialogMsg">{{t _choose_the_destination_survey_group}}</p>
-         <br/>
-         {{view Ember.Select 
-         contentBinding="FLOW.surveyGroupControl.arrangedContent" 
-         selectionBinding="view.selectedSurveyGroup" 
-         optionLabelPath="content.code" 
-         optionValuePath="content.keyId"
-         prompt=""
-         promptBinding="Ember.STRINGS._select_survey_group"}}
-         <div class="buttons menuCentre">
-           <ul>
-             <li><a {{action "copySurvey" target="this"}} class="ok smallBtn">{{t _ok}}</a></li>
-             <li><a {{action "cancelMoveSurvey" target="this"}}} class="cancel">{{t _cancel}}</a></li>
-           </ul>
-         </div>
-       </div>
-     </div>
-   </div> 
-
-
-
-
-
-  </section>
 {{/view}}

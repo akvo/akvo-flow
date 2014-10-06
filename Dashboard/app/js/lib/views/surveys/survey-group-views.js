@@ -3,16 +3,66 @@ function capitaliseFirstLetter(string) {
 }
 
 if (!String.prototype.trim) {
-		String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
-	}
+  String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+}
+
+FLOW.ProjectMainView = FLOW.View.extend({
+  showProjectList: true,
+  showProject: false,
+  currentProject: null,
+
+  switchView: function() {
+    this.set('showProjectList', false);
+    this.set('showProject', true);
+    this.set('currentProject', FLOW.selectedControl.selectedSurveyGroup);
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  projectListView: function() {
+    this.set('showProjectList', true);
+    this.set('showProject', false);
+    this.set('currentProject', null);
+  }
+});
+
+
+FLOW.ProjectBreadCrumbView = FLOW.View.extend({
+  // fired when a survey group is clicked
+  selectProject: function (evt) {
+    var project = evt.context;
+
+    if (project === null) {
+      this.get('parentView').projectListView();
+      FLOW.breadCrumbControl.addParentProject(null);
+      FLOW.surveyGroupControl.currentProjects(null);
+    } else if (project.get('projectType') === "PROJECT_FOLDER") {
+      FLOW.breadCrumbControl.addParentProject(project);
+      FLOW.surveyGroupControl.currentProjects(project.get('keyId'));
+    } else {
+      FLOW.selectedControl.set('selectedSurveyGroup', this.content);
+    }
+  }
+
+
+})
+
+
+FLOW.ProjectListView = FLOW.View.extend({
+
+});
 
 // displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   content: null,
   tagName: 'li',
-  classNameBindings: 'amSelected:current'.w(),
+  classNameBindings: ['classProperty'],
   monitoringGroup: false,
-  
+
+  classProperty: function() {
+
+    var className = this.get('amFolder') ? "aFolder" : "aSurvey";
+    return className;
+  }.property('this.amFolder'),
+
   // true if the survey group is selected. Used to set proper display class
   amSelected: function () {
     var selected = FLOW.selectedControl.get('selectedSurveyGroup');
@@ -24,27 +74,40 @@ FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedSurveyGroup', 'content').cacheable(),
 
+  amFolder: function () {
+    return this.content.get('projectType') === 'PROJECT_FOLDER';
+  }.property('this.projectType').cacheable(),
+
+  amMonitoringGroup: function () {
+    return this.content.get('monitoringGroup');
+  }.property('this.monitoringGroup').cacheable(),
+
   // fired when a survey group is clicked
   makeSelected: function () {
-    FLOW.selectedControl.set('selectedSurveyGroup', this.content);
+    if (this.content.get('projectType') === "PROJECT_FOLDER") {
+      FLOW.breadCrumbControl.addParentProject(this.content);
+      FLOW.surveyGroupControl.currentProjects(this.content.get('keyId'));
+    } else {
+      FLOW.selectedControl.set('selectedSurveyGroup', this.content);
+    }
   }
 });
 
 // displays single survey in content area of survey group page
 // doEditSurvey is defined in the Router. It transfers to the nav-surveys-edit handlebar view
 FLOW.SurveyGroupSurveyView = FLOW.View.extend({
-  
-	// fired when 'preview survey' is clicked in the survey item display
+
+  // fired when 'preview survey' is clicked in the survey item display
   previewSurvey: function () {
     FLOW.selectedControl.set('selectedSurvey', this.content);
   },
 
   showPreview: function () {
-	if (FLOW.questionControl.content.get('isLoaded')) {
-		FLOW.previewControl.set('showPreviewPopup', true);
-	}
+    if (FLOW.questionControl.content.get('isLoaded')) {
+      FLOW.previewControl.set('showPreviewPopup', true);
+    }
   }.observes('FLOW.questionControl.content.isLoaded'),
-  
+
   // fired when 'delete survey' is clicked in the survey item display
   deleteSurvey: function () {
     var sId = this.content.get('id');
@@ -85,11 +148,11 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
       return false;
     }
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
-  
+
   initVars: function () {
-	  if (FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup) {
-		  this.set('monitoringGroup', FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup'));
-	  }
+    if (FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup) {
+      this.set('monitoringGroup', FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup'));
+    }
   }.observes('FLOW.selectedControl.selectedSurveyGroup', 'FLOW.selectedControl.selectedSurvey'),
 
   // fired when 'edit name' is clicked, shows edit field to change survey group name
@@ -101,14 +164,14 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   // fired when 'save' is clicked while showing edit group name field. Saves the new group name
   saveSurveyGroupNameEdit: function () {
     if (!Ember.empty(this.get('surveyGroupName').trim())){
-    	var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
-    	var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
-    	surveyGroup.set('code', capitaliseFirstLetter(this.get('surveyGroupName')));
-    	surveyGroup.set('name', capitaliseFirstLetter(this.get('surveyGroupName')));
-    	FLOW.store.commit();
-    	FLOW.selectedControl.set('selectedSurveyGroup', FLOW.store.find(FLOW.SurveyGroup, sgId));
+      var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
+      var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
+      surveyGroup.set('code', capitaliseFirstLetter(this.get('surveyGroupName')));
+      surveyGroup.set('name', capitaliseFirstLetter(this.get('surveyGroupName')));
+      FLOW.store.commit();
+      FLOW.selectedControl.set('selectedSurveyGroup', FLOW.store.find(FLOW.SurveyGroup, sgId));
     } else {
-    	this.cancelSurveyGroupNameEdit();
+      this.cancelSurveyGroupNameEdit();
     }
     this.set('showEditField', false);
   },
@@ -118,7 +181,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
     this.set('surveyGroupName', FLOW.selectedControl.selectedSurveyGroup.get('code'));
     this.set('showEditField', false);
   },
-  
+
   // fired when 'add a group' is clicked. Displays a new group text field in the left sidebar
   addGroup: function () {
     FLOW.selectedControl.set('selectedSurveyGroup', null);
@@ -140,13 +203,13 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 
   // fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
   saveNewSurveyGroupName: function () {
-	  if (!Ember.empty(this.get('surveyGroupName').trim())){
-		  FLOW.store.createRecord(FLOW.SurveyGroup, {
-			  "code": capitaliseFirstLetter(this.get('surveyGroupName')),
-			  "name": capitaliseFirstLetter(this.get('surveyGroupName'))
-		  });
-		  FLOW.store.commit();
-	  }
+    if (!Ember.empty(this.get('surveyGroupName').trim())){
+      FLOW.store.createRecord(FLOW.SurveyGroup, {
+	"code": capitaliseFirstLetter(this.get('surveyGroupName')),
+	"name": capitaliseFirstLetter(this.get('surveyGroupName'))
+      });
+      FLOW.store.commit();
+    }
     this.set('showNewGroupField', false);
   },
 
@@ -157,17 +220,17 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   },
 
   makeMonitorGroup: function () {
-	  this.set('monitoringGroup', true);
-	  FLOW.selectedControl.selectedSurveyGroup.set('monitoringGroup', true);
-	  FLOW.store.commit();
+    this.set('monitoringGroup', true);
+    FLOW.selectedControl.selectedSurveyGroup.set('monitoringGroup', true);
+    FLOW.store.commit();
   },
 
   saveNewLocaleSurveyIdChoice: function () {
-	  var newLocaleSurvey = FLOW.surveyControl.get('newLocaleSurvey');
-	  if (!Ember.none(newLocaleSurvey) && !Ember.none(newLocaleSurvey.get('keyId'))){
-		  FLOW.selectedControl.selectedSurveyGroup.set('newLocaleSurveyId', newLocaleSurvey.get('keyId'));
-		  FLOW.store.commit();
-	  }
+    var newLocaleSurvey = FLOW.surveyControl.get('newLocaleSurvey');
+    if (!Ember.none(newLocaleSurvey) && !Ember.none(newLocaleSurvey.get('keyId'))){
+      FLOW.selectedControl.selectedSurveyGroup.set('newLocaleSurveyId', newLocaleSurvey.get('keyId'));
+      FLOW.store.commit();
+    }
   }.observes('FLOW.surveyControl.newLocaleSurvey'),
 
   showCopySurveyDialog: function (event) {

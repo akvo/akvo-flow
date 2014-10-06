@@ -66,7 +66,6 @@
                 <include name="*.vm" />
             </fileset>
         </copy>
-        <copy file="${src}/org/waterforpeople/mapping/app/gwt/client/util/UploadConstants.properties" tofile="${build}/UploadConstants.properties" overwrite="true" verbose="true" />
         <jar destfile="${dist}/exporterapplet.jar" basedir="${build}" />
     </target>
 
