@@ -290,8 +290,16 @@ public class UserRestService {
     @RequestMapping(method = RequestMethod.POST, value = "/roles")
     @ResponseBody
     public Map<String, Object> createUserRole(@RequestBody UserRole role) {
+        final RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+
         final Map<String, Object> response = new HashMap<String, Object>();
-        RestStatusDto statusDto = new RestStatusDto();
+        response.put("meta", statusDto);
+
+        if (role.getName() == null) {
+            statusDto.setMessage("_missing_role_name");
+            return response;
+        }
 
         UserRole newRole = userRoleDao.findUserRoleByName(role.getName());
         if (newRole == null) {
@@ -299,10 +307,8 @@ public class UserRestService {
             statusDto.setStatus("ok");
             statusDto.setMessage("_role_created");
         } else {
-            statusDto.setStatus("failed");
-            statusDto.setMessage("_role_exists");
+            statusDto.setMessage("_role_already_exists");
         }
-        response.put("meta", statusDto);
         response.put("role", role);
         return response;
     }
@@ -351,14 +357,20 @@ public class UserRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/roles/{roleId}")
     @ResponseBody
     public Map<String, Object> updateUserRole(@PathVariable Long roleId, @RequestBody UserRole role) {
+        final RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+
         final Map<String, Object> response = new HashMap<String, Object>();
-        RestStatusDto statusDto = new RestStatusDto();
+        response.put("meta", statusDto);
+
+        if (role.getName() == null) {
+            statusDto.setMessage("_missing_role_name");
+            return response;
+        }
 
         UserRole existingRole = userRoleDao.getByKey(roleId);
         if (existingRole == null) {
             statusDto.setMessage("_role_not_found");
-            statusDto.setStatus("failed");
-            response.put("meta", statusDto);
             return response;
         }
 
@@ -366,8 +378,6 @@ public class UserRestService {
             UserRole duplicateRoleName = userRoleDao.findUserRoleByName(role.getName());
             if (duplicateRoleName != null) {
                 statusDto.setMessage("_duplicate_role_name");
-                statusDto.setStatus("failed");
-                response.put("meta", statusDto);
                 return response;
             }
         }
@@ -376,9 +386,7 @@ public class UserRestService {
                 "createdDateTime"
         });
         response.put("role", userRoleDao.save(existingRole));
-
         statusDto.setStatus("ok");
-        response.put("meta", statusDto);
 
         return response;
     }
