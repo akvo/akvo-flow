@@ -22,10 +22,12 @@ import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
+import com.gallatinsystems.user.domain.UserRole;
 
 /**
  * Dao for User objects
@@ -104,4 +106,22 @@ public class UserDao extends BaseDAO<User> {
     	return findByProperty("accessKey", accessKey, STRING_TYPE);
     }
 
+    /**
+     * Retrieve a list of users who have been assigned certain role.
+     *
+     * @param roleName
+     * @return returns a list of users who have been assigned the named role. Returns an empty list
+     *         if no users have been assigned the role
+     */
+    public List<User> listUsersByRole(String roleName) {
+        List<User> userList = list(Constants.ALL_RESULTS);
+        for (User user : userList) {
+            for (UserRole role : user.getRoles()) {
+                if (role.getName().equals(roleName)) {
+                    userList.add(user);
+                }
+            }
+        }
+        return userList;
+    }
 }

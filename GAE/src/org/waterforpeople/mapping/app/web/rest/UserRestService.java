@@ -382,4 +382,27 @@ public class UserRestService {
 
         return response;
     }
+
+    /**
+     * Delete a user role definition
+     *
+     * @param roleId
+     */
+    @RequestMapping(method = RequestMethod.DELETE, value = "/roles/{roleId}")
+    @ResponseBody
+    public Map<String, Object> deleteUserRole(@PathVariable Long roleId) {
+        final RestStatusDto statusDto = new RestStatusDto();
+
+        final Map<String, Object> response = new HashMap<String, Object>();
+        response.put("meta", statusDto);
+
+        UserRole deleteRole = userRoleDao.getByKey(roleId);
+        if (userDao.listUsersByRole(deleteRole.getName()).isEmpty()) {
+            userRoleDao.delete(deleteRole);
+            statusDto.setStatus("ok");
+            statusDto.setMessage("_role_deleted");
+        }
+
+        return response;
+    }
 }
