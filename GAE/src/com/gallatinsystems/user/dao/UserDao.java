@@ -31,7 +31,7 @@ import com.gallatinsystems.user.domain.UserRole;
 
 /**
  * Dao for User objects
- * 
+ *
  * @author Christopher Fagiani
  */
 public class UserDao extends BaseDAO<User> {
@@ -42,7 +42,7 @@ public class UserDao extends BaseDAO<User> {
 
     /**
      * finds a single user by email address.
-     * 
+     *
      * @param email
      * @return
      */
@@ -52,7 +52,7 @@ public class UserDao extends BaseDAO<User> {
 
     /**
      * searches for users that match the non-null params
-     * 
+     *
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -89,21 +89,21 @@ public class UserDao extends BaseDAO<User> {
 
     /**
      * lists all permissions
-     * 
+     *
      * @return
      */
     public List<Permission> listPermissions() {
         return list(Permission.class, null);
     }
-    
+
     /**
      * finds a single user by accessKey
-     * 
+     *
      * @param accessKey
      * @return
      */
     public User findByAccessKey(String accessKey) {
-    	return findByProperty("accessKey", accessKey, STRING_TYPE);
+        return findByProperty("accessKey", accessKey, STRING_TYPE);
     }
 
     /**
