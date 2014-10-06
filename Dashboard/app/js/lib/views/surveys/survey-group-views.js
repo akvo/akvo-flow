@@ -6,12 +6,62 @@ if (!String.prototype.trim) {
   String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
 }
 
+FLOW.ProjectMainView = FLOW.View.extend({
+  showProjectList: true,
+  showProject: false,
+  currentProject: null,
+
+  switchView: function() {
+    this.set('showProjectList', false);
+    this.set('showProject', true);
+    this.set('currentProject', FLOW.selectedControl.selectedSurveyGroup);
+  }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  projectListView: function() {
+    this.set('showProjectList', true);
+    this.set('showProject', false);
+    this.set('currentProject', null);
+  }
+});
+
+
+FLOW.ProjectBreadCrumbView = FLOW.View.extend({
+  // fired when a survey group is clicked
+  selectProject: function (evt) {
+    var project = evt.context;
+
+    if (project === null) {
+      this.get('parentView').projectListView();
+      FLOW.breadCrumbControl.addParentProject(null);
+      FLOW.surveyGroupControl.currentProjects(null);
+    } else if (project.get('projectType') === "PROJECT_FOLDER") {
+      FLOW.breadCrumbControl.addParentProject(project);
+      FLOW.surveyGroupControl.currentProjects(project.get('keyId'));
+    } else {
+      FLOW.selectedControl.set('selectedSurveyGroup', this.content);
+    }
+  }
+
+
+})
+
+
+FLOW.ProjectListView = FLOW.View.extend({
+
+});
+
 // displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   content: null,
   tagName: 'li',
-  classNames: ['aSurvey', 'waterPoint'], //'aSurvey waterPoint'.w(), //'amSelected:current'.w(),
+  classNameBindings: ['classProperty'],
   monitoringGroup: false,
+
+  classProperty: function() {
+
+    var className = this.get('amFolder') ? "aFolder" : "aSurvey";
+    return className;
+  }.property('this.amFolder'),
 
   // true if the survey group is selected. Used to set proper display class
   amSelected: function () {
@@ -35,6 +85,7 @@ FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   // fired when a survey group is clicked
   makeSelected: function () {
     if (this.content.get('projectType') === "PROJECT_FOLDER") {
+      FLOW.breadCrumbControl.addParentProject(this.content);
       FLOW.surveyGroupControl.currentProjects(this.content.get('keyId'));
     } else {
       FLOW.selectedControl.set('selectedSurveyGroup', this.content);

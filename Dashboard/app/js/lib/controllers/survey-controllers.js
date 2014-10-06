@@ -125,6 +125,37 @@ FLOW.alwaysTrue = function () {
   return true;
 };
 
+FLOW.breadCrumbControl = Ember.ArrayController.create({
+  content: [null],
+
+  breadCrumbIndex: function(project) {
+    // Returns the index of project in content or -1 if not present.
+    if (project === null) return 0;
+
+    for (var i = 1; i < this.content.length; i++) {
+      if (this.content[i].get('keyId') === project.get('keyId')) {
+        return i;
+      }
+    }
+
+    return -1;
+  },
+
+  addParentProject: function(project) {
+    if (project === null) {
+      this.set('content', [null]);
+      return;
+    }
+
+    var idx = this.breadCrumbIndex(project);
+    if (idx < 0) {
+      this.set('content', this.get('content').concat([project]));
+    } else {
+      this.set('content', this.get('content').slice(0, idx+1));
+    }
+  }
+});
+
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   sortProperties: ['code'],
   sortAscending: true,
@@ -134,16 +165,13 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     this.set('content', FLOW.store.filter(FLOW.SurveyGroup, f));
   },
 
-  // load all Survey Groups
+  // load all Survey Groups and set 'content' to all root survey groups
   populate: function (f) {
-    //	var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
-    //  this.set('content', FLOW.store.find(FLOW.SurveyGroup));
-    //	this.setFilteredContent(fn);
-    FLOW.store.find(FLOW.SurveyGroup);
     this.currentProjects(null);
   },
 
   currentProjects: function(parentId) {
+
     this.set('content', FLOW.store.find(FLOW.SurveyGroup).filter(function(sg) {
       return sg.get('parent') === parentId;
     }));
