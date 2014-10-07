@@ -44,6 +44,7 @@
       <!-- show all survey groups -->
       <ul>
         {{#each sg in FLOW.surveyGroupControl.arrangedContent}}
+          <a {{action "deleteFolder" sg target="this"}}>[x]</a>
           {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
             <a {{action "makeSelected" sg target="this"}}>
               <h2>

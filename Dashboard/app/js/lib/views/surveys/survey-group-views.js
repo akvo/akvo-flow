@@ -60,7 +60,18 @@ FLOW.ProjectListView = FLOW.View.extend({
       "projectType": "PROJECT_FOLDER"
     });
     FLOW.store.commit();
+  },
+
+  deleteFolder: function(e) {
+    var folderId = e.context.get('keyId');
+    var projectFolder = FLOW.store.find(FLOW.SurveyGroup, folderId);
+
+    FLOW.store.findQuery(FLOW.SurveyGroup, {
+      preflight: 'delete',
+      surveyGroupId: folderId
+    });
   }
+
 });
 
 // displays survey groups in left sidebar
