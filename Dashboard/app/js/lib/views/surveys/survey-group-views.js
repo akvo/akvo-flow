@@ -48,6 +48,19 @@ FLOW.ProjectBreadCrumbView = FLOW.View.extend({
 
 FLOW.ProjectListView = FLOW.View.extend({
 
+  createFolder: function() {
+
+    var parentFolder = FLOW.breadCrumbControl.currentFolder();
+    var parentFolderId = parentFolder ? parentFolder.get('keyId') : null;
+
+    FLOW.store.createRecord(FLOW.SurveyGroup, {
+      "code": "New project folder - change my name",
+      "name": "New project folder - change my name",
+      "parent": parentFolderId,
+      "projectType": "PROJECT_FOLDER"
+    });
+    FLOW.store.commit();
+  }
 });
 
 // displays survey groups in left sidebar

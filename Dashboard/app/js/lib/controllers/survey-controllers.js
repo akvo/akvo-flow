@@ -153,6 +153,10 @@ FLOW.breadCrumbControl = Ember.ArrayController.create({
     } else {
       this.set('content', this.get('content').slice(0, idx+1));
     }
+  },
+
+  currentFolder: function() {
+    return this.content[this.content.length - 1];
   }
 });
 
