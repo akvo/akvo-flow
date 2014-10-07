@@ -5,6 +5,13 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.4.2
+Date: 07 October 2014
+
+## Resolved issues
+
+* Include textual question identifier as part of QuestionAnswer responses [#831]
+
 #1.7.4.1
 Date: 25 September 2014
 
