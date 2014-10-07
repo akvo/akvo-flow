@@ -23,7 +23,7 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 public class QuestionAnswerStoreDto extends BaseDto {
 
     /**
-	 * 
+	 *
 	 */
     private static final long serialVersionUID = 7382482717003334827L;
 
@@ -36,6 +36,7 @@ public class QuestionAnswerStoreDto extends BaseDto {
     private Long surveyInstanceId;
     private String oldValue;
     private String questionText;
+    private String textualQuestionId;
 
     public String getOldValue() {
         return oldValue;
@@ -107,6 +108,14 @@ public class QuestionAnswerStoreDto extends BaseDto {
 
     public String getQuestionText() {
         return questionText;
+    }
+
+    public String getTextualQuestionId() {
+        return textualQuestionId;
+    }
+
+    public void setTextualQuestionId(String textualQuestionId) {
+        this.textualQuestionId = textualQuestionId;
     }
 
 }
