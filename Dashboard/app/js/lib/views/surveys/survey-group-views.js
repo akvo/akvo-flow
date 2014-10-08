@@ -32,11 +32,9 @@ FLOW.ProjectBreadCrumbView = FLOW.View.extend({
 
     if (project === null) {
       this.get('parentView').projectListView();
-      FLOW.breadCrumbControl.addParentProject(null);
       FLOW.surveyGroupControl.setCurrentFolder(null);
     } else if (project.get('projectType') === "PROJECT_FOLDER") {
       this.get('parentView').projectListView();
-      FLOW.breadCrumbControl.addParentProject(project);
       FLOW.surveyGroupControl.setCurrentFolder(project.get('keyId'));
     } else {
       FLOW.selectedControl.set('selectedSurveyGroup', this.content);
@@ -103,9 +101,7 @@ FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   // fired when a survey group is clicked
   makeSelected: function () {
     if (this.content.get('projectType') === "PROJECT_FOLDER") {
-      FLOW.breadCrumbControl.addParentProject(this.content);
       FLOW.surveyGroupControl.setCurrentFolder(this.content.get('keyId'));
-      //FLOW.surveyGroupControl.currentProjects(this.content.get('keyId'));
     } else {
       FLOW.selectedControl.set('selectedSurveyGroup', this.content);
     }
