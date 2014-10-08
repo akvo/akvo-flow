@@ -125,24 +125,6 @@ FLOW.alwaysTrue = function () {
   return true;
 };
 
-FLOW.breadCrumbControl = Ember.ArrayController.create({
-  content: [null],
-
-  addParentProject: function(project) {
-
-    var idx = this.indexOf(project);
-    if (idx < 0) {
-      this.pushObject(project);
-    } else {
-      this.set('content', this.get('content').slice(0, idx+1));
-    }
-  },
-
-  currentFolder: function() {
-    return this.content[this.content.length - 1];
-  }
-});
-
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   content: null,
   currentFolderId: null,
@@ -153,6 +135,23 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
       return true;
     }));
   },
+
+  /*
+   * Returns an array of project folders which represents the path to
+   * currentFolderId
+   */
+  breadCrumbs: function() {
+    var result = []
+    var id = this.get('currentFolderId');
+    if (id === null) return [null];
+    while(id !== null) {
+      project = FLOW.store.find(FLOW.SurveyGroup, id);
+      result.push(project);
+      id = project.get('parent');
+    }
+    result.push(null);
+    return result.reverse();
+  }.property('@each', 'currentFolderId'),
 
   setCurrentFolder: function(folderId) {
     this.set('currentFolderId', folderId);

@@ -21,7 +21,7 @@
 {{#view FLOW.ProjectMainView}}
 
   {{#view FLOW.ProjectBreadCrumbView}}
-    {{#each sg in FLOW.breadCrumbControl}}
+    {{#each sg in FLOW.surveyGroupControl.breadCrumbs}}
       <a {{action "selectProject" sg target="this"}}>
         {{#if sg}}
           {{sg.code}}
