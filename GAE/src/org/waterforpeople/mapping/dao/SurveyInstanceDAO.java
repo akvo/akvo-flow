@@ -626,8 +626,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             "unchecked", "rawtypes"
     })
     public void deleteSurveyInstance(SurveyInstance item) {
-        SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
         QuestionDao qDao = new QuestionDao();
         BaseDAO<SurveyalValue> svDao = new BaseDAO<SurveyalValue>(SurveyalValue.class);
@@ -667,11 +665,11 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         }
 
         // get the instances that have contributed to the Locale, for later use
-        List<SurveyInstance> instancesForLocale = siDao.listByProperty("surveyedLocaleId",
+        List<SurveyInstance> instancesForLocale = listByProperty("surveyedLocaleId",
                 item.getSurveyedLocaleId(), "Long");
 
         // delete the surveyInstance
-        SurveyInstance instance = siDao.getByKey(item.getKey());
+        SurveyInstance instance = getByKey(item.getKey());
         if (instance != null) {
             // send notification
             List<Long> ids = new ArrayList<Long>();
@@ -710,7 +708,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 }
             }
             // now delete the surveyInstance
-            siDao.delete(instance);
+            delete(instance);
         }
     }
 
