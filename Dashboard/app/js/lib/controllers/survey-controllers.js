@@ -167,7 +167,10 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
   currentFolderId: null,
 
   populate: function (f) {
-    this.set('content', FLOW.store.find(FLOW.SurveyGroup));
+    FLOW.store.find(FLOW.SurveyGroup);
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function(sg) {
+      return true;
+    }));
   },
 
   setCurrentFolder: function(folderId) {
@@ -179,7 +182,7 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     return this.get('content').filter(function(project) {
       return project.get('parent') === parentId;
     })
-  }.property('currentFolderId'),
+  }.property('@each', 'currentFolderId'),
 
   // checks if data store contains surveys within this survey group.
   // this is also checked server side.
