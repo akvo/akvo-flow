@@ -128,28 +128,11 @@ FLOW.alwaysTrue = function () {
 FLOW.breadCrumbControl = Ember.ArrayController.create({
   content: [null],
 
-  breadCrumbIndex: function(project) {
-    // Returns the index of project in content or -1 if not present.
-    if (project === null) return 0;
-
-    for (var i = 1; i < this.content.length; i++) {
-      if (this.content[i].get('keyId') === project.get('keyId')) {
-        return i;
-      }
-    }
-
-    return -1;
-  },
-
   addParentProject: function(project) {
-    if (project === null) {
-      this.set('content', [null]);
-      return;
-    }
 
-    var idx = this.breadCrumbIndex(project);
+    var idx = this.indexOf(project);
     if (idx < 0) {
-      this.set('content', this.get('content').concat([project]));
+      this.pushObject(project);
     } else {
       this.set('content', this.get('content').slice(0, idx+1));
     }
@@ -161,8 +144,6 @@ FLOW.breadCrumbControl = Ember.ArrayController.create({
 });
 
 FLOW.surveyGroupControl = Ember.ArrayController.create({
-  sortProperties: ['code'],
-  sortAscending: true,
   content: null,
   currentFolderId: null,
 
