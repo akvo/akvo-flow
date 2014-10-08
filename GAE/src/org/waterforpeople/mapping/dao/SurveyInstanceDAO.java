@@ -47,6 +47,7 @@ import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -630,12 +631,24 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         BaseDAO<SurveyalValue> svDao = new BaseDAO<SurveyalValue>(SurveyalValue.class);
         final Long surveyInstanceId = surveyInstance.getKey().getId();
 
+        // delete question answers + update summary counts
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
-        surveyInstance.setQuestionAnswersStore(qasList);
-        boolean increment = false;
-        surveyInstance.updateSummaryCounts(increment);
-        qasDao.delete(qasList);
+        if (!qasList.isEmpty()) {
+            surveyInstance.setQuestionAnswersStore(qasList);
+            boolean increment = false;
+            surveyInstance.updateSummaryCounts(increment);
+            qasDao.delete(qasList);
+        }
+
+        // delete surveyal values
+        SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
+        SurveyalValueDao svDao = new SurveyalValueDao();
+        List<SurveyalValue> surveyalValues = surveyedLocaleDao
+                .listSurveyalValuesByInstance(surveyInstanceId);
+        if (!surveyalValues.isEmpty()) {
+            svDao.delete(surveyalValues);
+        }
 
         // to account for the slim change if we have two geo questions in one surveyInstance
 
@@ -670,17 +683,11 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
             Long localeId = instance.getSurveyedLocaleId();
 
-            List<SurveyalValue> valsForInstance = localeDao
-                    .listSurveyalValuesByInstance(instance.getKey().getId());
-            if (valsForInstance != null && valsForInstance.size() > 0) {
-                svDao.delete(valsForInstance);
-            }
-
             // if there is only one surveyInstance that has contributed to this Locale,
             // we can delete the SurveyedLocale. The values should already have been deleted
             // in the previous step.
             if (instancesForLocale != null && instancesForLocale.size() == 1) {
-                SurveyedLocale l = localeDao.getByKey(localeId);
+                SurveyedLocale l = surveyedLocaleDao.getByKey(localeId);
                 if (l != null) {
                     // initialize the memcache
                     Cache cache = null;
@@ -696,7 +703,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                                 "Couldn't initialize cache: " + e.getMessage(), e);
                     }
                     MapUtils.recomputeCluster(cache, l, -1);
-                    localeDao.delete(l);
+                    surveyedLocaleDao.delete(l);
                 }
             }
             // now delete the surveyInstance
