@@ -31,7 +31,6 @@ import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
-import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
@@ -618,21 +617,25 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
      * Deletes a surveyInstance and all its related questionAnswerStore objects Based on the version
      * in DataBackoutServlet
      *
-     * @param item
+     * @param surveyInstance
      * @return
      */
     // TODO update lastSurveyalInstanceId in surveydLocale objects
     @SuppressWarnings({
             "unchecked", "rawtypes"
     })
-    public void deleteSurveyInstance(SurveyInstance item) {
+    public void deleteSurveyInstance(SurveyInstance surveyInstance) {
         SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
         QuestionDao qDao = new QuestionDao();
         BaseDAO<SurveyalValue> svDao = new BaseDAO<SurveyalValue>(SurveyalValue.class);
-        Long surveyInstanceId = item.getKey().getId();
+        final Long surveyInstanceId = surveyInstance.getKey().getId();
 
-        List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStore(
-                surveyInstanceId, null);
+        QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+        List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
+        surveyInstance.setQuestionAnswersStore(qasList);
+        boolean increment = false;
+        surveyInstance.updateSummaryCounts(increment);
+        qasDao.delete(qasList);
 
         // to account for the slim change if we have two geo questions in one surveyInstance
 
@@ -650,26 +653,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                             .getKey().getId(), -1);
                     sisCountUpdated = true;
                 }
-
-                // if the questionAnswerStore item belongs to an OPTION type,
-                // update the count
-                Question q = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
-                if (q != null && Question.Type.OPTION.equals(q.getType())) {
-                    SurveyQuestionSummaryDao.incrementCount(qasItem, -1);
-                }
             }
-
-            // delete the questionAnswerStore objects in a single datastore
-            // operation
-            qasDao.delete(qasList);
         }
 
         // get the instances that have contributed to the Locale, for later use
         List<SurveyInstance> instancesForLocale = listByProperty("surveyedLocaleId",
-                item.getSurveyedLocaleId(), "Long");
+                surveyInstance.getSurveyedLocaleId(), "Long");
 
         // delete the surveyInstance
-        SurveyInstance instance = getByKey(item.getKey());
+        SurveyInstance instance = getByKey(surveyInstance.getKey());
         if (instance != null) {
             // send notification
             List<Long> ids = new ArrayList<Long>();
