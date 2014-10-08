@@ -145,7 +145,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     /**
      * adds the translation to the translation map. If a translation already exists (based on
      * language code), it will be replaced
-     * 
+     *
      * @param trans
      */
     public void addTranslation(TranslationDto trans) {
@@ -185,7 +185,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     /**
      * returns the translated version of the text for the locale specified (if present). If no
      * translation exists, it will return the default text.
-     * 
+     *
      * @param locale
      * @return
      */
@@ -419,6 +419,10 @@ public class QuestionDto extends BaseDto implements NamedObject {
     }
 
     public void setQuestionId(String questionId) {
+        // Missing questionId is represented as null
+        if (questionId != null && questionId.matches("\\s*")) {
+            questionId = null;
+        }
         this.questionId = questionId;
     }
 }
