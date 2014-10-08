@@ -2,7 +2,7 @@
 
 FLOW.ReportLoader = Ember.Object.create({
   criteria: null,
-  timeout: 6000,
+  timeout: 30000,
   requestInterval: 3000,
 
   payloads: {
@@ -82,7 +82,7 @@ FLOW.ReportLoader = Ember.Object.create({
     if (resp.message === 'PROCESSING') {
       this.set('processing', false);
       Ember.run.later(this, this.requestReport, this.requestInterval);
-    } else if (resp.file) {
+    } else if (resp.file && this.get('processing')) {
       FLOW.savingMessageControl.numLoadingChange(-1);
       this.set('processing', false);
       this.set('criteria', null);
@@ -98,7 +98,8 @@ FLOW.ReportLoader = Ember.Object.create({
         criteria: JSON.stringify(this.get('criteria'))
       },
       jsonpCallback: 'FLOW.ReportLoader.handleResponse',
-      dataType: 'jsonp'
+      dataType: 'jsonp',
+      timeout: this.timeout
     });
 
     Ember.run.later(this, this.handleError, this.timeout);
