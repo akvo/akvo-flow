@@ -421,8 +421,9 @@ public class QuestionDto extends BaseDto implements NamedObject {
     public void setQuestionId(String questionId) {
         // Missing questionId is represented as null
         if (questionId != null && questionId.matches("\\s*")) {
-            questionId = null;
+            this.questionId = null;
+        } else {
+            this.questionId = questionId;
         }
-        this.questionId = questionId;
     }
 }
