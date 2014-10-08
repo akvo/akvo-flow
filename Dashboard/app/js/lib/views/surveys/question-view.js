@@ -276,7 +276,7 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
     FLOW.selectedControl.selectedQuestion.set('requireDoubleEntry', this.get('requireDoubleEntry'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
-    
+
     var allowExternalSources = (this.type.get('value') !== 'FREE_TEXT') ? false : this.get('allowExternalSources');
     FLOW.selectedControl.selectedQuestion.set('allowExternalSources', allowExternalSources);
 
@@ -393,7 +393,8 @@ FLOW.QuestionView = FLOW.View.extend({
   throttleTimer: null,
 
   validateQuestionId: function(args) {
-    var questionKeyId = FLOW.selectedControl.selectedQuestion.get('keyId');
+    var selectedQuestion = FLOW.selectedControl.selectedQuestion
+    var questionKeyId = selectedQuestion.get('keyId');
     var questionId = this.get('questionId') || "";
     if (FLOW.Env.mandatoryQuestionID && questionId.match(/^\s*$/)) {
       args.failure(Ember.String.loc('_question_id_mandatory'));
@@ -402,37 +403,39 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
       if (monitoring) {
-	clearTimeout(this.throttleTimer);
-	this.throttleTimer = setTimeout(function () {
-	  $.ajax({
-	    url: '/rest/questions/' + questionKeyId + '/validate?questionId=' + questionId,
-	    type: 'POST',
-	    success: function(data) {
-	      if (data.success) {
-		args.success();
-	      } else {
-		args.failure(data.reason);
-	      }
-	    },
-	    error: function() {
-	      args.failure(Ember.String.loc('_could_not_validate_question_id_with_server'));
-	    }
-	  });
-	}, 1000);
+        clearTimeout(this.throttleTimer);
+        this.throttleTimer = setTimeout(function () {
+          $.ajax({
+            url: '/rest/questions/' + questionKeyId + '/validate?questionId=' + questionId,
+            type: 'POST',
+            success: function(data) {
+              if (data.success) {
+                args.success();
+              } else {
+                args.failure(data.reason);
+              }
+            },
+            error: function() {
+              args.failure(Ember.String.loc('_could_not_validate_question_id_with_server'));
+            }
+          });
+        }, 1000);
       } else {
-	var otherQuestionIds = FLOW.store.filter(FLOW.Question, function(question) {
-	  return questionKeyId !== question.get('keyId');
-	}).map(function(question) {
-	  return question.get('questionId');
-	}).filter(function(questionId) {
-	  return questionId !== "";
-	});
-	var isUnique = !otherQuestionIds.contains(questionId);
-	if (isUnique) {
-	  args.success();
-	} else {
-	  args.failure('the question id is not unique');
-	}
+        var otherQuestionIds = FLOW.store.filter(FLOW.Question, function(question) {
+          var keyId = question.get('keyId');
+          return (selectedQuestion.get('surveyId') === question.get('surveyId'))
+            && (questionKeyId !== question.get('keyId'));
+        }).map(function(question) {
+          return question.get('questionId');
+        }).filter(function(questionId) {
+          return questionId !== "";
+        });
+        var isUnique = !otherQuestionIds.contains(questionId);
+        if (isUnique) {
+          args.success();
+        } else {
+          args.failure('the question id is not unique');
+        }
       }
     }
   },
