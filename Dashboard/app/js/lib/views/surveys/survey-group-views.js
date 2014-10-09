@@ -21,7 +21,20 @@ FLOW.ProjectMainView = FLOW.View.extend({
     this.set('showProjectList', true);
     this.set('showProject', false);
     this.set('currentProject', null);
-  }
+  },
+
+/*
+  projectView: function() {
+    var currentProject = FLOW.surveyGroupControl.get('currentProject');
+
+    var isFolder = currentProject.get('projectType') === "PROJECT_FOLDER";
+
+    this.set('showProjectList', isFolder);
+    this.set('showProject', !isFolder);
+
+  }.obeserves('FLOW.surveyGroupView.currentProject');
+*/
+
 });
 
 
@@ -29,7 +42,6 @@ FLOW.ProjectBreadCrumbView = FLOW.View.extend({
   // fired when a survey group is clicked
   selectProject: function (evt) {
     var project = evt.context;
-
     if (project === null) {
       this.get('parentView').projectListView();
       FLOW.surveyGroupControl.setCurrentFolder(null);
@@ -62,6 +74,15 @@ FLOW.ProjectListView = FLOW.View.extend({
   deleteFolder: function(e) {
     var folderId = e.context.get('keyId');
     FLOW.surveyGroupControl.deleteSurveyGroup(folderId);
+  },
+
+  // fired when a survey group is clicked
+  makeSelected: function (e) {
+    if (e.context.get('projectType') === "PROJECT_FOLDER") {
+      FLOW.surveyGroupControl.setCurrentFolder(e.context.get('keyId'));
+    } else {
+      FLOW.selectedControl.set('selectedSurveyGroup', e.context);
+    }
   }
 
 });

@@ -1,61 +1,43 @@
-<style>
-.aFolder {
-  position: relative;
-  display: block;
-  box-sizing: border-box;
-  margin: 0.5em auto 1em auto;
-  padding: 0.5em 0 0.5em 1%;
-  min-height: 115px;
-  width: 99%;
-  background: lightblue url(../images/carret.svg) right center no-repeat;
-  -webkit-background-size: 45px 45px;
-  background-size: 45px 45px;
-  cursor: pointer;
-  -o-border-radius: 0.3em;
-  border-radius: 0.3em;
-  -webkit-transition: all 0.4s linear;
-  transition: all 0.4s linear;
-}
-</style>
-
 {{#view FLOW.ProjectMainView}}
 
-  {{#view FLOW.ProjectBreadCrumbView}}
-    {{#each sg in FLOW.surveyGroupControl.breadCrumbs}}
-      <a {{action "selectProject" sg target="this"}}>
-        {{#if sg}}
-          {{sg.code}}
-        {{else}}
-          Root
-        {{/if}}
-      </a>
-      &gt;
-    {{/each}}
-  {{/view}}
+  <section class="topBar">
+    <nav class="breadCrumb">
+      <ul>
+        {{#view FLOW.ProjectBreadCrumbView}}
+          {{#each sg in FLOW.surveyGroupControl.breadCrumbs}}
+            <li>
+              {{#if sg}}
+                <a {{action "selectProject" sg target="this"}}>{{sg.code}}</a>
+              {{else}}
+                <a class="homeRoot" {{action "selectProject" sg target="this"}}>Home</a>
+              {{/if}}
+            </li>
+          {{/each}}
+        {{/view}}
+      </ul>
+    </nav>
+    <nav class="menuTopBar">
+      <ul>
+        <li><a class="editGroupName" href="#">Edit folder</a></li>
+        <li><a class="addFolder" {{action "createFolder" target="this"}}>Add folder</a></li>
+        <li><a class="addSurvey" href="#">Create a new project</a></li>
+      </ul>
+    </nav>
+  </section>
 
   {{#if view.showProjectList}}
     {{#view FLOW.ProjectListView}}
-    <section id="allSurvey" class="mainRight surveysList">
-
-      <br/>
-      <a {{action "createFolder" target="this"}}>Add folder</a>
-      <a {{action "createProject" target="this"}}>Create project</a>
-    <nav>
-      <!-- show all survey groups -->
-      <ul>
-        {{#each sg in FLOW.surveyGroupControl.currentFolders}}
-          <a {{action "deleteFolder" sg target="this"}}>[x]</a>
-          {{#view FLOW.SurveyGroupMenuItemView contentBinding="sg"}}
-            <a {{action "makeSelected" sg target="this"}}>
-              <h2>
-                {{sg.code}}
-              </h2>
-            </a>
-          {{/view}}
-        {{/each}}
-      </ul>
-    </nav>
-    </section>
+      <section id="allSurvey" class="surveysList">
+        <ul>
+          {{#each sg in FLOW.surveyGroupControl.currentFolders}}
+              <li class="aSurvey aFolder">
+                <a {{action "makeSelected" sg target="this"}}>
+                  {{sg.code}}
+                </a>
+              </li>
+          {{/each}}
+        </ul>
+      </section>
     {{/view}}
   {{/if}}
 

@@ -8,7 +8,8 @@ textarea,
 button,
 select {
     font-weight: normal;
-    padding:5px;
+    text-transform: uppercase;
+    padding:8px 5px;
 }
 input,
 textarea {
@@ -48,9 +49,11 @@ fieldset {
     padding: 0;
 }
 label {
+    text-transform: uppercase;
     cursor: pointer;
     display: block;
     color: rgb(107, 134, 141);
+    color:rgb(212,212,212);
 }
 legend {
     border: 0;

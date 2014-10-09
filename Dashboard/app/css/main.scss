@@ -546,18 +546,16 @@ input[type="submit"] {
 }
 .dialog {
     position: absolute;
-    top: 5%;
+    top: 20%;
     left: 35%;
     display: block;
     padding: 1em 2em;
     min-width: 500px;
-    max-height: 90%;
     width: 25%;
     border: thin solid rgb(153, 153, 153);
     border-radius: 6px;
     background: white;
     -o-border-radius: 6px;
-    overflow-y:scroll;
 }
 .dialogWide {
     position: absolute;
@@ -610,7 +608,7 @@ label[for=newDeviceGroupName] {
     min-width: 768px;
 }
 .belowHeader {
-    padding-top: 110px;
+    padding-top: 35px;
     padding-bottom: 110px;
     background: white;
 }
@@ -624,7 +622,7 @@ label[for=newDeviceGroupName] {
     left: 0;
     /*margin-left: -20em;
     margin-top: -30px;*/
-    top:85px;
+    top:112px;
     bottom:56px;
     position: fixed;
     float:left;
@@ -665,12 +663,12 @@ header.top {
     padding: 20px 0;
     top: 0;
     width: 100%;
-    height: 40px;
-    border-bottom: 1px solid rgb(240, 240, 240);
-    background: rgb(248, 248, 248);
+    height: 41px;
+    background: rgb(255,255,255);
     z-index: 9999;
-    -webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.1);
+    /*-webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.1);
     box-shadow: 0 0 1px rgba(32, 32, 36, 0.5);
+    border-bottom: 1px solid rgb(240, 240, 240);*/
     border-top: 2px solid rgb(44, 42, 116);
     -webkit-transition: all 0.2s ease-in;
     transition: all 0.2s ease-in;
@@ -738,7 +736,7 @@ header.top {
 .languageSelector {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 0.25%;
     .labelText {
         display: block;
         margin: 0 0 0.25em 0em;
@@ -775,11 +773,11 @@ nav.appNav {
             display: inline;
             float: left;
             margin: 0 0 0 0;
-            padding: 0 2px 0 0;
+            padding: 5px 2px 0 0;
             &.current a {
-                -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
+              /*  -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
                 -o-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
-                box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
+                box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);*/
                 color:$anchorLinkHover;
             }
             &:hover,
@@ -831,13 +829,13 @@ nav.appNav{
                     background: url(../images/topnavDashboards.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavDashboardsOrange.svg);
+                        background:url(../images/topnavDashboardsOrange.svg);
                         @include bgDetails;                    
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavDashboardsOrange.svg);
+                        background:url(../images/topnavDashboardsOrange.svg);
                         @include bgDetails;                    
                     }
                 }
@@ -848,13 +846,13 @@ nav.appNav{
                     background: url(../images/topnavMessages.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavMessagesOrange.svg);
+                        background:url(../images/topnavMessagesOrange.svg);
                         @include bgDetails;                    
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavMessagesOrange.svg);
+                        background:url(../images/topnavMessagesOrange.svg);
                         @include bgDetails;                    
                     }
                 }
@@ -864,13 +862,13 @@ nav.appNav{
                     background: url(../images/topnavData.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavDataOrange.svg);
+                        background:url(../images/topnavDataOrange.svg);
                         @include bgDetails;                    
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavDataOrange.svg);
+                        background:url(../images/topnavDataOrange.svg);
                         @include bgDetails;                    
                     }
                 }
@@ -880,13 +878,13 @@ nav.appNav{
                     background: url(../images/topnavDashboards.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavDashboardsOrange.svg);
+                        background:url(../images/topnavDashboardsOrange.svg);
                         @include bgDetails;                    
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavDashboardsOrange.svg);
+                        background:url(../images/topnavDashboardsOrange.svg);
                         @include bgDetails;                    
                     }
                 }
@@ -896,7 +894,7 @@ nav.appNav{
                     background: url(../images/topnavMaps.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavMapsOrange.svg);
+                        background:url(../images/topnavMapsOrange.svg);
                         @include bgDetails;                    
                     }
                 }
@@ -912,13 +910,13 @@ nav.appNav{
                     background: url(../images/topnavDevices.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavDevicesOrange.svg);
+                        background:url(../images/topnavDevicesOrange.svg);
                         @include bgDetails;                    
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavDevicesOrange.svg);
+                        background:url(../images/topnavDevicesOrange.svg);
                         @include bgDetails;                    
                     }
                 }
@@ -928,13 +926,13 @@ nav.appNav{
                     background: url(../images/topnavUsers.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavUsersOrange.svg);
+                        background:url(../images/topnavUsersOrange.svg);
                         @include bgDetails;                    
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavUsersOrange.svg);
+                        background:url(../images/topnavUsersOrange.svg);
                         @include bgDetails;                    
                     }
                 }
@@ -944,13 +942,13 @@ nav.appNav{
                     background: url(../images/topnavReports.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavReportsOrange.svg);
+                        background:url(../images/topnavReportsOrange.svg);
                         @include bgDetails;                    
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavReportsOrange.svg);
+                        background:url(../images/topnavReportsOrange.svg);
                         @include bgDetails;                    
                     }
                 }
@@ -960,13 +958,13 @@ nav.appNav{
                     background: url(../images/topnavAdmin.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavAdminOrange.svg);
+                        background:url(../images/topnavAdminOrange.svg);
                         @include bgDetails;                    
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavAdminOrange.svg);
+                        background:url(../images/topnavAdminOrange.svg);
                         @include bgDetails;                    
                     }
                 }
@@ -976,13 +974,13 @@ nav.appNav{
                     background: url(../images/topnavSurveys.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavSurveysOrange.svg);
+                        background:url(../images/topnavSurveysOrange.svg);
                         @include bgDetails;                    
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavSurveysOrange.svg);
+                        background:url(../images/topnavSurveysOrange.svg);
                         @include bgDetails;                    
                     }
                 }
@@ -1294,14 +1292,6 @@ input.hasDatepicker {
 .action a.edit:hover {
     background: url(../images/editList.png) center bottom no-repeat;
 }
-.action a.api {
-    display: inline-block;
-    width: 13px;
-    height: 13px;
-    background: url(../images/apiList.png) center top no-repeat;
-    text-indent: -99999px;
-}
-.action a.api:hover { background: url(../images/apiList.png) center bottom no-repeat; }
 table.previewList {
     color: rgb(209, 84, 95);
 }
@@ -1518,7 +1508,18 @@ th.action {
     display: block;
     margin: 8px 0 0 10px;
     width: calc(100% - 32px);
+    z-index: 9999;
+    &.text_edit {
+        display:none;
+    }
 }
+
+a.text_label
+{
+
+}
+
+
 .leftSidebar a.smallBtn {
     margin: 0 5px 10px 10px;
 }
@@ -1540,39 +1541,108 @@ th.action {
 }
 nav.menuGroupWrap {
     overflow-y: hidden;
-    height: 361px;
+    height: 370px;
+    &.topMenuGroupWrap {
+        height:initial;
+        background: rgba(white,0.98);
+        padding:3px 0 2px 0;
+        ul.menuGroup {
+            li {
+                border-bottom:none;
+            }
+        }
+    }
     ul.menuGroup {
         li {
+            position: relative;
             margin: 2px 1% 1px 1%;
-            width: 98%;
+            width: calc(98%-30px);
             border-bottom: thin solid rgb(55, 55, 55);
             background: rgb(70, 70, 70);
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.05) url(../images/selectFolder.svg) 2px center no-repeat;
+            background-size: 20px 20px;
+            div.edit {
+                position: absolute;
+                background: url(../images/IconEditGrey.svg) center center no-repeat;
+                background-size: 20px 20px;
+                width: 25px;
+                height: 25px;
+                display: none;
+                cursor: pointer;
+                top: 7px;
+                right:5px;
+            }
+            div.trashFolder {
+                position: absolute;
+                background: url(../images/IconTrashGrey.svg) center center no-repeat;
+                background-size: 20px 20px;
+                width: 25px;
+                height: 25px;
+                display: none;
+                cursor: pointer;
+                top: 7px;
+                right:30px;
+            }
+            div.copyFolder {
+                position: absolute;
+                background: url(../images/IconCopyGrey.svg) center center no-repeat;
+                background-size: 20px 20px;
+                width: 25px;
+                height: 25px;
+                display: none;
+                cursor: pointer;
+                top: 7px;
+                right:55px;
+            }
+            &.folderUp {
+                background: rgb(70, 70, 70);
+                background: url(../images/folderUp.svg) 2px center no-repeat;
+                background-size: 35px 35px;
+                &:hover {
+                    background: rgb(70, 70, 70);
+                    background: rgba(255, 255, 255, 0.05) url(../images/folderUpHover.svg) 2px center no-repeat;
+                    background-size: 35px 35px;
+                }
+                a{
+                    color:$anchorLink;
+                    background-image: none;
+                    padding: 10px 1% 10px 45px;
+                    width: calc(99% - 40px);
+                    &:hover {
+                        color:$anchorLinkHover;
+                        background-image:none;
+                    }
+                }
+            }
             &.current {
                 border-bottom: thin solid rgb(55, 55, 55);
-                background: rgb(90, 90, 90);
-                background: rgba(255, 255, 255, 0.15);
+                background: rgb(90, 90, 90) url(../images/selectFolder.svg) left center no-repeat;
+                background: rgba(255, 255, 255, 0.15) url(../images/selectFolder.svg) 2px center no-repeat;
+                background-size: 20px 20px;
                 a, a:hover {
-                    background: url(../images/selectIndictr.png) right -61px no-repeat;
+                    background: url(../images/carretFolderSelected.svg) right center no-repeat;
                     color:$anchorLinkHover;                    
+                    background-size: 15px 25px;
                     }
                 }
             a {
                 display: block;
                 text-transform: uppercase;
-                padding: 10px 1% 10px 2%;
-                width: 97%;
+                padding: 10px 1% 10px 25px;
+                width: calc(99% - 25px);
                 height: 23px;
-                background: url(../images/selectIndictr.png) right 5px no-repeat;
+                background: url(../images/carretFolder.svg) right center no-repeat;
+                background-size: 15px 25px;
                 color: rgb(153, 153, 153);
                 color: rgba(255, 255, 255, 0.6);
                 @include noWrapTxt;
                 font-size: 1.2em;
                 cursor: pointer;
                 &:hover {
-                    background: rgb(80, 80, 80) url(../images/selectIndictr.png) right 50% no-repeat;
-                    background: rgba(255, 255, 255, 0.05) url(../images/selectIndictr.png) right 50% no-repeat;
+                    background: rgb(80, 80, 80) url(../images/carretFolder.svg) right center no-repeat;
+                    background: rgba(255, 255, 255, 0.05) url(../images/carretFolder.svg) right center no-repeat;
                     color: rgb(114, 205, 255);
+                    background-size: 15px 25px;
                 }
                 span.monitorIcn {
                     font-weight: bold;
@@ -1624,18 +1694,148 @@ nav.menuGroupWrap {
 a.FadeIt {
     display: none;
 }
+
+.projectDetail {
+    li{
+        margin:10px auto;
+        h2{
+            font-size: 1.5em;
+            display: block;
+            overflow: inherit;
+            text-overflow: inherit;
+            white-space: inherit;
+            margin: 10px 0 0 5px;
+            color:$anchorLink;
+        }   
+    }
+    li.formList {
+        border-top:1px solid rgb(51,51,51); 
+        padding:10px 0;
+        &.populated {
+            background: rgba(white,0);
+        }
+        h4 {
+            margin:5px 0 10px 5px; 
+            text-transform:uppercase;
+            color:rgba($anchorLink, 0.5);
+        }
+        p.noForms {
+                padding-top:35px;
+                background: url(../images/IconForms.png) center top no-repeat;
+                text-align: center;
+                color:rgb(88,89,91);
+                text-transform: uppercase;
+                font-size: 1.1em;
+                width: 90%;
+                margin:0 auto;
+        }
+        ul.menuForm {
+            li {
+                position: relative;
+                margin: 2px 1% 1px 1%;
+                width: calc(98%-30px);
+                border-bottom: thin solid rgb(55, 55, 55);
+                background: rgb(70, 70, 70);
+                background: rgba(255, 255, 255, 0.05) url(../images/IconForms.svg) 2px 11px no-repeat;
+                background-size: 20px 17px;
+                &.current {
+                    border-bottom: thin solid rgb(55, 55, 55);
+                    background: rgba($anchorLink, 0.25) url(../images/IconFormsWhite.svg) 2px 11px no-repeat;
+                    background-size: 20px 17px;
+                    a, a:hover {
+                        background: url(../images/carretFolderSelectedWhite.svg) right center no-repeat;
+                        color:white;                    
+                        background-size: 15px 25px;
+                        }
+                    }
+                a {
+                    display: block;
+                    text-transform: uppercase;
+                    padding: 10px 1% 10px 25px;
+                    width: calc(99% - 25px);
+                    height: 23px;
+                    background: url(../images/carretFolder.svg) right center no-repeat;
+                    background-size: 15px 25px;
+                    color: rgb(153, 153, 153);
+                    color: rgba(255, 255, 255, 0.2);
+                    @include noWrapTxt;
+                    font-size: 1.2em;
+                    cursor: pointer;
+                    &:hover {
+                        background: rgb(80, 80, 80) url(../images/carretFolder.svg) right center no-repeat;
+                        background: rgba(255, 255, 255, 0.05) url(../images/carretFolder.svg) right center no-repeat;
+                        color: rgb(114, 205, 255);
+                        background-size: 15px 25px;
+                    }
+                span.monitorIcn {
+                    font-weight: bold;
+                    font-size: 0.8em;
+                    line-height: 21px;
+                    color: white;
+                    background-color:$monitorGreen;
+                    display: inline-block;
+                    border-radius: 10px;
+                    width: 16px;
+                    height: 20px;
+                    padding: 0 0 0 4px;
+                }
+            }
+        }
+    }
+    }
+}
+.projectDetailForm {
+    display: block;
+    margin: 0 0 5px 5px;
+    width: calc(100% - 62px);
+    margin-top:0 !important;
+    padding:20px 25px;
+    background:rgb(248,248,248);
+    form {
+        width:98%;    
+    }
+    input {
+        width:100%;
+        margin-bottom: 35px;
+        background:rgb(248,248,248);
+        color:rgb(158,158,158);
+        &:focus {
+            border: 1px solid rgb(205, 205, 205);
+            background: rgb(245, 255, 216);
+            }
+        &[type=checkbox] {
+            width:20px;
+            float: left;
+        }
+    }
+    .projectSelect {
+        display: flex;
+        margin-bottom: 50px;
+        li {
+            width:50%;
+            select {
+                width:98%;
+                padding:8px 5px;
+            }
+        }
+    }
+}
 /* Survey Top Bar
 --------------------------------------------- */
 
 section.topBar {
-    margin: 0 0 20px 0;
-    z-index: 9999;
+    position:fixed;
+    margin: 0 auto;
+    z-index: 9998;
     width: 100%;
     background: white;
+    &.activeMenu{
+        border:1px solid rgb(212,212,212);
+    }
 }
 section.topBar ~ * {
-    margin-top: 80px;
-}
+        margin-top: 80px;
+    }
 .surveyLandingText {
     display: inherit;
     font-size: 2em;
@@ -1660,30 +1860,158 @@ section.topBar > a:hover {
     color:$anchorLinkHover;
 }
 section.topBar > a.smallBtn {
-    margin: 0 10px;
+    margin: 0 10px; 
     color: rgb(235, 235, 235);
 }
-nav.menuTopbar {
-    position: absolute;
-    right: 5px;
-    display: inline;
+section.topBar {
+    display:flex;
+    align-items:center;
+    padding:0 0 10px 0;
+    nav {
+        width:49.5%;
+        &:first-child {
+            margin-left: 0.5%;
+        }        
+        &:last-child {
+            margin-right: 0.5%;
+        }
+        }
+    nav.breadCrumb {
+        ul li {
+            display: inline-block;
+            height: 34px;
+            line-height: 34px;
+            width: auto;
+            margin: 5px 3px 0 0;
+            text-indent: 19px;
+            position: relative;
+
+        }
+        ul li:before {
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            left: -2px;
+            border-style: solid;
+            border-width: 17px 0 17px 17px;
+            border-color: transparent transparent transparent #fff;
+            z-index: 0;
+        }
+
+        ul li:first-child:before {
+            border-color: transparent;
+        }
+        ul li a:after {
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            right: -17px;
+            border-style: solid;
+            border-width: 17px 0 17px 17px;
+            border-color: transparent transparent transparent $akvoLightBlue;
+            z-index: 10;
+        }
+        ul li a {
+            display: block;
+            background: $akvoLightBlue;
+            color: white;
+            text-transform: uppercase;
+            font-size: 1.1em;
+            &:hover {
+                background: $anchorLinkHover;
+            }
+            &.homeRoot {
+                border-radius:3px 0 0 3px;
+                width:40px;
+                background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                text-indent:-9999px;
+                z-index:9999;
+                margin-left: 0;
+                &:hover {
+                background: url(../images/breadCrumb-Root.png) center center no-repeat $anchorLinkHover;
+            }
+            }
+        }
+        ul li a:hover:after {
+            border-color: transparent transparent transparent $anchorLinkHover; 
+        }
+        ul li:last-child {
+            opacity:0.3;
+            a {
+                border-radius:0 3px 3px 0;
+                padding-right:15px;
+                &.homeRoot {
+                    padding-right:0;
+                    border-radius:3px 0 0 3px;
+                    width:40px;
+                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                    text-indent:-9999px;
+                    z-index:9999;
+                    margin-left: 0;
+                &:after {
+                    content: " ";
+                    height: 0;
+                    width: 0;
+                    position: absolute;
+                    right: -17px;
+                    border-style: solid;
+                    border-width: 17px 0 17px 17px;
+                    border-color: transparent transparent transparent $akvoLightBlue;
+                    z-index: 10;
+        }
+                &:hover {
+                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                }
+            }
+                &:after {
+                    border-width:0;
+                &:hover {
+                    background: $akvoLightBlue;
+                    }
+                }
+            }
+        }
 }
+
+nav.menuTopbar {
+    margin:0 auto 0;
+        h3 {
+            text-transform: uppercase;
+            font-size:1em;
+            color:rgb(198,198,198);
+            margin:0;
+            padding:0;
+            &.actionTitleEdit {
+                padding: 5px 5px 5px 15px;
+                background:url(../images/IconEditGreyLight.svg) left center no-repeat;
+                background-size: 15px;
+            }
+        }
+        ul {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            li {
+                margin-left:10px;
+                &:first-child {
+                    margin-left:0px;
+                }
+            }
+        }
+    }
+}
+
+
 #surveyCreator nav.menuTopbar ul {
     background: none;
 }
-nav.menuTopbar ul li {
-    display: inline;
-    float: left;
-    margin: 10px 0 0 0;
-}
-nav.menuTopbar ul li:last-child {
-    display: inline;
-    float: left;
-    margin: 10px 15px 0 0;
-    text-transform: uppercase;
-}
+
+
 ul.folderMenu {
-    margin:10px auto 35px;
+    display: block;
+    margin:0px auto 45px;
     li {
         width:48%;
         padding:10px 1%;
@@ -1692,12 +2020,24 @@ ul.folderMenu {
         background:$blackOpac;
     }
 }
+
+ul.cancelMenu {
+        display: none;
+        margin:10px auto 0;
+        li {
+            width:98%;
+            padding:10px 1%;
+            display:inline;
+            float: right;
+            background:$blackOpac;
+        }
+    }
 a.addGroup,
 a.addSurvey,
 a.stepBack,
-a.editGroupName,
-a.makeMonitorGroup,
-a.deleteGroup, a.addFolder, a.editFolder {
+a.editGroupName, a.addMenuAction,
+a.makeMonitorGroup,a.manageNotifications,
+a.deleteGroup, a.addFolder, a.editFolder, a.cancelFolder, a.saveMenuAction {
     display: block;
     padding: 1px 0 7px 21px;
     height: 10px;
@@ -1710,15 +2050,23 @@ a.addGroup {
     margin: 0 0 5px 5px;
     padding: 1px 0 7px 19px;
 }
+a.cancelFolder {
+    color:$akvoRed;
+    background: url(../images/IconCancelFolder.svg) left center no-repeat;
+}
+a.cancelFolder:hover {
+    color:$anchorLinkHover;
+    background: url(../images/IconCancelFolderHover.svg) left center no-repeat;
+}
 a.addGroup, a.addFolder {
-    background: url(../images/IconAddGroup.svg) left center no-repeat;
+    background: url(../images/IconPlus.svg) left center no-repeat;
 }
 a.addGroup:hover, a.addFolder:hover {
-    background: url(../images/IconAddGroupOrange.svg) left center no-repeat;
+    background: url(../images/IconPlusOrange.svg) left center no-repeat;
 }
 a.addSurvey {
     color: white;
-    background: rgba($anchorLink, 1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
+    background: rgba($anchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
     padding: 4px 7px 11px 21px;
     border-radius: 3px;
     -webkit-background-size: 19px 19px;
@@ -1728,7 +2076,7 @@ a.addSurvey {
 }
 a.addSurvey:hover {
     color: white;
-    background: rgba($anchorLinkHover, 1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
+    background: rgba($anchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
     -webkit-background-size: 19px 19px;
     background-size: 19px 19px;
 }
@@ -1758,9 +2106,52 @@ a.editGroupName:hover, a.editFolder:hover {
 }
 a.deleteGroup {
     background: transparent url(../images/IconDelete.svg) left center no-repeat;
+    &:hover {
+        background: url(../images/IconDeleteOrange.svg) left center no-repeat;
+    }
 }
-a.deleteGroup:hover {
-    background: url(../images/IconDeleteOrange.svg) left center no-repeat;
+a.addMenuAction {
+    background: url(../images/IconPlus.svg) left center no-repeat;
+    &.aBtn {
+        background:$anchorLink url(../images/IconPlusWhite.svg) left center no-repeat;
+        background-size:35px auto;
+        color:white;
+        padding: 5px 5px 11px 31px;
+        height: 10px;   
+        @include border-radius(5px);
+        &:hover {
+            background:$anchorLinkHover url(../images/IconPlusWhite.svg) left center no-repeat;
+            background-size:35px auto;
+        }
+    }
+    &:hover {
+        background: url(../images/IconPlusOrange.svg) left center no-repeat;
+    }
+}
+a.saveMenuAction {
+    &.aBtn {
+        background:$anchorLink;
+        background-size:35px auto;
+        color:white;
+        padding: 5px 15px 12px;
+        @include border-radius(5px);
+        &:hover {
+            background:$anchorLinkHover;
+            background-size:35px auto;
+        }
+    }
+    &:hover {
+        background: url(../images/IconPlusOrange.svg) left center no-repeat;
+    }
+}
+a.redCancel {
+    color:$akvoRed;
+    padding:5px 10px 5px 15px;
+    background: url(../images/IconCancelFolder.svg) left center no-repeat;
+    background-size:15px;
+    &:hover {
+        color:rgba($akvoRed, 0.5);
+    }
 }
 #assignSurveys a.stepBack {
     position: absolute;
@@ -1776,29 +2167,60 @@ div.monitorSwitch {
 ul.surveyBatch {
     position: relative;
     width: 100%;
-    margin-top: 0;
+    margin-top: 30px;
 }
 li.aSurvey {
     position: relative;
     display: block;
     box-sizing: border-box;
-    margin: 0.5em auto 1em auto;
+    margin: 0.5em auto 0.5em auto;
     padding: 0.5em 0 0.5em 1%;
     min-height: 115px;
     width: 99%;
-    background: rgb(245, 245, 245) url(../images/carret.svg) right center no-repeat;
-    -webkit-background-size: 45px 45px;
-    background-size: 45px 45px;
+    /*background: rgb(245, 245, 245) url(../images/carret.svg) right center no-repeat;*/
+    background: rgb(245, 245, 245);
+    -webkit-background-size: 35px 45px;
+    background-size: 35px 45px;
     cursor: pointer;
     -o-border-radius: 0.3em;
     border-radius: 0.3em;
     -webkit-transition: all 0.4s linear;
     transition: all 0.4s linear;
+     h2 {
+        display: inline-block;
+        width: 98%;
+        color:$anchorLink;
+        text-transform:uppercase;
+     }
 }
-li.aSurvey h2 {
-    display: inline-block;
-    width: 98%;
+li.aFolder {
+    @extend li.aSurvey;
+    display:flex;
+    box-sizing: border-box;
+    flex-direction: row;
+    align-items: center;
+    min-height: 70px;
+    padding: 0.25em 0 0.25em 45px;
+    background-color: rgb(232,232,232);
+    background-image:  url(../images/folderSelectBullet.svg), url(../images/carret.svg);
+    background-position: 5px center ,right center;
+    background-repeat: no-repeat;
+    border:1px solid rgba(200,200,200,0);
+    h2{
+        color:rgb(183,183,183);
+        background: url(../images/folderIcn.svg) right center no-repeat;
+        display:inline-block;
+        width: initial;
+        padding-right:35px;
     }
+    &:hover {
+        background-color: rgb(212,212,212);
+        border:1px solid rgba(200,200,200,1);
+        h2 {
+            color:rgb(243,243,243);
+        }
+    }
+}
 ul.surveyInfo {
     position: relative;
     display: inline;
@@ -1862,12 +2284,12 @@ ul.surveyInfo li.responseNumber {
     float: left;
     margin: 0 2px 0 0;
     border-radius: 3px;
-    background: rgba(235, 235, 235, 1);
+    background: rgba(205, 205, 205, 0.2);
     -webkit-transition: background 0.2s ease-in;
     transition: background 0.2s ease-in;
 }
 .aSurvey nav ul li:hover {
-    background: rgba(235, 235, 235, 0.5);
+    background: rgba(205, 205, 205, 0.4);
 }
 .aSurvey nav ul li a {
     display: block;
@@ -1875,47 +2297,48 @@ ul.surveyInfo li.responseNumber {
     height: 20px;
     padding-top: 40px;
     text-align: center;
+    text-indent: -9999px
 }
 .aSurvey nav ul li a:hover {
     color:$anchorLinkHover;
 }
 .aSurvey nav ul li.editSurvey a {
-    background: url(../images/IconEdit.svg) center 5px no-repeat;
+    background: url(../images/IconEdit.svg) center 14px no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.previewSurvey a {
-    background: url(../images/IconPreview_big.svg) center 5px no-repeat;
+    background: url(../images/IconPreview_big.svg) center 14px no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.deleteSurvey a {
-    background: url(../images/IconDelete.svg) center 5px no-repeat;
+    background: url(../images/IconDelete.svg) center 14px no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.copySurvey a {
-    background: url(../images/IconCopy.svg) center 5px no-repeat;
+    background: url(../images/IconCopy.svg) center 14px no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.editSurvey a:hover {
-    background: url(../images/IconEditOrange.svg) center 5px no-repeat;
+    background: url(../images/IconEditOrange.svg) center 14px no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.previewSurvey a:hover {
-    background: url(../images/IconPreviewOrange_big.svg) center 5px no-repeat;
+    background: url(../images/IconPreviewOrange_big.svg) center 14px no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.deleteSurvey a:hover {
-    background: url(../images/IconDeleteOrange.svg) center 5px no-repeat;
+    background: url(../images/IconDeleteOrange.svg) center 14px no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.copySurvey a:hover {
-    background: url(../images/IconCopyOrange.svg) center 5px no-repeat;
+    background: url(../images/IconCopyOrange.svg) center 14px no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
@@ -1925,7 +2348,7 @@ ul.surveyInfo li.responseNumber {
 
 .leftSidebar {
     background: $darkGrey;
-    padding: 10px 0;
+    padding:0 0 10px 0;
 }
 .leftSidebar h2 {
     display: block;
@@ -2034,17 +2457,20 @@ a.manageNotifications span {
     margin: 5px auto;
     padding: 10px 1%;
     width: 94%;
-    background: rgb(33, 33, 33);
+    background: rgb(51,51,51);
 }
 .newSurveyInfoUl li {
     position: relative;
     margin: 0.01em auto 0.05em auto;
     width: 96%;
     color: rgb(153, 153, 153);
+    text-transform: uppercase;
+    font-size: 0.9em;
+
 }
 .newSurveyInfoUl li h3 {
-    font-size: 1.2em;
-    color: rgb(204, 204, 204);
+    font-size: 1.1em;
+    color: rgb(155,133,117);
     margin: 3px 0;
 }
 .newSurveyInfoUl li > span {
@@ -2653,8 +3079,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 .notificationAdd {
     position: relative;
     overflow: auto;
-    width: 99%;
-    margin-left:1%;
+    width: 100%;
 }
 .notificationAdd fieldset {
     float: left;
@@ -2703,7 +3128,7 @@ a.addNotification span {
 }
 table.dataTable.notificationTable {
     margin: 1.5em auto;
-    width: 99%;
+    width: 100%;
     border-collapse: collapse;
     border-top: 1px solid rgb(230, 230, 230);
     color: #606060;
@@ -2773,7 +3198,7 @@ table.dataTable.notificationTable thead tr th a:visited {
         }
     a.findData {
         display: block;
-        margin: 5px auto 10px;
+        margin: 0 auto;
         padding: 0.5em 1em;
         width: 10%;
         text-align: center;
@@ -3389,10 +3814,9 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     border-bottom: none;
 }
 .surveyTranslation table {
-    width: calc(98.5% - 2px);
+    width: 98.5%;
     margin: 0.5% 0.75% 0.1% 0.75%;
     text-align: left;
-    border: 1px solid rgb(230, 230, 230);
 }
 table#languageOption {
     background: rgb(242, 242, 242);
