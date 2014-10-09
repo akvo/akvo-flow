@@ -27,10 +27,6 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import net.sf.jsr107cache.Cache;
-import net.sf.jsr107cache.CacheFactory;
-import net.sf.jsr107cache.CacheManager;
-
 import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
@@ -43,10 +39,9 @@ import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
@@ -61,8 +56,6 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -626,9 +619,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             "unchecked", "rawtypes"
     })
     public void deleteSurveyInstance(SurveyInstance surveyInstance) {
-        SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
-        QuestionDao qDao = new QuestionDao();
-        BaseDAO<SurveyalValue> svDao = new BaseDAO<SurveyalValue>(SurveyalValue.class);
         final Long surveyInstanceId = surveyInstance.getKey().getId();
 
         // delete question answers + update summary counts
@@ -650,7 +640,28 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             svDao.delete(surveyalValues);
         }
 
-        // to account for the slim change if we have two geo questions in one surveyInstance
+        // delete instance
+        super.delete(surveyInstance);
+
+        // check surveyed locale related to deleted survey instance
+        Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
+        List<SurveyInstance> relatedSurveyInstances = listByProperty("surveyedLocaleId",
+                surveyedLocaleId, "Long");
+
+        // task to adapt cluster data
+        if (!relatedSurveyInstances.isEmpty()) {
+            Queue queue = QueueFactory.getDefaultQueue();
+            TaskOptions to = TaskOptions.Builder
+                    .withUrl("/app_worker/surveyalservlet")
+                    .param(SurveyalRestRequest.ACTION_PARAM,
+                            SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
+                    .param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
+                            surveyedLocaleId + "")
+                    .param(SurveyalRestRequest.DECREMENT_CLUSTER_COUNT_PARAM,
+                            Boolean.TRUE.toString())
+                    .countdownMillis(5 * 1000 * 60); // 5 minutes
+            queue.add(to);
+        }
 
         boolean sisCountUpdated = false;
 
@@ -667,47 +678,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                     sisCountUpdated = true;
                 }
             }
-        }
-
-        // get the instances that have contributed to the Locale, for later use
-        List<SurveyInstance> instancesForLocale = listByProperty("surveyedLocaleId",
-                surveyInstance.getSurveyedLocaleId(), "Long");
-
-        // delete the surveyInstance
-        SurveyInstance instance = getByKey(surveyInstance.getKey());
-        if (instance != null) {
-            // send notification
-            List<Long> ids = new ArrayList<Long>();
-            ids.add(instance.getSurveyId());
-            SurveyUtils.notifyReportService(ids, "invalidate");
-
-            Long localeId = instance.getSurveyedLocaleId();
-
-            // if there is only one surveyInstance that has contributed to this Locale,
-            // we can delete the SurveyedLocale. The values should already have been deleted
-            // in the previous step.
-            if (instancesForLocale != null && instancesForLocale.size() == 1) {
-                SurveyedLocale l = surveyedLocaleDao.getByKey(localeId);
-                if (l != null) {
-                    // initialize the memcache
-                    Cache cache = null;
-                    Map props = new HashMap();
-                    props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
-                    props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
-                    try {
-                        CacheFactory cacheFactory = CacheManager.getInstance()
-                                .getCacheFactory();
-                        cache = cacheFactory.createCache(props);
-                    } catch (Exception e) {
-                        log.log(Level.SEVERE,
-                                "Couldn't initialize cache: " + e.getMessage(), e);
-                    }
-                    MapUtils.recomputeCluster(cache, l, -1);
-                    surveyedLocaleDao.delete(l);
-                }
-            }
-            // now delete the surveyInstance
-            delete(instance);
         }
     }
 
