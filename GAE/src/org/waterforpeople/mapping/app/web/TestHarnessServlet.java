@@ -45,6 +45,7 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
@@ -493,12 +494,20 @@ public class TestHarnessServlet extends HttpServlet {
     private boolean deleteSurveyResponses(Long surveyId, Integer count) {
         SurveyInstanceDAO dao = new SurveyInstanceDAO();
 
-        List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
-                surveyId, count != null ? count : 100);
+        List<SurveyInstance> surveyInstances = dao.listSurveyInstanceBySurveyId(surveyId,
+                Constants.ALL_RESULTS);
 
-        if (instances != null) {
-            for (SurveyInstance instance : instances) {
-                dao.deleteSurveyInstance(instance);
+        if (surveyInstances != null && !surveyInstances.isEmpty()) {
+            Queue deleteQueue = QueueFactory.getQueue("deletequeue");
+            for (SurveyInstance surveyInstance : surveyInstances) {
+                TaskOptions deleteTaskOptions = TaskOptions.Builder
+                        .withUrl("/app_worker/dataprocessor")
+                        .param(DataProcessorRequest.ACTION_PARAM,
+                                DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION)
+                        .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM,
+                                surveyInstance.getKey().getId() + "");
+
+                deleteQueue.add(deleteTaskOptions);
             }
             return true;
         }

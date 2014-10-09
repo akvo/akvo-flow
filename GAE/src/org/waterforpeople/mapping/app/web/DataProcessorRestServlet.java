@@ -107,6 +107,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private static final Integer SVAL_PAGE_SIZE = 600;
     private static final String QAS_TO_REMOVE = "QAStoRemove";
 
+    private SurveyInstanceDAO siDao;
+
     @Override
     protected RestRequest convertRequest() throws Exception {
         HttpServletRequest req = getRequest();
@@ -183,6 +185,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION.equalsIgnoreCase(req
                 .getAction())) {
             populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
+        } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION.equalsIgnoreCase(req
+                .getAction())) {
+            deleteSurveyResponse(dpReq.getSurveyInstanceId());
         }
         return new RestResponse();
     }
@@ -1388,5 +1393,16 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             }
             queue.add(to);
         }
+    }
+
+    /**
+     * Delete the specified survey instance
+     *
+     * @param surveyInstanceId
+     */
+    private void deleteSurveyResponse(Long surveyInstanceId) {
+        siDao = new SurveyInstanceDAO();
+        SurveyInstance surveyInstance = siDao.getByKey(surveyInstanceId);
+        siDao.delete(surveyInstance);
     }
 }
