@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
@@ -624,7 +623,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         // delete question answers + update summary counts
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
-        if (!qasList.isEmpty()) {
+        if (qasList != null && !qasList.isEmpty()) {
             surveyInstance.setQuestionAnswersStore(qasList);
             boolean increment = false;
             surveyInstance.updateSummaryCounts(increment);
@@ -636,7 +635,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         SurveyalValueDao svDao = new SurveyalValueDao();
         List<SurveyalValue> surveyalValues = surveyedLocaleDao
                 .listSurveyalValuesByInstance(surveyInstanceId);
-        if (!surveyalValues.isEmpty()) {
+        if (surveyalValues != null && !surveyalValues.isEmpty()) {
             svDao.delete(surveyalValues);
         }
 
@@ -649,7 +648,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 surveyedLocaleId, "Long");
 
         // task to adapt cluster data
-        if (!relatedSurveyInstances.isEmpty()) {
+        if (relatedSurveyInstances != null && !relatedSurveyInstances.isEmpty()) {
             Queue queue = QueueFactory.getDefaultQueue();
             TaskOptions to = TaskOptions.Builder
                     .withUrl("/app_worker/surveyalservlet")
@@ -658,24 +657,23 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                     .param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
                             surveyedLocaleId + "")
                     .param(SurveyalRestRequest.DECREMENT_CLUSTER_COUNT_PARAM,
-                            Boolean.TRUE.toString())
-                    .countdownMillis(5 * 1000 * 60); // 5 minutes
+                            Boolean.TRUE.toString());
             queue.add(to);
         }
 
-        boolean sisCountUpdated = false;
-
+        // survey instance summary task
         if (qasList != null && qasList.size() > 0) {
-            // update the questionAnswerSummary counts
             for (QuestionAnswerStore qasItem : qasList) {
+                if (Question.Type.GEO.toString().equals(qasItem.getType())) {
+                    Queue summaryQueue = QueueFactory.getQueue("dataSummarization");
 
-                // if the questionAnswerStore item is the GEO type, try to update
-                // the surveyInstanceSummary
-
-                if (Question.Type.GEO.toString().equals(qasItem.getType()) && !sisCountUpdated) {
-                    DataProcessorRestServlet.surveyInstanceSummarizer(surveyInstanceId, qasItem
-                            .getKey().getId(), -1);
-                    sisCountUpdated = true;
+                    TaskOptions to = TaskOptions.Builder
+                            .withUrl("/app_worker/dataprocessor")
+                            .param(DataProcessorRequest.ACTION_PARAM,
+                                    DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
+                            .param(DataProcessorRequest.DELTA_PARAM, "-1");
+                    summaryQueue.add(to);
+                    break;
                 }
             }
         }
