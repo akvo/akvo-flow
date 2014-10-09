@@ -700,24 +700,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                         if (QuestionType.GEO == q.getType()) {
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : q.getKeyId().toString(),
-                                            LAT_LABEL.get(columnLocale)),
+                                    useQID ? questionId + "_" + LAT_LABEL.get(columnLocale)
+                                            : q.getKeyId().toString() + "|"
+                                                    + LAT_LABEL.get(columnLocale),
                                     headerStyle);
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : "--GEOLON--",
-                                            LON_LABEL.get(columnLocale)),
+                                    useQID ? questionId + "_" + LON_LABEL.get(columnLocale)
+                                            : "--GEOLON--" + "|" + LON_LABEL.get(columnLocale),
                                     headerStyle);
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : "--GEOELE--",
-                                            ELEV_LABEL.get(columnLocale)),
+                                    useQID ? questionId + "_" + ELEV_LABEL.get(columnLocale)
+                                            : "--GEOELE--" + "|" + ELEV_LABEL.get(columnLocale),
                                     headerStyle);
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : "--GEOCODE--",
-                                            CODE_LABEL.get(columnLocale)),
+                                    useQID ? questionId + "_" + CODE_LABEL.get(columnLocale)
+                                            : "--GEOCODE--" + "|" + CODE_LABEL.get(columnLocale),
                                     headerStyle);
                         } else {
                             String header = "";
