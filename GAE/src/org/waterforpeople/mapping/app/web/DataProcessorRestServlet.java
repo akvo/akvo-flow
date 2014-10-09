@@ -187,7 +187,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
         } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION.equalsIgnoreCase(req
                 .getAction())) {
-            deleteSurveyResponse(dpReq.getSurveyInstanceId());
+            deleteSurveyResponses(dpReq.getSurveyInstanceId());
         }
         return new RestResponse();
     }
@@ -1400,9 +1400,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      *
      * @param surveyInstanceId
      */
-    private void deleteSurveyResponse(Long surveyInstanceId) {
+    private void deleteSurveyResponses(Long surveyInstanceId) {
         siDao = new SurveyInstanceDAO();
         SurveyInstance surveyInstance = siDao.getByKey(surveyInstanceId);
-        siDao.delete(surveyInstance);
+        if (surveyInstance != null) {
+            siDao.deleteSurveyInstance(surveyInstance);
+        }
     }
 }

@@ -620,13 +620,30 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     public void deleteSurveyInstance(SurveyInstance surveyInstance) {
         final Long surveyInstanceId = surveyInstance.getKey().getId();
 
-        // delete question answers + update summary counts
+        // update summary counts + delete question answers
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
         if (qasList != null && !qasList.isEmpty()) {
+            // question summaries
             surveyInstance.setQuestionAnswersStore(qasList);
             boolean increment = false;
             surveyInstance.updateSummaryCounts(increment);
+
+            // survey instance summary task
+            for (QuestionAnswerStore qasItem : qasList) {
+                if (Question.Type.GEO.toString().equals(qasItem.getType())) {
+                    Queue summaryQueue = QueueFactory.getQueue("dataSummarization");
+
+                    TaskOptions to = TaskOptions.Builder
+                            .withUrl("/app_worker/dataprocessor")
+                            .param(DataProcessorRequest.ACTION_PARAM,
+                                    DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
+                            .param(DataProcessorRequest.DELTA_PARAM, "-1");
+                    summaryQueue.add(to);
+                    break;
+                }
+            }
+
             qasDao.delete(qasList);
         }
 
@@ -640,10 +657,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         }
 
         // delete instance
+        Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
         super.delete(surveyInstance);
 
+        // return if no surveyed locale
+        if (surveyedLocaleId == null) {
+            return;
+        }
+
         // check surveyed locale related to deleted survey instance
-        Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
         List<SurveyInstance> relatedSurveyInstances = listByProperty("surveyedLocaleId",
                 surveyedLocaleId, "Long");
 
@@ -659,23 +681,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                     .param(SurveyalRestRequest.DECREMENT_CLUSTER_COUNT_PARAM,
                             Boolean.TRUE.toString());
             queue.add(to);
-        }
-
-        // survey instance summary task
-        if (qasList != null && qasList.size() > 0) {
-            for (QuestionAnswerStore qasItem : qasList) {
-                if (Question.Type.GEO.toString().equals(qasItem.getType())) {
-                    Queue summaryQueue = QueueFactory.getQueue("dataSummarization");
-
-                    TaskOptions to = TaskOptions.Builder
-                            .withUrl("/app_worker/dataprocessor")
-                            .param(DataProcessorRequest.ACTION_PARAM,
-                                    DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-                            .param(DataProcessorRequest.DELTA_PARAM, "-1");
-                    summaryQueue.add(to);
-                    break;
-                }
-            }
         }
     }
 
