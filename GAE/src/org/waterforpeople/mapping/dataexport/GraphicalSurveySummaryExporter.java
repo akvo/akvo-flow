@@ -711,9 +711,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     (useQID ? questionId + "_" : "--GEOELE--|")
                                             + ELEV_LABEL.get(columnLocale),
                                     headerStyle);
+                            String codeLabel = CODE_LABEL.get(columnLocale);
                             createCell(row, offset++,
-                                    (useQID ? questionId + "_" : "--GEOCODE--|")
-                                            + CODE_LABEL.get(columnLocale),
+                                    useQID ? questionId + "_" + codeLabel.replaceAll("\\s", "")
+                                            : "--GEOCODE--|" + codeLabel,
                                     headerStyle);
                         } else {
                             String header = "";
