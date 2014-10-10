@@ -791,8 +791,12 @@ public class QuestionDao extends BaseDAO<Question> {
         if (results != null && results.size() > 0) {
             SortedMap<Integer, Question> orderedQuestionMap = new TreeMap<Integer, Question>();
             for (Question question : results) {
+                int orderIndex = 0;
                 QuestionGroup qg = qgDao.getByKey(question.getQuestionGroupId());
-                int orderIndex = (qg.getOrder() * 1000) + question.getOrder();
+                if (qg != null) {
+                    orderIndex = (qg.getOrder() != null ? qg.getOrder() * 1000 : 0);
+                    orderIndex += (question.getOrder() != null ? question.getOrder() : 0);
+                }
                 orderedQuestionMap.put(orderIndex, question);
             }
             return (List<Question>) orderedQuestionMap.values();

@@ -521,7 +521,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         if (monitoringGroup) {
             createCell(row, col++, dto.getSurveyedLocaleIdentifier(), null);
-            createCell(row, col++, generateDisplayName(responseMap), null);
+            createCell(row, col++, dto.getSurveyedLocaleDisplayName(), null);
         }
 
         createCell(row, col++, instanceId, null);
@@ -631,25 +631,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         // TODO: ((SXSSFSheet)sheet).flushRows(0); // retain 0 last rows and
         // flush all others
 
-    }
-
-    /**
-     * Generate the display name for responses of a specific survey instance
-     *
-     * @param responseMap
-     * @return
-     */
-    private String generateDisplayName(Map<String, String> surveyInstanceResponses) {
-        StringBuilder displayName = new StringBuilder();
-        for (Long questionId : displayNameQuestionIds) {
-            displayName.append(surveyInstanceResponses.get(questionId.toString())).append(" - ");
-        }
-        if (displayName.toString().endsWith(" - ")) {
-            int length = displayName.length();
-            displayName.delete(length - 3, length);
-        }
-
-        return displayName.toString();
     }
 
     /**
