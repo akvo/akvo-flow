@@ -700,24 +700,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                         if (QuestionType.GEO == q.getType()) {
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : q.getKeyId().toString(),
-                                            LAT_LABEL.get(columnLocale)),
+                                    (useQID ? questionId + "_" : q.getKeyId().toString() + "|")
+                                            + LAT_LABEL.get(columnLocale),
                                     headerStyle);
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : "--GEOLON--",
-                                            LON_LABEL.get(columnLocale)),
+                                    (useQID ? questionId + "_" : "--GEOLON--|")
+                                            + LON_LABEL.get(columnLocale),
                                     headerStyle);
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : "--GEOELE--",
-                                            ELEV_LABEL.get(columnLocale)),
+                                    (useQID ? questionId + "_" : "--GEOELE--|")
+                                            + ELEV_LABEL.get(columnLocale),
                                     headerStyle);
+                            String codeLabel = CODE_LABEL.get(columnLocale);
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : "--GEOCODE--",
-                                            CODE_LABEL.get(columnLocale)),
+                                    useQID ? questionId + "_" + codeLabel.replaceAll("\\s", "")
+                                            : "--GEOCODE--|" + codeLabel,
                                     headerStyle);
                         } else {
                             String header = "";
