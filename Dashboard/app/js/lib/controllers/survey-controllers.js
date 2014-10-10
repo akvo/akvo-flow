@@ -125,6 +125,80 @@ FLOW.alwaysTrue = function () {
   return true;
 };
 
+/**
+ * The root project folder is represented as null with the keyId null
+ */
+FLOW.projectControl = Ember.ArrayController.create({
+  content: null,
+  currentProject: null,
+
+  populate: function() {
+    FLOW.store.find(FLOW.SurveyGroup);
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function(p) {
+      return true;
+    }));
+  },
+
+  setCurrentProject: function(project) {
+    this.set('currentProject', project);
+  },
+
+  /* Computed properties */
+  breadCrumbs: function() {
+    var result = []
+    var currentProject = this.get('currentProject');
+    var id = currentProject ? currentProject.get('keyId') : null;
+    if (id === null) return [null];
+    while(id !== null) {
+      project = FLOW.store.find(FLOW.SurveyGroup, id);
+      result.push(project);
+      id = project.get('parent');
+    }
+    result.push(null);
+    return result.reverse();
+  }.property('@each', 'currentProject'),
+
+  currentFolders: function() {
+    var currentProject = this.get('currentProject');
+    var parentId = currentProject ? currentProject.get('keyId') : null;
+    return this.get('content').filter(function(project) {
+      return project.get('parent') === parentId;
+    })
+  }.property('@each', 'currentProject'),
+
+  /* Actions */
+  selectProject: function(evt) {
+    this.setCurrentProject(evt.context);
+  },
+
+  /* Create a new project folder. The current project must be root or a project folder */
+  createProjectFolder: function() {
+    var currentFolder = this.get('currentProject');
+    Ember.assert('current project is not a folder', this.isProjectFolder(currentFolder));
+
+    var currentFolderId = currentFolder ? currentFolder.get('keyId') : null;
+
+    FLOW.store.createRecord(FLOW.SurveyGroup, {
+      "code": "New project folder - change my name",
+      "name": "New project folder - change my name",
+      "parent": currentFolderId,
+      "projectType": "PROJECT_FOLDER"
+    });
+    FLOW.store.commit();
+  },
+
+  /* Helper methods */
+  isProjectFolder: function(project) {
+    return project === null || project.get('projectType') === 'PROJECT_FOLDER';
+  },
+
+  isProject: function(project) {
+    return !this.isProjectFolder(project);
+  }
+
+});
+
+
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   content: null,
   currentFolderId: null,

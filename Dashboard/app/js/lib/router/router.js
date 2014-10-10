@@ -19,10 +19,6 @@ FLOW.Router = Ember.Router.extend({
   },
 
   root: Ember.Route.extend({
-    doNavProjects: function(router, context) {
-      router.transitionTo('navProjects');
-    },
-
     doNavSurveys: function (router, context) {
       router.transitionTo('navSurveys.index');
     },
@@ -61,16 +57,6 @@ FLOW.Router = Ember.Router.extend({
       redirectsTo: 'navSurveys.index'
     }),
 
-    // ************************** PROJECTS ROUTER *****************************
-    navProjects: Ember.Route.extend({
-      route: '/projects',
-      connectOutlets: function (router, event) {
-        router.get('applicationController').connectOutlet({name: 'navProjects'});
-        router.set('navigationController.selected', 'navProjects');
-        FLOW.projectControl.populate();
-      }
-    }),
-
     // ******************* SURVEYS ROUTER ********************
     navSurveys: Ember.Route.extend({
       route: '/surveys',
@@ -105,6 +91,7 @@ FLOW.Router = Ember.Router.extend({
             name: 'navSurveysMain'
           });
           FLOW.surveyGroupControl.populate();
+          FLOW.projectControl.populate();
           FLOW.selectedControl.set('selectedQuestionGroup', null);
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);

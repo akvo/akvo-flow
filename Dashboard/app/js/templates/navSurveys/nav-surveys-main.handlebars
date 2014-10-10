@@ -1,25 +1,22 @@
-{{#view FLOW.ProjectMainView}}
 
   <section class="topBar">
     <nav class="breadCrumb">
       <ul>
-        {{#view FLOW.ProjectBreadCrumbView}}
-          {{#each sg in FLOW.surveyGroupControl.breadCrumbs}}
-            <li>
-              {{#if sg}}
-                <a {{action "selectProject" sg target="this"}}>{{sg.code}}</a>
-              {{else}}
-                <a class="homeRoot" {{action "selectProject" sg target="this"}}>Home</a>
-              {{/if}}
-            </li>
-          {{/each}}
-        {{/view}}
+        {{#each sg in FLOW.projectControl.breadCrumbs}}
+          <li>
+            {{#if sg}}
+              <a {{action "selectProject" sg target="FLOW.projectControl"}}>{{sg.code}}</a>
+            {{else}}
+              <a class="homeRoot" {{action "selectProject" sg target="FLOW.projectControl"}}>Home</a>
+            {{/if}}
+          </li>
+        {{/each}}
       </ul>
     </nav>
     <nav class="menuTopbar">
       <ul>
         <li><a class="editGroupName" href="#">Edit folder</a></li>
-        <li><a class="addFolder" {{action "createFolder" target="this"}}>Add folder</a></li>
+        <li><a class="addFolder" {{action "createProjectFolder" target="FLOW.projectControl"}}>Add folder</a></li>
         <li><a class="addSurvey" href="#">Create a new project</a></li>
       </ul>
     </nav>
@@ -27,27 +24,16 @@
 
   <div class="floats-in">
     <div id="pageWrap" class="widthConstraint belowHeader">
-      {{#if view.showProjectList}}
-        {{#view FLOW.ProjectListView}}
-          <section id="allSurvey" class="surveysList">
-            <ul>
-              {{#each sg in FLOW.surveyGroupControl.currentFolders}}
-                  <li class="aSurvey aFolder">
-                    <a {{action "makeSelected" sg target="this"}}>
-                      <h2>{{sg.code}}</h2>
-                    </a>
-                  </li>
-              {{/each}}
-            </ul>
-          </section>
-        {{/view}}
-      {{/if}}
+      <section id="allSurvey" class="surveysList">
+        <ul>
+          {{#each sg in FLOW.projectControl.currentFolders}}
+              <li class="aSurvey aFolder">
+                <a {{action "selectProject" sg target="FLOW.projectControl"}}>
+                  <h2>{{sg.code}}</h2>
+                </a>
+              </li>
+          {{/each}}
+        </ul>
+      </section>
     </div>
   </div>
-
-
-  {{#if view.showProject}}
-    <h2>Project {{view.currentProject.code}}</h2>
-  {{/if}}
-
-{{/view}}

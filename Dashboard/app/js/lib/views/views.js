@@ -7,7 +7,6 @@ require('akvo-flow/core-common');
 require('akvo-flow/views/surveys/preview-view');
 require('akvo-flow/views/surveys/notifications-view');
 require('akvo-flow/views/surveys/translations-view');
-require('akvo-flow/views/projects/projects-views');
 require('akvo-flow/views/surveys/survey-group-views');
 require('akvo-flow/views/surveys/survey-details-views');
 require('akvo-flow/views/data/inspect-data-table-views');
