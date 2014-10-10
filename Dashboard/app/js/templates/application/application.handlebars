@@ -16,12 +16,7 @@
     {{view FLOW.HeaderView}}
   </div>
 </header>
-
-<div class="floats-in">
-  <div id="pageWrap" class="widthConstraint belowHeader">
-    {{outlet}}
-  </div>
-</div>
+{{outlet}}
 <div><iframe id="downloader" style="display:none" width="0" height="0"></iframe></div>
 <div {{bindAttr class="FLOW.dialogControl.showDialog:display :overlay"}}>
   <div class="blanket"></div>
