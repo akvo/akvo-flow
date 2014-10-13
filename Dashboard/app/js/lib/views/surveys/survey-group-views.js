@@ -20,7 +20,21 @@ FLOW.ProjectItemView = FLOW.View.extend({
   isFolder: function() {
     return FLOW.projectControl.isProjectFolder(this.content);
   }.property(),
-})
+
+  formatDate: function(datetime) {
+    var date = new Date(parseInt(datetime));
+    return date.getDay() + "." + (date.getMonth() + 1) + " " + date.getFullYear();
+  },
+
+  created: function() {
+    return this.formatDate(this.content.get('createdDateTime'));
+  }.property(),
+
+  modified: function() {
+    return this.formatDate(this.content.get('lastUpdateDateTime'));
+  }.property(),
+
+});
 
 
 // displays survey groups in left sidebar
