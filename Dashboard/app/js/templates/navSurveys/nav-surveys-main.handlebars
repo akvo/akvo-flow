@@ -27,11 +27,22 @@
       <section id="allSurvey" class="surveysList">
         <ul>
           {{#each sg in FLOW.projectControl.currentFolders}}
-              <li class="aSurvey aFolder">
-                <a {{action "selectProject" sg target="FLOW.projectControl"}}>
+              {{#view FLOW.ProjectItemView contentBinding="sg"}}
+                {{#if view.isFolder}}
+                  <a {{action "selectProject" sg target="FLOW.projectControl"}}>
+                    <h2>{{sg.code}}</h2>
+                  </a>
+                {{else}}
                   <h2>{{sg.code}}</h2>
-                </a>
-              </li>
+                  <ul class="surveyInfo floats-in">
+                    <li class="dateCreated"><span>Created</span></li>
+                    <li class="responseNumber"><span>Responses</span></li>
+                    <li class="dateModified"><span>Modified</span></li>
+                    <li class="surveyType"><span>Type</span><p>Private</p></li>
+                    <li class="surveyLanguage"><span>Language</span><p>English</p></li>
+                  </ul>
+                {{/if}}
+              {{/view}}
           {{/each}}
         </ul>
       </section>

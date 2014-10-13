@@ -159,10 +159,14 @@ FLOW.projectControl = Ember.ArrayController.create({
   }.property('@each', 'currentProject'),
 
   currentFolders: function() {
+    var self = this;
     var currentProject = this.get('currentProject');
     var parentId = currentProject ? currentProject.get('keyId') : null;
     return this.get('content').filter(function(project) {
       return project.get('parent') === parentId;
+    }).sort(function(a, b) {
+      // TODO: Also sort 'code' by ascending order;
+      return self.isProjectFolder(a) ? -1 : 1;
     })
   }.property('@each', 'currentProject'),
 

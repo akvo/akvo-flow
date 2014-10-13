@@ -6,6 +6,23 @@ if (!String.prototype.trim) {
   String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
 }
 
+
+FLOW.ProjectItemView = FLOW.View.extend({
+  tagName: 'li',
+  content: null,
+  classNameBindings: ['classProperty'],
+
+  classProperty: function() {
+    var isFolder = FLOW.projectControl.isProjectFolder(this.content);
+    return isFolder ? "aSurvey aFolder" : "aSurvey";
+  }.property(),
+
+  isFolder: function() {
+    return FLOW.projectControl.isProjectFolder(this.content);
+  }.property(),
+})
+
+
 // displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   content: null,
