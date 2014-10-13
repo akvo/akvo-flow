@@ -28,11 +28,11 @@ FLOW.ProjectItemView = FLOW.View.extend({
 
   created: function() {
     return this.formatDate(this.content.get('createdDateTime'));
-  }.property(),
+  }.property('this.content.createdDateTime'),
 
   modified: function() {
     return this.formatDate(this.content.get('lastUpdateDateTime'));
-  }.property(),
+  }.property('this.content.lastUpdateDateTime'),
 
 });
 

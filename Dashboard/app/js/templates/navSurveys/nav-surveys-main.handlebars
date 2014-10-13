@@ -17,7 +17,7 @@
       <ul>
         <li><a class="editGroupName" href="#">Edit folder</a></li>
         <li><a class="addFolder" {{action "createProjectFolder" target="FLOW.projectControl"}}>Add folder</a></li>
-        <li><a class="addSurvey" href="#">Create a new project</a></li>
+        <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>Create new project</a></li>
       </ul>
     </nav>
   </section>
@@ -43,7 +43,7 @@
                   </ul>
                   <nav>
                     <ul>
-                      <li class="editSurvey"><a href="surveyProject.html">Edit</a></li>
+                      <li class="editSurvey"><a>Edit</a></li>
                       <li class="previewSurvey"><a>Preview</a></li>
                       <li class="deleteSurvey"> <a>Delete</a></li>
                       <li class="copySurvey"><a>Copy</a></li>

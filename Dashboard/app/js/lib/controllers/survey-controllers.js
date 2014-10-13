@@ -177,16 +177,25 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   /* Create a new project folder. The current project must be root or a project folder */
   createProjectFolder: function() {
-    var currentFolder = this.get('currentProject');
-    Ember.assert('current project is not a folder', this.isProjectFolder(currentFolder));
+    this.createNewProject(true);
+  },
 
+  createProject: function() {
+    this.createNewProject(false);
+  },
+
+  createNewProject: function(folder) {
+    var currentFolder = this.get('currentProject');
     var currentFolderId = currentFolder ? currentFolder.get('keyId') : null;
 
+    var name = folder ? "New project folder" : "New project";
+    var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
+
     FLOW.store.createRecord(FLOW.SurveyGroup, {
-      "code": "New project folder - change my name",
-      "name": "New project folder - change my name",
+      "code": name,
+      "name": name,
       "parent": currentFolderId,
-      "projectType": "PROJECT_FOLDER"
+      "projectType": projectType
     });
     FLOW.store.commit();
   },
