@@ -200,6 +200,12 @@ FLOW.projectControl = Ember.ArrayController.create({
     FLOW.store.commit();
   },
 
+  deleteProject: function(evt) {
+    project = FLOW.store.find(FLOW.SurveyGroup, evt.context.get('keyId'));
+    project.deleteRecord();
+    FLOW.store.commit();
+  },
+
   /* Helper methods */
   isProjectFolder: function(project) {
     return project === null || project.get('projectType') === 'PROJECT_FOLDER';
