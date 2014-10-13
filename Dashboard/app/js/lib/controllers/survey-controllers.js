@@ -214,9 +214,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   isProject: function(project) {
     return !this.isProjectFolder(project);
   }
-
 });
-
 
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   content: null,
@@ -278,7 +276,6 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     FLOW.selectedControl.set('selectedSurveyGroup', null);
   }
 });
-
 
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,

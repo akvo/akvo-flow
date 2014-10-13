@@ -1,0 +1,12 @@
+
+{{#view FLOW.Project}}
+  <div class="floats-in">
+    <div id="pageWrap" class="widthConstraint belowHeader">
+      <br/>
+      <h2>Project: {{view.project.code}}</h2>
+      <h2>Forms: </h2>
+      <h2>Monitoring: {{#if view.project.monitoringGroup}}Enabled{{else}}Not Enabled{{/if}}</h2>
+      <h2>Status: </h2>
+    </div>
+  </div>
+{{/view}}

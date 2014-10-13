@@ -7,6 +7,37 @@ if (!String.prototype.trim) {
 }
 
 
+
+FLOW.ProjectListView = FLOW.View.extend({
+  templateName: 'navSurveys/project-list'
+});
+
+FLOW.ProjectView = FLOW.View.extend({
+  templateName: 'navSurveys/project',
+});
+
+FLOW.Project = FLOW.View.extend({
+  project: function() {
+    return FLOW.projectControl.get('currentProject');
+  }.property(),
+})
+
+
+FLOW.ProjectMainView = FLOW.View.extend({
+
+  projectView: function() {
+    return FLOW.projectControl.isProject(FLOW.projectControl.get('currentProject'));
+  }.property('FLOW.projectControl.currentProject'),
+
+  projectListView: function() {
+    return FLOW.projectControl.isProjectFolder(FLOW.projectControl.get('currentProject'));
+  }.property('FLOW.projectControl.currentProject'),
+
+});
+
+
+
+
 FLOW.ProjectItemView = FLOW.View.extend({
   tagName: 'li',
   content: null,
