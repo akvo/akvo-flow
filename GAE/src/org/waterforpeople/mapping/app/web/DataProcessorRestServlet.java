@@ -19,7 +19,6 @@ package org.waterforpeople.mapping.app.web;
 import java.io.BufferedInputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1174,7 +1173,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 } else {
                     // look it up in the datastore
                     qList = new ArrayList<Long>();
-                    Collection<Question> questions = qDao
+                    List<Question> questions = qDao
                             .listDisplayNameQuestionsBySurveyId(sIsurveyId);
                     if (questions != null) {
                         for (Question q : questions) {
