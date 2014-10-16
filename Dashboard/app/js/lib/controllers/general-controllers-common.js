@@ -111,6 +111,7 @@ FLOW.tableColumnControl = Ember.Object.create({
 // set by restadapter sideLoad meta
 FLOW.metaControl = Ember.Object.create({
   numSILoaded: null, // used by data tab nextPage method
+  numSLLoaded: null, // used by monitored data tab nextPage method
   since: null,
   num: null,
   message: null,
@@ -144,7 +145,7 @@ FLOW.savingMessageControl = Ember.Object.create({
 		  this.set('areLoadingBool', false);
 	  }
   },
-  
+
   checkSaving: function () {
     if (FLOW.store.defaultTransaction.buckets.inflight.list.get('length') > 0) {
       this.set('areSavingBool', true);
