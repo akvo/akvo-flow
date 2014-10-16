@@ -1708,6 +1708,7 @@ a.FadeIt {
             color:$anchorLink;
         }   
     }
+}
     li.formList {
         border-top:1px solid rgb(51,51,51); 
         padding:10px 0;
@@ -1719,7 +1720,7 @@ a.FadeIt {
             text-transform:uppercase;
             color:rgba($anchorLink, 0.5);
         }
-        p.noForms {
+        .noForms {
                 padding-top:35px;
                 background: url(../images/IconForms.png) center top no-repeat;
                 text-align: center;
@@ -1748,78 +1749,10 @@ a.FadeIt {
                         background-size: 15px 25px;
                         }
                     }
-                a {
-                    display: block;
-                    text-transform: uppercase;
-                    padding: 10px 1% 10px 25px;
-                    width: calc(99% - 25px);
-                    height: 23px;
-                    background: url(../images/carretFolder.svg) right center no-repeat;
-                    background-size: 15px 25px;
-                    color: rgb(153, 153, 153);
-                    color: rgba(255, 255, 255, 0.2);
-                    @include noWrapTxt;
-                    font-size: 1.2em;
-                    cursor: pointer;
-                    &:hover {
-                        background: rgb(80, 80, 80) url(../images/carretFolder.svg) right center no-repeat;
-                        background: rgba(255, 255, 255, 0.05) url(../images/carretFolder.svg) right center no-repeat;
-                        color: rgb(114, 205, 255);
-                        background-size: 15px 25px;
-                    }
-                span.monitorIcn {
-                    font-weight: bold;
-                    font-size: 0.8em;
-                    line-height: 21px;
-                    color: white;
-                    background-color:$monitorGreen;
-                    display: inline-block;
-                    border-radius: 10px;
-                    width: 16px;
-                    height: 20px;
-                    padding: 0 0 0 4px;
-                }
-            }
         }
     }
     }
-}
-.projectDetailForm {
-    display: block;
-    margin: 0 0 5px 5px;
-    width: calc(100% - 62px);
-    margin-top:0 !important;
-    padding:20px 25px;
-    background:rgb(248,248,248);
-    form {
-        width:98%;    
-    }
-    input {
-        width:100%;
-        margin-bottom: 35px;
-        background:rgb(248,248,248);
-        color:rgb(158,158,158);
-        &:focus {
-            border: 1px solid rgb(205, 205, 205);
-            background: rgb(245, 255, 216);
-            }
-        &[type=checkbox] {
-            width:20px;
-            float: left;
-        }
-    }
-    .projectSelect {
-        display: flex;
-        margin-bottom: 50px;
-        li {
-            width:50%;
-            select {
-                width:98%;
-                padding:8px 5px;
-            }
-        }
-    }
-}
+
 /* Survey Top Bar
 --------------------------------------------- */
 
@@ -1871,7 +1804,7 @@ section.topBar {
         width:49.5%;
         &:first-child {
             margin-left: 0.5%;
-        }        
+        }
         &:last-child {
             margin-right: 0.5%;
         }
@@ -2452,37 +2385,6 @@ a.manageNotifications span {
     margin: 0 0.2em 0 0;
     text-transform: uppercase;
     font-weight: bold;
-}
-.newSurveyInfoUl {
-    margin: 5px auto;
-    padding: 10px 1%;
-    width: 94%;
-    background: rgb(51,51,51);
-}
-.newSurveyInfoUl li {
-    position: relative;
-    margin: 0.01em auto 0.05em auto;
-    width: 96%;
-    color: rgb(153, 153, 153);
-    text-transform: uppercase;
-    font-size: 0.9em;
-
-}
-.newSurveyInfoUl li h3 {
-    font-size: 1.1em;
-    color: rgb(155,133,117);
-    margin: 3px 0;
-}
-.newSurveyInfoUl li > span {
-    position: absolute;
-    right: 5px;
-    color: white;
-}
-.newSurveyInfoUl li > span.surveyNotPublished {
-    color: rgb(227, 27, 35);
-}
-.newSurveyInfoUl li > span.surveyPublished {
-    color: rgb(145, 237, 115);
 }
 nav.newSurveyNav {
     margin: 0 auto;
@@ -4171,4 +4073,76 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 }
 .marker-cluster span {
     line-height: 30px;
+}
+
+/************************************* New styles ****************************************/
+
+.projectSection {
+    background: $projectBackground;
+    box-sizing: border-box;
+    width:100%;
+    padding:2em 0;
+    margin:0 auto;
+    .projectDetailsPanel {
+        .addMenuAction {display:inline-block; margin:0 auto;}
+        .projectSummary {
+            display:flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            align-content: center;
+            li {
+                width: 33.33333%;
+                text-align: center;
+                padding:20px 0;
+                background:$projectTopBackground;
+            }
+        }
+        span.fontInfo {
+            font-family: $scriptFont;
+            font-size:1.8em;
+            color: rgb(212,212,212);
+            margin:0 0.5em 0 0;
+        }
+        h2 {
+            color: $akvoOrange;
+            display:inline;
+        }
+        .projectDetails {
+            background:$projectTopBackgroundLighter;
+            padding:2em 0.5%;
+        .projectDetailForm {
+            display: block;
+
+            margin-top:0 !important;
+            form {
+                width:100%;    
+            }
+            input {
+                width:99%;
+                margin-bottom: 35px;
+                background:rgb(248,248,248);
+                color:rgb(158,158,158);
+                &:focus {
+                    border: 1px solid rgb(205, 205, 205);
+                    background: rgb(245, 255, 216);
+                    }
+                &[type=checkbox] {
+                    width:20px;
+                    float: left;
+                }
+            }
+            .projectSelect {
+                display: flex;
+                margin-bottom: 50px;
+                li {
+                    width:50%;
+                    select {
+                        width:98%;
+                        padding:8px 5px;
+                    }
+        }
+    }
+}}
+    }
 }

@@ -7,8 +7,8 @@
 
 /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  PLEASE NEVER EDIT main.css directly  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  */
 
-$bodyFont: 'Open Sans',  'Raleway', "Helvetica Neue", Helvetica, Arial, sans-serif;
-$scriptFont: Baskerville, "Goudy Old Style", "Palatino", "Book Antiqua", Georgia, serif;
+$bodyFont: 'Raleway', 'Open Sans',  "Helvetica Neue", Helvetica, Arial, sans-serif;
+$scriptFont: 'Dancing Script', Baskerville, "Goudy Old Style", "Palatino", "Book Antiqua", Georgia, serif;
 $titleFont:  'Montserrat', "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 $akvoPurple: rgb(44, 42, 116);   	
@@ -20,8 +20,13 @@ $midGrey:rgb(153, 153, 153);
 $akvoDarkBlue:rgb(57, 102, 128);		
 $linkColor: rgb(107, 134, 141);
 $akvoRed: #C81600;
+$akvoRed2: #ef4136;
 $anchorLink: rgb(74, 177, 207);
 $anchorLinkHover: rgb(246, 160, 26);
+
+$projectBackground: rgb(56, 69, 74);
+$projectTopBackground: rgb(55, 67, 72);
+$projectTopBackgroundLighter: rgb(53, 78, 90);
 
 $monitorGreen: rgb(0, 167, 157);
 

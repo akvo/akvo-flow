@@ -2,11 +2,55 @@
 {{#view FLOW.Project}}
   <div class="floats-in">
     <div id="pageWrap" class="widthConstraint belowHeader">
-      <br/>
-      <h2>Project: {{view.project.code}}</h2>
-      <h2>Forms: </h2>
-      <h2>Monitoring: {{#if view.project.monitoringGroup}}Enabled{{else}}Not Enabled{{/if}}</h2>
-      <h2>Status: </h2>
+      <section id="main" class="projectSection floats-in middleSection" role="main">
+        <section id="" class="projectDetailsPanel">
+          <span class="fontInfo">Project:</span><h2>{{view.project.code}}</h2>
+          <ul class="projectSummary">
+            <li>Forms<span id="Form">0</span>
+            </li>
+            <li>Monitoring<span id="numberQuestion">No</span>
+            </li>
+            <li>Status:<span class="surveyNotPublished">No Forms</span>
+            </li>
+          </ul>
+          <section class="projectDetails">
+            <form class="projectDetailForm">
+              <label>Project Title</label><input id="projectTitle" class="" type="text" value="Burundi Population survey">
+              <label>Project Description</label><input id="projectTitle" class="" type="text" value="none">
+              <ul class="projectSelect floats-in">
+                <li>
+                  <label>Privacy Type:</label>
+                  <select>
+                    <option value="">Select privacy type</option>
+                    <option value="Public">Public</option>
+                    <option value="Private">Private</option>
+                  </select>
+                </li>
+                <li>
+                  <label>Language:</label>
+                  <select>
+                    <option value="">Select main language</option>
+                    <option value="Public">English</option>
+                    <option value="Private">French</option>
+                    <option value="Private">Spanish</option>
+                  </select>
+                </li>
+              </ul>
+              <label for="enableMonitoring" class="labelcheckbox">
+                <input type="checkbox" id="enableMonitoring">Enable Monitoting features
+              </label>
+            </form>
+          </section>
+          <section class="forms">
+            <ul>
+              <li class="formList">
+                <p class="noForms">You have no forms in this project</p>
+              </li>
+              <li><a class="addMenuAction aBtn" href="surveyNewForm.html">Add a new form</a></li>
+            </ul>
+          </section>
+        </section>
+      </section>
     </div>
   </div>
 {{/view}}
