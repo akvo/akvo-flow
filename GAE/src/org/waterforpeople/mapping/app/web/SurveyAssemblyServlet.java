@@ -193,7 +193,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         try {
             uploadedFile = S3Util.put(bucketName,
                     props.getProperty(SURVEY_UPLOAD_DIR) + "/" + sc.getSurveyId() + ".xml",
-                    document.getBytes(), "text/xml", true);
+                    document.getBytes("UTF-8"), "text/xml", true);
         } catch (IOException e) {
             log.error("Error uploading file " + e.getMessage(), e);
         }
@@ -354,7 +354,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         try {
             uploadedFile = S3Util.put(bucketName, props.getProperty(SURVEY_UPLOAD_DIR) + "/"
                     + surveyId
-                    + ".xml", document.getBytes(), "text/xml", true);
+                    + ".xml", document.getBytes("UTF-8"), "text/xml", true);
         } catch (IOException e) {
             log.error("Error uploading file: " + e.getMessage(), e);
         }
