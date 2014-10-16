@@ -63,7 +63,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
  * client code for calling the apis for data processing on the server
- * 
+ *
  * @author Christopher Fagiani
  */
 public class BulkDataServiceClient {
@@ -75,7 +75,7 @@ public class BulkDataServiceClient {
     /**
      * lists all responses from the server for a surveyInstance submission as a map of values keyed
      * on questionId
-     * 
+     *
      * @param instanceId
      * @param serverBase
      * @return
@@ -271,7 +271,7 @@ public class BulkDataServiceClient {
     /**
      * survey instance ids and their submission dates. Map keys are the instances and values are the
      * dates.
-     * 
+     *
      * @param surveyId
      * @param serverBase
      * @return
@@ -324,7 +324,7 @@ public class BulkDataServiceClient {
 
     /**
      * method to parse SurveyInstance response values
-     * 
+     *
      * @param data
      * @return
      */
@@ -368,7 +368,7 @@ public class BulkDataServiceClient {
 
     /**
      * loads full details for a single question (options, translations, etc)
-     * 
+     *
      * @param serverBase
      * @param questionId
      * @return
@@ -395,7 +395,7 @@ public class BulkDataServiceClient {
     /**
      * returns an array containing 2 elements: the first is an ordered list of questionIds (in the
      * order they appear in the survey) and the second element is a map of questions (keyed on id)
-     * 
+     *
      * @param surveyId
      * @param serverBase
      * @return
@@ -428,7 +428,7 @@ public class BulkDataServiceClient {
 
     /**
      * gets questions from the server for a specific question group
-     * 
+     *
      * @param serverBase
      * @param groupId
      * @return
@@ -445,7 +445,7 @@ public class BulkDataServiceClient {
 
     /**
      * gets a surveyInstance from the server for a specific id
-     * 
+     *
      * @param id
      * @param serverBase
      * @return
@@ -462,7 +462,7 @@ public class BulkDataServiceClient {
 
     /**
      * gets question groups from the server for a specific survey
-     * 
+     *
      * @param serverBase
      * @param surveyId
      * @return
@@ -479,7 +479,7 @@ public class BulkDataServiceClient {
 
     /**
      * gets question groups from the server for a specific survey
-     * 
+     *
      * @param serverBase
      * @param surveyId
      * @return
@@ -520,7 +520,7 @@ public class BulkDataServiceClient {
 
     /**
      * gets survey list from the server for a specific survey
-     * 
+     *
      * @param serverBase
      * @param surveyId
      * @return
@@ -537,7 +537,7 @@ public class BulkDataServiceClient {
 
     /**
      * parses a single SurveyInstanceDto from a json response string
-     * 
+     *
      * @param response
      * @return
      * @throws Exception
@@ -593,7 +593,7 @@ public class BulkDataServiceClient {
 
     /**
      * parses the question group response and forms DTOs
-     * 
+     *
      * @param response
      * @return
      * @throws Exception
@@ -643,7 +643,7 @@ public class BulkDataServiceClient {
 
     /**
      * parses the survey group response and forms DTOs
-     * 
+     *
      * @param response
      * @return
      * @throws Exception
@@ -683,7 +683,7 @@ public class BulkDataServiceClient {
 
     /**
      * parses the survey group response and forms DTOs
-     * 
+     *
      * @param response
      * @return
      * @throws Exception
@@ -805,7 +805,7 @@ public class BulkDataServiceClient {
 
     /**
      * parses question responses into QuesitonDto objects
-     * 
+     *
      * @param response
      * @return
      * @throws Exception
@@ -891,6 +891,9 @@ public class BulkDataServiceClient {
                             if (json.has("isName")
                                     && !"null".equalsIgnoreCase(json.getString("isName"))) {
                                 dto.setIsName(json.getBoolean("isName"));
+                            }
+                            if (!json.isNull("localeNameFlag")) {
+                                dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
                             }
                             if (json.has("mandatoryFlag")
                                     && !"null".equalsIgnoreCase(json.getString("mandatoryFlag"))) {
@@ -1040,7 +1043,7 @@ public class BulkDataServiceClient {
     /**
      * invokes a remote REST api using the base and query string passed in. If shouldSign is true,
      * the queryString will be augmented with a timestamp and hash parameter.
-     * 
+     *
      * @param baseUrl
      * @param queryString
      * @param shouldSign
@@ -1078,7 +1081,7 @@ public class BulkDataServiceClient {
     /**
      * invokes a remote REST api. If the url is longer than 1900 characters, this method will use
      * POST since that is too long for a GET
-     * 
+     *
      * @param fullUrl
      * @return
      * @throws Exception

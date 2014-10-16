@@ -71,7 +71,7 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 /**
  * Enhancement of the SurveySummaryExporter to support writing to Excel and including chart images.
- * 
+ *
  * @author Christopher Fagiani
  */
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
@@ -286,6 +286,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
     private boolean monitoringGroup = false;
+    private List<Long> displayNameQuestionIds = new ArrayList<Long>();
 
     @Override
     public void export(Map<String, String> criteria, File fileName,
@@ -322,6 +323,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 for (List<QuestionDto> qList : questionMap.values()) {
                     for (QuestionDto q : qList) {
                         questionsById.put(q.getKeyId(), q);
+                        if (q.getLocaleNameFlag() != null && q.getLocaleNameFlag()) {
+                            displayNameQuestionIds.add(q.getKeyId());
+                        }
                     }
                 }
             }
@@ -631,7 +635,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     /**
      * creates the header for the raw data tab
-     * 
+     *
      * @param row
      * @param questionMap
      * @return - returns a 2 element array. The first element is a List of String objects
@@ -677,24 +681,21 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
                         if (QuestionType.GEO == q.getType()) {
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : q.getKeyId().toString(),
-                                            LAT_LABEL.get(columnLocale)),
+                                    (useQID ? questionId + "_" : q.getKeyId().toString() + "|")
+                                            + LAT_LABEL.get(columnLocale),
                                     headerStyle);
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : "--GEOLON--",
-                                            LON_LABEL.get(columnLocale)),
+                                    (useQID ? questionId + "_" : "--GEOLON--|")
+                                            + LON_LABEL.get(columnLocale),
                                     headerStyle);
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : "--GEOELE--",
-                                            ELEV_LABEL.get(columnLocale)),
+                                    (useQID ? questionId + "_" : "--GEOELE--|")
+                                            + ELEV_LABEL.get(columnLocale),
                                     headerStyle);
+                            String codeLabel = CODE_LABEL.get(columnLocale);
                             createCell(row, offset++,
-                                    String.format("%s|%s",
-                                            useQID ? questionId : "--GEOCODE--",
-                                            CODE_LABEL.get(columnLocale)),
+                                    useQID ? questionId + "_" + codeLabel.replaceAll("\\s", "")
+                                            : "--GEOCODE--|" + codeLabel,
                                     headerStyle);
                         } else {
                             String header = "";
@@ -1014,7 +1015,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     /**
      * finds or creates the row at the given index
-     * 
+     *
      * @param index
      * @param rowLocalMax
      * @param sheet
@@ -1040,7 +1041,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     /**
      * sets instance variables to the values passed in in the Option map. If the option is not set,
      * the default values are used.
-     * 
+     *
      * @param options
      */
     protected void processOptions(Map<String, String> options) {
@@ -1096,7 +1097,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     /**
      * call the server to augment the data already loaded in each QuestionDto in the map passed in.
-     * 
+     *
      * @param questionMap
      */
     private void loadFullQuestions(
@@ -1121,7 +1122,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     /**
      * uses the locale and the translation map passed in to determine what value to use for the
      * string
-     * 
+     *
      * @param text
      * @param translationMap
      * @return
