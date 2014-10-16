@@ -19,6 +19,7 @@ package com.gallatinsystems.survey.dao;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -779,7 +780,7 @@ public class QuestionDao extends BaseDAO<Question> {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<Question> listDisplayNameQuestionsBySurveyId(Long surveyId) {
+    public Collection<Question> listDisplayNameQuestionsBySurveyId(Long surveyId) {
         QuestionGroupDao qgDao = new QuestionGroupDao();
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(Question.class);
@@ -799,7 +800,7 @@ public class QuestionDao extends BaseDAO<Question> {
                 }
                 orderedQuestionMap.put(orderIndex, question);
             }
-            return (List<Question>) orderedQuestionMap.values();
+            return orderedQuestionMap.values();
         } else {
             return Collections.emptyList();
         }
