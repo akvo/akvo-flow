@@ -799,7 +799,7 @@ public class QuestionDao extends BaseDAO<Question> {
                 }
                 orderedQuestionMap.put(orderIndex, question);
             }
-            return (List<Question>) orderedQuestionMap.values();
+            return new ArrayList<Question>(orderedQuestionMap.values());
         } else {
             return Collections.emptyList();
         }
