@@ -15,8 +15,8 @@
           </ul>
           <section class="projectDetails">
             <form class="projectDetailForm">
-              <label>Project Title</label><input id="projectTitle" class="" type="text" value="Burundi Population survey">
-              <label>Project Description</label><input id="projectTitle" class="" type="text" value="none">
+              <label>Project Title</label>{{view Ember.TextField id="projectTitle" valueBinding="view.project.code"}}
+              <label>Project Description</label>{{view Ember.TextField id="projectDescription" valueBinding="view.project.description"}}
               <ul class="projectSelect floats-in">
                 <li>
                   <label>Privacy Type:</label>
