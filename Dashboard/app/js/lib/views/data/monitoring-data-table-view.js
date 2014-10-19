@@ -59,20 +59,10 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   },
 
   hasNextPage: function () {
-    if (FLOW.metaControl.get('numSLLoaded') == 20) {
-      return true;
-    } else {
-      return false;
-    }
+    return FLOW.metaControl.get('numSLLoaded') == 20;
   }.property('FLOW.metaControl.numSLLoaded'),
 
   hasPrevPage: function () {
-    if (FLOW.surveyedLocaleControl.get('sinceArray').length === 0) {
-      return false;
-    } else {
-      return true;
-    }
+    return FLOW.surveyedLocaleControl.get('sinceArray').length != 0;
   }.property('FLOW.surveyedLocaleControl.sinceArray.length'),
-
-
 });
