@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.UserPayload;
+import org.waterforpeople.mapping.app.web.rest.dto.UserRolePayload;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
 import com.gallatinsystems.common.Constants;
@@ -289,27 +291,27 @@ public class UserRestService {
 
     @RequestMapping(method = RequestMethod.POST, value = "/roles")
     @ResponseBody
-    public Map<String, Object> createUserRole(@RequestBody UserRole role) {
+    public Map<String, Object> createUserRole(@RequestBody UserRolePayload payload) {
         final RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
 
         final Map<String, Object> response = new HashMap<String, Object>();
         response.put("meta", statusDto);
 
-        if (role.getName() == null) {
+        if (StringUtils.isBlank(payload.getName())) {
             statusDto.setMessage("_missing_role_name");
             return response;
         }
 
-        UserRole newRole = userRoleDao.findUserRoleByName(role.getName());
-        if (newRole == null) {
-            newRole = userRoleDao.save(role);
+        UserRole role = userRoleDao.findUserRoleByName(payload.getName());
+        if (role == null) {
+            role = userRoleDao.save(payload.getUserRole());
             statusDto.setStatus("ok");
             statusDto.setMessage("_role_created");
         } else {
             statusDto.setMessage("_role_already_exists");
         }
-        response.put("role", role);
+        response.put("role", new UserRolePayload(role));
         return response;
     }
 
