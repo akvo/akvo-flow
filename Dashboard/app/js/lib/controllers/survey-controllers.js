@@ -155,7 +155,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     while(id !== null) {
       project = FLOW.store.find(FLOW.SurveyGroup, id);
       result.push(project);
-      id = project.get('parent');
+      id = project.get('parentId');
     }
     return result.reverse();
   }.property('@each', 'currentProject'),
@@ -165,7 +165,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     var currentProject = this.get('currentProject');
     var parentId = currentProject ? currentProject.get('keyId') : null;
     return this.get('content').filter(function(project) {
-      return project.get('parent') === parentId;
+      return project.get('parentId') === parentId;
     }).sort(function(a, b) {
       // TODO: Also sort 'code' by ascending order;
       return self.isProjectFolder(a) ? -1 : 1;
@@ -200,7 +200,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     FLOW.store.createRecord(FLOW.SurveyGroup, {
       "code": name,
       "name": name,
-      "parent": currentFolderId,
+      "parentId": currentFolderId,
       "projectType": projectType
     });
     FLOW.store.commit();
@@ -244,7 +244,7 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     while(id !== null) {
       project = FLOW.store.find(FLOW.SurveyGroup, id);
       result.push(project);
-      id = project.get('parent');
+      id = project.get('parentId');
     }
     result.push(null);
     return result.reverse();

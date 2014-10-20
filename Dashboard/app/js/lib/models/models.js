@@ -44,7 +44,7 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
     defaultValue: ''
   }),
 
-  parent: DS.attr('number', {
+  parentId: DS.attr('number', {
     defaultValue: null
   }),
 

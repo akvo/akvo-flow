@@ -35,7 +35,7 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     private Date createdDateTime;
     private Date lastUpdateDateTime;
     private ProjectType projectType;
-    private Long parent;
+    private Long parentId;
 
     private ArrayList<SurveyDto> surveyList = null;
 
@@ -123,12 +123,12 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
         this.projectType = projectType;
     }
 
-    public Long getParent() {
-        return parent;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public void setParent(Long parent) {
-        this.parent = parent;
+    public void setParentId(Long parent) {
+        this.parentId = parent;
     }
 
 }

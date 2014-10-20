@@ -36,9 +36,11 @@ public class SurveyGroup extends BaseDomain {
     private String code = null;
     private Boolean monitoringGroup = false;
     private Long newLocaleSurveyId;
-    private Long parent; // parent survey group id
+    private Long parentId;
     private String description = null;
     private ProjectType projectType;
+    private String defaultLanguageCode;
+    private PrivacyLevel privacyLevel;
 
     @NotPersistent
     private HashMap<String, Translation> altTextMap;
@@ -47,6 +49,10 @@ public class SurveyGroup extends BaseDomain {
 
     public enum ProjectType {
         PROJECT_FOLDER, PROJECT
+    }
+
+    public enum PrivacyLevel {
+        PRIVATE, PUBLIC
     }
 
     public HashMap<String, Translation> getAltTextMap() {
@@ -111,12 +117,12 @@ public class SurveyGroup extends BaseDomain {
         this.newLocaleSurveyId = newLocaleSurveyId;
     }
 
-    public Long getParent() {
-        return parent;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public void setParent(Long parent) {
-        this.parent = parent;
+    public void setParentId(Long parent) {
+        this.parentId = parent;
     }
 
     public ProjectType getProjectType() {
@@ -127,4 +133,19 @@ public class SurveyGroup extends BaseDomain {
         this.projectType = projectType;
     }
 
+    public String getDefaultLanguageCode() {
+        return defaultLanguageCode;
+    }
+
+    public void setDefaultLanguageCode(String defaultLanuageCode) {
+        this.defaultLanguageCode = defaultLanuageCode;
+    }
+
+    public PrivacyLevel getPrivacyLevel() {
+        return privacyLevel;
+    }
+
+    public void setPrivacyLevel(PrivacyLevel privacyLevel) {
+        this.privacyLevel = privacyLevel;
+    }
 }

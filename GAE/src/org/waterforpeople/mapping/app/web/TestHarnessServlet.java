@@ -51,11 +51,11 @@ import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
-import com.gallatinsystems.survey.dao.ProjectFolderDAO;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
@@ -528,8 +528,19 @@ public class TestHarnessServlet extends HttpServlet {
             if (surveyGroup.getMonitoringGroup() || surveys.size() <= 1) {
                 if (surveyGroup.getProjectType() == null) {
                     surveyGroup.setProjectType(ProjectType.PROJECT);
-                    surveyGroupDAO.save(surveyGroup);
                 }
+
+                PrivacyLevel privacyLevel = PrivacyLevel.PRIVATE;
+                String defaultLanguageCode = "en";
+                if (surveys.size() >= 1) {
+                    Survey survey = surveys.get(0);
+                    privacyLevel = survey.getPointType() == "Household" ? PrivacyLevel.PRIVATE
+                            : PrivacyLevel.PUBLIC;
+                    defaultLanguageCode = survey.getDefaultLanguageCode();
+                }
+                surveyGroup.setPrivacyLevel(privacyLevel);
+                surveyGroup.setDefaultLanguageCode(defaultLanguageCode);
+                surveyGroupDAO.save(surveyGroup);
                 continue;
             }
 
@@ -540,9 +551,13 @@ public class TestHarnessServlet extends HttpServlet {
                 SurveyGroup newSurveyGroup = new SurveyGroup();
                 newSurveyGroup.setName(survey.getName());
                 newSurveyGroup.setCode(survey.getCode());
-                newSurveyGroup.setParent(surveyGroup.getKey().getId());
+                newSurveyGroup.setParentId(surveyGroup.getKey().getId());
                 newSurveyGroup.setMonitoringGroup(false);
                 newSurveyGroup.setProjectType(ProjectType.PROJECT);
+                newSurveyGroup
+                        .setPrivacyLevel(survey.getPointType() == "Household" ? PrivacyLevel.PRIVATE
+                                : PrivacyLevel.PUBLIC);
+                newSurveyGroup.setDefaultLanguageCode(survey.getDefaultLanguageCode());
                 surveyGroupDAO.save(newSurveyGroup);
                 survey.setSurveyGroupId(newSurveyGroup.getKey().getId());
                 surveyDAO.save(survey);
