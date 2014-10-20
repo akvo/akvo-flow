@@ -353,19 +353,20 @@ public class UserRestService {
     /**
      * Update an existing user role
      *
-     * @param role
+     * @param payload
      * @return
      */
     @RequestMapping(method = RequestMethod.PUT, value = "/roles/{roleId}")
     @ResponseBody
-    public Map<String, Object> updateUserRole(@PathVariable Long roleId, @RequestBody UserRole role) {
+    public Map<String, Object> updateUserRole(@PathVariable Long roleId,
+            @RequestBody UserRolePayload payload) {
         final RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
 
         final Map<String, Object> response = new HashMap<String, Object>();
         response.put("meta", statusDto);
 
-        if (role.getName() == null) {
+        if (StringUtils.isBlank(payload.getName())) {
             statusDto.setMessage("_missing_role_name");
             return response;
         }
@@ -376,18 +377,20 @@ public class UserRestService {
             return response;
         }
 
-        if (!existingRole.getName().equals(role.getName())) {
-            UserRole duplicateRoleName = userRoleDao.findUserRoleByName(role.getName());
+        if (!existingRole.getName().equals(payload.getName())) {
+            UserRole duplicateRoleName = userRoleDao.findUserRoleByName(payload.getName());
             if (duplicateRoleName != null) {
                 statusDto.setMessage("_duplicate_role_name");
                 return response;
             }
         }
 
-        BeanUtils.copyProperties(role, existingRole, new String[] {
+        BeanUtils.copyProperties(payload, existingRole, new String[] {
                 "createdDateTime"
         });
-        response.put("role", userRoleDao.save(existingRole));
+
+        UserRolePayload updatedRole = new UserRolePayload(userRoleDao.save(existingRole));
+        response.put("role", updatedRole);
         statusDto.setStatus("ok");
 
         return response;
