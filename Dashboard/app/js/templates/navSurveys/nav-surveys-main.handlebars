@@ -1,28 +1,30 @@
 
-  <section class="topBar">
-    <nav class="breadCrumb">
-      <ul>
-        {{#each sg in FLOW.projectControl.breadCrumbs}}
-          <li>
-            {{#if sg}}
-              <a {{action "selectProject" sg target="FLOW.projectControl"}}>{{sg.code}}</a>
-            {{else}}
-              <a class="homeRoot" {{action "selectProject" sg target="FLOW.projectControl"}}>Home</a>
-            {{/if}}
-          </li>
-        {{/each}}
-      </ul>
-    </nav>
-    <nav class="menuTopbar">
-      <ul>
-        <li><a class="editGroupName" href="#">Edit folder</a></li>
-        <li><a class="addFolder" {{action "createProjectFolder" target="FLOW.projectControl"}}>Add folder</a></li>
-        <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>Create new project</a></li>
-      </ul>
-    </nav>
-  </section>
+  {{#view FLOW.ProjectMainView}}
+    <section class="topBar">
+      <nav class="breadCrumb">
+        <ul>
+          {{#each sg in FLOW.projectControl.breadCrumbs}}
+            <li>
+              {{#if sg}}
+                <a {{action "selectProject" sg target="FLOW.projectControl"}}>{{sg.code}}</a>
+              {{else}}
+                <a class="homeRoot" {{action "selectProject" sg target="FLOW.projectControl"}}>Home</a>
+              {{/if}}
+            </li>
+          {{/each}}
+        </ul>
+      </nav>
+      {{#if view.projectListView}}
+        <nav class="menuTopbar">
+          <ul>
+            <li><a class="editGroupName" href="#">Edit folder</a></li>
+            <li><a class="addFolder" {{action "createProjectFolder" target="FLOW.projectControl"}}>Add folder</a></li>
+            <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>Create new project</a></li>
+          </ul>
+        </nav>
+      {{/if}}
+    </section>
 
-{{#view FLOW.ProjectMainView}}
   {{#if view.projectListView}}
     {{view FLOW.ProjectListView}}
   {{/if}}
