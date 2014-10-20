@@ -3,13 +3,12 @@
     <section class="topBar">
       <nav class="breadCrumb">
         <ul>
+          <li>
+            <a class="homeRoot" {{action "selectRootProject" target="FLOW.projectControl"}}>Home</a>
+          </li>
           {{#each sg in FLOW.projectControl.breadCrumbs}}
             <li>
-              {{#if sg}}
-                <a {{action "selectProject" sg target="FLOW.projectControl"}}>{{sg.code}}</a>
-              {{else}}
-                <a class="homeRoot" {{action "selectProject" sg target="FLOW.projectControl"}}>Home</a>
-              {{/if}}
+              <a {{action "selectProject" sg target="FLOW.projectControl"}}>{{sg.code}}</a>
             </li>
           {{/each}}
         </ul>

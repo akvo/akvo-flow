@@ -147,14 +147,16 @@ FLOW.projectControl = Ember.ArrayController.create({
   breadCrumbs: function() {
     var result = []
     var currentProject = this.get('currentProject');
-    var id = currentProject ? currentProject.get('keyId') : null;
-    if (id === null) return [null];
+    if (currentProject === null) {
+      // current project is root
+      return [];
+    }
+    var id = currentProject.get('keyId');
     while(id !== null) {
       project = FLOW.store.find(FLOW.SurveyGroup, id);
       result.push(project);
       id = project.get('parent');
     }
-    result.push(null);
     return result.reverse();
   }.property('@each', 'currentProject'),
 
@@ -173,6 +175,10 @@ FLOW.projectControl = Ember.ArrayController.create({
   /* Actions */
   selectProject: function(evt) {
     this.setCurrentProject(evt.context);
+  },
+
+  selectRootProject: function() {
+    this.setCurrentProject(null);
   },
 
   /* Create a new project folder. The current project must be root or a project folder */
