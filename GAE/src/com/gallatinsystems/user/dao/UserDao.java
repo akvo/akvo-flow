@@ -16,6 +16,7 @@
 
 package com.gallatinsystems.user.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,8 +115,8 @@ public class UserDao extends BaseDAO<User> {
      *         if no users have been assigned the role
      */
     public List<User> listUsersByRole(String roleName) {
-        List<User> userList = list(Constants.ALL_RESULTS);
-        for (User user : userList) {
+        List<User> userList = new ArrayList<User>();
+        for (User user : list(Constants.ALL_RESULTS)) {
             for (UserRole role : user.getRoles()) {
                 if (role.getName().equals(roleName)) {
                     userList.add(user);
