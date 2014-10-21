@@ -222,6 +222,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   }
 });
 
+
 FLOW.surveyGroupControl = Ember.ArrayController.create({
   content: null,
   currentFolderId: null,

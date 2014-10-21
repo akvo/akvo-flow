@@ -14,9 +14,19 @@
             </li>
           </ul>
           <section class="projectDetails">
+            <h3>Projects basics</h3>
+            <a {{action "toggleShowProjectDetails" target="this"}} class="showCollapse">
+              {{#if view.showProjectDetails}}
+                Collapse
+              {{else}}
+                Show
+              {{/if}}
+            </a>
+            {{#if view.showProjectDetails}}
             <form class="projectDetailForm">
               <label>Project Title</label>{{view Ember.TextField id="projectTitle" valueBinding="view.project.code"}}
               <label>Project Description</label>{{view Ember.TextField id="projectDescription" valueBinding="view.project.description"}}
+
               <ul class="projectSelect floats-in">
                 <li>
                   <label>Privacy Type:</label>
@@ -40,6 +50,8 @@
                 <input type="checkbox" id="enableMonitoring">Enable Monitoting features
               </label>
             </form>
+            {{/if}}
+            <a class="addMenuAction aBtn addNewForm inactive" {{action "publishProject" target="this"}}>Publish project</a>
           </section>
           <section class="forms">
             <ul>
