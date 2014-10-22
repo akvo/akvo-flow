@@ -176,7 +176,13 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   /* Actions */
   selectProject: function(evt) {
+    var project = evt.context;
     this.setCurrentProject(evt.context);
+    if (this.isProject(project)) {
+
+      FLOW.selectedControl.set('selectedSurveyGroup', project);
+
+    }
   },
 
   selectRootProject: function() {
@@ -297,6 +303,10 @@ FLOW.surveyControl = Ember.ArrayController.create({
     survey.deleteRecord();
     FLOW.store.commit();
     this.refresh();
+  },
+
+  selectForm: function(evt) {
+    debugger;
   }
 });
 

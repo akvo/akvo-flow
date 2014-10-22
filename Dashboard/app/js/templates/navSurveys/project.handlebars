@@ -6,11 +6,14 @@
         <section id="" class="projectDetailsPanel">
           <span class="fontInfo">Project:</span><h2>{{view.project.code}}</h2>
           <ul class="projectSummary">
-            <li>Forms<span id="Form">0</span>
+            <li>Forms<span class="projectForm">{{view.formCount}}</span>
             </li>
-            <li>Monitoring<span id="numberQuestion">No</span>
+            <li>Monitoring
+              <span class="projectMonitoring">
+                {{#if view.project.monitoringGroup}}enabled{{else}}not enabled{{/if}}
+              </span>
             </li>
-            <li>Status:<span class="surveyNotPublished">No Forms</span>
+            <li>Status:<span class="projectStatus">No Forms</span>
             </li>
           </ul>
           <section class="projectDetails">
@@ -58,6 +61,21 @@
               </li>
               <li><a class="addMenuAction aBtn" href="surveyNewForm.html">Add a new form</a></li>
             </ul>
+            <div id="tabs">
+              <nav class="tabNav floats-in">
+                <ul>
+                  {{#each form in FLOW.surveyControl}}
+                    <li class="aFormTab"><a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.code}}</a></li>
+                  {{/each}}
+                  {{#if view.project.monitoringGroup}}
+                    <li class="newFormTab"><a href=""><span>+</span>Add new form</a></li>
+                  {{/if}}
+                </ul>
+              </nav>
+              <section class="formsContainer">
+                  <div id="form01"></div>
+              </section>
+            </div>
           </section>
         </section>
       </section>
