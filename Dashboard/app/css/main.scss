@@ -1762,7 +1762,6 @@ section.topBar {
     z-index: 9998;
     width: 100%;
     background: white;
-    border-bottom: 1px solid rgb(128, 128, 128);
     &.activeMenu{
         border:1px solid rgb(212,212,212);
     }
@@ -4164,9 +4163,11 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                       }
                     }
                 &.newFormTab {
-                  padding-left:25px;
-                  background:rgba(32,32,36, 1) url(../images/IconForms.png) no-repeat 5px center;
-                  background-size:18% auto;
+                  background:transparent;
+                  span {
+                    font-weight:bold;
+                    margin-right:5px;
+                  }
                   &:hover {
                       background:rgba(32,32,36, 0.5) url(../images/IconForms.png) no-repeat 5px center;
                       background-size:18% auto;
