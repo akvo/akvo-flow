@@ -6,8 +6,6 @@ if (!String.prototype.trim) {
   String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
 }
 
-
-
 FLOW.ProjectListView = FLOW.View.extend({
   templateName: 'navSurveys/project-list'
 });

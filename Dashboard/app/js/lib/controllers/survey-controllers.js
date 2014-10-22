@@ -132,6 +132,8 @@ FLOW.projectControl = Ember.ArrayController.create({
   content: null,
   currentProject: null,
 
+  currentPrivacyLevel: null,
+
   populate: function() {
     FLOW.store.find(FLOW.SurveyGroup);
     this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function(p) {
@@ -205,6 +207,14 @@ FLOW.projectControl = Ember.ArrayController.create({
     });
     FLOW.store.commit();
   },
+
+  autoSaveProjectTitle: function(evt) {
+    console.log('project title changed');
+  }.observes('currentProject.code'),
+
+  autoSaveProjectDescription: function(evt) {
+    console.log('project descr changed');
+  }.observes('currentProject.description'),
 
   deleteProject: function(evt) {
     project = FLOW.store.find(FLOW.SurveyGroup, evt.context.get('keyId'));

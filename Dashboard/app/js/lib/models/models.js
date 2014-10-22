@@ -50,6 +50,14 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 
   projectType: DS.attr('string', {
     defaultValue: "PROJECT"
+  }),
+
+  privacyLevel: DS.attr('string', {
+    defaultValue: "PRIVATE"
+  }),
+
+  defaultLanguageCode: DS.attr('string', {
+    defaultValue: "en"
   })
 
 });
