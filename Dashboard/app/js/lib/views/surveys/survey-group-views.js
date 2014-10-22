@@ -30,6 +30,10 @@ FLOW.Project = FLOW.View.extend({
     }
   }.property('FLOW.surveyControl.content.@each'),
 
+  hasForms: function() {
+    return this.get('formCount') > 0;
+  }.property('this.formCount'),
+
   toggleShowProjectDetails: function() {
     this.set('showProjectDetails', !this.get('showProjectDetails'));
   }

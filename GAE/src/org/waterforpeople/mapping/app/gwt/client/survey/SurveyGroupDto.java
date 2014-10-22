@@ -39,6 +39,7 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     private Long parentId;
     private String defaultLanguageCode;
     private PrivacyLevel privacyLevel;
+    private Boolean published;
 
     private ArrayList<SurveyDto> surveyList = null;
 
@@ -148,6 +149,14 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 
     public void setPrivacyLevel(PrivacyLevel privacyLevel) {
         this.privacyLevel = privacyLevel;
+    }
+
+    public Boolean getPublished() {
+        return published;
+    }
+
+    public void setPublished(Boolean published) {
+        this.published = published;
     }
 
 }

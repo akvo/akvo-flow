@@ -41,6 +41,7 @@ public class SurveyGroup extends BaseDomain {
     private ProjectType projectType;
     private String defaultLanguageCode;
     private PrivacyLevel privacyLevel;
+    private Boolean published;
 
     @NotPersistent
     private HashMap<String, Translation> altTextMap;
@@ -54,6 +55,7 @@ public class SurveyGroup extends BaseDomain {
     public enum PrivacyLevel {
         PRIVATE, PUBLIC
     }
+
 
     public HashMap<String, Translation> getAltTextMap() {
         return altTextMap;
@@ -147,5 +149,13 @@ public class SurveyGroup extends BaseDomain {
 
     public void setPrivacyLevel(PrivacyLevel privacyLevel) {
         this.privacyLevel = privacyLevel;
+    }
+
+    public Boolean getPublished() {
+        return published;
+    }
+
+    public void setPublished(Boolean published) {
+        this.published = published;
     }
 }

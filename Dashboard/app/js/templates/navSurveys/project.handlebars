@@ -55,30 +55,40 @@
             <a class="addMenuAction aBtn addNewForm inactive" {{action "publishProject" target="this"}}>Publish project</a>
           </section>
           <section class="forms">
-            <ul>
-              <li class="formList">
-                <p class="noForms">You have no forms in this project</p>
-              </li>
-              <li><a class="addMenuAction aBtn" href="surveyNewForm.html">Add a new form</a></li>
-            </ul>
-            <div id="tabs">
-              <nav class="tabNav floats-in">
-                <ul>
-                  {{#each form in FLOW.surveyControl}}
-                    <li class="aFormTab"><a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.code}}</a></li>
-                  {{/each}}
-                  {{#if view.project.monitoringGroup}}
+            {{#if view.hasForms}}
+              <div id="tabs">
+                <nav class="tabNav floats-in">
+                  <ul>
+                    {{#each form in FLOW.surveyControl}}
+                      <li class="aFormTab"><a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.code}}</a></li>
+                    {{/each}}
+                    {{#if view.project.monitoringGroup}}
+                      <li class="newFormTab"><a href=""><span>+</span>Add new form</a></li>
+                    {{/if}}
+                  </ul>
+                </nav>
+                <section class="formsContainer">
+                    <div id="form01"></div>
+                </section>
+              </div>
+            {{else}}
+              <ul>
+                <li class="formList">
+                  <p class="noForms">You have no forms in this project</p>
+                </li>
+              </ul>
+              <div id="tabs">
+                <nav class="tabNav floats-in">
+                  <ul>
                     <li class="newFormTab"><a href=""><span>+</span>Add new form</a></li>
-                  {{/if}}
-                </ul>
-              </nav>
-              <section class="formsContainer">
-                  <div id="form01"></div>
-              </section>
-            </div>
+                  </ul>
+                </nav>
+              </div>
+            {{/if}}
           </section>
         </section>
       </section>
+      {{QuestionGroupItemView}}
     </div>
   </div>
 {{/view}}

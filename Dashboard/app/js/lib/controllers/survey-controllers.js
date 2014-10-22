@@ -306,7 +306,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   },
 
   selectForm: function(evt) {
-    debugger;
+    FLOW.selectedControl.set('selectedSurvey', evt.context);
   }
 });
 
