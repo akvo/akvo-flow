@@ -233,67 +233,6 @@ FLOW.projectControl = Ember.ArrayController.create({
 });
 
 
-FLOW.surveyGroupControl = Ember.ArrayController.create({
-  content: null,
-  currentFolderId: null,
-
-  populate: function (f) {
-    FLOW.store.find(FLOW.SurveyGroup);
-    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function(sg) {
-      return true;
-    }));
-  },
-
-  /*
-   * Returns an array of project folders which represents the path to
-   * currentFolderId
-   */
-  breadCrumbs: function() {
-    var result = []
-    var id = this.get('currentFolderId');
-    if (id === null) return [null];
-    while(id !== null) {
-      project = FLOW.store.find(FLOW.SurveyGroup, id);
-      result.push(project);
-      id = project.get('parentId');
-    }
-    result.push(null);
-    return result.reverse();
-  }.property('@each', 'currentFolderId'),
-
-  setCurrentFolder: function(folderId) {
-    this.set('currentFolderId', folderId);
-  },
-
-  currentFolders: function() {
-    var parentId = this.get('currentFolderId');
-    return this.get('content').filter(function(project) {
-      return project.get('parent') === parentId;
-    })
-  }.property('@each', 'currentFolderId'),
-
-  // checks if data store contains surveys within this survey group.
-  // this is also checked server side.
-  containsSurveys: function () {
-    var surveys, sgId;
-    surveys = FLOW.store.filter(FLOW.Survey, function (data) {
-      sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
-      if (data.get('surveyGroupId') == sgId) {
-        return true;
-      }
-    });
-    return surveys.get('content').length > 0;
-  },
-
-  deleteSurveyGroup: function (keyId) {
-    var surveyGroup;
-    surveyGroup = FLOW.store.find(FLOW.SurveyGroup, keyId);
-    surveyGroup.deleteRecord();
-    FLOW.store.commit();
-    FLOW.selectedControl.set('selectedSurveyGroup', null);
-  }
-});
-
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,
   publishedContent: null,
