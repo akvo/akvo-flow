@@ -91,6 +91,6 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
     public List<SurveyGroup> listByProjectFolderId(Long parentId) {
 
 	parentId = parentId < 0 ? null : parentId;
-        return super.listByProperty("parent", parentId, "Long");
+        return super.listByProperty("parentId", parentId, "Long");
     }
 }

@@ -235,6 +235,15 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   isProject: function(project) {
     return !this.isProjectFolder(project);
+  },
+
+  isProjectFolderEmpty: function(folder) {
+    var id = folder.get('keyId');
+    var children = this.get('content').filter(function(project) {
+      return project.get('parentId') === id;
+    });
+
+    return children.toArray().length === 0;
   }
 });
 

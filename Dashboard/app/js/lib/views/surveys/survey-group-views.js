@@ -62,7 +62,15 @@ FLOW.ProjectItemView = FLOW.View.extend({
 
   classProperty: function() {
     var isFolder = FLOW.projectControl.isProjectFolder(this.content);
-    return isFolder ? "aSurvey aFolder" : "aSurvey";
+    var isFolderEmpty = FLOW.projectControl.isProjectFolderEmpty(this.content);
+    var classes = "aSurvey";
+    if (isFolder) {
+      classes += " aFolder";
+    }
+    if (isFolderEmpty) {
+      classes += " folderEmpty"
+    }
+    return classes;
   }.property(),
 
   isFolder: function() {

@@ -2210,9 +2210,10 @@ ul.surveyInfo li.responseNumber {
     padding-right: 30px;
 }
 .aSurvey.aFolder {
+    .deleteSurvey {display:none;}
     &.folderEmpty {
         .deleteSurvey {
-            display:none;
+            display:inline;
         }        
     }
     nav {
