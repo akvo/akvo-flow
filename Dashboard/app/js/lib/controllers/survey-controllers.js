@@ -131,8 +131,7 @@ FLOW.alwaysTrue = function () {
 FLOW.projectControl = Ember.ArrayController.create({
   content: null,
   currentProject: null,
-
-  currentPrivacyLevel: null,
+  moveTarget: null,
 
   populate: function() {
     FLOW.store.find(FLOW.SurveyGroup);
@@ -172,7 +171,7 @@ FLOW.projectControl = Ember.ArrayController.create({
       // TODO: Also sort 'code' by ascending order;
       return self.isProjectFolder(a) ? -1 : 1;
     })
-  }.property('@each', 'currentProject'),
+  }.property('@each', 'currentProject', 'moveTarget'),
 
   /* Actions */
   selectProject: function(evt) {
@@ -226,6 +225,22 @@ FLOW.projectControl = Ember.ArrayController.create({
     project = FLOW.store.find(FLOW.SurveyGroup, evt.context.get('keyId'));
     project.deleteRecord();
     FLOW.store.commit();
+  },
+
+  beginMoveProject: function(evt) {
+    this.set('moveTarget', evt.context);
+  },
+
+  cancelMoveProject: function(evt) {
+    this.set('moveTarget', null);
+  },
+
+  endMoveProject: function(evt) {
+    var newFolderId = this.get('currentProject') ? this.get('currentProject').get('keyId') : null;
+    var project = this.get('moveTarget');
+    project.set('parentId', newFolderId);
+    FLOW.store.commit();
+    this.set('moveTarget', null);
   },
 
   /* Helper methods */

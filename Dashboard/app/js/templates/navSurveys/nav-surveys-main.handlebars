@@ -15,11 +15,18 @@
       </nav>
       {{#if view.projectListView}}
         <nav class="menuTopbar">
-          <ul>
-            <li><a class="editGroupName" href="#">Edit folder</a></li>
-            <li><a class="addFolder" {{action "createProjectFolder" target="FLOW.projectControl"}}>Add folder</a></li>
-            <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>Create new project</a></li>
-          </ul>
+          {{#if FLOW.projectControl.moveTarget}}
+            <ul>
+              <li><a {{action "endMoveProject" target="FLOW.projectControl"}}>Drop here!</a></li>
+              <li><a {{action "cancelMoveProject" target="FLOW.projectControl"}}>cancel</a></li>
+            </ul>
+          {{else}}
+            <ul>
+              <li><a class="editGroupName" href="#">Edit folder</a></li>
+              <li><a class="addFolder" {{action "createProjectFolder" target="FLOW.projectControl"}}>Add folder</a></li>
+              <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>Create new project</a></li>
+            </ul>
+          {{/if}}
         </nav>
       {{/if}}
     </section>
