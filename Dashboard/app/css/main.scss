@@ -1501,6 +1501,7 @@ th.action {
 .surveysList {
     position: relative;
 }
+
 /* Survey Groups Menu Bar
 --------------------------------------------- */
 
@@ -1909,6 +1910,7 @@ section.topBar {
 
 nav.menuTopbar {
     margin:0 auto 0;
+    padding:10px 0;
         h3 {
             text-transform: uppercase;
             font-size:1em;
@@ -1931,6 +1933,9 @@ nav.menuTopbar {
                     margin-left:0px;
                 }
             }
+        }
+        &.actionHighLighted {
+            border:1px solid rgb(241,242,242);
         }
     }
 }
@@ -1965,7 +1970,7 @@ ul.cancelMenu {
         }
     }
 a.addGroup,
-a.addSurvey,
+a.addSurvey,.moveAction,
 a.stepBack,
 a.editGroupName, a.addMenuAction,
 a.makeMonitorGroup,a.manageNotifications,
@@ -2011,6 +2016,19 @@ a.addSurvey:hover {
     background: rgba($anchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
     -webkit-background-size: 19px 19px;
     background-size: 19px 19px;
+}
+a.moveAction {
+    color: white;
+    background: rgba($anchorLink, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat;
+    background-size: 25px 25px;    
+    padding: 4px 7px 11px 25px;
+    border-radius: 3px;
+    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;}
+a.moveAction:hover {
+    color: white;
+    background: rgba($anchorLinkHover, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat !important;
+    background-size: 25px 25px !important;
 }
 a.stepBack {
     background: transparent url(../images/IconBack.svg) left center no-repeat;
@@ -2100,6 +2118,18 @@ ul.surveyBatch {
     position: relative;
     width: 100%;
     margin-top: 30px;
+    &.actionProcess {
+        .aFolder { 
+            nav {
+                opacity:0.2;
+            }
+        }
+         .aSurvey { 
+            nav {
+                opacity:0.2;
+            }
+        }
+    }
 }
 li.aSurvey {
     position: relative;
@@ -2124,6 +2154,19 @@ li.aSurvey {
         color:$anchorLink;
         text-transform:uppercase;
      }
+}
+li.aFolder, li.aSurvey {
+    &.highLighted {
+        background:#E7EEE0;
+        border:1px solid rgba(141,198,63,0.5);
+        h2 {color:rgba(141,198,63,1);}
+        &:hover {
+            background:#E7EEE0;
+            border:1px solid rgba(141,198,63,0.5);
+            h2 {color:rgba(141,198,63,1);}
+
+        }
+    }
 }
 li.aFolder {
     @extend li.aSurvey;
