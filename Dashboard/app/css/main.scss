@@ -1710,7 +1710,6 @@ a.FadeIt {
     }
 }
     li.formList {
-        border-top:1px solid rgb(51,51,51);
         padding:10px 0;
         &.populated {
             background: rgba(white,0);
@@ -2133,10 +2132,10 @@ li.aFolder {
     flex-direction: row;
     align-items: center;
     min-height: 70px;
-    padding: 0.25em 0 0.25em 45px;
+    padding: 0.25em 0 0.25em 15px;
     background-color: rgb(232,232,232);
-    background-image:  url(../images/folderSelectBullet.svg), url(../images/carret.svg);
-    background-position: 5px center ,right center;
+    background-image:  url(../images/carret.svg);
+    background-position: right center;
     background-repeat: no-repeat;
     border:1px solid rgba(200,200,200,0);
     h2{
@@ -2144,13 +2143,18 @@ li.aFolder {
         background: url(../images/folderIcn.svg) right center no-repeat;
         display:inline-block;
         width: initial;
-        padding-right:35px;
+        padding-right:45px;
     }
     &:hover {
         background-color: rgb(212,212,212);
         border:1px solid rgba(200,200,200,1);
         h2 {
             color:rgb(243,243,243);
+        }
+    }
+    &.folderEmpty {
+        h2{
+            background: url(../images/folderIcnEmpty.svg) right center no-repeat;
         }
     }
 }
@@ -2205,6 +2209,22 @@ ul.surveyInfo li.responseNumber {
     width: calc(30%);
     padding-right: 30px;
 }
+.aSurvey.aFolder {
+    &.folderEmpty {
+        .deleteSurvey {
+            display:none;
+        }        
+    }
+    nav {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        position: absolute;
+        right:0;
+        padding-right: 30px;
+    }
+}
+
 .aSurvey nav ul {
     display: -webkit-inline-box;
     display: -webkit-inline-flex;
@@ -2250,6 +2270,11 @@ ul.surveyInfo li.responseNumber {
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
+.aSurvey nav ul li.moveSurvey a {
+    background: url(../images/IconMove.svg) center 14px no-repeat;
+    -webkit-background-size: 35px 35px;
+    background-size: 35px 35px;
+}
 .aSurvey nav ul li.copySurvey a {
     background: url(../images/IconCopy.svg) center 14px no-repeat;
     -webkit-background-size: 35px 35px;
@@ -2267,6 +2292,11 @@ ul.surveyInfo li.responseNumber {
 }
 .aSurvey nav ul li.deleteSurvey a:hover {
     background: url(../images/IconDeleteOrange.svg) center 14px no-repeat;
+    -webkit-background-size: 35px 35px;
+    background-size: 35px 35px;
+}
+.aSurvey nav ul li.moveSurvey a:hover {
+    background: url(../images/IconMoveOrange.svg) center 14px no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
@@ -2437,6 +2467,18 @@ nav.newSurveyNav ul li a.publishNewSurvey:hover {
     background: url(../images/IconPublishOrange.svg) left top no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
+}
+.publishProjectBtn {
+        background:$anchorLink url(../images/IconPublishWhite.svg) left top no-repeat;
+        background-size: 35px 35px;
+        padding: 10px 5px 15px 29px;
+        color:white;
+    &:hover {
+        background:$anchorLinkHover url(../images/IconPublishWhite.svg) left top no-repeat;
+        background-size: 35px 35px;
+        padding: 10px 5px 15px 29px;
+        color:white;
+    }
 }
 /*****
 		A New Question Form
@@ -4164,13 +4206,13 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     }
                 &.newFormTab {
                   background:transparent;
+                  color:$anchorLink;
                   span {
                     font-weight:bold;
                     margin-right:5px;
                   }
                   &:hover {
-                      background:rgba(32,32,36, 0.5) url(../images/IconForms.png) no-repeat 5px center;
-                      background-size:18% auto;
+                      color:$anchorLinkHover;
                       }
                     }
                   }
