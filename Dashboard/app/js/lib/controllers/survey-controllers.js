@@ -229,6 +229,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   beginMoveProject: function(evt) {
     this.set('moveTarget', evt.context);
+    this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "project");
   },
 
   cancelMoveProject: function(evt) {

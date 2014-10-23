@@ -53,7 +53,13 @@ FLOW.ProjectMainView = FLOW.View.extend({
 });
 
 
-
+FLOW.ProjectList = FLOW.View.extend({
+  tagName: 'ul',
+  classNameBindings: ['classProperty'],
+  classProperty: function() {
+    return FLOW.projectControl.moveTarget === null ? '' : 'actionProcess';
+  }.property('FLOW.projectControl.moveTarget')
+});
 
 FLOW.ProjectItemView = FLOW.View.extend({
   tagName: 'li',
@@ -63,13 +69,13 @@ FLOW.ProjectItemView = FLOW.View.extend({
   classProperty: function() {
     var isFolder = FLOW.projectControl.isProjectFolder(this.content);
     var isFolderEmpty = FLOW.projectControl.isProjectFolderEmpty(this.content);
+    var isMoving = this.content === FLOW.projectControl.get('moveTarget');
+
     var classes = "aSurvey";
-    if (isFolder) {
-      classes += " aFolder";
-    }
-    if (isFolderEmpty) {
-      classes += " folderEmpty"
-    }
+    if (isFolder) classes += " aFolder";
+    if (isFolderEmpty) classes += " folderEmpty"
+    if (isMoving) classes += " highLighted";
+
     return classes;
   }.property(),
 

@@ -3,7 +3,7 @@
 <div class="floats-in">
   <div id="pageWrap" class="widthConstraint belowHeader">
     <section id="allSurvey" class="surveysList">
-      <ul>
+      {{#view FLOW.ProjectList}}
         {{#each sg in FLOW.projectControl.currentFolders}}
             {{#view FLOW.ProjectItemView contentBinding="sg"}}
               {{#if view.isFolder}}
@@ -38,7 +38,7 @@
               {{/if}}
             {{/view}}
         {{/each}}
-      </ul>
+      {{/view}}
     </section>
   </div>
 </div>
