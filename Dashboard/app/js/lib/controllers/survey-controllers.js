@@ -244,6 +244,12 @@ FLOW.projectControl = Ember.ArrayController.create({
     this.set('moveTarget', null);
   },
 
+  publishProject: function() {
+    var project = this.get('currentProject');
+    project.set('published', true);
+    FLOW.store.commit();
+  },
+
   /* Helper methods */
   isProjectFolder: function(project) {
     return project === null || project.get('projectType') === 'PROJECT_FOLDER';
@@ -258,7 +264,6 @@ FLOW.projectControl = Ember.ArrayController.create({
     var children = this.get('content').filter(function(project) {
       return project.get('parentId') === id;
     });
-
     return children.toArray().length === 0;
   }
 });

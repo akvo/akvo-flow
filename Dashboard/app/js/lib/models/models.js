@@ -58,6 +58,10 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 
   defaultLanguageCode: DS.attr('string', {
     defaultValue: "en"
+  }),
+
+  published: DS.attr('boolean', {
+    defaultValue: false
   })
 
 });

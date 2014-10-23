@@ -13,7 +13,21 @@
                 {{#if view.project.monitoringGroup}}enabled{{else}}not enabled{{/if}}
               </span>
             </li>
-            <li>Status:<span class="projectStatus">No Forms</span>
+            <li>Status:
+
+              {{#if view.project.published}}
+                <span class="projectStatus">
+                  Published
+                </span>
+              {{else}}
+                <span class="projectStatus redColor">
+                  {{#if view.hasForms}}
+                    Not published
+                  {{else}}
+                    No forms
+                  {{/if}}
+                </span>
+              {{/if}}
             </li>
           </ul>
           <section class="projectDetails">
@@ -52,7 +66,10 @@
               </label>
             </form>
             {{/if}}
-            <a class="addMenuAction aBtn addNewForm inactive" {{action "publishProject" target="this"}}>Publish project</a>
+            {{#unless FLOW.projectControl.currentProject.published}}
+              <a class="addMenuAction aBtn addNewForm inactive"
+                {{action "publishProject" target="FLOW.projectControl"}}>Publish project</a>
+            {{/unless}}
           </section>
           <section class="forms">
             {{#if view.hasForms}}
