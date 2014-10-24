@@ -67,8 +67,10 @@
             </form>
             {{/if}}
             {{#unless FLOW.projectControl.currentProject.published}}
-              <a class="addMenuAction aBtn addNewForm inactive"
-                {{action "publishProject" target="FLOW.projectControl"}}>Publish project</a>
+              {{#if view.hasForms}}
+                <a class="addMenuAction aBtn addNewForm"
+                  {{action "publishProject" target="FLOW.projectControl"}}>Publish project</a>
+              {{/if}}
             {{/unless}}
           </section>
           <section class="forms">
