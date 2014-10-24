@@ -2118,16 +2118,16 @@ ul.surveyBatch {
     position: relative;
     width: 100%;
     margin-top: 30px;
-    &.actionProcess {
-        .aFolder { 
-            nav {
-                opacity:0.2;
-            }
+}
+ul.actionProcess {
+    .aFolder { 
+         nav {
+            opacity:0.2;
         }
-         .aSurvey { 
-            nav {
-                opacity:0.2;
-            }
+    }
+    .aSurvey { 
+        nav {
+            opacity:0.2;
         }
     }
 }
@@ -2139,7 +2139,6 @@ li.aSurvey {
     padding: 0.5em 0 0.5em 1%;
     min-height: 115px;
     width: 99%;
-    /*background: rgb(245, 245, 245) url(../images/carret.svg) right center no-repeat;*/
     background: rgb(245, 245, 245);
     -webkit-background-size: 35px 45px;
     background-size: 35px 45px;
@@ -4196,8 +4195,8 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     font-size:1.8em;
                     margin-top:-5px;
                     font-weight:600;
-                    &.projectForm, &.projectMonitoring {color:white;}
-                    &.projectStatus {color:$akvoRed2;}
+                    &.projectForm, &.projectMonitoring, &.projectStatus {color:white;}
+                    &.projectStatus.redColor {color:$akvoRed2;}
                 }
             }
         }
@@ -4312,7 +4311,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                       top: 25px;
                       right: 15px;
                   }
-                  .projectDetailForm {
+                  .projectDetailForm, .surveyDetailForm {
                       display: block;
                       margin-top:0 !important;
                       form {
