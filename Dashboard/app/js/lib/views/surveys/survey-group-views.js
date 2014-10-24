@@ -15,7 +15,7 @@ FLOW.ProjectView = FLOW.View.extend({
 });
 
 FLOW.Project = FLOW.View.extend({
-
+  
   showProjectDetails: false,
 
   project: function() {

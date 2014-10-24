@@ -1,3 +1,80 @@
 {{#with FLOW.selectedControl.selectedSurvey as form}}
+<div id="form01" class="aformContainer">
+	<nav class="newSurveyNav">
+		<ul>
+			<li><a class="previewNewSurvey">Preview</a></li>
+			<li><a class="deleteSurvey">Delete</a></li>
+		</ul>
+	</nav>
+	<h3>Form basics</h3>
+	<ul class="formSummary">
+		<li>Version<span class="formVersion">1.0</span></li>
+		<li>ID<span class="formID">6549813</span></li>
+		<li>Questions<span class="formQuestionCount">0</span></li>
+	</ul>
+	<section class="formDetails">
+		<a href="" class="showCollapse">Show</a>
+		<form class="surveyDetailForm">
+			<label>Project Title</label><input id="projectTitle" class="" type="text" value="Burundi Population survey">
+			<label>Project Description</label><input id="projectTitle" class="" type="text" value="none">
+			<label>Manage</label>
+			<nav class="newSurveyNav">
+				<ul class="manageStuff">
+					<li>
+				  	<a class="manageTranslations">Manage translations &gt;</a>
+					</li>
+					<li>
+				  	<a class="manageNotifications">Manage notifications &gt;</a>
+					</li>
+				</ul>
+			</nav>
+		</form>
+	</section>
+	<section class="surveyForm">
+		<section id="questionSet">
+			<section class="aQuestionSet mainContent" id="setIndex-01">
+				<!-- zeroItem indicates that this is the item before the first question group -->
+				<div id="ember25098" class="ember-view">
+					<!-- insert, move and copy buttons -->
+					<nav class="insertMenu groupActionMenu">
+						<ul>
+							<li><a data-ember-action="630" class="">Insert group here</a></li>
+						</ul>
+					</nav>
+					<!-- end insert, move and copy buttons for zero item-->
+				</div>
+				<!-- start list of question groups -->
+				<div>
+					<div class="questionGroupBlock">
+						<header> <span class="qtnGroupHead">Group 1</span>
+							<h1 class="qtnGroupTitle"><a></a></h1>
+							<nav class="qtnGroupMenu">
+								<ul>
+									<li><a class="showQuestionGroup" id="">Show questions </a></li>
+									<li><a class="editQuestionGroup" id="">Edit group name</a></li>
+									<li> <a class="deleteQuestionGroup">Delete</a> </li>
+									<li><a class="copyQuestionGroup" id="">Copy</a></li>
+									<li><a class="moveQuestionGroup" id="">Move</a> </li>
+								</ul>
+							</nav>
+						</header>
+
+						<!-- if the question group is open, show all questions -->
+
+						<!-- end question group block -->
+					</div>
+
+					<!-- insert, move and copy buttons -->
+					<nav class="insertMenu groupActionMenu">
+						<ul>
+							<li><a class="">Insert group here</a></li>
+						</ul>
+					</nav>
+					<!-- end move and copy buttons -->
+				</div>
+			</section>
+		</section>
+	</section>
+</div>
 	<h1>This is form {{form.code}} with id {{form.keyId}}</h1>
 {{/with}}
