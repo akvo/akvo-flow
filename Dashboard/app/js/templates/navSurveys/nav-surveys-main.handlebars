@@ -31,6 +31,18 @@
             </ul>
           </nav>
         {{/if}}
+      {{else}}
+        <nav class="menuTopbar">
+          <ul>
+            <!-- TODO add noChanges if nothing has been changed -->
+            <li><a class="saveProject">Save</a></li>
+            {{#unless FLOW.projectControl.currentProject.published}}
+              {{#if FLOW.projectControl.hasForms}}
+                <li><a class="publishProjectBtn" {{action "publishProject" target="FLOW.projectControl"}}>Publish project</a></li>
+              {{/if}}
+            {{/unless}}
+          </ul>
+        </nav>
       {{/if}}
     </section>
 

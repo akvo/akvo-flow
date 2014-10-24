@@ -22,18 +22,6 @@ FLOW.Project = FLOW.View.extend({
     return FLOW.projectControl.get('currentProject');
   }.property(),
 
-  formCount: function() {
-    if (FLOW.surveyControl.content) {
-      return FLOW.surveyControl.content.toArray().length;
-    } else {
-      0;
-    }
-  }.property('FLOW.surveyControl.content.@each'),
-
-  hasForms: function() {
-    return this.get('formCount') > 0;
-  }.property('this.formCount'),
-
   toggleShowProjectDetails: function() {
     this.set('showProjectDetails', !this.get('showProjectDetails'));
   }

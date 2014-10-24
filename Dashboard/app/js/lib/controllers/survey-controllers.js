@@ -173,6 +173,18 @@ FLOW.projectControl = Ember.ArrayController.create({
     })
   }.property('@each', 'currentProject', 'moveTarget'),
 
+  formCount: function() {
+    if (FLOW.surveyControl.content) {
+      return FLOW.surveyControl.content.toArray().length;
+    } else {
+      0;
+    }
+  }.property('FLOW.surveyControl.content.@each'),
+
+  hasForms: function() {
+    return this.get('formCount') > 0;
+  }.property('this.formCount'),
+
   /* Actions */
   selectProject: function(evt) {
     var project = evt.context;

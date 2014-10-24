@@ -6,7 +6,7 @@
         <section id="" class="projectDetailsPanel">
           <span class="fontInfo">Project:</span><h2>{{FLOW.projectControl.currentProject.code}}</h2>
           <ul class="projectSummary">
-            <li>Forms<span class="projectForm">{{view.formCount}}</span>
+            <li>Forms<span class="projectForm">{{FLOW.projectControl.formCount}}</span>
             </li>
             <li>Monitoring
               <span class="projectMonitoring">
@@ -66,15 +66,9 @@
               </label>
             </form>
             {{/if}}
-            {{#unless FLOW.projectControl.currentProject.published}}
-              {{#if view.hasForms}}
-                <a class="addMenuAction aBtn addNewForm"
-                  {{action "publishProject" target="FLOW.projectControl"}}>Publish project</a>
-              {{/if}}
-            {{/unless}}
           </section>
           <section class="forms">
-            {{#if view.hasForms}}
+            {{#if FLOW.projectControl.hasForms}}
               <div id="tabs">
                 <nav class="tabNav floats-in">
                   <ul>

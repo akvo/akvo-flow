@@ -1721,14 +1721,14 @@ a.FadeIt {
             color:rgba($anchorLink, 0.5);
         }
         .noForms {
-                padding-top:35px;
+                padding-top:45px;
                 background: url(../images/IconForms.png) center top no-repeat;
                 text-align: center;
-                color:rgb(88,89,91);
+                color:white;
                 text-transform: uppercase;
                 font-size: 1.1em;
                 width: 90%;
-                margin:0 auto;
+                margin:0 auto 20px auto;
         }
         ul.menuForm {
             li {
@@ -2459,68 +2459,97 @@ a.manageNotifications span {
     text-transform: uppercase;
     font-weight: bold;
 }
+.aformContainer {
 nav.newSurveyNav {
-    margin: 0 auto;
+    display: inline-block;
+    margin:0 auto 20px auto;
     padding: 0;
-    width: 98%;
 }
 nav.newSurveyNav ul {
+    display: flex;
     margin: 0 auto;
     padding: 0;
     width: 100%;
 }
 nav.newSurveyNav ul li {
-    display: block;
-    float: left;
     padding: 0;
-    width: 33.333333333333333%;
 }
 nav.newSurveyNav ul li a {
+    text-transform: uppercase;
     display: block;
-    padding: 9px 0 11px 28px;
+    padding:9px 10px 18px 28px;
     height: 8px;
     overflow: hidden;
 }
 nav.newSurveyNav ul li a.saveNewSurvey {
-    background: url(../images/IconSave.svg) left top no-repeat;
+    background:rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left top no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 nav.newSurveyNav ul li a.previewNewSurvey {
-    background: url(../images/IconPreview.svg) left top no-repeat;
+    background:rgba(32, 32, 36, 0.5)  url(../images/IconPreview.svg) left top no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 nav.newSurveyNav ul li a.publishNewSurvey {
-    background: url(../images/IconPublish.svg) left top no-repeat;
+    background:rgba(32, 32, 36, 0.5)  url(../images/IconPublish.svg) left top no-repeat;
+    -webkit-background-size: 35px 35px;
+    background-size: 35px 35px;
+}
+nav.newSurveyNav ul li a.deleteSurvey {
+    background:rgba(32, 32, 36, 0.5)  url(../images/IconDelete.svg) left top no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 nav.newSurveyNav ul li a.saveNewSurvey:hover {
-    background: url(../images/IconSaveOrange.svg) left top no-repeat;
+    background:rgba(32, 32, 36, 1)   url(../images/IconSaveOrange.svg) left top no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 nav.newSurveyNav ul li a.previewNewSurvey:hover {
-    background: url(../images/IconPreviewOrange.svg) left top no-repeat;
+    background:rgba(32, 32, 36, 1)   url(../images/IconPreviewOrange.svg) left top no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
 nav.newSurveyNav ul li a.publishNewSurvey:hover {
-    background: url(../images/IconPublishOrange.svg) left top no-repeat;
+    background:rgba(32, 32, 36, 1)   url(../images/IconPublishOrange.svg) left top no-repeat;
     -webkit-background-size: 35px 35px;
     background-size: 35px 35px;
 }
-.publishProjectBtn {
-        background:$anchorLink url(../images/IconPublishWhite.svg) left top no-repeat;
-        background-size: 35px 35px;
-        padding: 10px 5px 15px 29px;
+nav.newSurveyNav ul li a.deleteSurvey:hover {
+    background:rgba(32, 32, 36, 1)   url(../images/IconDeleteOrange.svg) left top no-repeat;
+    -webkit-background-size: 35px 35px;
+    background-size: 35px 35px;
+}
+}
+a.publishProjectBtn {
+        text-transform:uppercase;
+        background:$anchorLink url(../images/IconPublishWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
         color:white;
+        border-radius:3px;
     &:hover {
-        background:$anchorLinkHover url(../images/IconPublishWhite.svg) left top no-repeat;
-        background-size: 35px 35px;
-        padding: 10px 5px 15px 29px;
+        background:$anchorLinkHover url(../images/IconPublishWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
         color:white;
+    }
+}
+a.saveProject {
+        text-transform:uppercase;
+        background:$anchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
+        color:white;
+        border-radius:3px;
+    &:hover {
+        background:$anchorLinkHover url(../images/IconSaveOrangeWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        color:white;
+    }
+    &.noChanges {
+        background:rgba(32,32,36,0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
     }
 }
 /*****
@@ -4161,13 +4190,22 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 }
 
 /************************************* New styles ****************************************/
-
 .projectSection {
     background: $projectBackground;
     box-sizing: border-box;
     width:100%;
     padding:2em 0;
     margin:0 auto;
+    .publishProject {
+        padding: 30px 5px;
+        display:table;
+        text-align: center;
+        width:calc(100% - 10px);
+            .publishProjectBtn {
+            text-align: center;
+            margin:0 auto;
+        }
+    }
     .projectDetailsPanel {
         .addMenuAction {display:inline-block; margin:0 auto;
           &.addNewForm {
@@ -4175,7 +4213,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             padding:8px 8px 8px 31px;
           }
         }
-        .projectSummary {
+        .projectSummary, .formSummary {
             display:flex;
             flex-direction: row;
             flex-wrap: nowrap;
@@ -4186,7 +4224,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 width: 33.33333%;
                 text-align: center;
                 padding:10px 0;
-                background:$projectTopBackground;
+                background:rgba(32,32,36,0.2);
                 color:rgb(128,130,133);
                 text-transform: uppercase;
                 font-size:1.5em;
@@ -4199,7 +4237,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     &.projectStatus.redColor {color:$akvoRed2;}
                 }
             }
-        }
+        } 
         span.fontInfo {
             font-family: $scriptFont;
             font-size:1.8em;
@@ -4212,9 +4250,50 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
         }
         .forms {
             padding:2em 0.5% 2em 0.5%;
+            background:#4E4E4E;
+            .formSummary {
+                        display:flex;
+                        flex-direction: row;
+                        flex-wrap: nowrap;
+                        align-items: center;
+                        align-content: center;
+                        margin:30px auto;
+                        li {
+                            width: 33.33333%;
+                            text-align: center;
+                            padding:10px 0;
+                            background:rgba(32,32,36,0.2);
+                            color:rgb(128,130,133);
+                            text-transform: uppercase;
+                            font-size:1.5em;
+                            span {
+                                display:block;
+                                font-size:1.8em;
+                                margin-top:-5px;
+                                font-weight:600;
+                                color:white;
+                            }
+                        }
+                    }             
             #tabs div > section {
                 border: thin solid rgb(224, 224, 224);
                 background: white;
+                &.formDetails {
+                    border:inherit;
+                    background:inherit;
+                    display: block;
+                    position:relative;
+                    background: $projectBackground;
+                    padding:30px 0.5% 20px 0.5%;
+                    width:inherit;
+                    width:99%;
+                    .showCollapse {
+                      text-transform:uppercase;
+                      position:absolute;
+                      top: 15px;
+                      right: 15px;                    
+                  }
+                }
             }
             #tabs div > section h3 {
                 text-shadow: none;
@@ -4246,18 +4325,32 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                       background:rgba(32,32,36, 0.5) url(../images/IconForms.png) no-repeat 5px center;
                       background-size:18% auto;
                       }
+                  &.registrationForm {
+                    background:$monitorGreen url(../images/IconForms.png) no-repeat 5px center;
+                    background-size:18% auto;
+                    &:hover {
+                        background:$monitorGreen url(../images/IconForms.png) no-repeat 5px center;
+                        background-size:18% auto;
+                      }
+                  }
+                  
                     }
                 &.newFormTab {
                   background:transparent;
-                  color:$anchorLink;
+                  a{
+                    color:$anchorLink;
+                    &:hover {
+                        color:$anchorLinkHover;
+                    }
+                  }
                   span {
                     font-weight:bold;
                     margin-right:5px;
                   }
                   &:hover {
-                      color:$anchorLinkHover;
-                      }
-                    }
+                    background: transparent;
+                  } 
+                 }
                   }
                   #tabs nav.tabNav ul li:hover {
                       background: rgb(174, 174, 174);
@@ -4296,9 +4389,11 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                       }
                   }
               }
-              .projectDetails {
+              .formsContainer {
+                background:rgba(32,32,36, 0.5);
+              }
+              .projectDetails, .formsContainer {
                   position:relative;
-                  background:$projectTopBackgroundLighter;
                   padding:2em 0.5% 2em 0.5%;
                   h3 {
                       color:$akvoGolden;
