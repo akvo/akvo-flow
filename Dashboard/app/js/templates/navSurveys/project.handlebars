@@ -4,18 +4,18 @@
     <div id="pageWrap" class="widthConstraint belowHeader">
       <section id="main" class="projectSection floats-in middleSection" role="main">
         <section id="" class="projectDetailsPanel">
-          <span class="fontInfo">Project:</span><h2>{{view.project.code}}</h2>
+          <span class="fontInfo">Project:</span><h2>{{FLOW.projectControl.currentProject.code}}</h2>
           <ul class="projectSummary">
             <li>Forms<span class="projectForm">{{view.formCount}}</span>
             </li>
             <li>Monitoring
               <span class="projectMonitoring">
-                {{#if view.project.monitoringGroup}}enabled{{else}}not enabled{{/if}}
+                {{#if FLOW.projectControl.currentProject.monitoringGroup}}enabled{{else}}not enabled{{/if}}
               </span>
             </li>
             <li>Status:
 
-              {{#if view.project.published}}
+              {{#if FLOW.projectControl.currentProject.published}}
                 <span class="projectStatus">
                   Published
                 </span>
@@ -41,8 +41,8 @@
             </a>
             {{#if view.showProjectDetails}}
             <form class="projectDetailForm">
-              <label>Project Title</label>{{view Ember.TextField id="projectTitle" valueBinding="view.project.code"}}
-              <label>Project Description</label>{{view Ember.TextField id="projectDescription" valueBinding="view.project.description"}}
+              <label>Project Title</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.code"}}
+              <label>Project Description</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
 
               <ul class="projectSelect floats-in">
                 <li>
@@ -79,7 +79,7 @@
                     {{#each form in FLOW.surveyControl}}
                       <li class="aFormTab"><a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.code}}</a></li>
                     {{/each}}
-                    {{#if view.project.monitoringGroup}}
+                    {{#if FLOW.projectControl.currentProject.monitoringGroup}}
                       <li class="newFormTab"><a href=""><span>+</span>Add new form</a></li>
                     {{/if}}
                   </ul>
