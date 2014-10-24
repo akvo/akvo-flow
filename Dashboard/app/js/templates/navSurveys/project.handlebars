@@ -87,7 +87,11 @@
                   </ul>
                 </nav>
                 <section class="formsContainer">
-                    <div id="form01"></div>
+                    <div id="form01">
+                      {{#if FLOW.selectedControl.selectedSurvey}}
+                        {{view FLOW.FormView}}
+                      {{/if}}
+                    </div>
                 </section>
               </div>
             {{else}}
