@@ -340,9 +340,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   },
 
   createForm: function() {
-    var newForm;
-    debugger;
-    newForm = FLOW.store.createRecord(FLOW.Survey, {
+    FLOW.store.createRecord(FLOW.Survey, {
       "name": "New Form",
       "code": "New Form",
       "defaultLanguageCode": "en",
