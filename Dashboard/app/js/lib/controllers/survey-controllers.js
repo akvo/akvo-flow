@@ -356,9 +356,9 @@ FLOW.surveyControl = Ember.ArrayController.create({
     this.refresh();
   },
 
-  deleteSurvey: function (keyId) {
-    var survey;
-    survey = FLOW.store.find(FLOW.Survey, keyId);
+  deleteForm: function() {
+    var keyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+    var survey = FLOW.store.find(FLOW.Survey, keyId);
     survey.deleteRecord();
     FLOW.store.commit();
     this.refresh();
