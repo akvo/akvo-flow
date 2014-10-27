@@ -339,6 +339,23 @@ FLOW.surveyControl = Ember.ArrayController.create({
     });
   },
 
+  createForm: function() {
+    var newForm;
+    debugger;
+    newForm = FLOW.store.createRecord(FLOW.Survey, {
+      "name": "New Form",
+      "code": "New Form",
+      "defaultLanguageCode": "en",
+      "requireApproval": false,
+      "status": "NOT_PUBLISHED",
+      "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
+      "version":"1.0"
+    });
+
+    FLOW.store.commit();
+    this.refresh();
+  },
+
   deleteSurvey: function (keyId) {
     var survey;
     survey = FLOW.store.find(FLOW.Survey, keyId);

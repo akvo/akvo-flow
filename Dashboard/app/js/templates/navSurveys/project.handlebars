@@ -76,7 +76,7 @@
                       <li class="aFormTab"><a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.code}}</a></li>
                     {{/each}}
                     {{#if FLOW.projectControl.currentProject.monitoringGroup}}
-                      <li class="newFormTab"><a href=""><span>+</span>Add new form</a></li>
+                      <li class="newFormTab"><a {{action "createForm" target="FLOW.surveyControl"}}><span>+</span>Add new form</a></li>
                     {{/if}}
                   </ul>
                 </nav>
@@ -97,7 +97,7 @@
               <div id="tabs">
                 <nav class="tabNav floats-in">
                   <ul>
-                    <li class="newFormTab"><a href=""><span>+</span>Add new form</a></li>
+                    <li class="newFormTab"><a {{action "createForm" target="FLOW.surveyControl"}}><span>+</span>Add new form</a></li>
                   </ul>
                 </nav>
               </div>
