@@ -364,6 +364,10 @@ FLOW.surveyControl = Ember.ArrayController.create({
     this.refresh();
   },
 
+  showPreview: function() {
+    FLOW.previewControl.set('showPreviewPopup', true)
+  },
+
   selectForm: function(evt) {
     FLOW.selectedControl.set('selectedSurvey', evt.context);
   }
