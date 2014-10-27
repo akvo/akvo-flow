@@ -6,4 +6,4 @@ FLOW.FormView = Ember.View.extend({
 		this.set('showFormBasics', !this.get('showFormBasics'));
 	}
 
-})
+});

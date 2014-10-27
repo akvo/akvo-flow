@@ -33,38 +33,7 @@
 		{{/if}}
 	</section>
 	<section class="surveyForm">
-		<section id="questionSet">
-			<section class="aQuestionSet mainContent" id="setIndex-01">
-				<div id="ember25098" class="ember-view">
-					<nav class="insertMenu groupActionMenu">
-						<ul>
-							<li><a data-ember-action="630" class="">Insert group here</a></li>
-						</ul>
-					</nav>
-				</div>
-				<div>
-					<div class="questionGroupBlock">
-						<header> <span class="qtnGroupHead">Group 1</span>
-							<h1 class="qtnGroupTitle"><a></a></h1>
-							<nav class="qtnGroupMenu">
-								<ul>
-									<li><a class="showQuestionGroup" id="">Show questions </a></li>
-									<li><a class="editQuestionGroup" id="">Edit group name</a></li>
-									<li> <a class="deleteQuestionGroup">Delete</a> </li>
-									<li><a class="copyQuestionGroup" id="">Copy</a></li>
-									<li><a class="moveQuestionGroup" id="">Move</a> </li>
-								</ul>
-							</nav>
-						</header>
-					</div>
-					<nav class="insertMenu groupActionMenu">
-						<ul>
-							<li><a class="">Insert group here</a></li>
-						</ul>
-					</nav>
-				</div>
-			</section>
-		</section>
+		{{view FLOW.EditQuestionsView}}
 	</section>
 </div>
 {{/with}}
