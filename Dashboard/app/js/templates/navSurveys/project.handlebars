@@ -67,6 +67,14 @@
             </form>
             {{/if}}
           </section>
+          <section class="noFormsContainer">
+            {{#unless FLOW.projectControl.hasForms}}
+              <ul>
+                  <li class="formList"><p class="noForms">You have no forms in this project</p></li>
+                  <li><a class="addMenuAction aBtn addNewForm" {{action "createForm" target="FLOW.surveyControl"}}>Add a new form</a></li>
+              </ul>
+            {{/unless}}
+          </section>
           <section class="forms">
             {{#if FLOW.projectControl.hasForms}}
               <div id="tabs">
@@ -87,19 +95,6 @@
                       {{/if}}
                     </div>
                 </section>
-              </div>
-            {{else}}
-              <ul>
-                <li class="formList">
-                  <p class="noForms">You have no forms in this project</p>
-                </li>
-              </ul>
-              <div id="tabs">
-                <nav class="tabNav floats-in">
-                  <ul>
-                    <li class="newFormTab"><a {{action "createForm" target="FLOW.surveyControl"}}><span>+</span>Add new form</a></li>
-                  </ul>
-                </nav>
               </div>
             {{/if}}
           </section>
