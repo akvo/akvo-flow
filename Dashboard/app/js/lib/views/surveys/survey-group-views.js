@@ -15,7 +15,7 @@ FLOW.ProjectView = FLOW.View.extend({
 });
 
 FLOW.Project = FLOW.View.extend({
-  
+
   showProjectDetails: false,
 
   project: function() {
@@ -29,6 +29,10 @@ FLOW.Project = FLOW.View.extend({
 
 
 FLOW.ProjectMainView = FLOW.View.extend({
+
+  doSave: function() {
+    FLOW.store.commit();
+  },
 
   projectView: function() {
     return FLOW.projectControl.isProject(FLOW.projectControl.get('currentProject'));
