@@ -125,6 +125,45 @@ FLOW.alwaysTrue = function () {
   return true;
 };
 
+FLOW.surveyGroupControl = Ember.ArrayController.create({
+  sortProperties: ['code'],
+  sortAscending: true,
+  content: null,
+
+  setFilteredContent: function (f) {
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, f));
+  },
+
+  // load all Survey Groups
+  populate: function (f) {
+	var fn = (f && $.isFunction(f) && f) || FLOW.alwaysTrue;
+	FLOW.store.find(FLOW.SurveyGroup);
+	this.setFilteredContent(fn);
+  },
+
+  // checks if data store contains surveys within this survey group.
+  // this is also checked server side.
+  containsSurveys: function () {
+    var surveys, sgId;
+    surveys = FLOW.store.filter(FLOW.Survey, function (data) {
+      sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
+      if (data.get('surveyGroupId') == sgId) {
+        return true;
+      }
+    });
+    return surveys.get('content').length > 0;
+  },
+
+  deleteSurveyGroup: function (keyId) {
+    var surveyGroup;
+    surveyGroup = FLOW.store.find(FLOW.SurveyGroup, keyId);
+    surveyGroup.deleteRecord();
+    FLOW.store.commit();
+    FLOW.selectedControl.set('selectedSurveyGroup', null);
+  }
+});
+
+
 /**
  * The root project folder is represented as null with the keyId null
  */
@@ -224,14 +263,6 @@ FLOW.projectControl = Ember.ArrayController.create({
     });
     FLOW.store.commit();
   },
-
-  autoSaveProjectTitle: function(evt) {
-    console.log('project title changed');
-  }.observes('currentProject.code'),
-
-  autoSaveProjectDescription: function(evt) {
-    console.log('project descr changed');
-  }.observes('currentProject.description'),
 
   deleteProject: function(evt) {
     project = FLOW.store.find(FLOW.SurveyGroup, evt.context.get('keyId'));
