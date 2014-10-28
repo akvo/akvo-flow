@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,19 +19,12 @@ package org.waterforpeople.mapping.app.web;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Properties;
 import java.util.TimeZone;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.json.JSONObject;
-import org.waterforpeople.mapping.app.web.dto.DeviceApplicationRestRequest;
-import org.waterforpeople.mapping.app.web.dto.DeviceApplicationRestResponse;
+
 import org.waterforpeople.mapping.app.web.dto.DeviceTimeRestRequest;
 import org.waterforpeople.mapping.app.web.dto.DeviceTimeRestResponse;
-import org.waterforpeople.mapping.dao.DeviceApplicationDao;
-import org.waterforpeople.mapping.domain.DeviceApplication;
 
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,7 +18,6 @@ package org.waterforpeople.mapping.app.web.dto;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
