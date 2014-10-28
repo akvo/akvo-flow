@@ -23,8 +23,8 @@
 				<label>Manage</label>
 				<nav class="newSurveyNav">
 					<ul class="manageStuff">
-						<li><a class="manageTranslations">Manage translations &gt;</a></li>
-						<li><a class="manageNotifications">Manage notifications &gt;</a></li>
+						<li><a class="manageTranslations" {{action "doManageTranslations" target="this"}}>Manage translations &gt;</a></li>
+						<li><a class="manageNotifications" {{action "doManageNotifications" target="this"}}>Manage notifications &gt;</a></li>
 					</ul>
 				</nav>
 			</form>
@@ -33,7 +33,15 @@
 		{{/if}}
 	</section>
 	<section class="surveyForm">
-		{{view FLOW.EditQuestionsView}}
+		{{#if view.manageTranslations}}
+			{{view FLOW.TranslationsView}}
+		{{else}}
+			{{#if view.manageNotifications}}
+				{{view FLOW.NotificationsView}}
+			{{else}}
+				{{view FLOW.EditQuestionsView}}
+			{{/if}}
+		{{/if}}
 	</section>
 </div>
 {{/with}}

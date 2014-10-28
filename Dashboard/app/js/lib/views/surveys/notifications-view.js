@@ -1,4 +1,5 @@
 FLOW.NotificationsView = FLOW.View.extend({
+  templateName: 'navSurveys/manage-notifications',
   notificationOption: null,
   notificationType: null,
   expiryDate: null,
