@@ -2181,6 +2181,14 @@ li.aFolder {
     background-position: right center;
     background-repeat: no-repeat;
     border:1px solid rgba(200,200,200,0);
+    a.editFolderName {
+        display:inline-block;
+        width:20px;
+        height:20px;
+        background: url(../images/IconEditGreyLight.svg) center center no-repeat;     
+        text-indent: -9999px;
+        margin-right:5px;
+    }
     h2{
         color:rgb(183,183,183);
         background: url(../images/folderIcn.svg) right center no-repeat;
@@ -2281,12 +2289,12 @@ ul.surveyInfo li.responseNumber {
     float: left;
     margin: 0 2px 0 0;
     border-radius: 3px;
-    background: rgba(205, 205, 205, 0.2);
+    background: rgba(205, 205, 205, 0.1);
     -webkit-transition: background 0.2s ease-in;
     transition: background 0.2s ease-in;
 }
 .aSurvey nav ul li:hover {
-    background: rgba(205, 205, 205, 0.4);
+    background: rgba(205, 205, 205, 0.3);
 }
 .aSurvey nav ul li a {
     display: block;
