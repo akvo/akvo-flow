@@ -49,7 +49,7 @@ FLOW.NotificationsView = FLOW.View.extend({
   },
 
   closeNotifications: function (router, event) {
-    FLOW.router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
+    this.get('parentView').set('manageNotifications', false);
   },
 
   removeNotification: function (event) {

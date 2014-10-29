@@ -180,8 +180,8 @@
 
     <nav class="bottomPg">
       <ul>
-         <li><a  {{action "saveTranslationsAndClose" target="FLOW.translationControl"}} class="standardBtn">{{t _save_and_close}}</a> </li>
-        <li><a {{action "closeTranslations" target="FLOW.translationControl"}}>{{t _close_without_saving}}</a> </li>
+         <li><a  {{action "saveTranslationsAndClose" target="this"}} class="standardBtn">{{t _save_and_close}}</a> </li>
+        <li><a {{action "closeTranslations" target="this"}}>{{t _close_without_saving}}</a> </li>
       </ul>
     </nav>
     </section>

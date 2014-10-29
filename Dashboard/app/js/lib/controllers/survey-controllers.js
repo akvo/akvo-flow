@@ -1112,15 +1112,6 @@ FLOW.translationControl = Ember.ArrayController.create({
 	return changed;
   },
 
-  saveTranslationsAndClose: function () {
-    this.saveTranslations();
-    FLOW.router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
-  },
-
-  closeTranslations: function (router, event) {
-    FLOW.router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
-  },
-
   // checks if unsaved translations are present, and if so, emits a warning
   unsavedTranslations: function () {
 	  var type, parentId, lan, transId, _self, unsaved;
