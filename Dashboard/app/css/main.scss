@@ -431,6 +431,9 @@ input[type="submit"] {
     padding: 1px 0.15%;
     background: white;
 }
+.usersList {
+    margin-top: 25px;
+}
 .btnAboveTable {
     margin: 7px 0 7px 5px;
     .usersList & {
@@ -608,13 +611,13 @@ label[for=newDeviceGroupName] {
     min-width: 768px;
 }
 .belowHeader {
-    padding-top: 35px;
+    padding-top: 55px;
     padding-bottom: 110px;
     background: white;
 }
 .middleSection {
     margin: 0 0 20px 0;
-    padding:30px 0 0 0;
+    padding:90px 0 0 0;
 }
 .leftSidebar {
     -webkit-box-sizing: border-box;
@@ -2136,7 +2139,7 @@ li.aSurvey {
     position: relative;
     display: block;
     box-sizing: border-box;
-    margin: 0.5em auto 0.5em auto;
+    margin: 0.5em auto 1em auto;
     padding: 0.5em 0 0.5em 1%;
     min-height: 115px;
     width: 99%;
@@ -4203,7 +4206,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     background: $projectBackground;
     box-sizing: border-box;
     width:100%;
-    padding:3em 0;
+    padding:1em 0 0 0;
     margin:0 auto;
     .publishProject {
         padding: 30px 5px;
@@ -4258,8 +4261,8 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             display:inline;
         }
         .forms {
-            padding:2em 0.5% 2em 0.5%;
-            background:#4E4E4E;
+            padding:2em 0 0 0;
+            background:white;
             .formSummary {
                         display:flex;
                         flex-direction: row;
@@ -4287,20 +4290,22 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             #tabs div > section {
                 border: thin solid rgb(224, 224, 224);
                 background: white;
+                margin-top: 15px;
+
                 &.formDetails {
                     border:inherit;
                     background:inherit;
                     display: block;
                     position:relative;
                     background: $projectBackground;
-                    padding:20px 0.5% 20px 0.5%;
+                    padding:20px 0.25%;
                     width:inherit;
-                    width:99%;
+                    width:99.5%;
+                    margin:0 auto;
                     .showCollapse {
                       text-transform:uppercase;
-                      position:absolute;
-                      top: 15px;
-                      right: 15px;                    
+                      display:inline-block;
+                      margin-left:10px;                   
                   }
                 }
             }
@@ -4399,21 +4404,33 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                   }
               }
               .formsContainer {
-                background:rgba(32,32,36, 0.5);
-              }
+                    background:rgba(32,32,36, 0.9); 
+                    margin:0px auto;
+                    }
+              .projectDetails {
+                    background:rgb(54, 79, 90); 
+                    margin:10px auto;
+                    }
               .projectDetails, .formsContainer {
+                  width:99.5%;
                   position:relative;
-                  padding:2em 0.5% 2em 0.5%;
+                  padding:2em 0.25% 2em 0.25%;
+
                   h3 {
                       color:$akvoGolden;
                       text-transform: uppercase;
                       margin-bottom: 20px;
+                      display:inline-block;
                   }
                   .showCollapse {
+                      background:$anchorLink;
+                      color:white;
                       text-transform:uppercase;
-                      position:absolute;
-                      top: 25px;
-                      right: 15px;
+                      display:inline-block;
+                      padding: 2px 5px 0px 5px;
+                      display: inline-block;
+                      margin: -2px 0 0 10px;
+                      border-radius:2px;                
                   }
                   .projectDetailForm, .surveyDetailForm {
                       display: block;
@@ -4441,8 +4458,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                           li {
                               width:50%;
                               select {
-                                  width:98%;
-                                  padding:8px 5px;
+                                  width:100%;
                               }
                           }
                       }
