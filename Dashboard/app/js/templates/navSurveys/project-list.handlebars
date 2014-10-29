@@ -8,10 +8,16 @@
         {{#each sg in FLOW.projectControl.currentFolders}}
             {{#view FLOW.ProjectItemView contentBinding="sg"}}
               {{#if view.isFolder}}
-                <a href="" class="editFolderName">edit folder name</a>
-                <a {{action "selectProject" sg target="FLOW.projectControl"}}>
-                  <h2>{{sg.code}}</h2>
+                <a {{action "toggleEditFolderName" sg target="this"}} class="editFolderName">
+                  edit folder name
                 </a>
+                {{#if view.folderEdit}}
+                  {{view FLOW.FolderEditView valueBinding="sg.code" contentBinding="sg"}}
+                {{else}}
+                  <a {{action "selectProject" sg target="FLOW.projectControl"}}>
+                    <h2>{{sg.code}}</h2>
+                  </a>
+                {{/if}}
                 <nav>
                   <ul>
                     <li class="deleteSurvey"><a {{action "deleteProject" sg target="FLOW.projectControl"}}>Delete</a></li>

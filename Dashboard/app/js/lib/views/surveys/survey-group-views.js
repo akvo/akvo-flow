@@ -8,6 +8,7 @@ if (!String.prototype.trim) {
 
 FLOW.ProjectListView = FLOW.View.extend({
   templateName: 'navSurveys/project-list'
+
 });
 
 FLOW.ProjectView = FLOW.View.extend({
@@ -24,7 +25,8 @@ FLOW.Project = FLOW.View.extend({
 
   toggleShowProjectDetails: function() {
     this.set('showProjectDetails', !this.get('showProjectDetails'));
-  }
+  },
+
 })
 
 
@@ -57,6 +59,7 @@ FLOW.ProjectItemView = FLOW.View.extend({
   tagName: 'li',
   content: null,
   classNameBindings: ['classProperty'],
+  folderEdit: false,
 
   classProperty: function() {
     var isFolder = FLOW.projectControl.isProjectFolder(this.content);
@@ -70,6 +73,10 @@ FLOW.ProjectItemView = FLOW.View.extend({
 
     return classes;
   }.property(),
+
+  toggleEditFolderName: function(evt) {
+    this.set('folderEdit', !this.get('folderEdit'));
+  },
 
   isFolder: function() {
     return FLOW.projectControl.isProjectFolder(this.content);
@@ -90,6 +97,14 @@ FLOW.ProjectItemView = FLOW.View.extend({
 
 });
 
+FLOW.FolderEditView = Ember.TextField.extend({
+  content: null,
+
+  focusOut: function() {
+    this.content.set('name', this.content.get('code'));
+    FLOW.store.commit();
+  }
+});
 
 // displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
