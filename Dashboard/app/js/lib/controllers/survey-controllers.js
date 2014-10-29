@@ -121,6 +121,10 @@ FLOW.surveySectorTypeControl = Ember.Object.create({
   ]
 });
 
+FLOW.privacyLevelControl = Ember.Object.create({
+  content: ["PRIVATE", "PUBLIC"]
+});
+
 FLOW.alwaysTrue = function () {
   return true;
 };

@@ -47,10 +47,9 @@
               <ul class="projectSelect floats-in">
                 <li>
                   <label>Privacy Type:</label>
-                  <select>
-                    <option value="Public">Public</option>
-                    <option value="Private">Private</option>
-                  </select>
+                  {{view Ember.Select
+                    contentBinding="FLOW.privacyLevelControl.content"
+                    selectionBinding="FLOW.projectControl.currentProject.privacyLevel"}}
                 </li>
                 <li>
                   <label>Language:</label>
@@ -59,11 +58,14 @@
                     <option value="fr">French</option>
                     <option value="es">Spanish</option>
                   </select>
+
                 </li>
               </ul>
-              <label for="enableMonitoring" class="labelcheckbox">
-                <input type="checkbox" id="enableMonitoring">Enable Monitoting features
-              </label>
+              {{#unless FLOW.projectControl.currentProject.monitoringGroup}}
+                <label for="enableMonitoring" class="labelcheckbox">
+                  <input type="checkbox" id="enableMonitoring">Enable Monitoting features
+                </label>
+              {{/unless}}
             </form>
             {{/if}}
           </section>
