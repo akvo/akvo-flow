@@ -224,6 +224,13 @@ FLOW.projectControl = Ember.ArrayController.create({
     }
   }.property('FLOW.surveyControl.content.@each'),
 
+  questionCount: function () {
+    if (Ember.none(FLOW.questionControl.get('filterContent'))) {
+      return 0;
+    }
+    return FLOW.questionControl.filterContent.toArray().length;
+  }.property('FLOW.questionControl.filterContent.@each'),
+
   hasForms: function() {
     return this.get('formCount') > 0;
   }.property('this.formCount'),
