@@ -231,7 +231,9 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
         String newLocaleSurveyId;
         for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
             Survey s = surveyDao.getById(dsjq.getSurveyID());
-            SurveyGroup sg = s != null ? sgDao.getByKey(s.getSurveyGroupId()) : null;
+            SurveyGroup sg = s != null && s.getSurveyGroupId() != null ? 
+                    sgDao.getByKey(s.getSurveyGroupId()) 
+                    : null;
 
             if (s != null && sg != null) {
                 ver = s.getVersion();
