@@ -18,6 +18,7 @@ FLOW.ProjectView = FLOW.View.extend({
 FLOW.Project = FLOW.View.extend({
 
   showProjectDetails: false,
+  selectedLanguage: null,
 
   project: function() {
     return FLOW.projectControl.get('currentProject');
@@ -26,6 +27,12 @@ FLOW.Project = FLOW.View.extend({
   toggleShowProjectDetails: function() {
     this.set('showProjectDetails', !this.get('showProjectDetails'));
   },
+
+  updateSelectedLanguage: function() {
+    var currentProject = FLOW.projectControl.get('currentProject');
+    if (currentProject)
+      currentProject.set('defaultLanguageCode', this.selectedLanguage.get('value'))
+  }.observes('this.selectedLanguage'),
 
 })
 

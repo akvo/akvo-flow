@@ -53,12 +53,11 @@
                 </li>
                 <li>
                   <label>Language:</label>
-                  <select>
-                    <option value="en">English</option>
-                    <option value="fr">French</option>
-                    <option value="es">Spanish</option>
-                  </select>
-
+                  {{view Ember.Select
+                    contentBinding="FLOW.languageControl.content"
+                    selectionBinding="view.selectedLanguage"
+                    optionLabelPath="content.label"
+                    optionValuePath="content.value"}}
                 </li>
               </ul>
               {{#unless FLOW.projectControl.currentProject.monitoringGroup}}
