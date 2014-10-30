@@ -31,8 +31,14 @@
                   <li class="dateCreated"><span>Created</span><p>{{view.created}}</p></li>
                   <li class="responseNumber"><span>Responses</span></li>
                   <li class="dateModified"><span>Modified</span><p>{{view.modified}}</li>
-                  <li class="surveyType"><span>Type</span><p>Private</p></li>
-                  <li class="surveyLanguage"><span>Language</span><p>English</p></li>
+                  <li class="surveyType"><span>Type</span><p>
+                    {{#if view.isPrivate}}
+                      Private
+                    {{else}}
+                      Public
+                    {{/if}}
+                  </p></li>
+                  <li class="surveyLanguage"><span>Language</span><p>{{view.language}}</p></li>
                 </ul>
                 <nav>
                   <ul>
