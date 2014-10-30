@@ -60,11 +60,11 @@
                     optionValuePath="content.value"}}
                 </li>
               </ul>
-              {{#unless FLOW.projectControl.currentProject.monitoringGroup}}
+              {{#if view.showMonitoringGroupCheckbox}}
                 <label for="enableMonitoring" class="labelcheckbox">
-                  <input type="checkbox" id="enableMonitoring">Enable Monitoting features
+                  {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup"}}Enable Monitoting features
                 </label>
-              {{/unless}}
+              {{/if}}
             </form>
             {{/if}}
           </section>

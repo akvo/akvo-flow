@@ -19,6 +19,7 @@ FLOW.Project = FLOW.View.extend({
 
   showProjectDetails: false,
   selectedLanguage: null,
+  monitoringGroupEnabled: false,
 
   project: function() {
     return FLOW.projectControl.get('currentProject');
@@ -33,6 +34,10 @@ FLOW.Project = FLOW.View.extend({
     if (currentProject)
       currentProject.set('defaultLanguageCode', this.selectedLanguage.get('value'))
   }.observes('this.selectedLanguage'),
+
+  showMonitoringGroupCheckbox: function() {
+    return !FLOW.projectControl.currentProject.get('monitoringGroup');
+  }.property(),
 
 })
 
