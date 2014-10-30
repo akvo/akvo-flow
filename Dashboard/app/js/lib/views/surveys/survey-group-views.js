@@ -48,6 +48,18 @@ FLOW.ProjectMainView = FLOW.View.extend({
     FLOW.store.commit();
   },
 
+  hasUnsavedChanges: function() {
+    var selectedProject = FLOW.projectControl.get('currentProject');
+    var isProjectDirty = selectedProject ? selectedProject.get('isDirty') : false;
+
+    var selectedForm = FLOW.selectedControl.get('selectedSurvey');
+    var isFormDirty = selectedForm ? selectedForm.get('isDirty') : false;
+
+    return isProjectDirty || isFormDirty;
+
+  }.property('FLOW.projectControl.currentProject.isDirty',
+              'FLOW.selectedControl.selectedSurvey.isDirty'),
+
   projectView: function() {
     return FLOW.projectControl.isProject(FLOW.projectControl.get('currentProject'));
   }.property('FLOW.projectControl.currentProject'),

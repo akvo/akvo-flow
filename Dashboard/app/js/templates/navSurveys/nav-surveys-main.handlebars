@@ -33,8 +33,11 @@
       {{else}}
         <nav class="menuTopbar">
           <ul>
-            <!-- TODO add noChanges if nothing has been changed -->
-            <li><a class="saveProject" {{action "doSave" target="this"}}>Save</a></li>
+            {{#if view.hasUnsavedChanges}}
+              <li><a class="saveProject" {{action "doSave" target="this"}}>Save</a></li>
+            {{else}}
+              <li><a class="saveProject noChanges">Save</a></li>
+            {{/if}}
             {{#unless FLOW.projectControl.currentProject.published}}
               {{#if FLOW.projectControl.hasForms}}
                 <li><a class="publishProjectBtn" {{action "publishProject" target="FLOW.projectControl"}}>Publish project</a></li>
