@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -224,9 +223,8 @@ public class BulkDataServiceClient {
                             try {
                                 dto.setLongitude(new Double(x));
                             } catch (NumberFormatException nex) {
-                                System.out
-                                .println("Couldn't parse Longitude for"
-                                        + dto.getCommunityCode());
+                                log.error("Couldn't parse Longitude for"
+                                        + dto.getCommunityCode(), nex);
                                 dto.setLongitude(null);
                             }
                         }
@@ -235,9 +233,8 @@ public class BulkDataServiceClient {
                             try {
                                 dto.setLatitude(new Double(x));
                             } catch (NumberFormatException nex) {
-                                System.out
-                                .println("Couldn't parse Latitude for"
-                                        + dto.getCommunityCode());
+                                log.error("Couldn't parse Latitude for"
+                                        + dto.getCommunityCode(), nex);
                                 dto.setLatitude(null);
                             }
                         }
@@ -248,9 +245,8 @@ public class BulkDataServiceClient {
                                     dto.setCollectionDate(new Date(x));
                                 } catch (IllegalArgumentException iae) {
                                     // log it and ignore it
-                                    System.out
-                                    .println("Couldn't parse date for"
-                                            + dto.getCommunityCode());
+                                    log.error("Couldn't parse date for"
+                                            + dto.getCommunityCode(), iae);
                                     dto.setCollectionDate(null);
                                 }
                             }
@@ -315,14 +311,10 @@ public class BulkDataServiceClient {
             Map<String, String> results = BulkDataServiceClient
                     .fetchInstanceIds(args[1], args[0], args[2], false);
             if (results != null) {
-                for (Entry<String, String> entry : results.entrySet()) {
-                    System.out
-                    .println(entry.getKey() + ", " + entry.getValue());
-                }
+                log.info(results);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Error: " + e.getMessage(), e);
         }
     }
 

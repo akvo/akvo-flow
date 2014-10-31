@@ -562,9 +562,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 .trim())));
                     }
                 } catch (Exception e) {
-                    System.out
-                            .println("couldn't format value for question id: "
-                                    + q + "\n" + e.getMessage());
+                    log.error("couldn't format value for question id: "
+                            + q + " -  " + e.getMessage(), e);
                 }
 
                 if (qdto != null && QuestionType.PHOTO == qdto.getType()) {
