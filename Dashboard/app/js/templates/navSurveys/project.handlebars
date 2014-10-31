@@ -40,32 +40,52 @@
               {{/if}}
             </a>
             {{#if view.showProjectDetails}}
-            <form class="projectDetailForm">
-              <label>Project Title</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.code"}}
-              <label>Project Description</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
+              <form class="projectDetailForm">
+                <label>Project Title</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.code"}}
+                <label>Project Description</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
 
-              <ul class="projectSelect floats-in">
-                <li>
-                  <label>Privacy Type:</label>
-                  {{view Ember.Select
-                    contentBinding="FLOW.privacyLevelControl.content"
-                    selectionBinding="FLOW.projectControl.currentProject.privacyLevel"}}
-                </li>
-                <li>
-                  <label>Language:</label>
-                  {{view Ember.Select
-                    contentBinding="FLOW.languageControl.content"
-                    selectionBinding="view.selectedLanguage"
-                    optionLabelPath="content.label"
-                    optionValuePath="content.value"}}
-                </li>
-              </ul>
-              {{#if view.showMonitoringGroupCheckbox}}
-                <label for="enableMonitoring" class="labelcheckbox">
-                  {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup"}}Enable Monitoting features
-                </label>
-              {{/if}}
-            </form>
+                <ul class="projectSelect floats-in">
+                  <li>
+                    <label>Privacy Type:</label>
+                    {{view Ember.Select
+                      contentBinding="FLOW.privacyLevelControl.content"
+                      selectionBinding="FLOW.projectControl.currentProject.privacyLevel"}}
+                  </li>
+                  <li>
+                    <label>Language:</label>
+                    {{view Ember.Select
+                      contentBinding="FLOW.languageControl.content"
+                      selectionBinding="view.selectedLanguage"
+                      optionLabelPath="content.label"
+                      optionValuePath="content.value"}}
+                  </li>
+                </ul>
+                <span>
+                  <a {{action "toggleShowAdvancedSettings" target="this"}} class="showCollapse">
+                    {{#if view.showAdvancedSettings}}
+                      Collapse
+                    {{else}}
+                      Show Advanced Settings
+                    {{/if}}
+                  </a>
+                </span>
+                {{#if view.showAdvancedSettings}}
+                  {{#if view.showMonitoringGroupCheckbox}}
+                    <label for="enableMonitoring" class="labelcheckbox">
+                      {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup"}}Enable Monitoting features
+                    </label>
+                  {{/if}}
+                  {{#if FLOW.projectControl.currentProject.monitoringGroup}}
+                    {{view Ember.Select
+                      contentBinding="FLOW.surveyControl.arrangedContent"
+                      selectionBinding="view.registrationForm"
+                      optionLabelPath="content.code"
+                      optionValuePath="content.keyId"}}
+                  {{/if}}
+                {{else}}
+
+                {{/if}}
+              </form>
             {{/if}}
           </section>
           <section class="noFormsContainer">
