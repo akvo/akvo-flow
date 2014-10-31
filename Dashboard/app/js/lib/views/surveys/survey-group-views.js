@@ -21,6 +21,7 @@ FLOW.Project = FLOW.View.extend({
   showAdvancedSettings: false,
   selectedLanguage: null,
   monitoringGroupEnabled: false,
+  selectedRegistrationForm: null,
 
   project: function() {
     return FLOW.projectControl.get('currentProject');
@@ -41,8 +42,13 @@ FLOW.Project = FLOW.View.extend({
   }.observes('this.selectedLanguage'),
 
   showMonitoringGroupCheckbox: function() {
-    return !FLOW.projectControl.currentProject.get('monitoringGroup');
-  }.property(),
+    return FLOW.projectControl.get('formCount') < 2;
+  }.property("FLOW.projectControl.formCount"),
+
+  updateSelectedRegistrationForm: function() {
+    debugger;
+    FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.selectedRegistrationForm.get('keyId'));
+  }.observes('selectedRegistrationForm')
 
 })
 

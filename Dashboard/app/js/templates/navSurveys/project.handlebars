@@ -78,7 +78,7 @@
                   {{#if FLOW.projectControl.currentProject.monitoringGroup}}
                     {{view Ember.Select
                       contentBinding="FLOW.surveyControl.arrangedContent"
-                      selectionBinding="view.registrationForm"
+                      selectionBinding="view.selectedRegistrationForm"
                       optionLabelPath="content.code"
                       optionValuePath="content.keyId"}}
                   {{/if}}
