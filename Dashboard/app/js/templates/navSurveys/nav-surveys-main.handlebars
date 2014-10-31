@@ -38,10 +38,14 @@
             {{else}}
               <li><a class="saveProject noChanges">Save</a></li>
             {{/if}}
-            {{#unless FLOW.projectControl.currentProject.published}}
+            {{#unless FLOW.projectControl.isPublished}}
               {{#if FLOW.projectControl.hasForms}}
                 <li><a class="publishProjectBtn" {{action "publishProject" target="FLOW.projectControl"}}>Publish project</a></li>
+              {{else}}
+                <li><a class="publishProjectBtn noChanges">Publish project</a></li>
               {{/if}}
+            {{else}}
+              <li><a class="publishProjectBtn noChanges">Publish project</a></li>
             {{/unless}}
           </ul>
         </nav>

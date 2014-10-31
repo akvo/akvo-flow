@@ -235,6 +235,17 @@ FLOW.projectControl = Ember.ArrayController.create({
     return this.get('formCount') > 0;
   }.property('this.formCount'),
 
+  isPublished: function() {
+    var forms = FLOW.surveyControl.get('content');
+    if (!forms) return true;
+
+    var unpublishedForms = forms.filter(function(form) {
+      return !(form.get('status') === 'PUBLISHED');
+    });
+
+    return unpublishedForms.toArray().length === 0;
+  }.property('FLOW.surveyControl.content.@each.status'),
+
   /* Actions */
   selectProject: function(evt) {
     var project = evt.context;
@@ -298,8 +309,19 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   publishProject: function() {
-    var project = this.get('currentProject');
-    project.set('published', true);
+    var forms = FLOW.surveyControl.get('content');
+    if (!forms) return true;
+
+    forms.filter(function(form) {
+      return !(form.get('status') === 'PUBLISHED');
+    }).map(function(form) {
+      FLOW.store.findQuery(FLOW.Action, {
+        action: 'publishSurvey',
+        surveyId: form.get('keyId')
+      });
+      form.set('status', 'PUBLISHED');
+    });
+
     FLOW.store.commit();
   },
 
