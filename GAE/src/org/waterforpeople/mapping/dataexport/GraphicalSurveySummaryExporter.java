@@ -343,7 +343,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 currentStep++;
             }
             Workbook wb = null;
-            if (questionMap.size() > 0) {
+            if (questionMap != null && questionMap.size() > 0) {
                 if (questionMap.size() > MAX_COL - 3) {
                     wb = new HSSFWorkbook();
                 } else {
@@ -395,11 +395,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                         COMPLETE.get(locale)));
             } else {
-                log.info("No questions for survey");
+                log.info("No questions for survey: "
+                        + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM) + " - instance: "
+                        + serverBase);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error generating report: " + e.getMessage(), e);
         } finally {
             if (pw != null) {
                 pw.close();
