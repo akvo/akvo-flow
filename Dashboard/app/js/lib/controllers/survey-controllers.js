@@ -242,7 +242,6 @@ FLOW.projectControl = Ember.ArrayController.create({
     if (this.isProject(project)) {
 
       FLOW.selectedControl.set('selectedSurveyGroup', project);
-
     }
   },
 
@@ -346,6 +345,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   populate: function () {
+
     var id;
     if (FLOW.selectedControl.get('selectedSurveyGroup')) {
       id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
@@ -354,10 +354,20 @@ FLOW.surveyControl = Ember.ArrayController.create({
       this.set('content', FLOW.store.findQuery(FLOW.Survey, {
         surveyGroupId: id
       }));
+
     } else {
       this.set('content', null);
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  selectFirstForm: function() {
+    if (this.content.isLoaded) {
+      var form = this.content.get('firstObject');
+      if (form) {
+        FLOW.selectedControl.set('selectedSurvey', form);
+      }
+    }
+  }.observes('content.isLoaded'),
 
   refresh: function () {
 	  var sg = FLOW.selectedControl.get('selectedSurveyGroup');
