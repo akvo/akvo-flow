@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -42,10 +43,12 @@ import com.gallatinsystems.framework.dataexport.applet.DataExporter;
 
 /**
  * Data exporter to write excel files containing the survey questions
- * 
+ *
  * @author Christopher Fagiani
  */
 public class SurveyFormExporter implements DataExporter {
+
+    private static final Logger log = Logger.getLogger(SurveyFormExporter.class);
 
     private static final int COL_WIDTH = 10000;
     private static final String LANG_DELIM = " / ";
@@ -68,8 +71,7 @@ public class SurveyFormExporter implements DataExporter {
             populateQuestionMap(criteria.get(SURVEY_ID_KEY), serverBase, criteria.get("apiKey"));
             writeSurvey(surveyTitle, fileName, groupList, questionMap);
         } catch (Exception e) {
-            System.out.println("Could not write survey");
-            e.printStackTrace();
+            log.error("Could not write survey", e);
         }
     }
 
@@ -111,7 +113,7 @@ public class SurveyFormExporter implements DataExporter {
     private void writeSurvey(String title, File fileName,
             List<QuestionGroupDto> groupList,
             Map<QuestionGroupDto, List<QuestionDto>> questions)
-            throws Exception {
+                    throws Exception {
         HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet sheet = wb.createSheet();
 
@@ -137,8 +139,8 @@ public class SurveyFormExporter implements DataExporter {
         int curRow = 0;
         HSSFRow row = sheet.createRow(curRow++);
         sheet
-                .addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1,
-                        0, 1));
+        .addMergedRegion(new CellRangeAddress(curRow - 1, curRow - 1,
+                0, 1));
         createCell(row, 0, title, headerStyle);
         row = sheet.createRow(curRow++);
         createCell(row, 0, QUESTION_HEADER, headerStyle);

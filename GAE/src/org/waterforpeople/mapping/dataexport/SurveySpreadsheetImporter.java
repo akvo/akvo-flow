@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
@@ -44,10 +45,12 @@ import com.gallatinsystems.framework.dataexport.applet.DataImporter;
  * assumes we're inserting questions into an existing survey above the question denoted by the
  * beforeQuestionId param. before loading the questions, the entire survey is reordered to adjust
  * the orderings for the to-be inserted items
- * 
+ *
  * @author Christopher Fagiani
  */
 public class SurveySpreadsheetImporter implements DataImporter {
+
+    private static final Logger log = Logger.getLogger(SurveySpreadsheetImporter.class);
 
     private static final String SERVLET_URL = "/surveyrestapi";
     private static final String BEFORE_QUESTION_ID_PARAM = "beforeQuestionId";
@@ -77,7 +80,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
             inp = new FileInputStream(file);
             HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
             sheet1 = wb.getSheetAt(0);
-            String apiKey = criteria.get("apiKey");
+            String apiKey = criteria != null ? criteria.get("apiKey") : null;
             if (!isWholeSurvey) {
                 // even though there is a header row, we want lastRowNum since
                 // rows are 0 indexed
@@ -111,11 +114,12 @@ public class SurveySpreadsheetImporter implements DataImporter {
                                     .append(SurveyRestRequest.QUESTION_ORDER_PARAM)
                                     .append("=")
                                     .append((q.getOrder() + questionCount));
-                            System.out.println(BulkDataServiceClient
+                            String result = BulkDataServiceClient
                                     .fetchDataFromServer(serverBase
                                             + SERVLET_URL,
                                             reorderBuffer.toString(), true,
-                                            criteria.get(KEY_PARAM)));
+                                            criteria.get(KEY_PARAM));
+                            log.debug(result);
                         }
                     }
                 }
@@ -302,18 +306,23 @@ public class SurveySpreadsheetImporter implements DataImporter {
                         }
                     }
                     try {
-                        System.out.println(BulkDataServiceClient
+                        String result = BulkDataServiceClient
                                 .fetchDataFromServer(serverBase + SERVLET_URL,
                                         sb.toString(), true,
-                                        criteria.get(KEY_PARAM)));
+                                        criteria.get(KEY_PARAM));
+                        log.debug(result);
                     } catch (Throwable t) {
-                        System.out.println("Error: " + t);
-                        t.printStackTrace();
-                        System.out.println("Trying again");
-                        System.out.println(BulkDataServiceClient
-                                .fetchDataFromServer(serverBase + SERVLET_URL,
-                                        sb.toString(), true,
-                                        criteria.get(KEY_PARAM)));
+                        log.error("Error: " + t.getMessage(), t);
+                        log.info("Trying again");
+                        try {
+                            BulkDataServiceClient
+                            .fetchDataFromServer(serverBase + SERVLET_URL,
+                                    sb.toString(), true,
+                                    criteria.get(KEY_PARAM));
+                        } catch (Exception e) {
+                            log.error("Error:" + e.getMessage(), e);
+                            // giving up
+                        }
                     }
                 }
             }
@@ -492,7 +501,7 @@ public class SurveySpreadsheetImporter implements DataImporter {
      * validates a boolean field. We have to try reading it as both a boolean and a string column
      * because once we encounter 1 non-boolean, it changes the underlying model for the remainder of
      * the spreadsheet.
-     * 
+     *
      * @param cell
      * @return
      */

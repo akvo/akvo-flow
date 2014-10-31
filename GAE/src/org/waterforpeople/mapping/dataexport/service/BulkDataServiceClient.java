@@ -39,6 +39,7 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,6 +68,9 @@ import com.gallatinsystems.framework.rest.RestRequest;
  * @author Christopher Fagiani
  */
 public class BulkDataServiceClient {
+
+    private static final Logger log = Logger.getLogger(BulkDataServiceClient.class);
+
     private static final String DATA_SERVLET_PATH = "/databackout";
     public static final String RESPONSE_KEY = "dtoList";
     private static final String SURVEY_SERVLET_PATH = "/surveyrestapi";
@@ -85,9 +89,9 @@ public class BulkDataServiceClient {
             String serverBase, String apiKey) throws Exception {
         String instanceValues = fetchDataFromServer(serverBase
                 + DATA_SERVLET_PATH, "?action="
-                + DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION + "&"
-                + DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
-                + instanceId, true, apiKey);
+                        + DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION + "&"
+                        + DataBackoutRequest.SURVEY_INSTANCE_ID_PARAM + "="
+                        + instanceId, true, apiKey);
         return parseInstanceValues(instanceValues);
     }
 
@@ -157,7 +161,7 @@ public class BulkDataServiceClient {
         try {
             list = parsePlacemarks(response);
         } catch (Exception ex) {
-            System.out.println("Caught Exception skipping this response");
+            log.error("Caught Exception skipping this response");
         }
         if (list == null || list.size() == 0) {
             return null;
@@ -221,8 +225,8 @@ public class BulkDataServiceClient {
                                 dto.setLongitude(new Double(x));
                             } catch (NumberFormatException nex) {
                                 System.out
-                                        .println("Couldn't parse Longitude for"
-                                                + dto.getCommunityCode());
+                                .println("Couldn't parse Longitude for"
+                                        + dto.getCommunityCode());
                                 dto.setLongitude(null);
                             }
                         }
@@ -232,8 +236,8 @@ public class BulkDataServiceClient {
                                 dto.setLatitude(new Double(x));
                             } catch (NumberFormatException nex) {
                                 System.out
-                                        .println("Couldn't parse Latitude for"
-                                                + dto.getCommunityCode());
+                                .println("Couldn't parse Latitude for"
+                                        + dto.getCommunityCode());
                                 dto.setLatitude(null);
                             }
                         }
@@ -245,8 +249,8 @@ public class BulkDataServiceClient {
                                 } catch (IllegalArgumentException iae) {
                                     // log it and ignore it
                                     System.out
-                                            .println("Couldn't parse date for"
-                                                    + dto.getCommunityCode());
+                                    .println("Couldn't parse date for"
+                                            + dto.getCommunityCode());
                                     dto.setCollectionDate(null);
                                 }
                             }
@@ -283,11 +287,11 @@ public class BulkDataServiceClient {
 
         String instanceString = fetchDataFromServer(serverBase
                 + DATA_SERVLET_PATH, "?action="
-                + DataBackoutRequest.LIST_INSTANCE_ACTION + "&"
-                + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId + "&"
-                + DataBackoutRequest.INCLUDE_DATE_PARAM + "=true" + "&"
-                + DataBackoutRequest.LAST_COLLECTION_PARAM + "="
-                + lastCollection, true, apiKey);
+                        + DataBackoutRequest.LIST_INSTANCE_ACTION + "&"
+                        + DataBackoutRequest.SURVEY_ID_PARAM + "=" + surveyId + "&"
+                        + DataBackoutRequest.INCLUDE_DATE_PARAM + "=true" + "&"
+                        + DataBackoutRequest.LAST_COLLECTION_PARAM + "="
+                        + lastCollection, true, apiKey);
 
         if (instanceString != null && instanceString.trim().length() != 0) {
             StringTokenizer strTok = new StringTokenizer(instanceString, ",");
@@ -313,7 +317,7 @@ public class BulkDataServiceClient {
             if (results != null) {
                 for (Entry<String, String> entry : results.entrySet()) {
                     System.out
-                            .println(entry.getKey() + ", " + entry.getValue());
+                    .println(entry.getKey() + ", " + entry.getValue());
                 }
             }
         } catch (Exception e) {
@@ -380,9 +384,9 @@ public class BulkDataServiceClient {
 
         dtoList = parseQuestions(fetchDataFromServer(serverBase
                 + SURVEY_SERVLET_PATH, "?action="
-                + SurveyRestRequest.GET_QUESTION_DETAILS_ACTION + "&"
-                + SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId, true,
-                apiKey));
+                        + SurveyRestRequest.GET_QUESTION_DETAILS_ACTION + "&"
+                        + SurveyRestRequest.QUESTION_ID_PARAM + "=" + questionId, true,
+                        apiKey));
 
         if (dtoList != null && dtoList.size() > 0) {
             return dtoList.get(0);
@@ -438,9 +442,9 @@ public class BulkDataServiceClient {
             Long groupId, String apiKey) throws Exception {
         return parseQuestions(fetchDataFromServer(serverBase
                 + SURVEY_SERVLET_PATH, "?action="
-                + SurveyRestRequest.LIST_QUESTION_ACTION + "&"
-                + SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "=" + groupId,
-                true, apiKey));
+                        + SurveyRestRequest.LIST_QUESTION_ACTION + "&"
+                        + SurveyRestRequest.QUESTION_GROUP_ID_PARAM + "=" + groupId,
+                        true, apiKey));
     }
 
     /**
@@ -455,9 +459,9 @@ public class BulkDataServiceClient {
             String serverBase, String apiKey) throws Exception {
         return parseSurveyInstance(fetchDataFromServer(serverBase
                 + SURVEY_SERVLET_PATH, "?action="
-                + SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION + "&"
-                + SurveyRestRequest.INSTANCE_PARAM + "=" + id, true,
-                apiKey));
+                        + SurveyRestRequest.GET_SURVEY_INSTANCE_ACTION + "&"
+                        + SurveyRestRequest.INSTANCE_PARAM + "=" + id, true,
+                        apiKey));
     }
 
     /**
@@ -472,9 +476,9 @@ public class BulkDataServiceClient {
             String surveyId, String apiKey) throws Exception {
         return parseQuestionGroups(fetchDataFromServer(serverBase
                 + SURVEY_SERVLET_PATH, "?action="
-                + SurveyRestRequest.LIST_GROUP_ACTION + "&"
-                + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
-                apiKey));
+                        + SurveyRestRequest.LIST_GROUP_ACTION + "&"
+                        + SurveyRestRequest.SURVEY_ID_PARAM + "=" + surveyId, true,
+                        apiKey));
     }
 
     /**
@@ -632,8 +636,7 @@ public class BulkDataServiceClient {
 
                         dtoList.add(dto);
                     } catch (Exception e) {
-                        System.out.println("Error in json parsing: " + e);
-                        e.printStackTrace();
+                        log.error("Error in json parsing: " + e.getMessage(), e);
                     }
                 }
             }
@@ -672,8 +675,7 @@ public class BulkDataServiceClient {
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
-                        System.out.println("Error in json parsing: " + e);
-                        e.printStackTrace();
+                        log.error("Error in json parsing: " + e.getMessage(), e);
                     }
                 }
             }
@@ -739,8 +741,7 @@ public class BulkDataServiceClient {
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
-                        System.out.println("Error in json parsing: " + e);
-                        e.printStackTrace();
+                        log.error("Error in json parsing: " + e.getMessage(), e);
                     }
                 }
             }
@@ -834,7 +835,7 @@ public class BulkDataServiceClient {
 
                             if (json.has("allowMultipleFlag")
                                     && !"null"
-                                            .equalsIgnoreCase(json.getString("allowMultipleFlag"))) {
+                                    .equalsIgnoreCase(json.getString("allowMultipleFlag"))) {
                                 dto.setAllowMultipleFlag(json.getBoolean("allowMultipleFlag"));
                             }
                             if (json.has("allowOtherFlag")
@@ -977,8 +978,8 @@ public class BulkDataServiceClient {
                                                     .getInt("order"));
                                             if (optJson.has("translationMap")
                                                     && !JSONObject.NULL
-                                                            .equals(optJson
-                                                                    .get("translationMap"))) {
+                                                    .equals(optJson
+                                                            .get("translationMap"))) {
                                                 opt.setTranslationMap(parseTranslations(optJson
                                                         .getJSONObject("translationMap")));
                                             }
@@ -1007,8 +1008,7 @@ public class BulkDataServiceClient {
                             }
                             dtoList.add(dto);
                         } catch (Exception e) {
-                            System.out.println("Error in json parsing: " + e);
-                            e.printStackTrace();
+                            log.error("Error in json parsing: " + e.getMessage(), e);
                         }
                     }
                 }
@@ -1053,7 +1053,7 @@ public class BulkDataServiceClient {
      */
     public static String fetchDataFromServer(String baseUrl,
             String queryString, boolean shouldSign, String apiKey)
-            throws Exception {
+                    throws Exception {
         if (shouldSign && apiKey != null) {
             if (queryString == null) {
                 queryString = new String();
@@ -1113,7 +1113,7 @@ public class BulkDataServiceClient {
                 queryString = fullUrl.substring(fullUrl.indexOf("?") + 1);
             }
             URL url = new URL(baseUrl);
-            System.out.println("Calling: " + baseUrl + " with params: "
+            log.debug("Calling: " + baseUrl + " with params: "
                     + queryString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -1170,7 +1170,7 @@ public class BulkDataServiceClient {
         String result = null;
         try {
             URL url = new URL(fullUrl);
-            System.out.println("Calling: " + url.toString());
+            log.debug("Calling: " + url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             conn.setConnectTimeout(30000);
@@ -1249,7 +1249,7 @@ public class BulkDataServiceClient {
      * converts the string into a JSON array object.
      */
     public static JSONArray getJsonArray(String response) throws Exception {
-        System.out.println("response: " + response);
+        log.debug("response: " + response);
         if (response != null) {
             JSONObject json = new JSONObject(response);
             if (json != null) {

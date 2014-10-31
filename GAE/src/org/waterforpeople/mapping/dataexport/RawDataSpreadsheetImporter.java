@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -55,6 +56,9 @@ import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 
 public class RawDataSpreadsheetImporter implements DataImporter {
+
+    private static final Logger log = Logger.getLogger(RawDataSpreadsheetImporter.class);
+
     private static final String SERVLET_URL = "/rawdatarestapi";
     private static final String DEFAULT_LOCALE = "en";
     public static final String SURVEY_CONFIG_KEY = "surveyId";
@@ -317,8 +321,8 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                             .getTime()
                                             + "";
                                 } catch (Exception e) {
-                                    System.out.println("bad date format: "
-                                            + cellVal + "\n" + e.getMessage());
+                                    log.error("bad date format: "
+                                            + cellVal + "\n" + e.getMessage(), e);
                                 }
                             }
                         }
@@ -378,16 +382,16 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                                     .digest());
                             if (md5 != null && md5.equals(digestVal)) {
                                 needUpload = false;
-                            } else if (md5 != null) {
-                                System.out.println("Row: " + row.getRowNum()
+                            } else if (md5 != null && log.isDebugEnabled()) {
+                                log.debug("Row: " + row.getRowNum()
                                         + " MD5: " + digestVal + " orig md5: "
                                         + md5);
                             }
                         } catch (Exception e) {
                             // if we can't handle the md5, then just assume we
                             // need to update the row
-                            System.err.println("Couldn't process md5 for row: "
-                                    + row.getRowNum());
+                            log.error("Couldn't process md5 for row: "
+                                    + row.getRowNum() + " - " + e.getMessage(), e);
                         }
                     }
                 }
@@ -411,13 +415,13 @@ public class RawDataSpreadsheetImporter implements DataImporter {
                 Thread.sleep(5000);
             }
             if (errorIds.size() > 0) {
-                System.out.println("There were ERRORS: ");
+                log.error("There were ERRORS: ");
                 for (String line : errorIds) {
-                    System.out.println(line);
+                    log.error(line);
                 }
             }
             Thread.sleep(5000);
-            System.out.println("Updating summaries");
+            log.debug("Updating summaries");
             // now update the summaries
             if ((questionIDColMap.size() * rows) < SIZE_THRESHOLD) {
                 invokeUrl(serverBase,
@@ -541,34 +545,34 @@ public class RawDataSpreadsheetImporter implements DataImporter {
         Map<Integer, String> errorMap = new HashMap<Integer, String>();
 
         try {
-	    Sheet sheet = getDataSheet(file);
-	    Row headerRow = sheet.getRow(0);
-	    boolean firstQuestionFound = false;
+            Sheet sheet = getDataSheet(file);
+            Row headerRow = sheet.getRow(0);
+            boolean firstQuestionFound = false;
 
-	    for (Cell cell : headerRow) {
-		String cellValue = cell.getStringCellValue();
-		if (firstQuestionFound && !cellValue.matches(".+\\|.+")) {
-		    errorMap.put(cell.getColumnIndex(),
-			    String.format("The header \"%s\" can not be imported", cellValue));
-		    break;
-		} else {
-		    if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
-			firstQuestionFound = true;
-			int idx = cell.getColumnIndex();
-			if (!(idx == 4 || idx == 6)) {
-			    errorMap.put(idx, "Found the first question at the wrong column index");
-			    break;
-			}
-		    }
-		}
-	    }
-	    if (!firstQuestionFound) {
-		errorMap.put(-1, "A question could not be found");
-	    }
+            for (Cell cell : headerRow) {
+                String cellValue = cell.getStringCellValue();
+                if (firstQuestionFound && !cellValue.matches(".+\\|.+")) {
+                    errorMap.put(cell.getColumnIndex(),
+                            String.format("The header \"%s\" can not be imported", cellValue));
+                    break;
+                } else {
+                    if (!firstQuestionFound && cellValue.matches("[0-9]+\\|.+")) {
+                        firstQuestionFound = true;
+                        int idx = cell.getColumnIndex();
+                        if (!(idx == 4 || idx == 6)) {
+                            errorMap.put(idx, "Found the first question at the wrong column index");
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!firstQuestionFound) {
+                errorMap.put(-1, "A question could not be found");
+            }
 
-	} catch (Exception e) {
-	    errorMap.put(-1, e.getMessage());
-	}
+        } catch (Exception e) {
+            errorMap.put(-1, e.getMessage());
+        }
 
         return errorMap;
     }
