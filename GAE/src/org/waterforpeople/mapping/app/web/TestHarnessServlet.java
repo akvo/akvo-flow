@@ -160,8 +160,7 @@ public class TestHarnessServlet extends HttpServlet {
                 }
             } else {
 
-                deleteSurveyResponses(
-                        Long.parseLong(req.getParameter("surveyId")));
+                deleteSurveyResponses(Long.parseLong(req.getParameter("surveyId")));
             }
         } else if ("changeLocaleType".equals(action)) {
             String surveyId = req
@@ -507,6 +506,15 @@ public class TestHarnessServlet extends HttpServlet {
 
                 deleteQueue.add(deleteTaskOptions);
             }
+
+            // delete summaries
+            TaskOptions deleteSummariesOptions = TaskOptions.Builder
+                    .withUrl("/app_worker/dataprocessor")
+                    .param(DataProcessorRequest.ACTION_PARAM,
+                            DataProcessorRequest.DELETE_SURVEY_QUESTION_SUMMARY)
+                    .param(DataProcessorRequest.SURVEY_ID_PARAM,
+                            surveyId + "");
+            deleteQueue.add(deleteSummariesOptions);
             return true;
         }
         return false;
