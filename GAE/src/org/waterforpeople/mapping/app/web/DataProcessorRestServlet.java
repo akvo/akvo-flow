@@ -1404,7 +1404,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         siDao = new SurveyInstanceDAO();
         SurveyInstance surveyInstance = siDao.getByKey(surveyInstanceId);
         if (surveyInstance != null) {
-            siDao.deleteSurveyInstance(surveyInstance);
+            siDao.deleteSurveyInstance(surveyInstance, true);
         }
     }
 }

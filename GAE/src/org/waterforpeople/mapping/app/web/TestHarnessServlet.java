@@ -161,9 +161,7 @@ public class TestHarnessServlet extends HttpServlet {
             } else {
 
                 deleteSurveyResponses(
-                        Long.parseLong(req.getParameter("surveyId")),
-                        req.getParameter("count") != null ? Integer.parseInt(req
-                                .getParameter("count")) : null);
+                        Long.parseLong(req.getParameter("surveyId")));
             }
         } else if ("changeLocaleType".equals(action)) {
             String surveyId = req
@@ -491,7 +489,7 @@ public class TestHarnessServlet extends HttpServlet {
         userDao.save(user);
     }
 
-    private boolean deleteSurveyResponses(Long surveyId, Integer count) {
+    private boolean deleteSurveyResponses(Long surveyId) {
         SurveyInstanceDAO dao = new SurveyInstanceDAO();
 
         List<SurveyInstance> surveyInstances = dao.listSurveyInstanceBySurveyId(surveyId,

@@ -607,17 +607,32 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     }
 
     /**
-     * Deletes a surveyInstance and all its related questionAnswerStore objects Based on the version
-     * in DataBackoutServlet
+     * Deletes a single surveyInstance and all its related objects
      *
      * @param surveyInstance
      * @return
+     */
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
+    public void deleteSurveyInstance(SurveyInstance surveyInstance) {
+        deleteSurveyInstance(surveyInstance, false);
+    }
+
+    /**
+     * Deletes a surveyInstance and all its related objects
+     *
+     * @param surveyInstance
+     *            survey instance to be deleted
+     * @param deleteSurvey
+     *            indicates that the responses for the entire survey will be deleted and so we do
+     *            not need to recompute summaries @return
      */
     // TODO update lastSurveyalInstanceId in surveydLocale objects
     @SuppressWarnings({
             "unchecked", "rawtypes"
     })
-    public void deleteSurveyInstance(SurveyInstance surveyInstance) {
+    public void deleteSurveyInstance(SurveyInstance surveyInstance, boolean deleteSurvey) {
         final Long surveyInstanceId = surveyInstance.getKey().getId();
 
         // update summary counts + delete question answers
@@ -625,9 +640,11 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
         if (qasList != null && !qasList.isEmpty()) {
             // question summaries
-            surveyInstance.setQuestionAnswersStore(qasList);
-            boolean increment = false;
-            surveyInstance.updateSummaryCounts(increment);
+            if (!deleteSurvey) {
+                surveyInstance.setQuestionAnswersStore(qasList);
+                boolean increment = false;
+                surveyInstance.updateSummaryCounts(increment);
+            }
 
             // survey instance summary task
             for (QuestionAnswerStore qasItem : qasList) {
