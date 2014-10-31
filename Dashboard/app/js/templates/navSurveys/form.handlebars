@@ -13,8 +13,10 @@
 	</ul>
 	<section class="formDetails">
 		<h3>Form basics</h3>
-		{{#if view.showFormBasics}}
-			<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">Collapse</a>
+		{{#if view.visibleFormBasics}}
+			{{#unless view.isNewForm}}
+				<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">Collapse</a>
+			{{/unless}}
 			<form class="surveyDetailForm">
 				<label>Form Title</label>
 				{{view Ember.TextField valueBinding="form.code"}}

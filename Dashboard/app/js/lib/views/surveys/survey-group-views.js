@@ -35,6 +35,15 @@ FLOW.Project = FLOW.View.extend({
     this.set('showAdvancedSettings', !this.get('showAdvancedSettings'));
   },
 
+  isNewProject: function() {
+    var currentProject = FLOW.projectControl.get('currentProject');
+    return currentProject && currentProject.get('code') == "New project"
+  }.property('FLOW.projectControl.currentProject'),
+
+  visibleProjectBasics: function() {
+    return this.get('isNewProject') || this.get('showProjectDetails')
+  }.property('showProjectDetails'),
+
   updateSelectedLanguage: function() {
     var currentProject = FLOW.projectControl.get('currentProject');
     if (currentProject)

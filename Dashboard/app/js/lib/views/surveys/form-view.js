@@ -5,9 +5,21 @@ FLOW.FormView = Ember.View.extend({
 	manageTranslations: false,
 	manageNotifications: false,
 
+
+
 	toggleShowFormBasics: function () {
 		this.set('showFormBasics', !this.get('showFormBasics'));
 	},
+
+	isNewForm: function() {
+		var form = FLOW.selectedControl.get('selectedSurvey');
+		return form && form.get('code') == "New Form";
+	}.property('FLOW.selectedControl.selectedSurvey'),
+
+	visibleFormBasics: function() {
+		return this.get('isNewForm') || this.get('showFormBasics');
+	}.property('showFormBasics'),
+
 
 	doManageTranslations: function() {
 		FLOW.translationControl.populate();

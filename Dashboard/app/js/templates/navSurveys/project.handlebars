@@ -32,14 +32,16 @@
           </ul>
           <section class="projectDetails">
             <h3>Projects basics</h3>
-            <a {{action "toggleShowProjectDetails" target="this"}} class="showCollapse">
-              {{#if view.showProjectDetails}}
-                Collapse
-              {{else}}
-                Show
-              {{/if}}
-            </a>
-            {{#if view.showProjectDetails}}
+            {{#unless view.isNewProject}}
+              <a {{action "toggleShowProjectDetails" target="this"}} class="showCollapse">
+                {{#if view.visibleProjectBasics}}
+                    Collapse
+                {{else}}
+                  Show
+                {{/if}}
+              </a>
+            {{/unless}}
+            {{#if view.visibleProjectBasics}}
               <form class="projectDetailForm">
                 <label>Project Title</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.code"}}
                 <label>Project Description</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
