@@ -1054,9 +1054,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         maxSteps = FULL_STEPS;
         generateCharts = true;
         if (options != null) {
-            if (log.isDebugEnabled()) {
-                log.debug(options);
-            }
+            log.debug(options);
 
             locale = options.get(LOCALE_OPT);
             imagePrefix = options.get(IMAGE_PREFIX_OPT);
