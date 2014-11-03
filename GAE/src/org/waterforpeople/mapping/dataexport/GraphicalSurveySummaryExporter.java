@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -75,6 +76,9 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
  * @author Christopher Fagiani
  */
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
+
+    private static final Logger log = Logger.getLogger(GraphicalSurveySummaryExporter.class);
+
     private static final int MAX_COL = 255;
     private static final String IMAGE_PREFIX_OPT = "imgPrefix";
     private static final String DO_ROLLUP_OPT = "performRollup";
@@ -339,7 +343,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 currentStep++;
             }
             Workbook wb = null;
-            if (questionMap.size() > 0) {
+            if (questionMap != null && questionMap.size() > 0) {
                 if (questionMap.size() > MAX_COL - 3) {
                     wb = new HSSFWorkbook();
                 } else {
@@ -391,11 +395,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                         COMPLETE.get(locale)));
             } else {
-                System.out.println("No questions for survey");
+                log.info("No questions for survey: "
+                        + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM) + " - instance: "
+                        + serverBase);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error generating report: " + e.getMessage(), e);
         } finally {
             if (pw != null) {
                 pw.close();
@@ -491,7 +497,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         while (!jobQueue.isEmpty() || threadPool.getActiveCount() > 0
                 || started > threadsCompleted) {
             try {
-                System.out.println("Sleeping, Queue has: " + jobQueue.size());
+                log.debug("Sleeping, Queue has: " + jobQueue.size());
                 Thread.sleep(5000);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -558,9 +564,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 .trim())));
                     }
                 } catch (Exception e) {
-                    System.out
-                            .println("couldn't format value for question id: "
-                                    + q + "\n" + e.getMessage());
+                    log.error("couldn't format value for question id: "
+                            + q + " -  " + e.getMessage(), e);
                 }
 
                 if (qdto != null && QuestionType.PHOTO == qdto.getType()) {
@@ -970,7 +975,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     getRow(curRow++, sheet);
                     // flush the sheet so far to disk; we will not go back up
                     ((SXSSFSheet) sheet).flushRows(0); // retain 0 last rows and
-                                                       // flush all others
+                    // flush all others
 
                 }
             }
@@ -1031,8 +1036,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } else {
             row = sheet.createRow(index);
         }
-        System.out.println("Row " + index); // debug printout to study backward
-                                            // jumps
+        log.debug("Row " + index); // debug printout to study backward jumps
 
         return row;
 
@@ -1050,10 +1054,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         maxSteps = FULL_STEPS;
         generateCharts = true;
         if (options != null) {
-            for (Map.Entry<String, String> entry : options.entrySet()) {
-                System.out.println("Option " + entry.getKey() + " = "
-                        + entry.getValue());
-            }
+            log.debug(options);
 
             locale = options.get(LOCALE_OPT);
             imagePrefix = options.get(IMAGE_PREFIX_OPT);
