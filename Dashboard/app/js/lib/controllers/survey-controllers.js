@@ -296,8 +296,16 @@ FLOW.projectControl = Ember.ArrayController.create({
     this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "project");
   },
 
+  beginCopyProject: function(evt) {
+    this.set('copyTarget', evt.context);
+  },
+
   cancelMoveProject: function(evt) {
     this.set('moveTarget', null);
+  },
+
+  cancelCopyProject: function(evt) {
+    this.set('copyTarget', null);
   },
 
   endMoveProject: function(evt) {
@@ -306,6 +314,28 @@ FLOW.projectControl = Ember.ArrayController.create({
     project.set('parentId', newFolderId);
     FLOW.store.commit();
     this.set('moveTarget', null);
+  },
+
+  endCopyProject: function(evt) {
+    var currentFolder = this.get('currentProject');
+
+    FLOW.store.findQuery(FLOW.Action, {
+      action: 'copyProject',
+      targetId: this.get('copyTarget').get('keyId'),
+      folderId: currentFolder ? currentFolder.get('keyId') : null,
+    });
+
+    FLOW.store.commit();
+
+    this.set('showCopySurveyDialogBool', false);
+
+    FLOW.dialogControl.set('activeAction', "ignore");
+    FLOW.dialogControl.set('header', Ember.String.loc('_copying_survey'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_copying_published_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+
+    this.set('copyTarget', null);
   },
 
   publishProject: function() {
