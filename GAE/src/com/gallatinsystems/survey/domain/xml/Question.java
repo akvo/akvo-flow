@@ -108,6 +108,10 @@ public class Question {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String localeLocationFlag;
 
+    @XmlAttribute(required = false)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String multiple;
+
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
@@ -338,6 +342,24 @@ public class Question {
      */
     public void setLocaleLocationFlag(String value) {
         this.localeLocationFlag = value;
+    }
+
+    /**
+     * Gets the value of the multiple property.
+     * 
+     * @return possible object is {@link String }
+     */
+    public String getMultiple() {
+        return multiple;
+    }
+
+    /**
+     * Sets the value of the multiple property.
+     * 
+     * @param value allowed object is {@link String }
+     */
+    public void setMultiple(String value) {
+        this.multiple = value;
     }
 
     /**

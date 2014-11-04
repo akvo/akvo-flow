@@ -633,6 +633,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
                 qXML.setLocaleLocationFlag("true");
             }
         }
+        if (q.getMultiple() != null) {
+            if (q.getMultiple()) {
+                qXML.setMultiple("true");
+            }
+        }
         Dependency dependency = objFactory.createDependency();
         if (q.getDependentQuestionId() != null) {
             dependency.setQuestion(q.getDependentQuestionId().toString());

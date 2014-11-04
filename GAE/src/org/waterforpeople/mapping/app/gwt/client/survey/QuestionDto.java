@@ -42,6 +42,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     private Boolean dependentFlag = null;
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
+    private Boolean multiple;
     private Boolean geoLocked = null;
     private Boolean requireDoubleEntry = null;
     private Long dependentQuestionId;
@@ -426,4 +427,12 @@ public class QuestionDto extends BaseDto implements NamedObject {
             this.questionId = questionId;
         }
     }
+
+	public Boolean getMultiple() {
+		return multiple;
+	}
+
+	public void setMultiple(Boolean multiple) {
+		this.multiple = multiple;
+	}
 }
