@@ -15,7 +15,6 @@ FLOW.QuestionView = FLOW.View.extend({
   allowExternalSources: false,
   localeNameFlag:false,
   localeLocationFlag:false,
-  multiple:false,
   geoLocked: null,
   requireDoubleEntry: null,
   dependentFlag: false,
@@ -96,11 +95,7 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type').cacheable(),
 
   amBarcodeType: function () {
-	if (this.type) {
-	  return this.type.get('value') == 'SCAN';
-	} else {
-	  return false;
-	}
+	  return this.type.get('value') === 'SCAN';
   }.property('this.type').cacheable(),
 
   amFreeTextType: function () {
@@ -171,7 +166,6 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('allowExternalSources', FLOW.selectedControl.selectedQuestion.get('allowExternalSources'));
     this.set('localeNameFlag', FLOW.selectedControl.selectedQuestion.get('localeNameFlag'));
     this.set('localeLocationFlag', FLOW.selectedControl.selectedQuestion.get('localeLocationFlag'));
-    this.set('multiple', FLOW.selectedControl.selectedQuestion.get('multiple'));
     this.set('geoLocked', FLOW.selectedControl.selectedQuestion.get('geoLocked'));
     this.set('requireDoubleEntry', FLOW.selectedControl.selectedQuestion.get('requireDoubleEntry'));
     this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
@@ -283,7 +277,6 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('allowOtherFlag', this.get('allowOtherFlag'));
     FLOW.selectedControl.selectedQuestion.set('localeNameFlag', this.get('localeNameFlag'));
     FLOW.selectedControl.selectedQuestion.set('localeLocationFlag', this.get('localeLocationFlag'));
-    FLOW.selectedControl.selectedQuestion.set('multiple', this.get('multiple'));
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
     FLOW.selectedControl.selectedQuestion.set('requireDoubleEntry', this.get('requireDoubleEntry'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));

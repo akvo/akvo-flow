@@ -62,7 +62,7 @@
     {{/if}}
     {{#if view.amBarcodeType}}
     <h1 class="answerNbr">{{t _barcode_details}}: </h1>
-      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.multiple"}}{{t _enable_bulk_barcode_scan}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _enable_bulk_barcode_scan}} </label>
     {{/if}}
     {{#if view.amNumberType}}
     <h1 class="answerNbr">{{t _number_details}}: </h1>

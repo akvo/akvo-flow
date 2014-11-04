@@ -76,7 +76,6 @@ public class Question extends BaseDomain {
     private Boolean isName;
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
-    private Boolean multiple;
 
     /**
      * Return true of a question can be visualised on a chart. This is limited to option questions
@@ -398,12 +397,4 @@ public class Question extends BaseDomain {
     public void setQuestionId(String questionId) {
         this.questionId = questionId;
     }
-
-	public Boolean getMultiple() {
-		return multiple;
-	}
-
-	public void setMultiple(Boolean multiple) {
-		this.multiple = multiple;
-	}
 }
