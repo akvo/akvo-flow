@@ -95,8 +95,8 @@ FLOW.ProjectList = FLOW.View.extend({
   tagName: 'ul',
   classNameBindings: ['classProperty'],
   classProperty: function() {
-    return FLOW.projectControl.moveTarget === null || FLOW.projectControl.copyTarget === null
-      ? '' : 'actionProcess';
+    return FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget
+      ? 'actionProcess' : '';
   }.property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget')
 });
 

@@ -240,7 +240,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     if (!forms) return true;
 
     var unpublishedForms = forms.filter(function(form) {
-      return !(form.get('status') === 'PUBLISHED');
+      return form.get('status') !== 'PUBLISHED';
     });
 
     return unpublishedForms.toArray().length === 0;
