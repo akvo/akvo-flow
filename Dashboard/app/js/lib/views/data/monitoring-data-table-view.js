@@ -39,7 +39,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 		  criteria.surveyGroupId = sgId.get('keyId');
 	  }
 
-    if (since && cursorType === 'SurveyedLocale') {
+    if (since && cursorType === FLOW.SurveyedLocale) {
       criteria.since = since;
     }
 
