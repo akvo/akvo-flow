@@ -525,8 +525,7 @@ public class TestHarnessServlet extends HttpServlet {
             List<Survey> surveys = surveyDAO.listSurveysByGroup(surveyGroup
                     .getKey().getId());
 
-            boolean isMonitoring = surveyGroup.getMonitoringGroup() != null ? surveyGroup
-                    .getMonitoringGroup() : false;
+            boolean isMonitoring = Boolean.TRUE.equals(surveyGroup.getMonitoringGroup());
             if (isMonitoring || surveys.size() <= 1) {
                 if (surveyGroup.getProjectType() == null) {
                     surveyGroup.setProjectType(ProjectType.PROJECT);
