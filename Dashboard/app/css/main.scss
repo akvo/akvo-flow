@@ -1933,10 +1933,12 @@ nav.menuTopbar {
             }
         }
         ul {
-            display: -webkit-flex;
-            display: flex;      
-            justify-content: -webkit-flex-end;
-            justify-content: flex-end;
+           display: -webkit-flex;
+           display: flex;
+           -webkit-flex-direction: row;
+           flex-direction: row;
+           -webkit-justify-content: flex-end;
+           justify-content: flex-end;
             -webkit-align-items: center;
             align-items: center;
             text-align: right;
@@ -2017,31 +2019,31 @@ a.addGroup:hover, a.addFolder:hover {
 a.addSurvey {
     color: white;
     background: rgba($anchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
-    padding: 4px 7px 11px 21px;
+    padding: 8px 7px 13px 25px;
     border-radius: 3px;
-    -webkit-background-size: 19px 19px;
-    background-size: 19px 19px;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
 }
 a.addSurvey:hover {
     color: white;
     background: rgba($anchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
-    -webkit-background-size: 19px 19px;
-    background-size: 19px 19px;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
 }
 a.moveAction {
     color: white;
     background: rgba($anchorLink, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat;
-    background-size: 25px 25px;
-    padding: 4px 7px 11px 25px;
+    background-size: 35px 35px;
+    padding: 4px 7px 11px 35px;
     border-radius: 3px;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;}
 a.moveAction:hover {
     color: white;
     background: rgba($anchorLinkHover, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat !important;
-    background-size: 25px 25px !important;
+    background-size: 35px 35px !important;
 }
 a.stepBack {
     background: transparent url(../images/IconBack.svg) left center no-repeat;
@@ -2184,14 +2186,11 @@ li.aFolder, li.aSurvey {
 }
 li.aFolder {
     @extend li.aSurvey;
-      display: -webkit-box;
-      display: -moz-box;
-      display: -ms-flexbox;
-      display: -webkit-flex;    
-      display:flex;
+   display: -webkit-flex;
+   display: flex;
+   -webkit-flex-direction: row;
+   flex-direction: row;
     box-sizing: border-box;
-    -webkit-flex-direction: row;
-    flex-direction: row;
     -webkit-align-items: center;
     align-items: center;
     min-height: 70px;
@@ -2571,7 +2570,7 @@ a.saveProject {
         color:white;
         border-radius:3px;
     &:hover {
-        background:$anchorLinkHover url(../images/IconSaveOrangeWhite.svg) left center no-repeat;
+        background:$anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         color:white;
     }
@@ -4362,19 +4361,32 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 -webkit-background-clip: padding-box;
                 &.aFormTab {
                   padding-left:25px;
-                  background:rgba(32,32,36, 1) url(../images/IconForms.png) no-repeat 5px center;
-                  background-size:18% auto;
+                  background:rgba(32,32,36, 0.2) url(../images/IconForms.png) no-repeat 5px center;
+                  background-size:20px auto;
                   &:hover {
-                      background:rgba(32,32,36, 0.5) url(../images/IconForms.png) no-repeat 5px center;
-                      background-size:18% auto;
+                      background:rgba(32,32,36, 1) url(../images/IconForms.png) no-repeat 5px center;
+                      background-size:20px auto;
                       }
+                    &.current {
+                      background:rgba(32, 32, 36, 0.9) url(../images/IconForms.png) no-repeat 5px center;
+                      background-size:20px auto;
+                    }
                   &.registrationForm {
-                    background:$monitorGreen url(../images/IconForms.png) no-repeat 5px center;
-                    background-size:18% auto;
+                    background:rgba($monitorGreen,0.5)  url(../images/IconForms.png) no-repeat 5px center;
+                    background-size:20px auto;
                     &:hover {
-                        background:$monitorGreen url(../images/IconForms.png) no-repeat 5px center;
-                        background-size:18% auto;
+                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 5px center;
+                        background-size:20px auto;
                       }
+                    &.current {
+                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 5px center;
+                        background-size:20px auto;
+                        &:hover {
+                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 5px center;
+                        background-size:20px auto;
+                        }
+                    }
+                      
                   }
 
                     }
@@ -4456,10 +4468,14 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                       color:white;
                       text-transform:uppercase;
                       display:inline-block;
-                      padding: 2px 5px 0px 5px;
+                      padding: 2px 7px 0px 7px;
                       display: inline-block;
                       margin: -2px 0 0 10px;
-                      border-radius:2px;
+                      border-radius:3px;
+                      span.monitoringAndvanced & {
+                        display:block;
+                        margin-top:10px;
+                      }
                   }
                   .projectDetailForm, .surveyDetailForm {
                       display: block;
