@@ -55,7 +55,6 @@ FLOW.Project = FLOW.View.extend({
   }.property("FLOW.projectControl.formCount"),
 
   updateSelectedRegistrationForm: function() {
-    debugger;
     FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.selectedRegistrationForm.get('keyId'));
   }.observes('selectedRegistrationForm')
 
@@ -160,6 +159,31 @@ FLOW.FolderEditView = Ember.TextField.extend({
     FLOW.store.commit();
   }
 });
+
+FLOW.FormTabView = Ember.View.extend({
+  tagName: 'li',
+  content: null,
+  classNameBindings: ['classProperty'],
+
+  classProperty: function() {
+
+    var form = this.get('content');
+    var classString = 'aFormTab';
+
+    if (form === null) return classString;
+
+    // Return "aFormTab" "active" and/or "registrationForm"
+    var isActive = form === FLOW.selectedControl.get('selectedSurvey');
+    var isRegistrationForm = FLOW.projectControl.currentProject.get('monitoringGroup') &&
+      form.get('keyId') === FLOW.projectControl.currentProject.get('newLocaleSurveyId');
+
+
+    if (isActive) classString += ' active';
+    if (isRegistrationForm) classString += ' registrationForm';
+
+    return classString;
+  }.property('FLOW.selectedControl.selectedSurvey', 'FLOW.projectControl.currentProject.newLocaleSurveyId'),
+})
 
 // displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = FLOW.View.extend({

@@ -104,7 +104,9 @@
                 <nav class="tabNav floats-in">
                   <ul>
                     {{#each form in FLOW.surveyControl}}
-                      <li class="aFormTab"><a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.code}}</a></li>
+                      {{#view FLOW.FormTabView contentBinding="form"}}
+                        <a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.code}}</a></li>
+                      {{/view}}
                     {{/each}}
                     {{#if FLOW.projectControl.currentProject.monitoringGroup}}
                       <li class="newFormTab"><a {{action "createForm" target="FLOW.surveyControl"}}><span>+</span>Add new form</a></li>
