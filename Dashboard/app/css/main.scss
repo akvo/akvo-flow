@@ -1879,7 +1879,7 @@ section.topBar {
         ul li a:hover:after {
             border-color: transparent transparent transparent $anchorLinkHover;
         }
-        ul li:last-child {
+        ul li:last-of-type {
             opacity:0.3;
             a {
                 border-radius:0 3px 3px 0;
@@ -1946,6 +1946,15 @@ nav.menuTopbar {
                 margin-left:10px;
                 &:first-child {
                     margin-left:0px;
+                }
+                p {
+                    color: $midGrey;
+                .itemMoved {
+                    color:$akvoDarkBlue;
+                    font-weight:bold;
+                    margin-right: 5px;
+                    margin-left: 5px;
+                    }   
                 }
             }
         }

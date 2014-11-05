@@ -17,7 +17,7 @@
         {{#if FLOW.projectControl.moveTarget}}
           <nav class="menuTopbar actionHighLighted">
             <ul>
-              <li><p>Moving <span>{{FLOW.projectControl.moveTarget.code}}</span> {{FLOW.projectControl.moveTargetType}}</p></li>
+              <li><p>Moving <span class="itemMoved">{{FLOW.projectControl.moveTarget.code}}</span> {{FLOW.projectControl.moveTargetType}}</p></li>
               <li><a class="moveAction" {{action "endMoveProject" target="FLOW.projectControl"}}>Drop <span class="assetHook">{{FLOW.projectControl.moveTargetType}}</span> here</a></li>
               <li><a class="redCancel " {{action "cancelMoveProject" target="FLOW.projectControl"}}>Cancel</a></li>
             </ul>
@@ -26,7 +26,7 @@
           {{#if FLOW.projectControl.copyTarget}}
             <nav class="menuTopbar actionHighLighted">
               <ul>
-                <li><p>Copying <span>{{FLOW.projectControl.copyTarget.code}}</span></p></li>
+                <li><p>Copying <span class="itemMoved">{{FLOW.projectControl.copyTarget.code}}</span></p></li>
                 <li><a class="moveAction" {{action "endCopyProject" target="FLOW.projectControl"}}>Copy <span class="assetHook">project</span> here</a></li>
                 <li><a class="redCancel " {{action "cancelCopyProject" target="FLOW.projectControl"}}>Cancel</a></li>
               </ul>
