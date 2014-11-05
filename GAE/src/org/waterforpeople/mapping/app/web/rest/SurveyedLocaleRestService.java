@@ -49,8 +49,8 @@ public class SurveyedLocaleRestService {
             Long surveyGroupId,
             @RequestParam(value = "identifier", defaultValue = "")
             String identifier,
-            @RequestParam(value = "displayName", defaultValue = "")
-            String displayName) {
+            @RequestParam(value = "displayName", defaultValue = "") String displayName,
+            @RequestParam(value = "since", defaultValue = "") String since) {
 
         Map<String, Object> response = new HashMap<String, Object>();
 
@@ -62,12 +62,11 @@ public class SurveyedLocaleRestService {
         List<SurveyedLocaleDto> locales = new ArrayList<SurveyedLocaleDto>();
 
         if (identifier != null && !"".equals(identifier)) {
-            sls = surveyedLocaleDao.listLocalesByCode(identifier, false);
+            sls = surveyedLocaleDao.listSurveyedLocales(since, null, identifier, null);
         } else if (displayName != null && !"".equals(displayName)) {
-            sls = surveyedLocaleDao.listLocalesByDisplayName(displayName);
+            sls = surveyedLocaleDao.listSurveyedLocales(since, null, null, displayName);
         } else if (surveyGroupId != null) {
-            sls = surveyedLocaleDao.listLocalesBySurveyGroupAndDate(
-                    surveyGroupId, null, 20);
+            sls = surveyedLocaleDao.listSurveyedLocales(since, surveyGroupId, null, null);
         }
 
         for (SurveyedLocale sl : sls) {
@@ -75,6 +74,11 @@ public class SurveyedLocaleRestService {
             DtoMarshaller.copyToDto(sl, dto);
             locales.add(dto);
         }
+
+        Integer num = sls.size();
+        String newSince = SurveyedLocaleDao.getCursor(sls);
+        statusDto.setNum(num);
+        statusDto.setSince(newSince);
 
         response.put("surveyed_locales", locales);
         response.put("meta", statusDto);

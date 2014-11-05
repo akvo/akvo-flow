@@ -59,6 +59,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("showStatisticsFeature");
         properties.add("showMonitoringFeature");
         properties.add("mandatoryQuestionID");
+        properties.add("showExternalSourcesFeature");
     }
 
     @Override
@@ -97,6 +98,10 @@ public class EnvServlet extends HttpServlet {
 
         if (props.get("mandatoryQuestionID") == null) {
             props.put("mandatoryQuestionID", "false");
+        }
+
+        if (props.get("showExternalSourcesFeature") == null) {
+            props.put("showExternalSourcesFeature", "false");
         }
 
         final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);

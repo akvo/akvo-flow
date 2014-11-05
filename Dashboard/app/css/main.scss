@@ -1631,8 +1631,8 @@ nav.menuGroupWrap {
             a {
                 display: block;
                 text-transform: uppercase;
-                padding: 10px 1% 10px 25px;
-                width: calc(99% - 25px);
+                padding: 10px 10% 10px 2%;
+                width: 93%;
                 height: 23px;
                 background: url(../images/carretFolder.svg) right center no-repeat;
                 background-size: 15px 25px;
@@ -2024,7 +2024,7 @@ a.addSurvey:hover {
 a.moveAction {
     color: white;
     background: rgba($anchorLink, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat;
-    background-size: 25px 25px;    
+    background-size: 25px 25px;
     padding: 4px 7px 11px 25px;
     border-radius: 3px;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
@@ -2124,12 +2124,12 @@ ul.surveyBatch {
     margin-top: 30px;
 }
 ul.actionProcess {
-    .aFolder { 
+    .aFolder {
          nav {
             opacity:0.2;
         }
     }
-    .aSurvey { 
+    .aSurvey {
         nav {
             opacity:0.2;
         }
@@ -2190,7 +2190,7 @@ li.aFolder {
         display:inline-block;
         width:20px;
         height:20px;
-        background: url(../images/IconEditGreyLight.svg) center center no-repeat;     
+        background: url(../images/IconEditGreyLight.svg) center center no-repeat;
         text-indent: -9999px;
         margin-right:5px;
         opacity:0.5;
@@ -2275,7 +2275,7 @@ ul.surveyInfo li.responseNumber {
     &.folderEmpty {
         .deleteSurvey {
             display:inline;
-        }        
+        }
     }
     nav {
         -webkit-box-sizing: border-box;
@@ -2515,18 +2515,18 @@ label[for="surveyLanguage"]  a.helpIcon {
             &.manageNotifications {
                     background:rgba(32, 32, 36, 0.5)  url(../images/IconNotif.svg) left top no-repeat;
                     background-size: 40px 40px;
-                }               
+                }
             &.manageNotifications:hover {
                     background:rgba(32, 32, 36, 1)  url(../images/IconNotifOrange.svg) left top no-repeat;
                     background-size: 40px 40px;
-                }        
+                }
             &.manageTranslations {
                     background:rgba(32, 32, 36, 0.5)  url(../images/IconTranslate.svg) left top no-repeat;
-                    background-size: 40px 40px;                
-                }            
+                    background-size: 40px 40px;
+                }
             &.manageTranslations:hover {
                     background:rgba(32, 32, 36, 1)  url(../images/IconTranslateOrange.svg) left top no-repeat;
-                    background-size: 40px 40px;                
+                    background-size: 40px 40px;
                 }
         }
     }
@@ -4246,7 +4246,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     &.projectStatus.redColor {color:$akvoRed2;}
                 }
             }
-        } 
+        }
         span.fontInfo {
             font-family: $scriptFont;
             font-size:1.8em;
@@ -4283,7 +4283,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                                 color:white;
                             }
                         }
-                    }             
+                    }
             #tabs div > section {
                 border: thin solid rgb(224, 224, 224);
                 background: white;
@@ -4302,7 +4302,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     .showCollapse {
                       text-transform:uppercase;
                       display:inline-block;
-                      margin-left:10px;                   
+                      margin-left:10px;
                   }
                 }
             }
@@ -4344,7 +4344,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                         background-size:18% auto;
                       }
                   }
-                  
+
                     }
                 &.newFormTab {
                   background:transparent;
@@ -4360,7 +4360,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                   }
                   &:hover {
                     background: transparent;
-                  } 
+                  }
                  }
                   }
                   #tabs nav.tabNav ul li:hover {
@@ -4401,11 +4401,11 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                   }
               }
               .formsContainer {
-                    background:rgba(32,32,36, 0.9); 
+                    background:rgba(32,32,36, 0.9);
                     margin:0px auto;
                     }
               .projectDetails {
-                    background:rgb(54, 79, 90); 
+                    background:rgb(54, 79, 90);
                     margin:10px auto;
                     }
               .projectDetails, .formsContainer {
@@ -4427,7 +4427,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                       padding: 2px 5px 0px 5px;
                       display: inline-block;
                       margin: -2px 0 0 10px;
-                      border-radius:2px;                
+                      border-radius:2px;
                   }
                   .projectDetailForm, .surveyDetailForm {
                       display: block;

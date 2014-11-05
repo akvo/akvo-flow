@@ -60,6 +60,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     private Boolean allowOtherFlag = null;
     private Boolean allowDecimal;
     private Boolean allowSign;
+    private Boolean allowExternalSources;
     private Double minVal;
     private Double maxVal;
     private Boolean isName;
@@ -144,7 +145,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     /**
      * adds the translation to the translation map. If a translation already exists (based on
      * language code), it will be replaced
-     * 
+     *
      * @param trans
      */
     public void addTranslation(TranslationDto trans) {
@@ -184,7 +185,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     /**
      * returns the translated version of the text for the locale specified (if present). If no
      * translation exists, it will return the default text.
-     * 
+     *
      * @param locale
      * @return
      */
@@ -389,6 +390,14 @@ public class QuestionDto extends BaseDto implements NamedObject {
         this.localeNameFlag = localeNameFlag;
     }
 
+    public Boolean getAllowExternalSources() {
+        return allowExternalSources;
+    }
+
+    public void setAllowExternalSources(Boolean allowExternalSources) {
+        this.allowExternalSources = allowExternalSources;
+    }
+
     public Boolean getLocaleLocationFlag() {
         return localeLocationFlag;
     }
@@ -406,10 +415,15 @@ public class QuestionDto extends BaseDto implements NamedObject {
     }
 
     public String getQuestionId() {
-	return questionId;
+        return questionId;
     }
 
     public void setQuestionId(String questionId) {
-	this.questionId = questionId;
+        // Missing questionId is represented as null
+        if (questionId != null && questionId.matches("\\s*")) {
+            this.questionId = null;
+        } else {
+            this.questionId = questionId;
+        }
     }
 }

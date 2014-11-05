@@ -55,14 +55,17 @@ public class MD5Util {
     public static String generateChecksum(byte[] arr) {
         byte[] digest = md5(arr);
         if (digest != null) {
-            String result = "";
-            for (int i = 0; i < digest.length; i++) {
-                result += Integer.toString((digest[i] & 0xff) + 0x100, 16)
-                        .substring(1);
-            }
-            return result;
+            return toHex(digest);
         }
         return null;
+    }
+
+    public static String toHex(byte[] data) {
+        StringBuilder builder = new StringBuilder();
+        for (byte b : data) {
+            builder.append(String.format("%02x", b));
+        }
+        return builder.toString();
     }
 
     public static String generateHMAC(String content, String privateKey) {

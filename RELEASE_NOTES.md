@@ -5,6 +5,45 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.5
+Date: 16 October 2014
+
+## New and noteworthy
+
+* External Sources Integration - This new feature enables marking a question as having responses coming from a source of data external to the mobile application, e.g., another application [#793]
+
+## Resolved issues
+
+* XML surveys encoding [#861]
+* Survey instances are missing when generating the RAW report [#854]
+* Change format of location data column header in questionId [#847]
+* Store APK file checksum [#843]
+* Uniqueness test for questionID sees other surveys [#842]
+* Disallow allow empty-string questionId's [#838]
+* Increase the request timeout on report generation [#835]
+* The (textual) questionId should be part of QuestionAnswer responses [#831]
+* Add scale indicator to map [#829]
+* Make S3Util.put more robust [#817]
+* Move the 'Question Id' field down in Question editor [#814]
+* Incorrect ordering of elements in the display name [#813]
+* Remove UploadConstants.properties from copyconfig task [#791]
+* Javascript code small cleanup [#788]
+
+#1.7.4.2
+Date: 07 October 2014
+
+## Resolved issues
+
+* Include textual question identifier as part of QuestionAnswer responses [#831]
+
+#1.7.4.1
+Date: 25 September 2014
+
+## Resolved issues
+
+* Display Name column empty in the RAW DATA report [#797]
+* Question id" value when copying questions [#807]
+
 #1.7.4
 Date: 25 September 2014
 

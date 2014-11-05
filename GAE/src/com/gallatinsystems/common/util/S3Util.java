@@ -34,6 +34,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -108,10 +109,12 @@ public class S3Util {
     public static boolean put(String bucketName, String objectKey, byte[] data, String contentType,
             boolean isPublic, String awsAccessId, String awsSecretKey) throws IOException {
 
-        final String md5 = Base64.encodeBase64String(MD5Util.md5(data)).trim();
+        final byte[] md5Raw = MD5Util.md5(data);
+        final String md5Base64 = Base64.encodeBase64String(md5Raw).trim();
+        final String md5Hex = MD5Util.toHex(md5Raw);
         final String date = getDate();
         final String payloadStr = isPublic ? PUT_PAYLOAD_PUBLIC : PUT_PAYLOAD_PRIVATE;
-        final String payload = String.format(payloadStr, md5, contentType, date, bucketName,
+        final String payload = String.format(payloadStr, md5Base64, contentType, date, bucketName,
                 objectKey);
         final String signature = MD5Util.generateHMAC(payload, awsSecretKey);
         final URL url = new URL(String.format(S3_URL, bucketName, objectKey));
@@ -122,7 +125,7 @@ public class S3Util {
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("PUT");
-            conn.setRequestProperty("Content-MD5", md5);
+            conn.setRequestProperty("Content-MD5", md5Base64);
             conn.setRequestProperty("Content-Type", contentType);
             conn.setRequestProperty("Date", date);
 
@@ -139,9 +142,16 @@ public class S3Util {
             out.flush();
 
             int status = conn.getResponseCode();
-            if (status >= 400) {
+            if (status != 200 && status != 201) {
                 log.severe("Error uploading file: " + url.toString());
                 log.severe(IOUtils.toString(conn.getInputStream()));
+                return false;
+            }
+            String etag = conn.getHeaderField("ETag");
+            etag = etag != null ? etag.replaceAll("\"", "") : null;// Remove quotes
+            if (!md5Hex.equals(etag)) {
+                log.severe("ETag comparison failed. Response ETag: " + etag +
+                        "Locally computed MD5: " + md5Hex);
                 return false;
             }
             return true;
@@ -210,7 +220,7 @@ public class S3Util {
 
             int status = conn.getResponseCode();
 
-            if (status >= 400) {
+            if (status != 200 && status != 201) {
                 log.severe("Error setting ACL for: " + url.toString());
                 log.severe(IOUtils.toString(conn.getInputStream()));
                 return false;
@@ -261,7 +271,7 @@ public class S3Util {
     }
 
     private static String getDate() {
-        final DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ");
+        final DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ", Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(new Date()) + "GMT";
     }

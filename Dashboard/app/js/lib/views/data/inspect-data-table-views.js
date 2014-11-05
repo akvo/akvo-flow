@@ -96,20 +96,12 @@ FLOW.inspectDataTableView = FLOW.View.extend({
   // If the number of items in the previous call was 20 (a full page) we assume that there are more.
   // This is not foolproof, but will only lead to an empty next page in 1/20 of the cases
   hasNextPage: function () {
-    if (FLOW.metaControl.get('numSILoaded') == 20) {
-      return true;
-    } else {
-      return false;
-    }
+    return FLOW.metaControl.get('numSILoaded') == 20;
   }.property('FLOW.metaControl.numSILoaded'),
 
   // not perfect yet, sometimes previous link is shown while there are no previous pages.
   hasPrevPage: function () {
-    if (FLOW.surveyInstanceControl.get('sinceArray').length === 1) {
-      return false;
-    } else {
-      return true;
-    }
+    FLOW.surveyInstanceControl.get('sinceArray').length !== 1;
   }.property('FLOW.surveyInstanceControl.sinceArray.length'),
 
   createSurveyInstanceString: function () {
@@ -179,7 +171,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     SIindex = currentSIList.indexOf(this.get('selectedSurveyInstanceNum'));
 
     if (SIindex == 19) {
-      // TODO get more data 
+      // TODO get more data
       // if at the end of the list, we should first go back and get more data
     } else {
       nextItem = currentSIList.objectAt(SIindex + 1);

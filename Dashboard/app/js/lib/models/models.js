@@ -157,7 +157,7 @@ FLOW.Question = FLOW.BaseModel.extend({
     defaultValue: false
   }),
   mandatoryFlag: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: true
   }),
   dependentFlag: DS.attr('boolean', {
     defaultValue: false
@@ -185,6 +185,9 @@ FLOW.Question = FLOW.BaseModel.extend({
   // Most of the times is `null`
   sourceId: DS.attr('number', {
 	 defaultValue: null
+  }),
+  allowExternalSources: DS.attr('boolean', {
+    defaultValue: false
   })
 });
 

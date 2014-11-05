@@ -42,8 +42,8 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
-import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyalValue;
 
 @Controller
 @RequestMapping("/question_answers")
@@ -87,6 +87,7 @@ public class QuestionAnswerRestService {
                             if (Long.parseLong(qas.getQuestionID()) == qList
                                     .get(i).getKey().getId()) {
                                 qasDto.setQuestionText(qList.get(i).getText());
+                                qasDto.setTextualQuestionId(qList.get(i).getQuestionId());
                                 idx = i;
                                 break;
                             }
@@ -226,7 +227,7 @@ public class QuestionAnswerRestService {
     /**
      * helper method to create a new QuestionAnswerStore object using the values passed in. Same
      * method as in SurveyQuestionSummaryUpdater
-     * 
+     *
      * @param id
      * @param value
      * @return

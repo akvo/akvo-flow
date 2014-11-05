@@ -16,6 +16,7 @@ FLOW.Router = Ember.Router.extend({
     FLOW.selectedControl.set('selectedQuestion', null);
     FLOW.surveyControl.set('content', null);
     FLOW.questionControl.set('OPTIONcontent', null);
+    FLOW.metaControl.set('since', null);
   },
 
   root: Ember.Route.extend({
@@ -309,6 +310,7 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function (router, context) {
           router.get('navDataController').connectOutlet('monitoringData');
           router.set('datasubnavController.selected', 'monitoringData');
+          router.resetState();
           FLOW.surveyGroupControl.populate(function (item) {
                  return item.get('monitoringGroup');
           });
