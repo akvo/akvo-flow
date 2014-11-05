@@ -1801,7 +1801,12 @@ section.topBar > a.smallBtn {
     color: rgb(235, 235, 235);
 }
 section.topBar {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;    
     display:flex;
+    -webkit-align-items:center;
     align-items:center;
     padding:0 0 10px 0;
     nav {
@@ -1928,9 +1933,13 @@ nav.menuTopbar {
             }
         }
         ul {
-            display: flex;
+            display: -webkit-flex;
+            display: flex;      
+            justify-content: -webkit-flex-end;
             justify-content: flex-end;
+            -webkit-align-items: center;
             align-items: center;
+            text-align: right;
             li {
                 margin-left:10px;
                 &:first-child {
@@ -2175,9 +2184,15 @@ li.aFolder, li.aSurvey {
 }
 li.aFolder {
     @extend li.aSurvey;
-    display:flex;
+      display: -webkit-box;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;    
+      display:flex;
     box-sizing: border-box;
+    -webkit-flex-direction: row;
     flex-direction: row;
+    -webkit-align-items: center;
     align-items: center;
     min-height: 70px;
     padding: 0.25em 0 0.25em 15px;
@@ -2462,7 +2477,11 @@ label[for="surveyLanguage"]  a.helpIcon {
             margin-top:10px;
         }
         ul {
-            display: flex;
+      display: -webkit-box;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;    
+      display:flex;
             margin: 0 auto;
             padding: 0;
             width: 100%;
@@ -4223,7 +4242,15 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
           }
         }
         .projectSummary, .formSummary {
-            display:flex;
+          display: -webkit-box;
+          display: -moz-box;
+          display: -ms-flexbox;
+          display: -webkit-flex;    
+          display:flex;
+            -webkit-flex-direction: row;
+            -webkit-flex-wrap: nowrap;
+            -webkit-align-items: center;
+            -webkit-align-content: center;            
             flex-direction: row;
             flex-wrap: nowrap;
             align-items: center;
@@ -4261,7 +4288,12 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             padding:2em 0 0 0;
             background:white;
             .formSummary {
+                        display:-webkit-flex;
                         display:flex;
+                        -webkit-flex-direction: row;
+                        -webkit-flex-wrap: nowrap;
+                        -webkit-align-items: center;
+                        -webkit-align-content: center;                       
                         flex-direction: row;
                         flex-wrap: nowrap;
                         align-items: center;
@@ -4450,6 +4482,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                           }
                       }
                       .projectSelect {
+                          display: -webkit-flex;
                           display: flex;
                           margin-bottom: 50px;
                           li {
