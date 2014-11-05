@@ -413,7 +413,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   selectFirstForm: function() {
-    if (this.content.isLoaded) {
+    if (this.get('content') && this.content.get('isLoaded')) {
       var form = this.content.get('firstObject');
       if (form) {
         FLOW.selectedControl.set('selectedSurvey', form);
