@@ -168,17 +168,18 @@ FLOW.FormTabView = Ember.View.extend({
   classProperty: function() {
 
     var form = this.get('content');
+    var currentProject = FLOW.projectControl.get('currentProject');
     var classString = 'aFormTab';
 
-    if (form === null) return classString;
+    if (form === null || currentProject === null) return classString;
 
-    // Return "aFormTab" "active" and/or "registrationForm"
+    // Return "aFormTab" "current" and/or "registrationForm"
     var isActive = form === FLOW.selectedControl.get('selectedSurvey');
-    var isRegistrationForm = FLOW.projectControl.currentProject.get('monitoringGroup') &&
-      form.get('keyId') === FLOW.projectControl.currentProject.get('newLocaleSurveyId');
+    var isRegistrationForm = currentProject.get('monitoringGroup')
+      && form.get('keyId') === currentProject.get('newLocaleSurveyId');
 
 
-    if (isActive) classString += ' active';
+    if (isActive) classString += ' current';
     if (isRegistrationForm) classString += ' registrationForm';
 
     return classString;
