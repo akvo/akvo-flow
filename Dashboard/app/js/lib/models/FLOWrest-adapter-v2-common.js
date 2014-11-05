@@ -23,11 +23,13 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
         FLOW.metaControl.set('numSILoaded', this.extractMeta(json).num);
         FLOW.metaControl.set('since', this.extractMeta(json).since);
         FLOW.metaControl.set('num', this.extractMeta(json).num);
+        FLOW.metaControl.set('cursorType', 'SurveyInstance');
       }
       if (type == FLOW.SurveyedLocale && !Ember.none(this.extractMeta(json).num)) {
         FLOW.metaControl.set('numSLLoaded', this.extractMeta(json).num);
         FLOW.metaControl.set('since', this.extractMeta(json).since);
         FLOW.metaControl.set('num', this.extractMeta(json).num);
+        FLOW.metaControl.set('cursorType', 'SurveyedLocale');
       }
       msg = this.extractMeta(json).message;
       status = this.extractMeta(json).status;

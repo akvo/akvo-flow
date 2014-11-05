@@ -24,7 +24,8 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 	      displayName = this.get('displayName'),
 	      sgId = this.get('selectedSurveyGroup'),
         since = FLOW.metaControl.get('since');
-	      criteria = {};
+	      cursorType = FLOW.metaControl.get('cursorType');
+        criteria = {};
 
 	  if (ident) {
 		  criteria.identifier = ident;
@@ -38,7 +39,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 		  criteria.surveyGroupId = sgId.get('keyId');
 	  }
 
-    if (since) {
+    if (since && cursorType === 'SurveyedLocale') {
       criteria.since = since;
     }
 
