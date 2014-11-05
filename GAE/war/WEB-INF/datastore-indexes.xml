@@ -537,5 +537,9 @@
         <property name="organization" direction="asc"/>
         <property name="name" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="surveyGroupId" direction="asc"/>
+        <property name="lastUpdateDateTime" direction="desc"/>
+    </datastore-index>
 
 </datastore-indexes>
