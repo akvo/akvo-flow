@@ -2036,7 +2036,7 @@ a.moveAction {
     color: white;
     background: rgba($anchorLink, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat;
     background-size: 35px 35px;
-    padding: 4px 7px 11px 35px;
+    padding: 7px 7px 14px 35px;
     border-radius: 3px;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;}
@@ -4347,11 +4347,18 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             }
             #tabs nav.tabNav ul {
                 padding: 0;
+               display: -webkit-flex;
+               display: flex;
+               -webkit-flex-direction: row;
+               flex-direction: row;
+               -webkit-justify-content: flex-start;
+               justify-content: flex-start;
+                -webkit-align-items: center;
+                align-items: center;
             }
             #tabs nav.tabNav ul li {
-                display: inline;
-                float: left;
-                margin: 0 1px 0 0;
+                border-right:1px solid rgba(32,32,36,0.2);
+                margin:0;
                 @include border-radius(2px 2px 0 0);
                 -webkit-background-clip: padding-box;
                 background-clip: padding-box;
@@ -4359,6 +4366,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 transition: none;
                 -moz-background-clip: padding;
                 -webkit-background-clip: padding-box;
+                @include noWrapTxt;
                 &.aFormTab {
                   padding-left:25px;
                   background:rgba(32,32,36, 0.2) url(../images/IconForms.png) no-repeat 5px center;
@@ -4392,6 +4400,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     }
                 &.newFormTab {
                   background:transparent;
+                  border-right:none;
                   a{
                     color:$anchorLink;
                     &:hover {
