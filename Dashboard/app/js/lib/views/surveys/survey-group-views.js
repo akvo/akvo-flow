@@ -64,6 +64,17 @@ FLOW.Project = FLOW.View.extend({
 FLOW.ProjectMainView = FLOW.View.extend({
 
   doSave: function() {
+    currentProject = FLOW.projectControl.get('currentProject');
+    currentForm = FLOW.selectedControl.get('selectedSurvey');
+
+    if (currentProject && currentProject.get('isDirty')) {
+      currentProject.set('name', currentProject.get('code'));
+    }
+
+    if (currentForm && currentForm.get('isDirty')) {
+      currentForm.set('name', currentForm.get('code'));
+    }
+
     FLOW.store.commit();
   },
 
