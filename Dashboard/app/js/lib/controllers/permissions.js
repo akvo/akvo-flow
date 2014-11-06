@@ -153,6 +153,7 @@ FLOW.dialogControl = Ember.Object.create({
   delSI: "delSI",
   delSI2: "delSI2",
   makeMonitor: "makeMonitor",
+  delForm: "delForm",
   showDialog: false,
   message: null,
   header: null,
@@ -227,11 +228,17 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('message', Ember.String.loc('_are_you_sure_delete_this_data_record'));
       this.set('showDialog', true);
       break;
-     
+
     case "makeMonitor":
     	this.set('header', Ember.String.loc('_make_monitor_group_header'));
         this.set('message', Ember.String.loc('_make_monitor_group_text'));
         this.set('showDialog', true);
+      break;
+
+    case "delForm":
+      this.set('header', "Delete form");
+      this.set('message', "Are you sure you want to delete this form?")
+      this.set('showDialog', true);
       break;
 
     default:
@@ -291,10 +298,15 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', false);
       view.deleteSI.apply(view, arguments);
       break;
-      
+
     case "makeMonitor":
       this.set('showDialog', false);
       view.makeMonitorGroup.apply(view, arguments);
+      break;
+
+    case "delForm":
+      this.set('showDialog', false);
+      FLOW.surveyControl.deleteForm();
       break;
 
     default:

@@ -3,7 +3,7 @@
 	<nav class="newSurveyNav">
 		<ul>
 			<li><a class="previewNewSurvey" {{action "showPreview" target="FLOW.surveyControl"}}>Preview</a></li>
-			<li><a class="deleteSurvey" {{action "deleteForm" target="FLOW.surveyControl"}}>Delete</a></li>
+			<li><a class="deleteSurvey" {{action confirm FLOW.dialogControl.delForm target="FLOW.dialogControl"}}>Delete</a></li>
 		</ul>
 	</nav>
 	<ul class="formSummary">

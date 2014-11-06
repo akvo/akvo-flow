@@ -5,8 +5,6 @@ FLOW.FormView = Ember.View.extend({
 	manageTranslations: false,
 	manageNotifications: false,
 
-
-
 	toggleShowFormBasics: function () {
 		this.set('showFormBasics', !this.get('showFormBasics'));
 	},
@@ -31,6 +29,5 @@ FLOW.FormView = Ember.View.extend({
 		FLOW.notificationControl.populate();
 		this.set('manageTranslations', false);
 		this.set('manageNotifications', true);
-	}
-
+	},
 });
