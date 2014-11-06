@@ -211,8 +211,13 @@ FLOW.projectControl = Ember.ArrayController.create({
     return this.get('content').filter(function(project) {
       return project.get('parentId') === parentId;
     }).sort(function(a, b) {
-      // TODO: Also sort 'code' by ascending order;
-      return self.isProjectFolder(a) ? -1 : 1;
+      if (self.isProjectFolder(a) && self.isProject(b)) {
+        return -1;
+      } else if (self.isProject(a) && self.isProjectFolder(b)) {
+        return 1;
+      } else {
+        return a.get('code').localeCompare(b.get('code'));
+      }
     })
   }.property('@each', 'currentProject', 'moveTarget'),
 
