@@ -115,10 +115,10 @@
                 </nav>
                 <section class="formsContainer">
                     <div id="form01">
-                    <h3>We should add the current selected Form name right here</h3>
-                      {{#if FLOW.selectedControl.selectedSurvey}}
-                        {{view FLOW.FormView}}
-                      {{/if}}
+                    {{#if FLOW.selectedControl.selectedSurvey}}
+                      <h3>{{FLOW.selectedControl.selectedSurvey.code}}</h3>
+                      {{view FLOW.FormView}}
+                    {{/if}}
                     </div>
                 </section>
               </div>
