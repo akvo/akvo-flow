@@ -139,6 +139,7 @@ FLOW.ProjectItemView = FLOW.View.extend({
   }.property(),
 
   formatDate: function(datetime) {
+    if (datetime === "") return "";
     var date = new Date(parseInt(datetime));
     return date.getDay() + "." + (date.getMonth() + 1) + " " + date.getFullYear();
   },
