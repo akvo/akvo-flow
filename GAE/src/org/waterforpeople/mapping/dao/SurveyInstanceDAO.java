@@ -673,21 +673,24 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             svDao.delete(surveyalValues);
         }
 
-        // delete instance
-        Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
-        super.delete(surveyInstance);
-
         // return if no surveyed locale
-        if (surveyedLocaleId == null) {
+        if (surveyInstance.getSurveyedLocaleId() == null) {
             return;
         }
 
-        // check surveyed locale related to deleted survey instance
+        // check survey instances related to surveyed locale
+        Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
         List<SurveyInstance> relatedSurveyInstances = listByProperty("surveyedLocaleId",
                 surveyedLocaleId, "Long");
 
-        // task to adapt cluster data
-        if (relatedSurveyInstances != null && !relatedSurveyInstances.isEmpty()) {
+        for (SurveyInstance instance : relatedSurveyInstances) {
+            if (instance.getKey().equals(surveyInstance.getKey())) {
+                relatedSurveyInstances.remove(instance);
+            }
+        }
+
+        if (!relatedSurveyInstances.isEmpty()) {
+            // task to adapt cluster data
             Queue queue = QueueFactory.getDefaultQueue();
             TaskOptions to = TaskOptions.Builder
                     .withUrl("/app_worker/surveyalservlet")
@@ -698,7 +701,16 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                     .param(SurveyalRestRequest.DECREMENT_CLUSTER_COUNT_PARAM,
                             Boolean.TRUE.toString());
             queue.add(to);
+
+        } else {
+            // delete locale if there are no related instances
+            SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+            SurveyedLocale locale = slDao.getByKey(surveyedLocaleId);
+            slDao.delete(locale);
         }
+
+        super.delete(surveyInstance);
+
     }
 
     /**
