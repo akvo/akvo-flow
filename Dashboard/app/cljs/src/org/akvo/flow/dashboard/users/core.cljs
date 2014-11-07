@@ -70,7 +70,7 @@
 ;;
 
 (def no-such-user {:title "No such user"
-                   :text (str "A user with this id has not been loaded yet")})
+                   :text "A user with this id has not been loaded yet"})
 
 (defn new-user-dialog [{:keys [close!]} owner]
   (om/component
@@ -145,9 +145,9 @@
              [:label "Secret:"]
              [:input {:type "text" :size 40 :value secret}]
              [:p "The secret key will never be shown again! If it is lost a new one must be generated"]])
-          [:a.ok.smallBtn {:on-click #(generate-apikeys owner user)} "(Re)generate"]
+          [:a {:on-click #(generate-apikeys owner user)} "(Re)generate"]
           " "
-          [:a.ok.smallBtn {:on-click #(revoke-apikeys owner user)} "Revoke"]])))
+          [:a {:on-click #(revoke-apikeys owner user)} "Revoke"]])))
 
 (defn manage-apikeys-dialog [{:keys [user close!]} owner]
   (reify
@@ -184,6 +184,31 @@
     2 "permissionList"
     "emailAddress"))
 
+
+(defn columns [owner]
+  [{:title "#"
+    :cell-fn :row-number}
+   {:title "User name"
+    :cell-fn #(get % "userName")
+    :sort-by "userName"}
+   {:title "Email"
+    :cell-fn #(get % "emailAddress")
+    :sort-by "emailAddress"}
+   {:title "Permission list"
+    :cell-fn #(if (= (get % "permissionList") "10")
+                "Admin"
+                "User")}
+   {:title "Actions"
+    :class "action"
+    :cell-fn (fn [user]
+               [:span
+                [:a {:on-click #(om/set-state! owner :dialog {:component edit-user-dialog
+                                                              :user-id (get user "keyId")})} "Edit"]
+                [:a {:on-click #(om/set-state! owner :dialog {:component delete-user-dialog
+                                                              :user-id (get user "keyId")})} "Remove"]
+                [:a {:on-click #(om/set-state! owner :dialog {:component manage-apikeys-dialog
+                                                              :user-id (get user "keyId")})} "api"]])}])
+
 (defn users [data owner]
   (reify
     om/IInitState
@@ -194,57 +219,37 @@
               :sort-order "ascending"}
        :dialog nil})
 
+
     om/IRenderState
     (render-state [this state]
       (html
-       [:div
-        [:div.greyBg
-         [:section.fullWidth.usersList
-          [:h1 "Manage users and user rights"]
-          [:a.standardBtn.btnAboveTable
-           {:on-click #(om/set-state! owner :dialog {:component new-user-dialog})}
-           "Add new user"]
-          (om/build grid
-                    {:id "usersListTable"
-                     :data (let [data (store/get-by-range (merge (:pagination state)
-                                                                 (:sort state)))]
-                             (when-not (= data :pending)
-                               (map (fn [row row-number]
-                                      (assoc row :row-number (inc row-number)))
-                                    data
-                                    (range))))
-                     :sort (:sort state)
-                     :on-sort (fn [sort-by sort-order]
-                                (om/set-state! owner :sort {:sort-by sort-by :sort-order sort-order}))
-                     :range (:pagination state)
-                     :on-range (fn [offset limit]
-                                 (om/set-state! owner :pagination {:offset offset :limit limit}))
-                     :columns [{:title "#"
-                                :cell-fn :row-number}
-                               {:title "User name"
-                                :cell-fn #(get % "userName")
-                                :sort-by "userName"}
-                               {:title "Email"
-                                :cell-fn #(get % "emailAddress")
-                                :sort-by "emailAddress"}
-                               {:title "Permission list"
-                                :cell-fn #(if (= (get % "permissionList") "10")
-                                            "Admin"
-                                            "User")}
-                               {:title "Actions"
-                                :class "action"
-                                :cell-fn (fn [user]
-                                           [:span
-                                            [:a.edit {:on-click #(om/set-state! owner :dialog {:component edit-user-dialog
-                                                                                               :user-id (get user "keyId")})} "Edit"]
-                                            [:a.remove {:on-click #(om/set-state! owner :dialog {:component delete-user-dialog
-                                                                                                 :user-id (get user "keyId")})} "Remove"]
-                                            [:a.api {:on-click #(om/set-state! owner :dialog {:component manage-apikeys-dialog
-                                                                                              :user-id (get user "keyId")})} "api"]])}]})]]
+       [:section
+        [:h1 "Manage users and user rights"]
+        [:a
+         {:on-click #(om/set-state! owner :dialog {:component new-user-dialog})}
+         "Add new user"]
         (if-let [dialog (:dialog state)]
           (let [{:keys [component user-id]} dialog]
-            (om/build component {:user (if user-id (store/get-by-id data user-id))
-                                 :close! #(om/set-state! owner :dialog nil)})))]))))
+            [:div
+             [:hr]
+             (om/build component {:user (if user-id (store/get-by-id data user-id))
+                                 :close! #(om/set-state! owner :dialog nil)})
+             [:hr]]))
+        (om/build grid
+                  {:data (let [data (store/get-by-range (merge (:pagination state)
+                                                               (:sort state)))]
+                           (when-not (= data :pending)
+                             (map (fn [row row-number]
+                                    (assoc row :row-number (inc row-number)))
+                                  data
+                                  (range))))
+                   :sort (:sort state)
+                   :on-sort (fn [sort-by sort-order]
+                              (om/set-state! owner :sort {:sort-by sort-by :sort-order sort-order}))
+                   :range (:pagination state)
+                   :on-range (fn [offset limit]
+                               (om/set-state! owner :pagination {:offset offset :limit limit}))
+                   :columns (columns owner)})]))))
 
 (defn value-component [data owner {:keys [component]}]
   (reify om/IRender

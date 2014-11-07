@@ -58,13 +58,12 @@
    (let [offset (or (:offset range) 0)
          limit (or (:limit range) 20)]
      (html
-      [:div {:style {:padding-top "5px"
-                     :font-size "1.2em"}}
+      [:div
        [:span "Show:"
         (if (= limit 10) " 10" [:a {:on-click #(on-range offset 10)} " 10"])
         (if (= limit 20) " 20" [:a {:on-click #(on-range offset 20)} " 20"])
         (if (= limit 50) " 50" [:a {:on-click #(on-range offset 50)} " 50"])]
-       [:span {:style {:float "right"}}
+       [:span
         (if (zero? offset)
           "«previous"
           [:a {:on-click #(on-range (let [new-offset (- offset limit)]
@@ -123,7 +122,7 @@
     [:div {}
      (when (:on-range data)
        (om/build pagination-controls (select-keys data [:range :on-range])))
-     [:table.dataTable {:id (:id data)}
+     [:table {:id (:id data)}
       [:thead (om/build table-head (select-keys data [:columns :sort :on-sort]))]
       [:tbody (om/build-all table-row
                             (map (fn [row columns]

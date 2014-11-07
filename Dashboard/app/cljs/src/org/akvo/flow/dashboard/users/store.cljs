@@ -11,8 +11,7 @@
   [user-id]
   (GET (str "/rest/users/" user-id)
        (merge ajax/default-ajax-config
-              {:handler #(swap! app-state assoc-in [:users :by-id user-id] (get % "user"))}
-              {:error-handler #(swap! app-state assoc-in [:users :by-id user-id] %)})))
+              {:handler #(swap! app-state assoc-in [:users :by-id user-id] (get % "user"))})))
 
 (defn fetch-and-update-users-range [params]
   {:pre [(= (set (keys params))
