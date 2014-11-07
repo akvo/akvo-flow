@@ -5,6 +5,21 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.6
+Date: 07 November 2014
+
+## New and noteworthy
+* New questions are now mandatory by default when editing a survey [#881]
+* The name of the submitter of the survey is now returned to the mobile app when syncing data [#878]
+
+## Resolved issues
+* Survey Assignment containing deleted survey causing backend failure [#887]
+* Handle non-existent surveys within an assignment [#878]
+* Explicitly use Locale.US on date formats [#869]
+* Legacy Code cleanup [#866]
+* Minor UI Fix - Long survey group names overlapping arrows [#858]
+* Adding pagination support for the data > monitoring tab [#855]
+
 #1.7.5
 Date: 16 October 2014
 

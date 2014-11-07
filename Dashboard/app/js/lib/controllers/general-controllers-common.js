@@ -115,7 +115,8 @@ FLOW.metaControl = Ember.Object.create({
   since: null,
   num: null,
   message: null,
-  status: null
+  status: null,
+  cursorType: null,
 }),
 
 
