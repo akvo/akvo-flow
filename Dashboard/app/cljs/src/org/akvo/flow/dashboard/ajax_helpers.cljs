@@ -4,8 +4,7 @@
 
 (def default-ajax-config
   {:error-handler #(.error js/console %)
-   :format (json-request-format {:keywords? false})
-   :keywords? false})
+   :format (json-request-format)})
 
 (defn query-str [params]
   (->> params

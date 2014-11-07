@@ -65,8 +65,6 @@
 (defn parent-route [data]
   ((-> data :current-page :parent-route)))
 
-
-
 ;;
 ;; Dialogs
 ;;
@@ -108,7 +106,7 @@
   (om/component
    (om/build dialog
              {:title "Are you sure you want to delete this user?"
-              :text "This can not be undone!!!"
+              :text "This can not be undone!"
               :buttons [{:caption "Ok"
                          :class "ok smallBtn"
                          :action #(do (dispatch :delete-user user)
@@ -245,7 +243,6 @@
                                                                                               :user-id (get user "keyId")})} "api"]])}]})]]
         (if-let [dialog (:dialog state)]
           (let [{:keys [component user-id]} dialog]
-            (pr-str user-id)
             (om/build component {:user (if user-id (store/get-by-id data user-id))
                                  :close! #(om/set-state! owner :dialog nil)})))]))))
 
