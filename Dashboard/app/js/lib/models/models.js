@@ -136,7 +136,7 @@ FLOW.Question = FLOW.BaseModel.extend({
     defaultValue: false
   }),
   mandatoryFlag: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: true
   }),
   dependentFlag: DS.attr('boolean', {
     defaultValue: false
