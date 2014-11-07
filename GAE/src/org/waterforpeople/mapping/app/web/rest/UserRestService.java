@@ -18,9 +18,13 @@ package org.waterforpeople.mapping.app.web.rest;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.apache.commons.codec.binary.Base64;
@@ -42,6 +46,7 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.dao.UserRoleDao;
+import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
 import com.gallatinsystems.user.domain.UserRole;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -424,6 +429,20 @@ public class UserRestService {
             statusDto.setMessage("_role_in_use");
         }
 
+        return response;
+    }
+
+    /**
+     * Return a list of all system permissions
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/permissions/all")
+    @ResponseBody
+    public Map<String, Object> listAllPermissions() {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        Set<Permission> permissions = new HashSet<Permission>(Arrays.asList(Permission.values()));
+        response.put("permissions", permissions);
         return response;
     }
 }
