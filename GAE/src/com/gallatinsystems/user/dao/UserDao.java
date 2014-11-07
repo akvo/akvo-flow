@@ -26,9 +26,7 @@ import javax.jdo.PersistenceManager;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.User;
-import com.gallatinsystems.user.domain.UserRole;
 
 /**
  * Dao for User objects
@@ -86,15 +84,6 @@ public class UserDao extends BaseDAO<User> {
         prepareCursor(cursorString, query);
         List<User> results = (List<User>) query.executeWithMap(paramMap);
         return results;
-    }
-
-    /**
-     * lists all permissions
-     *
-     * @return
-     */
-    public List<Permission> listPermissions() {
-        return list(Permission.class, null);
     }
 
     /**

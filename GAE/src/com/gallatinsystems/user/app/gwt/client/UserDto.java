@@ -16,12 +16,10 @@
 
 package com.gallatinsystems.user.app.gwt.client;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.gallatinsystems.user.domain.UserRole;
 
 /**
  * dto representing the user objects. When returned, this object usually will have a set of
@@ -42,7 +40,7 @@ public class UserDto extends BaseDto {
     private boolean superAdmin = false;
     private String permissionList;
     private String accessKey;
-    private List<UserRole> roles;
+    private Set<Long> userRoles;
 
     public String getPermissionList() {
         return permissionList;
@@ -131,11 +129,11 @@ public class UserDto extends BaseDto {
         this.accessKey = accessKey;
     }
 
-    public List<UserRole> getRoles() {
-        return roles;
+    public Set<Long> getUserRoles() {
+        return userRoles;
     }
 
-    public void setRoles(List<UserRole> roles) {
-        this.roles = roles;
+    public void setUserRoles(Set<Long> userRoles) {
+        this.userRoles = userRoles;
     }
 }
