@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
 
 import org.apache.commons.codec.binary.Base64;
@@ -298,20 +297,18 @@ public class UserRestService {
         response.put("meta", statusDto);
 
         if (StringUtils.isBlank(payload.getName())) {
-            statusDto.setStatus("failed");
             statusDto.setMessage("_missing_role_name");
             return response;
         }
 
-        UserRole role = userRoleDao.findUserRoleByName(payload.getName());
-        if (role == null) {
-            role = userRoleDao.save(payload.getUserRole());
+        if (userRoleDao.findUserRoleByName(payload.getName()) == null) {
+            UserRole createdRole = userRoleDao.save(payload.getUserRole());
             statusDto.setStatus("ok");
             statusDto.setMessage("_role_created");
+            response.put("role", new UserRolePayload(createdRole));
         } else {
             statusDto.setMessage("_role_already_exists");
         }
-        response.put("role", new UserRolePayload(role));
         return response;
     }
 
@@ -390,9 +387,7 @@ public class UserRestService {
             }
         }
 
-        BeanUtils.copyProperties(payload, existingRole, new String[] {
-                "createdDateTime"
-        });
+        BeanUtils.copyProperties(payload, existingRole);
 
         UserRolePayload updatedRole = new UserRolePayload(userRoleDao.save(existingRole));
         response.put("role", updatedRole);

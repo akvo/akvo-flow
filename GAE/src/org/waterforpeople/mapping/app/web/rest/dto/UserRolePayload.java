@@ -17,9 +17,11 @@
 package org.waterforpeople.mapping.app.web.rest.dto;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.UserRole;
 
 /**
@@ -48,6 +50,16 @@ public class UserRolePayload implements Serializable {
 
     public void setName(String name) {
         userRole.setName(name);
+    }
+
+    public Set<Permission> getPermissions() {
+        return userRole.getPermissions();
+    }
+
+    public void setPermissions(Set<Permission> permissions) {
+        if (permissions != null) {
+            userRole.setPermissions(permissions);
+        }
     }
 
     public Long getKeyId() {
