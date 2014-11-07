@@ -14,6 +14,59 @@
 
 (enable-console-print!)
 
+;;
+;; Dialogs
+;;
+
+(defn target-value [evt]
+  (-> evt .-target .-value))
+
+(defn user-form [{:keys [user on-change]} owner]
+  (om/component
+   (html
+    [:div
+     [:label "Username:"]
+     [:input {:type "text" :size "40" :value (get user "userName")
+              :on-change #(on-change "userName" (target-value %))}]
+     [:br]
+     [:label "Email address:"]
+     [:input {:type "text" :size "40" :value (get user "emailAddress")
+              :on-change #(on-change "emailAddress" (target-value %))}]
+     [:br]
+     [:label "Select permission level"]
+     [:select {:value (get user "permissionList")
+               :on-change #(on-change "permissionList" (target-value %))}
+      [:option {:value "10"} "Admin"]
+      [:option {:value "20"} "User"]]])))
+
+(def no-such-user {:title "No such user"
+                   :text "A user with this id has not been loaded yet"})
+
+(defn user-dialog [{:keys [user close! tag]} owner]
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:user user})
+    om/IWillReceiveProps
+    (will-receive-props [this {:keys [user]}]
+      (om/set-state! owner :user user))
+    om/IRenderState
+    (render-state [this state]
+      (om/build dialog
+                {:title "Add new user"
+                 :text "Please provide a user name, email address and permission level below."
+                 :content user-form
+                 :content-data {:user (:user state)
+                                :on-change (fn [key val] (om/set-state! owner [:user key] val))}
+                 :buttons [{:caption "Save"
+                            :action #(do
+                                       (println (type (:user state)))
+                                       (println "dispatching" tag (:user state))
+                                       (dispatch tag (:user state))
+                                       (close!))}
+                           {:caption "Cancel"
+                            :action close!}]}))))
+
 (def empty-user
   {"admin" false
    "logoutUrl" nil
@@ -24,83 +77,17 @@
    "userName" ""
    "keyId" nil})
 
-(defn by-id [id]
-  (.getElementById js/document id))
-
-(defn extract-user-data []
-  (let [username (.-value (by-id "newUserName"))
-        email (.-value (by-id "newEmail"))
-        permission-level (.-value (by-id "newPermissionList"))]
-    {"userName" username
-     "emailAddress" email
-     "permissionList" permission-level}))
-
-(defn user-form
-  ([] (user-form empty-user))
-  ([user]
-     (fn [data owner]
-       (om/component
-        (html
-         [:div
-          [:label {:for "newUserName"} "Username:"]
-          [:input#newUserName {:type "text" :size "40" :ref "new-username" :default-value (get user "userName")}]
-          [:br]
-          [:label {:for "newEmail"} "Email address:"]
-          [:input#newEmail {:type "text" :size "40" :ref "new-email" :default-value (get user "emailAddress")}]
-          [:br]
-          [:label {:for "newPermissionList"} "Select permission level"]
-          [:select#newPermissionList {:default-value (get user "permissionList") :ref "new-permission-level"}
-           [:option {:value "10"} "Admin"]
-           [:option {:value "20"} "User"]]])))))
-
-(defn get-current-user [data]
-  (let [user-id (-> data :current-page :user-id)]
-    (or (get-in data [:users :by-id user-id])
-        (throw (str "No such user: " user-id)))))
-
-(defn get-current-user-id [data]
-  (let [user-id (-> data :current-page :user-id)]
-    user-id))
-
-(defn parent-route [data]
-  ((-> data :current-page :parent-route)))
-
-;;
-;; Dialogs
-;;
-
-(def no-such-user {:title "No such user"
-                   :text "A user with this id has not been loaded yet"})
-
 (defn new-user-dialog [{:keys [close!]} owner]
   (om/component
-   (om/build dialog
-            {:title "Add new user"
-             :text "Please provide a user name, email address and permission level below."
-             :content (user-form)
-             :buttons [{:caption "Save"
-                        :class "ok smallBtn"
-                        :action #(do (dispatch :new-user (merge empty-user (extract-user-data)))
-                                     (close!))}
-                       {:caption "Cancel"
-                        :class "cancel"
-                        :action close!}]})))
+    (om/build user-dialog {:close! close!
+                           :tag :new-user
+                           :user empty-user})))
 
 (defn edit-user-dialog [{:keys [user close!]} owner]
   (om/component
-   (if-not user
-     (om/build dialog no-such-user)
-     (om/build dialog
-               {:title "Edit user"
-                :text "Please edit the user name, email address and permission level below."
-                :content (user-form user)
-                :buttons [{:caption "Save"
-                           :class "ok smallBtn"
-                           :action #(do (dispatch :edit-user {:user (merge user (extract-user-data))})
-                                        (close!))}
-                          {:caption "Cancel"
-                           :class "cancel"
-                           :action close!}]}))))
+   (om/build user-dialog {:close! close!
+                          :tag :edit-user
+                          :user user})))
 
 (defn delete-user-dialog [{:keys [user close!]} owner]
   (om/component
@@ -108,11 +95,9 @@
              {:title "Are you sure you want to delete this user?"
               :text "This can not be undone!"
               :buttons [{:caption "Ok"
-                         :class "ok smallBtn"
                          :action #(do (dispatch :delete-user user)
                                       (close!))}
                         {:caption "Cancel"
-                         :class "cancel"
                          :action close!}]})))
 
 (defn generate-apikeys [owner user]
@@ -130,10 +115,8 @@
   (DELETE (str "/rest/users/" (get user "keyId") "/apikeys")
           (merge default-ajax-config
                  {:handler (fn [response]
-                             (om/set-state! owner (om/set-state! owner {:access-key nil
-                                                                        :secret nil}))
-                             (dispatch :new-access-key {:access-key nil
-                                                        :user user}))})))
+                             (om/set-state! owner {:access-key nil :secret nil})
+                             (dispatch :new-access-key {:access-key nil :user user}))})))
 
 (defn manage-apikeys [{:keys [user secret access-key owner]} _]
   (om/component
@@ -168,7 +151,6 @@
                                   :owner owner}
                    :content manage-apikeys
                    :buttons [{:caption "Close"
-                              :class "cancel"
                               :action close!}]})))))
 
 (def dialogs
@@ -199,7 +181,6 @@
                 "Admin"
                 "User")}
    {:title "Actions"
-    :class "action"
     :cell-fn (fn [user]
                [:span
                 [:a {:on-click #(om/set-state! owner :dialog {:component edit-user-dialog

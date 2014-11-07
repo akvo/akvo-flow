@@ -74,6 +74,7 @@
 (let [chan (dispatcher/register :new-user)]
   (go-loop []
     (let [[_ new-user] (<! chan)]
+      (assert new-user)
       (POST "/rest/users"
             (merge ajax/default-ajax-config
                    {:params {"user" new-user}
@@ -85,8 +86,9 @@
 
 (let [chan (dispatcher/register :edit-user)]
   (go-loop []
-    (let [[_ {:keys [user]}] (<! chan)
+    (let [[_ user] (<! chan)
           user-id (get user "keyId")]
+      (assert user-id (str "No user-id for user " user))
       (PUT (str "/rest/users/" user-id)
            (merge ajax/default-ajax-config
                   {:params {"user" user}
@@ -102,6 +104,7 @@
   (go-loop []
     (let [[_ user] (<! chan)
           user-id (get user "keyId")]
+      (assert user-id (str "No user-id for user " user))
       (DELETE (str "/rest/users/" user-id)
               (merge ajax/default-ajax-config
                      {:handler (fn [response]
