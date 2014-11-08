@@ -190,7 +190,7 @@
                 [:a {:on-click #(om/set-state! owner :dialog {:component manage-apikeys-dialog
                                                               :user-id (get user "keyId")})} "api"]])}])
 
-(defn users [data owner]
+(defn users [{:keys [users]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -200,6 +200,9 @@
               :sort-order "ascending"}
        :dialog nil})
 
+    om/IDidMount
+    (did-mount [this]
+      (dispatch :fetch-users nil))
 
     om/IRenderState
     (render-state [this state]
@@ -213,17 +216,17 @@
           (let [{:keys [component user-id]} dialog]
             [:div
              [:hr]
-             (om/build component {:user (if user-id (store/get-by-id data user-id))
-                                 :close! #(om/set-state! owner :dialog nil)})
+             (om/build component {:user (if user-id (store/get-user users user-id))
+                                  :close! #(om/set-state! owner :dialog nil)})
              [:hr]]))
         (om/build grid
-                  {:data (let [data (store/get-by-range (merge (:pagination state)
+                  {:data (let [data (store/get-by-range users
+                                                        (merge (:pagination state)
                                                                (:sort state)))]
-                           (when-not (= data :pending)
-                             (map (fn [row row-number]
-                                    (assoc row :row-number (inc row-number)))
-                                  data
-                                  (range))))
+                           (map (fn [row row-number]
+                                  (assoc row :row-number (inc row-number)))
+                                data
+                                (range)))
                    :sort (:sort state)
                    :on-sort (fn [sort-by sort-order]
                               (om/set-state! owner :sort {:sort-by sort-by :sort-order sort-order}))

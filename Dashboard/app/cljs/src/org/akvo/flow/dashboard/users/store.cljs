@@ -7,67 +7,25 @@
              [ajax.core :refer (GET POST PUT DELETE)])
   (:require-macros [cljs.core.async.macros :refer (go go-loop)]))
 
-(defn fetch-and-update-user
-  [user-id]
-  (GET (str "/rest/users/" user-id)
-       (merge ajax/default-ajax-config
-              {:handler #(swap! app-state assoc-in [:users :by-id user-id] (get % "user"))})))
-
-(defn fetch-and-update-users-range [params]
-  {:pre [(= (set (keys params))
-            #{:limit :offset :sort-by :sort-order})]}
-  (GET (str "/rest/users/fetch" (ajax/query-str params))
-       (merge ajax/default-ajax-config
-              {:handler (fn [response]
-                          (swap! app-state assoc-in [:users :range params] (get response "users")))})))
-
-(defn get-by-id
-  "Find a user by user-id"
-  [data user-id]
+(defn get-user
+  [users user-id]
   {:pre [(integer? user-id)]}
-  (if-let [user (get-in data [:users :by-id user-id])]
-    user
-    (do (fetch-and-update-user user-id)
-        nil)))
+  (get-in users [:by-id user-id]))
 
 (def default-range-params {:limit 20
                            :offset 0
                            :sort-by "emailAddress"
                            :sort-order "ascending"})
 
-(defn get-by-range [params]
+(defn get-by-range [users params]
   {:pre [(set/subset? (set (keys params))
                       #{:limit :offset :sort-by :sort-order})]}
-  (let [params (merge default-range-params params)
-        users (get-in @app-state [:users :range params])]
-    (if users
-      users
-      (do (fetch-and-update-users-range params)
-          :pending))))
-
-(defn find-index-by
-  "Returns the index of (the first) item in coll when comparing using
-  the result of applying key-fn, or -1 if not present."
-  [key-fn item coll]
-  (let [k (key-fn item)]
-    (or (->> coll
-             (map-indexed (fn [i val] (if (= k (key-fn val)) i)))
-             (remove nil?)
-             first)
-        -1)))
-
-(defn replace-user-in-range [app-state range-key user]
-  (let [range (get-in app-state [:users :range range-key])
-        user-idx (find-index-by #(get % "keyId") user range)]
-    (if (neg? user-idx)
-      app-state
-      (assoc-in app-state [:users :range range-key user-idx] user))))
-
-;; Possible optimization: short-circuit when found for a particular offset/sort-order
-(defn update-ranges [user]
-  (let [ks (-> @app-state :users :range keys)]
-    (doseq [range-key ks]
-      (swap! app-state replace-user-in-range range-key user))))
+  (let [{:keys [limit offset sort-by sort-order]} (merge default-range-params params)
+        users (vals (:by-id users))]
+    (->> users
+         (cljs.core/sort-by #(get % sort-by))
+         (drop offset)
+         (take limit))))
 
 ;; Events
 
@@ -81,7 +39,7 @@
                     :handler (fn [response]
                                (let [user (get response "user")
                                      user-id (get user "keyId")]
-                                 (swap! app-state assoc-in [:users :by-id user-id])))})))
+                                 (swap! app-state assoc-in [:users :by-id user-id] user)))})))
     (recur)))
 
 (let [chan (dispatcher/register :edit-user)]
@@ -95,7 +53,6 @@
                    :handler (fn [response]
                               (let [user (get response "user")
                                     user-id (get user "keyId")]
-                                (update-ranges user)
                                 (swap! app-state assoc-in [:users :by-id user-id] user)))})))
     (recur)))
 
@@ -108,9 +65,7 @@
       (DELETE (str "/rest/users/" user-id)
               (merge ajax/default-ajax-config
                      {:handler (fn [response]
-                                 (let [user (get response "user")
-                                       user-id (get user "keyId")]
-                                   (swap! app-state update-in [:users :by-id] #(dissoc % user-id))))})))
+                                 (swap! app-state update-in [:users :by-id] #(dissoc % user-id)))})))
     (recur)))
 
 (let [chan (dispatcher/register :new-access-key)]
@@ -118,3 +73,15 @@
     (let [[_ {:keys [user access-key]}] (<! chan)]
       (swap! app-state assoc-in [:users :by-id (get user "keyId") "accessKey"] access-key)
       (recur))))
+
+(let [chan (dispatcher/register :fetch-users)]
+  (go-loop []
+    (let [_ (<! chan)]
+      (GET "/rest/users"
+           (merge ajax/default-ajax-config
+                  {:handler (fn [response]
+                              (let [users-index (reduce (fn [users user]
+                                                         (assoc users (get user "keyId") user))
+                                                       {}
+                                                       (get response "users"))]
+                                (swap! app-state assoc-in [:users :by-id] users-index)))})))))
