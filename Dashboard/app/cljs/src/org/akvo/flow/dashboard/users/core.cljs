@@ -14,10 +14,6 @@
 
 (enable-console-print!)
 
-;;
-;; Dialogs
-;;
-
 (defn target-value [evt]
   (-> evt .-target .-value))
 
@@ -73,9 +69,9 @@
 
 (defn new-user-dialog [{:keys [close!]} owner]
   (om/component
-    (om/build user-dialog {:close! close!
-                           :tag :new-user
-                           :user empty-user})))
+   (om/build user-dialog {:close! close!
+                          :tag :new-user
+                          :user empty-user})))
 
 (defn edit-user-dialog [{:keys [user close!]} owner]
   (om/component
@@ -144,20 +140,6 @@
                  :content manage-apikeys
                  :buttons [{:caption "Close"
                             :action close!}]}))))
-
-(def dialogs
-  {:add new-user-dialog
-   :edit edit-user-dialog
-   :delete delete-user-dialog
-   :manage-apikeys manage-apikeys-dialog})
-
-(defn sort-idx->sort-by [idx]
-  (condp = idx
-    0 "userName"
-    1 "emailAddress"
-    2 "permissionList"
-    "emailAddress"))
-
 
 (defn columns [owner]
   [{:title "#"
