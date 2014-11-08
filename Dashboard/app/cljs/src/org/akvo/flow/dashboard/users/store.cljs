@@ -17,13 +17,19 @@
                            :sort-by "emailAddress"
                            :sort-order "ascending"})
 
+(defn user-comparator [key order]
+  (fn [user-a user-b]
+    (* (if (= order "ascending") 1 -1)
+       (compare (get user-a key)
+                (get user-b key)))))
+
 (defn get-by-range [users params]
   {:pre [(set/subset? (set (keys params))
                       #{:limit :offset :sort-by :sort-order})]}
   (let [{:keys [limit offset sort-by sort-order]} (merge default-range-params params)
         users (vals (:by-id users))]
     (->> users
-         (cljs.core/sort-by #(get % sort-by))
+         (sort (user-comparator sort-by sort-order))
          (drop offset)
          (take limit))))
 
