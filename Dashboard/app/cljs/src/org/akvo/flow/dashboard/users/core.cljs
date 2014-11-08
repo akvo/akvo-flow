@@ -39,9 +39,6 @@
       [:option {:value "10"} "Admin"]
       [:option {:value "20"} "User"]]])))
 
-(def no-such-user {:title "No such user"
-                   :text "A user with this id has not been loaded yet"})
-
 (defn user-dialog [{:keys [user close! tag]} owner]
   (reify
     om/IInitState
@@ -137,18 +134,16 @@
        :access-key (get user "accessKey")})
     om/IRenderState
     (render-state [this {:keys [secret access-key]}]
-      (if-not user
-        (om/build dialog no-such-user)
-        (om/build dialog
-                  {:title "Manage API keys"
-                   :text "You can (re)generate or revoke an api key for this user"
-                   :content-data {:user user
-                                  :secret secret
-                                  :access-key access-key
-                                  :owner owner}
-                   :content manage-apikeys
-                   :buttons [{:caption "Close"
-                              :action close!}]})))))
+      (om/build dialog
+                {:title "Manage API keys"
+                 :text "You can (re)generate or revoke an api key for this user"
+                 :content-data {:user user
+                                :secret secret
+                                :access-key access-key
+                                :owner owner}
+                 :content manage-apikeys
+                 :buttons [{:caption "Close"
+                            :action close!}]}))))
 
 (def dialogs
   {:add new-user-dialog
