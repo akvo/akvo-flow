@@ -59,11 +59,8 @@
                  :content-data {:user (:user state)
                                 :on-change (fn [key val] (om/set-state! owner [:user key] val))}
                  :buttons [{:caption "Save"
-                            :action #(do
-                                       (println (type (:user state)))
-                                       (println "dispatching" tag (:user state))
-                                       (dispatch tag (:user state))
-                                       (close!))}
+                            :action #(do (dispatch tag (:user state))
+                                         (close!))}
                            {:caption "Cancel"
                             :action close!}]}))))
 
