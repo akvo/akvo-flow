@@ -107,6 +107,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private static final Integer SVAL_PAGE_SIZE = 600;
     private static final String QAS_TO_REMOVE = "QAStoRemove";
 
+    private SurveyInstanceDAO siDao;
+
     @Override
     protected RestRequest convertRequest() throws Exception {
         HttpServletRequest req = getRequest();
@@ -183,6 +185,16 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION.equalsIgnoreCase(req
                 .getAction())) {
             populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
+        } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION.equalsIgnoreCase(req
+                .getAction())) {
+            if (dpReq.getSurveyInstanceId() != null) {
+                deleteSurveyResponses(dpReq.getSurveyInstanceId());
+            }
+        } else if (DataProcessorRequest.DELETE_SURVEY_QUESTION_SUMMARY.equalsIgnoreCase(req
+                .getAction())) {
+            if (dpReq.getSurveyId() != null) {
+                deleteSurveyQuestionSummary(dpReq.getSurveyId());
+            }
         }
         return new RestResponse();
     }
@@ -1388,5 +1400,44 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             }
             queue.add(to);
         }
+    }
+
+    /**
+     * Delete the specified survey instance
+     *
+     * @param surveyInstanceId
+     */
+    private void deleteSurveyResponses(Long surveyInstanceId) {
+        siDao = new SurveyInstanceDAO();
+        SurveyInstance surveyInstance = siDao.getByKey(surveyInstanceId);
+        if (surveyInstance != null) {
+            siDao.deleteSurveyInstance(surveyInstance, true);
+        }
+    }
+
+    /**
+     * Delete the summary objects for a specific surveyId
+     *
+     * @param surveyId
+     */
+    private void deleteSurveyQuestionSummary(Long surveyId) {
+        QuestionDao qDao = new QuestionDao();
+        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
+        List<SurveyQuestionSummary> summaryList = new ArrayList<SurveyQuestionSummary>();
+        List<Question> surveyOptionQuestions = qDao.listQuestionByType(surveyId,
+                Question.Type.OPTION);
+
+        for (Question question : surveyOptionQuestions) {
+            String questionIdStr = Long.toString(question.getKey().getId());
+            List<SurveyQuestionSummary> questionSummaryList = summaryDao
+                    .listByQuestion(questionIdStr);
+            if (questionSummaryList != null && !questionSummaryList.isEmpty()) {
+                summaryList.addAll(questionSummaryList);
+            }
+        }
+
+        log.log(Level.INFO, "Deleting " + summaryList.size() + " summary objects for "
+                + surveyOptionQuestions.size() + " questions");
+        summaryDao.delete(summaryList);
     }
 }

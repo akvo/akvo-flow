@@ -21,6 +21,7 @@ import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -41,8 +42,6 @@ import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.SurveyInstance;
-
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -58,6 +57,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.google.appengine.api.backends.BackendServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -159,10 +159,7 @@ public class TestHarnessServlet extends HttpServlet {
                 }
             } else {
 
-                deleteSurveyResponses(
-                        Long.parseLong(req.getParameter("surveyId")),
-                        req.getParameter("count") != null ? Integer.parseInt(req
-                                .getParameter("count")) : null);
+                deleteSurveyResponses(Long.parseLong(req.getParameter("surveyId")));
             }
         } else if ("changeLocaleType".equals(action)) {
             String surveyId = req
@@ -490,16 +487,34 @@ public class TestHarnessServlet extends HttpServlet {
         userDao.save(user);
     }
 
-    private boolean deleteSurveyResponses(Long surveyId, Integer count) {
+    private boolean deleteSurveyResponses(Long surveyId) {
         SurveyInstanceDAO dao = new SurveyInstanceDAO();
 
-        List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
-                surveyId, count != null ? count : 100);
+        Iterable<Entity> surveyInstanceEntityKeys = dao.listSurveyInstanceKeysBySurveyId(surveyId);
 
-        if (instances != null) {
-            for (SurveyInstance instance : instances) {
-                dao.deleteSurveyInstance(instance);
+        if (surveyInstanceEntityKeys != null) {
+            Queue deleteQueue = QueueFactory.getQueue("deletequeue");
+            Iterator<Entity> surveyInstanceKeys = surveyInstanceEntityKeys.iterator();
+
+            while (surveyInstanceKeys.hasNext()) {
+                TaskOptions deleteTaskOptions = TaskOptions.Builder
+                        .withUrl("/app_worker/dataprocessor")
+                        .param(DataProcessorRequest.ACTION_PARAM,
+                                DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION)
+                        .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM,
+                                surveyInstanceKeys.next().getKey().getId() + "");
+
+                deleteQueue.add(deleteTaskOptions);
             }
+
+            // delete summaries
+            TaskOptions deleteSummariesOptions = TaskOptions.Builder
+                    .withUrl("/app_worker/dataprocessor")
+                    .param(DataProcessorRequest.ACTION_PARAM,
+                            DataProcessorRequest.DELETE_SURVEY_QUESTION_SUMMARY)
+                    .param(DataProcessorRequest.SURVEY_ID_PARAM,
+                            surveyId + "");
+            deleteQueue.add(deleteSummariesOptions);
             return true;
         }
         return false;
