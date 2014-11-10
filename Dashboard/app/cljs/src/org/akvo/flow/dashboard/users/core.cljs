@@ -141,28 +141,34 @@
                  :buttons [{:caption "Close"
                             :action close!}]}))))
 
+(defn user-actions [{:keys [user on-action]} owner]
+  (om/component
+   (html
+    [:span
+     [:a {:on-click #(on-action edit-user-dialog user)} "Edit"]
+     [:a {:on-click #(on-action delete-user-dialog user)} "Remove"]
+     [:a {:on-click #(on-action manage-apikeys-dialog user)} "api"]])))
+
 (defn columns [owner]
-  [{:title "#"
-    :cell-fn :row-number}
-   {:title "User name"
-    :cell-fn #(get % "userName")
-    :sort-by "userName"}
-   {:title "Email"
-    :cell-fn #(get % "emailAddress")
-    :sort-by "emailAddress"}
-   {:title "Permission list"
-    :cell-fn #(if (= (get % "permissionList") "10")
-                "Admin"
-                "User")}
-   {:title "Actions"
-    :cell-fn (fn [user]
-               [:span
-                [:a {:on-click #(om/set-state! owner :dialog {:component edit-user-dialog
-                                                              :user-id (get user "keyId")})} "Edit"]
-                [:a {:on-click #(om/set-state! owner :dialog {:component delete-user-dialog
-                                                              :user-id (get user "keyId")})} "Remove"]
-                [:a {:on-click #(om/set-state! owner :dialog {:component manage-apikeys-dialog
-                                                              :user-id (get user "keyId")})} "api"]])}])
+  (let [on-action (fn [component user]
+                    (om/set-state! owner :dialog {:component component :user-id (get user "keyId")}))]
+    [{:title "#"
+      :cell-fn :row-number}
+     {:title "User name"
+      :cell-fn #(get % "userName")
+      :sort-by "userName"}
+     {:title "Email"
+      :cell-fn #(get % "emailAddress")
+      :sort-by "emailAddress"}
+     {:title "Permission list"
+      :cell-fn #(if (= (get % "permissionList") "10")
+                  "Admin"
+                  "User")}
+     {:title "Actions"
+      :component user-actions
+      :component-data-fn (fn [user]
+                           {:user user
+                            :on-action on-action})}]))
 
 (defn users [{:keys [users]} owner]
   (reify
@@ -183,8 +189,7 @@
       (html
        [:section
         [:h1 "Manage users and user rights"]
-        [:a
-         {:on-click #(om/set-state! owner :dialog {:component new-user-dialog})}
+        [:a {:on-click #(om/set-state! owner :dialog {:component new-user-dialog})}
          "Add new user"]
         (if-let [dialog (:dialog state)]
           (let [{:keys [component user-id]} dialog]

@@ -36,7 +36,11 @@
 
              ;; Description of the columns
              :columns [{:title "Id"
-                        :cell-fn :user-id}
+                        :cell-fn :user-id
+                        ;; or
+                        ;; :component some-component
+                        ;; :component-data-fn identity
+                        }
                        {;; The title of this column
                         :title "Username"
                         ;; Make the column sortable by adding a :sort-by
@@ -108,13 +112,13 @@
   (om/component
    (html
     [:tr
-     (for [col columns]
-       (let [class (:class col)
-             item ((:cell-fn col) row)]
-         [:td {:class (if class class "")}
-          (if (fn? item)
-            (om/build item {})
-            item)]))])))
+     (for [{:keys [class cell-fn component component-data-fn]} columns]
+       (let [class (or class "")
+             item  (cond
+                    cell-fn (cell-fn row)
+                    component (let [data (component-data-fn row)]
+                                (om/build component data)))]
+         [:td {:class class} item]))])))
 
 (defn grid [data owner]
   (om/component
