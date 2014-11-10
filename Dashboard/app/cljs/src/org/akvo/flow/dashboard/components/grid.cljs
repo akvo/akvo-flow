@@ -34,6 +34,8 @@
              :range {:offset 100
                      :limit 20}
 
+             :key-fn :id
+
              ;; Description of the columns
              :columns [{:title "Id"
                         :cell-fn :user-id
@@ -49,7 +51,6 @@
                         ;; A function that returns the cell value. This function can return a
                         ;; * simple value: string/number/nil etc.
                         ;; * a sablono vector
-                        ;; * an om/react component
                         :cell-fn :username
                         ;; (optional) class name to add to the <td>
                         :class "some-class"
@@ -92,7 +93,8 @@
        (->> columns
             (map-indexed
              (fn [idx {:keys [title sort-by]}]
-               [:th {:class (if sort-by
+               [:th {:key (str "col_" idx) ;; TODO could also be derived from e.g. title
+                     :class (if sort-by
                               (if (= current-sort-by sort-by)
                                 (if (= current-sort-order "ascending")
                                   "sorting_asc"
@@ -112,13 +114,15 @@
   (om/component
    (html
     [:tr
-     (for [{:keys [class cell-fn component component-data-fn]} columns]
-       (let [class (or class "")
-             item  (cond
-                    cell-fn (cell-fn row)
-                    component (let [data (component-data-fn row)]
-                                (om/build component data)))]
-         [:td {:class class} item]))])))
+     (map-indexed (fn [idx {:keys [class cell-fn component component-data-fn title]}]
+                    (let [class (or class "")
+                          item  (cond
+                                 cell-fn (cell-fn row)
+                                 component (let [data (component-data-fn row)]
+                                             (om/build component data)))]
+                      [:td {:class class
+                            :key (str "col_" idx)} item]))
+                  columns)])))
 
 (defn grid [data owner]
   (om/component
@@ -128,9 +132,9 @@
        (om/build pagination-controls (select-keys data [:range :on-range])))
      [:table {:id (:id data)}
       [:thead (om/build table-head (select-keys data [:columns :sort :on-sort]))]
-      [:tbody (om/build-all table-row
-                            (map (fn [row columns]
-                                   {:row row
-                                    :columns columns})
-                                 (:data data)
-                                 (repeat (:columns data))))]]])))
+      [:tbody
+       (map (fn [row columns]
+              (om/build table-row {:row row :columns columns} (if-let [key-fn (:key-fn data)]
+                                                                {:react-key (str "k" (key-fn row))})))
+            (:data data)
+            (repeat (:columns data)))]]])))

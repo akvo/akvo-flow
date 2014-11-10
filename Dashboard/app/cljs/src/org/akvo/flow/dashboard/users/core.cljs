@@ -212,6 +212,7 @@
                    :range (:pagination state)
                    :on-range (fn [offset limit]
                                (om/set-state! owner :pagination {:offset offset :limit limit}))
+                   :key-fn #(get % "keyId")
                    :columns (columns owner)})]))))
 
 (defn value-component [data owner {:keys [component]}]
