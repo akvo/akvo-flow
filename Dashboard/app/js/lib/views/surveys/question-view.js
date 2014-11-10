@@ -498,6 +498,20 @@ FLOW.QuestionView = FLOW.View.extend({
       return;
     }
 
+    // Check if there is another question that is dependant on this question
+    if (this.content.get('type') === 'OPTION') {
+      var hasDependant = FLOW.store.find(FLOW.Question).some(function (q) {
+        return qDeleteId === q.get('dependentQuestionId');
+      });
+
+      if (hasDependant) {
+        this.showMessageDialog(
+          Ember.String.loc('_cant_delete_question'),
+          Ember.String.loc('_another_question_depends_on_this'));
+        return;
+      }
+    }
+
     // check if deleting this question is allowed
     // if successful, the deletion action will be called from DS.FLOWrestadaptor.sideload
     FLOW.store.findQuery(FLOW.Question, {
