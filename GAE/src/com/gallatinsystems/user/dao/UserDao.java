@@ -103,11 +103,11 @@ public class UserDao extends BaseDAO<User> {
      * @return returns a list of users who have been assigned the named role. Returns an empty list
      *         if no users have been assigned the role
      */
-    public List<User> listUsersByRole(String roleName) {
+    public List<User> listUsersByRole(Long userRoleId) {
         List<User> userList = new ArrayList<User>();
         for (User user : list(Constants.ALL_RESULTS)) {
-            for (UserRole role : user.getRoles()) {
-                if (role.getName().equals(roleName)) {
+            for (Long roleId : user.getUserRoles()) {
+                if (roleId.equals(userRoleId)) {
                     userList.add(user);
                 }
             }
