@@ -1,10 +1,7 @@
 (ns ^{:doc "Reusable grid component"}
   org.akvo.flow.dashboard.components.grid
-  (:require [cljs.core.async :as async]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros (html)])
-  (:require-macros [cljs.core.async.macros :refer (go-loop)]))
+  (:require [om.core :as om :include-macros true]
+            [sablono.core :as html :refer-macros (html)]))
 
 (comment
 
@@ -19,7 +16,7 @@
       :email "zyx@gmail.com"}])
 
   (om/build grid
-            {;; The id of this table
+            {;; The id of the grid
              :id "deviceDataTable"
              ;; The data to be rendered
              :data the-data
@@ -27,6 +24,7 @@
              ;; On sort callback. Will be called with :sort-id and :sort-order
              :on-sort callback
              :sort {:sort-by "username"
+                    ;; Sort order must be either "ascending" or "descending"
                     :sort-order "ascending"}
 
              ;; on-range will be called with :offset and :limit
@@ -34,29 +32,26 @@
              :range {:offset 100
                      :limit 20}
 
+             ;; Function to generate a react-key. Will be called with a record from the data
              :key-fn :id
 
              ;; Description of the columns
              :columns [{:title "Id"
-                        :cell-fn :user-id
-                        ;; or
-                        ;; :component some-component
-                        ;; :component-data-fn identity
-                        }
-                       {;; The title of this column
-                        :title "Username"
-                        ;; Make the column sortable by adding a :sort-by
-                        :sort-by "username"
-
+                        ;; (optional) class name to add to the <td>
+                        :class "some-class"
                         ;; A function that returns the cell value. This function can return a
                         ;; * simple value: string/number/nil etc.
                         ;; * a sablono vector
                         :cell-fn :username
-                        ;; (optional) class name to add to the <td>
-                        :class "some-class"
+                        ;; or
+                        :component some-component
+                        ;; (om/build component (component-data-fn row))
+                        :component-data-fn identity
+                        ;; Make the column sortable by adding a :sort-by
+                        :sort-by "username"
                         }
-                       {:title "Actions"
-                        :cell-fn edit-and-delete-component}]}))
+                       {... ...}]})
+  )
 
 (defn pagination-controls [{:keys [range on-range]} owner]
   (om/component

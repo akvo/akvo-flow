@@ -12,13 +12,13 @@
                     :text "Fill in the form below to create a new user"
                     ;; Content is optional
                     :content form-component
+                    :content-data data-for-component
                     :buttons [{:caption "Create"
                                :class "ok smallBtn"
                                :action #(some action)}
                               {:caption "Cancel"
                                :action #(some action)}]})
-
-  )
+)
 
 (defn button-item [data owner]
   (let [{:keys [caption class action]} data]
