@@ -7,10 +7,8 @@
             [org.akvo.flow.dashboard.users.store :as store]
             [org.akvo.flow.dashboard.app-state :refer (app-state)]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros (html)]
-            [ajax.core :refer (ajax-request GET POST PUT DELETE)])
-  (:require-macros [cljs.core.async.macros :refer (go)]))
+            [ajax.core :refer (ajax-request GET POST PUT DELETE)]))
 
 (enable-console-print!)
 
