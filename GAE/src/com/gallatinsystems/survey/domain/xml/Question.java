@@ -85,9 +85,8 @@ public class Question {
     @XmlSchemaType(name = "NMTOKEN")
     protected String locked;
     
-    @XmlAttribute
+    @XmlAttribute(required = false)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "NMTOKEN")
     protected String allowMultiple;
     
     @XmlAttribute
