@@ -94,6 +94,10 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  amBarcodeType: function () {
+	  return this.type.get('value') === 'SCAN';
+  }.property('this.type').cacheable(),
+
   amFreeTextType: function () {
     if (this.type) {
       return this.type.get('value') == 'FREE_TEXT';
@@ -122,7 +126,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
+      return val == 'PHOTO' || val == 'VIDEO';
     }
   }.property('this.type').cacheable(),
 
