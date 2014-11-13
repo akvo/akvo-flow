@@ -5,6 +5,14 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.6.1
+Date: 13 November 2014
+
+## Resolved issues
+
+* Question ID validation causes attributes to be copied to other questions [#903]
+
+
 #1.7.6
 Date: 07 November 2014
 
