@@ -239,7 +239,7 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
 
-  onEditSuccess: function() {
+  doSaveEditQuestion: function() {
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
     if (this.type.get('value') !== 'NUMBER') {
@@ -461,30 +461,6 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.dialogControl.set('message', message);
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
-  },
-
-  doSaveEditQuestion: function () {
-    var self = this;
-    this.validateQuestionId({
-      failure: function(msg) {
-	self.showMessageDialog('Invalid question id', msg);
-      },
-      success: function() {
-	self.validateMinAndMax({
-	  valueFailure: function() {
-	    self.showMessageDialog(Ember.String.loc('_min_max_not_correct'),
-				   Ember.String.loc('_min_larger_than_max_or_equal'));
-	  },
-	  NaNFailure: function() {
-	    self.showMessageDialog(Ember.String.loc('_min_max_not_number'),
-				   Ember.String.loc('_min_max_not_number_message'));
-	  },
-	  success: function(){
-	    self.onEditSuccess();
-	  }
-	});
-      }
-    });
   },
 
   deleteQuestion: function () {
