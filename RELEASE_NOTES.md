@@ -5,6 +5,12 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.7.6.2
+Date: 13 November 2014
+
+## New and noteworthy
+* The barcode scan question can now be used to capture multiple barcodes [#888]
+
 #1.7.6.1
 Date: 13 November 2014
 
