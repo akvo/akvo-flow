@@ -23,7 +23,8 @@
 		<custom-filter position="PRE_AUTH_FILTER" ref="apiFilter"/>
 	</http>
 
-    <http use-expressions="true" entry-point-ref="gaeEntryPoint" authentication-manager-ref="authenticationManager">
+    <http use-expressions="true" entry-point-ref="gaeEntryPoint" authentication-manager-ref="authenticationManager"
+        access-decision-manager-ref="accessDecisionManager">
         <intercept-url pattern="/remote_api**" access="permitAll"/>
         <intercept-url pattern="/admin/logout.html" access="permitAll"/>
         <intercept-url pattern="/rest/placemark**" method="GET" access="permitAll"/>
@@ -39,6 +40,14 @@
 		<custom-filter position="PRE_AUTH_FILTER" ref="gaeFilter"/>
     </http>
 
+    <b:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+		<b:property name="decisionVoters">
+			<b:list>
+				<b:bean class="org.waterforpeople.mapping.app.web.rest.security.CustomVoter" />
+				<b:bean class="org.springframework.security.web.access.expression.WebExpressionVoter" />
+			</b:list>
+		</b:property>
+	</b:bean>
 
 	<!-- API Authentication -->
 	
