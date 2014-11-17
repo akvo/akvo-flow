@@ -43,7 +43,7 @@
     <b:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
 		<b:property name="decisionVoters">
 			<b:list>
-				<b:bean class="org.waterforpeople.mapping.app.web.rest.security.CustomVoter" />
+				<b:bean class="org.waterforpeople.mapping.app.web.rest.security.RequestUriVoter" />
 				<b:bean class="org.springframework.security.web.access.expression.WebExpressionVoter" />
 			</b:list>
 		</b:property>

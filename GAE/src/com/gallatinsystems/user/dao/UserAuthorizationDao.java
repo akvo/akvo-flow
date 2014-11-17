@@ -16,11 +16,10 @@ public class UserAuthorizationDao extends BaseDAO<UserAuthorization> {
      * List the user authorizations that correspond to a specific object path or set of paths
      *
      * @param userId
-     * @param roleId
      * @param objectPath
      * @return
      */
-    public List<UserAuthorization> listByObjectPath(Long userId, Long roleId, String objectPath) {
+    public List<UserAuthorization> listByObjectPath(Long userId, String objectPath) {
         return null;
     }
 
@@ -31,7 +30,7 @@ public class UserAuthorizationDao extends BaseDAO<UserAuthorization> {
      * @param roleId
      * @return
      */
-    public List<UserAuthorization> listByUserRoles(Long userId, Long roleId) {
+    public List<UserAuthorization> listByUserRole(Long userId, Long roleId) {
         return null;
     }
 

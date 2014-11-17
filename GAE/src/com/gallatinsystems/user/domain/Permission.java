@@ -56,4 +56,14 @@ public enum Permission {
     public String getAction() {
         return httpMethod;
     }
+
+    public static Permission lookup(String httpMethod, String requestUri) {
+        for (Permission permission : Permission.values()) {
+            if (permission.getHttpMethod().equals(httpMethod)
+                    && permission.getUriPrefix().equals(requestUri)) {
+                return permission;
+            }
+        }
+        return null;
+    }
 }
