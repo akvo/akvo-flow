@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,69 +16,45 @@
 
 package com.gallatinsystems.user.domain;
 
-import javax.jdo.annotations.PersistenceCapable;
-
-import com.gallatinsystems.framework.domain.BaseDomain;
-
 /**
- * permissions that can be assigned to a user. Code is mandatory and must be unique
- * 
+ * Predefined set of permissions that can be assigned to a user. A permission consists of a name - a
+ * short code that identifies the permission. this is unique in the set of permissions. The name
+ * (prepended with an underscore) is used as a place holder for the longer textual description of
+ * the permission, action - the HTTP method (action) with which the permission is associated,
+ * resourceURI - the URI identifying the resource being accessed.
+ *
  * @author Christopher Fagiani
  */
-@PersistenceCapable
-public class Permission extends BaseDomain {
-    private static final long serialVersionUID = 3706308694153467750L;
-    private String code;
-    private String name;
+public enum Permission {
 
-    public Permission(String name, String code) {
-        this.name = name;
-        this.code = code;
+    PROJECT_FOLDER_CREATE("POST", "/rest/project_folders"),
+    PROJECT_FOLDER_READ("GET", "/rest/project_folders"),
+    PROJECT_FOLDER_UPDATE("PUT", "/rest/project_folders"),
+    PROJECT_FOLDER_DELETE("DELETE", "/rest/project_folders"),
+
+    PROJECT_CREATE("POST", "/rest/survey_groups"),
+    PROJECT_READ("GET", "/rest/survey_groups"),
+    PROJECT_UPDATE("PUT", "/rest/survey_groups"),
+    PROJECT_DELETE("DELETE", "/rest/survey_groups"),
+
+    SURVEY_CREATE("POST", "/rest/surveys"),
+    SURVEY_READ("GET", "/rest/surveys"),
+    SURVEY_UPDATE("PUT", "/survey/update"),
+    SURVEY_DELETE("DELETE", "/rest/surveys");
+
+    private final String action;
+    private final String resourceUri;
+
+    Permission(String action, String uri) {
+        this.action = action;
+        this.resourceUri = uri;
     }
 
-    public Permission(String name) {
-        this(name, name.toUpperCase());
+    public String getAction() {
+        return action;
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * equality defined as having the same code
-     */
-    public boolean equals(Object other) {
-        if (other != null && other instanceof Permission) {
-            Permission op = (Permission) other;
-            if (getCode() != null && getCode().equals(op.getCode())) {
-                return true;
-            } else if (op.getCode() == null && getCode() == null) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    public int hashCode() {
-        if (code != null) {
-            return code.hashCode();
-        } else {
-            return 0;
-        }
+    public String getResourceUri() {
+        return resourceUri;
     }
 }

@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,22 +35,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.UserPayload;
-import org.waterforpeople.mapping.app.web.rest.dto.UserRolePayload;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.app.gwt.client.UserDto;
 import com.gallatinsystems.user.dao.UserDao;
-import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.User;
-import com.gallatinsystems.user.domain.UserRole;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.users.UserServiceFactory;
 
 @Controller
@@ -60,9 +49,6 @@ public class UserRestService {
 
     @Inject
     private UserDao userDao;
-
-    @Inject
-    private UserRoleDao userRoleDao;
 
     // TODO put in meta information?
     // list all users
@@ -294,185 +280,5 @@ public class UserRestService {
         byte bytes[] = new byte[32];
         secureRandom.nextBytes(bytes);
         return Base64.encodeBase64String(bytes).trim();
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/roles")
-    @ResponseBody
-    public Map<String, Object> createUserRole(@RequestBody UserRolePayload payload) {
-        final RestStatusDto statusDto = new RestStatusDto();
-
-        final Map<String, Object> response = new HashMap<String, Object>();
-        response.put("meta", statusDto);
-
-        if (StringUtils.isBlank(payload.getName())) {
-            statusDto.setStatus("failed");
-            statusDto.setMessage("_missing_role_name");
-            return response;
-        }
-
-        UserRole role = userRoleDao.findUserRoleByName(payload.getName());
-        if (role == null) {
-            role = userRoleDao.save(payload.getUserRole());
-            statusDto.setStatus("ok");
-            statusDto.setMessage("_role_created");
-        } else {
-            statusDto.setMessage("_role_already_exists");
-        }
-        response.put("role", new UserRolePayload(role));
-        return response;
-    }
-
-    /**
-     * Retrieve the list of all user roles defined
-     *
-     * @return
-     */
-    @RequestMapping(method = RequestMethod.GET, value = "/roles/all")
-    @ResponseBody
-    public Map<String, Object> listUserRoles() {
-        final Map<String, Object> response = new HashMap<String, Object>();
-        List<UserRolePayload> rolesPayload = new ArrayList<UserRolePayload>();
-        for (UserRole role : userRoleDao.listAllRoles()) {
-            rolesPayload.add(new UserRolePayload(role));
-        }
-        response.put("roles", rolesPayload);
-        return response;
-    }
-
-    /**
-     * Retrieve a role by its id.
-     *
-     * @param roleId
-     * @return
-     */
-    @RequestMapping(method = RequestMethod.GET, value = "/roles/{roleId}")
-    @ResponseBody
-    public Map<String, Object> findUserRole(@PathVariable Long roleId) {
-        final Map<String, Object> response = new HashMap<String, Object>();
-        RestStatusDto statusDto = new RestStatusDto();
-        response.put("meta", statusDto);
-
-        UserRole role = userRoleDao.getByKey(roleId);
-        if (role == null) {
-            statusDto.setMessage("_role_not_found");
-            return response;
-        }
-        statusDto.setStatus("ok");
-        response.put("role", new UserRolePayload(role));
-        return response;
-    }
-
-    /**
-     * Update an existing user role
-     *
-     * @param payload
-     * @return
-     */
-    @RequestMapping(method = RequestMethod.PUT, value = "/roles/{roleId}")
-    @ResponseBody
-    public Map<String, Object> updateUserRole(@PathVariable Long roleId,
-            @RequestBody UserRolePayload payload) {
-        final RestStatusDto statusDto = new RestStatusDto();
-        statusDto.setStatus("failed");
-
-        final Map<String, Object> response = new HashMap<String, Object>();
-        response.put("meta", statusDto);
-
-        if (StringUtils.isBlank(payload.getName())) {
-            statusDto.setMessage("_missing_role_name");
-            return response;
-        }
-
-        UserRole existingRole = userRoleDao.getByKey(roleId);
-        if (existingRole == null) {
-            statusDto.setMessage("_role_not_found");
-            return response;
-        }
-
-        if (!existingRole.getName().equals(payload.getName())) {
-            UserRole duplicateRoleName = userRoleDao.findUserRoleByName(payload.getName());
-            if (duplicateRoleName != null) {
-                statusDto.setMessage("_duplicate_role_name");
-                return response;
-            }
-        }
-
-        BeanUtils.copyProperties(payload, existingRole, new String[] {
-                "createdDateTime"
-        });
-
-        UserRolePayload updatedRole = new UserRolePayload(userRoleDao.save(existingRole));
-        response.put("role", updatedRole);
-        statusDto.setStatus("ok");
-
-        return response;
-    }
-
-    /**
-     * Delete a user role definition
-     *
-     * @param roleId
-     */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/roles/{roleId}")
-    @ResponseBody
-    public Map<String, Object> deleteUserRole(@PathVariable Long roleId) {
-        final RestStatusDto statusDto = new RestStatusDto();
-
-        final Map<String, Object> response = new HashMap<String, Object>();
-        response.put("meta", statusDto);
-
-        UserRole deleteRole = userRoleDao.getByKey(roleId);
-        if (deleteRole == null) {
-            statusDto.setStatus("ok");
-            statusDto.setMessage("_role_not_found");
-            return response;
-        }
-
-        if (userDao.listUsersByRole(deleteRole.getName()).isEmpty()) {
-            userRoleDao.delete(deleteRole);
-            statusDto.setStatus("ok");
-            statusDto.setMessage("_role_deleted");
-        } else {
-            statusDto.setMessage("_role_in_use");
-        }
-
-        return response;
-    }
-
-    /*
-     * pagination support
-     */
-    private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-    private Query.SortDirection getSortDirection(String dir) {
-        return "descending".equals(dir) ? SortDirection.DESCENDING : SortDirection.ASCENDING;
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/fetch")
-    @ResponseBody
-    public Map<String, Object> fetchUsers(
-            @RequestParam(value = "sort-by") String sortBy,
-            @RequestParam(value = "sort-order") String sortOrder,
-            @RequestParam(value = "limit") Integer limit,
-            @RequestParam(value = "offset") Integer offset) {
-
-        Query query = new Query("User")
-                .addSort(sortBy, getSortDirection(sortOrder));
-
-        PreparedQuery pq = datastore.prepare(query);
-        List<Map<String, Object>> users = new ArrayList<Map<String, Object>>();
-        for (Entity entity : pq.asIterable(FetchOptions.Builder.withOffset(offset).limit(limit))) {
-            Map<String, Object> user = new HashMap<String, Object>();
-            user.put("keyId", entity.getKey().getId());
-            user.put("userName", entity.getProperty("userName"));
-            user.put("emailAddress", entity.getProperty("emailAddress"));
-            user.put("permissionList", entity.getProperty("permissionList"));
-            user.put("createdDateTime", entity.getProperty("createdDateTime"));
-            users.add(user);
-        }
-
-        Map<String, Object> result = new HashMap<String, Object>();
-        result.put("users", users);
-        return result;
     }
 }

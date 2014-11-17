@@ -19,6 +19,7 @@ package com.gallatinsystems.user.domain;
 import java.util.Set;
 
 import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
 
@@ -33,8 +34,10 @@ public class UserRole extends BaseDomain {
 
     private static final long serialVersionUID = 7519627602488288941L;
 
+    @Persistent
     private String name;
 
+    @Persistent
     private Set<Permission> permissions;
 
     public String getName() {
