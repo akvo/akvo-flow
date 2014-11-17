@@ -34,7 +34,7 @@ import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.UserAuthorization;
 import com.gallatinsystems.user.domain.UserRole;
 
-public class RequestUriVoter implements AccessDecisionVoter<Object> {
+public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
     private static final Logger log = Logger.getLogger(RequestUriVoter.class.getName());
 
@@ -51,14 +51,13 @@ public class RequestUriVoter implements AccessDecisionVoter<Object> {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return FilterInvocation.class.isAssignableFrom(clazz);
+        return clazz.isAssignableFrom(FilterInvocation.class);
     }
 
     @Override
-    public int vote(Authentication authentication, Object object,
+    public int vote(Authentication authentication, FilterInvocation securedObject,
             Collection<ConfigAttribute> attributes) {
 
-        FilterInvocation securedObject = (FilterInvocation) object;
         String requestUri = securedObject.getRequestUrl();
         String httpMethod = securedObject.getHttpRequest().getMethod();
 
