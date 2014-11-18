@@ -222,9 +222,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   }.property('@each', 'currentProject', 'moveTarget'),
 
   formCount: function() {
-    if (FLOW.surveyControl.content) {
-      return FLOW.surveyControl.content.get('length');
-    }
+    return FLOW.surveyControl.content && FLOW.surveyControl.content.get('length') || 0;
   }.property('FLOW.surveyControl.content.@each'),
 
   questionCount: function () {
