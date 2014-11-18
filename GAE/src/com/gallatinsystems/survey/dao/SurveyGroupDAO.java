@@ -72,15 +72,15 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
      * @param item
      */
     public void delete(SurveyGroup item) {
-	// This probably won't work on the server
-	SurveyDAO surveyDao = new SurveyDAO();
-	item = super.getByKey(item.getKey().getId());
-	for (Survey survey : surveyDao
-		.listSurveysByGroup(item.getKey().getId())) {
-	    SurveyTaskUtil.spawnDeleteTask("deleteSurvey", survey.getKey()
-		    .getId());
-	}
-	super.delete(item);
+        // This probably won't work on the server
+        SurveyDAO surveyDao = new SurveyDAO();
+        item = super.getByKey(item.getKey().getId());
+        for (Survey survey : surveyDao
+                .listSurveysByGroup(item.getKey().getId())) {
+            SurveyTaskUtil.spawnDeleteTask("deleteSurvey", survey.getKey()
+                    .getId());
+        }
+        super.delete(item);
     }
 
     /**
@@ -90,7 +90,6 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
      */
     public List<SurveyGroup> listByProjectFolderId(Long parentId) {
 
-	parentId = parentId < 0 ? null : parentId;
         return super.listByProperty("parentId", parentId, "Long");
     }
 }
