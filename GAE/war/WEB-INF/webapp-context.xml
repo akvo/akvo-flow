@@ -19,7 +19,6 @@
     <bean id="surveyAssignmentDao" class="com.gallatinsystems.survey.dao.SurveyAssignmentDAO" />
     <bean id="surveyDao" class="com.gallatinsystems.survey.dao.SurveyDAO" />
     <bean id="surveyGroupDao" class="com.gallatinsystems.survey.dao.SurveyGroupDAO" />
-    <bean id="projectFolderDao" class="com.gallatinsystems.survey.dao.ProjectFolderDAO" />
     <bean id="surveyInstanceDao" class="org.waterforpeople.mapping.dao.SurveyInstanceDAO" />
     <bean id="surveyInstanceSummaryDao" class="org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao" />
     <bean id="surveyMetricMappingDao" class="com.gallatinsystems.metric.dao.SurveyMetricMappingDao" />
