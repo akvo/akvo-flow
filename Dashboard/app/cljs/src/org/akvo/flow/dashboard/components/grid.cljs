@@ -84,7 +84,7 @@
    (let [current-sort-by (:sort-by sort)
          current-sort-order (:sort-order sort)]
      (html
-      [:tr
+      [:tr {:class "tabHeader"}
        (->> columns
             (map-indexed
              (fn [idx {:keys [title sort-by]}]
@@ -125,11 +125,13 @@
     [:div {}
      (when (:on-range data)
        (om/build pagination-controls (select-keys data [:range :on-range])))
-     [:table {:id (:id data)}
+     [:div {:class "table-responsive"}
+      [:table {:id (:id data) :class "table table-striped dataTable"}
       [:thead (om/build table-head (select-keys data [:columns :sort :on-sort]))]
       [:tbody
        (map (fn [row columns]
               (om/build table-row {:row row :columns columns} (if-let [key-fn (:key-fn data)]
                                                                 {:react-key (str "k" (key-fn row))})))
             (:data data)
-            (repeat (:columns data)))]]])))
+            (repeat (:columns data)))]]]
+     ])))

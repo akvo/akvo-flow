@@ -55,6 +55,10 @@ input 'app' do
     scss
   end
 
+  match 'css/users.scss' do
+    scss
+  end
+
   match 'dashboard.html' do
     if ENV['RAKEP_MODE'] == 'production'
       filter CSSMinFilter

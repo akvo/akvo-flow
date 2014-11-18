@@ -1,0 +1,86 @@
+@import 'library.scss';
+@import 'forms.scss';
+
+/* links
+---------------------------------------------------------------*/
+
+button, a{
+    &.cancelAction {
+        color:$akvoRed;
+        text-transform: uppercase;
+    }
+}
+
+/* Sliding panels
+--------------------------------------------- */
+section[role=main] {
+    overflow:hidden;
+.panels {
+        height: 100%;
+        background:white;
+        width:calc(100% * 2);
+        overflow:hidden;
+        .mypanel {
+                width:calc(100% / 2);
+                float: left;
+                text-align: center;
+                -webkit-transition: transform .6s ease-out;
+                -moz-transition: transform .6s ease-out;
+                -o-transition: transform .6s ease-out;
+                transition: transform .6s ease-out;
+                background:white;
+                &.opened { 
+                /* visible */
+                -webkit-transform: translate(-100%, 0);
+                -moz-transform: translate(-100%, 0);
+                    -ms-transform: translate(-100%, 0);
+                        transform: translate(-100%, 0);
+                }
+                &.closed { 
+                /* completely offscreen */
+                -webkit-transform: translate(0%, 0);
+                   -moz-transform: translate(0%, 0);
+                    -ms-transform: translate(0%, 0);
+                        transform: translate(0%, 0);
+            }
+            .panelHeader{
+                border-bottom:1px solid rgb(212,212,212);
+                .panelTitle {
+                    color:rgb(212,212,212);
+                    }
+                }
+        }
+    }
+}
+
+
+.btn {
+    text-transform: uppercase;
+}
+/********************************* Tables ********************************/
+table {
+    &.dataTable {
+        margin:15px auto;
+    }
+    tr {
+        &.tabHeader {
+            background:$tableHeaderGrey;
+            color:$yellowTableHead;
+            padding:15px 0;
+            text-transform:uppercase;
+            td {
+            }
+        }
+    }
+}
+
+/********************************* Structure ********************************/
+.topMargin {
+    margin-top:15px;
+}
+.paddingTop {
+    padding:20px 0;
+    &.dropdown {
+        padding:7px 0 10px 0;        
+    }
+}

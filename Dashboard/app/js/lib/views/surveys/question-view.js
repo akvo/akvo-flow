@@ -276,7 +276,7 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
     FLOW.selectedControl.selectedQuestion.set('requireDoubleEntry', this.get('requireDoubleEntry'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
-    
+
     var allowExternalSources = (this.type.get('value') !== 'FREE_TEXT') ? false : this.get('allowExternalSources');
     FLOW.selectedControl.selectedQuestion.set('allowExternalSources', allowExternalSources);
 
