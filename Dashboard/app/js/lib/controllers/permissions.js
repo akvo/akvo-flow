@@ -237,7 +237,7 @@ FLOW.dialogControl = Ember.Object.create({
 
     case "delForm":
       this.set('header', "Delete form");
-      this.set('message', "Are you sure you want to delete this form?")
+      this.set('message', "Are you sure you want to delete this form?");
       this.set('showDialog', true);
       break;
 

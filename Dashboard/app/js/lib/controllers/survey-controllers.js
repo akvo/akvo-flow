@@ -189,7 +189,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   /* Computed properties */
   breadCrumbs: function() {
-    var result = []
+    var result = [];
     var currentProject = this.get('currentProject');
     if (currentProject === null) {
       // current project is root
@@ -218,14 +218,12 @@ FLOW.projectControl = Ember.ArrayController.create({
       } else {
         return a.get('code').localeCompare(b.get('code'));
       }
-    })
+    });
   }.property('@each', 'currentProject', 'moveTarget'),
 
   formCount: function() {
     if (FLOW.surveyControl.content) {
-      return FLOW.surveyControl.content.toArray().length;
-    } else {
-      0;
+      return FLOW.surveyControl.content.get('length');
     }
   }.property('FLOW.surveyControl.content.@each'),
 
@@ -348,7 +346,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     if (!forms) return true;
 
     forms.filter(function(form) {
-      return !(form.get('status') === 'PUBLISHED');
+      return form.get('status') !== 'PUBLISHED';
     }).map(function(form) {
       FLOW.store.findQuery(FLOW.Action, {
         action: 'publishSurvey',
@@ -472,7 +470,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   },
 
   showPreview: function() {
-    FLOW.previewControl.set('showPreviewPopup', true)
+    FLOW.previewControl.set('showPreviewPopup', true);
   },
 
   selectForm: function(evt) {

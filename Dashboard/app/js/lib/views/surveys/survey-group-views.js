@@ -37,17 +37,17 @@ FLOW.Project = FLOW.View.extend({
 
   isNewProject: function() {
     var currentProject = FLOW.projectControl.get('currentProject');
-    return currentProject && currentProject.get('code') == "New project"
+    return currentProject && currentProject.get('code') == "New project";
   }.property('FLOW.projectControl.currentProject'),
 
   visibleProjectBasics: function() {
-    return this.get('isNewProject') || this.get('showProjectDetails')
+    return this.get('isNewProject') || this.get('showProjectDetails');
   }.property('showProjectDetails'),
 
   updateSelectedLanguage: function() {
     var currentProject = FLOW.projectControl.get('currentProject');
     if (currentProject)
-      currentProject.set('defaultLanguageCode', this.selectedLanguage.get('value'))
+      currentProject.set('defaultLanguageCode', this.selectedLanguage.get('value'));
   }.observes('this.selectedLanguage'),
 
   showMonitoringGroupCheckbox: function() {
@@ -58,7 +58,7 @@ FLOW.Project = FLOW.View.extend({
     FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.selectedRegistrationForm.get('keyId'));
   }.observes('selectedRegistrationForm')
 
-})
+});
 
 
 FLOW.ProjectMainView = FLOW.View.extend({
@@ -105,8 +105,7 @@ FLOW.ProjectList = FLOW.View.extend({
   tagName: 'ul',
   classNameBindings: ['classProperty'],
   classProperty: function() {
-    return FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget
-      ? 'actionProcess' : '';
+    return FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget ? 'actionProcess' : '';
   }.property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget')
 });
 
@@ -124,7 +123,7 @@ FLOW.ProjectItemView = FLOW.View.extend({
 
     var classes = "aSurvey";
     if (isFolder) classes += " aFolder";
-    if (isFolderEmpty) classes += " folderEmpty"
+    if (isFolderEmpty) classes += " folderEmpty";
     if (isMoving || isCopying) classes += " highLighted";
 
     return classes;
@@ -187,16 +186,14 @@ FLOW.FormTabView = Ember.View.extend({
 
     // Return "aFormTab" "current" and/or "registrationForm"
     var isActive = form === FLOW.selectedControl.get('selectedSurvey');
-    var isRegistrationForm = currentProject.get('monitoringGroup')
-      && form.get('keyId') === currentProject.get('newLocaleSurveyId');
-
+    var isRegistrationForm = currentProject.get('monitoringGroup') && form.get('keyId') === currentProject.get('newLocaleSurveyId');
 
     if (isActive) classString += ' current';
     if (isRegistrationForm) classString += ' registrationForm';
 
     return classString;
   }.property('FLOW.selectedControl.selectedSurvey', 'FLOW.projectControl.currentProject.newLocaleSurveyId'),
-})
+});
 
 // displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
