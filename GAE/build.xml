@@ -167,7 +167,7 @@
 		<echo message="Rebuilding Dashboard..." />
 
 		<exec dir="../Dashboard" executable="bundle" failonerror="true">
-		    <env key="RAKEP_MODE" value="no-production" />
+		    <env key="RAKEP_MODE" value="production" />
 		    <arg value="exec" />
 		    <arg value="rake" />
 		    <arg value="build" />
