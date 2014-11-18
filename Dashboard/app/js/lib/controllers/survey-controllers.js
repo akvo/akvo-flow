@@ -242,7 +242,7 @@ FLOW.projectControl = Ember.ArrayController.create({
       return form.get('status') !== 'PUBLISHED';
     });
 
-    return unpublishedForms.toArray().length === 0;
+    return unpublishedForms.get('length') === 0;
   }.property('FLOW.surveyControl.content.@each.status'),
 
   /* Actions */
@@ -368,7 +368,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     var children = this.get('content').filter(function(project) {
       return project.get('parentId') === id;
     });
-    return children.toArray().length === 0;
+    return children.get('length') === 0;
   }
 });
 
