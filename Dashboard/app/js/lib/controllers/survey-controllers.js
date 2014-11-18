@@ -285,7 +285,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   deleteProject: function(evt) {
-    project = FLOW.store.find(FLOW.SurveyGroup, evt.context.get('keyId'));
+    var project = FLOW.store.find(FLOW.SurveyGroup, evt.context.get('keyId'));
     project.deleteRecord();
     FLOW.store.commit();
   },
