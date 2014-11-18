@@ -51,8 +51,10 @@ public class CustomVoter implements AccessDecisionVoter<FilterInvocation> {
         HttpServletRequest req = fi.getHttpRequest();
         ObjectMapper mapper = new ObjectMapper();
         String method = req.getMethod();
+        String contentType = req.getContentType();
 
-        if ("POST".equals(method) || "PUT".equals(method)) {
+        if ("application/json".equals(contentType)
+                && ("POST".equals(method) || "PUT".equals(method))) {
             try {
                 Map payload = mapper.readValue(req.getInputStream(), Map.class);
                 log.info(payload.toString());
