@@ -3,7 +3,10 @@ package com.gallatinsystems.user.dao;
 
 import java.util.List;
 
+import javax.jdo.PersistenceManager;
+
 import com.gallatinsystems.framework.dao.BaseDAO;
+import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.user.domain.UserAuthorization;
 
 public class UserAuthorizationDao extends BaseDAO<UserAuthorization> {
@@ -20,7 +23,12 @@ public class UserAuthorizationDao extends BaseDAO<UserAuthorization> {
      * @return
      */
     public List<UserAuthorization> listByObjectPath(Long userId, String objectPath) {
-        return null;
+        PersistenceManager pm = PersistenceFilter.getManager();
+        String queryString = "userId == :p1 && :p2.contains(objectPath)";
+        javax.jdo.Query query = pm.newQuery(UserAuthorization.class, queryString);
+        List<UserAuthorization> results = (List<UserAuthorization>) query.execute(userId,
+                objectPath);
+        return results;
     }
 
     /**
@@ -42,5 +50,24 @@ public class UserAuthorizationDao extends BaseDAO<UserAuthorization> {
      */
     public List<UserAuthorization> listByUser(Long userId) {
         return listByProperty("userId", userId, "Long");
+    }
+
+    /**
+     * Wrapper for BaseDAO.save()
+     *
+     * @param auth
+     * @return
+     */
+    public UserAuthorization save(UserAuthorization auth) {
+        return super.save(auth);
+    }
+
+    /**
+     * Wrapper for BaseDAO.delete()
+     *
+     * @param auth
+     */
+    public void delete(UserAuthorization auth) {
+        super.delete(auth);
     }
 }
