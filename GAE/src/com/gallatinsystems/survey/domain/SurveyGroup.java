@@ -37,6 +37,7 @@ public class SurveyGroup extends BaseDomain {
     private Boolean monitoringGroup = false;
     private Long newLocaleSurveyId;
     private String description = null;
+    private String path = null;
     @NotPersistent
     private HashMap<String, Translation> altTextMap;
     @NotPersistent
@@ -86,6 +87,14 @@ public class SurveyGroup extends BaseDomain {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public Boolean getMonitoringGroup() {

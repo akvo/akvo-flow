@@ -16,18 +16,29 @@
 
 package org.waterforpeople.mapping.app.web.rest.security;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
 
+import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.user.dao.UserAuthorizationDao;
 import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.Permission;
@@ -38,11 +49,24 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
     private static final Logger log = Logger.getLogger(RequestUriVoter.class.getName());
 
+    private static String projectFolderUriPrefix = Permission.PROJECT_FOLDER_CREATE.getUriPrefix();
+
+    private static String formUriPrefix = Permission.FORM_CREATE.getUriPrefix();
+
+    private static final Pattern URI_PATTERN = Pattern.compile("(" + projectFolderUriPrefix + "|"
+            + formUriPrefix + ")(/(\\d*))?");
+
     @Inject
     private UserRoleDao userRoleDao;
 
     @Inject
     private UserAuthorizationDao userAuthorizationDao;
+
+    @Inject
+    private SurveyGroupDAO surveyGroupDao;
+
+    @Inject
+    private SurveyDAO surveyDao;
 
     @Override
     public boolean supports(ConfigAttribute attribute) {
@@ -58,19 +82,17 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     public int vote(Authentication authentication, FilterInvocation securedObject,
             Collection<ConfigAttribute> attributes) {
 
+        HttpServletRequest httpRequest = securedObject.getHttpRequest();
         String requestUri = securedObject.getRequestUrl();
-        String httpMethod = securedObject.getHttpRequest().getMethod();
-
-        Long userId = null; // retrieve from principal
+        String httpMethod = httpRequest.getMethod();
+        Long userId = null; // TODO: retrieve from principal
 
         // for now we only vote for request access on project folders and forms
-        if (!requestUri.startsWith(Permission.PROJECT_FOLDER_CREATE.getUriPrefix())
-                || !requestUri.startsWith(Permission.FORM_CREATE.getUriPrefix())) {
+        if (!URI_PATTERN.matcher(requestUri).matches()) {
             return ACCESS_ABSTAIN;
         }
 
-        // retrieve the resource path from the payload
-        String resourcePath = retrieveResourcePath(requestUri);
+        String resourcePath = retrieveResourcePath(securedObject);
         if (resourcePath == null) {
             return ACCESS_ABSTAIN;
         }
@@ -100,7 +122,62 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         return ACCESS_DENIED;
     }
 
-    private String retrieveResourcePath(String requestUri) {
-        return null; // TODO
+    /**
+     * Retrieve the resource path for a secured object that is being accessed. The path is either
+     * retrieved from the posted payload or from the datastore. Throws an @{link
+     * AccessDeniedException} in cases where a path should have been found but is missing
+     *
+     * @param securedObject
+     * @return
+     */
+    private String retrieveResourcePath(FilterInvocation securedObject)
+            throws AccessDeniedException {
+
+        HttpServletRequest httpRequest = securedObject.getHttpRequest();
+        String httpMethod = httpRequest.getMethod();
+        String requestUri = securedObject.getRequestUrl();
+        String resourcePath = null;
+
+        if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
+            if (!"application/json".equals(httpRequest.getContentType())
+                    || (httpRequest.getContentLength() == 0)) {
+                return null; // if not JSON payload, conversion exception will be thrown later
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            Map payload = null;
+            try {
+                payload = mapper.readValue(httpRequest.getInputStream(), Map.class);
+            } catch (IOException e) {
+                log.severe(e.toString());
+            }
+
+            if (!payload.containsKey("path")) {
+                log.info("object:  " + payload.toString());
+                throw new AccessDeniedException("Access is Denied. Unable to identify object path");
+            }
+            resourcePath = (String) payload.get("path");
+        } else {
+            Matcher matcher = URI_PATTERN.matcher(requestUri);
+            if (matcher.matches()) {
+                String objectIdStr = matcher.group(3);
+                if (objectIdStr == null) {
+                    return null;
+                }
+                Long objectId = Long.valueOf(objectIdStr);
+                if (requestUri.contains("survey_groups")) {
+                    SurveyGroup sg = surveyGroupDao.getByKey(objectId);
+                    if (sg != null) {
+                        resourcePath = sg.getPath();
+                    }
+                } else {
+                    Survey s = surveyDao.getByKey(objectId);
+                    if (s != null) {
+                        resourcePath = s.getPath();
+                    }
+                }
+            }
+        }
+        return resourcePath;
     }
 }
