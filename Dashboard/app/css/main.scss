@@ -1722,7 +1722,6 @@ a.FadeIt {
         }
         h4 {
             margin:5px 0 10px 5px;
-            text-transform:uppercase;
             color:rgba($anchorLink, 0.5);
         }
         .noForms {
@@ -1827,7 +1826,6 @@ section.topBar {
             margin: 5px 3px 0 0;
             text-indent: 19px;
             position: relative;
-
         }
         ul li:before {
             content: " ";
@@ -1859,8 +1857,8 @@ section.topBar {
             display: block;
             background: $akvoLightBlue;
             color: white;
-            text-transform: uppercase;
             font-size: 1.1em;
+            @include noWrapTxt;
             &:hover {
                 background: $anchorLinkHover;
             }
@@ -4517,7 +4515,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
                   h3 {
                       color:$akvoGolden;
-                      text-transform: uppercase;
                       margin-bottom: 20px;
                       display:inline-block;
                   }
