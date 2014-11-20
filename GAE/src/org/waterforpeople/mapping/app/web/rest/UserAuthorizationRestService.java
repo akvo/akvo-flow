@@ -23,7 +23,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -87,11 +89,41 @@ public class UserAuthorizationRestService {
         return response;
     }
 
-    public Map<String, Object> updateUserAuthorization() {
+    /**
+     * Update an authorization definition. This is restricted to updating the role and the path. The
+     * user for an authorization cannot be changed.
+     *
+     * @param requestPayload
+     * @param authId
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/{authId}")
+    @ResponseBody
+    public Map<String, Object> updateUserAuthorization(
+            @RequestBody UserAuthorizationPayload requestPayload, @PathVariable Long authId) {
 
+        final Map<String, Object> response = new HashMap<String, Object>();
+        final UserAuthorization existingAuth = userAuthorizationDAO.getByKey(authId);
+
+        if (existingAuth != null) {
+            BeanUtils.copyProperties(requestPayload, existingAuth,
+                    new String[] {
+                        "userId"
+                    }); // we should not switch the user on an authorization.
+            response.put("user_auth", new UserAuthorizationPayload(existingAuth));
+        }
+        return response;
     }
 
-    public Map<String, Object> deleteUserAuthorization() {
-
+    /**
+     * Delete an authorization definition.
+     *
+     * @param authId
+     */
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{authId}")
+    @ResponseBody
+    public void deleteUserAuthorization(@PathVariable Long authId) {
+        final UserAuthorization existingAuth = userAuthorizationDAO.getByKey(authId);
+        userAuthorizationDAO.delete(existingAuth);
     }
 }
