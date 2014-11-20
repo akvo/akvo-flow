@@ -39,7 +39,7 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
-import com.gallatinsystems.user.dao.UserAuthorizationDao;
+import com.gallatinsystems.user.dao.UserAuthorizationDAO;
 import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.UserAuthorization;
@@ -60,7 +60,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     private UserRoleDao userRoleDao;
 
     @Inject
-    private UserAuthorizationDao userAuthorizationDao;
+    private UserAuthorizationDAO userAuthorizationDao;
 
     @Inject
     private SurveyGroupDAO surveyGroupDao;

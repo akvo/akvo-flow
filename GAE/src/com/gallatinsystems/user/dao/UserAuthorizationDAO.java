@@ -1,7 +1,9 @@
 
 package com.gallatinsystems.user.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
@@ -9,9 +11,9 @@ import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.user.domain.UserAuthorization;
 
-public class UserAuthorizationDao extends BaseDAO<UserAuthorization> {
+public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
 
-    public UserAuthorizationDao() {
+    public UserAuthorizationDAO() {
         super(UserAuthorization.class);
     }
 
@@ -50,6 +52,42 @@ public class UserAuthorizationDao extends BaseDAO<UserAuthorization> {
      */
     public List<UserAuthorization> listByUser(Long userId) {
         return listByProperty("userId", userId, "Long");
+    }
+
+    /**
+     * Retrieve a specific UserAuthorization entity
+     *
+     * @param userId
+     * @param roleId
+     * @param objectPath
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public UserAuthorization findUserAuthorization(Long userId, Long roleId, String objectPath) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(UserAuthorization.class);
+
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        ;
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+
+        appendNonNullParam("userId", filterString, paramString, "Long", userId,
+                paramMap);
+        appendNonNullParam("roleId", filterString, paramString,
+                "Long", roleId, paramMap);
+        appendNonNullParam("objectPath", filterString, paramString,
+                "String", objectPath, paramMap);
+
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+
+        List<UserAuthorization> authList = (List<UserAuthorization>) query.executeWithMap(paramMap);
+        if (authList.isEmpty()) {
+            return null;
+        } else {
+            return authList.get(0);
+        }
     }
 
     /**
