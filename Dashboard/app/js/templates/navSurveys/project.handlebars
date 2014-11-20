@@ -72,6 +72,7 @@
                   </a>
                 </span>
                 {{#if view.showAdvancedSettings}}
+                  <p class="monitoringHint">Choose the registration form:</p>
                   {{#if view.showMonitoringGroupCheckbox}}
                     <label for="enableMonitoring" class="labelcheckbox">
                       {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup"}}Enable Monitoting features
@@ -98,9 +99,11 @@
               </ul>
             {{/unless}}
           </section>
+
           <section class="forms">
             {{#if FLOW.projectControl.hasForms}}
               <div id="tabs">
+                <h2>Form(s):</h2>
                 <nav class="tabNav floats-in">
                   <ul>
                     {{#each form in FLOW.surveyControl}}

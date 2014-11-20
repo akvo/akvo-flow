@@ -2172,6 +2172,9 @@ li.aSurvey {
     border-radius: 0.3em;
     -webkit-transition: all 0.4s linear;
     transition: all 0.4s linear;
+    &:hover {
+        cursor:text;
+    }
      h2 {
         display: inline-block;
         width: 98%;
@@ -2181,6 +2184,7 @@ li.aSurvey {
         }
      }
 }
+
 li.aFolder, li.aSurvey {
     &.highLighted {
         background:#E7EEE0;
@@ -4321,6 +4325,9 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
         .forms {
             padding:2em 0 0 0;
             background:white;
+            #tabs h2 {
+                margin:0 0 15px 5px;
+            }
             .formSummary {
                         display:-webkit-flex;
                         display:flex;
@@ -4531,6 +4538,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                   .projectDetailForm, .surveyDetailForm {
                       display: block;
                       margin-top:0 !important;
+                      .monitoringHint {
+                        margin: 10px 0 0 10px;
+                        color: #c49a6c;
+                      }
                       form {
                           width:100%;
                       }
@@ -4555,7 +4566,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                               width:100%;
                               margin-bottom:20px;
                               select {
-                                  width:100%;
+                                  width:99.5%;
                               }
                           }
                       }
