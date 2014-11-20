@@ -216,7 +216,9 @@ FLOW.projectControl = Ember.ArrayController.create({
       } else if (self.isProject(a) && self.isProjectFolder(b)) {
         return 1;
       } else {
-        return a.get('code').localeCompare(b.get('code'));
+        var aCode = a.get('code') || a.get('name');
+        var bCode = b.get('code') || b.get('name');
+        return aCode.localeCompare(bCode);
       }
     });
   }.property('@each', 'currentProject', 'moveTarget'),
