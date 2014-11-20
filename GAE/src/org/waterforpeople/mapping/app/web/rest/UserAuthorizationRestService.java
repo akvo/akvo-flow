@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,14 +41,32 @@ public class UserAuthorizationRestService {
     @Inject
     private UserAuthorizationDAO userAuthorizationDAO;
 
+    /**
+     * List the authorization parameters for all users
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
-    public Map<String, Object> listUserAuthorization() {
+    public Map<String, Object> listAllUserAuthorizations() {
+        final Map<String, Object> response = new HashMap<String, Object>();
+        List<UserAuthorization> authorizationList = userAuthorizationDAO
+                .list(Constants.ALL_RESULTS);
+        List<UserAuthorizationPayload> responsePayloadList = new ArrayList<UserAuthorizationPayload>();
+        for (UserAuthorization auth : authorizationList) {
+            responsePayloadList.add(new UserAuthorizationPayload(auth));
+        }
+        response.put("user_auth", responsePayloadList);
+        return response;
     }
 
-    @ResponseBody
-    public Map<String, Object> findUserAuthorization(Long userId) {
-    }
-
+    /**
+     * Create a new UserAuthorization from posted payload. If an authorization with the same
+     * parameters already exists, it is returned instead.
+     *
+     * @param requestPayload
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
     public Map<String, Object> createUserAuthorization(
