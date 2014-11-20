@@ -50,17 +50,21 @@ public class UserAuthorizationRestService {
 
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, Object> createUserAuthorization(@RequestBody UserAuthorizationPayload payload) {
+    public Map<String, Object> createUserAuthorization(
+            @RequestBody UserAuthorizationPayload requestPayload) {
+
         final Map<String, Object> response = new HashMap<String, Object>();
-        final UserAuthorization newAuth = payload.getUserAuthorisation();
+        final UserAuthorization newAuth = requestPayload.getUserAuthorisation();
         final UserAuthorization existingAuth = userAuthorizationDAO.findUserAuthorization(
                 newAuth.getUserId(), newAuth.getRoleId(), newAuth.getObjectPath());
 
+        UserAuthorizationPayload responsePayload = null;
         if (existingAuth != null) {
-            response.put("user_auth", existingAuth);
+            responsePayload = new UserAuthorizationPayload(existingAuth);
         } else {
-            response.put("user_auth", userAuthorizationDAO.save(payload.getUserAuthorisation()));
+            responsePayload = new UserAuthorizationPayload(userAuthorizationDAO.save(newAuth));
         }
+        response.put("user_auth", responsePayload);
         return response;
     }
 
