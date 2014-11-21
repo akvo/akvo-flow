@@ -1,8 +1,10 @@
 (ns org.akvo.flow.dashboard.users.user-details
   (:require [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.dispatcher :refer (dispatch)]
+            [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
             [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros (html)]))
+            [sablono.core :as html :refer-macros (html)]
+            [ajax.core :refer (ajax-request GET POST PUT DELETE)]))
 
 (defn panel-header [{:keys [on-save]} owner])
 
@@ -22,7 +24,7 @@
     om/IRenderState
     (render-state [this {:strs [userName emailAddress] :as state}]
       (html
-       [:div.userEditSection
+       [:div.userEditSection.topMargin
         [:h2 "User info:"]
         [:form
          [:div.form-group
@@ -40,28 +42,49 @@
                           :on-click #(on-save state)}
                          (b/icon :floppy-disk) " Save user info")]]]))))
 
-#_(defn roles-and-permissions-section [{:keys [user projects roles]} owner]
-  (om/component
-   (html
-    [:div.userRolesPerm
-     [:h2 "Roles and permissions:"]
-     [:form.form-inline.text-left.paddingTop.roleEditSelect {:role "form"}
-      [:div.form-group
-       (om/build b/dropdown {:data-source (roles/get-roles roles)
-                             :placeholder "Select role"
-                             :on-change #(println "selected" %)})]
-      [:div.form-group
-       (om/build b/dropdown {:data-source (projects/get-projects {:parent nil})
-                             :placeholder "Select project"
-                             :on-change #(println "selected" %)})]
-      [:div.form-group
-       (b/btn-primary {:on-click #(println "submit!")}
-                      (b/icon :plus)
-                      " Add")]]
-     (om/build grid
-               {})])))
+(defn generate-apikeys [owner user]
+  (POST (str "/rest/users/" (get user "keyId") "/apikeys")
+        (merge default-ajax-config
+               {:handler (fn [response]
+                           (let [access-key (get-in response ["apikeys" "accessKey"])
+                                 secret (get-in response ["apikeys" "secret"])]
+                             (om/set-state! owner {:access-key access-key
+                                                   :secret secret})
+                             (dispatch :new-access-key {:access-key access-key
+                                                        :user user})))})))
 
-(defn api-keys [{:keys [user]} owner])
+(defn revoke-apikeys [owner user]
+  (DELETE (str "/rest/users/" (get user "keyId") "/apikeys")
+          (merge default-ajax-config
+                 {:handler (fn [response]
+                             (om/set-state! owner {:access-key nil :secret nil})
+                             (dispatch :new-access-key {:access-key nil :user user}))})))
+
+(defn api-keys-section [{:keys [user]} owner]
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:access-key (get user "accessKey")
+       :secret nil})
+    om/IWillReceiveProps
+    (will-receive-props [this {:keys [user]}]
+      (om/set-state! owner :access-key (get user "accessKey")))
+    om/IRenderState
+    (render-state [this {:keys [access-key secret]}]
+      (html
+       [:div.apiKeySection.topMargin
+        [:h2 "Manage API key:"]
+        [:p "You can (re)generate or revoke an api key for this user"]
+        [:form
+         [:div.form-group
+          [:label.control-label.text-left "Access key"]
+          [:input.form-control {:type "text"
+                                :value access-key}]]
+         [:div.btn-group
+          [:button.btn.btn-default {:on-click #(generate-apikeys owner user)}
+           (b/icon :refresh) " (Re)generate"]
+          [:button.btn.btn-default {:on-click #(revoke-apikeys owner user)}
+           (b/icon :ban-circle) " Revoke"]]]]))))
 
 (defn user-details [{:keys [user projects]} owner]
   (om/component
@@ -71,4 +94,4 @@
      (om/build user-edit-section {:user user
                                   :on-save #(dispatch :edit-user %)})
      #_(om/build roles-and-permissions-section {:user user :projects projects})
-     #_(om/build api-keys {:user user})])))
+     (om/build api-keys-section {:user user})])))
