@@ -44,6 +44,7 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     @Inject
     UserDao userDao;
 
+    @Override
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         User googleUser = (User) authentication.getPrincipal();
@@ -83,7 +84,8 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
             }
         }
 
-        return new GaeUser(user.getUserName(), user.getEmailAddress(), roles, true);
+        return new GaeUser(user.getUserName(), user.getEmailAddress(), user.getKey().getId(),
+                roles, true);
     }
 
     private int getAuthorityLevel(com.gallatinsystems.user.domain.User user) {
