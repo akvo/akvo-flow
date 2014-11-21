@@ -133,7 +133,7 @@ public class ActionRestService {
         } else if ("createTestLocales".equals(action)) {
             status = createTestLocales();
         } else if ("publishCascade".equals(action)) {
-        	status = publishCascade(cascadeResourceId);
+        	status = SurveyUtils.publishCascade(cascadeResourceId);
         } else if ("copyProject".equals(action)) {
             status = copyProject(targetId, folderId);
         }
@@ -143,47 +143,6 @@ public class ActionRestService {
         response.put("meta", statusDto);
         return response;
     }
-
-    private String publishCascade(Long cascadeResourceId) {
-		String status = "failed";
-    	CascadeResourceDao crDao = new CascadeResourceDao();
-    	CascadeResource cr = crDao.getByKey(cascadeResourceId);
-    	if (cr != null){
-    		final String flowServiceURL = PropertyUtil.getProperty("flowServices");
-            final String uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
-
-            if (flowServiceURL == null || "".equals(flowServiceURL)) {
-                log.log(Level.SEVERE,
-                        "Error trying to publish cascade. Check `flowServices` property");
-                return status;
-            }
-
-            try {
-                final JSONObject payload = new JSONObject();
-                payload.put("cascadeResourceId", cascadeResourceId);
-                payload.put("uploadUrl", uploadUrl);
-
-                log.log(Level.INFO, "Sending cascade publish request for cascade: " + cascadeResourceId);
-
-                final String postString = URLEncoder.encode(payload.toString(), "UTF-8");
-                log.log(Level.INFO, "POSTing to: " + flowServiceURL);
-                log.log(Level.INFO, "POST string: " + postString);
-
-                final String response = new String(HttpUtil.doPost(flowServiceURL
-                        + "/publish_cascade", postString), "UTF-8");
-
-                log.log(Level.INFO, "Response from server: " + response);
-                status = "publish requested";
-                cr.setVersion(cr.getVersion() + 1);
-                cr.setPublished(true);
-                crDao.save(cr);
-            } catch (Exception e) {
-                log.log(Level.SEVERE,
-                        "Error publishing cascade: " + e.getMessage(), e);
-            }
-    	}
-		return status;
-	}
 
 	/**
      * Used to create test locales. The only field populated is surveyId, which is set to 1. To be
