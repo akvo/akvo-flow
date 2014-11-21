@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,15 +16,19 @@
 
 package org.waterforpeople.mapping.app.web.rest;
 
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
+import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,6 +39,7 @@ import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
+import org.waterforpeople.mapping.app.web.dto.SurveyAssemblyRequest;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.dao.DeviceApplicationDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -43,8 +48,13 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.common.util.HttpUtil;
+import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.survey.dao.CascadeResourceDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
+import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
@@ -57,6 +67,8 @@ import com.google.appengine.api.utils.SystemProperty;
 @Controller
 @RequestMapping("/actions")
 public class ActionRestService {
+	private static final Logger log = Logger.getLogger(SurveyUtils.class
+            .getName());
 
     @Inject
     private SurveyDAO surveyDao;
@@ -71,6 +83,8 @@ public class ActionRestService {
             String action,
             @RequestParam(value = "surveyId", defaultValue = "")
             Long surveyId,
+            @RequestParam(value = "cascadeResourceId", defaultValue = "")
+            Long cascadeResourceId,
             @RequestParam(value = "surveyIds[]", defaultValue = "")
             Long[] surveyIds,
             @RequestParam(value = "email", defaultValue = "")
@@ -108,6 +122,8 @@ public class ActionRestService {
             status = computeGeocellsForLocales();
         } else if ("createTestLocales".equals(action)) {
             status = createTestLocales();
+        } else if ("publishCascade".equals(action)) {
+        	status = publishCascade(cascadeResourceId);
         }
         statusDto.setStatus(status);
         response.put("actions", "[]");
@@ -115,7 +131,48 @@ public class ActionRestService {
         return response;
     }
 
-    /**
+    private String publishCascade(Long cascadeResourceId) {
+		String status = "failed";
+    	CascadeResourceDao crDao = new CascadeResourceDao();
+    	CascadeResource cr = crDao.getByKey(cascadeResourceId);
+    	if (cr != null){
+    		final String flowServiceURL = PropertyUtil.getProperty("flowServices");
+            final String uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
+
+            if (flowServiceURL == null || "".equals(flowServiceURL)) {
+                log.log(Level.SEVERE,
+                        "Error trying to publish cascade. Check `flowServices` property");
+                return status;
+            }
+
+            try {
+                final JSONObject payload = new JSONObject();
+                payload.put("cascadeResourceId", cascadeResourceId);
+                payload.put("uploadUrl", uploadUrl);
+
+                log.log(Level.INFO, "Sending cascade publish request for cascade: " + cascadeResourceId);
+
+                final String postString = URLEncoder.encode(payload.toString(), "UTF-8");
+                log.log(Level.INFO, "POSTing to: " + flowServiceURL);
+                log.log(Level.INFO, "POST string: " + postString);
+
+                final String response = new String(HttpUtil.doPost(flowServiceURL
+                        + "/publish_cascade", postString), "UTF-8");
+
+                log.log(Level.INFO, "Response from server: " + response);
+                status = "publish requested";
+                cr.setVersion(cr.getVersion() + 1);
+                cr.setPublished(true);
+                crDao.save(cr);
+            } catch (Exception e) {
+                log.log(Level.SEVERE,
+                        "Error publishing cascade: " + e.getMessage(), e);
+            }
+    	}
+		return status;
+	}
+
+	/**
      * Used to create test locales. The only field populated is surveyId, which is set to 1. To be
      * used only to test clustering during development in order to speed this up, it is advisable to
      * comment out the code in SurveyalRestServlet which computes the geoplace while running this

@@ -28,6 +28,8 @@
     <bean id="translationDao" class="com.gallatinsystems.survey.dao.TranslationDao" />
     <bean id="userConfigDao" class="com.gallatinsystems.user.dao.UserConfigDao" />
     <bean id="userDao" class="com.gallatinsystems.user.dao.UserDao" />
+    <bean id="cascadeResourceDao" class="com.gallatinsystems.survey.dao.CascadeResourceDao" />
+    <bean id="cascadeNodeDao" class="com.gallatinsystems.survey.dao.CascadeNodeDao" />
 
 	<context:annotation-config/>
 </beans>

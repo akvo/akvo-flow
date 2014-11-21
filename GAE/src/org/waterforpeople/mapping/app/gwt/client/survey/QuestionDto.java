@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -46,6 +46,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     private Boolean requireDoubleEntry = null;
     private Long dependentQuestionId;
     private String dependentQuestionAnswer;
+    private Long cascadeResourceId;
     private Long metricId;
     private QuestionDependencyDto questionDependency = null;
     private Long surveyId;
@@ -291,7 +292,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     }
 
     public enum QuestionType {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE
     }
 
     @Override
@@ -426,4 +427,12 @@ public class QuestionDto extends BaseDto implements NamedObject {
             this.questionId = questionId;
         }
     }
+
+	public Long getCascadeResourceId() {
+		return cascadeResourceId;
+	}
+
+	public void setCascadeResourceId(Long cascadeResourceId) {
+		this.cascadeResourceId = cascadeResourceId;
+	}
 }
