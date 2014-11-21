@@ -27,34 +27,43 @@ package com.gallatinsystems.user.domain;
  */
 public enum Permission {
 
-    PROJECT_FOLDER_CREATE("POST", "/rest/project_folders"),
-    PROJECT_FOLDER_READ("GET", "/rest/project_folders"),
-    PROJECT_FOLDER_UPDATE("PUT", "/rest/project_folders"),
-    PROJECT_FOLDER_DELETE("DELETE", "/rest/project_folders"),
+    PROJECT_FOLDER_CREATE("POST", "/rest/survey_groups"),
+    PROJECT_FOLDER_READ("GET", "/rest/survey_groups"),
+    PROJECT_FOLDER_UPDATE("PUT", "/rest/survey_groups"),
+    PROJECT_FOLDER_DELETE("DELETE", "/rest/survey_groups"),
 
-    PROJECT_CREATE("POST", "/rest/survey_groups"),
-    PROJECT_READ("GET", "/rest/survey_groups"),
-    PROJECT_UPDATE("PUT", "/rest/survey_groups"),
-    PROJECT_DELETE("DELETE", "/rest/survey_groups"),
+    FORM_CREATE("POST", "/rest/surveys"),
+    FORM_READ("GET", "/rest/surveys"),
+    FORM_UPDATE("PUT", "/survey/update"),
+    FORM_DELETE("DELETE", "/rest/surveys");
 
-    SURVEY_CREATE("POST", "/rest/surveys"),
-    SURVEY_READ("GET", "/rest/surveys"),
-    SURVEY_UPDATE("PUT", "/survey/update"),
-    SURVEY_DELETE("DELETE", "/rest/surveys");
+    private final String httpMethod;
+    private final String uriPrefix;
 
-    private final String action;
-    private final String resourceUri;
+    Permission(String method, String uri) {
+        this.httpMethod = method;
+        this.uriPrefix = uri;
+    }
 
-    Permission(String action, String uri) {
-        this.action = action;
-        this.resourceUri = uri;
+    public String getHttpMethod() {
+        return httpMethod;
+    }
+
+    public String getUriPrefix() {
+        return uriPrefix;
     }
 
     public String getAction() {
-        return action;
+        return httpMethod;
     }
 
-    public String getResourceUri() {
-        return resourceUri;
+    public static Permission lookup(String httpMethod, String requestUri) {
+        for (Permission permission : Permission.values()) {
+            if (permission.getHttpMethod().equals(httpMethod)
+                    && permission.getUriPrefix().equals(requestUri)) {
+                return permission;
+            }
+        }
+        return null;
     }
 }

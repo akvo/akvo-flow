@@ -26,6 +26,7 @@
     <bean id="surveyedLocaleDao" class="com.gallatinsystems.surveyal.dao.SurveyedLocaleDao" />
     <bean id="SurveyedLocaleClusterDao" class="com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao" />
     <bean id="translationDao" class="com.gallatinsystems.survey.dao.TranslationDao" />
+    <bean id="userAuthorizationDao" class="com.gallatinsystems.user.dao.UserAuthorizationDAO" />
     <bean id="userConfigDao" class="com.gallatinsystems.user.dao.UserConfigDao" />
     <bean id="userDao" class="com.gallatinsystems.user.dao.UserDao" />
     <bean id="userRoleDao" class="com.gallatinsystems.user.dao.UserRoleDao" />

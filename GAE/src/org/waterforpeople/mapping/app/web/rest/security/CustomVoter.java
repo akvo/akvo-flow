@@ -16,15 +16,20 @@
 
 package org.waterforpeople.mapping.app.web.rest.security;
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
 
-public class CustomVoter implements AccessDecisionVoter<Object> {
+public class CustomVoter implements AccessDecisionVoter<FilterInvocation> {
 
     private static final Logger log = Logger.getLogger(CustomVoter.class.getName());
 
@@ -35,15 +40,31 @@ public class CustomVoter implements AccessDecisionVoter<Object> {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return FilterInvocation.class.isAssignableFrom(clazz);
+        return clazz.isAssignableFrom(FilterInvocation.class);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
-    public int vote(Authentication authentication, Object object,
+    public int vote(Authentication authentication, FilterInvocation fi,
             Collection<ConfigAttribute> attributes) {
 
-        log.info(object.toString() + " - CustomVoter - voting: "
-                + AccessDecisionVoter.ACCESS_ABSTAIN);
+        HttpServletRequest req = fi.getHttpRequest();
+        ObjectMapper mapper = new ObjectMapper();
+        String method = req.getMethod();
+        String contentType = req.getContentType();
+
+        if ("application/json".equals(contentType)
+                && ("POST".equals(method) || "PUT".equals(method))) {
+            try {
+                Map payload = mapper.readValue(req.getInputStream(), Map.class);
+                log.info(payload.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        log.info(fi.toString() + " - CustomVoter - voting: " + AccessDecisionVoter.ACCESS_ABSTAIN);
 
         return AccessDecisionVoter.ACCESS_ABSTAIN;
     }
