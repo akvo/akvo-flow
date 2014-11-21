@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}dependency"/>
  *         &lt;element ref="{}help"/>
  *         &lt;element ref="{}options"/>
+*		   &lt;element ref="{}levels"/>
  *         &lt;element ref="{}text"/>
  *         &lt;element ref="{}validationRule"/>
  *       &lt;/choice>
@@ -42,6 +43,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;attribute name="locked" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="requireDoubleEntry" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
+ *       &lt;attribute name="cascadeResource" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
+ *       &lt;attribute name="cascadeVersion" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="mandatory" use="required">
  *         &lt;simpleType>
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN">
@@ -58,7 +61,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-        "altText", "dependency", "help", "options",
+        "altText", "dependency", "help", "options","levels",
         "text", "validationRule", "scoring"
 })
 @XmlRootElement(name = "question")
@@ -70,6 +73,8 @@ public class Question {
     @XmlElement(required = false)
     protected List<Help> help;
     protected Options options;
+    @XmlElement(required = false)
+    protected Levels levels;
     protected Text text;
     protected ValidationRule validationRule;
     @XmlElement(required = false)
@@ -92,6 +97,11 @@ public class Question {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
     protected String type;
+
+    @XmlAttribute(required = false)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    protected String cascadeResource;
 
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -176,6 +186,24 @@ public class Question {
      */
     public void setOptions(Options value) {
         this.options = value;
+    }
+
+    /**
+     * Gets the value of the levels property.
+     *
+     * @return possible object is {@link Levels }
+     */
+    public Levels getLevels() {
+        return levels;
+    }
+
+    /**
+     * Sets the value of the levels property.
+     *
+     * @param value allowed object is {@link Levels }
+     */
+    public void setLevels(Levels value) {
+        this.levels = value;
     }
 
     /**
@@ -266,6 +294,24 @@ public class Question {
      */
     public String getRequireDoubleEntry() {
         return requireDoubleEntry;
+    }
+
+    /**
+     * Gets the value of the cascadeResource property.
+     *
+     * @return possible object is {@link String }
+     */
+    public String getCascadeResource() {
+        return cascadeResource;
+    }
+
+    /**
+     * Sets the value of the cascadeResource property.
+     *
+     * @param value allowed object is {@link String }
+     */
+    public void setCascadeResource(String value) {
+        this.cascadeResource = value;
     }
 
     /**

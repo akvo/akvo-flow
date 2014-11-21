@@ -43,6 +43,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
+import com.gallatinsystems.survey.dao.CascadeResourceDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -50,6 +51,7 @@ import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.dao.SurveyXMLFragmentDao;
 import com.gallatinsystems.survey.dao.TranslationDao;
+import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
@@ -64,6 +66,8 @@ import com.gallatinsystems.survey.domain.Translation;
 import com.gallatinsystems.survey.domain.xml.AltText;
 import com.gallatinsystems.survey.domain.xml.Dependency;
 import com.gallatinsystems.survey.domain.xml.Help;
+import com.gallatinsystems.survey.domain.xml.Level;
+import com.gallatinsystems.survey.domain.xml.Levels;
 import com.gallatinsystems.survey.domain.xml.ObjectFactory;
 import com.gallatinsystems.survey.domain.xml.Option;
 import com.gallatinsystems.survey.domain.xml.Options;
@@ -93,6 +97,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     public static final String SCAN_QUESTION_TYPE = "scan";
     public static final String STRENGTH_QUESTION_TYPE = "strength";
     public static final String DATE_QUESTION_TYPE = "date";
+    public static final String CASCADE_QUESTION_TYPE = "cascade";
 
     private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
@@ -616,6 +621,34 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             qXML.setType(STRENGTH_QUESTION_TYPE);
         } else if (q.getType().equals(Question.Type.DATE)) {
             qXML.setType(DATE_QUESTION_TYPE);
+        } else if (q.getType().equals(Question.Type.CASCADE)) {
+            qXML.setType(CASCADE_QUESTION_TYPE);
+        }
+
+        if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
+        	CascadeResourceDao crDao = new CascadeResourceDao();
+        	CascadeResource cr = crDao.getByKey(q.getCascadeResourceId());
+        	if (cr != null) {
+        		String cascadeResource = createCascadeResourceId(q.getCascadeResourceId(),cr.getVersion());
+            	if (cascadeResource.length() > 0) {
+            		qXML.setCascadeResource(cascadeResource);
+            		List<String> levelNames = cr.getLevelNames();
+            		if (levelNames != null && levelNames.size() > 0){
+            			Levels levels = objFactory.createLevels();
+            			ArrayList<Level> levelList = new ArrayList<Level>();
+            			for (int i=0 ; i<cr.getNumLevels(); i++){
+            				Level levelItem = objFactory.createLevel();
+            				com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
+                            t.setContent(levelNames.get(i));
+                            levelItem.addContent(t);
+                            levelList.add(levelItem);
+                            // TODO sort out translations
+            			}
+            			levels.setLevel(levelList);
+            			qXML.setLevels(levels);
+            		}
+            	}
+        	}
         }
 
         if (q.getOrder() != null) {
@@ -712,7 +745,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         return questionDocument;
     }
 
-    private List<AltText> formAltText(Map<String, Translation> translationMap) {
+    private String createCascadeResourceId(Long cascadeResourceId, Integer version) {
+        return "cascade-" + cascadeResourceId.toString() + "-v" + version.toString() + ".sqlite";
+    }
+
+	private List<AltText> formAltText(Map<String, Translation> translationMap) {
         List<AltText> altTextList = new ArrayList<AltText>();
         if (translationMap != null) {
             for (Translation lang : translationMap.values()) {
