@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
@@ -62,6 +64,8 @@ import com.google.appengine.api.utils.SystemProperty;
 @RequestMapping("/actions")
 public class ActionRestService {
 
+    private static final Logger logger = Logger.getLogger(ActionRestService.class.getName());
+
     @Inject
     private SurveyDAO surveyDao;
 
@@ -74,22 +78,14 @@ public class ActionRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> doAction(
-            @RequestParam(value = "action", defaultValue = "")
-            String action,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId,
-            @RequestParam(value = "surveyIds[]", defaultValue = "")
-            Long[] surveyIds,
-            @RequestParam(value = "email", defaultValue = "")
-            String email,
-            @RequestParam(value = "version", defaultValue = "")
-            String version,
-            @RequestParam(value = "dbInstructions", defaultValue = "")
-            String dbInstructions,
-            @RequestParam(value = "targetId", defaultValue = "")
- Long targetId,
-            @RequestParam(value = "folderId", defaultValue = "")
- Long folderId) {
+            @RequestParam(value = "action", defaultValue = "") String action,
+            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+            @RequestParam(value = "surveyIds[]", defaultValue = "") Long[] surveyIds,
+            @RequestParam(value = "email", defaultValue = "") String email,
+            @RequestParam(value = "version", defaultValue = "") String version,
+            @RequestParam(value = "dbInstructions", defaultValue = "") String dbInstructions,
+            @RequestParam(value = "targetId", defaultValue = "") Long targetId,
+            @RequestParam(value = "folderId", defaultValue = "") Long folderId) {
         String status = "failed";
         String message = "";
         final Map<String, Object> response = new HashMap<String, Object>();
@@ -122,6 +118,7 @@ public class ActionRestService {
         } else if ("copyProject".equals(action)) {
             status = copyProject(targetId, folderId);
         }
+
         statusDto.setStatus(status);
         response.put("actions", "[]");
         response.put("meta", statusDto);
@@ -322,6 +319,11 @@ public class ActionRestService {
     private String copyProject(Long targetId, Long folderId) {
 
         SurveyGroup projectSource = surveyGroupDao.getByKey(targetId);
+        if (projectSource == null) {
+            logger.log(Level.WARNING,
+                    String.format("Failed to copy project %s to folder %s", targetId, folderId));
+            return "failed";
+        }
         SurveyGroup projectCopy = new SurveyGroup();
 
         projectCopy.setCode(projectSource.getCode() + " copy");
