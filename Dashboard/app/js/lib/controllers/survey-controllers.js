@@ -1,3 +1,9 @@
+
+function capitaliseFirstLetter(string) {
+	if (Ember.empty(string)) return "";
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
@@ -7,6 +13,9 @@ FLOW.questionTypeControl = Ember.Object.create({
       label: Ember.String.loc('_option'),
       value: 'OPTION'
     }), Ember.Object.create({
+        label: Ember.String.loc('_cascade'),
+     value: 'CASCADE'
+      }),Ember.Object.create({
       label: Ember.String.loc('_number'),
       value: 'NUMBER'
     }), Ember.Object.create({
@@ -26,6 +35,87 @@ FLOW.questionTypeControl = Ember.Object.create({
       value: 'SCAN'
     })
   ]
+});
+
+FLOW.cascadeResourceControl = Ember.ArrayController.create({
+	content:null,
+	published:null,
+	levelNames:null,
+
+	populate: function() {
+		this.set('content', FLOW.store.find(FLOW.CascadeResource));
+		this.set('published',FLOW.store.filter(FLOW.CascadeResource,function(item){
+			return item.get('published');
+		}));
+	},
+
+	publish: function(cascadeResourceId){
+		FLOW.store.findQuery(FLOW.Action, {
+		    action: 'publishCascade',
+		    cascadeResourceId: cascadeResourceId
+		});
+	}
+});
+
+FLOW.cascadeNodeControl = Ember.ArrayController.create({
+	content:null,
+	level1:[],
+	level2:[],
+	level3:[],
+	level4:[],
+	level5:[],
+	parentNode:[],
+	selectedNode:[],
+	selectedNodeTrigger: true,
+	updateCountTrigger: true,
+	unSaved: null,
+	timeout: 60000,
+
+	init: function(){
+		this.set('unSaved', FLOW.store.filter(FLOW.CascadeNode, function(item){
+			return Ember.empty(item.get('keyId'));
+		}));
+	},
+
+	emptyNodes: function(start){
+		var i;
+		for (i=start ; i < 6 ; i++){
+			this.selectedNode[i]=null;
+			this.set('level' + i,[]);
+		}
+	},
+
+	toggleSelectedNodeTrigger:function (){
+		this.set('selectedNodeTrigger',!this.get('selectedNodeTrigger'));
+	},
+
+	toggleUpdateCountTrigger:function (){
+		this.set('updateCountTrigger',!this.get('updateCountTrigger'));
+	},
+
+	populate: function(level, parentNodeId){
+		var currentCascadeResource;
+		currentCascadeResource = FLOW.selectedControl.selectedCascadeResource.get('keyId');
+		this.set('content',FLOW.store.findQuery(FLOW.CascadeNode, {
+	        cascadeResourceId: currentCascadeResource,
+	        parentNodeId: parentNodeId
+	      }));
+		this.set('level' + level,FLOW.store.filter(FLOW.CascadeNode, function(item){
+			return (item.get('parentNodeId') == parentNodeId && item.get('cascadeResourceId') == currentCascadeResource);
+		}));
+		this.parentNode[level] = parentNodeId;
+	},
+
+	addNode: function(level,text) {
+		FLOW.store.createRecord(FLOW.CascadeNode, {
+			"code": null,
+			"name": capitaliseFirstLetter(text),
+			"nodeId": null,
+			"parentNodeId":this.get('parentNode')[level],
+			"cascadeResourceId":FLOW.selectedControl.selectedCascadeResource.get('keyId')
+        });
+		this.toggleUpdateCountTrigger();
+	},
 });
 
 FLOW.notificationOptionControl = Ember.Object.create({

@@ -64,6 +64,7 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function (router, event) {
         router.get('applicationController').connectOutlet('navSurveys');
         router.set('navigationController.selected', 'navSurveys');
+        FLOW.cascadeResourceControl.populate();
       },
 
       doNewSurvey: function (router, event) {
@@ -259,6 +260,9 @@ FLOW.Router = Ember.Router.extend({
       doDataCleaning: function (router, event) {
         router.transitionTo('navData.dataCleaning');
       },
+      doCascadeResources: function (router, event) {
+          router.transitionTo('navData.cascadeResources');
+        },
       doMonitoringData: function (router, event) {
         router.transitionTo('navData.monitoringData');
       },
@@ -304,6 +308,15 @@ FLOW.Router = Ember.Router.extend({
         }
       }),
       
+      cascadeResources: Ember.Route.extend({
+          route: '/cascaderesources',
+          connectOutlets: function (router, context) {
+            router.get('navDataController').connectOutlet('cascadeResources');
+            router.set('datasubnavController.selected', 'cascadeResources');
+            FLOW.cascadeResourceControl.populate();
+          }
+        }),
+
       monitoringData: Ember.Route.extend({
         route: '/monitoringdata',
         connectOutlets: function (router, context) {

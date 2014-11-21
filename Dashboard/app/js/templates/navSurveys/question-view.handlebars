@@ -80,6 +80,17 @@
       {{/if}}
     {{/if}}
 
+  	{{#if view.amCascadeType}}
+         <label class="selectinLabel dependencySelect"> {{t _choose_cascade_question_resource}}:
+        {{view Ember.Select
+        contentBinding="FLOW.cascadeResourceControl.published"
+        selectionBinding="FLOW.selectedControl.selectedCascadeResource"
+        optionLabelPath="content.name"
+        optionValuePath="content.keyId"
+        prompt="Select cascade"
+        promptBinding="Ember.STRINGS._select_cascade"}}</label>
+    {{/if}}
+
     {{#if view.amNoOptionsType}}
     <p class="noOptions">
       {{t _no_options_for_this_question_type}}

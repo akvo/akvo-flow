@@ -63,6 +63,7 @@ FLOW.selectedControl = Ember.Controller.create({
   selectedForCopyQuestion: null,
   selectedCreateNewGroup: false,
   selectedSurveyOPTIONQuestions: null,
+  selectedCascadeResource:null,
   radioOptions: "",
 
   // OptionQuestions:function (){

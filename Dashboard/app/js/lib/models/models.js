@@ -19,7 +19,38 @@ FLOW.BaseModel = DS.Model.extend({
     }
     this.set('savingStatus', (this.get('isSaving') || this.get('isDirty')));
   }.observes('isSaving', 'isDirty')
+});
 
+FLOW.CascadeResource = FLOW.BaseModel.extend({
+	name: DS.attr('string', {
+	   defaultValue: ''
+	}),
+	version: DS.attr('number', {
+		defaultValue: 1
+	}),
+	numLevels: DS.attr('number', {
+		defaultValue: 1
+	}),
+	published: DS.attr('boolean', {
+		defaultValue: false
+	}),
+	levelNames: DS.attr('array', {defaultValue: []
+	}),
+});
+
+FLOW.CascadeNode = FLOW.BaseModel.extend({
+	name: DS.attr('string', {
+	   defaultValue: ''
+	}),
+	code: DS.attr('string', {
+		defaultValue: ''
+	}),
+	parentNodeId: DS.attr('number', {
+		defaultValue: ''
+	}),
+	cascadeResourceId: DS.attr('number', {
+		defaultValue: ''
+	})
 });
 
 FLOW.SurveyGroup = FLOW.BaseModel.extend({
@@ -150,6 +181,7 @@ FLOW.Question = FLOW.BaseModel.extend({
     defaultValue: null
   }),
   order: DS.attr('number'),
+  cascadeResourceId: DS.attr('number'),
   path: DS.attr('string'),
   questionGroupId: DS.attr('number'),
   surveyId: DS.attr('number'),
