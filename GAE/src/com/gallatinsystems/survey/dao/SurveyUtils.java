@@ -222,6 +222,11 @@ public class SurveyUtils {
         return sDao.getById(surveyId);
     }
 
+    public static SurveyGroup retrieveSurveyGroup(Long surveyGroupId) {
+        final SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
+        return surveyGroupDAO.getByKey(surveyGroupId);
+    }
+
     private static String getPath(Survey s) {
         if (s == null) {
             return null;

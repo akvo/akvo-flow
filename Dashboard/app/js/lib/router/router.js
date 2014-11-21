@@ -91,11 +91,12 @@ FLOW.Router = Ember.Router.extend({
           router.get('navSurveysController').connectOutlet({
             name: 'navSurveysMain'
           });
-          FLOW.surveyGroupControl.populate();
+          FLOW.projectControl.populate();
           FLOW.selectedControl.set('selectedQuestionGroup', null);
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.questionControl.set('OPTIONcontent', null);
+          FLOW.attributeControl.populate();
 
         }
       }),
@@ -303,7 +304,7 @@ FLOW.Router = Ember.Router.extend({
           router.set('datasubnavController.selected', 'dataCleaning');
         }
       }),
-      
+
       monitoringData: Ember.Route.extend({
         route: '/monitoringdata',
         connectOutlets: function (router, context) {

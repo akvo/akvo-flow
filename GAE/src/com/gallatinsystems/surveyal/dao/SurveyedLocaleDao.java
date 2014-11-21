@@ -84,7 +84,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
     @SuppressWarnings("unchecked")
     public List<SurveyedLocale> listPublicLocalesByGeocell(List<String> geocells, int pageSize) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        String queryString = ":p1.contains(geocells) && localeType != 'Household'";
+        String queryString = ":p1.contains(geocells) && localeType != 'Household' && localeType != 'PRIVATE'";
         javax.jdo.Query query = pm.newQuery(SurveyedLocale.class, queryString);
         prepareCursor(null, pageSize, query);
         List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(geocells);

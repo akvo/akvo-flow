@@ -21,6 +21,8 @@ import java.util.Date;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
+import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
 public class SurveyGroupDto extends BaseDto implements NamedObject {
 
@@ -33,6 +35,11 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     private Long newLocaleSurveyId;
     private Date createdDateTime;
     private Date lastUpdateDateTime;
+    private ProjectType projectType;
+    private Long parentId;
+    private String defaultLanguageCode;
+    private PrivacyLevel privacyLevel;
+    private Boolean published;
 
     private ArrayList<SurveyDto> surveyList = null;
 
@@ -110,6 +117,46 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 
     public void setNewLocaleSurveyId(Long newLocaleSurveyId) {
         this.newLocaleSurveyId = newLocaleSurveyId;
+    }
+
+    public ProjectType getProjectType() {
+        return projectType;
+    }
+
+    public void setProjectType(ProjectType projectType) {
+        this.projectType = projectType;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parent) {
+        this.parentId = parent;
+    }
+
+    public String getDefaultLanguageCode() {
+        return defaultLanguageCode;
+    }
+
+    public void setDefaultLanguageCode(String defaultLanguageCode) {
+        this.defaultLanguageCode = defaultLanguageCode;
+    }
+
+    public PrivacyLevel getPrivacyLevel() {
+        return privacyLevel;
+    }
+
+    public void setPrivacyLevel(PrivacyLevel privacyLevel) {
+        this.privacyLevel = privacyLevel;
+    }
+
+    public Boolean getPublished() {
+        return published;
+    }
+
+    public void setPublished(Boolean published) {
+        this.published = published;
     }
 
 }

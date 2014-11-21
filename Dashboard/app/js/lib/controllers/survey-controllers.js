@@ -121,6 +121,10 @@ FLOW.surveySectorTypeControl = Ember.Object.create({
   ]
 });
 
+FLOW.privacyLevelControl = Ember.Object.create({
+  content: ["PRIVATE", "PUBLIC"]
+});
+
 FLOW.alwaysTrue = function () {
   return true;
 };
@@ -164,6 +168,213 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
 });
 
 
+/**
+ * The root project folder is represented as null with the keyId null
+ */
+FLOW.projectControl = Ember.ArrayController.create({
+  content: null,
+  currentProject: null,
+  moveTarget: null,
+
+  populate: function() {
+    FLOW.store.find(FLOW.SurveyGroup);
+    this.set('content', FLOW.store.filter(FLOW.SurveyGroup, function(p) {
+      return true;
+    }));
+  },
+
+  setCurrentProject: function(project) {
+    this.set('currentProject', project);
+  },
+
+  /* Computed properties */
+  breadCrumbs: function() {
+    var result = [];
+    var currentProject = this.get('currentProject');
+    if (currentProject === null) {
+      // current project is root
+      return [];
+    }
+    var id = currentProject.get('keyId');
+    while(id !== null) {
+      project = FLOW.store.find(FLOW.SurveyGroup, id);
+      result.push(project);
+      id = project.get('parentId');
+    }
+    return result.reverse();
+  }.property('@each', 'currentProject'),
+
+  currentFolders: function() {
+    var self = this;
+    var currentProject = this.get('currentProject');
+    var parentId = currentProject ? currentProject.get('keyId') : null;
+    return this.get('content').filter(function(project) {
+      return project.get('parentId') === parentId;
+    }).sort(function(a, b) {
+      if (self.isProjectFolder(a) && self.isProject(b)) {
+        return -1;
+      } else if (self.isProject(a) && self.isProjectFolder(b)) {
+        return 1;
+      } else {
+        var aCode = a.get('code') || a.get('name');
+        var bCode = b.get('code') || b.get('name');
+        return aCode.localeCompare(bCode);
+      }
+    });
+  }.property('@each', 'currentProject', 'moveTarget'),
+
+  formCount: function() {
+    return FLOW.surveyControl.content && FLOW.surveyControl.content.get('length') || 0;
+  }.property('FLOW.surveyControl.content.@each'),
+
+  questionCount: function () {
+    var questions = FLOW.questionControl.filterContent;
+    return questions && questions.get('length') || 0;
+  }.property('FLOW.questionControl.filterContent.@each'),
+
+  hasForms: function() {
+    return this.get('formCount') > 0;
+  }.property('this.formCount'),
+
+  isPublished: function() {
+    var forms = FLOW.surveyControl.get('content');
+    if (!forms) return true;
+
+    var unpublishedForms = forms.filter(function(form) {
+      return form.get('status') !== 'PUBLISHED';
+    });
+
+    return unpublishedForms.get('length') === 0;
+  }.property('FLOW.surveyControl.content.@each.status'),
+
+  /* Actions */
+  selectProject: function(evt) {
+    var project = evt.context;
+    this.setCurrentProject(evt.context);
+    if (this.isProject(project)) {
+
+      FLOW.selectedControl.set('selectedSurveyGroup', project);
+    }
+  },
+
+  selectRootProject: function() {
+    this.setCurrentProject(null);
+  },
+
+  /* Create a new project folder. The current project must be root or a project folder */
+  createProjectFolder: function() {
+    this.createNewProject(true);
+  },
+
+  createProject: function() {
+    this.createNewProject(false);
+  },
+
+  createNewProject: function(folder) {
+    var currentFolder = this.get('currentProject');
+    var currentFolderId = currentFolder ? currentFolder.get('keyId') : null;
+
+    var name = folder ? "New project folder" : "New project";
+    var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
+
+    FLOW.store.createRecord(FLOW.SurveyGroup, {
+      "code": name,
+      "name": name,
+      "parentId": currentFolderId,
+      "projectType": projectType
+    });
+    FLOW.store.commit();
+  },
+
+  deleteProject: function(evt) {
+    var project = FLOW.store.find(FLOW.SurveyGroup, evt.context.get('keyId'));
+    project.deleteRecord();
+    FLOW.store.commit();
+  },
+
+  beginMoveProject: function(evt) {
+    this.set('moveTarget', evt.context);
+    this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "project");
+  },
+
+  beginCopyProject: function(evt) {
+    this.set('copyTarget', evt.context);
+  },
+
+  cancelMoveProject: function(evt) {
+    this.set('moveTarget', null);
+  },
+
+  cancelCopyProject: function(evt) {
+    this.set('copyTarget', null);
+  },
+
+  endMoveProject: function(evt) {
+    var newFolderId = this.get('currentProject') ? this.get('currentProject').get('keyId') : null;
+    var project = this.get('moveTarget');
+    project.set('parentId', newFolderId);
+    FLOW.store.commit();
+    this.set('moveTarget', null);
+  },
+
+  endCopyProject: function(evt) {
+    var currentFolder = this.get('currentProject');
+
+    FLOW.store.findQuery(FLOW.Action, {
+      action: 'copyProject',
+      targetId: this.get('copyTarget').get('keyId'),
+      folderId: currentFolder ? currentFolder.get('keyId') : null,
+    });
+
+    FLOW.store.commit();
+
+    this.set('showCopySurveyDialogBool', false);
+
+    FLOW.dialogControl.set('activeAction', "ignore");
+    FLOW.dialogControl.set('header', Ember.String.loc('_copying_survey'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_copying_published_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+
+    this.set('copyTarget', null);
+  },
+
+  publishProject: function() {
+    var forms = FLOW.surveyControl.get('content');
+    if (!forms) return true;
+
+    forms.filter(function(form) {
+      return form.get('status') !== 'PUBLISHED';
+    }).map(function(form) {
+      FLOW.store.findQuery(FLOW.Action, {
+        action: 'publishSurvey',
+        surveyId: form.get('keyId')
+      });
+      form.set('status', 'PUBLISHED');
+    });
+
+    FLOW.store.commit();
+  },
+
+  /* Helper methods */
+  isProjectFolder: function(project) {
+    return project === null || project.get('projectType') === 'PROJECT_FOLDER';
+  },
+
+  isProject: function(project) {
+    return !this.isProjectFolder(project);
+  },
+
+  isProjectFolderEmpty: function(folder) {
+    var id = folder.get('keyId');
+    var children = this.get('content').filter(function(project) {
+      return project.get('parentId') === id;
+    });
+    return children.get('length') === 0;
+  }
+});
+
+
 FLOW.surveyControl = Ember.ArrayController.create({
   content: null,
   publishedContent: null,
@@ -187,6 +398,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
 
   populate: function () {
+
     var id;
     if (FLOW.selectedControl.get('selectedSurveyGroup')) {
       id = FLOW.selectedControl.selectedSurveyGroup.get('keyId');
@@ -195,10 +407,20 @@ FLOW.surveyControl = Ember.ArrayController.create({
       this.set('content', FLOW.store.findQuery(FLOW.Survey, {
         surveyGroupId: id
       }));
+
     } else {
       this.set('content', null);
     }
   }.observes('FLOW.selectedControl.selectedSurveyGroup'),
+
+  selectFirstForm: function() {
+    if (this.get('content') && this.content.get('isLoaded')) {
+      var form = this.content.get('firstObject');
+      if (form) {
+        FLOW.selectedControl.set('selectedSurvey', form);
+      }
+    }
+  }.observes('content.isLoaded'),
 
   refresh: function () {
 	  var sg = FLOW.selectedControl.get('selectedSurveyGroup');
@@ -222,12 +444,35 @@ FLOW.surveyControl = Ember.ArrayController.create({
     });
   },
 
-  deleteSurvey: function (keyId) {
-    var survey;
-    survey = FLOW.store.find(FLOW.Survey, keyId);
+  createForm: function() {
+    FLOW.store.createRecord(FLOW.Survey, {
+      "name": "New Form",
+      "code": "New Form",
+      "defaultLanguageCode": "en",
+      "requireApproval": false,
+      "status": "NOT_PUBLISHED",
+      "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
+      "version":"1.0"
+    });
+
+    FLOW.store.commit();
+    this.refresh();
+  },
+
+  deleteForm: function() {
+    var keyId = FLOW.selectedControl.selectedSurvey.get('keyId');
+    var survey = FLOW.store.find(FLOW.Survey, keyId);
     survey.deleteRecord();
     FLOW.store.commit();
     this.refresh();
+  },
+
+  showPreview: function() {
+    FLOW.previewControl.set('showPreviewPopup', true);
+  },
+
+  selectForm: function(evt) {
+    FLOW.selectedControl.set('selectedSurvey', evt.context);
   }
 });
 
@@ -939,15 +1184,6 @@ FLOW.translationControl = Ember.ArrayController.create({
       }
     }
 	return changed;
-  },
-
-  saveTranslationsAndClose: function () {
-    this.saveTranslations();
-    FLOW.router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
-  },
-
-  closeTranslations: function (router, event) {
-    FLOW.router.transitionTo('navSurveys.navSurveysEdit.editQuestions');
   },
 
   // checks if unsaved translations are present, and if so, emits a warning
