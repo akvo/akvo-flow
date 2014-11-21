@@ -19,7 +19,8 @@
 
     om/IWillMount
     (will-mount [this]
-      (dispatch :roles/fetch nil))
+      (dispatch :roles/fetch nil)
+      (dispatch :projects/fetch nil))
 
     om/IRenderState
     (render-state [this state]

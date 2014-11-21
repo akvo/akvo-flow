@@ -6,6 +6,8 @@
             [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
             [org.akvo.flow.dashboard.users.store :as store]
+            [org.akvo.flow.dashboard.users.user-details :refer (user-details)]
+            [org.akvo.flow.dashboard.projects.store :as projects-store]
             [org.akvo.flow.dashboard.app-state :refer (app-state)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]
@@ -138,7 +140,7 @@
                  :buttons [{:caption "Close"
                             :action close!}]}))))
 
-(defn edit-user [{:keys [user close!]} owner]
+(defn edit-user [{:keys [user close! roles project-folders]} owner]
   (om/component
    (html
     [:div
@@ -153,12 +155,15 @@
       [:div.form-group
        (om/build b/dropdown {:id "chooseRole"
                              :caption "Select Role"
-                             :choices ["Admin" "Project Editor" "Translator" "User"]
+                             :choices (map pr-str roles)
                              :on-select #(println %1 %2)})]
       [:div.form-group
        (om/build b/dropdown {:id "chooseAssignment"
-                             :caption "Select Assignment"
-                             :choices ["All" "Africa" "Asia" "South America" "Burundi population survey"]
+                             :placeholder "Select Assignment"
+                             :selected nil
+                             :choices (map (fn [pf]
+                                             {:label (get pf "code")
+                                              :id (get pf "keyId")}) project-folders)
                              :on-select #(println %1 %2)})]
       [:div.form-group
        (b/btn-primary {:class "btn-xs"} (b/icon :plus) " Add")]]])))
@@ -192,7 +197,7 @@
                            {:user user
                             :on-action on-action})}]))
 
-(defn users [{:keys [users]} owner]
+(defn users [{:keys [users roles projects]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -239,6 +244,7 @@
                {:keys [component user-id]} dialog]
            [:div
             [:hr]
-            (om/build component {:user (if user-id (store/get-user users user-id))
-                                 :close! #(om/set-state! owner :dialog nil)})
+            (om/build user-details {:user (if user-id (store/get-user users user-id))
+                                    :close! #(om/set-state! owner :dialog nil)
+                                    :project-folders (projects-store/get-project-folders projects)})
             [:hr]])]]))))

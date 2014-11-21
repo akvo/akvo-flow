@@ -72,28 +72,12 @@
  (swap! app-state assoc-in [:users :by-id (get user "keyId") "accessKey"] access-key))
 
 
-(defn index-by [key coll]
-  (assert key )
-  (reduce (fn [index res]
-            (let [elem (get res key ::not-found)]
-              (assert (not= elem ::not-found) (str "No value under key " key))
-              (assoc index elem res)))
-          {}
-          coll))
 
-(defn fetch-and-index-by-id [resource resource-name]
-  {:pre [(string? resource) (keyword? resource-name)]}
-  (GET resource
-       (merge ajax/default-ajax-config
-              {:handler (fn [response]
-                          (swap! app-state assoc-in [resource-name :by-id]
-                                 (index-by "keyId" (get response (name resource-name)))))})))
 
 (dispatch-loop
  :fetch-users _
- (fetch-and-index-by-id "/rest/users" :users))
+ (ajax/fetch-and-index "/rest/users" :users))
 
-;; TODO move roles endpoint to /rest/roles.
 (dispatch-loop
  :roles/fetch _
- (fetch-and-index-by-id "/rest/user_roles/all" :roles))
+ (ajax/fetch-and-index "/rest/user_roles/all" :roles))
