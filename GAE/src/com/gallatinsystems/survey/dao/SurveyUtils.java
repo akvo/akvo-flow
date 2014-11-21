@@ -297,8 +297,10 @@ public class SurveyUtils {
 
             try {
                 final JSONObject payload = new JSONObject();
-                payload.put("cascadeResourceId", cascadeResourceId);
+                payload.put("cascadeResourceId", cascadeResourceId.toString());
                 payload.put("uploadUrl", uploadUrl);
+                cr.setVersion(cr.getVersion() + 1);
+                payload.put("version", cr.getVersion().toString());
 
                 log.log(Level.INFO, "Sending cascade publish request for cascade: " + cascadeResourceId);
 
@@ -310,7 +312,6 @@ public class SurveyUtils {
 
                 log.log(Level.INFO, "Response from server: " + response);
                 status = "publish requested";
-                cr.setVersion(cr.getVersion() + 1);
                 cr.setPublished(true);
                 crDao.save(cr);
             } catch (Exception e) {
