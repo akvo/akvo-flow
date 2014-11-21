@@ -19,6 +19,7 @@ public class GaeUser implements Serializable {
     private final String userName;
     private final Set<AppRole> authorities;
     private final boolean enabled;
+    private Long userId;
 
     /**
      * Pre-registration constructor. Assigns the user the "NEW_USER" role only.
@@ -33,11 +34,13 @@ public class GaeUser implements Serializable {
     /**
      * Post-registration constructor
      */
-    public GaeUser(String userName, String email, Set<AppRole> authorities, boolean enabled) {
+    public GaeUser(String userName, String email, Long userId, Set<AppRole> authorities,
+            boolean enabled) {
         this.userName = userName;
         this.email = email;
         this.authorities = authorities;
         this.enabled = enabled;
+        this.userId = userId;
     }
 
     public boolean isEnabled() {
@@ -50,6 +53,10 @@ public class GaeUser implements Serializable {
 
     public String getUserName() {
         return userName;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 
     public Collection<AppRole> getAuthorities() {

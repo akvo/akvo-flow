@@ -1,6 +1,8 @@
 
 package com.gallatinsystems.user.dao;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +27,33 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
      * @return
      */
     public List<UserAuthorization> listByObjectPath(Long userId, String objectPath) {
+        if (objectPath == null) {
+            return Collections.emptyList();
+        }
+        List<String> paths = listParentPaths(objectPath);
         PersistenceManager pm = PersistenceFilter.getManager();
         String queryString = "userId == :p1 && :p2.contains(objectPath)";
         javax.jdo.Query query = pm.newQuery(UserAuthorization.class, queryString);
-        List<UserAuthorization> results = (List<UserAuthorization>) query.execute(userId,
-                objectPath);
+        List<UserAuthorization> results = (List<UserAuthorization>) query.execute(userId, paths);
         return results;
+    }
+
+    /**
+     * Split the path of an object into a list of the paths of all its parent objects
+     *
+     * @param objectPath
+     * @return
+     */
+    private List<String> listParentPaths(String objectPath) {
+        List<String> parentPaths = new ArrayList<String>();
+        StringBuilder path = new StringBuilder(objectPath);
+        while (path.length() > 1) {
+            path.delete(path.lastIndexOf("/"), path.length());
+            parentPaths.add(path.toString().trim());
+        }
+        parentPaths.set(parentPaths.size() - 1, "/"); // set last element to root path
+
+        return parentPaths;
     }
 
     /**

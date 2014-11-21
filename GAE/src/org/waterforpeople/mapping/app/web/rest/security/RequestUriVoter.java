@@ -85,7 +85,6 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         HttpServletRequest httpRequest = securedObject.getHttpRequest();
         String requestUri = securedObject.getRequestUrl();
         String httpMethod = httpRequest.getMethod();
-        Long userId = null; // TODO: retrieve from principal
 
         // for now we only vote for request access on project folders and forms
         if (!URI_PATTERN.matcher(requestUri).matches()) {
@@ -97,7 +96,9 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             return ACCESS_ABSTAIN;
         }
 
-        // retrieve user authorisations containing resource paths that make up this one
+        Long userId = (Long) authentication.getCredentials();
+
+        // retrieve user authorizations containing resource paths that make up this one
         List<UserAuthorization> authorizations = userAuthorizationDao.listByObjectPath(userId,
                 resourcePath);
         if (authorizations.isEmpty()) {
@@ -153,7 +154,6 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             }
 
             if (!payload.containsKey("path")) {
-                log.info("object:  " + payload.toString());
                 throw new AccessDeniedException("Access is Denied. Unable to identify object path");
             }
             resourcePath = (String) payload.get("path");

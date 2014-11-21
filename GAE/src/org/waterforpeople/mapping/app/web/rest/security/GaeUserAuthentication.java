@@ -18,10 +18,12 @@ public class GaeUserAuthentication implements Authentication {
     private final GaeUser principal;
     private final Object details;
     private boolean authenticated;
+    private Long userId;
 
     public GaeUserAuthentication(GaeUser principal, Object details) {
         this.principal = principal;
         this.details = details;
+        this.userId = principal.getUserId();
         authenticated = true;
     }
 
@@ -29,8 +31,9 @@ public class GaeUserAuthentication implements Authentication {
         return new HashSet<GrantedAuthority>(principal.getAuthorities());
     }
 
+    @Override
     public Object getCredentials() {
-        throw new UnsupportedOperationException();
+        return userId;
     }
 
     public Object getDetails() {
