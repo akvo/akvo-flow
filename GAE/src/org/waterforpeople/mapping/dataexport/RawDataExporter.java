@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto.QuestionType;
 import org.waterforpeople.mapping.app.gwt.client.surveyinstance.SurveyInstanceDto;
@@ -37,10 +38,12 @@ import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
 
 /**
  * exports raw data based on a date
- * 
+ *
  * @author Christopher Fagiani
  */
 public class RawDataExporter extends AbstractDataExporter {
+
+    private static final Logger log = Logger.getLogger(RawDataExporter.class);
     private static final String IMAGE_PREFIX = "http://waterforpeople.s3.amazonaws.com/images/";
 
     private String serverBase;
@@ -62,7 +65,7 @@ public class RawDataExporter extends AbstractDataExporter {
         apiKey = criteria.get("apiKey");
 
         Writer pw = null;
-        System.out.println("In CSV exporter");
+        log.debug("In CSV exporter");
         final String apiKey = criteria.get("apiKey");
         try {
             Object[] results = BulkDataServiceClient.loadQuestions(surveyId,
@@ -75,16 +78,16 @@ public class RawDataExporter extends AbstractDataExporter {
                 writeHeader(pw, questionMap);
                 exportInstances(pw, keyList);
             } else {
-                System.out.println("Error getting questions");
+                log.error("Error getting questions");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error exporting CSV:" + e.getMessage(), e);
         } finally {
             if (pw != null) {
                 try {
                     pw.close();
                 } catch (IOException e) {
-                    System.err.println("Could not close writer: " + e);
+                    log.error("Could not close writer: " + e.getMessage(), e);
                 }
             }
         }
@@ -103,10 +106,10 @@ public class RawDataExporter extends AbstractDataExporter {
                 writeHeader(pw, questionMap);
                 exportInstances(pw, keyList);
             } else {
-                System.out.println("Error getting questions");
+                log.error("Error getting questions");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error exporting: " + e.getMessage(), e);
         }
     }
 
@@ -202,7 +205,7 @@ public class RawDataExporter extends AbstractDataExporter {
                                     } else {
                                         if (qdto != null
                                                 && (QuestionType.PHOTO == qdto.getType() || QuestionType.VIDEO == qdto
-                                                        .getType())) {
+                                                .getType())) {
                                             final int filenameIndex = val.lastIndexOf("/") + 1;
                                             if (filenameIndex > 0 && filenameIndex < val.length()) {
                                                 val = imagePrefix + val.substring(filenameIndex);
@@ -217,14 +220,12 @@ public class RawDataExporter extends AbstractDataExporter {
                             pw.write("\n");
                             pw.flush();
                             i++;
-                            System.out.println("Row: " + i);
+                            log.debug("Row: " + i);
                             responses = null;
                         }
                     } catch (Exception ex) {
-                        System.out
-                                .println("Swallow the exception for now and continue");
+                        log.error("Swallow the exception for now and continue", ex);
                     }
-
                 }
             }
         }

@@ -45,13 +45,18 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
@@ -64,7 +69,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class TestHarnessServlet extends HttpServlet {
     private static Logger log = Logger.getLogger(TestHarnessServlet.class
-            .getName());
+	    .getName());
     private static final long serialVersionUID = -5673118002247715049L;
 
     @Override
@@ -473,35 +478,91 @@ public class TestHarnessServlet extends HttpServlet {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else if ("projectMigration".equals(action)) {
+            projectMigration();
         }
     }
 
     private void setupTestUser() {
-        UserDao userDao = new UserDao();
-        User user = userDao.findUserByEmail("test@example.com");
-        if (user == null) {
-            user = new User();
-            user.setEmailAddress("test@example.com");
-        }
-        user.setSuperAdmin(true);
-        user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
-        user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
-        user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
-        userDao.save(user);
+	UserDao userDao = new UserDao();
+	User user = userDao.findUserByEmail("test@example.com");
+	if (user == null) {
+	    user = new User();
+	    user.setEmailAddress("test@example.com");
+	}
+	user.setSuperAdmin(true);
+	user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
+	user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
+	user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
+	userDao.save(user);
     }
 
     private boolean deleteSurveyResponses(Long surveyId, Integer count) {
-        SurveyInstanceDAO dao = new SurveyInstanceDAO();
+	SurveyInstanceDAO dao = new SurveyInstanceDAO();
 
-        List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
-                surveyId, count != null ? count : 100);
+	List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
+		surveyId, count != null ? count : 100);
 
-        if (instances != null) {
-            for (SurveyInstance instance : instances) {
-                dao.deleteSurveyInstance(instance);
+	if (instances != null) {
+	    for (SurveyInstance instance : instances) {
+		dao.deleteSurveyInstance(instance);
+	    }
+	    return true;
+	}
+	return false;
+    }
+
+    private static void projectMigration() {
+
+        SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
+        SurveyDAO surveyDAO = new SurveyDAO();
+
+        List<SurveyGroup> surveyGroups = surveyGroupDAO
+                .list(Constants.ALL_RESULTS);
+
+        for (SurveyGroup surveyGroup : surveyGroups) {
+
+            List<Survey> surveys = surveyDAO.listSurveysByGroup(surveyGroup
+                    .getKey().getId());
+
+            boolean isMonitoring = Boolean.TRUE.equals(surveyGroup.getMonitoringGroup());
+            if (isMonitoring || surveys.size() <= 1) {
+                if (surveyGroup.getProjectType() == null) {
+                    surveyGroup.setProjectType(ProjectType.PROJECT);
+                }
+
+                PrivacyLevel privacyLevel = PrivacyLevel.PRIVATE;
+                String defaultLanguageCode = "en";
+                if (surveys.size() >= 1) {
+                    Survey survey = surveys.get(0);
+                    privacyLevel = survey.getPointType() == "Household" ? PrivacyLevel.PRIVATE
+                            : PrivacyLevel.PUBLIC;
+                    defaultLanguageCode = survey.getDefaultLanguageCode();
+                }
+                surveyGroup.setPrivacyLevel(privacyLevel);
+                surveyGroup.setDefaultLanguageCode(defaultLanguageCode);
+                surveyGroupDAO.save(surveyGroup);
+                continue;
             }
-            return true;
+
+            for (Survey survey : surveys) {
+                surveyGroup.setProjectType(ProjectType.PROJECT_FOLDER);
+                surveyGroupDAO.save(surveyGroup);
+
+                SurveyGroup newSurveyGroup = new SurveyGroup();
+                newSurveyGroup.setName(survey.getName());
+                newSurveyGroup.setCode(survey.getCode());
+                newSurveyGroup.setParentId(surveyGroup.getKey().getId());
+                newSurveyGroup.setMonitoringGroup(false);
+                newSurveyGroup.setProjectType(ProjectType.PROJECT);
+                newSurveyGroup
+                        .setPrivacyLevel(survey.getPointType() == "Household" ? PrivacyLevel.PRIVATE
+                                : PrivacyLevel.PUBLIC);
+                newSurveyGroup.setDefaultLanguageCode(survey.getDefaultLanguageCode());
+                surveyGroupDAO.save(newSurveyGroup);
+                survey.setSurveyGroupId(newSurveyGroup.getKey().getId());
+                surveyDAO.save(survey);
+            }
         }
-        return false;
     }
 }

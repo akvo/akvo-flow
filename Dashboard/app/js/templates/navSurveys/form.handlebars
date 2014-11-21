@@ -1,0 +1,49 @@
+{{#with FLOW.selectedControl.selectedSurvey as form}}
+<div id="form01" class="aformContainer">
+	<nav class="newSurveyNav">
+		<ul>
+			<li><a class="previewNewSurvey" {{action "showPreview" target="FLOW.surveyControl"}}>Preview</a></li>
+			<li><a class="deleteSurvey" {{action confirm FLOW.dialogControl.delForm target="FLOW.dialogControl"}}>Delete</a></li>
+		</ul>
+	</nav>
+	<ul class="formSummary">
+		<li>Version<span class="formVersion">{{form.version}}</span></li>
+		<li>ID<span class="formID">{{form.keyId}}</span></li>
+		<li>Questions<span class="formQuestionCount">{{FLOW.projectControl.questionCount}}</span></li>
+	</ul>
+	<section class="formDetails">
+		<h3>Form basics</h3>
+		{{#if view.visibleFormBasics}}
+			{{#unless view.isNewForm}}
+				<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">Collapse</a>
+			{{/unless}}
+			<form class="surveyDetailForm">
+				<label>Form Title</label>
+				{{view Ember.TextField valueBinding="form.code"}}
+				<label>Form Description</label>
+				{{view Ember.TextField valueBinding="form.description"}}
+				<label>Manage</label>
+				<nav class="newSurveyNav">
+					<ul class="manageStuff">
+						<li><a class="manageTranslations" {{action "doManageTranslations" target="this"}}>Manage translations &gt;</a></li>
+						<li><a class="manageNotifications" {{action "doManageNotifications" target="this"}}>Manage notifications &gt;</a></li>
+					</ul>
+				</nav>
+			</form>
+		{{else}}
+			<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">Show</a>
+		{{/if}}
+	</section>
+	<section class="surveyForm">
+		{{#if view.manageTranslations}}
+			{{view FLOW.TranslationsView}}
+		{{else}}
+			{{#if view.manageNotifications}}
+				{{view FLOW.NotificationsView}}
+			{{else}}
+				{{view FLOW.EditQuestionsView}}
+			{{/if}}
+		{{/if}}
+	</section>
+</div>
+{{/with}}

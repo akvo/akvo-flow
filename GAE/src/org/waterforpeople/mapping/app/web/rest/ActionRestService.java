@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -55,8 +56,10 @@ import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.CascadeResource;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
@@ -70,8 +73,13 @@ public class ActionRestService {
 	private static final Logger log = Logger.getLogger(SurveyUtils.class
             .getName());
 
+    private static final Logger logger = Logger.getLogger(ActionRestService.class.getName());
+
     @Inject
     private SurveyDAO surveyDao;
+
+    @Inject
+    private SurveyGroupDAO surveyGroupDao;
 
     @Inject
     private QuestionDao questionDao;
@@ -92,7 +100,9 @@ public class ActionRestService {
             @RequestParam(value = "version", defaultValue = "")
             String version,
             @RequestParam(value = "dbInstructions", defaultValue = "")
-            String dbInstructions) {
+            String dbInstructions,
+            @RequestParam(value = "targetId", defaultValue = "") Long targetId,
+            @RequestParam(value = "folderId", defaultValue = "") Long folderId) {
         String status = "failed";
         String message = "";
         final Map<String, Object> response = new HashMap<String, Object>();
@@ -124,7 +134,10 @@ public class ActionRestService {
             status = createTestLocales();
         } else if ("publishCascade".equals(action)) {
         	status = publishCascade(cascadeResourceId);
+        } else if ("copyProject".equals(action)) {
+            status = copyProject(targetId, folderId);
         }
+
         statusDto.setStatus(status);
         response.put("actions", "[]");
         response.put("meta", statusDto);
@@ -340,7 +353,7 @@ public class ActionRestService {
      * Create datastore entry for new apk version object called as:
      * http://host/rest/actions?action=newApkVersion&version=x.y.z appCode and deviceType properties
      * are defaults.
-     * 
+     *
      * @Param version
      */
     private String newApkVersion(String version) {
@@ -361,5 +374,36 @@ public class ActionRestService {
         } else {
             return "";
         }
+    }
+
+    private String copyProject(Long targetId, Long folderId) {
+
+        SurveyGroup projectSource = surveyGroupDao.getByKey(targetId);
+        if (projectSource == null) {
+            logger.log(Level.WARNING,
+                    String.format("Failed to copy project %s to folder %s", targetId, folderId));
+            return "failed";
+        }
+        SurveyGroup projectCopy = new SurveyGroup();
+
+        projectCopy.setCode(projectSource.getCode() + " copy");
+        projectCopy.setName(projectSource.getName() + " copy");
+        projectCopy.setMonitoringGroup(projectSource.getMonitoringGroup());
+        projectCopy.setParentId(folderId);
+
+        SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy);
+
+        List<Survey> surveys = surveyDao.listSurveysByGroup(targetId);
+        for (Survey survey : surveys) {
+            SurveyDto surveyDto = new SurveyDto();
+            surveyDto.setCode(survey.getCode());
+            surveyDto.setName(survey.getName());
+            surveyDto.setSurveyGroupId(savedProjectCopy.getKey().getId());
+            Survey surveyCopy = SurveyUtils.copySurvey(survey, surveyDto);
+            surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
+            surveyDao.save(surveyCopy);
+        }
+        return "success";
+
     }
 }

@@ -143,7 +143,7 @@ body {
     text-rendering: optimizelegibility;
     font-family: $bodyFont;
 }
-/*-------------------------------------------------------------- 
+/*--------------------------------------------------------------
 							Headings
 -------------------------------------------------------------- */
 
@@ -295,7 +295,7 @@ pre {
 .noBG {
     background-image: none !important;
 }
-/* links 
+/* links
 ---------------------------------------------------------------*/
 
 a, a:link, a:visited {
@@ -431,6 +431,9 @@ input[type="submit"] {
     padding: 1px 0.15%;
     background: white;
 }
+.usersList {
+    margin-top: 25px;
+}
 .btnAboveTable {
     margin: 7px 0 7px 5px;
     .usersList & {
@@ -546,18 +549,16 @@ input[type="submit"] {
 }
 .dialog {
     position: absolute;
-    top: 5%;
+    top: 20%;
     left: 35%;
     display: block;
     padding: 1em 2em;
     min-width: 500px;
-    max-height: 90%;
     width: 25%;
     border: thin solid rgb(153, 153, 153);
     border-radius: 6px;
     background: white;
     -o-border-radius: 6px;
-    overflow-y:scroll;
 }
 .dialogWide {
     position: absolute;
@@ -610,21 +611,20 @@ label[for=newDeviceGroupName] {
     min-width: 768px;
 }
 .belowHeader {
-    padding-top: 110px;
+    padding-top: 55px;
     padding-bottom: 110px;
     background: white;
 }
 .middleSection {
     margin: 0 0 20px 0;
+    padding:90px 0 40px 0;
 }
 .leftSidebar {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     left: 0;
-    /*margin-left: -20em;
-    margin-top: -30px;*/
-    top:85px;
+    top:112px;
     bottom:56px;
     position: fixed;
     float:left;
@@ -665,12 +665,12 @@ header.top {
     padding: 20px 0;
     top: 0;
     width: 100%;
-    height: 40px;
-    border-bottom: 1px solid rgb(240, 240, 240);
-    background: rgb(248, 248, 248);
+    height: 41px;
+    background: rgb(255,255,255);
     z-index: 9999;
-    -webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.1);
+    /*-webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.1);
     box-shadow: 0 0 1px rgba(32, 32, 36, 0.5);
+    border-bottom: 1px solid rgb(240, 240, 240);*/
     border-top: 2px solid rgb(44, 42, 116);
     -webkit-transition: all 0.2s ease-in;
     transition: all 0.2s ease-in;
@@ -738,7 +738,7 @@ header.top {
 .languageSelector {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 0.25%;
     .labelText {
         display: block;
         margin: 0 0 0.25em 0em;
@@ -761,7 +761,7 @@ header.top {
         }
     }
 }
-/* Top navigation styles 
+/* Top navigation styles
 --------------------------------------------- */
 
 nav.appNav {
@@ -775,11 +775,11 @@ nav.appNav {
             display: inline;
             float: left;
             margin: 0 0 0 0;
-            padding: 0 2px 0 0;
+            padding: 5px 2px 0 0;
             &.current a {
-                -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
+              /*  -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
                 -o-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
-                box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
+                box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);*/
                 color:$anchorLinkHover;
             }
             &:hover,
@@ -831,31 +831,31 @@ nav.appNav{
                     background: url(../images/topnavDashboards.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavDashboardsOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavDashboardsOrange.svg);
+                        @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavDashboardsOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavDashboardsOrange.svg);
+                        @include bgDetails;
                     }
                 }
-            }           
-            
+            }
+
             &.navMessages {
                 a{
                     background: url(../images/topnavMessages.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavMessagesOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavMessagesOrange.svg);
+                        @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavMessagesOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavMessagesOrange.svg);
+                        @include bgDetails;
                     }
                 }
             }
@@ -864,14 +864,14 @@ nav.appNav{
                     background: url(../images/topnavData.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavDataOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavDataOrange.svg);
+                        @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavDataOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavDataOrange.svg);
+                        @include bgDetails;
                     }
                 }
             }
@@ -880,14 +880,14 @@ nav.appNav{
                     background: url(../images/topnavDashboards.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavDashboardsOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavDashboardsOrange.svg);
+                        @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavDashboardsOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavDashboardsOrange.svg);
+                        @include bgDetails;
                     }
                 }
             }
@@ -896,14 +896,14 @@ nav.appNav{
                     background: url(../images/topnavMaps.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavMapsOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavMapsOrange.svg);
+                        @include bgDetails;
                     }
                 }
                 &.current {
                     a {
                         background: $navCurrent url(../images/topnavMapsOrange.svg);
-                        @include bgDetails;                    
+                        @include bgDetails;
                     }
                 }
             }
@@ -912,14 +912,14 @@ nav.appNav{
                     background: url(../images/topnavDevices.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavDevicesOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavDevicesOrange.svg);
+                        @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavDevicesOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavDevicesOrange.svg);
+                        @include bgDetails;
                     }
                 }
             }
@@ -928,14 +928,14 @@ nav.appNav{
                     background: url(../images/topnavUsers.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavUsersOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavUsersOrange.svg);
+                        @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavUsersOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavUsersOrange.svg);
+                        @include bgDetails;
                     }
                 }
             }
@@ -944,14 +944,14 @@ nav.appNav{
                     background: url(../images/topnavReports.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavReportsOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavReportsOrange.svg);
+                        @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavReportsOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavReportsOrange.svg);
+                        @include bgDetails;
                     }
                 }
             }
@@ -960,14 +960,14 @@ nav.appNav{
                     background: url(../images/topnavAdmin.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavAdminOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavAdminOrange.svg);
+                        @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavAdminOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavAdminOrange.svg);
+                        @include bgDetails;
                     }
                 }
             }
@@ -976,14 +976,14 @@ nav.appNav{
                     background: url(../images/topnavSurveys.svg);
                     @include bgDetails;
                     &:hover {
-                        background:$lightGrey url(../images/topnavSurveysOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavSurveysOrange.svg);
+                        @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavSurveysOrange.svg);
-                        @include bgDetails;                    
+                        background:url(../images/topnavSurveysOrange.svg);
+                        @include bgDetails;
                     }
                 }
             }
@@ -992,7 +992,7 @@ nav.appNav{
     }
 }
 
-/*--------------------------------------------- 
+/*---------------------------------------------
 					Data Table
 -----------------------------------------------*/
 
@@ -1144,7 +1144,7 @@ tfoot tr {
     border-radius: 0;
     background: transparent;
     color: grey;
-    -o-border-radius: 0;   
+    -o-border-radius: 0;
 }
 .dataTabMenu {
     position:absolute;
@@ -1294,14 +1294,6 @@ input.hasDatepicker {
 .action a.edit:hover {
     background: url(../images/editList.png) center bottom no-repeat;
 }
-.action a.api {
-    display: inline-block;
-    width: 13px;
-    height: 13px;
-    background: url(../images/apiList.png) center top no-repeat;
-    text-indent: -99999px;
-}
-.action a.api:hover { background: url(../images/apiList.png) center bottom no-repeat; }
 table.previewList {
     color: rgb(209, 84, 95);
 }
@@ -1429,7 +1421,7 @@ th.action {
 .menuConfirm ul li a {
     display: inline-block;
 }
-/*-------------------------------------------------------------------- 
+/*--------------------------------------------------------------------
 							Tabs Styling
 ----------------------------------------------------------------------*/
 
@@ -1511,6 +1503,7 @@ th.action {
 .surveysList {
     position: relative;
 }
+
 /* Survey Groups Menu Bar
 --------------------------------------------- */
 
@@ -1518,7 +1511,18 @@ th.action {
     display: block;
     margin: 8px 0 0 10px;
     width: calc(100% - 32px);
+    z-index: 9999;
+    &.text_edit {
+        display:none;
+    }
 }
+
+a.text_label
+{
+
+}
+
+
 .leftSidebar a.smallBtn {
     margin: 0 5px 10px 10px;
 }
@@ -1540,21 +1544,88 @@ th.action {
 }
 nav.menuGroupWrap {
     overflow-y: hidden;
-    height: 361px;
+    height: 370px;
+    &.topMenuGroupWrap {
+        height:initial;
+        background: rgba(white,0.98);
+        padding:3px 0 2px 0;
+        ul.menuGroup {
+            li {
+                border-bottom:none;
+            }
+        }
+    }
     ul.menuGroup {
         li {
+            position: relative;
             margin: 2px 1% 1px 1%;
-            width: 98%;
+            width: calc(98%-30px);
             border-bottom: thin solid rgb(55, 55, 55);
             background: rgb(70, 70, 70);
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.05) url(../images/selectFolder.svg) 2px center no-repeat;
+            background-size: 20px 20px;
+            div.edit {
+                position: absolute;
+                background: url(../images/IconEditGrey.svg) center center no-repeat;
+                background-size: 20px 20px;
+                width: 25px;
+                height: 25px;
+                display: none;
+                cursor: pointer;
+                top: 7px;
+                right:5px;
+            }
+            div.trashFolder {
+                position: absolute;
+                background: url(../images/IconTrashGrey.svg) center center no-repeat;
+                background-size: 20px 20px;
+                width: 25px;
+                height: 25px;
+                display: none;
+                cursor: pointer;
+                top: 7px;
+                right:30px;
+            }
+            div.copyFolder {
+                position: absolute;
+                background: url(../images/IconCopyGrey.svg) center center no-repeat;
+                background-size: 20px 20px;
+                width: 25px;
+                height: 25px;
+                display: none;
+                cursor: pointer;
+                top: 7px;
+                right:55px;
+            }
+            &.folderUp {
+                background: rgb(70, 70, 70);
+                background: url(../images/folderUp.svg) 2px center no-repeat;
+                background-size: 35px 35px;
+                &:hover {
+                    background: rgb(70, 70, 70);
+                    background: rgba(255, 255, 255, 0.05) url(../images/folderUpHover.svg) 2px center no-repeat;
+                    background-size: 35px 35px;
+                }
+                a{
+                    color:$anchorLink;
+                    background-image: none;
+                    padding: 10px 1% 10px 45px;
+                    width: calc(99% - 40px);
+                    &:hover {
+                        color:$anchorLinkHover;
+                        background-image:none;
+                    }
+                }
+            }
             &.current {
                 border-bottom: thin solid rgb(55, 55, 55);
-                background: rgb(90, 90, 90);
-                background: rgba(255, 255, 255, 0.15);
+                background: rgb(90, 90, 90) url(../images/selectFolder.svg) left center no-repeat;
+                background: rgba(255, 255, 255, 0.15) url(../images/selectFolder.svg) 2px center no-repeat;
+                background-size: 20px 20px;
                 a, a:hover {
-                    background: url(../images/selectIndictr.png) right -61px no-repeat;
-                    color:$anchorLinkHover;                    
+                    background: url(../images/carretFolderSelected.svg) right center no-repeat;
+                    color:$anchorLinkHover;
+                    background-size: 15px 25px;
                     }
                 }
             a {
@@ -1563,16 +1634,18 @@ nav.menuGroupWrap {
                 padding: 10px 10% 10px 2%;
                 width: 93%;
                 height: 23px;
-                background: url(../images/selectIndictr.png) right 5px no-repeat;
+                background: url(../images/carretFolder.svg) right center no-repeat;
+                background-size: 15px 25px;
                 color: rgb(153, 153, 153);
                 color: rgba(255, 255, 255, 0.6);
                 @include noWrapTxt;
                 font-size: 1.2em;
                 cursor: pointer;
                 &:hover {
-                    background: rgb(80, 80, 80) url(../images/selectIndictr.png) right 50% no-repeat;
-                    background: rgba(255, 255, 255, 0.05) url(../images/selectIndictr.png) right 50% no-repeat;
+                    background: rgb(80, 80, 80) url(../images/carretFolder.svg) right center no-repeat;
+                    background: rgba(255, 255, 255, 0.05) url(../images/carretFolder.svg) right center no-repeat;
                     color: rgb(114, 205, 255);
+                    background-size: 15px 25px;
                 }
                 span.monitorIcn {
                     font-weight: bold;
@@ -1589,7 +1662,7 @@ nav.menuGroupWrap {
             }
         }
     }
-} 
+}
 .scrollWrap {
     display: block;
     margin: 4px auto;
@@ -1616,7 +1689,7 @@ nav.menuGroupWrap {
             background: rgb(31, 31, 31) url(../images/scrollDown.png) center center no-repeat;
             &:hover {
                 background: rgb(107, 134, 141) url(../images/scrollDown.png) center center no-repeat;
-            }        
+            }
         }
     }
 }
@@ -1624,18 +1697,81 @@ nav.menuGroupWrap {
 a.FadeIt {
     display: none;
 }
+
+.projectDetail {
+    li{
+        margin:10px auto;
+        h2{
+            font-size: 1.5em;
+            display: block;
+            overflow: inherit;
+            text-overflow: inherit;
+            white-space: inherit;
+            margin: 10px 0 0 5px;
+            color:$anchorLink;
+        }
+    }
+}
+    .noFormsContainer {
+        background:white;
+        padding:2em 0;
+    li.formList {
+        padding:10px 0;
+        &.populated {
+            background: rgba(white,0);
+        }
+        h4 {
+            margin:5px 0 10px 5px;
+            color:rgba($anchorLink, 0.5);
+        }
+        .noForms {
+                padding-top:45px;
+                background: url(../images/IconFormsBlack.png) center top no-repeat;
+                text-align: center;
+                text-transform: uppercase;
+                font-size: 1.1em;
+                width: 90%;
+                margin:0 auto 20px auto;
+        }
+        ul.menuForm {
+            li {
+                position: relative;
+                margin: 2px 1% 1px 1%;
+                width: calc(98%-30px);
+                border-bottom: thin solid rgb(55, 55, 55);
+                background: rgb(70, 70, 70);
+                background: rgba(255, 255, 255, 0.05) url(../images/IconForms.svg) 2px 11px no-repeat;
+                background-size: 20px 17px;
+                &.current {
+                    border-bottom: thin solid rgb(55, 55, 55);
+                    background: rgba($anchorLink, 0.25) url(../images/IconFormsWhite.svg) 2px 11px no-repeat;
+                    background-size: 20px 17px;
+                    a, a:hover {
+                        background: url(../images/carretFolderSelectedWhite.svg) right center no-repeat;
+                        color:white;
+                        background-size: 15px 25px;
+                        }
+                    }
+        }
+    }
+    }
+}
 /* Survey Top Bar
 --------------------------------------------- */
 
 section.topBar {
-    margin: 0 0 20px 0;
-    z-index: 9999;
+    position:fixed;
+    margin: 0 auto;
+    z-index: 9998;
     width: 100%;
     background: white;
+    &.activeMenu{
+        border:1px solid rgb(212,212,212);
+    }
 }
 section.topBar ~ * {
-    margin-top: 80px;
-}
+        margin-top: 80px;
+    }
 .surveyLandingText {
     display: inherit;
     font-size: 2em;
@@ -1663,27 +1799,179 @@ section.topBar > a.smallBtn {
     margin: 0 10px;
     color: rgb(235, 235, 235);
 }
-nav.menuTopbar {
-    position: absolute;
-    right: 5px;
-    display: inline;
+section.topBar {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;    
+    display:flex;
+    -webkit-align-items:center;
+    align-items:center;
+    padding:0 0 10px 0;
+    nav {
+        width:49.5%;
+        &:first-child {
+            margin-left: 0.5%;
+        }
+        &:last-child {
+            margin-right: 0.5%;
+        }
+        }
+    nav.breadCrumb {
+        ul li {
+            display: inline-block;
+            height: 34px;
+            line-height: 34px;
+            width: auto;
+            margin: 5px 3px 0 0;
+            text-indent: 19px;
+            position: relative;
+        }
+        ul li:before {
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            left: -2px;
+            border-style: solid;
+            border-width: 17px 0 17px 17px;
+            border-color: transparent transparent transparent #fff;
+            z-index: 0;
+        }
+
+        ul li:first-child:before {
+            border-color: transparent;
+        }
+        ul li a:after {
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            right: -17px;
+            border-style: solid;
+            border-width: 17px 0 17px 17px;
+            border-color: transparent transparent transparent $akvoLightBlue;
+            z-index: 10;
+        }
+        ul li a {
+            display: block;
+            background: $akvoLightBlue;
+            color: white;
+            font-size: 1.1em;
+            @include noWrapTxt;
+            &:hover {
+                background: $anchorLinkHover;
+            }
+            &.homeRoot {
+                border-radius:3px 0 0 3px;
+                width:40px;
+                background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                text-indent:-9999px;
+                z-index:9999;
+                margin-left: 0;
+                &:hover {
+                background: url(../images/breadCrumb-Root.png) center center no-repeat $anchorLinkHover;
+            }
+            }
+        }
+        ul li a:hover:after {
+            border-color: transparent transparent transparent $anchorLinkHover;
+        }
+        ul li:last-of-type {
+            opacity:0.8;
+            a {
+                border-radius:0 3px 3px 0;
+                padding-right:15px;
+                background: $anchorLinkHover;
+                &.homeRoot {
+                    padding-right:0;
+                    border-radius:3px 0 0 3px;
+                    width:40px;
+                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                    text-indent:-9999px;
+                    z-index:9999;
+                    margin-left: 0;
+                &:after {
+                    content: " ";
+                    height: 0;
+                    width: 0;
+                    position: absolute;
+                    right: -17px;
+                    border-style: solid;
+                    border-width: 17px 0 17px 17px;
+                    border-color: transparent transparent transparent $akvoLightBlue;
+                    z-index: 10;
+        }
+                &:hover {
+                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                }
+            }
+                &:after {
+                    border-width:0;
+                &:hover {
+                    background: $akvoLightBlue;
+                    }
+                }
+            }
+        }
 }
+
+nav.menuTopbar {
+    margin:0 auto 0;
+    padding:10px 0;
+        h3 {
+            text-transform: uppercase;
+            font-size:1em;
+            color:rgb(198,198,198);
+            margin:0;
+            padding:0;
+            &.actionTitleEdit {
+                padding: 5px 5px 5px 15px;
+                background:url(../images/IconEditGreyLight.svg) left center no-repeat;
+                background-size: 15px;
+            }
+        }
+        ul {
+           display: -webkit-flex;
+           display: flex;
+           -webkit-flex-direction: row;
+           flex-direction: row;
+           -webkit-justify-content: flex-end;
+           justify-content: flex-end;
+            -webkit-align-items: center;
+            align-items: center;
+            text-align: right;
+            li {
+                margin-left:10px;
+                &:first-child {
+                    margin-left:0px;
+                }
+                p {
+                    color: $midGrey;
+                .itemMoved {
+                    color:$akvoDarkBlue;
+                    font-weight:bold;
+                    margin-right: 5px;
+                    margin-left: 5px;
+                    }   
+                }
+            }
+        }
+        &.actionHighLighted {
+            border:1px solid rgb(241,242,242);
+        }
+    }
+}
+
+
 #surveyCreator nav.menuTopbar ul {
     background: none;
 }
-nav.menuTopbar ul li {
-    display: inline;
-    float: left;
-    margin: 10px 0 0 0;
-}
-nav.menuTopbar ul li:last-child {
-    display: inline;
-    float: left;
-    margin: 10px 15px 0 0;
-    text-transform: uppercase;
-}
+
+
 ul.folderMenu {
-    margin:10px auto 35px;
+    display: block;
+    margin:0px auto 45px;
     li {
         width:48%;
         padding:10px 1%;
@@ -1692,12 +1980,24 @@ ul.folderMenu {
         background:$blackOpac;
     }
 }
+
+ul.cancelMenu {
+        display: none;
+        margin:10px auto 0;
+        li {
+            width:98%;
+            padding:10px 1%;
+            display:inline;
+            float: right;
+            background:$blackOpac;
+        }
+    }
 a.addGroup,
-a.addSurvey,
+a.addSurvey,.moveAction,
 a.stepBack,
-a.editGroupName,
-a.makeMonitorGroup,
-a.deleteGroup, a.addFolder, a.editFolder {
+a.editGroupName, a.addMenuAction,
+a.makeMonitorGroup,a.manageNotifications,
+a.deleteGroup, a.addFolder, a.editFolder, a.cancelFolder, a.saveMenuAction {
     display: block;
     padding: 1px 0 7px 21px;
     height: 10px;
@@ -1710,27 +2010,48 @@ a.addGroup {
     margin: 0 0 5px 5px;
     padding: 1px 0 7px 19px;
 }
+a.cancelFolder {
+    color:$akvoRed;
+    background: url(../images/IconCancelFolder.svg) left center no-repeat;
+}
+a.cancelFolder:hover {
+    color:$anchorLinkHover;
+    background: url(../images/IconCancelFolderHover.svg) left center no-repeat;
+}
 a.addGroup, a.addFolder {
-    background: url(../images/IconAddGroup.svg) left center no-repeat;
+    background: url(../images/IconPlus.svg) left center no-repeat;
 }
 a.addGroup:hover, a.addFolder:hover {
-    background: url(../images/IconAddGroupOrange.svg) left center no-repeat;
+    background: url(../images/IconPlusOrange.svg) left center no-repeat;
 }
 a.addSurvey {
     color: white;
-    background: rgba($anchorLink, 1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
-    padding: 4px 7px 11px 21px;
+    background: rgba($anchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
+    padding: 8px 7px 13px 25px;
     border-radius: 3px;
-    -webkit-background-size: 19px 19px;
-    background-size: 19px 19px;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
 }
 a.addSurvey:hover {
     color: white;
-    background: rgba($anchorLinkHover, 1) url(../images/topnavSurveysWhite.svg) 2px center no-repeat;
-    -webkit-background-size: 19px 19px;
-    background-size: 19px 19px;
+    background: rgba($anchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
+}
+a.moveAction {
+    color: white;
+    background: rgba($anchorLink, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat;
+    background-size: 35px 35px;
+    padding: 7px 7px 14px 35px;
+    border-radius: 3px;
+    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;}
+a.moveAction:hover {
+    color: white;
+    background: rgba($anchorLinkHover, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat !important;
+    background-size: 35px 35px !important;
 }
 a.stepBack {
     background: transparent url(../images/IconBack.svg) left center no-repeat;
@@ -1758,9 +2079,52 @@ a.editGroupName:hover, a.editFolder:hover {
 }
 a.deleteGroup {
     background: transparent url(../images/IconDelete.svg) left center no-repeat;
+    &:hover {
+        background: url(../images/IconDeleteOrange.svg) left center no-repeat;
+    }
 }
-a.deleteGroup:hover {
-    background: url(../images/IconDeleteOrange.svg) left center no-repeat;
+a.addMenuAction {
+    background: url(../images/IconPlus.svg) left center no-repeat;
+    &.aBtn {
+        background:$anchorLink url(../images/IconPlusWhite.svg) left center no-repeat;
+        background-size:35px auto;
+        color:white;
+        padding: 5px 5px 11px 31px;
+        height: 10px;
+        @include border-radius(5px);
+        &:hover {
+            background:$anchorLinkHover url(../images/IconPlusWhite.svg) left center no-repeat;
+            background-size:35px auto;
+        }
+    }
+    &:hover {
+        background: url(../images/IconPlusOrange.svg) left center no-repeat;
+    }
+}
+a.saveMenuAction {
+    &.aBtn {
+        background:$anchorLink;
+        background-size:35px auto;
+        color:white;
+        padding: 5px 15px 12px;
+        @include border-radius(5px);
+        &:hover {
+            background:$anchorLinkHover;
+            background-size:35px auto;
+        }
+    }
+    &:hover {
+        background: url(../images/IconPlusOrange.svg) left center no-repeat;
+    }
+}
+a.redCancel {
+    color:$akvoRed;
+    padding:5px 10px 5px 15px;
+    background: url(../images/IconCancelFolder.svg) left center no-repeat;
+    background-size:15px;
+    &:hover {
+        color:rgba($akvoRed, 0.5);
+    }
 }
 #assignSurveys a.stepBack {
     position: absolute;
@@ -1776,7 +2140,19 @@ div.monitorSwitch {
 ul.surveyBatch {
     position: relative;
     width: 100%;
-    margin-top: 0;
+    margin-top: 30px;
+}
+ul.actionProcess {
+    .aFolder {
+         nav {
+            opacity:0.2;
+        }
+    }
+    .aSurvey {
+        nav {
+            opacity:0.2;
+        }
+    }
 }
 li.aSurvey {
     position: relative;
@@ -1786,19 +2162,96 @@ li.aSurvey {
     padding: 0.5em 0 0.5em 1%;
     min-height: 115px;
     width: 99%;
-    background: rgb(245, 245, 245) url(../images/carret.svg) right center no-repeat;
-    -webkit-background-size: 45px 45px;
-    background-size: 45px 45px;
+    background: rgb(245, 245, 245);
+    -webkit-background-size: 35px 45px;
+    background-size: 35px 45px;
     cursor: pointer;
     -o-border-radius: 0.3em;
     border-radius: 0.3em;
     -webkit-transition: all 0.4s linear;
     transition: all 0.4s linear;
-}
-li.aSurvey h2 {
-    display: inline-block;
-    width: 98%;
+    &:hover {
+        cursor:text;
     }
+     h2 {
+        display: inline-block;
+        width: 98%;
+        color:$anchorLink;
+        &:hover {
+            color:$anchorLinkHover;
+        }
+     }
+}
+
+li.aFolder, li.aSurvey {
+    &.highLighted {
+        background:#E7EEE0;
+        border:1px solid rgba(141,198,63,0.5);
+        h2 {color:rgba(141,198,63,1);}
+        &:hover {
+            background:#E7EEE0;
+            border:1px solid rgba(141,198,63,0.5);
+            h2 {color:rgba(141,198,63,1);}
+
+        }
+    }
+}
+li.aFolder {
+    @extend li.aSurvey;
+   display: -webkit-flex;
+   display: flex;
+   -webkit-flex-direction: row;
+   flex-direction: row;
+    box-sizing: border-box;
+    -webkit-align-items: center;
+    align-items: center;
+    min-height: 70px;
+    padding: 0.25em 0 0.25em 15px;
+    background-color: rgb(232,232,232);
+    background-image:  url(../images/carret.svg);
+    background-position: right center;
+    background-repeat: no-repeat;
+    border:1px solid rgba(200,200,200,0);
+    input {
+        width:50%;
+        font-family: $bodyFont;
+        font-size:1.8em;
+    }
+    a.editFolderName {
+        display:inline-block;
+        width:40px;
+        height:40px;
+        background: url(../images/IconEditGreyLight.svg) center center no-repeat;
+        background-size:30px 30px;
+        text-indent: -9999px;
+        margin-right:15px;
+        opacity:0.5;
+        &:hover {
+           background: url(../images/IconEditOrange.svg) center center no-repeat;
+           background-size:30px 30px;
+           opacity:1;
+        }
+    }
+    h2{
+        color:rgb(183,183,183);
+        background: url(../images/folderIcn.svg) right center no-repeat;
+        display:inline-block;
+        width: initial;
+        padding-right:45px;
+    }
+    &:hover {
+        background-color: rgb(222,222,222);
+        border:1px solid rgba(200,200,200,1);
+        h2 {
+            color:$anchorLinkHover;
+        }
+    }
+    &.folderEmpty {
+        h2{
+            background: url(../images/folderIcnEmpty.svg) right center no-repeat;
+        }
+    }
+}
 ul.surveyInfo {
     position: relative;
     display: inline;
@@ -1850,6 +2303,23 @@ ul.surveyInfo li.responseNumber {
     width: calc(30%);
     padding-right: 30px;
 }
+.aSurvey.aFolder {
+    .deleteSurvey {display:none;}
+    &.folderEmpty {
+        .deleteSurvey {
+            display:inline;
+        }
+    }
+    nav {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        position: absolute;
+        right:0;
+        padding-right: 30px;
+    }
+}
+
 .aSurvey nav ul {
     display: -webkit-inline-box;
     display: -webkit-inline-flex;
@@ -1862,12 +2332,12 @@ ul.surveyInfo li.responseNumber {
     float: left;
     margin: 0 2px 0 0;
     border-radius: 3px;
-    background: rgba(235, 235, 235, 1);
+    background: rgba(205, 205, 205, 0.1);
     -webkit-transition: background 0.2s ease-in;
     transition: background 0.2s ease-in;
 }
 .aSurvey nav ul li:hover {
-    background: rgba(235, 235, 235, 0.5);
+    background: rgba(205, 205, 205, 0.3);
 }
 .aSurvey nav ul li a {
     display: block;
@@ -1875,48 +2345,49 @@ ul.surveyInfo li.responseNumber {
     height: 20px;
     padding-top: 40px;
     text-align: center;
+    text-indent: -9999px
 }
 .aSurvey nav ul li a:hover {
     color:$anchorLinkHover;
 }
 .aSurvey nav ul li.editSurvey a {
-    background: url(../images/IconEdit.svg) center 5px no-repeat;
-    -webkit-background-size: 35px 35px;
+    background: url(../images/IconEdit.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.previewSurvey a {
-    background: url(../images/IconPreview_big.svg) center 5px no-repeat;
-    -webkit-background-size: 35px 35px;
+    background: url(../images/IconPreview_big.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.deleteSurvey a {
-    background: url(../images/IconDelete.svg) center 5px no-repeat;
-    -webkit-background-size: 35px 35px;
+    background: url(../images/IconDelete.svg) center 14px no-repeat;
+    background-size:50px 35px;
+}
+.aSurvey nav ul li.moveSurvey a {
+    background: url(../images/IconMove.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.copySurvey a {
-    background: url(../images/IconCopy.svg) center 5px no-repeat;
-    -webkit-background-size: 35px 35px;
+    background: url(../images/IconCopy.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.editSurvey a:hover {
-    background: url(../images/IconEditOrange.svg) center 5px no-repeat;
-    -webkit-background-size: 35px 35px;
+    background: url(../images/IconEditOrange.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.previewSurvey a:hover {
-    background: url(../images/IconPreviewOrange_big.svg) center 5px no-repeat;
-    -webkit-background-size: 35px 35px;
+    background: url(../images/IconPreviewOrange_big.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.deleteSurvey a:hover {
-    background: url(../images/IconDeleteOrange.svg) center 5px no-repeat;
-    -webkit-background-size: 35px 35px;
+    background: url(../images/IconDeleteOrange.svg) center 14px no-repeat;
+    background-size:50px 35px;
+}
+.aSurvey nav ul li.moveSurvey a:hover {
+    background: url(../images/IconMoveOrange.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
 .aSurvey nav ul li.copySurvey a:hover {
-    background: url(../images/IconCopyOrange.svg) center 5px no-repeat;
-    -webkit-background-size: 35px 35px;
+    background: url(../images/IconCopyOrange.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
 /*----------------------------------------------------------------------------------------------------------------
@@ -1925,7 +2396,7 @@ ul.surveyInfo li.responseNumber {
 
 .leftSidebar {
     background: $darkGrey;
-    padding: 10px 0;
+    padding:0 0 10px 0;
 }
 .leftSidebar h2 {
     display: block;
@@ -2013,102 +2484,137 @@ ul.surveyInfo li.responseNumber {
 label[for="surveyLanguage"]  a.helpIcon {
     right:10px;
 }
-.manageStuff li {
-    display: inline;
-    float: left;
-    width: 50%;
+
+.aformContainer {
+    nav.newSurveyNav {
+        display: table;
+        margin:0 auto 20px auto;
+        padding: 0;
+        right:0;
+        &.manageStuff {
+            margin-top:10px;
+        }
+        ul {
+      display: -webkit-box;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;    
+      display:flex;
+            margin: 0 auto;
+            padding: 0;
+            width: 100%;
+        }
+        ul li {
+            padding: 0;
+            margin-right:2px;
+        }
+        ul li a {
+            font-size:1.2em;
+            text-transform: uppercase;
+            display: block;
+            padding:11px 15px 20px 35px;
+            height: 9px;
+            border-radius:3px;
+            overflow: hidden;
+            &.saveNewSurvey {
+                background:rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
+            &.previewNewSurvey {
+                background:rgba(32, 32, 36, 0.5)  url(../images/IconPreview.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
+            &.publishNewSurvey {
+                background:rgba(32, 32, 36, 0.5)  url(../images/IconPublish.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
+            &.deleteSurvey {
+                background:rgba(32, 32, 36, 0.5)  url(../images/IconDelete.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
+            &.saveNewSurvey:hover {
+                background:rgba(32, 32, 36, 1)   url(../images/IconSaveOrange.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
+            &.previewNewSurvey:hover {
+                background:rgba(32, 32, 36, 1)   url(../images/IconPreviewOrange.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
+            &.publishNewSurvey:hover {
+                background:rgba(32, 32, 36, 1)   url(../images/IconPublishOrange.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
+            &.deleteSurvey:hover {
+                background:rgba(32, 32, 36, 1)   url(../images/IconDeleteOrange.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
+
+            &.manageNotifications {
+                    background:rgba(32, 32, 36, 0.5)  url(../images/IconNotif.svg) left top no-repeat;
+                    background-size: 40px 40px;
+                }
+            &.manageNotifications:hover {
+                    background:rgba(32, 32, 36, 1)  url(../images/IconNotifOrange.svg) left top no-repeat;
+                    background-size: 40px 40px;
+                }
+            &.manageTranslations {
+                    background:rgba(32, 32, 36, 0.5)  url(../images/IconTranslate.svg) left top no-repeat;
+                    background-size: 40px 40px;
+                }
+            &.manageTranslations:hover {
+                    background:rgba(32, 32, 36, 1)  url(../images/IconTranslateOrange.svg) left top no-repeat;
+                    background-size: 40px 40px;
+                }
+        }
+    }
 }
-a.manageNotifications {
-    display: block;
-    margin: 0.5em auto;
-    text-align: center;
-    text-transform: uppercase;
+a.publishProjectBtn {
+        text-transform:uppercase;
+        background:$anchorLink url(../images/IconPublishWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
+        color:white;
+        border-radius:3px;
+    &.noChanges {
+        background:rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
+        color:white;
+        cursor: text;
+        &:hover {
+            background:rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
+            background-size: 55px 55px;
+        }
+    }
+    &:hover {
+        background:$anchorLinkHover url(../images/IconPublishWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        color:white;
+    }
 }
-a.manageNotifications span {
-    display: inline;
-    margin: 0 0.2em 0 0;
-    text-transform: uppercase;
-    font-weight: bold;
-}
-.newSurveyInfoUl {
-    margin: 5px auto;
-    padding: 10px 1%;
-    width: 94%;
-    background: rgb(33, 33, 33);
-}
-.newSurveyInfoUl li {
-    position: relative;
-    margin: 0.01em auto 0.05em auto;
-    width: 96%;
-    color: rgb(153, 153, 153);
-}
-.newSurveyInfoUl li h3 {
-    font-size: 1.2em;
-    color: rgb(204, 204, 204);
-    margin: 3px 0;
-}
-.newSurveyInfoUl li > span {
-    position: absolute;
-    right: 5px;
-    color: white;
-}
-.newSurveyInfoUl li > span.surveyNotPublished {
-    color: rgb(227, 27, 35);
-}
-.newSurveyInfoUl li > span.surveyPublished {
-    color: rgb(145, 237, 115);
-}
-nav.newSurveyNav {
-    margin: 0 auto;
-    padding: 0;
-    width: 98%;
-}
-nav.newSurveyNav ul {
-    margin: 0 auto;
-    padding: 0;
-    width: 100%;
-}
-nav.newSurveyNav ul li {
-    display: block;
-    float: left;
-    padding: 0;
-    width: 33.333333333333333%;
-}
-nav.newSurveyNav ul li a {
-    display: block;
-    padding: 9px 0 11px 28px;
-    height: 8px;
-    overflow: hidden;
-}
-nav.newSurveyNav ul li a.saveNewSurvey {
-    background: url(../images/IconSave.svg) left top no-repeat;
-    -webkit-background-size: 35px 35px;
-    background-size: 35px 35px;
-}
-nav.newSurveyNav ul li a.previewNewSurvey {
-    background: url(../images/IconPreview.svg) left top no-repeat;
-    -webkit-background-size: 35px 35px;
-    background-size: 35px 35px;
-}
-nav.newSurveyNav ul li a.publishNewSurvey {
-    background: url(../images/IconPublish.svg) left top no-repeat;
-    -webkit-background-size: 35px 35px;
-    background-size: 35px 35px;
-}
-nav.newSurveyNav ul li a.saveNewSurvey:hover {
-    background: url(../images/IconSaveOrange.svg) left top no-repeat;
-    -webkit-background-size: 35px 35px;
-    background-size: 35px 35px;
-}
-nav.newSurveyNav ul li a.previewNewSurvey:hover {
-    background: url(../images/IconPreviewOrange.svg) left top no-repeat;
-    -webkit-background-size: 35px 35px;
-    background-size: 35px 35px;
-}
-nav.newSurveyNav ul li a.publishNewSurvey:hover {
-    background: url(../images/IconPublishOrange.svg) left top no-repeat;
-    -webkit-background-size: 35px 35px;
-    background-size: 35px 35px;
+a.saveProject {
+        text-transform:uppercase;
+        background:$anchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
+        color:white;
+        border-radius:3px;
+    &:hover {
+        background:$anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        color:white;
+    }
+    &.noChanges {
+        background:rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
+        color:white;
+        cursor: text;
+        &:hover {
+            background:rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+            background-size: 55px 55px;
+          }
+    }
 }
 /*****
 		A New Question Form
@@ -2653,8 +3159,7 @@ nav.smallMenu ul li a.showQuestion:hover {
 .notificationAdd {
     position: relative;
     overflow: auto;
-    width: 99%;
-    margin-left:1%;
+    width: 100%;
 }
 .notificationAdd fieldset {
     float: left;
@@ -2703,7 +3208,7 @@ a.addNotification span {
 }
 table.dataTable.notificationTable {
     margin: 1.5em auto;
-    width: 99%;
+    width: 100%;
     border-collapse: collapse;
     border-top: 1px solid rgb(230, 230, 230);
     color: #606060;
@@ -2773,12 +3278,12 @@ table.dataTable.notificationTable thead tr th a:visited {
         }
     a.findData {
         display: block;
-        margin: 5px auto 10px;
+        margin: 0 auto;
         padding: 0.5em 1em;
         width: 10%;
         text-align: center;
         }
-    } 
+    }
 
 
 .filterData div.dataCollectedDate input {
@@ -3084,7 +3589,7 @@ div.drawHandle {
     text-transform: uppercase;
     font-weight: bold;
 }
-/*--------------------------------------------- 
+/*---------------------------------------------
 					Footer
 -----------------------------------------------*/
 
@@ -3389,10 +3894,9 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     border-bottom: none;
 }
 .surveyTranslation table {
-    width: calc(98.5% - 2px);
+    width: 98.5%;
     margin: 0.5% 0.75% 0.1% 0.75%;
     text-align: left;
-    border: 1px solid rgb(230, 230, 230);
 }
 table#languageOption {
     background: rgb(242, 242, 242);
@@ -3748,3 +4252,322 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 .marker-cluster span {
     line-height: 30px;
 }
+
+/************************************* New styles ****************************************/
+.projectSection {
+    background: $projectBackground;
+    box-sizing: border-box;
+    width:100%;
+    padding:1em 0 0 0;
+    margin:0 auto;
+    .publishProject {
+        padding: 30px 5px;
+        display:table;
+        text-align: center;
+        width:calc(100% - 10px);
+            .publishProjectBtn {
+            text-align: center;
+            margin:0 auto;
+        }
+    }
+    .projectDetailsPanel {
+        .addMenuAction {display:inline-block; margin:0 auto;
+          &.addNewForm {
+            display:table;
+            padding:8px 8px 8px 31px;
+          }
+        }
+        .projectSummary, .formSummary {
+          display: -webkit-box;
+          display: -moz-box;
+          display: -ms-flexbox;
+          display: -webkit-flex;    
+          display:flex;
+            -webkit-flex-direction: row;
+            -webkit-flex-wrap: nowrap;
+            -webkit-align-items: center;
+            -webkit-align-content: center;            
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            align-content: center;
+            margin-top:10px;
+            li {
+                width: 33.33333%;
+                text-align: center;
+                padding:10px 0;
+                background:rgba(32,32,36,0.2);
+                color:rgb(128,130,133);
+                text-transform: uppercase;
+                font-size:1.5em;
+                span {
+                    display:block;
+                    font-size:1.8em;
+                    margin-top:-5px;
+                    font-weight:600;
+                    &.projectForm, &.projectMonitoring, &.projectStatus {color:white;}
+                    &.projectStatus.redColor {color:$akvoRed2;}
+                }
+            }
+        }
+        span.fontInfo {
+            font-family: $scriptFont;
+            font-size:1.8em;
+            color: rgb(212,212,212);
+            margin:0 0.5em;
+        }
+        h2 {
+            color: $akvoOrange;
+            display:inline;
+        }
+        .forms {
+            padding:2em 0 0 0;
+            background:white;
+            #tabs h2 {
+                margin:0 0 15px 5px;
+            }
+            .formSummary {
+                        display:-webkit-flex;
+                        display:flex;
+                        -webkit-flex-direction: row;
+                        -webkit-flex-wrap: nowrap;
+                        -webkit-align-items: center;
+                        -webkit-align-content: center;                       
+                        flex-direction: row;
+                        flex-wrap: nowrap;
+                        align-items: center;
+                        align-content: center;
+                        margin:30px auto;
+                        li {
+                            width: 33.33333%;
+                            text-align: center;
+                            padding:10px 0;
+                            background:rgba(32,32,36,0.2);
+                            color:rgb(128,130,133);
+                            text-transform: uppercase;
+                            font-size:1.5em;
+                            span {
+                                display:block;
+                                font-size:1.8em;
+                                margin-top:-5px;
+                                font-weight:600;
+                                color:white;
+                            }
+                        }
+                    }
+            #tabs div > section {
+                border: thin solid rgb(224, 224, 224);
+                background: white;
+                margin-top: 15px;
+
+                &.formDetails {
+                    border:inherit;
+                    background:inherit;
+                    display: block;
+                    position:relative;
+                    background: $projectBackground;
+                    padding:20px 0.25%;
+                    width:inherit;
+                    width:99.5%;
+                    margin:0 auto;
+                    .showCollapse {
+                      text-transform:uppercase;
+                      display:inline-block;
+                      margin-left:10px;
+                  }
+                }
+            }
+            #tabs div > section h3 {
+                text-shadow: none;
+            }
+            #tabs nav.tabNav {
+                display: block;
+                padding: 0;
+                width: 100%;
+            }
+            #tabs nav.tabNav ul {
+                padding: 0;
+               display: -webkit-flex;
+               display: flex;
+               -webkit-flex-direction: row;
+               flex-direction: row;
+               -webkit-justify-content: flex-start;
+               justify-content: flex-start;
+                -webkit-align-items: center;
+                align-items: center;
+            }
+            #tabs nav.tabNav ul li {
+                border-right:1px solid rgba(32,32,36,0.2);
+                margin:0;
+                font-size:1.2em;
+                @include border-radius(2px 2px 0 0);
+                -webkit-background-clip: padding-box;
+                background-clip: padding-box;
+                -webkit-transition: none;
+                transition: none;
+                -moz-background-clip: padding;
+                -webkit-background-clip: padding-box;
+                @include noWrapTxt;
+                &.aFormTab {
+                  padding-left:25px;
+                  background:rgba(32,32,36, 0.5) url(../images/IconForms.png) no-repeat 10px center;
+                  background-size:20px auto;
+                  &:hover {
+                      background:rgba(32,32,36, 1) url(../images/IconForms.png) no-repeat 10px center;
+                      background-size:20px auto;
+                      }
+                    &.current {
+                      background:rgba(32, 32, 36, 0.9) url(../images/IconFormsOrange.png) no-repeat 10px center;
+                      background-size:20px auto;
+                      a{
+                        color:$anchorLinkHover;
+                        }
+                    }
+                  &.registrationForm {
+                    background:rgba($monitorGreen,0.5)  url(../images/IconForms.png) no-repeat 10px center;
+                    background-size:20px auto;
+                    &:hover {
+                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 10px center;
+                        background-size:20px auto;
+                      }
+                    &.current {
+                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 10px center;
+                        background-size:20px auto;
+                        a {
+                            color:white;
+                        }
+                        &:hover {
+                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 10px center;
+                        background-size:20px auto;
+                        }
+                    }
+                      
+                  }
+
+                    }
+                &.newFormTab {
+                  background:transparent;
+                  border-right:none;
+                  a{
+                    color:$anchorLink;
+                    &:hover {
+                        color:$anchorLinkHover;
+                    }
+                  }
+                  span {
+                    font-weight:bold;
+                    margin-right:5px;
+                  }
+                  &:hover {
+                    background: transparent;
+                  }
+                 }
+                  }
+                  #tabs nav.tabNav ul li:hover {
+                      background: rgb(174, 174, 174);
+                  }
+                  #tabs nav.tabNav ul li.active,
+                  #tabs nav.tabNav ul li.active:hover {
+                      background: rgb(0,0,0);
+                  }
+                  #tabs nav.tabNav ul li a {
+                      display: block;
+                      padding: 0.75em 1em;
+                      color: white;
+                      text-transform: uppercase;
+                      -webkit-transition: none;
+                      transition: none;
+                      text-shadow:none;
+                  }
+                  #tabs nav.tabNav ul li.active a,
+                  #tabs nav.tabNav ul li.active a:hover {
+                      color: white;
+                      text-shadow: none;
+                      -webkit-text-shadow: none;
+                      -moz-text-shadow: none;
+                  }
+                  #tabs nav.tabNav ul li a:hover {
+                      color: white;
+                      text-shadow: none;
+                      -webkit-text-shadow: none;
+                      -moz-text-shadow: none;
+                  }
+                  .tabNav{
+                    .aFormTab {
+                      padding-left:25px;
+                      background:rgb(32,32,36) url(../images/IconForms.png) no-repeat left center;
+
+                      }
+                  }
+              }
+              .formsContainer {
+                    background:rgba(32,32,36, 0.9);
+                    margin:0px auto;
+                    }
+              .projectDetails {
+                    background:rgb(54, 79, 90);
+                    margin:10px auto;
+                    }
+              .projectDetails, .formsContainer {
+                  width:99.5%;
+                  position:relative;
+                  padding:2em 0.25% 2em 0.25%;
+
+                  h3 {
+                      color:$akvoGolden;
+                      margin-bottom: 20px;
+                      display:inline-block;
+                  }
+                  .showCollapse {
+                      background:$anchorLink;
+                      color:white;
+                      text-transform:uppercase;
+                      display:inline-block;
+                      padding: 2px 7px 0px 7px;
+                      display: inline-block;
+                      margin: -2px 0 0 10px;
+                      border-radius:3px;
+                      span.monitoringAndvanced & {
+                        display:block;
+                        margin-top:10px;
+                      }
+                  }
+                  .projectDetailForm, .surveyDetailForm {
+                      display: block;
+                      margin-top:0 !important;
+                      .monitoringHint {
+                        margin: 10px 0 0 10px;
+                        color: #c49a6c;
+                      }
+                      form {
+                          width:100%;
+                      }
+                      input {
+                          width:99%;
+                          margin-bottom: 35px;
+                          background:rgb(248,248,248);
+                          color:rgb(158,158,158);
+                          &:focus {
+                              border: 1px solid rgb(205, 205, 205);
+                              background: rgb(245, 255, 216);
+                              }
+                          &[type=checkbox] {
+                              width:20px;
+                              float: left;
+                          }
+                      }
+                      .projectSelect {
+                          margin-bottom: 50px;
+                          li {
+                              display:block;
+                              width:100%;
+                              margin-bottom:20px;
+                              select {
+                                  width:99.5%;
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }

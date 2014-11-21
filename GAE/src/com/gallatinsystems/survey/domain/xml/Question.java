@@ -89,6 +89,11 @@ public class Question {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
     protected String locked;
+    
+    @XmlAttribute(required = false)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String allowMultiple;
+    
     @XmlAttribute
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
@@ -261,6 +266,24 @@ public class Question {
     }
 
     /**
+     * Gets the value of the allowMultiple property.
+     * 
+     * @return possible object is {@link String }
+     */
+    public String getAllowMultiple() {
+        return allowMultiple;
+    }
+
+    /**
+     * Sets the value of the allowMultiple property.
+     * 
+     * @param value allowed object is {@link String }
+     */
+    public void setAllowMultiple(String value) {
+        this.allowMultiple = value;
+    }
+    
+    /**
      * Gets the value of the locked property.
      * 
      * @return possible object is {@link String }
@@ -277,7 +300,7 @@ public class Question {
     public void setLocked(String value) {
         this.locked = value;
     }
-
+    
     /**
      * Sets the value of the requireDoubleEntry property.
      * 

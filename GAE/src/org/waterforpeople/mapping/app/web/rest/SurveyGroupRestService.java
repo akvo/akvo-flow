@@ -126,10 +126,20 @@ public class SurveyGroupRestService {
 
         // check if surveyGroup exists in the datastore
         if (s != null) {
-            // only delete surveyGroups if there are no surveys in there
-            List<Survey> surveys = surveyDao.listSurveysByGroup(id);
-            if (surveys.size() == 0) {
-                // delete survey group
+            boolean delete = false;
+            switch (s.getProjectType()) {
+                case PROJECT:
+                    // only delete surveyGroups if there are no surveys in there
+                    List<Survey> surveys = surveyDao.listSurveysByGroup(id);
+                    delete = surveys.size() == 0;
+                    break;
+                case PROJECT_FOLDER:
+                    // only delete surveyGroups if there are no sub folders in there
+                    List<SurveyGroup> surveyGroups = surveyGroupDao.listByProjectFolderId(id);
+                    delete = surveyGroups.size() == 0;
+                    break;
+            }
+            if (delete) {
                 surveyGroupDao.delete(s);
                 statusDto.setStatus("ok");
             }

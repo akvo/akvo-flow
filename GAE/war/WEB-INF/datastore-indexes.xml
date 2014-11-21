@@ -520,6 +520,18 @@
         <property name="localeType" direction="asc"/>
         <property name="identifier" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="surveyGroupId" direction="asc"/>
+        <property name="lastUpdateDateTime" direction="desc"/>
+    </datastore-index>
+    <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="displayName" direction="asc"/>
+        <property name="lastUpdateDateTime" direction="desc"/>
+    </datastore-index>
+    <datastore-index kind="SurveyedLocale" ancestor="false" source="manual">
+        <property name="identifier" direction="asc"/>
+        <property name="lastUpdateDateTime" direction="desc"/>
+    </datastore-index>
     <datastore-index kind="LOSScoreToStatusMapping" ancestor="false" source="manual">
         <property name="levelOfServiceScoreType" direction="asc"/>
         <property name="floor" direction="asc"/>
@@ -541,5 +553,6 @@
         <property name="organization" direction="asc"/>
         <property name="name" direction="asc"/>
     </datastore-index>
+
 
 </datastore-indexes>

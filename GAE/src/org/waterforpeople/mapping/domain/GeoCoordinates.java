@@ -59,7 +59,7 @@ public class GeoCoordinates {
         if (line != null && line.trim().length() > 0
                 && !line.trim().equals("||") && !line.startsWith("||")) {
             gc = new GeoCoordinates();
-            String[] coordinates = line.split("\\|");
+            String[] coordinates = line.split("\\|", -1);
             if (coordinates.length > 1) {
                 try {
                     gc.setLatitude(Double.parseDouble(coordinates[0]));

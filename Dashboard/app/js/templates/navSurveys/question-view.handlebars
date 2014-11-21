@@ -60,6 +60,10 @@
     <h1 class="answerNbr">{{t _free_text_details}}:</h1>
     <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireDoubleEntry"}}{{t _require_double_entry}} </label>
     {{/if}}
+    {{#if view.amBarcodeType}}
+    <h1 class="answerNbr">{{t _barcode_details}}: </h1>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowMultipleFlag"}}{{t _enable_bulk_barcode_scan}} </label>
+    {{/if}}
     {{#if view.amNumberType}}
     <h1 class="answerNbr">{{t _number_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowSign"}}{{t _allow_sign}} </label>

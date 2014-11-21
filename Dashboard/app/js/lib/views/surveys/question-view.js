@@ -94,6 +94,10 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  amBarcodeType: function () {
+	  return this.type.get('value') === 'SCAN';
+  }.property('this.type').cacheable(),
+
   amFreeTextType: function () {
     if (this.type) {
       return this.type.get('value') == 'FREE_TEXT';
@@ -130,7 +134,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
+      return val == 'PHOTO' || val == 'VIDEO';
     }
   }.property('this.type').cacheable(),
 
@@ -255,7 +259,7 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
 
-  onEditSuccess: function() {
+  doSaveEditQuestion: function() {
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
     if (this.type.get('value') !== 'NUMBER') {
@@ -487,30 +491,6 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.dialogControl.set('showDialog', true);
   },
 
-  doSaveEditQuestion: function () {
-    var self = this;
-    this.validateQuestionId({
-      failure: function(msg) {
-	self.showMessageDialog('Invalid question id', msg);
-      },
-      success: function() {
-	self.validateMinAndMax({
-	  valueFailure: function() {
-	    self.showMessageDialog(Ember.String.loc('_min_max_not_correct'),
-				   Ember.String.loc('_min_larger_than_max_or_equal'));
-	  },
-	  NaNFailure: function() {
-	    self.showMessageDialog(Ember.String.loc('_min_max_not_number'),
-				   Ember.String.loc('_min_max_not_number_message'));
-	  },
-	  success: function(){
-	    self.onEditSuccess();
-	  }
-	});
-      }
-    });
-  },
-
   deleteQuestion: function () {
     var qDeleteId;
     qDeleteId = this.content.get('keyId');
@@ -520,6 +500,20 @@ FLOW.QuestionView = FLOW.View.extend({
       this.showMessageDialog(Ember.String.loc('_please_wait'),
 			     Ember.String.loc('_please_wait_until_previous_request'));
       return;
+    }
+
+    // Check if there is another question that is dependant on this question
+    if (this.content.get('type') === 'OPTION') {
+      var hasDependant = FLOW.store.find(FLOW.Question).some(function (q) {
+        return qDeleteId === q.get('dependentQuestionId');
+      });
+
+      if (hasDependant) {
+        this.showMessageDialog(
+          Ember.String.loc('_cant_delete_question'),
+          Ember.String.loc('_another_question_depends_on_this'));
+        return;
+      }
     }
 
     // check if deleting this question is allowed

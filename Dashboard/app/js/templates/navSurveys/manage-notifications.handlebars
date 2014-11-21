@@ -1,4 +1,4 @@
-{{#view FLOW.NotificationsView}}
+
 <div class="manageNotificationsBlock">
     <section id="manageNotifications" class="mainContent mainRight">
         <div class="innerContent">
@@ -7,30 +7,30 @@
                     {{t _notifications}}
                 </h1>
                 <div class="Separator">
-                   
+
                     <form class="notificationAdd">
                         <fieldset>
-                            <label for="emailNotification">{{t _email}}  {{#if view.destinationEmpty}} - {{t _please_provide_an_email_address}} {{/if}}</label> 
+                            <label for="emailNotification">{{t _email}}  {{#if view.destinationEmpty}} - {{t _please_provide_an_email_address}} {{/if}}</label>
                             {{view Ember.TextField valueBinding="view.notificationDestination" id="emailNotification" size=150 }}
                         </fieldset>
                         <fieldset>
-                            <label for="eventNotification">{{t _event}}  {{#if view.typeEmpty}} - {{t _please_make_a_choice}}{{/if}}</label> 
-                            {{view Ember.Select 
-                            contentBinding="FLOW.notificationEventControl.content" 
-                            optionLabelPath="content.label" 
-                            optionValuePath="content.value" 
-                            selectionBinding="view.notificationType" 
+                            <label for="eventNotification">{{t _event}}  {{#if view.typeEmpty}} - {{t _please_make_a_choice}}{{/if}}</label>
+                            {{view Ember.Select
+                            contentBinding="FLOW.notificationEventControl.content"
+                            optionLabelPath="content.label"
+                            optionValuePath="content.value"
+                            selectionBinding="view.notificationType"
                             id="eventNotification"
                             prompt=""
                             promptBinding="Ember.STRINGS._select_event"}}
                         </fieldset>
                         <fieldset>
-                            <label for="typeNotification">{{t _option}}  {{#if view.optionEmpty}} - {{t _please_make_a_choice}} {{/if}}</label> 
-                            {{view Ember.Select 
-                            contentBinding="FLOW.notificationOptionControl.content" 
-                            optionLabelPath="content.label" 
-                            optionValuePath="content.value" 
-                            selectionBinding="view.notificationOption" 
+                            <label for="typeNotification">{{t _option}}  {{#if view.optionEmpty}} - {{t _please_make_a_choice}} {{/if}}</label>
+                            {{view Ember.Select
+                            contentBinding="FLOW.notificationOptionControl.content"
+                            optionLabelPath="content.label"
+                            optionValuePath="content.value"
+                            selectionBinding="view.notificationOption"
                             id="typeNotification"
                             prompt=""
                             promptBinding="Ember.STRINGS._select_option"}}
@@ -91,4 +91,3 @@
         </div>
     </section>
 </div>
-{{/view}}
