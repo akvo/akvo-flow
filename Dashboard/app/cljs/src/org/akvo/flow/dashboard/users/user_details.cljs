@@ -6,7 +6,16 @@
             [sablono.core :as html :refer-macros (html)]
             [ajax.core :refer (ajax-request GET POST PUT DELETE)]))
 
-(defn panel-header [{:keys [on-save]} owner])
+(defn panel-header-section [{:keys [user]} owner]
+  (om/component
+   (html
+    [:div.row.panelHeader
+     [:div.col-xs-9.text-left.panelTitle
+      [:h4
+       (b/icon :pencil) " Edit " (get user "userName")]]
+     [:div.col-xs-3.text-right
+      [:button.btn.btn-primary
+       (b/icon :circle-arrow-left) " Go back"]]])))
 
 (defn update-input! [owner key]
   (fn [event]
@@ -90,7 +99,7 @@
   (om/component
    (html
     [:div
-     #_(om/build panel-header {:user user})
+     (om/build panel-header-section {:user user})
      (om/build user-edit-section {:user user
                                   :on-save #(dispatch :edit-user %)})
      #_(om/build roles-and-permissions-section {:user user :projects projects})
