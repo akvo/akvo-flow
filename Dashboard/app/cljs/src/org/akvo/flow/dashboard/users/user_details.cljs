@@ -48,7 +48,8 @@
                                 :on-change (update-input! owner "emailAddress")}]]
          [:div.form-group
           (b/btn-primary {:class (when (= state user) "disabled")
-                          :on-click #(on-save state)}
+                          :on-click #(do (.preventDefault %)
+                                         (on-save state))}
                          (b/icon :floppy-disk) " Save user info")]]]))))
 
 (defn generate-apikeys [owner user]
@@ -90,9 +91,11 @@
           [:input.form-control {:type "text"
                                 :value access-key}]]
          [:div.btn-group
-          [:button.btn.btn-default {:on-click #(generate-apikeys owner user)}
+          [:button.btn.btn-default {:on-click #(do (.preventDefault %)
+                                                   (generate-apikeys owner user))}
            (b/icon :refresh) " (Re)generate"]
-          [:button.btn.btn-default {:on-click #(revoke-apikeys owner user)}
+          [:button.btn.btn-default {:on-click #(do (.preventDefault %)
+                                                   (revoke-apikeys owner user))}
            (b/icon :ban-circle) " Revoke"]]]]))))
 
 (defn user-details [{:keys [user projects]} owner]

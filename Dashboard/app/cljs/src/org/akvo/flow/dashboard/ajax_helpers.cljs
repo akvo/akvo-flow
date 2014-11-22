@@ -25,7 +25,7 @@
 (defn fetch-and-index [resource resource-name]
   {:pre [(string? resource) (keyword? resource-name)]}
   (GET resource
-       (merge ajax/default-ajax-config
+       (merge default-ajax-config
               {:handler (fn [response]
                           (swap! app-state assoc-in [resource-name :by-id]
                                  (index-by "keyId" (get response (name resource-name)))))})))
