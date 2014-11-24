@@ -32,6 +32,9 @@
          (drop offset)
          (take limit))))
 
+(defn get-roles [roles]
+  (-> roles :by-id vals))
+
 ;; Dispatch loops
 
 (dispatch-loop
@@ -71,9 +74,6 @@
  :new-access-key {:keys [user access-key]}
  (swap! app-state assoc-in [:users :by-id (get user "keyId") "accessKey"] access-key))
 
-
-
-
 (dispatch-loop
  :fetch-users _
  (ajax/fetch-and-index "/rest/users" :users))
@@ -81,3 +81,14 @@
 (dispatch-loop
  :roles/fetch _
  (ajax/fetch-and-index "/rest/user_roles/all" :roles))
+
+(dispatch-loop
+ :roles/create _
+ (POST "/rest/user_roles"
+       (merge ajax/default-ajax-config
+              {:params {"name" "New_Role"
+                        "permissions" []}
+               :handler (fn [response]
+                          (let [role (get response "role")
+                                role-id (get role "keyId")]
+                            (swap! app-state assoc-in [:roles :by-id role-id] role)))})))

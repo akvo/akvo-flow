@@ -11,6 +11,12 @@
 (defn caret []
   [:span.caret])
 
+(defn btn-primary [attrs icn caption]
+  {:pre [(map? attrs)
+         (keyword? icn)
+         (string? caption)]}
+  [:button.btn.btn-primary attrs (icon icn) (str " " caption)])
+
 (defn dropdown [{:keys [id placeholder selected choices on-select]} owner]
   (reify
     om/IInitState
@@ -33,9 +39,7 @@
                                (on-select id (:id choice)))}
             (:label choice)]])]]))))
 
-(defn btn-primary [attrs & children]
-  {:pre [(map? attrs)]}
-  [:button.btn.btn-primary attrs children])
+
 
 (defn btn-link [attrs & children]
   {:pre [(map? attrs)]}

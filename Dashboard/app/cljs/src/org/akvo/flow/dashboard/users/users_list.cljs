@@ -149,7 +149,7 @@
        [:h4 (b/icon :pencil)
         [:span.userName (get user "userName")] " Roles and Permissions"]]
       [:div.col-xs-3.text-right
-       (b/btn-primary {} (b/icon :floppy-disk) " Save")
+       (b/btn-primary {} :floppy-disk "Save")
        (b/btn-link {:on-click close!}  (b/icon :remove) " Cancel")]]
      [:form.form-inline.text-left.paddingTop.roleEditSelect {:role "form"}
       [:div.form-group
@@ -166,7 +166,7 @@
                                               :id (get pf "keyId")}) project-folders)
                              :on-select #(println %1 %2)})]
       [:div.form-group
-       (b/btn-primary {:class "btn-xs"} (b/icon :plus) " Add")]]])))
+       (b/btn-primary {:class "btn-xs"} :pluss "Add")]]])))
 
 (defn user-actions [{:keys [user on-action]} owner]
   (om/component
@@ -222,7 +222,7 @@
             (b/btn-primary {:class "btn-md"
                             :type "button"
                             :on-click #(om/set-state! owner :dialog {:component new-user-dialog})}
-                           (b/icon :plus) " Add new user")]]
+                           :plus "Add new user")]]
           (om/build grid
                     {:data (let [data (store/get-by-range users
                                                           (merge (:pagination state)

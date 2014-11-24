@@ -14,8 +14,7 @@
       [:h4
        (b/icon :pencil) " Edit " (get user "userName")]]
      [:div.col-xs-3.text-right
-      [:button.btn.btn-primary
-       (b/icon :circle-arrow-left) " Go back"]]])))
+      (b/btn-primary {} :circle-arrow-left "Go back")]])))
 
 (defn update-input! [owner key]
   (fn [event]
@@ -50,7 +49,7 @@
           (b/btn-primary {:class (when (= state user) "disabled")
                           :on-click #(do (.preventDefault %)
                                          (on-save state))}
-                         (b/icon :floppy-disk) " Save user info")]]]))))
+                         :floppy-disk "Save user info")]]]))))
 
 (defn generate-apikeys [owner user]
   (POST (str "/rest/users/" (get user "keyId") "/apikeys")
