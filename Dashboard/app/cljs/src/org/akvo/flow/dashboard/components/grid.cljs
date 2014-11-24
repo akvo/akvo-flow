@@ -111,6 +111,7 @@
     [:tr
      (map-indexed (fn [idx {:keys [class cell-fn component component-data-fn title]}]
                     (let [class (or class "")
+                          component-data-fn (or component-data-fn identity)
                           item  (cond
                                  cell-fn (cell-fn row)
                                  component (let [data (component-data-fn row)]

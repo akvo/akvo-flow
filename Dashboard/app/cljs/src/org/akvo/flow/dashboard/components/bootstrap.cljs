@@ -11,11 +11,15 @@
 (defn caret []
   [:span.caret])
 
-(defn btn-primary [attrs icn caption]
-  {:pre [(map? attrs)
-         (keyword? icn)
-         (string? caption)]}
-  [:button.btn.btn-primary attrs (icon icn) (str " " caption)])
+(defn btn-primary
+  ([attrs icn]
+     (btn-primary attrs icn ""))
+  ([attrs icn caption]
+     {:pre [(map? attrs)
+            (keyword? icn)
+            (string? caption)]}
+     [:button.btn.btn-primary attrs (icon icn) (when-not (empty? caption)
+                                                 (str " " caption))]))
 
 (defn dropdown [{:keys [id placeholder selected choices on-select]} owner]
   (reify

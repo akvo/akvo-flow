@@ -51,6 +51,13 @@
                                              "permissions" permissions})}
                        :save "Save")]))))
 
+(defn roles-actions [{:strs [keyId]} owner]
+  (om/component
+   (html
+    [:span
+     (b/btn-primary {:on-click #(dispatch :roles/delete keyId)} :remove)
+     (b/btn-primary {} :edit)])))
+
 (defn roles-and-permissions [{:keys [roles]} owner]
   (reify
 
@@ -86,4 +93,4 @@
                              {:title "Number of users"
                               :cell-fn (constantly 0)}
                              {:title "Action"
-                              :cell-fn (constantly "")}]})]))))
+                              :component roles-actions}]})]))))

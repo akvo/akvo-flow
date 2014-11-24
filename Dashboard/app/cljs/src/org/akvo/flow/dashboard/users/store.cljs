@@ -91,3 +91,11 @@
                           (let [role (get response "role")
                                 role-id (get role "keyId")]
                             (swap! app-state assoc-in [:roles :by-id role-id] role)))})))
+
+(dispatch-loop
+ :roles/delete key-id
+ (assert (integer? key-id))
+ (DELETE (str "/rest/user_roles/" key-id)
+         (merge ajax/default-ajax-config
+                {:handler (fn [response]
+                            (swap! app-state update-in [:roles :by-id] dissoc key-id))})))

@@ -7,17 +7,12 @@
     (:require-macros [org.akvo.flow.dashboard.dispatcher :refer (dispatch-loop)]))
 
 (defn get-project-folders [projects]
-  (let [v (vals (get projects :by-id))]
-    (println (take 3 v))
-    v))
-
-
+  (vals (get projects :by-id)))
 
 (dispatch-loop
  :projects/fetch _
  (GET "/rest/survey_groups"
       (merge ajax/default-ajax-config
              {:handler (fn [response]
-                         (println "GOTHERE!")
                          (swap! app-state assoc-in [:projects :by-id]
                                 (ajax/index-by "keyId" (get response "survey_groups"))))})))
