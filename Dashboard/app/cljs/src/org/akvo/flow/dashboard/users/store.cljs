@@ -83,11 +83,10 @@
  (ajax/fetch-and-index "/rest/user_roles/all" :roles))
 
 (dispatch-loop
- :roles/create _
+ :roles/create role
  (POST "/rest/user_roles"
        (merge ajax/default-ajax-config
-              {:params {"name" "New_Role"
-                        "permissions" []}
+              {:params role
                :handler (fn [response]
                           (let [role (get response "role")
                                 role-id (get role "keyId")]
