@@ -93,6 +93,8 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
         String resourcePath = retrieveResourcePath(securedObject);
         if (resourcePath == null) {
+            // enables listing folders and forms. access is denied when
+            // specific folder is requested with insufficient permissions
             return ACCESS_ABSTAIN;
         }
 
@@ -102,7 +104,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         List<UserAuthorization> authorizations = userAuthorizationDao.listByObjectPath(userId,
                 resourcePath);
         if (authorizations.isEmpty()) {
-            return ACCESS_DENIED;
+            throw new AccessDeniedException("Access is Denied. Insufficient permissions");
         }
 
         List<Long> authorizedRoleIds = new ArrayList<Long>();
@@ -110,8 +112,8 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             authorizedRoleIds.add(auth.getRoleId());
         }
 
-        List<UserRole> authorizedRoles = userRoleDao.listByKeys((Long[]) authorizedRoleIds
-                .toArray());
+        List<UserRole> authorizedRoles = userRoleDao.listByKeys(authorizedRoleIds
+                .toArray(new Long[0]));
 
         Permission permission = Permission.lookup(httpMethod, requestUri);
         for (UserRole role : authorizedRoles) {
@@ -120,7 +122,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             }
         }
 
-        return ACCESS_DENIED;
+        throw new AccessDeniedException("Access is Denied. Insufficient permissions");
     }
 
     /**
@@ -131,6 +133,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      * @param securedObject
      * @return
      */
+    @SuppressWarnings("rawtypes")
     private String retrieveResourcePath(FilterInvocation securedObject)
             throws AccessDeniedException {
 
@@ -162,7 +165,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             if (matcher.matches()) {
                 String objectIdStr = matcher.group(3);
                 if (objectIdStr == null) {
-                    return null;
+                    return null; // should only happen for GET requests with no objectid specified
                 }
                 Long objectId = Long.valueOf(objectIdStr);
                 if (requestUri.contains("survey_groups")) {
@@ -176,6 +179,13 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
                         resourcePath = s.getPath();
                     }
                 }
+
+                // expecting object with valid path
+                if (resourcePath == null) {
+                    throw new AccessDeniedException(
+                            "Access is Denied. Unable to identify object path");
+                }
+
             }
         }
         return resourcePath;

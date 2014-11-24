@@ -53,14 +53,14 @@ public enum Permission {
         return uriPrefix;
     }
 
-    public String getAction() {
-        return httpMethod;
-    }
-
     public static Permission lookup(String httpMethod, String requestUri) {
+        if (httpMethod == null || requestUri == null) {
+            return null;
+        }
+
         for (Permission permission : Permission.values()) {
             if (permission.getHttpMethod().equals(httpMethod)
-                    && permission.getUriPrefix().equals(requestUri)) {
+                    && requestUri.startsWith(permission.getUriPrefix())) {
                 return permission;
             }
         }
