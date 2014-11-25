@@ -26,6 +26,7 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
      * @param objectPath
      * @return
      */
+    @SuppressWarnings("unchecked")
     public List<UserAuthorization> listByObjectPath(Long userId, String objectPath) {
         if (objectPath == null) {
             return Collections.emptyList();

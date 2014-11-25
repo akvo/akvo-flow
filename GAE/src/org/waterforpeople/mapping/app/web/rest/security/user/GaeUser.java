@@ -10,7 +10,7 @@ import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
 /**
  * Custom user object for the application.
- * 
+ *
  * @author Luke Taylor
  */
 public class GaeUser implements Serializable {
