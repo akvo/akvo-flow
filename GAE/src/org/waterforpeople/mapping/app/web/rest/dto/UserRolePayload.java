@@ -16,11 +16,11 @@
 
 package org.waterforpeople.mapping.app.web.rest.dto;
 
-import java.io.Serializable;
 import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.UserRole;
 
@@ -30,7 +30,7 @@ import com.gallatinsystems.user.domain.UserRole;
  *
  * @author emmanuel
  */
-public class UserRolePayload implements Serializable {
+public class UserRolePayload extends BaseDto {
 
     private static final long serialVersionUID = 2069008497215961962L;
 
@@ -62,6 +62,12 @@ public class UserRolePayload implements Serializable {
         }
     }
 
+    @Override
+    public void setKeyId(Long keyId) {
+        // do nothing. keyId already picked from the URL
+    }
+
+    @Override
     public Long getKeyId() {
         return userRole.getKey().getId();
     }

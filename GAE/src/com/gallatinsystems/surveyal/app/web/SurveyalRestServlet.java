@@ -25,9 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.beoui.geocell.GeocellManager;
-import com.beoui.geocell.model.Point;
-
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.jsr107cache.Cache;
@@ -37,6 +34,8 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.beoui.geocell.GeocellManager;
+import com.beoui.geocell.model.Point;
 import com.gallatinsystems.common.util.MemCacheUtils;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
@@ -58,6 +57,7 @@ import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -266,7 +266,9 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
 
             Survey survey = SurveyUtils.retrieveSurvey(surveyInstance.getSurveyId());
             if (survey != null) {
-                locale.setLocaleType(survey.getPointType());
+                SurveyGroup surveyGroup = SurveyUtils
+                        .retrieveSurveyGroup(survey.getSurveyGroupId());
+                locale.setLocaleType(surveyGroup.getPrivacyLevel().toString());
                 locale.setSurveyGroupId(survey.getSurveyGroupId());
                 locale.setCreationSurveyId(survey.getKey().getId());
             }

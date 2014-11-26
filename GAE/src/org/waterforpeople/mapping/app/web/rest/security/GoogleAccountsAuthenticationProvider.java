@@ -32,7 +32,7 @@ import com.google.appengine.api.users.User;
  * limited access until they have registered.
  * <p>
  * If the account has been disabled, a {@code DisabledException} will be raised.
- * 
+ *
  * @author Luke Taylor
  */
 public class GoogleAccountsAuthenticationProvider implements AuthenticationProvider,
@@ -104,10 +104,12 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     /**
      * Indicate that this provider only supports PreAuthenticatedAuthenticationToken (sub)classes.
      */
+    @Override
     public final boolean supports(Class<?> authentication) {
         return PreAuthenticatedAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
+    @Override
     public void setMessageSource(MessageSource messageSource) {
         this.messages = new MessageSourceAccessor(messageSource);
     }

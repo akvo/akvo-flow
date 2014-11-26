@@ -144,7 +144,9 @@ public class SurveyUtils {
 
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
-        tmp.setQuestionId(source.getQuestionId() + "_copy");
+        if (source.getQuestionId() != null) {
+            tmp.setQuestionId(source.getQuestionId() + "_copy");
+        }
         log.log(Level.INFO, "Copying `Question` " + source.getKey().getId());
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
@@ -218,6 +220,11 @@ public class SurveyUtils {
     public static Survey retrieveSurvey(Long surveyId) {
         final SurveyDAO sDao = new SurveyDAO();
         return sDao.getById(surveyId);
+    }
+
+    public static SurveyGroup retrieveSurveyGroup(Long surveyGroupId) {
+        final SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
+        return surveyGroupDAO.getByKey(surveyGroupId);
     }
 
     private static String getPath(Survey s) {

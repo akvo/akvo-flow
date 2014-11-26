@@ -35,7 +35,7 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 /**
  * Data access object for manipulating SurveyedLocales
- * 
+ *
  * @author Christopher Fagiani
  */
 public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
@@ -47,7 +47,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
     /**
      * lists the set of SurveyedLocales that are within tolerance of the lat/lon coordinates passed
      * in.
-     * 
+     *
      * @param lat
      * @param lon
      * @param tolerance
@@ -62,7 +62,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     /**
      * lists locales that fit within the bounding box geocells passed in
-     * 
+     *
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -78,13 +78,13 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
     /**
      * lists locales that fit within the bounding box geocells passed in and that can be displayed
      * on the public map (meaning, not household type)
-     * 
+     *
      * @return
      */
     @SuppressWarnings("unchecked")
     public List<SurveyedLocale> listPublicLocalesByGeocell(List<String> geocells, int pageSize) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        String queryString = ":p1.contains(geocells) && localeType != 'Household'";
+        String queryString = ":p1.contains(geocells) && localeType != 'Household' && localeType != 'PRIVATE'";
         javax.jdo.Query query = pm.newQuery(SurveyedLocale.class, queryString);
         prepareCursor(null, pageSize, query);
         List<SurveyedLocale> results = (List<SurveyedLocale>) query.execute(geocells);
@@ -93,7 +93,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     /**
      * lists all locales
-     * 
+     *
      * @param cursor
      * @param pagesize
      * @return
@@ -110,7 +110,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     /**
      * lists locales that fit within the bounding box passed in
-     * 
+     *
      * @param pointType
      * @param lat1
      * @param lon1
@@ -158,7 +158,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     /**
      * lists all SurveyalValues for a single Locale
-     * 
+     *
      * @param surveyedLocaleId
      * @return
      */
@@ -169,7 +169,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     /**
      * lists all locales that match the geo constraints passed in
-     * 
+     *
      * @param countryCode
      * @param level
      * @param subValue
@@ -211,7 +211,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     /**
      * searches for surveyedLocale based on params passed in
-     * 
+     *
      * @param country
      * @param collDateFrom
      * @param collDateTo
@@ -271,7 +271,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     /**
      * returns all the SurveyalValues corresponding to the metric id/value pair passed in
-     * 
+     *
      * @param metricId
      * @param metricValue
      * @return
@@ -300,7 +300,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
      * returns all the SurveyalValues corresponding to the surveyInstanceId and questionId passed
      * in. This uniquely identifies the surveyalValue corresponding to a single questionAnswerStore
      * object
-     * 
+     *
      * @param surveyInstanceId
      * @param questionId
      * @return
@@ -326,7 +326,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     /**
      * lists all values for a given survey instance
-     * 
+     *
      * @param surveyInstanceId
      * @return
      */
@@ -338,7 +338,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     /**
      * returns all the locales by surveyGroupId survey instance only.
-     * 
+     *
      * @param surveyGroupId
      * @return
      */
@@ -346,6 +346,38 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         List<SurveyedLocale> locales = listByProperty("surveyGroupId", surveyGroupId,
                 "Long");
         return locales;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<SurveyedLocale> listSurveyedLocales(String cursor, Long surveyGroupId,
+            String identifier, String displayName) {
+
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(SurveyedLocale.class);
+
+        Map<String, Object> paramMap = null;
+
+        StringBuilder filterString = new StringBuilder();
+        StringBuilder paramString = new StringBuilder();
+        paramMap = new HashMap<String, Object>();
+
+        appendNonNullParam("surveyGroupId", filterString, paramString, "Long",
+                surveyGroupId, paramMap);
+        appendNonNullParam("identifier", filterString, paramString,
+                "String", identifier, paramMap);
+        appendNonNullParam("displayName", filterString, paramString,
+                "String", displayName, paramMap);
+
+        query.setOrdering("lastUpdateDateTime desc");
+
+        query.setFilter(filterString.toString());
+        query.declareParameters(paramString.toString());
+
+        if (cursor != null && cursor != "")
+            prepareCursor(cursor, query);
+
+        return (List<SurveyedLocale>) query.executeWithMap(paramMap);
+
     }
 
     public List<SurveyedLocale> listLocalesByDisplayName(String displayName) {
@@ -357,7 +389,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
     /**
      * returns all the locales by surveyGroupId, from a certain date. If no date is supplised, t = 0
      * is used.
-     * 
+     *
      * @param surveyGroupId
      * @param lastUpdateTime
      * @param pageSize
@@ -371,7 +403,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
         Map<String, Object> paramMap = new HashMap<String, Object>();
         StringBuilder filterString = new StringBuilder();
         StringBuilder paramString = new StringBuilder();
-        
+
         appendNonNullParam("surveyGroupId", filterString, paramString, "Long",
                 surveyGroupId, paramMap);
         appendNonNullParam("lastUpdateDateTime", filterString, paramString, "Date",
@@ -389,7 +421,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
     /**
      * returns all the locales with the identifier passed in. If needDetails is true, it will list
      * the surveyalValues for the locale from the most recent survey instance only.
-     * 
+     *
      * @param identifier
      * @param needDetails
      * @return
@@ -433,7 +465,7 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
 
     /**
      * finds a single surveyedLocale by identifier.
-     * 
+     *
      * @param identifier
      * @return
      */

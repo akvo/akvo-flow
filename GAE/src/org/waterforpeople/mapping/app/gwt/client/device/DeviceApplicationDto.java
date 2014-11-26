@@ -28,6 +28,7 @@ public class DeviceApplicationDto extends BaseDto {
     private String appCode;
     private String version;
     private String fileName;
+    private String md5Checksum;
 
     public String getDeviceType() {
         return deviceType;
@@ -59,6 +60,14 @@ public class DeviceApplicationDto extends BaseDto {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getMd5Checksum() {
+        return md5Checksum;
+    }
+
+    public void setMd5Checksum(String md5Checksum) {
+        this.md5Checksum = md5Checksum;
     }
 
 }

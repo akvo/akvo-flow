@@ -617,7 +617,7 @@ label[for=newDeviceGroupName] {
 }
 .middleSection {
     margin: 0 0 20px 0;
-    padding:90px 0 0 0;
+    padding:90px 0 40px 0;
 }
 .leftSidebar {
     -webkit-box-sizing: border-box;
@@ -1722,7 +1722,6 @@ a.FadeIt {
         }
         h4 {
             margin:5px 0 10px 5px;
-            text-transform:uppercase;
             color:rgba($anchorLink, 0.5);
         }
         .noForms {
@@ -1804,7 +1803,7 @@ section.topBar {
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
-    display: -webkit-flex;    
+    display: -webkit-flex;
     display:flex;
     -webkit-align-items:center;
     align-items:center;
@@ -1827,7 +1826,6 @@ section.topBar {
             margin: 5px 3px 0 0;
             text-indent: 19px;
             position: relative;
-
         }
         ul li:before {
             content: " ";
@@ -1859,8 +1857,8 @@ section.topBar {
             display: block;
             background: $akvoLightBlue;
             color: white;
-            text-transform: uppercase;
             font-size: 1.1em;
+            @include noWrapTxt;
             &:hover {
                 background: $anchorLinkHover;
             }
@@ -1954,7 +1952,7 @@ nav.menuTopbar {
                     font-weight:bold;
                     margin-right: 5px;
                     margin-left: 5px;
-                    }   
+                    }
                 }
             }
         }
@@ -2171,6 +2169,9 @@ li.aSurvey {
     border-radius: 0.3em;
     -webkit-transition: all 0.4s linear;
     transition: all 0.4s linear;
+    &:hover {
+        cursor:text;
+    }
      h2 {
         display: inline-block;
         width: 98%;
@@ -2488,7 +2489,7 @@ label[for="surveyLanguage"]  a.helpIcon {
       display: -webkit-box;
       display: -moz-box;
       display: -ms-flexbox;
-      display: -webkit-flex;    
+      display: -webkit-flex;
       display:flex;
             margin: 0 auto;
             padding: 0;
@@ -2565,6 +2566,17 @@ a.publishProjectBtn {
         padding: 10px 15px 10px 45px;
         color:white;
         border-radius:3px;
+    &.noChanges {
+        background:rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
+        color:white;
+        cursor: text;
+        &:hover {
+            background:rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
+            background-size: 55px 55px;
+        }
+    }
     &:hover {
         background:$anchorLinkHover url(../images/IconPublishWhite.svg) left center no-repeat;
         background-size: 55px 55px;
@@ -2584,8 +2596,15 @@ a.saveProject {
         color:white;
     }
     &.noChanges {
-        background:rgba(32,32,36,0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+        background:rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
         background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
+        color:white;
+        cursor: text;
+        &:hover {
+            background:rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+            background-size: 55px 55px;
+          }
     }
 }
 /*****
@@ -4253,12 +4272,12 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
           display: -webkit-box;
           display: -moz-box;
           display: -ms-flexbox;
-          display: -webkit-flex;    
+          display: -webkit-flex;
           display:flex;
             -webkit-flex-direction: row;
             -webkit-flex-wrap: nowrap;
             -webkit-align-items: center;
-            -webkit-align-content: center;            
+            -webkit-align-content: center;
             flex-direction: row;
             flex-wrap: nowrap;
             align-items: center;
@@ -4295,13 +4314,16 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
         .forms {
             padding:2em 0 0 0;
             background:white;
+            #tabs h2 {
+                margin:0 0 15px 5px;
+            }
             .formSummary {
                         display:-webkit-flex;
                         display:flex;
                         -webkit-flex-direction: row;
                         -webkit-flex-wrap: nowrap;
                         -webkit-align-items: center;
-                        -webkit-align-content: center;                       
+                        -webkit-align-content: center;
                         flex-direction: row;
                         flex-wrap: nowrap;
                         align-items: center;
@@ -4368,6 +4390,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             #tabs nav.tabNav ul li {
                 border-right:1px solid rgba(32,32,36,0.2);
                 margin:0;
+                font-size:1.2em;
                 @include border-radius(2px 2px 0 0);
                 -webkit-background-clip: padding-box;
                 background-clip: padding-box;
@@ -4403,7 +4426,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                         background-size:20px auto;
                         }
                     }
-                      
                   }
 
                     }
@@ -4498,6 +4520,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                   .projectDetailForm, .surveyDetailForm {
                       display: block;
                       margin-top:0 !important;
+                      .monitoringHint {
+                        margin: 10px 0 0 10px;
+                        color: #c49a6c;
+                      }
                       form {
                           width:100%;
                       }
@@ -4516,13 +4542,13 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                           }
                       }
                       .projectSelect {
-                          display: -webkit-flex;
-                          display: flex;
                           margin-bottom: 50px;
                           li {
-                              width:50%;
+                              display:block;
+                              width:100%;
+                              margin-bottom:20px;
                               select {
-                                  width:100%;
+                                  width:99.5%;
                               }
                           }
                       }
@@ -4530,6 +4556,4 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
               }
           }
       }
-
-
 @import "users.scss";

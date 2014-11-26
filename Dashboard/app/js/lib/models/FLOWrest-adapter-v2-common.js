@@ -19,10 +19,14 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
     // and if it does not come from a delete action. We detect this by looking if num == null
     metaObj = this.extractMeta(json);
     if (metaObj && !Ember.none(metaObj.message)) {
-      if (type == FLOW.SurveyInstance && !Ember.none(this.extractMeta(json).num)) {
-        FLOW.metaControl.set('numSILoaded', this.extractMeta(json).num);
+
+      if (type == FLOW.SurveyInstance
+          || type == FLOW.SurveyedLocale
+          && !Ember.none(this.extractMeta(json).num)) {
+        FLOW.metaControl.set(type == FLOW.SurveyInstance ? 'numSILoaded' : 'numSLLoaded', this.extractMeta(json).num);
         FLOW.metaControl.set('since', this.extractMeta(json).since);
         FLOW.metaControl.set('num', this.extractMeta(json).num);
+        FLOW.metaControl.set('cursorType', type);
       }
       msg = this.extractMeta(json).message;
       status = this.extractMeta(json).status;

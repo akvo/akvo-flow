@@ -42,7 +42,28 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
   // the code field is used as name
   code: DS.attr('string', {
     defaultValue: ''
+  }),
+
+  parentId: DS.attr('number', {
+    defaultValue: null
+  }),
+
+  projectType: DS.attr('string', {
+    defaultValue: "PROJECT"
+  }),
+
+  privacyLevel: DS.attr('string', {
+    defaultValue: "PRIVATE"
+  }),
+
+  defaultLanguageCode: DS.attr('string', {
+    defaultValue: "en"
+  }),
+
+  published: DS.attr('boolean', {
+    defaultValue: false
   })
+
 });
 
 
@@ -136,7 +157,7 @@ FLOW.Question = FLOW.BaseModel.extend({
     defaultValue: false
   }),
   mandatoryFlag: DS.attr('boolean', {
-    defaultValue: false
+    defaultValue: true
   }),
   dependentFlag: DS.attr('boolean', {
     defaultValue: false

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
@@ -769,8 +770,17 @@ public class QuestionDao extends BaseDAO<Question> {
         return listByProperty("dependentQuestionId", questionId, "Long");
     }
 
+    /**
+     * Returns a list of questions whose responses will be shown as the display name of a data
+     * point. The returned list of questions is ordered by question group order and then by question
+     * order within a group
+     *
+     * @param surveyId
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public List<Question> listDisplayNameQuestionsBySurveyId(Long surveyId) {
+        QuestionGroupDao qgDao = new QuestionGroupDao();
         PersistenceManager pm = PersistenceFilter.getManager();
         javax.jdo.Query query = pm.newQuery(Question.class);
         query.setFilter("surveyId == surveyIdParam && localeNameFlag == true");
@@ -779,7 +789,17 @@ public class QuestionDao extends BaseDAO<Question> {
         List<Question> results = (List<Question>) query.execute(
                 surveyId);
         if (results != null && results.size() > 0) {
-            return results;
+            SortedMap<Integer, Question> orderedQuestionMap = new TreeMap<Integer, Question>();
+            for (Question question : results) {
+                int orderIndex = 0;
+                QuestionGroup qg = qgDao.getByKey(question.getQuestionGroupId());
+                if (qg != null) {
+                    orderIndex = (qg.getOrder() != null ? qg.getOrder() * 1000 : 0);
+                    orderIndex += (question.getOrder() != null ? question.getOrder() : 0);
+                }
+                orderedQuestionMap.put(orderIndex, question);
+            }
+            return new ArrayList<Question>(orderedQuestionMap.values());
         } else {
             return Collections.emptyList();
         }

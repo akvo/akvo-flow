@@ -10,7 +10,7 @@ import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 
 /**
  * Authentication object representing a fully-authenticated user.
- * 
+ *
  * @author Luke Taylor
  */
 public class GaeUserAuthentication implements Authentication {
@@ -27,6 +27,7 @@ public class GaeUserAuthentication implements Authentication {
         authenticated = true;
     }
 
+    @Override
     public Collection<GrantedAuthority> getAuthorities() {
         return new HashSet<GrantedAuthority>(principal.getAuthorities());
     }
@@ -36,22 +37,27 @@ public class GaeUserAuthentication implements Authentication {
         return userId;
     }
 
+    @Override
     public Object getDetails() {
         return null;
     }
 
+    @Override
     public Object getPrincipal() {
         return principal;
     }
 
+    @Override
     public boolean isAuthenticated() {
         return authenticated;
     }
 
+    @Override
     public void setAuthenticated(boolean isAuthenticated) {
         authenticated = isAuthenticated;
     }
 
+    @Override
     public String getName() {
         return principal.getUserName();
     }
