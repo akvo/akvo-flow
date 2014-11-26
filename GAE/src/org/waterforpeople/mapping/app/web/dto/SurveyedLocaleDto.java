@@ -24,7 +24,7 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 
 /**
  * dto that can hold surveyedLocale data
- * 
+ *
  * @author Mark Westra
  */
 public class SurveyedLocaleDto extends BaseDto {

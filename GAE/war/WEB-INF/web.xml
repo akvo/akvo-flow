@@ -48,6 +48,14 @@
 		<servlet-name>DeviceApplicationRestService</servlet-name>
 		<url-pattern>/deviceapprest</url-pattern>
 	</servlet-mapping>
+		<servlet>
+		<servlet-name>DeviceTimeRestService</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.DeviceTimeRestService</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeviceTimeRestService</servlet-name>
+		<url-pattern>/devicetimerest</url-pattern>
+	</servlet-mapping>
 	<servlet>
 		<servlet-name>CurrentUserServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.CurrentUserServlet</servlet-class>

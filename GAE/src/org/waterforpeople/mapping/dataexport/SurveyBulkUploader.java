@@ -36,6 +36,8 @@ import java.util.StringTokenizer;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+
 import com.gallatinsystems.common.util.FileUtil;
 import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.common.util.ZipUtil;
@@ -54,6 +56,7 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
 @Deprecated
 public class SurveyBulkUploader implements DataImporter {
 
+    private static final Logger log = Logger.getLogger(SurveyBulkUploader.class);
     private static final String NOTIFICATION_PATH = "/processor?action=submit&fileName=";
     private static final String UPLOAD_IMAGE_MODE = "uploadImageOnly";
     private static final String ZIP_ONLY_MODE = "processZipOnly";
@@ -137,7 +140,7 @@ public class SurveyBulkUploader implements DataImporter {
         for (File fx : filesToUpload) {
             if (!processedList.contains(fx.getName())) {
                 try {
-                    System.out.println("uploading " + fx.getCanonicalPath()
+                    log.info("uploading " + fx.getCanonicalPath()
                             + " file " + (i + 1) + " of "
                             + filesToUpload.size());
 
@@ -197,7 +200,7 @@ public class SurveyBulkUploader implements DataImporter {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 conn.getInputStream()));
         while ((line = reader.readLine()) != null) {
-            System.out.println(line);
+            log.info(line);
         }
         reader.close();
     }

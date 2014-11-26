@@ -34,6 +34,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -270,7 +271,7 @@ public class S3Util {
     }
 
     private static String getDate() {
-        final DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ");
+        final DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ", Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df.format(new Date()) + "GMT";
     }

@@ -223,37 +223,33 @@ public class SurveyManagerServlet extends AbstractRestApiServlet {
         DeviceSurveyJobQueueDAO dsjqDAO = new DeviceSurveyJobQueueDAO();
         SurveyDAO surveyDao = new SurveyDAO();
         SurveyGroupDAO sgDao = new SurveyGroupDAO();
-        Map<Long, Double> versionMap = new HashMap<Long, Double>();
         StringBuilder sb = new StringBuilder();
-        Long surveyGroupId = null;
         String sgName;
         String surveyName;
+        Double ver;
         Boolean isInMonitoringGroup;
         String newLocaleSurveyId;
         for (DeviceSurveyJobQueue dsjq : dsjqDAO.get(devicePhoneNumber, imei)) {
-            Double ver = versionMap.get(dsjq.getSurveyID());
             Survey s = surveyDao.getById(dsjq.getSurveyID());
-            surveyGroupId = s.getSurveyGroupId();
-            SurveyGroup sg = sgDao.getByKey(s.getSurveyGroupId());
+            SurveyGroup sg = s != null && s.getSurveyGroupId() != null ?
+                    sgDao.getByKey(s.getSurveyGroupId())
+                    : null;
 
             if (s != null && sg != null) {
+                ver = s.getVersion();
                 surveyName = s.getName();
                 sgName = sg.getCode() != null ? sg.getCode() : "unknown";
                 isInMonitoringGroup = Boolean.valueOf(sg.getMonitoringGroup() != null ? sg
                         .getMonitoringGroup() : false);
                 newLocaleSurveyId = sg.getNewLocaleSurveyId() != null ? sg.getNewLocaleSurveyId()
                         .toString() : "null";
-                if (s.getVersion() != null) {
-                    versionMap.put(dsjq.getSurveyID(), s.getVersion());
-                    ver = s.getVersion();
-                } else {
-                    versionMap.put(dsjq.getSurveyID(), new Double(1.0));
+                if (ver == null) {
                     ver = new Double(1.0);
                 }
 
                 sb.append(devicePhoneNumber + "," + dsjq.getSurveyID() + ","
                         + surveyName + "," + dsjq.getLanguage() + "," + ver
-                        + "," + surveyGroupId + "," + sgName
+                        + "," + s.getSurveyGroupId() + "," + sgName
                         + "," + isInMonitoringGroup + "," + newLocaleSurveyId
                         + "\n");
             }

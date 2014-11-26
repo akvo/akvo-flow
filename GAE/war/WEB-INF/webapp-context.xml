@@ -31,5 +31,5 @@
     <bean id="userDao" class="com.gallatinsystems.user.dao.UserDao" />
     <bean id="userRoleDao" class="com.gallatinsystems.user.dao.UserRoleDao" />
 
-	<context:annotation-config/>
+    <context:annotation-config/>
 </beans>

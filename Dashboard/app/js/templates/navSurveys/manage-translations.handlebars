@@ -1,4 +1,4 @@
-{{#view FLOW.TranslationsView}}
+
 <div class="manageTranslationsBlock">
     <section id="manageTranslations" class="">
        <section class="floats-in surveyTranslation">
@@ -12,7 +12,7 @@
           <th>{{t _add_new_translation}}</th>
         </tr>
       </thead>
-      
+
       <!-- TABLE BODY: MAIN CONTENT-->
       <tbody>
         <tr>
@@ -23,10 +23,10 @@
              {{/each}}
             </ul></td>
           <td class="newLang">
-             {{view Ember.Select 
-         contentBinding="FLOW.translationControl.isoLangs" 
-         selectionBinding="FLOW.translationControl.selectedLanguage" 
-         optionLabelPath="content.labelLong" 
+             {{view Ember.Select
+         contentBinding="FLOW.translationControl.isoLangs"
+         selectionBinding="FLOW.translationControl.selectedLanguage"
+         optionLabelPath="content.labelLong"
          optionValuePath="content.value"
          prompt="Select language"
          promptBinding="Ember.STRINGS._select_language"}}
@@ -48,7 +48,7 @@
       </tbody>
     </table>
 
-     
+
   <div class="twoColumns floats-in">
   <table class="surveyTranslate surveyDetails">
     <!-- TABLE HEADER-->
@@ -64,7 +64,7 @@
 
   <div class="twoColumns floats-in">
     <table class="surveyTranslate surveyDetails">
-    <tbody>      
+    <tbody>
       {{#each item in FLOW.translationControl.itemArray}}
         {{#if item.isSurvey}}
           <tr>
@@ -128,7 +128,7 @@
           {{else}}
             {{#if item.isQ}}
             <tr>
-              <td class="defaultLanguage"><div class="questionNbr"><span>{{item.displayOrder}}</span>{{item.qText}}</div>  
+              <td class="defaultLanguage"><div class="questionNbr"><span>{{item.displayOrder}}</span>{{item.qText}}</div>
                 {{#if item.hasTooltip}}
                   <div class="qHelpTooltip">
                     <label class="qTooltip">{{t _question_help_tooltip_optional}}</label>
@@ -139,7 +139,7 @@
               <td class="targetLanguage"><div class="questionNbr"><span>{{item.displayOrder}}</span>
               {{view Ember.TextField valueBinding="item.qTextTrans" disabledBinding="FLOW.translationControl.blockInteraction" size=40 }}
               {{#if item.hasTooltip}}
-                </div>  
+                </div>
                 <div class="qHelpTooltip">
               <label class="qTooltip">{{t _question_help_tooltip_optional}}</label>
               {{view Ember.TextField valueBinding="item.qTipTextTrans" disabledBinding="FLOW.translationControl.blockInteraction" size=40 }}
@@ -158,7 +158,7 @@
 
               {{/if}}
             {{/if}}
-        {{/if}} 
+        {{/if}}
       {{/each}}
       </tbody>
     </table>
@@ -180,11 +180,10 @@
 
     <nav class="bottomPg">
       <ul>
-         <li><a  {{action "saveTranslationsAndClose" target="FLOW.translationControl"}} class="standardBtn">{{t _save_and_close}}</a> </li>
-        <li><a {{action "closeTranslations" target="FLOW.translationControl"}}>{{t _close_without_saving}}</a> </li>
+         <li><a  {{action "saveTranslationsAndClose" target="this"}} class="standardBtn">{{t _save_and_close}}</a> </li>
+        <li><a {{action "closeTranslations" target="this"}}>{{t _close_without_saving}}</a> </li>
       </ul>
     </nav>
     </section>
       </section>
 </div>
-{{/view}}

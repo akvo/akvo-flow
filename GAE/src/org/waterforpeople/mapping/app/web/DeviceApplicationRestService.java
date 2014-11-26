@@ -70,6 +70,7 @@ public class DeviceApplicationRestService extends AbstractRestApiServlet {
             if (devAppList != null && devAppList.size() > 0) {
                 resp.setVersion(devAppList.get(0).getVersion());
                 resp.setFileName(devAppList.get(0).getFileName());
+                resp.setMd5Checksum(devAppList.get(0).getMd5Checksum());
             }
         }
         return resp;

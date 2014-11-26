@@ -25,7 +25,7 @@ import com.gallatinsystems.framework.dataexport.applet.DataImporter;
 
 /**
  * Factory to create a DataExporter or DataImporter instance based on the type passed in
- * 
+ *
  * @author Christopher Fagiani
  */
 public class SurveyDataImportExportFactory implements DataImportExportFactory {
@@ -55,11 +55,12 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
         }
     };
 
+    @Override
     public DataExporter getExporter(String type) {
         Class<? extends DataExporter> exporterClass = EXPORTER_MAP.get(type);
         if (exporterClass != null) {
             try {
-                return (DataExporter) exporterClass.newInstance();
+                return exporterClass.newInstance();
             } catch (Exception e) {
                 throw new RuntimeException("Could not initilaize constructor");
             }
@@ -68,11 +69,12 @@ public class SurveyDataImportExportFactory implements DataImportExportFactory {
         }
     }
 
+    @Override
     public DataImporter getImporter(String type) {
         Class<? extends DataImporter> importerClass = IMPORTER_MAP.get(type);
         if (importerClass != null) {
             try {
-                return (DataImporter) importerClass.newInstance();
+                return importerClass.newInstance();
             } catch (Exception e) {
                 throw new RuntimeException("Could not initilaize constructor");
             }
