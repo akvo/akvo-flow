@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,7 +16,6 @@
 
 package org.waterforpeople.mapping.app.web;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -191,12 +190,8 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
         try {
             conn = S3Util.getConnection(bucketName, keyPrefix + "/" + res);
             out = new ByteArrayOutputStream();
-            in = new BufferedInputStream(conn.getInputStream());
-            int read;
-            byte[] buff = new byte[8192];
-            while ((read = in.read(buff, 0, buff.length)) != -1) {
-                out.write(buff, 0, read);
-            }
+            in = conn.getInputStream();
+            IOUtils.copy(in, out);
             out.flush();
             return out.toByteArray();
         } finally {
