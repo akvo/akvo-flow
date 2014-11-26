@@ -68,7 +68,7 @@ public class UserRolesRestService {
             UserRole createdRole = userRoleDao.save(payload.getUserRole());
             statusDto.setStatus("ok");
             statusDto.setMessage("_role_created");
-            response.put("role", new UserRolePayload(createdRole));
+            response.put("user_roles", new UserRolePayload(createdRole));
         } else {
             statusDto.setMessage("_role_already_exists");
         }
@@ -80,7 +80,7 @@ public class UserRolesRestService {
      *
      * @return
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/all")
+    @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listUserRoles() {
         final Map<String, Object> response = new HashMap<String, Object>();
@@ -88,7 +88,7 @@ public class UserRolesRestService {
         for (UserRole role : userRoleDao.listAllRoles()) {
             rolesPayload.add(new UserRolePayload(role));
         }
-        response.put("roles", rolesPayload);
+        response.put("user_roles", rolesPayload);
         return response;
     }
 
@@ -111,7 +111,7 @@ public class UserRolesRestService {
             return response;
         }
         statusDto.setStatus("ok");
-        response.put("role", new UserRolePayload(role));
+        response.put("user_roles", new UserRolePayload(role));
         return response;
     }
 
@@ -153,7 +153,7 @@ public class UserRolesRestService {
         BeanUtils.copyProperties(payload, existingRole);
 
         UserRolePayload updatedRole = new UserRolePayload(userRoleDao.save(existingRole));
-        response.put("role", updatedRole);
+        response.put("user_roles", updatedRole);
         statusDto.setStatus("ok");
 
         return response;
@@ -195,7 +195,7 @@ public class UserRolesRestService {
      *
      * @return
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/permissions/all")
+    @RequestMapping(method = RequestMethod.GET, value = "/permissions")
     @ResponseBody
     public Map<String, Object> listAllPermissions() {
         final Map<String, Object> response = new HashMap<String, Object>();
