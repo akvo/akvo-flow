@@ -16,14 +16,12 @@
 
 package com.gallatinsystems.user.dao;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.jdo.PersistenceManager;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.user.domain.User;
@@ -94,24 +92,5 @@ public class UserDao extends BaseDAO<User> {
      */
     public User findByAccessKey(String accessKey) {
         return findByProperty("accessKey", accessKey, STRING_TYPE);
-    }
-
-    /**
-     * Retrieve a list of users who have been assigned certain role.
-     *
-     * @param roleName
-     * @return returns a list of users who have been assigned the named role. Returns an empty list
-     *         if no users have been assigned the role
-     */
-    public List<User> listUsersByRole(Long userRoleId) {
-        List<User> userList = new ArrayList<User>();
-        for (User user : list(Constants.ALL_RESULTS)) {
-            for (Long roleId : user.getUserRoles()) {
-                if (roleId.equals(userRoleId)) {
-                    userList.add(user);
-                }
-            }
-        }
-        return userList;
     }
 }

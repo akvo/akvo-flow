@@ -36,7 +36,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.UserRolePayload;
-import com.gallatinsystems.user.dao.UserDao;
+
+import com.gallatinsystems.user.dao.UserAuthorizationDAO;
 import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.Permission;
 import com.gallatinsystems.user.domain.UserRole;
@@ -46,10 +47,10 @@ import com.gallatinsystems.user.domain.UserRole;
 public class UserRolesRestService {
 
     @Inject
-    private UserDao userDao;
+    private UserRoleDao userRoleDao;
 
     @Inject
-    private UserRoleDao userRoleDao;
+    private UserAuthorizationDAO userAuthorizationDAO;
 
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
@@ -179,7 +180,7 @@ public class UserRolesRestService {
             return response;
         }
 
-        if (userDao.listUsersByRole(roleId).isEmpty()) {
+        if (userAuthorizationDAO.findFirstAssignedByRole(roleId).isEmpty()) {
             userRoleDao.delete(deleteRole);
             statusDto.setStatus("ok");
             statusDto.setMessage("_role_deleted");
