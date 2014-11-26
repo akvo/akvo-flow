@@ -87,7 +87,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         String httpMethod = httpRequest.getMethod();
 
         // for now we only vote for request access on project folders and forms
-        if (!URI_PATTERN.matcher(requestUri).matches()) {
+        if (!URI_PATTERN.matcher(requestUri).find()) {
             return ACCESS_ABSTAIN;
         }
 
@@ -162,21 +162,26 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             resourcePath = (String) payload.get("path");
         } else {
             Matcher matcher = URI_PATTERN.matcher(requestUri);
-            if (matcher.matches()) {
+            if (matcher.find()) {
                 String objectIdStr = matcher.group(3);
-                if (objectIdStr == null) {
-                    return null; // should only happen for GET requests with no objectid specified
-                }
-                Long objectId = Long.valueOf(objectIdStr);
-                if (requestUri.contains("survey_groups")) {
-                    SurveyGroup sg = surveyGroupDao.getByKey(objectId);
-                    if (sg != null) {
-                        resourcePath = sg.getPath();
-                    }
+                Long objectId = null;
+                if (objectIdStr == null && httpRequest.getParameter("surveyGroupId") == null) {
+                    return null; // enable return of top level list of project folders
+                } else if (objectIdStr != null) {
+                    objectId = Long.valueOf(objectIdStr);
                 } else {
+                    objectId = Long.valueOf(httpRequest.getParameter("surveyGroupId"));
+                }
+
+                if (requestUri.contains("surveys") && objectIdStr != null) {
                     Survey s = surveyDao.getByKey(objectId);
                     if (s != null) {
                         resourcePath = s.getPath();
+                    }
+                } else {
+                    SurveyGroup sg = surveyGroupDao.getByKey(objectId);
+                    if (sg != null) {
+                        resourcePath = sg.getPath();
                     }
                 }
 
