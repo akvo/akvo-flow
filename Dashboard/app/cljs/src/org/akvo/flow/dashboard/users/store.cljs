@@ -93,6 +93,17 @@
                             (swap! app-state assoc-in [:roles :by-id role-id] role)))})))
 
 (dispatch-loop
+ :roles/edit role ;{:strs [keyId] :as role}
+ (let [key-id (get role "keyId")]
+   (assert (integer? key-id))
+   (PUT (str "/rest/user_roles/" key-id)
+        (merge ajax/default-ajax-config
+               {:params (dissoc role "keyId")
+                :handler (fn [response]
+                           (let [role (get response "role")]
+                             (swap! app-state assoc-in [:roles :by-id key-id] role)))}))))
+
+(dispatch-loop
  :roles/delete key-id
  (assert (integer? key-id))
  (DELETE (str "/rest/user_roles/" key-id)

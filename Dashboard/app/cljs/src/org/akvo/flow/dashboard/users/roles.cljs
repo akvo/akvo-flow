@@ -5,65 +5,53 @@
             [org.akvo.flow.dashboard.components.grid :refer (grid)]
             [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.users.store :as store]
+            [org.akvo.flow.dashboard.users.role-details :refer (role-details)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]))
 
-(def all-permissions
-  #{"PROJECT_FOLDER_CREATE"
-    "PROJECT_FOLDER_READ"
-    "PROJECT_FOLDER_UPDATE"
-    "PROJECT_FOLDER_DELETE"
-    "FORM_CREATE"
-    "FORM_READ"
-    "FORM_UPDATE"
-    "FORM_DELETE"})
+
 
 (defn target-value [evt]
   (-> evt .-target .-value))
 
-(defn set-input! [owner korks]
-  (fn [evt]
-    (om/set-state! owner korks (target-value evt))))
+(defn set-input! [evt owner korks]
+  (om/set-state! owner korks (target-value evt)))
 
-(defn update-input! [owner korks f & args]
-  (fn [evt]
-    (let [old-state (om/get-state owner korks)]
-      (om/set-state! owner korks (apply f old-state (target-value evt) args)))))
+(defn update-input! [evt owner korks f & args]
+  (let [old-state (om/get-state owner korks)]
+    (om/set-state! owner korks (apply f old-state (target-value evt) args))))
 
-(defn create-new-form-view [{:keys [on-save]} owner]
-  (reify
-    om/IInitState
-    (init-state [this]
-      {:permissions #{}
-       :role-name ""})
+(defn toggle! [owner korks]
+  (om/set-state! owner korks (not (om/get-state owner korks))))
 
-    om/IRenderState
-    (render-state [this {:keys [permissions role-name]}]
-      (html
-       [:div
-        [:input {:value role-name :on-change (set-input! owner :role-name)}]
-        (for [permission permissions]
-          [:span permission])
-        [:select {:on-change (update-input! owner :permissions conj)}
-         (for [permission (set/difference all-permissions permissions)]
-           [:option {:value permission} permission])]
-        (b/btn-primary {:on-click #(on-save {"name" role-name
-                                             "permissions" permissions})}
-                       :save "Save")]))))
-
-(defn roles-actions [{:strs [keyId]} owner]
+(defn role-actions [{:keys [on-action]} owner]
   (om/component
    (html
     [:span
-     (b/btn-primary {:on-click #(dispatch :roles/delete keyId)} :remove)
-     (b/btn-primary {} :edit)])))
+     (b/btn-primary {:on-click #(on-action ::delete)} :remove)
+     (b/btn-primary {:on-click #(on-action ::show-edit-view)} :edit)])))
+
+(defmulti do-role-action (fn [action owner role] action))
+
+(defmethod do-role-action ::delete
+  [_ owner role]
+  (dispatch :roles/delete (get role "keyId")))
+
+(defmethod do-role-action ::show-edit-view
+  [_ owner role]
+  (toggle! owner :role-details-view?)
+  (om/set-state! owner :current-role role))
+
+(defmethod do-role-action ::show-create-view
+  [_ owner role])
 
 (defn roles-and-permissions [{:keys [roles]} owner]
   (reify
 
     om/IInitState
     (init-state [this]
-      {:create-role-view? false})
+      {:role-details-view? false
+       :current-role nil})
 
     om/IWillMount
     (will-mount [this]
@@ -71,26 +59,38 @@
       (dispatch :projects/fetch nil))
 
     om/IRenderState
-    (render-state [this {:keys [create-role-view?]}]
+    (render-state [this {:keys [role-details-view? current-role]}]
       (html
-       [:div
-        [:div.row.topMargin
-         [:div.col-lg-3.col-md-3.col-sm-3]
-         [:div.col-lg-2.col-md-2.col-sm-2]
-         [:div.col-lg-2.col-lg-offset-5.col-md-2.col-md-offset-5.col-sm-2.col-sm-offset-5
-          [:form.navbar-form.navbar-right
-           (b/btn-primary {:on-click #(do (.preventDefault %)
-                                          (om/set-state! owner :create-role-view? true))}
-                          :plus "Add new role!")]]]
-        (when create-role-view?
-          (om/build create-new-form-view
-                    {:on-save #(do (om/set-state! owner :create-role-view? false)
-                                   (dispatch :roles/create %))}))
-        (om/build grid
-                  {:data (store/get-roles roles)
-                   :columns [{:title "Role"
-                              :cell-fn #(get % "name")}
-                             {:title "Number of users"
-                              :cell-fn (constantly 0)}
-                             {:title "Action"
-                              :component roles-actions}]})]))))
+       [:div.panels
+        [:div.mypanel {:id "panel0" :class (if role-details-view? "opened" "closed")}
+         [:div.row.topMargin
+          [:div.col-lg-3.col-md-3.col-sm-3]
+          [:div.col-lg-2.col-md-2.col-sm-2]
+          [:div.col-lg-2.col-lg-offset-5.col-md-2.col-md-offset-5.col-sm-2.col-sm-offset-5
+           [:form.navbar-form.navbar-right
+            (b/btn-primary {:on-click #(do (.preventDefault %)
+                                           (toggle! owner :role-details-view?)
+                                           (om/set-state! owner :current-role nil))}
+                           :plus "Add new role!")]]]
+         (om/build grid
+                   {:data (store/get-roles roles)
+                    :columns [{:title "Role"
+                               :cell-fn #(get % "name")}
+                              {:title "Number of users"
+                               :cell-fn (constantly 0)}
+                              {:title "Permissions"
+                               :cell-fn #(pr-str (get % "permissions"))}
+                              {:title "Action"
+                               :component role-actions
+                               :component-data-fn (fn [role]
+                                                    {:on-action (fn [action]
+                                                                  (do-role-action action owner role))})}]})]
+        (om/build role-details
+                  {:open? role-details-view?
+                   :on-save (fn [role]
+                              (if (contains? role "keyId")
+                                (dispatch :roles/edit role)
+                                (dispatch :roles/create role))
+                              (toggle! owner :role-details-view?))
+                   :on-close #(toggle! owner :role-details-view?)
+                   :role current-role})]))))

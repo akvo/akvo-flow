@@ -11,15 +11,34 @@
 (defn caret []
   [:span.caret])
 
+(defn btn
+  ([button-type attrs icn]
+     (btn-primary button-type attrs icn ""))
+  ([button-type attrs icn caption]
+     {:pre [(string? button-type)
+            (map? attrs)
+            (keyword? icn)
+            (string? caption)]}
+     [:button.btn
+      (update-in attrs [:class] (fn [classes]
+                                  (if classes
+                                    (str classes " " button-type)
+                                    button-type)))
+      (icon icn) (when-not (empty? caption)
+                   (str " " caption))]))
+
 (defn btn-primary
   ([attrs icn]
      (btn-primary attrs icn ""))
   ([attrs icn caption]
-     {:pre [(map? attrs)
-            (keyword? icn)
-            (string? caption)]}
-     [:button.btn.btn-primary attrs (icon icn) (when-not (empty? caption)
-                                                 (str " " caption))]))
+     (btn "btn-primary" attrs icn caption)))
+
+(defn btn-link
+  ([attrs icn]
+     (btn-link attrs icn ""))
+  ([attrs icn caption]
+     (btn "btn-link" attrs icn caption)))
+
 
 (defn dropdown [{:keys [id placeholder selected choices on-select]} owner]
   (reify
@@ -42,9 +61,3 @@
                 :on-click #(do (om/set-state! owner :selected (:label choice))
                                (on-select id (:id choice)))}
             (:label choice)]])]]))))
-
-
-
-(defn btn-link [attrs & children]
-  {:pre [(map? attrs)]}
-  [:button.btn.btn-link attrs children])

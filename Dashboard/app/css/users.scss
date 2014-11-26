@@ -67,8 +67,11 @@ h6 {
 ---------------------------------------------------------------*/
 
 button, a{
-    &.cancelAction {
+    &.cancelAction, &.goBack {
         text-transform: uppercase;
+    }
+    &.cancelAction {
+        color:$akvoRed;
     }
 }
 
@@ -116,7 +119,20 @@ section[role=main] {
     }
 }
 
-
+.permissionList {
+    div {
+        &.checkbox {
+            padding:10px 0;
+            @include border-radius(3px);
+            &:nth-child(2n){
+                background-color: rgb(248,248,248);
+            }
+        }
+    }
+    label{
+        font-size:130%;
+    }
+}
 .btn {
     text-transform: uppercase;
 }
