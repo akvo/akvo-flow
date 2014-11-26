@@ -227,7 +227,7 @@ public class SurveyUtils {
         return surveyGroupDAO.getByKey(surveyGroupId);
     }
 
-    private static String getPath(Survey s) {
+    public static String getPath(Survey s) {
         if (s == null) {
             return null;
         }
@@ -239,7 +239,7 @@ public class SurveyUtils {
             return null;
         }
 
-        return sg.getName() + "/" + s.getName();
+        return sg.getPath() + "/" + s.getName();
     }
 
     public static List<Translation> getTranslations(Long parentId,
