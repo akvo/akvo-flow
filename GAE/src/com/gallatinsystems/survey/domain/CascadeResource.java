@@ -23,51 +23,56 @@ import com.gallatinsystems.framework.domain.BaseDomain;
  * Represents a Question on a survey. A question belongs to exactly 1 questionGroup.
  */
 @PersistenceCapable
-public class CascadeResource extends BaseDomain {	
-	private static final long serialVersionUID = 1L;
-	private String name;
-	private Integer version;
-	private Boolean published;
-	private List<String> levelNames;
-	private Integer numLevels;
+public class CascadeResource extends BaseDomain {
+    private static final long serialVersionUID = 1L;
+    private String name;
+    private Integer version;
+    private Boolean published;
+    private List<String> levelNames;
+    private Integer numLevels;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Integer getVersion() {
-		return version;
-	}
+    public Integer getVersion() {
+        return version;
+    }
 
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
-	public Boolean getPublished() {
-		return published;
-	}
+    public Boolean getPublished() {
+        return published;
+    }
 
-	public void setPublished(Boolean published) {
-		this.published = published;
-	}
+    public void setPublished(Boolean published) {
+        this.published = published;
+    }
 
-	public List<String> getLevelNames() {
-		return levelNames;
-	}
+    public List<String> getLevelNames() {
+        return levelNames;
+    }
 
-	public void setLevelNames(List<String> levelNames) {
-		this.levelNames = levelNames;
-	}
+    public void setLevelNames(List<String> levelNames) {
+        this.levelNames = levelNames;
+    }
 
-	public Integer getNumLevels() {
-		return numLevels;
-	}
+    public Integer getNumLevels() {
+        return numLevels;
+    }
 
-	public void setNumLevels(Integer numLevels) {
-		this.numLevels = numLevels;
-	}	
+    public void setNumLevels(Integer numLevels) {
+        this.numLevels = numLevels;
+    }
+
+    public String getResourceId() {
+        return "cascade-" + getKey().getId() + "-v" + version + ".sqlite";
+    }
+
 }

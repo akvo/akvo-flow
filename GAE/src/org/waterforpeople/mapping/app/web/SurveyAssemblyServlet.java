@@ -626,29 +626,26 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
 
         if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
-        	CascadeResourceDao crDao = new CascadeResourceDao();
-        	CascadeResource cr = crDao.getByKey(q.getCascadeResourceId());
-        	if (cr != null) {
-        		String cascadeResource = createCascadeResourceId(q.getCascadeResourceId(),cr.getVersion());
-            	if (cascadeResource.length() > 0) {
-            		qXML.setCascadeResource(cascadeResource);
-            		List<String> levelNames = cr.getLevelNames();
-            		if (levelNames != null && levelNames.size() > 0){
-            			Levels levels = objFactory.createLevels();
-            			ArrayList<Level> levelList = new ArrayList<Level>();
-            			for (int i=0 ; i<cr.getNumLevels(); i++){
-            				Level levelItem = objFactory.createLevel();
-            				com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
-                            t.setContent(levelNames.get(i));
-                            levelItem.addContent(t);
-                            levelList.add(levelItem);
-                            // TODO sort out translations
-            			}
-            			levels.setLevel(levelList);
-            			qXML.setLevels(levels);
-            		}
-            	}
-        	}
+            CascadeResourceDao crDao = new CascadeResourceDao();
+            CascadeResource cr = crDao.getByKey(q.getCascadeResourceId());
+            if (cr != null) {
+                qXML.setCascadeResource(cr.getResourceId());
+                List<String> levelNames = cr.getLevelNames();
+                if (levelNames != null && levelNames.size() > 0) {
+                    Levels levels = objFactory.createLevels();
+                    ArrayList<Level> levelList = new ArrayList<Level>();
+                    for (int i = 0; i < cr.getNumLevels(); i++) {
+                        Level levelItem = objFactory.createLevel();
+                        com.gallatinsystems.survey.domain.xml.Text t = new com.gallatinsystems.survey.domain.xml.Text();
+                        t.setContent(levelNames.get(i));
+                        levelItem.addContent(t);
+                        levelList.add(levelItem);
+                        // TODO sort out translations
+                    }
+                    levels.setLevel(levelList);
+                    qXML.setLevels(levels);
+                }
+            }
         }
 
         if (q.getOrder() != null) {
@@ -748,11 +745,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         return questionDocument;
     }
 
-    private String createCascadeResourceId(Long cascadeResourceId, Integer version) {
-        return "cascade-" + cascadeResourceId.toString() + "-v" + version.toString() + ".sqlite";
-    }
-
-	private List<AltText> formAltText(Map<String, Translation> translationMap) {
+    private List<AltText> formAltText(Map<String, Translation> translationMap) {
         List<AltText> altTextList = new ArrayList<AltText>();
         if (translationMap != null) {
             for (Translation lang : translationMap.values()) {
