@@ -17,8 +17,6 @@
        vals
        (filter #(= (get % "parentId") parent-id))))
 
-
-
 (dispatch-loop
  :projects/fetch _
  (GET "/rest/survey_groups"

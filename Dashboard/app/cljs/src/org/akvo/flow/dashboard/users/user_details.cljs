@@ -1,5 +1,6 @@
 (ns org.akvo.flow.dashboard.users.user-details
-  (:require [org.akvo.flow.dashboard.components.bootstrap :as b]
+  (:require [clojure.string :as str]
+            [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.users.store :as store]
             [org.akvo.flow.dashboard.projects.store :as projects-store]
             [org.akvo.flow.dashboard.components.grid :refer (grid)]
@@ -57,7 +58,7 @@
                                          (on-save state))}
                          :floppy-disk "Save user info")]]]))))
 
-(defn roles-and-permissions [{:keys [roles-store projects-store]} owner]
+(defn roles-and-permissions [{:keys [user roles-store projects-store]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -87,7 +88,8 @@
                            "PROJECT_FOLDER"))
                 [:div.form-group.folderStructure
                  [:select {:type "select"
-                           :on-change #(om/set-state! owner :selected-folders (conj selected-folders (js/parseInt (target-value %))))}
+                           :on-change #(om/set-state! owner :selected-folders
+                                                      (conj selected-folders (js/parseInt (target-value %))))}
                   [:option "Select a project(folder)"]
                   (for [project (projects-store/get-projects projects-store (when-not (empty? selected-folders)
                                                                               (peek selected-folders)))]
@@ -95,8 +97,16 @@
 
               [:div.form-group
                (b/btn-primary {:class "btn-xs"
-                               :on-click #(do (.preventDefault %)
-                                              (println "Clicked!"))} :plus "Add")]]
+                               :on-click (fn [evt]
+                                           (.preventDefault evt)
+                                           (dispatch :user-auth/create
+                                                     {:user (get user "keyId")
+                                                      :role selected-role
+                                                      :object-path (->> selected-folders
+                                                                        (map #(projects-store/get-by-id projects-store %))
+                                                                        (map #(get % "name"))
+                                                                        (str/join "/"))}))}
+                              :plus "Add")]]
              (om/build grid
                        {:data [{:role "Admin" :projects ["Burundi", "Asia"]}
                                {:role "User" :projects ["Burundi", "Asia"]}]

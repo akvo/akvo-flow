@@ -5,9 +5,10 @@
             [org.akvo.flow.dashboard.components.grid :refer (grid)]
             [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
-            [org.akvo.flow.dashboard.users.store :as store]
             [org.akvo.flow.dashboard.users.user-details :refer (user-details)]
+            [org.akvo.flow.dashboard.users.store :as store]
             [org.akvo.flow.dashboard.projects.store :as projects-store]
+            [org.akvo.flow.dashboard.user-auth.store :as user-auth-store]
             [org.akvo.flow.dashboard.app-state :refer (app-state)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]
@@ -30,7 +31,10 @@
   (om/component
    (html
     [:span
-     [:a {:on-click #(on-action user)} "Edit"]
+     [:a {:on-click #(do (dispatch :user-auth/fetch user)
+                         (dispatch :roles/fetch nil)
+                         (dispatch :projects/fetch nil)
+                         (on-action user))} "Edit"]
      [:a {:on-click #(dispatch :delete-user user)} "Remove"]])))
 
 (defn columns [owner]
