@@ -1878,10 +1878,11 @@ section.topBar {
             border-color: transparent transparent transparent $anchorLinkHover;
         }
         ul li:last-of-type {
-            opacity:0.3;
+            opacity:0.8;
             a {
                 border-radius:0 3px 3px 0;
                 padding-right:15px;
+                background: $anchorLinkHover;
                 &.homeRoot {
                     padding-right:0;
                     border-radius:3px 0 0 3px;
@@ -2181,6 +2182,7 @@ li.aSurvey {
         }
      }
 }
+
 li.aFolder, li.aSurvey {
     &.highLighted {
         background:#E7EEE0;
@@ -2210,16 +2212,23 @@ li.aFolder {
     background-position: right center;
     background-repeat: no-repeat;
     border:1px solid rgba(200,200,200,0);
+    input {
+        width:50%;
+        font-family: $bodyFont;
+        font-size:1.8em;
+    }
     a.editFolderName {
         display:inline-block;
-        width:20px;
-        height:20px;
+        width:40px;
+        height:40px;
         background: url(../images/IconEditGreyLight.svg) center center no-repeat;
+        background-size:30px 30px;
         text-indent: -9999px;
-        margin-right:5px;
+        margin-right:15px;
         opacity:0.5;
         &:hover {
            background: url(../images/IconEditOrange.svg) center center no-repeat;
+           background-size:30px 30px;
            opacity:1;
         }
     }
@@ -4401,31 +4410,38 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 @include noWrapTxt;
                 &.aFormTab {
                   padding-left:25px;
-                  background:rgba(32,32,36, 0.2) url(../images/IconForms.png) no-repeat 5px center;
+                  background:rgba(32,32,36, 0.5) url(../images/IconForms.png) no-repeat 10px center;
                   background-size:20px auto;
                   &:hover {
-                      background:rgba(32,32,36, 1) url(../images/IconForms.png) no-repeat 5px center;
+                      background:rgba(32,32,36, 1) url(../images/IconForms.png) no-repeat 10px center;
                       background-size:20px auto;
                       }
                     &.current {
-                      background:rgba(32, 32, 36, 0.9) url(../images/IconForms.png) no-repeat 5px center;
+                      background:rgba(32, 32, 36, 0.9) url(../images/IconFormsOrange.png) no-repeat 10px center;
                       background-size:20px auto;
+                      a{
+                        color:$anchorLinkHover;
+                        }
                     }
                   &.registrationForm {
-                    background:rgba($monitorGreen,0.5)  url(../images/IconForms.png) no-repeat 5px center;
+                    background:rgba($monitorGreen,0.5)  url(../images/IconForms.png) no-repeat 10px center;
                     background-size:20px auto;
                     &:hover {
-                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 5px center;
+                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 10px center;
                         background-size:20px auto;
                       }
                     &.current {
-                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 5px center;
+                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 10px center;
                         background-size:20px auto;
+                        a {
+                            color:white;
+                        }
                         &:hover {
-                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 5px center;
+                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 10px center;
                         background-size:20px auto;
                         }
                     }
+
                   }
 
                     }
@@ -4499,7 +4515,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
                   h3 {
                       color:$akvoGolden;
-                      text-transform: uppercase;
                       margin-bottom: 20px;
                       display:inline-block;
                   }
@@ -4556,4 +4571,3 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
               }
           }
       }
-@import "users.scss";
