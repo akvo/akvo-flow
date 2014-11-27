@@ -31,7 +31,7 @@
   (om/component
    (html
     [:span
-     [:a {:on-click #(do (dispatch :user-auth/fetch user)
+     [:a {:on-click #(do (dispatch :user-auth/fetch nil)
                          (dispatch :roles/fetch nil)
                          (dispatch :projects/fetch nil)
                          (on-action user))} "Edit"]
@@ -58,7 +58,7 @@
                            {:user user
                             :on-action on-action})}]))
 
-(defn users [{:keys [users user_roles projects]} owner]
+(defn users [{:keys [users user_roles projects user-auth]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -106,4 +106,5 @@
                                   :close! #(om/set-state! owner :current-user nil)
                                   :projects-store projects
                                   :roles-store user_roles
+                                  :user-auth-store user-auth
                                   :user-roles (store/get-roles user_roles)})]]]))))

@@ -3,6 +3,7 @@
             [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.users.store :as store]
             [org.akvo.flow.dashboard.projects.store :as projects-store]
+            [org.akvo.flow.dashboard.user-auth.store :as user-auth-store]
             [org.akvo.flow.dashboard.components.grid :refer (grid)]
             [org.akvo.flow.dashboard.dispatcher :refer (dispatch)]
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
@@ -58,7 +59,7 @@
                                          (on-save state))}
                          :floppy-disk "Save user info")]]]))))
 
-(defn roles-and-permissions [{:keys [user roles-store projects-store]} owner]
+(defn roles-and-permissions [{:keys [user roles-store projects-store user-auth-store]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -67,7 +68,6 @@
 
     om/IRenderState
     (render-state [this {:keys [selected-role selected-folders]}]
-      (println selected-folders)
       (html [:div.userRolesPerm.well.topMargin
              [:h2 "Roles and permissions:"]
              [:form.form-inline.text-left.paddingTop.roleEditSelect {:role "name"}
@@ -108,12 +108,16 @@
                                                                         (str/join "/"))}))}
                               :plus "Add")]]
              (om/build grid
-                       {:data [{:role "Admin" :projects ["Burundi", "Asia"]}
-                               {:role "User" :projects ["Burundi", "Asia"]}]
+                       {:data (when user
+                                (user-auth-store/get-by-user-id user-auth-store (get user "keyId")))
                         :columns [{:title "Role"
-                                   :cell-fn #(get % :role)}
-                                  {:title "Projects"
-                                   :cell-fn #(pr-str (get % :projects))}
+                                   :cell-fn (fn [user-auth]
+                                              (let [role-id (get user-auth "roleId")
+                                                    role (store/get-role roles-store role-id)
+                                                    name (get role "name")]
+                                                name))}
+                                  {:title "Resource"
+                                   :cell-fn #(get % "objectPath")}
                                   {:title "Actions"
                                    :cell-fn (constantly "Delete")}]})]))))
 
@@ -163,7 +167,7 @@
                                                    (revoke-apikeys owner user))}
            (b/icon :ban-circle) " Revoke"]]]]))))
 
-(defn user-details [{:keys [close! user projects-store roles-store]} owner]
+(defn user-details [{:keys [close! user projects-store roles-store user-auth-store]} owner]
   (reify
     om/IRender
     (render [this]
@@ -175,5 +179,6 @@
                                      :on-save #(dispatch :edit-user %)})
         (om/build roles-and-permissions {:user user
                                          :projects-store projects-store
-                                         :roles-store roles-store})
+                                         :roles-store roles-store
+                                         :user-auth-store user-auth-store})
         (om/build api-keys-section {:user user})]))))
