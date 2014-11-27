@@ -58,17 +58,6 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
     }
 
     /**
-     * List the user authorizations that correspond to specific roles of a specific user
-     *
-     * @param userId
-     * @param roleId
-     * @return
-     */
-    public List<UserAuthorization> listByUserRole(Long userId, Long roleId) {
-        return null;
-    }
-
-    /**
      * List the user authorizations that correspond to a specific user
      *
      * @param userId
@@ -112,6 +101,23 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
         } else {
             return authList.get(0);
         }
+    }
+
+    /**
+     * Find a list of UserAuthorization objects that contains the given roleId. This is used to test
+     * that the role has been assigned regardless of which user it has been assigned to.
+     *
+     * @param roleId
+     * @return
+     */
+    public List<UserAuthorization> findFirstAssignedByRole(Long roleId) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(UserAuthorization.class);
+        query.setFilter("roleId == roleIdParam");
+        query.declareParameters("Long roleIdParam");
+        query.setRange(0, 1);
+
+        return (List<UserAuthorization>) query.execute(roleId);
     }
 
     /**

@@ -17,8 +17,6 @@
 package com.gallatinsystems.user.domain;
 
 import java.util.List;
-import java.util.Set;
-
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
@@ -44,9 +42,6 @@ public class User extends BaseDomain {
     private List<UserConfig> config;
     private String accessKey;
     private String secret;
-
-    // a set of IDs of the userRole entities associated with this user
-    private Set<Long> userRoles;
 
     public String getPermissionList() {
         return permissionList;
@@ -102,13 +97,5 @@ public class User extends BaseDomain {
 
     public void setSecret(String secret) {
         this.secret = secret;
-    }
-
-    public Set<Long> getUserRoles() {
-        return userRoles;
-    }
-
-    public void setUserRoles(Set<Long> userRoles) {
-        this.userRoles = userRoles;
     }
 }

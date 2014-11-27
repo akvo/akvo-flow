@@ -40,7 +40,6 @@ public class UserDto extends BaseDto {
     private boolean superAdmin = false;
     private String permissionList;
     private String accessKey;
-    private Set<Long> userRoles;
 
     public String getPermissionList() {
         return permissionList;
@@ -127,13 +126,5 @@ public class UserDto extends BaseDto {
 
     public void setAccessKey(String accessKey) {
         this.accessKey = accessKey;
-    }
-
-    public Set<Long> getUserRoles() {
-        return userRoles;
-    }
-
-    public void setUserRoles(Set<Long> userRoles) {
-        this.userRoles = userRoles;
     }
 }
