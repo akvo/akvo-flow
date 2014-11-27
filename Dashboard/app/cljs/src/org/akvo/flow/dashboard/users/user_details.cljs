@@ -52,7 +52,7 @@
                                          (on-save state))}
                          :floppy-disk "Save user info")]]]))))
 
-(defn roles-and-permissions [{:keys [user-roles]} owner]
+(defn roles-and-permissions [{:keys [user-roles projects]} owner]
   (reify
     om/IRender
     (render [this]
@@ -65,11 +65,12 @@
                   [:option (get role "name")])]]
               [:div.form-group.folderStructure
                [:select {:type "select"}
-                [:option "Root folder#1"]
-                [:option "Root #2"]]]
+                (for [project projects]
+                  [:option (get project "name")])]]
               [:div.form-group
                (b/btn-primary {:class "btn-xs"
-                               :on-click #(println "Clicked!")} :plus "Add")]]
+                               :on-click #(do (.preventDefault %)
+                                              (println "Clicked!"))} :plus "Add")]]
              (om/build grid
                        {:data [{:role "Admin" :projects ["Burundi", "Asia"]}
                                {:role "User" :projects ["Burundi", "Asia"]}]
@@ -78,8 +79,7 @@
                                   {:title "Projects"
                                    :cell-fn #(pr-str (get % :projects))}
                                   {:title "Actions"
-                                   :cell-fn (constantly "Delete")}]})])))
-  )
+                                   :cell-fn (constantly "Delete")}]})]))))
 
 
 (defn generate-apikeys [owner user]
@@ -129,14 +129,16 @@
            (b/icon :ban-circle) " Revoke"]]]]))))
 
 (defn user-details [{:keys [close! user projects user-roles]} owner]
-  (om/component
-   (html
-    [:div
-     (om/build panel-header-section {:user user
-                                     :close! close!})
-     (om/build user-edit-section {:user user
-                                  :on-save #(dispatch :edit-user %)})
-     (om/build roles-and-permissions {:user user
-                                      :projects projects
-                                      :user-roles user-roles})
-     (om/build api-keys-section {:user user})])))
+  (reify
+    om/IRender
+    (render [this]
+      (html
+       [:div
+        (om/build panel-header-section {:user user
+                                        :close! close!})
+        (om/build user-edit-section {:user user
+                                     :on-save #(dispatch :edit-user %)})
+        (om/build roles-and-permissions {:user user
+                                         :projects projects
+                                         :user-roles user-roles})
+        (om/build api-keys-section {:user user})]))))

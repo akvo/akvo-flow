@@ -26,24 +26,12 @@
    "userName" ""
    "keyId" nil})
 
-;; TODO
-(defn delete-user-dialog [{:keys [user close!]} owner]
-  (om/component
-   (om/build dialog
-             {:title "Are you sure you want to delete this user?"
-              :text "This can not be undone!"
-              :buttons [{:caption "Ok"
-                         :action #(do (dispatch :delete-user user)
-                                      (close!))}
-                        {:caption "Cancel"
-                         :action close!}]})))
-
 (defn user-actions [{:keys [user on-action]} owner]
   (om/component
    (html
     [:span
      [:a {:on-click #(on-action user)} "Edit"]
-     [:a {:on-click #(on-action user)} "Remove"]])))
+     [:a {:on-click #(dispatch :delete-user user)} "Remove"]])))
 
 (defn columns [owner]
   (let [on-action (fn [user]
