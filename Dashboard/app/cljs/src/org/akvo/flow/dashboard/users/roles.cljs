@@ -45,7 +45,7 @@
 (defmethod do-role-action ::show-create-view
   [_ owner role])
 
-(defn roles-and-permissions [{:keys [roles]} owner]
+(defn roles-and-permissions [{:keys [user_roles]} owner]
   (reify
 
     om/IInitState
@@ -73,7 +73,7 @@
                                            (om/set-state! owner :current-role nil))}
                            :plus "Add new role!")]]]
          (om/build grid
-                   {:data (store/get-roles roles)
+                   {:data (store/get-roles user_roles)
                     :columns [{:title "Role"
                                :cell-fn #(get % "name")}
                               {:title "Number of users"

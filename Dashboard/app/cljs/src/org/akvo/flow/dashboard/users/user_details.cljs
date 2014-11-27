@@ -1,12 +1,13 @@
 (ns org.akvo.flow.dashboard.users.user-details
   (:require [org.akvo.flow.dashboard.components.bootstrap :as b]
+            [org.akvo.flow.dashboard.components.grid :refer (grid)]
             [org.akvo.flow.dashboard.dispatcher :refer (dispatch)]
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]
             [ajax.core :refer (ajax-request GET POST PUT DELETE)]))
 
-(defn panel-header-section [{:keys [user]} owner]
+(defn panel-header-section [{:keys [user close!]} owner]
   (om/component
    (html
     [:div.row.panelHeader
@@ -14,7 +15,7 @@
       [:h4
        (b/icon :pencil) " Edit " (get user "userName")]]
      [:div.col-xs-3.text-right
-      (b/btn-primary {} :circle-arrow-left "Go back")]])))
+      (b/btn-primary {:on-click #(close!)} :circle-arrow-left "Go back")]])))
 
 (defn update-input! [owner key]
   (fn [event]
@@ -51,6 +52,36 @@
                                          (on-save state))}
                          :floppy-disk "Save user info")]]]))))
 
+(defn roles-and-permissions [{:keys [user-roles]} owner]
+  (reify
+    om/IRender
+    (render [this]
+      (html [:div.userRolesPerm.well.topMargin
+             [:h2 "Roles and permissions:"]
+             [:form.form-inline.text-left.paddingTop.roleEditSelect {:role "name"}
+              [:div.form-group
+               [:select {:type "select"}
+                (for [role user-roles]
+                  [:option (get role "name")])]]
+              [:div.form-group.folderStructure
+               [:select {:type "select"}
+                [:option "Root folder#1"]
+                [:option "Root #2"]]]
+              [:div.form-group
+               (b/btn-primary {:class "btn-xs"
+                               :on-click #(println "Clicked!")} :plus "Add")]]
+             (om/build grid
+                       {:data [{:role "Admin" :projects ["Burundi", "Asia"]}
+                               {:role "User" :projects ["Burundi", "Asia"]}]
+                        :columns [{:title "Role"
+                                   :cell-fn #(get % :role)}
+                                  {:title "Projects"
+                                   :cell-fn #(pr-str (get % :projects))}
+                                  {:title "Actions"
+                                   :cell-fn (constantly "Delete")}]})])))
+  )
+
+
 (defn generate-apikeys [owner user]
   (POST (str "/rest/users/" (get user "keyId") "/apikeys")
         (merge default-ajax-config
@@ -69,7 +100,7 @@
                              (om/set-state! owner {:access-key nil :secret nil})
                              (dispatch :new-access-key {:access-key nil :user user}))})))
 
-(defn api-keys-section [{:keys [user]} owner]
+(defn api-keys-section [{:keys [user user-roles]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -97,12 +128,15 @@
                                                    (revoke-apikeys owner user))}
            (b/icon :ban-circle) " Revoke"]]]]))))
 
-(defn user-details [{:keys [user projects]} owner]
+(defn user-details [{:keys [close! user projects user-roles]} owner]
   (om/component
    (html
     [:div
-     (om/build panel-header-section {:user user})
+     (om/build panel-header-section {:user user
+                                     :close! close!})
      (om/build user-edit-section {:user user
                                   :on-save #(dispatch :edit-user %)})
-     #_(om/build roles-and-permissions-section {:user user :projects projects})
+     (om/build roles-and-permissions {:user user
+                                      :projects projects
+                                      :user-roles user-roles})
      (om/build api-keys-section {:user user})])))

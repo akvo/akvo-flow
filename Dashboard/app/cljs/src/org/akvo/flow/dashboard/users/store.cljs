@@ -80,7 +80,7 @@
 
 (dispatch-loop
  :roles/fetch _
- (ajax/fetch-and-index "/rest/user_roles/all" :roles))
+ (ajax/fetch-and-index "/rest/user_roles" :user_roles))
 
 (dispatch-loop
  :roles/create role
@@ -88,9 +88,9 @@
        (merge ajax/default-ajax-config
               {:params role
                :handler (fn [response]
-                          (let [role (get response "role")
+                          (let [role (get response "user_roles")
                                 role-id (get role "keyId")]
-                            (swap! app-state assoc-in [:roles :by-id role-id] role)))})))
+                            (swap! app-state assoc-in [:user_roles :by-id role-id] role)))})))
 
 (dispatch-loop
  :roles/edit role ;{:strs [keyId] :as role}
@@ -100,8 +100,8 @@
         (merge ajax/default-ajax-config
                {:params (dissoc role "keyId")
                 :handler (fn [response]
-                           (let [role (get response "role")]
-                             (swap! app-state assoc-in [:roles :by-id key-id] role)))}))))
+                           (let [role (get response "user_roles")]
+                             (swap! app-state assoc-in [:user_roles :by-id key-id] role)))}))))
 
 (dispatch-loop
  :roles/delete key-id
@@ -109,4 +109,4 @@
  (DELETE (str "/rest/user_roles/" key-id)
          (merge ajax/default-ajax-config
                 {:handler (fn [response]
-                            (swap! app-state update-in [:roles :by-id] dissoc key-id))})))
+                            (swap! app-state update-in [:user_roles :by-id] dissoc key-id))})))
