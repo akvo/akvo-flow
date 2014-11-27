@@ -13,7 +13,7 @@
 
 (defn btn
   ([button-type attrs icn]
-     (btn-primary button-type attrs icn ""))
+     (btn button-type attrs icn ""))
   ([button-type attrs icn caption]
      {:pre [(string? button-type)
             (map? attrs)

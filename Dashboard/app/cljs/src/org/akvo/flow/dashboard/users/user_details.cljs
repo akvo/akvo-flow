@@ -65,7 +65,8 @@
                   [:option (get role "name")])]]
               [:div.form-group.folderStructure
                [:select {:type "select"}
-                (for [project projects]
+                (for [project projects
+                      :when (nil? (get project "parentId"))]
                   [:option (get project "name")])]]
               [:div.form-group
                (b/btn-primary {:class "btn-xs"
@@ -80,7 +81,6 @@
                                    :cell-fn #(pr-str (get % :projects))}
                                   {:title "Actions"
                                    :cell-fn (constantly "Delete")}]})]))))
-
 
 (defn generate-apikeys [owner user]
   (POST (str "/rest/users/" (get user "keyId") "/apikeys")

@@ -38,7 +38,7 @@
                               (om/set-state! owner "permissions" (conj permissions value))))}]
     caption]])
 
-(defn role-edit-section [{:keys [on-save]} owner]
+(defn role-edit-section [{:keys [role on-save]} owner]
   (reify
     om/IInitState
     (init-state [this]
