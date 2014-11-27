@@ -1,5 +1,7 @@
 (ns org.akvo.flow.dashboard.users.user-details
   (:require [org.akvo.flow.dashboard.components.bootstrap :as b]
+            [org.akvo.flow.dashboard.users.store :as store]
+            [org.akvo.flow.dashboard.projects.store :as projects-store]
             [org.akvo.flow.dashboard.components.grid :refer (grid)]
             [org.akvo.flow.dashboard.dispatcher :refer (dispatch)]
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
@@ -16,6 +18,9 @@
        (b/icon :pencil) " Edit " (get user "userName")]]
      [:div.col-xs-3.text-right
       (b/btn-primary {:on-click #(close!)} :circle-arrow-left "Go back")]])))
+
+(defn target-value [event]
+  (-> event .-target .-value))
 
 (defn update-input! [owner key]
   (fn [event]
@@ -52,22 +57,42 @@
                                          (on-save state))}
                          :floppy-disk "Save user info")]]]))))
 
-(defn roles-and-permissions [{:keys [user-roles projects]} owner]
+(defn roles-and-permissions [{:keys [roles-store projects-store]} owner]
   (reify
-    om/IRender
-    (render [this]
+    om/IInitState
+    (init-state [this]
+      {:selected-role nil
+       :selected-folders []})
+
+    om/IRenderState
+    (render-state [this {:keys [selected-role selected-folders]}]
+      (println selected-folders)
       (html [:div.userRolesPerm.well.topMargin
              [:h2 "Roles and permissions:"]
              [:form.form-inline.text-left.paddingTop.roleEditSelect {:role "name"}
               [:div.form-group
-               [:select {:type "select"}
-                (for [role user-roles]
-                  [:option (get role "name")])]]
-              [:div.form-group.folderStructure
-               [:select {:type "select"}
-                (for [project projects
-                      :when (nil? (get project "parentId"))]
-                  [:option (get project "name")])]]
+               [:select {:type "select"
+                         :on-change #(om/set-state! owner :selected-role (js/parseInt (target-value %)))}
+                [:option "Select a role"]
+                (for [role (store/get-roles roles-store)]
+                  [:option {:value (get role "keyId")}
+                   (get role "name")])]]
+
+              (for [selected-folder selected-folders]
+                [:select {:type "select"}
+                 [:option (get (projects-store/get-by-id projects-store selected-folder) "name")]])
+
+              (when (or (empty? selected-folders)
+                        (= (get (projects-store/get-by-id projects-store (peek selected-folders)) "projectType")
+                           "PROJECT_FOLDER"))
+                [:div.form-group.folderStructure
+                 [:select {:type "select"
+                           :on-change #(om/set-state! owner :selected-folders (conj selected-folders (js/parseInt (target-value %))))}
+                  [:option "Select a project(folder)"]
+                  (for [project (projects-store/get-projects projects-store (when-not (empty? selected-folders)
+                                                                              (peek selected-folders)))]
+                    [:option {:value (get project "keyId")} (get project "name")])]])
+
               [:div.form-group
                (b/btn-primary {:class "btn-xs"
                                :on-click #(do (.preventDefault %)
@@ -100,7 +125,7 @@
                              (om/set-state! owner {:access-key nil :secret nil})
                              (dispatch :new-access-key {:access-key nil :user user}))})))
 
-(defn api-keys-section [{:keys [user user-roles]} owner]
+(defn api-keys-section [{:keys [user]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -128,7 +153,7 @@
                                                    (revoke-apikeys owner user))}
            (b/icon :ban-circle) " Revoke"]]]]))))
 
-(defn user-details [{:keys [close! user projects user-roles]} owner]
+(defn user-details [{:keys [close! user projects-store roles-store]} owner]
   (reify
     om/IRender
     (render [this]
@@ -139,6 +164,6 @@
         (om/build user-edit-section {:user user
                                      :on-save #(dispatch :edit-user %)})
         (om/build roles-and-permissions {:user user
-                                         :projects projects
-                                         :user-roles user-roles})
+                                         :projects-store projects-store
+                                         :roles-store roles-store})
         (om/build api-keys-section {:user user})]))))

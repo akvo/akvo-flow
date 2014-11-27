@@ -100,5 +100,6 @@
          [:div
           (om/build user-details {:user current-user
                                   :close! #(om/set-state! owner :current-user nil)
-                                  :projects (projects-store/get-project-folders projects)
+                                  :projects-store projects
+                                  :roles-store user_roles
                                   :user-roles (store/get-roles user_roles)})]]]))))

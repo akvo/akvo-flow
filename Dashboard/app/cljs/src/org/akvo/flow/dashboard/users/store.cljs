@@ -35,6 +35,10 @@
 (defn get-roles [roles]
   (-> roles :by-id vals))
 
+(defn get-role [roles role-id]
+  {:pre [(integer? role-id)]}
+  (get-in roles [:by-id id]))
+
 ;; Dispatch loops
 
 (dispatch-loop

@@ -6,8 +6,18 @@
                [ajax.core :refer (GET POST PUT DELETE)])
     (:require-macros [org.akvo.flow.dashboard.dispatcher :refer (dispatch-loop)]))
 
-(defn get-project-folders [projects]
-  (vals (get projects :by-id)))
+(defn get-by-id [projects id]
+  {:pre [(integer? id)]}
+  (get-in projects [:by-id id]))
+
+(defn get-projects [projects parent-id]
+  {:pre [(or (nil? parent-id) ;; nil is root
+             (number? parent-id))]}
+  (->> (get projects :by-id)
+       vals
+       (filter #(= (get % "parentId") parent-id))))
+
+
 
 (dispatch-loop
  :projects/fetch _
