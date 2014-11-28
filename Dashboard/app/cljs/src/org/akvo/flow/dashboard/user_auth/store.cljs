@@ -1,0 +1,53 @@
+(ns org.akvo.flow.dashboard.user-auth.store
+  (:require  [clojure.set :as set]
+             [org.akvo.flow.dashboard.app-state :refer (app-state)]
+             [org.akvo.flow.dashboard.dispatcher :as dispatcher]
+             [org.akvo.flow.dashboard.ajax-helpers :as ajax]
+             [ajax.core :refer (GET POST PUT DELETE)])
+  (:require-macros [org.akvo.flow.dashboard.dispatcher :refer (dispatch-loop)]))
+
+
+(defn get-by-user-id [user-auth user-id]
+  {:pre [(integer? user-id)]}
+  (get-in user-auth [:by-user-id user-id]))
+
+
+
+(dispatch-loop
+ :user-auth/fetch _
+ (GET "/rest/user_auth"
+      (merge ajax/default-ajax-config
+             {:handler (fn [response]
+                         (let [user-auth (get response "user_auth")]
+                           (swap! app-state assoc-in [:user-auth :by-id]
+                                  (ajax/index-by "keyId" user-auth))
+                           (swap! app-state assoc-in [:user-auth :by-user-id]
+                                  (group-by #(get % "userId") user-auth))))})))
+
+(dispatch-loop
+ :user-auth/create auth
+ (let [{:keys [user role object-path]} auth]
+   (assert (integer? user))
+   (assert (integer? role))
+   (assert (string? object-path))
+   (POST "/rest/user_auth"
+         (merge ajax/default-ajax-config
+                {:params {"userId" user
+                          "roleId" role
+                          "objectPath" object-path}
+                 :handler (fn [{:strs [user_auth]}]
+                            (swap! app-state assoc-in [:user-auth :by-id (get user_auth "keyId")] user_auth)
+                            (swap! app-state update-in [:user-auth :by-user-id (get user_auth "userId")] conj user_auth))}))))
+
+(dispatch-loop
+ :user-auth/delete user-auth
+ (let [key-id (get user-auth "keyId")
+       user-id (get user-auth "userId")]
+    (assert (integer? (get user-auth "keyId")))
+    (DELETE (str "/rest/user_auth/" key-id)
+            (merge ajax/default-ajax-config
+                   {:handler (fn [_]
+                               (swap! app-state update-in [:user-auth :by-id] dissoc key-id)
+                               (swap! app-state update-in [:user-auth :by-user-id user-id]
+                                      (fn [user-auths]
+                                        (vec (remove #(= (get % "keyId") key-id) user-auths)))))}))))
