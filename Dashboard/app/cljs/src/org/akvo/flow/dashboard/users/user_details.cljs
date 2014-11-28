@@ -59,6 +59,12 @@
                                          (on-save state))}
                          :floppy-disk "Save user info")]]]))))
 
+
+(defn actions [user-auth owner]
+  (om/component
+   (html
+    [:a {:on-click #(dispatch :user-auth/delete user-auth)} "Delete"])))
+
 (defn roles-and-permissions [{:keys [user roles-store projects-store user-auth-store]} owner]
   (reify
     om/IInitState
@@ -99,6 +105,7 @@
                (b/btn-primary {:class "btn-xs"
                                :on-click (fn [evt]
                                            (.preventDefault evt)
+                                           (om/set-state! owner {:selected-role nil :selected-folders []})
                                            (dispatch :user-auth/create
                                                      {:user (get user "keyId")
                                                       :role selected-role
@@ -108,8 +115,8 @@
                                                                         (str/join "/"))}))}
                               :plus "Add")]]
              (om/build grid
-                       {:data (when user
-                                (user-auth-store/get-by-user-id user-auth-store (get user "keyId")))
+                       {:data (when-let [user-id (get user "keyId")]
+                                (user-auth-store/get-by-user-id user-auth-store user-id))
                         :columns [{:title "Role"
                                    :cell-fn (fn [user-auth]
                                               (let [role-id (get user-auth "roleId")
@@ -119,7 +126,7 @@
                                   {:title "Resource"
                                    :cell-fn #(get % "objectPath")}
                                   {:title "Actions"
-                                   :cell-fn (constantly "Delete")}]})]))))
+                                   :component actions}]})]))))
 
 (defn generate-apikeys [owner user]
   (POST (str "/rest/users/" (get user "keyId") "/apikeys")
@@ -176,9 +183,15 @@
         (om/build panel-header-section {:user user
                                         :close! close!})
         (om/build user-edit-section {:user user
-                                     :on-save #(dispatch :edit-user %)})
-        (om/build roles-and-permissions {:user user
-                                         :projects-store projects-store
-                                         :roles-store roles-store
-                                         :user-auth-store user-auth-store})
-        (om/build api-keys-section {:user user})]))))
+                                     :on-save #(if (integer? (get % "keyId"))
+                                                 (dispatch :edit-user %)
+                                                 (do ;; TODO
+                                                   (dispatch :new-user %)
+                                                   (close!)))})
+        (when (get user "keyId")
+          [:div
+           (om/build roles-and-permissions {:user user
+                                           :projects-store projects-store
+                                           :roles-store roles-store
+                                           :user-auth-store user-auth-store})
+          (om/build api-keys-section {:user user})])]))))

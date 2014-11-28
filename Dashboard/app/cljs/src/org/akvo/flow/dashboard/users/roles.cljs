@@ -5,7 +5,7 @@
             [org.akvo.flow.dashboard.components.grid :refer (grid)]
             [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.users.store :as store]
-            [org.akvo.flow.dashboard.users.role-details :refer (role-details)]
+            [org.akvo.flow.dashboard.users.role-details :refer (role-details all-permissions)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]))
 
@@ -28,8 +28,9 @@
   (om/component
    (html
     [:span
-     (b/btn-primary {:on-click #(on-action ::delete)} :remove)
-     (b/btn-primary {:on-click #(on-action ::show-edit-view)} :edit)])))
+     [:a {:on-click #(on-action ::delete)} "delete"]
+     " "
+     [:a {:on-click #(on-action ::show-edit-view)} "edit"]])))
 
 (defmulti do-role-action (fn [action owner role] action))
 
@@ -76,10 +77,8 @@
                    {:data (store/get-roles user_roles)
                     :columns [{:title "Role"
                                :cell-fn #(get % "name")}
-                              {:title "Number of users"
-                               :cell-fn (constantly 0)}
                               {:title "Permissions"
-                               :cell-fn #(pr-str (get % "permissions"))}
+                               :cell-fn #(s/join ", " (map (partial get all-permissions) (get % "permissions")))}
                               {:title "Action"
                                :component role-actions
                                :component-data-fn (fn [role]
