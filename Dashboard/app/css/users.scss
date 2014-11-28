@@ -8,6 +8,7 @@
 -------------------------------------------------------------- */
 
 html {
+    padding-top:20px;
     width: 100%;
     overflow-y: scroll;
     background: white;
@@ -77,6 +78,8 @@ button, a{
 /* Sliding panels
 --------------------------------------------- */
 section[role=main] {
+    padding-top:20px;
+    padding-bottom:20px;
     overflow:hidden;
 .panels {
         height: 100%;
