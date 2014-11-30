@@ -247,6 +247,19 @@ FLOW.projectControl = Ember.ArrayController.create({
     return unpublishedForms.get('length') === 0;
   }.property('FLOW.surveyControl.content.@each.status'),
 
+  currentProjectPath: function() {
+    var projectList = this.get('breadCrumbs');
+    if(projectList.length === 0) {
+        return ""; // root project folder
+    } else {
+        var path = "";
+        for(i = 0; i < projectList.length; i++){
+            path += "/" + projectList[i].get('name');
+        }
+        return path;
+    }
+  }.property('breadCrumbs'),
+
   /* Actions */
   selectProject: function(evt) {
     var project = evt.context;
@@ -276,10 +289,12 @@ FLOW.projectControl = Ember.ArrayController.create({
 
     var name = folder ? "New project folder" : "New project";
     var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
+    var path = this.get('currentProjectPath') + "/" + name;
 
     FLOW.store.createRecord(FLOW.SurveyGroup, {
       "code": name,
       "name": name,
+      "path":path,
       "parentId": currentFolderId,
       "projectType": projectType
     });
@@ -445,9 +460,12 @@ FLOW.surveyControl = Ember.ArrayController.create({
   },
 
   createForm: function() {
+    code = "New Form";
+    path = FLOW.projectControl.get('currentProjectPath') + "/" + code;
     FLOW.store.createRecord(FLOW.Survey, {
-      "name": "New Form",
-      "code": "New Form",
+      "name": code,
+      "code": code,
+      "path": path,
       "defaultLanguageCode": "en",
       "requireApproval": false,
       "status": "NOT_PUBLISHED",

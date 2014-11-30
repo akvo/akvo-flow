@@ -69,10 +69,13 @@ FLOW.ProjectMainView = FLOW.View.extend({
 
     if (currentProject && currentProject.get('isDirty')) {
       currentProject.set('name', currentProject.get('code'));
+      currentProject.set('path', FLOW.projectControl.get('currentProjectPath'));
     }
 
     if (currentForm && currentForm.get('isDirty')) {
       currentForm.set('name', currentForm.get('code'));
+      path = FLOW.projectControl.get('currentProjectPath') + "/" + currentForm.get('name');
+      currentForm.set('path', path);
     }
 
     FLOW.store.commit();
@@ -164,9 +167,12 @@ FLOW.ProjectItemView = FLOW.View.extend({
 
 FLOW.FolderEditView = Ember.TextField.extend({
   content: null,
+  path: null,
 
   focusOut: function() {
     this.content.set('name', this.content.get('code'));
+	path = FLOW.projectControl.get('currentProjectPath') + "/" + this.content.get('name');
+	this.content.set('path', path );
     FLOW.store.commit();
   }
 });
