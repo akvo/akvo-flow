@@ -1,3 +1,9 @@
+
+function capitaliseFirstLetter(string) {
+	if (Ember.empty(string)) return "";
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 FLOW.attributeTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
@@ -34,6 +40,94 @@ FLOW.attributeControl = Ember.ArrayController.create({
     this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
   }
 });
+
+FLOW.cascadeResourceControl = Ember.ArrayController.create({
+	content:null,
+	published:null,
+	levelNames:null,
+
+	populate: function() {
+		this.set('content', FLOW.store.find(FLOW.CascadeResource));
+		this.set('published',FLOW.store.filter(FLOW.CascadeResource,function(item){
+			return item.get('published');
+		}));
+	},
+
+	setLevelNamesArray: function(){
+		var i=1, levelNamesArray=[], numLevels;
+		numLevels = FLOW.selectedControl.selectedCascadeResource.get('numLevels');
+
+		// store the level names in an array
+		FLOW.selectedControl.selectedCascadeResource.get('levelNames').forEach(function(item){
+			if (i <= numLevels) {
+				levelNamesArray.push(Ember.Object.create({
+					levelName: item,
+					level:i}));
+				i++;
+			}
+		});
+		this.set('levelNames',levelNamesArray);
+	},
+
+	publish: function(cascadeResourceId){
+		FLOW.store.findQuery(FLOW.Action, {
+		    action: 'publishCascade',
+		    cascadeResourceId: cascadeResourceId
+		});
+	}
+});
+
+FLOW.cascadeNodeControl = Ember.ArrayController.create({
+	content:null,
+	level1:[], level2:[], level3:[], level4:[], level5:[], level6:[], level7:[],
+	displayLevel1:[], displayLevel2:[], displayLevel3:[],
+	parentNode:[],
+	selectedNode:[],
+	selectedNodeTrigger: true,
+	skip: 0,
+
+	emptyNodes: function(start){
+		var i;
+		for (i=start ; i < 6 ; i++){
+			this.selectedNode[i]=null;
+			this.set('level' + i,[]);
+		}
+	},
+
+	toggleSelectedNodeTrigger:function (){
+		this.set('selectedNodeTrigger',!this.get('selectedNodeTrigger'));
+	},
+
+	setDisplayLevels: function(){
+		this.set('displayLevel1',this.get('level' + (this.get('skip') + 1)));
+		this.set('displayLevel2',this.get('level' + (this.get('skip') + 2)));
+		this.set('displayLevel3',this.get('level' + (this.get('skip') + 3)));
+	},
+
+	populate: function(cascadeResourceId, level, parentNodeId){
+		this.set('content',FLOW.store.findQuery(FLOW.CascadeNode, {
+	        cascadeResourceId: cascadeResourceId,
+	        parentNodeId: parentNodeId
+	      }));
+		this.set('level' + level,FLOW.store.filter(FLOW.CascadeNode, function(item){
+			return (item.get('parentNodeId') == parentNodeId && item.get('cascadeResourceId') == cascadeResourceId);
+		}));
+		this.parentNode[level] = parentNodeId;
+		FLOW.cascadeNodeControl.setDisplayLevels();
+	},
+
+	addNode: function(cascadeResourceId, level, text, code) {
+		FLOW.store.createRecord(FLOW.CascadeNode, {
+			"code": code,
+			"name": capitaliseFirstLetter(text),
+			"nodeId": null,
+			"parentNodeId":this.get('parentNode')[level],
+			"cascadeResourceId":cascadeResourceId
+        });
+		FLOW.store.commit();
+	},
+});
+
 
 FLOW.surveyInstanceControl = Ember.ArrayController.create({
   sortProperties: ['collectionDate'],

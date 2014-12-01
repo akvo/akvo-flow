@@ -34,17 +34,21 @@ import org.waterforpeople.mapping.app.web.rest.dto.CascadeResourcePayload;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 
 import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.survey.dao.CascadeNodeDao;
 import com.gallatinsystems.survey.dao.CascadeResourceDao;
+import com.gallatinsystems.survey.domain.CascadeNode;
 import com.gallatinsystems.survey.domain.CascadeResource;
-
 
 @Controller
 @RequestMapping("/cascade_resources")
 public class CascadeResourceRestService {
-	
+
 	@Inject
     private CascadeResourceDao cascadeResourceDao;
-	
+
+	@Inject
+    private CascadeNodeDao cascadeNodeDao;
+
 	@RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, List<CascadeResourceDto>> listCascadeResources() {
@@ -80,7 +84,10 @@ public class CascadeResourceRestService {
 
         // check if cascadeResource exists in the datastore
         if (cr != null) {
-            // delete cascade resource
+            // delete all nodes belonging to this cascade
+        	// TODO make sure this succeeds for large lists
+        	List<CascadeNode> allNodes = cascadeNodeDao.listCascadeNodesByResourceAndParentId(id, 0l);
+        	cascadeNodeDao.delete(allNodes);
         
         	// TODO check if any questions use this cascadeResource. If yes, we can't delete.
             cascadeResourceDao.delete(cr);

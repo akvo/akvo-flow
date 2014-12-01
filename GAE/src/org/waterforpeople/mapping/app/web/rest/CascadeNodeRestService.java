@@ -85,7 +85,7 @@ public class CascadeNodeRestService {
         if (cr != null) {
         	// TODO check if any questions use this cascadeNode. If yes, we can't delete.
 
-        	// delete cascade resource            
+        	// delete cascade node and all its children
         	cascadeNodeDao.deleteRecursive(cr.getCascadeResourceId(),id);
             statusDto.setStatus("ok");
         }

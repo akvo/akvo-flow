@@ -26,6 +26,36 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 		}
 	},
 
+	oneSelected: function(){
+		return !Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'));
+	}.property('FLOW.selectedControl.selectedCascadeResource').cacheable(),
+
+	resourceSelected: function(){
+		if (!Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))){
+			var i=1, levelNamesArray=[];
+			FLOW.cascadeNodeControl.emptyNodes(1);
+			FLOW.cascadeNodeControl.populate(FLOW.selectedControl.selectedCascadeResource.get('keyId'),1,0);
+			FLOW.cascadeResourceControl.setLevelNamesArray();
+			FLOW.cascadeNodeControl.set('skip',0);
+			FLOW.cascadeNodeControl.setDisplayLevels();
+			FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
+		}
+	}.observes('FLOW.selectedControl.selectedCascadeResource'),
+
+	moveRight: function(){
+		var skip = FLOW.cascadeNodeControl.get('skip');
+		if (skip > 0) {
+			FLOW.cascadeNodeControl.set('skip', skip - 1);
+			FLOW.cascadeNodeControl.setDisplayLevels();
+		}
+	},
+
+	moveLeft: function(){
+		var skip = FLOW.cascadeNodeControl.get('skip');
+			FLOW.cascadeNodeControl.set('skip', skip + 1);
+			FLOW.cascadeNodeControl.setDisplayLevels();
+	},
+
 	// fired when 'save' is clicked while showing new cascade text field. Saves new cascade resource to the data store
 	saveNewCascadeResource: function () {
 		  if (!Ember.empty(this.get('cascadeResourceName').trim())){
@@ -47,38 +77,6 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	},
 });
 
-FLOW.CascadeResourceItemView = FLOW.View.extend({
-	tagName: 'li',
-	classNameBindings: 'amSelected:current'.w(),
-
-	// true if the cascade resource is selected. Used to set proper display class
-	amSelected: function () {
-	    var selected = FLOW.selectedControl.get('selectedCascadeResource');
-	    if (selected) {
-	      var amSelected = (this.content.get('keyId') === FLOW.selectedControl.selectedCascadeResource.get('keyId'));
-	      return amSelected;
-	    } else {
-	      return null;
-	    }
-	  }.property('FLOW.selectedControl.selectedCascadeResource', 'content').cacheable(),
-
-	makeSelected: function(){
-		var i=1, levelNamesArray=[];
-		FLOW.selectedControl.set('selectedCascadeResource', this.content);
-		FLOW.cascadeNodeControl.emptyNodes(1);
-		FLOW.cascadeNodeControl.populate(1,0);
-		this.content.get('levelNames').forEach(function(item){
-			levelNamesArray.push(Ember.Object.create({
-				levelName: item,
-				level:i
-			}));
-			i++;
-		});
-		FLOW.cascadeResourceControl.set('levelNames',levelNamesArray);
-		FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
-	}	  
-});	
-
 FLOW.CascadeLevelNameView = FLOW.View.extend({
 	tagName: 'th',
 	editFieldVisible:false,
@@ -97,9 +95,9 @@ FLOW.CascadeLevelNameView = FLOW.View.extend({
 
 	saveNewLevelName: function(){
 		var currList, index, i=1, levelNamesArray=[];
-		index=this.content.get('level');
+		index = this.content.get('col') + FLOW.cascadeNodeControl.get('skip');
 		currList = FLOW.selectedControl.selectedCascadeResource.get('levelNames');
-		currList[index-1] = this.get('levelName');
+		currList[index-1] = capitaliseFirstLetter(this.get('levelName'));
 		FLOW.selectedControl.selectedCascadeResource.set('levelNames',currList);
 
 		// this is needed, as in this version of Ember, changes in an array do 
@@ -108,14 +106,7 @@ FLOW.CascadeLevelNameView = FLOW.View.extend({
 		FLOW.store.commit();
 
 		// put the names in the array again.
-		FLOW.selectedControl.selectedCascadeResource.get('levelNames').forEach(function(item){
-			levelNamesArray.push(Ember.Object.create({
-				levelName: item,
-				level:i
-			}));
-			i++;
-		});
-		FLOW.cascadeResourceControl.set('levelNames',levelNamesArray);
+		FLOW.cascadeResourceControl.setLevelNamesArray();
 
 		this.set('levelName',null);
 		this.set('editFieldVisible',false);
@@ -124,59 +115,49 @@ FLOW.CascadeLevelNameView = FLOW.View.extend({
 
 FLOW.CascadeNodeView = FLOW.View.extend({
 	cascadeNodeName: null,
+	cascadeNodeCode:null,
 	
 	showInputField:function(){
-		if (this.get('level') == 1) {
-			return !Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'));
+		var skip;
+		// determines if we should show an input field in this column
+		// we do this in column one by default, or if in the previous column a node has been selected
+		if (this.get('col') == 1 && FLOW.cascadeNodeControl.get('skip') == 0) {
+			return true;
 		}
-		return (!Ember.empty(FLOW.cascadeNodeControl.selectedNode[this.get('level')-1]) && 
-				!Ember.empty(FLOW.cascadeNodeControl.selectedNode[this.get('level')-1].get('keyId')) );
+		skip = FLOW.cascadeNodeControl.get('skip');
+		return (!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1]) && 
+				!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1].get('keyId')));
 	}.property('FLOW.cascadeNodeControl.selectedNodeTrigger').cacheable(),
 
 	addNewNode: function() {
-		var newNodeStringArray, level, nodes, exists;
-		level = this.get('level');
+		var newNodeStringArray, level, nodes, exists, item, itemTrim;
+		level = this.get('col') + FLOW.cascadeNodeControl.get('skip');
 		nodes = FLOW.cascadeNodeControl.get('level' + level);
-
-		if (!Ember.empty(this.get('cascadeNodeName'))) {
-			newNodeStringArray = this.get('cascadeNodeName').split('\n');
-		    if (newNodeStringArray.length > 0) {
-		    	newNodeStringArray.forEach(function (item) {
-		    		if (!Ember.empty(item.trim()) && item.trim().length > 0) {
-		    			// check for uniqueness
-		    			exists = false;
-		    			nodes.forEach(function(node){
-		    				if (node.get('name').toLowerCase() == item.trim().toLowerCase()) {
-		    					exists = true;
-		    				}
-		    			});
-		    			if (!exists) {
-		    				FLOW.cascadeNodeControl.addNode(level,item.trim());
-		    			}
-		    		}
-		    	});
-		    }
-		    this.set('cascadeNodeName',"");
+		item = this.get('cascadeNodeName');
+		if (item!= null && item.trim().length > 0) {
+			exists = false;
+			itemTrim = item.trim().toLowerCase();
+			nodes.forEach(function(node){
+				if (node.get('name').toLowerCase() == itemTrim) {
+					exists = true;
+				}
+			});
+			if (!exists) {
+				FLOW.cascadeNodeControl.addNode(FLOW.selectedControl.selectedCascadeResource.get('keyId'),
+						level, item.trim(), this.get('cascadeNodeCode'));
+			}
 		}
-
-		// save nodes using bulk commit
-		FLOW.store.adapter.set('bulkCommit', true);
-		FLOW.store.commit();
-		FLOW.store.adapter.set('bulkCommit', false);
+		this.set('cascadeNodeName',"");
+		this.set('cascadeNodeCode',"");
 
 		// check if we need to increase the level of items that we use
 		// TODO somehow decrease it when a level becomes empty. However, this is hard to check.
 		if (level > FLOW.selectedControl.selectedCascadeResource.get('numLevels')){
 			FLOW.selectedControl.selectedCascadeResource.set('numLevels',level);
 			FLOW.store.commit();
+			FLOW.cascadeResourceControl.setLevelNamesArray();
 		}
 	},
-
-	newNodeEnter: function() {
-		if (this.get('cascadeNodeName').indexOf('\n') > -1) {
-			this.addNewNode();
-		}
-	}.observes('this.cascadeNodeName'),
 });
 
 FLOW.CascadeNodeItemView = FLOW.View.extend({
@@ -186,9 +167,9 @@ FLOW.CascadeNodeItemView = FLOW.View.extend({
 
 	// true if the node group is selected. Used to set proper display class
 	amSelected: function () {
-	    var selected = FLOW.cascadeNodeControl.get('selectedNode')[this.get('level')];
+	    var selected = FLOW.cascadeNodeControl.get('selectedNode')[this.get('col') + FLOW.cascadeNodeControl.get('skip')];
 	    if (selected) {
-	      var amSelected = (this.content.get('name') === FLOW.cascadeNodeControl.get('selectedNode')[this.get('level')].get('name'));
+	      var amSelected = (this.content.get('name') === FLOW.cascadeNodeControl.get('selectedNode')[this.get('col') + FLOW.cascadeNodeControl.get('skip')].get('name'));
 	      return amSelected;
 	    } else {
 	      return false;
@@ -196,19 +177,20 @@ FLOW.CascadeNodeItemView = FLOW.View.extend({
 	}.property('FLOW.cascadeNodeControl.selectedNodeTrigger').cacheable(),
 
 	deleteNode:function() {
-		FLOW.cascadeNodeControl.emptyNodes(this.get('level') + 1);
+		FLOW.cascadeNodeControl.emptyNodes(this.get('col') + FLOW.cascadeNodeControl.get('skip') + 1);
 		this.get('content').deleteRecord();
 		FLOW.store.commit();
 	},
 
 	makeSelected: function(){
 		var i, level;
-		level = this.get('level');
+		level = this.get('col') + FLOW.cascadeNodeControl.get('skip');
 		FLOW.cascadeNodeControl.get('selectedNode')[level] = this.get('content');
 		FLOW.cascadeNodeControl.emptyNodes(level + 1);
 
 		if (!Ember.empty(this.content.get('keyId'))){
-			FLOW.cascadeNodeControl.populate(level+1,this.content.get('keyId'));
+			FLOW.cascadeNodeControl.populate(FLOW.selectedControl.selectedCascadeResource.get('keyId'), 
+					level + 1, this.content.get('keyId'));
 		}
 		FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
 	}
