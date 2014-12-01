@@ -39,10 +39,8 @@
 
 (defn columns [owner]
   (let [on-action (fn [user]
-                    (om/set-state! owner :current-user user))]
-    [{:title "#"
-      :cell-fn :row-number}
-     {:title "User name"
+                    (om/set-state! owner :current-user-id (get user "keyId")))]
+    [{:title "User name"
       :cell-fn #(get % "userName")
       :sort-by "userName"}
      {:title "Email"
@@ -66,32 +64,28 @@
                     :limit 20}
        :sort {:sort-by "emailAddress"
               :sort-order "ascending"}
-       :current-user nil})
+       :current-user-id nil})
 
     om/IDidMount
     (did-mount [this]
       (dispatch :fetch-users nil))
 
     om/IRenderState
-    (render-state [this {:keys [current-user] :as state}]
+    (render-state [this {:keys [current-user-id] :as state}]
       (html
        [:div.topNav-spacer.panels
-        [:div.mypanel {:class (if current-user "opened" "closed")}
+        [:div.mypanel {:class (if current-user-id "opened" "closed")}
          [:div.topMargin
           [:form.form-inline.text-left.paddingTop {:role "form"}
            [:div.form-group.pull-right
             (b/btn-primary {:class "btn-md"
                             :type "button"
-                            :on-click #(om/set-state! owner :current-user empty-user)}
+                            :on-click #(om/set-state! owner :current-user-id 0)}
                            :plus "Add new user")]]
           (om/build grid
-                    {:data (let [data (store/get-by-range users
-                                                          (merge (:pagination state)
-                                                                 (:sort state)))]
-                             (map (fn [row row-number]
-                                    (assoc row :row-number (inc row-number)))
-                                  data
-                                  (range)))
+                    {:data (store/get-by-range users
+                                               (merge (:pagination state)
+                                                      (:sort state)))
                      :sort (:sort state)
                      :on-sort (fn [sort-by sort-order]
                                 (om/set-state! owner :sort {:sort-by sort-by :sort-order sort-order}))
@@ -100,10 +94,13 @@
                                  (om/set-state! owner :pagination {:offset offset :limit limit}))
                      :key-fn #(get % "keyId")
                      :columns (columns owner)})]]
-        [:div.mypanel {:class (if current-user "opened" "closed")}
+        [:div.mypanel {:class (if current-user-id "opened" "closed")}
          [:div
-          (om/build user-details {:user current-user
-                                  :close! #(om/set-state! owner :current-user nil)
+          (om/build user-details {:user (if (or (nil? current-user-id)
+                                                (zero? current-user-id))
+                                          empty-user
+                                          (store/get-user users current-user-id))
+                                  :close! #(om/set-state! owner :current-user-id nil)
                                   :projects-store projects
                                   :roles-store user_roles
                                   :user-auth-store user-auth

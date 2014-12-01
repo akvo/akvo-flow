@@ -65,6 +65,11 @@
    (html
     [:a {:on-click #(dispatch :user-auth/delete user-auth)} "Delete"])))
 
+(defn role-label [{:strs [name]} owner]
+  (om/component
+   (html
+    [:span name])))
+
 (defn roles-and-permissions [{:keys [user roles-store projects-store user-auth-store]} owner]
   (reify
     om/IInitState
@@ -76,43 +81,56 @@
     (render-state [this {:keys [selected-role selected-folders]}]
       (html [:div.userRolesPerm.well.topMargin
              [:h2 "Roles and permissions:"]
-             [:form.form-inline.text-left.paddingTop.roleEditSelect {:role "name"}
+             [:div.form-inline.text-left.paddingTop.roleEditSelect {:role "name"}
               [:div.form-group
-               [:select {:type "select"
-                         :on-change #(om/set-state! owner :selected-role (js/parseInt (target-value %)))}
-                [:option "Select a role"]
-                (for [role (store/get-roles roles-store)]
-                  [:option {:value (get role "keyId")}
-                   (get role "name")])]]
-
+               (om/build b/select
+                         {:placeholder "Select a role"
+                          :selected selected-role
+                          :data (store/get-roles roles-store)
+                          :label-fn #(get % "name")
+                          :key-fn #(str (get % "keyId"))
+                          :on-select #(om/set-state! owner :selected-role %)})]
               (for [selected-folder selected-folders]
-                [:select {:type "select"}
-                 [:option (get (projects-store/get-by-id projects-store selected-folder) "name")]])
-
+                [:div.form-group
+                 (om/build b/select
+                           {:data [selected-folder]
+                            :selected selected-folder
+                            :label-fn #(get % "name")
+                            :key-fn #(str (get % "keyId"))})])
               (when (or (empty? selected-folders)
-                        (= (get (projects-store/get-by-id projects-store (peek selected-folders)) "projectType")
+                        (= (get (projects-store/get-by-id projects-store
+                                                          (get (peek selected-folders) "keyId"))
+                                "projectType")
                            "PROJECT_FOLDER"))
-                [:div.form-group.folderStructure
-                 [:select {:type "select"
-                           :on-change #(om/set-state! owner :selected-folders
-                                                      (conj selected-folders (js/parseInt (target-value %))))}
-                  [:option "Select a project(folder)"]
-                  (for [project (projects-store/get-projects projects-store (when-not (empty? selected-folders)
-                                                                              (peek selected-folders)))]
-                    [:option {:value (get project "keyId")} (get project "name")])]])
+                [:div.form-group
+                 (let [projects (if (empty? selected-folders)
+                                  (cons {"name" "All folders" "keyId" 0}
+                                        (projects-store/get-projects projects-store nil))
+                                  (projects-store/get-projects projects-store (get (peek selected-folders) "keyId")))]
 
+                   (om/build b/select
+                           {:placeholder "Select a project(folder)"
+                            :data projects
+                            :label-fn #(get % "name")
+                            :key-fn #(str (get % "keyId"))
+                            :on-select #(om/set-state! owner :selected-folders
+                                                       (conj selected-folders %))}))])
               [:div.form-group
-               (b/btn-primary {:class "btn-xs"
+               (b/btn-primary {:class (if (or (nil? selected-role)
+                                              (empty? selected-folders))
+                                        "disabled")
                                :on-click (fn [evt]
                                            (.preventDefault evt)
                                            (om/set-state! owner {:selected-role nil :selected-folders []})
                                            (dispatch :user-auth/create
                                                      {:user (get user "keyId")
-                                                      :role selected-role
-                                                      :object-path (->> selected-folders
-                                                                        (map #(projects-store/get-by-id projects-store %))
-                                                                        (map #(get % "name"))
-                                                                        (str/join "/"))}))}
+                                                      :role (get selected-role "keyId")
+                                                      :object-path (if (zero? (get (first selected-folders) "keyId"))
+                                                                     "/"
+                                                                     (str "/"
+                                                                          (->> selected-folders
+                                                                               (map #(get % "name"))
+                                                                               (str/join "/"))))}))}
                               :plus "Add")]]
              (om/build grid
                        {:data (when-let [user-id (get user "keyId")]
@@ -178,6 +196,7 @@
   (reify
     om/IRender
     (render [this]
+      (println "rendering user details")
       (html
        [:div
         (om/build panel-header-section {:user user

@@ -40,24 +40,72 @@
      (btn "btn-link" attrs icn caption)))
 
 
-(defn dropdown [{:keys [id placeholder selected choices on-select]} owner]
+(comment
+  usage for dropdown component:
+
+  (om/build dropdown
+            {;; What to show if nothing is selected
+             :placeholder "Select something"
+             ;; Data
+             :data [{... ...} {... ...}]
+             ;; Component to use as labels
+             ;; will be built
+             ;; (om/build label-component (label-component-data-fn {... ...})
+             :label-component <some-component>
+             ;; defaults to identity
+             :label-component-data-fn <some-fn>
+             })
+
+)
+
+(defn dropdown [{:keys [placeholder selected choices on-select data label-component label-component-data-fn]} owner]
   (reify
     om/IInitState
     (init-state [this]
-      {:selected placeholder})
+      {:id (name (gensym "dropdown"))})
 
     om/IRenderState
-    (render-state [this state]
-      (html
-      [:div.dropdown
-       [:button.btn.btn-default.dropdown-toggle {:type "button" :id id :data-toggle "dropdown" :aria-expanded "true"}
-        (:selected state) " " (caret)]
-       [:ul.dropdown-menu {:role "menu" :aria-labelledby id}
-        (for [choice choices]
-          [:li {:role "presentation"}
-           [:a {:role "menuitem"
-                :tab-index "-1"
-                :href "#"
-                :on-click #(do (om/set-state! owner :selected (:label choice))
-                               (on-select id (:id choice)))}
-            (:label choice)]])]]))))
+    (render-state [this {:keys [id]}]
+      (println "Rendering dropdown")
+      (let [label-component-data-fn (or label-component-data-fn identity)]
+        (html
+         [:div.dropdown
+          [:button.btn.btn-default.dropdown-toggle {:type "button" :id id :data-toggle "dropdown" :aria-expanded "true"}
+           (if selected
+             (om/build label-component (label-component-data-fn selected))
+             placeholder)
+           " "
+           (caret)]
+          [:ul.dropdown-menu {:role "menu" :aria-labelledby id}
+           (for [item data]
+             [:li {:role "presentation"}
+              [:a {:role "menuitem"
+                   :tab-index "-1"
+                   :href "#"
+                   :on-click #(do (om/set-state! owner :selected item)
+                                  (on-select item))}
+               (om/build label-component (label-component-data-fn item))]])]])))))
+
+
+(defn select [{:keys [placeholder data selected label-fn key-fn on-select]} owner]
+  (om/component
+   (html
+    [:select.form-control
+     {:on-change (fn [evt]
+                   (let [key (-> evt .-target .-value)
+                         sel (some (fn [record]
+                                     (if (= key (key-fn record))
+                                       record))
+                                   data)]
+                     (assert sel (str "No such key:" key))
+                     (on-select sel)))
+      :value (if selected
+               (key-fn selected)
+               "__placeholder")}
+     (when (and placeholder (not selected))
+       [:option {:disabled true :value "__placeholder"} placeholder])
+     (map (fn [record]
+            (let [key (key-fn record)]
+              (assert (string? key) "key-fn must return a string")
+              [:option {:value key} (label-fn record)]))
+          data)])))
