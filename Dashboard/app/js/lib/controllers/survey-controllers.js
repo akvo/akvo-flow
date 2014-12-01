@@ -327,7 +327,9 @@ FLOW.projectControl = Ember.ArrayController.create({
   endMoveProject: function(evt) {
     var newFolderId = this.get('currentProject') ? this.get('currentProject').get('keyId') : null;
     var project = this.get('moveTarget');
+    var path = this.get('currentProjectPath') + "/" + project.get('name');
     project.set('parentId', newFolderId);
+    project.set('path', path);
     FLOW.store.commit();
     this.set('moveTarget', null);
   },
