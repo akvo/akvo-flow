@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -368,7 +369,15 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
         qDto.setTranslationMap(marshalTranslations(q.getTranslationMap()));
 
+        if (Question.Type.CASCADE.equals(q.getType())) {
+            qDto.setCascadeLevels(marshallCascadeLevels());
+        }
+
         return qDto;
+    }
+
+    private static List<String> marshallCascadeLevels() {
+        return Collections.emptyList();
     }
 
     private static TreeMap<String, TranslationDto> marshalTranslations(

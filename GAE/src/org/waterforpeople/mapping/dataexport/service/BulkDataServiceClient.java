@@ -998,6 +998,15 @@ public class BulkDataServiceClient {
                                     dto.setQuestionDependency(dep);
                                 }
                             }
+                            if (json.has("cascadeLevels")
+                                    && !JSONObject.NULL.equals(json.getJSONArray("cascadeLevels"))) {
+                                final List<String> cascadeLevels = new ArrayList<String>();
+                                final JSONArray array = json.getJSONArray("cascadeLevels");
+                                for (int c = 0; c < array.length(); c++) {
+                                    cascadeLevels.add(array.getString(c));
+                                }
+                                dto.setCascadeLevels(cascadeLevels);
+                            }
                             dtoList.add(dto);
                         } catch (Exception e) {
                             log.error("Error in json parsing: " + e.getMessage(), e);
