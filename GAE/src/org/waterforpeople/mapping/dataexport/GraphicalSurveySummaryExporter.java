@@ -590,6 +590,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String cellVal = val.trim();
                     createCell(row, col++, cellVal, null, Cell.CELL_TYPE_NUMERIC);
                     digest.update(cellVal.getBytes());
+                } else if (qdto != null && QuestionType.CASCADE.equals(qdto.getType())) {
+                    String cellVal = val.trim();
+                    String[] parts = cellVal.split("\\|");
+                    for (int c = 0; c < parts.length; c++) {
+                        createCell(row, col++, parts[c], null, Cell.CELL_TYPE_STRING);
+                        digest.update(parts[c].getBytes());
+                    }
                 } else {
                     String cellVal = val.replaceAll("\n", " ").trim();
                     createCell(row, col++, cellVal, null);
