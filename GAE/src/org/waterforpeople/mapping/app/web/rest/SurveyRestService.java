@@ -42,7 +42,6 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
@@ -74,7 +73,7 @@ public class SurveyRestService {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyDto> results = new ArrayList<SurveyDto>();
         SurveyInstanceSummary sis = null;
-        List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
+        List<Survey> surveys = surveyDao.listAllFilteredByUserAuthorization();
         if (surveys != null) {
             for (Survey s : surveys) {
                 SurveyDto dto = new SurveyDto();
@@ -147,8 +146,9 @@ public class SurveyRestService {
         }
 
         if (surveys != null) {
-            for (Survey s : surveys) {
+            for (Object obj : surveyDao.filterByUserAuthorization(surveys)) {
                 SurveyDto dto = new SurveyDto();
+                Survey s = (Survey) obj;
                 DtoMarshaller.copyToDto(s, dto);
 
                 // add surveyInstance Count

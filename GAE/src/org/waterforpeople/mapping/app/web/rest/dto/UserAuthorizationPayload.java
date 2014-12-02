@@ -16,6 +16,7 @@
 
 package org.waterforpeople.mapping.app.web.rest.dto;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
@@ -65,6 +66,9 @@ public class UserAuthorizationPayload extends BaseDto {
     }
 
     public void setObjectPath(String objectPath) {
+        if (StringUtils.isBlank(objectPath)) {
+            throw new IllegalArgumentException("No path specified in authorization");
+        }
         this.userAuthorization.setObjectPath(objectPath);
     }
 

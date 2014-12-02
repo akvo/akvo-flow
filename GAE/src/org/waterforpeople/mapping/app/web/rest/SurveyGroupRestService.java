@@ -36,7 +36,6 @@ import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyGroupPayload;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
@@ -84,7 +83,7 @@ public class SurveyGroupRestService {
         }
 
         // if we are here, it is a regular request
-        List<SurveyGroup> surveys = surveyGroupDao.list(Constants.ALL_RESULTS);
+        List<SurveyGroup> surveys = surveyGroupDao.listAllFilteredByUserAuthorization();
         if (surveys != null) {
             for (SurveyGroup s : surveys) {
                 SurveyGroupDto dto = new SurveyGroupDto();
