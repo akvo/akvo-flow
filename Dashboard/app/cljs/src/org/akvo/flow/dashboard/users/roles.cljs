@@ -35,14 +35,14 @@
        (if confirm-delete?
          [:span
           [:strong "Delete? "]
-          [:a {:href "#" :on-click #(do (om/set-state! owner :confirm-delete? false)
+          [:a {:on-click #(do (om/set-state! owner :confirm-delete? false)
                               (on-action ::delete))} "Yes"]
           " / "
-          [:a {:href "#" :on-click #(om/set-state! owner :confirm-delete? false)} "No"]]
+          [:a {:on-click #(om/set-state! owner :confirm-delete? false)} "No"]]
          [:span
-          [:a {:href "#" :on-click #(on-action ::show-edit-view)} (b/icon :pencil) " Edit"]
+          [:a {:on-click #(on-action ::show-edit-view)} (b/icon :pencil) " Edit"]
           " "
-          [:a {:href "#" :on-click #(om/set-state! owner :confirm-delete? true)} (b/icon :remove) " Delete"]])) )))
+          [:a {:on-click #(om/set-state! owner :confirm-delete? true)} (b/icon :remove) " Delete"]])) )))
 
 
 (defmulti do-role-action (fn [action owner role] action))

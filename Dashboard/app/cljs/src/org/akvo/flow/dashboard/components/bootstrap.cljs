@@ -80,7 +80,7 @@
              [:li {:role "presentation"}
               [:a {:role "menuitem"
                    :tab-index "-1"
-                   :href "#"
+                   ;;  :href "#"
                    :on-click #(do (om/set-state! owner :selected item)
                                   (on-select item))}
                (om/build label-component (label-component-data-fn item))]])]])))))
