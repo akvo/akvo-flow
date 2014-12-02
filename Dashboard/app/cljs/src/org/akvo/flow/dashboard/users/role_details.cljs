@@ -38,7 +38,7 @@
                               (om/set-state! owner "permissions" (conj permissions value))))}]
     caption]])
 
-(defn role-edit-section [{:keys [role on-save]} owner]
+(defn role-edit-section [{:keys [role on-save on-close]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -63,10 +63,13 @@
           (for [[value caption] all-permissions]
             (checkbox owner value caption (contains? (set permissions) value)))]
          [:div.form-group
-          (b/btn-primary {:on-click #(do (.preventDefault %)
+          (b/btn-primary {:class (if (empty? name) "disabled")
+                          :on-click #(do (.preventDefault %)
                                          (on-save role))}
                          :floppy-disk "Save permissions set")
-          (b/btn-link {:class "cancelAction" :on-click #(.preventDefault %)} :remove "Cancel")]]]))))
+          (b/btn-link {:class "cancelAction"
+                       :on-click #(do (.preventDefault %) (on-close))}
+                      :remove "Cancel")]]]))))
 
 (defn role-details [{:keys [role open? on-save on-close]} owner]
   (reify
@@ -76,4 +79,4 @@
        [:div.mypanel {:id "panel1"
                       :class (if open? "opened" "closed")}
         (om/build header-section {:role role :on-close on-close})
-        (om/build role-edit-section {:role role :on-save on-save})]))))
+        (om/build role-edit-section {:role role :on-save on-save :on-close on-close})]))))

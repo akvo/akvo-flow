@@ -38,17 +38,18 @@
        (if confirm-delete?
          [:span
           [:strong "Delete? "]
-          [:a {:on-click #(do (om/set-state! owner :confirm-delete? false)
+          [:button.btn.btn-link {:on-click #(do (om/set-state! owner :confirm-delete? false)
                                         (dispatch :delete-user user))} "Yes"]
           " / "
-          [:a {:on-click #(om/set-state! owner :confirm-delete? false)} "No"]]
+          [:button.btn.btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} "No"]]
          [:span
-          [:a {:on-click #(do
+          [:button.btn.btn-link {:on-click #(do
                               (dispatch :projects/fetch nil)
                               (on-action user))}
            (b/icon :pencil) " Edit"]
           " "
-          [:a {:on-click #( om/set-state! owner :confirm-delete? true)}
+
+          [:button.btn.btn-link {:on-click #( om/set-state! owner :confirm-delete? true)}
            (b/icon :remove) " Delete"]])))))
 
 (defn user-roles [user user-auth-store roles-store]
