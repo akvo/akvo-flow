@@ -15,6 +15,5 @@
 (let [chan (dispatcher/register :navigate)]
   (go-loop []
     (let [[_ page] (<! chan)]
-      (prn page)
       (swap! app-state assoc :current-page page)
       (recur))))

@@ -66,7 +66,6 @@
 
     om/IRenderState
     (render-state [this {:keys [id]}]
-      (println "Rendering dropdown")
       (let [label-component-data-fn (or label-component-data-fn identity)]
         (html
          [:div.dropdown

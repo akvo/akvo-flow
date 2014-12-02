@@ -206,7 +206,6 @@
   (reify
     om/IRender
     (render [this]
-      (println "rendering user details")
       (html
        [:div
         (om/build panel-header-section {:user user
