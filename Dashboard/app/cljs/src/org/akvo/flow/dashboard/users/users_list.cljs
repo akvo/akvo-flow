@@ -60,7 +60,7 @@
                           (let [role (store/get-role roles-store roleId)]
                             [:div [:strong (get role "name")]
                              " (" (if (= objectPath "/")
-                                    "All projects"
+                                    "All folders & surveys"
                                     objectPath) ")"]))))]
     (html [:div roles]))))
 

@@ -11,6 +11,13 @@
   {:pre [(integer? user-id)]}
   (get-in user-auth [:by-user-id user-id]))
 
+;; TODO: index?
+(defn get-by-role-id [user-auth role-id]
+  {:pre [(integer? role-id)]}
+  (->> (get user-auth :by-id)
+       vals
+       (filter #(= (get % "roleId") role-id))))
+
 
 
 (dispatch-loop

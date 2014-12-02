@@ -5,6 +5,7 @@
             [org.akvo.flow.dashboard.components.grid :refer (grid)]
             [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.users.store :as store]
+            [org.akvo.flow.dashboard.user-auth.store :as user-auth-store]
             [org.akvo.flow.dashboard.users.role-details :refer (role-details all-permissions)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]))
@@ -24,7 +25,7 @@
 (defn toggle! [owner korks]
   (om/set-state! owner korks (not (om/get-state owner korks))))
 
-(defn role-actions [{:keys [on-action]} owner]
+(defn role-actions [{:keys [on-action disabled?]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -42,7 +43,7 @@
          [:span
           [:button.btn.btn-link {:on-click #(on-action ::show-edit-view)} (b/icon :pencil) " Edit"]
           " "
-          [:button.btn.btn-link {:on-click #(om/set-state! owner :confirm-delete? true)} (b/icon :remove) " Delete"]])) )))
+          [:button.btn.btn-link {:class (if disabled? "disabled" "") :on-click #(om/set-state! owner :confirm-delete? true)} (b/icon :remove) " Delete"]])) )))
 
 
 (defmulti do-role-action (fn [action owner role] action))
@@ -59,7 +60,10 @@
 (defmethod do-role-action ::show-create-view
   [_ owner role])
 
-(defn roles-and-permissions [{:keys [user_roles]} owner]
+(defn user-role-count [user-auth-store role]
+  (count (user-auth-store/get-by-role-id user-auth-store (get role "keyId"))))
+
+(defn roles-and-permissions [{:keys [user_roles user-auth]} owner]
   (reify
 
     om/IInitState
@@ -90,12 +94,15 @@
                    {:data (store/get-roles user_roles)
                     :columns [{:title "Role"
                                :cell-fn #(get % "name")}
+                              {:title "Number of users"
+                               :cell-fn #(user-role-count user-auth %)}
                               {:title "Permissions"
                                :cell-fn #(s/join ", " (map (partial get all-permissions) (get % "permissions")))}
                               {:title "Action"
                                :component role-actions
                                :component-data-fn (fn [role]
-                                                    {:on-action (fn [action]
+                                                    {:disabled? (not (zero? (user-role-count user-auth role)))
+                                                     :on-action (fn [action]
                                                                   (do-role-action action owner role))})}]})]
         (om/build role-details
                   {:open? role-details-view?
