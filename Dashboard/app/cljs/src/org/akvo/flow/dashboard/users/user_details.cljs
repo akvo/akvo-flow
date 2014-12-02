@@ -179,11 +179,21 @@
        [:div.apiKeySection.topMargin
         [:h2 "Manage API key:"]
         [:p "You can (re)generate or revoke an api key for this user"]
+        (when secret
+           [:div.alert.alert-success {:role "alert"}
+            (b/icon :ok) " The secret key will only be shown once. If it gets lost you will need to generate a new one."])
         [:form
          [:div.form-group
           [:label.control-label.text-left "Access key"]
           [:input.form-control {:type "text"
                                 :value access-key}]]
+         (when secret
+           [:div.form-group
+            [:label.control-label.text-left "Secret"]
+            [:input.form-control {:type "text"
+                                  :value secret}]])
+
+
          [:div.btn-group
           [:button.btn.btn-default {:on-click #(do (.preventDefault %)
                                                    (generate-apikeys owner user))}
