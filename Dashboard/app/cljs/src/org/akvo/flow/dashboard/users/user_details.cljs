@@ -63,7 +63,7 @@
 (defn actions [user-auth owner]
   (om/component
    (html
-    [:a {:on-click #(dispatch :user-auth/delete user-auth)} "Delete"])))
+    [:a {:on-click #(dispatch :user-auth/delete user-auth)} (b/icon :remove) " Delete"])))
 
 (defn role-label [{:strs [name]} owner]
   (om/component
@@ -213,7 +213,7 @@
         (om/build user-edit-section {:user user
                                      :on-save #(if (integer? (get % "keyId"))
                                                  (dispatch :edit-user %)
-                                                 (do ;; TODO
+                                                 (do
                                                    (dispatch :new-user %)
                                                    (close!)))})
         (when (get user "keyId")
