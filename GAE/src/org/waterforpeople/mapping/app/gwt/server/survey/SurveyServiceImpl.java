@@ -21,7 +21,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,12 +63,14 @@ import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
+import com.gallatinsystems.survey.dao.CascadeResourceDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionHelpMediaDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.TranslationDao;
+import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionHelpMedia;
@@ -369,15 +370,19 @@ public class SurveyServiceImpl extends RemoteServiceServlet implements
 
         qDto.setTranslationMap(marshalTranslations(q.getTranslationMap()));
 
-        if (Question.Type.CASCADE.equals(q.getType())) {
-            qDto.setCascadeLevels(marshallCascadeLevels());
+        if (Question.Type.CASCADE.equals(q.getType()) && q.getCascadeResourceId() != null) {
+            qDto.setLevelNames(getCascadeResourceLevelNames(q.getCascadeResourceId()));
         }
 
         return qDto;
     }
 
-    private static List<String> marshallCascadeLevels() {
-        return Collections.emptyList();
+    private static List<String> getCascadeResourceLevelNames(Long id) {
+        final CascadeResource cr = new CascadeResourceDao().getByKey(id);
+        if (cr == null || cr.getLevelNames() == null || cr.getLevelNames().isEmpty()) {
+            return null;
+        }
+        return cr.getLevelNames();
     }
 
     private static TreeMap<String, TranslationDto> marshalTranslations(

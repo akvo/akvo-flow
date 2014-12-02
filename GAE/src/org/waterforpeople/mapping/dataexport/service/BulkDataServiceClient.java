@@ -998,14 +998,14 @@ public class BulkDataServiceClient {
                                     dto.setQuestionDependency(dep);
                                 }
                             }
-                            if (json.has("cascadeLevels")
-                                    && !JSONObject.NULL.equals(json.getJSONArray("cascadeLevels"))) {
-                                final List<String> cascadeLevels = new ArrayList<String>();
-                                final JSONArray array = json.getJSONArray("cascadeLevels");
+                            if (json.has("levelNames")
+                                    && !JSONObject.NULL.equals(json.getJSONArray("levelNames"))) {
+                                final List<String> levelNames = new ArrayList<String>();
+                                final JSONArray array = json.getJSONArray("levelNames");
                                 for (int c = 0; c < array.length(); c++) {
-                                    cascadeLevels.add(array.getString(c));
+                                    levelNames.add(array.getString(c));
                                 }
-                                dto.setCascadeLevels(cascadeLevels);
+                                dto.setLevelNames(levelNames);
                             }
                             dtoList.add(dto);
                         } catch (Exception e) {
