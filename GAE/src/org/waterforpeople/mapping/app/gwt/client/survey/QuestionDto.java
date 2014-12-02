@@ -66,6 +66,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     private Double maxVal;
     private Boolean isName;
     private Long sourceId = null;
+    private List<String> cascadeLevels = null;
 
     public Boolean getAllowDecimal() {
         return allowDecimal;
@@ -428,11 +429,19 @@ public class QuestionDto extends BaseDto implements NamedObject {
         }
     }
 
-	public Long getCascadeResourceId() {
-		return cascadeResourceId;
-	}
+    public Long getCascadeResourceId() {
+        return cascadeResourceId;
+    }
 
-	public void setCascadeResourceId(Long cascadeResourceId) {
-		this.cascadeResourceId = cascadeResourceId;
-	}
+    public void setCascadeResourceId(Long cascadeResourceId) {
+        this.cascadeResourceId = cascadeResourceId;
+    }
+
+    public List<String> getCascadeLevels() {
+        return cascadeLevels;
+    }
+
+    public void setCascadeLevels(List<String> cascadeLevels) {
+        this.cascadeLevels = cascadeLevels;
+    }
 }
