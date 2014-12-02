@@ -1,135 +1,172 @@
-<section class="fullWidth reportTools" id="reportBlocks">
 {{#view FLOW.CascadeResourceView}}
-	<br/>
-    <label class="selectinLabel dependencySelect"> {{t _choose_existing_cascade}}:
-        {{view Ember.Select
-        contentBinding="FLOW.cascadeResourceControl.content"
-        selectionBinding="FLOW.selectedControl.selectedCascadeResource"
-        optionLabelPath="content.name"
-        optionValuePath="content.keyId"
-        prompt="Select cascade"
-        promptBinding="Ember.STRINGS._select_cascade"}}</label>
-<br/>
-   <a {{action "newCascade" target="this"}} class="addGroup">{{t _add_new_cascade}}</a>
- 	{{#if view.showNewCascadeField}}
-        {{view Ember.TextField valueBinding="view.cascadeResourceName" size=30}}
-        <nav class="menuCentre">
-          <a {{action "saveNewCascadeResource" target="this"}} class="smallBtn">{{t _save}}</a>
-          <a {{action "cancelNewCascadeResource" target="this"}}>{{t _cancel}}</a>
-        </nav>
-      {{/if}}   	 
-</br>
-</br>
-
-{{#if view.oneSelected}}
-<h3>{{FLOW.selectedControl.selectedCascadeResource.name}}</h3>
-<style type="text/css">
-.tftable {font-size:12px;color:#333333;width:70%;border-width: 1px;border-color: #729ea5;border-collapse: collapse;}
-.tftable th {font-size:12px;background-color:#acc8cc;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;text-align:left;}
-.tftable tr {background-color:#d4e3e5;}
-.tftable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #729ea5;}
-li.selected {background-color: #fff;}
-</style>
-
-{{#each item in FLOW.cascadeResourceControl.levelNames}}
-		{{#view FLOW.CascadeLevelNameView contentBinding="item"}}
-			{{#if view.editFieldVisible}}
-				 {{view Ember.TextField valueBinding="view.levelName" size=15}}
-				 <nav class="menuCentre">
-	          <a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
-	          <a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
-	        </nav>
-			{{else}}
-			{{item.levelName}} <a class="editGroupName" {{action "showEditField" target="this"}}></a>
-			{{/if}}
-		{{/view}}
-{{/each}}
-
-<table class="tftable" border="1">
-	<tr>
-	{{#each item in FLOW.cascadeResourceControl.levelNames}}
-		{{#view FLOW.CascadeLevelNameView contentBinding="item"}}
-			{{#if view.editFieldVisible}}
-				 {{view Ember.TextField valueBinding="view.levelName" size=15}}
-				 <nav class="menuCentre">
-	          <a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
-	          <a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
-	        </nav>
-			{{else}}
-			{{item.levelName}} <a class="editGroupName" {{action "showEditField" target="this"}}></a>
-			{{/if}}
-		{{/view}}
-	{{/each}}
-	</tr>
-	<tr>
-		<td>
-			{{#view FLOW.CascadeNodeView col=1}}
-				{{#if view.showInputField}}
-					{{view Ember.TextField valueBinding="view.cascadeNodeCode" size=5}}
-					{{view Ember.TextField valueBinding="view.cascadeNodeName" size=30}}
-					<a {{action "addNewNode" target="this"}}>+</a>
-				{{/if}}
-			{{/view}}
-		</td>
-		<td>
-			{{#view FLOW.CascadeNodeView col=2}}
-				{{#if view.showInputField}}
-					{{view Ember.TextField valueBinding="view.cascadeNodeCode" size=5}}
-					{{view Ember.TextField valueBinding="view.cascadeNodeName" size=30}}
-					<a {{action "addNewNode" target="this"}}>+</a>
-				{{/if}}
-			{{/view}}
-		</td>
-		<td>
-			{{#view FLOW.CascadeNodeView col=3}}
-				{{#if view.showInputField}}
-					{{view Ember.TextField valueBinding="view.cascadeNodeCode" size=5}}
-					{{view Ember.TextField valueBinding="view.cascadeNodeName" size=30}}
-					<a {{action "addNewNode" target="this"}}>+</a>
-				{{/if}}
-			{{/view}}
-		</td>
-	</tr>
-	<tr>
-		<td style="height:300px; width:20%;">
-			<ul>
-				{{#each item in FLOW.cascadeNodeControl.displayLevel1}}
-					{{#view FLOW.CascadeNodeItemView contentBinding="item" col=1}}
-						<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a> &nbsp;&nbsp;&nbsp;&nbsp; <a {{action "deleteNode" target="this"}}>X</a>
-					{{/view}}
-				{{/each}}
-			</ul>
-		</td>
-		<td style="width:20%;">
-			<ul>
-				{{#each item in FLOW.cascadeNodeControl.displayLevel2}}
-					{{#view FLOW.CascadeNodeItemView contentBinding="item" col=2}}
-						<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>&nbsp;&nbsp;&nbsp;&nbsp; <a {{action "deleteNode" target="this"}}>X</a>
-					{{/view}}
-				{{/each}}
-			</ul>
-		</td>
-		<td style="width:20%;">
-			<ul>
-				{{#each item in FLOW.cascadeNodeControl.displayLevel3}}
-					{{#view FLOW.CascadeNodeItemView contentBinding="item" col=3}}
-						<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>&nbsp;&nbsp;&nbsp;&nbsp; <a {{action "deleteNode" target="this"}}>X</a>
-					{{/view}}
-				{{/each}}
-			</ul>
-		</td>
-	</tr>
-</table>
-</br>
-</br>
-
-<a {{action "moveLeft" target="this"}}>move left</a> &nbsp;|&nbsp; <a {{action "moveRight" target="this"}}>move right</a>
-<br/>
-<br/>
-
-<a {{action "publishResource" target="this"}}>Publish</a>
-{{else}}
-	Select an existing cascade or create a new one
-{{/if}}
-{{/view}}
+<section class="topBar">
+    <nav class="menuTopbar doubleMenu">
+        <ul class="">
+            <li>
+             <label class="selectinLabel dependencySelect"> {{t _choose_existing_cascade}} (<span class="totalCascades">18</span>)
+        	{{view Ember.Select
+        	contentBinding="FLOW.cascadeResourceControl.content"
+        	selectionBinding="FLOW.selectedControl.selectedCascadeResource"
+        	optionLabelPath="content.name"
+        	optionValuePath="content.keyId"
+        	prompt="Select cascade"
+        	promptBinding="Ember.STRINGS._select_cascade"}}</label>
+            </li>
+        </ul>
+        <ul>
+            <li>
+               {{#if view.showNewCascadeField}}
+        			{{view Ember.TextField valueBinding="view.cascadeResourceName" size=100}}
+          			<a {{action "saveNewCascadeResource" target="this"}} class="smallBtn">{{t _save}}</a>
+          			<a {{action "cancelNewCascadeResource" target="this"}}>{{t _cancel}}</a>
+      			{{else}}
+      				<a {{action "newCascade" target="this"}} class="addProject noChanges">Add new cascade</a>
+      			{{/if}}
+            </li>
+            <li>
+                <a class="publishProjectBtn" href="">Import cascade data</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- show delete group, add new group, and create new survey buttons-->
 </section>
+<div class="floats-in ">
+    <div id="pageWrap" class="belowHeader widthConstraint">
+        <section id="main" class="cascadeSection floats-in middleSection" role="main">
+        	{{#if view.oneSelected}}
+            <section id="" class="cascadeDetailsPanel">
+                <span class="fontInfo">Project:</span><h2>{{FLOW.selectedControl.selectedCascadeResource.name}}</h2>
+                <ul class="cascadeAction">
+                <li><a {{action "publishResource" target="this"}} class="saveNewSurvey">Publish</a></li>
+                    <li><a {{action "deleteResource" target="this"}} class="deleteSurvey">Delete</a></li>
+                </ul>
+                <ul class="cascadeInfo">
+                    <li>Cascading levels<span class="cascadesN">{{FLOW.selectedControl.selectedCascadeResource.numLevels}}</span>
+                    </li>
+                    <li>Status
+                    {{#if FLOW.selectedControl.selectedCascadeResource.status}}
+                    	<span class="projectStatus published">{{t _published}}</span>
+                    {{else}}
+                    	<span class="projectStatus unpublished">{{t _unpublished}}</span>
+                    {{/if}}
+                    </li>
+                </ul>
+            </section>
+            <section class="cascadeItems">
+                <nav class="cascadeBreadCrumb">
+                    <ul>
+                    	{{#each item in FLOW.cascadeResourceControl.levelNames}}
+							{{#view FLOW.CascadeLevelBreadcrumbView contentBinding="item"}}
+                    		<a {{action "adaptColView" target="this"}}><span>{{item.level}}</span>{{item.levelName}}</a>
+                    		{{/view}}
+						{{/each}}
+                    </ul>
+                    <a {{action "addLevel" target="this"}} class="addLevel"> + Add a level</a>
+                </nav>
+                <section class="levelColumns floats-in">
+                    <div class="levelCol level01">
+                    	{{#view FLOW.CascadeLevelNameView col=1 origLevelName=FLOW.cascadeResourceControl.displayLevelName1}}
+                       		<span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum1}}</span>
+                        	<fieldset class="levelHead">
+                        		{{#if view.editFieldVisible}}
+				 					{{view Ember.TextField valueBinding="view.levelName" size=15}}
+	          							<a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
+	          							<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
+								{{else}}
+									<label for="level01Name">{{FLOW.cascadeResourceControl.displayLevelName1}}
+									<a {{action "showEditField" target="this"}} class="editSurvey">edit</a></label>
+								{{/if}}
+                           	 	{{#view FLOW.CascadeNodeView col=1}}
+									{{#if view.showInputField}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeCode" placeholder="code" size=12}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeName" placeholder="new item name (mandatory)" size=53}}
+										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
+									{{/if}}
+								{{/view}}
+                        	</fieldset>
+                        {{/view}}
+                        <ul>
+                        	{{#each item in FLOW.cascadeNodeControl.displayLevel1}}
+								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=1}}
+									{{unbound item.name}}
+									<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
+									<a {{action "editNode" target="this"}} class="editSurvey">edit</a>
+									<a {{action "deleteNode" target="this"}} class="deleteSurvey">delete</a>
+								{{/view}}
+							{{/each}}
+                        </ul>
+                    </div>
+                    <div class="levelCol level02">
+                    	{{#view FLOW.CascadeLevelNameView col=2 origLevelName=FLOW.cascadeResourceControl.displayLevelName2}}
+           		            <span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum2}}</span>
+                	        <fieldset class="levelHead">
+                    	        {{#if view.editFieldVisible}}
+				 					{{view Ember.TextField valueBinding="view.levelName" size=15}}
+	          							<a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
+	          							<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
+								{{else}}
+									<label for="level02Name">{{FLOW.cascadeResourceControl.displayLevelName2}}
+									<a {{action "showEditField" target="this"}} class="editSurvey">edit</a></label>
+								{{/if}}
+                           		{{#view FLOW.CascadeNodeView col=2}}
+									{{#if view.showInputField}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeCode" placeholder="code" size=12}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeName" placeholder="new item name (mandatory)" size=53}}
+										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
+									{{/if}}
+								{{/view}}
+                        </fieldset>
+                       {{/view}}
+                        <ul>
+                        	{{#each item in FLOW.cascadeNodeControl.displayLevel2}}
+								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=2}}
+									{{unbound item.name}}
+									<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
+									<a {{action "deleteNode" target="this"}} class="deleteSurvey">delete</a>
+								{{/view}}
+							{{/each}}
+                        </ul>
+                    </div>
+                    <div class="levelCol level03">
+                    {{#view FLOW.CascadeLevelNameView col=3 origLevelName=FLOW.cascadeResourceControl.displayLevelName3}}
+                        <span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum3}}</span>
+                        <fieldset class="levelHead">
+                             {{#if view.editFieldVisible}}
+				 				{{view Ember.TextField valueBinding="view.levelName" size=15}}
+	          						<a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
+	          						<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
+							{{else}}
+								<label for="level02Name">{{FLOW.cascadeResourceControl.displayLevelName3}}
+								<a {{action "showEditField" target="this"}} class="editSurvey">edit</a></label>
+							{{/if}}
+							{{#view FLOW.CascadeNodeView col=3}}
+								{{#if view.showInputField}}
+									{{view Ember.TextField valueBinding="view.cascadeNodeCode" placeholder="code" size=12}}
+									{{view Ember.TextField valueBinding="view.cascadeNodeName" placeholder="new item name (mandatory)" size=53}}
+									<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
+								{{/if}}
+							{{/view}}
+                        </fieldset>
+                        {{/view}}
+                        <ul>
+                        	{{#each item in FLOW.cascadeNodeControl.displayLevel3}}
+								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=3}}
+									{{unbound item.name}}
+									<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
+									<a {{action "editNode" target="this"}} class="editSurvey">edit</a>
+									<a {{action "deleteNode" target="this"}} class="deleteSurvey">delete</a>
+								{{/view}}
+							{{/each}}
+                        </ul>
+                    </div>
+                </section>
+            </section>
+            {{else}}
+            <section>
+            	Please select an existing cascade resource or create a new one
+            </section>
+          {{/if}}
+        </section>
+    </div>
+</div>
+{{/view}}

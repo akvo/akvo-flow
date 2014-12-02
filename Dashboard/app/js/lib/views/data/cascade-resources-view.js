@@ -26,6 +26,19 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 		}
 	},
 
+	deleteResource: function(){
+		console.log("TODO: Deleting resource");
+		// TODO delete
+	},
+
+	// adds a level to the hierarchy
+	addLevel: function(){
+		FLOW.selectedControl.selectedCascadeResource.set('numLevels', FLOW.selectedControl.selectedCascadeResource.get('numLevels') + 1);
+		FLOW.store.commit();
+		FLOW.cascadeResourceControl.setLevelNamesArray();
+		FLOW.cascadeResourceControl.setDisplayLevelNames();
+	},
+
 	oneSelected: function(){
 		return !Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'));
 	}.property('FLOW.selectedControl.selectedCascadeResource').cacheable(),
@@ -38,23 +51,10 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 			FLOW.cascadeResourceControl.setLevelNamesArray();
 			FLOW.cascadeNodeControl.set('skip',0);
 			FLOW.cascadeNodeControl.setDisplayLevels();
+			FLOW.cascadeResourceControl.setDisplayLevelNames();
 			FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
 		}
 	}.observes('FLOW.selectedControl.selectedCascadeResource'),
-
-	moveRight: function(){
-		var skip = FLOW.cascadeNodeControl.get('skip');
-		if (skip > 0) {
-			FLOW.cascadeNodeControl.set('skip', skip - 1);
-			FLOW.cascadeNodeControl.setDisplayLevels();
-		}
-	},
-
-	moveLeft: function(){
-		var skip = FLOW.cascadeNodeControl.get('skip');
-			FLOW.cascadeNodeControl.set('skip', skip + 1);
-			FLOW.cascadeNodeControl.setDisplayLevels();
-	},
 
 	// fired when 'save' is clicked while showing new cascade text field. Saves new cascade resource to the data store
 	saveNewCascadeResource: function () {
@@ -77,14 +77,41 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	},
 });
 
+FLOW.CascadeLevelBreadcrumbView = FLOW.View.extend({
+	tagName: 'li',
+	content: null,
+
+	adaptColView: function(){
+		var skip = FLOW.cascadeNodeControl.get('skip');
+		var level = this.content.get('level');
+		// if the level is already visible, do nothing
+		if (level > skip && level < skip + 4) {
+			return;
+		}
+
+		// clicked level lies on the left
+		if (level < skip + 1) {
+			FLOW.cascadeNodeControl.set('skip', level - 1);
+			FLOW.cascadeNodeControl.setDisplayLevels();
+			FLOW.cascadeResourceControl.setDisplayLevelNames();
+		}
+
+		// clicked level lies on the right
+		if (level > skip + 3) {
+			FLOW.cascadeNodeControl.set('skip', level - 3);
+			FLOW.cascadeNodeControl.setDisplayLevels();
+			FLOW.cascadeResourceControl.setDisplayLevelNames();
+		}
+	},
+});
+
 FLOW.CascadeLevelNameView = FLOW.View.extend({
-	tagName: 'th',
 	editFieldVisible:false,
 	content: null,
 	levelName:null,
 
 	showEditField: function(){
-		this.set('levelName',this.get('content').get('levelName'));
+		this.set('levelName',this.get('origLevelName'));
 		this.set('editFieldVisible',true);
 	},
 
@@ -95,7 +122,7 @@ FLOW.CascadeLevelNameView = FLOW.View.extend({
 
 	saveNewLevelName: function(){
 		var currList, index, i=1, levelNamesArray=[];
-		index = this.content.get('col') + FLOW.cascadeNodeControl.get('skip');
+		index = this.get('col') + FLOW.cascadeNodeControl.get('skip');
 		currList = FLOW.selectedControl.selectedCascadeResource.get('levelNames');
 		currList[index-1] = capitaliseFirstLetter(this.get('levelName'));
 		FLOW.selectedControl.selectedCascadeResource.set('levelNames',currList);
@@ -107,6 +134,7 @@ FLOW.CascadeLevelNameView = FLOW.View.extend({
 
 		// put the names in the array again.
 		FLOW.cascadeResourceControl.setLevelNamesArray();
+		FLOW.cascadeResourceControl.setDisplayLevelNames();
 
 		this.set('levelName',null);
 		this.set('editFieldVisible',false);
