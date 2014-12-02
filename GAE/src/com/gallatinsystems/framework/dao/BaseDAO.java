@@ -311,7 +311,7 @@ public class BaseDAO<T extends BaseDomain> {
     })
     public List filterByUserAuthorization(List allObjectsList) {
         if (!concreteClass.isAssignableFrom(SurveyGroup.class)
-                || !concreteClass.isAssignableFrom(Survey.class)) {
+                && !concreteClass.isAssignableFrom(Survey.class)) {
             throw new UnsupportedOperationException("Cannot filter "
                     + concreteClass.getSimpleName());
         }
