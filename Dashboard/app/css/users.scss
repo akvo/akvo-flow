@@ -81,6 +81,13 @@ section[role=main] {
     padding-top:20px;
     padding-bottom:20px;
     overflow:hidden;
+    .nav-tabs {
+        li {
+            &:hover {
+                cursor:pointer;
+            }
+        }
+    }
 .panels {
         height: 100%;
         background:white;
@@ -109,13 +116,32 @@ section[role=main] {
                         transform: translate(0%, 0);
             }
             .panelHeader{
-                border-bottom:1px solid rgb(212,212,212);
+                padding:20px 0 20px 0;
+                margin-left:0;
+                background:rgba(212,212,212,0.2);
+                h4{
+                    span{
+                        &.usrNm {
+                            font-weight: bold;
+                            color: rgba(32,32,36,0.8);
+                            margin-left:5px;
+                        }
+                    }
+                }
                 .panelTitle {
-                    color:rgb(212,212,212);
+                    color:rgb(182,182,182);
                     }
                 }
             .roleEditSelect {
                 border-bottom:1px solid rgb(212,212,212);
+                select:first-child {
+                    margin-right:10px;
+                    &:after {
+                        content:" > ";
+                        display: inline;
+                        margin-right:10px;
+                    }
+                }
             }
         }
     }

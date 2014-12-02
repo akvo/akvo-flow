@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -321,5 +322,31 @@ public class SurveyUtils {
                     "Error notifying the report service: " + e.getMessage(), e);
         }
         return null;
+    }
+
+    /**
+     * Given the path of an object, return a list of the paths of all its parent objects
+     *
+     * @param objectPath
+     *            the path of an object
+     * @param includeRootPath
+     *            include the root path in the list of parent paths
+     * @return
+     */
+    public static List<String> listParentPaths(String objectPath, boolean includeRootPath) {
+        List<String> parentPaths = new ArrayList<String>();
+        StringBuilder path = new StringBuilder(objectPath);
+        while (path.length() > 1) {
+            path.delete(path.lastIndexOf("/"), path.length());
+            if (StringUtils.isNotBlank(path.toString())) {
+                parentPaths.add(path.toString().trim());
+            }
+        }
+
+        if (includeRootPath) {
+            parentPaths.add("/");
+        }
+
+        return parentPaths;
     }
 }

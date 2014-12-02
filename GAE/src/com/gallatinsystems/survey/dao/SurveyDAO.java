@@ -25,6 +25,7 @@ import javax.xml.bind.JAXBException;
 
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -126,6 +127,17 @@ public class SurveyDAO extends BaseDAO<Survey> {
     public String getSurveyDocument(Long id) {
         SurveyContainer surveyContainer = getByKey(id, SurveyContainer.class);
         return surveyContainer.getSurveyDocument().getValue();
+    }
+
+    /**
+     * Return a list of surveys accessible to the current user
+     *
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<Survey> listAllFilteredByUserAuthorization() {
+        List<Survey> allSurveys = list(Constants.ALL_RESULTS);
+        return filterByUserAuthorization(allSurveys);
     }
 
     /**

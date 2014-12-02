@@ -17,7 +17,7 @@
     [:div.row.panelHeader
      [:div.col-xs-9.text-left.panelTitle
       [:h4
-       (b/icon :pencil) " Edit " (get user "userName")]]
+       (b/icon :pencil) " Editing " [:span.usrNm (get user "userName")]]]
      [:div.col-xs-3.text-right
       (b/btn-primary {:on-click #(close!)} :circle-arrow-left "Go back")]])))
 

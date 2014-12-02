@@ -19,6 +19,7 @@ package com.gallatinsystems.survey.dao;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -91,5 +92,16 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
     public List<SurveyGroup> listByProjectFolderId(Long parentId) {
 
         return super.listByProperty("parentId", parentId, "Long");
+    }
+
+    /**
+     * Return a list of survey groups that are accessible by the current user
+     *
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyGroup> listAllFilteredByUserAuthorization() {
+        List<SurveyGroup> allSurveyGroups = list(Constants.ALL_RESULTS);
+        return filterByUserAuthorization(allSurveyGroups);
     }
 }
