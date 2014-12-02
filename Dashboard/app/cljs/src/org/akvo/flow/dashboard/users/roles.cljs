@@ -25,12 +25,25 @@
   (om/set-state! owner korks (not (om/get-state owner korks))))
 
 (defn role-actions [{:keys [on-action]} owner]
-  (om/component
-   (html
-    [:span
-     [:a {:on-click #(on-action ::delete)} "delete"]
-     " "
-     [:a {:on-click #(on-action ::show-edit-view)} "edit"]])))
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:confirm-delete? false})
+    om/IRenderState
+    (render-state [this {:keys [confirm-delete?]}]
+      (html
+       (if confirm-delete?
+         [:span
+          [:strong "Delete? "]
+          [:a {:href "#" :on-click #(do (om/set-state! owner :confirm-delete? false)
+                              (on-action ::delete))} "Yes"]
+          " / "
+          [:a {:href "#" :on-click #(om/set-state! owner :confirm-delete? false)} "No"]]
+         [:span
+          [:a {:href "#" :on-click #(on-action ::show-edit-view)} (b/icon :pencil) " Edit"]
+          " "
+          [:a {:href "#" :on-click #(om/set-state! owner :confirm-delete? true)} (b/icon :remove) " Delete"]])) )))
+
 
 (defmulti do-role-action (fn [action owner role] action))
 

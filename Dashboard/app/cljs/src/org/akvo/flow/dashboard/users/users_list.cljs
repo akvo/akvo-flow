@@ -27,15 +27,52 @@
    "userName" ""
    "keyId" nil})
 
+(defn role-actions [{:keys [on-action]} owner]
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:confirm-delete? false})
+    om/IRenderState
+    (render-state [this {:keys [confirm-delete?]}]
+      (html
+       (if confirm-delete?
+         [:span
+          [:strong "Delete? "]
+          [:a {:href "#" :on-click #(do (om/set-state! owner :confirm-delete? false)
+                              (on-action ::delete))} "Yes"]
+          " / "
+          [:a {:href "#" :on-click #(om/set-state! owner :confirm-delete? false)} "No"]]
+         [:span
+          [:a {:href "#" :on-click #(on-action ::show-edit-view)} (b/icon :pencil) " Edit"]
+          " "
+          [:a {:href "#" :on-click #(om/set-state! owner :confirm-delete? true)} (b/icon :remove) " Delete"]])) )))
+
 (defn user-actions [{:keys [user on-action]} owner]
-  (om/component
-   (html
-    [:span
-     [:a {:on-click #(do (dispatch :user-auth/fetch nil)
-                         (dispatch :roles/fetch nil)
-                         (dispatch :projects/fetch nil)
-                         (on-action user))} "Edit"]
-     [:a {:on-click #(dispatch :delete-user user)} "Remove"]])))
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:confirm-delete? false})
+    om/IRenderState
+    (render-state [this {:keys [confirm-delete?]}]
+      (html
+       (if confirm-delete?
+         [:span
+          [:strong "Delete? "]
+          [:a {:href "#" :on-click #(do (om/set-state! owner :confirm-delete? false)
+                                        (dispatch :delete-user user))} "Yes"]
+          " / "
+          [:a {:href "#" :on-click #(om/set-state! owner :confirm-delete? false)} "No"]]
+         [:span
+          [:a {:href "#"
+               :on-click #(do (dispatch :user-auth/fetch nil)
+                              (dispatch :roles/fetch nil)
+                              (dispatch :projects/fetch nil)
+                              (on-action user))}
+           (b/icon :pencil) " Edit"]
+          " "
+          [:a {:href "#"
+               :on-click #(om/set-state! owner :confirm-delete? true)}
+           (b/icon :remove) " Delete"]])))))
 
 (defn columns [owner]
   (let [on-action (fn [user]
