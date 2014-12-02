@@ -52,14 +52,23 @@
           [:button.btn.btn-link {:on-click #( om/set-state! owner :confirm-delete? true)}
            (b/icon :remove) " Delete"]])))))
 
-(defn user-roles [user user-auth-store roles-store]
-  (let [user-id (get user "keyId")
-        role-ids (map #(get % "roleId")
-                      (user-auth-store/get-by-user-id user-auth-store user-id))
-        role-names (->> role-ids
-                        (map #(store/get-role roles-store %))
-                        (map #(get % "name")))]
-    (s/join ", " role-names)))
+(defn user-roles [{:keys [user user-auth-store roles-store]} owner]
+ (om/component
+  (let [roles (->> (get user "keyId")
+                   (user-auth-store/get-by-user-id user-auth-store)
+                   (map (fn [{:strs [roleId objectPath] :as r}]
+                          (let [role (store/get-role roles-store roleId)]
+                            [:div [:strong (get role "name")]
+                             " (" (if (= objectPath "/")
+                                    "All projects"
+                                    objectPath) ")"]))))]
+    (html [:div roles]))))
+
+(defn api-user-mark [{:strs [accessKey]} owner]
+  (om/component
+   (html (if accessKey
+           (b/icon :ok)
+           [:div]))))
 
 (defn columns [owner user-auth-store roles-store]
   (let [on-action (fn [user]
@@ -71,7 +80,13 @@
       :cell-fn #(get % "emailAddress")
       :sort-by "emailAddress"}
      {:title "Roles"
-      :cell-fn #(user-roles % user-auth-store roles-store)}
+      :component user-roles
+      :component-data-fn (fn [user]
+                           {:user user
+                            :user-auth-store user-auth-store
+                            :roles-store roles-store})}
+     {:title "API keys"
+      :component api-user-mark}
      {:title "Actions"
       :component user-actions
       :component-data-fn (fn [user]
