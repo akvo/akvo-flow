@@ -43,8 +43,7 @@
           " / "
           [:a {:on-click #(om/set-state! owner :confirm-delete? false)} "No"]]
          [:span
-          [:a {:on-click #(do (dispatch :user-auth/fetch nil)
-                              (dispatch :roles/fetch nil)
+          [:a {:on-click #(do
                               (dispatch :projects/fetch nil)
                               (on-action user))}
            (b/icon :pencil) " Edit"]
@@ -52,7 +51,16 @@
           [:a {:on-click #( om/set-state! owner :confirm-delete? true)}
            (b/icon :remove) " Delete"]])))))
 
-(defn columns [owner]
+(defn user-roles [user user-auth-store roles-store]
+  (let [user-id (get user "keyId")
+        role-ids (map #(get % "roleId")
+                      (user-auth-store/get-by-user-id user-auth-store user-id))
+        role-names (->> role-ids
+                        (map #(store/get-role roles-store %))
+                        (map #(get % "name")))]
+    (s/join ", " role-names)))
+
+(defn columns [owner user-auth-store roles-store]
   (let [on-action (fn [user]
                     (om/set-state! owner :current-user-id (get user "keyId")))]
     [{:title "User name"
@@ -61,10 +69,8 @@
      {:title "Email"
       :cell-fn #(get % "emailAddress")
       :sort-by "emailAddress"}
-     {:title "Permission list"
-      :cell-fn #(if (= (get % "permissionList") "10")
-                  "Admin"
-                  "User")}
+     {:title "Roles"
+      :cell-fn #(user-roles % user-auth-store roles-store)}
      {:title "Actions"
       :component user-actions
       :component-data-fn (fn [user]
@@ -83,7 +89,9 @@
 
     om/IDidMount
     (did-mount [this]
-      (dispatch :fetch-users nil))
+      (dispatch :fetch-users nil)
+      (dispatch :user-auth/fetch nil)
+      (dispatch :roles/fetch nil))
 
     om/IRenderState
     (render-state [this {:keys [current-user-id] :as state}]
@@ -108,7 +116,7 @@
                      :on-range (fn [offset limit]
                                  (om/set-state! owner :pagination {:offset offset :limit limit}))
                      :key-fn #(get % "keyId")
-                     :columns (columns owner)})]]
+                     :columns (columns owner user-auth user_roles)})]]
         [:div.mypanel {:class (if current-user-id "opened" "closed")}
          [:div
           (om/build user-details {:user (if (or (nil? current-user-id)
