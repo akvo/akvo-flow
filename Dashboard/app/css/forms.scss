@@ -1,0 +1,31 @@
+/************************ FORMS DEFAULT ****************************/
+form {
+    margin: 0;
+    padding: 0;
+}
+input,
+textarea,
+button,
+select {
+    font-weight: normal;
+}
+input,
+textarea {
+    border: thin solid rgb(232, 232, 232);
+    background: rgb(250, 244, 230);
+    border-radius: 2px;
+    &:hover {
+        border: 1px solid rgb(114, 205, 255);
+        background: rgb(224, 224, 224);
+        background: -webkit-linear-gradient(rgb(245, 245, 245), rgb(234, 234, 234));
+        background: -webkit-gradient(linear, left top, left bottom, from(rgb(245, 245, 245)), to(rgb(234, 234, 234)));
+        background: linear-gradient(rgb(245, 245, 245), rgb(234, 234, 234));
+    }
+    &:focus {
+        border: 1px solid rgb(205, 205, 205);
+        background: rgb(245, 255, 216);
+    }
+}
+select {
+    padding:15px 5px;
+}

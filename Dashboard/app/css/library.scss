@@ -1,8 +1,13 @@
 /*-------------------------------------------------------------------------------------------------------------
 
                     Title:          SASS library and Style Guide for Akvo Flow dashboard.
+<<<<<<< HEAD
+		                Author:         Loic Sans, loic@akvo.org
+
+=======
 		            Author:         Loic Sans, loic@akvo.org
 
+>>>>>>> feature/818-user-roles-and-permissions
 -------------------------------------------------------------------------------------------------------------*/
 
 /*  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  PLEASE NEVER EDIT main.css directly  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  */
@@ -15,15 +20,16 @@ $akvoPurple: rgb(44, 42, 116);
 $akvoActionBlue: rgb(44, 42, 116);
 
 $akvoLightBlue: rgb(39, 170, 225);
-$akvoOrange: rgb(222, 137, 41);		
+$akvoOrange: rgb(222, 137, 41);
 $midGrey:rgb(153, 153, 153);
-$akvoDarkBlue:rgb(57, 102, 128);		
+$akvoDarkBlue:rgb(57, 102, 128);
 $linkColor: rgb(107, 134, 141);
 $akvoRed: #C81600;
 $akvoRed2: #ef4136;
 $anchorLink: rgb(74, 177, 207);
 $anchorLinkHover: rgb(246, 160, 26);
 $akvoGolden: #c49a6c;
+$yellowTableHead: rgb(245, 200, 43);
 
 $projectBackground: rgb(56, 69, 74);
 $projectTopBackground: rgb(55, 67, 72);
@@ -33,6 +39,9 @@ $monitorGreen: rgb(0, 167, 157);
 
 $lightGrey: rgb(232, 232, 232);
 $darkGrey: rgb(58, 58, 58);
+$tableHeaderGrey: rgb(84, 83, 85);
+
+
 
 $navCurrent: #F7F2E5;
 
@@ -71,7 +80,6 @@ $blackOpac: rgba(0,0,0,0.1);
 	$opacity-ie: $opacity * 100;
 	filter: alpha(opacity=$opacity-ie); //IE8
 }
-
 
 
 $width-small:  768px;
