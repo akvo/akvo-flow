@@ -21,6 +21,8 @@ import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 
+import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 import org.waterforpeople.mapping.app.web.test.DeleteObjectUtil;
@@ -51,8 +54,14 @@ import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
+import com.gallatinsystems.survey.dao.CascadeResourceDao;
+import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.domain.CascadeResource;
+import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
@@ -69,7 +78,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class TestHarnessServlet extends HttpServlet {
     private static Logger log = Logger.getLogger(TestHarnessServlet.class
-	    .getName());
+            .getName());
     private static final long serialVersionUID = -5673118002247715049L;
 
     @Override
@@ -480,36 +489,38 @@ public class TestHarnessServlet extends HttpServlet {
             }
         } else if ("projectMigration".equals(action)) {
             projectMigration();
+        } else if ("createCascadeData".equals(action)) {
+            createCascadeData(resp);
         }
     }
 
     private void setupTestUser() {
-	UserDao userDao = new UserDao();
-	User user = userDao.findUserByEmail("test@example.com");
-	if (user == null) {
-	    user = new User();
-	    user.setEmailAddress("test@example.com");
-	}
-	user.setSuperAdmin(true);
-	user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
-	user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
-	user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
-	userDao.save(user);
+        UserDao userDao = new UserDao();
+        User user = userDao.findUserByEmail("test@example.com");
+        if (user == null) {
+            user = new User();
+            user.setEmailAddress("test@example.com");
+        }
+        user.setSuperAdmin(true);
+        user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
+        user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
+        user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
+        userDao.save(user);
     }
 
     private boolean deleteSurveyResponses(Long surveyId, Integer count) {
-	SurveyInstanceDAO dao = new SurveyInstanceDAO();
+        SurveyInstanceDAO dao = new SurveyInstanceDAO();
 
-	List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
-		surveyId, count != null ? count : 100);
+        List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
+                surveyId, count != null ? count : 100);
 
-	if (instances != null) {
-	    for (SurveyInstance instance : instances) {
-		dao.deleteSurveyInstance(instance);
-	    }
-	    return true;
-	}
-	return false;
+        if (instances != null) {
+            for (SurveyInstance instance : instances) {
+                dao.deleteSurveyInstance(instance);
+            }
+            return true;
+        }
+        return false;
     }
 
     private static void projectMigration() {
@@ -564,5 +575,75 @@ public class TestHarnessServlet extends HttpServlet {
                 surveyDAO.save(survey);
             }
         }
+    }
+
+    private void createCascadeData(HttpServletResponse resp) {
+        String[] levelNames = {
+                "Zone", "State", "District", "Block", "Village"
+        };
+
+        String name = "Cascade-" + System.currentTimeMillis();
+
+        String[] data = {
+                "Zone 1", "State 1", "District 1", "Block 1", "Village 1"
+        };
+
+        CascadeResourceDao crd = new CascadeResourceDao();
+        CascadeResource cr = new CascadeResource();
+        cr.setName(name);
+        cr.setNumLevels(levelNames.length);
+        cr.setLevelNames(Arrays.asList(levelNames));
+        cr = crd.save(cr);
+
+        SurveyGroup sg = new SurveyGroup();
+        sg.setName(name);
+        sg = new SurveyGroupDAO().save(sg);
+
+        Survey s = new Survey();
+        s.setName(name);
+        s.setCode(name);
+        s.setSurveyGroupId(sg.getKey().getId());
+        s = new SurveyDAO().save(s);
+
+        QuestionGroup qg = new QuestionGroup();
+        qg.setName(name);
+        qg.setSurveyId(s.getKey().getId());
+        qg.setOrder(1);
+        qg = new QuestionGroupDao().save(qg);
+
+        Question q = new Question();
+        q.setText(name);
+        q.setType(Question.Type.CASCADE);
+        q.setCascadeResourceId(cr.getKey().getId());
+        q.setQuestionGroupId(qg.getKey().getId());
+        q.setOrder(1);
+        q = new QuestionDao().save(q);
+
+        SurveyInstance si = new SurveyInstance();
+        si.setSurveyId(s.getKey().getId());
+        si.setUuid(UUID.randomUUID().toString());
+        si.setCollectionDate(new Date());
+        si.setUserID(1L);
+        si.setSubmitterName("TestHarness");
+        si = new SurveyInstanceDAO().save(si);
+
+        QuestionAnswerStore qas = new QuestionAnswerStore();
+        qas.setQuestionID(String.valueOf(q.getKey().getId()));
+        qas.setSurveyId(s.getKey().getId());
+        qas.setSurveyInstanceId(si.getKey().getId());
+        qas.setType(Question.Type.CASCADE.toString());
+        qas.setValue(StringUtils.join(Arrays.asList(data), "|"));
+        qas.setCollectionDate(new Date());
+        qas.setArbitratyNumber(0L);
+
+        Writer w;
+        try {
+            w = resp.getWriter();
+            w.write("Survey ID: " + s.getKey().getId());
+            w.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

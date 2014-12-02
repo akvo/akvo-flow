@@ -41,7 +41,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -709,6 +712,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     useQID ? questionId + "_" + codeLabel.replaceAll("\\s", "")
                                             : "--GEOCODE--|" + codeLabel,
                                     headerStyle);
+                        } else if (QuestionType.CASCADE == q.getType() && q.getLevelNames() != null) {
+                            for (String level : q.getLevelNames()) {
+                                createCell(row, offset++, q.getKeyId() + "|" + level, headerStyle);
+                            }
                         } else {
                             String header = "";
                             if (useQID) {
@@ -1170,6 +1177,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     public static void main(String[] args) {
+        // Log4j stuff - http://stackoverflow.com/a/9003191
+        ConsoleAppender console = new ConsoleAppender();
+        console.setLayout(new PatternLayout("%d{ISO8601} [%t] %-5p %c - %m%n"));
+        console.setThreshold(Level.DEBUG);
+        console.activateOptions();
+        Logger.getRootLogger().addAppender(console);
+
         GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();

@@ -998,8 +998,7 @@ public class BulkDataServiceClient {
                                     dto.setQuestionDependency(dep);
                                 }
                             }
-                            if (json.has("levelNames")
-                                    && !JSONObject.NULL.equals(json.getJSONArray("levelNames"))) {
+                            if (!json.isNull("levelNames")) {
                                 final List<String> levelNames = new ArrayList<String>();
                                 final JSONArray array = json.getJSONArray("levelNames");
                                 for (int c = 0; c < array.length(); c++) {
