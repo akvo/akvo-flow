@@ -19,7 +19,6 @@ package com.gallatinsystems.survey.dao;
 import java.util.logging.Logger;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
-import com.gallatinsystems.survey.domain.CascadeNode;
 import com.gallatinsystems.survey.domain.CascadeResource;
 
 /**
