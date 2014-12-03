@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -595,10 +596,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     digest.update(cellVal.getBytes());
                 } else if (qdto != null && QuestionType.CASCADE.equals(qdto.getType())) {
                     String cellVal = val.trim();
-                    String[] parts = cellVal.split("\\|");
-                    for (int c = 0; c < parts.length; c++) {
-                        createCell(row, col++, parts[c], null, Cell.CELL_TYPE_STRING);
-                        digest.update(parts[c].getBytes());
+                    ArrayList<String> parts = new ArrayList<String>(Arrays.asList(cellVal
+                            .split("\\|", -1)));
+                    int padCount = qdto.getLevelNames().size() - parts.size();
+                    for (int p = 0; p < padCount; p++) { // padding
+                        parts.add("");
+                    }
+                    for (String lVal : parts) {
+                        createCell(row, col++, lVal, null, Cell.CELL_TYPE_STRING);
+                        digest.update(lVal.getBytes());
                     }
                 } else {
                     String cellVal = val.replaceAll("\n", " ").trim();
