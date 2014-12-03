@@ -1,6 +1,8 @@
 {{#view FLOW.CascadeResourceView}}
+<section class="fullWidth">
+
 <section class="topBar">
-    <nav class="menuTopbar doubleMenu">
+    <nav class="">
         <ul class="">
             <li>
              <label class="selectinLabel dependencySelect"> {{t _choose_existing_cascade}} (<span class="totalCascades">18</span>)
@@ -13,6 +15,8 @@
         	promptBinding="Ember.STRINGS._select_cascade"}}</label>
             </li>
         </ul>
+    </nav>
+    <nav class="menuTopbar doubleMenu">
         <ul>
             <li>
                {{#if view.showNewCascadeField}}
@@ -29,10 +33,9 @@
         </ul>
     </nav>
 </section>
-
 {{#if view.showImportCascade}}
     <section>
-    	<div class="rawDataReport block">
+    	<div class="rawDataReport block hidden">
       		<h3>{{t _import_cascade_file}}</h3>
       		<p>{{t _import_cascade_file}}</p>
       		 {{#if FLOW.uploader.support}}
@@ -57,8 +60,7 @@
 {{/if}}
 
 <div class="floats-in ">
-    <div id="pageWrap" class="belowHeader widthConstraint">
-        <section id="main" class="cascadeSection floats-in middleSection" role="main">
+  <section id="main" class="cascadeSection floats-in middleSection" role="main">
         	{{#if view.oneSelected}}
             <section id="" class="cascadeDetailsPanel">
                 <span class="fontInfo">Project:</span><h2>{{FLOW.selectedControl.selectedCascadeResource.name}}</h2>
@@ -104,8 +106,8 @@
 								{{/if}}
                            	 	{{#view FLOW.CascadeNodeView col=1}}
 									{{#if view.showInputField}}
-										{{view Ember.TextField valueBinding="view.cascadeNodeCode" placeholder="code" size=12}}
-										{{view Ember.TextField valueBinding="view.cascadeNodeName" placeholder="new item name (mandatory)" size=53}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeCode" class="cascadeEntryCode" placeholder="code" size=12}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeName" class="cascadeEntryName" placeholder="new item name (mandatory)" size=53}}
 										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
 									{{/if}}
 								{{/view}}
@@ -193,6 +195,6 @@
             </section>
           {{/if}}
         </section>
-    </div>
 </div>
+</section>
 {{/view}}
