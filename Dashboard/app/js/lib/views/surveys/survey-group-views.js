@@ -37,7 +37,7 @@ FLOW.Project = FLOW.View.extend({
 
   isNewProject: function() {
     var currentProject = FLOW.projectControl.get('currentProject');
-    return currentProject && currentProject.get('code') == "New project";
+    return currentProject && currentProject.get('code') == "New survey";
   }.property('FLOW.projectControl.currentProject'),
 
   visibleProjectBasics: function() {

@@ -27,7 +27,7 @@
             <nav class="menuTopbar actionHighLighted">
               <ul>
                 <li><p>Copying <span class="itemMoved">{{FLOW.projectControl.copyTarget.code}}</span></p></li>
-                <li><a class="moveAction" {{action "endCopyProject" target="FLOW.projectControl"}}>Copy <span class="assetHook">project</span> here</a></li>
+                <li><a class="moveAction" {{action "endCopyProject" target="FLOW.projectControl"}}>Copy <span class="assetHook">survey</span> here</a></li>
                 <li><a class="redCancel " {{action "cancelCopyProject" target="FLOW.projectControl"}}>Cancel</a></li>
               </ul>
             </nav>
@@ -35,7 +35,7 @@
             <nav class="menuTopbar">
               <ul>
                 <li><a class="addFolder" {{action "createProjectFolder" target="FLOW.projectControl"}}>Add folder</a></li>
-                <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>Create new project</a></li>
+                <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>Create new survey</a></li>
               </ul>
             </nav>
           {{/if}}
@@ -50,12 +50,12 @@
             {{/if}}
             {{#unless FLOW.projectControl.isPublished}}
               {{#if FLOW.projectControl.hasForms}}
-                <li><a class="publishProjectBtn" {{action "publishProject" target="FLOW.projectControl"}}>Publish project</a></li>
+                <li><a class="publishProjectBtn" {{action "publishProject" target="FLOW.projectControl"}}>Publish survey</a></li>
               {{else}}
-                <li><a class="publishProjectBtn noChanges">Publish project</a></li>
+                <li><a class="publishProjectBtn noChanges">Publish survey</a></li>
               {{/if}}
             {{else}}
-              <li><a class="publishProjectBtn noChanges">Publish project</a></li>
+              <li><a class="publishProjectBtn noChanges">Publish survey</a></li>
             {{/unless}}
           </ul>
         </nav>

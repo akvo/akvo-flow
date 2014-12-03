@@ -274,7 +274,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     var currentFolder = this.get('currentProject');
     var currentFolderId = currentFolder ? currentFolder.get('keyId') : null;
 
-    var name = folder ? "New project folder" : "New project";
+    var name = folder ? "New folder" : "New survey";
     var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
 
     FLOW.store.createRecord(FLOW.SurveyGroup, {
@@ -294,7 +294,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   beginMoveProject: function(evt) {
     this.set('moveTarget', evt.context);
-    this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "project");
+    this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "survey");
   },
 
   beginCopyProject: function(evt) {

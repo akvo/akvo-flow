@@ -4,7 +4,7 @@
     <div id="pageWrap" class="widthConstraint belowHeader">
       <section id="main" class="projectSection floats-in middleSection" role="main">
         <section id="" class="projectDetailsPanel">
-          <span class="fontInfo">Project:</span><h2>{{FLOW.projectControl.currentProject.code}}</h2>
+          <span class="fontInfo">Survey:</span><h2>{{FLOW.projectControl.currentProject.code}}</h2>
           <ul class="projectSummary">
             <li>Forms<span class="projectForm">{{FLOW.projectControl.formCount}}</span>
             </li>
@@ -31,7 +31,7 @@
             </li>
           </ul>
           <section class="projectDetails">
-            <h3>Projects basics</h3>
+            <h3>Survey basics</h3>
             {{#unless view.isNewProject}}
               <a {{action "toggleShowProjectDetails" target="this"}} class="showCollapse">
                 {{#if view.visibleProjectBasics}}
@@ -43,8 +43,8 @@
             {{/unless}}
             {{#if view.visibleProjectBasics}}
               <form class="projectDetailForm">
-                <label>Project Title</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.code"}}
-                <label>Project Description</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
+                <label>Survey Title</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.code"}}
+                <label>Survey Description</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
 
                 <ul class="projectSelect floats-in">
                   <li>
