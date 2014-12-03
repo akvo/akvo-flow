@@ -11,7 +11,7 @@ if (!String.prototype.trim) {
 FLOW.CascadeResourceView = FLOW.View.extend({
 	showNewCascadeField: false,
 	cascadeResourceName:null,
-	showImportCascade:false,
+	showImportDialog:false,
 
 	// fired when 'add a cascade resource' is clicked. Displays a text field
 	newCascade: function () {
@@ -24,11 +24,11 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	},
 
 	showImportCascade: function(){
-		this.set('showImportCascade',true);
+		this.toggleProperty('showImportDialog');
 	},
 
 	hideImportCascade: function(){
-		this.set('showImportCascade',false);
+		this.toggleProperty('showImportDialog');
 	},
 
 	publishResource: function(){

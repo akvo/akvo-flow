@@ -27,46 +27,18 @@
       				<a {{action "newCascade" target="this"}} class="addBtn btn noChanges">{{t _add_new_cascade}}</a>
       			{{/if}}
             </li>
-            <li>
-                <a class="importBtn btn" {{action "showImportCascade" target="this"}}>{{t _import_cascade_data}}</a>
-            </li>
         </ul>
     </nav>
 </section>
-{{#if view.showImportCascade}}
-    <section>
-    	<div class="rawDataReport block hidden">
-      		<h3>{{t _import_cascade_file}}</h3>
-      		<p>{{t _import_cascade_file}}</p>
-      		 {{#if FLOW.uploader.support}}
-        		<p><input id="cascade-resource-file" type="file"/></p>
-     		  	<a {{action importFile target="this"}} class="standardBtn"> {{t _import_cascade_file}}</a>
-  		      	<a {{action "hideImportCascade" target="this"}} class="smallBtn">{{t _cancel}}</a>
- 		       	<div class="resumable-progress">
-          			<h5>{{t _progress}}</h5>
-          			<div class="progress-container">
-          				<div class="progress-bar">
-          				</div>
-          			</div>
-        		</div>
-        		<ul class="resumable-list"></ul>
-      		{{else}}
-       			<div class="resumable-error">
-        		{{t _bulk_upload_unsupported_browser}}
-       			</div>
-      		{{/if}}
-     	</div>
-	</section>
-{{/if}}
-
 <div class="floats-in ">
   <section id="main" class="cascadeSection floats-in middleSection" role="main">
         	{{#if view.oneSelected}}
             <section id="" class="cascadeDetailsPanel">
-                <span class="fontInfo">Project:</span><h2>{{FLOW.selectedControl.selectedCascadeResource.name}}</h2>
+                <span class="fontInfo">{{t _cascade_resource}}</span><h2>{{FLOW.selectedControl.selectedCascadeResource.name}}</h2>
                 <ul class="cascadeAction">
-                <li><a {{action "publishResource" target="this"}} class="saveNewSurvey">Publish</a></li>
-                    <li><a {{action "deleteResource" target="this"}} class="deleteSurvey">Delete</a></li>
+                  <li><a {{action "publishResource" target="this"}} class="saveNewSurvey">{{t _publish}}</a></li>
+                  <li><a {{action "deleteResource" target="this"}} class="deleteSurvey">{{t _delete}}</a></li>
+                  <li><a {{action "showImportCascade" target="this"}} class="importBtn">{{t _import_cascade_data}}</a></li>
                 </ul>
                 <ul class="cascadeInfo">
                     <li>{{t _cascading_levels}}<span class="cascadesN">{{FLOW.selectedControl.selectedCascadeResource.numLevels}}</span>
@@ -91,9 +63,29 @@
                             <div class="addLevelBtn"><a {{action "addLevel" target="this"}} class="addLevel btn addBtn">Add a level</a></li>
                 </div>
                 </nav>
-
               </section>
-                <section class="levelColumns floats-in">
+			<section {{bindAttr class="view.showImportDialog:display:hidden"}}>
+				<div>
+					<h3>{{t _import_cascade_file}}</h3>
+					<p>{{t _import_cascade_file}}</p>
+					{{#if FLOW.uploader.support}}
+					<p><input id="cascade-resource-file" type="file" /></p>
+					<a {{action importFile target="this" }} class="standardBtn">{{t _import_cascade_file}}</a>
+					<a {{action "hideImportCascade" target="this" }} class="smallBtn">{{t _cancel}}</a>
+					<div class="resumable-progress">
+						<h5>{{t _progress}}</h5>
+						<div class="progress-container">
+							<div class="progress-bar"></div>
+						</div>
+					</div>
+					<ul class="resumable-list"></ul>
+					{{else}}
+					<div class="resumable-error">{{t
+						_bulk_upload_unsupported_browser}}</div>
+					{{/if}}
+				</div>
+			</section>
+			<section {{bindAttr class="view.showImportDialog:hidden:display :levelColumns :floats-in"}}>
                     <div class="levelCol level01">
                     	{{#view FLOW.CascadeLevelNameView col=1 origLevelName=FLOW.cascadeResourceControl.displayLevelName1}}
                        		<span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum1}}</span>
