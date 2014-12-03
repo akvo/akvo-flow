@@ -69,14 +69,16 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 
 	// fired when 'save' is clicked while showing new cascade text field. Saves new cascade resource to the data store
 	saveNewCascadeResource: function () {
+		var casc;
 		  if (!Ember.empty(this.get('cascadeResourceName').trim())){
-			  FLOW.store.createRecord(FLOW.CascadeResource, {
+			  casc = FLOW.store.createRecord(FLOW.CascadeResource, {
 				  "version": 0,
 				  "levelNames":["Level 1","Level 2","Level 3","Level 4","Level 5","Level 6","Level 7","Level 8","Level 9","Level 10"],
 				  "numLevels": 1,
 				  "name": capitaliseFirstLetter(this.get('cascadeResourceName'))
 			  });
 			  FLOW.store.commit();
+			  FLOW.selectedControl.set('selectedCascadeResource',casc);
 		  }
 	    this.set('showNewCascadeField', false);
 	},
