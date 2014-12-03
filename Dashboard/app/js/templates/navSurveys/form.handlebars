@@ -7,31 +7,31 @@
 		</ul>
 	</nav>
 	<ul class="formSummary">
-		<li>Version<span class="formVersion">{{form.version}}</span></li>
-		<li>ID<span class="formID">{{form.keyId}}</span></li>
-		<li>Questions<span class="formQuestionCount">{{FLOW.projectControl.questionCount}}</span></li>
+		<li>{{t _version}}<span class="formVersion">{{form.version}}</span></li>
+		<li>{{t _id}}<span class="formID">{{form.keyId}}</span></li>
+		<li>{{t _questions}}<span class="formQuestionCount">{{FLOW.projectControl.questionCount}}</span></li>
 	</ul>
 	<section class="formDetails">
-		<h3>Form basics</h3>
+		<h3>{{t _form_basics}}</h3>
 		{{#if view.visibleFormBasics}}
 			{{#unless view.isNewForm}}
-				<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">Collapse</a>
+				<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">{{t _collapse}}</a>
 			{{/unless}}
 			<form class="surveyDetailForm">
-				<label>Form Title</label>
+				<label>{{t _form_title}}</label>
 				{{view Ember.TextField valueBinding="form.code"}}
-				<label>Form Description</label>
+				<label>{{t _form_description}}</label>
 				{{view Ember.TextField valueBinding="form.description"}}
-				<label>Manage</label>
+				<label>{{t _manage}}</label>
 				<nav class="newSurveyNav">
 					<ul class="manageStuff">
-						<li><a class="manageTranslations" {{action "doManageTranslations" target="this"}}>Manage translations &gt;</a></li>
-						<li><a class="manageNotifications" {{action "doManageNotifications" target="this"}}>Manage notifications &gt;</a></li>
+						<li><a class="manageTranslations" {{action "doManageTranslations" target="this"}}>{{t _manage_translations}}</a></li>
+						<li><a class="manageNotifications" {{action "doManageNotifications" target="this"}}>{{t _manage_notifications}}</a></li>
 					</ul>
 				</nav>
 			</form>
 		{{else}}
-			<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">Show</a>
+			<a {{action "toggleShowFormBasics" target="this"}} class="showCollapse">{{t _show}}</a>
 		{{/if}}
 	</section>
 	<section class="surveyForm">

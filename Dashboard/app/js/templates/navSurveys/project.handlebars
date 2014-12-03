@@ -4,57 +4,57 @@
     <div id="pageWrap" class="widthConstraint belowHeader">
       <section id="main" class="projectSection floats-in middleSection" role="main">
         <section id="" class="projectDetailsPanel">
-          <span class="fontInfo">Project:</span><h2>{{FLOW.projectControl.currentProject.code}}</h2>
+          <span class="fontInfo">{{t _survey}}:</span><h2>{{FLOW.projectControl.currentProject.code}}</h2>
           <ul class="projectSummary">
-            <li>Forms<span class="projectForm">{{FLOW.projectControl.formCount}}</span>
+            <li>{{t _forms}}<span class="projectForm">{{FLOW.projectControl.formCount}}</span>
             </li>
-            <li>Monitoring
+            <li>{{t _monitoring}}
               <span class="projectMonitoring">
-                {{#if FLOW.projectControl.currentProject.monitoringGroup}}enabled{{else}}not enabled{{/if}}
+                {{#if FLOW.projectControl.currentProject.monitoringGroup}}{{t _enabled}}{{else}}{{t _not_enabled}}{{/if}}
               </span>
             </li>
-            <li>Status:
+            <li>{{t _status}}:
 
               {{#if FLOW.projectControl.isPublished}}
                 <span class="projectStatus">
-                  Published
+                  {{t _published}}
                 </span>
               {{else}}
                 <span class="projectStatus redColor">
                   {{#if FLOW.projectControl.hasForms}}
-                    Not published
+                    {{t _not_published}}
                   {{else}}
-                    No forms
+                    {{t _no_forms}}
                   {{/if}}
                 </span>
               {{/if}}
             </li>
           </ul>
           <section class="projectDetails">
-            <h3>Projects basics</h3>
+            <h3>{{t _survey_basics}}</h3>
             {{#unless view.isNewProject}}
               <a {{action "toggleShowProjectDetails" target="this"}} class="showCollapse">
                 {{#if view.visibleProjectBasics}}
-                    Collapse
+                  {{t _collapse}}
                 {{else}}
-                  Show
+                  {{t _show}}
                 {{/if}}
               </a>
             {{/unless}}
             {{#if view.visibleProjectBasics}}
               <form class="projectDetailForm">
-                <label>Project Title</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.code"}}
-                <label>Project Description</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
+                <label>{{t _survey_title}}</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.code"}}
+                <label>{{t _survey_description}}</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
 
                 <ul class="projectSelect floats-in">
                   <li>
-                    <label>Privacy Type:</label>
+                    <label>{{t _privacy_type}}:</label>
                     {{view Ember.Select
                       contentBinding="FLOW.privacyLevelControl.content"
                       selectionBinding="FLOW.projectControl.currentProject.privacyLevel"}}
                   </li>
                   <li>
-                    <label>Language:</label>
+                    <label>{{t _language}}:</label>
                     {{view Ember.Select
                       contentBinding="FLOW.languageControl.content"
                       selectionBinding="view.selectedLanguage"
@@ -65,17 +65,17 @@
                 <span class="monitoringAndvanced">
                   <a {{action "toggleShowAdvancedSettings" target="this"}} class="showCollapse">
                     {{#if view.showAdvancedSettings}}
-                      Collapse
+                      {{t _collapse}}
                     {{else}}
-                      Show Advanced Settings
+                      {{t _show_advanced_settings}}
                     {{/if}}
                   </a>
                 </span>
                 {{#if view.showAdvancedSettings}}
-                  <p class="monitoringHint">Choose the registration form:</p>
+                  <p class="monitoringHint">{{t _choose_the_registration_form}}:</p>
                   {{#if view.showMonitoringGroupCheckbox}}
                     <label for="enableMonitoring" class="labelcheckbox">
-                      {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup"}}Enable Monitoting features
+                      {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup"}}{{t _enable_monitoring_features}}
                     </label>
                   {{/if}}
                   {{#if FLOW.projectControl.currentProject.monitoringGroup}}
@@ -94,8 +94,8 @@
           <section class="noFormsContainer">
             {{#unless FLOW.projectControl.hasForms}}
               <ul>
-                  <li class="formList"><p class="noForms">You have no forms in this project</p></li>
-                  <li><a class="addMenuAction aBtn addNewForm" {{action "createForm" target="FLOW.surveyControl"}}>Add a new form</a></li>
+                  <li class="formList"><p class="noForms">{{t _no_forms_in_this_survey}}</p></li>
+                  <li><a class="addMenuAction aBtn addNewForm" {{action "createForm" target="FLOW.surveyControl"}}>{{t _add_new_form}}</a></li>
               </ul>
             {{/unless}}
           </section>
@@ -103,7 +103,7 @@
           <section class="forms">
             {{#if FLOW.projectControl.hasForms}}
               <div id="tabs">
-                <h2>Form(s):</h2>
+                <h2>{{t _forms}}:</h2>
                 <nav class="tabNav floats-in">
                   <ul>
                     {{#each form in FLOW.surveyControl}}
@@ -112,7 +112,7 @@
                       {{/view}}
                     {{/each}}
                     {{#if FLOW.projectControl.currentProject.monitoringGroup}}
-                      <li class="newFormTab"><a {{action "createForm" target="FLOW.surveyControl"}}><span>+</span>Add new form</a></li>
+                      <li class="newFormTab"><a {{action "createForm" target="FLOW.surveyControl"}}><span>+</span>{{t _add_new_form}}</a></li>
                     {{/if}}
                   </ul>
                 </nav>

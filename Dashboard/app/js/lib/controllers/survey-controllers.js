@@ -223,6 +223,9 @@ FLOW.projectControl = Ember.ArrayController.create({
       } else {
         var aCode = a.get('code') || a.get('name');
         var bCode = b.get('code') || b.get('name');
+        if (aCode === bCode) return 0;
+        if (aCode === 'New survey' || aCode === 'New folder') return -1;
+        if (bCode === 'New survey' || bCode === 'New folder') return 1;
         return aCode.localeCompare(bCode);
       }
     });
@@ -279,7 +282,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     var currentFolder = this.get('currentProject');
     var currentFolderId = currentFolder ? currentFolder.get('keyId') : null;
 
-    var name = folder ? "New project folder" : "New project";
+    var name = folder ? "New folder" : "New survey";
     var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
 
     FLOW.store.createRecord(FLOW.SurveyGroup, {
@@ -299,7 +302,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   beginMoveProject: function(evt) {
     this.set('moveTarget', evt.context);
-    this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "project");
+    this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "survey");
   },
 
   beginCopyProject: function(evt) {
