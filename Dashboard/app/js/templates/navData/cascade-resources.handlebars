@@ -70,7 +70,7 @@
 					<p>{{t _import_cascade_file}}</p>
 					{{#if FLOW.uploader.support}}
 					<p><input id="cascade-resource-file" type="file" /></p>
-					<a {{action importFile target="this" }} class="standardBtn">{{t _import_cascade_file}}</a>
+					<a {{action "importFile" target="this" }} class="standardBtn">{{t _import_cascade_file}}</a>
 					<a {{action "hideImportCascade" target="this" }} class="smallBtn">{{t _cancel}}</a>
 					<div class="resumable-progress">
 						<h5>{{t _progress}}</h5>

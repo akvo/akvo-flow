@@ -13,6 +13,27 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	cascadeResourceName:null,
 	showImportDialog:false,
 
+
+    showImportWarning : function(msg) {
+		FLOW.dialogControl.set('activeAction', 'ignore');
+		FLOW.dialogControl.set('header', Ember.String.loc('_import_cascade_file'));
+		FLOW.dialogControl.set('message', msg);
+		FLOW.dialogControl.set('showCANCEL', false);
+		FLOW.dialogControl.set('showDialog', true);
+	},
+
+    importFile : function() {
+		var file = $('#cascade-resource-file')[0];
+
+		if (!file || file.files.length === 0) {
+			this.showImportWarning(Ember.String.loc('_import_select_cascade_file'));
+			return;
+		}
+
+		FLOW.uploader.addFile(file.files[0]);
+		FLOW.uploader.upload();
+	},
+
 	// fired when 'add a cascade resource' is clicked. Displays a text field
 	newCascade: function () {
 		this.set('cascadeResourceName',null);  
