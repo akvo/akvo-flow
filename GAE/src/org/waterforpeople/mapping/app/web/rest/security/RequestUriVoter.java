@@ -143,7 +143,8 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         String resourcePath = null;
 
         if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
-            if (!"application/json".equals(httpRequest.getContentType())
+            if ((httpRequest.getContentType() != null
+                    && !httpRequest.getContentType().startsWith("application/json"))
                     || (httpRequest.getContentLength() == 0)) {
                 return null; // if not JSON payload, conversion exception will be thrown later
             }
