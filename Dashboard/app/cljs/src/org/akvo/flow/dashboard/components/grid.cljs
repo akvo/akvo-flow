@@ -59,20 +59,17 @@
          limit (or (:limit range) 20)]
      (html
       [:div
-       [:span "Show:"
-        (if (= limit 10) " 10" [:a {:on-click #(on-range offset 10)} " 10"])
-        (if (= limit 20) " 20" [:a {:on-click #(on-range offset 20)} " 20"])
-        (if (= limit 50) " 50" [:a {:on-click #(on-range offset 50)} " 50"])]
-       [:span
-        (if (zero? offset)
-          "«previous"
+       [:nav
+        [:ul.pager
+         [:li {:role "presentation"}
           [:a {:on-click #(on-range (let [new-offset (- offset limit)]
                                       (if (neg? new-offset) 0 new-offset))
                                     limit)}
-           "«previous"])
-        (str " " (inc offset) " - " (+ offset limit) " ")
-        [:a {:on-click #(on-range (+ offset limit) limit)}
-         "next»"]]]))))
+           "« previous"]]
+         [:li [:strong (str " " (inc offset) " - " (+ offset limit) " ")]]
+         [:li
+          [:a {:on-click #(on-range (+ offset limit) limit)}
+             "next »"]]]]]))))
 
 (defn change-direction [dir]
   (if (= dir "ascending")
@@ -123,9 +120,7 @@
 (defn grid [data owner]
   (om/component
    (html
-    [:div {}
-     (when (:on-range data)
-       (om/build pagination-controls (select-keys data [:range :on-range])))
+    [:div
      [:div {:class "table-responsive"}
       [:table {:id (:id data) :class "table table-striped dataTable"}
       [:thead (om/build table-head (select-keys data [:columns :sort :on-sort]))]
@@ -135,4 +130,5 @@
                                                                 {:react-key (str "k" (key-fn row))})))
             (:data data)
             (repeat (:columns data)))]]]
-     ])))
+     (when (:on-range data)
+       (om/build pagination-controls (select-keys data [:range :on-range])))])))

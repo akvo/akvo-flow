@@ -89,7 +89,7 @@
             (b/btn-primary {:on-click #(do (.preventDefault %)
                                            (toggle! owner :role-details-view?)
                                            (om/set-state! owner :current-role nil))}
-                           :plus "Add new role!")]]]
+                           :plus "Add new role")]]]
          (om/build grid
                    {:data (store/get-roles user_roles)
                     :columns [{:title "Role"

@@ -112,17 +112,19 @@
     om/IRenderState
     (render-state [this {:keys [current-user-id] :as state}]
       (html
-       [:div.topNav-spacer.panels
+       [:div.panels ;topNav-spacer.panels
         [:div.mypanel {:class (if current-user-id "opened" "closed")}
-         [:div.topMargin
-          [:form.form-inline.text-left.paddingTop {:role "form"}
-           [:div.form-group.pull-right
+         [:div.row.topMargin
+          [:div.col-lg-3.col-md-3.col-sm-3]
+          [:div.col-lg-2.col-md-2.col-sm-2]
+          [:div.col-lg-2.col-lg-offset-5.col-md-2.col-md-offset-5.col-sm-2.col-sm-offset-5
+           [:form.navbar-form.navbar-right
             (b/btn-primary {:class "btn-md"
                             :type "button"
                             :on-click #(om/set-state! owner :current-user-id 0)}
-                           :plus "Add new user")]]
-          (om/build grid
-                    {:data (store/get-by-range users
+                           :plus "Add new user")]]]
+         (om/build grid
+                   {:data (store/get-by-range users
                                                (merge (:pagination state)
                                                       (:sort state)))
                      :sort (:sort state)
@@ -132,7 +134,7 @@
                      :on-range (fn [offset limit]
                                  (om/set-state! owner :pagination {:offset offset :limit limit}))
                      :key-fn #(get % "keyId")
-                     :columns (columns owner user-auth user_roles)})]]
+                     :columns (columns owner user-auth user_roles)})]
         [:div.mypanel {:class (if current-user-id "opened" "closed")}
          [:div
           (om/build user-details {:user (if (or (nil? current-user-id)
