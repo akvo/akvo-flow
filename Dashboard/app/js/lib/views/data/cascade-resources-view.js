@@ -13,6 +13,9 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	cascadeResourceName:null,
 	showImportDialog:false,
 
+    didInsertElement : function() {
+      FLOW.uploader.registerEvents();
+    },
 
     showImportWarning : function(msg) {
 		FLOW.dialogControl.set('activeAction', 'ignore');
@@ -29,7 +32,6 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 			this.showImportWarning(Ember.String.loc('_import_select_cascade_file'));
 			return;
 		}
-
 		FLOW.uploader.addFile(file.files[0]);
 		FLOW.uploader.upload();
 	},
