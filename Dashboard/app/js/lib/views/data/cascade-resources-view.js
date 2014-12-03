@@ -248,6 +248,9 @@ FLOW.CascadeNodeItemView = FLOW.View.extend({
 	content: null,
 	tagName: 'li',
 	classNameBindings: 'amSelected:selected'.w(),
+	showEditNodeFlag: false,
+	newCode:null,
+	newName:null,
 
 	// true if the node group is selected. Used to set proper display class
 	amSelected: function () {
@@ -264,6 +267,29 @@ FLOW.CascadeNodeItemView = FLOW.View.extend({
 		FLOW.cascadeNodeControl.emptyNodes(this.get('col') + FLOW.cascadeNodeControl.get('skip') + 1);
 		this.get('content').deleteRecord();
 		FLOW.store.commit();
+	},
+
+	showEditNodeField: function(){
+		this.set('showEditNode', true);
+		this.set('newCode',this.content.get('code'));
+		this.set('newName',this.content.get('name'));
+	},
+
+	cancelEditNode: function(){
+		this.set('showEditNode', false);
+		this.set('newCode',null);
+		this.set('newName',null);
+	},
+
+	saveEditNode: function(){
+		if (Ember.empty(this.get('newName')) ||this.get('newName').trim().length == 0) {
+			this.cancelEditNode();
+			return;
+		}
+		this.content.set('name',capitaliseFirstLetter(this.get('newName')));
+		this.content.set('code',this.get('newCode'));
+		FLOW.store.commit();
+		this.cancelEditNode();
 	},
 
 	makeSelected: function(){
