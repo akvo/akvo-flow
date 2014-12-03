@@ -218,6 +218,9 @@ FLOW.projectControl = Ember.ArrayController.create({
       } else {
         var aCode = a.get('code') || a.get('name');
         var bCode = b.get('code') || b.get('name');
+        if (aCode === bCode) return 0;
+        if (aCode === 'New survey' || aCode === 'New folder') return -1;
+        if (bCode === 'New survey' || bCode === 'New folder') return 1;
         return aCode.localeCompare(bCode);
       }
     });
