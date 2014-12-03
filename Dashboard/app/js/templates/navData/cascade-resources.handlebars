@@ -187,13 +187,12 @@
             <section class="levelSecondNav">
 	            <nav>
 	              <ul>
-	               {{#if view.showGoDownLevel}} 
-	               		<li><a {{action "goDownLevel" target="this"}} class="levelUp disabled btn">{{t _move_one_level_down}}</a></li>
-	               {{/if}}
-	               <!--  <li><a class="publishProjectBtn btn">{{t _publish_cascade}}</a></li> -->
-	                {{#if view.showGoUpLevel}} 
-	                	<li><a {{action "goUpLevel" target="this"}} class="levelDown btn">{{t _move_one_level_up}}</a></li>
-	                {{/if}} 
+	               {{#view FLOW.CascadeSecondNavView dir="down"}}
+	               		<a {{action "goDownLevel" target="this"}} class="levelDown btn">{{t _move_one_level_down}}</a>
+	              {{/view}}
+	               {{#view FLOW.CascadeSecondNavView dir="up"}}
+	                	<a {{action "goUpLevel" target="this"}} class="levelUp btn">{{t _move_one_level_up}}</a>
+	              {{/view}}
 	              </ul>
 	            </nav>
           </section>

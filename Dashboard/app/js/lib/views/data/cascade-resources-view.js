@@ -6,32 +6,12 @@ if (!String.prototype.trim) {
 		String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
 }
 
+
+
 FLOW.CascadeResourceView = FLOW.View.extend({
 	showNewCascadeField: false,
 	cascadeResourceName:null,
 	showImportCascade:false,
-
-	showGoUpLevel: function(){
-		return (FLOW.cascadeNodeControl.get('skip') + 3 < FLOW.selectedControl.selectedCascadeResource.get('numLevels'));
-	}.property('FLOW.cascadeNodeControl.skip', 'FLOW.selectedControl.selectedCascadeResource'),
-
-	showGoDownLevel: function(){
-		return FLOW.cascadeNodeControl.get('skip') > 0;
-	}.property('FLOW.cascadeNodeControl.skip','FLOW.selectedControl.selectedCascadeResource'),
-
-	goUpLevel: function(){
-		FLOW.cascadeNodeControl.set('skip', FLOW.cascadeNodeControl.get('skip') + 1);
-		FLOW.cascadeNodeControl.setDisplayLevels();
-		FLOW.cascadeResourceControl.setDisplayLevelNames();
-		FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
-	},
-
-	goDownLevel: function(){
-		FLOW.cascadeNodeControl.set('skip', FLOW.cascadeNodeControl.get('skip') - 1);
-		FLOW.cascadeNodeControl.setDisplayLevels();
-		FLOW.cascadeResourceControl.setDisplayLevelNames();
-		FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
-	},
 
 	// fired when 'add a cascade resource' is clicked. Displays a text field
 	newCascade: function () {
@@ -105,6 +85,40 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	cancelNewCascadeResource: function () {
 	  this.set('cascadeResourceName', null);
 	  this.set('showNewCascadeField', false);
+	},
+});
+
+FLOW.CascadeSecondNavView = FLOW.View.extend({
+	tagName: 'li',
+	content: null,
+	classNameBindings: 'display:disable'.w(),
+
+	display: function(){
+		if (this.get('dir') == "up"){
+			return !this.get('showGoUpLevel');
+		} else return !this.get('showGoDownLevel');
+	}.property('this.showGoUpLevel','this.showGoUpLevel'),
+
+	showGoUpLevel: function(){
+		return (FLOW.cascadeNodeControl.get('skip') + 3 < FLOW.selectedControl.selectedCascadeResource.get('numLevels'));
+	}.property('FLOW.cascadeNodeControl.skip', 'FLOW.selectedControl.selectedCascadeResource'),
+
+	showGoDownLevel: function(){
+		return FLOW.cascadeNodeControl.get('skip') > 0;
+	}.property('FLOW.cascadeNodeControl.skip','FLOW.selectedControl.selectedCascadeResource'),
+
+	goUpLevel: function(){
+		FLOW.cascadeNodeControl.set('skip', FLOW.cascadeNodeControl.get('skip') + 1);
+		FLOW.cascadeNodeControl.setDisplayLevels();
+		FLOW.cascadeResourceControl.setDisplayLevelNames();
+		FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
+	},
+
+	goDownLevel: function(){
+		FLOW.cascadeNodeControl.set('skip', FLOW.cascadeNodeControl.get('skip') - 1);
+		FLOW.cascadeNodeControl.setDisplayLevels();
+		FLOW.cascadeResourceControl.setDisplayLevelNames();
+		FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
 	},
 });
 
