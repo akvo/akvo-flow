@@ -31,7 +31,7 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
         if (objectPath == null) {
             return Collections.emptyList();
         }
-        List<String> paths = SurveyUtils.listParentPaths(objectPath, false);
+        List<String> paths = SurveyUtils.listParentPaths(objectPath, true);
         PersistenceManager pm = PersistenceFilter.getManager();
         String queryString = "userId == :p1 && :p2.contains(objectPath)";
         javax.jdo.Query query = pm.newQuery(UserAuthorization.class, queryString);

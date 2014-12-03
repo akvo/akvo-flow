@@ -329,12 +329,12 @@ public class BaseDAO<T extends BaseDomain> {
         StringBuilder authorizedPathsRegex = new StringBuilder();
         StringBuilder authorizedParentPathsRegex = new StringBuilder();
         for (UserAuthorization auth : userAuthorizationList) {
-            String path = auth.getObjectPath();
-            authorizedPathsRegex.append(path);
+            String authorizedPath = auth.getObjectPath();
+            authorizedPathsRegex.append(authorizedPath);
             authorizedPathsRegex.append("|");
 
             // include parent folders in order to be able to navigate to sub folder / project
-            for (String parentPath : SurveyUtils.listParentPaths(path, false)) {
+            for (String parentPath : SurveyUtils.listParentPaths(authorizedPath, false)) {
                 authorizedParentPathsRegex.append(parentPath);
                 authorizedParentPathsRegex.append("|");
             }
@@ -342,7 +342,9 @@ public class BaseDAO<T extends BaseDomain> {
 
         // trim the last "|"s
         authorizedPathsRegex.deleteCharAt(authorizedPathsRegex.length() - 1);
-        authorizedParentPathsRegex.deleteCharAt(authorizedParentPathsRegex.length() - 1);
+        if (authorizedParentPathsRegex.length() > 0) {
+            authorizedParentPathsRegex.deleteCharAt(authorizedParentPathsRegex.length() - 1);
+        }
 
         final Pattern authorizedPaths = Pattern.compile(authorizedPathsRegex.toString());
         final Pattern authorizedParentPaths = Pattern
