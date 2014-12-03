@@ -11,6 +11,28 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	cascadeResourceName:null,
 	showImportCascade:false,
 
+	showGoUpLevel: function(){
+		return (FLOW.cascadeNodeControl.get('skip') + 3 < FLOW.selectedControl.selectedCascadeResource.get('numLevels'));
+	}.property('FLOW.cascadeNodeControl.skip', 'FLOW.selectedControl.selectedCascadeResource'),
+
+	showGoDownLevel: function(){
+		return FLOW.cascadeNodeControl.get('skip') > 0;
+	}.property('FLOW.cascadeNodeControl.skip','FLOW.selectedControl.selectedCascadeResource'),
+
+	goUpLevel: function(){
+		FLOW.cascadeNodeControl.set('skip', FLOW.cascadeNodeControl.get('skip') + 1);
+		FLOW.cascadeNodeControl.setDisplayLevels();
+		FLOW.cascadeResourceControl.setDisplayLevelNames();
+		FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
+	},
+
+	goDownLevel: function(){
+		FLOW.cascadeNodeControl.set('skip', FLOW.cascadeNodeControl.get('skip') - 1);
+		FLOW.cascadeNodeControl.setDisplayLevels();
+		FLOW.cascadeResourceControl.setDisplayLevelNames();
+		FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
+	},
+
 	// fired when 'add a cascade resource' is clicked. Displays a text field
 	newCascade: function () {
 		this.set('cascadeResourceName',null);  
@@ -89,6 +111,13 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 FLOW.CascadeLevelBreadcrumbView = FLOW.View.extend({
 	tagName: 'li',
 	content: null,
+	classNameBindings: 'offscreen:offScreen'.w(),
+
+	offscreen: function() {
+		var skip = FLOW.cascadeNodeControl.get('skip');
+		var level = this.content.get('level');
+		return ((level < skip + 1) || (level > skip + 3));
+	}.property('FLOW.cascadeNodeControl.skip', 'FLOW.selectedControl.selectedCascadeResource'),
 
 	adaptColView: function(){
 		var skip = FLOW.cascadeNodeControl.get('skip');
@@ -103,6 +132,7 @@ FLOW.CascadeLevelBreadcrumbView = FLOW.View.extend({
 			FLOW.cascadeNodeControl.set('skip', level - 1);
 			FLOW.cascadeNodeControl.setDisplayLevels();
 			FLOW.cascadeResourceControl.setDisplayLevelNames();
+			FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
 		}
 
 		// clicked level lies on the right
@@ -110,6 +140,7 @@ FLOW.CascadeLevelBreadcrumbView = FLOW.View.extend({
 			FLOW.cascadeNodeControl.set('skip', level - 3);
 			FLOW.cascadeNodeControl.setDisplayLevels();
 			FLOW.cascadeResourceControl.setDisplayLevelNames();
+			FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
 		}
 	},
 });
@@ -155,13 +186,15 @@ FLOW.CascadeNodeView = FLOW.View.extend({
 	cascadeNodeCode:null,
 	
 	showInputField:function(){
-		var skip;
+		var skip = FLOW.cascadeNodeControl.get('skip');;
+		
 		// determines if we should show an input field in this column
 		// we do this in column one by default, or if in the previous column a node has been selected
-		if (this.get('col') == 1 && FLOW.cascadeNodeControl.get('skip') == 0) {
+		if (this.get('col') == 1 && skip == 0) {
 			return true;
 		}
-		skip = FLOW.cascadeNodeControl.get('skip');
+		console.log("selected:" + FLOW.cascadeNodeControl.get('selectedNode'));
+		console.log("col:"+ this.get('col'));
 		return (!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1]) && 
 				!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1].get('keyId')));
 	}.property('FLOW.cascadeNodeControl.selectedNodeTrigger').cacheable(),

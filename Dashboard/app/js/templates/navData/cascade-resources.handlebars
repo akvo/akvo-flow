@@ -5,7 +5,7 @@
     <nav class="">
         <ul class="">
             <li>
-             <label class="selectinLabel dependencySelect"> {{t _choose_existing_cascade}} (<span class="totalCascades">18</span>)
+             <label class="selectinLabel dependencySelect"> {{t _choose_existing_cascade}}
         	{{view Ember.Select
         	contentBinding="FLOW.cascadeResourceControl.content"
         	selectionBinding="FLOW.selectedControl.selectedCascadeResource"
@@ -24,11 +24,11 @@
           			<a {{action "saveNewCascadeResource" target="this"}} class="smallBtn">{{t _save}}</a>
           			<a {{action "cancelNewCascadeResource" target="this"}}>{{t _cancel}}</a>
       			{{else}}
-      				<a {{action "newCascade" target="this"}} class="addBtn btn noChanges">Add new cascade</a>
+      				<a {{action "newCascade" target="this"}} class="addBtn btn noChanges">{{t _add_new_cascade}}</a>
       			{{/if}}
             </li>
             <li>
-                <a class="importBtn btn" {{action "showImportCascade" target="this"}}>Import cascade data</a>
+                <a class="importBtn btn" {{action "showImportCascade" target="this"}}>{{t _import_cascade_data}}</a>
             </li>
         </ul>
     </nav>
@@ -69,9 +69,9 @@
                     <li><a {{action "deleteResource" target="this"}} class="deleteSurvey">Delete</a></li>
                 </ul>
                 <ul class="cascadeInfo">
-                    <li>Cascading levels<span class="cascadesN">{{FLOW.selectedControl.selectedCascadeResource.numLevels}}</span>
+                    <li>{{t _cascading_levels}}<span class="cascadesN">{{FLOW.selectedControl.selectedCascadeResource.numLevels}}</span>
                     </li>
-                    <li>Status
+                    <li>{{t _status}}
                     {{#if FLOW.selectedControl.selectedCascadeResource.status}}
                     	<span class="projectStatus published">{{t _published}}</span>
                     {{else}}
@@ -85,7 +85,7 @@
                     <ul>
                     	{{#each item in FLOW.cascadeResourceControl.levelNames}}
 							{{#view FLOW.CascadeLevelBreadcrumbView contentBinding="item"}}
-                    		<a {{action "adaptColView" target="this"}}><span>{{item.level}}</span>{{item.levelName}}</a>
+                    			<a {{action "adaptColView" target="this"}}><span>{{item.level}}</span>{{item.levelName}}</a>
                     		{{/view}}
 						{{/each}}
                     </ul>
@@ -116,9 +116,7 @@
                         <ul>
                         	{{#each item in FLOW.cascadeNodeControl.displayLevel1}}
 								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=1}}
-									{{unbound item.name}}
 									<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
-									<a {{action "editNode" target="this"}} class="editLevel">edit</a>
 									<a {{action "deleteNode" target="this"}} class="deleteLevel">delete</a>
 								{{/view}}
 							{{/each}}
@@ -148,9 +146,8 @@
                         <ul>
                         	{{#each item in FLOW.cascadeNodeControl.displayLevel2}}
 								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=2}}
-									{{unbound item.name}}
 									<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
-									<a {{action "deleteNode" target="this"}} class="deleteSurvey">delete</a>
+									<a {{action "deleteNode" target="this"}} class="deleteLevel">delete</a>
 								{{/view}}
 							{{/each}}
                         </ul>
@@ -179,18 +176,28 @@
                         <ul>
                         	{{#each item in FLOW.cascadeNodeControl.displayLevel3}}
 								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=3}}
-									{{unbound item.name}}
 									<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
-									<a {{action "editNode" target="this"}} class="editSurvey">edit</a>
-									<a {{action "deleteNode" target="this"}} class="deleteSurvey">delete</a>
+									<a {{action "deleteNode" target="this"}} class="deleteLevel">delete</a>
 								{{/view}}
 							{{/each}}
                         </ul>
                     </div>
                 </section>
             </section>
+            <section class="levelSecondNav">
+	            <nav>
+	              <ul>
+	               {{#if view.showGoDownLevel}} 
+	               		<li><a {{action "goDownLevel" target="this"}} class="levelUp disabled btn">{{t _move_one_level_down}}</a></li>
+	               {{/if}}
+	               <!--  <li><a class="publishProjectBtn btn">{{t _publish_cascade}}</a></li> -->
+	                {{#if view.showGoUpLevel}} 
+	                	<li><a {{action "goUpLevel" target="this"}} class="levelDown btn">{{t _move_one_level_up}}</a></li>
+	                {{/if}} 
+	              </ul>
+	            </nav>
+          </section>
             {{else}}
-
             <section class="noCascadeContainer">
                     <ul>
                         <li class="formList">
@@ -200,19 +207,8 @@
                     </ul>
                 </section>
           {{/if}}
-          <section class="levelSecondNav">
-            <nav>
-              <ul>
-                <li><a class="levelUp disabled btn">Move one level up</a></li>
-                <li><a class="publishProjectBtn btn">Publish cascade Items</a></li>
-                <li><a class="levelDown btn">Move one level down</a></li>
-              </ul>
-            </nav>
-          </section>
+
         </section>
-            
-
-
     </div>
 </section>
 {{/view}}
