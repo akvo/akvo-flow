@@ -72,11 +72,17 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
 	},
 
 	setDisplayLevelNames: function(){
-		var skip = FLOW.cascadeNodeControl.get('skip');
-		var names = this.get('levelNames');
+		var skip, names, numLevels;
+		skip = FLOW.cascadeNodeControl.get('skip');
+		names = this.get('levelNames');
+		numLevels = FLOW.selectedControl.selectedCascadeResource.get('numLevels');
 		this.set('displayLevelName1',names[skip].get('levelName'));
-		this.set('displayLevelName2',names[skip + 1].get('levelName'));
-		this.set('displayLevelName3',names[skip + 2].get('levelName'));
+		if (numLevels > 1) {
+			this.set('displayLevelName2',names[skip + 1].get('levelName'));
+		}
+		if (numLevels > 2) {
+			this.set('displayLevelName3',names[skip + 2].get('levelName'));
+		}
 		this.set('displayLevelNum1',skip + 1);
 		this.set('displayLevelNum2',skip + 2);
 		this.set('displayLevelNum3',skip + 3);

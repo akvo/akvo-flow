@@ -209,8 +209,6 @@ FLOW.CascadeNodeView = FLOW.View.extend({
 		if (this.get('col') == 1 && skip == 0) {
 			return true;
 		}
-		console.log("selected:" + FLOW.cascadeNodeControl.get('selectedNode'));
-		console.log("col:"+ this.get('col'));
 		return (!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1]) && 
 				!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1].get('keyId')));
 	}.property('FLOW.cascadeNodeControl.selectedNodeTrigger').cacheable(),
