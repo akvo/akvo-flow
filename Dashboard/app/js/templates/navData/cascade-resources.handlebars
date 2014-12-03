@@ -24,11 +24,11 @@
           			<a {{action "saveNewCascadeResource" target="this"}} class="smallBtn">{{t _save}}</a>
           			<a {{action "cancelNewCascadeResource" target="this"}}>{{t _cancel}}</a>
       			{{else}}
-      				<a {{action "newCascade" target="this"}} class="addProject noChanges">Add new cascade</a>
+      				<a {{action "newCascade" target="this"}} class="addBtn btn noChanges">Add new cascade</a>
       			{{/if}}
             </li>
             <li>
-                <a class="publishProjectBtn" {{action "showImportCascade" target="this"}}>Import cascade data</a>
+                <a class="importBtn btn" {{action "showImportCascade" target="this"}}>Import cascade data</a>
             </li>
         </ul>
     </nav>
@@ -118,8 +118,8 @@
 								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=1}}
 									{{unbound item.name}}
 									<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
-									<a {{action "editNode" target="this"}} class="editSurvey">edit</a>
-									<a {{action "deleteNode" target="this"}} class="deleteSurvey">delete</a>
+									<a {{action "editNode" target="this"}} class="editLevel">edit</a>
+									<a {{action "deleteNode" target="this"}} class="deleteLevel">delete</a>
 								{{/view}}
 							{{/each}}
                         </ul>

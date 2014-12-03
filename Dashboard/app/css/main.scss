@@ -1431,10 +1431,14 @@ th.action {
     width: 100%;
 }
 #tabs div > section {
-    border: thin solid rgb(224, 224, 224);
+    border-top: thin solid rgb(224, 224, 224);
     background: white;
     &.cascadeSection {
         background: $projectBackground;
+        box-sizing: border-box;
+        width:100%;
+        padding:15px 0;
+        margin:0 auto;     
     }
 }
 #tabs section h1,
@@ -2619,6 +2623,31 @@ a.publishProjectBtn {
         color:white;
     }
 }
+a.saveProject {
+        text-transform:uppercase;
+        background:$anchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
+        color:white;
+        border-radius:3px;
+    &:hover {
+        background:$anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        color:white;
+    }
+    &.noChanges {
+        background:rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
+        color:white;
+        cursor: text;
+        &:hover {
+            background:rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+            background-size: 55px 55px;
+          }
+    }
+}
+
 a.saveProject {
         text-transform:uppercase;
         background:$anchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
@@ -4388,7 +4417,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                         }
                     }
             #tabs div > section {
-                border: thin solid rgb(224, 224, 224);
+                border-top: thin solid rgb(224, 224, 224);
                 background: white;
                 margin-top: 15px;
 
@@ -4700,7 +4729,7 @@ nav.cascadeBreadCrumb {
             z-index: 0;
         }
 
-        ul li:first-child:before {
+        ul li:first-of-type:before {
             border-color: transparent;
         }
         ul li a:after {
@@ -4870,7 +4899,7 @@ nav.cascadeBreadCrumb {
                 float: right;
                 margin-top:-7px;
                 @include border-radius(4px);
-                &.deleteSurvey {
+                &.deleteLevel {
                     background: rgba(32,32,36,0.2) url(../images/IconDelete.svg) center  center  no-repeat;
                     background-size: 40px 40px;
                     &:hover {
@@ -4878,7 +4907,7 @@ nav.cascadeBreadCrumb {
                         background-size: 40px 40px;
                     }             
                 }
-                &.editSurvey{
+                &.editLevel{
                     background: rgba(32,32,36,0.2) url(../images/IconEdit.svg) center center no-repeat;
                     background-size: 18px 18px;
                     margin-left:5px;
@@ -4956,6 +4985,49 @@ ul.cascadeAction {
                 }
         }
     }
+}
+a.btn {
+    display: block;
+    padding: 1px 0 7px 21px;
+    height: 10px;
+    text-transform: uppercase;
+    &:hover {
+         color:$anchorLinkHover;
+    }
+}
+
+a.addBtn {
+    color: white;
+    background: rgba($anchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
+    padding: 8px 7px 13px 25px;
+    border-radius: 3px;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
+    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;
+}
+a.addBtn:hover {
+    color: white;
+    background: rgba($anchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
+}
+
+a.importBtn {
+    color: white;
+    background: rgba($anchorLink, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
+    padding: 8px 7px 13px 25px;
+    border-radius: 3px;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
+    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;
+}
+a.importBtn:hover {
+    color: white;
+    background: rgba($anchorLinkHover, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
 }
 
 
