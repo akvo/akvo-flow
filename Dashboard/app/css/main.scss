@@ -1463,7 +1463,7 @@ th.action {
     width: 100%;
     background-color:white;
     position: fixed;
-    margin-top: 0;
+    margin-top: -10px;
     z-index: 9999;
     & + div, & + section {
         margin-top:40px;
@@ -3658,6 +3658,7 @@ footer.bottomPage {
     background:rgb(248, 248, 248);
     -webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.5);
     box-shadow: 0 0 -1px rgba(32, 32, 36, 0.5);
+    z-index:1001;
 }
 footer.bottomPage div:nth-child(1n) {
     position: relative;
@@ -4107,7 +4108,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 }
 #tabs {
     .fullWidth {
-        margin-top:35px;
+        margin-top:25px;
     }
 }
 /* Uploader: Drag & Drop */
@@ -4728,12 +4729,6 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 
 nav.cascadeBreadCrumb {
         position:relative;
-        .addLevel {
-           position:absolute;
-            display: inline-block;
-            top: 27px;
-            right:5px;
-        }
         ul li {
             display: inline-block;
             height: 54px;
@@ -4766,13 +4761,13 @@ nav.cascadeBreadCrumb {
             right: -27px;
             border-style: solid;
             border-width: 27px 0 27px 27px;
-            border-color: transparent transparent transparent $akvoLightBlue;
+            border-color: transparent transparent transparent $akvoDarkBlue;
             z-index: 10;
         }
         ul li {
-                a {
+            a {
                 display: block;
-                background: $akvoLightBlue;
+                background: $akvoDarkBlue;
                 color: white;
                 font-size: 1.1em; 
                 span {
@@ -4785,17 +4780,16 @@ nav.cascadeBreadCrumb {
                     background: $anchorLinkHover;
                 }
                 &.homeRoot {
-                    z-index:9999;
+                    z-index:999;
                     margin-left: 0;
                 }
-           }
+            }
            &.offScreen {
-                a{
-                    background:#365969;
-                    color:rgb(32,32,36);
-                    border-color: transparent transparent transparent #365969;
-                    &:after {                    border-color: transparent transparent transparent #365969;
-}                   &:hover {
+                a {
+                    background:rgba(32,32,36,0.7);
+                    color:rgba(white, 0.3);
+                    border-color: transparent transparent transparent rgba(32,32,36,0.7);
+                    &:after { border-color: transparent transparent transparent rgba(32,32,36,0.7);}                   &:hover {
                         background: $anchorLinkHover;
                         &:after {
                              border-color: transparent transparent transparent $anchorLinkHover;
@@ -4808,37 +4802,19 @@ nav.cascadeBreadCrumb {
         ul li a:hover:after {
             border-color: transparent transparent transparent $anchorLinkHover;
         }
-       /* ul li:last-of-type {
-            a {
-                padding-right:15px;
-                &.homeRoot {
-                    padding-right:0;
-                    z-index:9999;
-                    margin-left: 0;
-                &:after {
-                    content: " ";
-                    height: 0;
-                    width: 0;
-                    position: absolute;
-                    right: -27px;
-                    border-style: solid;
-                    border-width: 27px 0 27px 27px;
-                    border-color: transparent transparent transparent $akvoLightBlue;
-                    z-index: 10;
+div.addLevelBtn {
+    position:absolute;
+    top:15px;
+    right:5px;
+    &.addLevel {
+        display:table;
+    &:hover {
+        background: $anchorLinkHover;
+            }
         }
-                &:hover {
-                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                }
-            }
-                &:after {
-                    border-width:0;
-                &:hover {
-                    background: $akvoLightBlue;
-                    }
-                }
-            }
-        } */
+    }
 }
+
 
 .levelColumns {
     width:100%;
@@ -5053,14 +5029,27 @@ a.importBtn {
     background-size: 25px 45px;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    &:hover {
+        color: white;
+        background: rgba($anchorLinkHover, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
+        -webkit-background-size: 25px 45px;
+        background-size: 25px 45px;
+    }
 }
-a.importBtn:hover {
-    color: white;
-    background: rgba($anchorLinkHover, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
-    -webkit-background-size: 25px 45px;
-    background-size: 25px 45px;
+a.importBtn {
+    color
+    &:hover {
+
+    }
 }
 
+.disabled {
+    color:rgba(128,128,128,0.1);
+    &:hover{
+        color:rgba(128,128,128,0.1);
+    }
+}
+.levelUp {}
 .levelSecondNav {
     nav {
         ul{

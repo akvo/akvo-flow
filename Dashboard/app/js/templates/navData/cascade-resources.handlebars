@@ -88,9 +88,11 @@
                     			<a {{action "adaptColView" target="this"}}><span>{{item.level}}</span>{{item.levelName}}</a>
                     		{{/view}}
 						{{/each}}
-                    </ul>
-                    <a {{action "addLevel" target="this"}} class="addLevel"> + Add a level</a>
+                            <div class="addLevelBtn"><a {{action "addLevel" target="this"}} class="addLevel btn addBtn">Add a level</a></li>
+                </div>
                 </nav>
+
+              </section>
                 <section class="levelColumns floats-in">
                     <div class="levelCol level01">
                     	{{#view FLOW.CascadeLevelNameView col=1 origLevelName=FLOW.cascadeResourceControl.displayLevelName1}}
