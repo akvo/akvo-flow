@@ -190,11 +190,20 @@
                 </section>
             </section>
             {{else}}
-            <section>
-            	Please select an existing cascade resource or create a new one
-            </section>
+
+            <section class="noCascadeContainer">
+                    <ul>
+                        <li class="formList">
+                        <p class="noCascade">Please select an existing cascade resource or create a new one</p></li>
+                        <li>
+                        <a {{action "newCascade" target="this"}} class="addBtn btn noChanges addMenuAction addNewForm">Add new cascade</a></li>
+                    </ul>
+                </section>
           {{/if}}
         </section>
-</div>
+        <section>
+            <a class="publishProject">Publish cascadeItems</a>
+        </section>
+    </div>
 </section>
 {{/view}}

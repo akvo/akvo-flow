@@ -4634,6 +4634,36 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
       }
 
       /************************************** CASCADING QUESTIONS ************************************/
+    .noCascadeContainer {
+        color:white;
+        background:rgba(white,0);
+        padding:2em 0;
+        li.formList {
+            padding:10px 0;
+            &.populated {
+                background: rgba(white,0);
+            }
+            h4 {
+                margin:5px 0 10px 5px;
+                color:rgba($anchorLink, 0.5);
+            }
+            .noCascade {
+                padding-top:45px;
+                background: url(../images/IconCascadeWhite.png) center top no-repeat;
+                text-align: center;
+                text-transform: uppercase;
+                font-size: 1.1em;
+                width: 90%;
+                margin:0 auto 20px auto;
+            }
+        }
+}
+
+.addMenuAction {display:inline-block; margin:0 auto;
+  &.addNewForm {
+    display:table;
+    padding:8px 8px 8px 31px;
+  }
 
 .cascadeSection {
     background: $projectBackground;
@@ -4647,11 +4677,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
         h2 {
             margin-right: 15px;
         }
-        .addMenuAction {display:inline-block; margin:0 auto;
-          &.addNewForm {
-            display:table;
-            padding:8px 8px 8px 31px;
-          }
+
         }
         .cascadeInfo {
           display: -webkit-box;

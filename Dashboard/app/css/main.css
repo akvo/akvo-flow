@@ -4452,24 +4452,24 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             width: 99.5%; }
 
 /************************************** CASCADING QUESTIONS ************************************/
-.cascadeSection {
-  background: #38454a;
-  box-sizing: border-box;
-  width: 100%;
-  padding: 15px 0;
+.addMenuAction {
+  display: inline-block;
   margin: 0 auto; }
-  .cascadeSection .cascadeDetailsPanel {
-    padding-top: 15px;
-    padding-bottom: 15px; }
-    .cascadeSection .cascadeDetailsPanel h2 {
-      margin-right: 15px; }
-    .cascadeSection .cascadeDetailsPanel .addMenuAction {
-      display: inline-block;
-      margin: 0 auto; }
-      .cascadeSection .cascadeDetailsPanel .addMenuAction.addNewForm {
-        display: table;
-        padding: 8px 8px 8px 31px; }
-    .cascadeSection .cascadeDetailsPanel .cascadeInfo {
+  .addMenuAction.addNewForm {
+    display: table;
+    padding: 8px 8px 8px 31px; }
+  .addMenuAction .cascadeSection {
+    background: #38454a;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 15px 0;
+    margin: 0 auto; }
+    .addMenuAction .cascadeSection .cascadeDetailsPanel {
+      padding-top: 15px;
+      padding-bottom: 15px; }
+      .addMenuAction .cascadeSection .cascadeDetailsPanel h2 {
+        margin-right: 15px; }
+    .addMenuAction .cascadeSection .cascadeInfo {
       display: -webkit-box;
       display: -moz-box;
       display: -ms-flexbox;
@@ -4484,7 +4484,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
       align-items: center;
       align-content: center;
       margin-top: 20px; }
-      .cascadeSection .cascadeDetailsPanel .cascadeInfo li {
+      .addMenuAction .cascadeSection .cascadeInfo li {
         width: 50%;
         text-align: center;
         padding: 10px 0;
@@ -4492,26 +4492,26 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
         color: #808285;
         text-transform: uppercase;
         font-size: 1.5em; }
-        .cascadeSection .cascadeDetailsPanel .cascadeInfo li span {
+        .addMenuAction .cascadeSection .cascadeInfo li span {
           display: block;
           font-size: 1.8em;
           margin-top: -5px;
           font-weight: 600; }
-          .cascadeSection .cascadeDetailsPanel .cascadeInfo li span.projectForm, .cascadeSection .cascadeDetailsPanel .cascadeInfo li span.projectMonitoring, .cascadeSection .cascadeDetailsPanel .cascadeInfo li span.projectStatus {
+          .addMenuAction .cascadeSection .cascadeInfo li span.projectForm, .addMenuAction .cascadeSection .cascadeInfo li span.projectMonitoring, .addMenuAction .cascadeSection .cascadeInfo li span.projectStatus {
             color: white; }
-          .cascadeSection .cascadeDetailsPanel .cascadeInfo li span.projectStatus.redColor {
+          .addMenuAction .cascadeSection .cascadeInfo li span.projectStatus.redColor {
             color: #ef4136; }
-          .cascadeSection .cascadeDetailsPanel .cascadeInfo li span.projectStatus.published {
+          .addMenuAction .cascadeSection .cascadeInfo li span.projectStatus.published {
             color: #8DC63F; }
-    .cascadeSection .cascadeDetailsPanel span.fontInfo {
+    .addMenuAction .cascadeSection span.fontInfo {
       font-family: "Dancing Script", Baskerville, "Goudy Old Style", "Palatino", "Book Antiqua", Georgia, serif;
       font-size: 1.8em;
       color: #d4d4d4;
       margin: 0 0.5em; }
-    .cascadeSection .cascadeDetailsPanel h2 {
+    .addMenuAction .cascadeSection h2 {
       color: #de8929;
       display: inline; }
-  .cascadeSection nav.cascadeBreadCrumb {
+  .addMenuAction nav.cascadeBreadCrumb {
     position: relative;
     /* ul li:last-of-type {
          a {
@@ -4543,12 +4543,12 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
              }
          }
      } */ }
-    .cascadeSection nav.cascadeBreadCrumb .addLevel {
+    .addMenuAction nav.cascadeBreadCrumb .addLevel {
       position: absolute;
       display: inline-block;
       top: 27px;
       right: 5px; }
-    .cascadeSection nav.cascadeBreadCrumb ul li {
+    .addMenuAction nav.cascadeBreadCrumb ul li {
       display: inline-block;
       height: 54px;
       line-height: 54px;
@@ -4556,7 +4556,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
       margin: 5px 3px 0 0;
       text-indent: 29px;
       position: relative; }
-    .cascadeSection nav.cascadeBreadCrumb ul li:before {
+    .addMenuAction nav.cascadeBreadCrumb ul li:before {
       content: " ";
       height: 0;
       width: 0;
@@ -4566,9 +4566,9 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
       border-width: 27px 0 27px 27px;
       border-color: transparent transparent transparent #38454a;
       z-index: 0; }
-    .cascadeSection nav.cascadeBreadCrumb ul li:first-of-type:before {
+    .addMenuAction nav.cascadeBreadCrumb ul li:first-of-type:before {
       border-color: transparent; }
-    .cascadeSection nav.cascadeBreadCrumb ul li a:after {
+    .addMenuAction nav.cascadeBreadCrumb ul li a:after {
       content: " ";
       height: 0;
       width: 0;
@@ -4578,7 +4578,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
       border-width: 27px 0 27px 27px;
       border-color: transparent transparent transparent #27aae1;
       z-index: 10; }
-    .cascadeSection nav.cascadeBreadCrumb ul li a {
+    .addMenuAction nav.cascadeBreadCrumb ul li a {
       display: block;
       background: #27aae1;
       color: white;
@@ -4586,26 +4586,26 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap; }
-      .cascadeSection nav.cascadeBreadCrumb ul li a span {
+      .addMenuAction nav.cascadeBreadCrumb ul li a span {
         display: inline-block;
         margin-left: -20px;
         margin-right: 15px; }
-      .cascadeSection nav.cascadeBreadCrumb ul li a:hover {
+      .addMenuAction nav.cascadeBreadCrumb ul li a:hover {
         background: #f6a01a; }
-      .cascadeSection nav.cascadeBreadCrumb ul li a.homeRoot {
+      .addMenuAction nav.cascadeBreadCrumb ul li a.homeRoot {
         z-index: 9999;
         margin-left: 0; }
-    .cascadeSection nav.cascadeBreadCrumb ul li.offScreen a {
+    .addMenuAction nav.cascadeBreadCrumb ul li.offScreen a {
       background: #365969;
       color: #202024;
       border-color: transparent transparent transparent #365969; }
-      .cascadeSection nav.cascadeBreadCrumb ul li.offScreen a:after {
+      .addMenuAction nav.cascadeBreadCrumb ul li.offScreen a:after {
         border-color: transparent transparent transparent #365969; }
-      .cascadeSection nav.cascadeBreadCrumb ul li.offScreen a:hover {
+      .addMenuAction nav.cascadeBreadCrumb ul li.offScreen a:hover {
         background: #f6a01a; }
-        .cascadeSection nav.cascadeBreadCrumb ul li.offScreen a:hover:after {
+        .addMenuAction nav.cascadeBreadCrumb ul li.offScreen a:hover:after {
           border-color: transparent transparent transparent #f6a01a; }
-    .cascadeSection nav.cascadeBreadCrumb ul li a:hover:after {
+    .addMenuAction nav.cascadeBreadCrumb ul li a:hover:after {
       border-color: transparent transparent transparent #f6a01a; }
 
 .levelColumns {
