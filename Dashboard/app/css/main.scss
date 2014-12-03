@@ -5061,7 +5061,30 @@ a.importBtn:hover {
     background-size: 25px 45px;
 }
 
+.levelSecondNav {
+    nav {
+        ul{
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;    
+            display:flex;
+            -webkit-align-items:center;
+            align-items:center;
+            li{
+                text-align: center;
+                width:33.33%;
+                -webkit-justify-content: flex-justified;
+                justify-content: flex-justified;
+                .publishProjectBtn {
+                    display:table;
+                    margin:10px auto;
+                }
 
+            }
+        }
+    }
+}
 
 
 
