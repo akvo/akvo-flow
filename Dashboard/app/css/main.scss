@@ -4918,14 +4918,14 @@ nav.cascadeBreadCrumb {
                 } 
             }
             a {
-                display: inline-block;
-                width:15px;
-                padding:0px 7px 14px 7px;
-                text-indent:-9999px;
-                float: right;
-                margin-top:-7px;
-                @include border-radius(4px);
                 &.deleteLevel {
+                    display: inline-block;
+                    width:15px;
+                    padding:0px 7px 14px 7px;
+                    text-indent:-9999px;
+                    float: right;
+                    margin-top:-7px;
+                    @include border-radius(4px);
                     background: rgba(32,32,36,0.2) url(../images/IconDelete.svg) center  center  no-repeat;
                     background-size: 40px 40px;
                     &:hover {
@@ -4934,6 +4934,13 @@ nav.cascadeBreadCrumb {
                     }             
                 }
                 &.editLevel{
+                    display: inline-block;
+                    width:15px;
+                    padding:0px 7px 14px 7px;
+                    text-indent:-9999px;
+                    float: right;
+                    margin-top:-7px;
+                    @include border-radius(4px);
                     background: rgba(32,32,36,0.2) url(../images/IconEdit.svg) center center no-repeat;
                     background-size: 18px 18px;
                     margin-left:5px;
