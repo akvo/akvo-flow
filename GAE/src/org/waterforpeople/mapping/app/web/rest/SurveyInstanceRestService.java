@@ -53,6 +53,9 @@ public class SurveyInstanceRestService {
     @Inject
     private SurveyInstanceDAO surveyInstanceDao;
 
+    @Inject
+    private SurveyDAO surveyDao;
+
     // list survey instances
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
