@@ -40,6 +40,32 @@
                   <li><a {{action "deleteResource" target="this"}} class="deleteSurvey">{{t _delete}}</a></li>
                   <li class="offSet"><a {{action "showImportCascade" target="this"}} class="importBtn">{{t _import_cascade_data}}</a></li>
                 </ul>
+                </section>
+                <section {{bindAttr class="view.showImportDialog:display:hidden  :importBlock"}}>
+					<div>
+						<h2>{{t _import_cascade_file}}</h2>
+						<fieldset>
+						{{#if FLOW.uploader.support}}
+						<input id="cascade-resource-file" type="file" /></label>
+						<a {{action "importFile" target="this" }} class="standardBtn">{{t _import_cascade_file}}</a>
+						<a {{action "hideImportCascade" target="this" }} class="smallBtn">{{t _cancel}}</a>
+						<div>
+							{{t _import_help_text}}
+						</div>
+						<div class="resumable-progress">
+							<h5>{{t _progress}}</h5>
+							<div class="progress-container">
+								<div class="progress-bar"></div>
+							</div>
+						</div>
+						<ul class="resumable-list"></ul>
+						{{else}}
+						<div class="resumable-error">{{t
+							_bulk_upload_unsupported_browser}}</div>
+						{{/if}}
+					</div>
+				</section>
+                <section id="" class="cascadeDetailsPanel">
                 <ul class="cascadeInfo">
                     <li>{{t _cascading_levels}}<span class="cascadesN">{{FLOW.selectedControl.selectedCascadeResource.numLevels}}</span>
                     </li>
@@ -64,29 +90,7 @@
                 </div>
                 </nav>
               </section>
-			<section {{bindAttr class="view.showImportDialog:display:hidden  :importBlock"}}>
-				<div>
-					<h3>{{t _import_cascade_file}}</h3>
-					<fieldset>
-					<label>{{t _import_cascade_file}}</label>
-					{{#if FLOW.uploader.support}}
-					<input id="cascade-resource-file" type="file" /></label>
-					<a {{action "importFile" target="this" }} class="standardBtn">{{t _import_cascade_file}}</a>
-					<a {{action "hideImportCascade" target="this" }} class="smallBtn">{{t _cancel}}</a>
-					<div class="resumable-progress">
-						<h5>{{t _progress}}</h5>
-						<div class="progress-container">
-							<div class="progress-bar"></div>
-						</div>
-					</div>
-					<ul class="resumable-list"></ul>
-					{{else}}
-					<div class="resumable-error">{{t
-						_bulk_upload_unsupported_browser}}</div>
-					{{/if}}
-				</div>
-			</section>
-			<section {{bindAttr class="view.showImportDialog:hidden:display :levelColumns :floats-in"}}>
+			<section class="levelColumns floats-in">
                     <div class="levelCol level01">
                     	{{#view FLOW.CascadeLevelNameView col=1 origLevelName=FLOW.cascadeResourceControl.displayLevelName1}}
                        		<span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum1}}</span>
