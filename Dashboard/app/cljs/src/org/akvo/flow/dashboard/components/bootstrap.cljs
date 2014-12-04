@@ -12,8 +12,8 @@
   [:span.caret])
 
 (defn btn
-  ([button-type attrs icn]
-     (btn button-type attrs icn ""))
+  ([button-type attrs caption]
+     (btn button-type attrs ::no-icon caption))
   ([button-type attrs icn caption]
      {:pre [(string? button-type)
             (map? attrs)
@@ -24,18 +24,19 @@
                                   (if classes
                                     (str classes " " button-type)
                                     button-type)))
-      (icon icn) (when-not (empty? caption)
-                   (str " " caption))]))
+      (when-not (= icn ::no-icon)
+        (icon icn))
+      (str (if-not (= icn ::no-icon) " ") caption)]))
 
 (defn btn-primary
-  ([attrs icn]
-     (btn-primary attrs icn ""))
+  ([attrs caption]
+     (btn-primary attrs ::no-icon caption))
   ([attrs icn caption]
      (btn "btn-primary" attrs icn caption)))
 
 (defn btn-link
-  ([attrs icn]
-     (btn-link attrs icn ""))
+  ([attrs caption]
+     (btn-link attrs ::no-icon caption))
   ([attrs icn caption]
      (btn "btn-link" attrs icn caption)))
 

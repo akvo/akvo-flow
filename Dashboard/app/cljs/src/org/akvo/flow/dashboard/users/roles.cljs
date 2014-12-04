@@ -35,14 +35,15 @@
        (if confirm-delete?
          [:span
           [:strong (t> _deleteq) " "]
-          [:button.btn.btn-link {:on-click #(do (om/set-state! owner :confirm-delete? false)
-                              (on-action ::delete))} (t> _yes)]
+          (b/btn-link {:on-click #(do (om/set-state! owner :confirm-delete? false)
+                                      (on-action ::delete))}
+                      (t> _yes))
           " / "
-          [:button.btn.btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} (t> _no)]]
+          (b/btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} (t> _no))]
          [:span
-          [:button.btn.btn-link {:on-click #(on-action ::show-edit-view)} (b/icon :pencil) " " (t> _edit)]
+          (b/btn-link {:on-click #(on-action ::show-edit-view)} :pencil (t> _edit))
           " "
-          [:button.btn.btn-link {:class (if disabled? "disabled" "") :on-click #(om/set-state! owner :confirm-delete? true)} (b/icon :remove) " " (t> _delete)]])) )))
+          (b/btn-link {:class (if disabled? "disabled" "") :on-click #(om/set-state! owner :confirm-delete? true)} :remove (t> _delete))])))))
 
 
 (defmulti do-role-action (fn [action owner role] action))

@@ -39,19 +39,19 @@
        (if confirm-delete?
          [:span
           [:strong (t> _deleteq) " "]
-          [:button.btn.btn-link {:on-click #(do (om/set-state! owner :confirm-delete? false)
-                                        (dispatch :delete-user user))} (t> _yes)]
+          (b/btn-link {:on-click #(do (om/set-state! owner :confirm-delete? false)
+                                        (dispatch :delete-user user))}
+                      (t> _yes))
           " / "
-          [:button.btn.btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} (t> _no)]]
+          (b/btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} (t> _no))]
          [:span
-          [:button.btn.btn-link {:on-click #(do
+          (b/btn-link {:on-click #(do
                               (dispatch :projects/fetch nil)
                               (on-action user))}
-           (b/icon :pencil) " " (t> _edit)]
+                      :pencil (t> _edit))
           " "
-
-          [:button.btn.btn-link {:on-click #( om/set-state! owner :confirm-delete? true)}
-           (b/icon :remove) " " (t> _delete)]])))))
+          (b/btn-link {:on-click #( om/set-state! owner :confirm-delete? true)}
+                      :remove (t> _delete))])))))
 
 (defn user-roles [{:keys [user user-auth-store roles-store]} owner]
  (om/component
