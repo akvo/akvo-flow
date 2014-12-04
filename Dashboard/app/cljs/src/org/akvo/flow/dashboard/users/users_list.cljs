@@ -12,7 +12,8 @@
             [org.akvo.flow.dashboard.app-state :refer (app-state)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]
-            [ajax.core :refer (ajax-request GET POST PUT DELETE)]))
+            [ajax.core :refer (ajax-request GET POST PUT DELETE)])
+  (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
 (defn target-value [evt]
   (-> evt .-target .-value))
@@ -37,20 +38,20 @@
       (html
        (if confirm-delete?
          [:span
-          [:strong "Delete? "]
+          [:strong (t> _deleteq) " "]
           [:button.btn.btn-link {:on-click #(do (om/set-state! owner :confirm-delete? false)
-                                        (dispatch :delete-user user))} "Yes"]
+                                        (dispatch :delete-user user))} (t> _yes)]
           " / "
-          [:button.btn.btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} "No"]]
+          [:button.btn.btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} (t> _no)]]
          [:span
           [:button.btn.btn-link {:on-click #(do
                               (dispatch :projects/fetch nil)
                               (on-action user))}
-           (b/icon :pencil) " Edit"]
+           (b/icon :pencil) " " (t> _edit)]
           " "
 
           [:button.btn.btn-link {:on-click #( om/set-state! owner :confirm-delete? true)}
-           (b/icon :remove) " Delete"]])))))
+           (b/icon :remove) " " (t> _delete)]])))))
 
 (defn user-roles [{:keys [user user-auth-store roles-store]} owner]
  (om/component
@@ -60,7 +61,7 @@
                           (let [role (store/get-role roles-store roleId)]
                             [:div [:strong (get role "name")]
                              " (" (if (= objectPath "/")
-                                    "All folders & surveys"
+                                    (t> _all_folders_and_surveys)
                                     objectPath) ")"]))))]
     (html [:div roles]))))
 
@@ -73,21 +74,21 @@
 (defn columns [owner user-auth-store roles-store]
   (let [on-action (fn [user]
                     (om/set-state! owner :current-user-id (get user "keyId")))]
-    [{:title "User name"
+    [{:title (t> _user_name)
       :cell-fn #(get % "userName")
       :sort-by "userName"}
-     {:title "Email"
+     {:title (t> _email)
       :cell-fn #(get % "emailAddress")
       :sort-by "emailAddress"}
-     {:title "Roles"
+     {:title (t> _roles)
       :component user-roles
       :component-data-fn (fn [user]
                            {:user user
                             :user-auth-store user-auth-store
                             :roles-store roles-store})}
-     {:title "API keys"
+     {:title (t> _api_keys)
       :component api-user-mark}
-     {:title "Actions"
+     {:title (t> _actions)
       :component user-actions
       :component-data-fn (fn [user]
                            {:user user
@@ -112,7 +113,7 @@
     om/IRenderState
     (render-state [this {:keys [current-user-id] :as state}]
       (html
-       [:div.panels ;topNav-spacer.panels
+       [:div.panels
         [:div.mypanel {:class (if current-user-id "opened" "closed")}
          [:div.row.topMargin
           [:div.col-lg-3.col-md-3.col-sm-3]

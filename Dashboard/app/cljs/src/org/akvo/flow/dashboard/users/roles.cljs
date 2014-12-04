@@ -8,9 +8,8 @@
             [org.akvo.flow.dashboard.user-auth.store :as user-auth-store]
             [org.akvo.flow.dashboard.users.role-details :refer (role-details all-permissions)]
             [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros (html)]))
-
-
+            [sablono.core :as html :refer-macros (html)])
+  (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
 (defn target-value [evt]
   (-> evt .-target .-value))
@@ -35,15 +34,15 @@
       (html
        (if confirm-delete?
          [:span
-          [:strong "Delete? "]
+          [:strong (t> _deleteq) " "]
           [:button.btn.btn-link {:on-click #(do (om/set-state! owner :confirm-delete? false)
-                              (on-action ::delete))} "Yes"]
+                              (on-action ::delete))} (t> _yes)]
           " / "
-          [:button.btn.btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} "No"]]
+          [:button.btn.btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} (t> _no)]]
          [:span
-          [:button.btn.btn-link {:on-click #(on-action ::show-edit-view)} (b/icon :pencil) " Edit"]
+          [:button.btn.btn-link {:on-click #(on-action ::show-edit-view)} (b/icon :pencil) " " (t> _edit)]
           " "
-          [:button.btn.btn-link {:class (if disabled? "disabled" "") :on-click #(om/set-state! owner :confirm-delete? true)} (b/icon :remove) " Delete"]])) )))
+          [:button.btn.btn-link {:class (if disabled? "disabled" "") :on-click #(om/set-state! owner :confirm-delete? true)} (b/icon :remove) " " (t> _delete)]])) )))
 
 
 (defmulti do-role-action (fn [action owner role] action))
@@ -89,16 +88,16 @@
             (b/btn-primary {:on-click #(do (.preventDefault %)
                                            (toggle! owner :role-details-view?)
                                            (om/set-state! owner :current-role nil))}
-                           :plus "Add new role")]]]
+                           :plus (t> _add_new_role))]]]
          (om/build grid
                    {:data (store/get-roles user_roles)
-                    :columns [{:title "Role"
+                    :columns [{:title (t> _role)
                                :cell-fn #(get % "name")}
-                              {:title "Number of users"
+                              {:title (t> _number_of_users)
                                :cell-fn #(user-role-count user-auth %)}
-                              {:title "Permissions"
+                              {:title (t> _permissions)
                                :cell-fn #(s/join ", " (map (partial get all-permissions) (get % "permissions")))}
-                              {:title "Action"
+                              {:title (t> _actions)
                                :component role-actions
                                :component-data-fn (fn [role]
                                                     {:disabled? (not (zero? (user-role-count user-auth role)))

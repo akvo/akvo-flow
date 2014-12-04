@@ -9,7 +9,8 @@
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]
-            [ajax.core :refer (ajax-request GET POST PUT DELETE)]))
+            [ajax.core :refer (ajax-request GET POST PUT DELETE)])
+  (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
 (defn panel-header-section [{:keys [user close!]} owner]
   (om/component
@@ -17,9 +18,9 @@
     [:div.row.panelHeader
      [:div.col-xs-9.text-left.panelTitle
       [:h4
-       (b/icon :pencil) " Editing " [:span.usrNm (get user "userName")]]]
+       (b/icon :pencil) " " (t> _editing) " " [:span.usrNm (get user "userName")]]]
      [:div.col-xs-3.text-right
-      (b/btn-primary {:on-click #(close!)} :circle-arrow-left "Go back")]])))
+      (b/btn-primary {:on-click #(close!)} :circle-arrow-left (t> _go_back))]])))
 
 (defn target-value [event]
   (-> event .-target .-value))
@@ -41,29 +42,29 @@
     (render-state [this {:strs [userName emailAddress] :as state}]
       (html
        [:div.userEditSection.topMargin
-        [:h2 "User info:"]
+        [:h2 (t> _user_info) ":"]
         [:form
          [:div.form-group
-          [:label.control-label.text-left {:for "username"} "Name"]
+          [:label.control-label.text-left {:for "username"} (t> _name)]
           [:input.form-control {:value userName
-                                :placeholder "Enter full name"
+                                :placeholder (t> _enter_full_name)
                                 :on-change (update-input! owner "userName")}]]
          [:div.form-group
-          [:label.control-label.text-left {:for "email"} "Email"]
+          [:label.control-label.text-left {:for "email"} (t> _email)]
           [:input.form-control {:value emailAddress
-                                :placeholder "example@gmail.com"
+                                :placeholder (t> _email_placeholder)
                                 :on-change (update-input! owner "emailAddress")}]]
          [:div.form-group
           (b/btn-primary {:class (when (= state user) "disabled")
                           :on-click #(do (.preventDefault %)
                                          (on-save state))}
-                         :floppy-disk "Save user info")]]]))))
+                         :floppy-disk (t> _save_user_info))]]]))))
 
 
 (defn actions [user-auth owner]
   (om/component
    (html
-    [:a {:on-click #(dispatch :user-auth/delete user-auth)} (b/icon :remove) " Delete"])))
+    [:a {:on-click #(dispatch :user-auth/delete user-auth)} (b/icon :remove) " " (t> _delete)])))
 
 (defn role-label [{:strs [name]} owner]
   (om/component
@@ -80,11 +81,11 @@
     om/IRenderState
     (render-state [this {:keys [selected-role selected-folders]}]
       (html [:div.userRolesPerm.well.topMargin
-             [:h2 "Roles and permissions:"]
+             [:h2 (t> _roles_and_permissions) ":"]
              [:div.form-inline.text-left.paddingTop.roleEditSelect {:role "name"}
               [:div.form-group
                (om/build b/select
-                         {:placeholder "Select a role"
+                         {:placeholder (t> _select_a_role)
                           :selected selected-role
                           :data (store/get-roles roles-store)
                           :label-fn #(get % "name")
@@ -104,12 +105,12 @@
                            "PROJECT_FOLDER"))
                 [:div.form-group
                  (let [projects (if (empty? selected-folders)
-                                  (cons {"name" "All folders" "keyId" 0}
+                                  (cons {"name" (t> _all_folders) "keyId" 0}
                                         (projects-store/get-projects projects-store nil))
                                   (projects-store/get-projects projects-store (get (peek selected-folders) "keyId")))]
 
                    (om/build b/select
-                           {:placeholder "Select a project(folder)"
+                           {:placeholder (t> _select_a_folder_or_survey)
                             :data projects
                             :label-fn #(get % "name")
                             :key-fn #(str (get % "keyId"))
@@ -131,19 +132,19 @@
                                                                           (->> selected-folders
                                                                                (map #(get % "name"))
                                                                                (str/join "/"))))}))}
-                              :plus "Add")]]
+                              :plus (t> _add))]]
              (om/build grid
                        {:data (when-let [user-id (get user "keyId")]
                                 (user-auth-store/get-by-user-id user-auth-store user-id))
-                        :columns [{:title "Role"
+                        :columns [{:title (t> _role)
                                    :cell-fn (fn [user-auth]
                                               (let [role-id (get user-auth "roleId")
                                                     role (store/get-role roles-store role-id)
                                                     name (get role "name")]
                                                 name))}
-                                  {:title "Resource"
+                                  {:title (t> _resource)
                                    :cell-fn #(get % "objectPath")}
-                                  {:title "Actions"
+                                  {:title (t> _actions)
                                    :component actions}]})]))))
 
 (defn generate-apikeys [owner user]
@@ -177,19 +178,19 @@
     (render-state [this {:keys [access-key secret]}]
       (html
        [:div.apiKeySection.topMargin
-        [:h2 "Manage API key:"]
-        [:p "You can (re)generate or revoke an api key for this user"]
+        [:h2 (t> _manage_api_keys) ":"]
+        [:p (t> _you_can_regen_or_revoke_api_key_for_this_user)]
         (when secret
            [:div.alert.alert-success {:role "alert"}
-            (b/icon :ok) " The secret key will only be shown once. If it gets lost you will need to generate a new one."])
+            (b/icon :ok) " " (t> _secret_will_only_be_shown_once)])
         [:form
          [:div.form-group
-          [:label.control-label.text-left "Access key"]
+          [:label.control-label.text-left (t> _access_key)]
           [:input.form-control {:type "text"
                                 :value access-key}]]
          (when secret
            [:div.form-group
-            [:label.control-label.text-left "Secret"]
+            [:label.control-label.text-left (t> _secret)]
             [:input.form-control {:type "text"
                                   :value secret}]])
 
@@ -197,10 +198,10 @@
          [:div.btn-group
           [:button.btn.btn-default {:on-click #(do (.preventDefault %)
                                                    (generate-apikeys owner user))}
-           (b/icon :refresh) " (Re)generate"]
+           (b/icon :refresh) " " (t> _re_generate)]
           [:button.btn.btn-default {:on-click #(do (.preventDefault %)
                                                    (revoke-apikeys owner user))}
-           (b/icon :ban-circle) " Revoke"]]]]))))
+           (b/icon :ban-circle) " " (t> _revoke)]]]]))))
 
 (defn user-details [{:keys [close! user projects-store roles-store user-auth-store]} owner]
   (reify

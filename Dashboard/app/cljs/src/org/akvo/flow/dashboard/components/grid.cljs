@@ -53,6 +53,7 @@
                        {... ...}]})
   )
 
+
 (defn pagination-controls [{:keys [range on-range]} owner]
   (om/component
    (let [offset (or (:offset range) 0)

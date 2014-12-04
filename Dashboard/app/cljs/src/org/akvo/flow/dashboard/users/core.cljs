@@ -10,7 +10,8 @@
             [org.akvo.flow.dashboard.users.roles :refer (roles-and-permissions)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]
-            [ajax.core :refer (ajax-request GET POST PUT DELETE)]))
+            [ajax.core :refer (ajax-request GET POST PUT DELETE)])
+  (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
 (enable-console-print!)
 
@@ -22,12 +23,12 @@
             {:class "active"})
       [:a {:on-click #(dispatch :navigate {:name :users/users-list
                                            :params nil})}
-       "Dashboard users"]]
+       (t> _dashboard_users)]]
      [:li (if (= name :users/roles-and-permissions)
             {:class "active"})
       [:a {:on-click #(dispatch :navigate {:name :users/roles-and-permissions
                                            :params nil})}
-       "Roles & permissions"]]])))
+       (t> _roles_and_permissions)]]])))
 
 (defn panel [{:keys [component component-data active?]} owner]
   (om/component
