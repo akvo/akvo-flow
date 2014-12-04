@@ -93,8 +93,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
         String resourcePath = retrieveResourcePath(securedObject);
         if (resourcePath == null) {
-            // enables listing folders and forms. access is denied when
-            // specific folder is requested with insufficient permissions
+            // enables listing folders and forms
             return ACCESS_ABSTAIN;
         }
 
@@ -143,7 +142,8 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         String resourcePath = null;
 
         if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
-            if (!"application/json".equals(httpRequest.getContentType())
+            if ((httpRequest.getContentType() != null
+                    && !httpRequest.getContentType().startsWith("application/json"))
                     || (httpRequest.getContentLength() == 0)) {
                 return null; // if not JSON payload, conversion exception will be thrown later
             }
@@ -156,10 +156,17 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
                 log.severe(e.toString());
             }
 
-            if (!payload.containsKey("path")) {
+            Map content = null;
+            if (payload.containsKey("survey_group")) {
+                content = (Map) payload.get("survey_group");
+            } else {
+                content = (Map) payload.get("survey");
+            }
+
+            if (content == null || !content.containsKey("path")) {
                 throw new AccessDeniedException("Access is Denied. Unable to identify object path");
             }
-            resourcePath = (String) payload.get("path");
+            resourcePath = (String) content.get("path");
         } else {
             Matcher matcher = URI_PATTERN.matcher(requestUri);
             if (matcher.find()) {
