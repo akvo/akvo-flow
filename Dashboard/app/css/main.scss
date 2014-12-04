@@ -5038,25 +5038,12 @@ a.addBtn:hover {
     background-size: 25px 45px;
 }
 a.importBtn {
-    color: white;
-    background: rgba($anchorLink, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
-    padding: 8px 7px 13px 25px;
-    border-radius: 3px;
-    -webkit-background-size: 25px 45px;
-    background-size: 25px 45px;
-    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
-    transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    @extend .addBtn;
+    background: rgba($anchorLink, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;   
     &:hover {
-        color: white;
         background: rgba($anchorLinkHover, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
         -webkit-background-size: 25px 45px;
         background-size: 25px 45px;
-    }
-}
-a.importBtn {
-    color
-    &:hover {
-
     }
 }
 
@@ -5066,7 +5053,45 @@ a.importBtn {
         color:rgba(128,128,128,0.1);
     }
 }
-.levelUp {}
+a.levelUp {
+    display:table;
+    padding:10px 15px 10px 25px;
+    background: rgba($anchorLink, 0.1) url(../images/IconLeftBlue.svg) left center no-repeat; 
+    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;  
+    &:hover {
+    background: rgba($anchorLink, 0.1) url(../images/IconLeftOrange.svg) left center no-repeat;   
+    }
+}
+a.levelDown {
+    display:table;
+    padding:10px 25px 10px 15px;
+    background: rgba($anchorLink, 0.1) url(../images/IconRightBlue.svg) right center no-repeat;   
+    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    &:hover {
+    background: rgba($anchorLink, 0.1) url(../images/IconRightOrange.svg) right center no-repeat;   
+    }
+}
+li.disable {
+    a{
+        pointer-events: none; /* Disables the button completely. Better than just cursor: default; */
+        @include opacity(0.2);
+        color:white;
+        }
+    &.levelUp{
+        background: rgba($anchorLink, 0.1) url(../images/IconRightWhite.svg) right center no-repeat;   
+        &:hover {
+            background: rgba($anchorLink, 0.1) url(../images/IconRightWhite.svg) right center no-repeat;   
+            }
+        }
+    &.levelDown{
+        background: rgba($anchorLink, 0.1) url(../images/IconLeftWhite.svg) right center no-repeat;   
+        &:hover {
+            background: rgba($anchorLink, 0.1) url(../images/IconLeftWhite.svg) right center no-repeat;   
+            }
+        }
+    }
 .levelSecondNav {
     nav {
         ul{
@@ -5078,15 +5103,9 @@ a.importBtn {
             -webkit-align-items:center;
             align-items:center;
             li{
-                text-align: center;
-                width:33.33%;
+                width:50%;
                 -webkit-justify-content: flex-justified;
                 justify-content: flex-justified;
-                .publishProjectBtn {
-                    display:table;
-                    margin:10px auto;
-                }
-
             }
         }
     }
