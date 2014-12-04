@@ -33,8 +33,8 @@
         <intercept-url pattern="/dashboard.html" access="hasRole('SUPER_ADMIN')"/>
         <intercept-url pattern="/rest/survey_instances**" method="DELETE" access="hasRole('ADMIN')"/>
         <intercept-url pattern="/rest/users" access="hasRole('ADMIN')"/>
-        <intercept-url pattern="/rest/user_roles" access="hasRole('SUPER_ADMIN')"/>
-        <intercept-url pattern="/rest/user_auth" access="hasRole('SUPER_ADMIN')"/>
+        <intercept-url pattern="/rest/user_roles" access="hasRole('ADMIN')"/>
+        <intercept-url pattern="/rest/user_auth" access="hasRole('ADMIN')"/>
         <intercept-url pattern="/rest/**" access="hasRole('USER')"/>
         <intercept-url pattern="/admin/**" access="hasRole('USER')"/>
         <intercept-url pattern="/**" access="permitAll"/>

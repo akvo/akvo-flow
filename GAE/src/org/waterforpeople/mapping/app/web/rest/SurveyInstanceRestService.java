@@ -17,10 +17,13 @@
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -97,12 +100,10 @@ public class SurveyInstanceRestService {
         final Map<String, Object> response = new HashMap<String, Object>();
         RestStatusDto statusDto = new RestStatusDto();
 
-        // create list of surveygroup / survey
-        SurveyDAO surveyDao = new SurveyDAO();
-        List<Survey> surveyList = surveyDao.list("all");
-        HashMap<Long, String> surveyMap = new HashMap<Long, String>();
-        for (Survey s : surveyList) {
-            surveyMap.put(s.getKey().getId(), s.getPath() + "/" + s.getCode());
+        // for dashboard requests we immediately return empty list of no surveyId is provided
+        if (surveyId == null && surveyedLocaleId == null) {
+            response.put("survey_instances", Collections.emptyList());
+            return response;
         }
 
         // turn params into dates
@@ -126,24 +127,40 @@ public class SurveyInstanceRestService {
 
         // get survey Instances
         List<SurveyInstance> siList = null;
-        SurveyInstanceDAO dao = new SurveyInstanceDAO();
         if (surveyedLocaleId == null) {
-            siList = dao.listByDateRangeAndSubmitter(beginDate, endDate, false,
+            List<Survey> authorizedSurveys = surveyDao.listAllFilteredByUserAuthorization();
+            Set<Long> authorizedSurveyIds = new HashSet<Long>();
+            for (Survey s : authorizedSurveys) {
+                authorizedSurveyIds.add(s.getKey().getId());
+            }
+
+            if (!authorizedSurveyIds.contains(surveyId)) {
+                response.put("survey_instances", Collections.emptyList());
+                return response;
+            }
+
+            siList = surveyInstanceDao.listByDateRangeAndSubmitter(beginDate, endDate, false,
                     surveyId, deviceId, submitterName, countryCode, level1, level2, since);
         } else {
-            siList = dao.listInstancesByLocale(surveyedLocaleId, null, null, null);
+            siList = surveyInstanceDao.listInstancesByLocale(surveyedLocaleId, null, null, null);
         }
         Integer num = siList.size();
         String newSince = SurveyInstanceDAO.getCursor(siList);
 
+        String surveyCode = null;
+        if (siList.size() > 0) {
+            Survey selectedSurvey = surveyDao.getByKey(siList.get(0).getSurveyId());
+            surveyCode = selectedSurvey.getPath();
+        } else {
+            surveyCode = "";
+        }
+
         // put in survey group/survey names
         ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
         for (SurveyInstance siItem : siList) {
-            String code = surveyMap.get(siItem.getSurveyId());
             SurveyInstanceDto dto = new SurveyInstanceDto();
             DtoMarshaller.copyToDto(siItem, dto);
-            if (code != null)
-                dto.setSurveyCode(code);
+            dto.setSurveyCode(surveyCode);
             siDtoList.add(dto);
         }
 
