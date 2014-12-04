@@ -86,6 +86,11 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         String requestUri = securedObject.getRequestUrl();
         String httpMethod = httpRequest.getMethod();
 
+        // do not filter super admin requests
+        if (authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)) {
+            return ACCESS_ABSTAIN;
+        }
+
         // for now we only vote for request access on project folders and forms
         if (!URI_PATTERN.matcher(requestUri).find()) {
             return ACCESS_ABSTAIN;

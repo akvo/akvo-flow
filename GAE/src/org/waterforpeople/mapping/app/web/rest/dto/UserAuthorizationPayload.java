@@ -18,6 +18,9 @@ package org.waterforpeople.mapping.app.web.rest.dto;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 import com.gallatinsystems.user.domain.UserAuthorization;
@@ -66,10 +69,26 @@ public class UserAuthorizationPayload extends BaseDto {
     }
 
     public void setObjectPath(String objectPath) {
-        if (StringUtils.isBlank(objectPath)) {
-            throw new IllegalArgumentException("No path specified in authorization");
+        if (isAcceptablePath(objectPath)) {
+            this.userAuthorization.setObjectPath(objectPath);
+        } else {
+            throw new IllegalArgumentException("The specified path is not acceptable ("
+                    + objectPath + ")");
         }
-        this.userAuthorization.setObjectPath(objectPath);
+    }
+
+    private boolean isAcceptablePath(String objectPath) {
+        if (StringUtils.isNotBlank(objectPath)) {
+            if ("/".equals(objectPath)) {
+                Authentication authentication = SecurityContextHolder.getContext()
+                        .getAuthentication();
+                return authentication.getAuthorities().contains(AppRole.SUPER_ADMIN);
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
 
     @JsonIgnore
