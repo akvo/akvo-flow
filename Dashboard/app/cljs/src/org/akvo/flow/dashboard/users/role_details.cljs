@@ -54,7 +54,7 @@
     (render-state [this {:strs [name permissions] :as role}]
       (html
        [:div.roleEditSection.topMargin
-        [:h2 "List of permissions:"]
+        [:h2 (t> _list_of_permissions) ":"]
         [:form.paddingTop.roleEditSelect {:role "form"}
          [:div.form-group
           [:label.control-label.text-left {:for "userRoleName"} (t> _role_name)]
@@ -77,7 +77,6 @@
     om/IRender
     (render [this]
       (html
-       [:div.mypanel {:id "panel1"
-                      :class (if open? "opened" "closed")}
+       [:div.mypanel {:class (if open? "opened" "closed")}
         (om/build header-section {:role role :on-close on-close})
         (om/build role-edit-section {:role role :on-save on-save :on-close on-close})]))))

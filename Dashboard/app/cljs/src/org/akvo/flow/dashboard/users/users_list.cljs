@@ -15,9 +15,6 @@
             [ajax.core :refer (ajax-request GET POST PUT DELETE)])
   (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
-(defn target-value [evt]
-  (-> evt .-target .-value))
-
 (def empty-user
   {"admin" false
    "logoutUrl" nil
@@ -123,19 +120,19 @@
             (b/btn-primary {:class "btn-md"
                             :type "button"
                             :on-click #(om/set-state! owner :current-user-id 0)}
-                           :plus "Add new user")]]]
+                           :plus (t> _add_new_user))]]]
          (om/build grid
                    {:data (store/get-by-range users
                                                (merge (:pagination state)
                                                       (:sort state)))
-                     :sort (:sort state)
-                     :on-sort (fn [sort-by sort-order]
-                                (om/set-state! owner :sort {:sort-by sort-by :sort-order sort-order}))
-                     :range (:pagination state)
-                     :on-range (fn [offset limit]
-                                 (om/set-state! owner :pagination {:offset offset :limit limit}))
-                     :key-fn #(get % "keyId")
-                     :columns (columns owner user-auth user_roles)})]
+                    :sort (:sort state)
+                    :on-sort (fn [sort-by sort-order]
+                               (om/set-state! owner :sort {:sort-by sort-by :sort-order sort-order}))
+                    :range (:pagination state)
+                    :on-range (fn [offset limit]
+                                (om/set-state! owner :pagination {:offset offset :limit limit}))
+                    :key-fn #(get % "keyId")
+                    :columns (columns owner user-auth user_roles)})]
         [:div.mypanel {:class (if current-user-id "opened" "closed")}
          [:div
           (om/build user-details {:user (if (or (nil? current-user-id)

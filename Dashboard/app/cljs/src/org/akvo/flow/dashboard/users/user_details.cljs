@@ -27,7 +27,7 @@
 
 (defn update-input! [owner key]
   (fn [event]
-    (om/set-state! owner key (-> event .-target .-value))))
+    (om/set-state! owner key (target-value event))))
 
 (defn user-edit-section [{:keys [on-save user]} owner]
   (reify
