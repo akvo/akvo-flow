@@ -89,6 +89,18 @@
     (assert (integer? permission-list))
     (zero? permission-list)))
 
+(defn survey-or-folder [s]
+  (let [name (get s "name")
+        type (get s "projectType")]
+    (if (= type "PROJECT_FOLDER")
+      [:span (b/fa-icon :folder) " " name]
+      [:span (b/fa-icon :pencil-square-o) " " name])))
+
+(defn sort-folders-and-surveys [s]
+  (let [{folders "PROJECT_FOLDER" surveys "PROJECT"} (group-by #(get % "projectType") s)]
+    (concat (sort-by #(get % "name") folders)
+            (sort-by #(get % "name") surveys))))
+
 (defn roles-and-permissions [{:keys [user roles-store projects-store user-auth-store]} owner]
   (reify
     om/IInitState
@@ -102,12 +114,11 @@
              [:h2 (t> _roles_and_permissions) ":"]
              [:div.form-inline.text-left.paddingTop.roleEditSelect {:role "name"}
               [:div.form-group
-               (om/build b/select
+               (om/build b/dropdown ;;b/select
                          {:placeholder (t> _select_a_role)
                           :selected selected-role
                           :data (store/get-roles roles-store)
                           :label-fn #(get % "name")
-                          :key-fn #(str (get % "keyId"))
                           :on-select #(om/set-state! owner :selected-role %)})]
               (for [{:keys [selected-folder idx]} (map-indexed (fn [idx sf]
                                                                  {:selected-folder sf
@@ -115,11 +126,11 @@
                                                                selected-folders)]
                 (let [parent-id (get selected-folder "parentId")]
                   [:div.form-group
-                   (om/build b/select
-                             {:data (projects-store/get-projects projects-store parent-id)
+                   (om/build b/dropdown
+                             {:data (sort-folders-and-surveys
+                                     (projects-store/get-projects projects-store parent-id))
                               :selected selected-folder
-                              :label-fn #(get % "name")
-                              :key-fn #(str (get % "keyId"))
+                              :label-fn survey-or-folder;;#(get % "name")
                               :on-select #(om/set-state! owner :selected-folders
                                                          (conj (subvec selected-folders 0 idx) %))})]))
               (when (or (empty? selected-folders)
@@ -134,12 +145,11 @@
                                         (projects-store/get-projects projects-store nil))
                                   (projects-store/get-projects projects-store (get (peek selected-folders) "keyId")))]
 
-                   (om/build b/select
-                           {:placeholder (t> _select_a_folder_or_survey)
-                            :data projects
-                            :label-fn #(get % "name")
-                            :key-fn #(str (get % "keyId"))
-                            :on-select #(om/set-state! owner :selected-folders
+                   (om/build b/dropdown
+                             {:placeholder (t> _select_a_folder_or_survey)
+                              :data (sort-folders-and-surveys projects)
+                              :label-fn survey-or-folder ;;#(get % "name")
+                              :on-select #(om/set-state! owner :selected-folders
                                                        (conj selected-folders %))}))])
               [:div.form-group
                (b/btn-primary {:class (if (or (nil? selected-role)
