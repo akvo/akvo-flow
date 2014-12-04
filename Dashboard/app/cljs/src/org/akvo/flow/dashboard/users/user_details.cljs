@@ -60,7 +60,7 @@
                     :on-change #(condp = (target-value %)
                                   "10" (om/set-state! owner "permissionList" "20")
                                   "20" (om/set-state! owner "permissionList" "10"))}]
-           " " (t> _allow_user_administration) "?"]]
+           " " (t> _administrator) "?"]]
          [:div.form-group
           (b/btn-primary {:class (when (= state user) "disabled")
                           :on-click #(do (.preventDefault %)
@@ -77,6 +77,17 @@
   (om/component
    (html
     [:span name])))
+
+(defn current-user []
+  (-> js/window
+      (aget "parent")
+      (aget "FLOW")
+      (aget "currentUser")))
+
+(defn super-admin? [user]
+  (let [permission-list (aget user "permissionList")]
+    (assert (integer? permission-list))
+    (zero? permission-list)))
 
 (defn roles-and-permissions [{:keys [user roles-store projects-store user-auth-store]} owner]
   (reify
@@ -98,20 +109,27 @@
                           :label-fn #(get % "name")
                           :key-fn #(str (get % "keyId"))
                           :on-select #(om/set-state! owner :selected-role %)})]
-              (for [selected-folder selected-folders]
-                [:div.form-group
-                 (om/build b/select
-                           {:data [selected-folder]
-                            :selected selected-folder
-                            :label-fn #(get % "name")
-                            :key-fn #(str (get % "keyId"))})])
+              (for [{:keys [selected-folder idx]} (map-indexed (fn [idx sf]
+                                                                 {:selected-folder sf
+                                                                  :idx idx})
+                                                               selected-folders)]
+                (let [parent-id (get selected-folder "parentId")]
+                  [:div.form-group
+                   (om/build b/select
+                             {:data (projects-store/get-projects projects-store parent-id)
+                              :selected selected-folder
+                              :label-fn #(get % "name")
+                              :key-fn #(str (get % "keyId"))
+                              :on-select #(om/set-state! owner :selected-folders
+                                                         (conj (subvec selected-folders 0 idx) %))})]))
               (when (or (empty? selected-folders)
                         (= (get (projects-store/get-by-id projects-store
                                                           (get (peek selected-folders) "keyId"))
                                 "projectType")
                            "PROJECT_FOLDER"))
                 [:div.form-group
-                 (let [projects (if (empty? selected-folders)
+                 (let [projects (if (and (empty? selected-folders)
+                                         (super-admin? (current-user)))
                                   (cons {"name" (t> _all_folders) "keyId" 0}
                                         (projects-store/get-projects projects-store nil))
                                   (projects-store/get-projects projects-store (get (peek selected-folders) "keyId")))]
