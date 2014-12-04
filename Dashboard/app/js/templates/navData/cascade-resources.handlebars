@@ -211,10 +211,10 @@
 	            <nav>
 	              <ul>
 	               {{#view FLOW.CascadeSecondNavView dir="down"}}
-	               		<a {{action "goDownLevel" target="this"}} class="levelDown btn">{{t _move_one_level_down}}</a>
+	               		<a {{action "goDownLevel" target="this"}} class="levelDown btn">{{t _move_left}}</a>
 	              {{/view}}
 	               {{#view FLOW.CascadeSecondNavView dir="up"}}
-	                	<a {{action "goUpLevel" target="this"}} class="levelUp btn">{{t _move_one_level_up}}</a>
+	                	<a {{action "goUpLevel" target="this"}} class="levelUp btn">{{t _move_right}}</a>
 	              {{/view}}
 	              </ul>
 	            </nav>
