@@ -39,7 +39,7 @@
       (om/set-state! owner user))
 
     om/IRenderState
-    (render-state [this {:strs [userName emailAddress] :as state}]
+    (render-state [this {:strs [userName emailAddress permissionList] :as state}]
       (html
        [:div.userEditSection.topMargin
         [:h2 (t> _user_info) ":"]
@@ -54,6 +54,13 @@
           [:input.form-control {:value emailAddress
                                 :placeholder (t> _email_placeholder)
                                 :on-change (update-input! owner "emailAddress")}]]
+         [:div.form-group
+          [:label
+           [:input {:type "checkbox" :value permissionList :checked (= permissionList "10")
+                    :on-change #(condp = (target-value %)
+                                  "10" (om/set-state! owner "permissionList" "20")
+                                  "20" (om/set-state! owner "permissionList" "10"))}]
+           " " (t> _allow_user_administration) "?"]]
          [:div.form-group
           (b/btn-primary {:class (when (= state user) "disabled")
                           :on-click #(do (.preventDefault %)
