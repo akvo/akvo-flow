@@ -111,10 +111,10 @@
                         	{{#each item in FLOW.cascadeNodeControl.displayLevel1}}
 								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=1}}
 									{{#if view.showEditNode}}
-										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode" placeholder="code" size=12}}
-										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName" placeholder="new item name (mandatory)" size=53}}
-										<a {{action "saveEditNode" target="this"}}><button class="addCascadeItem">Save</button></a>
-										<a {{action "cancelEditNode" target="this"}}><button class="addCascadeItem">Cancel</button></a>
+										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode squeezeR" placeholder="code" size=12}}
+										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName squeezeR" placeholder="new item name (mandatory)" size=53}}
+										<button class="addCascadeItem squeezeR" {{action "saveEditNode" target="this"}}>Save</button>
+										<button class="addCascadeItem squeezeR" {{action "cancelEditNode" target="this"}}>Cancel</button>
 									{{else}}
 										<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
 										<a {{action "deleteNode" target="this"}} class="deleteLevel">delete</a>
@@ -138,8 +138,8 @@
 								{{/if}}
                            		{{#view FLOW.CascadeNodeView col=2}}
 									{{#if view.showInputField}}
-										{{view Ember.TextField valueBinding="view.cascadeNodeCode" placeholder="code" size=12}}
-										{{view Ember.TextField valueBinding="view.cascadeNodeName" placeholder="new item name (mandatory)" size=53}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeCode" class="cascadeEntryCode" placeholder="code"placeholder="code" size=12}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeName" class="cascadeEntryName" placeholder="new item name (mandatory)" size=53}}
 										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
 									{{/if}}
 								{{/view}}
