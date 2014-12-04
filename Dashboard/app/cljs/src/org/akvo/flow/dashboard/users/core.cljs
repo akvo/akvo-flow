@@ -1,16 +1,10 @@
 (ns org.akvo.flow.dashboard.users.core
-  (:require [clojure.string :as s]
-            [org.akvo.flow.dashboard.dispatcher :refer (dispatch)]
-            [org.akvo.flow.dashboard.components.dialog :refer (dialog)]
-            [org.akvo.flow.dashboard.components.grid :refer (grid)]
-            [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
-            [org.akvo.flow.dashboard.users.store :as store]
+  (:require [org.akvo.flow.dashboard.dispatcher :refer (dispatch)]
             [org.akvo.flow.dashboard.app-state :refer (app-state)]
             [org.akvo.flow.dashboard.users.users-list :refer (users)]
             [org.akvo.flow.dashboard.users.roles :refer (roles-and-permissions)]
             [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros (html)]
-            [ajax.core :refer (ajax-request GET POST PUT DELETE)])
+            [sablono.core :as html :refer-macros (html)])
   (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
 (enable-console-print!)

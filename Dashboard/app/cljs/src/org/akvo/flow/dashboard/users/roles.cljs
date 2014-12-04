@@ -80,7 +80,7 @@
     (render-state [this {:keys [role-details-view? current-role]}]
       (html
        [:div.panels
-        [:div.mypanel {:id "panel0" :class (if role-details-view? "opened" "closed")}
+        [:div.mypanel {:class (if role-details-view? "opened" "closed")}
          [:div.row.topMargin
           [:div.col-lg-3.col-md-3.col-sm-3]
           [:div.col-lg-2.col-md-2.col-sm-2]
