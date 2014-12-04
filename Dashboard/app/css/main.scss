@@ -4889,7 +4889,7 @@ div.addLevelBtn {
             li{
                 position:relative;
                 color:white;
-                padding:15px 2%;
+                padding:0 2%;
                 width:96%;
                 background: rgb(53, 76, 84) url(../images/carret.svg) right center no-repeat;
                 margin:0px auto 5px auto;
@@ -4909,10 +4909,12 @@ div.addLevelBtn {
             a {
                 display:block;
                 width:100%;
+                padding:15px 0;
                 &.deleteLevel {
                     position:absolute;
                     display: inline-block;
                     width:15px;
+                    height:inherit;
                     padding:0px 7px 14px 7px;
                     text-indent:-9999px;
                     margin-top:-7px;
@@ -4930,6 +4932,7 @@ div.addLevelBtn {
                     position:absolute;
                     display: inline-block;
                     width:15px;
+                    height:inherit;
                     padding:0px 7px 14px 7px;
                     text-indent:-9999px;
                     margin-top:-7px;
@@ -5116,7 +5119,6 @@ li.disable {
         }
     }
 .levelSecondNav {
-
     nav {
         ul{
             display: -webkit-box;
