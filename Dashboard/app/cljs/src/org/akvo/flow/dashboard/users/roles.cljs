@@ -34,7 +34,7 @@
       (html
        (if confirm-delete?
          [:span
-          [:strong (t> _deleteq) " "]
+          [:strong (t> _delete) "?"]
           (b/btn-link {:on-click #(do (om/set-state! owner :confirm-delete? false)
                                       (on-action ::delete))}
                       (t> _yes))
