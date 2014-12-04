@@ -84,8 +84,10 @@
                             :user-auth-store user-auth-store
                             :roles-store roles-store})}
      {:title (t> _api_keys)
+      :class "text-center"
       :component api-user-mark}
      {:title (t> _actions)
+      :class "text-center"
       :component user-actions
       :component-data-fn (fn [user]
                            {:user user

@@ -95,10 +95,12 @@
                     :columns [{:title (t> _role)
                                :cell-fn #(get % "name")}
                               {:title (t> _number_of_users)
+                               :class "text-center"
                                :cell-fn #(user-role-count user-auth %)}
                               {:title (t> _permissions)
                                :cell-fn #(s/join ", " (map (partial get all-permissions) (get % "permissions")))}
                               {:title (t> _actions)
+                               :class "text-center"
                                :component role-actions
                                :component-data-fn (fn [role]
                                                     {:disabled? (not (zero? (user-role-count user-auth role)))

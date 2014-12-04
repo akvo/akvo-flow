@@ -49,6 +49,9 @@
                         :component-data-fn identity
                         ;; Make the column sortable by adding a :sort-by
                         :sort-by "username"
+
+                        ;; default left
+                        :align :center
                         }
                        {... ...}]})
   )
@@ -85,15 +88,9 @@
       [:tr {:class "tabHeader"}
        (->> columns
             (map-indexed
-             (fn [idx {:keys [title sort-by]}]
+             (fn [idx {:keys [title sort-by class]}]
                [:th {:key (str "col_" idx) ;; TODO could also be derived from e.g. title
-                     :class (if sort-by
-                              (if (= current-sort-by sort-by)
-                                (if (= current-sort-order "ascending")
-                                  "sorting_asc"
-                                  "sorting_desc")
-                                "")
-                              "noArrows")}
+                     :class class}
                 [:a (when sort-by
                       {:on-click #(on-sort sort-by
                                            (if (= current-sort-by sort-by)
@@ -101,7 +98,14 @@
                                              "ascending"))})
                  (if (fn? title)
                    (om/build title {})
-                   title)]])))]))))
+                   title)
+                 " "
+                 (if sort-by
+                   (if (= current-sort-by sort-by)
+                     (if (= current-sort-order "ascending")
+                       [:i.fa.fa-sort-asc]
+                       [:i.fa.fa-sort-desc])
+                     [:i.fa.fa-unsorted]))]])))]))))
 
 (defn table-row [{:keys [row columns]} owner]
   (om/component
@@ -115,7 +119,7 @@
                                  component (let [data (component-data-fn row)]
                                              (om/build component data)))]
                       [:td {:class class
-                            :key (str "col_" idx)} item]))
+                            :key (str "col_" idx)}  item]))
                   columns)])))
 
 (defn grid [data owner]
