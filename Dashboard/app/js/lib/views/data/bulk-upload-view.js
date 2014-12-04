@@ -111,7 +111,7 @@ FLOW.uploader = Ember.Object.create({
         sc = FLOW.selectedControl.selectedCascadeResource;
         data.cascadeResourceId = sc.get('keyId');
         data.numLevels = FLOW.selectedControl.get('cascadeImportNumLevels');
-        data.includeCodes = FLOW.selectedControl.get('cascadeImportIncludeCodes');
+        data.includeCodes = !!FLOW.selectedControl.get('cascadeImportIncludeCodes');
       }
 
       // Reflect that the file upload has completed
