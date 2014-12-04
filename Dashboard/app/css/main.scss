@@ -130,6 +130,7 @@ button {
 
 html {
     width: 100%;
+    height:100%;
     overflow-y: scroll;
     border-top: 3px solid rgb(38, 8, 89);
     background: white;
@@ -1438,7 +1439,7 @@ th.action {
         box-sizing: border-box;
         width:100%;
         padding:15px 0;
-        margin:0 auto;     
+        margin:0 auto;   
     }
 }
 #tabs section h1,
@@ -4666,13 +4667,17 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     padding:8px 8px 8px 31px;
   }
 }
-
+/*.cascadeWrap {
+     height:calc(100vh - 180px);
+}*/
 .cascadeSection {
     background: $projectBackground;
     box-sizing: border-box;
     width:100%;
     padding:15px 0;
     margin:0 auto;
+    height:calc(100vh - 260px);
+    overflow-y: scroll;
     .cascadeDetailsPanel {
         padding-top:15px;         
         padding-bottom:15px;
@@ -4831,7 +4836,9 @@ div.addLevelBtn {
     -webkit-overflow-scrolling: touch; 
     margin-top: 15px;
     background:rgba(32,32,36,0.7);
+    height:calc(100% - 360px);
     .levelCol {
+        position:relative;
         @include border-radius(3px);
         padding:10px 5px;
         vertical-align: top;
@@ -4840,8 +4847,8 @@ div.addLevelBtn {
         background:rgba(32,32,36,0.2);
         bottom:0;
         top:0;
-        height: 100%;
-        max-height:100%;
+        height: calc(100% - 20px);
+        max-height:calc(100% - 20px);
         overflow: auto;
         transition:all 0.4s ease-in;
         .levelNbr {
@@ -4864,7 +4871,6 @@ div.addLevelBtn {
                 }
             }
         .levelHead {
-            position:relative;
             padding-left:5px;            
             width: calc(100% - 10px);
             label {
