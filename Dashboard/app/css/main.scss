@@ -4675,7 +4675,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     margin:0 auto;
     .cascadeDetailsPanel {
         padding-top:15px;         
-        padding-bottom:15px; 
+        padding-bottom:15px;
+        .offSet {
+            @include offSet(60px, 0);
+        } 
         h2 {
             margin-right: 15px;
             }
