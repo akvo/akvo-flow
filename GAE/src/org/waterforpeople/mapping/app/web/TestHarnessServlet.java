@@ -71,7 +71,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class TestHarnessServlet extends HttpServlet {
     private static Logger log = Logger.getLogger(TestHarnessServlet.class
-	    .getName());
+            .getName());
     private static final long serialVersionUID = -5673118002247715049L;
 
     @Override
@@ -486,32 +486,32 @@ public class TestHarnessServlet extends HttpServlet {
     }
 
     private void setupTestUser() {
-	UserDao userDao = new UserDao();
-	User user = userDao.findUserByEmail("test@example.com");
-	if (user == null) {
-	    user = new User();
-	    user.setEmailAddress("test@example.com");
-	}
-	user.setSuperAdmin(true);
-	user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
-	user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
-	user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
-	userDao.save(user);
+        UserDao userDao = new UserDao();
+        User user = userDao.findUserByEmail("test@example.com");
+        if (user == null) {
+            user = new User();
+            user.setEmailAddress("test@example.com");
+        }
+        user.setSuperAdmin(true);
+        user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
+        user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
+        user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
+        userDao.save(user);
     }
 
     private boolean deleteSurveyResponses(Long surveyId, Integer count) {
-	SurveyInstanceDAO dao = new SurveyInstanceDAO();
+        SurveyInstanceDAO dao = new SurveyInstanceDAO();
 
-	List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
-		surveyId, count != null ? count : 100);
+        List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
+                surveyId, count != null ? count : 100);
 
-	if (instances != null) {
-	    for (SurveyInstance instance : instances) {
-		dao.deleteSurveyInstance(instance);
-	    }
-	    return true;
-	}
-	return false;
+        if (instances != null) {
+            for (SurveyInstance instance : instances) {
+                dao.deleteSurveyInstance(instance);
+            }
+            return true;
+        }
+        return false;
     }
 
     private static void projectMigration() {

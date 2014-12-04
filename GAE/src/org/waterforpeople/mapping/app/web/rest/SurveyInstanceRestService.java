@@ -60,28 +60,17 @@ public class SurveyInstanceRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listSurveyInstances(
-            @RequestParam(value = "beginDate", defaultValue = "")
-            Long bDate,
-            @RequestParam(value = "endDate", defaultValue = "")
-            Long eDate,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId,
-            @RequestParam(value = "since", defaultValue = "")
-            String since,
-            @RequestParam(value = "unapprovedOnlyFlag", defaultValue = "")
-            Boolean unapprovedOnlyFlag,
-            @RequestParam(value = "deviceId", defaultValue = "")
-            String deviceId,
-            @RequestParam(value = "submitterName", defaultValue = "")
-            String submitterName,
-            @RequestParam(value = "countryCode", defaultValue = "")
-            String countryCode,
-            @RequestParam(value = "level1", defaultValue = "")
-            String level1,
-            @RequestParam(value = "level2", defaultValue = "")
-            String level2,
-            @RequestParam(value = "surveyedLocaleId", defaultValue = "")
-            Long surveyedLocaleId) {
+            @RequestParam(value = "beginDate", defaultValue = "") Long bDate,
+            @RequestParam(value = "endDate", defaultValue = "") Long eDate,
+            @RequestParam(value = "surveyId", required = false) Long surveyId,
+            @RequestParam(value = "since", defaultValue = "") String since,
+            @RequestParam(value = "unapprovedOnlyFlag", defaultValue = "") Boolean unapprovedOnlyFlag,
+            @RequestParam(value = "deviceId", defaultValue = "") String deviceId,
+            @RequestParam(value = "submitterName", defaultValue = "") String submitterName,
+            @RequestParam(value = "countryCode", defaultValue = "") String countryCode,
+            @RequestParam(value = "level1", defaultValue = "") String level1,
+            @RequestParam(value = "level2", defaultValue = "") String level2,
+            @RequestParam(value = "surveyedLocaleId", defaultValue = "") Long surveyedLocaleId) {
 
         // we don't want to search for empty fields
         if ("".equals(deviceId)) {
@@ -178,8 +167,7 @@ public class SurveyInstanceRestService {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
     public Map<String, SurveyInstanceDto> findSurveyInstanceById(
-            @PathVariable("id")
-            Long id) {
+            @PathVariable("id") Long id) {
         final Map<String, SurveyInstanceDto> response = new HashMap<String, SurveyInstanceDto>();
         SurveyInstance s = surveyInstanceDao.getByKey(id);
         SurveyInstanceDto dto = null;
@@ -196,8 +184,7 @@ public class SurveyInstanceRestService {
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
     public Map<String, RestStatusDto> deleteSurveyInstanceById(
-            @PathVariable("id")
-            Long id) {
+            @PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         SurveyInstance s = surveyInstanceDao.getByKey(id);
         RestStatusDto statusDto = new RestStatusDto();
@@ -222,8 +209,7 @@ public class SurveyInstanceRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingSurveyInstance(
-            @RequestBody
-            SurveyInstancePayload payLoad) {
+            @RequestBody SurveyInstancePayload payLoad) {
 
         final SurveyInstanceDto surveyInstanceDto = payLoad.getSurvey_instance();
         final Map<String, Object> response = new HashMap<String, Object>();
@@ -266,8 +252,7 @@ public class SurveyInstanceRestService {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> saveNewSurveyInstance(
-            @RequestBody
-            SurveyInstancePayload payLoad) {
+            @RequestBody SurveyInstancePayload payLoad) {
 
         final SurveyInstanceDto surveyInstanceDto = payLoad.getSurvey_instance();
         final Map<String, Object> response = new HashMap<String, Object>();

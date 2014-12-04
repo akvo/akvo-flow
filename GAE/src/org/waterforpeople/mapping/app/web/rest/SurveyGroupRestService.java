@@ -56,10 +56,8 @@ public class SurveyGroupRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listSurveyGroups(
-            @RequestParam(value = "preflight", defaultValue = "")
-            String preflight,
-            @RequestParam(value = "surveyGroupId", defaultValue = "")
-            Long surveyGroupId) {
+            @RequestParam(value = "preflight", defaultValue = "") String preflight,
+            @RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId) {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyGroupDto> results = new ArrayList<SurveyGroupDto>();
         RestStatusDto statusDto = new RestStatusDto();
@@ -99,8 +97,7 @@ public class SurveyGroupRestService {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
     public Map<String, SurveyGroupDto> findSurveyGroupById(
-            @PathVariable("id")
-            Long id) {
+            @PathVariable("id") Long id) {
         final Map<String, SurveyGroupDto> response = new HashMap<String, SurveyGroupDto>();
         SurveyGroup s = surveyGroupDao.getByKey(id);
         SurveyGroupDto dto = null;
@@ -116,8 +113,7 @@ public class SurveyGroupRestService {
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
     public Map<String, RestStatusDto> deleteSurveyGroupById(
-            @PathVariable("id")
-            Long id) {
+            @PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         SurveyGroup s = surveyGroupDao.getByKey(id);
         RestStatusDto statusDto = new RestStatusDto();
@@ -151,8 +147,7 @@ public class SurveyGroupRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingSurveyGroup(
-            @RequestBody
-            SurveyGroupPayload payLoad) {
+            @RequestBody SurveyGroupPayload payLoad) {
 
         final SurveyGroupDto surveyGroupDto = payLoad.getSurvey_group();
         final Map<String, Object> response = new HashMap<String, Object>();
@@ -195,8 +190,7 @@ public class SurveyGroupRestService {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> saveNewSurveyGroup(
-            @RequestBody
-            SurveyGroupPayload payLoad) {
+            @RequestBody SurveyGroupPayload payLoad) {
 
         final SurveyGroupDto surveyGroupDto = payLoad.getSurvey_group();
         final Map<String, Object> response = new HashMap<String, Object>();

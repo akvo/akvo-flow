@@ -97,22 +97,18 @@ public class SurveyRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listSurveysByGroupId(
-            @RequestParam(value = "surveyGroupId", defaultValue = "")
-            Long surveyGroupId,
-            @RequestParam(value = "ids[]", defaultValue = "")
-            Long[] ids,
-            @RequestParam(value = "preflight", defaultValue = "")
-            String preflight,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId) {
+            @RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId,
+            @RequestParam(value = "ids[]", defaultValue = "") Long[] ids,
+            @RequestParam(value = "preflight", defaultValue = "") String preflight,
+            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId) {
 
-	// If none of the optional query params are specified, return all surveys
-	if (surveyGroupId == null
-		&& ids[0] == null
-		&& preflight.equals("")
-		&& surveyId == null) {
-	    return listSurveys();
-	}
+        // If none of the optional query params are specified, return all surveys
+        if (surveyGroupId == null
+                && ids[0] == null
+                && preflight.equals("")
+                && surveyId == null) {
+            return listSurveys();
+        }
 
         final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyDto> results = new ArrayList<SurveyDto>();
@@ -171,8 +167,7 @@ public class SurveyRestService {
     // find a single survey by the surveyId
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
-    public Map<String, SurveyDto> findSurvey(@PathVariable("id")
-    Long id) {
+    public Map<String, SurveyDto> findSurvey(@PathVariable("id") Long id) {
         final Map<String, SurveyDto> response = new HashMap<String, SurveyDto>();
         Survey s = surveyDao.getByKey(id);
         SurveyDto dto = null;
@@ -199,15 +194,14 @@ public class SurveyRestService {
 
     /**
      * Spawns a task to delete a survey by survey id
-     * 
+     *
      * @param surveyId
      * @return
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
     public Map<String, RestStatusDto> deleteSurveyById(
-            @PathVariable("id")
-            Long surveyId) {
+            @PathVariable("id") Long surveyId) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         Survey survey = surveyDao.getByKey(surveyId);
         RestStatusDto statusDto = null;
@@ -239,8 +233,7 @@ public class SurveyRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingSurvey(
-            @RequestBody
-            SurveyPayload payLoad) {
+            @RequestBody SurveyPayload payLoad) {
         final SurveyDto surveyDto = payLoad.getSurvey();
         final Map<String, Object> response = new HashMap<String, Object>();
         SurveyDto dto = null;
@@ -303,8 +296,7 @@ public class SurveyRestService {
     // create new survey
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, Object> saveNewSurvey(@RequestBody
-    SurveyPayload payLoad) {
+    public Map<String, Object> saveNewSurvey(@RequestBody SurveyPayload payLoad) {
         final SurveyDto surveyDto = payLoad.getSurvey();
         final Map<String, Object> response = new HashMap<String, Object>();
 
