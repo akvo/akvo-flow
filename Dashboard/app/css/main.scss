@@ -5017,6 +5017,9 @@ a.btn {
     padding: 1px 0 7px 21px;
     height: 10px;
     text-transform: uppercase;
+    &.smallBtn {
+        display: inline-block;
+    }
     &:hover {
          color:$anchorLinkHover;
     }
@@ -5055,22 +5058,32 @@ a.importBtn {
 }
 a.levelUp {
     display:table;
-    padding:10px 15px 10px 25px;
-    background: rgba($anchorLink, 0.1) url(../images/IconLeftBlue.svg) left center no-repeat; 
+    margin:20px auto 0;
+    padding:15px 35px 15px 15px;
+    background: rgba($anchorLink, 0) url(../images/IconRightBlue.svg) right center no-repeat; 
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;  
+    -webkit-background-size: 25px 25px;
+    background-size: 25px 25px;
     &:hover {
-    background: rgba($anchorLink, 0.1) url(../images/IconLeftOrange.svg) left center no-repeat;   
+    background: rgba($anchorLink, 0.1) url(../images/IconRightOrange.svg) right center no-repeat;  
+    -webkit-background-size: 25px 25px;
+    background-size: 25px 25px;
     }
 }
 a.levelDown {
     display:table;
-    padding:10px 25px 10px 15px;
-    background: rgba($anchorLink, 0.1) url(../images/IconRightBlue.svg) right center no-repeat;   
+    margin:20px auto 0;
+    padding:15px 15px 15px 35px;
+    background: rgba($anchorLink, 0) url(../images/IconLeftBlue.svg) left center no-repeat;   
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    -webkit-background-size: 25px 25px;
+    background-size: 25px 25px;
     &:hover {
-    background: rgba($anchorLink, 0.1) url(../images/IconRightOrange.svg) right center no-repeat;   
+    background: rgba($anchorLink, 0.1) url(../images/IconLeftOrange.svg) left center no-repeat;   
+        -webkit-background-size: 25px 25px;
+    background-size: 25px 25px;
     }
 }
 li.disable {
@@ -5080,19 +5093,30 @@ li.disable {
         color:white;
         }
     &.levelUp{
-        background: rgba($anchorLink, 0.1) url(../images/IconRightWhite.svg) right center no-repeat;   
+        padding:15px 35px 15px 15px;
+        background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
+            -webkit-background-size: 25px 25px;
+    background-size: 25px 25px;   
         &:hover {
-            background: rgba($anchorLink, 0.1) url(../images/IconRightWhite.svg) right center no-repeat;   
+                -webkit-background-size: 25px 25px;
+    background-size: 25px 25px;
+            background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;   
             }
         }
     &.levelDown{
-        background: rgba($anchorLink, 0.1) url(../images/IconLeftWhite.svg) right center no-repeat;   
+        padding:15px 15px 15px 35px;
+        background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat; 
+            -webkit-background-size: 25px 25px;
+    background-size: 25px 25px;  
         &:hover {
-            background: rgba($anchorLink, 0.1) url(../images/IconLeftWhite.svg) right center no-repeat;   
+            background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;   
+                -webkit-background-size: 25px 25px;
+    background-size: 25px 25px;
             }
         }
     }
 .levelSecondNav {
+
     nav {
         ul{
             display: -webkit-box;
@@ -5103,6 +5127,7 @@ li.disable {
             -webkit-align-items:center;
             align-items:center;
             li{
+                text-align: center;
                 width:50%;
                 -webkit-justify-content: flex-justified;
                 justify-content: flex-justified;
@@ -5111,5 +5136,33 @@ li.disable {
     }
 }
 
-
+.importBlock  {
+    width:98%;
+    margin:5px auto;
+    background:rgba($anchorLink, 0.1);
+    padding:10px 0.5%;
+    h4{
+        font-size:1.2em;
+        color:$akvoOrange;
+        margin:5px 0 10px 0;
+    }
+    @include border-radius(5px);
+    fieldset {
+        padding:10px;
+        background-color:rgba(white,0.1);
+        color:white;
+        input {
+            background:rgba(white,0.1);
+            border:none;
+        }
+    }
+    p {
+        width:35%;
+        margin-top:5px;
+        color:rgb(128,128,128);
+    }
+    .resumable-progress {
+        margin-top:15px;
+    }
+}
 

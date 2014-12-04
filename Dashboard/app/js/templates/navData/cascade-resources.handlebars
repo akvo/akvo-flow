@@ -43,14 +43,16 @@
                 </section>
                 <section {{bindAttr class="view.showImportDialog:display:hidden  :importBlock"}}>
 					<div>
-						<h2>{{t _import_cascade_file}}</h2>
+						<h4>{{t _import_cascade_file}}</h4>
 						<fieldset>
 						{{#if FLOW.uploader.support}}
 						<input id="cascade-resource-file" type="file" /></label>
-						<a {{action "importFile" target="this" }} class="standardBtn">{{t _import_cascade_file}}</a>
+						<a {{action "importFile" target="this" }} class="smallBtn">{{t _import_cascade_file}}</a>
 						<a {{action "hideImportCascade" target="this" }} class="smallBtn">{{t _cancel}}</a>
 						<div>
-							{{t _import_help_text}}
+							<p>
+								{{t _import_help_text}}
+							</p>
 						</div>
 						<div class="resumable-progress">
 							<h5>{{t _progress}}</h5>
