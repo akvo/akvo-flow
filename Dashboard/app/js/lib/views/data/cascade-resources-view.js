@@ -38,7 +38,9 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 
 	// fired when 'add a cascade resource' is clicked. Displays a text field
 	newCascade: function () {
-		this.set('cascadeResourceName',null);  
+		FLOW.selectedControl.set('cascadeImportNumLevels', null);
+		FLOW.selectedControl.set('cascadeImportIncludeCodes', null);
+		this.set('importIncludeCodes', null);
 	    this.set('showNewCascadeField', true);
 	},
 
@@ -51,6 +53,8 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	},
 
 	hideImportCascade: function(){
+		FLOW.selectedControl.set('cascadeImportNumLevels', null);
+		FLOW.selectedControl.set('cascadeImportIncludeCodes', null);
 		this.toggleProperty('showImportDialog');
 	},
 
