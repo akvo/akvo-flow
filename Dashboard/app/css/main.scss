@@ -1555,10 +1555,19 @@ a.text_label
     margin: 8px auto 10px auto;
     width: 77%;
 }
-.topBar input[type="text"] {
-    padding: 5px;
-    margin: 16px 0 0 10px;
-    width: 20%;
+.topBar { 
+    input[type="text"] {
+        padding: 5px;
+        margin: 16px 0 0 10px;
+        width: 20%;
+    }
+    .addCascade {
+        input[type="text"] {
+            width:50%;
+            padding:9px 10px;
+            background:lighten($akvoDarkBlue, 50%)
+        }
+}
 }
 .no-textshadow .leftSidebar h2 {
     color: rgb(125, 125, 125);
@@ -4390,8 +4399,10 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
         .forms {
             padding:2em 0 0 0;
             background:white;
-            #tabs h2 {
-                margin:0 0 15px 5px;
+            #tabs {
+                h2 {
+                    margin:0 0 15px 5px;
+                }
             }
             .formSummary {
                         display:-webkit-flex;
@@ -4448,9 +4459,14 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 text-shadow: none;
             }
             #tabs nav.tabNav {
+                position:relative;
                 display: block;
                 padding: 0;
                 width: 100%;
+                margin-top:10px;
+                & + section, & + div  {
+                    margin-top: 0;
+                }
             }
             #tabs nav.tabNav ul {
                 padding: 0;
@@ -5120,31 +5136,32 @@ a.levelDown {
     }
 }
 li.disable {
-    a{
+    a.levelUp{
         pointer-events: none; /* Disables the button completely. Better than just cursor: default; */
         @include opacity(0.2);
         color:white;
-        }
-    &.levelUp{
         padding:15px 35px 15px 15px;
-        background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
-            -webkit-background-size: 25px 25px;
-    background-size: 25px 25px;   
+        background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
+        -webkit-background-size: 25px 25px;
+        background-size: 25px 25px;   
         &:hover {
-                -webkit-background-size: 25px 25px;
-    background-size: 25px 25px;
-            background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;   
+            -webkit-background-size: 25px 25px;
+            background-size: 25px 25px;
+            background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;   
             }
         }
-    &.levelDown{
+    a.levelDown{
+        pointer-events: none; /* Disables the button completely. Better than just cursor: default; */
+        @include opacity(0.2);
+        color:white;
         padding:15px 15px 15px 35px;
-        background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat; 
-            -webkit-background-size: 25px 25px;
-    background-size: 25px 25px;  
+        background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat; 
+        -webkit-background-size: 25px 25px;
+        background-size: 25px 25px;  
         &:hover {
-            background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;   
-                -webkit-background-size: 25px 25px;
-    background-size: 25px 25px;
+            background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;   
+            -webkit-background-size: 25px 25px;
+            background-size: 25px 25px;
             }
         }
     }

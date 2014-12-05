@@ -18,7 +18,7 @@
     </nav>
     <nav class="menuTopbar doubleMenu">
         <ul>
-            <li>
+            <li class="addCascade">
                {{#if view.showNewCascadeField}}
         			{{view Ember.TextField valueBinding="view.cascadeResourceName"}}
           			<a {{action "saveNewCascadeResource" target="this"}} class="smallBtn">{{t _save}}</a>
