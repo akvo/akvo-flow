@@ -65,10 +65,11 @@
  (let [key-id (get user-auth "keyId")
        user-id (get user-auth "userId")]
     (assert (integer? (get user-auth "keyId")))
-    (DELETE (str "/rest/user_auth/" key-id)
-            (merge ajax/default-ajax-config
-                   {:handler (fn [_]
-                               (swap! app-state update-in [:user-auth :by-id] dissoc key-id)
-                               (swap! app-state update-in [:user-auth :by-user-id user-id]
-                                      (fn [user-auths]
-                                        (vec (remove #(= (get % "keyId") key-id) user-auths)))))}))))
+    (ajax/XhrIo-DELETE
+     (str "/rest/user_auth/" key-id)
+     (merge ajax/default-ajax-config
+            {:handler (fn [_]
+                        (swap! app-state update-in [:user-auth :by-id] dissoc key-id)
+                        (swap! app-state update-in [:user-auth :by-user-id user-id]
+                               (fn [user-auths]
+                                 (vec (remove #(= (get % "keyId") key-id) user-auths)))))}))))
