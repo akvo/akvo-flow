@@ -60,6 +60,9 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
   name: DS.attr('string', {
     defaultValue: ''
   }),
+  path: DS.attr('string', {
+    defaultValue: null
+  }),
   createdDateTime: DS.attr('string', {
     defaultValue: ''
   }),

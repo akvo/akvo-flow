@@ -37,10 +37,11 @@ public class TranslationGenerator {
         PATTERNS.put("promptBinding=\"Ember.STRINGS.", "\"");
         PATTERNS.put("placeholderBinding=\"Ember.STRINGS.", "\"");
         PATTERNS.put("String.loc('", "'");
+        PATTERNS.put("(t> ", ")");
     }
 
     private static final String[] EXTS = {
-            "handlebars", "js"
+            "handlebars", "js", "cljs"
     };
 
     @SuppressWarnings("unchecked")

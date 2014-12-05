@@ -32,7 +32,6 @@ import com.gallatinsystems.framework.rest.RestResponse;
 
 /**
  * restful service for serving time
- * 
  */
 public class DeviceTimeRestService extends AbstractRestApiServlet {
 
@@ -44,7 +43,7 @@ public class DeviceTimeRestService extends AbstractRestApiServlet {
 
     @Override
     protected RestRequest convertRequest() throws Exception {
-    	// not needed in this service, simply return object to fulfill override
+        // not needed in this service, simply return object to fulfill override
         RestRequest restRequest = new DeviceTimeRestRequest();
         return restRequest;
     }
@@ -52,13 +51,13 @@ public class DeviceTimeRestService extends AbstractRestApiServlet {
     @Override
     protected RestResponse handleRequest(RestRequest req) throws Exception {
         DeviceTimeRestResponse resp = new DeviceTimeRestResponse();
-        
+
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         df.setTimeZone(tz);
         String nowAsISO = df.format(new Date());
         resp.setTime(nowAsISO);
-        
+
         return resp;
     }
 

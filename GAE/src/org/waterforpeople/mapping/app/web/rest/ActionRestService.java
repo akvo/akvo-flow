@@ -331,6 +331,10 @@ public class ActionRestService {
     private String copyProject(Long targetId, Long folderId) {
 
         SurveyGroup projectSource = surveyGroupDao.getByKey(targetId);
+        SurveyGroup projectParent = null;
+        if (folderId != null) {
+            projectParent = surveyGroupDao.getByKey(folderId);
+        }
         if (projectSource == null) {
             logger.log(Level.WARNING,
                     String.format("Failed to copy project %s to folder %s", targetId, folderId));
@@ -340,6 +344,13 @@ public class ActionRestService {
 
         projectCopy.setCode(projectSource.getCode() + " copy");
         projectCopy.setName(projectSource.getName() + " copy");
+        String parentPath = null;
+        if (projectParent != null) {
+            parentPath = projectParent.getPath();
+        } else {
+            parentPath = ""; // root folder
+        }
+        projectCopy.setPath(parentPath + "/" + projectCopy.getName());
         projectCopy.setMonitoringGroup(projectSource.getMonitoringGroup());
         projectCopy.setParentId(folderId);
 
@@ -350,6 +361,7 @@ public class ActionRestService {
             SurveyDto surveyDto = new SurveyDto();
             surveyDto.setCode(survey.getCode());
             surveyDto.setName(survey.getName());
+            surveyDto.setPath(projectCopy.getPath() + "/" + survey.getName());
             surveyDto.setSurveyGroupId(savedProjectCopy.getKey().getId());
             Survey surveyCopy = SurveyUtils.copySurvey(survey, surveyDto);
             surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());

@@ -280,7 +280,6 @@ FLOW.Router = Ember.Router.extend({
           router.set('datasubnavController.selected', 'inspectData');
           router.resetState();
           FLOW.surveyGroupControl.populate();
-          FLOW.surveyInstanceControl.populate();
         }
       }),
 

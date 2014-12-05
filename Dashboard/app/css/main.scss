@@ -120,6 +120,9 @@ textarea,
 button {
     padding: 0;
 }
+iframe {
+    border:none;
+}
 @import	'form.scss';
 
 /*--------------------------------------------------------------
@@ -1842,7 +1845,7 @@ section.topBar {
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
-    display: -webkit-flex;    
+    display: -webkit-flex;
     display:flex;
     -webkit-align-items:center;
     align-items:center;
@@ -1996,7 +1999,7 @@ nav.menuTopbar {
                     font-weight:bold;
                     margin-right: 5px;
                     margin-left: 5px;
-                    }   
+                    }
                 }
             }
         }
@@ -2541,7 +2544,7 @@ label[for="surveyLanguage"]  a.helpIcon {
       display: -webkit-box;
       display: -moz-box;
       display: -ms-flexbox;
-      display: -webkit-flex;    
+      display: -webkit-flex;
       display:flex;
             margin: 0 auto;
             padding: 0;
@@ -4358,12 +4361,12 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
           display: -webkit-box;
           display: -moz-box;
           display: -ms-flexbox;
-          display: -webkit-flex;    
+          display: -webkit-flex;
           display:flex;
             -webkit-flex-direction: row;
             -webkit-flex-wrap: nowrap;
             -webkit-align-items: center;
-            -webkit-align-content: center;            
+            -webkit-align-content: center;
             flex-direction: row;
             flex-wrap: nowrap;
             align-items: center;
@@ -4411,7 +4414,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                         -webkit-flex-direction: row;
                         -webkit-flex-wrap: nowrap;
                         -webkit-align-items: center;
-                        -webkit-align-content: center;                       
+                        -webkit-align-content: center;
                         flex-direction: row;
                         flex-wrap: nowrap;
                         align-items: center;
@@ -4525,7 +4528,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                         background-size:20px auto;
                         }
                     }
-                      
+
                   }
 
                     }

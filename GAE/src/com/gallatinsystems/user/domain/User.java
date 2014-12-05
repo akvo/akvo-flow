@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,7 +17,6 @@
 package com.gallatinsystems.user.domain;
 
 import java.util.List;
-
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
@@ -26,7 +25,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 /**
  * User of the web application. This object also can be used to persist (via a cascade save)
  * UserConfig.
- * 
+ *
  * @author Christopher Fagiani
  */
 @PersistenceCapable
@@ -84,20 +83,19 @@ public class User extends BaseDomain {
         this.superAdmin = superAdmin;
     }
 
-	public String getAccessKey() {
-		return accessKey;
-	}
+    public String getAccessKey() {
+        return accessKey;
+    }
 
-	public void setAccessKey(String accessKey) {
-		this.accessKey = accessKey;
-	}
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
 
-	public String getSecret() {
-		return secret;
-	}
+    public String getSecret() {
+        return secret;
+    }
 
-	public void setSecret(String secret) {
-		this.secret = secret;
-	}
-
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
 }
