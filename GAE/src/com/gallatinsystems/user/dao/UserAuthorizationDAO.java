@@ -63,7 +63,7 @@ public class UserAuthorizationDAO extends BaseDAO<UserAuthorization> {
         javax.jdo.Query query = pm.newQuery(UserAuthorization.class);
 
         Map<String, Object> paramMap = new HashMap<String, Object>();
-        ;
+
         StringBuilder filterString = new StringBuilder();
         StringBuilder paramString = new StringBuilder();
 

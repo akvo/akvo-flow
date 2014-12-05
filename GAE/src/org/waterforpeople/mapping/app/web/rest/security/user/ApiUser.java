@@ -1,3 +1,4 @@
+
 package org.waterforpeople.mapping.app.web.rest.security.user;
 
 import java.io.Serializable;

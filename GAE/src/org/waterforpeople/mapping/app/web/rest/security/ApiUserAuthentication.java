@@ -34,9 +34,9 @@ public class ApiUserAuthentication implements Authentication {
     private Long userId;
 
     public ApiUserAuthentication(ApiUser principal, Map<String, String> details) {
-	this.principal = principal;
-	this.details = details;
-	this.authenticated = true;
+        this.principal = principal;
+        this.details = details;
+        this.authenticated = true;
     }
 
     public ApiUserAuthentication(ApiUser principal) {
@@ -48,12 +48,12 @@ public class ApiUserAuthentication implements Authentication {
 
     @Override
     public String getName() {
-	return principal.getUserName();
+        return principal.getUserName();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-	return EnumSet.of(AppRole.USER);
+        return EnumSet.of(AppRole.USER);
     }
 
     @Override
@@ -63,22 +63,22 @@ public class ApiUserAuthentication implements Authentication {
 
     @Override
     public Object getDetails() {
-	return details;
+        return details;
     }
 
     @Override
     public Object getPrincipal() {
-	return principal;
+        return principal;
     }
 
     @Override
     public boolean isAuthenticated() {
-	return authenticated;
+        return authenticated;
     }
 
     @Override
     public void setAuthenticated(boolean authenticated)
-	    throws IllegalArgumentException {
-	this.authenticated = authenticated;
+            throws IllegalArgumentException {
+        this.authenticated = authenticated;
     }
 }
