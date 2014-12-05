@@ -48,10 +48,12 @@
 						{{#if FLOW.uploader.support}}
 						<label>{{t _cascade_import_number_of_levels}}</label>
 						{{view Ember.TextField valueBinding="FLOW.selectedControl.cascadeImportNumLevels" placeholderBinding="Ember.STRINGS._cascade_import_num_levels"}}
-						<p>{{t _cascade_import_code_legend}}</p>
 						</fieldset>
 						<fieldset>
+						<label>{{t _cascade_import_code_legend}}</label>
 						{{view Ember.Checkbox checkedBinding="FLOW.selectedControl.cascadeImportIncludeCodes"}}
+						</fieldset>
+						<fieldset>
 						<input id="cascade-resource-file" type="file" /></label>
 						<a {{action "importFile" target="this" }} class="smallBtn">{{t _import_cascade_file}}</a>
 						<a {{action "hideImportCascade" target="this" }} class="">{{t _cancel}}</a>

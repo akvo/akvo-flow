@@ -146,6 +146,7 @@ body {
     line-height: 1.42857;
     text-rendering: optimizelegibility;
     font-family: $bodyFont;
+    -ms-overflow-style:-ms-autohiding-scrollbar;
 }
 /*--------------------------------------------------------------
 							Headings
@@ -616,11 +617,12 @@ label[for=newDeviceGroupName] {
 }
 .belowHeader {
     padding-top: 55px;
-    padding-bottom: 110px;
+    padding-bottom: 0px;
     background: white;
 }
 .middleSection {
-    margin: 0 0 20px 0;
+    overflow:hidden;
+    /*margin: 0 0 20px 0;*/
     padding:90px 0 40px 0;
 }
 .leftSidebar {
@@ -906,7 +908,7 @@ nav.appNav{
                 }
                 &.current {
                     a {
-                        background: $navCurrent url(../images/topnavMapsOrange.svg);
+                        background:url(../images/topnavMapsOrange.svg);
                         @include bgDetails;
                     }
                 }
@@ -1152,7 +1154,7 @@ tfoot tr {
 }
 .dataTabMenu {
     position:absolute;
-    top:7px;
+    top:30px;
     right: 5px;
     text-transform: uppercase;
     ul {
@@ -1430,7 +1432,7 @@ th.action {
 ----------------------------------------------------------------------*/
 #tabs {
     position:relative;
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
     height:100%;
     width: 100%;
 }
@@ -1442,7 +1444,9 @@ th.action {
         box-sizing: border-box;
         width:100%;
         padding:15px 0;
-        margin:0 auto;   
+        margin:0 auto;
+        ms-overflow-style:none;
+        overflow-y: scroll; 
     }
 }
 #tabs section h1,
@@ -1463,7 +1467,7 @@ th.action {
 }
 #tabs nav.tabNav {
     display: block;
-    padding: 0;
+    padding:1px 0;
     width: 100%;
     background-color:white;
     position: fixed;
@@ -3668,9 +3672,8 @@ div.drawHandle {
 -----------------------------------------------*/
 
 footer.bottomPage {
-    position: fixed;
     bottom: 0;
-    margin: 20px 0 0 0;
+    margin: 0px 0 0 0;
     padding: 0;
     width: 100%;
     background:rgb(248, 248, 248);
@@ -4126,7 +4129,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 }
 #tabs {
     .fullWidth {
-        margin-top:25px;
+        padding-top:25px;
     }
 }
 /* Uploader: Drag & Drop */
@@ -4700,8 +4703,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     width:100%;
     padding:15px 0;
     margin:0 auto;
-    height:calc(100vh - 260px);
-    overflow-y: scroll;
+    overflow-y:hidden;
     overflow-x:hidden;
     .cascadeDetailsPanel {
         padding-top:15px;         
@@ -4882,7 +4884,8 @@ div.addLevelBtn {
 .levelColumns {
     width:100%;
     white-space: nowrap;
-    -webkit-overflow-scrolling: touch; 
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style:-ms-autohiding-scrollbar;
     margin-top: 15px;
     background:rgba(32,32,36,0.7);
     /*height:calc(100% - 360px);*/
@@ -5234,7 +5237,7 @@ li.disable {
     p {
         width:35%;
         margin-top:5px;
-        color:rgb(32,32,36);
+        color:rgba(white,0.6);
     }
     .resumable-progress {
         margin-top:15px;
