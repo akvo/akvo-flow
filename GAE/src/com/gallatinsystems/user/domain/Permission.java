@@ -34,7 +34,7 @@ public enum Permission {
 
     FORM_CREATE("POST", "/rest/surveys"),
     FORM_READ("GET", "/rest/surveys"),
-    FORM_UPDATE("PUT", "/survey/update"),
+    FORM_UPDATE("PUT", "/rest/surveys"),
     FORM_DELETE("DELETE", "/rest/surveys");
 
     private final String httpMethod;

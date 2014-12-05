@@ -74,13 +74,13 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
     }
 
     private ApiUser findUser(String accessKey) {
-	User user = userDao.findByAccessKey(accessKey);
-	if (user != null) {
-	    return new ApiUser(user.getUserName(), user.getAccessKey(),
-		    user.getSecret());
-	} else {
-	    return null;
-	}
+        User user = userDao.findByAccessKey(accessKey);
+        if (user != null) {
+            return new ApiUser(user.getUserName(), user.getAccessKey(),
+                    user.getSecret(), user.getKey().getId());
+        } else {
+            return null;
+        }
     }
 
     @Override

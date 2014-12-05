@@ -31,6 +31,7 @@ public class ApiUserAuthentication implements Authentication {
     private ApiUser principal;
     private Map<String, String> details;
     private boolean authenticated;
+    private Long userId;
 
     public ApiUserAuthentication(ApiUser principal, Map<String, String> details) {
 	this.principal = principal;
@@ -39,9 +40,10 @@ public class ApiUserAuthentication implements Authentication {
     }
 
     public ApiUserAuthentication(ApiUser principal) {
-	this.principal = principal;
-	this.details = null;
-	this.authenticated = true;
+        this.principal = principal;
+        this.details = null;
+        this.authenticated = true;
+        this.userId = principal.getUserId();
     }
 
     @Override
@@ -56,8 +58,7 @@ public class ApiUserAuthentication implements Authentication {
 
     @Override
     public Object getCredentials() {
-	// TODO Auto-generated method stub
-	return null;
+        return userId;
     }
 
     @Override
