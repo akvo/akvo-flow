@@ -88,14 +88,14 @@
             </section>
             <section {{bindAttr class="view.showImportDialog:hidden:display  :cascadeItems"}}>
                 <nav class="cascadeBreadCrumb">
-                    <ul>
-	                	{{#each item in FLOW.cascadeResourceControl.levelNames}}
+					<ul>
+						{{#each item in FLOW.cascadeResourceControl.levelNames}}
 							{{#view FLOW.CascadeLevelBreadcrumbView contentBinding="item"}}
-	            <a {{action "adaptColView" target="this"}}><span>{{item.level}}</span>{{item.levelName}}</a>
-	            {/view}}
-				{{/each}}
-	            <div class="addLevelBtn"><a {{action "addLevel" target="this"}} class="addLevel btn addBtn">Add a level</a></li>
-	            </div>
+								<a {{action "adaptColView" target="this"}}><span>{{item.level}}</span>{{item.levelName}}</a>
+							{{/view}}
+						{{/each}}
+					</ul>
+					<div class="addLevelBtn"><a {{action "addLevel" target="this"}} class="addLevel btn addBtn">Add a level</a></div>
 	            </nav>
 	        </section>
 			<section {{bindAttr class="view.showImportDialog:hidden:display  :levelColumns :floats-in"}}>
