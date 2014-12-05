@@ -1,3 +1,17 @@
+;; Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+;;
+;; This file is part of Akvo FLOW.
+;;
+;; Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+;; the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+;; either version 3 of the License or any later version.
+;;
+;; Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+;; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+;; See the GNU Affero General Public License included below for more details.
+;;
+;; The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+
 (ns org.akvo.flow.dashboard.users.roles
   (:require [clojure.string :as s]
             [clojure.set :as set]
@@ -95,10 +109,12 @@
                     :columns [{:title (t> _role)
                                :cell-fn #(get % "name")}
                               {:title (t> _number_of_users)
+                               :class "text-center"
                                :cell-fn #(user-role-count user-auth %)}
                               {:title (t> _permissions)
                                :cell-fn #(s/join ", " (map (partial get all-permissions) (get % "permissions")))}
                               {:title (t> _actions)
+                               :class "text-center"
                                :component role-actions
                                :component-data-fn (fn [role]
                                                     {:disabled? (not (zero? (user-role-count user-auth role)))

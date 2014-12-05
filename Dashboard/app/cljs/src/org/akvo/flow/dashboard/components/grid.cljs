@@ -1,7 +1,22 @@
+;; Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+;;
+;; This file is part of Akvo FLOW.
+;;
+;; Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+;; the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+;; either version 3 of the License or any later version.
+;;
+;; Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+;; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+;; See the GNU Affero General Public License included below for more details.
+;;
+;; The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+
 (ns ^{:doc "Reusable grid component"}
   org.akvo.flow.dashboard.components.grid
   (:require [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros (html)]))
+            [sablono.core :as html :refer-macros (html)])
+  (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
 (comment
 
@@ -49,6 +64,9 @@
                         :component-data-fn identity
                         ;; Make the column sortable by adding a :sort-by
                         :sort-by "username"
+
+                        ;; default left
+                        :align :center
                         }
                        {... ...}]})
   )
@@ -66,11 +84,11 @@
           [:a {:on-click #(on-range (let [new-offset (- offset limit)]
                                       (if (neg? new-offset) 0 new-offset))
                                     limit)}
-           "« previous"]]
+           "« " (t> _previous)]]
          [:li [:strong (str " " (inc offset) " - " (+ offset limit) " ")]]
          [:li
           [:a {:on-click #(on-range (+ offset limit) limit)}
-             "next »"]]]]]))))
+             (t> _next) " »"]]]]]))))
 
 (defn change-direction [dir]
   (if (= dir "ascending")
@@ -85,15 +103,9 @@
       [:tr {:class "tabHeader"}
        (->> columns
             (map-indexed
-             (fn [idx {:keys [title sort-by]}]
+             (fn [idx {:keys [title sort-by class]}]
                [:th {:key (str "col_" idx) ;; TODO could also be derived from e.g. title
-                     :class (if sort-by
-                              (if (= current-sort-by sort-by)
-                                (if (= current-sort-order "ascending")
-                                  "sorting_asc"
-                                  "sorting_desc")
-                                "")
-                              "noArrows")}
+                     :class class}
                 [:a (when sort-by
                       {:on-click #(on-sort sort-by
                                            (if (= current-sort-by sort-by)
@@ -101,7 +113,14 @@
                                              "ascending"))})
                  (if (fn? title)
                    (om/build title {})
-                   title)]])))]))))
+                   title)
+                 " "
+                 (if sort-by
+                   (if (= current-sort-by sort-by)
+                     (if (= current-sort-order "ascending")
+                       [:i.fa.fa-sort-asc]
+                       [:i.fa.fa-sort-desc])
+                     [:i.fa.fa-unsorted]))]])))]))))
 
 (defn table-row [{:keys [row columns]} owner]
   (om/component
@@ -115,7 +134,7 @@
                                  component (let [data (component-data-fn row)]
                                              (om/build component data)))]
                       [:td {:class class
-                            :key (str "col_" idx)} item]))
+                            :key (str "col_" idx)}  item]))
                   columns)])))
 
 (defn grid [data owner]

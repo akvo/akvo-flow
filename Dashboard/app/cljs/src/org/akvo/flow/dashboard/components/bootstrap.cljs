@@ -1,3 +1,17 @@
+;; Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+;;
+;; This file is part of Akvo FLOW.
+;;
+;; Akvo FLOW is free software: you can redistribute it and modify it under the terms of
+;; the GNU Affero General Public License (AGPL) as published by the Free Software Foundation,
+;; either version 3 of the License or any later version.
+;;
+;; Akvo FLOW is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+;; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+;; See the GNU Affero General Public License included below for more details.
+;;
+;; The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
+
 (ns ^{:doc "Bootstrap helpers and components"}
   org.akvo.flow.dashboard.components.bootstrap
   (:require [om.core :as om :include-macros true]
@@ -7,6 +21,10 @@
 (defn icon [n]
   {:pre [(keyword? n)]}
   [:span {:class (str "glyphicon glyphicon-" (name n))}])
+
+(defn fa-icon [n]
+  {:pre [(keyword? n)]}
+  [:span {:class (str "fa fa-" (name n))}])
 
 (defn caret []
   [:span.caret])
@@ -55,24 +73,27 @@
              :label-component <some-component>
              ;; defaults to identity
              :label-component-data-fn <some-fn>
+
+             :on-change <callback>
              })
 
 )
 
-(defn dropdown [{:keys [placeholder selected choices on-select data label-component label-component-data-fn]} owner]
+(defn dropdown [{:keys [placeholder data selected label label-fn label-data-fn on-select]} owner]
   (reify
     om/IInitState
     (init-state [this]
-      {:id (name (gensym "dropdown"))})
-
+      {:id (name (gensym "__dropdown_"))})
     om/IRenderState
     (render-state [this {:keys [id]}]
-      (let [label-component-data-fn (or label-component-data-fn identity)]
+      (let [label-data-fn (or label-data-fn identity)]
         (html
          [:div.dropdown
           [:button.btn.btn-default.dropdown-toggle {:type "button" :id id :data-toggle "dropdown" :aria-expanded "true"}
            (if selected
-             (om/build label-component (label-component-data-fn selected))
+             (if label-fn
+               (label-fn selected)
+               (om/build label (label-data-fn selected)))
              placeholder)
            " "
            (caret)]
@@ -82,9 +103,10 @@
               [:a {:role "menuitem"
                    :tab-index "-1"
                    ;;  :href "#"
-                   :on-click #(do (om/set-state! owner :selected item)
-                                  (on-select item))}
-               (om/build label-component (label-component-data-fn item))]])]])))))
+                   :on-click #(on-select item)}
+               (if label-fn
+                 (label-fn item)
+                 (om/build label (label-data-fn item)))]])]])))))
 
 
 (defn select [{:keys [placeholder data selected label-fn key-fn on-select]} owner]
