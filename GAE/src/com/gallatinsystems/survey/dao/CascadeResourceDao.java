@@ -16,35 +16,57 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.CascadeResource;
+import com.google.appengine.api.backends.BackendServiceFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 /**
  * Dao for manipulating CascadeResources
  */
 public class CascadeResourceDao extends BaseDAO<CascadeResource> {
+
+    private static final Logger log = Logger.getLogger(CascadeResourceDao.class.getName());
+
     public CascadeResourceDao() {
 		super(CascadeResource.class);
-		// TODO Auto-generated constructor stub
 	}
 
-	@SuppressWarnings("unused")
-    private static final Logger log = Logger.getLogger(SurveyGroupDAO.class
-            .getName());
 
     /**
      * deletes a cascade resource, and the nodes therein asynchronously in a task
      * 
      * @param item
      */
-    public void delete(CascadeResource item) {    	
-        CascadeNodeDao cascadeNodeDao = new CascadeNodeDao();
-        item = super.getByKey(item.getKey().getId());
-        // TODO - delete cascade nodes in task
-        cascadeNodeDao.delete(cascadeNodeDao
-                    .listCascadeNodesByResource(item.getKey().getId()));
-        super.delete(item);
+    public void delete(CascadeResource item) {
+        if (item == null) {
+            return;
+        }
+
+        try {
+
+            super.delete(item);
+
+            final Long keyId = item.getKey().getId();
+            final TaskOptions options = TaskOptions.Builder
+                    .withUrl("/app_worker/dataprocessor")
+                    .header("Host",
+                            BackendServiceFactory.getBackendService()
+                                    .getBackendAddress("dataprocessor"))
+                    .param(DataProcessorRequest.ACTION_PARAM,
+                            DataProcessorRequest.DELETE_CASCADE_NODES)
+                    .param(DataProcessorRequest.CASCADE_RESOURCE_ID, keyId.toString());
+            final Queue queue = QueueFactory.getQueue("background-processing");
+            queue.add(options);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Error deleting Cascade Resource: " + e.getMessage(), e);
+        }
     }
 }
