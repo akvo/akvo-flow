@@ -37,7 +37,7 @@ FLOW.Project = FLOW.View.extend({
 
   isNewProject: function() {
     var currentProject = FLOW.projectControl.get('currentProject');
-    return currentProject && currentProject.get('code') == "New project";
+    return currentProject && currentProject.get('code') == "New survey";
   }.property('FLOW.projectControl.currentProject'),
 
   visibleProjectBasics: function() {
@@ -143,7 +143,7 @@ FLOW.ProjectItemView = FLOW.View.extend({
   formatDate: function(datetime) {
     if (datetime === "") return "";
     var date = new Date(parseInt(datetime, 10));
-    return date.getDay() + "." + (date.getMonth() + 1) + " " + date.getFullYear();
+    return date.getDate() + "." + (date.getMonth() + 1) + " " + date.getFullYear();
   },
 
   created: function() {
