@@ -27,8 +27,6 @@
         <filter-name>multiReadFilter</filter-name>
         <url-pattern>/rest/survey_groups/*</url-pattern>
         <url-pattern>/rest/surveys/*</url-pattern>
-        <url-pattern>/api/v1/survey_groups/*</url-pattern>
-        <url-pattern>/api/v1/surveys/*</url-pattern>
     </filter-mapping>
 
 	<filter>
