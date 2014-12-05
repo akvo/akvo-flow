@@ -2153,7 +2153,7 @@ a.saveMenuAction {
 a.redCancel {
     color:$akvoRed;
     padding:5px 10px 5px 15px;
-    background: url(../images/IconCancelFolder.svg) left center no-repeat;
+    background:rgba(white,0.5) url(../images/IconCancelFolder.svg) left center no-repeat;
     background-size:15px;
     &:hover {
         color:rgba($akvoRed, 0.5);
@@ -4682,6 +4682,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     margin:0 auto;
     height:calc(100vh - 260px);
     overflow-y: scroll;
+    overflow-x:hidden;
     .cascadeDetailsPanel {
         padding-top:15px;         
         padding-bottom:15px;
@@ -5067,8 +5068,14 @@ a.addBtn:hover {
     background-size: 25px 45px;
 }
 a.importBtn {
-    @extend .addBtn;
+    color: white;
+    padding: 8px 7px 13px 25px;
+    border-radius: 3px;
     background: rgba($anchorLink, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;   
+    -webkit-background-size: 25px 45px;
+    background-size: 25px 45px;
+    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;    
     &:hover {
         background: rgba($anchorLinkHover, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
         -webkit-background-size: 25px 45px;
@@ -5166,6 +5173,11 @@ li.disable {
     margin:5px auto;
     background:rgba($anchorLink, 0.1);
     padding:10px 0.5%;
+    a {
+        & + a {
+            margin-left:10px;
+        }
+    }
     h4{
         font-size:1.2em;
         color:$akvoOrange;
@@ -5176,7 +5188,13 @@ li.disable {
         padding:10px;
         background-color:rgba(white,0.1);
         color:white;
+        &:first-child {
+            input {
+                width:300px;
+            }
+        }
         input {
+            @include placeholder-color(rgb(32,32,36));
             background:rgba(white,0.4);
             border:none;
         }
@@ -5184,7 +5202,7 @@ li.disable {
     p {
         width:35%;
         margin-top:5px;
-        color:rgb(128,128,128);
+        color:rgb(32,32,36);
     }
     .resumable-progress {
         margin-top:15px;

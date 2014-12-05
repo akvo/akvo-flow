@@ -20,7 +20,7 @@
         <ul>
             <li>
                {{#if view.showNewCascadeField}}
-        			{{view Ember.TextField valueBinding="view.cascadeResourceName" size=100}}
+        			{{view Ember.TextField valueBinding="view.cascadeResourceName"}}
           			<a {{action "saveNewCascadeResource" target="this"}} class="smallBtn">{{t _save}}</a>
           			<a {{action "cancelNewCascadeResource" target="this"}}>{{t _cancel}}</a>
       			{{else}}
@@ -47,14 +47,14 @@
 						<fieldset>
 						{{#if FLOW.uploader.support}}
 						<label>{{t _cascade_import_number_of_levels}}</label>
-						{{view Ember.TextField valueBinding="FLOW.selectedControl.cascadeImportNumLevels" placeholderBinding="Ember.STRINGS._cascade_import_num_levels" size="30"}}
+						{{view Ember.TextField valueBinding="FLOW.selectedControl.cascadeImportNumLevels" placeholderBinding="Ember.STRINGS._cascade_import_num_levels"}}
 						<p>{{t _cascade_import_code_legend}}</p>
 						</fieldset>
 						<fieldset>
 						{{view Ember.Checkbox checkedBinding="FLOW.selectedControl.cascadeImportIncludeCodes"}}
 						<input id="cascade-resource-file" type="file" /></label>
 						<a {{action "importFile" target="this" }} class="smallBtn">{{t _import_cascade_file}}</a>
-						<a {{action "hideImportCascade" target="this" }} class="smallBtn">{{t _cancel}}</a>
+						<a {{action "hideImportCascade" target="this" }} class="">{{t _cancel}}</a>
 						<div>
 							<p>
 								{{t _import_help_text}}
@@ -104,17 +104,17 @@
                        		<span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum1}}</span>
                         	<fieldset class="levelHead">
                         		{{#if view.editFieldVisible}}
-				 					{{view Ember.TextField valueBinding="view.levelName" size=15}}
+				 					{{view Ember.TextField valueBinding="view.levelName"}}
 	          							<a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
-	          							<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
+	          							<a class="redCancel"{{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
 								{{else}}
 									<label for="level01Name">{{FLOW.cascadeResourceControl.displayLevelName1}}
 									<a {{action "showEditField" target="this"}} class="editSurvey">edit</a></label>
 								{{/if}}
                            	 	{{#view FLOW.CascadeNodeView col=1}}
 									{{#if view.showInputField}}
-										{{view Ember.TextField valueBinding="view.cascadeNodeCode" class="cascadeEntryCode" placeholder="code" size=12}}
-										{{view Ember.TextField valueBinding="view.cascadeNodeName" class="cascadeEntryName" placeholder="new item name (mandatory)" size=53}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeCode" class="cascadeEntryCode" placeholder="code"}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
 										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
 									{{/if}}
 								{{/view}}
@@ -124,8 +124,8 @@
                         	{{#each item in FLOW.cascadeNodeControl.displayLevel1}}
 								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=1}}
 									{{#if view.showEditNode}}
-										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode squeezeR" placeholder="code" size=12}}
-										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName squeezeR" placeholder="new item name (mandatory)" size=53}}
+										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode squeezeR" placeholder="code"}}
+										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName squeezeR" placeholder="new item name (mandatory)"}}
 										<button class="addCascadeItem squeezeR" {{action "saveEditNode" target="this"}}>Save</button>
 										<button class="addCascadeItem squeezeR" {{action "cancelEditNode" target="this"}}>Cancel</button>
 									{{else}}
@@ -142,7 +142,7 @@
            		            <span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum2}}</span>
                 	        <fieldset class="levelHead">
                     	        {{#if view.editFieldVisible}}
-				 					{{view Ember.TextField valueBinding="view.levelName" size=15}}
+				 					{{view Ember.TextField valueBinding="view.levelName"}}
 	          							<a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
 	          							<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
 								{{else}}
@@ -151,8 +151,8 @@
 								{{/if}}
                            		{{#view FLOW.CascadeNodeView col=2}}
 									{{#if view.showInputField}}
-										{{view Ember.TextField valueBinding="view.cascadeNodeCode" class="cascadeEntryCode" placeholder="code"placeholder="code" size=12}}
-										{{view Ember.TextField valueBinding="view.cascadeNodeName" class="cascadeEntryName" placeholder="new item name (mandatory)" size=53}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeCode" class="cascadeEntryCode" placeholder="code"placeholder="code"}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
 										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
 									{{/if}}
 								{{/view}}
@@ -162,8 +162,8 @@
                         	{{#each item in FLOW.cascadeNodeControl.displayLevel2}}
 								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=2}}
 									{{#if view.showEditNode}}
-										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode" placeholder="code" size=12}}
-										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName" placeholder="new item name (mandatory)" size=53}}
+										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode" placeholder="code"}}
+										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
 										<a {{action "saveEditNode" target="this"}}><button class="addCascadeItem">Save</button></a>
 										<a {{action "cancelEditNode" target="this"}}><button class="addCascadeItem">Cancel</button></a>
 									{{else}}
@@ -180,7 +180,7 @@
                         <span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum3}}</span>
                         <fieldset class="levelHead">
                              {{#if view.editFieldVisible}}
-				 				{{view Ember.TextField valueBinding="view.levelName" size=15}}
+				 				{{view Ember.TextField valueBinding="view.levelName"}}
 	          						<a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
 	          						<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
 							{{else}}
@@ -189,8 +189,8 @@
 							{{/if}}
 							{{#view FLOW.CascadeNodeView col=3}}
 								{{#if view.showInputField}}
-									{{view Ember.TextField valueBinding="view.cascadeNodeCode" placeholder="code" size=12}}
-									{{view Ember.TextField valueBinding="view.cascadeNodeName" placeholder="new item name (mandatory)" size=53}}
+									{{view Ember.TextField valueBinding="view.cascadeNodeCode" placeholder="code"}}
+									{{view Ember.TextField valueBinding="view.cascadeNodeName" placeholder="new item name (mandatory)"}}
 									<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
 								{{/if}}
 							{{/view}}
@@ -200,8 +200,8 @@
                         	{{#each item in FLOW.cascadeNodeControl.displayLevel3}}
 								{{#view FLOW.CascadeNodeItemView contentBinding="item" col=3}}
 									{{#if view.showEditNode}}
-										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode" placeholder="code" size=12}}
-										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName" placeholder="new item name (mandatory)" size=53}}
+										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode" placeholder="code"}}
+										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
 										<a {{action "saveEditNode" target="this"}}><button class="addCascadeItem">Save</button></a>
 										<a {{action "cancelEditNode" target="this"}}><button class="addCascadeItem">Cancel</button></a>
 									{{else}}
