@@ -34,7 +34,7 @@
   <section id="main" class="cascadeSection middleSection floats-in" role="main">
         	{{#if view.oneSelected}}
             <section id="" class="cascadeDetailsPanel">
-                <span class="fontInfo">{{t _cascade_resource}}</span><h2>{{FLOW.selectedControl.selectedCascadeResource.name}}</h2>
+                <span class="fontInfo">{{t _cascade_resource}}</span><h2>{{FLOW.selectedControl.selectedCascadeResource.name}} <a class="editSurvey">Edit name</a></h2>
                 <ul class="cascadeAction">
                   <li><a {{action "publishResource" target="this"}} class="saveNewSurvey">{{t _publish}}</a></li>
                   <li><a {{action "deleteResource" target="this"}} class="deleteSurvey">{{t _delete}}</a></li>
