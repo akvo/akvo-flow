@@ -144,7 +144,7 @@
                              {:data (sort-folders-and-surveys
                                      (projects-store/get-projects projects-store parent-id))
                               :selected selected-folder
-                              :label-fn survey-or-folder;;#(get % "name")
+                              :label-fn survey-or-folder
                               :on-select #(om/set-state! owner :selected-folders
                                                          (conj (subvec selected-folders 0 idx) %))})]))
               (when (or (empty? selected-folders)
@@ -155,14 +155,13 @@
                 [:div.form-group
                  (let [projects (if (and (empty? selected-folders)
                                          (super-admin? (current-user)))
-                                  (cons {"name" (t> _all_folders) "keyId" 0}
+                                  (cons {"name" (t> _all_folders) "keyId" 0 "projectType" "PROJECT_FOLDER"}
                                         (projects-store/get-projects projects-store nil))
                                   (projects-store/get-projects projects-store (get (peek selected-folders) "keyId")))]
-
                    (om/build b/dropdown
                              {:placeholder (t> _select_a_folder_or_survey)
                               :data (sort-folders-and-surveys projects)
-                              :label-fn survey-or-folder ;;#(get % "name")
+                              :label-fn survey-or-folder
                               :on-select #(om/set-state! owner :selected-folders
                                                        (conj selected-folders %))}))])
               [:div.form-group

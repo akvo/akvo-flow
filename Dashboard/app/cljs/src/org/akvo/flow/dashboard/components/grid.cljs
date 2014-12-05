@@ -15,7 +15,8 @@
 (ns ^{:doc "Reusable grid component"}
   org.akvo.flow.dashboard.components.grid
   (:require [om.core :as om :include-macros true]
-            [sablono.core :as html :refer-macros (html)]))
+            [sablono.core :as html :refer-macros (html)])
+  (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
 (comment
 
@@ -83,11 +84,11 @@
           [:a {:on-click #(on-range (let [new-offset (- offset limit)]
                                       (if (neg? new-offset) 0 new-offset))
                                     limit)}
-           "« previous"]]
+           "« " (t> _previous)]]
          [:li [:strong (str " " (inc offset) " - " (+ offset limit) " ")]]
          [:li
           [:a {:on-click #(on-range (+ offset limit) limit)}
-             "next »"]]]]]))))
+             (t> _next) " »"]]]]]))))
 
 (defn change-direction [dir]
   (if (= dir "ascending")

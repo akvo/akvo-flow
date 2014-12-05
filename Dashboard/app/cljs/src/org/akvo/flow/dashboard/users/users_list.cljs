@@ -36,8 +36,7 @@
    "emailAddress" ""
    "superAdmin" false
    "permissionList" "20"
-   "userName" ""
-   "keyId" nil})
+   "userName" ""})
 
 (defn user-actions [{:keys [user on-action]} owner]
   (reify
