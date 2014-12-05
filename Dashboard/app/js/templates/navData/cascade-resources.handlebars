@@ -106,7 +106,7 @@
                         		{{#if view.editFieldVisible}}
 				 					{{view Ember.TextField valueBinding="view.levelName"}}
 	          							<a {{action "saveNewLevelName" target="this"}} class="smallBtn">{{t _save}}</a>
-	          							<a class="redCancel"{{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
+	          							<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
 								{{else}}
 									<label for="level01Name">{{FLOW.cascadeResourceControl.displayLevelName1}}
 									<a {{action "showEditField" target="this"}} class="editSurvey">edit</a></label>

@@ -1564,6 +1564,7 @@ a.text_label
     .addCascade {
         input[type="text"] {
             width:50%;
+            margin:0 10px 0 0;
             padding:9px 10px;
             background:lighten($akvoDarkBlue, 50%)
         }
@@ -3345,7 +3346,7 @@ table.dataTable.notificationTable thead tr th a:visited {
         }
     a.findData {
         display: block;
-        margin: 0 auto;
+        margin: 0 auto 15px;
         padding: 0.5em 1em;
         width: 10%;
         text-align: center;
@@ -4821,7 +4822,8 @@ nav.cascadeBreadCrumb {
                     font-size:1.2em;
                     font-family: $titleFont;
                     color:$akvoGolden;
-                }
+                    text-shadow:1px 2px 0 rgba(black,0.4);
+                    }
                 @include noWrapTxt;
                 &:hover {
                     background: $akvoDarkBlue;
@@ -4850,11 +4852,20 @@ nav.cascadeBreadCrumb {
                 }
            }
     }
-
 div.addLevelBtn {
     position:absolute;
     top:15px;
     right:5px;
+    @include responsive(medium-max-screens){
+        position:relative;
+        display:table;
+        margin:10px auto;
+    }
+/*    @media screen and (max-width:992px) {
+        position:relative;
+        display:table;
+        margin:10px auto;
+    }*/
     &.addLevel {
         display:table;
     &:hover {
@@ -4944,12 +4955,12 @@ div.addLevelBtn {
                     background-size:15px 15px;
                     cursor:text;
                 }
-
             }
             a {
                 display:block;
                 width:100%;
                 padding:15px 0;
+                @include noWrapTxt;
                 &.deleteLevel {
                     position:absolute;
                     display: inline-block;
@@ -4993,6 +5004,9 @@ div.addLevelBtn {
 
 ul.cascadeAction {
     display:inline-block;
+    @include responsive(medium-max-screens) {
+        margin:10px 0 10px 0;
+    }
     li{             
         display: inline-block;
         a {
@@ -5205,15 +5219,13 @@ li.disable {
         padding:10px;
         background-color:rgba(white,0.1);
         color:white;
-        &:first-child {
-            input {
-                width:300px;
-            }
-        }
         input {
             @include placeholder-color(rgb(32,32,36));
             background:rgba(white,0.4);
             border:none;
+            &:first-of-type {            
+                width:25%;
+            }
         }
     }
     p {
