@@ -17,7 +17,7 @@
              [org.akvo.flow.dashboard.app-state :refer (app-state)]
              [org.akvo.flow.dashboard.dispatcher :as dispatcher]
              [org.akvo.flow.dashboard.ajax-helpers :as ajax]
-             [ajax.core :refer (GET POST PUT DELETE)])
+             [ajax.core :refer (GET POST PUT)])
   (:require-macros [org.akvo.flow.dashboard.dispatcher :refer (dispatch-loop)]))
 
 (defn get-user
@@ -83,10 +83,11 @@
  :delete-user user
  (let [user-id (get user "keyId")]
    (assert user-id (str "No user-id for user " user))
-   (DELETE (str "/rest/users/" user-id)
-           (merge ajax/default-ajax-config
-                  {:handler (fn [response]
-                              (swap! app-state update-in [:users :by-id] #(dissoc % user-id)))}))))
+   (ajax/XhrIo-DELETE
+    (str "/rest/users/" user-id)
+    (merge ajax/default-ajax-config
+           {:handler (fn [response]
+                       (swap! app-state update-in [:users :by-id] #(dissoc % user-id)))}))))
 
 (dispatch-loop
  :new-access-key {:keys [user access-key]}
@@ -124,7 +125,8 @@
 (dispatch-loop
  :roles/delete key-id
  (assert (integer? key-id))
- (DELETE (str "/rest/user_roles/" key-id)
-         (merge ajax/default-ajax-config
-                {:handler (fn [response]
-                            (swap! app-state update-in [:user_roles :by-id] dissoc key-id))})))
+ (ajax/XhrIo-DELETE
+  (str "/rest/user_roles/" key-id)
+  (merge ajax/default-ajax-config
+         {:handler (fn [response]
+                     (swap! app-state update-in [:user_roles :by-id] dissoc key-id))})))
