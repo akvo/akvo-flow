@@ -79,9 +79,9 @@
                     </li>
                     <li>{{t _status}}
                     {{#if FLOW.selectedControl.selectedCascadeResource.status}}
-                    	<span class="projectStatus published">{{t _published}}</span>
+                    	<span class="cascadeStatus published">{{t _published}}</span>
                     {{else}}
-                    	<span class="projectStatus unpublished">{{t _unpublished}}</span>
+                    	<span class="cascadeStatus unpublished">{{t _unpublished}}</span>
                     {{/if}}
                     </li>
                 </ul>
@@ -89,15 +89,15 @@
             <section {{bindAttr class="view.showImportDialog:hidden:display  :cascadeItems"}}>
                 <nav class="cascadeBreadCrumb">
                     <ul>
-                    	{{#each item in FLOW.cascadeResourceControl.levelNames}}
+	                	{{#each item in FLOW.cascadeResourceControl.levelNames}}
 							{{#view FLOW.CascadeLevelBreadcrumbView contentBinding="item"}}
-                    			<a {{action "adaptColView" target="this"}}><span>{{item.level}}</span>{{item.levelName}}</a>
-                    		{{/view}}
-						{{/each}}
-                            <div class="addLevelBtn"><a {{action "addLevel" target="this"}} class="addLevel btn addBtn">Add a level</a></li>
-                </div>
-                </nav>
-              </section>
+	            <a {{action "adaptColView" target="this"}}><span>{{item.level}}</span>{{item.levelName}}</a>
+	            {/view}}
+				{{/each}}
+	            <div class="addLevelBtn"><a {{action "addLevel" target="this"}} class="addLevel btn addBtn">Add a level</a></li>
+	            </div>
+	            </nav>
+	        </section>
 			<section {{bindAttr class="view.showImportDialog:hidden:display  :levelColumns :floats-in"}}>
                     <div class="levelCol level01">
                     	{{#view FLOW.CascadeLevelNameView col=1 origLevelName=FLOW.cascadeResourceControl.displayLevelName1}}

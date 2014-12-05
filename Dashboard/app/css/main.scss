@@ -4738,9 +4738,9 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                     font-size:1.8em;
                     margin-top:-5px;
                     font-weight:600;
-                    &.projectForm, &.projectMonitoring, &.projectStatus {color:white;}
-                    &.projectStatus.redColor {color:$akvoRed2;}
-                    &.projectStatus.published {color:$green;}
+                    &.projectForm, &.projectMonitoring, &.cascadeStatus {color:white;}
+                    &.cascadeStatus.redColor {color:$akvoRed2;}
+                    &.cascadeStatus.published {color:$green;}
                 }
             }
         }
