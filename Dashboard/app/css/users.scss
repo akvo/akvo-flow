@@ -186,6 +186,9 @@ table {
             color:$yellowTableHead;
             padding:15px 0;
             text-transform:uppercase;
+            a {
+               color:$yellowTableHead;
+            }
             td {
             }
         }
