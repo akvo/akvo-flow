@@ -19,6 +19,7 @@ package com.gallatinsystems.survey.dao;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -29,13 +30,13 @@ import com.gallatinsystems.survey.domain.SurveyGroup;
 public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
     @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger(SurveyGroupDAO.class
-	    .getName());
+            .getName());
 
     private SurveyDAO surveyDao;
 
     public SurveyGroupDAO() {
-	super(SurveyGroup.class);
-	surveyDao = new SurveyDAO();
+        super(SurveyGroup.class);
+        surveyDao = new SurveyDAO();
     }
 
     /**
@@ -45,14 +46,14 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
      * @return
      */
     public SurveyGroup save(SurveyGroup group) {
-	group = super.save(group);
-	if (group.getSurveyList() != null) {
-	    for (Survey s : group.getSurveyList()) {
-		s.setSurveyGroupId(group.getKey().getId());
-		surveyDao.save(s);
-	    }
-	}
-	return group;
+        group = super.save(group);
+        if (group.getSurveyList() != null) {
+            for (Survey s : group.getSurveyList()) {
+                s.setSurveyGroupId(group.getKey().getId());
+                surveyDao.save(s);
+            }
+        }
+        return group;
     }
 
     /**
@@ -62,7 +63,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
      * @return
      */
     public SurveyGroup findBySurveyGroupName(String name) {
-	return super.findByProperty("code", name, "String");
+        return super.findByProperty("code", name, "String");
     }
 
     /**
@@ -84,12 +85,22 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
     }
 
     /**
-     *
      * @param parentId
      * @return
      */
     public List<SurveyGroup> listByProjectFolderId(Long parentId) {
 
         return super.listByProperty("parentId", parentId, "Long");
+    }
+
+    /**
+     * Return a list of survey groups that are accessible by the current user
+     *
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyGroup> listAllFilteredByUserAuthorization() {
+        List<SurveyGroup> allSurveyGroups = list(Constants.ALL_RESULTS);
+        return filterByUserAuthorization(allSurveyGroups);
     }
 }

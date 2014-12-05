@@ -21,6 +21,7 @@ import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -53,6 +54,7 @@ import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
@@ -69,7 +71,7 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class TestHarnessServlet extends HttpServlet {
     private static Logger log = Logger.getLogger(TestHarnessServlet.class
-	    .getName());
+            .getName());
     private static final long serialVersionUID = -5673118002247715049L;
 
     @Override
@@ -484,32 +486,32 @@ public class TestHarnessServlet extends HttpServlet {
     }
 
     private void setupTestUser() {
-	UserDao userDao = new UserDao();
-	User user = userDao.findUserByEmail("test@example.com");
-	if (user == null) {
-	    user = new User();
-	    user.setEmailAddress("test@example.com");
-	}
-	user.setSuperAdmin(true);
-	user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
-	user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
-	user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
-	userDao.save(user);
+        UserDao userDao = new UserDao();
+        User user = userDao.findUserByEmail("test@example.com");
+        if (user == null) {
+            user = new User();
+            user.setEmailAddress("test@example.com");
+        }
+        user.setSuperAdmin(true);
+        user.setPermissionList(String.valueOf(AppRole.SUPER_ADMIN.getLevel()));
+        user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
+        user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
+        userDao.save(user);
     }
 
     private boolean deleteSurveyResponses(Long surveyId, Integer count) {
-	SurveyInstanceDAO dao = new SurveyInstanceDAO();
+        SurveyInstanceDAO dao = new SurveyInstanceDAO();
 
-	List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
-		surveyId, count != null ? count : 100);
+        List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(
+                surveyId, count != null ? count : 100);
 
-	if (instances != null) {
-	    for (SurveyInstance instance : instances) {
-		dao.deleteSurveyInstance(instance);
-	    }
-	    return true;
-	}
-	return false;
+        if (instances != null) {
+            for (SurveyInstance instance : instances) {
+                dao.deleteSurveyInstance(instance);
+            }
+            return true;
+        }
+        return false;
     }
 
     private static void projectMigration() {
@@ -541,13 +543,26 @@ public class TestHarnessServlet extends HttpServlet {
                 }
                 surveyGroup.setPrivacyLevel(privacyLevel);
                 surveyGroup.setDefaultLanguageCode(defaultLanguageCode);
+                surveyGroup.setPath("/" + surveyGroup.getName());
                 surveyGroupDAO.save(surveyGroup);
+
+                // set paths for surveys
+                List<Survey> surveyList = new ArrayList<Survey>();
+                for (Survey s : surveys) {
+                    s.setPath(SurveyUtils.getPath(s));
+                    surveyList.add(s);
+                }
+                if (!surveyList.isEmpty()) {
+                    surveyDAO.save(surveyList);
+                }
                 continue;
             }
 
+            surveyGroup.setProjectType(ProjectType.PROJECT_FOLDER);
+            surveyGroup.setPath("/" + surveyGroup.getName());
+            surveyGroupDAO.save(surveyGroup);
+
             for (Survey survey : surveys) {
-                surveyGroup.setProjectType(ProjectType.PROJECT_FOLDER);
-                surveyGroupDAO.save(surveyGroup);
 
                 SurveyGroup newSurveyGroup = new SurveyGroup();
                 newSurveyGroup.setName(survey.getName());
@@ -559,8 +574,10 @@ public class TestHarnessServlet extends HttpServlet {
                         .setPrivacyLevel(survey.getPointType() == "Household" ? PrivacyLevel.PRIVATE
                                 : PrivacyLevel.PUBLIC);
                 newSurveyGroup.setDefaultLanguageCode(survey.getDefaultLanguageCode());
+                newSurveyGroup.setPath(surveyGroup.getPath() + "/" + newSurveyGroup.getName());
                 surveyGroupDAO.save(newSurveyGroup);
                 survey.setSurveyGroupId(newSurveyGroup.getKey().getId());
+                survey.setPath(SurveyUtils.getPath(survey));
                 surveyDAO.save(survey);
             }
         }

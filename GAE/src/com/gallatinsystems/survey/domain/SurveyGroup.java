@@ -38,6 +38,7 @@ public class SurveyGroup extends BaseDomain {
     private Long newLocaleSurveyId;
     private Long parentId;
     private String description = null;
+    private String path = null;
     private ProjectType projectType;
     private String defaultLanguageCode;
     private PrivacyLevel privacyLevel;
@@ -55,7 +56,6 @@ public class SurveyGroup extends BaseDomain {
     public enum PrivacyLevel {
         PRIVATE, PUBLIC
     }
-
 
     public HashMap<String, Translation> getAltTextMap() {
         return altTextMap;
@@ -101,6 +101,14 @@ public class SurveyGroup extends BaseDomain {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public Boolean getMonitoringGroup() {

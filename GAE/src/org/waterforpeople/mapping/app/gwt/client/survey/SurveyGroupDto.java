@@ -31,6 +31,7 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
     private String description;
     private String name;
     private String code;
+    private String path;
     private Boolean monitoringGroup;
     private Long newLocaleSurveyId;
     private Date createdDateTime;
@@ -57,6 +58,14 @@ public class SurveyGroupDto extends BaseDto implements NamedObject {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public Date getCreatedDateTime() {

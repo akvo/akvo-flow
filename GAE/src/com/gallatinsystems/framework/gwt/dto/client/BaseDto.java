@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 /**
  * base transfer object that should be used when returning data to clients
- * 
+ *
  * @author Christopher Fagaini
  */
 public class BaseDto implements Serializable {

@@ -18,11 +18,13 @@ package com.gallatinsystems.framework.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
@@ -30,10 +32,17 @@ import javax.jdo.PersistenceManager;
 import net.sf.jsr107cache.CacheException;
 
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.dao.SurveyUtils;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.user.dao.UserAuthorizationDAO;
+import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -43,7 +52,8 @@ import com.google.appengine.api.datastore.KeyFactory;
  * list).
  *
  * @author Christopher Fagiani
- * @param <T> a persistent class that extends BaseDomain
+ * @param <T>
+ *            a persistent class that extends BaseDomain
  */
 public class BaseDAO<T extends BaseDomain> {
     public static final int DEFAULT_RESULT_COUNT = 20;
@@ -69,7 +79,8 @@ public class BaseDAO<T extends BaseDomain> {
      * Injected version of the actual Class to pass for the persistentClass in the query creation.
      * This must be set before using this implementation class or any derived class.
      *
-     * @param e an instance of the type of object to use for this instance of the DAO
+     * @param e
+     *            an instance of the type of object to use for this instance of the DAO
      *            implementation.
      */
     public void setDomainClass(Class<T> e) {
@@ -173,7 +184,7 @@ public class BaseDAO<T extends BaseDomain> {
         E result = null;
         Key k = KeyFactory.stringToKey(keyString);
         try {
-            result = (E) pm.getObjectById(clazz, k);
+            result = pm.getObjectById(clazz, k);
         } catch (JDOObjectNotFoundException nfe) {
             log.warning("No " + clazz.getCanonicalName() + " found with key: "
                     + k);
@@ -194,7 +205,7 @@ public class BaseDAO<T extends BaseDomain> {
         E result = null;
 
         try {
-            result = (E) pm.getObjectById(clazz, key);
+            result = pm.getObjectById(clazz, key);
         } catch (JDOObjectNotFoundException nfe) {
             log.warning("No " + clazz.getCanonicalName() + " found with key: "
                     + key);
@@ -293,6 +304,80 @@ public class BaseDAO<T extends BaseDomain> {
     }
 
     /**
+     * Return a list of survey groups or surveys that are accessible by the current user
+     *
+     * @return
+     */
+    @SuppressWarnings({
+            "rawtypes", "unchecked"
+    })
+    public List filterByUserAuthorization(List allObjectsList) {
+        if (!concreteClass.isAssignableFrom(SurveyGroup.class)
+                && !concreteClass.isAssignableFrom(Survey.class)) {
+            throw new UnsupportedOperationException("Cannot filter "
+                    + concreteClass.getSimpleName());
+        }
+
+        final Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        final Long userId = (Long) authentication.getCredentials();
+
+        UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
+        List<UserAuthorization> userAuthorizationList = userAuthorizationDAO.listByUser(userId);
+        if (userAuthorizationList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        StringBuilder authorizedPathsRegex = new StringBuilder();
+        StringBuilder authorizedParentPathsRegex = new StringBuilder();
+        for (UserAuthorization auth : userAuthorizationList) {
+            String authorizedPath = auth.getObjectPath();
+            authorizedPathsRegex.append(authorizedPath);
+            authorizedPathsRegex.append("|");
+
+            // include parent folders in order to be able to navigate to sub folder / project
+            for (String parentPath : SurveyUtils.listParentPaths(authorizedPath, false)) {
+                authorizedParentPathsRegex.append(parentPath);
+                authorizedParentPathsRegex.append("|");
+            }
+        }
+
+        // trim the last "|"s
+        authorizedPathsRegex.deleteCharAt(authorizedPathsRegex.length() - 1);
+        if (authorizedParentPathsRegex.length() > 0) {
+            authorizedParentPathsRegex.deleteCharAt(authorizedParentPathsRegex.length() - 1);
+        }
+
+        final Pattern authorizedPaths = Pattern.compile(authorizedPathsRegex.toString());
+        final Pattern authorizedParentPaths = Pattern
+                .compile(authorizedParentPathsRegex.toString());
+
+        List authorizedList = new ArrayList();
+        if (concreteClass.isAssignableFrom(SurveyGroup.class)) {
+            for (Object obj : allObjectsList) {
+                SurveyGroup sg = (SurveyGroup) obj;
+                String sgPath = sg.getPath();
+                if (sgPath != null
+                        && (authorizedPaths.matcher(sgPath).lookingAt() ||
+                        authorizedParentPaths.matcher(sgPath).matches())) {
+                    authorizedList.add(sg);
+                }
+            }
+        } else {
+            for (Object obj : allObjectsList) {
+                Survey s = (Survey) obj;
+                String sPath = s.getPath();
+                if (sPath != null &&
+                        (authorizedPaths.matcher(sPath).lookingAt() ||
+                        authorizedParentPaths.matcher(sPath).matches())) {
+                    authorizedList.add(s);
+                }
+            }
+        }
+        return authorizedList;
+    }
+
+    /**
      * returns a single object based on the property value
      *
      * @param propertyName
@@ -314,7 +399,8 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * gets a List of object by key where the key is represented as a Long
      *
-     * @param ids Array of Long representing the keys of objects
+     * @param ids
+     *            Array of Long representing the keys of objects
      * @return null if ids is null, otherwise a list of objects
      */
     public List<T> listByKeys(Long[] ids) {
@@ -399,7 +485,7 @@ public class BaseDAO<T extends BaseDomain> {
      */
     protected List<T> listByProperty(String propertyName, Object propertyValue,
             String propertyType, String orderByCol, String orderByDir) {
-        return (List<T>) listByProperty(propertyName, propertyValue,
+        return listByProperty(propertyName, propertyValue,
                 propertyType, orderByCol, orderByDir, EQ_OP, concreteClass);
     }
 
@@ -481,12 +567,18 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * utility method to form a hash map of query parameters using an equality operator
      *
-     * @param paramName - name of object property
-     * @param filter - in/out stringBuilder of query filters
-     * @param param -in/out stringBuilder of param names
-     * @param type - data type of field
-     * @param value - value to bind to param
-     * @param paramMap - in/out parameter map
+     * @param paramName
+     *            - name of object property
+     * @param filter
+     *            - in/out stringBuilder of query filters
+     * @param param
+     *            -in/out stringBuilder of param names
+     * @param type
+     *            - data type of field
+     * @param value
+     *            - value to bind to param
+     * @param paramMap
+     *            - in/out parameter map
      */
     protected void appendNonNullParam(String paramName, StringBuilder filter,
             StringBuilder param, String type, Object value,
@@ -498,13 +590,20 @@ public class BaseDAO<T extends BaseDomain> {
     /**
      * utility method to form a hash map of query parameters
      *
-     * @param paramName - name of object property
-     * @param filter - in/out stringBuilder of query filters
-     * @param param -in/out stringBuilder of param names
-     * @param type - data type of field
-     * @param value - value to bind to param
-     * @param paramMap - in/out parameter map
-     * @param operator - operator to use
+     * @param paramName
+     *            - name of object property
+     * @param filter
+     *            - in/out stringBuilder of query filters
+     * @param param
+     *            -in/out stringBuilder of param names
+     * @param type
+     *            - data type of field
+     * @param value
+     *            - value to bind to param
+     * @param paramMap
+     *            - in/out parameter map
+     * @param operator
+     *            - operator to use
      */
     protected void appendNonNullParam(String paramName, StringBuilder filter,
             StringBuilder param, String type, Object value,
