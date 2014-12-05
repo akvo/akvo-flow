@@ -83,9 +83,23 @@
 
 
 (defn actions [user-auth owner]
-  (om/component
-   (html
-    [:a {:on-click #(dispatch :user-auth/delete user-auth)} (b/icon :remove) " " (t> _delete)])))
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:confirm-delete? false})
+    om/IRenderState
+    (render-state [this {:keys [confirm-delete?]}]
+      (html
+       (if confirm-delete?
+        [:span
+         [:strong (t> _delete) "?"]
+         (b/btn-link {:on-click #(do (om/set-state! owner :confirm-delete? false)
+                                     (dispatch :user-auth/delete user-auth))}
+                     (t> _yes))
+         " / "
+         (b/btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} (t> _no))]
+        (b/btn-link {:on-click #(om/set-state! owner :confirm-delete? true)} :remove (t> _delete)))))))
+
 
 (defn role-label [{:strs [name]} owner]
   (om/component
@@ -193,6 +207,7 @@
                                   {:title (t> _resource)
                                    :cell-fn #(get % "objectPath")}
                                   {:title (t> _actions)
+                                   :class "text-center"
                                    :component actions}]})]))))
 
 (defn generate-apikeys [owner user]
