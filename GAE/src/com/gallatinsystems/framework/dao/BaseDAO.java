@@ -34,6 +34,7 @@ import net.sf.jsr107cache.CacheException;
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
@@ -321,6 +322,11 @@ public class BaseDAO<T extends BaseDomain> {
         final Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
         final Long userId = (Long) authentication.getCredentials();
+
+        // super admin list all
+        if (authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)) {
+            return allObjectsList;
+        }
 
         UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
         List<UserAuthorization> userAuthorizationList = userAuthorizationDAO.listByUser(userId);
