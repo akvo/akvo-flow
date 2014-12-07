@@ -19,6 +19,16 @@
         <url-pattern>/api/v1/*</url-pattern>
     </servlet-mapping>
 
+    <filter>
+        <filter-name>multiReadFilter</filter-name>
+        <filter-class>com.gallatinsystems.framework.servlet.MultiReadFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>multiReadFilter</filter-name>
+        <url-pattern>/rest/survey_groups/*</url-pattern>
+        <url-pattern>/rest/surveys/*</url-pattern>
+    </filter-mapping>
+
 	<filter>
 		<filter-name>springSecurityFilterChain</filter-name>
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -35,6 +45,14 @@
 	<servlet-mapping>
 		<servlet-name>DeviceApplicationRestService</servlet-name>
 		<url-pattern>/deviceapprest</url-pattern>
+	</servlet-mapping>
+		<servlet>
+		<servlet-name>DeviceTimeRestService</servlet-name>
+		<servlet-class>org.waterforpeople.mapping.app.web.DeviceTimeRestService</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeviceTimeRestService</servlet-name>
+		<url-pattern>/devicetimerest</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>CurrentUserServlet</servlet-name>

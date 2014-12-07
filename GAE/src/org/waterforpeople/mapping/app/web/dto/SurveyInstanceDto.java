@@ -30,6 +30,7 @@ public class SurveyInstanceDto implements Serializable {
     private static final long serialVersionUID = -850583183416882347L;
 
     private String uuid;
+    private String submitter;
     private Long surveyId;
     private Long collectionDate;
     private List<QasDto> qasList;
@@ -41,6 +42,14 @@ public class SurveyInstanceDto implements Serializable {
         setQasList(new ArrayList<QasDto>());
         // setQuestionIds(new ArrayList<Long>());
         // setAnswerValues(new ArrayList<String>());
+    }
+
+    public String getSubmitter() {
+        return submitter;
+    }
+
+    public void setSubmitter(String submitter) {
+        this.submitter = submitter;
     }
 
     public String getUuid() {

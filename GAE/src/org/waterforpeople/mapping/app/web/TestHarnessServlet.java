@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -44,13 +45,19 @@ import org.waterforpeople.mapping.domain.AccessPoint;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.Point;
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.map.dao.OGRFeatureDao;
 import com.gallatinsystems.gis.map.domain.Geometry;
 import com.gallatinsystems.gis.map.domain.Geometry.GeometryType;
 import com.gallatinsystems.gis.map.domain.OGRFeature;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
@@ -470,6 +477,8 @@ public class TestHarnessServlet extends HttpServlet {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else if ("projectMigration".equals(action)) {
+            projectMigration();
         }
     }
 
@@ -518,5 +527,74 @@ public class TestHarnessServlet extends HttpServlet {
             return true;
         }
         return false;
+    }
+
+    private static void projectMigration() {
+
+        SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
+        SurveyDAO surveyDAO = new SurveyDAO();
+
+        List<SurveyGroup> surveyGroups = surveyGroupDAO
+                .list(Constants.ALL_RESULTS);
+
+        for (SurveyGroup surveyGroup : surveyGroups) {
+
+            List<Survey> surveys = surveyDAO.listSurveysByGroup(surveyGroup
+                    .getKey().getId());
+
+            boolean isMonitoring = Boolean.TRUE.equals(surveyGroup.getMonitoringGroup());
+            if (isMonitoring || surveys.size() <= 1) {
+                if (surveyGroup.getProjectType() == null) {
+                    surveyGroup.setProjectType(ProjectType.PROJECT);
+                }
+
+                PrivacyLevel privacyLevel = PrivacyLevel.PRIVATE;
+                String defaultLanguageCode = "en";
+                if (surveys.size() >= 1) {
+                    Survey survey = surveys.get(0);
+                    privacyLevel = survey.getPointType() == "Household" ? PrivacyLevel.PRIVATE
+                            : PrivacyLevel.PUBLIC;
+                    defaultLanguageCode = survey.getDefaultLanguageCode();
+                }
+                surveyGroup.setPrivacyLevel(privacyLevel);
+                surveyGroup.setDefaultLanguageCode(defaultLanguageCode);
+                surveyGroup.setPath("/" + surveyGroup.getName());
+                surveyGroupDAO.save(surveyGroup);
+
+                // set paths for surveys
+                List<Survey> surveyList = new ArrayList<Survey>();
+                for (Survey s : surveys) {
+                    s.setPath(SurveyUtils.getPath(s));
+                    surveyList.add(s);
+                }
+                if (!surveyList.isEmpty()) {
+                    surveyDAO.save(surveyList);
+                }
+                continue;
+            }
+
+            surveyGroup.setProjectType(ProjectType.PROJECT_FOLDER);
+            surveyGroup.setPath("/" + surveyGroup.getName());
+            surveyGroupDAO.save(surveyGroup);
+
+            for (Survey survey : surveys) {
+
+                SurveyGroup newSurveyGroup = new SurveyGroup();
+                newSurveyGroup.setName(survey.getName());
+                newSurveyGroup.setCode(survey.getCode());
+                newSurveyGroup.setParentId(surveyGroup.getKey().getId());
+                newSurveyGroup.setMonitoringGroup(false);
+                newSurveyGroup.setProjectType(ProjectType.PROJECT);
+                newSurveyGroup
+                        .setPrivacyLevel(survey.getPointType() == "Household" ? PrivacyLevel.PRIVATE
+                                : PrivacyLevel.PUBLIC);
+                newSurveyGroup.setDefaultLanguageCode(survey.getDefaultLanguageCode());
+                newSurveyGroup.setPath(surveyGroup.getPath() + "/" + newSurveyGroup.getName());
+                surveyGroupDAO.save(newSurveyGroup);
+                survey.setSurveyGroupId(newSurveyGroup.getKey().getId());
+                survey.setPath(SurveyUtils.getPath(survey));
+                surveyDAO.save(survey);
+            }
+        }
     }
 }

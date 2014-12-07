@@ -94,6 +94,10 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  amBarcodeType: function () {
+	  return this.type.get('value') === 'SCAN';
+  }.property('this.type').cacheable(),
+
   amFreeTextType: function () {
     if (this.type) {
       return this.type.get('value') == 'FREE_TEXT';
@@ -122,7 +126,7 @@ FLOW.QuestionView = FLOW.View.extend({
     var val;
     if (!Ember.none(this.type)) {
       val = this.type.get('value');
-      return val == 'PHOTO' || val == 'VIDEO' || val == 'BARCODE';
+      return val == 'PHOTO' || val == 'VIDEO';
     }
   }.property('this.type').cacheable(),
 
@@ -239,7 +243,7 @@ FLOW.QuestionView = FLOW.View.extend({
   },
 
 
-  onEditSuccess: function() {
+  doSaveEditQuestion: function() {
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
     if (this.type.get('value') !== 'NUMBER') {
@@ -276,7 +280,7 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
     FLOW.selectedControl.selectedQuestion.set('requireDoubleEntry', this.get('requireDoubleEntry'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
-    
+
     var allowExternalSources = (this.type.get('value') !== 'FREE_TEXT') ? false : this.get('allowExternalSources');
     FLOW.selectedControl.selectedQuestion.set('allowExternalSources', allowExternalSources);
 
@@ -393,7 +397,8 @@ FLOW.QuestionView = FLOW.View.extend({
   throttleTimer: null,
 
   validateQuestionId: function(args) {
-    var questionKeyId = FLOW.selectedControl.selectedQuestion.get('keyId');
+    var selectedQuestion = FLOW.selectedControl.selectedQuestion
+    var questionKeyId = selectedQuestion.get('keyId');
     var questionId = this.get('questionId') || "";
     if (FLOW.Env.mandatoryQuestionID && questionId.match(/^\s*$/)) {
       args.failure(Ember.String.loc('_question_id_mandatory'));
@@ -402,37 +407,39 @@ FLOW.QuestionView = FLOW.View.extend({
     } else {
       var monitoring = this.isPartOfMonitoringGroup(questionKeyId);
       if (monitoring) {
-	clearTimeout(this.throttleTimer);
-	this.throttleTimer = setTimeout(function () {
-	  $.ajax({
-	    url: '/rest/questions/' + questionKeyId + '/validate?questionId=' + questionId,
-	    type: 'POST',
-	    success: function(data) {
-	      if (data.success) {
-		args.success();
-	      } else {
-		args.failure(data.reason);
-	      }
-	    },
-	    error: function() {
-	      args.failure(Ember.String.loc('_could_not_validate_question_id_with_server'));
-	    }
-	  });
-	}, 1000);
+        clearTimeout(this.throttleTimer);
+        this.throttleTimer = setTimeout(function () {
+          $.ajax({
+            url: '/rest/questions/' + questionKeyId + '/validate?questionId=' + questionId,
+            type: 'POST',
+            success: function(data) {
+              if (data.success) {
+                args.success();
+              } else {
+                args.failure(data.reason);
+              }
+            },
+            error: function() {
+              args.failure(Ember.String.loc('_could_not_validate_question_id_with_server'));
+            }
+          });
+        }, 1000);
       } else {
-	var otherQuestionIds = FLOW.store.filter(FLOW.Question, function(question) {
-	  return questionKeyId !== question.get('keyId');
-	}).map(function(question) {
-	  return question.get('questionId');
-	}).filter(function(questionId) {
-	  return questionId !== "";
-	});
-	var isUnique = !otherQuestionIds.contains(questionId);
-	if (isUnique) {
-	  args.success();
-	} else {
-	  args.failure('the question id is not unique');
-	}
+        var otherQuestionIds = FLOW.store.filter(FLOW.Question, function(question) {
+          var keyId = question.get('keyId');
+          return (selectedQuestion.get('surveyId') === question.get('surveyId'))
+            && (questionKeyId !== question.get('keyId'));
+        }).map(function(question) {
+          return question.get('questionId');
+        }).filter(function(questionId) {
+          return questionId !== "";
+        });
+        var isUnique = !otherQuestionIds.contains(questionId);
+        if (isUnique) {
+          args.success();
+        } else {
+          args.failure('the question id is not unique');
+        }
       }
     }
   },
@@ -460,30 +467,6 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.dialogControl.set('showDialog', true);
   },
 
-  doSaveEditQuestion: function () {
-    var self = this;
-    this.validateQuestionId({
-      failure: function(msg) {
-	self.showMessageDialog('Invalid question id', msg);
-      },
-      success: function() {
-	self.validateMinAndMax({
-	  valueFailure: function() {
-	    self.showMessageDialog(Ember.String.loc('_min_max_not_correct'),
-				   Ember.String.loc('_min_larger_than_max_or_equal'));
-	  },
-	  NaNFailure: function() {
-	    self.showMessageDialog(Ember.String.loc('_min_max_not_number'),
-				   Ember.String.loc('_min_max_not_number_message'));
-	  },
-	  success: function(){
-	    self.onEditSuccess();
-	  }
-	});
-      }
-    });
-  },
-
   deleteQuestion: function () {
     var qDeleteId;
     qDeleteId = this.content.get('keyId');
@@ -493,6 +476,20 @@ FLOW.QuestionView = FLOW.View.extend({
       this.showMessageDialog(Ember.String.loc('_please_wait'),
 			     Ember.String.loc('_please_wait_until_previous_request'));
       return;
+    }
+
+    // Check if there is another question that is dependant on this question
+    if (this.content.get('type') === 'OPTION') {
+      var hasDependant = FLOW.store.find(FLOW.Question).some(function (q) {
+        return qDeleteId === q.get('dependentQuestionId');
+      });
+
+      if (hasDependant) {
+        this.showMessageDialog(
+          Ember.String.loc('_cant_delete_question'),
+          Ember.String.loc('_another_question_depends_on_this'));
+        return;
+      }
     }
 
     // check if deleting this question is allowed

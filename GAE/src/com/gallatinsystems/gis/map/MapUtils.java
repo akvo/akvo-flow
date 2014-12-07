@@ -28,7 +28,10 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
@@ -60,7 +63,6 @@ public class MapUtils {
         Double lonCenter;
         Boolean showOnPublicMap = false;
         Long surveyId = null;
-        String surveyIdString = "";
 
         if (locale.getGeocells() == null || locale.getGeocells().size() == 0) {
             // nothing to do
@@ -71,17 +73,16 @@ public class MapUtils {
             SurveyInstance si = siDao.getByKey(locale.getLastSurveyalInstanceId());
             if (si != null) {
                 surveyId = si.getSurveyId();
-                surveyIdString = surveyId.toString();
 
                 // get public status, first try from cache
-                String pubKey = surveyIdString + "-publicStatus";
+                String pubKey = surveyId.toString() + "-publicStatus";
                 if (containsKey(cache, pubKey)) {
                     showOnPublicMap = (Boolean) cache.get(pubKey);
                 } else {
                     Survey s = sDao.getByKey(surveyId);
+                    SurveyGroup surveyGroup = SurveyUtils.retrieveSurveyGroup(s.getSurveyGroupId());
                     if (s != null) {
-                        showOnPublicMap = showOnPublicMap || "Point".equals(s.getPointType())
-                                || "PublicInstitution".equals(s.getPointType());
+                        showOnPublicMap = surveyGroup.getPrivacyLevel() == PrivacyLevel.PUBLIC;
                         putObject(cache, pubKey, showOnPublicMap);
                     }
                 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -16,69 +16,54 @@
 
 package com.gallatinsystems.user.domain;
 
-import javax.jdo.annotations.PersistenceCapable;
-
-import com.gallatinsystems.framework.domain.BaseDomain;
-
 /**
- * permissions that can be assigned to a user. Code is mandatory and must be unique
- * 
+ * Predefined set of permissions that can be assigned to a user. A permission consists of a name - a
+ * short code that identifies the permission. this is unique in the set of permissions. The name
+ * (prepended with an underscore) is used as a place holder for the longer textual description of
+ * the permission, action - the HTTP method (action) with which the permission is associated,
+ * resourceURI - the URI identifying the resource being accessed.
+ *
  * @author Christopher Fagiani
  */
-@PersistenceCapable
-public class Permission extends BaseDomain {
-    private static final long serialVersionUID = 3706308694153467750L;
-    private String code;
-    private String name;
+public enum Permission {
 
-    public Permission(String name, String code) {
-        this.name = name;
-        this.code = code;
+    PROJECT_FOLDER_CREATE("POST", "/rest/survey_groups"),
+    PROJECT_FOLDER_READ("GET", "/rest/survey_groups"),
+    PROJECT_FOLDER_UPDATE("PUT", "/rest/survey_groups"),
+    PROJECT_FOLDER_DELETE("DELETE", "/rest/survey_groups"),
+
+    FORM_CREATE("POST", "/rest/surveys"),
+    FORM_READ("GET", "/rest/surveys"),
+    FORM_UPDATE("PUT", "/rest/surveys"),
+    FORM_DELETE("DELETE", "/rest/surveys");
+
+    private final String httpMethod;
+    private final String uriPrefix;
+
+    Permission(String method, String uri) {
+        this.httpMethod = method;
+        this.uriPrefix = uri;
     }
 
-    public Permission(String name) {
-        this(name, name.toUpperCase());
+    public String getHttpMethod() {
+        return httpMethod;
     }
 
-    public String getCode() {
-        return code;
+    public String getUriPrefix() {
+        return uriPrefix;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+    public static Permission lookup(String httpMethod, String requestUri) {
+        if (httpMethod == null || requestUri == null) {
+            return null;
+        }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * equality defined as having the same code
-     */
-    public boolean equals(Object other) {
-        if (other != null && other instanceof Permission) {
-            Permission op = (Permission) other;
-            if (getCode() != null && getCode().equals(op.getCode())) {
-                return true;
-            } else if (op.getCode() == null && getCode() == null) {
-                return true;
-            } else {
-                return false;
+        for (Permission permission : Permission.values()) {
+            if (permission.getHttpMethod().equals(httpMethod)
+                    && requestUri.startsWith(permission.getUriPrefix())) {
+                return permission;
             }
-        } else {
-            return false;
         }
-    }
-
-    public int hashCode() {
-        if (code != null) {
-            return code.hashCode();
-        } else {
-            return 0;
-        }
+        return null;
     }
 }

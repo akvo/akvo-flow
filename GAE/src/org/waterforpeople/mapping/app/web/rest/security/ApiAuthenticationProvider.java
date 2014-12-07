@@ -38,84 +38,84 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication)
-	    throws AuthenticationException {
+            throws AuthenticationException {
 
-	@SuppressWarnings("unchecked")
-	Map<String, String> details = (Map<String, String>) authentication
-		.getDetails();
-	String[] credentials = parseCredentials(details.get("Authorization"));
-	String accessKey = credentials[0];
-	String clientSignature = credentials[1];
+        @SuppressWarnings("unchecked")
+        Map<String, String> details = (Map<String, String>) authentication
+                .getDetails();
+        String[] credentials = parseCredentials(details.get("Authorization"));
+        String accessKey = credentials[0];
+        String clientSignature = credentials[1];
 
-	ApiUser apiUser = findUser(accessKey);
+        ApiUser apiUser = findUser(accessKey);
 
-	if (apiUser == null) {
-	    throw new BadCredentialsException("Authorization Required");
-	}
+        if (apiUser == null) {
+            throw new BadCredentialsException("Authorization Required");
+        }
 
-	Date date = parseDate(details.get("Date"));
-	long clientTime = date.getTime();
-	long serverTime = new Date().getTime();
-	long timeDelta = 600000; // +/- 10 minutes
+        Date date = parseDate(details.get("Date"));
+        long clientTime = date.getTime();
+        long serverTime = new Date().getTime();
+        long timeDelta = 600000; // +/- 10 minutes
 
-	if (serverTime - timeDelta < clientTime
-		&& clientTime < serverTime + timeDelta) {
-	    String payload = buildPayload(details.get("HTTP-Verb"), date,
-		    details.get("Resource"));
-	    String serverSignature = MD5Util.generateHMAC(payload,
-		    apiUser.getSecret());
-	    if (clientSignature.equals(serverSignature)) {
-		// Successful authentication
-		return new ApiUserAuthentication(apiUser);
-	    }
-	}
-	// Unsuccessful authentication
-	throw new BadCredentialsException("Authorization Required");
+        if (serverTime - timeDelta < clientTime
+                && clientTime < serverTime + timeDelta) {
+            String payload = buildPayload(details.get("HTTP-Verb"), date,
+                    details.get("Resource"));
+            String serverSignature = MD5Util.generateHMAC(payload,
+                    apiUser.getSecret());
+            if (clientSignature.equals(serverSignature)) {
+                // Successful authentication
+                return new ApiUserAuthentication(apiUser);
+            }
+        }
+        // Unsuccessful authentication
+        throw new BadCredentialsException("Authorization Required");
     }
 
     private ApiUser findUser(String accessKey) {
-	User user = userDao.findByAccessKey(accessKey);
-	if (user != null) {
-	    return new ApiUser(user.getUserName(), user.getAccessKey(),
-		    user.getSecret());
-	} else {
-	    return null;
-	}
+        User user = userDao.findByAccessKey(accessKey);
+        if (user != null) {
+            return new ApiUser(user.getUserName(), user.getAccessKey(),
+                    user.getSecret(), user.getKey().getId());
+        } else {
+            return null;
+        }
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-	return true;
+        return true;
     }
 
     private String[] parseCredentials(String credentialsString) {
-	if (credentialsString == null)
-	    throw new BadCredentialsException("Authorization required");
+        if (credentialsString == null)
+            throw new BadCredentialsException("Authorization required");
 
-	String[] credentials = credentialsString.split(":");
+        String[] credentials = credentialsString.split(":");
 
-	if (credentials.length != 2) {
-	    throw new BadCredentialsException("Authorization required");
-	}
+        if (credentials.length != 2) {
+            throw new BadCredentialsException("Authorization required");
+        }
 
-	credentials[0] = credentials[0].trim();
-	credentials[1] = credentials[1].trim();
+        credentials[0] = credentials[0].trim();
+        credentials[1] = credentials[1].trim();
 
-	return credentials;
+        return credentials;
     }
 
     private Date parseDate(String dateString) {
-	try {
-	    // epoch is seconds based. Date constructor is milliseconds based.
-	    return new Date(Long.parseLong(dateString) * 1000);
-	} catch (NumberFormatException e) {
-	    throw new BadCredentialsException("Authorization Required");
-	}
+        try {
+            // epoch is seconds based. Date constructor is milliseconds based.
+            return new Date(Long.parseLong(dateString) * 1000);
+        } catch (NumberFormatException e) {
+            throw new BadCredentialsException("Authorization Required");
+        }
     }
 
     private String buildPayload(String httpVerb, Date date, String resource) {
-	// date.getTime() is millisecond based and epoch is seconds based
-	return httpVerb + "\n" + String.valueOf(date.getTime() / 1000) + "\n"
-		+ resource;
+        // date.getTime() is millisecond based and epoch is seconds based
+        return httpVerb + "\n" + String.valueOf(date.getTime() / 1000) + "\n"
+                + resource;
     }
 }

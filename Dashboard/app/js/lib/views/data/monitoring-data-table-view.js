@@ -1,5 +1,6 @@
 FLOW.MonitoringDataTableView = FLOW.View.extend({
   showingDetailsDialog: false,
+  since: null,
 
   showDetailsDialog: function (evt) {
 	FLOW.surveyInstanceControl.set('content', FLOW.store.findQuery(FLOW.SurveyInstance, {
@@ -17,11 +18,14 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
     $('.si_details').hide();
     $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
   },
+
   findSurveyedLocale: function (evt) {
 	  var ident = this.get('identifier'),
 	      displayName = this.get('displayName'),
 	      sgId = this.get('selectedSurveyGroup'),
-	      criteria = {};
+        since = FLOW.metaControl.get('since');
+	      cursorType = FLOW.metaControl.get('cursorType');
+        criteria = {};
 
 	  if (ident) {
 		  criteria.identifier = ident;
@@ -35,6 +39,31 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 		  criteria.surveyGroupId = sgId.get('keyId');
 	  }
 
+    if (since && cursorType === FLOW.SurveyedLocale) {
+      criteria.since = since;
+    }
+
 	  FLOW.surveyedLocaleControl.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, criteria));
-  }
+  },
+
+  doNextPage: function () {
+    FLOW.surveyedLocaleControl.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
+    this.findSurveyedLocale();
+    FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') + 1);
+  },
+
+  doPrevPage: function () {
+    FLOW.surveyedLocaleControl.get('sinceArray').popObject();
+    FLOW.metaControl.set('since', FLOW.surveyedLocaleControl.get('sinceArray')[FLOW.surveyedLocaleControl.get('sinceArray').length - 1]);
+    this.findSurveyedLocale();
+    FLOW.surveyedLocaleControl.set('pageNumber', FLOW.surveyedLocaleControl.get('pageNumber') - 1);
+  },
+
+  hasNextPage: function () {
+    return FLOW.metaControl.get('numSLLoaded') == 20;
+  }.property('FLOW.metaControl.numSLLoaded'),
+
+  hasPrevPage: function () {
+    return FLOW.surveyedLocaleControl.get('sinceArray').length != 0;
+  }.property('FLOW.surveyedLocaleControl.sinceArray.length'),
 });

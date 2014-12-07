@@ -32,7 +32,7 @@ import com.google.appengine.api.users.User;
  * limited access until they have registered.
  * <p>
  * If the account has been disabled, a {@code DisabledException} will be raised.
- * 
+ *
  * @author Luke Taylor
  */
 public class GoogleAccountsAuthenticationProvider implements AuthenticationProvider,
@@ -44,6 +44,7 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     @Inject
     UserDao userDao;
 
+    @Override
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         User googleUser = (User) authentication.getPrincipal();
@@ -83,7 +84,8 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
             }
         }
 
-        return new GaeUser(user.getUserName(), user.getEmailAddress(), roles, true);
+        return new GaeUser(user.getUserName(), user.getEmailAddress(), user.getKey().getId(),
+                roles, true);
     }
 
     private int getAuthorityLevel(com.gallatinsystems.user.domain.User user) {
@@ -102,10 +104,12 @@ public class GoogleAccountsAuthenticationProvider implements AuthenticationProvi
     /**
      * Indicate that this provider only supports PreAuthenticatedAuthenticationToken (sub)classes.
      */
+    @Override
     public final boolean supports(Class<?> authentication) {
         return PreAuthenticatedAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
+    @Override
     public void setMessageSource(MessageSource messageSource) {
         this.messages = new MessageSourceAccessor(messageSource);
     }

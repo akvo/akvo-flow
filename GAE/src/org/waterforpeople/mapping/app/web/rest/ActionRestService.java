@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.analytics.dao.SurveyInstanceSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyInstanceSummary;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.server.survey.SurveyServiceImpl;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -45,8 +48,11 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
@@ -58,8 +64,13 @@ import com.google.appengine.api.utils.SystemProperty;
 @RequestMapping("/actions")
 public class ActionRestService {
 
+    private static final Logger logger = Logger.getLogger(ActionRestService.class.getName());
+
     @Inject
     private SurveyDAO surveyDao;
+
+    @Inject
+    private SurveyGroupDAO surveyGroupDao;
 
     @Inject
     private QuestionDao questionDao;
@@ -67,18 +78,14 @@ public class ActionRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> doAction(
-            @RequestParam(value = "action", defaultValue = "")
-            String action,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId,
-            @RequestParam(value = "surveyIds[]", defaultValue = "")
-            Long[] surveyIds,
-            @RequestParam(value = "email", defaultValue = "")
-            String email,
-            @RequestParam(value = "version", defaultValue = "")
-            String version,
-            @RequestParam(value = "dbInstructions", defaultValue = "")
-            String dbInstructions) {
+            @RequestParam(value = "action", defaultValue = "") String action,
+            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+            @RequestParam(value = "surveyIds[]", defaultValue = "") Long[] surveyIds,
+            @RequestParam(value = "email", defaultValue = "") String email,
+            @RequestParam(value = "version", defaultValue = "") String version,
+            @RequestParam(value = "dbInstructions", defaultValue = "") String dbInstructions,
+            @RequestParam(value = "targetId", defaultValue = "") Long targetId,
+            @RequestParam(value = "folderId", defaultValue = "") Long folderId) {
         String status = "failed";
         String message = "";
         final Map<String, Object> response = new HashMap<String, Object>();
@@ -108,7 +115,10 @@ public class ActionRestService {
             status = computeGeocellsForLocales();
         } else if ("createTestLocales".equals(action)) {
             status = createTestLocales();
+        } else if ("copyProject".equals(action)) {
+            status = copyProject(targetId, folderId);
         }
+
         statusDto.setStatus(status);
         response.put("actions", "[]");
         response.put("meta", statusDto);
@@ -283,7 +293,7 @@ public class ActionRestService {
      * Create datastore entry for new apk version object called as:
      * http://host/rest/actions?action=newApkVersion&version=x.y.z appCode and deviceType properties
      * are defaults.
-     * 
+     *
      * @Param version
      */
     private String newApkVersion(String version) {
@@ -304,5 +314,48 @@ public class ActionRestService {
         } else {
             return "";
         }
+    }
+
+    private String copyProject(Long targetId, Long folderId) {
+
+        SurveyGroup projectSource = surveyGroupDao.getByKey(targetId);
+        SurveyGroup projectParent = null;
+        if (folderId != null) {
+            projectParent = surveyGroupDao.getByKey(folderId);
+        }
+        if (projectSource == null) {
+            logger.log(Level.WARNING,
+                    String.format("Failed to copy project %s to folder %s", targetId, folderId));
+            return "failed";
+        }
+        SurveyGroup projectCopy = new SurveyGroup();
+
+        projectCopy.setCode(projectSource.getCode() + " copy");
+        projectCopy.setName(projectSource.getName() + " copy");
+        String parentPath = null;
+        if (projectParent != null) {
+            parentPath = projectParent.getPath();
+        } else {
+            parentPath = ""; // root folder
+        }
+        projectCopy.setPath(parentPath + "/" + projectCopy.getName());
+        projectCopy.setMonitoringGroup(projectSource.getMonitoringGroup());
+        projectCopy.setParentId(folderId);
+
+        SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy);
+
+        List<Survey> surveys = surveyDao.listSurveysByGroup(targetId);
+        for (Survey survey : surveys) {
+            SurveyDto surveyDto = new SurveyDto();
+            surveyDto.setCode(survey.getCode());
+            surveyDto.setName(survey.getName());
+            surveyDto.setPath(projectCopy.getPath() + "/" + survey.getName());
+            surveyDto.setSurveyGroupId(savedProjectCopy.getKey().getId());
+            Survey surveyCopy = SurveyUtils.copySurvey(survey, surveyDto);
+            surveyCopy.setSurveyGroupId(savedProjectCopy.getKey().getId());
+            surveyDao.save(surveyCopy);
+        }
+        return "success";
+
     }
 }

@@ -31,53 +31,54 @@ public class ApiUserAuthentication implements Authentication {
     private ApiUser principal;
     private Map<String, String> details;
     private boolean authenticated;
+    private Long userId;
 
     public ApiUserAuthentication(ApiUser principal, Map<String, String> details) {
-	this.principal = principal;
-	this.details = details;
-	this.authenticated = true;
+        this.principal = principal;
+        this.details = details;
+        this.authenticated = true;
     }
 
     public ApiUserAuthentication(ApiUser principal) {
-	this.principal = principal;
-	this.details = null;
-	this.authenticated = true;
+        this.principal = principal;
+        this.details = null;
+        this.authenticated = true;
+        this.userId = principal.getUserId();
     }
 
     @Override
     public String getName() {
-	return principal.getUserName();
+        return principal.getUserName();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-	return EnumSet.of(AppRole.USER);
+        return EnumSet.of(AppRole.USER);
     }
 
     @Override
     public Object getCredentials() {
-	// TODO Auto-generated method stub
-	return null;
+        return userId;
     }
 
     @Override
     public Object getDetails() {
-	return details;
+        return details;
     }
 
     @Override
     public Object getPrincipal() {
-	return principal;
+        return principal;
     }
 
     @Override
     public boolean isAuthenticated() {
-	return authenticated;
+        return authenticated;
     }
 
     @Override
     public void setAuthenticated(boolean authenticated)
-	    throws IllegalArgumentException {
-	this.authenticated = authenticated;
+            throws IllegalArgumentException {
+        this.authenticated = authenticated;
     }
 }

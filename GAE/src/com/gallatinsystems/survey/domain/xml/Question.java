@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * Java class for anonymous complex type.
  * <p>
  * The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -84,6 +84,11 @@ public class Question {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
     protected String locked;
+
+    @XmlAttribute(required = false)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String allowMultiple;
+
     @XmlAttribute
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
@@ -126,7 +131,7 @@ public class Question {
 
     /**
      * Gets the value of the dependency property.
-     * 
+     *
      * @return possible object is {@link Dependency }
      */
     public Dependency getDependency() {
@@ -135,7 +140,7 @@ public class Question {
 
     /**
      * Sets the value of the dependency property.
-     * 
+     *
      * @param value allowed object is {@link Dependency }
      */
     public void setDependency(Dependency value) {
@@ -144,7 +149,7 @@ public class Question {
 
     /**
      * Gets the value of the help property.
-     * 
+     *
      * @return possible object is {@link Help }
      */
     public List<Help> getHelp() {
@@ -153,7 +158,7 @@ public class Question {
 
     /**
      * Sets the value of the help property.
-     * 
+     *
      * @param value allowed object is {@link Help }
      */
     public void setHelp(List<Help> value) {
@@ -162,7 +167,7 @@ public class Question {
 
     /**
      * Gets the value of the options property.
-     * 
+     *
      * @return possible object is {@link Options }
      */
     public Options getOptions() {
@@ -171,7 +176,7 @@ public class Question {
 
     /**
      * Sets the value of the options property.
-     * 
+     *
      * @param value allowed object is {@link Options }
      */
     public void setOptions(Options value) {
@@ -180,7 +185,7 @@ public class Question {
 
     /**
      * Gets the value of the text property.
-     * 
+     *
      * @return possible object is {@link Text }
      */
     public Text getText() {
@@ -189,7 +194,7 @@ public class Question {
 
     /**
      * Sets the value of the text property.
-     * 
+     *
      * @param value allowed object is {@link Text }
      */
     public void setText(Text value) {
@@ -198,7 +203,7 @@ public class Question {
 
     /**
      * Gets the value of the validationRule property.
-     * 
+     *
      * @return possible object is {@link ValidationRule }
      */
     public ValidationRule getValidationRule() {
@@ -207,7 +212,7 @@ public class Question {
 
     /**
      * Sets the value of the validationRule property.
-     * 
+     *
      * @param value allowed object is {@link ValidationRule }
      */
     public void setValidationRule(ValidationRule value) {
@@ -216,7 +221,7 @@ public class Question {
 
     /**
      * Gets the value of the order property.
-     * 
+     *
      * @return possible object is {@link String }
      */
     public String getOrder() {
@@ -225,7 +230,7 @@ public class Question {
 
     /**
      * Sets the value of the order property.
-     * 
+     *
      * @param value allowed object is {@link String }
      */
     public void setOrder(String value) {
@@ -233,8 +238,26 @@ public class Question {
     }
 
     /**
+     * Gets the value of the allowMultiple property.
+     *
+     * @return possible object is {@link String }
+     */
+    public String getAllowMultiple() {
+        return allowMultiple;
+    }
+
+    /**
+     * Sets the value of the allowMultiple property.
+     *
+     * @param value allowed object is {@link String }
+     */
+    public void setAllowMultiple(String value) {
+        this.allowMultiple = value;
+    }
+
+    /**
      * Gets the value of the locked property.
-     * 
+     *
      * @return possible object is {@link String }
      */
     public String getLocked() {
@@ -243,7 +266,7 @@ public class Question {
 
     /**
      * Sets the value of the locked property.
-     * 
+     *
      * @param value allowed object is {@link String }
      */
     public void setLocked(String value) {
@@ -252,7 +275,7 @@ public class Question {
 
     /**
      * Sets the value of the requireDoubleEntry property.
-     * 
+     *
      * @param value allowed object is {@link String }
      */
     public void setRequireDoubleEntry(String value) {
@@ -261,7 +284,7 @@ public class Question {
 
     /**
      * Gets the value of the requireDoubleEntry property.
-     * 
+     *
      * @return possible object is {@link String }
      */
     public String getRequireDoubleEntry() {
@@ -270,7 +293,7 @@ public class Question {
 
     /**
      * Gets the value of the type property.
-     * 
+     *
      * @return possible object is {@link String }
      */
     public String getType() {
@@ -279,7 +302,7 @@ public class Question {
 
     /**
      * Sets the value of the type property.
-     * 
+     *
      * @param value allowed object is {@link String }
      */
     public void setType(String value) {
@@ -288,7 +311,7 @@ public class Question {
 
     /**
      * Gets the value of the mandatory property.
-     * 
+     *
      * @return possible object is {@link String }
      */
     public String getMandatory() {
@@ -297,7 +320,7 @@ public class Question {
 
     /**
      * Sets the value of the mandatory property.
-     * 
+     *
      * @param value allowed object is {@link String }
      */
     public void setMandatory(String value) {
@@ -306,7 +329,7 @@ public class Question {
 
     /**
      * Gets the value of the localeName property.
-     * 
+     *
      * @return possible object is {@link String }
      */
     public String getLocaleNameFlag() {
@@ -315,7 +338,7 @@ public class Question {
 
     /**
      * Sets the value of the localeName property.
-     * 
+     *
      * @param value allowed object is {@link String }
      */
     public void setLocaleNameFlag(String value) {
@@ -324,7 +347,7 @@ public class Question {
 
     /**
      * Gets the value of the localeLocation property.
-     * 
+     *
      * @return possible object is {@link String }
      */
     public String getLocaleLocationFlag() {
@@ -333,7 +356,7 @@ public class Question {
 
     /**
      * Sets the value of the localeLocation property.
-     * 
+     *
      * @param value allowed object is {@link String }
      */
     public void setLocaleLocationFlag(String value) {
@@ -342,7 +365,7 @@ public class Question {
 
     /**
      * Gets the value of the id property.
-     * 
+     *
      * @return possible object is {@link String }
      */
     public String getId() {
@@ -351,7 +374,7 @@ public class Question {
 
     /**
      * Sets the value of the id property.
-     * 
+     *
      * @param value allowed object is {@link String }
      */
     public void setId(String value) {

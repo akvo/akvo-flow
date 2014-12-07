@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -55,8 +55,7 @@ public class UserRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, List<UserDto>> listUsers(
-            @RequestParam(value = "currUser", defaultValue = "")
-            String currUser) {
+            @RequestParam(value = "currUser", defaultValue = "") String currUser) {
         final Map<String, List<UserDto>> response = new HashMap<String, List<UserDto>>();
         List<UserDto> results = new ArrayList<UserDto>();
 
@@ -83,7 +82,7 @@ public class UserRestService {
                     }
                     UserDto dto = new UserDto();
                     BeanUtils.copyProperties(u, dto, new String[] {
-                        "config"
+                            "config"
                     });
                     if (u.getKey() != null) {
                         dto.setKeyId(u.getKey().getId());
@@ -100,15 +99,14 @@ public class UserRestService {
     // find a single user by the userId
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
-    public Map<String, UserDto> findUser(@PathVariable("id")
-    Long id) {
+    public Map<String, UserDto> findUser(@PathVariable("id") Long id) {
         final Map<String, UserDto> response = new HashMap<String, UserDto>();
         User u = userDao.getByKey(id);
         UserDto dto = null;
         if (u != null) {
             dto = new UserDto();
             BeanUtils.copyProperties(u, dto, new String[] {
-                "config"
+                    "config"
             });
             if (u.getKey() != null) {
                 dto.setKeyId(u.getKey().getId());
@@ -122,8 +120,7 @@ public class UserRestService {
     // delete user by id
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
-    public Map<String, RestStatusDto> deleteUserById(@PathVariable("id")
-    Long id) {
+    public Map<String, RestStatusDto> deleteUserById(@PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         User u = userDao.getByKey(id);
         RestStatusDto statusDto = null;
@@ -143,8 +140,7 @@ public class UserRestService {
     // update existing user
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
-    public Map<String, Object> saveExistingUser(@RequestBody
-    UserPayload payLoad) {
+    public Map<String, Object> saveExistingUser(@RequestBody UserPayload payLoad) {
         final UserDto userDto = payLoad.getUser();
         final Map<String, Object> response = new HashMap<String, Object>();
         UserDto dto = null;
@@ -178,7 +174,7 @@ public class UserRestService {
                     u = userDao.save(u);
                     dto = new UserDto();
                     BeanUtils.copyProperties(u, dto, new String[] {
-                        "config"
+                            "config"
                     });
                     if (u.getKey() != null) {
                         dto.setKeyId(u.getKey().getId());
@@ -195,8 +191,7 @@ public class UserRestService {
     // create new user
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, Object> saveNewUser(@RequestBody
-    UserPayload payLoad) {
+    public Map<String, Object> saveNewUser(@RequestBody UserPayload payLoad) {
         final UserDto userDto = payLoad.getUser();
         final Map<String, Object> response = new HashMap<String, Object>();
         UserDto dto = null;
@@ -224,7 +219,7 @@ public class UserRestService {
 
             dto = new UserDto();
             BeanUtils.copyProperties(u, dto, new String[] {
-                "config"
+                    "config"
             });
             if (u.getKey() != null) {
                 dto.setKeyId(u.getKey().getId());
@@ -242,7 +237,7 @@ public class UserRestService {
     @ResponseBody
     public Map<String, Map<String, String>> createApiKeys(@PathVariable("id") Long id) {
 
-	final Map<String, Map<String, String>> response = new HashMap<String, Map<String, String>>();
+        final Map<String, Map<String, String>> response = new HashMap<String, Map<String, String>>();
         Map<String, String> result = new HashMap<String, String>();
 
         User user = userDao.getByKey(id);
@@ -266,18 +261,18 @@ public class UserRestService {
     @ResponseBody
     public Map<String, String> deleteApiKeys(@PathVariable("id") Long id) {
 
-	final Map<String, String> response = new HashMap<String, String>();
+        final Map<String, String> response = new HashMap<String, String>();
 
-	User user = userDao.getByKey(id);
+        User user = userDao.getByKey(id);
 
-	if (user == null) {
+        if (user == null) {
             throw new ResourceNotFoundException();
-	}
-	user.setAccessKey(null);
-	user.setSecret(null);
-	userDao.save(user);
-	response.put("apikeys", "deleted");
-	return response;
+        }
+        user.setAccessKey(null);
+        user.setSecret(null);
+        userDao.save(user);
+        response.put("apikeys", "deleted");
+        return response;
     }
 
     static String createRandomKey() {

@@ -16,6 +16,7 @@ FLOW.Router = Ember.Router.extend({
     FLOW.selectedControl.set('selectedQuestion', null);
     FLOW.surveyControl.set('content', null);
     FLOW.questionControl.set('OPTIONcontent', null);
+    FLOW.metaControl.set('since', null);
   },
 
   root: Ember.Route.extend({
@@ -90,11 +91,12 @@ FLOW.Router = Ember.Router.extend({
           router.get('navSurveysController').connectOutlet({
             name: 'navSurveysMain'
           });
-          FLOW.surveyGroupControl.populate();
+          FLOW.projectControl.populate();
           FLOW.selectedControl.set('selectedQuestionGroup', null);
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
           FLOW.questionControl.set('OPTIONcontent', null);
+          FLOW.attributeControl.populate();
 
         }
       }),
@@ -274,7 +276,6 @@ FLOW.Router = Ember.Router.extend({
           router.set('datasubnavController.selected', 'inspectData');
           router.resetState();
           FLOW.surveyGroupControl.populate();
-          FLOW.surveyInstanceControl.populate();
         }
       }),
 
@@ -302,12 +303,13 @@ FLOW.Router = Ember.Router.extend({
           router.set('datasubnavController.selected', 'dataCleaning');
         }
       }),
-      
+
       monitoringData: Ember.Route.extend({
         route: '/monitoringdata',
         connectOutlets: function (router, context) {
           router.get('navDataController').connectOutlet('monitoringData');
           router.set('datasubnavController.selected', 'monitoringData');
+          router.resetState();
           FLOW.surveyGroupControl.populate(function (item) {
                  return item.get('monitoringGroup');
           });
