@@ -23,6 +23,7 @@ import static com.gallatinsystems.common.util.MemCacheUtils.putObject;
 import java.io.BufferedInputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -188,7 +189,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 .getAction())) {
             populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
         } else if (DataProcessorRequest.DELETE_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
-            deleteCascadeNodes(dpReq.getCascadeResourceId());
+            deleteCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
         }
         return new RestResponse();
     }
@@ -1395,37 +1396,58 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
     }
 
-    private void deleteCascadeNodes(Long cascadeResourceId) {
+    private void deleteCascadeNodes(Long cascadeResourceId, Long parentNodeId) {
         final CascadeNodeDao dao = new CascadeNodeDao();
-        final List<CascadeNode> nodes = dao.list(Constants.ALL_RESULTS, QAS_PAGE_SIZE);
+        List<CascadeNode> nodes = Collections.emptyList();
+
+        if (parentNodeId == null) {
+            nodes = dao.list(Constants.ALL_RESULTS, QAS_PAGE_SIZE);
+        } else {
+            nodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId, parentNodeId);
+        }
 
         int count = nodes.size();
 
         if (count == 0) {
-            log.log(Level.INFO, "No CascadeNode found with cascadeResourceId = "
-                    + cascadeResourceId);
+            log.log(Level.INFO, String.format(
+                    "No CascadeNode found with cascadeResourceId = %s , parentNodeId = %s",
+                    cascadeResourceId, parentNodeId));
             return;
         }
 
-        dao.delete(nodes);
-
-        if (count == QAS_PAGE_SIZE) {
-            try {
-                final TaskOptions options = TaskOptions.Builder
-                        .withUrl("/app_worker/dataprocessor")
-                        .header("Host",
-                                BackendServiceFactory.getBackendService()
-                                        .getBackendAddress("dataprocessor"))
-                        .param(DataProcessorRequest.ACTION_PARAM,
-                                DataProcessorRequest.DELETE_CASCADE_NODES)
-                        .param(DataProcessorRequest.CASCADE_RESOURCE_ID,
-                                cascadeResourceId.toString());
-                final Queue queue = QueueFactory.getQueue("background-processing");
-                queue.add(options);
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Error scheduling Cascade Nodes deletion: " + e.getMessage(),
-                        e);
+        if (parentNodeId == null) {
+            dao.delete(nodes);
+            if (count == QAS_PAGE_SIZE) {
+                scheduleCascadeNodeDeletion(cascadeResourceId, parentNodeId);
             }
+        } else {
+            for (CascadeNode node : nodes) {
+                scheduleCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
+            }
+            dao.delete(nodes);
         }
     }
+
+    private void scheduleCascadeNodeDeletion(Long cascadeResourceId, Long parentNodeId) {
+        try {
+            final TaskOptions options = TaskOptions.Builder
+                    .withUrl("/app_worker/dataprocessor")
+                    .header("Host",
+                            BackendServiceFactory.getBackendService()
+                                    .getBackendAddress("dataprocessor"))
+                    .param(DataProcessorRequest.ACTION_PARAM,
+                            DataProcessorRequest.DELETE_CASCADE_NODES)
+                    .param(DataProcessorRequest.CASCADE_RESOURCE_ID,
+                            cascadeResourceId.toString())
+                    .param(DataProcessorRequest.PARENT_NODE_ID, parentNodeId.toString());
+            final Queue queue = QueueFactory.getQueue("background-processing");
+            queue.add(options);
+        } catch (Exception e) {
+            log.log(Level.SEVERE,
+                    String.format(
+                            "Error scheduling Cascade Node deletion - cascadeResourceId: %s - parentNodeId: %s",
+                            cascadeResourceId, parentNodeId), e);
+        }
+    }
+
 }

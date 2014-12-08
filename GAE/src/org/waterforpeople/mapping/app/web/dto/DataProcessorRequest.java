@@ -60,6 +60,7 @@ public class DataProcessorRequest extends RestRequest {
     public static final String CREATE_NEW_IDENTIFIERS_LOCALES_ACTION = "createNewIdentifiersLocales";
     public static final String DELETE_CASCADE_NODES = "deleteCascadeNodes";
     public static final String CASCADE_RESOURCE_ID = "cascadeResourceId";
+    public static final String PARENT_NODE_ID = "parentNodeId";
 
     private String country;
     private String source;
@@ -71,6 +72,7 @@ public class DataProcessorRequest extends RestRequest {
     private String apiKey;
     private Long offset = 0L;
     private Long cascadeResourceId = 0L;
+    private Long parentNodeId = null;
 
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
@@ -134,6 +136,14 @@ public class DataProcessorRequest extends RestRequest {
         if (req.getParameter(CASCADE_RESOURCE_ID) != null) {
             try {
                 setCascadeResourceId(Long.valueOf(req.getParameter(CASCADE_RESOURCE_ID)));
+            } catch (NumberFormatException e) {
+                // no-op
+            }
+        }
+
+        if (req.getParameter(PARENT_NODE_ID) != null) {
+            try {
+                setParentNodeId(Long.valueOf(req.getParameter(PARENT_NODE_ID)));
             } catch (NumberFormatException e) {
                 // no-op
             }
@@ -226,5 +236,13 @@ public class DataProcessorRequest extends RestRequest {
 
     public void setCascadeResourceId(Long cascadeResourceId) {
         this.cascadeResourceId = cascadeResourceId;
+    }
+
+    public Long getParentNodeId() {
+        return parentNodeId;
+    }
+
+    public void setParentNodeId(Long parentNodeId) {
+        this.parentNodeId = parentNodeId;
     }
 }
