@@ -28,6 +28,9 @@ import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFileJobQueue;
+import com.gallatinsystems.survey.dao.CascadeResourceDao;
+import com.gallatinsystems.survey.domain.CascadeResource;
+import com.gallatinsystems.survey.domain.CascadeResource.Status;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -108,6 +111,33 @@ public class ProcessorServlet extends HttpServlet {
                     "Deleting %s entities matching the fileName %s",
                     missing.size(), fileName));
             dfDao.delete(missing);
+        } else if (action.equals("cascade")) {
+            Long crId = null;
+            final String status = req.getParameter("status");
+            final CascadeResourceDao dao = new CascadeResourceDao();
+
+            try {
+                crId = Long.valueOf(req.getParameter("cascadeResourceId"));
+            } catch (NumberFormatException e) {
+            }
+
+            if (crId == null || status == null) {
+                return;
+            }
+
+            CascadeResource cr = dao.getByKey(crId);
+
+            if (cr == null) {
+                return;
+            }
+
+            if ("published".equals(status)) {
+                cr.setStatus(Status.PUBLISHED);
+            } else {
+                cr.setStatus(Status.NOT_PUBLISHED);
+            }
+
+            dao.save(cr);
         }
 
     }
