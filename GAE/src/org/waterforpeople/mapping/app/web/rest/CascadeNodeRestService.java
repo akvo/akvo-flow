@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -161,7 +162,10 @@ public class CascadeNodeRestService {
 
     private CascadeNodeDto createCascadeNode(CascadeNodeDto cascadeNodeDto){
     	CascadeNode cn = new CascadeNode();
-    	BeanUtils.copyProperties(cascadeNodeDto, cn, new String[] {});
+        BeanUtils.copyProperties(cascadeNodeDto, cn);
+        if (StringUtils.isEmpty(cascadeNodeDto.getCode())) {
+            cn.setCode(cn.getName());
+        }
     	cn = cascadeNodeDao.save(cn);
     	CascadeNodeDto cnDto = new CascadeNodeDto();
     	DtoMarshaller.copyToDto(cn,cnDto);
