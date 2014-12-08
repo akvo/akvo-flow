@@ -111,7 +111,6 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
 		if (!FLOW.selectedControl.selectedCascadeResource) {
 			return '';
 		}
-		debugger;
 		status = ('_' + FLOW.selectedControl.selectedCascadeResource.get('status')).toLowerCase();
 		return Ember.String.loc(status);
 	}.property('FLOW.selectedControl.selectedCascadeResource'),

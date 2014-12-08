@@ -67,6 +67,7 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	publishResource: function(){
 		if (!Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))){
 			FLOW.cascadeResourceControl.publish(FLOW.selectedControl.selectedCascadeResource.get('keyId'));
+			this.showMessage(Ember.String.loc('_cascade_resources'), Ember.String.loc('_cascade_resource_published_text'));
 		}
 	},
 
