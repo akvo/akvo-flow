@@ -17,7 +17,7 @@
              [org.akvo.flow.dashboard.app-state :refer (app-state)]
              [org.akvo.flow.dashboard.dispatcher :as dispatcher]
              [org.akvo.flow.dashboard.ajax-helpers :as ajax]
-             [ajax.core :refer (GET POST PUT DELETE)])
+             [ajax.core :refer (GET POST PUT DELETE url-request-format)])
   (:require-macros [org.akvo.flow.dashboard.dispatcher :refer (dispatch-loop)]))
 
 
@@ -65,10 +65,11 @@
  (let [key-id (get user-auth "keyId")
        user-id (get user-auth "userId")]
     (assert (integer? (get user-auth "keyId")))
-    (ajax/XhrIo-DELETE
+    (DELETE
      (str "/rest/user_auth/" key-id)
      (merge ajax/default-ajax-config
-            {:handler (fn [_]
+            {:format (url-request-format)
+             :handler (fn [_]
                         (swap! app-state update-in [:user-auth :by-id] dissoc key-id)
                         (swap! app-state update-in [:user-auth :by-user-id user-id]
                                (fn [user-auths]

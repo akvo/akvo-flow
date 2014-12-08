@@ -15,8 +15,7 @@
 (ns org.akvo.flow.dashboard.ajax-helpers
   (:require [clojure.string :as s]
             [org.akvo.flow.dashboard.app-state :refer (app-state)]
-            [ajax.core :as ajax :refer (json-request-format GET)])
-  (:import [goog.net XhrIo]))
+            [ajax.core :as ajax :refer (json-request-format GET)]))
 
 (def default-ajax-config
   {:error-handler #(.error js/console (pr-str %))
@@ -29,7 +28,7 @@
        (str "?")))
 
 (defn index-by [key coll]
-  (assert key )
+  (assert key)
   (reduce (fn [index res]
             (let [elem (get res key ::not-found)]
               (assert (not= elem ::not-found) (str "No value under key " key))
@@ -44,13 +43,3 @@
               {:handler (fn [response]
                           (swap! app-state assoc-in [resource-name :by-id]
                                  (index-by "keyId" (get response (name resource-name)))))})))
-
-;; Temporary workaround
-(defn XhrIo-DELETE [url callback]
-  (.send XhrIo url
-         (fn [response]
-           ((:handler callback)
-            (try (.getResponseJson (.-target response))
-                 (catch js/Error e
-                   nil))))
-         "DELETE"))
