@@ -19,15 +19,20 @@ package com.gallatinsystems.survey.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 
-import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.domain.CascadeNode;
+import com.google.appengine.api.backends.BackendServiceFactory;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 
 /**
  * Dao for manipulating CascadeResources
@@ -35,10 +40,8 @@ import com.gallatinsystems.survey.domain.CascadeNode;
 public class CascadeNodeDao extends BaseDAO<CascadeNode> {
     public CascadeNodeDao() {
 		super(CascadeNode.class);
-		// TODO Auto-generated constructor stub
 	}
 
-	@SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger(SurveyGroupDAO.class
             .getName());
 
@@ -74,12 +77,29 @@ public class CascadeNodeDao extends BaseDAO<CascadeNode> {
 	}
 
 	public void deleteRecursive(Long cascadeResourceId, Long nodeId){
-		//TODO this should happen in a task, to avoid timeouts
 		CascadeNode cr = getByKey(nodeId);
+        if (cr == null) {
+            return;
+        }
+        try {
+            final TaskOptions options = TaskOptions.Builder
+                    .withUrl("/app_worker/dataprocessor")
+                    .header("Host",
+                            BackendServiceFactory.getBackendService()
+                                    .getBackendAddress("dataprocessor"))
+                    .param(DataProcessorRequest.ACTION_PARAM,
+                            DataProcessorRequest.DELETE_CASCADE_NODES)
+                    .param(DataProcessorRequest.CASCADE_RESOURCE_ID,
+                            cascadeResourceId.toString())
+                    .param(DataProcessorRequest.PARENT_NODE_ID, nodeId.toString());
+            final Queue queue = QueueFactory.getQueue("background-processing");
+            queue.add(options);
+        } catch (Exception e) {
+            log.log(Level.SEVERE,
+                    String.format(
+                            "Error scheduling Cascade Node deletion - cascadeResourceId: %s - parentNodeId: %s",
+                            cascadeResourceId, nodeId), e);
+        }
 		delete(cr);
-		List<CascadeNode> childNodeList = listCascadeNodesByResourceAndParentId(cascadeResourceId,nodeId);
-		for (CascadeNode cn : childNodeList) {
-			deleteRecursive(cascadeResourceId, cn.getKey().getId());
-		}
 	}
 }
