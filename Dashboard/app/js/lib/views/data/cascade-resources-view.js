@@ -17,7 +17,7 @@ FLOW.CascadeResourceView = FLOW.View.extend({
       FLOW.uploader.registerEvents();
     },
 
-    showImportWarning : function(msg) {
+    showImportWarning : function(header, msg) {
 		FLOW.dialogControl.set('activeAction', 'ignore');
 		FLOW.dialogControl.set('header', Ember.String.loc('_import_cascade_file'));
 		FLOW.dialogControl.set('message', msg);
@@ -26,10 +26,16 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	},
 
     importFile : function() {
-		var file = $('#cascade-resource-file')[0];
+		var file = $('#cascade-resource-file')[0],
+		    numLevels = FLOW.selectedControl.get('cascadeImportNumLevels');
+
+		if (!numLevels || +numLevels === 0) {
+			this.showImportWarning(Ember.String.loc('_import_cascade_file'), Ember.String.loc('_import_cascade_number_levels'));
+			return;
+		}
 
 		if (!file || file.files.length === 0) {
-			this.showImportWarning(Ember.String.loc('_import_select_cascade_file'));
+			this.showImportWarning(Ember.String.loc('_import_cascade_file'), Ember.String.loc('_import_select_cascade_file'));
 			return;
 		}
 		FLOW.uploader.addFile(file.files[0]);
