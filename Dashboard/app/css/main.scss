@@ -4471,6 +4471,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 padding: 0;
                 width: 100%;
                 margin-top:10px;
+                z-index:inherit;
                 & + section, & + div  {
                     margin-top: 0;
                 }
