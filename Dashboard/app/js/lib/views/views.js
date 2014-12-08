@@ -14,6 +14,7 @@ require('akvo-flow/views/data/inspect-data-table-views');
 require('akvo-flow/views/data/data-attribute-views');
 require('akvo-flow/views/data/bulk-upload-view');
 require('akvo-flow/views/data/monitoring-data-table-view');
+require('akvo-flow/views/data/cascade-resources-view');
 require('akvo-flow/views/surveys/question-view');
 require('akvo-flow/views/data/question-answer-view');
 require('akvo-flow/views/reports/report-views');
@@ -495,6 +496,10 @@ FLOW.BulkUploadView = Ember.View.extend({
 });
 FLOW.DataCleaningView = Ember.View.extend({
   templateName: 'navData/data-cleaning'
+});
+
+FLOW.CascadeResourcesView = Ember.View.extend({
+	  templateName: 'navData/cascade-resources'
 });
 
 FLOW.MonitoringDataView = Ember.View.extend({

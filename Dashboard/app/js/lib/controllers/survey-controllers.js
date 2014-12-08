@@ -1,3 +1,4 @@
+
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
@@ -7,6 +8,9 @@ FLOW.questionTypeControl = Ember.Object.create({
       label: Ember.String.loc('_option'),
       value: 'OPTION'
     }), Ember.Object.create({
+        label: Ember.String.loc('_cascade'),
+     value: 'CASCADE'
+      }),Ember.Object.create({
       label: Ember.String.loc('_number'),
       value: 'NUMBER'
     }), Ember.Object.create({
@@ -27,6 +31,7 @@ FLOW.questionTypeControl = Ember.Object.create({
     })
   ]
 });
+
 
 FLOW.notificationOptionControl = Ember.Object.create({
   content: [

@@ -45,7 +45,16 @@ $tableHeaderGrey: rgb(84, 83, 85);
 
 $navCurrent: #F7F2E5;
 
+
 $blackOpac: rgba(0,0,0,0.1);
+$green: #8DC63F;
+
+@mixin offSet($marginLeft, $marginRight) {
+  margin-left:$marginLeft;
+  margin-right:$marginRight;
+}
+
+
 @mixin border-radius($property) {
     -moz-border-radius: $property;
     -o-border-radius: $property;

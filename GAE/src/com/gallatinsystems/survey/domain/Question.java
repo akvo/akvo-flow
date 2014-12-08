@@ -36,7 +36,7 @@ public class Question extends BaseDomain {
     private static final long serialVersionUID = -9123426646238761996L;
 
     public enum Type {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE
     };
 
     private Type type = null;
@@ -53,6 +53,7 @@ public class Question extends BaseDomain {
     private Boolean immutable = false;
     private Long dependentQuestionId;
     private String dependentQuestionAnswer;
+    private Long cascadeResourceId;
     private Long metricId;
     @NotPersistent
     private TreeMap<Integer, QuestionOption> questionOptionMap = null;
@@ -397,4 +398,12 @@ public class Question extends BaseDomain {
     public void setQuestionId(String questionId) {
         this.questionId = questionId;
     }
+
+	public Long getCascadeResourceId() {
+		return cascadeResourceId;
+	}
+
+	public void setCascadeResourceId(Long cascadeResourceId) {
+		this.cascadeResourceId = cascadeResourceId;
+	}
 }

@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.JSONObject;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -53,6 +53,7 @@ import com.gallatinsystems.metric.dao.MetricDao;
 import com.gallatinsystems.metric.dao.SurveyMetricMappingDao;
 import com.gallatinsystems.metric.domain.Metric;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
+import com.gallatinsystems.survey.dao.CascadeResourceDao;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
 import com.gallatinsystems.survey.dao.QuestionOptionDao;
@@ -60,6 +61,7 @@ import com.gallatinsystems.survey.dao.ScoringRuleDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.TranslationDao;
+import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Question.Type;
 import com.gallatinsystems.survey.domain.QuestionGroup;
@@ -121,15 +123,6 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
         Boolean questionSaved = null;
         if (SurveyRestRequest.SAVE_QUESTION_ACTION
                 .equals(surveyReq.getAction())) {
-            /*
-             * questionSaved = saveQuestion(surveyReq);.getSurveyGroupName(),
-             * surveyReq.getSurveyName(), surveyReq.getQuestionGroupName(),
-             * surveyReq.getQuestionType(), surveyReq.getQuestionText(), surveyReq.getOptions(),
-             * surveyReq.getDependQuestion(), surveyReq.getAllowOtherFlag(),
-             * surveyReq.getAllowMultipleFlag(), surveyReq.getMandatoryFlag(),
-             * surveyReq.getQuestionOrder(), surveyReq.getQuestionGroupOrder(),
-             * surveyReq.getScoring());
-             */
             questionSaved = saveQuestion(surveyReq);
             response.setCode("200");
             response.setMessage("Record Saved status: " + questionSaved);
@@ -301,7 +294,8 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
     @Override
     protected void writeOkResponse(RestResponse resp) throws Exception {
         getResponse().setStatus(200);
-        getResponse().getWriter().println(new JSONObject(resp, true).toString());
+        new ObjectMapper().writeValue(getResponse().getWriter(), resp);
+
     }
 
     /**
@@ -394,6 +388,13 @@ public class SurveyRestServlet extends AbstractRestApiServlet {
             for (Question q : questions.values()) {
                 QuestionDto dto = new QuestionDto();
                 DtoMarshaller.copyToDto(q, dto);
+                if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {
+                    CascadeResource cr = new CascadeResourceDao()
+                    .getByKey(q.getCascadeResourceId());
+                    if (cr != null) {
+                        dto.setLevelNames(cr.getLevelNames());
+                    }
+                }
                 dtoList.add(dto);
             }
         }
