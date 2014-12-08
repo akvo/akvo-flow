@@ -14,6 +14,9 @@ FLOW.Router = Ember.Router.extend({
     FLOW.selectedControl.set('selectedSurveyGroup', null);
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.selectedControl.set('selectedQuestion', null);
+    FLOW.selectedControl.set('selectedCascadeResource', null);
+    FLOW.selectedControl.set('cascadeImportNumLevels', null);
+    FLOW.selectedControl.set('cascadeImportIncludeCodes', null);
     FLOW.surveyControl.set('content', null);
     FLOW.questionControl.set('OPTIONcontent', null);
     FLOW.metaControl.set('since', null);
@@ -64,6 +67,7 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function (router, event) {
         router.get('applicationController').connectOutlet('navSurveys');
         router.set('navigationController.selected', 'navSurveys');
+        FLOW.cascadeResourceControl.populate();
       },
 
       doNewSurvey: function (router, event) {
@@ -260,6 +264,9 @@ FLOW.Router = Ember.Router.extend({
       doDataCleaning: function (router, event) {
         router.transitionTo('navData.dataCleaning');
       },
+      doCascadeResources: function (router, event) {
+          router.transitionTo('navData.cascadeResources');
+        },
       doMonitoringData: function (router, event) {
         router.transitionTo('navData.monitoringData');
       },
@@ -303,6 +310,15 @@ FLOW.Router = Ember.Router.extend({
           router.set('datasubnavController.selected', 'dataCleaning');
         }
       }),
+
+      cascadeResources: Ember.Route.extend({
+          route: '/cascaderesources',
+          connectOutlets: function (router, context) {
+            router.get('navDataController').connectOutlet('cascadeResources');
+            router.set('datasubnavController.selected', 'cascadeResources');
+            FLOW.cascadeResourceControl.populate();
+          }
+        }),
 
       monitoringData: Ember.Route.extend({
         route: '/monitoringdata',

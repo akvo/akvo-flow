@@ -90,26 +90,41 @@ FLOW.uploader = Ember.Object.create({
     });
 
     r.on('fileSuccess', function (file, message) {
-      var data = {
+      var target = this.opts.target,
+      data = {
         uniqueIdentifier: file.uniqueIdentifier,
         filename: file.fileName,
         baseURL: location.protocol + '//' + location.host,
-        uploadDomain: this.opts.uploadDomain
-      };
+        uploadDomain: this.opts.uploadDomain,
+        complete: true
+      },
+      fname = file.fileName,
+      excel = /\.xlsx$/gi,
+      csv = /\.csv$/gi,
+      sc;
 
-      if (file.fileName.toUpperCase().indexOf('.XLSX') !== -1) {
+      if (excel.test(fname)) {
         data.surveyId = FLOW.selectedControl.selectedSurvey.get('id');
       }
 
-      // Reflect that the file upload has completed
-      $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html('(completed)');
+      if (csv.test(fname)) {
+        sc = FLOW.selectedControl.selectedCascadeResource;
+        data.cascadeResourceId = sc.get('keyId');
+        data.numLevels = FLOW.selectedControl.get('cascadeImportNumLevels');
+        data.includeCodes = !!FLOW.selectedControl.get('cascadeImportIncludeCodes');
+      }
 
-      setTimeout($.ajax({
-        url: this.opts.target,
-        cache: false,
-        type: 'POST',
-        data: data
-      }), 500);
+      // Reflect that the file upload has completed
+      $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html('(' + Ember.String.loc('_upload_complete') + ')');
+
+      setTimeout(function() {
+        $.ajax({
+          url : target,
+          cache : false,
+          type : 'POST',
+          data : data
+        });
+      }, 500);
 
     });
 

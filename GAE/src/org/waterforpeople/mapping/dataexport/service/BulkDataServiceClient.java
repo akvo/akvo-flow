@@ -998,6 +998,14 @@ public class BulkDataServiceClient {
                                     dto.setQuestionDependency(dep);
                                 }
                             }
+                            if (!json.isNull("levelNames")) {
+                                final List<String> levelNames = new ArrayList<String>();
+                                final JSONArray array = json.getJSONArray("levelNames");
+                                for (int c = 0; c < array.length(); c++) {
+                                    levelNames.add(array.getString(c));
+                                }
+                                dto.setLevelNames(levelNames);
+                            }
                             dtoList.add(dto);
                         } catch (Exception e) {
                             log.error("Error in json parsing: " + e.getMessage(), e);

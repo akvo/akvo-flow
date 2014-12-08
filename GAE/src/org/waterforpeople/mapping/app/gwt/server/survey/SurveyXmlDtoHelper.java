@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -52,6 +52,7 @@ public class SurveyXmlDtoHelper {
     public static final String SCAN_QUESTION_TYPE = "scan";
     public static final String STRENGTH_QUESTION_TYPE = "strength";
     public static final String DATE_QUESTION_TYPE = "date";
+    public static final String CASCADE_QUESTION_TYPE = "cascade";
 
     /**
      * parses the xml and then converts the xml objects to DTOs
@@ -148,6 +149,8 @@ public class SurveyXmlDtoHelper {
                         qDto.setType(QuestionType.STRENGTH);
                     } else if (DATE_QUESTION_TYPE.equals(type)) {
                         qDto.setType(QuestionType.DATE);
+                    } else if (CASCADE_QUESTION_TYPE.equals(type)) {
+                        qDto.setType(QuestionType.CASCADE);
                     }
                     for (AltText alt : q.getAltText()) {
                         qDto.addTranslation(parseTranslation(alt));

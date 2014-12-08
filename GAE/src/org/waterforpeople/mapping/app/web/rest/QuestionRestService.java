@@ -88,8 +88,8 @@ public class QuestionRestService {
             String optionQuestionsOnly,
             @RequestParam(value = "preflight", defaultValue = "")
             String preflight,
-            @RequestParam(value = "questionId", defaultValue = "")
-            Long questionId) {
+            @RequestParam(value = "questionId", defaultValue = "") Long questionId,
+            @RequestParam(value = "cascadeResourceId", defaultValue = "") Long cascadeResourceId) {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<QuestionDto> results = new ArrayList<QuestionDto>();
         List<QuestionOptionDto> qoResults = new ArrayList<QuestionOptionDto>();
@@ -121,30 +121,34 @@ public class QuestionRestService {
             } else {
                 questions = questionDao.listQuestionsInOrder(surveyId, null);
             }
-            if (questions != null && questions.size() > 0) {
-                for (Question question : questions) {
-                    QuestionDto qDto = new QuestionDto();
-                    DtoMarshaller.copyToDto(question, qDto);
-                    if (question.getType() == Question.Type.OPTION
-                            && !optionQuestionsOnly.equals("true")) {
-                        Map<Integer, QuestionOption> qoMap = questionOptionDao
-                                .listOptionByQuestion(qDto.getKeyId());
-                        List<Long> qoList = new ArrayList<Long>();
-                        for (QuestionOption qo : qoMap.values()) {
-                            QuestionOptionDto qoDto = new QuestionOptionDto();
-                            BeanUtils.copyProperties(qo, qoDto, new String[] {
-                                    "translationMap"
-                            });
-                            qoDto.setKeyId(qo.getKey().getId());
-                            qoList.add(qo.getKey().getId());
-                            qoResults.add(qoDto);
-                        }
-                        qDto.setQuestionOptions(qoList);
+        } else if (cascadeResourceId != null) {
+            questions = questionDao.listByCascadeResourceId(cascadeResourceId);
+        }
+
+        if (questions != null && questions.size() > 0) {
+            for (Question question : questions) {
+                QuestionDto qDto = new QuestionDto();
+                DtoMarshaller.copyToDto(question, qDto);
+                if (question.getType() == Question.Type.OPTION
+                        && !optionQuestionsOnly.equals("true")) {
+                    Map<Integer, QuestionOption> qoMap = questionOptionDao
+                            .listOptionByQuestion(qDto.getKeyId());
+                    List<Long> qoList = new ArrayList<Long>();
+                    for (QuestionOption qo : qoMap.values()) {
+                        QuestionOptionDto qoDto = new QuestionOptionDto();
+                        BeanUtils.copyProperties(qo, qoDto, new String[] {
+                                "translationMap"
+                        });
+                        qoDto.setKeyId(qo.getKey().getId());
+                        qoList.add(qo.getKey().getId());
+                        qoResults.add(qoDto);
                     }
-                    results.add(qDto);
+                    qDto.setQuestionOptions(qoList);
                 }
+                results.add(qDto);
             }
         }
+
         response.put("questionOptions", qoResults);
         response.put("questions", results);
         response.put("meta", statusDto);
