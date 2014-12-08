@@ -375,10 +375,13 @@ FLOW.projectControl = Ember.ArrayController.create({
         action: 'publishSurvey',
         surveyId: form.get('keyId')
       });
-      form.set('status', 'PUBLISHED');
     });
 
-    FLOW.store.commit();
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
   },
 
   /* Helper methods */
