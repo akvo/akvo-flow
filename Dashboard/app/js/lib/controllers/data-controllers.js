@@ -93,7 +93,14 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
 		    action: 'publishCascade',
 		    cascadeResourceId: cascadeResourceId
 		});
-	}
+	},
+
+	hasQuestions: function () {
+		if (!FLOW.selectedControl.selectedCascadeResource) {
+			return;
+		}
+		FLOW.store.findQuery(FLOW.Question, {cascadeResourceId: FLOW.selectedControl.selectedCascadeResource.get('keyId')});
+	}.observes('FLOW.selectedControl.selectedCascadeResource')
 });
 
 FLOW.cascadeNodeControl = Ember.ArrayController.create({

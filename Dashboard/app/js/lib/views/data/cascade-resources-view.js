@@ -17,9 +17,9 @@ FLOW.CascadeResourceView = FLOW.View.extend({
       FLOW.uploader.registerEvents();
     },
 
-    showImportWarning : function(header, msg) {
+    showMessage : function(header, msg) {
 		FLOW.dialogControl.set('activeAction', 'ignore');
-		FLOW.dialogControl.set('header', Ember.String.loc('_import_cascade_file'));
+		FLOW.dialogControl.set('header', header);
 		FLOW.dialogControl.set('message', msg);
 		FLOW.dialogControl.set('showCANCEL', false);
 		FLOW.dialogControl.set('showDialog', true);
@@ -30,12 +30,12 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 		    numLevels = FLOW.selectedControl.get('cascadeImportNumLevels');
 
 		if (!numLevels || +numLevels === 0) {
-			this.showImportWarning(Ember.String.loc('_import_cascade_file'), Ember.String.loc('_import_cascade_number_levels'));
+			this.showMessage(Ember.String.loc('_import_cascade_file'), Ember.String.loc('_import_cascade_number_levels'));
 			return;
 		}
 
 		if (!file || file.files.length === 0) {
-			this.showImportWarning(Ember.String.loc('_import_cascade_file'), Ember.String.loc('_import_select_cascade_file'));
+			this.showMessage(Ember.String.loc('_import_cascade_file'), Ember.String.loc('_import_select_cascade_file'));
 			return;
 		}
 		FLOW.uploader.addFile(file.files[0]);
@@ -70,9 +70,20 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 		}
 	},
 
-	deleteResource: function(){
-		console.log("TODO: Deleting resource");
-		// TODO delete
+	deleteResource: function (e) {
+		var resource = FLOW.selectedControl.selectedCascadeResource,
+		    keyId = resource.get('keyId'),
+            questions = FLOW.store.filter(FLOW.Question, function (item) {
+              return item.get('cascadeResourceId') === keyId;
+            });
+
+		if (questions.get('length') > 0) {
+			this.showMessage(Ember.String.loc('_cascade_resources'), Ember.String.loc('_cannot_delete_cascade'));
+			return;
+		}
+		resource.deleteRecord();
+		FLOW.store.commit();
+		FLOW.selectedControl.set('selectedCascadeResource', null);
 	},
 
 	// adds a level to the hierarchy
@@ -135,7 +146,7 @@ FLOW.CascadeSecondNavView = FLOW.View.extend({
 	}.property('this.showGoUpLevel','this.showGoUpLevel'),
 
 	showGoUpLevel: function(){
-		return (FLOW.cascadeNodeControl.get('skip') + 3 < FLOW.selectedControl.selectedCascadeResource.get('numLevels'));
+		return FLOW.selectedControl.selectedCascadeResource && (FLOW.cascadeNodeControl.get('skip') + 3 < FLOW.selectedControl.selectedCascadeResource.get('numLevels'));
 	}.property('FLOW.cascadeNodeControl.skip', 'FLOW.selectedControl.selectedCascadeResource'),
 
 	showGoDownLevel: function(){
@@ -216,7 +227,7 @@ FLOW.CascadeLevelNameView = FLOW.View.extend({
 		currList[index-1] = capitaliseFirstLetter(this.get('levelName'));
 		FLOW.selectedControl.selectedCascadeResource.set('levelNames',currList);
 
-		// this is needed, as in this version of Ember, changes in an array do 
+		// this is needed, as in this version of Ember, changes in an array do
 		// not make an object dirty, apparently
 		FLOW.selectedControl.selectedCascadeResource.send('becomeDirty');
 		FLOW.store.commit();
@@ -233,16 +244,16 @@ FLOW.CascadeLevelNameView = FLOW.View.extend({
 FLOW.CascadeNodeView = FLOW.View.extend({
 	cascadeNodeName: null,
 	cascadeNodeCode:null,
-	
+
 	showInputField:function(){
-		var skip = FLOW.cascadeNodeControl.get('skip');;
-		
+		var skip = FLOW.cascadeNodeControl.get('skip');
+
 		// determines if we should show an input field in this column
 		// we do this in column one by default, or if in the previous column a node has been selected
-		if (this.get('col') == 1 && skip == 0) {
+		if (this.get('col') === 1 && skip === 0) {
 			return true;
 		}
-		return (!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1]) && 
+		return (!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1]) &&
 				!Ember.empty(FLOW.cascadeNodeControl.selectedNode[skip + this.get('col') - 1].get('keyId')));
 	}.property('FLOW.cascadeNodeControl.selectedNodeTrigger').cacheable(),
 
@@ -251,7 +262,7 @@ FLOW.CascadeNodeView = FLOW.View.extend({
 		level = this.get('col') + FLOW.cascadeNodeControl.get('skip');
 		nodes = FLOW.cascadeNodeControl.get('level' + level);
 		item = this.get('cascadeNodeName');
-		if (item!= null && item.trim().length > 0) {
+		if (item !== null && item.trim().length > 0) {
 			exists = false;
 			itemTrim = item.trim().toLowerCase();
 			nodes.forEach(function(node){
@@ -315,7 +326,7 @@ FLOW.CascadeNodeItemView = FLOW.View.extend({
 	},
 
 	saveEditNode: function(){
-		if (Ember.empty(this.get('newName')) ||this.get('newName').trim().length == 0) {
+		if (Ember.empty(this.get('newName')) ||this.get('newName').trim().length === 0) {
 			this.cancelEditNode();
 			return;
 		}
@@ -332,7 +343,7 @@ FLOW.CascadeNodeItemView = FLOW.View.extend({
 		FLOW.cascadeNodeControl.emptyNodes(level + 1);
 
 		if (!Ember.empty(this.content.get('keyId'))){
-			FLOW.cascadeNodeControl.populate(FLOW.selectedControl.selectedCascadeResource.get('keyId'), 
+			FLOW.cascadeNodeControl.populate(FLOW.selectedControl.selectedCascadeResource.get('keyId'),
 					level + 1, this.content.get('keyId'));
 		}
 		FLOW.cascadeNodeControl.toggleSelectedNodeTrigger();
