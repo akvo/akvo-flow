@@ -18,58 +18,53 @@ package org.waterforpeople.mapping.app.gwt.client.survey;
 import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
+import com.gallatinsystems.survey.domain.CascadeResource.Status;
 
-public class CascadeResourceDto extends BaseDto implements NamedObject {
-	private static final long serialVersionUID = 1L;
-	private String name;
-	private Integer version;
-	private Boolean published;
-	private List<String> levelNames;
-	private Integer numLevels;
+public class CascadeResourceDto extends BaseDto {
+    private static final long serialVersionUID = 1L;
+    private String name;
+    private Integer version;
+    private Status status;
+    private List<String> levelNames;
+    private Integer numLevels;
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Integer getVersion() {
-		return version;
-	}
-
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
-
-	@Override
-    public String getDisplayName() {
-        return getName();
+    public String getName() {
+        return name;
     }
 
-	public Boolean getPublished() {
-		return published;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setPublished(Boolean published) {
-		this.published = published;
-	}
+    public Integer getVersion() {
+        return version;
+    }
 
-	public List<String> getLevelNames() {
-		return levelNames;
-	}
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
-	public void setLevelNames(List<String> levelNames) {
-		this.levelNames = levelNames;
-	}
+    public Status getStatus() {
+        return status;
+    }
 
-	public Integer getNumLevels() {
-		return numLevels;
-	}
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
-	public void setNumLevels(Integer numLevels) {
-		this.numLevels = numLevels;
-	}
+    public List<String> getLevelNames() {
+        return levelNames;
+    }
+
+    public void setLevelNames(List<String> levelNames) {
+        this.levelNames = levelNames;
+    }
+
+    public Integer getNumLevels() {
+        return numLevels;
+    }
+
+    public void setNumLevels(Integer numLevels) {
+        this.numLevels = numLevels;
+    }
 }

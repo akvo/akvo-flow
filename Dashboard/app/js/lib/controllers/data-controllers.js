@@ -100,7 +100,28 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
 			return;
 		}
 		FLOW.store.findQuery(FLOW.Question, {cascadeResourceId: FLOW.selectedControl.selectedCascadeResource.get('keyId')});
-	}.observes('FLOW.selectedControl.selectedCascadeResource')
+	}.observes('FLOW.selectedControl.selectedCascadeResource'),
+
+	currentStatus: function () {
+		// hack to get translation keys, don't delete them
+		// {{t _not_published}}
+		// {{t _publishing}}
+		// {{t _published}}
+		var status;
+		if (!FLOW.selectedControl.selectedCascadeResource) {
+			return '';
+		}
+		debugger;
+		status = ('_' + FLOW.selectedControl.selectedCascadeResource.get('status')).toLowerCase();
+		return Ember.String.loc(status);
+	}.property('FLOW.selectedControl.selectedCascadeResource'),
+
+	isPublished: function () {
+		if (!FLOW.selectedControl.selectedCascadeResource) {
+			return false;
+		}
+		return FLOW.selectedControl.selectedCascadeResource.get('status') === 'PUBLISHED';
+	}.property('FLOW.selectedControl.selectedCascadeResource')
 });
 
 FLOW.cascadeNodeControl = Ember.ArrayController.create({

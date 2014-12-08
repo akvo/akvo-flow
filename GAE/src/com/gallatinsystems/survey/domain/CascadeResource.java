@@ -16,7 +16,9 @@
 package com.gallatinsystems.survey.domain;
 
 import java.util.List;
+
 import javax.jdo.annotations.PersistenceCapable;
+
 import com.gallatinsystems.framework.domain.BaseDomain;
 
 /**
@@ -27,9 +29,13 @@ public class CascadeResource extends BaseDomain {
     private static final long serialVersionUID = 1L;
     private String name;
     private Integer version;
-    private Boolean published;
+    private Status status;
     private List<String> levelNames;
     private Integer numLevels;
+
+    public enum Status {
+        NOT_PUBLISHED, PUBLISHING, PUBLISHED
+    }
 
     public String getName() {
         return name;
@@ -47,12 +53,12 @@ public class CascadeResource extends BaseDomain {
         this.version = version;
     }
 
-    public Boolean getPublished() {
-        return published;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setPublished(Boolean published) {
-        this.published = published;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public List<String> getLevelNames() {

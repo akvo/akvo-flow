@@ -63,8 +63,6 @@ import com.google.appengine.api.utils.SystemProperty;
 @Controller
 @RequestMapping("/actions")
 public class ActionRestService {
-	private static final Logger log = Logger.getLogger(SurveyUtils.class
-            .getName());
 
     private static final Logger logger = Logger.getLogger(ActionRestService.class.getName());
 

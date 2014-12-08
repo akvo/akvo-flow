@@ -36,6 +36,7 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.HttpUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.survey.domain.CascadeResource;
+import com.gallatinsystems.survey.domain.CascadeResource.Status;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -313,7 +314,7 @@ public class SurveyUtils {
 
                 log.log(Level.INFO, "Response from server: " + response);
                 status = "publish requested";
-                cr.setPublished(true);
+                cr.setStatus(Status.PUBLISHING);
                 crDao.save(cr);
             } catch (Exception e) {
                 log.log(Level.SEVERE,

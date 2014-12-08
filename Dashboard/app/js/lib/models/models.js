@@ -31,8 +31,8 @@ FLOW.CascadeResource = FLOW.BaseModel.extend({
 	numLevels: DS.attr('number', {
 		defaultValue: 1
 	}),
-	published: DS.attr('boolean', {
-		defaultValue: false
+	status: DS.attr('string', {
+		defaultValue: 'NOT_PUBLISHED'
 	}),
 	levelNames: DS.attr('array', {defaultValue: []
 	}),

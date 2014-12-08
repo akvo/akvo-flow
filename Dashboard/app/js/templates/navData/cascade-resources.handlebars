@@ -80,11 +80,7 @@
                     <li>{{t _cascading_levels}}<span class="cascadesN">{{FLOW.selectedControl.selectedCascadeResource.numLevels}}</span>
                     </li>
                     <li>{{t _status}}
-                    {{#if FLOW.selectedControl.selectedCascadeResource.status}}
-                    	<span class="cascadeStatus published">{{t _published}}</span>
-                    {{else}}
-                    	<span class="cascadeStatus unpublished">{{t _unpublished}}</span>
-                    {{/if}}
+                    <span {{bindAttr class=":cascadeStatus FLOW.cascadeResourceControl.isPublished:published:unpublished"}}>{{FLOW.cascadeResourceControl.currentStatus}}</span>
                     </li>
                 </ul>
             </section>
