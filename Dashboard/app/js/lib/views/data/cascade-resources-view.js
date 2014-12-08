@@ -106,7 +106,7 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 		  if (!Ember.empty(this.get('cascadeResourceName').trim())){
 			  casc = FLOW.store.createRecord(FLOW.CascadeResource, {
 				  "version": 0,
-				  "levelNames":["Level 1","Level 2","Level 3","Level 4","Level 5","Level 6","Level 7","Level 8","Level 9","Level 10"],
+				  "levelNames":["Level 1"],
 				  "numLevels": 1,
 				  "name": capitaliseFirstLetter(this.get('cascadeResourceName'))
 			  });
