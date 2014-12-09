@@ -89,7 +89,18 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 
 	// adds a level to the hierarchy
 	addLevel: function(){
-		FLOW.selectedControl.selectedCascadeResource.set('numLevels', FLOW.selectedControl.selectedCascadeResource.get('numLevels') + 1);
+		var selectedCascade = FLOW.selectedControl.selectedCascadeResource,
+		    numLevels = (selectedCascade && selectedCascade.get('numLevels') + 1) || 0,
+		    nameLevels = (selectedCascade && selectedCascade.get('levelNames')) || [];
+
+		if (!selectedCascade) {
+			return;
+		}
+
+		nameLevels.push('Level ' + numLevels);
+
+		selectedCascade.set('numLevels', numLevels);
+		selectedCascade.set('levelNames', nameLevels);
 		FLOW.store.commit();
 		FLOW.cascadeResourceControl.setLevelNamesArray();
 		FLOW.cascadeResourceControl.setDisplayLevelNames();
