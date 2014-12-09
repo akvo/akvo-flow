@@ -93,10 +93,14 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 		    numLevels = (selectedCascade && selectedCascade.get('numLevels') + 1) || 0,
 		    nameLevels = (selectedCascade && selectedCascade.get('levelNames')) || [];
 
+		if (!selectedCascade) {
+			return;
+		}
+
 		nameLevels.push('Level ' + numLevels);
 
-		FLOW.selectedControl.selectedCascadeResource.set('numLevels', numLevels);
-		FLOW.selectedControl.selectedCascadeResource.set('levelNames', nameLevels);
+		selectedCascade.set('numLevels', numLevels);
+		selectedCascade.set('levelNames', nameLevels);
 		FLOW.store.commit();
 		FLOW.cascadeResourceControl.setLevelNamesArray();
 		FLOW.cascadeResourceControl.setDisplayLevelNames();
