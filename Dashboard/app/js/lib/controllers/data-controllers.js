@@ -51,7 +51,7 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
 	populate: function() {
 		this.set('content', FLOW.store.find(FLOW.CascadeResource));
 		this.set('published',FLOW.store.filter(FLOW.CascadeResource,function(item){
-			return item.get('published');
+			return item.get('status') === 'PUBLISHED';
 		}));
 	},
 
@@ -96,7 +96,7 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
 	},
 
 	hasQuestions: function () {
-		if (!FLOW.selectedControl.selectedCascadeResource) {
+		if (!FLOW.selectedControl.selectedCascadeResource || !FLOW.selectedControl.selectedCascadeResource.get('keyId')) {
 			return;
 		}
 		FLOW.store.findQuery(FLOW.Question, {cascadeResourceId: FLOW.selectedControl.selectedCascadeResource.get('keyId')});
@@ -141,7 +141,7 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
 	},
 
 	toggleSelectedNodeTrigger:function (){
-		this.set('selectedNodeTrigger',!this.get('selectedNodeTrigger'));
+		this.toggleProperty('selectedNodeTrigger');
 	},
 
 	setDisplayLevels: function(){
@@ -150,12 +150,15 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
 		this.set('displayLevel3',this.get('level' + (this.get('skip') + 3)));
 	},
 
-	populate: function(cascadeResourceId, level, parentNodeId){
+	populate: function(cascadeResourceId, level, parentNodeId) {
+		if (!cascadeResourceId) {
+			return;
+		}
 		this.set('content',FLOW.store.findQuery(FLOW.CascadeNode, {
 	        cascadeResourceId: cascadeResourceId,
 	        parentNodeId: parentNodeId
 	      }));
-		this.set('level' + level,FLOW.store.filter(FLOW.CascadeNode, function(item){
+		this.set('level' + level, FLOW.store.filter(FLOW.CascadeNode, function(item){
 			return (item.get('parentNodeId') == parentNodeId && item.get('cascadeResourceId') == cascadeResourceId);
 		}));
 		this.parentNode[level] = parentNodeId;
@@ -163,14 +166,16 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
 	},
 
 	addNode: function(cascadeResourceId, level, text, code) {
+		var parentNodeId = this.get('parentNode')[level];
 		FLOW.store.createRecord(FLOW.CascadeNode, {
 			"code": code,
 			"name": capitaliseFirstLetter(text),
 			"nodeId": null,
-			"parentNodeId":this.get('parentNode')[level],
-			"cascadeResourceId":cascadeResourceId
+			"parentNodeId": this.get('parentNode')[level],
+			"cascadeResourceId": cascadeResourceId
         });
 		FLOW.store.commit();
+		this.populate(cascadeResourceId, level, parentNodeId);
 	},
 });
 
