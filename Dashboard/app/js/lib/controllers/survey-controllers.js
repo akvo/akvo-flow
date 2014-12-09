@@ -190,6 +190,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   setCurrentProject: function(project) {
     this.set('currentProject', project);
+    window.scrollTo(0,0);
   },
 
   /* Computed properties */
