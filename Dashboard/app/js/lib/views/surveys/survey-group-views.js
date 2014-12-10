@@ -169,11 +169,19 @@ FLOW.FolderEditView = Ember.TextField.extend({
   content: null,
   path: null,
 
-  focusOut: function() {
+  saveFolderName: function() {
     this.content.set('name', this.content.get('code'));
-	path = FLOW.projectControl.get('currentProjectPath') + "/" + this.content.get('name');
-	this.content.set('path', path );
+    path = FLOW.projectControl.get('currentProjectPath') + "/" + this.content.get('name');
+    this.content.set('path', path );
     FLOW.store.commit();
+  },
+
+  focusOut: function() {
+    this.saveFolderName();
+  },
+
+  insertNewline: function() {
+    this.saveFolderName();
   }
 });
 
