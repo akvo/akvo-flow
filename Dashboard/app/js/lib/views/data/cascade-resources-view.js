@@ -270,7 +270,7 @@ FLOW.CascadeNodeView = FLOW.View.extend({
 	}.property('FLOW.cascadeNodeControl.selectedNodeTrigger').cacheable(),
 
 	addNewNode: function() {
-		var newNodeStringArray, level, nodes, exists, item, itemTrim;
+		var newNodeStringArray, level, nodes, exists, item, itemTrim, levelNames;
 		level = this.get('col') + FLOW.cascadeNodeControl.get('skip');
 		nodes = FLOW.cascadeNodeControl.get('level' + level);
 		item = this.get('cascadeNodeName');
@@ -293,7 +293,10 @@ FLOW.CascadeNodeView = FLOW.View.extend({
 		// check if we need to increase the level of items that we use
 		// TODO somehow decrease it when a level becomes empty. However, this is hard to check.
 		if (level > FLOW.selectedControl.selectedCascadeResource.get('numLevels')){
-			FLOW.selectedControl.selectedCascadeResource.set('numLevels',level);
+			levelNames = FLOW.selectedControl.selectedCascadeResource.get('levelNames');
+			levelNames.push('Level ' + level);
+			FLOW.selectedControl.selectedCascadeResource.set('numLevels', level);
+			FLOW.selectedControl.selectedCascadeResource.set('levelNames', levelNames);
 			FLOW.store.commit();
 			FLOW.cascadeResourceControl.setLevelNamesArray();
 		}
