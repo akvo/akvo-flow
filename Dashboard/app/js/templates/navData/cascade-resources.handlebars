@@ -187,9 +187,9 @@
 							{{/if}}
 							{{#view FLOW.CascadeNodeView col=3}}
 								{{#if view.showInputField}}
-									{{view Ember.TextField valueBinding="view.cascadeNodeCode" placeholder="code"}}
-									{{view Ember.TextField valueBinding="view.cascadeNodeName" placeholder="new item name (mandatory)"}}
-									<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
+										{{view Ember.TextField valueBinding="view.cascadeNodeCode" class="cascadeEntryCode" placeholder="code"placeholder="code"}}
+										{{view Ember.TextField valueBinding="view.cascadeNodeName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
+										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
 								{{/if}}
 							{{/view}}
                         </fieldset>
