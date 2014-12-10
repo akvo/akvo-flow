@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -340,6 +341,8 @@ public class ActionRestService {
         }
         SurveyGroup projectCopy = new SurveyGroup();
 
+        BeanUtils.copyProperties(projectSource, projectCopy, Constants.EXCLUDED_PROPERTIES);
+
         projectCopy.setCode(projectSource.getCode() + " copy");
         projectCopy.setName(projectSource.getName() + " copy");
         String parentPath = null;
@@ -349,8 +352,8 @@ public class ActionRestService {
             parentPath = ""; // root folder
         }
         projectCopy.setPath(parentPath + "/" + projectCopy.getName());
-        projectCopy.setMonitoringGroup(projectSource.getMonitoringGroup());
         projectCopy.setParentId(folderId);
+        projectCopy.setPublished(false);
 
         SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy);
 
