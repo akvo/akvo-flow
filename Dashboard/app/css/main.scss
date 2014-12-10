@@ -4633,6 +4633,9 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                         margin-top:10px;
                       }
                   }
+                  label[for=enableMonitoring] {
+                    margin:10px 0 0 5px;
+                  }
                   .projectDetailForm, .surveyDetailForm {
                       display: block;
                       margin-top:0 !important;
