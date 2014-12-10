@@ -173,6 +173,10 @@ public class SurveyGroupRestService {
                             "createdDateTime", "lastUpdateDateTime",
                             "displayName", "questionGroupList"
                     });
+
+                    // Make sure that code and name are the same
+                    s.setCode(s.getName());
+
                     s = surveyGroupDao.save(s);
 
                     dto = new SurveyGroupDto();
@@ -210,6 +214,9 @@ public class SurveyGroupRestService {
                     "createdDateTime", "lastUpdateDateTime", "displayName",
                     "questionGroupList"
             });
+
+            // Make sure that code and name are the same
+            s.setCode(s.getName());
             s = surveyGroupDao.save(s);
 
             dto = new SurveyGroupDto();
