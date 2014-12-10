@@ -181,7 +181,6 @@ FLOW.FolderEditView = Ember.TextField.extend({
   },
 
   insertNewline: function() {
-    this.saveFolderName();
     this.get('parentView').toggleEditFolderName();
   }
 });
