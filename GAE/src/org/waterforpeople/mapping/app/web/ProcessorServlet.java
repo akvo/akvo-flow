@@ -28,6 +28,8 @@ import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFileJobQueue;
+import com.gallatinsystems.messaging.dao.MessageDao;
+import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.CascadeResourceDao;
 import com.gallatinsystems.survey.domain.CascadeResource;
 import com.gallatinsystems.survey.domain.CascadeResource.Status;
@@ -114,7 +116,7 @@ public class ProcessorServlet extends HttpServlet {
         } else if (action.equals("cascade")) {
             Long crId = null;
             final String status = req.getParameter("status");
-            final CascadeResourceDao dao = new CascadeResourceDao();
+            final CascadeResourceDao crDao = new CascadeResourceDao();
 
             try {
                 crId = Long.valueOf(req.getParameter("cascadeResourceId"));
@@ -125,19 +127,28 @@ public class ProcessorServlet extends HttpServlet {
                 return;
             }
 
-            CascadeResource cr = dao.getByKey(crId);
+            CascadeResource cr = crDao.getByKey(crId);
+
 
             if (cr == null) {
                 return;
             }
 
+            final MessageDao mDao = new MessageDao();
+            final Message m = new Message();
+            m.setActionAbout("cascadePublish");
+
             if ("published".equals(status)) {
                 cr.setStatus(Status.PUBLISHED);
+                m.setShortMessage("Cascade resource " + cr.getName() + " successfully published");
             } else {
                 cr.setStatus(Status.NOT_PUBLISHED);
+                m.setShortMessage("Failed to publish cascade resource " + cr.getName());
             }
 
-            dao.save(cr);
+            crDao.save(cr);
+            mDao.save(m);
+
         }
 
     }
