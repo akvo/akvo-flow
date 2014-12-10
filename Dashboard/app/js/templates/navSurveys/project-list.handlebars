@@ -7,12 +7,15 @@
         {{#each sg in FLOW.projectControl.currentFolders}}
             {{#view FLOW.ProjectItemView contentBinding="sg"}}
               {{#if view.isFolder}}
-                <a {{action "toggleEditFolderName" sg target="this"}} class="editFolderName">
-                  {{t _edit_folder_name}}
-                </a>
                 {{#if view.folderEdit}}
+                  <a {{action "toggleEditFolderName" sg target="this"}} class="editingFolderName">
+                    {{t _edit_folder_name}}
+                  </a>
                   {{view FLOW.FolderEditView valueBinding="sg.code" contentBinding="sg"}}
                 {{else}}
+                  <a {{action "toggleEditFolderName" sg target="this"}} class="editFolderName">
+                    {{t _edit_folder_name}}
+                  </a>
                   <a {{action "selectProject" sg target="FLOW.projectControl"}}>
                     <h2>{{sg.code}}</h2>
                   </a>

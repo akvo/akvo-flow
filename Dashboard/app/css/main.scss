@@ -2282,6 +2282,16 @@ li.aFolder {
            opacity:1;
         }
     }
+    a.editingFolderName {
+        @extend .editFolderName;
+        background: url(../images/IconSave.svg) center center no-repeat;
+        background-size:70px 70px;
+        &:hover {
+           background: url(../images/IconSaveOrange.svg) center center no-repeat;
+           background-size:70px 70px;
+           opacity:1;
+        }
+    }
     h2{
         color:rgb(183,183,183);
         background: url(../images/folderIcn.svg) right center no-repeat;
