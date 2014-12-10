@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -78,20 +79,13 @@ public class ActionRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> doAction(
-            @RequestParam(value = "action", defaultValue = "")
-            String action,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId,
-            @RequestParam(value = "cascadeResourceId", defaultValue = "")
-            Long cascadeResourceId,
-            @RequestParam(value = "surveyIds[]", defaultValue = "")
-            Long[] surveyIds,
-            @RequestParam(value = "email", defaultValue = "")
-            String email,
-            @RequestParam(value = "version", defaultValue = "")
-            String version,
-            @RequestParam(value = "dbInstructions", defaultValue = "")
-            String dbInstructions,
+            @RequestParam(value = "action", defaultValue = "") String action,
+            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+            @RequestParam(value = "cascadeResourceId", defaultValue = "") Long cascadeResourceId,
+            @RequestParam(value = "surveyIds[]", defaultValue = "") Long[] surveyIds,
+            @RequestParam(value = "email", defaultValue = "") String email,
+            @RequestParam(value = "version", defaultValue = "") String version,
+            @RequestParam(value = "dbInstructions", defaultValue = "") String dbInstructions,
             @RequestParam(value = "targetId", defaultValue = "") Long targetId,
             @RequestParam(value = "folderId", defaultValue = "") Long folderId) {
         String status = "failed";
@@ -124,7 +118,7 @@ public class ActionRestService {
         } else if ("createTestLocales".equals(action)) {
             status = createTestLocales();
         } else if ("publishCascade".equals(action)) {
-        	status = SurveyUtils.publishCascade(cascadeResourceId);
+            status = SurveyUtils.publishCascade(cascadeResourceId);
         } else if ("copyProject".equals(action)) {
             status = copyProject(targetId, folderId);
         }
@@ -135,7 +129,7 @@ public class ActionRestService {
         return response;
     }
 
-	/**
+    /**
      * Used to create test locales. The only field populated is surveyId, which is set to 1. To be
      * used only to test clustering during development in order to speed this up, it is advisable to
      * comment out the code in SurveyalRestServlet which computes the geoplace while running this
@@ -340,6 +334,8 @@ public class ActionRestService {
         }
         SurveyGroup projectCopy = new SurveyGroup();
 
+        BeanUtils.copyProperties(projectSource, projectCopy, Constants.EXCLUDED_PROPERTIES);
+
         projectCopy.setCode(projectSource.getCode() + " copy");
         projectCopy.setName(projectSource.getName() + " copy");
         String parentPath = null;
@@ -349,8 +345,8 @@ public class ActionRestService {
             parentPath = ""; // root folder
         }
         projectCopy.setPath(parentPath + "/" + projectCopy.getName());
-        projectCopy.setMonitoringGroup(projectSource.getMonitoringGroup());
         projectCopy.setParentId(folderId);
+        projectCopy.setPublished(false);
 
         SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy);
 
