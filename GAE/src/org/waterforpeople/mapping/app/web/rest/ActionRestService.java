@@ -79,20 +79,13 @@ public class ActionRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> doAction(
-            @RequestParam(value = "action", defaultValue = "")
-            String action,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId,
-            @RequestParam(value = "cascadeResourceId", defaultValue = "")
-            Long cascadeResourceId,
-            @RequestParam(value = "surveyIds[]", defaultValue = "")
-            Long[] surveyIds,
-            @RequestParam(value = "email", defaultValue = "")
-            String email,
-            @RequestParam(value = "version", defaultValue = "")
-            String version,
-            @RequestParam(value = "dbInstructions", defaultValue = "")
-            String dbInstructions,
+            @RequestParam(value = "action", defaultValue = "") String action,
+            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+            @RequestParam(value = "cascadeResourceId", defaultValue = "") Long cascadeResourceId,
+            @RequestParam(value = "surveyIds[]", defaultValue = "") Long[] surveyIds,
+            @RequestParam(value = "email", defaultValue = "") String email,
+            @RequestParam(value = "version", defaultValue = "") String version,
+            @RequestParam(value = "dbInstructions", defaultValue = "") String dbInstructions,
             @RequestParam(value = "targetId", defaultValue = "") Long targetId,
             @RequestParam(value = "folderId", defaultValue = "") Long folderId) {
         String status = "failed";
@@ -125,7 +118,7 @@ public class ActionRestService {
         } else if ("createTestLocales".equals(action)) {
             status = createTestLocales();
         } else if ("publishCascade".equals(action)) {
-        	status = SurveyUtils.publishCascade(cascadeResourceId);
+            status = SurveyUtils.publishCascade(cascadeResourceId);
         } else if ("copyProject".equals(action)) {
             status = copyProject(targetId, folderId);
         }
@@ -136,7 +129,7 @@ public class ActionRestService {
         return response;
     }
 
-	/**
+    /**
      * Used to create test locales. The only field populated is surveyId, which is set to 1. To be
      * used only to test clustering during development in order to speed this up, it is advisable to
      * comment out the code in SurveyalRestServlet which computes the geoplace while running this
