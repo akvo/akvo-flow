@@ -171,7 +171,7 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
 			"code": code,
 			"name": capitaliseFirstLetter(text),
 			"nodeId": null,
-			"parentNodeId": this.get('parentNode')[level],
+			"parentNodeId": parentNodeId,
 			"cascadeResourceId": cascadeResourceId
         });
 		FLOW.store.commit();
