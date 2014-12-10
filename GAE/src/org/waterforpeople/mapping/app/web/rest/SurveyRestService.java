@@ -261,6 +261,8 @@ public class SurveyRestService {
                     });
 
                     s.setDesc(surveyDto.getDescription());
+                    // Make sure that code and name are the same
+                    s.setCode(s.getName());
 
                     if (surveyDto.getStatus() != null) {
                         // increment version for surveys already published
@@ -365,6 +367,9 @@ public class SurveyRestService {
 
         // ignore version number sent by Dashboard and initialise
         s.getVersion();
+
+        // Make sure that code and name are the same
+        s.setCode(s.getName());
 
         return s;
     }

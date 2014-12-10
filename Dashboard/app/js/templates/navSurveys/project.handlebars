@@ -4,7 +4,7 @@
     <div id="pageWrap" class="widthConstraint belowHeader">
       <section id="main" class="projectSection floats-in middleSection" role="main">
         <section id="" class="projectDetailsPanel">
-          <span class="fontInfo">{{t _survey}}:</span><h2>{{FLOW.projectControl.currentProject.code}}</h2>
+          <span class="fontInfo">{{t _survey}}:</span><h2>{{FLOW.projectControl.currentProject.name}}</h2>
           <ul class="projectSummary">
             <li>{{t _forms}}<span class="projectForm">{{FLOW.projectControl.formCount}}</span>
             </li>
@@ -43,7 +43,7 @@
             {{/unless}}
             {{#if view.visibleProjectBasics}}
               <form class="projectDetailForm">
-                <label>{{t _survey_title}}</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.code"}}
+                <label>{{t _survey_title}}</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.name"}}
                 <label>{{t _survey_description}}</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
 
                 <ul class="projectSelect floats-in">
@@ -108,7 +108,7 @@
                   <ul>
                     {{#each form in FLOW.surveyControl}}
                       {{#view FLOW.FormTabView contentBinding="form"}}
-                        <a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.code}}</a></li>
+                        <a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.name}}</a></li>
                       {{/view}}
                     {{/each}}
                     {{#if FLOW.projectControl.currentProject.monitoringGroup}}
@@ -119,7 +119,7 @@
                 <section class="formsContainer">
                     <div id="form01">
                     {{#if FLOW.selectedControl.selectedSurvey}}
-                      <h3>{{FLOW.selectedControl.selectedSurvey.code}}</h3>
+                      <h3>{{FLOW.selectedControl.selectedSurvey.name}}</h3>
                       {{view FLOW.FormView}}
                     {{/if}}
                     </div>

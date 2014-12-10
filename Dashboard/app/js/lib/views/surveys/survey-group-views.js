@@ -64,16 +64,16 @@ FLOW.Project = FLOW.View.extend({
 FLOW.ProjectMainView = FLOW.View.extend({
 
   doSave: function() {
-    currentProject = FLOW.projectControl.get('currentProject');
-    currentForm = FLOW.selectedControl.get('selectedSurvey');
+    var currentProject = FLOW.projectControl.get('currentProject');
+    var currentForm = FLOW.selectedControl.get('selectedSurvey');
 
     if (currentProject && currentProject.get('isDirty')) {
-      currentProject.set('name', currentProject.get('code'));
+      currentProject.set('code', currentProject.get('name'));
       currentProject.set('path', FLOW.projectControl.get('currentProjectPath'));
     }
 
     if (currentForm && currentForm.get('isDirty')) {
-      currentForm.set('name', currentForm.get('code'));
+      currentForm.set('code', currentForm.get('name'));
       path = FLOW.projectControl.get('currentProjectPath') + "/" + currentForm.get('name');
       currentForm.set('path', path);
     }
