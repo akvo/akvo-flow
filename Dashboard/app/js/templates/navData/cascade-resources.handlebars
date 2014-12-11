@@ -162,8 +162,8 @@
 									{{#if view.showEditNode}}
 										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode" placeholder="code"}}
 										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
-										<a {{action "saveEditNode" target="this"}}><button class="addCascadeItem">Save</button></a>
-										<a {{action "cancelEditNode" target="this"}}><button class="addCascadeItem">Cancel</button></a>
+										<button class="addCascadeItem squeezeR" {{action "saveEditNode" target="this"}}>Save</button>
+										<button class="addCascadeItem squeezeR" {{action "cancelEditNode" target="this"}}>Cancel</button>
 									{{else}}
 										<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
 										<a {{action "deleteNode" target="this"}} class="deleteLevel">delete</a>
@@ -200,8 +200,8 @@
 									{{#if view.showEditNode}}
 										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode" placeholder="code"}}
 										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
-										<a {{action "saveEditNode" target="this"}}><button class="addCascadeItem">Save</button></a>
-										<a {{action "cancelEditNode" target="this"}}><button class="addCascadeItem">Cancel</button></a>
+										<button class="addCascadeItem squeezeR" {{action "saveEditNode" target="this"}}>Save</button>
+										<button class="addCascadeItem squeezeR" {{action "cancelEditNode" target="this"}}>Cancel</button>
 									{{else}}
 										<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
 										<a {{action "deleteNode" target="this"}} class="deleteLevel">delete</a>
