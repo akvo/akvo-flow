@@ -255,19 +255,20 @@ pre {
     line-height: 1.3em;
     -o-box-shadow: 0 0 2px rgb(0, 0, 0);
 }
-.isLoading,
-.isSaving, .loadSave {
+.loadSave {
     position: fixed;
     top: 90px;
     left: 46%;
     z-index: 9999999;
-    border-radius: 3px;
-    box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
-    padding: 5px 3px 5px 25px;
-    background: rgb(248,248,248) url(../images/loader.gif) 5px center no-repeat;
-    color: rgb(252, 159, 0);
-    font-weight: bold;
-    font-size: 1.2em;
+    .isLoading, .isSaving{
+        border-radius: 3px;
+        box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
+        padding: 5px 3px 5px 25px;
+        background: rgb(248,248,248) url(../images/loader.gif) 5px center no-repeat;
+        color: rgb(252, 159, 0);
+        font-weight: bold;
+        font-size: 1.2em;
+    }
 }
 .greyish {
     background: rgb(200, 214, 214);
