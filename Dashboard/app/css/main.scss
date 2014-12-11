@@ -1,4 +1,4 @@
-@import	'library.scss';
+@import "library.scss";
 
 html,
 body,
@@ -77,6 +77,7 @@ section {
     vertical-align: baseline;
     background: transparent;
 }
+
 header,
 footer,
 nav,
@@ -85,45 +86,55 @@ article,
 section {
     display: block;
 }
+
 body {
     line-height: 1;
 }
+
 ol,
 ul {
     list-style: none;
 }
+
 blockquote,
 q {
     quotes: none;
 }
+
 :focus {
     outline: 0;
 }
+
 table {
     border-collapse: collapse;
     border-spacing: 0;
 }
+
 img,
 object,
 embed,
 video {
     max-width: 100%;
 }
+
 /* IE 6 does not support max-width so default to width 100% */
 
 .ie6 img {
     width: 100%;
 }
+
 input,
 select,
 textarea,
 button {
     padding: 0;
 }
+
 iframe {
-    border:none;
+    border: none;
 }
-@import	'form.scss';
+
+@import "form.scss";
 
 /*--------------------------------------------------------------
 
@@ -133,11 +144,12 @@ iframe {
 
 html {
     width: 100%;
-    height:100%;
+    height: 100%;
     overflow-y: scroll;
     border-top: 3px solid rgb(38, 8, 89);
     background: white;
 }
+
 body {
     width: 100%;
     height: 100%;
@@ -146,10 +158,11 @@ body {
     line-height: 1.42857;
     text-rendering: optimizelegibility;
     font-family: $bodyFont;
-    -ms-overflow-style:-ms-autohiding-scrollbar;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
 }
+
 /*--------------------------------------------------------------
-							Headings
+                            Headings
 -------------------------------------------------------------- */
 
 h1,
@@ -161,28 +174,35 @@ h6 {
     font-family: $titleFont;
     font-weight: normal;
 }
+
 h1 {
     font-size: 1.8em;
 }
+
 h2 {
     color: rgb(44, 42, 116);
     font-size: 1.7em;
 }
+
 h3 {
     font-size: 1.6em;
     line-height: 1;
 }
+
 h4 {
     font-size: 1em;
     line-height: 1.25em;
 }
+
 h5 {
     margin-bottom: 0.5em;
     font-size: 1.2em;
 }
+
 h6 {
     font-size: 1em;
 }
+
 h1 img,
 h2 img,
 h3 img,
@@ -191,13 +211,16 @@ h5 img,
 h6 img {
     margin: 0;
 }
+
 .amp {
     font-style: italic;
     font-family: $scriptFont;
 }
+
 em {
     padding-bottom: 1em;
 }
+
 /* misc.
 --------------------------------------------- */
 
@@ -207,24 +230,30 @@ video,
 embed {
     max-width: 100%;
 }
+
 /* Sine the map pin need no max-width */
 
 #flowMap img {
     max-width: none;
 }
+
 .hidden {
     display: none !important;
 }
+
 .shown {
     display: block !important;
 }
+
 hr,
 .hide {
     display: none;
 }
+
 a img {
     border: none;
 }
+
 .floats-in:after {
     display: block;
     visibility: hidden;
@@ -232,6 +261,7 @@ a img {
     height: 0;
     content: ".";
 }
+
 pre {
     display: block;
     overflow: auto;
@@ -240,8 +270,9 @@ pre {
     width: 800px;
     border: 1px solid #bae2f0;
     background: #e3f4f9;
-    font: 100%"Courier New", Courier, monospace;
+    font: 100% "Courier New", Courier, monospace;
 }
+
 #tooltip {
     position: absolute;
     display: none;
@@ -255,21 +286,24 @@ pre {
     line-height: 1.3em;
     -o-box-shadow: 0 0 2px rgb(0, 0, 0);
 }
+
 .isLoading,
-.isSaving {
+.isSaving, .loadSave {
     position: fixed;
-    top: 88px;
+    top: 95px;
     left: 46%;
-    z-index: 999999;
-    padding: 1px 0 0 20px;
+    z-index: 9999999;
+    padding: 0px 0 0 20px;
     background: url(../images/loader.gif) left center no-repeat;
     color: rgb(252, 159, 0);
     font-weight: bold;
     font-size: 1.2em;
 }
+
 .greyish {
     background: rgb(200, 214, 214);
 }
+
 .whiteBgSeparator {
     display: inline-block;
     overflow: auto;
@@ -281,15 +315,18 @@ pre {
     box-shadow: 0 0 2px rgb(230, 230, 230);
     -o-box-shadow: 0 0 2px rgb(230, 230, 230);
 }
+
 .isRequired {
     margin: 0 0 0 5px;
     color: rgb(204, 204, 204);
     font-weight: normal;
 }
+
 .errorMsg {
     color: rgb(255, 41, 12);
     text-align: center;
 }
+
 .infoText {
     display: block;
     margin: 0.5em 0 0 0;
@@ -297,9 +334,11 @@ pre {
     color: rgb(153, 153, 153);
     width: 90%;
 }
+
 .noBG {
     background-image: none !important;
 }
+
 /* links
 ---------------------------------------------------------------*/
 
@@ -327,7 +366,7 @@ a, a:link, a:visited {
         -o-border-radius: 0.3em;
         border-radius: 0.3em;
         &:hover {
-            background:$anchorLinkHover;
+            background: $anchorLinkHover;
             color: white;
         }
     }
@@ -342,7 +381,7 @@ a, a:link, a:visited {
         font-size: 1em;
         -o-border-radius: 3px;
         &:hover {
-            background:$anchorLinkHover;
+            background: $anchorLinkHover;
             color: white;
         }
     }
@@ -353,11 +392,11 @@ a, a:link, a:visited {
         width: 18px;
         height: 18px;
         border-radius: 9px;
-        background:$anchorLink;
+        background: $anchorLink;
         color: white;
         text-align: center;
         &:hover {
-            background:$anchorLinkHover;
+            background: $anchorLinkHover;
         }
         .selectinLabel & {
             line-height: 1.5em;
@@ -391,54 +430,67 @@ a, a:link, a:visited {
         }
     }
 }
+
 ::-moz-selection {
     background: #930;
     color: #fff;
     text-shadow: none;
 }
+
 ::selection {
     background: #930;
     color: #fff;
     text-shadow: none;
 }
+
 ins {
     background-color: #930;
     color: #000;
     text-decoration: none;
 }
+
 mark {
     background-color: #930;
     color: #000;
     font-weight: bold;
     font-style: italic;
 }
+
 .fadedText {
     color: rgb(153, 153, 153);
 }
+
 .selectInfo {
     color: $darkGrey;
 }
+
 .visible {
     visibility: hidden;
 }
+
 .nonVisible {
     visibility: visible;
 }
+
 input[type="submit"] {
     @extend .standardBtn;
 }
+
 .selectinLabel a.helpIcon {
     line-height: 1.5em;
 }
+
 .greyBg {
     width: 99.7%;
     position: relative;
     padding: 1px 0.15%;
     background: white;
 }
+
 .usersList {
     margin-top: 25px;
 }
+
 .btnAboveTable {
     margin: 7px 0 7px 5px;
     .usersList & {
@@ -448,6 +500,7 @@ input[type="submit"] {
         right: 5px;
     }
 }
+
 .editAnswerMenu {
     position: relative;
     margin: 10px auto;
@@ -463,6 +516,7 @@ input[type="submit"] {
         }
     }
 }
+
 .prevNext {
     position: relative;
     display: block;
@@ -493,17 +547,20 @@ input[type="submit"] {
         }
     }
 }
+
 .deleteBtn,
 .saveBtn {
     position: absolute;
     top: 5px;
     left: 40%;
 }
+
 .inline {
     display: inline;
 }
+
 /*-------------------------------
-			Dialog
+            Dialog
 -----------------------------------*/
 
 .overlay {
@@ -525,6 +582,7 @@ input[type="submit"] {
         opacity: 1.0;
     }
 }
+
 .blanket {
     position: absolute;
     top: 0;
@@ -536,6 +594,7 @@ input[type="submit"] {
     background-color: rgb(0, 0, 0);
     opacity: 0.8;
 }
+
 .blanketWide {
     position: absolute;
     top: 0;
@@ -547,11 +606,13 @@ input[type="submit"] {
     background-color: rgb(0, 0, 0);
     opacity: 0.3;
 }
+
 .dialogWrap {
     position: relative;
     width: 100%;
     Height: 100%;
 }
+
 .dialog {
     position: absolute;
     top: 20%;
@@ -565,6 +626,7 @@ input[type="submit"] {
     background: white;
     -o-border-radius: 6px;
 }
+
 .dialogWide {
     position: absolute;
     top: 15%;
@@ -580,6 +642,7 @@ input[type="submit"] {
     background: white;
     -o-border-radius: 4px;
 }
+
 .dialogWrap {
     .menuCentre {
         margin: 30px auto 10px auto;
@@ -596,15 +659,18 @@ input[type="submit"] {
         margin: 5px auto;
     }
 }
+
 label[for=newDeviceGroupName] {
     margin: 10px 0 0 0;
 }
+
 .dialogWrap table.dataTable select,
 .dialogWrap table.dataTable input {
     display: inline;
     margin: 5px 0.5em 0 0.1em;
     width: 70%;
 }
+
 /* page structure
 --------------------------------------------- */
 
@@ -615,54 +681,63 @@ label[for=newDeviceGroupName] {
     width: 100%;
     min-width: 768px;
 }
+
 .belowHeader {
     padding-top: 55px;
     padding-bottom: 0px;
     background: white;
 }
+
 .middleSection {
-    overflow:hidden;
+    overflow: hidden;
     /*margin: 0 0 20px 0;*/
-    padding:90px 0 40px 0;
+    padding: 90px 0 40px 0;
 }
+
 .leftSidebar {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     left: 0;
-    top:112px;
-    bottom:56px;
+    top: 112px;
+    bottom: 56px;
     position: fixed;
-    float:left;
+    float: left;
     width: 20em;
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
 .rightSidebar {
     position: relative;
     float: right;
     width: 22%;
 }
+
 .mainRight {
     float: left;
     width: calc(100% - 20em);
     margin-left: 20em;
     overflow-y: auto;
 }
+
 .mainLeft {
     position: relative;
     float: left;
     width: 78%;
 }
+
 .fullWidth {
     position: relative;
     width: 100%;
 }
+
 .mainContent {
     margin: 0 auto;
     padding: 0 0 0 0;
     width: 99%;
 }
+
 /* .header
 --------------------------------------------- */
 
@@ -672,7 +747,7 @@ header.top {
     top: 0;
     width: 100%;
     height: 41px;
-    background: rgb(255,255,255);
+    background: rgb(255, 255, 255);
     z-index: 9999;
     /*-webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.1);
     box-shadow: 0 0 1px rgba(32, 32, 36, 0.5);
@@ -693,7 +768,7 @@ header.top {
         border-top: none;
         h1 {
             width: 169px;
-            top:2px;
+            top: 2px;
             height: inherit;
             background: url(../images/akvoFlowLogo.svg) no-repeat 10px center;
             -webkit-background-size: 85% auto;
@@ -714,11 +789,11 @@ header.top {
         position: absolute;
         top: 2px;
         left: 0px;
-        height:60px;
+        height: 60px;
         width: 169px;
         background: url(../images/akvoFlowLogo.svg) no-repeat 5px top;
         text-indent: -9999px;
-        background-size:95% auto;
+        background-size: 95% auto;
         a {
             display: block;
             width: 169px;
@@ -727,6 +802,7 @@ header.top {
         }
     }
 }
+
 .loginSection {
     display: none;
     position: absolute;
@@ -738,9 +814,11 @@ header.top {
         }
     }
 }
+
 .userRegister {
     margin: 5px 0 0 10px;
 }
+
 .languageSelector {
     position: absolute;
     top: 0;
@@ -767,6 +845,7 @@ header.top {
         }
     }
 }
+
 /* Top navigation styles
 --------------------------------------------- */
 
@@ -783,10 +862,10 @@ nav.appNav {
             margin: 0 0 0 0;
             padding: 5px 2px 0 0;
             &.current a {
-              /*  -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
-                -o-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
-                box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);*/
-                color:$anchorLinkHover;
+                /*  -webkit-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
+                  -o-box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);
+                  box-shadow: 0 0 2px rgba(20, 20, 20, 0.1);*/
+                color: $anchorLinkHover;
             }
             &:hover,
             &:last-child,
@@ -806,7 +885,7 @@ nav.appNav {
                 cursor: pointer;
                 header.top.top-nav-collapse & {
                     margin-top: 0;
-                    padding:18px 4px 5px 8px;
+                    padding: 18px 4px 5px 8px;
                     background-position: center 2px;
                     -webkit-background-size: 18px auto;
                     background-size: 18px auto;
@@ -822,6 +901,7 @@ nav.appNav {
         }
     }
 }
+
 @mixin bgDetails {
     background-repeat: no-repeat;
     background-position: center 12px;
@@ -829,177 +909,175 @@ nav.appNav {
     background-size: 28px auto;
 }
 
-nav.appNav{
+nav.appNav {
     ul {
         li {
             &.navHome {
-                a{
+                a {
                     background: url(../images/topnavDashboards.svg);
                     @include bgDetails;
                     &:hover {
-                        background:url(../images/topnavDashboardsOrange.svg);
+                        background: url(../images/topnavDashboardsOrange.svg);
                         @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background:url(../images/topnavDashboardsOrange.svg);
+                        background: url(../images/topnavDashboardsOrange.svg);
                         @include bgDetails;
                     }
                 }
             }
-
             &.navMessages {
-                a{
+                a {
                     background: url(../images/topnavMessages.svg);
                     @include bgDetails;
                     &:hover {
-                        background:url(../images/topnavMessagesOrange.svg);
+                        background: url(../images/topnavMessagesOrange.svg);
                         @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background:url(../images/topnavMessagesOrange.svg);
+                        background: url(../images/topnavMessagesOrange.svg);
                         @include bgDetails;
                     }
                 }
             }
             &.navData {
-                a{
+                a {
                     background: url(../images/topnavData.svg);
                     @include bgDetails;
                     &:hover {
-                        background:url(../images/topnavDataOrange.svg);
+                        background: url(../images/topnavDataOrange.svg);
                         @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background:url(../images/topnavDataOrange.svg);
+                        background: url(../images/topnavDataOrange.svg);
                         @include bgDetails;
                     }
                 }
             }
             &.navDashboards {
-                a{
+                a {
                     background: url(../images/topnavDashboards.svg);
                     @include bgDetails;
                     &:hover {
-                        background:url(../images/topnavDashboardsOrange.svg);
+                        background: url(../images/topnavDashboardsOrange.svg);
                         @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background:url(../images/topnavDashboardsOrange.svg);
+                        background: url(../images/topnavDashboardsOrange.svg);
                         @include bgDetails;
                     }
                 }
             }
             &.navMaps {
-                a{
+                a {
                     background: url(../images/topnavMaps.svg);
                     @include bgDetails;
                     &:hover {
-                        background:url(../images/topnavMapsOrange.svg);
+                        background: url(../images/topnavMapsOrange.svg);
                         @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background:url(../images/topnavMapsOrange.svg);
+                        background: url(../images/topnavMapsOrange.svg);
                         @include bgDetails;
                     }
                 }
             }
             &.navDevices {
-                a{
+                a {
                     background: url(../images/topnavDevices.svg);
                     @include bgDetails;
                     &:hover {
-                        background:url(../images/topnavDevicesOrange.svg);
+                        background: url(../images/topnavDevicesOrange.svg);
                         @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background:url(../images/topnavDevicesOrange.svg);
+                        background: url(../images/topnavDevicesOrange.svg);
                         @include bgDetails;
                     }
                 }
             }
             &.navUsers {
-                a{
+                a {
                     background: url(../images/topnavUsers.svg);
                     @include bgDetails;
                     &:hover {
-                        background:url(../images/topnavUsersOrange.svg);
+                        background: url(../images/topnavUsersOrange.svg);
                         @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background:url(../images/topnavUsersOrange.svg);
+                        background: url(../images/topnavUsersOrange.svg);
                         @include bgDetails;
                     }
                 }
             }
             &.navReports {
-                a{
+                a {
                     background: url(../images/topnavReports.svg);
                     @include bgDetails;
                     &:hover {
-                        background:url(../images/topnavReportsOrange.svg);
+                        background: url(../images/topnavReportsOrange.svg);
                         @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background:url(../images/topnavReportsOrange.svg);
+                        background: url(../images/topnavReportsOrange.svg);
                         @include bgDetails;
                     }
                 }
             }
             &.navAdmin {
-                a{
+                a {
                     background: url(../images/topnavAdmin.svg);
                     @include bgDetails;
                     &:hover {
-                        background:url(../images/topnavAdminOrange.svg);
+                        background: url(../images/topnavAdminOrange.svg);
                         @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background:url(../images/topnavAdminOrange.svg);
+                        background: url(../images/topnavAdminOrange.svg);
                         @include bgDetails;
                     }
                 }
             }
             &.navSurveys {
-                a{
+                a {
                     background: url(../images/topnavSurveys.svg);
                     @include bgDetails;
                     &:hover {
-                        background:url(../images/topnavSurveysOrange.svg);
+                        background: url(../images/topnavSurveysOrange.svg);
                         @include bgDetails;
                     }
                 }
                 &.current {
                     a {
-                        background:url(../images/topnavSurveysOrange.svg);
+                        background: url(../images/topnavSurveysOrange.svg);
                         @include bgDetails;
                     }
                 }
             }
-
         }
     }
 }
 
 /*---------------------------------------------
-					Data Table
+                    Data Table
 -----------------------------------------------*/
 
 table.dataTable {
@@ -1039,6 +1117,7 @@ table.dataTable {
         }
     }
 }
+
 table.dataTable tbody tr,
 table.dataTable tbody tr:nth-child(2n+1),
 table.dataTable tbody tr.odd {
@@ -1047,30 +1126,36 @@ table.dataTable tbody tr.odd {
     -webkit-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
+
 table.dataTable tbody tr:nth-child(2n),
 table.dataTable tbody tr.even {
     background: rgb(232, 230, 220);
     -webkit-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
+
 table.dataTable tbody tr:hover,
 table.dataTable tbody tr:nth-child(2n):hover,
 table.dataTable tbody tr.even:hover {
     background: rgb(177, 214, 224);
     color: rgb(16, 28, 30);
 }
+
 #usersListTable thead tr th {
     padding: 11px 1em 7px 1em;
 }
+
 table.dataTable thead tr th a,
 table.dataTable thead tr th a:link,
 table.dataTable thead tr th a:visited {
     color: #FFD200;
     cursor: pointer;
 }
+
 #statisticsDataTable {
     width: 400px;
 }
+
 /* end addition MTW */
 
 table.dataTable thead tr th a.helpIcon {
@@ -1078,19 +1163,24 @@ table.dataTable thead tr th a.helpIcon {
     top: -3px;
     margin: 0 0 0 7px;
 }
+
 table.dataTable thead tr th.sorting_desc {
     background: rgb(23, 23, 23) url(../images/sortTableDown.png) right center no-repeat;
 }
+
 table.dataTable thead tr th.sorting_asc {
     background: rgb(23, 23, 23) url(../images/sortTableUp.png) right center no-repeat;
 }
+
 table.dataTable thead tr th:last-child {
     border-right: none;
 }
+
 tfoot tr {
     display: none;
     background: transparent;
 }
+
 #devicesListTable {
     .macAddress {
         width: 14%;
@@ -1115,6 +1205,7 @@ tfoot tr {
         width: 16%;
     }
 }
+
 #usersListTable {
     .userName {
         width: 35%;
@@ -1138,23 +1229,27 @@ tfoot tr {
         color: rgb(119, 97, 0);
     }
 }
+
 #inspectData {
     border: thin solid rgb(224, 224, 224);
     border-top: 1px solid white;
     background: rgb(224, 224, 224);
 }
+
 .greyBg a.standardBtn {
     background-image: url("../images/addPlus.png") left center no-repeat;
 }
+
 @mixin disabledMix {
     border-radius: 0;
     background: transparent;
     color: grey;
     -o-border-radius: 0;
 }
+
 .dataTabMenu {
-    position:absolute;
-    top:30px;
+    position: absolute;
+    top: 30px;
     right: 5px;
     text-transform: uppercase;
     ul {
@@ -1171,83 +1266,98 @@ tfoot tr {
                 @include transition(all 0.2s ease);
                 @include border-radius(0.3em);
                 &.disabled {
-                       @include disabledMix;
-                  }
+                    @include disabledMix;
+                }
                 &:hover {
                     border-radius: 2px;
-                    background:$anchorLink;
+                    background: $anchorLink;
                     color: white;
                     -o-border-radius: 2px;
                     &.disabled {
                         @include disabledMix;
-                        }
                     }
                 }
             }
         }
     }
+}
 
 /**************** Assign Survey to devices. **************/
 
 #assignSurveys h2 {
     margin: 0.1em 0 1em 0;
 }
+
 #assignSurveys select,
 #assignSurveys input {
     margin: 0.3em 0 0.2em 0;
 }
+
 #assignSurveys label {
     margin: 0.5em 0 0 0;
 }
+
 #assignSurveys fieldset {
     position: relative;
     margin: 3px auto;
     padding: 1em 0.5% 3em 0.5%;
     width: 98%;
 }
+
 fieldset#assignmentDetails {
     background: white;
 }
+
 #assignSurveys input {
     padding: 3px 5px;
     border: 1px solid rgb(158, 158, 158);
 }
+
 .manualTransfer input {
     padding: 3px 5px;
     border: 1px solid rgb(158, 158, 158);
     width: 48%;
 }
+
 .manualTransfer textarea {
     width: 98%;
     margin: 0.2em 0;
     border: 1px solid rgb(158, 158, 158);
 }
+
 .manualTransfer input[type="checkbox"] {
     width: inherit;
 }
+
 #assignmentDetails > input {
     width: 47.5%;
 }
+
 .dateRange {
     position: relative;
     display: block;
     width: 100%;
 }
+
 input.hasDatepicker {
     display: inline;
     width: 95%;
     background: rgb(250, 244, 230) url(../images/icon_cal.png) right center no-repeat;
 }
+
 .dateRange div.activeDate,
 .dateRange div.expireDate {
     width: 50%;
 }
+
 .dateRange div.activeDate {
     float: left;
 }
+
 .dateRange div.expireDate {
     float: right;
 }
+
 .fieldSetWrap {
     position: relative;
     clear: both;
@@ -1257,9 +1367,11 @@ input.hasDatepicker {
     width: 99%;
     background: rgb(242, 242, 242) url(../images/FieldSetSep.png) center center no-repeat;
 }
+
 .fieldSetWrap.makeWhite {
     background: white url(../images/FieldSetSep.png) center center no-repeat;
 }
+
 #assignSurveys .fieldSetWrap fieldset {
     display: inline;
     margin: 0;
@@ -1267,19 +1379,23 @@ input.hasDatepicker {
     min-height: 200px;
     width: 49%;
 }
+
 .manualTransfer .fieldSetWrap fieldset.fullWidth {
     min-height: inherit;
     width: 100%;
 }
+
 #assignSurveys .fieldSetWrap fieldset table {
     overflow: scroll;
     margin: 0 auto;
     max-height: 210px;
     width: 98%;
 }
+
 .action a:first-child {
     margin-right: 5px;
 }
+
 .action a.remove {
     display: inline-block;
     width: 13px;
@@ -1287,9 +1403,11 @@ input.hasDatepicker {
     background: url(../images/removeList.png) center top no-repeat;
     text-indent: -99999px;
 }
+
 .action a.remove:hover {
     background: url(../images/removeList.png) center bottom no-repeat;
 }
+
 .action a.edit {
     display: inline-block;
     width: 13px;
@@ -1297,15 +1415,19 @@ input.hasDatepicker {
     background: url(../images/editList.png) center top no-repeat;
     text-indent: -99999px;
 }
+
 .action a.edit:hover {
     background: url(../images/editList.png) center bottom no-repeat;
 }
+
 table.previewList {
     color: rgb(209, 84, 95);
 }
+
 #assignSurveys .fieldSetWrap fieldset table tbody {
     border: thin solid rgb(230, 230, 230);
 }
+
 #assignSurveys .fieldSetWrap fieldset table th {
     padding: 5px 0 5px 5px;
     background: rgb(242, 242, 242);
@@ -1314,34 +1436,42 @@ table.previewList {
     font-weight: normal;
     cursor: pointer;
 }
+
 #assignSurveys .fieldSetWrap fieldset table tr:nth-child(2n+1) {
     background: rgb(230, 230, 230);
 }
+
 #assignSurveys .fieldSetWrap fieldset table tr:nth-child(2n) {
     background: white;
 }
+
 #assignSurveys .fieldSetWrap fieldset table tr:last-child {
     background: transparent;
 }
+
 #assignSurveys .fieldSetWrap fieldset table td {
     padding: 0 0 0 1.5%;
     border-right: thin solid white;
     vertical-align: middle;
     text-align: left;
 }
+
 #assignSurveys .fieldSetWrap fieldset table td:last-child {
     border-right: none;
 }
+
 #assignSurveys .fieldSetWrap fieldset table tfoot tr {
     display: table-row;
     height: 21px;
     background: transparent;
     vertical-align: middle;
 }
+
 #assignSurveys .fieldSetWrap fieldset table tfoot td {
     position: relative;
     text-align: center;
 }
+
 #assignSurveys .fieldSetWrap fieldset table tfoot td a {
     display: block;
     float: right;
@@ -1354,27 +1484,34 @@ table.previewList {
     -o-border-radius: 0 0 5px 5px;
     border-radius: 0 0 5px 5px;
 }
+
 #assignSurveys .fieldSetWrap fieldset table tfoot td a:hover {
     background: rgb(107, 134, 141);
     color: white;
 }
+
 .groupPreview {
     width: 37.5%;
 }
+
 .surveyPreview {
     width: 48.5%;
 }
+
 th.action {
     width: 7%;
 }
+
 #assignSurveys .fieldSetWrap fieldset table td.action {
     padding: 0.6em 0 0.6em 3%;
     width: 7%;
 }
+
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel {
     position: relative;
     float: left;
 }
+
 #assignSurveys .fieldSetWrap fieldset.formRightPanel {
     position: relative;
     float: right;
@@ -1382,104 +1519,123 @@ th.action {
     width: 48%;
     height: 98%;
 }
+
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div {
     position: relative;
     display: inline;
 }
+
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav {
     position: absolute;
     top: 0.3em;
     right: 3em;
     display: inline;
 }
+
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav ul li {
     display: inline;
     margin: 0 0 0 5px;
 }
+
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav ul li:first-child {
     margin: 0 0 0 0;
 }
+
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav ul li a {
     color: rgb(0, 123, 182);
 }
+
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n+1) {
     float: right;
     width: 55%;
 }
+
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n) {
     float: left;
     width: 45%;
 }
+
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n) select {
     width: 90%;
 }
+
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n+1) select {
     width: 90%;
 }
+
 .menuConfirm {
     margin: 1em auto;
     text-align: center;
 }
+
 .menuConfirm ul li {
     display: inline;
     margin: 0 15px 0 0;
 }
+
 .menuConfirm ul li a {
     display: inline-block;
 }
+
 /*--------------------------------------------------------------------
-							Tabs Styling
+                            Tabs Styling
 ----------------------------------------------------------------------*/
 #tabs {
-    position:relative;
+    position: relative;
     /*overflow-y: scroll;*/
-    height:100%;
+    height: 100%;
     width: 100%;
 }
+
 #tabs div > section {
-    border-top: thin solid rgb(224, 224, 224);
+    border-top: thin solid white;
     background: white;
     &.cascadeSection {
         background: $projectBackground;
         box-sizing: border-box;
-        width:100%;
-        padding:15px 0;
-        margin:0 auto;
-        ms-overflow-style:none;
-        overflow-y: scroll; 
+        width: 100%;
+        padding: 15px 0;
+        margin: 0 auto;
+        -ms-overflow-style: none;
+        overflow-y: scroll;
     }
 }
+
 #tabs section h1,
 .messagesList h1,
 .usersList h1,
 .surveyTranslation > h1 {
     display: block;
     margin: 0.5em 0 0.5em 0.5em;
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
     font-size: 1.8em;
     font-weight: 400;
 }
+
 #tabs div > section h3 {
     -moz-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
     -webkit-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
     -o-text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
     text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
 }
+
 #tabs nav.tabNav {
     display: block;
-    padding:1px 0;
+    padding: 1px 0;
     width: 100%;
-    background-color:white;
+    background-color: white;
     position: fixed;
     margin-top: -10px;
     z-index: 9999;
     & + div, & + section {
-        margin-top:40px;
+        margin-top: 40px;
     }
 }
+
 #tabs nav.tabNav ul {
     padding: 0;
 }
+
 #tabs nav.tabNav ul li {
     display: inline;
     float: left;
@@ -1493,13 +1649,16 @@ th.action {
     -moz-background-clip: padding;
     -webkit-background-clip: padding-box;
 }
+
 #tabs nav.tabNav ul li:hover {
     background: rgb(174, 174, 174);
 }
+
 #tabs nav.tabNav ul li.active,
 #tabs nav.tabNav ul li.active:hover {
-    background: rgb(0,0,0);
+    background: rgb(0, 0, 0);
 }
+
 #tabs nav.tabNav ul li a {
     display: block;
     padding: 0.75em 1em;
@@ -1510,8 +1669,9 @@ th.action {
     -webkit-text-shadow: 1px 1px 0 rgb(235, 235, 235);
     -moz-text-shadow: 1px 1px 0 rgb(235, 235, 235);
     text-shadow: 1px 1px 0 rgb(235, 235, 235);
-    font-weight:bold;
+    font-weight: bold;
 }
+
 #tabs nav.tabNav ul li.active a,
 #tabs nav.tabNav ul li.active a:hover {
     color: white;
@@ -1519,12 +1679,14 @@ th.action {
     -webkit-text-shadow: none;
     -moz-text-shadow: none;
 }
+
 #tabs nav.tabNav ul li a:hover {
     color: white;
     text-shadow: none;
     -webkit-text-shadow: none;
     -moz-text-shadow: none;
 }
+
 /* Survey styles
 --------------------------------------------- */
 
@@ -1541,28 +1703,27 @@ th.action {
     width: calc(100% - 32px);
     z-index: 9999;
     &.text_edit {
-        display:none;
+        display: none;
     }
 }
 
-a.text_label
-{
-
-}
-
+a.text_label {}
 
 .leftSidebar a.smallBtn {
     margin: 0 5px 10px 10px;
 }
+
 .leftSidebar nav.surveyGroupNav a.smallBtn:nth-child(2n) {
     margin: 0 0 10px 0;
 }
+
 .leftSidebar input[type="search"] {
     display: block;
     margin: 8px auto 10px auto;
     width: 77%;
 }
-.topBar { 
+
+.topBar {
     input[type="text"] {
         padding: 5px;
         margin: 16px 0 0 10px;
@@ -1570,26 +1731,28 @@ a.text_label
     }
     .addCascade {
         input[type="text"] {
-            width:50%;
-            margin:0 10px 0 0;
-            padding:9px 10px;
-            background:lighten($akvoDarkBlue, 50%)
+            width: 50%;
+            margin: 0 10px 0 0;
+            padding: 9px 10px;
+            background: lighten($akvoDarkBlue, 50%);
         }
+    }
 }
-}
+
 .no-textshadow .leftSidebar h2 {
     color: rgb(125, 125, 125);
 }
+
 nav.menuGroupWrap {
     overflow-y: hidden;
     height: 370px;
     &.topMenuGroupWrap {
-        height:initial;
-        background: rgba(white,0.98);
-        padding:3px 0 2px 0;
+        height: initial;
+        background: rgba(white, 0.98);
+        padding: 3px 0 2px 0;
         ul.menuGroup {
             li {
-                border-bottom:none;
+                border-bottom: none;
             }
         }
     }
@@ -1611,7 +1774,7 @@ nav.menuGroupWrap {
                 display: none;
                 cursor: pointer;
                 top: 7px;
-                right:5px;
+                right: 5px;
             }
             div.trashFolder {
                 position: absolute;
@@ -1622,7 +1785,7 @@ nav.menuGroupWrap {
                 display: none;
                 cursor: pointer;
                 top: 7px;
-                right:30px;
+                right: 30px;
             }
             div.copyFolder {
                 position: absolute;
@@ -1633,7 +1796,7 @@ nav.menuGroupWrap {
                 display: none;
                 cursor: pointer;
                 top: 7px;
-                right:55px;
+                right: 55px;
             }
             &.folderUp {
                 background: rgb(70, 70, 70);
@@ -1644,14 +1807,14 @@ nav.menuGroupWrap {
                     background: rgba(255, 255, 255, 0.05) url(../images/folderUpHover.svg) 2px center no-repeat;
                     background-size: 35px 35px;
                 }
-                a{
-                    color:$anchorLink;
+                a {
+                    color: $anchorLink;
                     background-image: none;
                     padding: 10px 1% 10px 45px;
                     width: calc(99% - 40px);
                     &:hover {
-                        color:$anchorLinkHover;
-                        background-image:none;
+                        color: $anchorLinkHover;
+                        background-image: none;
                     }
                 }
             }
@@ -1662,10 +1825,10 @@ nav.menuGroupWrap {
                 background-size: 20px 20px;
                 a, a:hover {
                     background: url(../images/carretFolderSelected.svg) right center no-repeat;
-                    color:$anchorLinkHover;
+                    color: $anchorLinkHover;
                     background-size: 15px 25px;
-                    }
                 }
+            }
             a {
                 display: block;
                 text-transform: uppercase;
@@ -1690,7 +1853,7 @@ nav.menuGroupWrap {
                     font-size: 0.8em;
                     line-height: 21px;
                     color: white;
-                    background-color:$monitorGreen;
+                    background-color: $monitorGreen;
                     display: inline-block;
                     border-radius: 10px;
                     width: 16px;
@@ -1701,12 +1864,13 @@ nav.menuGroupWrap {
         }
     }
 }
+
 .scrollWrap {
     display: block;
     margin: 4px auto;
     width: 100%;
     height: 15px;
-    a{
+    a {
         display: block;
         margin: 0 auto 0 auto;
         width: 50%;
@@ -1737,39 +1901,40 @@ a.FadeIt {
 }
 
 .projectDetail {
-    li{
-        margin:10px auto;
-        h2{
+    li {
+        margin: 10px auto;
+        h2 {
             font-size: 1.5em;
             display: block;
             overflow: inherit;
             text-overflow: inherit;
             white-space: inherit;
             margin: 10px 0 0 5px;
-            color:$anchorLink;
+            color: $anchorLink;
         }
     }
 }
-    .noFormsContainer {
-        background:white;
-        padding:2em 0;
+
+.noFormsContainer {
+    background: white;
+    padding: 2em 0;
     li.formList {
-        padding:10px 0;
+        padding: 10px 0;
         &.populated {
-            background: rgba(white,0);
+            background: rgba(white, 0);
         }
         h4 {
-            margin:5px 0 10px 5px;
-            color:rgba($anchorLink, 0.5);
+            margin: 5px 0 10px 5px;
+            color: rgba($anchorLink, 0.5);
         }
         .noForms {
-                padding-top:45px;
-                background: url(../images/IconFormsBlack.png) center top no-repeat;
-                text-align: center;
-                text-transform: uppercase;
-                font-size: 1.1em;
-                width: 90%;
-                margin:0 auto 20px auto;
+            padding-top: 45px;
+            background: url(../images/IconFormsBlack.png) center top no-repeat;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 1.1em;
+            width: 90%;
+            margin: 0 auto 20px auto;
         }
         ul.menuForm {
             li {
@@ -1786,38 +1951,40 @@ a.FadeIt {
                     background-size: 20px 17px;
                     a, a:hover {
                         background: url(../images/carretFolderSelectedWhite.svg) right center no-repeat;
-                        color:white;
+                        color: white;
                         background-size: 15px 25px;
-                        }
                     }
+                }
+            }
         }
     }
-    }
 }
+
 /* Survey Top Bar
 --------------------------------------------- */
 
 section.topBar {
-    position:fixed;
-    margin:-10px auto 0 auto;
+    position: fixed;
+    margin: -10px auto 0 auto;
     z-index: 9998;
     width: 100%;
     background: white;
     #tabs & {
-        margin-top:0px;
-        padding-top:10px;
-        }
-    &.activeMenu{
-        border:1px solid rgb(212,212,212);
+        margin-top: 0px;
+        padding-top: 10px;
+    }
+    &.activeMenu {
+        border: 1px solid rgb(212, 212, 212);
     }
 }
 
 section.topBar ~ * {
+    margin-top: 90px;
+    #tabs & {
         margin-top: 90px;
-        #tabs & {
-            margin-top:90px;
-        }
     }
+}
+
 .surveyLandingText {
     display: inherit;
     font-size: 2em;
@@ -1827,6 +1994,7 @@ section.topBar ~ * {
     padding: 1em 3em;
     text-shadow: 0px 2px 1px rgba(247, 242, 229, 0.5);
 }
+
 section.topBar h2 {
     display: inline-table;
     max-width: 45%;
@@ -1834,28 +2002,32 @@ section.topBar h2 {
     @include noWrapTxt;
     margin: 5px 0 0 15px;
 }
+
 section.topBar > a {
     position: relative;
     display: inline-block;
 }
+
 section.topBar > a:hover {
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
 }
+
 section.topBar > a.smallBtn {
     margin: 0 10px;
     color: rgb(235, 235, 235);
 }
+
 section.topBar {
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
     display: -webkit-flex;
-    display:flex;
-    -webkit-align-items:center;
-    align-items:center;
-    padding:0 0 10px 0;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    padding: 0 0 10px 0;
     nav {
-        width:49.5%;
+        width: 49.5%;
         &:first-child {
             margin-left: 0.5%;
             -webkit-justify-content: flex-start;
@@ -1866,7 +2038,7 @@ section.topBar {
             -webkit-justify-content: flex-end;
             justify-content: flex-end;
         }
-        }
+    }
     nav.breadCrumb {
         ul li {
             display: inline-block;
@@ -1888,7 +2060,6 @@ section.topBar {
             border-color: transparent transparent transparent #fff;
             z-index: 0;
         }
-
         ul li:first-child:before {
             border-color: transparent;
         }
@@ -1913,167 +2084,171 @@ section.topBar {
                 background: $anchorLinkHover;
             }
             &.homeRoot {
-                border-radius:3px 0 0 3px;
-                width:40px;
+                border-radius: 3px 0 0 3px;
+                width: 40px;
                 background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                text-indent:-9999px;
-                z-index:9999;
+                text-indent: -9999px;
+                z-index: 9999;
                 margin-left: 0;
                 &:hover {
-                background: url(../images/breadCrumb-Root.png) center center no-repeat $anchorLinkHover;
-            }
+                    background: url(../images/breadCrumb-Root.png) center center no-repeat $anchorLinkHover;
+                }
             }
         }
         ul li a:hover:after {
             border-color: transparent transparent transparent $anchorLinkHover;
         }
         ul li:last-of-type {
-            opacity:0.8;
+            opacity: 0.8;
             a {
-                border-radius:0 3px 3px 0;
-                padding-right:15px;
+                border-radius: 0 3px 3px 0;
+                padding-right: 15px;
                 background: $anchorLinkHover;
                 &.homeRoot {
-                    padding-right:0;
-                    border-radius:3px 0 0 3px;
-                    width:40px;
+                    padding-right: 0;
+                    border-radius: 3px 0 0 3px;
+                    width: 40px;
                     background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
-                    text-indent:-9999px;
-                    z-index:9999;
+                    text-indent: -9999px;
+                    z-index: 9999;
                     margin-left: 0;
-                &:after {
-                    content: " ";
-                    height: 0;
-                    width: 0;
-                    position: absolute;
-                    right: -17px;
-                    border-style: solid;
-                    border-width: 17px 0 17px 17px;
-                    border-color: transparent transparent transparent $akvoLightBlue;
-                    z-index: 10;
-        }
-                &:hover {
-                    background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                    &:after {
+                        content: " ";
+                        height: 0;
+                        width: 0;
+                        position: absolute;
+                        right: -17px;
+                        border-style: solid;
+                        border-width: 17px 0 17px 17px;
+                        border-color: transparent transparent transparent $akvoLightBlue;
+                        z-index: 10;
+                    }
+                    &:hover {
+                        background: url(../images/breadCrumb-Root.png) center center no-repeat $akvoLightBlue;
+                    }
                 }
-            }
                 &:after {
-                    border-width:0;
-                &:hover {
-                    background: $akvoLightBlue;
+                    border-width: 0;
+                    &:hover {
+                        background: $akvoLightBlue;
                     }
                 }
             }
         }
-}
-
-nav.menuTopbar {
-    margin:0 auto 0;
-    padding:10px 0;
+    }
+    nav.menuTopbar {
+        margin: 0 auto 0;
+        padding: 10px 0;
         h3 {
             text-transform: uppercase;
-            font-size:1em;
-            color:rgb(198,198,198);
-            margin:0;
-            padding:0;
+            font-size: 1em;
+            color: rgb(198, 198, 198);
+            margin: 0;
+            padding: 0;
             &.actionTitleEdit {
                 padding: 5px 5px 5px 15px;
-                background:url(../images/IconEditGreyLight.svg) left center no-repeat;
+                background: url(../images/IconEditGreyLight.svg) left center no-repeat;
                 background-size: 15px;
             }
         }
         ul {
-           display: -webkit-flex;
-           display: flex;
-           -webkit-flex-direction: row;
-           flex-direction: row;
-           -webkit-justify-content: flex-end;
-           justify-content: flex-end;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: row;
+            flex-direction: row;
+            -webkit-justify-content: flex-end;
+            justify-content: flex-end;
             -webkit-align-items: center;
             align-items: center;
             text-align: right;
             li {
-                margin-left:10px;
+                margin-left: 10px;
                 &:first-child {
-                    margin-left:0px;
+                    margin-left: 0px;
                 }
                 p {
                     color: $midGrey;
-                .itemMoved {
-                    color:$akvoDarkBlue;
-                    font-weight:bold;
-                    margin-right: 5px;
-                    margin-left: 5px;
+                    .itemMoved {
+                        color: $akvoDarkBlue;
+                        font-weight: bold;
+                        margin-right: 5px;
+                        margin-left: 5px;
                     }
                 }
             }
         }
         &.actionHighLighted {
-            border:1px solid rgb(241,242,242);
+            border: 1px solid rgb(241, 242, 242);
         }
     }
 }
-
 
 #surveyCreator nav.menuTopbar ul {
     background: none;
 }
 
-
 ul.folderMenu {
     display: block;
-    margin:0px auto 45px;
+    margin: 0px auto 45px;
     li {
-        width:48%;
-        padding:10px 1%;
-        display:inline;
+        width: 48%;
+        padding: 10px 1%;
+        display: inline;
         float: left;
-        background:$blackOpac;
+        background: $blackOpac;
     }
 }
 
 ul.cancelMenu {
-        display: none;
-        margin:10px auto 0;
-        li {
-            width:98%;
-            padding:10px 1%;
-            display:inline;
-            float: right;
-            background:$blackOpac;
-        }
+    display: none;
+    margin: 10px auto 0;
+    li {
+        width: 98%;
+        padding: 10px 1%;
+        display: inline;
+        float: right;
+        background: $blackOpac;
     }
+}
+
 a.addGroup,
-a.addSurvey,.moveAction,
+a.addSurvey, .moveAction,
 a.stepBack,
 a.editGroupName, a.addMenuAction,
-a.makeMonitorGroup,a.manageNotifications,
+a.makeMonitorGroup, a.manageNotifications,
 a.deleteGroup, a.addFolder, a.editFolder, a.cancelFolder, a.saveMenuAction {
     display: block;
     padding: 1px 0 7px 21px;
     height: 10px;
     text-transform: uppercase;
     &:hover {
-         color:$anchorLinkHover;
+        color: $anchorLinkHover;
     }
 }
+
 a.addGroup {
     margin: 0 0 5px 5px;
     padding: 1px 0 7px 19px;
 }
+
 a.cancelFolder {
-    color:$akvoRed;
+    color: $akvoRed;
     background: url(../images/IconCancelFolder.svg) left center no-repeat;
 }
+
 a.cancelFolder:hover {
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
     background: url(../images/IconCancelFolderHover.svg) left center no-repeat;
 }
+
 a.addGroup, a.addFolder {
     background: url(../images/IconPlus.svg) left center no-repeat;
 }
+
 a.addGroup:hover, a.addFolder:hover {
     background: url(../images/IconPlusOrange.svg) left center no-repeat;
 }
+
 a.addSurvey {
     color: white;
     background: rgba($anchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
@@ -2084,12 +2259,14 @@ a.addSurvey {
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
 }
+
 a.addSurvey:hover {
     color: white;
     background: rgba($anchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
     -webkit-background-size: 25px 45px;
     background-size: 25px 45px;
 }
+
 a.moveAction {
     color: white;
     background: rgba($anchorLink, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat;
@@ -2097,113 +2274,132 @@ a.moveAction {
     padding: 7px 7px 14px 35px;
     border-radius: 3px;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
-    transition: color 0.2s ease-in, background-color 0.2s ease-in;}
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;
+}
+
 a.moveAction:hover {
     color: white;
     background: rgba($anchorLinkHover, 1) url(../images/IconMoveWhite.svg) 2px center no-repeat !important;
     background-size: 35px 35px !important;
 }
+
 a.stepBack {
     background: transparent url(../images/IconBack.svg) left center no-repeat;
 }
+
 a.stepBack:hover {
     background: url(../images/IconBackOrange.svg) left center no-repeat;
 }
+
 a.makeMonitorGroup[data-ember-action] {
     background: transparent url(../images/IconCopy.svg) left center no-repeat;
 }
+
 a.makeMonitorGroup[data-ember-action]:hover {
     background: transparent url(../images/IconCopyOrange.svg) left center no-repeat;
 }
+
 a.makeMonitorGroup {
     background: transparent url(../images/IconMonitorEnable.svg) left center no-repeat;
 }
+
 a.makeMonitorGroup:hover {
     background: transparent url(../images/IconMonitorEnable.svg) left center no-repeat;
 }
+
 a.editGroupName, a.editFolder {
     background: transparent url(../images/IconEdit.svg) left center no-repeat;
 }
+
 a.editGroupName:hover, a.editFolder:hover {
     background: url(../images/IconEditOrange.svg) left center no-repeat;
 }
+
 a.deleteGroup {
     background: transparent url(../images/IconDelete.svg) left center no-repeat;
     &:hover {
         background: url(../images/IconDeleteOrange.svg) left center no-repeat;
     }
 }
+
 a.addMenuAction {
     background: url(../images/IconPlus.svg) left center no-repeat;
     &.aBtn {
-        background:$anchorLink url(../images/IconPlusWhite.svg) left center no-repeat;
-        background-size:35px auto;
-        color:white;
+        background: $anchorLink url(../images/IconPlusWhite.svg) left center no-repeat;
+        background-size: 35px auto;
+        color: white;
         padding: 5px 5px 11px 31px;
         height: 10px;
         @include border-radius(5px);
         &:hover {
-            background:$anchorLinkHover url(../images/IconPlusWhite.svg) left center no-repeat;
-            background-size:35px auto;
+            background: $anchorLinkHover url(../images/IconPlusWhite.svg) left center no-repeat;
+            background-size: 35px auto;
         }
     }
     &:hover {
         background: url(../images/IconPlusOrange.svg) left center no-repeat;
     }
 }
+
 a.saveMenuAction {
     &.aBtn {
-        background:$anchorLink;
-        background-size:35px auto;
-        color:white;
+        background: $anchorLink;
+        background-size: 35px auto;
+        color: white;
         padding: 5px 15px 12px;
         @include border-radius(5px);
         &:hover {
-            background:$anchorLinkHover;
-            background-size:35px auto;
+            background: $anchorLinkHover;
+            background-size: 35px auto;
         }
     }
     &:hover {
         background: url(../images/IconPlusOrange.svg) left center no-repeat;
     }
 }
+
 a.redCancel {
-    color:$akvoRed;
-    padding:5px 10px 5px 15px;
-    background:rgba(white,0.5) url(../images/IconCancelFolder.svg) left center no-repeat;
-    background-size:15px;
+    color: $akvoRed;
+    padding: 5px 10px 5px 15px;
+    background: rgba(white, 0.5) url(../images/IconCancelFolder.svg) left center no-repeat;
+    background-size: 15px;
     &:hover {
-        color:rgba($akvoRed, 0.5);
+        color: rgba($akvoRed, 0.5);
     }
 }
+
 #assignSurveys a.stepBack {
     position: absolute;
-    top: 1.5em;
-    right: 1em;
+    top: 40px;
+    right: 20px;
 }
+
 /* Survey Asset
 --------------------------------------------- */
 
 div.monitorSwitch {
     margin: 0 0 30px 20px;
 }
+
 ul.surveyBatch {
     position: relative;
     width: 100%;
     margin-top: 30px;
 }
+
 ul.actionProcess {
     .aFolder {
-         nav {
-            opacity:0.2;
+        nav {
+            opacity: 0.2;
         }
     }
     .aSurvey {
         nav {
-            opacity:0.2;
+            opacity: 0.2;
         }
     }
 }
+
 li.aSurvey {
     position: relative;
     display: block;
@@ -2221,97 +2417,102 @@ li.aSurvey {
     -webkit-transition: all 0.4s linear;
     transition: all 0.4s linear;
     &:hover {
-        cursor:default;
+        cursor: default;
     }
-     h2 {
+    h2 {
         display: inline-block;
         width: 98%;
-        color:$anchorLink;
+        color: $anchorLink;
         &:hover {
-            color:$anchorLinkHover;
+            color: $anchorLinkHover;
         }
-     }
+    }
 }
 
 li.aFolder, li.aSurvey {
     &.highLighted {
-        background:#E7EEE0;
-        border:1px solid rgba(141,198,63,0.5);
-        h2 {color:rgba(141,198,63,1);}
+        background: #E7EEE0;
+        border: 1px solid rgba(141, 198, 63, 0.5);
+        h2 {
+            color: rgba(141, 198, 63, 1);
+        }
         &:hover {
-            background:#E7EEE0;
-            border:1px solid rgba(141,198,63,0.5);
-            h2 {color:rgba(141,198,63,1);}
-
+            background: #E7EEE0;
+            border: 1px solid rgba(141, 198, 63, 0.5);
+            h2 {
+                color: rgba(141, 198, 63, 1);
+            }
         }
     }
 }
+
 li.aFolder {
     @extend li.aSurvey;
-   display: -webkit-flex;
-   display: flex;
-   -webkit-flex-direction: row;
-   flex-direction: row;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
     box-sizing: border-box;
     -webkit-align-items: center;
     align-items: center;
     min-height: 70px;
     padding: 0.25em 0 0.25em 15px;
-    background-color: rgb(232,232,232);
-    background-image:  url(../images/carret.svg);
+    background-color: rgb(232, 232, 232);
+    background-image: url(../images/carret.svg);
     background-position: right center;
     background-repeat: no-repeat;
-    border:1px solid rgba(200,200,200,0);
+    border: 1px solid rgba(200, 200, 200, 0);
     input {
-        width:50%;
+        width: 50%;
         font-family: $bodyFont;
-        font-size:1.8em;
+        font-size: 1.8em;
     }
     a.editFolderName {
-        display:inline-block;
-        width:40px;
-        height:40px;
+        display: inline-block;
+        width: 40px;
+        height: 40px;
         background: url(../images/IconEditGreyLight.svg) center center no-repeat;
-        background-size:30px 30px;
+        background-size: 30px 30px;
         text-indent: -9999px;
-        margin-right:15px;
-        opacity:0.5;
+        margin-right: 15px;
+        opacity: 0.5;
         &:hover {
-           background: url(../images/IconEditOrange.svg) center center no-repeat;
-           background-size:30px 30px;
-           opacity:1;
+            background: url(../images/IconEditOrange.svg) center center no-repeat;
+            background-size: 30px 30px;
+            opacity: 1;
         }
     }
     a.editingFolderName {
         @extend .editFolderName;
         background: url(../images/IconSave.svg) center center no-repeat;
-        background-size:70px 70px;
+        background-size: 70px 70px;
         &:hover {
-           background: url(../images/IconSaveOrange.svg) center center no-repeat;
-           background-size:70px 70px;
-           opacity:1;
+            background: url(../images/IconSaveOrange.svg) center center no-repeat;
+            background-size: 70px 70px;
+            opacity: 1;
         }
     }
-    h2{
-        color:rgb(183,183,183);
+    h2 {
+        color: rgb(183, 183, 183);
         background: url(../images/folderIcn.svg) right center no-repeat;
-        display:inline-block;
+        display: inline-block;
         width: initial;
-        padding-right:45px;
+        padding-right: 45px;
     }
     &:hover {
-        background-color: rgb(222,222,222);
-        border:1px solid rgba(200,200,200,1);
+        background-color: rgb(222, 222, 222);
+        border: 1px solid rgba(200, 200, 200, 1);
         h2 {
-            color:$anchorLinkHover;
+            color: $anchorLinkHover;
         }
     }
     &.folderEmpty {
-        h2{
+        h2 {
             background: url(../images/folderIcnEmpty.svg) right center no-repeat;
         }
     }
 }
+
 ul.surveyInfo {
     position: relative;
     display: inline;
@@ -2320,6 +2521,7 @@ ul.surveyInfo {
     width: calc(100% - 50% - 30px);
     margin-top: 20px;
 }
+
 ul.surveyInfo li {
     position: relative;
     float: left;
@@ -2327,32 +2529,39 @@ ul.surveyInfo li {
     margin: 0 3px 0 0;
     width: calc(25% - 3px);
 }
+
 ul.surveyInfo li span {
     display: block;
     color: rgb(128, 130, 133);
     text-transform: uppercase;
     @include noWrapTxt;
 }
+
 ul.surveyInfo li time {
     font-weight: bold;
     color: black;
 }
+
 ul.surveyInfo li p {
     display: block;
     font-weight: bold;
 }
+
 ul.surveyInfo li.surveyLanguage p {
     color: rgb(107, 174, 61);
 }
+
 ul.surveyInfo li.surveyType p {
     color: rgb(227, 27, 35);
 }
+
 ul.surveyInfo li.responseNumber {
-    display:none;
+    display: none;
     p {
-    color: rgb(225, 237, 195);
+        color: rgb(225, 237, 195);
+    }
 }
-}
+
 .aSurvey nav {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -2363,11 +2572,14 @@ ul.surveyInfo li.responseNumber {
     width: calc(30%);
     padding-right: 30px;
 }
+
 .aSurvey.aFolder {
-    .deleteSurvey {display:none;}
+    .deleteSurvey {
+        display: none;
+    }
     &.folderEmpty {
         .deleteSurvey {
-            display:inline;
+            display: inline;
         }
     }
     nav {
@@ -2375,7 +2587,7 @@ ul.surveyInfo li.responseNumber {
         -moz-box-sizing: border-box;
         box-sizing: border-box;
         position: absolute;
-        right:0;
+        right: 0;
         padding-right: 30px;
     }
 }
@@ -2387,6 +2599,7 @@ ul.surveyInfo li.responseNumber {
     display: inline-flex;
     float: right;
 }
+
 .aSurvey nav ul li {
     display: inline;
     float: left;
@@ -2396,68 +2609,83 @@ ul.surveyInfo li.responseNumber {
     -webkit-transition: background 0.2s ease-in;
     transition: background 0.2s ease-in;
 }
+
 .aSurvey nav ul li:hover {
     background: rgba(205, 205, 205, 0.3);
 }
+
 .aSurvey nav ul li a {
     display: block;
     width: 60px;
     height: 20px;
     padding-top: 40px;
     text-align: center;
-    text-indent: -9999px
+    text-indent: -9999px;
 }
+
 .aSurvey nav ul li a:hover {
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
 }
+
 .aSurvey nav ul li.editSurvey a {
     background: url(../images/IconEdit.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
+
 .aSurvey nav ul li.previewSurvey a {
     background: url(../images/IconPreview_big.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
+
 .aSurvey nav ul li.deleteSurvey a {
     background: url(../images/IconDelete.svg) center 11px no-repeat;
-    background-size:65px 40px;
+    background-size: 65px 40px;
 }
+
 .aSurvey nav ul li.moveSurvey a {
     background: url(../images/IconMove.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
+
 .aSurvey nav ul li.copySurvey a {
     background: url(../images/IconCopy.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
+
 .aSurvey nav ul li.editSurvey a:hover {
     background: url(../images/IconEditOrange.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
+
 .aSurvey nav ul li.previewSurvey a:hover {
     background: url(../images/IconPreviewOrange_big.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
+
 .aSurvey nav ul li.deleteSurvey a:hover {
     background: url(../images/IconDeleteOrange.svg) center 11px no-repeat;
-    background-size:65px 40px;
+    background-size: 65px 40px;
 }
+
 .aSurvey nav ul li.moveSurvey a:hover {
     background: url(../images/IconMoveOrange.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
+
 .aSurvey nav ul li.copySurvey a:hover {
     background: url(../images/IconCopyOrange.svg) center 14px no-repeat;
     background-size: 35px 35px;
 }
+
 /*----------------------------------------------------------------------------------------------------------------
-										 Survey Creation & Editing
+                                         Survey Creation & Editing
 ----------------------------------------------------------------------------------------------------------------*/
 
 .leftSidebar {
     background: $darkGrey;
-    padding:0 0 10px 0;
+    padding: 0 0 10px 0;
 }
+
 .leftSidebar h2 {
     display: block;
     @include noWrapTxt;
@@ -2468,13 +2696,16 @@ ul.surveyInfo li.responseNumber {
 .leftSidebar.surveyDetailSideBar h2 {
     margin-bottom: 10px;
 }
+
 .leftSidebar form {
     position: relative;
 }
+
 .leftSidebar label {
     margin-top: 15px;
     margin-bottom: 15px;
 }
+
 .leftSidebar label,
 .leftSidebar input,
 .leftSidebar textarea,
@@ -2487,20 +2718,25 @@ ul.surveyInfo li.responseNumber {
     margin-right: auto;
     margin-left: auto;
 }
+
 .leftSidebar input[type=checkbox] {
     display: inline;
     width: 13px;
 }
+
 .leftSidebar label > span {
     color: rgb(225, 237, 195);
     margin: 3px 0 3px 5px;
 }
+
 .leftSidebar textarea {
     height: 35px;
 }
+
 .leftSidebar form select option {
     background: white;
 }
+
 .leftSidebar dl {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -2511,6 +2747,7 @@ ul.surveyInfo li.responseNumber {
     width: 96%;
     background: rgb(33, 33, 33);
 }
+
 .leftSidebar dt {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -2523,6 +2760,7 @@ ul.surveyInfo li.responseNumber {
     width: 45%;
     color: rgb(204, 204, 204);
 }
+
 .leftSidebar dd {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -2536,173 +2774,177 @@ ul.surveyInfo li.responseNumber {
     color: white;
     text-align: left;
 }
+
 .leftSidebar .helpIcon {
     position: absolute;
     right: 3px;
     margin: 0;
 }
-label[for="surveyLanguage"]  a.helpIcon {
-    right:10px;
+
+label[for="surveyLanguage"] a.helpIcon {
+    right: 10px;
 }
 
 .aformContainer {
     nav.newSurveyNav {
         display: table;
-        margin:0 auto 20px auto;
+        margin: 0 auto 20px auto;
         padding: 0;
-        right:0;
+        right: 0;
         &.manageStuff {
-            margin-top:10px;
+            margin-top: 10px;
         }
         ul {
-      display: -webkit-box;
-      display: -moz-box;
-      display: -ms-flexbox;
-      display: -webkit-flex;
-      display:flex;
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
             margin: 0 auto;
             padding: 0;
             width: 100%;
         }
         ul li {
             padding: 0;
-            margin-right:2px;
+            margin-right: 2px;
         }
         ul li a {
-            font-size:1.2em;
+            font-size: 1.2em;
             text-transform: uppercase;
             display: block;
-            padding:11px 15px 20px 35px;
+            padding: 11px 15px 20px 35px;
             height: 9px;
-            border-radius:3px;
+            border-radius: 3px;
             overflow: hidden;
             &.saveNewSurvey {
-                background:rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left top no-repeat;
+                background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
             &.previewNewSurvey {
-                background:rgba(32, 32, 36, 0.5)  url(../images/IconPreview.svg) left top no-repeat;
+                background: rgba(32, 32, 36, 0.5) url(../images/IconPreview.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
             &.publishNewSurvey {
-                background:rgba(32, 32, 36, 0.5)  url(../images/IconPublish.svg) left top no-repeat;
+                background: rgba(32, 32, 36, 0.5) url(../images/IconPublish.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
             &.deleteSurvey {
-                background:rgba(32, 32, 36, 0.5)  url(../images/IconDelete.svg) left top no-repeat;
+                background: rgba(32, 32, 36, 0.5) url(../images/IconDelete.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
             &.saveNewSurvey:hover {
-                background:rgba(32, 32, 36, 1)   url(../images/IconSaveOrange.svg) left top no-repeat;
+                background: rgba(32, 32, 36, 1) url(../images/IconSaveOrange.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
             &.previewNewSurvey:hover {
-                background:rgba(32, 32, 36, 1)   url(../images/IconPreviewOrange.svg) left top no-repeat;
+                background: rgba(32, 32, 36, 1) url(../images/IconPreviewOrange.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
             &.publishNewSurvey:hover {
-                background:rgba(32, 32, 36, 1)   url(../images/IconPublishOrange.svg) left top no-repeat;
+                background: rgba(32, 32, 36, 1) url(../images/IconPublishOrange.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
             &.deleteSurvey:hover {
-                background:rgba(32, 32, 36, 1)   url(../images/IconDeleteOrange.svg) left top no-repeat;
+                background: rgba(32, 32, 36, 1) url(../images/IconDeleteOrange.svg) left top no-repeat;
                 background-size: 40px 40px;
             }
-
             &.manageNotifications {
-                    background:rgba(32, 32, 36, 0.5)  url(../images/IconNotif.svg) left top no-repeat;
-                    background-size: 40px 40px;
-                }
+                background: rgba(32, 32, 36, 0.5) url(../images/IconNotif.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
             &.manageNotifications:hover {
-                    background:rgba(32, 32, 36, 1)  url(../images/IconNotifOrange.svg) left top no-repeat;
-                    background-size: 40px 40px;
-                }
+                background: rgba(32, 32, 36, 1) url(../images/IconNotifOrange.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
             &.manageTranslations {
-                    background:rgba(32, 32, 36, 0.5)  url(../images/IconTranslate.svg) left top no-repeat;
-                    background-size: 40px 40px;
-                }
+                background: rgba(32, 32, 36, 0.5) url(../images/IconTranslate.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
             &.manageTranslations:hover {
-                    background:rgba(32, 32, 36, 1)  url(../images/IconTranslateOrange.svg) left top no-repeat;
-                    background-size: 40px 40px;
-                }
+                background: rgba(32, 32, 36, 1) url(../images/IconTranslateOrange.svg) left top no-repeat;
+                background-size: 40px 40px;
+            }
         }
     }
 }
+
 a.publishProjectBtn {
-        text-transform:uppercase;
-        background:$anchorLink url(../images/IconPublishWhite.svg) left center no-repeat;
-        background-size: 55px 55px;
-        padding: 10px 15px 10px 45px;
-        color:white;
-        border-radius:3px;
+    text-transform: uppercase;
+    background: $anchorLink url(../images/IconPublishWhite.svg) left center no-repeat;
+    background-size: 55px 55px;
+    padding: 10px 15px 10px 45px;
+    color: white;
+    border-radius: 3px;
     &.noChanges {
-        background:rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
+        background: rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         padding: 10px 15px 10px 45px;
-        color:white;
+        color: white;
         cursor: text;
         &:hover {
-            background:rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
+            background: rgba(32, 32, 36, 0.1) url(../images/IconPublishWhite.svg) left center no-repeat;
             background-size: 55px 55px;
         }
     }
     &:hover {
-        background:$anchorLinkHover url(../images/IconPublishWhite.svg) left center no-repeat;
+        background: $anchorLinkHover url(../images/IconPublishWhite.svg) left center no-repeat;
         background-size: 55px 55px;
-        color:white;
-    }
-}
-a.saveProject {
-        text-transform:uppercase;
-        background:$anchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
-        background-size: 55px 55px;
-        padding: 10px 15px 10px 45px;
-        color:white;
-        border-radius:3px;
-    &:hover {
-        background:$anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
-        background-size: 55px 55px;
-        color:white;
-    }
-    &.noChanges {
-        background:rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
-        background-size: 55px 55px;
-        padding: 10px 15px 10px 45px;
-        color:white;
-        cursor: text;
-        &:hover {
-            background:rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
-            background-size: 55px 55px;
-          }
+        color: white;
     }
 }
 
 a.saveProject {
-        text-transform:uppercase;
-        background:$anchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
-        background-size: 55px 55px;
-        padding: 10px 15px 10px 45px;
-        color:white;
-        border-radius:3px;
+    text-transform: uppercase;
+    background: $anchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
+    background-size: 55px 55px;
+    padding: 10px 15px 10px 45px;
+    color: white;
+    border-radius: 3px;
     &:hover {
-        background:$anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
+        background: $anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
         background-size: 55px 55px;
-        color:white;
+        color: white;
     }
     &.noChanges {
-        background:rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+        background: rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
         background-size: 55px 55px;
         padding: 10px 15px 10px 45px;
-        color:white;
+        color: white;
         cursor: text;
         &:hover {
-            background:rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+            background: rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
             background-size: 55px 55px;
-          }
+        }
     }
 }
+
+a.saveProject {
+    text-transform: uppercase;
+    background: $anchorLink url(../images/IconSaveWhite.svg) left center no-repeat;
+    background-size: 55px 55px;
+    padding: 10px 15px 10px 45px;
+    color: white;
+    border-radius: 3px;
+    &:hover {
+        background: $anchorLinkHover url(../images/IconSaveWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        color: white;
+    }
+    &.noChanges {
+        background: rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+        background-size: 55px 55px;
+        padding: 10px 15px 10px 45px;
+        color: white;
+        cursor: text;
+        &:hover {
+            background: rgba(32, 32, 36, 0.1) url(../images/IconSaveWhite.svg) left center no-repeat;
+            background-size: 55px 55px;
+        }
+    }
+}
+
 /*****
-		A New Question Form
+        A New Question Form
 ******---------------------------------------------------------------------------------*/
 
 .aQuestionSet .questionSetContent {
@@ -2712,6 +2954,7 @@ a.saveProject {
     padding: 1.5em 0.5% 1em 0.5%;
     width: 99%;
 }
+
 .aQuestionSet .questionSetContent:before {
     display: block;
     margin: 0px auto 5px auto;
@@ -2720,6 +2963,7 @@ a.saveProject {
     border-bottom: 1px solid white;
     content: "";
 }
+
 .aQuestionSet .questionSetContent a.addQuestion {
     position: relative;
     display: block;
@@ -2730,15 +2974,18 @@ a.saveProject {
     background-size: 25px 25px;
     text-transform: uppercase;
 }
+
 .aQuestionSet .questionSetContent a.addQuestion:hover {
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
     background: url(../images/IconInsertOrange.svg) left center no-repeat;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
 }
+
 .aQuestionSet .questionSetContent a.addQuestion:first-child {
     margin: 20px 0 20px 5px;
 }
+
 .aQuestionSet header {
     position: relative;
     display: block;
@@ -2747,38 +2994,48 @@ a.saveProject {
     width: 99%;
     background: rgb(240, 240, 240);
 }
-.aQuestionSet > div > div.ember-view:first-child header {} div.questionGroupBlock {
+
+.aQuestionSet > div > div.ember-view:first-child header {}
+
+div.questionGroupBlock {
     margin: 15px 0;
     border-top: thin solid rgb(230, 230, 230);
     border-bottom: thin solid rgb(230, 230, 230);
     background: rgb(240, 240, 240);
 }
+
 .aQuestionSet > div > div.ember-view > div.questionGroupBlock {
     margin: 15px 0;
     border-top: thin solid rgb(230, 230, 230);
     border-bottom: thin solid rgb(230, 230, 230);
     background: rgb(240, 240, 240);
 }
+
 .aQuestionSet > div > div.ember-view:first-child {
     margin: 0 0 15px 0;
 }
+
 span.qtnGroupHead {
     display: block;
     margin: 0.75em 0 0.25em 0;
     width: 100%;
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
     font-size: 1.2em;
 }
+
 .qtnGroupTitle {
     margin: 3px 0 0.5em;
 }
+
 .aQuestionSet header h1.qtnGroupTitle {
     display: inline-block;
     @include noWrapTxt;
 }
+
 .aQuestionSet header h1.qtnGroupTitle a {
     color: rgb(38, 8, 89);
 }
+
 .aQuestionSet header h1 + a.editSetInfo {
     position: relative;
     display: inline-block;
@@ -2786,6 +3043,7 @@ span.qtnGroupHead {
     padding: 0.75em 0.5em 0.25em 17px;
     background: url(../images/editTinyIcon.png) left center no-repeat;
 }
+
 .aQuestionSet header input {
     margin: 5px 0;
     width: 25%;
@@ -2793,9 +3051,11 @@ span.qtnGroupHead {
     border-radius: 3px;
     -o-border-radius: 3px;
 }
+
 .aQuestionSet header input + a.smallBtn {
     margin: 0 5px 0 0;
 }
+
 .aQuestionSet footer {
     position: relative;
     display: block;
@@ -2804,6 +3064,7 @@ span.qtnGroupHead {
     width: 98%;
     background: rgb(179, 179, 179);
 }
+
 .aQuestionSet footer a.addSet {
     position: relative;
     display: block;
@@ -2816,17 +3077,20 @@ span.qtnGroupHead {
     text-transform: uppercase;
     @include noWrapTxt;
 }
+
 .aQuestionSet footer a.addSet:hover {
     background: rgb(214, 214, 214) url(../images/addSet.png) left center no-repeat;
     color: rgb(227, 27, 35);
 }
+
 nav.groupActionMenu {
     display: block;
     margin: 5px auto;
     padding: 1.5em 0;
     width: 100%;
-    background: rgb(255, 251, 248);
+    background: rgba($akvoOrange, 0.1);
 }
+
 nav.groupActionMenu ul {
     position: relative;
     display: block;
@@ -2834,16 +3098,19 @@ nav.groupActionMenu ul {
     width: 30%;
     text-align: center;
 }
+
 nav.moveMenu ul li,
 nav.copyMenu ul li {
     display: inline;
     margin: 0 10px 0 0;
     text-align: center;
 }
+
 nav.groupActionMenu.insertMenu ul {
     margin: 0 0 0 1%;
     text-align: left;
 }
+
 nav.groupActionMenu.insertMenu a {
     display: inline-block;
     padding: 1px 5px 9px 19px;
@@ -2851,9 +3118,11 @@ nav.groupActionMenu.insertMenu a {
     background: transparent url(../images/IconPlus.svg) left top no-repeat;
     text-transform: uppercase;
 }
+
 nav.groupActionMenu.insertMenu a:hover {
     background: url(../images/IconPlusOrange.svg) left top no-repeat;
 }
+
 nav.questionActionMenu {
     display: block;
     margin: 10px auto;
@@ -2861,6 +3130,7 @@ nav.questionActionMenu {
     width: 100%;
     background: rgb(211, 220, 222);
 }
+
 nav.questionActionMenu ul {
     position: relative;
     display: block;
@@ -2868,28 +3138,34 @@ nav.questionActionMenu ul {
     width: 26%;
     text-align: center;
 }
+
 nav.moveQMenu ul li,
 nav.copyQMenu ul li {
     display: inline;
     margin: 0 10px 0 0;
     text-align: center;
 }
+
 nav.questionActionMenu a.smallBtn {
     background: rgb(39, 94, 110);
     color: white;
 }
+
 nav.questionActionMenu a.smallBtn:hover {
     background: $darkGrey;
     color: white;
 }
+
 nav.questionActionMenu a {
     color: rgb(39, 94, 110);
 }
+
 nav.questionActionMenu a:hover {
     color: $darkGrey;
 }
+
 /*---------------------------------------------------------------------------------
-								A New Question Form
+                                A New Question Form
 ---------------------------------------------------------------------------------*/
 
 .aQuestionSet .questionSetContent div.innerContent {
@@ -2902,70 +3178,85 @@ nav.questionActionMenu a:hover {
     background: white;
     -o-border-radius: 0 0 5px 0;
 }
+
 .aQuestionSet header nav.qtnGroupMenu {
     position: absolute;
     top: 0px;
     right: 10px;
 }
+
 .aQuestionSet header nav.qtnGroupMenu ul {
     margin: 0;
     padding: 0;
     width: 100%;
 }
+
 .aQuestionSet header nav.qtnGroupMenu ul li {
     display: inline;
     float: left;
     margin: 0 30px 0 0;
     text-align: right;
 }
+
 .aQuestionSet header nav.qtnGroupMenu ul li a {
     display: block;
     text-transform: uppercase;
 }
+
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup {
     background: url(../images/IconShow.svg) left center no-repeat;
     text-align: left;
     padding-left: 17px;
 }
+
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup:hover {
     background: url(../images/IconShowHover.svg) left center no-repeat;
     text-align: left;
     padding-left: 17px;
 }
+
 .aQuestionSet header nav.qtnGroupMenu ul li a.showQuestionGroup.shown {
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
     background: url(../images/IconShowOrange.svg) left center no-repeat;
     padding-left: 17px;
 }
+
 .aQuestionSet header nav.qtnGroupMenu ul li:last-child {
     margin: 0;
 }
+
 .aQuestionSet header nav.qtnGroupMenu ul li a:hover {
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
 }
+
 .menuCentre {
     position: relative;
     display: inline-block;
     margin: 5px auto 10px auto;
     width: 100%;
 }
+
 .menuCentre ul {
     margin: 0 auto;
     width: 40%;
     text-align: center;
 }
+
 .menuCentre ul li {
     display: inline;
     width: 20%;
     text-align: center;
 }
+
 .menuCentre ul li a {
     display: inline;
     padding: 6px 10%;
 }
+
 .menuCentre ul li a.smallBtn {
     margin: 0 5px 0 0;
 }
+
 .innerContent nav.smallMenu {
     position: absolute;
     top: 1px;
@@ -2973,12 +3264,14 @@ nav.questionActionMenu a:hover {
     margin: 0;
     padding: 0.5em 0.1em 0.5em 0.5em;
 }
+
 .innerContent nav {
     display: block;
     margin: 0 auto;
     padding: 0.5em 0;
     background: transparent;
 }
+
 .innerContent nav ul {
     position: relative;
     display: block;
@@ -2986,18 +3279,22 @@ nav.questionActionMenu a:hover {
     width: 100%;
     text-align: center;
 }
+
 .innerContent nav ul li {
     display: inline;
 }
+
 .innerContent nav ul li a.standardBtn {
     margin: 2em 1.5em auto auto;
     width: 15%;
 }
+
 .innerContent nav.smallMenu ul {
     margin: 0;
     padding: 0;
     width: 100%;
 }
+
 .innerContent nav.smallMenu ul li {
     float: right;
     background: transparent;
@@ -3005,51 +3302,65 @@ nav.questionActionMenu a:hover {
     -webkit-transition: background 0.4s ease-in;
     transition: background 0.4s ease-in;
 }
+
 .innerContent nav.smallMenu ul li a {
     display: block;
     padding: 0px 10px 6px 18px;
     height: 10px;
 }
+
 .innerContent nav.smallMenu ul li a:hover {
     color: rgba(246, 160, 26, 1);
 }
+
 nav.smallMenu ul li a.editQuestion {
     background: url(../images/IconEdit.svg) left center no-repeat;
 }
+
 nav.smallMenu ul li a.deleteQuestion {
     background: url(../images/IconDelete.svg) left center no-repeat;
 }
+
 nav.smallMenu ul li a.moveQuestion {
     background: url(../images/IconMove.svg) left center no-repeat;
 }
+
 nav.smallMenu ul li a.copyQuestion {
     background: url(../images/IconCopy.svg) left center no-repeat;
 }
+
 nav.smallMenu ul li a.showQuestion {
     background: url(../images/IconShow.svg) left center no-repeat;
 }
+
 nav.smallMenu ul li a.editQuestion:hover {
     background: url(../images/IconEditOrange.svg) left center no-repeat;
 }
+
 nav.smallMenu ul li a.deleteQuestion:hover {
     background: url(../images/IconDeleteOrange.svg) left center no-repeat;
 }
+
 nav.smallMenu ul li a.moveQuestion:hover {
     background: url(../images/IconMoveOrange.svg) left center no-repeat;
 }
+
 nav.smallMenu ul li a.copyQuestion:hover {
     background: url(../images/IconCopyOrange.svg) left center no-repeat;
 }
+
 nav.smallMenu ul li a.showQuestion:hover {
     background: url(../images/IconShowOrange.svg) left center no-repeat;
 }
+
 /*-------------------------------------------------------------------------------------------------------------------------------
-											New Survey Settings
+                                            New Survey Settings
 --------------------------------------------------------------------------------------------------------------------------------*/
 
 .innerContent {
     width: 100%;
 }
+
 .innerContent input[type=checkbox],
 .innerContent input[type=radio] {
     display: inline-block;
@@ -3057,33 +3368,40 @@ nav.smallMenu ul li a.showQuestion:hover {
     padding: 5px 0.5%;
     border-color: rgb(235, 235, 235);
 }
+
 .innerContent input[type=checkbox]:first-child,
 .innerContent input[type=radio]:first-child {
     margin: 1em 0.5em 0 0.5em;
 }
+
 .innerContent .labelcheckbox input[type=checkbox]:first-child,
 .innerContent .labelcheckbox input[type=radio]:first-child {
     margin: 0 0.5em 0 0;
 }
+
 .innerContent p {
     margin: 0.5em auto 0 auto;
     padding: 3px 0.5%;
 }
+
 .innerContent textarea {
     margin: 5px 0 0 10px;
     width: 35%;
     border-color: white;
 }
+
 .innerContent h3 {
     margin: 2em 0 0.5em 1em;
     color: rgb(39, 94, 110);
 }
+
 .innerContent p.noOptions {
     margin: 0 auto;
     padding: 0.5em 0.5%;
     text-align: center;
     color: rgb(153, 153, 153);
 }
+
 /********************************************* To remove when Create new survey setting page confirmed deleted. *******************************************/
 
 .innerContent dl {
@@ -3091,6 +3409,7 @@ nav.smallMenu ul li a.showQuestion:hover {
     margin: 0 0 0 1%;
     width: 99%;
 }
+
 .innerContent dt {
     display: table-cell;
     float: left;
@@ -3098,6 +3417,7 @@ nav.smallMenu ul li a.showQuestion:hover {
     width: 35%;
     color: rgb(39, 94, 110);
 }
+
 .innerContent dd {
     display: table-cell;
     float: right;
@@ -3105,6 +3425,7 @@ nav.smallMenu ul li a.showQuestion:hover {
     width: 65%;
     font-weight: bold;
 }
+
 .surveySettingsBlock {
     overflow: auto;
     margin: 0 auto;
@@ -3114,22 +3435,26 @@ nav.smallMenu ul li a.showQuestion:hover {
     border-bottom: thin solid rgb(230, 230, 230);
     background: rgb(240, 240, 240);
 }
+
 .surveySettingsBlock .helpIcon {
     position: absolute;
     left: 44%;
     margin: -4px 0 0 0;
 }
+
 .innerContent h1 {
     display: block;
     margin: 1em 0 1em 0.5em;
     font-size: 1.5em;
 }
+
 .innerContent h1:after {
     display: block;
     margin: 0.1em auto;
     width: 98%;
     content: "";
 }
+
 .questionNbr {
     display: inline;
     color: rgb(0, 0, 0);
@@ -3140,20 +3465,24 @@ nav.smallMenu ul li a.showQuestion:hover {
     -o-text-shadow: none;
     text-shadow: none;
 }
+
 .questionNbr span {
     display: inline-block;
     margin: 0 0.1em 0 0;
     padding: 0.1em 0.3em;
     text-align: center;
 }
+
 .innerContent input {
     display: block;
 }
+
 .innerContent label {
     display: block;
     margin: 1.5em 0 0 1em;
     color: rgb(39, 94, 110);
 }
+
 .innerContent .labelcheckbox {
     position: relative;
     display: block;
@@ -3161,42 +3490,51 @@ nav.smallMenu ul li a.showQuestion:hover {
     padding: 0.5em 0;
     width: 100%;
 }
+
 .innerContent .selectinLabel {
     position: relative;
     margin: 0.5em 0 0 1em;
     padding: 0.5em 0 0.5em 0.25em;
 }
+
 .innerContent .selectinLabel span {
     display: block;
 }
+
 .innerContent .selectinLabel select {
     margin: 0.5em 0 0 0;
     width: 45%;
 }
+
 .innerContent .dependencyBlock {
     margin: 0.5em auto;
     padding: 0.25em 0 0.75em 0;
     width: 98%;
     background: rgb(237, 237, 237);
 }
+
 .innerContent .dependencyBlock .qDependency {
     margin: 1.5em 0 0.1em 1.5em;
     width: 97.5%;
     color: rgb(153, 51, 0);
 }
+
 .innerContent .dependencyBlock div.ember-radio-button label {
     margin: -0.5em 0 0 2em;
 }
+
 .innerContent .questionOption {
     margin: 1em auto;
     padding: 1em 0 1em 0;
     width: 98%;
     background: rgb(243, 243, 243);
 }
+
 .innerContent .questionOption h1.answerNbr {
     margin: 0 0 0.5em 0.5em;
     padding: 0 0 0 0.5em;
 }
+
 .innerContent h1.answerNbr:after {
     display: block;
     margin: 1em auto;
@@ -3205,35 +3543,43 @@ nav.smallMenu ul li a.showQuestion:hover {
     border-bottom: 1px solid white;
     content: "";
 }
+
 .innerContent .minValNumb,
 .innerContent .maxValNumb {
     width: 48%;
 }
+
 .innerContent .minValNumb {
     float: left;
 }
+
 .innerContent .maxValNumb {
     float: right;
 }
+
 .innerContent .selectinLabel a.addAttribute {
     display: block;
     margin: 0.2em 0 0 0.2em;
 }
+
 .innerContent .selectinLabel a.addAttribute span {
     display: inline;
     margin: 0.2em 0.2em 0 0;
     font-weight: bold;
 }
+
 .innerContent input[type=text] {
     margin: 5px 0 0 0;
     padding: 5px 0.5%;
     width: 97.5%;
 }
+
 .qDependency {
     display: block;
     margin: 1em 0 0 1em;
     color: rgb(204, 204, 204);
 }
+
 .innerContent .optiontype input[type=text] {
     display: inline;
     margin: 5px 0 0 5px;
@@ -3241,38 +3587,46 @@ nav.smallMenu ul li a.showQuestion:hover {
     width: 35%;
     border-color: rgb(235, 235, 235);
 }
+
 .notificationAdd {
     position: relative;
     overflow: auto;
     width: 100%;
 }
+
 .notificationAdd fieldset {
     float: left;
     padding: 1em 0 0 0;
     width: 22%;
 }
+
 .notificationAdd fieldset.addNotifiBtn {
     float: left;
     padding: 1em 0;
     width: 12%;
 }
+
 .notificationAdd fieldset select {
     margin: 0;
     width: 95%;
 }
+
 .notificationAdd fieldset label {
     margin: 0 0 0.5em 0;
 }
+
 .notificationAdd fieldset input {
     margin: 0;
     width: 89%;
 }
+
 .notificationAdd fieldset nav {
     display: block;
     margin: 0.5em auto 0 auto;
     padding: 1em 0;
     background: transparent;
 }
+
 .notificationAdd fieldset nav ul {
     position: relative;
     display: block;
@@ -3280,17 +3634,21 @@ nav.smallMenu ul li a.showQuestion:hover {
     width: 100%;
     text-align: right;
 }
+
 .notificationAdd fieldset nav ul a.smallBtn {
     margin: 0 0.5em 0 0;
 }
+
 a.addNotification {
     margin: 0 0 0 1em;
 }
+
 a.addNotification span {
     margin: 0 0.2em 0 0;
     font-weight: bold;
     font-size: 1.5em;
 }
+
 table.dataTable.notificationTable {
     margin: 1.5em auto;
     width: 100%;
@@ -3299,6 +3657,7 @@ table.dataTable.notificationTable {
     color: #606060;
     text-align: left;
 }
+
 table.dataTable.notificationTable td {
     overflow: hidden;
     padding: 1em 0 1em 0.5em;
@@ -3306,31 +3665,37 @@ table.dataTable.notificationTable td {
     text-align: left;
     font-weight: normal;
 }
+
 table.dataTable.notificationTable td:hover {
     font-weight: normal;
 }
+
 table.dataTable.notificationTable tbody tr {
     border-bottom: thin solid white;
     background: white;
     -webkit-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
+
 table.dataTable.notificationTable tbody tr:nth-child(2n+1),
 table.dataTable.notificationTable tbody tr.odd {
     background: rgb(232, 230, 220);
     -webkit-transition: background-color .4s linear;
     transition: background-color .4s linear;
 }
+
 table.dataTable.notificationTable tbody tr:hover,
 table.dataTable.notificationTable tbody tr:nth-child(2n):hover,
 table.dataTable.notificationTable tbody tr.even:hover {
     background: rgb(177, 214, 224);
     color: rgb(16, 28, 30);
 }
+
 table.dataTable.notificationTable thead tr {
     border-bottom: none;
     background: transparent;
 }
+
 table.dataTable.notificationTable thead tr th {
     padding: 5px 1em 0.5em 1em;
     border-right: none;
@@ -3340,18 +3705,22 @@ table.dataTable.notificationTable thead tr th {
     text-transform: inherit;
     font-weight: bold;
 }
+
 .dataSection table.dataTable.notificationTable thead tr th {
     padding: 9px 1em 9px 1em;
 }
+
 table.dataTable.notificationTable thead tr th.noArrows {
     background: #3A3A3A;
 }
+
 table.dataTable.notificationTable thead tr th a,
 table.dataTable.notificationTable thead tr th a:link,
 table.dataTable.notificationTable thead tr th a:visited {
     color: #FFD200;
     cursor: pointer;
 }
+
 /****** Data Page
 ****************************************************************************/
 
@@ -3360,28 +3729,30 @@ table.dataTable.notificationTable thead tr th a:visited {
         margin: 0 0 5px 5px;
         color: #666;
         font-weight: bold;
-        }
+    }
     a.findData {
         display: block;
         margin: 0 auto 15px;
         padding: 0.5em 1em;
         width: 10%;
         text-align: center;
-        }
     }
-
+}
 
 .filterData div.dataCollectedDate input {
     display: inline;
     height: 20px;
     background: url(../images/icon_cal.png) right center no-repeat;
 }
+
 .filterData label {
     display: inline;
 }
+
 .filterData label.collectedTo {
     margin: 0;
 }
+
 .filterData div.chooseSurveyData {
     position: relative;
     display: block;
@@ -3390,6 +3761,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     width: 48%;
     height: 20px;
 }
+
 .filterData div.chooseLocationData {
     position: relative;
     display: block;
@@ -3398,14 +3770,17 @@ table.dataTable.notificationTable thead tr th a:visited {
     width: 100%;
     height: 15px;
 }
+
 .filterData div.chooseSurveyData select {
     display: inline;
     width: 47%;
 }
+
 .filterData div.chooseLocationData select {
     display: inline;
     width: 15%;
 }
+
 .filterData div.dataCollectedDate {
     position: relative;
     display: block;
@@ -3415,12 +3790,15 @@ table.dataTable.notificationTable thead tr th a:visited {
     height: 20px;
     text-align: left;
 }
+
 .collectedFrom span {
     display: block;
 }
+
 .collectedTo span {
     display: block;
 }
+
 .filterData div.dataCollectedDate label {
     width: 48%;
     float: left;
@@ -3429,41 +3807,50 @@ table.dataTable.notificationTable thead tr th a:visited {
         margin-left: 1%;
     }
 }
+
 .filterData div.dataCollectedDate label input {
     width: 97%;
 }
+
 .filterData div.dataDeviceId {
     display: block;
     margin: 60px 0 10px 0;
     padding: 0.5em 1em 8px 1em;
     background: rgb(234, 234, 234);
 }
+
 .filterData div.dataLocation {
     display: block;
     margin: 5px 0 10px 0;
     padding: 0.5em 1em 8px 1em;
     background: rgb(234, 234, 234);
 }
+
 .dataTables_wrapper {
     margin: 0px auto 1px auto;
     background: rgb(235, 235, 235);
 }
+
 .dataTables_length {
     display: inline-block;
     padding: 10px 5px 12px 5px;
 }
+
 .dataTables_length select {
     padding: 0;
     padding: 0 8px 0 0;
 }
+
 .dataTables_filter {
     display: inline-block;
     margin-left: 70px;
     padding: 10px 5px 12px 5px;
 }
+
 .dataTables_filter input {
     border-color: transparent;
 }
+
 .dataTables_info {
     display: block;
     margin: 5px auto;
@@ -3471,6 +3858,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     text-align: center;
     letter-spacing: 0.1em;
 }
+
 .dataTables_paginate {
     position: relative;
     display: block;
@@ -3478,6 +3866,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     width: 12%;
     text-align: center;
 }
+
 .dataTables_paginate a {
     position: relative;
     display: block;
@@ -3485,6 +3874,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     color: rgb(107, 134, 141);
     cursor: pointer;
 }
+
 .dataTables_paginate a.paginate_disabled_previous,
 .dataTables_paginate a.paginate_disabled_next {
     position: relative;
@@ -3493,24 +3883,28 @@ table.dataTable.notificationTable thead tr th a:visited {
     color: rgb(184, 184, 184);
     cursor: text;
 }
+
 .dataTables_paginate a.paginate_disabled_previous:hover,
 .dataTables_paginate a.paginate_disabled_next:hover {
     color: rgb(184, 184, 184);
 }
+
 .dataTables_paginate a.paginate_disabled_previous,
 .dataTables_paginate a.paginate_enabled_previous {
     float: left;
 }
+
 .dataTables_paginate a.paginate_disabled_next,
 .dataTables_paginate a.paginate_enabled_next {
     float: right;
 }
+
 .dataSection label {
     font-weight: normal;
 }
 
 /******************************************************************************
-									FLOW MAP
+                                    FLOW MAP
 ******************************************************************************/
 
 #flowMap {
@@ -3520,6 +3914,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     height: 600px;
     border-bottom: 2px solid rgb(158, 158, 158);
 }
+
 #dropdown-holder {
     position: relative;
     clear: both;
@@ -3529,13 +3924,16 @@ table.dataTable.notificationTable thead tr th a:visited {
     height: 23px;
     background: $darkGrey;
 }
+
 #dropdown-holder label {
     color: white;
 }
+
 #dropdown-holder select {
     display: inline;
     margin: 0 0 0 0.5em;
 }
+
 #pointDetails {
     position: relative;
     float: right;
@@ -3550,10 +3948,12 @@ table.dataTable.notificationTable thead tr th a:visited {
     overflow-style: marquee-line;
     border-bottom: 2px solid rgb(158, 158, 158);
 }
+
 #pointDetails h2 {
     margin: 5px 0 10px 5px;
     line-height: inherit;
 }
+
 #pointDetails dl {
     position: relative;
     overflow: hidden;
@@ -3564,15 +3964,18 @@ table.dataTable.notificationTable thead tr th a:visited {
     font-family: Verdana, Geneva, sans-serif;
     line-height: 1.2em;
 }
+
 #pointDetails dl div.defListWrap {
     display: table;
     margin: 2px auto;
     padding: 0.2em 0;
     width: 100%;
 }
+
 #pointDetails dl div.defListWrap:nth-child(odd) {
     background: rgb(224, 224, 224);
 }
+
 #pointDetails dl div.defListWrap dt {
     display: table-cell;
     float: left;
@@ -3584,6 +3987,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     -o-text-shadow: 0px 1px 0 white, 0 -1px 0 rgb(154, 164, 164);
     text-shadow: 0px 1px 0 white, 0 -1px 0 rgb(154, 164, 164);
 }
+
 #pointDetails dl div.defListWrap dd {
     display: table-cell;
     float: left;
@@ -3591,10 +3995,12 @@ table.dataTable.notificationTable thead tr th a:visited {
     width: 54.25%;
     color: rgb(0, 0, 0);
 }
+
 #pointDetails dl dt:nth-of-type(1),
 #pointDetails dl dd:nth-of-type(1) {
     border-top: none;
 }
+
 div#drawHandleWrap {
     position: relative;
     display: block;
@@ -3602,19 +4008,21 @@ div#drawHandleWrap {
     width: 100%;
     height: 16px;
 }
+
 div.drawHandle {
     position: absolute;
     top: 1px;
     right: 5px;
     z-index: 99999;
     display: block;
-    padding:4px 7px 15px 7px;
+    padding: 4px 7px 15px 7px;
     height: 3px;
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
     text-transform: uppercase;
     font-weight: bold;
     cursor: pointer;
 }
+
 .noDetails {
     margin: 2em auto;
     text-align: center;
@@ -3624,11 +4032,13 @@ div.drawHandle {
     -o-text-shadow: 2px 2px 0 white;
     text-shadow: 2px 2px 0 white;
 }
+
 #pointDetails .imgContainer {
     position: relative;
     margin: 10px 5px 10px 1px;
     padding: 1px;
 }
+
 #pointDetails .imgContainer a {
     position: relative;
     display: block;
@@ -3638,47 +4048,55 @@ div.drawHandle {
     float: left;
     border: 1px solid rgb(214, 214, 214);
 }
-#pointDetails .imgContainer img {} #flowMapLegend {
+
+#pointDetails .imgContainer img {}
+
+#flowMapLegend {
     position: relative;
-    display: none
-    /*block*/
-    ;
+    display: none;
     clear: both;
     padding: 5px 1%;
     width: 98%;
     border-top: 1px solid white;
     background: rgb(234, 234, 234);
 }
+
 .placeMarkBasicInfo {
     padding: 1em 2%;
     width: 96%;
     background: url(../images/mapPointDetailSep.png) center bottom no-repeat;
 }
+
 .placeMarkBasicInfo li {
     display: inline;
     float: left;
 }
+
 .placeMarkBasicInfo li:last-child {
     float: right;
     width: 50px;
 }
+
 .placeMarkBasicInfo li span {
     display: inline;
 }
+
 .placeMarkCollectionDate {
     display: inline;
     margin: 0 0 0 5px;
     color: rgb(227, 27, 35);
     font-weight: bold;
 }
+
 .placeMarkPointCode {
     margin: 0 0 0 5px;
     color: $darkGrey;
     text-transform: uppercase;
     font-weight: bold;
 }
+
 /*---------------------------------------------
-					Footer
+                    Footer
 -----------------------------------------------*/
 
 footer.bottomPage {
@@ -3686,11 +4104,12 @@ footer.bottomPage {
     margin: 0px 0 0 0;
     padding: 0;
     width: 100%;
-    background:rgb(248, 248, 248);
+    background: rgb(248, 248, 248);
     -webkit-box-shadow: 0 0 1px rgba(32, 32, 36, 0.5);
     box-shadow: 0 0 -1px rgba(32, 32, 36, 0.5);
-    z-index:1001;
+    z-index: 1001;
 }
+
 footer.bottomPage div:nth-child(1n) {
     position: relative;
     margin: 0 auto;
@@ -3698,12 +4117,14 @@ footer.bottomPage div:nth-child(1n) {
     width: 90%;
     min-width: 768px;
 }
+
 footer.bottomPage div:nth-child(2n) {
     position: relative;
     min-width: inherit;
     max-width: none;
     width: 100%;
 }
+
 footer.bottomPage small {
     position: relative;
     display: block;
@@ -3711,11 +4132,13 @@ footer.bottomPage small {
     width: 100%;
     text-align: center;
 }
+
 footer.bottomPage nav.footItems {
     display: block;
     width: 100%;
     text-align: center;
 }
+
 footer.bottomPage nav.footItems ul {
     display: -webkit-box;
     display: -webkit-flex;
@@ -3736,36 +4159,45 @@ footer.bottomPage nav.footItems ul {
     margin: 0 auto;
     text-align: center;
 }
+
 footer.bottomPage nav.footItems ul li.footLink {
     text-align: center;
 }
+
 footer.bottomPage nav ul li a {
     display: block;
     padding: 5px 7px;
     text-transform: uppercase;
 }
+
 footer.bottomPage nav ul li a.akvoDotOrg {
-    margin:0;
+    margin: 0;
     width: 42px;
     background: url(../images/akvo.orgLogo.svg) center center no-repeat;
     text-indent: -9999px;
 }
-footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
+
+footer.bottomPage a[rel="self"] {}
+
+footer.bottomPage a[rel="self"]:hover {}
+
 /******************************************************************************************************
-											Survey Preview
+                                            Survey Preview
 ******************************************************************************************************/
 
 .surveyPreviewWrap {
     position: relative;
 }
+
 .surveyPreviewWrap span.qtnGroupHead {
     display: block;
     margin: 1em 0 0.5em 0.1em;
     width: 100%;
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
     font-style: italic;
     font-family: Georgia, "Times New Roman", Times, serif;
 }
+
 .fixedMenu {
     background: none repeat scroll 0 0 #FFFFFF;
     -webkit-box-shadow: 0 1px 3px #F2F2F2;
@@ -3778,6 +4210,7 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     min-width: 500px;
     z-index: 9999;
 }
+
 .surveyPreviewWrap div.questionGroupBlock {
     margin: 5em auto;
     padding: 0.5em 1em 1em 1em;
@@ -3785,20 +4218,24 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     border-bottom: none;
     background: rgb(246, 246, 246);
 }
+
 .surveyPreviewWrap h3.qtnGroupTitle {
     margin: 0.2em 0 2em 0.1em;
     padding: 0 0 0.5em 0;
     border-bottom: 1px solid rgb(238, 238, 238);
     color: rgb(44, 42, 116);
 }
+
 .surveyPreviewWrap h4 {
     margin: 0.2em 0 0.2em 1.5em;
     color: rgb(44, 42, 116);
 }
+
 .surveyPreviewWrap .innerContent h3 {
     margin: 2em 0 1.5em 1.5em;
     color: rgb(39, 94, 110);
 }
+
 .surveyPreviewWrap .innerContent h1:after {
     display: block;
     margin: 1em auto 0 auto;
@@ -3807,18 +4244,22 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     border-bottom: none;
     content: "";
 }
+
 .surveyPreviewWrap input[type=text] {
     margin: 0.5em auto 0 auto;
     width: 96%;
 }
+
 .surveyPreviewWrap .ember-radio-button label {
     margin: 0em 0 0 1.5em;
 }
+
 .surveyPreviewWrap .innerContent input[type=checkbox],
 .surveyPreviewWrap .innerContent input[type=radio] {
     display: inline-block;
     margin: 5px 0.5em 0 1em;
 }
+
 .surveyPreviewWrap .innerContent h1.questionNbr {
     display: block;
     margin: 0 0 0 0.75em;
@@ -3827,6 +4268,7 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     font-weight: normal;
     line-height: inherit;
 }
+
 .surveyPreviewWrap .innerContent h1.questionNbr span {
     display: inline-block;
     margin: 0.1em 0.5em 0 0;
@@ -3834,15 +4276,18 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     height: inherit;
     text-align: center;
 }
+
 .surveyPreviewWrap .innerContent h1.questionNbr span:after {
     display: inline-block;
     margin: 0 0.5em 0 0;
 }
+
 .surveyPreviewWrap .previewQuestion {
     margin: 2.5em auto 0 auto;
 }
+
 /********************************************************************************************************************************
-													Reports Tab
+                                                    Reports Tab
 ********************************************************************************************************************************/
 
 .reportsSection > div > div > section.reportTools select,
@@ -3852,26 +4297,31 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     float: left;
     margin: 0 0 1em 1%;
 }
+
 .reportTools select:last-child {
     display: inline;
     width: 30%;
     float: left;
     margin: 0 1% 1em 1%;
 }
+
 .reportTools a.standardBtn {
     clear: both;
     margin: 0.1em 0 1em 1%;
 }
+
 .reportTools div.block a.standardBtn {
     clear: both;
     margin: 0;
 }
+
 .reportTools .chartTitle {
     margin: 0.5em auto 0 auto;
     padding: 0.5em 0 0.3em 0;
     width: 97.5%;
-    color:$anchorLinkHover;
+    color: $anchorLinkHover;
 }
+
 .reportTools div.block {
     display: block;
     clear: both;
@@ -3882,12 +4332,14 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     -o-border-radius: 0.3em;
     border-radius: 0.3em;
 }
+
 .reportTools div.block p {
     display: block;
     width: 100%;
     margin: 0.5em auto 1em auto;
     color: rgb(153, 153, 153);
 }
+
 .reportTools .chartPie {
     display: block;
     clear: both;
@@ -3896,6 +4348,7 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     background: rgb(249, 249, 249);
     padding: 1em 0;
 }
+
 .reportTools .chartPie p {
     display: block;
     width: 100%;
@@ -3903,18 +4356,22 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     margin: 0.5em auto 1em auto;
     color: rgb(153, 153, 153);
 }
+
 .axis path,
 .axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
 }
+
 .bar {
     fill: steelblue;
 }
+
 .x.axis path {
     display: none;
 }
+
 .chartSetting {
     display: block;
     clear: both;
@@ -3922,9 +4379,11 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     margin: 1em auto;
     border-bottom: thin solid rgb(198, 198, 198);
 }
+
 .chartSetting h4 {
     margin-left: 1%;
 }
+
 .reportTools .chartSetting select {
     display: inline;
     width: 15%;
@@ -3932,15 +4391,18 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     margin: 0.1em 0 0 0;
     clear: both;
 }
+
 .groupChartSelect {
     display: inline-block;
-    margin: 0.1em 0.5em 0 1.5em
+    margin: 0.1em 0.5em 0 1.5em;
 }
+
 .chartSetting .groupChartSelect input {
     display: inline;
 }
+
 /* ------------------------------------------------------------------------------------------
-									 .Translate Surveys
+                                     .Translate Surveys
 ------------------------------------------------------------------------------------------ */
 
 .bottomPg {
@@ -3948,13 +4410,16 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     text-align: center;
     margin: 30px auto;
 }
+
 .bottomPg .standardBtn {
     margin: 0.5em auto;
 }
+
 .twoColumns {
     position: relative;
     margin: 1px auto 0 auto;
 }
+
 .twoColumns > div,
 .twoColumns > section {
     position: relative;
@@ -3962,52 +4427,63 @@ footer.bottomPage a[rel="self"] {} footer.bottomPage a[rel="self"]:hover {}
     width: 49%;
     background: white;
 }
+
 .twoColumns > div:first-child,
 .twoColumns > section:first-child {
     margin: 0 0.25% 0 0.75%;
     float: left;
 }
+
 .twoColumns > div:last-child,
 .twoColumns > section:last-child {
     margin: 0 0.75% 0 0.25%;
     float: right;
 }
+
 #defaultLanguage section,
 #targetLanguage section {
     padding: 0.5% 1% 2em 1%;
     border-bottom: 3px solid rgb(230, 230, 230);
 }
+
 #defaultLanguage section:last-child,
 #targetLanguage section:last-child {
     border-bottom: none;
 }
+
 .surveyTranslation table {
     width: 98.5%;
     margin: 0.5% 0.75% 0.1% 0.75%;
     text-align: left;
 }
+
 table#languageOption {
     background: rgb(242, 242, 242);
     -o-border-radius: 0.25em;
     border-radius: 0.25em;
 }
+
 table#languageOption th {
     text-transform: uppercase;
     color: rgb(39, 94, 110);
     padding: 1em 0.75% 0.5em 0.75%;
 }
+
 table#languageOption td {
     padding: 0.25em 0.75%;
     height: 30px;
 }
+
 table#languageOption td select {
     margin: 0;
     display: inline;
 }
+
 table#languageOption td li {
     display: inline;
     margin: 0 0.5em 0 0;
 }
+
 table#languageOption td.formTitle {
     color: rgb(123, 123, 123);
     border-top: 1px solid rgb(230, 230, 230);
@@ -4016,47 +4492,59 @@ table#languageOption td.formTitle {
     vertical-align: middle;
     height: 60px;
 }
+
 table.surveyTranslate {
     -o-border-radius: 0.25em;
     border-radius: 0.25em;
     background: white url(../images/borderMiddle.png) center top repeat-y;
 }
+
 table.surveyTranslate td {
     position: relative;
     padding: 1.75em 0.75% 1.5em;
     width: 48%;
 }
+
 table.surveyTranslate th {
     position: relative;
     padding: 0.25em 0.75% 1em 0.75%;
     width: 48%;
 }
+
 table.surveyTranslate tr.indented {
     border: none;
 }
+
 table.surveyTranslate tr.indented td {
     padding: 0.25em 0.75% 0.25em 3.5em;
 }
+
 table.surveyTranslate tr {
     border-top: 1px solid rgb(230, 230, 230);
 }
+
 table.surveyTranslate th h3 {
     padding: 1em 0 1em 0.5em;
 }
+
 table.surveyTranslate label {
     font-weight: bold;
     margin: 1em 0 0.75em 0;
 }
+
 table.surveyTranslate p {
     padding: 0 0.25em;
 }
+
 table.surveyTranslate textarea {
     width: 88%;
     margin: 0.5em 0 0 0;
 }
+
 table.surveyTranslate input {
     width: 88%;
 }
+
 table.surveyTranslate .questionNbr span {
     background: transparent;
     -o-border-radius: inherit;
@@ -4074,6 +4562,7 @@ table.surveyTranslate .questionNbr span {
     font-size: 14px;
     width: 20px;
 }
+
 table.surveyTranslate tr.indented .questionNbr span {
     background: transparent;
     -o-border-radius: inherit;
@@ -4091,63 +4580,79 @@ table.surveyTranslate tr.indented .questionNbr span {
     font-size: 11px;
     width: 20px;
 }
+
 table.surveyTranslate textarea {
     width: 88%;
     margin: 0.5em 0 0 20px;
 }
+
 table.surveyTranslate.surveyDetails textarea {
     width: 88%;
     margin: 0.5em 0 0 0;
 }
+
 table.surveyTranslate select {
     margin: 0.5em 0 0 5px;
     width: 88%;
 }
+
 table.surveyTranslate ul {
     padding: 0 0.5em;
 }
+
 table.surveyTranslate ul li {
     padding: 0.5em 0.25em;
     border-bottom: none;
     margin: 0.5em 0 0 15px;
     min-height: inherit;
 }
+
 table.surveyTranslate .qHelpTooltip {
     margin-left: 20px;
 }
+
 table.surveyTranslate .qHelpTooltip p {
     margin: 0;
     padding: 0;
 }
+
 table.surveyTranslate .qHelpTooltip label {
     margin: 1.25em 0 0em 0;
 }
+
 table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     width: 93%;
 }
+
 .surveyDetails {
     min-height: 200px;
 }
+
 .surveyDetails ul textarea {
     margin: 0 0 0 0 !important;
 }
+
 .groupSection h1 {
     margin: 0.5em 0 0.5em 0;
 }
+
 .fullWidth {
     width: 100%;
 }
+
 #tabs {
     .fullWidth {
-        padding-top:25px;
+        padding-top: 25px;
     }
 }
+
 /* Uploader: Drag & Drop */
 
 .resumable-error {
     font-size: 14px;
     font-style: italic;
 }
+
 .resumable-drop {
     padding: 3em;
     font-size: 1.6em;
@@ -4160,19 +4665,23 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     margin: 1.5em auto 1.5em;
     z-index: 9999;
 }
+
 .resumable-drop u {
     font-weight: bold;
     cursor: pointer;
 }
+
 .resumable-drop input {
     cursor: pointer;
 }
+
 .resumable-dragover {
     padding: 30px;
     color: #555;
     background-color: #ddd;
     border: 1px solid #999;
 }
+
 /* Uploader: Progress bar */
 
 .resumable-progress {
@@ -4180,6 +4689,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     width: 100%;
     display: none;
 }
+
 .progress-container {
     height: 20px;
     background: rgb(234, 185, 45);
@@ -4192,6 +4702,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     -o-border-radius: 0.5em;
     border-radius: 0.5em;
 }
+
 .progress-bar {
     position: absolute;
     top: 0;
@@ -4215,26 +4726,33 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     -o-border-radius: 0.5em;
     border-radius: 0.5em;
 }
+
 .progress-text {
     font-size: 11px;
     line-height: 9px;
     padding-left: 10px;
 }
+
 .progress-pause {
     padding: 0 0 0 7px;
 }
+
 .progress-resume-link {
     display: none;
 }
+
 .is-paused .progress-resume-link {
     display: inline;
 }
+
 .is-paused .progress-pause-link {
     display: none;
 }
+
 .is-complete .progress-pause {
     display: none;
 }
+
 /* Uploader: List of items being uploaded */
 
 .resumable-list {
@@ -4247,20 +4765,24 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     padding: 0.25em;
     color: rgb(180, 180, 180);
 }
+
 .resumable-list li {
     margin: 0 0 1px 0;
     padding: 0.25em;
     background: rgb(245, 245, 245);
 }
+
 .resumable-file-name {
     color: rgb(44, 42, 116);
     margin-left: 5px;
     margin-right: 15px;
 }
+
 .resumable-file-progress {
     color: rgb(44, 42, 116);
     font-weight: bold;
 }
+
 .uploader-item {
     width: 148px;
     height: 90px;
@@ -4270,6 +4792,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     float: left;
     margin: 0 6px 6px 0;
 }
+
 .uploader-item-thumbnail {
     width: 100%;
     height: 100%;
@@ -4277,14 +4800,17 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     top: 0;
     left: 0;
 }
+
 .uploader-item img.uploader-item-thumbnail {
     opacity: 0;
 }
+
 .uploader-item-creating-thumbnail {
     padding: 0 5px;
     font-size: 9px;
     color: white;
 }
+
 .uploader-item-title {
     position: absolute;
     font-size: 9px;
@@ -4297,11 +4823,13 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     background-color: rgba(0, 0, 0, 0.6);
     min-height: 27px;
 }
+
 .uploader-item-status {
     position: absolute;
     bottom: 3px;
     right: 3px;
 }
+
 /* Uploader: Hover & Active status */
 
 .uploader-item:hover,
@@ -4309,29 +4837,35 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     border-color: #4a873c;
     cursor: pointer;
 }
+
 .uploader-item:hover .uploader-item-title,
 .is-active .uploader-item .uploader-item-title {
     background-color: rgba(74, 135, 60, 0.8);
 }
+
 /* Uploader: Error status */
 
 .is-error .uploader-item:hover,
 .is-active.is-error .uploader-item {
     border-color: #900;
 }
+
 .is-error .uploader-item:hover .uploader-item-title,
 .is-active.is-error .uploader-item .uploader-item-title {
     background-color: rgba(153, 0, 0, 0.6);
 }
+
 .is-error .uploader-item-creating-thumbnail {
     display: none;
 }
+
 .marker-cluster {
     background-color: rgba(253, 156, 115, 0.6);
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
     border-radius: 20px;
 }
+
 .marker-cluster div {
     background-color: rgba(241, 128, 23, 0.6);
     width: 30px;
@@ -4340,8 +4874,9 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
     margin-top: 5px;
     text-align: center;
     border-radius: 15px;
-    font: 12px"Helvetica Neue", Arial, Helvetica, sans-serif;
+    font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
+
 .marker-cluster span {
     line-height: 30px;
 }
@@ -4350,32 +4885,34 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
 .projectSection {
     background: $projectBackground;
     box-sizing: border-box;
-    width:100%;
-    padding:1em 0 0 0;
-    margin:0 auto;
+    width: 100%;
+    padding: 1em 0 0 0;
+    margin: 0 auto;
     .publishProject {
         padding: 30px 5px;
-        display:table;
+        display: table;
         text-align: center;
-        width:calc(100% - 10px);
-            .publishProjectBtn {
+        width: calc(100% - 10px);
+        .publishProjectBtn {
             text-align: center;
-            margin:0 auto;
+            margin: 0 auto;
         }
     }
     .projectDetailsPanel {
-        .addMenuAction {display:inline-block; margin:0 auto;
-          &.addNewForm {
-            display:table;
-            padding:8px 8px 8px 31px;
-          }
+        .addMenuAction {
+            display: inline-block;
+            margin: 0 auto;
+            &.addNewForm {
+                display: table;
+                padding: 8px 8px 8px 31px;
+            }
         }
         .projectSummary, .formSummary {
-          display: -webkit-box;
-          display: -moz-box;
-          display: -ms-flexbox;
-          display: -webkit-flex;
-          display:flex;
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
             -webkit-flex-direction: row;
             -webkit-flex-wrap: nowrap;
             -webkit-align-items: center;
@@ -4384,123 +4921,131 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             flex-wrap: nowrap;
             align-items: center;
             align-content: center;
-            margin-top:10px;
+            margin-top: 10px;
             li {
                 width: 33.33333%;
                 text-align: center;
-                padding:10px 0;
-                background:rgba(32,32,36,0.2);
-                color:rgb(128,130,133);
+                padding: 10px 0;
+                background: rgba(32, 32, 36, 0.2);
+                color: rgb(128, 130, 133);
                 text-transform: uppercase;
-                font-size:1.5em;
+                font-size: 1.5em;
+                @include noWrapTxt;
                 span {
-                    display:block;
-                    font-size:1.8em;
-                    margin-top:-5px;
-                    font-weight:600;
-                    &.projectForm, &.projectMonitoring, &.projectStatus {color:white;}
-                    &.projectStatus.redColor {color:$akvoRed2;}
+                    display: block;
+                    font-size: 1.8em;
+                    margin-top: -5px;
+                    font-weight: 600;
+                    &.projectForm, &.projectMonitoring, &.projectStatus {
+                        color: white;
+                    }
+                    &.projectStatus.redColor {
+                        color: $akvoRed2;
+                    }
                 }
             }
         }
         span.fontInfo {
             font-family: $scriptFont;
-            font-size:1.8em;
-            color: rgb(212,212,212);
-            margin:0 0.5em;
+            font-size: 1.8em;
+            color: rgb(212, 212, 212);
+            margin: 0 0.5em;
         }
         h2 {
             color: $akvoOrange;
-            display:inline;
+            display: inline;
         }
         .forms {
-            padding:2em 0 0 0;
-            background:white;
+            padding: 2em 0 0 0;
+            background: white;
             #tabs {
                 h2 {
-                    margin:0 0 15px 5px;
+                    margin: 0 0 15px 5px;
                 }
             }
             .formSummary {
-                        display:-webkit-flex;
-                        display:flex;
-                        -webkit-flex-direction: row;
-                        -webkit-flex-wrap: nowrap;
-                        -webkit-align-items: center;
-                        -webkit-align-content: center;
-                        flex-direction: row;
-                        flex-wrap: nowrap;
-                        align-items: center;
-                        align-content: center;
-                        margin:30px auto;
-                        li {
-                            width: 33.33333%;
-                            text-align: center;
-                            padding:10px 0;
-                            background:rgba(32,32,36,0.2);
-                            color:rgb(128,130,133);
-                            text-transform: uppercase;
-                            font-size:1.5em;
-                            span {
-                                display:block;
-                                font-size:1.8em;
-                                margin-top:-5px;
-                                font-weight:600;
-                                color:white;
-                            }
-                        }
+                display: -webkit-flex;
+                display: flex;
+                -webkit-flex-direction: row;
+                -webkit-flex-wrap: nowrap;
+                -webkit-align-items: center;
+                -webkit-align-content: center;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                align-items: center;
+                align-content: center;
+                margin: 30px auto;
+                li {
+                    width: 33.33333%;
+                    text-align: center;
+                    padding: 10px 0;
+                    background: rgba(32, 32, 36, 0.2);
+                    color: rgb(128, 130, 133);
+                    text-transform: uppercase;
+                    font-size: 1.5em;
+                    span {
+                        display: block;
+                        font-size: 1.8em;
+                        margin-top: -5px;
+                        font-weight: 600;
+                        color: white;
                     }
+                }
+            }
             #tabs div > section {
-                border-top: thin solid rgb(224, 224, 224);
+                border-top: thin solid white;
                 background: white;
                 margin-top: 15px;
-
+                &.surveyForm, &#questionSet {
+                    margin-top: 5px;
+                    padding:0 0 5px 0;
+                }
                 &.formDetails {
-                    border:inherit;
-                    background:inherit;
+                    border: inherit;
+                    background: inherit;
                     display: block;
-                    position:relative;
+                    position: relative;
                     background: $projectBackground;
-                    padding:20px 0.25%;
-                    width:inherit;
-                    width:99.5%;
-                    margin:0 auto;
+                    padding: 20px 0.25%;
+                    width: inherit;
+                    width: 99.5%;
+                    margin: 0 auto;
                     .showCollapse {
-                      text-transform:uppercase;
-                      display:inline-block;
-                      margin-left:10px;
-                  }
+                        text-transform: uppercase;
+                        display: inline-block;
+                        margin-left: 10px;
+                    }
                 }
             }
             #tabs div > section h3 {
                 text-shadow: none;
             }
             #tabs nav.tabNav {
-                position:relative;
+                position: relative;
                 display: block;
                 padding: 0;
                 width: 100%;
-                margin-top:10px;
-                z-index:inherit;
-                & + section, & + div  {
+                margin-top: 10px;
+                z-index: inherit;
+                & + section, & + div {
                     margin-top: 0;
                 }
             }
             #tabs nav.tabNav ul {
                 padding: 0;
-               display: -webkit-flex;
-               display: flex;
-               -webkit-flex-direction: row;
-               flex-direction: row;
-               -webkit-justify-content: flex-start;
-               justify-content: flex-start;
+                display: -webkit-flex;
+                display: flex;
+                -webkit-flex-direction: row;
+                flex-direction: row;
+                -webkit-justify-content: flex-start;
+                justify-content: flex-start;
                 -webkit-align-items: center;
                 align-items: center;
             }
             #tabs nav.tabNav ul li {
-                border-right:1px solid rgba(32,32,36,0.2);
-                margin:0;
-                font-size:1.2em;
+                border-right: 1px solid rgba(32, 32, 36, 0.2);
+                margin: 0;
+                font-size: 1.2em;
                 @include border-radius(2px 2px 0 0);
                 -webkit-background-clip: padding-box;
                 background-clip: padding-box;
@@ -4510,587 +5055,593 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 -webkit-background-clip: padding-box;
                 @include noWrapTxt;
                 &.aFormTab {
-                  padding-left:25px;
-                  background:rgba(32,32,36, 0.5) url(../images/IconForms.png) no-repeat 10px center;
-                  background-size:20px auto;
-                  &:hover {
-                      background:rgba(32,32,36, 1) url(../images/IconForms.png) no-repeat 10px center;
-                      background-size:20px auto;
-                      }
-                    &.current {
-                      background:rgba(32, 32, 36, 0.9) url(../images/IconFormsOrange.png) no-repeat 10px center;
-                      background-size:20px auto;
-                      a{
-                        color:$anchorLinkHover;
-                        }
-                    }
-                  &.registrationForm {
-                    background:rgba($monitorGreen,0.5)  url(../images/IconForms.png) no-repeat 10px center;
-                    background-size:20px auto;
+                    padding-left: 25px;
+                    background: rgba(32, 32, 36, 0.5) url(../images/IconForms.png) no-repeat 10px center;
+                    background-size: 20px auto;
                     &:hover {
-                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 10px center;
-                        background-size:20px auto;
-                      }
+                        background: rgba(32, 32, 36, 1) url(../images/IconForms.png) no-repeat 10px center;
+                        background-size: 20px auto;
+                    }
                     &.current {
-                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 10px center;
-                        background-size:20px auto;
+                        background: rgba(32, 32, 36, 0.9) url(../images/IconFormsOrange.png) no-repeat 10px center;
+                        background-size: 20px auto;
                         a {
-                            color:white;
+                            color: $anchorLinkHover;
                         }
+                    }
+                    &.registrationForm {
+                        box-sizing: border-box;
+                        -webkit-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 0.5);
+                        -moz-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 0.5);
+                        box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 0.5);
                         &:hover {
-                        background:rgba($monitorGreen,1) url(../images/IconForms.png) no-repeat 10px center;
-                        background-size:20px auto;
+                            -webkit-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
+                            -moz-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
+                            box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
+                        }
+                        &.current {
+                            -webkit-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
+                            -moz-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
+                            box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
+                            &:hover {
+                                -webkit-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
+                                -moz-box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
+                                box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
+                            }
                         }
                     }
-
-                  }
-
-                    }
+                }
                 &.newFormTab {
-                  background:transparent;
-                  border-right:none;
-                  a{
-                    color:$anchorLink;
-                    &:hover {
-                        color:$anchorLinkHover;
-                    }
-                  }
-                  span {
-                    font-weight:bold;
-                    margin-right:5px;
-                  }
-                  &:hover {
                     background: transparent;
-                  }
-                 }
-                  }
-                  #tabs nav.tabNav ul li:hover {
-                      background: rgb(174, 174, 174);
-                  }
-                  #tabs nav.tabNav ul li.active,
-                  #tabs nav.tabNav ul li.active:hover {
-                      background: rgb(0,0,0);
-                  }
-                  #tabs nav.tabNav ul li a {
-                      display: block;
-                      padding: 0.75em 1em;
-                      color: white;
-                      text-transform: uppercase;
-                      -webkit-transition: none;
-                      transition: none;
-                      text-shadow:none;
-                      min-width:1px;
-                      min-height: 12px;
-                  }
-                  #tabs nav.tabNav ul li.active a,
-                  #tabs nav.tabNav ul li.active a:hover {
-                      color: white;
-                      text-shadow: none;
-                      -webkit-text-shadow: none;
-                      -moz-text-shadow: none;
-                  }
-                  #tabs nav.tabNav ul li a:hover {
-                      color: white;
-                      text-shadow: none;
-                      -webkit-text-shadow: none;
-                      -moz-text-shadow: none;
-                  }
-                  .tabNav{
-                    .aFormTab {
-                      padding-left:25px;
-                      background:rgb(32,32,36) url(../images/IconForms.png) no-repeat left center;
-
-                      }
-                  }
-              }
-              .formsContainer {
-                    background:rgba(32,32,36, 0.9);
-                    margin:0px auto;
+                    border-right: none;
+                    a {
+                        color: $anchorLink;
+                        &:hover {
+                            color: $anchorLinkHover;
+                        }
                     }
-              .projectDetails {
-                    background:rgb(54, 79, 90);
-                    margin:10px auto;
+                    span {
+                        font-weight: bold;
+                        margin-right: 5px;
                     }
-              .projectDetails, .formsContainer {
-                  width:99.5%;
-                  position:relative;
-                  padding:2em 0.25% 2em 0.25%;
-
-                  h3 {
-                      color:$akvoGolden;
-                      margin-bottom: 20px;
-                      display:inline-block;
-                  }
-                  .showCollapse {
-                      background:$anchorLink;
-                      color:white;
-                      text-transform:uppercase;
-                      display:inline-block;
-                      padding: 2px 7px 0px 7px;
-                      display: inline-block;
-                      margin: -2px 0 0 10px;
-                      border-radius:3px;
-                      span.monitoringAndvanced & {
-                        display:block;
-                        margin-top:10px;
-                      }
-                  }
-                  label[for=enableMonitoring] {
-                    margin:10px 0 0 5px;
-                  }
-                  .projectDetailForm, .surveyDetailForm {
-                      display: block;
-                      margin-top:0 !important;
-                      .monitoringHint {
-                        margin: 10px 0 0 10px;
-                        color: #c49a6c;
-                      }
-                      form {
-                          width:100%;
-                      }
-                      input {
-                          width:99%;
-                          margin-bottom: 35px;
-                          background:rgb(248,248,248);
-                          color:rgb(158,158,158);
-                          &:focus {
-                              border: 1px solid rgb(205, 205, 205);
-                              background: rgb(245, 255, 216);
-                              }
-                          &[type=checkbox] {
-                              width:20px;
-                              float: left;
-                          }
-                      }
-                      .projectSelect {
-                          margin-bottom: 50px;
-                          li {
-                              display:block;
-                              width:100%;
-                              margin-bottom:20px;
-                              select {
-                                  width:99.5%;
-                              }
-                          }
-                      }
-                  }
-              }
-          }
-      }
-
-      /************************************** CASCADING QUESTIONS ************************************/
-    .noCascadeContainer {
-        color:white;
-        background:rgba(white,0);
-        padding:2em 0;
-        li.formList {
-            padding:10px 0;
-            &.populated {
-                background: rgba(white,0);
+                    &:hover {
+                        background: transparent;
+                    }
+                }
             }
-            h4 {
-                margin:5px 0 10px 5px;
-                color:rgba($anchorLink, 0.5);
+            #tabs nav.tabNav ul li:hover {
+                background: rgb(174, 174, 174);
             }
-            .noCascade {
-                padding-top:45px;
-                background: url(../images/IconCascadeWhite.png) center top no-repeat;
-                text-align: center;
+            #tabs nav.tabNav ul li.active,
+            #tabs nav.tabNav ul li.active:hover {
+                background: rgb(0, 0, 0);
+            }
+            #tabs nav.tabNav ul li a {
+                display: block;
+                padding: 0.75em 1em;
+                color: white;
                 text-transform: uppercase;
-                font-size: 1.1em;
-                width: 90%;
-                margin:0 auto 20px auto;
+                -webkit-transition: none;
+                transition: none;
+                text-shadow: none;
+                min-width: 1px;
+                min-height: 12px;
+            }
+            #tabs nav.tabNav ul li.active a,
+            #tabs nav.tabNav ul li.active a:hover {
+                color: white;
+                text-shadow: none;
+                -webkit-text-shadow: none;
+                -moz-text-shadow: none;
+            }
+            #tabs nav.tabNav ul li a:hover {
+                color: white;
+                text-shadow: none;
+                -webkit-text-shadow: none;
+                -moz-text-shadow: none;
+            }
+            .tabNav {
+                .aFormTab {
+                    padding-left: 25px;
+                    background: rgb(32, 32, 36) url(../images/IconForms.png) no-repeat left center;
+                }
+            }
+        }
+        .formsContainer {
+            background: rgba(32, 32, 36, 0.9);
+            margin: 0px auto;
+        }
+        .projectDetails {
+            background: rgb(54, 79, 90);
+            margin: 10px auto;
+        }
+        .projectDetails, .formsContainer {
+            width: 99.5%;
+            position: relative;
+            padding: 2em 0.25% 2em 0.25%;
+            h3 {
+                color: $akvoGolden;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+            .showCollapse {
+                background: $anchorLink;
+                color: white;
+                text-transform: uppercase;
+                display: inline-block;
+                padding: 2px 7px 0px 7px;
+                display: inline-block;
+                margin: -2px 0 0 10px;
+                border-radius: 3px;
+                span.monitoringAndvanced & {
+                    display: block;
+                    margin-top: 10px;
+                }
+            }
+            label[for=enableMonitoring] {
+                margin: 10px 0 0 5px;
+            }
+            .projectDetailForm, .surveyDetailForm {
+                display: block;
+                margin-top: 0 !important;
+                .monitoringHint {
+                    margin: 10px 0 0 10px;
+                    color: #c49a6c;
+                }
+                form {
+                    width: 100%;
+                }
+                input {
+                    width: 99%;
+                    margin-bottom: 35px;
+                    background: rgb(248, 248, 248);
+                    color: rgb(158, 158, 158);
+                    &:focus {
+                        border: 1px solid rgb(205, 205, 205);
+                        background: rgb(245, 255, 216);
+                    }
+                    &[type=checkbox] {
+                        width: 20px;
+                        float: left;
+                    }
+                }
+                .projectSelect {
+                    margin-bottom: 50px;
+                    li {
+                        display: block;
+                        width: 100%;
+                        margin-bottom: 20px;
+                        select {
+                            width: 99.5%;
+                        }
+                    }
+                }
             }
         }
     }
-
-.addMenuAction {display:inline-block; margin:0 auto;
-  &.addNewForm {
-    display:table;
-    padding:8px 8px 8px 31px;
-  }
 }
+
+/************************************** CASCADING QUESTIONS ************************************/
+.noCascadeContainer {
+    color: white;
+    background: rgba(white, 0);
+    padding: 2em 0;
+    li.formList {
+        padding: 10px 0;
+        &.populated {
+            background: rgba(white, 0);
+        }
+        h4 {
+            margin: 5px 0 10px 5px;
+            color: rgba($anchorLink, 0.5);
+        }
+        .noCascade {
+            padding-top: 45px;
+            background: url(../images/IconCascadeWhite.png) center top no-repeat;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 1.1em;
+            width: 90%;
+            margin: 0 auto 20px auto;
+        }
+    }
+}
+
+.addMenuAction {
+    display: inline-block;
+    margin: 0 auto;
+    &.addNewForm {
+        display: table;
+        padding: 8px 8px 8px 31px;
+    }
+}
+
 /*.cascadeWrap {
      height:calc(100vh - 180px);
 }*/
 .cascadeSection {
     background: $projectBackground;
     box-sizing: border-box;
-    width:100%;
-    padding:15px 0;
-    margin:0 auto;
-    overflow-y:hidden;
-    overflow-x:hidden;
+    width: 100%;
+    padding: 15px 0;
+    margin: 0 auto;
+    overflow-y: hidden;
+    overflow-x: hidden;
     .cascadeDetailsPanel {
-        padding-top:15px;         
-        padding-bottom:15px;
+        padding-top: 15px;
+        padding-bottom: 15px;
         .offSet {
             @include offSet(60px, 0);
-        } 
+        }
         h2 {
             margin-right: 15px;
-            }
         }
-        .cascadeInfo {
-          display: -webkit-box;
-          display: -moz-box;
-          display: -ms-flexbox;
-          display: -webkit-flex;    
-          display:flex;
-            -webkit-flex-direction: row;
-            -webkit-flex-wrap: nowrap;
-            -webkit-align-items: center;
-            -webkit-align-content: center;            
-            flex-direction: row;
-            flex-wrap: nowrap;
-            align-items: center;
-            align-content: center;
-            margin-top:20px;
-            li {
-                width: 50%;
-                text-align: center;
-                padding:10px 0;
-                background:rgba(32,32,36,0.2);
-                color:rgb(128,130,133);
-                text-transform: uppercase;
-                font-size:1.5em;
-                span {
-                    display:block;
-                    font-size:1.8em;
-                    margin-top:-5px;
-                    font-weight:600;
-                    &.projectForm, &.projectMonitoring, &.cascadeStatus {color:white;}
-                    &.cascadeStatus.redColor {color:$akvoRed2;}
-                    &.cascadeStatus.published {color:$green;}
+    }
+    .cascadeInfo {
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-direction: row;
+        -webkit-flex-wrap: nowrap;
+        -webkit-align-items: center;
+        -webkit-align-content: center;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        align-content: center;
+        margin-top: 20px;
+        li {
+            width: 50%;
+            text-align: center;
+            padding: 10px 0;
+            background: rgba(32, 32, 36, 0.2);
+            color: rgb(128, 130, 133);
+            text-transform: uppercase;
+            font-size: 1.5em;
+            span {
+                display: block;
+                font-size: 1.8em;
+                margin-top: -5px;
+                font-weight: 600;
+                &.projectForm, &.projectMonitoring, &.cascadeStatus {
+                    color: white;
+                }
+                &.cascadeStatus.redColor {
+                    color: $akvoRed2;
+                }
+                &.cascadeStatus.published {
+                    color: $green;
                 }
             }
         }
-        span.fontInfo {
-            font-family: $scriptFont;
-            font-size:1.8em;
-            color: rgb(212,212,212);
-            margin:0 0.5em;
-        }
-        h2 {
-            color: $akvoOrange;
-            display:inline;
-            a {
+    }
+    span.fontInfo {
+        font-family: $scriptFont;
+        font-size: 1.8em;
+        color: rgb(212, 212, 212);
+        margin: 0 0.5em;
+    }
+    h2 {
+        color: $akvoOrange;
+        display: inline;
+        a {
             display: inline-block;
             width: 20px;
-            text-indent:-9999px;
-            &.editSurvey{
-                background:url(../images/IconEdit.svg) center center no-repeat;
+            text-indent: -9999px;
+            &.editSurvey {
+                background: url(../images/IconEdit.svg) center center no-repeat;
                 background-size: 18px 18px;
-                &:hover{ background: url(../images/IconEditOrange.svg) center center no-repeat;
-                         background-size: 18px 18px;
-                    }
-                }
-            }               
-        }
-    }
-
-nav.cascadeBreadCrumb {
-        position:relative;
-        ul li {
-            display: inline-block;
-            height: 54px;
-            line-height: 54px;
-            width: auto;
-            margin: 5px 3px 0 0;
-            text-indent: 29px;
-            position: relative;
-            transition:all 0.4s ease-in;
-        }
-        ul li:before {
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            left: -2px;
-            border-style: solid;
-            border-width: 27px 0 27px 27px;
-            border-color: transparent transparent transparent #38454a;
-            z-index: 0;
-            transition:all 0.4s ease-in;
-        }
-        ul li:first-of-type:before {
-            border-color: transparent;
-        }
-        ul li a:after {
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            right: -27px;
-            border-style: solid;
-            border-width: 27px 0 27px 27px;
-            border-color: transparent transparent transparent $akvoDarkBlue;
-            z-index: 10;
-            transition:all 0.4s ease-in;
-        }
-        ul li {
-            a {
-                display: block;
-                background: $akvoDarkBlue;
-                color: white;
-                font-size: 1.1em;
-                transition:all 0.4s ease-in;
-                span {
-                    display: inline-block;
-                    margin-left:-20px;
-                    margin-right:15px;
-                    font-weight:bold;
-                    font-size:1.2em;
-                    font-family: $titleFont;
-                    color:$akvoGolden;
-                    text-shadow:1px 2px 0 rgba(black,0.4);
-                    }
-                @include noWrapTxt;
                 &:hover {
-                    background: $akvoDarkBlue;
-                    &:after {
-                        border-color: transparent transparent transparent $akvoDarkBlue;
-                    }
+                    background: url(../images/IconEditOrange.svg) center center no-repeat;
+                    background-size: 18px 18px;
                 }
-
-            }
-            &.offScreen {
-                a {
-                    background:rgba(32,32,36,0.7);
-                    color:rgba(white, 0.3);
-                    border-color: transparent transparent transparent rgba(32,32,36,0.7);
-                    transition:all 0.4s ease-in;
-                    &:after { 
-                        border-color: transparent transparent transparent rgba(32,32,36,0.7);
-                        transition:all 0.4s ease-in;
-                        }
-                    &:hover {
-                        background: rgba($anchorLinkHover,0.5);
-                        &:after {
-                             border-color: transparent transparent transparent rgba($anchorLinkHover,0.5);
-                            }
-                    }
-                }
-           }
-    }
-div.addLevelBtn {
-    position:absolute;
-    top:15px;
-    right:5px;
-    @include responsive(medium-max-screens){
-        position:relative;
-        display:table;
-        margin:10px auto;
-    }
-/*    @media screen and (max-width:992px) {
-        position:relative;
-        display:table;
-        margin:10px auto;
-    }*/
-    &.addLevel {
-        display:table;
-    &:hover {
-        background: $anchorLinkHover;
             }
         }
     }
 }
 
+nav.cascadeBreadCrumb {
+    position: relative;
+    ul li {
+        display: inline-block;
+        height: 54px;
+        line-height: 54px;
+        width: auto;
+        margin: 5px 3px 0 0;
+        text-indent: 29px;
+        position: relative;
+        transition: all 0.4s ease-in;
+    }
+    ul li:before {
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        left: -2px;
+        border-style: solid;
+        border-width: 27px 0 27px 27px;
+        border-color: transparent transparent transparent #38454a;
+        z-index: 0;
+        transition: all 0.4s ease-in;
+    }
+    ul li:first-of-type:before {
+        border-color: transparent;
+    }
+    ul li a:after {
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        right: -27px;
+        border-style: solid;
+        border-width: 27px 0 27px 27px;
+        border-color: transparent transparent transparent $akvoDarkBlue;
+        z-index: 10;
+        transition: all 0.4s ease-in;
+    }
+    ul li {
+        a {
+            display: block;
+            background: $akvoDarkBlue;
+            color: white;
+            font-size: 1.1em;
+            transition: all 0.4s ease-in;
+            span {
+                display: inline-block;
+                margin-left: -20px;
+                margin-right: 15px;
+                font-weight: bold;
+                font-size: 1.2em;
+                font-family: $titleFont;
+                color: $akvoGolden;
+                text-shadow: 1px 2px 0 rgba(black, 0.4);
+            }
+            @include noWrapTxt;
+            &:hover {
+                background: $akvoDarkBlue;
+                &:after {
+                    border-color: transparent transparent transparent $akvoDarkBlue;
+                }
+            }
+        }
+        &.offScreen {
+            a {
+                background: rgba(32, 32, 36, 0.7);
+                color: rgba(white, 0.3);
+                border-color: transparent transparent transparent rgba(32, 32, 36, 0.7);
+                transition: all 0.4s ease-in;
+                &:after {
+                    border-color: transparent transparent transparent rgba(32, 32, 36, 0.7);
+                    transition: all 0.4s ease-in;
+                }
+                &:hover {
+                    background: rgba($anchorLinkHover, 0.5);
+                    &:after {
+                        border-color: transparent transparent transparent rgba($anchorLinkHover, 0.5);
+                    }
+                }
+            }
+        }
+    }
+    div.addLevelBtn {
+        position: absolute;
+        top: 15px;
+        right: 5px;
+        @include responsive(medium-max-screens) {
+            position: relative;
+            display: table;
+            margin: 10px auto;
+        }
+        &.addLevel {
+            display: table;
+            &:hover {
+                background: $anchorLinkHover;
+            }
+        }
+    }
+}
 
 .levelColumns {
-    width:100%;
+    width: 100%;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
-    -ms-overflow-style:-ms-autohiding-scrollbar;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
     margin-top: 15px;
-    background:rgba(32,32,36,0.7);
-    /*height:calc(100% - 360px);*/
+    background: rgba(32, 32, 36, 0.7);
     .levelCol {
-        position:relative;
+        position: relative;
         @include border-radius(3px);
-        padding:10px 5px;
+        padding: 10px 5px;
         vertical-align: top;
         display: inline-block;
         width: calc(33.2% - 10px);
-        background:rgba(32,32,36,0.2);
+        background: rgba(32, 32, 36, 0.2);
         height: calc(100% - 20px);
-      /*  height: calc(100% - 20px);
-        max-height:calc(100% - 20px);*/
         overflow: auto;
-        transition:all 0.4s ease-in;
+        transition: all 0.4s ease-in;
         .levelNbr {
-            color:$akvoGolden;
-            padding-left:5px;
+            color: $akvoGolden;
+            padding-left: 5px;
             font-weight: bold;
-            font-size:1.2em;
+            font-size: 1.2em;
         }
-        .cascadeEntryName {width:55%;}
-            .cascadeEntryCode {width:15%;}
-            button {
-                width:15%;
-                @include border-radius(3px);
-                background:$anchorLink;
-                color:white;
-                border:none;
-                &.squeezeR {width:10%;}
-                &:hover {
-                    background:$anchorLinkHover;
-                }
+        .cascadeEntryName {
+            width: 55%;
+        }
+        .cascadeEntryCode {
+            width: 15%;
+        }
+        button {
+            width: 15%;
+            @include border-radius(3px);
+            background: $anchorLink;
+            color: white;
+            border: none;
+            &.squeezeR {
+                width: 10%;
             }
+            &:hover {
+                background: $anchorLinkHover;
+            }
+        }
         .levelHead {
-            padding-left:5px;            
+            padding-left: 5px;
             width: calc(100% - 10px);
             label {
-                margin-bottom:10px;
+                margin-bottom: 10px;
                 a {
-                display: inline-block;
-                width: 20px;
-                margin-left: 10px;
-                text-indent:-9999px;
-                &.editSurvey{
-                    background:url(../images/IconEdit.svg) center center no-repeat;
-                    background-size: 18px 18px;
-                    &:hover{ background: url(../images/IconEditOrange.svg) center center no-repeat;
-                             background-size: 18px 18px;
+                    display: inline-block;
+                    width: 20px;
+                    margin-left: 10px;
+                    text-indent: -9999px;
+                    &.editSurvey {
+                        background: url(../images/IconEdit.svg) center center no-repeat;
+                        background-size: 18px 18px;
+                        &:hover {
+                            background: url(../images/IconEditOrange.svg) center center no-repeat;
+                            background-size: 18px 18px;
                         }
                     }
-                }   
+                }
             }
-        } 
-        ul{
-            margin-top:15px;
-            li{
-                position:relative;
-                color:white;
-                padding:0 2%;
-                width:96%;
+        }
+        ul {
+            margin-top: 15px;
+            li {
+                position: relative;
+                color: white;
+                padding: 0 2%;
+                width: 96%;
                 background: rgb(53, 76, 84) url(../images/carret.svg) right center no-repeat;
-                margin:0px auto 5px auto;
-                background-size:15px 15px;
+                margin: 0px auto 5px auto;
+                background-size: 15px 15px;
                 &:hover {
-                    background:rgba(255,255,255, 0.2) url(../images/carret.svg) right center no-repeat;
-                    background-size:15px 15px;
+                    background: rgba(255, 255, 255, 0.2) url(../images/carret.svg) right center no-repeat;
+                    background-size: 15px 15px;
                     cursor: pointer;
                 }
                 &.selected {
-                    background:rgb(41, 119, 152) url(../images/carret.svg) right center no-repeat;
-                    background-size:15px 15px;
-                    cursor:text;
+                    background: rgb(41, 119, 152) url(../images/carret.svg) right center no-repeat;
+                    background-size: 15px 15px;
+                    cursor: text;
                 }
             }
             a {
-                display:block;
-                width:100%;
-                padding:15px 0;
+                display: block;
+                width: 100%;
+                padding: 15px 0;
                 @include noWrapTxt;
                 &.deleteLevel {
-                    position:absolute;
+                    position: absolute;
                     display: inline-block;
-                    width:15px;
-                    height:inherit;
-                    padding:0px 7px 14px 7px;
-                    text-indent:-9999px;
-                    margin-top:-7px;
+                    width: 15px;
+                    height: inherit;
+                    padding: 0px 7px 14px 7px;
+                    text-indent: -9999px;
+                    margin-top: -7px;
                     @include border-radius(4px);
-                    background: rgba(32,32,36,0.2) url(../images/IconDelete.svg) center  center  no-repeat;
+                    background: rgba(32, 32, 36, 0.2) url(../images/IconDelete.svg) center center no-repeat;
                     background-size: 40px 40px;
-                    top:15px;
-                    right:15px; 
+                    top: 15px;
+                    right: 15px;
                     &:hover {
-                        background:rgba(32,32,36,0.2) url(../images/IconDeleteOrange.svg) center  center  no-repeat;                    
+                        background: rgba(32, 32, 36, 0.2) url(../images/IconDeleteOrange.svg) center center no-repeat;
                         background-size: 40px 40px;
-                    }             
+                    }
                 }
-                &.editLevel{
-                    position:absolute;
+                &.editLevel {
+                    position: absolute;
                     display: inline-block;
-                    width:15px;
-                    height:inherit;
-                    padding:0px 7px 14px 7px;
-                    text-indent:-9999px;
-                    margin-top:-7px;
+                    width: 15px;
+                    height: inherit;
+                    padding: 0px 7px 14px 7px;
+                    text-indent: -9999px;
+                    margin-top: -7px;
                     @include border-radius(4px);
-                    background: rgba(32,32,36,0.2) url(../images/IconEdit.svg) center center no-repeat;
+                    background: rgba(32, 32, 36, 0.2) url(../images/IconEdit.svg) center center no-repeat;
                     background-size: 18px 18px;
-                    top:15px;
-                    right:50px;                     
-                    &:hover{ 
-                        background: rgba(32,32,36,0.2) url(../images/IconEditOrange.svg) center center no-repeat;
+                    top: 15px;
+                    right: 50px;
+                    &:hover {
+                        background: rgba(32, 32, 36, 0.2) url(../images/IconEditOrange.svg) center center no-repeat;
                         background-size: 18px 18px;
                     }
                 }
             }
-        }    
+        }
     }
 }
 
 ul.cascadeAction {
-    display:inline-block;
+    display: inline-block;
     @include responsive(medium-max-screens) {
-        margin:10px 0 10px 0;
+        margin: 10px 0 10px 0;
     }
-    li{             
+
+    li {
         display: inline-block;
         a {
-            font-size:1em;
+            font-size: 1em;
             text-transform: uppercase;
-            padding:8px 15px 8px 35px;
+            padding: 8px 15px 8px 35px;
             height: 9px;
-            border-radius:3px;
+            border-radius: 3px;
             overflow: hidden;
-            white-space:nowrap;
+            white-space: nowrap;
             &.saveNewSurvey {
-                background:rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left center no-repeat;
+                background: rgba(32, 32, 36, 0.5) url(../images/IconSave.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
             &.previewNewSurvey {
-                background:rgba(32, 32, 36, 0.5)  url(../images/IconPreview.svg) left  center  no-repeat;
+                background: rgba(32, 32, 36, 0.5) url(../images/IconPreview.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
             &.publishNewSurvey {
-                background:rgba(32, 32, 36, 0.5)  url(../images/IconPublish.svg) left  center  no-repeat;
+                background: rgba(32, 32, 36, 0.5) url(../images/IconPublish.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
             &.deleteSurvey {
-                background:rgba(32, 32, 36, 0.5)  url(../images/IconDelete.svg) left  center  no-repeat;
+                background: rgba(32, 32, 36, 0.5) url(../images/IconDelete.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
             &.saveNewSurvey:hover {
-                background:rgba(32, 32, 36, 1)   url(../images/IconSaveOrange.svg) left  center  no-repeat;
+                background: rgba(32, 32, 36, 1) url(../images/IconSaveOrange.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
             &.previewNewSurvey:hover {
-                background:rgba(32, 32, 36, 1)   url(../images/IconPreviewOrange.svg) left  center  no-repeat;
+                background: rgba(32, 32, 36, 1) url(../images/IconPreviewOrange.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
             &.publishNewSurvey:hover {
-                background:rgba(32, 32, 36, 1)   url(../images/IconPublishOrange.svg) left  center  no-repeat;
+                background: rgba(32, 32, 36, 1) url(../images/IconPublishOrange.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
             &.deleteSurvey:hover {
-                background:rgba(32, 32, 36, 1)   url(../images/IconDeleteOrange.svg) left  center  no-repeat;
+                background: rgba(32, 32, 36, 1) url(../images/IconDeleteOrange.svg) left center no-repeat;
                 background-size: 40px 40px;
             }
-
             &.manageNotifications {
-                    background:rgba(32, 32, 36, 0.5)  url(../images/IconNotif.svg) left  center  no-repeat;
-                    background-size: 40px 40px;
-                }
+                background: rgba(32, 32, 36, 0.5) url(../images/IconNotif.svg) left center no-repeat;
+                background-size: 40px 40px;
+            }
             &.manageNotifications:hover {
-                    background:rgba(32, 32, 36, 1)  url(../images/IconNotifOrange.svg) left  center  no-repeat;
-                    background-size: 40px 40px;
-                }
+                background: rgba(32, 32, 36, 1) url(../images/IconNotifOrange.svg) left center no-repeat;
+                background-size: 40px 40px;
+            }
             &.manageTranslations {
-                    background:rgba(32, 32, 36, 0.5)  url(../images/IconTranslate.svg) left  center  no-repeat;
-                    background-size: 40px 40px;
-                }
+                background: rgba(32, 32, 36, 0.5) url(../images/IconTranslate.svg) left center no-repeat;
+                background-size: 40px 40px;
+            }
             &.manageTranslations:hover {
-                    background:rgba(32, 32, 36, 1)  url(../images/IconTranslateOrange.svg) left  center  no-repeat;
-                    background-size: 40px 40px;
-                }
+                background: rgba(32, 32, 36, 1) url(../images/IconTranslateOrange.svg) left center no-repeat;
+                background-size: 40px 40px;
+            }
         }
     }
 }
+
 a.btn {
     display: block;
     padding: 1px 0 7px 21px;
@@ -5100,9 +5651,10 @@ a.btn {
         display: inline-block;
     }
     &:hover {
-         color:$anchorLinkHover;
+        color: $anchorLinkHover;
     }
 }
+
 a.addBtn {
     color: white;
     background: rgba($anchorLink, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
@@ -5113,21 +5665,23 @@ a.addBtn {
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
 }
+
 a.addBtn:hover {
     color: white;
     background: rgba($anchorLinkHover, 1) url(../images/IconPlusWhite.svg) 2px center no-repeat;
     -webkit-background-size: 25px 45px;
     background-size: 25px 45px;
 }
+
 a.importBtn {
     color: white;
     padding: 8px 7px 13px 25px;
     border-radius: 3px;
-    background: rgba($anchorLink, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;   
+    background: rgba($anchorLink, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
     -webkit-background-size: 25px 45px;
     background-size: 25px 45px;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
-    transition: color 0.2s ease-in, background-color 0.2s ease-in;    
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;
     &:hover {
         background: rgba($anchorLinkHover, 1) url(../images/IconImportWhite.svg) 2px center no-repeat;
         -webkit-background-size: 25px 45px;
@@ -5136,84 +5690,90 @@ a.importBtn {
 }
 
 .disabled {
-    color:rgba(128,128,128,0.1);
-    &:hover{
-        color:rgba(128,128,128,0.1);
-    }
-}
-a.levelUp {
-    display:table;
-    margin:20px auto 0;
-    padding:15px 35px 15px 15px;
-    background: rgba($anchorLink, 0) url(../images/IconRightBlue.svg) right center no-repeat; 
-    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
-    transition: color 0.2s ease-in, background-color 0.2s ease-in;  
-    -webkit-background-size: 25px 25px;
-    background-size: 25px 25px;
+    color: rgba(128, 128, 128, 0.1);
     &:hover {
-    background: rgba($anchorLink, 0.1) url(../images/IconRightOrange.svg) right center no-repeat;  
-    -webkit-background-size: 25px 25px;
-    background-size: 25px 25px;
+        color: rgba(128, 128, 128, 0.1);
     }
 }
-a.levelDown {
-    display:table;
-    margin:20px auto 0;
-    padding:15px 15px 15px 35px;
-    background: rgba($anchorLink, 0) url(../images/IconLeftBlue.svg) left center no-repeat;   
+
+a.levelUp {
+    display: table;
+    margin: 20px auto 0;
+    padding: 15px 35px 15px 15px;
+    background: rgba($anchorLink, 0) url(../images/IconRightBlue.svg) right center no-repeat;
     -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
     transition: color 0.2s ease-in, background-color 0.2s ease-in;
     -webkit-background-size: 25px 25px;
     background-size: 25px 25px;
     &:hover {
-    background: rgba($anchorLink, 0.1) url(../images/IconLeftOrange.svg) left center no-repeat;   
+        background: rgba($anchorLink, 0.1) url(../images/IconRightOrange.svg) right center no-repeat;
         -webkit-background-size: 25px 25px;
-    background-size: 25px 25px;
+        background-size: 25px 25px;
     }
 }
+
+a.levelDown {
+    display: table;
+    margin: 20px auto 0;
+    padding: 15px 15px 15px 35px;
+    background: rgba($anchorLink, 0) url(../images/IconLeftBlue.svg) left center no-repeat;
+    -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    transition: color 0.2s ease-in, background-color 0.2s ease-in;
+    -webkit-background-size: 25px 25px;
+    background-size: 25px 25px;
+    &:hover {
+        background: rgba($anchorLink, 0.1) url(../images/IconLeftOrange.svg) left center no-repeat;
+        -webkit-background-size: 25px 25px;
+        background-size: 25px 25px;
+    }
+}
+
 li.disable {
-    a.levelUp{
-        pointer-events: none; /* Disables the button completely. Better than just cursor: default; */
+    a.levelUp {
+        pointer-events: none;
+        /* Disables the button completely. Better than just cursor: default; */
         @include opacity(0.2);
-        color:white;
-        padding:15px 35px 15px 15px;
+        color: white;
+        padding: 15px 35px 15px 15px;
         background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
         -webkit-background-size: 25px 25px;
-        background-size: 25px 25px;   
+        background-size: 25px 25px;
         &:hover {
             -webkit-background-size: 25px 25px;
             background-size: 25px 25px;
-            background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;   
-            }
-        }
-    a.levelDown{
-        pointer-events: none; /* Disables the button completely. Better than just cursor: default; */
-        @include opacity(0.2);
-        color:white;
-        padding:15px 15px 15px 35px;
-        background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat; 
-        -webkit-background-size: 25px 25px;
-        background-size: 25px 25px;  
-        &:hover {
-            background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;   
-            -webkit-background-size: 25px 25px;
-            background-size: 25px 25px;
-            }
+            background: rgba($anchorLink, 0) url(../images/IconRightWhite.svg) right center no-repeat;
         }
     }
+    a.levelDown {
+        pointer-events: none;
+        /* Disables the button completely. Better than just cursor: default; */
+        @include opacity(0.2);
+        color: white;
+        padding: 15px 15px 15px 35px;
+        background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
+        -webkit-background-size: 25px 25px;
+        background-size: 25px 25px;
+        &:hover {
+            background: rgba($anchorLink, 0) url(../images/IconLeftWhite.svg) left center no-repeat;
+            -webkit-background-size: 25px 25px;
+            background-size: 25px 25px;
+        }
+    }
+}
+
 .levelSecondNav {
     nav {
-        ul{
+        ul {
             display: -webkit-box;
             display: -moz-box;
             display: -ms-flexbox;
-            display: -webkit-flex;    
-            display:flex;
-            -webkit-align-items:center;
-            align-items:center;
-            li{
+            display: -webkit-flex;
+            display: flex;
+            -webkit-align-items: center;
+            align-items: center;
+            li {
                 text-align: center;
-                width:50%;
+                width: 50%;
                 -webkit-justify-content: flex-justified;
                 justify-content: flex-justified;
             }
@@ -5221,42 +5781,41 @@ li.disable {
     }
 }
 
-.importBlock  {
-    width:98%;
-    margin:5px auto;
-    background:rgba($anchorLink, 0.1);
-    padding:10px 0.5%;
+.importBlock {
+    width: 98%;
+    margin: 5px auto;
+    background: rgba($anchorLink, 0.1);
+    padding: 10px 0.5%;
     a {
         & + a {
-            margin-left:10px;
+            margin-left: 10px;
         }
     }
-    h4{
-        font-size:1.2em;
-        color:$akvoOrange;
-        margin:5px 0 10px 0;
+    h4 {
+        font-size: 1.2em;
+        color: $akvoOrange;
+        margin: 5px 0 10px 0;
     }
     @include border-radius(5px);
     fieldset {
-        padding:10px;
-        background-color:rgba(white,0.1);
-        color:white;
+        padding: 10px;
+        background-color: rgba(white, 0.1);
+        color: white;
         input {
-            @include placeholder-color(rgb(32,32,36));
-            background:rgba(white,0.4);
-            border:none;
-            &:first-of-type {            
-                width:25%;
+            @include placeholder-color(rgb(32, 32, 36));
+            background: rgba(white, 0.4);
+            border: none;
+            &:first-of-type {
+                width: 25%;
             }
         }
     }
     p {
-        width:35%;
-        margin-top:5px;
-        color:rgba(white,0.6);
+        width: 35%;
+        margin-top: 5px;
+        color: rgba(white, 0.6);
     }
     .resumable-progress {
-        margin-top:15px;
+        margin-top: 15px;
     }
 }
-
