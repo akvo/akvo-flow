@@ -4579,6 +4579,8 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                       -webkit-transition: none;
                       transition: none;
                       text-shadow:none;
+                      min-width:1px;
+                      min-height: 12px;
                   }
                   #tabs nav.tabNav ul li.active a,
                   #tabs nav.tabNav ul li.active a:hover {
