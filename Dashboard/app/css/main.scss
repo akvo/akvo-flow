@@ -256,12 +256,12 @@ pre {
     -o-box-shadow: 0 0 2px rgb(0, 0, 0);
 }
 .isLoading,
-.isSaving {
+.isSaving, .loadSave {
     position: fixed;
-    top: 88px;
+    top: 95px;
     left: 46%;
-    z-index: 999999;
-    padding: 1px 0 0 20px;
+    z-index: 9999999;
+    padding: 0px 0 0 20px;
     background: url(../images/loader.gif) left center no-repeat;
     color: rgb(252, 159, 0);
     font-weight: bold;
@@ -2178,8 +2178,8 @@ a.redCancel {
 }
 #assignSurveys a.stepBack {
     position: absolute;
-    top: 1.5em;
-    right: 1em;
+    top: 40px;
+    right: 20px;
 }
 /* Survey Asset
 --------------------------------------------- */
