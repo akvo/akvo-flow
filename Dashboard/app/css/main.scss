@@ -258,11 +258,13 @@ pre {
 .isLoading,
 .isSaving, .loadSave {
     position: fixed;
-    top: 95px;
+    top: 90px;
     left: 46%;
     z-index: 9999999;
-    padding: 0px 0 0 20px;
-    background: url(../images/loader.gif) left center no-repeat;
+    border-radius: 3px;
+    box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
+    padding: 5px 3px 5px 25px;
+    background: rgb(248,248,248) url(../images/loader.gif) 5px center no-repeat;
     color: rgb(252, 159, 0);
     font-weight: bold;
     font-size: 1.2em;
