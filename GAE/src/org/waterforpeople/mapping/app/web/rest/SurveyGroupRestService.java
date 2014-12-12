@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
@@ -82,10 +83,18 @@ public class SurveyGroupRestService {
 
         // if we are here, it is a regular request
         List<SurveyGroup> surveys = surveyGroupDao.listAllFilteredByUserAuthorization();
+        SurveyDAO surveyDao = new SurveyDAO();
         if (surveys != null) {
             for (SurveyGroup s : surveys) {
                 SurveyGroupDto dto = new SurveyGroupDto();
                 DtoMarshaller.copyToDto(s, dto);
+                List<Survey> surveyList = surveyDao.listSurveysByGroup(s.getKey().getId());
+                if (surveyList != null && !surveyList.isEmpty()) {
+                    SurveyDto sDto = new SurveyDto();
+                    // we don't want/need the full object
+                    sDto.setKeyId(surveyList.get(0).getKey().getId());
+                    dto.addSurvey(sDto);
+                }
                 results.add(dto);
             }
         }
