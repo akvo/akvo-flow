@@ -175,6 +175,7 @@
                    (om/build b/dropdown
                              {:placeholder (t> _select_a_folder_or_survey)
                               :data (sort-folders-and-surveys projects)
+                              :loading? (projects-store/loading? projects-store)
                               :label-fn survey-or-folder
                               :on-select #(om/set-state! owner :selected-folders
                                                        (conj selected-folders %))}))])
