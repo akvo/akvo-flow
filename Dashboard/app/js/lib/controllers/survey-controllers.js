@@ -492,7 +492,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
       "version":"1.0"
     });
-
+    FLOW.projectControl.get('currentProject').set('surveyList', [1]);
     FLOW.store.commit();
     this.refresh();
   },
@@ -500,7 +500,11 @@ FLOW.surveyControl = Ember.ArrayController.create({
   deleteForm: function() {
     var keyId = FLOW.selectedControl.selectedSurvey.get('keyId');
     var survey = FLOW.store.find(FLOW.Survey, keyId);
+    if (FLOW.projectControl.get('formCount') === 1) {
+      FLOW.projectControl.get('currentProject').set('surveyList', null);
+    }
     survey.deleteRecord();
+
     FLOW.store.commit();
     this.refresh();
   },
