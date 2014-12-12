@@ -321,11 +321,13 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   beginMoveProject: function(evt) {
+    this.set('newlyCreated', null);
     this.set('moveTarget', evt.context);
     this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "survey");
   },
 
   beginCopyProject: function(evt) {
+    this.set('newlyCreated', null);
     this.set('copyTarget', evt.context);
   },
 

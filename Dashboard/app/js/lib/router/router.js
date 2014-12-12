@@ -97,6 +97,7 @@ FLOW.Router = Ember.Router.extend({
           });
           FLOW.projectControl.populate();
           FLOW.projectControl.set('currentProject', null);
+          FLOW.projectControl.set('newlyCreated', null);
           FLOW.selectedControl.set('selectedQuestionGroup', null);
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
