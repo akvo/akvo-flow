@@ -2449,12 +2449,18 @@ li.aFolder, li.aSurvey {
 
 li.aFolder {
     @extend li.aSurvey;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: row;
+    -moz-flex-direction: row;    
     flex-direction: row;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
     -webkit-align-items: center;
+    -moz-align-items: center;
     align-items: center;
     min-height: 70px;
     padding: 0.25em 0 0.25em 15px;
@@ -2568,10 +2574,11 @@ ul.surveyInfo li.responseNumber {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     position: relative;
-    display: inline;
+    display: inline-block;
     float: right;
-    width: calc(30%);
+    width: 30%;
     padding-right: 30px;
+    top: 5px;
 }
 
 .aSurvey.aFolder {
@@ -2591,13 +2598,20 @@ ul.surveyInfo li.responseNumber {
         right: 0;
         padding-right: 30px;
     }
+    body:not(:-moz-handler-blocked) nav {
+    margin-top:-30px;
+  }
 }
 
 .aSurvey nav ul {
     display: -webkit-inline-box;
     display: -webkit-inline-flex;
+    display: -moz-inline-box;
+    display: -moz-inline-flex;
     display: -ms-inline-flexbox;
     display: inline-flex;
+    align-items:center;
+    align-content:flex-start;
     float: right;
 }
 
