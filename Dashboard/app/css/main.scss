@@ -2712,6 +2712,75 @@ ul.surveyInfo li.responseNumber {
         border:2px solid rgba($akvoOrange, 0.3);
     }
 }
+@-moz-keyframes appearFx {
+    0% {
+        background: rgba($akvoOrange, 0);
+        opacity: 0;
+        box-shadow: 0 0 2px rgba(200,200,200, 0);
+    }
+    30% {
+        background: rgba($akvoOrange, 0.5);
+        opacity: 0.2;
+        box-shadow: 0 0 10px rgba(200,200,200, 1);
+    }
+    40% {
+        background: rgba(white, 1);
+        opacity: 1;
+        box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
+    }
+    100% {
+        background: rgba($akvoOrange, 0.1);
+        opacity: 1;
+        box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
+        border:2px solid rgba($akvoOrange, 0.3);
+    }
+}
+@-o-keyframes appearFx {
+    0% {
+        background: rgba($akvoOrange, 0);
+        opacity: 0;
+        box-shadow: 0 0 2px rgba(200,200,200, 0);
+    }
+    30% {
+        background: rgba($akvoOrange, 0.5);
+        opacity: 0.2;
+        box-shadow: 0 0 10px rgba(200,200,200, 1);
+    }
+    40% {
+        background: rgba(white, 1);
+        opacity: 1;
+        box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
+    }
+    100% {
+        background: rgba($akvoOrange, 0.1);
+        opacity: 1;
+        box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
+        border:2px solid rgba($akvoOrange, 0.3);
+    }
+}
+@keyframes appearFx {
+    0% {
+        background: rgba($akvoOrange, 0);
+        opacity: 0;
+        box-shadow: 0 0 2px rgba(200,200,200, 0);
+    }
+    30% {
+        background: rgba($akvoOrange, 0.5);
+        opacity: 0.2;
+        box-shadow: 0 0 10px rgba(200,200,200, 1);
+    }
+    40% {
+        background: rgba(white, 1);
+        opacity: 1;
+        box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
+    }
+    100% {
+        background: rgba($akvoOrange, 0.1);
+        opacity: 1;
+        box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
+        border:2px solid rgba($akvoOrange, 0.3);
+    }
+}
 /*----------------------------------------------------------------------------------------------------------------
                                          Survey Creation & Editing
 ----------------------------------------------------------------------------------------------------------------*/
