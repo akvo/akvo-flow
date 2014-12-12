@@ -128,9 +128,10 @@ FLOW.ProjectItemView = FLOW.View.extend({
     if (isFolder) classes += " aFolder";
     if (isFolderEmpty) classes += " folderEmpty";
     if (isMoving || isCopying) classes += " highLighted";
+    if (FLOW.projectControl.get('newlyCreated') === this.get('content')) classes += " newlyCreated";
 
     return classes;
-  }.property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget'),
+  }.property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget', 'FLOW.projectControl.currentProject'),
 
   toggleEditFolderName: function(evt) {
     this.set('folderEdit', !this.get('folderEdit'));

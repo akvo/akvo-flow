@@ -277,6 +277,8 @@ FLOW.projectControl = Ember.ArrayController.create({
 
       FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
+
+    this.set('newlyCreated', null);
   },
 
   selectRootProject: function() {
@@ -300,7 +302,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
     var path = this.get('currentProjectPath') + "/" + name;
 
-    FLOW.store.createRecord(FLOW.SurveyGroup, {
+    var newRecord = FLOW.store.createRecord(FLOW.SurveyGroup, {
       "code": name,
       "name": name,
       "path":path,
@@ -308,6 +310,8 @@ FLOW.projectControl = Ember.ArrayController.create({
       "projectType": projectType
     });
     FLOW.store.commit();
+
+    this.set('newlyCreated', newRecord);
   },
 
   deleteProject: function(evt) {
@@ -317,11 +321,13 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   beginMoveProject: function(evt) {
+    this.set('newlyCreated', null);
     this.set('moveTarget', evt.context);
     this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "survey");
   },
 
   beginCopyProject: function(evt) {
+    this.set('newlyCreated', null);
     this.set('copyTarget', evt.context);
   },
 
