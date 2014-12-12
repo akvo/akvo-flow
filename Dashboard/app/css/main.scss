@@ -286,9 +286,8 @@ pre {
     line-height: 1.3em;
     -o-box-shadow: 0 0 2px rgb(0, 0, 0);
 }
-
-.isLoading,
-.isSaving, .loadSave {
+.loadSave {
+.isLoading, .isSaving {
     position: fixed;
     top: 90px;
     left: 46%;
@@ -300,8 +299,8 @@ pre {
     color: rgb(252, 159, 0);
     font-weight: bold;
     font-size: 1.2em;
+    }
 }
-
 .greyish {
     background: rgb(200, 214, 214);
 }
