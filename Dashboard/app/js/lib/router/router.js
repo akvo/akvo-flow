@@ -214,7 +214,9 @@ FLOW.Router = Ember.Router.extend({
           FLOW.deviceGroupControl.populate();
           FLOW.deviceControl.populate();
           FLOW.surveyAssignmentControl.populate();
-          FLOW.surveyGroupControl.populate();
+          FLOW.surveyGroupControl.populate(function (item) {
+            return item.get('projectType') !== 'PROJECT_FOLDER';
+          });
           router.set('devicesSubnavController.selected', 'currentDevices');
         }
       }),
@@ -283,7 +285,9 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('inspectData');
           router.set('datasubnavController.selected', 'inspectData');
           router.resetState();
-          FLOW.surveyGroupControl.populate();
+          FLOW.surveyGroupControl.populate(function (item) {
+            return item.get('projectType') !== 'PROJECT_FOLDER';
+          });
         }
       }),
 
@@ -339,7 +343,9 @@ FLOW.Router = Ember.Router.extend({
       route: '/reports',
       connectOutlets: function (router, context) {
         router.get('applicationController').connectOutlet('navReports');
-        FLOW.surveyGroupControl.populate();
+        FLOW.surveyGroupControl.populate(function (item) {
+          return item.get('projectType') !== 'PROJECT_FOLDER';
+        });
         router.resetState();
         router.set('navigationController.selected', 'navReports');
       },
@@ -375,7 +381,9 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function (router, context) {
           router.get('navReportsController').connectOutlet('chartReports');
           router.set('reportsSubnavController.selected', 'chartReports');
-          FLOW.surveyGroupControl.populate();
+          FLOW.surveyGroupControl.populate(function (item) {
+            return item.get('projectType') !== 'PROJECT_FOLDER';
+          });
         }
       }),
       statistics: Ember.Route.extend({
@@ -384,7 +392,9 @@ FLOW.Router = Ember.Router.extend({
           router.resetState();
           router.get('navReportsController').connectOutlet('statistics');
           router.set('reportsSubnavController.selected', 'statistics');
-          FLOW.surveyGroupControl.populate();
+          FLOW.surveyGroupControl.populate(function (item) {
+            return item.get('projectType') !== 'PROJECT_FOLDER';
+          });
         }
       })
     }),
