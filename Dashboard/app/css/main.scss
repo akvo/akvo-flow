@@ -286,21 +286,23 @@ pre {
     line-height: 1.3em;
     -o-box-shadow: 0 0 2px rgb(0, 0, 0);
 }
+
 .loadSave {
-.isLoading, .isSaving {
-    position: fixed;
-    top: 90px;
-    left: 46%;
-    z-index: 9999999;
-    border-radius: 3px;
-    box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
-    padding: 5px 3px 5px 25px;
-    background: rgb(248,248,248) url(../images/loader.gif) 5px center no-repeat;
-    color: rgb(252, 159, 0);
-    font-weight: bold;
-    font-size: 1.2em;
+    .isLoading, .isSaving {
+        position: fixed;
+        top: 90px;
+        left: 46%;
+        z-index: 9999999;
+        border-radius: 3px;
+        box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
+        padding: 5px 3px 5px 25px;
+        background: rgb(248, 248, 248) url(../images/loader.gif) 5px center no-repeat;
+        color: rgb(252, 159, 0);
+        font-weight: bold;
+        font-size: 1.2em;
     }
 }
+
 .greyish {
     background: rgb(200, 214, 214);
 }
@@ -2420,12 +2422,14 @@ li.aSurvey {
     &:hover {
         cursor: default;
     }
-    h2 {
-        display: inline-block;
-        width: 98%;
-        color: $anchorLink;
-        &:hover {
-            color: $anchorLinkHover;
+    a {
+        display: block;
+        h2 {
+            display: inline;
+            color: $anchorLink;
+            &:hover {
+                color: $anchorLinkHover;
+            }
         }
     }
 }
@@ -2455,7 +2459,7 @@ li.aFolder {
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: row;
-    -moz-flex-direction: row;    
+    -moz-flex-direction: row;
     flex-direction: row;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -2463,7 +2467,7 @@ li.aFolder {
     -moz-align-items: center;
     align-items: center;
     min-height: 70px;
-    padding: 0.25em 0 0.25em 15px;
+    padding: 0 0 0 15px;
     background-color: rgb(232, 232, 232);
     background-image: url(../images/carret.svg);
     background-position: right center;
@@ -2499,12 +2503,18 @@ li.aFolder {
             opacity: 1;
         }
     }
-    h2 {
-        color: rgb(183, 183, 183);
-        background: url(../images/folderIcn.svg) right center no-repeat;
-        display: inline-block;
-        width: initial;
-        padding-right: 45px;
+    a {
+        display: block;
+        width: calc(100% - 30% );
+        padding-top: 10px;
+        padding-bottom: 10px;
+        h2 {
+            color: rgb(183, 183, 183);
+            background: url(../images/folderIcn.svg) right center no-repeat;
+            display: inline;
+            width: initial;
+            padding-right: 45px;
+        }
     }
     &:hover {
         background-color: rgb(222, 222, 222);
@@ -2578,7 +2588,7 @@ ul.surveyInfo li.responseNumber {
     float: right;
     width: 30%;
     padding-right: 30px;
-    top: 5px;
+    top: 0px;
 }
 
 .aSurvey.aFolder {
@@ -2599,8 +2609,8 @@ ul.surveyInfo li.responseNumber {
         padding-right: 30px;
     }
     body:not(:-moz-handler-blocked) nav {
-    margin-top:-30px;
-  }
+        margin-top: -30px;
+    }
 }
 
 .aSurvey nav ul {
@@ -2610,8 +2620,8 @@ ul.surveyInfo li.responseNumber {
     display: -moz-inline-flex;
     display: -ms-inline-flexbox;
     display: inline-flex;
-    align-items:center;
-    align-content:flex-start;
+    align-items: center;
+    align-content: flex-start;
     float: right;
 }
 
@@ -5013,7 +5023,7 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                 margin-top: 15px;
                 &.surveyForm, &#questionSet {
                     margin-top: 5px;
-                    padding:0 0 5px 0;
+                    padding: 0 0 5px 0;
                 }
                 &.formDetails {
                     border: inherit;
@@ -5449,6 +5459,7 @@ nav.cascadeBreadCrumb {
             display: table;
             margin: 10px auto;
         }
+
         &.addLevel {
             display: table;
             &:hover {
