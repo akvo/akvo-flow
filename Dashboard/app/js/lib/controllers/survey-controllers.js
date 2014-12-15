@@ -269,6 +269,12 @@ FLOW.projectControl = Ember.ArrayController.create({
     }
   }.property('breadCrumbs'),
 
+  currentPathPermissions: function() {
+      var permissions = [];
+      console.log(this.get('breadCrumbs').reverse());
+      return permissions;
+  }.property('breadCrumbs'),
+
   /* Actions */
   selectProject: function(evt) {
     var project = evt.context;
