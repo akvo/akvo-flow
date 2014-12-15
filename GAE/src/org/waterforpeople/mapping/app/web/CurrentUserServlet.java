@@ -22,7 +22,6 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,25 +95,36 @@ public class CurrentUserServlet extends HttpServlet {
     }
 
     /**
-     * Retrieve a map of the paths and corresponding permissions for the current user
+     * Retrieve a javascript map of the paths and corresponding permissions for the current user
      *
      * @param currentUser
      * @return
      */
-    private Map<String, Set<Permission>> getPermissionsMap(User currentUser) {
+    private String getPermissionsMap(User currentUser) {
         List<UserAuthorization> authorizationList = userAuthorizationDAO.listByUser(currentUser
                 .getKey().getId());
         Map<Long, UserRole> roleMap = new HashMap<Long, UserRole>();
         for (UserRole role : userRoleDAO.list(Constants.ALL_RESULTS)) {
             roleMap.put(role.getKey().getId(), role);
         }
-        Map<String, Set<Permission>> permissions = new HashMap<String, Set<Permission>>();
+        StringBuilder permissions = new StringBuilder();
+        permissions.append("{");
         for (UserAuthorization auth : authorizationList) {
             UserRole role = roleMap.get(auth.getRoleId());
             if (role != null) {
-                permissions.put(auth.getObjectPath(), role.getPermissions());
+                permissions.append("\"" + auth.getObjectPath() + "\":[");
+                for (Permission perm : role.getPermissions()) {
+                    permissions.append("\"" + perm.name() + "\",");
+                }
+                permissions.append("]");
+                permissions.append(",");
             }
         }
-        return permissions;
+        if (permissions.lastIndexOf(",") == permissions.length() - 1) {
+            permissions.deleteCharAt(permissions.lastIndexOf(","));
+        }
+        permissions.append("}");
+
+        return permissions.toString();
     }
 }
