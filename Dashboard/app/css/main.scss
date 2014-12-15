@@ -2702,8 +2702,7 @@ ul.surveyInfo li.responseNumber {
     background-size: 35px 35px;
 }
 
-
-.newlyCreated {
+.newlyCreated, .newlycreated:hover {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -2711,100 +2710,111 @@ ul.surveyInfo li.responseNumber {
     -moz-animation: appearFx 2s linear  1 normal forwards;
     -o-animation: appearFx 2s linear 1 normal forwards;
     animation: appearFx 2s linear 1 normal forwards;
+    background-image: url(../images/carret.svg);
+    background-position: right center;
+    background-repeat: no-repeat;
 }
 
 @-webkit-keyframes appearFx {
     0% {
-        background: rgba($akvoOrange, 0);
         opacity: 0;
-        box-shadow: 0 0 2px rgba(200,200,200, 0);
+        box-shadow: 0 0 2px rgba(200, 200, 200, 0);
+        background-color: rgba($akvoOrange, 0);
     }
     30% {
-        background: rgba($akvoOrange, 0.5);
         opacity: 0.2;
-        box-shadow: 0 0 10px rgba(200,200,200, 1);
+        box-shadow: 0 0 10px rgba(200, 200, 200, 1);
+        background-color: rgba($akvoOrange, 0.5);
     }
     40% {
-        background: rgba(white, 1);
+        background-color: rgba(white, 1);
         opacity: 1;
         box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
     }
     100% {
-        background: rgba($akvoOrange, 0.1);
+        background-color: rgba($akvoOrange, 0.1);
         opacity: 1;
         box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
-        border:2px solid rgba($akvoOrange, 0.3);
+        border: 2px solid rgba($akvoOrange, 0.3);
     }
 }
+
+
 @-moz-keyframes appearFx {
     0% {
-        background: rgba($akvoOrange, 0);
         opacity: 0;
-        box-shadow: 0 0 2px rgba(200,200,200, 0);
+        box-shadow: 0 0 2px rgba(200, 200, 200, 0);
+        background-color: rgba($akvoOrange, 0);
     }
     30% {
-        background: rgba($akvoOrange, 0.5);
         opacity: 0.2;
-        box-shadow: 0 0 10px rgba(200,200,200, 1);
+        box-shadow: 0 0 10px rgba(200, 200, 200, 1);
+        background-color: rgba($akvoOrange, 0.5);
     }
     40% {
-        background: rgba(white, 1);
+        background-color: rgba(white, 1);
         opacity: 1;
         box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
     }
     100% {
-        background: rgba($akvoOrange, 0.1);
+        background-color: rgba($akvoOrange, 0.1);
         opacity: 1;
         box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
-        border:2px solid rgba($akvoOrange, 0.3);
+        border: 2px solid rgba($akvoOrange, 0.3);
     }
 }
+
+
 @-o-keyframes appearFx {
     0% {
-        background: rgba($akvoOrange, 0);
         opacity: 0;
-        box-shadow: 0 0 2px rgba(200,200,200, 0);
+        box-shadow: 0 0 2px rgba(200, 200, 200, 0);
+        background-color: rgba($akvoOrange, 0);
     }
     30% {
-        background: rgba($akvoOrange, 0.5);
         opacity: 0.2;
-        box-shadow: 0 0 10px rgba(200,200,200, 1);
+        box-shadow: 0 0 10px rgba(200, 200, 200, 1);
+        background-color: rgba($akvoOrange, 0.5);
     }
     40% {
-        background: rgba(white, 1);
+        background-color: rgba(white, 1);
         opacity: 1;
         box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
     }
     100% {
-        background: rgba($akvoOrange, 0.1);
+        background-color: rgba($akvoOrange, 0.1);
         opacity: 1;
         box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
-        border:2px solid rgba($akvoOrange, 0.3);
+        border: 2px solid rgba($akvoOrange, 0.3);
     }
 }
+
+
 @keyframes appearFx {
     0% {
-        background: rgba($akvoOrange, 0);
         opacity: 0;
-        box-shadow: 0 0 2px rgba(200,200,200, 0);
+        box-shadow: 0 0 2px rgba(200, 200, 200, 0);
+        background-repeat: no-repeat;
     }
     30% {
-        background: rgba($akvoOrange, 0.5);
         opacity: 0.2;
-        box-shadow: 0 0 10px rgba(200,200,200, 1);
+        box-shadow: 0 0 10px rgba(200, 200, 200, 1);
+        background-repeat: no-repeat;
     }
     40% {
-        background: rgba(white, 1);
+        background-color: rgba(white, 1);
         opacity: 1;
         box-shadow: 0 0 15px rgba($akvoOrange, 0.6);
     }
     100% {
-        background: rgba($akvoOrange, 0.1);
+        background-color: rgba($akvoOrange, 0.1);
         opacity: 1;
         box-shadow: 0 0 5px rgba($akvoOrange, 0.5);
-        border:2px solid rgba($akvoOrange, 0.3);
+        border: 2px solid rgba($akvoOrange, 0.3);
     }
 }
+
+
 /*----------------------------------------------------------------------------------------------------------------
                                          Survey Creation & Editing
 ----------------------------------------------------------------------------------------------------------------*/
