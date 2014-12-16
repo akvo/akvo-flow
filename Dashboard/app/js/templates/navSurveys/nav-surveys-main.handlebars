@@ -35,12 +35,12 @@
             <nav class="menuTopbar">
               <ul>
               {{#if view.disableAddFolderButton }}
-                <li><a class="addFolder actionDisable" {{action "createProjectFolder" target="FLOW.projectControl"}}>{{t _add_folder}}</a></li>
+                <li><a class="addFolder noChanges">{{t _add_folder}}</a></li>
               {{else}}
                 <li><a class="addFolder" {{action "createProjectFolder" target="FLOW.projectControl"}}>{{t _add_folder}}</a></li>
               {{/if}}
               {{#if view.disableAddSurveyButton }}
-                <li><a class="addSurvey actionDisable" {{action "createProject" target="FLOW.projectControl"}}>{{t _create_new_survey}}</a></li>
+                <li><a class="addSurvey noChanges">{{t _create_new_survey}}</a></li>
               {{else}}
                 <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>{{t _create_new_survey}}</a></li>
               {{/if}}
