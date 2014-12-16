@@ -10,6 +10,9 @@ FLOW.Router = Ember.Router.extend({
   //'hash'or 'none' for URLs
 
   resetState: function () {
+    // We could have unsaved changes
+    FLOW.store.commit();
+
     FLOW.selectedControl.set('selectedQuestionGroup', null);
     FLOW.selectedControl.set('selectedSurveyGroup', null);
     FLOW.selectedControl.set('selectedSurvey', null);
