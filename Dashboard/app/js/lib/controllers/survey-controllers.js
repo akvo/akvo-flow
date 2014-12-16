@@ -492,7 +492,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
       "version":"1.0"
     });
-    FLOW.projectControl.get('currentProject').set('surveyList', [1]);
+    FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
     FLOW.store.commit();
     this.refresh();
   },

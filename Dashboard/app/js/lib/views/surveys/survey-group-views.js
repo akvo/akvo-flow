@@ -164,6 +164,11 @@ FLOW.ProjectItemView = FLOW.View.extend({
     return langs[this.content.get('defaultLanguageCode')];
   }.property(),
 
+  hideDeleteButton: function () {
+    var c = this.get('content');
+	return !Ember.empty(c.get('surveyList')) || (Ember.empty(c.get('surveyList')) && c.get('deleteDisabled'));
+  }.property()
+
 });
 
 FLOW.FolderEditView = Ember.TextField.extend({
