@@ -290,8 +290,11 @@ FLOW.projectControl = Ember.ArrayController.create({
   selectProject: function(evt) {
     var project = evt.context;
     this.setCurrentProject(evt.context);
-    if (this.isProject(project)) {
 
+    // User is using the breadcrumb to navigate, we could have unsaved changes
+    FLOW.store.commit();
+
+    if (this.isProject(project)) {
       FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
 
