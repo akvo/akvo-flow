@@ -47,7 +47,7 @@
                   <ul>
                     <li class="editSurvey"><a {{action "selectProject" sg target="FLOW.projectControl"}}>{{t _edit}}</a></li>
                     <li class="moveSurvey"><a {{action "beginMoveProject" sg target="FLOW.projectControl"}}>{{t _move}}</a></li>
-                    {{#unless sg.surveyList}}
+                    {{#unless view.hideDeleteButton}}
                       <li class="deleteSurvey"><a {{action "deleteProject" sg target="FLOW.projectControl"}}>{{t _delete}}</a></li>
                     {{/unless}}
                     <li class="copySurvey" {{action "beginCopyProject" sg target="FLOW.projectControl"}}><a>{{t _copy}}</a></li>
