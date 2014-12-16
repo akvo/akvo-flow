@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
@@ -107,24 +111,26 @@ public class CurrentUserServlet extends HttpServlet {
         for (UserRole role : userRoleDAO.list(Constants.ALL_RESULTS)) {
             roleMap.put(role.getKey().getId(), role);
         }
-        StringBuilder permissions = new StringBuilder();
-        permissions.append("{");
+        Map<String, Set<Permission>> permissions = new HashMap<String, Set<Permission>>();
         for (UserAuthorization auth : authorizationList) {
             UserRole role = roleMap.get(auth.getRoleId());
             if (role != null) {
-                permissions.append("\"" + auth.getObjectPath() + "\":[");
-                for (Permission perm : role.getPermissions()) {
-                    permissions.append("\"" + perm.name() + "\",");
-                }
-                permissions.append("]");
-                permissions.append(",");
+                permissions.put(auth.getObjectPath(), role.getPermissions());
             }
         }
-        if (permissions.lastIndexOf(",") == permissions.length() - 1) {
-            permissions.deleteCharAt(permissions.lastIndexOf(","));
-        }
-        permissions.append("}");
 
-        return permissions.toString();
+        ObjectMapper jsonObjectMapper = new ObjectMapper();
+        StringWriter writer = new StringWriter();
+        try {
+            jsonObjectMapper.writeValue(writer, permissions);
+        } catch (JsonGenerationException e) {
+            // ignore
+        } catch (JsonMappingException e) {
+            // ignore
+        } catch (IOException e) {
+            // ignore
+        }
+
+        return writer.toString();
     }
 }
