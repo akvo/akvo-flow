@@ -395,6 +395,9 @@ FLOW.projectControl = Ember.ArrayController.create({
     var forms = FLOW.surveyControl.get('content');
     if (!forms) return true;
 
+    // We could have unsaved changes
+    FLOW.store.commit();
+
     forms.filter(function(form) {
       return form.get('status') !== 'PUBLISHED';
     }).map(function(form) {
