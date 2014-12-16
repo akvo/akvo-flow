@@ -101,6 +101,15 @@ FLOW.ProjectMainView = FLOW.View.extend({
     return FLOW.projectControl.isProjectFolder(FLOW.projectControl.get('currentProject'));
   }.property('FLOW.projectControl.currentProject'),
 
+  disableAddFolderButton: function() {
+    var permissions = FLOW.projectControl.get('currentPathPermissions');
+    return !FLOW.role.get('SUPER_ADMIN') && $.inArray("PROJECT_FOLDER_CREATE", permissions) === -1;
+  }.property('FLOW.projectControl.currentProjectPath'),
+
+  disableAddSurveyButton: function() {
+    var permissions = FLOW.projectControl.get('currentPathPermissions');
+    return !FLOW.role.get('SUPER_ADMIN') && $.inArray("PROJECT_FOLDER_CREATE", permissions) === -1;
+  }.property('FLOW.projectControl.currentProjectPath'),
 });
 
 
