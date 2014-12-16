@@ -68,6 +68,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
     private Long sourceId = null;
     private List<String> levelNames = null;
 
+    /**
+     * Geoshape question options
+     */
+    private Boolean allowPoints;
+    private Boolean allowLine;
+    private Boolean allowPolygon;
+
     public Boolean getAllowDecimal() {
         return allowDecimal;
     }
@@ -147,7 +154,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     /**
      * adds the translation to the translation map. If a translation already exists (based on
      * language code), it will be replaced
-     *
+     * 
      * @param trans
      */
     public void addTranslation(TranslationDto trans) {
@@ -187,7 +194,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
     /**
      * returns the translated version of the text for the locale specified (if present). If no
      * translation exists, it will return the default text.
-     *
+     * 
      * @param locale
      * @return
      */
@@ -293,7 +300,8 @@ public class QuestionDto extends BaseDto implements NamedObject {
     }
 
     public enum QuestionType {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE,
+        GEOSHAPE
     }
 
     @Override
@@ -443,5 +451,29 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
     public void setLevelNames(List<String> levelNames) {
         this.levelNames = levelNames;
+    }
+
+    public void setAllowPoints(Boolean allowPoints) {
+        this.allowPoints = allowPoints;
+    }
+
+    public Boolean isAllowPoints() {
+        return allowPoints;
+    }
+
+    public void setAllowLine(Boolean allowLine) {
+        this.allowLine = allowLine;
+    }
+
+    public Boolean isAllowLine() {
+        return allowLine;
+    }
+
+    public void setAllowPolygon(Boolean allowPolygon) {
+        this.allowPolygon = allowPolygon;
+    }
+
+    public Boolean isAllowPolygon() {
+        return allowPolygon;
     }
 }

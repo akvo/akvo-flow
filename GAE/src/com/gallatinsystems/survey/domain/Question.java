@@ -36,7 +36,8 @@ public class Question extends BaseDomain {
     private static final long serialVersionUID = -9123426646238761996L;
 
     public enum Type {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE,
+        GEOSHAPE
     };
 
     private Type type = null;
@@ -77,6 +78,13 @@ public class Question extends BaseDomain {
     private Boolean isName;
     private Boolean localeNameFlag;
     private Boolean localeLocationFlag;
+
+    /**
+     * Geoshape question options
+     */
+    private Boolean allowPoints;
+    private Boolean allowLine;
+    private Boolean allowPolygon;
 
     /**
      * Return true of a question can be visualised on a chart. This is limited to option questions
@@ -399,11 +407,35 @@ public class Question extends BaseDomain {
         this.questionId = questionId;
     }
 
-	public Long getCascadeResourceId() {
-		return cascadeResourceId;
-	}
+    public Long getCascadeResourceId() {
+        return cascadeResourceId;
+    }
 
-	public void setCascadeResourceId(Long cascadeResourceId) {
-		this.cascadeResourceId = cascadeResourceId;
-	}
+    public void setCascadeResourceId(Long cascadeResourceId) {
+        this.cascadeResourceId = cascadeResourceId;
+    }
+
+    public void setAllowPoints(Boolean allowPoints) {
+        this.allowPoints = allowPoints;
+    }
+    
+    public Boolean isAllowPoints() {
+        return allowPoints;
+    }
+
+    public void setAllowLine(Boolean allowLine) {
+        this.allowLine = allowLine;
+    }
+    
+    public Boolean isAllowLine() {
+        return allowLine;
+    }
+
+    public void setAllowPolygon(Boolean allowPolygon) {
+        this.allowPolygon = allowPolygon;
+    }
+    
+    public Boolean isAllowPolygon() {
+        return allowPolygon;
+    }
 }
