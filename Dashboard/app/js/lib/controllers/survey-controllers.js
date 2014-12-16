@@ -271,6 +271,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   currentPathPermissions: function() {
       var currentProjectAncestors = this.get('breadCrumbs').reverse(); // reversed to start matching from the most specific path.
+      var i;
       for(i = 0; i < currentProjectAncestors.length; i++) {
           var path = currentProjectAncestors[i].get('path');
           if(path in FLOW.currentUser.pathPermissions){
