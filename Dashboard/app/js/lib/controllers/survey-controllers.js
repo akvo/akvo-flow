@@ -528,6 +528,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     var survey = FLOW.store.find(FLOW.Survey, keyId);
     if (FLOW.projectControl.get('formCount') === 1) {
       FLOW.projectControl.get('currentProject').set('surveyList', null);
+      FLOW.projectControl.get('currentProject').set('deleteDisabled', false);
     }
     survey.deleteRecord();
 
