@@ -21,9 +21,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
-import com.gallatinsystems.framework.gwt.dto.client.NamedObject;
 
-public class SurveyDto extends BaseDto implements NamedObject {
+public class SurveyDto extends BaseDto {
     private static final long serialVersionUID = 6593732844403807030L;
     private String name;
     private String code;
@@ -119,16 +118,6 @@ public class SurveyDto extends BaseDto implements NamedObject {
 
     public void setSector(String sector) {
         this.sector = sector;
-    }
-
-    @Override
-    public String getDisplayName() {
-        String display = name;
-        if (display == null || display.trim().length() == 0) {
-            display = getKeyId().toString();
-        }
-        display = display + " - v." + getVersion();
-        return display;
     }
 
     public void setSurveyGroupId(Long surveyGroupId) {
