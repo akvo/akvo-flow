@@ -55,6 +55,7 @@ FLOW.Project = FLOW.View.extend({
   }.property("FLOW.projectControl.formCount"),
 
   updateSelectedRegistrationForm: function() {
+    if (!this.get('selectedRegistrationForm')) return;
     FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.selectedRegistrationForm.get('keyId'));
   }.observes('selectedRegistrationForm')
 
