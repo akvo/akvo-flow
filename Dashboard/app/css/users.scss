@@ -101,14 +101,14 @@ section[role=main] {
                 -o-transition: transform .6s ease-out;
                 transition: transform .6s ease-out;
                 background:white;
-                &.opened { 
+                &.opened {
                 /* visible */
                 -webkit-transform: translate(-100%, 0);
                 -moz-transform: translate(-100%, 0);
                     -ms-transform: translate(-100%, 0);
                         transform: translate(-100%, 0);
                 }
-                &.closed { 
+                &.closed {
                 /* completely offscreen */
                 -webkit-transform: translate(0%, 0);
                    -moz-transform: translate(0%, 0);
@@ -204,7 +204,7 @@ table {
 .paddingTop {
     padding:20px 0;
     &.dropdown {
-        padding:7px 0 10px 0;        
+        padding:7px 0 10px 0;
     }
 }
 
@@ -216,6 +216,10 @@ table {
     }
 }
 .userRolesPerm {
+    ul.dropdown-menu {
+        max-height:220px;
+        overflow-y: scroll;
+    }
 }
 div.folderStructure {
     &:first-child {

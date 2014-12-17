@@ -193,6 +193,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   setCurrentProject: function(project) {
     this.set('currentProject', project);
+    window.scrollTo(0,0);
   },
 
   /* Computed properties */
@@ -279,6 +280,8 @@ FLOW.projectControl = Ember.ArrayController.create({
 
       FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
+
+    this.set('newlyCreated', null);
   },
 
   selectRootProject: function() {
@@ -302,7 +305,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
     var path = this.get('currentProjectPath') + "/" + name;
 
-    FLOW.store.createRecord(FLOW.SurveyGroup, {
+    var newRecord = FLOW.store.createRecord(FLOW.SurveyGroup, {
       "code": name,
       "name": name,
       "path":path,
@@ -310,6 +313,8 @@ FLOW.projectControl = Ember.ArrayController.create({
       "projectType": projectType
     });
     FLOW.store.commit();
+
+    this.set('newlyCreated', newRecord);
   },
 
   deleteProject: function(evt) {
@@ -319,11 +324,13 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   beginMoveProject: function(evt) {
+    this.set('newlyCreated', null);
     this.set('moveTarget', evt.context);
     this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "survey");
   },
 
   beginCopyProject: function(evt) {
+    this.set('newlyCreated', null);
     this.set('copyTarget', evt.context);
   },
 
@@ -378,10 +385,13 @@ FLOW.projectControl = Ember.ArrayController.create({
         action: 'publishSurvey',
         surveyId: form.get('keyId')
       });
-      form.set('status', 'PUBLISHED');
     });
 
-    FLOW.store.commit();
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
   },
 
   /* Helper methods */
@@ -485,7 +495,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
       "version":"1.0"
     });
-
+    FLOW.projectControl.get('currentProject').set('surveyList', [1]);
     FLOW.store.commit();
     this.refresh();
   },
@@ -493,7 +503,11 @@ FLOW.surveyControl = Ember.ArrayController.create({
   deleteForm: function() {
     var keyId = FLOW.selectedControl.selectedSurvey.get('keyId');
     var survey = FLOW.store.find(FLOW.Survey, keyId);
+    if (FLOW.projectControl.get('formCount') === 1) {
+      FLOW.projectControl.get('currentProject').set('surveyList', null);
+    }
     survey.deleteRecord();
+
     FLOW.store.commit();
     this.refresh();
   },

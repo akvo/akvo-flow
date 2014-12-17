@@ -5,6 +5,29 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.0
+Date: 15 December 2014
+
+## New and noteworthy
+* User roles and permissions. Define custom roles and permissions, and restrict access to specific folders and surveys [#818, #966, #958, #957, #956]
+* Cascading question type. Create questions using hierarchical data, for example describing administrative boundaries [#189, #970]
+* Survey folders and structure. Store surveys in a folder structure. A survey can contain multiple forms now [#805, #959]
+* Bulk barcode scanning. It is now possible to scan multiple barcodes within a single barcode question [#888]
+
+## Resolved issues
+* Handle empty strings in pipe-concatenated geolocation responses [#920]
+* Save button in assignment screen not reachable [#915]
+* Question ID validation causes attributes to be copied to other questions [#903]
+* Missing indexes for displayName and identifier [#900]
+* Question name being blanked on hide/show [#896]
+* Move dataexport System.out calls to proper logging calls [#884]
+* Don't allow a user to delete a question that has dependant questions pointing to it [#853]
+* Add GAE remote api tool to /config folder to streamline creation process (& document) [#811]
+* Incorrect options visible for certain roles - also crashes browser [#990]
+* Change of Translation Placeholders and Text [#989]
+* Minor Issues with release/1.8.0 [#960]
+* Enable super admin user to list all folders and forms on an instance [#934]
+
 #1.7.6
 Date: 07 November 2014
 

@@ -96,6 +96,10 @@ FLOW.SurveyGroup = FLOW.BaseModel.extend({
 
   published: DS.attr('boolean', {
     defaultValue: false
+  }),
+
+  surveyList: DS.attr('array', {
+	defaultValue: null
   })
 
 });

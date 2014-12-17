@@ -198,7 +198,6 @@ FLOW.QuestionView = FLOW.View.extend({
     console.log(FLOW.selectedControl.get('selectedQuestion'));
     console.log(FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'))) {
-    	console.log("in here!" + FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
     	cascadeResource = FLOW.store.find(FLOW.CascadeResource,FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
     	FLOW.selectedControl.set('selectedCascadeResource', cascadeResource);
     }
