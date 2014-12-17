@@ -271,9 +271,8 @@ public class SurveyRestService {
                                         Survey.Status.valueOf(surveyDto.getStatus()))) {
                             s.incrementVersion();
                         }
-                        s.setStatus(Survey.Status
-                                .valueOf(surveyDto.getStatus().toString()));
                     }
+                    s.setStatus(Survey.Status.NOT_PUBLISHED);
                     if (surveyDto.getSector() != null) {
                         s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
                     }
