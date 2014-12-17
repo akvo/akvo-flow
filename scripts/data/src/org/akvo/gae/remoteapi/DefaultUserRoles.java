@@ -31,6 +31,13 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.tools.remoteapi.RemoteApiInstaller;
 import com.google.appengine.tools.remoteapi.RemoteApiOptions;
 
+/**
+ * Run this application to create two default user roles (admin and user), and to grant existing
+ * users the authorization to view, modify and delete all surveys groups and surveys that exist on
+ * an instance
+ *
+ * @author emmanuel
+ */
 public class DefaultUserRoles {
 
     public static List<String> allPermissionsList = Arrays.asList("PROJECT_FOLDER_CREATE",
