@@ -247,12 +247,13 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   isPublished: function() {
     var forms = FLOW.surveyControl.get('content');
-    if (!forms) return true;
+    if (forms === null || forms.get('length') === 0) {
+        return false;
+    }
 
     var unpublishedForms = forms.filter(function(form) {
       return form.get('status') !== 'PUBLISHED';
     });
-
     return unpublishedForms.get('length') === 0;
   }.property('FLOW.surveyControl.content.@each.status'),
 
