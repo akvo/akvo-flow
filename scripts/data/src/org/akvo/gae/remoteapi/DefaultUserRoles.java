@@ -57,9 +57,10 @@ public class DefaultUserRoles {
     }
 
     public static void main(String[] args) {
-        if (args.length > 4) {
-            throw new IllegalArgumentException(
+        if (args.length < 3 || args.length > 4) {
+            System.out.println(
                     "Usage: java org.akvo.gae.remoteapi.DefaultUserRoles <appid> <user> '<passwd>' [port]");
+	    System.exit(0);
         }
 
         final String instanceUrl = "localhost".equals(args[0]) ? "localhost" : args[0]
