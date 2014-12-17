@@ -250,12 +250,13 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   isPublished: function() {
     var forms = FLOW.surveyControl.get('content');
-    if (!forms) return true;
+    if (forms === null || forms.get('length') === 0) {
+        return false;
+    }
 
     var unpublishedForms = forms.filter(function(form) {
       return form.get('status') !== 'PUBLISHED';
     });
-
     return unpublishedForms.get('length') === 0;
   }.property('FLOW.surveyControl.content.@each.status'),
 
@@ -272,12 +273,34 @@ FLOW.projectControl = Ember.ArrayController.create({
     }
   }.property('breadCrumbs'),
 
+  currentPathPermissions: function() {
+      var currentProjectAncestors = this.get('breadCrumbs').slice();
+      currentProjectAncestors.reverse();// reversed to start matching from the most specific path.
+      var i;
+      var path;
+      for(i = 0; i < currentProjectAncestors.length; i++) {
+          path = currentProjectAncestors[i].get('path');
+          if(path in FLOW.currentUser.pathPermissions){
+              return FLOW.currentUser.pathPermissions[path];
+          }
+      }
+
+      // check for the root path
+      if("/" in FLOW.currentUser.pathPermissions){
+          return FLOW.currentUser.pathPermissions["/"];
+      }
+      return [];
+  }.property('breadCrumbs'),
+
   /* Actions */
   selectProject: function(evt) {
     var project = evt.context;
     this.setCurrentProject(evt.context);
-    if (this.isProject(project)) {
 
+    // User is using the breadcrumb to navigate, we could have unsaved changes
+    FLOW.store.commit();
+
+    if (this.isProject(project)) {
       FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
 
@@ -377,6 +400,9 @@ FLOW.projectControl = Ember.ArrayController.create({
   publishProject: function() {
     var forms = FLOW.surveyControl.get('content');
     if (!forms) return true;
+
+    // We could have unsaved changes
+    FLOW.store.commit();
 
     forms.filter(function(form) {
       return form.get('status') !== 'PUBLISHED';
@@ -495,7 +521,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
       "version":"1.0"
     });
-    FLOW.projectControl.get('currentProject').set('surveyList', [1]);
+    FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
     FLOW.store.commit();
     this.refresh();
   },
@@ -505,6 +531,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
     var survey = FLOW.store.find(FLOW.Survey, keyId);
     if (FLOW.projectControl.get('formCount') === 1) {
       FLOW.projectControl.get('currentProject').set('surveyList', null);
+      FLOW.projectControl.get('currentProject').set('deleteDisabled', false);
     }
     survey.deleteRecord();
 

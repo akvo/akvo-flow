@@ -101,6 +101,15 @@ FLOW.ProjectMainView = FLOW.View.extend({
     return FLOW.projectControl.isProjectFolder(FLOW.projectControl.get('currentProject'));
   }.property('FLOW.projectControl.currentProject'),
 
+  disableAddFolderButton: function() {
+    var permissions = FLOW.projectControl.get('currentPathPermissions');
+    return !FLOW.role.get('SUPER_ADMIN') && $.inArray("PROJECT_FOLDER_CREATE", permissions) === -1;
+  }.property('FLOW.projectControl.currentProjectPath'),
+
+  disableAddSurveyButton: function() {
+    var permissions = FLOW.projectControl.get('currentPathPermissions');
+    return !FLOW.role.get('SUPER_ADMIN') && $.inArray("PROJECT_FOLDER_CREATE", permissions) === -1;
+  }.property('FLOW.projectControl.currentProjectPath'),
 });
 
 
@@ -163,6 +172,11 @@ FLOW.ProjectItemView = FLOW.View.extend({
     var langs = {en: "English", es: "Español", fr: "Français"};
     return langs[this.content.get('defaultLanguageCode')];
   }.property(),
+
+  hideDeleteButton: function () {
+    var c = this.get('content');
+    return !Ember.empty(c.get('surveyList')) || c.get('deleteDisabled');
+  }.property()
 
 });
 

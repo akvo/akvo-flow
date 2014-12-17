@@ -137,6 +137,7 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 			  FLOW.selectedControl.set('selectedCascadeResource',casc);
 		  }
 	    this.set('showNewCascadeField', false);
+	    this.set('cascadeResourceName',null);
 	},
 
 	  // fired when 'cancel' is clicked while showing new group text field in left sidebar. Cancels the new survey group creation

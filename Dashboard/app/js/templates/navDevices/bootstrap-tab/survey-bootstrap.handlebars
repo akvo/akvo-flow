@@ -6,7 +6,7 @@
         <fieldset id="surveySelect" class="formLeftPanel">
           <h2>01. {{t _select_survey}}:</h2>
           <div class="">
-            <label for="surveyGroup">{{t _select_survey_group}}:</label>
+            <label for="surveyGroup">{{t _select_survey}}:</label>
             {{view Ember.Select
                    contentBinding="FLOW.surveyGroupControl.arrangedContent"
                    selectionBinding="FLOW.selectedControl.selectedSurveyGroup"
@@ -14,7 +14,7 @@
                    optionValuePath="content.keyId"
                    id="surveyGroup"
                    prompt="Select survey group"
-                   promptBinding="Ember.STRINGS._select_survey_group"}}
+                   promptBinding="Ember.STRINGS._select_survey"}}
 			<span class="infoText">{{t _cant_find_your_survey_}}</span>
 			</div>
           <div class="">
@@ -24,7 +24,7 @@
                 <li><a {{action deselectAllSurveys target="this"}}>{{t _deselect_all}}</a></li>
               </ul>
             </nav>
-            <label for="surveys">{{t _select_surveys}}:</label>
+            <label for="surveys">{{t _select_forms}}:</label>
            {{view Ember.Select 
            multiple=true
            size=10
@@ -33,7 +33,7 @@
         optionLabelPath="content.name" 
           id="surveys"
         optionValuePath="content.keyId"}} 
-      <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_surveys}}</a>
+      <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
           </div>
         </fieldset>
         <fieldset id="surveyPreview" class="formRightPanel">
@@ -44,8 +44,8 @@
               <!-- TABLE HEADER-->
               <thead>
                 <tr>
-                  <th class="groupPreview">{{t _survey_group}}</th>
-                  <th class="surveyPreview">{{t _survey}}</th>
+                  <th class="groupPreview">{{t _survey}}</th>
+                  <th class="surveyPreview">{{t _form}}</th>
                   <th class="action"></th>
                 </tr>
               </thead>

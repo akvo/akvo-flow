@@ -19,6 +19,10 @@ package org.waterforpeople.mapping.app.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,11 +34,25 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
+import com.gallatinsystems.common.Constants;
+import com.gallatinsystems.user.dao.UserAuthorizationDAO;
 import com.gallatinsystems.user.dao.UserDao;
+import com.gallatinsystems.user.dao.UserRoleDao;
+import com.gallatinsystems.user.domain.Permission;
+import com.gallatinsystems.user.domain.User;
+import com.gallatinsystems.user.domain.UserAuthorization;
+import com.gallatinsystems.user.domain.UserRole;
 import com.google.appengine.api.users.UserServiceFactory;
 
 public class CurrentUserServlet extends HttpServlet {
+
+    private UserRoleDao userRoleDAO = new UserRoleDao();
+
+    private UserAuthorizationDAO userAuthorizationDAO = new UserAuthorizationDAO();
 
     private static final long serialVersionUID = -430515593814261770L;
     private static final Logger log = Logger.getLogger(CurrentUserServlet.class
@@ -63,9 +81,12 @@ public class CurrentUserServlet extends HttpServlet {
 
         final VelocityContext context = new VelocityContext();
         final UserDao uDao = new UserDao();
+        final String currentUserEmail = UserServiceFactory.getUserService()
+                .getCurrentUser().getEmail().toLowerCase();
+        final User currentUser = uDao.findUserByEmail(currentUserEmail);
 
-        context.put("user", uDao.findUserByEmail(UserServiceFactory.getUserService()
-                .getCurrentUser().getEmail().toLowerCase()));
+        context.put("user", currentUser);
+        context.put("permissions", getPermissionsMap(currentUser));
 
         final StringWriter writer = new StringWriter();
         t.merge(context, writer);
@@ -77,4 +98,39 @@ public class CurrentUserServlet extends HttpServlet {
         pw.close();
     }
 
+    /**
+     * Retrieve a javascript map of the paths and corresponding permissions for the current user
+     *
+     * @param currentUser
+     * @return
+     */
+    private String getPermissionsMap(User currentUser) {
+        List<UserAuthorization> authorizationList = userAuthorizationDAO.listByUser(currentUser
+                .getKey().getId());
+        Map<Long, UserRole> roleMap = new HashMap<Long, UserRole>();
+        for (UserRole role : userRoleDAO.list(Constants.ALL_RESULTS)) {
+            roleMap.put(role.getKey().getId(), role);
+        }
+        Map<String, Set<Permission>> permissions = new HashMap<String, Set<Permission>>();
+        for (UserAuthorization auth : authorizationList) {
+            UserRole role = roleMap.get(auth.getRoleId());
+            if (role != null) {
+                permissions.put(auth.getObjectPath(), role.getPermissions());
+            }
+        }
+
+        ObjectMapper jsonObjectMapper = new ObjectMapper();
+        StringWriter writer = new StringWriter();
+        try {
+            jsonObjectMapper.writeValue(writer, permissions);
+        } catch (JsonGenerationException e) {
+            // ignore
+        } catch (JsonMappingException e) {
+            // ignore
+        } catch (IOException e) {
+            // ignore
+        }
+
+        return writer.toString();
+    }
 }
