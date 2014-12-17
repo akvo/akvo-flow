@@ -98,6 +98,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     public static final String STRENGTH_QUESTION_TYPE = "strength";
     public static final String DATE_QUESTION_TYPE = "date";
     public static final String CASCADE_QUESTION_TYPE = "cascade";
+    public static final String GEOSHAPE_QUESTION_TYPE = "geoshape";
 
     private static final String SURVEY_UPLOAD_URL = "surveyuploadurl";
     private static final String SURVEY_UPLOAD_DIR = "surveyuploaddir";
@@ -623,6 +624,11 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             qXML.setType(DATE_QUESTION_TYPE);
         } else if (q.getType().equals(Question.Type.CASCADE)) {
             qXML.setType(CASCADE_QUESTION_TYPE);
+        } else if (q.getType().equals(Question.Type.GEOSHAPE)) {
+            qXML.setType(GEOSHAPE_QUESTION_TYPE);
+            qXML.setAllowPoints(Boolean.toString(q.getAllowPoints()));
+            qXML.setAllowLine(Boolean.toString(q.getAllowLine()));
+            qXML.setAllowPolygon(Boolean.toString(q.getAllowPolygon()));
         }
 
         if (q.getType().equals(Question.Type.CASCADE) && q.getCascadeResourceId() != null) {

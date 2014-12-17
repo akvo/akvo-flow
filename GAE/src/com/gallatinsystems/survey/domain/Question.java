@@ -419,7 +419,7 @@ public class Question extends BaseDomain {
         this.allowPoints = allowPoints;
     }
     
-    public Boolean isAllowPoints() {
+    public Boolean getAllowPoints() {
         return allowPoints;
     }
 
@@ -427,7 +427,7 @@ public class Question extends BaseDomain {
         this.allowLine = allowLine;
     }
     
-    public Boolean isAllowLine() {
+    public Boolean getAllowLine() {
         return allowLine;
     }
 
@@ -435,7 +435,7 @@ public class Question extends BaseDomain {
         this.allowPolygon = allowPolygon;
     }
     
-    public Boolean isAllowPolygon() {
+    public Boolean getAllowPolygon() {
         return allowPolygon;
     }
 }

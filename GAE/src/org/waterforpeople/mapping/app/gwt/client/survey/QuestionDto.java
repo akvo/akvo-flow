@@ -457,7 +457,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
         this.allowPoints = allowPoints;
     }
 
-    public Boolean isAllowPoints() {
+    public Boolean getAllowPoints() {
         return allowPoints;
     }
 
@@ -465,7 +465,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
         this.allowLine = allowLine;
     }
 
-    public Boolean isAllowLine() {
+    public Boolean getAllowLine() {
         return allowLine;
     }
 
@@ -473,7 +473,7 @@ public class QuestionDto extends BaseDto implements NamedObject {
         this.allowPolygon = allowPolygon;
     }
 
-    public Boolean isAllowPolygon() {
+    public Boolean getAllowPolygon() {
         return allowPolygon;
     }
 }
