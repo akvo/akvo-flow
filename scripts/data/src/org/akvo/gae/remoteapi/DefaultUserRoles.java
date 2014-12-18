@@ -67,7 +67,7 @@ public class DefaultUserRoles {
             System.out
                     .println(
                     "Usage: java org.akvo.gae.remoteapi.DefaultUserRoles <appid> <user> '<passwd>' [port]");
-            System.exit(0);
+            System.exit(1);
         }
 
         final String instanceUrl = "localhost".equals(args[0]) ? "localhost" : args[0]
