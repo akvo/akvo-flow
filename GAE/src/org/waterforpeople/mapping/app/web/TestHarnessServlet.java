@@ -479,6 +479,10 @@ public class TestHarnessServlet extends HttpServlet {
 
 		for (SurveyGroup surveyGroup : surveyGroups) {
 
+            // If the surveyGroup already has projectType set, don't touch it.
+            if (surveyGroup.getProjectType() != null)
+                continue;
+
 			List<Survey> surveys = surveyDAO.listSurveysByGroup(surveyGroup.getKey().getId());
 
 			boolean isMonitoring = Boolean.TRUE.equals(surveyGroup.getMonitoringGroup());
