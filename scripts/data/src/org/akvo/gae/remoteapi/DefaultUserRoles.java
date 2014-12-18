@@ -19,7 +19,9 @@ package org.akvo.gae.remoteapi;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -40,11 +42,15 @@ import com.google.appengine.tools.remoteapi.RemoteApiOptions;
  */
 public class DefaultUserRoles {
 
-    public static List<String> allPermissionsList = Arrays.asList("PROJECT_FOLDER_CREATE",
+    private static String ADMIN_ROLE_NAME = "admin";
+
+    private static String USER_ROLE_NAME = "user";
+
+    private static List<String> allPermissionsList = Arrays.asList("PROJECT_FOLDER_CREATE",
             "PROJECT_FOLDER_READ", "PROJECT_FOLDER_UPDATE", "PROJECT_FOLDER_DELETE", "FORM_CREATE",
             "FORM_READ", "FORM_UPDATE", "FORM_DELETE");
 
-    public static Entity createAuthorizationEntity(Key userKey, Key roleKey) {
+    private static Entity createAuthorizationEntity(Key userKey, Key roleKey) {
         Entity authorizationEntity = new Entity("UserAuthorization");
         authorizationEntity.setProperty("userId", userKey.getId());
         authorizationEntity.setProperty("roleId", roleKey.getId());
@@ -58,9 +64,10 @@ public class DefaultUserRoles {
 
     public static void main(String[] args) {
         if (args.length < 3 || args.length > 4) {
-            System.out.println(
+            System.out
+                    .println(
                     "Usage: java org.akvo.gae.remoteapi.DefaultUserRoles <appid> <user> '<passwd>' [port]");
-	    System.exit(0);
+            System.exit(0);
         }
 
         final String instanceUrl = "localhost".equals(args[0]) ? "localhost" : args[0]
@@ -80,37 +87,92 @@ public class DefaultUserRoles {
 
             DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-            // create defaultroles + retrieve key ids
-            Entity defaultAdminRole = new Entity("UserRole");
-            defaultAdminRole.setProperty("name", "admin");
-            defaultAdminRole.setProperty("permissions", allPermissionsList);
-            Key adminRoleKey = ds.put(defaultAdminRole);
+            // create / retrieve defaultroles + retrieve key ids
 
-            Entity defaultUserRole = new Entity("UserRole");
-            defaultUserRole.setProperty("name", "user");
-            defaultUserRole.setProperty("permissions", allPermissionsList);
-            Key userRoleKey = ds.put(defaultUserRole);
+            Query rolesQuery = new Query("UserRole").setFilter(new Query.FilterPredicate("name",
+                    FilterOperator.IN, Arrays.asList(ADMIN_ROLE_NAME, USER_ROLE_NAME)));
+            PreparedQuery rolesPq = ds.prepare(rolesQuery);
+            Entity defaultAdminRole = null;
+            Entity defaultUserRole = null;
+
+            for (Entity role : rolesPq.asIterable()) {
+                String roleName = (String) role.getProperty("name");
+                if (ADMIN_ROLE_NAME.equals(roleName)) {
+                    defaultAdminRole = role;
+                } else {
+                    defaultUserRole = role;
+                }
+            }
+
+            Key adminRoleKey = null;
+            if (defaultAdminRole == null) {
+                defaultAdminRole = new Entity("UserRole");
+                defaultAdminRole.setProperty("name", "admin");
+                defaultAdminRole.setProperty("permissions", allPermissionsList);
+                adminRoleKey = ds.put(defaultAdminRole);
+                System.out.println(ADMIN_ROLE_NAME + " role created");
+            } else {
+                adminRoleKey = defaultAdminRole.getKey();
+                System.out.println(ADMIN_ROLE_NAME + " role already exists");
+            }
+
+            Key userRoleKey = null;
+            if (defaultUserRole == null) {
+                defaultUserRole = new Entity("UserRole");
+                defaultUserRole.setProperty("name", "user");
+                defaultUserRole.setProperty("permissions", allPermissionsList);
+                userRoleKey = ds.put(defaultUserRole);
+                System.out.println(USER_ROLE_NAME + " role created");
+            } else {
+                userRoleKey = defaultUserRole.getKey();
+                System.out.println(USER_ROLE_NAME + " role already exists");
+            }
 
             // for each user create authorization
+
+            // retrieve existing authorization
+            Query userAuthQuery = new Query("UserAuthorization");
+            userAuthQuery.setFilter(new Query.FilterPredicate(
+                    "objectPath", FilterOperator.EQUAL, "/"));
+
+            PreparedQuery userAuthPq = ds.prepare(userAuthQuery);
+            Map<Long, Long> userAuthMap = new HashMap<Long, Long>();
+            for (Entity authorization : userAuthPq.asIterable()) {
+                Long userId = (Long) authorization.getProperty("userId");
+                Long roleId = (Long) authorization.getProperty("roleId");
+                userAuthMap.put(userId, roleId);
+            }
+
             List<Entity> userAuthorizationList = new ArrayList<Entity>();
-
             Query userQuery = new Query("User");
-
             // ignore superadmin users
             userQuery.setFilter(new Query.FilterPredicate(
                     "permissionList", FilterOperator.IN, Arrays.asList("10", "20")));
-
             PreparedQuery userPq = ds.prepare(userQuery);
+
             for (Entity user : userPq.asIterable()) {
                 String permissionList = (String) user.getProperty("permissionList");
                 String email = (String) user.getProperty("emailAddress");
+                Long userId = user.getKey().getId();
 
                 if (permissionList.trim().equals("10")) {
+                    if (userAuthMap.containsKey(userId)
+                            && userAuthMap.get(userId).equals(adminRoleKey.getId())) {
+                        System.out.println("Admin authorization for user " + anonymizeEmail(email)
+                                + " already exists");
+                        continue;
+                    }
                     userAuthorizationList
                             .add(createAuthorizationEntity(user.getKey(), adminRoleKey));
                     System.out.println("Creating Admin user authorization for: "
                             + anonymizeEmail(email));
                 } else {
+                    if (userAuthMap.containsKey(userId)
+                            && userAuthMap.get(userId).equals(userRoleKey.getId())) {
+                        System.out.println("User authorization for user " + anonymizeEmail(email)
+                                + " already exists");
+                        continue;
+                    }
                     userAuthorizationList
                             .add(createAuthorizationEntity(user.getKey(), userRoleKey));
                     System.out.println("Creating user authorization for: " + anonymizeEmail(email));
