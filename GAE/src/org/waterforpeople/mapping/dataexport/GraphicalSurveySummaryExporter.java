@@ -720,7 +720,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     headerStyle);
                         } else if (QuestionType.CASCADE == q.getType() && q.getLevelNames() != null) {
                             for (String level : q.getLevelNames()) {
-                                createCell(row, offset++, q.getKeyId() + "|" + level, headerStyle);
+                                createCell(row, offset++, level, headerStyle);
                             }
                         } else {
                             String header = "";
