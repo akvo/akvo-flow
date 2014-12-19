@@ -261,6 +261,8 @@ public class SurveyRestService {
                     });
 
                     s.setDesc(surveyDto.getDescription());
+                    // Make sure that code and name are the same
+                    s.setCode(s.getName());
 
                     if (surveyDto.getStatus() != null) {
                         // increment version for surveys already published
@@ -269,9 +271,8 @@ public class SurveyRestService {
                                         Survey.Status.valueOf(surveyDto.getStatus()))) {
                             s.incrementVersion();
                         }
-                        s.setStatus(Survey.Status
-                                .valueOf(surveyDto.getStatus().toString()));
                     }
+                    s.setStatus(Survey.Status.NOT_PUBLISHED);
                     if (surveyDto.getSector() != null) {
                         s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
                     }
@@ -365,6 +366,9 @@ public class SurveyRestService {
 
         // ignore version number sent by Dashboard and initialise
         s.getVersion();
+
+        // Make sure that code and name are the same
+        s.setCode(s.getName());
 
         return s;
     }

@@ -181,10 +181,7 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.optionListControl.set('content', []);
 
     // if the cascadeResourceId is not null, get the resource
-    console.log(FLOW.selectedControl.get('selectedQuestion'));
-    console.log(FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'))) {
-    	console.log("in here!" + FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
     	cascadeResource = FLOW.store.find(FLOW.CascadeResource,FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
     	FLOW.selectedControl.set('selectedCascadeResource', cascadeResource);
     }
@@ -261,6 +258,15 @@ FLOW.QuestionView = FLOW.View.extend({
 
   doSaveEditQuestion: function() {
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
+
+    if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
+        FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', Ember.String.loc('_cascade_resources'));
+        FLOW.dialogControl.set('message', Ember.String.loc('_cascade_select_resource'));
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
+        return false;
+    }
 
     if (this.type.get('value') !== 'NUMBER') {
       this.set('minVal', null);

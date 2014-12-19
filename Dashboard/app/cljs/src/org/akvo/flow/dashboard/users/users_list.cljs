@@ -19,6 +19,7 @@
             [org.akvo.flow.dashboard.components.grid :refer (grid)]
             [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
+            [org.akvo.flow.dashboard.dom-helpers :refer (scroll-to-top)]
             [org.akvo.flow.dashboard.users.user-details :refer (user-details)]
             [org.akvo.flow.dashboard.users.store :as store]
             [org.akvo.flow.dashboard.projects.store :as projects-store]
@@ -56,8 +57,9 @@
           (b/btn-link {:on-click #(om/set-state! owner :confirm-delete? false)} (t> _no))]
          [:span
           (b/btn-link {:on-click #(do
-                              (dispatch :projects/fetch nil)
-                              (on-action user))}
+                                    (dispatch :projects/fetch nil)
+                                    (scroll-to-top)
+                                    (on-action user))}
                       :pencil (t> _edit))
           " "
           (b/btn-link {:on-click #( om/set-state! owner :confirm-delete? true)}
@@ -134,7 +136,8 @@
            [:form.navbar-form.navbar-right
             (b/btn-primary {:class "btn-md"
                             :type "button"
-                            :on-click #(om/set-state! owner :current-user-id 0)}
+                            :on-click #(do (scroll-to-top)
+                                           (om/set-state! owner :current-user-id 0))}
                            :plus (t> _add_new_user))]]]
          (om/build grid
                    {:data (store/get-by-range users
@@ -154,7 +157,8 @@
                                                 (zero? current-user-id))
                                           empty-user
                                           (store/get-user users current-user-id))
-                                  :close! #(om/set-state! owner :current-user-id nil)
+                                  :close! #(do (scroll-to-top)
+                                               (om/set-state! owner :current-user-id nil))
                                   :projects-store projects
                                   :roles-store user_roles
                                   :user-auth-store user-auth

@@ -28,7 +28,7 @@
        (str "?")))
 
 (defn index-by [key coll]
-  (assert key )
+  (assert key)
   (reduce (fn [index res]
             (let [elem (get res key ::not-found)]
               (assert (not= elem ::not-found) (str "No value under key " key))

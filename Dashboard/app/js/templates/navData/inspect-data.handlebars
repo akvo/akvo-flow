@@ -3,7 +3,7 @@
     <div class="floats-in filterData" id="dataFilter">
         <h1>{{t _choose_survey_data_to_display}}:</h1>
         <div class="chooseSurveyData">
-            {{view Ember.Select contentBinding="FLOW.surveyGroupControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.code" optionValuePath="content.keyId" prompt="" promptBinding="Ember.STRINGS._select_survey_group"}} {{view Ember.Select contentBinding="FLOW.surveyControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurvey" optionLabelPath="content.code" optionValuePath="content.keyId" prompt="" promptBinding="Ember.STRINGS._select_survey"}}
+            {{view Ember.Select contentBinding="FLOW.surveyGroupControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.code" optionValuePath="content.keyId" prompt="" promptBinding="Ember.STRINGS._select_survey"}} {{view Ember.Select contentBinding="FLOW.surveyControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurvey" optionLabelPath="content.code" optionValuePath="content.keyId" prompt="" promptBinding="Ember.STRINGS._select_form"}}
         </div>
         <div class="dataCollectedDate">
             <label class="collectedFrom"><span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="Collected from" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
@@ -30,7 +30,7 @@
                 <tr>
                     <th class="noArrows"></th>
                     <th class="noArrows">{{t _id}}</th>
-                    <th class="noArrows">{{t _survey}}</th>
+                    <th class="noArrows">{{t _form}}</th>
                     <th class="noArrows">{{t _submitter}}</th>
                     <th class="noArrows">{{t _device}}</th>
                     <th class="noArrows">{{t _collected}}</th>

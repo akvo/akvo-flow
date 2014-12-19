@@ -55,6 +55,7 @@ FLOW.Project = FLOW.View.extend({
   }.property("FLOW.projectControl.formCount"),
 
   updateSelectedRegistrationForm: function() {
+    if (!this.get('selectedRegistrationForm')) return;
     FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.selectedRegistrationForm.get('keyId'));
   }.observes('selectedRegistrationForm')
 
@@ -64,16 +65,16 @@ FLOW.Project = FLOW.View.extend({
 FLOW.ProjectMainView = FLOW.View.extend({
 
   doSave: function() {
-    currentProject = FLOW.projectControl.get('currentProject');
-    currentForm = FLOW.selectedControl.get('selectedSurvey');
+    var currentProject = FLOW.projectControl.get('currentProject');
+    var currentForm = FLOW.selectedControl.get('selectedSurvey');
 
     if (currentProject && currentProject.get('isDirty')) {
-      currentProject.set('name', currentProject.get('code'));
+      currentProject.set('code', currentProject.get('name'));
       currentProject.set('path', FLOW.projectControl.get('currentProjectPath'));
     }
 
     if (currentForm && currentForm.get('isDirty')) {
-      currentForm.set('name', currentForm.get('code'));
+      currentForm.set('code', currentForm.get('name'));
       path = FLOW.projectControl.get('currentProjectPath') + "/" + currentForm.get('name');
       currentForm.set('path', path);
     }
@@ -101,6 +102,15 @@ FLOW.ProjectMainView = FLOW.View.extend({
     return FLOW.projectControl.isProjectFolder(FLOW.projectControl.get('currentProject'));
   }.property('FLOW.projectControl.currentProject'),
 
+  disableAddFolderButton: function() {
+    var permissions = FLOW.projectControl.get('currentPathPermissions');
+    return !FLOW.role.get('SUPER_ADMIN') && $.inArray("PROJECT_FOLDER_CREATE", permissions) === -1;
+  }.property('FLOW.projectControl.currentProjectPath'),
+
+  disableAddSurveyButton: function() {
+    var permissions = FLOW.projectControl.get('currentPathPermissions');
+    return !FLOW.role.get('SUPER_ADMIN') && $.inArray("PROJECT_FOLDER_CREATE", permissions) === -1;
+  }.property('FLOW.projectControl.currentProjectPath'),
 });
 
 
@@ -128,9 +138,10 @@ FLOW.ProjectItemView = FLOW.View.extend({
     if (isFolder) classes += " aFolder";
     if (isFolderEmpty) classes += " folderEmpty";
     if (isMoving || isCopying) classes += " highLighted";
+    if (FLOW.projectControl.get('newlyCreated') === this.get('content')) classes += " newlyCreated";
 
     return classes;
-  }.property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget'),
+  }.property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget', 'FLOW.projectControl.currentProject'),
 
   toggleEditFolderName: function(evt) {
     this.set('folderEdit', !this.get('folderEdit'));
@@ -163,17 +174,30 @@ FLOW.ProjectItemView = FLOW.View.extend({
     return langs[this.content.get('defaultLanguageCode')];
   }.property(),
 
+  hideDeleteButton: function () {
+    var c = this.get('content');
+    return !Ember.empty(c.get('surveyList')) || c.get('deleteDisabled');
+  }.property()
+
 });
 
 FLOW.FolderEditView = Ember.TextField.extend({
   content: null,
   path: null,
 
-  focusOut: function() {
+  saveFolderName: function() {
     this.content.set('name', this.content.get('code'));
-	path = FLOW.projectControl.get('currentProjectPath') + "/" + this.content.get('name');
-	this.content.set('path', path );
+    path = FLOW.projectControl.get('currentProjectPath') + "/" + this.content.get('name');
+    this.content.set('path', path );
     FLOW.store.commit();
+  },
+
+  focusOut: function() {
+    this.saveFolderName();
+  },
+
+  insertNewline: function() {
+    this.get('parentView').toggleEditFolderName();
   }
 });
 

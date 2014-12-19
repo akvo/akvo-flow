@@ -16,7 +16,8 @@
   org.akvo.flow.dashboard.components.bootstrap
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [sablono.core :as html :refer-macros (html)]))
+            [sablono.core :as html :refer-macros (html)])
+  (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
 (defn icon [n]
   {:pre [(keyword? n)]}
@@ -70,16 +71,24 @@
              ;; Component to use as labels
              ;; will be built
              ;; (om/build label-component (label-component-data-fn {... ...})
-             :label-component <some-component>
+             :label <some-component>
+             ;; or
+             :label-fn <some-fn>
+
              ;; defaults to identity
-             :label-component-data-fn <some-fn>
+             :label-data-fn <some-fn>
+
+             ;; Display a spinner as the first and only item
+             :loading? false
 
              :on-change <callback>
              })
 
 )
 
-(defn dropdown [{:keys [placeholder data selected label label-fn label-data-fn on-select]} owner]
+(defn dropdown [{:keys [placeholder data selected
+                        label label-fn label-data-fn
+                        on-select loading?]} owner]
   (reify
     om/IInitState
     (init-state [this]
@@ -98,7 +107,12 @@
            " "
            (caret)]
           [:ul.dropdown-menu {:role "menu" :aria-labelledby id}
-           (for [item data]
+           (if loading?
+             [:li {:role "presentation"}
+              [:a {:role "menuitem"
+                   :tab-index "-1"}
+               [:span.fa.fa-spinner.fa-spin] " " (t> _loading)]]
+             (for [item data]
              [:li {:role "presentation"}
               [:a {:role "menuitem"
                    :tab-index "-1"
@@ -106,7 +120,7 @@
                    :on-click #(on-select item)}
                (if label-fn
                  (label-fn item)
-                 (om/build label (label-data-fn item)))]])]])))))
+                 (om/build label (label-data-fn item)))]]))]])))))
 
 
 (defn select [{:keys [placeholder data selected label-fn key-fn on-select]} owner]
