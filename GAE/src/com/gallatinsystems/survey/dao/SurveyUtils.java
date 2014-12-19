@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
@@ -34,6 +35,8 @@ import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.HttpUtil;
 import com.gallatinsystems.common.util.PropertyUtil;
+import com.gallatinsystems.survey.domain.CascadeResource;
+import com.gallatinsystems.survey.domain.CascadeResource.Status;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
 import com.gallatinsystems.survey.domain.QuestionOption;
@@ -222,7 +225,12 @@ public class SurveyUtils {
         return sDao.getById(surveyId);
     }
 
-    private static String getPath(Survey s) {
+    public static SurveyGroup retrieveSurveyGroup(Long surveyGroupId) {
+        final SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
+        return surveyGroupDAO.getByKey(surveyGroupId);
+    }
+
+    public static String getPath(Survey s) {
         if (s == null) {
             return null;
         }
@@ -234,7 +242,7 @@ public class SurveyUtils {
             return null;
         }
 
-        return sg.getName() + "/" + s.getName();
+        return sg.getPath() + "/" + s.getName();
     }
 
     public static List<Translation> getTranslations(Long parentId,
@@ -266,6 +274,55 @@ public class SurveyUtils {
                 SurveyUtils.getTranslations(sourceParentId, types),
                 copyParentId, newSurveyId, newQuestionGroupId);
     }
+
+    /**
+     * Sends a POST request to publish a cascade resource to a server defined by the `flowServices`
+     * property
+     *
+     * @param cascadeResourceId
+     *           The id of the cascade resource to publish
+     * @return "failed" or "publishing requested", depending on the success.
+     */
+    public static String publishCascade(Long cascadeResourceId) {
+		String status = "failed";
+    	CascadeResourceDao crDao = new CascadeResourceDao();
+    	CascadeResource cr = crDao.getByKey(cascadeResourceId);
+    	if (cr != null){
+    		final String flowServiceURL = PropertyUtil.getProperty("flowServices");
+            final String uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
+
+            if (flowServiceURL == null || "".equals(flowServiceURL)) {
+                log.log(Level.SEVERE,
+                        "Error trying to publish cascade. Check `flowServices` property");
+                return status;
+            }
+
+            try {
+                final JSONObject payload = new JSONObject();
+                payload.put("cascadeResourceId", cascadeResourceId.toString());
+                payload.put("uploadUrl", uploadUrl);
+                cr.setVersion(cr.getVersion() + 1);
+                payload.put("version", cr.getVersion().toString());
+
+                log.log(Level.INFO, "Sending cascade publish request for cascade: " + cascadeResourceId);
+
+                final String postString = payload.toString();
+                log.log(Level.INFO, "POSTing to: " + flowServiceURL);
+
+                final String response = new String(HttpUtil.doPost(flowServiceURL
+                        + "/publish_cascade", postString, "application/json"), "UTF-8");
+
+                log.log(Level.INFO, "Response from server: " + response);
+                status = "publish requested";
+                cr.setStatus(Status.PUBLISHING);
+                crDao.save(cr);
+            } catch (Exception e) {
+                log.log(Level.SEVERE,
+                        "Error publishing cascade: " + e.getMessage(), e);
+            }
+    	}
+		return status;
+	}
 
     /**
      * Sends a POST request of a collection of surveyIds to a server defined by the `flowServices`
@@ -316,5 +373,31 @@ public class SurveyUtils {
                     "Error notifying the report service: " + e.getMessage(), e);
         }
         return null;
+    }
+
+    /**
+     * Given the path of an object, return a list of the paths of all its parent objects
+     *
+     * @param objectPath
+     *            the path of an object
+     * @param includeRootPath
+     *            include the root path in the list of parent paths
+     * @return
+     */
+    public static List<String> listParentPaths(String objectPath, boolean includeRootPath) {
+        List<String> parentPaths = new ArrayList<String>();
+        StringBuilder path = new StringBuilder(objectPath);
+        while (path.length() > 1) {
+            path.delete(path.lastIndexOf("/"), path.length());
+            if (StringUtils.isNotBlank(path.toString())) {
+                parentPaths.add(path.toString().trim());
+            }
+        }
+
+        if (includeRootPath) {
+            parentPaths.add("/");
+        }
+
+        return parentPaths;
     }
 }

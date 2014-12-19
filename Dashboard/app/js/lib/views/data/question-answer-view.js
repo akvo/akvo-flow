@@ -38,7 +38,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     questionId = this.content.get('questionID');
     q = FLOW.store.find(FLOW.Question, questionId);
     type = q.get('type');
-    this.set('isTextType', type == 'FREE_TEXT');
+    this.set('isTextType', type == 'FREE_TEXT' || type === 'CASCADE');
     this.set('isOptionType', type == 'OPTION');
     this.set('isNumberType', type == 'NUMBER');
     this.set('isBarcodeType', type == 'BARCODE');

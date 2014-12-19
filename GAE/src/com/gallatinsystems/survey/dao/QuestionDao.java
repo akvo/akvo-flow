@@ -16,6 +16,10 @@
 
 package com.gallatinsystems.survey.dao;
 
+import static com.gallatinsystems.common.util.MemCacheUtils.containsKey;
+import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
+import static com.gallatinsystems.common.util.MemCacheUtils.putObjects;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,8 +54,6 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
-
-import static com.gallatinsystems.common.util.MemCacheUtils.*;
 
 /**
  * saves/finds question objects
@@ -803,5 +805,9 @@ public class QuestionDao extends BaseDAO<Question> {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    public List<Question> listByCascadeResourceId(Long cascadeResourceId) {
+        return listByProperty("cascadeResourceId", cascadeResourceId, "Long");
     }
 }

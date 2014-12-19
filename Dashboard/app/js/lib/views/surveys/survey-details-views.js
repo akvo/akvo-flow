@@ -99,7 +99,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 	 }
 	 return false;
   },
-  
+
   doManageTranslations: function () {
 	// check if we have questions that are still loading
 	if (Ember.none(FLOW.questionControl.get('content'))){
@@ -134,8 +134,8 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 	}
 	FLOW.router.transitionTo('navSurveys.navSurveysEdit.manageTranslations');
   },
-  
-  
+
+
   doManageNotifications: function () {
 	if (this.surveyNotComplete()){
 		return;
@@ -152,7 +152,7 @@ FLOW.SurveySidebarView = FLOW.View.extend({
 	}
 	FLOW.router.transitionTo('navSurveys.navSurveysEdit.manageNotifications');
   },
-  
+
   doSaveSurvey: function () {
     var survey, re = /,/g;
     if (this.surveyNotComplete()){
@@ -286,6 +286,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
 
   toggleVisibility: function () {
     if (this.get('amVisible')) {
+      FLOW.selectedControl.set('selectedQuestion', null);
       FLOW.selectedControl.set('selectedQuestionGroup', null);
     } else {
       FLOW.selectedControl.set('selectedQuestionGroup', this.content);

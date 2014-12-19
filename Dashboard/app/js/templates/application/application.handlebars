@@ -1,42 +1,38 @@
-  <header class="floats-in top" id="header" role="banner">
-        <div>
-                <h1>Akvo
-                    <abbr title="field level operations watch">Flow</abbr></h1>
-          
-            <nav id="topnav" role="navigation" class="appNav">
-                {{view FLOW.NavigationView controllerBinding="controller.controllers.navigationController"}}
-            </nav>
-    		<div class="loadSave">
-					{{#if FLOW.savingMessageControl.areSavingBool}}<div class="isSaving">{{t _saving}}</div>
-			{{else}}
-			  {{#if FLOW.savingMessageControl.areLoadingBool}}<div class="isLoading">{{t _loading}}</div>
-			  {{/if}}
-			{{/if}}
-			</div>
-            {{view FLOW.HeaderView}}
-            
-        </div>
-    </header>
-    <div class="floats-in">
-    <div id="pageWrap" class="widthConstraint belowHeader">
-        {{outlet}}
-    </div></div>
-    <div><iframe id="downloader" style="display:none" width="0" height="0"></iframe></div>
-    <div {{bindAttr class="FLOW.dialogControl.showDialog:display :overlay"}}>
-      <div class="blanket"></div>
-          <div class="dialogWrap">
-        <!-- the dialog contents -->
-        <div class="confirmDialog dialog">
-          <h2>{{FLOW.dialogControl.header}}</h2>
-          <p class="dialogMsg">{{FLOW.dialogControl.message}}</p>
-          <br/><br/>
-          <div class="buttons menuCentre"> 
-            <ul>  
-              {{#if FLOW.dialogControl.showOK}} <li><a {{action "doOK" target="FLOW.dialogControl"}} class="ok smallBtn">{{t _ok}}</a></li>{{/if}}
-               {{#if FLOW.dialogControl.showCANCEL}} <li><a {{action "doCANCEL" target="FLOW.dialogControl"}}} class="cancel">{{t _cancel}}</a></li>{{/if}}
-            </ul>
-          </div>
-        </div>
+<div class="loadSave">
+  {{#if FLOW.savingMessageControl.areSavingBool}}
+    <div class="isSaving">{{t _saving}}</div>
+  {{else}}
+    {{#if FLOW.savingMessageControl.areLoadingBool}}
+      <div class="isLoading">{{t _loading}}</div>
+    {{/if}}
+  {{/if}}
+</div>
+<header class="floats-in top" id="header" role="banner">
+  <div>
+    <h1>Akvo <abbr title="field level operations watch">Flow</abbr></h1>
+    <nav id="topnav" role="navigation" class="appNav">
+      {{view FLOW.NavigationView controllerBinding="controller.controllers.navigationController"}}
+    </nav>
+    {{view FLOW.HeaderView}}
+  </div>
+</header>
+{{outlet}}
+<div><iframe id="downloader" style="display:none" width="0" height="0"></iframe></div>
+<div {{bindAttr class="FLOW.dialogControl.showDialog:display :overlay"}}>
+  <div class="blanket"></div>
+  <div class="dialogWrap">
+    <!-- the dialog contents -->
+    <div class="confirmDialog dialog">
+      <h2>{{FLOW.dialogControl.header}}</h2>
+      <p class="dialogMsg">{{FLOW.dialogControl.message}}</p>
+      <br/><br/>
+      <div class="buttons menuCentre">
+        <ul>
+          {{#if FLOW.dialogControl.showOK}} <li><a {{action "doOK" target="FLOW.dialogControl"}} class="ok smallBtn">{{t _ok}}</a></li>{{/if}}
+          {{#if FLOW.dialogControl.showCANCEL}} <li><a {{action "doCANCEL" target="FLOW.dialogControl"}}} class="cancel">{{t _cancel}}</a></li>{{/if}}
+        </ul>
       </div>
     </div>
-   {{view FLOW.FooterView}}
+  </div>
+</div>
+{{view FLOW.FooterView}}

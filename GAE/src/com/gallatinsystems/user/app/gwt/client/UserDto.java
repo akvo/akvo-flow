@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -24,7 +24,7 @@ import com.gallatinsystems.framework.gwt.dto.client.BaseDto;
 /**
  * dto representing the user objects. When returned, this object usually will have a set of
  * UserConfigDtos enumerating the per-user configuration as well as a list of UserPermissionDtos
- * 
+ *
  * @author Christopher Fagiani
  */
 public class UserDto extends BaseDto {
@@ -121,10 +121,10 @@ public class UserDto extends BaseDto {
     }
 
     public String getAccessKey() {
-	return accessKey;
+        return accessKey;
     }
 
     public void setAccessKey(String accessKey) {
-	this.accessKey = accessKey;
+        this.accessKey = accessKey;
     }
 }

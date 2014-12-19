@@ -17,10 +17,13 @@
 package org.waterforpeople.mapping.app.web.rest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -50,32 +53,24 @@ public class SurveyInstanceRestService {
     @Inject
     private SurveyInstanceDAO surveyInstanceDao;
 
+    @Inject
+    private SurveyDAO surveyDao;
+
     // list survey instances
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listSurveyInstances(
-            @RequestParam(value = "beginDate", defaultValue = "")
-            Long bDate,
-            @RequestParam(value = "endDate", defaultValue = "")
-            Long eDate,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId,
-            @RequestParam(value = "since", defaultValue = "")
-            String since,
-            @RequestParam(value = "unapprovedOnlyFlag", defaultValue = "")
-            Boolean unapprovedOnlyFlag,
-            @RequestParam(value = "deviceId", defaultValue = "")
-            String deviceId,
-            @RequestParam(value = "submitterName", defaultValue = "")
-            String submitterName,
-            @RequestParam(value = "countryCode", defaultValue = "")
-            String countryCode,
-            @RequestParam(value = "level1", defaultValue = "")
-            String level1,
-            @RequestParam(value = "level2", defaultValue = "")
-            String level2,
-            @RequestParam(value = "surveyedLocaleId", defaultValue = "")
-            Long surveyedLocaleId) {
+            @RequestParam(value = "beginDate", defaultValue = "") Long bDate,
+            @RequestParam(value = "endDate", defaultValue = "") Long eDate,
+            @RequestParam(value = "surveyId", required = false) Long surveyId,
+            @RequestParam(value = "since", defaultValue = "") String since,
+            @RequestParam(value = "unapprovedOnlyFlag", defaultValue = "") Boolean unapprovedOnlyFlag,
+            @RequestParam(value = "deviceId", defaultValue = "") String deviceId,
+            @RequestParam(value = "submitterName", defaultValue = "") String submitterName,
+            @RequestParam(value = "countryCode", defaultValue = "") String countryCode,
+            @RequestParam(value = "level1", defaultValue = "") String level1,
+            @RequestParam(value = "level2", defaultValue = "") String level2,
+            @RequestParam(value = "surveyedLocaleId", defaultValue = "") Long surveyedLocaleId) {
 
         // we don't want to search for empty fields
         if ("".equals(deviceId)) {
@@ -97,12 +92,10 @@ public class SurveyInstanceRestService {
         final Map<String, Object> response = new HashMap<String, Object>();
         RestStatusDto statusDto = new RestStatusDto();
 
-        // create list of surveygroup / survey
-        SurveyDAO surveyDao = new SurveyDAO();
-        List<Survey> surveyList = surveyDao.list("all");
-        HashMap<Long, String> surveyMap = new HashMap<Long, String>();
-        for (Survey s : surveyList) {
-            surveyMap.put(s.getKey().getId(), s.getPath() + "/" + s.getCode());
+        // for dashboard requests we immediately return empty list of no surveyId is provided
+        if (surveyId == null && surveyedLocaleId == null) {
+            response.put("survey_instances", Collections.emptyList());
+            return response;
         }
 
         // turn params into dates
@@ -126,24 +119,40 @@ public class SurveyInstanceRestService {
 
         // get survey Instances
         List<SurveyInstance> siList = null;
-        SurveyInstanceDAO dao = new SurveyInstanceDAO();
         if (surveyedLocaleId == null) {
-            siList = dao.listByDateRangeAndSubmitter(beginDate, endDate, false,
+            List<Survey> authorizedSurveys = surveyDao.listAllFilteredByUserAuthorization();
+            Set<Long> authorizedSurveyIds = new HashSet<Long>();
+            for (Survey s : authorizedSurveys) {
+                authorizedSurveyIds.add(s.getKey().getId());
+            }
+
+            if (!authorizedSurveyIds.contains(surveyId)) {
+                response.put("survey_instances", Collections.emptyList());
+                return response;
+            }
+
+            siList = surveyInstanceDao.listByDateRangeAndSubmitter(beginDate, endDate, false,
                     surveyId, deviceId, submitterName, countryCode, level1, level2, since);
         } else {
-            siList = dao.listInstancesByLocale(surveyedLocaleId, null, null, null);
+            siList = surveyInstanceDao.listInstancesByLocale(surveyedLocaleId, null, null, null);
         }
         Integer num = siList.size();
         String newSince = SurveyInstanceDAO.getCursor(siList);
 
+        String surveyCode = null;
+        if (siList.size() > 0) {
+            Survey selectedSurvey = surveyDao.getByKey(siList.get(0).getSurveyId());
+            surveyCode = selectedSurvey.getPath();
+        } else {
+            surveyCode = "";
+        }
+
         // put in survey group/survey names
         ArrayList<SurveyInstanceDto> siDtoList = new ArrayList<SurveyInstanceDto>();
         for (SurveyInstance siItem : siList) {
-            String code = surveyMap.get(siItem.getSurveyId());
             SurveyInstanceDto dto = new SurveyInstanceDto();
             DtoMarshaller.copyToDto(siItem, dto);
-            if (code != null)
-                dto.setSurveyCode(code);
+            dto.setSurveyCode(surveyCode);
             siDtoList.add(dto);
         }
 
@@ -158,8 +167,7 @@ public class SurveyInstanceRestService {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
     public Map<String, SurveyInstanceDto> findSurveyInstanceById(
-            @PathVariable("id")
-            Long id) {
+            @PathVariable("id") Long id) {
         final Map<String, SurveyInstanceDto> response = new HashMap<String, SurveyInstanceDto>();
         SurveyInstance s = surveyInstanceDao.getByKey(id);
         SurveyInstanceDto dto = null;
@@ -176,8 +184,7 @@ public class SurveyInstanceRestService {
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
     public Map<String, RestStatusDto> deleteSurveyInstanceById(
-            @PathVariable("id")
-            Long id) {
+            @PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         SurveyInstance s = surveyInstanceDao.getByKey(id);
         RestStatusDto statusDto = new RestStatusDto();
@@ -202,8 +209,7 @@ public class SurveyInstanceRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingSurveyInstance(
-            @RequestBody
-            SurveyInstancePayload payLoad) {
+            @RequestBody SurveyInstancePayload payLoad) {
 
         final SurveyInstanceDto surveyInstanceDto = payLoad.getSurvey_instance();
         final Map<String, Object> response = new HashMap<String, Object>();
@@ -246,8 +252,7 @@ public class SurveyInstanceRestService {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> saveNewSurveyInstance(
-            @RequestBody
-            SurveyInstancePayload payLoad) {
+            @RequestBody SurveyInstancePayload payLoad) {
 
         final SurveyInstanceDto surveyInstanceDto = payLoad.getSurvey_instance();
         final Map<String, Object> response = new HashMap<String, Object>();

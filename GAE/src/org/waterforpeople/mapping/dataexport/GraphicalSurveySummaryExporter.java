@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -41,6 +42,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -75,6 +80,9 @@ import com.gallatinsystems.framework.dataexport.applet.ProgressDialog;
  * @author Christopher Fagiani
  */
 public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
+
+    private static final Logger log = Logger.getLogger(GraphicalSurveySummaryExporter.class);
+
     private static final int MAX_COL = 255;
     private static final String IMAGE_PREFIX_OPT = "imgPrefix";
     private static final String DO_ROLLUP_OPT = "performRollup";
@@ -339,7 +347,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 currentStep++;
             }
             Workbook wb = null;
-            if (questionMap.size() > 0) {
+            if (questionMap != null && questionMap.size() > 0) {
                 if (questionMap.size() > MAX_COL - 3) {
                     wb = new HSSFWorkbook();
                 } else {
@@ -391,11 +399,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                         COMPLETE.get(locale)));
             } else {
-                System.out.println("No questions for survey");
+                log.info("No questions for survey: "
+                        + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM) + " - instance: "
+                        + serverBase);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error generating report: " + e.getMessage(), e);
         } finally {
             if (pw != null) {
                 pw.close();
@@ -491,7 +501,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         while (!jobQueue.isEmpty() || threadPool.getActiveCount() > 0
                 || started > threadsCompleted) {
             try {
-                System.out.println("Sleeping, Queue has: " + jobQueue.size());
+                log.debug("Sleeping, Queue has: " + jobQueue.size());
                 Thread.sleep(5000);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -558,9 +568,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 .trim())));
                     }
                 } catch (Exception e) {
-                    System.out
-                            .println("couldn't format value for question id: "
-                                    + q + "\n" + e.getMessage());
+                    log.error("couldn't format value for question id: "
+                            + q + " -  " + e.getMessage(), e);
                 }
 
                 if (qdto != null && QuestionType.PHOTO == qdto.getType()) {
@@ -585,6 +594,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String cellVal = val.trim();
                     createCell(row, col++, cellVal, null, Cell.CELL_TYPE_NUMERIC);
                     digest.update(cellVal.getBytes());
+                } else if (qdto != null && QuestionType.CASCADE.equals(qdto.getType())) {
+                    String cellVal = val.trim();
+                    ArrayList<String> parts = new ArrayList<String>(Arrays.asList(cellVal
+                            .split("\\|", -1)));
+                    int padCount = qdto.getLevelNames().size() - parts.size();
+                    for (int p = 0; p < padCount; p++) { // padding
+                        parts.add("");
+                    }
+                    for (String lVal : parts) {
+                        createCell(row, col++, lVal, null, Cell.CELL_TYPE_STRING);
+                        digest.update(lVal.getBytes());
+                    }
                 } else {
                     String cellVal = val.replaceAll("\n", " ").trim();
                     createCell(row, col++, cellVal, null);
@@ -697,6 +718,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     useQID ? questionId + "_" + codeLabel.replaceAll("\\s", "")
                                             : "--GEOCODE--|" + codeLabel,
                                     headerStyle);
+                        } else if (QuestionType.CASCADE == q.getType() && q.getLevelNames() != null) {
+                            for (String level : q.getLevelNames()) {
+                                createCell(row, offset++, q.getKeyId() + "|" + level, headerStyle);
+                            }
                         } else {
                             String header = "";
                             if (useQID) {
@@ -970,7 +995,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     getRow(curRow++, sheet);
                     // flush the sheet so far to disk; we will not go back up
                     ((SXSSFSheet) sheet).flushRows(0); // retain 0 last rows and
-                                                       // flush all others
+                    // flush all others
 
                 }
             }
@@ -1031,8 +1056,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         } else {
             row = sheet.createRow(index);
         }
-        System.out.println("Row " + index); // debug printout to study backward
-                                            // jumps
+        log.debug("Row " + index); // debug printout to study backward jumps
 
         return row;
 
@@ -1050,10 +1074,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         maxSteps = FULL_STEPS;
         generateCharts = true;
         if (options != null) {
-            for (Map.Entry<String, String> entry : options.entrySet()) {
-                System.out.println("Option " + entry.getKey() + " = "
-                        + entry.getValue());
-            }
+            log.debug(options);
 
             locale = options.get(LOCALE_OPT);
             imagePrefix = options.get(IMAGE_PREFIX_OPT);
@@ -1162,6 +1183,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     public static void main(String[] args) {
+        // Log4j stuff - http://stackoverflow.com/a/9003191
+        ConsoleAppender console = new ConsoleAppender();
+        console.setLayout(new PatternLayout("%d{ISO8601} [%t] %-5p %c - %m%n"));
+        console.setThreshold(Level.DEBUG);
+        console.activateOptions();
+        Logger.getRootLogger().addAppender(console);
+
         GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();

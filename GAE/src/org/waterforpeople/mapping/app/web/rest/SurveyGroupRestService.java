@@ -31,12 +31,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.SurveyGroupDto;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyGroupPayload;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
@@ -57,10 +57,8 @@ public class SurveyGroupRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listSurveyGroups(
-            @RequestParam(value = "preflight", defaultValue = "")
-            String preflight,
-            @RequestParam(value = "surveyGroupId", defaultValue = "")
-            Long surveyGroupId) {
+            @RequestParam(value = "preflight", defaultValue = "") String preflight,
+            @RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId) {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyGroupDto> results = new ArrayList<SurveyGroupDto>();
         RestStatusDto statusDto = new RestStatusDto();
@@ -84,11 +82,19 @@ public class SurveyGroupRestService {
         }
 
         // if we are here, it is a regular request
-        List<SurveyGroup> surveys = surveyGroupDao.list(Constants.ALL_RESULTS);
+        List<SurveyGroup> surveys = surveyGroupDao.listAllFilteredByUserAuthorization();
+        SurveyDAO surveyDao = new SurveyDAO();
         if (surveys != null) {
             for (SurveyGroup s : surveys) {
                 SurveyGroupDto dto = new SurveyGroupDto();
                 DtoMarshaller.copyToDto(s, dto);
+                List<Survey> surveyList = surveyDao.listSurveysByGroup(s.getKey().getId());
+                if (surveyList != null && !surveyList.isEmpty()) {
+                    SurveyDto sDto = new SurveyDto();
+                    // we don't want/need the full object
+                    sDto.setKeyId(surveyList.get(0).getKey().getId());
+                    dto.addSurvey(sDto);
+                }
                 results.add(dto);
             }
         }
@@ -100,8 +106,7 @@ public class SurveyGroupRestService {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
     public Map<String, SurveyGroupDto> findSurveyGroupById(
-            @PathVariable("id")
-            Long id) {
+            @PathVariable("id") Long id) {
         final Map<String, SurveyGroupDto> response = new HashMap<String, SurveyGroupDto>();
         SurveyGroup s = surveyGroupDao.getByKey(id);
         SurveyGroupDto dto = null;
@@ -117,8 +122,7 @@ public class SurveyGroupRestService {
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
     public Map<String, RestStatusDto> deleteSurveyGroupById(
-            @PathVariable("id")
-            Long id) {
+            @PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         SurveyGroup s = surveyGroupDao.getByKey(id);
         RestStatusDto statusDto = new RestStatusDto();
@@ -126,10 +130,20 @@ public class SurveyGroupRestService {
 
         // check if surveyGroup exists in the datastore
         if (s != null) {
-            // only delete surveyGroups if there are no surveys in there
-            List<Survey> surveys = surveyDao.listSurveysByGroup(id);
-            if (surveys.size() == 0) {
-                // delete survey group
+            boolean delete = false;
+            switch (s.getProjectType()) {
+                case PROJECT:
+                    // only delete surveyGroups if there are no surveys in there
+                    List<Survey> surveys = surveyDao.listSurveysByGroup(id);
+                    delete = surveys.size() == 0;
+                    break;
+                case PROJECT_FOLDER:
+                    // only delete surveyGroups if there are no sub folders in there
+                    List<SurveyGroup> surveyGroups = surveyGroupDao.listByProjectFolderId(id);
+                    delete = surveyGroups.size() == 0;
+                    break;
+            }
+            if (delete) {
                 surveyGroupDao.delete(s);
                 statusDto.setStatus("ok");
             }
@@ -142,8 +156,7 @@ public class SurveyGroupRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingSurveyGroup(
-            @RequestBody
-            SurveyGroupPayload payLoad) {
+            @RequestBody SurveyGroupPayload payLoad) {
 
         final SurveyGroupDto surveyGroupDto = payLoad.getSurvey_group();
         final Map<String, Object> response = new HashMap<String, Object>();
@@ -169,6 +182,15 @@ public class SurveyGroupRestService {
                             "createdDateTime", "lastUpdateDateTime",
                             "displayName", "questionGroupList"
                     });
+
+                    // Make sure that code and name are the same
+                    s.setCode(s.getName());
+
+                    if (Boolean.FALSE.equals(s.getMonitoringGroup())) {
+                        s.setNewLocaleSurveyId(null);
+                    }
+                    s.setPublished(false);
+
                     s = surveyGroupDao.save(s);
 
                     dto = new SurveyGroupDto();
@@ -186,8 +208,7 @@ public class SurveyGroupRestService {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> saveNewSurveyGroup(
-            @RequestBody
-            SurveyGroupPayload payLoad) {
+            @RequestBody SurveyGroupPayload payLoad) {
 
         final SurveyGroupDto surveyGroupDto = payLoad.getSurvey_group();
         final Map<String, Object> response = new HashMap<String, Object>();
@@ -207,6 +228,9 @@ public class SurveyGroupRestService {
                     "createdDateTime", "lastUpdateDateTime", "displayName",
                     "questionGroupList"
             });
+
+            // Make sure that code and name are the same
+            s.setCode(s.getName());
             s = surveyGroupDao.save(s);
 
             dto = new SurveyGroupDto();

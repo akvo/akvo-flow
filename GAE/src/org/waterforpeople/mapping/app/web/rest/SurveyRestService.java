@@ -42,7 +42,6 @@ import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
 import org.waterforpeople.mapping.app.web.rest.dto.SurveyPayload;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 
-import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
@@ -74,7 +73,7 @@ public class SurveyRestService {
         final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyDto> results = new ArrayList<SurveyDto>();
         SurveyInstanceSummary sis = null;
-        List<Survey> surveys = surveyDao.list(Constants.ALL_RESULTS);
+        List<Survey> surveys = surveyDao.listAllFilteredByUserAuthorization();
         if (surveys != null) {
             for (Survey s : surveys) {
                 SurveyDto dto = new SurveyDto();
@@ -98,22 +97,18 @@ public class SurveyRestService {
     @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, Object> listSurveysByGroupId(
-            @RequestParam(value = "surveyGroupId", defaultValue = "")
-            Long surveyGroupId,
-            @RequestParam(value = "ids[]", defaultValue = "")
-            Long[] ids,
-            @RequestParam(value = "preflight", defaultValue = "")
-            String preflight,
-            @RequestParam(value = "surveyId", defaultValue = "")
-            Long surveyId) {
+            @RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId,
+            @RequestParam(value = "ids[]", defaultValue = "") Long[] ids,
+            @RequestParam(value = "preflight", defaultValue = "") String preflight,
+            @RequestParam(value = "surveyId", defaultValue = "") Long surveyId) {
 
-	// If none of the optional query params are specified, return all surveys
-	if (surveyGroupId == null
-		&& ids[0] == null
-		&& preflight.equals("")
-		&& surveyId == null) {
-	    return listSurveys();
-	}
+        // If none of the optional query params are specified, return all surveys
+        if (surveyGroupId == null
+                && ids[0] == null
+                && preflight.equals("")
+                && surveyId == null) {
+            return listSurveys();
+        }
 
         final Map<String, Object> response = new HashMap<String, Object>();
         List<SurveyDto> results = new ArrayList<SurveyDto>();
@@ -147,8 +142,9 @@ public class SurveyRestService {
         }
 
         if (surveys != null) {
-            for (Survey s : surveys) {
+            for (Object obj : surveyDao.filterByUserAuthorization(surveys)) {
                 SurveyDto dto = new SurveyDto();
+                Survey s = (Survey) obj;
                 DtoMarshaller.copyToDto(s, dto);
 
                 // add surveyInstance Count
@@ -171,8 +167,7 @@ public class SurveyRestService {
     // find a single survey by the surveyId
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ResponseBody
-    public Map<String, SurveyDto> findSurvey(@PathVariable("id")
-    Long id) {
+    public Map<String, SurveyDto> findSurvey(@PathVariable("id") Long id) {
         final Map<String, SurveyDto> response = new HashMap<String, SurveyDto>();
         Survey s = surveyDao.getByKey(id);
         SurveyDto dto = null;
@@ -199,15 +194,14 @@ public class SurveyRestService {
 
     /**
      * Spawns a task to delete a survey by survey id
-     * 
+     *
      * @param surveyId
      * @return
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
     public Map<String, RestStatusDto> deleteSurveyById(
-            @PathVariable("id")
-            Long surveyId) {
+            @PathVariable("id") Long surveyId) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         Survey survey = surveyDao.getByKey(surveyId);
         RestStatusDto statusDto = null;
@@ -239,8 +233,7 @@ public class SurveyRestService {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
     public Map<String, Object> saveExistingSurvey(
-            @RequestBody
-            SurveyPayload payLoad) {
+            @RequestBody SurveyPayload payLoad) {
         final SurveyDto surveyDto = payLoad.getSurvey();
         final Map<String, Object> response = new HashMap<String, Object>();
         SurveyDto dto = null;
@@ -268,6 +261,8 @@ public class SurveyRestService {
                     });
 
                     s.setDesc(surveyDto.getDescription());
+                    // Make sure that code and name are the same
+                    s.setCode(s.getName());
 
                     if (surveyDto.getStatus() != null) {
                         // increment version for surveys already published
@@ -276,9 +271,8 @@ public class SurveyRestService {
                                         Survey.Status.valueOf(surveyDto.getStatus()))) {
                             s.incrementVersion();
                         }
-                        s.setStatus(Survey.Status
-                                .valueOf(surveyDto.getStatus().toString()));
                     }
+                    s.setStatus(Survey.Status.NOT_PUBLISHED);
                     if (surveyDto.getSector() != null) {
                         s.setSector(Survey.Sector.valueOf(surveyDto.getSector()));
                     }
@@ -303,8 +297,7 @@ public class SurveyRestService {
     // create new survey
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, Object> saveNewSurvey(@RequestBody
-    SurveyPayload payLoad) {
+    public Map<String, Object> saveNewSurvey(@RequestBody SurveyPayload payLoad) {
         final SurveyDto surveyDto = payLoad.getSurvey();
         final Map<String, Object> response = new HashMap<String, Object>();
 
@@ -373,6 +366,9 @@ public class SurveyRestService {
 
         // ignore version number sent by Dashboard and initialise
         s.getVersion();
+
+        // Make sure that code and name are the same
+        s.setCode(s.getName());
 
         return s;
     }

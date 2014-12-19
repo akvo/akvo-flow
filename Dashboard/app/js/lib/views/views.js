@@ -9,10 +9,12 @@ require('akvo-flow/views/surveys/notifications-view');
 require('akvo-flow/views/surveys/translations-view');
 require('akvo-flow/views/surveys/survey-group-views');
 require('akvo-flow/views/surveys/survey-details-views');
+require('akvo-flow/views/surveys/form-view');
 require('akvo-flow/views/data/inspect-data-table-views');
 require('akvo-flow/views/data/data-attribute-views');
 require('akvo-flow/views/data/bulk-upload-view');
 require('akvo-flow/views/data/monitoring-data-table-view');
+require('akvo-flow/views/data/cascade-resources-view');
 require('akvo-flow/views/surveys/question-view');
 require('akvo-flow/views/data/question-answer-view');
 require('akvo-flow/views/reports/report-views');
@@ -426,6 +428,11 @@ FLOW.NavHomeView = Ember.View.extend({
   templateName: 'navHome/nav-home'
 });
 
+// project views
+FLOW.NavProjectsView = Ember.View.extend({
+  templateName: 'navProjects/nav-projects-main'
+});
+
 // surveys views
 FLOW.NavSurveysView = Ember.View.extend({
   templateName: 'navSurveys/nav-surveys'
@@ -489,6 +496,10 @@ FLOW.BulkUploadView = Ember.View.extend({
 });
 FLOW.DataCleaningView = Ember.View.extend({
   templateName: 'navData/data-cleaning'
+});
+
+FLOW.CascadeResourcesView = Ember.View.extend({
+	  templateName: 'navData/cascade-resources'
 });
 
 FLOW.MonitoringDataView = Ember.View.extend({

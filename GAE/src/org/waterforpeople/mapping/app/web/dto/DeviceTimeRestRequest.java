@@ -22,7 +22,6 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
  * encapsulates request to the device time service
- * 
  */
 public class DeviceTimeRestRequest extends RestRequest {
 

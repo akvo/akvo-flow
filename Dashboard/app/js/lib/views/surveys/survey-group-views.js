@@ -3,16 +3,241 @@ function capitaliseFirstLetter(string) {
 }
 
 if (!String.prototype.trim) {
-		String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
-	}
+  String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+}
+
+FLOW.ProjectListView = FLOW.View.extend({
+  templateName: 'navSurveys/project-list'
+
+});
+
+FLOW.ProjectView = FLOW.View.extend({
+  templateName: 'navSurveys/project',
+});
+
+FLOW.Project = FLOW.View.extend({
+
+  showProjectDetails: false,
+  showAdvancedSettings: false,
+  selectedLanguage: null,
+  monitoringGroupEnabled: false,
+  selectedRegistrationForm: null,
+
+  project: function() {
+    return FLOW.projectControl.get('currentProject');
+  }.property(),
+
+  toggleShowProjectDetails: function() {
+    this.set('showProjectDetails', !this.get('showProjectDetails'));
+  },
+
+  toggleShowAdvancedSettings: function() {
+    this.set('showAdvancedSettings', !this.get('showAdvancedSettings'));
+  },
+
+  isNewProject: function() {
+    var currentProject = FLOW.projectControl.get('currentProject');
+    return currentProject && currentProject.get('code') == "New survey";
+  }.property('FLOW.projectControl.currentProject'),
+
+  visibleProjectBasics: function() {
+    return this.get('isNewProject') || this.get('showProjectDetails');
+  }.property('showProjectDetails'),
+
+  updateSelectedLanguage: function() {
+    var currentProject = FLOW.projectControl.get('currentProject');
+    if (currentProject)
+      currentProject.set('defaultLanguageCode', this.selectedLanguage.get('value'));
+  }.observes('this.selectedLanguage'),
+
+  showMonitoringGroupCheckbox: function() {
+    return FLOW.projectControl.get('formCount') < 2;
+  }.property("FLOW.projectControl.formCount"),
+
+  updateSelectedRegistrationForm: function() {
+    if (!this.get('selectedRegistrationForm')) return;
+    FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.selectedRegistrationForm.get('keyId'));
+  }.observes('selectedRegistrationForm')
+
+});
+
+
+FLOW.ProjectMainView = FLOW.View.extend({
+
+  doSave: function() {
+    var currentProject = FLOW.projectControl.get('currentProject');
+    var currentForm = FLOW.selectedControl.get('selectedSurvey');
+
+    if (currentProject && currentProject.get('isDirty')) {
+      currentProject.set('code', currentProject.get('name'));
+      currentProject.set('path', FLOW.projectControl.get('currentProjectPath'));
+    }
+
+    if (currentForm && currentForm.get('isDirty')) {
+      currentForm.set('code', currentForm.get('name'));
+      path = FLOW.projectControl.get('currentProjectPath') + "/" + currentForm.get('name');
+      currentForm.set('path', path);
+    }
+
+    FLOW.store.commit();
+  },
+
+  hasUnsavedChanges: function() {
+    var selectedProject = FLOW.projectControl.get('currentProject');
+    var isProjectDirty = selectedProject ? selectedProject.get('isDirty') : false;
+
+    var selectedForm = FLOW.selectedControl.get('selectedSurvey');
+    var isFormDirty = selectedForm ? selectedForm.get('isDirty') : false;
+
+    return isProjectDirty || isFormDirty;
+
+  }.property('FLOW.projectControl.currentProject.isDirty',
+              'FLOW.selectedControl.selectedSurvey.isDirty'),
+
+  projectView: function() {
+    return FLOW.projectControl.isProject(FLOW.projectControl.get('currentProject'));
+  }.property('FLOW.projectControl.currentProject'),
+
+  projectListView: function() {
+    return FLOW.projectControl.isProjectFolder(FLOW.projectControl.get('currentProject'));
+  }.property('FLOW.projectControl.currentProject'),
+
+  disableAddFolderButton: function() {
+    var permissions = FLOW.projectControl.get('currentPathPermissions');
+    return !FLOW.role.get('SUPER_ADMIN') && $.inArray("PROJECT_FOLDER_CREATE", permissions) === -1;
+  }.property('FLOW.projectControl.currentProjectPath'),
+
+  disableAddSurveyButton: function() {
+    var permissions = FLOW.projectControl.get('currentPathPermissions');
+    return !FLOW.role.get('SUPER_ADMIN') && $.inArray("PROJECT_FOLDER_CREATE", permissions) === -1;
+  }.property('FLOW.projectControl.currentProjectPath'),
+});
+
+
+FLOW.ProjectList = FLOW.View.extend({
+  tagName: 'ul',
+  classNameBindings: ['classProperty'],
+  classProperty: function() {
+    return FLOW.projectControl.moveTarget || FLOW.projectControl.copyTarget ? 'actionProcess' : '';
+  }.property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget')
+});
+
+FLOW.ProjectItemView = FLOW.View.extend({
+  tagName: 'li',
+  content: null,
+  classNameBindings: ['classProperty'],
+  folderEdit: false,
+
+  classProperty: function() {
+    var isFolder = FLOW.projectControl.isProjectFolder(this.content);
+    var isFolderEmpty = FLOW.projectControl.isProjectFolderEmpty(this.content);
+    var isMoving = this.content === FLOW.projectControl.get('moveTarget');
+    var isCopying = this.content === FLOW.projectControl.get('copyTarget');
+
+    var classes = "aSurvey";
+    if (isFolder) classes += " aFolder";
+    if (isFolderEmpty) classes += " folderEmpty";
+    if (isMoving || isCopying) classes += " highLighted";
+    if (FLOW.projectControl.get('newlyCreated') === this.get('content')) classes += " newlyCreated";
+
+    return classes;
+  }.property('FLOW.projectControl.moveTarget', 'FLOW.projectControl.copyTarget', 'FLOW.projectControl.currentProject'),
+
+  toggleEditFolderName: function(evt) {
+    this.set('folderEdit', !this.get('folderEdit'));
+  },
+
+  isFolder: function() {
+    return FLOW.projectControl.isProjectFolder(this.content);
+  }.property(),
+
+  formatDate: function(datetime) {
+    if (datetime === "") return "";
+    var date = new Date(parseInt(datetime, 10));
+    return date.getDate() + "." + (date.getMonth() + 1) + " " + date.getFullYear();
+  },
+
+  created: function() {
+    return this.formatDate(this.content.get('createdDateTime'));
+  }.property('this.content.createdDateTime'),
+
+  modified: function() {
+    return this.formatDate(this.content.get('lastUpdateDateTime'));
+  }.property('this.content.lastUpdateDateTime'),
+
+  isPrivate: function() {
+    return this.content.get('privacyLevel') === "PRIVATE";
+  }.property(),
+
+  language: function() {
+    var langs = {en: "English", es: "Español", fr: "Français"};
+    return langs[this.content.get('defaultLanguageCode')];
+  }.property(),
+
+  hideDeleteButton: function () {
+    var c = this.get('content');
+    return !Ember.empty(c.get('surveyList')) || c.get('deleteDisabled');
+  }.property()
+
+});
+
+FLOW.FolderEditView = Ember.TextField.extend({
+  content: null,
+  path: null,
+
+  saveFolderName: function() {
+    this.content.set('name', this.content.get('code'));
+    path = FLOW.projectControl.get('currentProjectPath') + "/" + this.content.get('name');
+    this.content.set('path', path );
+    FLOW.store.commit();
+  },
+
+  focusOut: function() {
+    this.saveFolderName();
+  },
+
+  insertNewline: function() {
+    this.get('parentView').toggleEditFolderName();
+  }
+});
+
+FLOW.FormTabView = Ember.View.extend({
+  tagName: 'li',
+  content: null,
+  classNameBindings: ['classProperty'],
+
+  classProperty: function() {
+
+    var form = this.get('content');
+    var currentProject = FLOW.projectControl.get('currentProject');
+    var classString = 'aFormTab';
+
+    if (form === null || currentProject === null) return classString;
+
+    // Return "aFormTab" "current" and/or "registrationForm"
+    var isActive = form === FLOW.selectedControl.get('selectedSurvey');
+    var isRegistrationForm = currentProject.get('monitoringGroup') && form.get('keyId') === currentProject.get('newLocaleSurveyId');
+
+    if (isActive) classString += ' current';
+    if (isRegistrationForm) classString += ' registrationForm';
+
+    return classString;
+  }.property('FLOW.selectedControl.selectedSurvey', 'FLOW.projectControl.currentProject.newLocaleSurveyId'),
+});
 
 // displays survey groups in left sidebar
 FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
   content: null,
   tagName: 'li',
-  classNameBindings: 'amSelected:current'.w(),
+  classNameBindings: ['classProperty'],
   monitoringGroup: false,
-  
+
+  classProperty: function() {
+
+    var className = this.get('amFolder') ? "aFolder" : "aSurvey";
+    return className;
+  }.property('this.amFolder'),
+
   // true if the survey group is selected. Used to set proper display class
   amSelected: function () {
     var selected = FLOW.selectedControl.get('selectedSurveyGroup');
@@ -24,27 +249,39 @@ FLOW.SurveyGroupMenuItemView = FLOW.View.extend({
     }
   }.property('FLOW.selectedControl.selectedSurveyGroup', 'content').cacheable(),
 
+  amFolder: function () {
+    return this.content.get('projectType') === 'PROJECT_FOLDER';
+  }.property('this.projectType').cacheable(),
+
+  amMonitoringGroup: function () {
+    return this.content.get('monitoringGroup');
+  }.property('this.monitoringGroup').cacheable(),
+
   // fired when a survey group is clicked
   makeSelected: function () {
-    FLOW.selectedControl.set('selectedSurveyGroup', this.content);
+    if (this.content.get('projectType') === "PROJECT_FOLDER") {
+      FLOW.surveyGroupControl.setCurrentFolder(this.content.get('keyId'));
+    } else {
+      FLOW.selectedControl.set('selectedSurveyGroup', this.content);
+    }
   }
 });
 
 // displays single survey in content area of survey group page
 // doEditSurvey is defined in the Router. It transfers to the nav-surveys-edit handlebar view
 FLOW.SurveyGroupSurveyView = FLOW.View.extend({
-  
-	// fired when 'preview survey' is clicked in the survey item display
+
+  // fired when 'preview survey' is clicked in the survey item display
   previewSurvey: function () {
     FLOW.selectedControl.set('selectedSurvey', this.content);
   },
 
   showPreview: function () {
-	if (FLOW.questionControl.content.get('isLoaded')) {
-		FLOW.previewControl.set('showPreviewPopup', true);
-	}
+    if (FLOW.questionControl.content.get('isLoaded')) {
+      FLOW.previewControl.set('showPreviewPopup', true);
+    }
   }.observes('FLOW.questionControl.content.isLoaded'),
-  
+
   // fired when 'delete survey' is clicked in the survey item display
   deleteSurvey: function () {
     var sId = this.content.get('id');
@@ -85,11 +322,11 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
       return false;
     }
   }.property('FLOW.selectedControl.selectedSurveyGroup'),
-  
+
   initVars: function () {
-	  if (FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup) {
-		  this.set('monitoringGroup', FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup'));
-	  }
+    if (FLOW.selectedControl && FLOW.selectedControl.selectedSurveyGroup) {
+      this.set('monitoringGroup', FLOW.selectedControl.selectedSurveyGroup.get('monitoringGroup'));
+    }
   }.observes('FLOW.selectedControl.selectedSurveyGroup', 'FLOW.selectedControl.selectedSurvey'),
 
   // fired when 'edit name' is clicked, shows edit field to change survey group name
@@ -101,14 +338,14 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   // fired when 'save' is clicked while showing edit group name field. Saves the new group name
   saveSurveyGroupNameEdit: function () {
     if (!Ember.empty(this.get('surveyGroupName').trim())){
-    	var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
-    	var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
-    	surveyGroup.set('code', capitaliseFirstLetter(this.get('surveyGroupName')));
-    	surveyGroup.set('name', capitaliseFirstLetter(this.get('surveyGroupName')));
-    	FLOW.store.commit();
-    	FLOW.selectedControl.set('selectedSurveyGroup', FLOW.store.find(FLOW.SurveyGroup, sgId));
+      var sgId = FLOW.selectedControl.selectedSurveyGroup.get('id');
+      var surveyGroup = FLOW.store.find(FLOW.SurveyGroup, sgId);
+      surveyGroup.set('code', capitaliseFirstLetter(this.get('surveyGroupName')));
+      surveyGroup.set('name', capitaliseFirstLetter(this.get('surveyGroupName')));
+      FLOW.store.commit();
+      FLOW.selectedControl.set('selectedSurveyGroup', FLOW.store.find(FLOW.SurveyGroup, sgId));
     } else {
-    	this.cancelSurveyGroupNameEdit();
+      this.cancelSurveyGroupNameEdit();
     }
     this.set('showEditField', false);
   },
@@ -118,7 +355,7 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
     this.set('surveyGroupName', FLOW.selectedControl.selectedSurveyGroup.get('code'));
     this.set('showEditField', false);
   },
-  
+
   // fired when 'add a group' is clicked. Displays a new group text field in the left sidebar
   addGroup: function () {
     FLOW.selectedControl.set('selectedSurveyGroup', null);
@@ -140,13 +377,13 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
 
   // fired when 'save' is clicked while showing new group text field in left sidebar. Saves new survey group to the data store
   saveNewSurveyGroupName: function () {
-	  if (!Ember.empty(this.get('surveyGroupName').trim())){
-		  FLOW.store.createRecord(FLOW.SurveyGroup, {
-			  "code": capitaliseFirstLetter(this.get('surveyGroupName')),
-			  "name": capitaliseFirstLetter(this.get('surveyGroupName'))
-		  });
-		  FLOW.store.commit();
-	  }
+    if (!Ember.empty(this.get('surveyGroupName').trim())){
+      FLOW.store.createRecord(FLOW.SurveyGroup, {
+	"code": capitaliseFirstLetter(this.get('surveyGroupName')),
+	"name": capitaliseFirstLetter(this.get('surveyGroupName'))
+      });
+      FLOW.store.commit();
+    }
     this.set('showNewGroupField', false);
   },
 
@@ -157,17 +394,17 @@ FLOW.SurveyGroupMainView = FLOW.View.extend({
   },
 
   makeMonitorGroup: function () {
-	  this.set('monitoringGroup', true);
-	  FLOW.selectedControl.selectedSurveyGroup.set('monitoringGroup', true);
-	  FLOW.store.commit();
+    this.set('monitoringGroup', true);
+    FLOW.selectedControl.selectedSurveyGroup.set('monitoringGroup', true);
+    FLOW.store.commit();
   },
 
   saveNewLocaleSurveyIdChoice: function () {
-	  var newLocaleSurvey = FLOW.surveyControl.get('newLocaleSurvey');
-	  if (!Ember.none(newLocaleSurvey) && !Ember.none(newLocaleSurvey.get('keyId'))){
-		  FLOW.selectedControl.selectedSurveyGroup.set('newLocaleSurveyId', newLocaleSurvey.get('keyId'));
-		  FLOW.store.commit();
-	  }
+    var newLocaleSurvey = FLOW.surveyControl.get('newLocaleSurvey');
+    if (!Ember.none(newLocaleSurvey) && !Ember.none(newLocaleSurvey.get('keyId'))){
+      FLOW.selectedControl.selectedSurveyGroup.set('newLocaleSurveyId', newLocaleSurvey.get('keyId'));
+      FLOW.store.commit();
+    }
   }.observes('FLOW.surveyControl.newLocaleSurvey'),
 
   showCopySurveyDialog: function (event) {

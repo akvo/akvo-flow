@@ -78,6 +78,20 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Levels }
+     */
+    public Levels createLevels() {
+        return new Levels();
+    }
+
+    /**
+     * Create an instance of {@link Level }
+     */
+    public Level createLevel() {
+        return new Level();
+    }
+
+    /**
      * Create an instance of {@link Dependency }
      */
     public Dependency createDependency() {

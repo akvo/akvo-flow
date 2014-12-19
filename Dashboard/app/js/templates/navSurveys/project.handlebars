@@ -1,0 +1,136 @@
+
+{{#view FLOW.Project}}
+  <div class="floats-in">
+    <div id="pageWrap" class="widthConstraint belowHeader">
+      <section id="main" class="projectSection floats-in middleSection" role="main">
+        <section id="" class="projectDetailsPanel">
+          <span class="fontInfo">{{t _survey}}:</span><h2>{{FLOW.projectControl.currentProject.name}}</h2>
+          <ul class="projectSummary">
+            <li>{{t _forms}}<span class="projectForm">{{FLOW.projectControl.formCount}}</span>
+            </li>
+            <li>{{t _monitoring}}
+              <span class="projectMonitoring">
+                {{#if FLOW.projectControl.currentProject.monitoringGroup}}{{t _enabled}}{{else}}{{t _not_enabled}}{{/if}}
+              </span>
+            </li>
+            <li>{{t _status}}:
+
+              {{#if FLOW.projectControl.isPublished}}
+                <span class="projectStatus">
+                  {{t _published}}
+                </span>
+              {{else}}
+                <span class="projectStatus redColor">
+                  {{#if FLOW.projectControl.hasForms}}
+                    {{t _not_published}}
+                  {{else}}
+                    {{t _no_forms}}
+                  {{/if}}
+                </span>
+              {{/if}}
+            </li>
+          </ul>
+          <section class="projectDetails">
+            <h3>{{t _survey_basics}}</h3>
+            {{#unless view.isNewProject}}
+              <a {{action "toggleShowProjectDetails" target="this"}} class="showCollapse">
+                {{#if view.visibleProjectBasics}}
+                  {{t _collapse}}
+                {{else}}
+                  {{t _show}}
+                {{/if}}
+              </a>
+            {{/unless}}
+            {{#if view.visibleProjectBasics}}
+              <form class="projectDetailForm">
+                <label>{{t _survey_title}}</label>{{view Ember.TextField id="projectTitle" valueBinding="FLOW.projectControl.currentProject.name"}}
+                <label>{{t _survey_description}}</label>{{view Ember.TextField id="projectDescription" valueBinding="FLOW.projectControl.currentProject.description"}}
+
+                <ul class="projectSelect floats-in">
+                  <li>
+                    <label>{{t _privacy_type}}:</label>
+                    {{view Ember.Select
+                      contentBinding="FLOW.privacyLevelControl.content"
+                      selectionBinding="FLOW.projectControl.currentProject.privacyLevel"}}
+                  </li>
+                  <li>
+                    <label>{{t _language}}:</label>
+                    {{view Ember.Select
+                      contentBinding="FLOW.languageControl.content"
+                      selectionBinding="view.selectedLanguage"
+                      optionLabelPath="content.label"
+                      optionValuePath="content.value"}}
+                  </li>
+                </ul>
+                {{#if FLOW.projectControl.hasForms}}
+                  <span class="monitoringAndvanced">
+                    <a {{action "toggleShowAdvancedSettings" target="this"}} class="showCollapse">
+                      {{#if view.showAdvancedSettings}}
+                        {{t _collapse}}
+                      {{else}}
+                        {{t _show_advanced_settings}}
+                      {{/if}}
+                    </a>
+                  </span>
+
+                  {{#if view.showAdvancedSettings}}
+                    {{#if view.showMonitoringGroupCheckbox}}
+                      <label for="enableMonitoring" class="labelcheckbox">
+                        {{view Ember.Checkbox checkedBinding="FLOW.projectControl.currentProject.monitoringGroup" id="enableMonitoring"}}{{t _enable_monitoring_features}}
+                      </label>
+                    {{/if}}
+                    {{#if FLOW.projectControl.currentProject.monitoringGroup}}
+
+                      <p class="monitoringHint">{{t _choose_the_registration_form}}:</p>
+                      {{view Ember.Select
+                        contentBinding="FLOW.surveyControl.arrangedContent"
+                        selectionBinding="view.selectedRegistrationForm"
+                        optionLabelPath="content.code"
+                        optionValuePath="content.keyId"}}
+                    {{/if}}
+                  {{/if}}
+                {{/if}}
+              </form>
+            {{/if}}
+          </section>
+          <section class="noFormsContainer">
+            {{#unless FLOW.projectControl.hasForms}}
+              <ul>
+                  <li class="formList"><p class="noForms">{{t _no_forms_in_this_survey}}</p></li>
+                  <li><a class="addMenuAction aBtn addNewForm" {{action "createForm" target="FLOW.surveyControl"}}>{{t _add_new_form}}</a></li>
+              </ul>
+            {{/unless}}
+          </section>
+
+          <section class="forms">
+            {{#if FLOW.projectControl.hasForms}}
+              <div id="tabs">
+                <h2>{{t _forms}}:</h2>
+                <nav class="tabNav floats-in">
+                  <ul>
+                    {{#each form in FLOW.surveyControl}}
+                      {{#view FLOW.FormTabView contentBinding="form"}}
+                        <a {{action "selectForm" form target="FLOW.surveyControl"}}>{{form.name}}</a></li>
+                      {{/view}}
+                    {{/each}}
+                    {{#if FLOW.projectControl.currentProject.monitoringGroup}}
+                      <li class="newFormTab"><a {{action "createForm" target="FLOW.surveyControl"}}><span>+</span>{{t _add_new_form}}</a></li>
+                    {{/if}}
+                  </ul>
+                </nav>
+                <section class="formsContainer">
+                    <div id="form01">
+                    {{#if FLOW.selectedControl.selectedSurvey}}
+                      <h3>{{FLOW.selectedControl.selectedSurvey.name}}</h3>
+                      {{view FLOW.FormView}}
+                    {{/if}}
+                    </div>
+                </section>
+              </div>
+            {{/if}}
+          </section>
+        </section>
+      </section>
+    </div>
+  </div>
+{{/view}}

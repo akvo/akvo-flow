@@ -16,8 +16,10 @@
 
 package com.gallatinsystems.survey.dao;
 
+import java.util.List;
 import java.util.logging.Logger;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -39,7 +41,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 
     /**
      * saves the survey group and any surveys contained therein
-     * 
+     *
      * @param group
      * @return
      */
@@ -56,7 +58,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
 
     /**
      * finds a single survey group by code
-     * 
+     *
      * @param name
      * @return
      */
@@ -67,7 +69,7 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
     /**
      * deletes the survey group and spawns asynchronous delete survey messages for any surveys
      * contained therein.
-     * 
+     *
      * @param item
      */
     public void delete(SurveyGroup item) {
@@ -82,4 +84,23 @@ public class SurveyGroupDAO extends BaseDAO<SurveyGroup> {
         super.delete(item);
     }
 
+    /**
+     * @param parentId
+     * @return
+     */
+    public List<SurveyGroup> listByProjectFolderId(Long parentId) {
+
+        return super.listByProperty("parentId", parentId, "Long");
+    }
+
+    /**
+     * Return a list of survey groups that are accessible by the current user
+     *
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<SurveyGroup> listAllFilteredByUserAuthorization() {
+        List<SurveyGroup> allSurveyGroups = list(Constants.ALL_RESULTS);
+        return filterByUserAuthorization(allSurveyGroups);
+    }
 }

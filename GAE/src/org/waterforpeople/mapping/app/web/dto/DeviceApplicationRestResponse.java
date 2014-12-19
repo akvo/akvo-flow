@@ -25,7 +25,7 @@ public class DeviceApplicationRestResponse extends RestResponse {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-    
+
     public String getMd5Checksum() {
         return md5Checksum;
     }

@@ -36,11 +36,26 @@ public class SurveyGroup extends BaseDomain {
     private String code = null;
     private Boolean monitoringGroup = false;
     private Long newLocaleSurveyId;
+    private Long parentId;
     private String description = null;
+    private String path = null;
+    private ProjectType projectType;
+    private String defaultLanguageCode;
+    private PrivacyLevel privacyLevel;
+    private Boolean published;
+
     @NotPersistent
     private HashMap<String, Translation> altTextMap;
     @NotPersistent
     private List<Survey> surveyList = null;
+
+    public enum ProjectType {
+        PROJECT_FOLDER, PROJECT
+    }
+
+    public enum PrivacyLevel {
+        PRIVATE, PUBLIC
+    }
 
     public HashMap<String, Translation> getAltTextMap() {
         return altTextMap;
@@ -88,6 +103,14 @@ public class SurveyGroup extends BaseDomain {
         return description;
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public Boolean getMonitoringGroup() {
         return monitoringGroup;
     }
@@ -104,4 +127,43 @@ public class SurveyGroup extends BaseDomain {
         this.newLocaleSurveyId = newLocaleSurveyId;
     }
 
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parent) {
+        this.parentId = parent;
+    }
+
+    public ProjectType getProjectType() {
+        return projectType;
+    }
+
+    public void setProjectType(ProjectType projectType) {
+        this.projectType = projectType;
+    }
+
+    public String getDefaultLanguageCode() {
+        return defaultLanguageCode;
+    }
+
+    public void setDefaultLanguageCode(String defaultLanuageCode) {
+        this.defaultLanguageCode = defaultLanuageCode;
+    }
+
+    public PrivacyLevel getPrivacyLevel() {
+        return privacyLevel;
+    }
+
+    public void setPrivacyLevel(PrivacyLevel privacyLevel) {
+        this.privacyLevel = privacyLevel;
+    }
+
+    public Boolean getPublished() {
+        return published;
+    }
+
+    public void setPublished(Boolean published) {
+        this.published = published;
+    }
 }

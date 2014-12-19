@@ -25,6 +25,7 @@ import javax.xml.bind.JAXBException;
 
 import org.waterforpeople.mapping.domain.SurveyQuestion;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.exceptions.IllegalDeletionException;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
@@ -69,7 +70,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
     /**
      * loads a full survey object (whole object graph, including questions). This method can only be
      * called reliably from a background task or backend
-     * 
+     *
      * @param id
      * @return
      */
@@ -82,7 +83,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * saves a surveyContainer containing the xml representation of the survey document.
-     * 
+     *
      * @param surveyId
      * @param surveyDocument
      * @return
@@ -99,7 +100,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * returns a Survey xml pojo obtained after unmarshalling the SurveyContainer
-     * 
+     *
      * @param id
      * @return
      */
@@ -119,7 +120,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * gets a document from the surveyContainer
-     * 
+     *
      * @param id
      * @return
      */
@@ -129,8 +130,19 @@ public class SurveyDAO extends BaseDAO<Survey> {
     }
 
     /**
+     * Return a list of surveys accessible to the current user
+     *
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<Survey> listAllFilteredByUserAuthorization() {
+        List<Survey> allSurveys = list(Constants.ALL_RESULTS);
+        return filterByUserAuthorization(allSurveys);
+    }
+
+    /**
      * lists all survey container objects
-     * 
+     *
      * @return
      */
     public List<SurveyContainer> listSurveyContainers() {
@@ -147,7 +159,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * lists all survey groups
-     * 
+     *
      * @param cursorString
      * @return
      */
@@ -157,7 +169,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * lists all surveys in a given surveyGroup
-     * 
+     *
      * @param surveyGroupId
      * @return
      */
@@ -167,7 +179,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * gets a survey by the surveyGroupId and survey code
-     * 
+     *
      * @param code
      * @param surveyGroupId
      * @return
@@ -189,7 +201,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * gets a single survey by code and path. path is defined as "surveyGroupName"
-     * 
+     *
      * @param code
      * @param path
      * @return
@@ -210,9 +222,10 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * Deletes a survey
-     * 
+     *
      * @param survey
-     * @throws IllegalDeletionException - if the system contains responses for this survey
+     * @throws IllegalDeletionException
+     *             - if the system contains responses for this survey
      */
     public void delete(Survey survey) throws IllegalDeletionException {
         QuestionGroupDao qgDao = new QuestionGroupDao();
@@ -222,7 +235,7 @@ public class SurveyDAO extends BaseDAO<Survey> {
 
     /**
      * lists all survey ids
-     * 
+     *
      * @return
      */
     @SuppressWarnings("unchecked")

@@ -122,6 +122,14 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  amCascadeType: function () {
+	    if (this.type) {
+	      return this.type.get('value') == 'CASCADE';
+	    } else {
+	      return false;
+	    }
+	  }.property('this.type').cacheable(),
+
   amNoOptionsType: function () {
     var val;
     if (!Ember.none(this.type)) {
@@ -141,10 +149,9 @@ FLOW.QuestionView = FLOW.View.extend({
   // TODO dependencies
   // TODO options
   doQuestionEdit: function () {
-
     var questionType = null,
     attribute = null,
-    dependentQuestion, dependentAnswer, dependentAnswerArray;
+    dependentQuestion, dependentAnswer, dependentAnswerArray,cascadeResource;
     if (this.content && (this.content.get('isDirty') || this.content.get('isSaving'))) {
       this.showMessageDialog(Ember.String.loc('_question_is_being_saved'),
 			     Ember.String.loc('_question_is_being_saved_text'));
@@ -172,6 +179,12 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
     this.set('optionList', FLOW.selectedControl.selectedQuestion.get('questionOptionList'));
     FLOW.optionListControl.set('content', []);
+
+    // if the cascadeResourceId is not null, get the resource
+    if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'))) {
+    	cascadeResource = FLOW.store.find(FLOW.CascadeResource,FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
+    	FLOW.selectedControl.set('selectedCascadeResource', cascadeResource);
+    }
 
     // if the dependentQuestionId is not null, get the question
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'))) {
@@ -246,6 +259,15 @@ FLOW.QuestionView = FLOW.View.extend({
   doSaveEditQuestion: function() {
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
+    if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
+        FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', Ember.String.loc('_cascade_resources'));
+        FLOW.dialogControl.set('message', Ember.String.loc('_cascade_select_resource'));
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
+        return false;
+    }
+
     if (this.type.get('value') !== 'NUMBER') {
       this.set('minVal', null);
       this.set('maxVal', null);
@@ -315,7 +337,6 @@ FLOW.QuestionView = FLOW.View.extend({
       FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
     }
 
-
     // deal with saving options
     // the questionOptionList field is created in the init method, and contains the list of options as a string
     // if the list of options is not equal to the edited list, we need to save it
@@ -371,10 +392,19 @@ FLOW.QuestionView = FLOW.View.extend({
       FLOW.selectedControl.selectedQuestion.set('questionOptionList', this.get('optionList'));
     }
 
+    // deal with cascadeResource
+    if (this.type.get('value') == 'CASCADE') {
+    	if (!Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))){
+    		FLOW.selectedControl.selectedQuestion.set('cascadeResourceId',
+    				FLOW.selectedControl.selectedCascadeResource.get('keyId'));
+    	}
+    }
+
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedQuestion', null);
     FLOW.selectedControl.set('dependentQuestion', null);
+    FLOW.selectedControl.set('selectedCascadeResource',null);
   },
 
   isPartOfMonitoringGroup: function(questionKeyId) {
@@ -476,6 +506,20 @@ FLOW.QuestionView = FLOW.View.extend({
       this.showMessageDialog(Ember.String.loc('_please_wait'),
 			     Ember.String.loc('_please_wait_until_previous_request'));
       return;
+    }
+
+    // Check if there is another question that is dependant on this question
+    if (this.content.get('type') === 'OPTION') {
+      var hasDependant = FLOW.store.find(FLOW.Question).some(function (q) {
+        return qDeleteId === q.get('dependentQuestionId');
+      });
+
+      if (hasDependant) {
+        this.showMessageDialog(
+          Ember.String.loc('_cant_delete_question'),
+          Ember.String.loc('_another_question_depends_on_this'));
+        return;
+      }
     }
 
     // check if deleting this question is allowed

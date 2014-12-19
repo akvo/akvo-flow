@@ -37,6 +37,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
@@ -55,6 +56,8 @@ import com.gallatinsystems.framework.dataexport.applet.AbstractDataExporter;
  * @author Christopher Fagiani
  */
 public class SurveySummaryExporter extends AbstractDataExporter {
+
+    private static final Logger log = Logger.getLogger(SurveySummaryExporter.class);
 
     public static final String RESPONSE_KEY = "dtoList";
     private static final String SERVLET_URL = "/surveyrestapi";
@@ -140,7 +143,9 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                     }
                 }
             } else {
-                System.out.println("No questions for survey");
+                log.info("No questions for survey: "
+                        + criteria.get(SurveyRestRequest.SURVEY_ID_PARAM) + " - instance: "
+                        + serverBase);
             }
 
         } catch (Exception e) {
@@ -280,8 +285,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         }
                         dtoList.add(dto);
                     } catch (Exception e) {
-                        System.out.println("Error in json parsing: " + e);
-                        e.printStackTrace();
+                        log.error("Error in json parsing: " + e.getMessage(), e);
                     }
                 }
             }
@@ -316,10 +320,17 @@ public class SurveySummaryExporter extends AbstractDataExporter {
                         if (!json.isNull("localeNameFlag")) {
                             dto.setLocaleNameFlag(json.getBoolean("localeNameFlag"));
                         }
+                        if (!json.isNull("levelNames")) {
+                            final List<String> levelNames = new ArrayList<String>();
+                            final JSONArray array = json.getJSONArray("levelNames");
+                            for (int c = 0; c < array.length(); c++) {
+                                levelNames.add(array.getString(c));
+                            }
+                            dto.setLevelNames(levelNames);
+                        }
                         dtoList.add(dto);
                     } catch (Exception e) {
-                        System.out.println("Error in json parsing: " + e);
-                        e.printStackTrace();
+                        log.error("Error in json parsing: " + e.getMessage(), e);
                     }
                 }
             }
@@ -354,8 +365,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
 
                     dtoList.add(dto);
                 } catch (Exception e) {
-                    System.out.println("Error in json parsing: " + e.getMessage());
-                    e.printStackTrace();
+                    log.error("Error in json parsing: " + e.getMessage(), e);
                 }
             }
         }
@@ -367,7 +377,7 @@ public class SurveySummaryExporter extends AbstractDataExporter {
      * converts the string into a JSON array object.
      */
     protected JSONArray getJsonArray(String response) throws Exception {
-        System.out.println("response: " + response);
+        log.debug("response: " + response);
         if (response != null) {
             JSONObject json = new JSONObject(response);
             if (json != null) {
