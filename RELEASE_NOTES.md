@@ -28,6 +28,13 @@ Date: 15 December 2014
 * Minor Issues with release/1.8.0 [#960]
 * Enable super admin user to list all folders and forms on an instance [#934]
 
+## Known issues
+
+* When user has _read only_ permission and makes a change, the save action is rejected but there is no feedback in the UI [#818]
+* When the changes in a form/survey are _autosaved_, the path property is not properly updated [#1019]
+* A _RAW DATA_ report containing _cascade_ data, is rejected from import [#1038]
+* Question ID uniqueness is no longer respected [#1040]
+
 #1.7.6
 Date: 07 November 2014
 
