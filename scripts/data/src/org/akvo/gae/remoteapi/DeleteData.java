@@ -31,47 +31,23 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.tools.remoteapi.RemoteApiInstaller;
-import com.google.appengine.tools.remoteapi.RemoteApiOptions;
 
-public class DeleteData {
+public class DeleteData implements Process {
 
-    public static void main(String[] args) {
+    @Override
+    public void execute(String[] args) throws Exception {
 
-        if (args.length != 4) {
-            System.err.println(DeleteData.class.getName()
-                    + " <appid> <username> <password> <surveyId>");
-            System.exit(1);
+        final Long surveyId = Long.parseLong(args[0]);
+
+        final DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        final List<String> kinds = Arrays.asList("SurveyalValue", "QuestionAnswerStore",
+                "SurveyInstance");
+
+        for (String kind : kinds) {
+            deleteEntities(ds, kind, surveyId);
         }
 
-        final String appid = args[0];
-        final String usr = args[1];
-        final String pwd = args[2];
-        final Long surveyId = Long.parseLong(args[3]);
-
-        final RemoteApiOptions options = new RemoteApiOptions().server(
-                appid + ".appspot.com", 443)
-                .credentials(usr, pwd);
-        final RemoteApiInstaller installer = new RemoteApiInstaller();
-
-        try {
-            installer.install(options);
-
-            final DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-            final List<String> kinds = Arrays.asList("SurveyalValue", "QuestionAnswerStore",
-                    "SurveyInstance");
-
-            for (String kind : kinds) {
-                deleteEntities(ds, kind, surveyId);
-            }
-
-            deleteSurveyedLocale(ds, surveyId);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            installer.uninstall();
-        }
+        deleteSurveyedLocale(ds, surveyId);
     }
 
     private static void deleteEntities(DatastoreService ds, String kind, Long surveyId) {
@@ -104,4 +80,5 @@ public class DeleteData {
                 keys.size(), surveyId));
         ds.delete(keys);
     }
+
 }
