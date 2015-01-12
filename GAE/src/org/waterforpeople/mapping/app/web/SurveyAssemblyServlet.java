@@ -589,10 +589,6 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
             }
         } else if (q.getType().equals(Question.Type.GEO)) {
             qXML.setType(GEO_QUESTION_TYPE);
-            // add locked flag if the geoLocked field is true in the question
-            if (q.getGeoLocked() != null && q.getGeoLocked()) {
-                qXML.setLocked(q.getGeoLocked().toString());
-            }
         } else if (q.getType().equals(Question.Type.NUMBER)) {
             qXML.setType(FREE_QUESTION_TYPE);
             if (!hasValidation) {
@@ -671,6 +667,10 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
         if (Boolean.TRUE.equals(q.getAllowMultipleFlag())) {
             qXML.setAllowMultiple("true");
+        }
+        // Both GEO and GEOSHAPE question types can block manual input
+        if (Boolean.TRUE.equals(q.getGeoLocked())) {
+            qXML.setLocked("true");
         }
         Dependency dependency = objFactory.createDependency();
         if (q.getDependentQuestionId() != null) {
