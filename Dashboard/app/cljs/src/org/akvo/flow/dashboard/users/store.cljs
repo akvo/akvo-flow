@@ -46,6 +46,9 @@
          (drop offset)
          (take limit))))
 
+(defn user-count [users]
+  (count (vals (:by-id users))))
+
 (defn get-roles [roles]
   (-> roles :by-id vals))
 

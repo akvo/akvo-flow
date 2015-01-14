@@ -72,7 +72,7 @@
   )
 
 
-(defn pagination-controls [{:keys [range on-range]} owner]
+(defn pagination-controls [{:keys [range on-range total-count]} owner]
   (om/component
    (let [offset (or (:offset range) 0)
          limit (or (:limit range) 20)]
@@ -87,7 +87,11 @@
            "« " (t> _previous)]]
          [:li [:strong (str " " (inc offset) " - " (+ offset limit) " ")]]
          [:li
-          [:a {:on-click #(on-range (+ offset limit) limit)}
+          [:a {:on-click #(on-range (let [new-offset (+ offset limit)]
+                                      (if (and total-count
+                                               (>= new-offset total-count))
+                                        offset new-offset))
+                                    limit)}
              (t> _next) " »"]]]]]))))
 
 (defn change-direction [dir]
@@ -151,4 +155,4 @@
             (:data data)
             (repeat (:columns data)))]]]
      (when (:on-range data)
-       (om/build pagination-controls (select-keys data [:range :on-range])))])))
+       (om/build pagination-controls (select-keys data [:range :on-range :total-count])))])))
