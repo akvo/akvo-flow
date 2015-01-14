@@ -2,29 +2,22 @@
 <section class="fullWidth reportTools" id="reportBlocks">
 {{#view FLOW.ExportReportsAppletView}}
   <h1>{{t _export_data}}</h1>
- {{view Ember.Select
-      contentBinding="FLOW.surveyGroupControl.arrangedContent"
-      selectionBinding="FLOW.selectedControl.selectedSurveyGroup"
+  {{view FLOW.SurveySelectionView}}
+
+  {{view Ember.Select
+      contentBinding="FLOW.surveyControl.arrangedContent"
+      selectionBinding="FLOW.selectedControl.selectedSurvey"
       optionLabelPath="content.code"
       optionValuePath="content.keyId"
       prompt=""
-      promptBinding="Ember.STRINGS._select_survey"}}
-
-      {{view Ember.Select
-        contentBinding="FLOW.surveyControl.arrangedContent"
-        selectionBinding="FLOW.selectedControl.selectedSurvey"
-        optionLabelPath="content.code"
-        optionValuePath="content.keyId"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_form"}}
-
+      promptBinding="Ember.STRINGS._select_form"}}
   {{view Ember.Select
-        contentBinding="FLOW.reportLanguageControl.arrangedContent"
-        selectionBinding="FLOW.reportLanguageControl.selectedLanguage"
-        optionLabelPath="content.label"
-        optionValuePath="content.value"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_language"}}
+      contentBinding="FLOW.reportLanguageControl.arrangedContent"
+      selectionBinding="FLOW.reportLanguageControl.selectedLanguage"
+      optionLabelPath="content.label"
+      optionValuePath="content.value"
+      prompt=""
+      promptBinding="Ember.STRINGS._select_language"}}
 
 <div class="rawDataReport block">
   <h3>{{t _export_raw_data_report}}</h3>

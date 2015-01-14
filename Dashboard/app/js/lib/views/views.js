@@ -691,3 +691,50 @@ Ember.RadioButton = Ember.View.extend({
     set(this, 'value', input.attr('value'));
   }
 });
+
+FLOW.SelectFolder = Ember.Select.extend({
+  controller: null,
+
+  init: function() {
+    this._super();
+    this.set('prompt', "Choose a folder or survey");
+    this.set('optionLabelPath', 'content.code');
+    this.set('optionValuePath', 'content.keyId');
+    this.set('controller', FLOW.SurveySelection.create());
+    this.set('content', this.get('controller').getByParentId(this.get('parentId')));
+  },
+
+  onChange: function() {
+    var childViews = this.get('parentView').get('childViews');
+    var keyId = this.get('value');
+    var nextIdx = this.get('idx') + 1;
+
+    if (nextIdx !== childViews.length) {
+      childViews.removeAt(nextIdx, childViews.length - nextIdx);
+    }
+
+    if (this.get('controller').isSurvey(keyId)) {
+      FLOW.selectedControl.set('selectedSurveyGroup', this.get('controller').getSurvey(keyId));
+    } else {
+      FLOW.selectedControl.set('selectedSurveyGroup', null);
+      childViews.pushObject(FLOW.SelectFolder.create({
+        parentId: keyId,
+        idx: nextIdx
+      }));
+    }
+  }.observes('value'),
+});
+
+
+FLOW.SurveySelectionView = Ember.ContainerView.extend({
+  tagName: 'div',
+  childViews: [],
+
+  init: function() {
+    this._super();
+    this.get('childViews').pushObject(FLOW.SelectFolder.create({
+      parentId: null,
+      idx: 0,
+    }));
+  },
+})
