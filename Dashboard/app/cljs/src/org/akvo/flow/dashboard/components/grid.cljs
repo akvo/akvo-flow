@@ -1,4 +1,4 @@
-;; Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014 - 2015 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -72,23 +72,27 @@
   )
 
 
-(defn pagination-controls [{:keys [range on-range]} owner]
+(defn pagination-controls [{:keys [range on-range total-count]} owner]
   (om/component
    (let [offset (or (:offset range) 0)
          limit (or (:limit range) 20)]
      (html
       [:div
        [:nav
-        [:ul.pager
-         [:li {:role "presentation"}
-          [:a {:on-click #(on-range (let [new-offset (- offset limit)]
-                                      (if (neg? new-offset) 0 new-offset))
-                                    limit)}
-           "« " (t> _previous)]]
-         [:li [:strong (str " " (inc offset) " - " (+ offset limit) " ")]]
-         [:li
-          [:a {:on-click #(on-range (+ offset limit) limit)}
-             (t> _next) " »"]]]]]))))
+        (let [can-paginate-back? (>= (- offset limit) 0)
+              can-paginate-forward? (< (+ offset limit) total-count)]
+          [:ul.pager
+           [:li {:class (when-not can-paginate-back? "disabled")
+                 :role "presentation"}
+            [:a {:on-click #(when can-paginate-back?
+                              (on-range (- offset limit) limit))}
+             "« " (t> _previous)]]
+           [:li [:strong (str " " (inc offset) " - " (+ offset limit) " ")]]
+           [:li {:class (when-not can-paginate-forward? "disabled")
+                 :role "presentation"}
+            [:a {:on-click #(when can-paginate-forward?
+                              (on-range (+ offset limit) limit))}
+             (t> _next) " »"]]])]]))))
 
 (defn change-direction [dir]
   (if (= dir "ascending")
@@ -151,4 +155,4 @@
             (:data data)
             (repeat (:columns data)))]]]
      (when (:on-range data)
-       (om/build pagination-controls (select-keys data [:range :on-range])))])))
+       (om/build pagination-controls (select-keys data [:range :on-range :total-count])))])))
