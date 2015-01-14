@@ -79,20 +79,20 @@
      (html
       [:div
        [:nav
-        [:ul.pager
-         [:li {:role "presentation"}
-          [:a {:on-click #(on-range (let [new-offset (- offset limit)]
-                                      (if (neg? new-offset) 0 new-offset))
-                                    limit)}
-           "« " (t> _previous)]]
-         [:li [:strong (str " " (inc offset) " - " (+ offset limit) " ")]]
-         [:li
-          [:a {:on-click #(on-range (let [new-offset (+ offset limit)]
-                                      (if (and total-count
-                                               (>= new-offset total-count))
-                                        offset new-offset))
-                                    limit)}
-             (t> _next) " »"]]]]]))))
+        (let [can-paginate-back? (>= (- offset limit) 0)
+              can-paginate-forward? (< (+ offset limit) total-count)]
+          [:ul.pager
+           [:li {:class (when-not can-paginate-back? "disabled")
+                 :role "presentation"}
+            [:a {:on-click #(when can-paginate-back?
+                              (on-range (- offset limit) limit))}
+             "« " (t> _previous)]]
+           [:li [:strong (str " " (inc offset) " - " (+ offset limit) " ")]]
+           [:li {:class (when-not can-paginate-forward? "disabled")
+                 :role "presentation"}
+            [:a {:on-click #(when can-paginate-forward?
+                              (on-range (+ offset limit) limit))}
+             (t> _next) " »"]]])]]))))
 
 (defn change-direction [dir]
   (if (= dir "ascending")
