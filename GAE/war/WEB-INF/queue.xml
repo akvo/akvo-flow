@@ -34,7 +34,7 @@
         </retry-parameters>
 	</queue>
     <queue>
-        <name>surveyQuestionSummary</name>
+        <name>surveyResponseCount</name>
         <rate>10/s</rate>
         <bucket-size>20</bucket-size>
         <max-concurrent-requests>1</max-concurrent-requests>

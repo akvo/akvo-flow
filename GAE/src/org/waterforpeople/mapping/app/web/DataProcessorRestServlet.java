@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
+import javax.inject.Inject;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
@@ -108,6 +109,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private static final String QAS_TO_REMOVE = "QAStoRemove";
 
     private SurveyInstanceDAO siDao;
+
+    @Inject
+    private SurveyQuestionSummaryDao summaryDao;
 
     @Override
     protected RestRequest convertRequest() throws Exception {
@@ -194,6 +198,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 .getAction())) {
             if (dpReq.getSurveyId() != null) {
                 deleteSurveyQuestionSummary(dpReq.getSurveyId());
+            }
+        } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req
+                .getAction())) {
+            if (dpReq.getSummaryCounterId() != null && dpReq.getDelta() != null) {
+                updateSurveyResponseCounter(dpReq.getSummaryCounterId(), dpReq.getDelta());
             }
         }
         return new RestResponse();
@@ -1411,7 +1420,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         siDao = new SurveyInstanceDAO();
         SurveyInstance surveyInstance = siDao.getByKey(surveyInstanceId);
         if (surveyInstance != null) {
-            siDao.deleteSurveyInstance(surveyInstance, true);
+            siDao.deleteSurveyInstance(surveyInstance);
         }
     }
 
@@ -1440,4 +1449,22 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 + surveyOptionQuestions.size() + " questions");
         summaryDao.delete(summaryList);
     }
+
+    /**
+     * Update a survey response counter according to the provided delta. This method should be
+     * invoked though the task queue 'surveyResponseCount' to avoid concurrent updates
+     *
+     * @param summaryCounterId
+     * @param delta
+     */
+    private void updateSurveyResponseCounter(long summaryCounterId, int delta) {
+        SurveyQuestionSummary summary = summaryDao.getByKey(summaryCounterId);
+        if (summary == null) {
+            return;
+        }
+
+        summary.setCount(summary.getCount() + delta);
+        summaryDao.save(summary);
+    }
+
 }

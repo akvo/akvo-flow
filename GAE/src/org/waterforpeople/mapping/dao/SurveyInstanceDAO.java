@@ -24,9 +24,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
+import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
@@ -63,6 +66,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     private static final Logger logger = Logger
             .getLogger(SurveyInstanceDAO.class.getName());
+
+    @Inject
+    private SurveyQuestionSummaryDao summaryDao;
 
     // the set of unparsedLines we have here represent values from one surveyInstance
     // as they are split up in the TaskServlet task.
@@ -607,47 +613,42 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     }
 
     /**
-     * Deletes a single surveyInstance and all its related objects
-     *
-     * @param surveyInstance
-     * @return
-     */
-    @SuppressWarnings({
-            "unchecked", "rawtypes"
-    })
-    public void deleteSurveyInstance(SurveyInstance surveyInstance) {
-        deleteSurveyInstance(surveyInstance, false);
-    }
-
-    /**
      * Deletes a surveyInstance and all its related objects
      *
      * @param surveyInstance
      *            survey instance to be deleted
-     * @param deleteSurvey
-     *            indicates that the responses for the entire survey will be deleted and so we do
-     *            not need to recompute summaries @return
      */
     // TODO update lastSurveyalInstanceId in surveydLocale objects
     @SuppressWarnings({
             "unchecked", "rawtypes"
     })
-    public void deleteSurveyInstance(SurveyInstance surveyInstance, boolean deleteSurvey) {
+    public void deleteSurveyInstance(SurveyInstance surveyInstance) {
         final Long surveyInstanceId = surveyInstance.getKey().getId();
 
         // update summary counts + delete question answers
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
         if (qasList != null && !qasList.isEmpty()) {
-            // question summaries
-            if (!deleteSurvey) {
-                surveyInstance.setQuestionAnswersStore(qasList);
-                boolean increment = false;
-                surveyInstance.updateSummaryCounts(increment);
-            }
-
-            // survey instance summary task
             for (QuestionAnswerStore qasItem : qasList) {
+                // question summaries
+                if (Question.Type.OPTION.toString().equals(qasItem.getType())) {
+                    Queue questionSummaryQueue = QueueFactory.getQueue("surveyResponseCount");
+                    List<SurveyQuestionSummary> summaryList = summaryDao.listByResponse(
+                            qasItem.getQuestionID(), qasItem.getValue());
+                    if (summaryList != null && !summaryList.isEmpty()) {
+                        TaskOptions to = TaskOptions.Builder
+                                .withUrl("/app_worker/dataprocessor")
+                                .param(DataProcessorRequest.ACTION_PARAM,
+                                        DataProcessorRequest.SURVEY_RESPONSE_COUNT)
+                                .param(DataProcessorRequest.COUNTER_ID_PARAM,
+                                        summaryList.get(0).getKey().getId() + "")
+                                .param(DataProcessorRequest.DELTA_PARAM, "-1");
+                        questionSummaryQueue.add(to);
+                        break;
+                    }
+                }
+
+                // survey instance summary task
                 if (Question.Type.GEO.toString().equals(qasItem.getType())) {
                     Queue summaryQueue = QueueFactory.getQueue("dataSummarization");
 
