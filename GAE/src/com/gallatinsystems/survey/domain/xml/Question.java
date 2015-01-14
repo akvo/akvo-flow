@@ -312,7 +312,7 @@ public class Question {
     public void setLocked(String value) {
         this.locked = value;
     }
-
+    
     /**
      * Sets the value of the requireDoubleEntry property.
      *

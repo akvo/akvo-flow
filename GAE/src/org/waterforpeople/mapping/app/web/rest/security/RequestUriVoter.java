@@ -177,15 +177,14 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             if (matcher.find()) {
                 String objectIdStr = matcher.group(3);
                 Long objectId = null;
-                if (objectIdStr == null && httpRequest.getParameter("surveyGroupId") == null) {
-                    return null; // enable return of top level list of project folders
-                } else if (objectIdStr != null) {
-                    objectId = Long.valueOf(objectIdStr);
-                } else {
-                    objectId = Long.valueOf(httpRequest.getParameter("surveyGroupId"));
+                if (objectIdStr == null) {
+                    // if no specific object (id) requested, abstain from voting. filtering is done
+                    // via the listByUserAuthorization
+                    return null;
                 }
+                objectId = Long.valueOf(objectIdStr);
 
-                if (requestUri.contains("surveys") && objectIdStr != null) {
+                if (requestUri.contains("surveys")) {
                     Survey s = surveyDao.getByKey(objectId);
                     if (s != null) {
                         resourcePath = s.getPath();

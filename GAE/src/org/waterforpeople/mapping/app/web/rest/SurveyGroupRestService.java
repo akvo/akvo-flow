@@ -186,6 +186,11 @@ public class SurveyGroupRestService {
                     // Make sure that code and name are the same
                     s.setCode(s.getName());
 
+                    if (Boolean.FALSE.equals(s.getMonitoringGroup())) {
+                        s.setNewLocaleSurveyId(null);
+                    }
+                    s.setPublished(false);
+
                     s = surveyGroupDao.save(s);
 
                     dto = new SurveyGroupDto();
