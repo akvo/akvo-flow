@@ -36,7 +36,9 @@ FLOW.inspectDataTableView = FLOW.View.extend({
 
   doInstanceQuery: function () {
     this.set('beginDate', Date.parse(FLOW.dateControl.get('fromDate')));
-    this.set('endDate', Date.parse(FLOW.dateControl.get('toDate')));
+    // we add 24 hours to the date, in order to make the date search inclusive.
+    dayInMilliseconds = 24 * 60 * 60 * 1000;
+    this.set('endDate', Date.parse(FLOW.dateControl.get('toDate')) + dayInMilliseconds);
 
     // we shouldn't be sending NaN
     if (isNaN(this.get('beginDate'))) {
