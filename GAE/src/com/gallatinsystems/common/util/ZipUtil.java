@@ -78,7 +78,7 @@ public class ZipUtil {
      *            content that will be written as an UTF-8 string
      * @return
      */
-    public static ByteArrayOutputStream generateZip(Map<String, String> contents) {
+    public static ByteArrayOutputStream generateZip(Map<String, String> contents, Map<String, byte[]> resources) {
         ZipOutputStream zipOut = null;
         ByteArrayOutputStream bos = null;
         try {
@@ -89,6 +89,12 @@ public class ZipUtil {
                 ZipEntry entry = new ZipEntry(contentEntry.getKey());
                 zipOut.putNextEntry(entry);
                 zipOut.write(contentEntry.getValue().getBytes("UTF-8"));
+                zipOut.closeEntry();
+            }
+            for (Entry<String, byte[]> resource : resources.entrySet()) {
+                ZipEntry entry = new ZipEntry(resource.getKey());
+                zipOut.putNextEntry(entry);
+                zipOut.write(resource.getValue());
                 zipOut.closeEntry();
             }
             zipOut.close();

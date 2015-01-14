@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -80,6 +81,7 @@ public class ActionRestService {
     public Map<String, Object> doAction(
             @RequestParam(value = "action", defaultValue = "") String action,
             @RequestParam(value = "surveyId", defaultValue = "") Long surveyId,
+            @RequestParam(value = "cascadeResourceId", defaultValue = "") Long cascadeResourceId,
             @RequestParam(value = "surveyIds[]", defaultValue = "") Long[] surveyIds,
             @RequestParam(value = "email", defaultValue = "") String email,
             @RequestParam(value = "version", defaultValue = "") String version,
@@ -115,6 +117,8 @@ public class ActionRestService {
             status = computeGeocellsForLocales();
         } else if ("createTestLocales".equals(action)) {
             status = createTestLocales();
+        } else if ("publishCascade".equals(action)) {
+            status = SurveyUtils.publishCascade(cascadeResourceId);
         } else if ("copyProject".equals(action)) {
             status = copyProject(targetId, folderId);
         }
@@ -330,6 +334,8 @@ public class ActionRestService {
         }
         SurveyGroup projectCopy = new SurveyGroup();
 
+        BeanUtils.copyProperties(projectSource, projectCopy, Constants.EXCLUDED_PROPERTIES);
+
         projectCopy.setCode(projectSource.getCode() + " copy");
         projectCopy.setName(projectSource.getName() + " copy");
         String parentPath = null;
@@ -339,8 +345,8 @@ public class ActionRestService {
             parentPath = ""; // root folder
         }
         projectCopy.setPath(parentPath + "/" + projectCopy.getName());
-        projectCopy.setMonitoringGroup(projectSource.getMonitoringGroup());
         projectCopy.setParentId(folderId);
+        projectCopy.setPublished(false);
 
         SurveyGroup savedProjectCopy = surveyGroupDao.save(projectCopy);
 

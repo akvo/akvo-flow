@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}dependency"/>
  *         &lt;element ref="{}help"/>
  *         &lt;element ref="{}options"/>
+ * 	   &lt;element ref="{}levels"/>
  *         &lt;element ref="{}text"/>
  *         &lt;element ref="{}validationRule"/>
  *       &lt;/choice>
@@ -42,6 +43,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;attribute name="locked" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="requireDoubleEntry" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
+ *       &lt;attribute name="cascadeResource" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
+ *       &lt;attribute name="cascadeVersion" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="mandatory" use="required">
  *         &lt;simpleType>
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}NMTOKEN">
@@ -58,7 +61,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-        "altText", "dependency", "help", "options",
+        "altText", "dependency", "help", "options", "levels",
         "text", "validationRule", "scoring"
 })
 @XmlRootElement(name = "question")
@@ -70,6 +73,8 @@ public class Question {
     @XmlElement(required = false)
     protected List<Help> help;
     protected Options options;
+    @XmlElement(required = false)
+    protected Levels levels;
     protected Text text;
     protected ValidationRule validationRule;
     @XmlElement(required = false)
@@ -97,6 +102,11 @@ public class Question {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
     protected String type;
+
+    @XmlAttribute(required = false)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    protected String cascadeResource;
 
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -141,7 +151,8 @@ public class Question {
     /**
      * Sets the value of the dependency property.
      *
-     * @param value allowed object is {@link Dependency }
+     * @param value
+     *            allowed object is {@link Dependency }
      */
     public void setDependency(Dependency value) {
         this.dependency = value;
@@ -159,7 +170,8 @@ public class Question {
     /**
      * Sets the value of the help property.
      *
-     * @param value allowed object is {@link Help }
+     * @param value
+     *            allowed object is {@link Help }
      */
     public void setHelp(List<Help> value) {
         this.help = value;
@@ -177,10 +189,30 @@ public class Question {
     /**
      * Sets the value of the options property.
      *
-     * @param value allowed object is {@link Options }
+     * @param value
+     *            allowed object is {@link Options }
      */
     public void setOptions(Options value) {
         this.options = value;
+    }
+
+    /**
+     * Gets the value of the levels property.
+     *
+     * @return possible object is {@link Levels }
+     */
+    public Levels getLevels() {
+        return levels;
+    }
+
+    /**
+     * Sets the value of the levels property.
+     *
+     * @param value
+     *            allowed object is {@link Levels }
+     */
+    public void setLevels(Levels value) {
+        this.levels = value;
     }
 
     /**
@@ -195,7 +227,8 @@ public class Question {
     /**
      * Sets the value of the text property.
      *
-     * @param value allowed object is {@link Text }
+     * @param value
+     *            allowed object is {@link Text }
      */
     public void setText(Text value) {
         this.text = value;
@@ -213,7 +246,8 @@ public class Question {
     /**
      * Sets the value of the validationRule property.
      *
-     * @param value allowed object is {@link ValidationRule }
+     * @param value
+     *            allowed object is {@link ValidationRule }
      */
     public void setValidationRule(ValidationRule value) {
         this.validationRule = value;
@@ -231,7 +265,8 @@ public class Question {
     /**
      * Sets the value of the order property.
      *
-     * @param value allowed object is {@link String }
+     * @param value
+     *            allowed object is {@link String }
      */
     public void setOrder(String value) {
         this.order = value;
@@ -249,7 +284,8 @@ public class Question {
     /**
      * Sets the value of the allowMultiple property.
      *
-     * @param value allowed object is {@link String }
+     * @param value
+     *            allowed object is {@link String }
      */
     public void setAllowMultiple(String value) {
         this.allowMultiple = value;
@@ -267,7 +303,8 @@ public class Question {
     /**
      * Sets the value of the locked property.
      *
-     * @param value allowed object is {@link String }
+     * @param value
+     *            allowed object is {@link String }
      */
     public void setLocked(String value) {
         this.locked = value;
@@ -276,7 +313,8 @@ public class Question {
     /**
      * Sets the value of the requireDoubleEntry property.
      *
-     * @param value allowed object is {@link String }
+     * @param value
+     *            allowed object is {@link String }
      */
     public void setRequireDoubleEntry(String value) {
         this.requireDoubleEntry = value;
@@ -292,6 +330,25 @@ public class Question {
     }
 
     /**
+     * Gets the value of the cascadeResource property.
+     *
+     * @return possible object is {@link String }
+     */
+    public String getCascadeResource() {
+        return cascadeResource;
+    }
+
+    /**
+     * Sets the value of the cascadeResource property.
+     *
+     * @param value
+     *            allowed object is {@link String }
+     */
+    public void setCascadeResource(String value) {
+        this.cascadeResource = value;
+    }
+
+    /**
      * Gets the value of the type property.
      *
      * @return possible object is {@link String }
@@ -303,7 +360,8 @@ public class Question {
     /**
      * Sets the value of the type property.
      *
-     * @param value allowed object is {@link String }
+     * @param value
+     *            allowed object is {@link String }
      */
     public void setType(String value) {
         this.type = value;
@@ -321,7 +379,8 @@ public class Question {
     /**
      * Sets the value of the mandatory property.
      *
-     * @param value allowed object is {@link String }
+     * @param value
+     *            allowed object is {@link String }
      */
     public void setMandatory(String value) {
         this.mandatory = value;
@@ -339,7 +398,8 @@ public class Question {
     /**
      * Sets the value of the localeName property.
      *
-     * @param value allowed object is {@link String }
+     * @param value
+     *            allowed object is {@link String }
      */
     public void setLocaleNameFlag(String value) {
         this.localeNameFlag = value;
@@ -357,7 +417,8 @@ public class Question {
     /**
      * Sets the value of the localeLocation property.
      *
-     * @param value allowed object is {@link String }
+     * @param value
+     *            allowed object is {@link String }
      */
     public void setLocaleLocationFlag(String value) {
         this.localeLocationFlag = value;
@@ -375,7 +436,8 @@ public class Question {
     /**
      * Sets the value of the id property.
      *
-     * @param value allowed object is {@link String }
+     * @param value
+     *            allowed object is {@link String }
      */
     public void setId(String value) {
         this.id = value;

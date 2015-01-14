@@ -16,6 +16,7 @@
   (:require [clojure.string :as s]
             [clojure.set :as set]
             [org.akvo.flow.dashboard.dispatcher :refer (dispatch)]
+            [org.akvo.flow.dashboard.dom-helpers :refer (scroll-to-top)]
             [org.akvo.flow.dashboard.components.grid :refer (grid)]
             [org.akvo.flow.dashboard.components.bootstrap :as b]
             [org.akvo.flow.dashboard.users.store :as store]
@@ -57,7 +58,9 @@
          [:span
           (b/btn-link {:on-click #(on-action ::show-edit-view)} :pencil (t> _edit))
           " "
-          (b/btn-link {:class (if disabled? "disabled" "") :on-click #(om/set-state! owner :confirm-delete? true)} :remove (t> _delete))])))))
+          (b/btn-link {:class (if disabled? "disabled" "")
+                       :on-click #(om/set-state! owner :confirm-delete? true)}
+                      :remove (t> _delete))])))))
 
 
 (defmulti do-role-action (fn [action owner role] action))
@@ -69,10 +72,8 @@
 (defmethod do-role-action ::show-edit-view
   [_ owner role]
   (toggle! owner :role-details-view?)
+  (scroll-to-top)
   (om/set-state! owner :current-role role))
-
-(defmethod do-role-action ::show-create-view
-  [_ owner role])
 
 (defn user-role-count [user-auth-store role]
   (count (user-auth-store/get-by-role-id user-auth-store (get role "keyId"))))
@@ -102,6 +103,7 @@
            [:form.navbar-form.navbar-right
             (b/btn-primary {:on-click #(do (.preventDefault %)
                                            (toggle! owner :role-details-view?)
+                                           (scroll-to-top)
                                            (om/set-state! owner :current-role nil))}
                            :plus (t> _add_new_role))]]]
          (om/build grid
@@ -126,6 +128,8 @@
                               (if (contains? role "keyId")
                                 (dispatch :roles/edit role)
                                 (dispatch :roles/create role))
+                              (scroll-to-top)
                               (toggle! owner :role-details-view?))
-                   :on-close #(toggle! owner :role-details-view?)
+                   :on-close #(do (scroll-to-top)
+                                  (toggle! owner :role-details-view?))
                    :role current-role})]))))

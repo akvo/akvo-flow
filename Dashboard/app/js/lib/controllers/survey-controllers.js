@@ -1,3 +1,4 @@
+
 FLOW.questionTypeControl = Ember.Object.create({
   content: [
     Ember.Object.create({
@@ -7,6 +8,9 @@ FLOW.questionTypeControl = Ember.Object.create({
       label: Ember.String.loc('_option'),
       value: 'OPTION'
     }), Ember.Object.create({
+        label: Ember.String.loc('_cascade'),
+     value: 'CASCADE'
+      }),Ember.Object.create({
       label: Ember.String.loc('_number'),
       value: 'NUMBER'
     }), Ember.Object.create({
@@ -27,6 +31,7 @@ FLOW.questionTypeControl = Ember.Object.create({
     })
   ]
 });
+
 
 FLOW.notificationOptionControl = Ember.Object.create({
   content: [
@@ -185,6 +190,7 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   setCurrentProject: function(project) {
     this.set('currentProject', project);
+    window.scrollTo(0,0);
   },
 
   /* Computed properties */
@@ -241,12 +247,13 @@ FLOW.projectControl = Ember.ArrayController.create({
 
   isPublished: function() {
     var forms = FLOW.surveyControl.get('content');
-    if (!forms) return true;
+    if (forms === null || forms.get('length') === 0) {
+        return false;
+    }
 
     var unpublishedForms = forms.filter(function(form) {
       return form.get('status') !== 'PUBLISHED';
     });
-
     return unpublishedForms.get('length') === 0;
   }.property('FLOW.surveyControl.content.@each.status'),
 
@@ -263,14 +270,38 @@ FLOW.projectControl = Ember.ArrayController.create({
     }
   }.property('breadCrumbs'),
 
+  currentPathPermissions: function() {
+      var currentProjectAncestors = this.get('breadCrumbs').slice();
+      currentProjectAncestors.reverse();// reversed to start matching from the most specific path.
+      var i;
+      var path;
+      for(i = 0; i < currentProjectAncestors.length; i++) {
+          path = currentProjectAncestors[i].get('path');
+          if(path in FLOW.currentUser.pathPermissions){
+              return FLOW.currentUser.pathPermissions[path];
+          }
+      }
+
+      // check for the root path
+      if("/" in FLOW.currentUser.pathPermissions){
+          return FLOW.currentUser.pathPermissions["/"];
+      }
+      return [];
+  }.property('breadCrumbs'),
+
   /* Actions */
   selectProject: function(evt) {
     var project = evt.context;
     this.setCurrentProject(evt.context);
-    if (this.isProject(project)) {
 
+    // User is using the breadcrumb to navigate, we could have unsaved changes
+    FLOW.store.commit();
+
+    if (this.isProject(project)) {
       FLOW.selectedControl.set('selectedSurveyGroup', project);
     }
+
+    this.set('newlyCreated', null);
   },
 
   selectRootProject: function() {
@@ -294,7 +325,7 @@ FLOW.projectControl = Ember.ArrayController.create({
     var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
     var path = this.get('currentProjectPath') + "/" + name;
 
-    FLOW.store.createRecord(FLOW.SurveyGroup, {
+    var newRecord = FLOW.store.createRecord(FLOW.SurveyGroup, {
       "code": name,
       "name": name,
       "path":path,
@@ -302,6 +333,8 @@ FLOW.projectControl = Ember.ArrayController.create({
       "projectType": projectType
     });
     FLOW.store.commit();
+
+    this.set('newlyCreated', newRecord);
   },
 
   deleteProject: function(evt) {
@@ -311,11 +344,13 @@ FLOW.projectControl = Ember.ArrayController.create({
   },
 
   beginMoveProject: function(evt) {
+    this.set('newlyCreated', null);
     this.set('moveTarget', evt.context);
     this.set('moveTargetType', this.isProjectFolder(evt.context) ? "folder" : "survey");
   },
 
   beginCopyProject: function(evt) {
+    this.set('newlyCreated', null);
     this.set('copyTarget', evt.context);
   },
 
@@ -363,6 +398,9 @@ FLOW.projectControl = Ember.ArrayController.create({
     var forms = FLOW.surveyControl.get('content');
     if (!forms) return true;
 
+    // We could have unsaved changes
+    FLOW.store.commit();
+
     forms.filter(function(form) {
       return form.get('status') !== 'PUBLISHED';
     }).map(function(form) {
@@ -370,10 +408,13 @@ FLOW.projectControl = Ember.ArrayController.create({
         action: 'publishSurvey',
         surveyId: form.get('keyId')
       });
-      form.set('status', 'PUBLISHED');
     });
 
-    FLOW.store.commit();
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
   },
 
   /* Helper methods */
@@ -477,7 +518,7 @@ FLOW.surveyControl = Ember.ArrayController.create({
       "surveyGroupId": FLOW.selectedControl.selectedSurveyGroup.get('keyId'),
       "version":"1.0"
     });
-
+    FLOW.projectControl.get('currentProject').set('deleteDisabled', true);
     FLOW.store.commit();
     this.refresh();
   },
@@ -485,7 +526,12 @@ FLOW.surveyControl = Ember.ArrayController.create({
   deleteForm: function() {
     var keyId = FLOW.selectedControl.selectedSurvey.get('keyId');
     var survey = FLOW.store.find(FLOW.Survey, keyId);
+    if (FLOW.projectControl.get('formCount') === 1) {
+      FLOW.projectControl.get('currentProject').set('surveyList', null);
+      FLOW.projectControl.get('currentProject').set('deleteDisabled', false);
+    }
     survey.deleteRecord();
+
     FLOW.store.commit();
     this.refresh();
   },

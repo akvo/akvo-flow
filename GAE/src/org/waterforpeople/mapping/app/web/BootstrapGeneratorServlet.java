@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -18,15 +18,20 @@ package org.waterforpeople.mapping.app.web;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.waterforpeople.mapping.app.web.dto.BootstrapGeneratorRequest;
 
 import com.gallatinsystems.common.util.MailUtil;
@@ -36,13 +41,17 @@ import com.gallatinsystems.common.util.ZipUtil;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
+import com.gallatinsystems.survey.dao.CascadeResourceDao;
+import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.domain.CascadeResource;
+import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.Survey;
 
 /**
  * downloads publishes survey xml files and forms a zip that conforms to the structure of the
  * bootstrap.zip file expected by the device
- * 
+ *
  * @author Christopher Fagiani
  */
 public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
@@ -58,10 +67,16 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
     private static final String ERROR_BODY = "There were errors while attempting to generate the bootstrap file:";
 
     private SurveyDAO surveyDao;
+    private CascadeResourceDao cascadeDao;
+    private String bucketName;
+    private String keyPrefix;
 
     public BootstrapGeneratorServlet() {
         super();
         surveyDao = new SurveyDAO();
+        cascadeDao = new CascadeResourceDao();
+        bucketName = PropertyUtil.getProperty("s3bucket");
+        keyPrefix = PropertyUtil.getProperty("surveyuploaddir");
     }
 
     @Override
@@ -90,9 +105,8 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
 
     private void generateFile(BootstrapGeneratorRequest req) {
         Map<String, String> contentMap = new HashMap<String, String>();
+        Set<String> resourcesSet = new HashSet<String>();
         StringBuilder errors = new StringBuilder();
-        String bucketName = PropertyUtil.getProperty("s3bucket");
-        String keyPrefix = PropertyUtil.getProperty("surveyuploaddir");
         if (req.getSurveyIds() != null) {
             for (Long id : req.getSurveyIds()) {
                 try {
@@ -110,6 +124,8 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
                     reader.close();
                     contentMap.put(s.getKey().getId() + "/" + name + ".xml",
                             buf.toString());
+
+                    resourcesSet.addAll(getSurveyResources(id));// Add survey resources
                 } catch (Exception e) {
                     errors.append("Could not include survey id " + id + "\n");
                 }
@@ -120,12 +136,12 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
             contentMap.put(DB_INST_ENTRY, req.getDbInstructions().trim());
         }
 
-        ByteArrayOutputStream os = ZipUtil.generateZip(contentMap);
-
         String filename = System.currentTimeMillis() + "-bs.zip";
         String objectKey = PropertyUtil.getProperty(BOOTSTRAP_UPLOAD_DIR) + "/" + filename;
-
         try {
+            Map<String, byte[]> resources = fetchResources(resourcesSet);
+            ByteArrayOutputStream os = ZipUtil.generateZip(contentMap, resources);
+
             S3Util.put(bucketName, objectKey, os.toByteArray(), "application/zip", false);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error uploading bootstrap file: " + e.getMessage(), e);
@@ -141,6 +157,47 @@ public class BootstrapGeneratorServlet extends AbstractRestApiServlet {
         }
         MailUtil.sendMail(PropertyUtil.getProperty(EMAIL_FROM_ADDRESS_KEY),
                 "FLOW", req.getEmail(), EMAIL_SUB, body);
+    }
+
+    private Set<String> getSurveyResources(Long surveyId) {
+        Set<String> resources = new HashSet<String>();
+        for (Question q : new QuestionDao().listQuestionByType(surveyId, Question.Type.CASCADE)) {
+            Long cascadeResourceId = q.getCascadeResourceId();
+            if (cascadeResourceId != null) {
+                CascadeResource cr = cascadeDao.getByKey(cascadeResourceId);
+                if (cr != null) {
+                    String resName = cr.getResourceId() + ".zip";
+                    resources.add(resName);
+                }
+            }
+        }
+        return resources;
+    }
+
+    private Map<String, byte[]> fetchResources(Set<String> resources) throws IOException {
+        Map<String, byte[]> resData = new HashMap<String, byte[]>();
+        for (String resource : resources) {
+            byte[] data = fetchResource(resource);
+            resData.put(resource, data);
+        }
+        return resData;
+    }
+
+    private byte[] fetchResource(String res) throws IOException {
+        URLConnection conn = null;
+        InputStream in = null;
+        ByteArrayOutputStream out = null;
+        try {
+            conn = S3Util.getConnection(bucketName, keyPrefix + "/" + res);
+            out = new ByteArrayOutputStream();
+            in = conn.getInputStream();
+            IOUtils.copy(in, out);
+            out.flush();
+            return out.toByteArray();
+        } finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
+        }
     }
 
 }

@@ -10,10 +10,16 @@ FLOW.Router = Ember.Router.extend({
   //'hash'or 'none' for URLs
 
   resetState: function () {
+    // We could have unsaved changes
+    FLOW.store.commit();
+
     FLOW.selectedControl.set('selectedQuestionGroup', null);
     FLOW.selectedControl.set('selectedSurveyGroup', null);
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.selectedControl.set('selectedQuestion', null);
+    FLOW.selectedControl.set('selectedCascadeResource', null);
+    FLOW.selectedControl.set('cascadeImportNumLevels', null);
+    FLOW.selectedControl.set('cascadeImportIncludeCodes', null);
     FLOW.surveyControl.set('content', null);
     FLOW.questionControl.set('OPTIONcontent', null);
     FLOW.metaControl.set('since', null);
@@ -64,6 +70,7 @@ FLOW.Router = Ember.Router.extend({
       connectOutlets: function (router, event) {
         router.get('applicationController').connectOutlet('navSurveys');
         router.set('navigationController.selected', 'navSurveys');
+        FLOW.cascadeResourceControl.populate();
       },
 
       doNewSurvey: function (router, event) {
@@ -92,6 +99,8 @@ FLOW.Router = Ember.Router.extend({
             name: 'navSurveysMain'
           });
           FLOW.projectControl.populate();
+          FLOW.projectControl.set('currentProject', null);
+          FLOW.projectControl.set('newlyCreated', null);
           FLOW.selectedControl.set('selectedQuestionGroup', null);
           FLOW.selectedControl.set('selectedSurvey', null);
           FLOW.selectedControl.set('selectedQuestion', null);
@@ -209,7 +218,9 @@ FLOW.Router = Ember.Router.extend({
           FLOW.deviceGroupControl.populate();
           FLOW.deviceControl.populate();
           FLOW.surveyAssignmentControl.populate();
-          FLOW.surveyGroupControl.populate();
+          FLOW.surveyGroupControl.populate(function (item) {
+            return item.get('projectType') !== 'PROJECT_FOLDER';
+          });
           router.set('devicesSubnavController.selected', 'currentDevices');
         }
       }),
@@ -260,6 +271,9 @@ FLOW.Router = Ember.Router.extend({
       doDataCleaning: function (router, event) {
         router.transitionTo('navData.dataCleaning');
       },
+      doCascadeResources: function (router, event) {
+          router.transitionTo('navData.cascadeResources');
+        },
       doMonitoringData: function (router, event) {
         router.transitionTo('navData.monitoringData');
       },
@@ -275,7 +289,9 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('inspectData');
           router.set('datasubnavController.selected', 'inspectData');
           router.resetState();
-          FLOW.surveyGroupControl.populate();
+          FLOW.surveyGroupControl.populate(function (item) {
+            return item.get('projectType') !== 'PROJECT_FOLDER';
+          });
         }
       }),
 
@@ -304,6 +320,15 @@ FLOW.Router = Ember.Router.extend({
         }
       }),
 
+      cascadeResources: Ember.Route.extend({
+          route: '/cascaderesources',
+          connectOutlets: function (router, context) {
+            router.get('navDataController').connectOutlet('cascadeResources');
+            router.set('datasubnavController.selected', 'cascadeResources');
+            FLOW.cascadeResourceControl.populate();
+          }
+        }),
+
       monitoringData: Ember.Route.extend({
         route: '/monitoringdata',
         connectOutlets: function (router, context) {
@@ -322,7 +347,9 @@ FLOW.Router = Ember.Router.extend({
       route: '/reports',
       connectOutlets: function (router, context) {
         router.get('applicationController').connectOutlet('navReports');
-        FLOW.surveyGroupControl.populate();
+        FLOW.surveyGroupControl.populate(function (item) {
+          return item.get('projectType') !== 'PROJECT_FOLDER';
+        });
         router.resetState();
         router.set('navigationController.selected', 'navReports');
       },
@@ -358,7 +385,9 @@ FLOW.Router = Ember.Router.extend({
         connectOutlets: function (router, context) {
           router.get('navReportsController').connectOutlet('chartReports');
           router.set('reportsSubnavController.selected', 'chartReports');
-          FLOW.surveyGroupControl.populate();
+          FLOW.surveyGroupControl.populate(function (item) {
+            return item.get('projectType') !== 'PROJECT_FOLDER';
+          });
         }
       }),
       statistics: Ember.Route.extend({
@@ -367,7 +396,9 @@ FLOW.Router = Ember.Router.extend({
           router.resetState();
           router.get('navReportsController').connectOutlet('statistics');
           router.set('reportsSubnavController.selected', 'statistics');
-          FLOW.surveyGroupControl.populate();
+          FLOW.surveyGroupControl.populate(function (item) {
+            return item.get('projectType') !== 'PROJECT_FOLDER';
+          });
         }
       })
     }),

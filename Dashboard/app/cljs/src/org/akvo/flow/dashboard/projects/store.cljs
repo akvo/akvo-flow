@@ -31,10 +31,15 @@
        vals
        (filter #(= (get % "parentId") parent-id))))
 
+(defn loading? [projects]
+  (:loading? projects))
+
 (dispatch-loop
  :projects/fetch _
+ (swap! app-state assoc-in [:projects :loading?] true)
  (GET "/rest/survey_groups"
       (merge ajax/default-ajax-config
              {:handler (fn [response]
+                         (swap! app-state assoc-in [:projects :loading?] false)
                          (swap! app-state assoc-in [:projects :by-id]
                                 (ajax/index-by "keyId" (get response "survey_groups"))))})))

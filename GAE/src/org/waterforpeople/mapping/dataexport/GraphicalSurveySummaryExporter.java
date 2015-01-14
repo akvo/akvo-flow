@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -41,7 +42,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -590,6 +594,18 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String cellVal = val.trim();
                     createCell(row, col++, cellVal, null, Cell.CELL_TYPE_NUMERIC);
                     digest.update(cellVal.getBytes());
+                } else if (qdto != null && QuestionType.CASCADE.equals(qdto.getType())) {
+                    String cellVal = val.trim();
+                    ArrayList<String> parts = new ArrayList<String>(Arrays.asList(cellVal
+                            .split("\\|", -1)));
+                    int padCount = qdto.getLevelNames().size() - parts.size();
+                    for (int p = 0; p < padCount; p++) { // padding
+                        parts.add("");
+                    }
+                    for (String lVal : parts) {
+                        createCell(row, col++, lVal, null, Cell.CELL_TYPE_STRING);
+                        digest.update(lVal.getBytes());
+                    }
                 } else {
                     String cellVal = val.replaceAll("\n", " ").trim();
                     createCell(row, col++, cellVal, null);
@@ -702,6 +718,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     useQID ? questionId + "_" + codeLabel.replaceAll("\\s", "")
                                             : "--GEOCODE--|" + codeLabel,
                                     headerStyle);
+                        } else if (QuestionType.CASCADE == q.getType() && q.getLevelNames() != null) {
+                            for (String level : q.getLevelNames()) {
+                                createCell(row, offset++, level, headerStyle);
+                            }
                         } else {
                             String header = "";
                             if (useQID) {
@@ -1163,6 +1183,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     }
 
     public static void main(String[] args) {
+        // Log4j stuff - http://stackoverflow.com/a/9003191
+        ConsoleAppender console = new ConsoleAppender();
+        console.setLayout(new PatternLayout("%d{ISO8601} [%t] %-5p %c - %m%n"));
+        console.setThreshold(Level.DEBUG);
+        console.activateOptions();
+        Logger.getRootLogger().addAppender(console);
+
         GraphicalSurveySummaryExporter exporter = new GraphicalSurveySummaryExporter();
         Map<String, String> criteria = new HashMap<String, String>();
         Map<String, String> options = new HashMap<String, String>();

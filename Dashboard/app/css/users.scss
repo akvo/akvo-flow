@@ -216,6 +216,10 @@ table {
     }
 }
 .userRolesPerm {
+    ul.dropdown-menu {
+        max-height:220px;
+        overflow-y: scroll;
+    }
 }
 div.folderStructure {
     &:first-child {

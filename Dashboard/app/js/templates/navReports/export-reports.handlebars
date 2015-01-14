@@ -1,4 +1,4 @@
-<div class="greyBg">
+
 <section class="fullWidth reportTools" id="reportBlocks">
 {{#view FLOW.ExportReportsAppletView}}
   <h1>{{t _export_data}}</h1>
@@ -8,7 +8,7 @@
       optionLabelPath="content.code"
       optionValuePath="content.keyId"
       prompt=""
-      promptBinding="Ember.STRINGS._select_survey_group"}}
+      promptBinding="Ember.STRINGS._select_survey"}}
 
       {{view Ember.Select
         contentBinding="FLOW.surveyControl.arrangedContent"
@@ -16,7 +16,7 @@
         optionLabelPath="content.code"
         optionValuePath="content.keyId"
         prompt=""
-        promptBinding="Ember.STRINGS._select_survey"}}
+        promptBinding="Ember.STRINGS._select_form"}}
 
   {{view Ember.Select
         contentBinding="FLOW.reportLanguageControl.arrangedContent"
@@ -89,4 +89,3 @@
     </div>
 {{/view}}
 </section>
-</div>

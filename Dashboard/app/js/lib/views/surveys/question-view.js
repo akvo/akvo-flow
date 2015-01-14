@@ -42,7 +42,7 @@ FLOW.QuestionView = FLOW.View.extend({
       i = 0;
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-    	  return a.get('order') - b.get('order');
+          return a.get('order') - b.get('order');
       });
 
       optionArray.forEach(function (item) {
@@ -95,7 +95,7 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type').cacheable(),
 
   amBarcodeType: function () {
-	  return this.type.get('value') === 'SCAN';
+      return this.type.get('value') === 'SCAN';
   }.property('this.type').cacheable(),
 
   amFreeTextType: function () {
@@ -122,6 +122,14 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  amCascadeType: function () {
+        if (this.type) {
+          return this.type.get('value') == 'CASCADE';
+        } else {
+          return false;
+        }
+      }.property('this.type').cacheable(),
+
   amNoOptionsType: function () {
     var val;
     if (!Ember.none(this.type)) {
@@ -141,13 +149,12 @@ FLOW.QuestionView = FLOW.View.extend({
   // TODO dependencies
   // TODO options
   doQuestionEdit: function () {
-
     var questionType = null,
     attribute = null,
-    dependentQuestion, dependentAnswer, dependentAnswerArray;
+    dependentQuestion, dependentAnswer, dependentAnswerArray,cascadeResource;
     if (this.content && (this.content.get('isDirty') || this.content.get('isSaving'))) {
       this.showMessageDialog(Ember.String.loc('_question_is_being_saved'),
-			     Ember.String.loc('_question_is_being_saved_text'));
+                 Ember.String.loc('_question_is_being_saved_text'));
       return;
     }
     this.init();
@@ -172,6 +179,12 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
     this.set('optionList', FLOW.selectedControl.selectedQuestion.get('questionOptionList'));
     FLOW.optionListControl.set('content', []);
+
+    // if the cascadeResourceId is not null, get the resource
+    if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'))) {
+        cascadeResource = FLOW.store.find(FLOW.CascadeResource,FLOW.selectedControl.selectedQuestion.get('cascadeResourceId'));
+        FLOW.selectedControl.set('selectedCascadeResource', cascadeResource);
+    }
 
     // if the dependentQuestionId is not null, get the question
     if (!Ember.empty(FLOW.selectedControl.selectedQuestion.get('dependentQuestionId'))) {
@@ -226,7 +239,7 @@ FLOW.QuestionView = FLOW.View.extend({
 
       optionArray = options.toArray();
       optionArray.sort(function (a, b) {
-    	  return a.get('order') - b.get('order');
+          return a.get('order') - b.get('order');
       });
 
       optionArray.forEach(function (item) {
@@ -245,6 +258,15 @@ FLOW.QuestionView = FLOW.View.extend({
 
   doSaveEditQuestion: function() {
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
+
+    if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
+        FLOW.dialogControl.set('activeAction', 'ignore');
+        FLOW.dialogControl.set('header', Ember.String.loc('_cascade_resources'));
+        FLOW.dialogControl.set('message', Ember.String.loc('_cascade_select_resource'));
+        FLOW.dialogControl.set('showCANCEL', false);
+        FLOW.dialogControl.set('showDialog', true);
+        return false;
+    }
 
     if (this.type.get('value') !== 'NUMBER') {
       this.set('minVal', null);
@@ -315,7 +337,6 @@ FLOW.QuestionView = FLOW.View.extend({
       FLOW.selectedControl.selectedQuestion.set('type', this.type.get('value'));
     }
 
-
     // deal with saving options
     // the questionOptionList field is created in the init method, and contains the list of options as a string
     // if the list of options is not equal to the edited list, we need to save it
@@ -341,23 +362,23 @@ FLOW.QuestionView = FLOW.View.extend({
         if (!Ember.empty(item)) {
           // if there is an existing option with this value, use it and change order if neccessary
           options.forEach(function (optionItem) {
-	    if (item == optionItem.get('text')) {
-	      found = true;
-	      // adapt order if necessary
-	      if (optionItem.get('order') != order) {
+        if (item == optionItem.get('text')) {
+          found = true;
+          // adapt order if necessary
+          if (optionItem.get('order') != order) {
                 optionItem.set('order', order);
-	      }
-	      // don't delete this one
-	      optionsToDelete.splice(optionsToDelete.indexOf(optionItem.get('keyId')), 1);
-	    }
+          }
+          // don't delete this one
+          optionsToDelete.splice(optionsToDelete.indexOf(optionItem.get('keyId')), 1);
+        }
           });
           if (!found) {
-	    // create new one
-	    FLOW.store.createRecord(FLOW.QuestionOption, {
-	      text: item,
-	      questionId: FLOW.selectedControl.selectedQuestion.get('keyId'),
-	      order: order
-	    });
+        // create new one
+        FLOW.store.createRecord(FLOW.QuestionOption, {
+          text: item,
+          questionId: FLOW.selectedControl.selectedQuestion.get('keyId'),
+          order: order
+        });
           }
           order++;
         }
@@ -371,10 +392,19 @@ FLOW.QuestionView = FLOW.View.extend({
       FLOW.selectedControl.selectedQuestion.set('questionOptionList', this.get('optionList'));
     }
 
+    // deal with cascadeResource
+    if (this.type.get('value') == 'CASCADE') {
+        if (!Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))){
+            FLOW.selectedControl.selectedQuestion.set('cascadeResourceId',
+                    FLOW.selectedControl.selectedCascadeResource.get('keyId'));
+        }
+    }
+
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedQuestion', null);
     FLOW.selectedControl.set('dependentQuestion', null);
+    FLOW.selectedControl.set('selectedCascadeResource',null);
   },
 
   isPartOfMonitoringGroup: function(questionKeyId) {
@@ -448,11 +478,11 @@ FLOW.QuestionView = FLOW.View.extend({
     if (this.type.get('value') == 'NUMBER') {
       if (!Ember.empty(this.get('minVal')) && !Ember.empty(this.get('maxVal'))) {
         if (isNaN(this.get('minVal')) || isNaN(this.get('maxVal'))) {
-	  args.NaNFailure();
-	  return;
+      args.NaNFailure();
+      return;
         } else if (parseFloat(this.get('minVal')) >= parseFloat(this.get('maxVal'))) {
           args.valueFailure();
-	  return;
+      return;
         }
       }
     }
@@ -474,7 +504,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+                 Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
@@ -522,7 +552,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+                 Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
@@ -610,12 +640,12 @@ FLOW.QuestionView = FLOW.View.extend({
         });
 
         questionsInGroup = FLOW.store.filter(FLOW.Question, function (item) {
-        	return item.get('questionGroupId') == qgId;
-       	});
+            return item.get('questionGroupId') == qgId;
+           });
 
         // restore order in case the order has gone haywire
         FLOW.questionControl.restoreOrder(questionsInGroup);
-      	}
+          }
     }
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
@@ -636,7 +666,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+                 Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
@@ -687,7 +717,7 @@ FLOW.QuestionView = FLOW.View.extend({
     // check if anything is being saved at the moment
     if (this.checkQuestionsBeingSaved()) {
       this.showMessageDialog(Ember.String.loc('_please_wait'),
-			     Ember.String.loc('_please_wait_until_previous_request'));
+                 Ember.String.loc('_please_wait_until_previous_request'));
       return;
     }
 
@@ -789,12 +819,12 @@ FLOW.QuestionView = FLOW.View.extend({
     var self = this;
     self.validateQuestionId({
       success: function() {
-	self.set('questionIdValidationFailure', false);
-	self.set('questionIdValidationFailureReason', null);
+    self.set('questionIdValidationFailure', false);
+    self.set('questionIdValidationFailureReason', null);
       },
       failure: function(msg) {
-	self.set('questionIdValidationFailure', true);
-	self.set('questionIdValidationFailureReason', msg);
+    self.set('questionIdValidationFailure', true);
+    self.set('questionIdValidationFailureReason', msg);
       }
     });
   }.observes('this.questionId')

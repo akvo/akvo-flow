@@ -31,5 +31,7 @@ public class SurveyGroupPayload implements Serializable {
 
     public void setSurvey_group(SurveyGroupDto survey_group) {
         this.survey_group = survey_group;
+        // Discard the value on `surveyList` property
+        this.survey_group.setSurveyList(null);
     }
 }
