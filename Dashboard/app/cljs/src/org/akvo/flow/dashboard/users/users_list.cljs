@@ -114,7 +114,7 @@
     (init-state [this]
       {:pagination {:offset 0
                     :limit 20}
-       :sort {:sort-by "emailAddress"
+       :sort {:sort-by "userName"
               :sort-order "ascending"}
        :current-user-id nil})
 
