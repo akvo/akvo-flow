@@ -94,6 +94,13 @@
         prompt="Select cascade"
         promptBinding="Ember.STRINGS._select_cascade"}}</label>
     {{/if}}
+    {{#if view.amGeoshapeType}}
+    <h1 class="answerNbr">{{t _geoshape_details}}: </h1>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPoints"}}{{t _allow_points}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowLine"}}{{t _allow_line}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.allowPolygon"}}{{t _allow_polygon}} </label>
+      <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
+    {{/if}}
 
     {{#if view.amNoOptionsType}}
     <p class="noOptions">
