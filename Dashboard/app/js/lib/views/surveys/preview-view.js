@@ -75,6 +75,13 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
           value: item.get('text')
         }));
       });
+
+      if (this.content.get('allowOtherFlag')) {
+        tempList.push(Ember.Object.create({
+          isSelected: false,
+          value: Ember.String.loc('_other')
+        }));
+      }
       this.set('optionsList', tempList);
     }
   },
