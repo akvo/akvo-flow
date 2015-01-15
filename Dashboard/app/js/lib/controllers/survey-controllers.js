@@ -248,18 +248,6 @@ FLOW.projectControl = Ember.ArrayController.create({
     return this.get('formCount') > 0;
   }.property('this.formCount'),
 
-  isPublished: function() {
-    var forms = FLOW.surveyControl.get('content');
-    if (forms === null || forms.get('length') === 0) {
-        return false;
-    }
-
-    var unpublishedForms = forms.filter(function(form) {
-      return form.get('status') !== 'PUBLISHED';
-    });
-    return unpublishedForms.get('length') === 0;
-  }.property('FLOW.surveyControl.content.@each.status'),
-
   currentProjectPath: function() {
     var projectList = this.get('breadCrumbs');
     if(projectList.length === 0) {
@@ -395,29 +383,6 @@ FLOW.projectControl = Ember.ArrayController.create({
     FLOW.dialogControl.set('showDialog', true);
 
     this.set('copyTarget', null);
-  },
-
-  publishProject: function() {
-    var forms = FLOW.surveyControl.get('content');
-    if (!forms) return true;
-
-    // We could have unsaved changes
-    FLOW.store.commit();
-
-    forms.filter(function(form) {
-      return form.get('status') !== 'PUBLISHED';
-    }).map(function(form) {
-      FLOW.store.findQuery(FLOW.Action, {
-        action: 'publishSurvey',
-        surveyId: form.get('keyId')
-      });
-    });
-
-    FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
-    FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
-    FLOW.dialogControl.set('showCANCEL', false);
-    FLOW.dialogControl.set('showDialog', true);
   },
 
   /* Helper methods */

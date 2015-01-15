@@ -2,6 +2,7 @@
 <div id="form01" class="aformContainer">
 	<nav class="newSurveyNav">
 		<ul>
+			<li><a class="publishSurvey" {{action "publishSurvey" target="FLOW.surveyControl"}}>Publish</a></li>
 			<li><a class="previewNewSurvey" {{action "showPreview" target="FLOW.surveyControl"}}>Preview</a></li>
 			<li><a class="deleteSurvey" {{action confirm FLOW.dialogControl.delForm target="FLOW.dialogControl"}}>Delete</a></li>
 		</ul>
