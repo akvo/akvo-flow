@@ -35,7 +35,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
-import javax.inject.Inject;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import javax.servlet.http.HttpServletRequest;
@@ -114,9 +113,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private static final String QAS_TO_REMOVE = "QAStoRemove";
 
     private SurveyInstanceDAO siDao;
-
-    @Inject
-    private SurveyQuestionSummaryDao summaryDao;
 
     @Override
     protected RestRequest convertRequest() throws Exception {
@@ -1464,6 +1460,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      * @param delta
      */
     private void updateSurveyResponseCounter(long summaryCounterId, int delta) {
+        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
         SurveyQuestionSummary summary = summaryDao.getByKey(summaryCounterId);
         if (summary == null) {
             return;
