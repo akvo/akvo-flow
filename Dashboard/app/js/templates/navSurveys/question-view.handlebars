@@ -13,7 +13,7 @@
       {{view Ember.TextField valueBinding="view.questionId" size=100}}
     </label>
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
-    
+
   {{#if FLOW.Env.showStatisticsFeature}}
     <label class="selectinLabel"><span>{{t _tag}} {{tooltip _what_is_tag}}:</span> {{view Ember.Select
       contentBinding="FLOW.attributeControl.content"
@@ -77,7 +77,7 @@
     <h1 class="answerNbr">{{t _geo_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
     {{/if}}
-    
+
     {{#if view.amTextType}}
       {{#if FLOW.Env.showExternalSourcesFeature}}
         <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.allowExternalSources"}}{{t _allow_external_sources}}</label>
