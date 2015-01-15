@@ -674,40 +674,27 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             svDao.delete(surveyalValues);
         }
 
-        // return if no surveyed locale
-        if (surveyInstance.getSurveyedLocaleId() == null) {
-            return;
-        }
+        // task to adapt cluster data + delete surveyedlocale if not needed
+        if (surveyInstance.getSurveyedLocaleId() != null) {
+            Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
+            List<SurveyInstance> relatedSurveyInstances = listByProperty("surveyedLocaleId",
+                    surveyedLocaleId, "Long");
 
-        // check survey instances related to surveyed locale
-        Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
-        List<SurveyInstance> relatedSurveyInstances = listByProperty("surveyedLocaleId",
-                surveyedLocaleId, "Long");
+            if (relatedSurveyInstances.size() < 2) {
+                // only the current (or no) survey instance is related to the locale. we fire task
+                // to delete locale and update clusters
 
-        for (SurveyInstance instance : relatedSurveyInstances) {
-            if (instance.getKey().equals(surveyInstance.getKey())) {
-                relatedSurveyInstances.remove(instance);
+                Queue queue = QueueFactory.getDefaultQueue();
+                TaskOptions to = TaskOptions.Builder
+                        .withUrl("/app_worker/surveyalservlet")
+                        .param(SurveyalRestRequest.ACTION_PARAM,
+                                SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
+                        .param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
+                                surveyedLocaleId + "")
+                        .param(SurveyalRestRequest.DECREMENT_CLUSTER_COUNT_PARAM,
+                                Boolean.TRUE.toString());
+                queue.add(to);
             }
-        }
-
-        if (!relatedSurveyInstances.isEmpty()) {
-            // task to adapt cluster data
-            Queue queue = QueueFactory.getDefaultQueue();
-            TaskOptions to = TaskOptions.Builder
-                    .withUrl("/app_worker/surveyalservlet")
-                    .param(SurveyalRestRequest.ACTION_PARAM,
-                            SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
-                    .param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
-                            surveyedLocaleId + "")
-                    .param(SurveyalRestRequest.DECREMENT_CLUSTER_COUNT_PARAM,
-                            Boolean.TRUE.toString());
-            queue.add(to);
-
-        } else {
-            // delete locale if there are no related instances
-            SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-            SurveyedLocale locale = slDao.getByKey(surveyedLocaleId);
-            slDao.delete(locale);
         }
 
         super.delete(surveyInstance);
