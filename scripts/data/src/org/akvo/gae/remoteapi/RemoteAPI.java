@@ -18,6 +18,8 @@ package org.akvo.gae.remoteapi;
 
 import java.util.Arrays;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.remoteapi.RemoteApiInstaller;
 import com.google.appengine.tools.remoteapi.RemoteApiOptions;
 
@@ -48,8 +50,9 @@ public class RemoteAPI {
             installer.install(options);
             String clz = className.indexOf(".") != -1 ? className : "org.akvo.gae.remoteapi."
                     + className;
+            DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
             Process p = (Process) Class.forName(clz).newInstance();
-            p.execute(Arrays.copyOfRange(args, 4, args.length));
+            p.execute(ds, Arrays.copyOfRange(args, 4, args.length));
             System.out.println("Done");
         } catch (Exception e) {
             e.printStackTrace();

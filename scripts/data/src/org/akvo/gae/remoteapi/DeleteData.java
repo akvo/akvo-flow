@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 
 import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
@@ -35,11 +34,10 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 public class DeleteData implements Process {
 
     @Override
-    public void execute(String[] args) throws Exception {
+    public void execute(DatastoreService ds, String[] args) throws Exception {
 
         final Long surveyId = Long.parseLong(args[0]);
 
-        final DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         final List<String> kinds = Arrays.asList("SurveyalValue", "QuestionAnswerStore",
                 "SurveyInstance");
 
