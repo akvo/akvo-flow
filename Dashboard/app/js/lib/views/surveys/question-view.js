@@ -273,6 +273,11 @@ FLOW.QuestionView = FLOW.View.extend({
   doSaveEditQuestion: function() {
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
+    if (this.questionIdValidationFailure) {
+      this.showMessageDialog(Ember.String.loc('_question_id_must_be_valid_and_unique'), this.questionIdValidationFailureReason);
+      return;
+    }
+
     if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
         FLOW.dialogControl.set('activeAction', 'ignore');
         FLOW.dialogControl.set('header', Ember.String.loc('_cascade_resources'));
@@ -836,12 +841,12 @@ FLOW.QuestionView = FLOW.View.extend({
     var self = this;
     self.validateQuestionId({
       success: function() {
-	self.set('questionIdValidationFailure', false);
-	self.set('questionIdValidationFailureReason', null);
+        self.set('questionIdValidationFailure', false);
+        self.set('questionIdValidationFailureReason', null);
       },
       failure: function(msg) {
-	self.set('questionIdValidationFailure', true);
-	self.set('questionIdValidationFailureReason', msg);
+        self.set('questionIdValidationFailure', true);
+        self.set('questionIdValidationFailureReason', msg);
       }
     });
   }.observes('this.questionId')
