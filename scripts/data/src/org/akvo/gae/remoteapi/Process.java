@@ -16,7 +16,9 @@
 
 package org.akvo.gae.remoteapi;
 
+import com.google.appengine.api.datastore.DatastoreService;
+
 public interface Process {
 
-    public void execute(String[] args) throws Exception;
+    public void execute(DatastoreService ds, String[] args) throws Exception;
 }
