@@ -195,11 +195,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             if (dpReq.getSurveyInstanceId() != null) {
                 deleteSurveyResponses(dpReq.getSurveyInstanceId());
             }
-        } else if (DataProcessorRequest.DELETE_SURVEY_QUESTION_SUMMARY.equalsIgnoreCase(req
-                .getAction())) {
-            if (dpReq.getSurveyId() != null) {
-                deleteSurveyQuestionSummary(dpReq.getSurveyId());
-            }
         } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req
                 .getAction())) {
             if (dpReq.getSummaryCounterId() != null && dpReq.getDelta() != null) {
@@ -1424,32 +1419,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         if (surveyInstance != null) {
             siDao.deleteSurveyInstance(surveyInstance);
         }
-    }
-
-    /**
-     * Delete the summary objects for a specific surveyId
-     *
-     * @param surveyId
-     */
-    private void deleteSurveyQuestionSummary(Long surveyId) {
-        QuestionDao qDao = new QuestionDao();
-        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
-        List<SurveyQuestionSummary> summaryList = new ArrayList<SurveyQuestionSummary>();
-        List<Question> surveyOptionQuestions = qDao.listQuestionByType(surveyId,
-                Question.Type.OPTION);
-
-        for (Question question : surveyOptionQuestions) {
-            String questionIdStr = Long.toString(question.getKey().getId());
-            List<SurveyQuestionSummary> questionSummaryList = summaryDao
-                    .listByQuestion(questionIdStr);
-            if (questionSummaryList != null && !questionSummaryList.isEmpty()) {
-                summaryList.addAll(questionSummaryList);
-            }
-        }
-
-        log.log(Level.INFO, "Deleting " + summaryList.size() + " summary objects for "
-                + surveyOptionQuestions.size() + " questions");
-        summaryDao.delete(summaryList);
     }
 
     /**

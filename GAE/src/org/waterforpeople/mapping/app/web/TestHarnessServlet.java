@@ -21,7 +21,6 @@ import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -75,7 +74,6 @@ import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 import com.gallatinsystems.user.dao.UserDao;
 import com.gallatinsystems.user.domain.User;
 import com.google.appengine.api.backends.BackendServiceFactory;
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -167,18 +165,6 @@ public class TestHarnessServlet extends HttpServlet {
             com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
                     .getDefaultQueue();
             queue.add(options);
-        } else if ("deleteSurveyResponses".equals(action)) {
-            if (req.getParameter("surveyId") == null) {
-                try {
-                    resp.getWriter()
-                            .println("surveyId is a required parameter");
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            } else {
-
-                deleteSurveyResponses(Long.parseLong(req.getParameter("surveyId")));
-            }
         } else if ("changeLocaleType".equals(action)) {
             String surveyId = req
                     .getParameter(DataProcessorRequest.SURVEY_ID_PARAM);
@@ -507,39 +493,6 @@ public class TestHarnessServlet extends HttpServlet {
         user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
         user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
         userDao.save(user);
-    }
-
-    private boolean deleteSurveyResponses(Long surveyId) {
-        SurveyInstanceDAO dao = new SurveyInstanceDAO();
-
-        Iterable<Entity> surveyInstanceEntityKeys = dao.listSurveyInstanceKeysBySurveyId(surveyId);
-
-        if (surveyInstanceEntityKeys != null) {
-            Queue deleteQueue = QueueFactory.getQueue("deletequeue");
-            Iterator<Entity> surveyInstanceKeys = surveyInstanceEntityKeys.iterator();
-
-            while (surveyInstanceKeys.hasNext()) {
-                TaskOptions deleteTaskOptions = TaskOptions.Builder
-                        .withUrl("/app_worker/dataprocessor")
-                        .param(DataProcessorRequest.ACTION_PARAM,
-                                DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION)
-                        .param(DataProcessorRequest.SURVEY_INSTANCE_PARAM,
-                                surveyInstanceKeys.next().getKey().getId() + "");
-
-                deleteQueue.add(deleteTaskOptions);
-            }
-
-            // delete summaries
-            TaskOptions deleteSummariesOptions = TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.DELETE_SURVEY_QUESTION_SUMMARY)
-                    .param(DataProcessorRequest.SURVEY_ID_PARAM,
-                            surveyId + "");
-            deleteQueue.add(deleteSummariesOptions);
-            return true;
-        }
-        return false;
     }
 
     private static void projectMigration() {
