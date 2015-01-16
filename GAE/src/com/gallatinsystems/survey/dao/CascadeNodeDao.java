@@ -45,7 +45,7 @@ public class CascadeNodeDao extends BaseDAO<CascadeNode> {
     private static final Logger log = Logger.getLogger(SurveyGroupDAO.class
             .getName());
 
-	/* 
+	/*
 	 * List Cascade nodes by cascade resource id
 	 */
 	public List<CascadeNode> listCascadeNodesByResource(Long cascadeResourceId) {
@@ -54,7 +54,7 @@ public class CascadeNodeDao extends BaseDAO<CascadeNode> {
 		return cnList;
 	}
 
-	/* 
+	/*
 	 * List Cascade nodes by cascade resource ID and parent node
 	 */
 	@SuppressWarnings("unchecked")

@@ -42,7 +42,7 @@ public class CascadeResourceDao extends BaseDAO<CascadeResource> {
 
     /**
      * deletes a cascade resource, and the nodes therein asynchronously in a task
-     * 
+     *
      * @param item
      */
     public void delete(CascadeResource item) {

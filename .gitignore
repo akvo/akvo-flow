@@ -13,6 +13,11 @@
 # Emacs files
 *~
 
+# git files
+
+war/WEB-INF/.gitignore
+scripts/.gitignore
+
 # Build config and output paths
 .gradle
 .gwt-log
@@ -31,6 +36,9 @@ Dashboard/assets
 Dashboard/node_modules
 Dashboard/test_assets
 Dashboard/tmp
+Dashboard/.gitignore
+Dashboard/app/cljs/target/
+
 
 # Server config files
 *.jks

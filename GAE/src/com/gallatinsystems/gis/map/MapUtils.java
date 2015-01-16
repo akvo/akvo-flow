@@ -33,6 +33,7 @@ import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleClusterDao;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.gallatinsystems.surveyal.domain.SurveyedLocaleCluster;
 
@@ -174,6 +175,11 @@ public class MapUtils {
             }
         }
 
+        // delete locale if the Delta was a subtraction
+        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+        if (delta < 0) {
+            slDao.delete(locale);
+        }
     }
 
     private static void addToCache(Cache cache, String cell, Long id, long count, Long latTotal,

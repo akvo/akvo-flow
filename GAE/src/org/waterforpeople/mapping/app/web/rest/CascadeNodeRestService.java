@@ -44,29 +44,28 @@ import com.gallatinsystems.survey.domain.CascadeNode;
 @RequestMapping("/cascade_nodes")
 public class CascadeNodeRestService {
 
-	@Inject
+    @Inject
     private CascadeNodeDao cascadeNodeDao;
 
-	@RequestMapping(method = RequestMethod.GET, value = "")
+    @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, List<CascadeNodeDto>> listCascadeNodes(
-    		@RequestParam(value = "cascadeResourceId", defaultValue = "")
-            Long cascadeResourceId,
-            @RequestParam(value = "parentNodeId", defaultValue = "")
-            Long parentNodeId) {
+            @RequestParam(value = "cascadeResourceId", defaultValue = "") Long cascadeResourceId,
+            @RequestParam(value = "parentNodeId", defaultValue = "") Long parentNodeId) {
         final Map<String, List<CascadeNodeDto>> response = new HashMap<String, List<CascadeNodeDto>>();
-        List<CascadeNodeDto> results = new ArrayList<CascadeNodeDto>();      
-        List<CascadeNode> cnList = cascadeNodeDao.listCascadeNodesByResourceAndParentId(cascadeResourceId, parentNodeId);
-            if (cnList != null) {
-                for (CascadeNode cn : cnList) {
-                    CascadeNodeDto dto = new CascadeNodeDto();
-                    BeanUtils.copyProperties(cn, dto);
-                    if (cn.getKey() != null) {
-                        dto.setKeyId(cn.getKey().getId());
-                    }
-                    results.add(dto);
+        List<CascadeNodeDto> results = new ArrayList<CascadeNodeDto>();
+        List<CascadeNode> cnList = cascadeNodeDao.listCascadeNodesByResourceAndParentId(
+                cascadeResourceId, parentNodeId);
+        if (cnList != null) {
+            for (CascadeNode cn : cnList) {
+                CascadeNodeDto dto = new CascadeNodeDto();
+                BeanUtils.copyProperties(cn, dto);
+                if (cn.getKey() != null) {
+                    dto.setKeyId(cn.getKey().getId());
                 }
+                results.add(dto);
             }
+        }
         response.put("cascade_nodes", results);
         return response;
     }
@@ -74,8 +73,7 @@ public class CascadeNodeRestService {
     // delete cascade node by id
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
-    public Map<String, RestStatusDto> deleteCascadeNodeById(@PathVariable("id")
-    Long id) {
+    public Map<String, RestStatusDto> deleteCascadeNodeById(@PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         CascadeNode cr = cascadeNodeDao.getByKey(id);
         RestStatusDto statusDto = null;
@@ -84,21 +82,20 @@ public class CascadeNodeRestService {
 
         // check if cascadeNode exists in the datastore
         if (cr != null) {
-        	// TODO check if any questions use this cascadeNode. If yes, we can't delete.
+            // TODO check if any questions use this cascadeNode. If yes, we can't delete.
 
-        	// delete cascade node and all its children
-        	cascadeNodeDao.deleteRecursive(cr.getCascadeResourceId(),id);
+            // delete cascade node and all its children
+            cascadeNodeDao.deleteRecursive(cr.getCascadeResourceId(), id);
             statusDto.setStatus("ok");
         }
         response.put("meta", statusDto);
         return response;
     }
-	
+
     // update existing cascade resource
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
-    public Map<String, Object> saveExistingCascadeNode(@RequestBody
-    CascadeNodePayload payLoad) {
+    public Map<String, Object> saveExistingCascadeNode(@RequestBody CascadeNodePayload payLoad) {
         final CascadeNodeDto cascadeNodeDto = payLoad.getCascade_node();
         final Map<String, Object> response = new HashMap<String, Object>();
         CascadeNodeDto dto = null;
@@ -119,7 +116,8 @@ public class CascadeNodeRestService {
                     // copy the properties, except the createdDateTime property,
                     // because it is set in the Dao.
                     BeanUtils.copyProperties(cascadeNodeDto, cr, new String[] {
-                            "createdDateTime"});
+                            "createdDateTime"
+                    });
                     cr = cascadeNodeDao.save(cr);
                     dto = new CascadeNodeDto();
                     BeanUtils.copyProperties(cr, dto);
@@ -138,8 +136,7 @@ public class CascadeNodeRestService {
     // create new cascade node
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, Object> saveNewCascadeNode(@RequestBody
-    CascadeNodePayload payLoad) {
+    public Map<String, Object> saveNewCascadeNode(@RequestBody CascadeNodePayload payLoad) {
         final CascadeNodeDto cascadeNodeDto = payLoad.getCascade_node();
         final Map<String, Object> response = new HashMap<String, Object>();
         CascadeNodeDto dto = null;
@@ -149,10 +146,10 @@ public class CascadeNodeRestService {
         // if the POST data contains a valid cascDto, continue.
         // Otherwise, server will respond with 400 Bad Request
         if (cascadeNodeDto != null) {
-        	dto = createCascadeNode(cascadeNodeDto);
-        	if (dto != null){
-        		statusDto.setStatus("ok");
-        	}
+            dto = createCascadeNode(cascadeNodeDto);
+            if (dto != null) {
+                statusDto.setStatus("ok");
+            }
         }
 
         response.put("meta", statusDto);
@@ -160,24 +157,23 @@ public class CascadeNodeRestService {
         return response;
     }
 
-    private CascadeNodeDto createCascadeNode(CascadeNodeDto cascadeNodeDto){
-    	CascadeNode cn = new CascadeNode();
+    private CascadeNodeDto createCascadeNode(CascadeNodeDto cascadeNodeDto) {
+        CascadeNode cn = new CascadeNode();
         BeanUtils.copyProperties(cascadeNodeDto, cn);
         if (StringUtils.isEmpty(cascadeNodeDto.getCode())) {
             cn.setCode(cn.getName());
         }
-    	cn = cascadeNodeDao.save(cn);
-    	CascadeNodeDto cnDto = new CascadeNodeDto();
-    	DtoMarshaller.copyToDto(cn,cnDto);
-    	return cnDto;
+        cn = cascadeNodeDao.save(cn);
+        CascadeNodeDto cnDto = new CascadeNodeDto();
+        DtoMarshaller.copyToDto(cn, cnDto);
+        return cnDto;
     }
 
     // bulk save new cascade nodes
     @RequestMapping(method = RequestMethod.POST, value = "/bulk")
     @ResponseBody
-    public Map<String, Object> saveNewCascadeNodeBulk(@RequestBody
-    CascadeNodeBulkPayload payLoad) {
-    	final List<CascadeNodeDto> cascadeNodeDtoList = payLoad
+    public Map<String, Object> saveNewCascadeNodeBulk(@RequestBody CascadeNodeBulkPayload payLoad) {
+        final List<CascadeNodeDto> cascadeNodeDtoList = payLoad
                 .getCascade_nodes();
         final Map<String, Object> response = new HashMap<String, Object>();
         List<CascadeNodeDto> results = new ArrayList<CascadeNodeDto>();
@@ -202,5 +198,5 @@ public class CascadeNodeRestService {
         response.put("meta", statusDto);
         response.put("cascade_nodes", results);
         return response;
-    }       
+    }
 }

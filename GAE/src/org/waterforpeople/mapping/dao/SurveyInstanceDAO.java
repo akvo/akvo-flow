@@ -24,15 +24,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import net.sf.jsr107cache.Cache;
-import net.sf.jsr107cache.CacheFactory;
-import net.sf.jsr107cache.CacheManager;
-
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
-import org.waterforpeople.mapping.app.web.DataProcessorRestServlet;
+import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
@@ -44,10 +41,10 @@ import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
-import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.survey.dao.QuestionDao;
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
+import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -61,8 +58,6 @@ import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.stdimpl.GCacheFactory;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -71,6 +66,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     private static final Logger logger = Logger
             .getLogger(SurveyInstanceDAO.class.getName());
+
+    @Inject
+    private SurveyQuestionSummaryDao summaryDao;
 
     // the set of unparsedLines we have here represent values from one surveyInstance
     // as they are split up in the TaskServlet task.
@@ -615,103 +613,93 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     }
 
     /**
-     * Deletes a surveyInstance and all its related questionAnswerStore objects Based on the version
-     * in DataBackoutServlet
+     * Deletes a surveyInstance and all its related objects
      *
-     * @param item
-     * @return
+     * @param surveyInstance
+     *            survey instance to be deleted
      */
     // TODO update lastSurveyalInstanceId in surveydLocale objects
     @SuppressWarnings({
             "unchecked", "rawtypes"
     })
-    public void deleteSurveyInstance(SurveyInstance item) {
-        SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+    public void deleteSurveyInstance(SurveyInstance surveyInstance) {
+        final Long surveyInstanceId = surveyInstance.getKey().getId();
+
+        // update summary counts + delete question answers
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        SurveyedLocaleDao localeDao = new SurveyedLocaleDao();
         QuestionDao qDao = new QuestionDao();
-        BaseDAO<SurveyalValue> svDao = new BaseDAO<SurveyalValue>(SurveyalValue.class);
-        Long surveyInstanceId = item.getKey().getId();
-
-        List<QuestionAnswerStore> qasList = siDao.listQuestionAnswerStore(
-                surveyInstanceId, null);
-
-        // to account for the slim change if we have two geo questions in one surveyInstance
-
-        boolean sisCountUpdated = false;
-
-        if (qasList != null && qasList.size() > 0) {
-            // update the questionAnswerSummary counts
+        List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
+        if (qasList != null && !qasList.isEmpty()) {
             for (QuestionAnswerStore qasItem : qasList) {
-
-                // if the questionAnswerStore item is the GEO type, try to update
-                // the surveyInstanceSummary
-
-                if (Question.Type.GEO.toString().equals(qasItem.getType()) && !sisCountUpdated) {
-                    DataProcessorRestServlet.surveyInstanceSummarizer(surveyInstanceId, qasItem
-                            .getKey().getId(), -1);
-                    sisCountUpdated = true;
+                // question summaries
+                Question question = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
+                if (question != null && question.canBeCharted()) {
+                    Queue questionSummaryQueue = QueueFactory.getQueue("surveyResponseCount");
+                    List<SurveyQuestionSummary> summaryList = summaryDao.listByResponse(
+                            qasItem.getQuestionID(), qasItem.getValue());
+                    if (summaryList != null && !summaryList.isEmpty()) {
+                        TaskOptions to = TaskOptions.Builder
+                                .withUrl("/app_worker/dataprocessor")
+                                .param(DataProcessorRequest.ACTION_PARAM,
+                                        DataProcessorRequest.SURVEY_RESPONSE_COUNT)
+                                .param(DataProcessorRequest.COUNTER_ID_PARAM,
+                                        summaryList.get(0).getKey().getId() + "")
+                                .param(DataProcessorRequest.DELTA_PARAM, "-1");
+                        questionSummaryQueue.add(to);
+                        continue;
+                    }
                 }
 
-                // if the questionAnswerStore item belongs to an OPTION type,
-                // update the count
-                Question q = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
-                if (q != null && Question.Type.OPTION.equals(q.getType())) {
-                    SurveyQuestionSummaryDao.incrementCount(qasItem, -1);
+                // survey instance summary task
+                if (Question.Type.GEO.toString().equals(qasItem.getType())) {
+                    Queue summaryQueue = QueueFactory.getQueue("dataSummarization");
+
+                    TaskOptions to = TaskOptions.Builder
+                            .withUrl("/app_worker/dataprocessor")
+                            .param(DataProcessorRequest.ACTION_PARAM,
+                                    DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
+                            .param(DataProcessorRequest.DELTA_PARAM, "-1");
+                    summaryQueue.add(to);
                 }
             }
 
-            // delete the questionAnswerStore objects in a single datastore
-            // operation
             qasDao.delete(qasList);
         }
 
-        // get the instances that have contributed to the Locale, for later use
-        List<SurveyInstance> instancesForLocale = siDao.listByProperty("surveyedLocaleId",
-                item.getSurveyedLocaleId(), "Long");
-
-        // delete the surveyInstance
-        SurveyInstance instance = siDao.getByKey(item.getKey());
-        if (instance != null) {
-            // send notification
-            List<Long> ids = new ArrayList<Long>();
-            ids.add(instance.getSurveyId());
-            SurveyUtils.notifyReportService(ids, "invalidate");
-
-            Long localeId = instance.getSurveyedLocaleId();
-
-            List<SurveyalValue> valsForInstance = localeDao
-                    .listSurveyalValuesByInstance(instance.getKey().getId());
-            if (valsForInstance != null && valsForInstance.size() > 0) {
-                svDao.delete(valsForInstance);
-            }
-
-            // if there is only one surveyInstance that has contributed to this Locale,
-            // we can delete the SurveyedLocale. The values should already have been deleted
-            // in the previous step.
-            if (instancesForLocale != null && instancesForLocale.size() == 1) {
-                SurveyedLocale l = localeDao.getByKey(localeId);
-                if (l != null) {
-                    // initialize the memcache
-                    Cache cache = null;
-                    Map props = new HashMap();
-                    props.put(GCacheFactory.EXPIRATION_DELTA, 12 * 60 * 60);
-                    props.put(MemcacheService.SetPolicy.SET_ALWAYS, true);
-                    try {
-                        CacheFactory cacheFactory = CacheManager.getInstance()
-                                .getCacheFactory();
-                        cache = cacheFactory.createCache(props);
-                    } catch (Exception e) {
-                        log.log(Level.SEVERE,
-                                "Couldn't initialize cache: " + e.getMessage(), e);
-                    }
-                    MapUtils.recomputeCluster(cache, l, -1);
-                    localeDao.delete(l);
-                }
-            }
-            // now delete the surveyInstance
-            siDao.delete(instance);
+        // delete surveyal values
+        SurveyedLocaleDao surveyedLocaleDao = new SurveyedLocaleDao();
+        SurveyalValueDao svDao = new SurveyalValueDao();
+        List<SurveyalValue> surveyalValues = surveyedLocaleDao
+                .listSurveyalValuesByInstance(surveyInstanceId);
+        if (surveyalValues != null && !surveyalValues.isEmpty()) {
+            svDao.delete(surveyalValues);
         }
+
+        // task to adapt cluster data + delete surveyedlocale if not needed
+        if (surveyInstance.getSurveyedLocaleId() != null) {
+            Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
+            List<SurveyInstance> relatedSurveyInstances = listByProperty("surveyedLocaleId",
+                    surveyedLocaleId, "Long");
+
+            if (relatedSurveyInstances.size() < 2) {
+                // only the current (or no) survey instance is related to the locale. we fire task
+                // to delete locale and update clusters
+
+                Queue queue = QueueFactory.getDefaultQueue();
+                TaskOptions to = TaskOptions.Builder
+                        .withUrl("/app_worker/surveyalservlet")
+                        .param(SurveyalRestRequest.ACTION_PARAM,
+                                SurveyalRestRequest.ADAPT_CLUSTER_DATA_ACTION)
+                        .param(SurveyalRestRequest.SURVEYED_LOCALE_PARAM,
+                                surveyedLocaleId + "")
+                        .param(SurveyalRestRequest.DECREMENT_CLUSTER_COUNT_PARAM,
+                                Boolean.TRUE.toString());
+                queue.add(to);
+            }
+        }
+
+        super.delete(surveyInstance);
+
     }
 
     /**
