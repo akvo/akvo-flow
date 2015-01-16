@@ -112,6 +112,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private static final Integer SVAL_PAGE_SIZE = 600;
     private static final String QAS_TO_REMOVE = "QAStoRemove";
 
+    private SurveyInstanceDAO siDao;
+
     @Override
     protected RestRequest convertRequest() throws Exception {
         HttpServletRequest req = getRequest();
@@ -188,6 +190,16 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.POP_QUESTION_ORDER_FIELDS_ACTION.equalsIgnoreCase(req
                 .getAction())) {
             populateQuestionOrdersSurveyalValues(dpReq.getSurveyId(), req.getCursor());
+        } else if (DataProcessorRequest.DELETE_SURVEY_INSTANCE_ACTION.equalsIgnoreCase(req
+                .getAction())) {
+            if (dpReq.getSurveyInstanceId() != null) {
+                deleteSurveyResponses(dpReq.getSurveyInstanceId());
+            }
+        } else if (DataProcessorRequest.SURVEY_RESPONSE_COUNT.equalsIgnoreCase(req
+                .getAction())) {
+            if (dpReq.getSummaryCounterId() != null && dpReq.getDelta() != null) {
+                updateSurveyResponseCounter(dpReq.getSummaryCounterId(), dpReq.getDelta());
+            }
         } else if (DataProcessorRequest.DELETE_CASCADE_NODES.equalsIgnoreCase(req.getAction())) {
             deleteCascadeNodes(dpReq.getCascadeResourceId(), dpReq.getParentNodeId());
         }
@@ -1394,6 +1406,37 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             }
             queue.add(to);
         }
+    }
+
+    /**
+     * Delete the specified survey instance
+     *
+     * @param surveyInstanceId
+     */
+    private void deleteSurveyResponses(Long surveyInstanceId) {
+        siDao = new SurveyInstanceDAO();
+        SurveyInstance surveyInstance = siDao.getByKey(surveyInstanceId);
+        if (surveyInstance != null) {
+            siDao.deleteSurveyInstance(surveyInstance);
+        }
+    }
+
+    /**
+     * Update a survey response counter according to the provided delta. This method should be
+     * invoked though the task queue 'surveyResponseCount' to avoid concurrent updates
+     *
+     * @param summaryCounterId
+     * @param delta
+     */
+    private void updateSurveyResponseCounter(long summaryCounterId, int delta) {
+        SurveyQuestionSummaryDao summaryDao = new SurveyQuestionSummaryDao();
+        SurveyQuestionSummary summary = summaryDao.getByKey(summaryCounterId);
+        if (summary == null) {
+            return;
+        }
+
+        summary.setCount(summary.getCount() + delta);
+        summaryDao.save(summary);
     }
 
     private void deleteCascadeNodes(Long cascadeResourceId, Long parentNodeId) {

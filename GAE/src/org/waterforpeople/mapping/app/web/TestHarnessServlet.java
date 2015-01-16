@@ -154,20 +154,6 @@ public class TestHarnessServlet extends HttpServlet {
             com.google.appengine.api.taskqueue.Queue queue = com.google.appengine.api.taskqueue.QueueFactory
                     .getDefaultQueue();
             queue.add(options);
-        } else if ("deleteSurveyResponses".equals(action)) {
-            if (req.getParameter("surveyId") == null) {
-                try {
-                    resp.getWriter().println("surveyId is a required parameter");
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            } else {
-
-                deleteSurveyResponses(
-                        Long.parseLong(req.getParameter("surveyId")),
-                        req.getParameter("count") != null ? Integer.parseInt(req
-                                .getParameter("count")) : null);
-            }
         } else if ("changeLocaleType".equals(action)) {
             String surveyId = req.getParameter(DataProcessorRequest.SURVEY_ID_PARAM);
             if (surveyId == null) {
@@ -484,21 +470,6 @@ public class TestHarnessServlet extends HttpServlet {
         user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
         user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
         userDao.save(user);
-    }
-
-    private boolean deleteSurveyResponses(Long surveyId, Integer count) {
-        SurveyInstanceDAO dao = new SurveyInstanceDAO();
-
-        List<SurveyInstance> instances = dao.listSurveyInstanceBySurvey(surveyId,
-                count != null ? count : 100);
-
-        if (instances != null) {
-            for (SurveyInstance instance : instances) {
-                dao.deleteSurveyInstance(instance);
-            }
-            return true;
-        }
-        return false;
     }
 
     private static void projectMigration() {
