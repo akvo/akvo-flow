@@ -727,7 +727,8 @@ FLOW.SelectFolder = Ember.Select.extend({
 
 
 FLOW.SurveySelectionView = Ember.ContainerView.extend({
-  tagName: 'div',
+  tagName: 'div', 
+  classNames: 'modularSelection',
   childViews: [],
 
   init: function() {
