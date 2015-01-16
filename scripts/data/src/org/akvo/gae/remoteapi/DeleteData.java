@@ -70,7 +70,7 @@ public class DeleteData implements Process {
 
         for (Entity e : pq.asList(FetchOptions.Builder.withChunkSize(500))) {
             Collection<Long> contrib = (Collection<Long>) e.getProperty("surveyInstanceContrib");
-            if (contrib.size() == 1 && contrib.contains(surveyId)) {
+            if (contrib != null && contrib.size() == 1 && contrib.contains(surveyId)) {
                 keys.add(e.getKey());
             }
         }
