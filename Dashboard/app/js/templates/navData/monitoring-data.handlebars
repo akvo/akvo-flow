@@ -3,13 +3,7 @@
     <div class="floats-in filterData" id="dataFilter">
       <h1>{{t _choose_survey_data_to_display}}:</h1>
       <div class="chooseSurveyData">
-        {{view Ember.Select 
-          contentBinding="FLOW.surveyGroupControl.arrangedContent"
-          selectionBinding="view.selectedSurveyGroup"
-          optionLabelPath="content.code" 
-          optionValuePath="content.keyId"
-          prompt=""
-          promptBinding="Ember.STRINGS._select_survey"}}
+        {{view FLOW.SurveySelectionView}}
 	  </div>
 	  <div class="dataCollectedDate">
 	  </div>
@@ -21,7 +15,7 @@
           placeholderBinding="Ember.STRINGS._identifier"
           size=30}}
         <label  class="devideId"> {{t _display_name}}:</label>
-        {{view Ember.TextField 
+        {{view Ember.TextField
           valueBinding="view.displayName"
           placeholder=""
           placeholderBinding="Ember.STRINGS._display_name"
@@ -82,7 +76,7 @@
 		     <a {{action "closeDetailsDialog" target="this"}} class="ok clodeDialog">close window</a>
 
           <h2>{{t _details}}</h2>
-            <nav class="editAnswerMenu"> 
+            <nav class="editAnswerMenu">
           </nav>
         <p></p>
 <section class="fullWidth " id="devicesList">
@@ -121,7 +115,7 @@
                 <tr>
                     <th class="noArrows">{{t _id}}</th>
                     <th class="noArrows">{{t _question}}</th>
-                    <th class="noArrows">{{t _answer}}</th>                
+                    <th class="noArrows">{{t _answer}}</th>
                 </tr>
             </thead>
             <!-- TABLE BODY: MAIN CONTENT-->
@@ -131,11 +125,11 @@
                     <tr>
                       <td class="device">{{QA.keyId}}</td>
                       <td class="survey" style="text-align:left;">{{QA.questionText}}</td>
-                    
+
                     <td class="submitter" style="text-align:left;">
                       {{#if view.isNotEditable}}
                         {{#if view.isPhotoType}}
-                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open photo</a> 
+                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open photo</a>
                         {{else}}
                           {{QA.value}}
                         {{/if}}

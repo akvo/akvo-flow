@@ -1,44 +1,38 @@
  <section class="fullWidth reportTools" id="reportBlocks">
     {{#view FLOW.chartView}}
-        <h1>{{t _chart_builder}}</h1>
-        {{view Ember.Select 
-      contentBinding="FLOW.surveyGroupControl.arrangedContent"
-      selectionBinding="FLOW.selectedControl.selectedSurveyGroup" 
-      optionLabelPath="content.code" 
-      optionValuePath="content.keyId"
-      prompt=""
-      promptBinding="Ember.STRINGS._select_survey"}}
-		<span class=""></span>
-      {{view Ember.Select 
+      <h1>{{t _chart_builder}}</h1>
+      {{view FLOW.SurveySelectionView}}
+      <span class=""></span>
+      {{view Ember.Select
         contentBinding="FLOW.surveyControl.arrangedContent"
-        selectionBinding="view.selectedSurvey" 
-        optionLabelPath="content.name" 
+        selectionBinding="view.selectedSurvey"
+        optionLabelPath="content.name"
         optionValuePath="content.keyId"
         prompt=""
         promptBinding="Ember.STRINGS._select_form"}}
 
-        {{view Ember.Select 
-        contentBinding="FLOW.questionControl.OPTIONcontent" 
-        selectionBinding="FLOW.selectedControl.selectedQuestion" 
-        optionLabelPath="content.text" 
-        optionValuePath="content.keyId" 
+        {{view Ember.Select
+        contentBinding="FLOW.questionControl.OPTIONcontent"
+        selectionBinding="FLOW.selectedControl.selectedQuestion"
+        optionLabelPath="content.text"
+        optionValuePath="content.keyId"
         prompt=""
         promptBinding="Ember.STRINGS._select_question"}}
-<div class="chartSetting">       
+<div class="chartSetting">
 <h4>{{t _chart_type}}:</h4>
-      {{view Ember.Select 
-        contentBinding="FLOW.chartTypeControl.content" 
-        selectionBinding="view.chartType" 
-        optionLabelPath="content.label" 
+      {{view Ember.Select
+        contentBinding="FLOW.chartTypeControl.content"
+        selectionBinding="view.chartType"
+        optionLabelPath="content.label"
         optionValuePath="content.value"
         prompt=""
         promptBinding="Ember.STRINGS._select_chart_type"}}
-        
-{{#if view.isDoughnut}} 
+
+{{#if view.isDoughnut}}
   <label class="groupChartSelect"> {{t _put_smaller_items_together}} {{view Ember.Checkbox checkedBinding="view.compactSmaller"}}</label>
 {{/if}}
         <a {{action getChartData target="this"}} class="standardBtn"> {{t _build_chart}} </a>
-</div>		
+</div>
     {{#if view.noChoiceBool}}
       <p class="errorMsg">{{t _please_select_survey_group_survey_and_question}}</p>
     {{/if}}
@@ -91,7 +85,7 @@ function createDoughnutChart(){
       .attr("text-anchor", "left")
       .style("fill", "rgb(246, 160, 26)")
       .style("font", "bold 1.5em helvetica")
-      .text(Ember.String.loc('_smallest_items')) 
+      .text(Ember.String.loc('_smallest_items'))
       .attr("transform","translate(320,-120)");
 
 
@@ -104,7 +98,7 @@ function createDoughnutChart(){
       .style("font", "bold 1.1em helvetica")
       .text(function(d){
         return d.legendLabel;
-      }) 
+      })
       .attr("transform",function(d,i){
         return "translate(325," + (-100+i*20) + ")";
       })
@@ -112,7 +106,7 @@ function createDoughnutChart(){
     // Select all <g> elements with class slice (there aren't any yet)
     var arcs = vis.selectAll("g.slice")
       // Associate the generated pie data (an array of arcs, each having startAngle,
-      // endAngle and value properties) 
+      // endAngle and value properties)
       .data(pie)
       // This will create <g> elements for every "extra" data element that should be associated
       // with a selection. The result is creating a <g> for every object in the data array
@@ -136,7 +130,7 @@ function createDoughnutChart(){
           y = c[1],
           // pythagorean theorem for hypotenuse
           h = Math.sqrt(x*x + y*y);
-          return "translate(" + (x/h * labelRadius) +  ',' + (y/h * labelRadius) +  ")"; 
+          return "translate(" + (x/h * labelRadius) +  ',' + (y/h * labelRadius) +  ")";
         })
       .attr("text-anchor", function(d) {
         // are we past the center?
@@ -165,7 +159,7 @@ function createDoughnutChart(){
       .attr("text-anchor", "middle")
       .style("fill", "rgb(58,58,58)")
       .style("font", "bold 1.1em helvetica")
-      .text(total.toString()) 
+      .text(total.toString())
       .attr("transform","translate(0,0)");
 
     // Computes the angle of an arc, converting from radians to degrees.
@@ -229,7 +223,7 @@ var svg = d3.select("#piechart")
       .attr("width", 20)
       .attr("y",function(d){return y(d.percentage/100);})
       .attr("height",function(d){return height*0.6-y(d.percentage/100);})
-      
+
   // add labels
   svg.selectAll("p")
       .data(dataSet)
@@ -240,7 +234,7 @@ var svg = d3.select("#piechart")
       .style("font", "bold 1.1em helvetica")
       .text(function(d){
         return d.legendLabel;
-      }) 
+      })
     .attr("transform",function(d,i){
          return "translate(" + (25+i*40) + "," + (0.6*height + 10) +") rotate(45) ";
        })
@@ -256,7 +250,7 @@ var svg = d3.select("#piechart")
       .text(function(d){
         var num = d.percentage;
         return num.toFixed(1).toString() + "%";
-      }) 
+      })
       .attr("transform",function(d,i){
         return "translate(" + (20+i*40) + "," + (y(d.percentage/100)-5) + ")";
       })
@@ -293,7 +287,7 @@ var svg = d3.select("#piechart")
       .attr("text-anchor", "left")
       .style("fill", "rgb(246, 160, 26)")
       .style("font", "bold 2em helvetica")
-      .text("Percentage") 
+      .text("Percentage")
       .attr("transform","translate(300,0)");
 
   // add bars
@@ -306,7 +300,7 @@ var svg = d3.select("#piechart")
       .attr("height", 20)
       .attr("x",function(d){return 300;})
       .attr("width",function(d){return y(d.percentage/100);})
-      
+
   // add labels
   svg.selectAll("p")
       .data(dataSet)
@@ -317,7 +311,7 @@ var svg = d3.select("#piechart")
       .style("font", "bold 1.1em helvetica")
       .text(function(d){
         return d.legendLabel;
-      }) 
+      })
     .attr("transform",function(d,i){
          return "translate(280," + (35+i*40) +")";
        })
@@ -333,11 +327,11 @@ var svg = d3.select("#piechart")
       .text(function(d){
         var num = d.percentage;
         return num.toFixed(1).toString();
-      }) 
+      })
       .attr("transform",function(d,i){
         return "translate(" + (305+y(d.percentage/100)) + "," + (35+i*40) + ")";
       })
   }
-        
+
     </script>
     </section>
