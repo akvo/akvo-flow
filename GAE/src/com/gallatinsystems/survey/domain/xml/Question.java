@@ -128,6 +128,18 @@ public class Question {
     @XmlSchemaType(name = "NMTOKEN")
     protected String id;
 
+    @XmlAttribute(required = false)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String allowPoints;
+
+    @XmlAttribute(required = false)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String allowLine;
+
+    @XmlAttribute(required = false)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String allowPolygon;
+
     public List<AltText> getAltText() {
         if (altText == null) {
             altText = new ArrayList<AltText>();
@@ -457,6 +469,30 @@ public class Question {
 
     public void setScoring(Scoring scoring) {
         this.scoring = scoring;
+    }
+
+    public void setAllowPoints(String allowPoints) {
+        this.allowPoints = allowPoints;
+    }
+
+    public String getAllowPoints() {
+        return allowPoints;
+    }
+
+    public void setAllowLine(String allowLine) {
+        this.allowLine = allowLine;
+    }
+
+    public String getAllowLine() {
+        return allowLine;
+    }
+
+    public void setAllowPolygon(String allowPolygon) {
+        this.allowPolygon = allowPolygon;
+    }
+
+    public String getAllowPolygon() {
+        return allowPolygon;
     }
 
 }

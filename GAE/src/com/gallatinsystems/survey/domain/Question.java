@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -36,7 +36,8 @@ public class Question extends BaseDomain {
     private static final long serialVersionUID = -9123426646238761996L;
 
     public enum Type {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE,
+        GEOSHAPE
     };
 
     private Type type = null;
@@ -79,9 +80,16 @@ public class Question extends BaseDomain {
     private Boolean localeLocationFlag;
 
     /**
+     * Geoshape question options
+     */
+    private Boolean allowPoints;
+    private Boolean allowLine;
+    private Boolean allowPolygon;
+
+    /**
      * Return true of a question can be visualised on a chart. This is limited to option questions
      * that do not allow the possibility for multiple selection in the responses
-     * 
+     *
      * @return true if can be charted else false.
      */
     public boolean canBeCharted() {
@@ -287,7 +295,7 @@ public class Question extends BaseDomain {
 
     /**
      * use helpMedia instead
-     * 
+     *
      * @return
      */
     @Deprecated
@@ -383,7 +391,7 @@ public class Question extends BaseDomain {
 
     /**
      * Compare question entities based on Key
-     * 
+     *
      * @param q
      * @return true if the Key of the two entities is the same
      */
@@ -399,11 +407,35 @@ public class Question extends BaseDomain {
         this.questionId = questionId;
     }
 
-	public Long getCascadeResourceId() {
-		return cascadeResourceId;
-	}
+    public Long getCascadeResourceId() {
+        return cascadeResourceId;
+    }
 
-	public void setCascadeResourceId(Long cascadeResourceId) {
-		this.cascadeResourceId = cascadeResourceId;
-	}
+    public void setCascadeResourceId(Long cascadeResourceId) {
+        this.cascadeResourceId = cascadeResourceId;
+    }
+
+    public void setAllowPoints(Boolean allowPoints) {
+        this.allowPoints = allowPoints;
+    }
+
+    public Boolean getAllowPoints() {
+        return allowPoints;
+    }
+
+    public void setAllowLine(Boolean allowLine) {
+        this.allowLine = allowLine;
+    }
+
+    public Boolean getAllowLine() {
+        return allowLine;
+    }
+
+    public void setAllowPolygon(Boolean allowPolygon) {
+        this.allowPolygon = allowPolygon;
+    }
+
+    public Boolean getAllowPolygon() {
+        return allowPolygon;
+    }
 }

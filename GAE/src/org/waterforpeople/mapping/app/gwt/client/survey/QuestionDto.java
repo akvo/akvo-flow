@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -67,6 +67,13 @@ public class QuestionDto extends BaseDto implements NamedObject {
     private Boolean isName;
     private Long sourceId = null;
     private List<String> levelNames = null;
+
+    /**
+     * Geoshape question options
+     */
+    private Boolean allowPoints;
+    private Boolean allowLine;
+    private Boolean allowPolygon;
 
     public Boolean getAllowDecimal() {
         return allowDecimal;
@@ -293,7 +300,8 @@ public class QuestionDto extends BaseDto implements NamedObject {
     }
 
     public enum QuestionType {
-        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE
+        FREE_TEXT, OPTION, NUMBER, GEO, PHOTO, VIDEO, SCAN, TRACK, NAME, STRENGTH, DATE, CASCADE,
+        GEOSHAPE
     }
 
     @Override
@@ -443,5 +451,29 @@ public class QuestionDto extends BaseDto implements NamedObject {
 
     public void setLevelNames(List<String> levelNames) {
         this.levelNames = levelNames;
+    }
+
+    public void setAllowPoints(Boolean allowPoints) {
+        this.allowPoints = allowPoints;
+    }
+
+    public Boolean getAllowPoints() {
+        return allowPoints;
+    }
+
+    public void setAllowLine(Boolean allowLine) {
+        this.allowLine = allowLine;
+    }
+
+    public Boolean getAllowLine() {
+        return allowLine;
+    }
+
+    public void setAllowPolygon(Boolean allowPolygon) {
+        this.allowPolygon = allowPolygon;
+    }
+
+    public Boolean getAllowPolygon() {
+        return allowPolygon;
     }
 }

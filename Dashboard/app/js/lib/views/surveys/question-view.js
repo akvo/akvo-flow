@@ -25,6 +25,9 @@ FLOW.QuestionView = FLOW.View.extend({
   newAttributeName: null,
   newAttributeGroup: null,
   newAttributeType: null,
+  allowPoints: true,
+  allowLine: true,
+  allowPolygon: true,
 
   init: function () {
     var self, qoList, i;
@@ -138,6 +141,14 @@ FLOW.QuestionView = FLOW.View.extend({
     }
   }.property('this.type').cacheable(),
 
+  amGeoshapeType: function () {
+	    if (this.type) {
+	      return this.type.get('value') == 'GEOSHAPE';
+	    } else {
+	      return false;
+	    }
+	  }.property('this.type').cacheable(),
+
   // when we change the question type to GEO, we turn on the
   // localeLocationFLag by default. If we change to something else, we
   // turn the flag of.
@@ -178,6 +189,9 @@ FLOW.QuestionView = FLOW.View.extend({
     this.set('includeInMap', FLOW.selectedControl.selectedQuestion.get('includeInMap'));
     this.set('dependentFlag', FLOW.selectedControl.selectedQuestion.get('dependentFlag'));
     this.set('optionList', FLOW.selectedControl.selectedQuestion.get('questionOptionList'));
+    this.set('allowPoints', FLOW.selectedControl.selectedQuestion.get('allowPoints'));
+    this.set('allowLine', FLOW.selectedControl.selectedQuestion.get('allowLine'));
+    this.set('allowPolygon', FLOW.selectedControl.selectedQuestion.get('allowPolygon'));
     FLOW.optionListControl.set('content', []);
 
     // if the cascadeResourceId is not null, get the resource
@@ -259,6 +273,11 @@ FLOW.QuestionView = FLOW.View.extend({
   doSaveEditQuestion: function() {
     var path, anyActive, first, dependentQuestionAnswer, minVal, maxVal, options, found, optionsToDelete;
 
+    if (this.questionIdValidationFailure) {
+      this.showMessageDialog(Ember.String.loc('_question_id_must_be_valid_and_unique'), this.questionIdValidationFailureReason);
+      return;
+    }
+
     if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
         FLOW.dialogControl.set('activeAction', 'ignore');
         FLOW.dialogControl.set('header', Ember.String.loc('_cascade_resources'));
@@ -274,7 +293,7 @@ FLOW.QuestionView = FLOW.View.extend({
       this.set('allowSign', false);
       this.set('allowDecimal', false);
     }
-    if (this.type.get('value') !== 'GEO') {
+    if (this.type.get('value') !== 'GEO' && this.type.get('value') !== 'GEOSHAPE') {
       this.set('geoLocked', false);
     }
 
@@ -302,6 +321,9 @@ FLOW.QuestionView = FLOW.View.extend({
     FLOW.selectedControl.selectedQuestion.set('geoLocked', this.get('geoLocked'));
     FLOW.selectedControl.selectedQuestion.set('requireDoubleEntry', this.get('requireDoubleEntry'));
     FLOW.selectedControl.selectedQuestion.set('includeInMap', this.get('includeInMap'));
+    FLOW.selectedControl.selectedQuestion.set('allowPoints', this.get('allowPoints'));
+    FLOW.selectedControl.selectedQuestion.set('allowLine', this.get('allowLine'));
+    FLOW.selectedControl.selectedQuestion.set('allowPolygon', this.get('allowPolygon'));
 
     var allowExternalSources = (this.type.get('value') !== 'FREE_TEXT') ? false : this.get('allowExternalSources');
     FLOW.selectedControl.selectedQuestion.set('allowExternalSources', allowExternalSources);
@@ -819,12 +841,12 @@ FLOW.QuestionView = FLOW.View.extend({
     var self = this;
     self.validateQuestionId({
       success: function() {
-    self.set('questionIdValidationFailure', false);
-    self.set('questionIdValidationFailureReason', null);
+        self.set('questionIdValidationFailure', false);
+        self.set('questionIdValidationFailureReason', null);
       },
       failure: function(msg) {
-    self.set('questionIdValidationFailure', true);
-    self.set('questionIdValidationFailureReason', msg);
+        self.set('questionIdValidationFailure', true);
+        self.set('questionIdValidationFailureReason', msg);
       }
     });
   }.observes('this.questionId')

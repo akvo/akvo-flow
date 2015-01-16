@@ -12,6 +12,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
   isOptionType: false,
   isNumberType: false,
   isBarcodeType: false,
+  isGeoshapeType: false,
   isDateType: false,
   isPhotoType: false,
   isVideoType: false,
@@ -45,7 +46,7 @@ FLOW.QuestionAnswerView = Ember.View.extend({
     this.set('isPhotoType', type == 'PHOTO');
     this.set('isVideoType', type == 'VIDEO');
     this.set('isDateType', type == 'DATE');
-    this.set('isNotEditable', (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO'));
+    this.set('isNotEditable', (type == 'GEO' || type == 'PHOTO' || type == 'VIDEO' || type == 'GEOSHAPE'));
 
     this.setInitialValue();
   }.observes('FLOW.questionControl.content.isLoaded'),
