@@ -627,11 +627,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
         // update summary counts + delete question answers
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+        QuestionDao qDao = new QuestionDao();
         List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
         if (qasList != null && !qasList.isEmpty()) {
             for (QuestionAnswerStore qasItem : qasList) {
                 // question summaries
-                if (Question.Type.OPTION.toString().equals(qasItem.getType())) {
+                Question question = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
+                if (question != null && question.canBeCharted()) {
                     Queue questionSummaryQueue = QueueFactory.getQueue("surveyResponseCount");
                     List<SurveyQuestionSummary> summaryList = summaryDao.listByResponse(
                             qasItem.getQuestionID(), qasItem.getValue());
@@ -644,7 +646,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                                         summaryList.get(0).getKey().getId() + "")
                                 .param(DataProcessorRequest.DELTA_PARAM, "-1");
                         questionSummaryQueue.add(to);
-                        break;
+                        continue;
                     }
                 }
 
@@ -658,7 +660,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                                     DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
                             .param(DataProcessorRequest.DELTA_PARAM, "-1");
                     summaryQueue.add(to);
-                    break;
                 }
             }
 
