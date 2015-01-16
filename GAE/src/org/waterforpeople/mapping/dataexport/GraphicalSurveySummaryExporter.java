@@ -512,7 +512,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             Row row = getRow(curRow++, sheet);
             writeRow(row, rd.getDto(), rd.getResponseMap(), rd.getDateString(),
                     rd.getInstanceId(), generateSummary, questionIdList,
-                    unsummarizable, nameToIdMap, collapseIdMap, model);
+                    unsummarizable, nameToIdMap, collapseIdMap, model, useQuestionId);
         }
 
         SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
@@ -525,7 +525,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             String instanceId, boolean generateSummary,
             List<String> questionIdList, List<String> unsummarizable,
             Map<String, String> nameToIdMap, Map<String, String> collapseIdMap,
-            SummaryModel model) throws Exception {
+            SummaryModel model, boolean useQuestionId) throws Exception {
         int col = 0;
         MessageDigest digest = MessageDigest.getInstance("MD5");
 
@@ -594,7 +594,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                     String cellVal = val.trim();
                     createCell(row, col++, cellVal, null, Cell.CELL_TYPE_NUMERIC);
                     digest.update(cellVal.getBytes());
-                } else if (qdto != null && QuestionType.CASCADE.equals(qdto.getType())) {
+                } else if (qdto != null && QuestionType.CASCADE.equals(qdto.getType())
+                        && useQuestionId) {
                     String cellVal = val.trim();
                     ArrayList<String> parts = new ArrayList<String>(Arrays.asList(cellVal
                             .split("\\|", -1)));
@@ -621,8 +622,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 }
             }
         }
-        // now add 1 more col that contains the digest
-        createCell(row, col++, StringUtil.toHexString(digest.digest()), null);
+
+        if (!useQuestionId) {
+            // now add 1 more col that contains the digest
+            createCell(row, col++, StringUtil.toHexString(digest.digest()), null);
+        }
 
         if (generateSummary && responseMap != null) {
             Set<String> rollups = null;
@@ -701,10 +705,17 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         String columnLocale = useQID ? "en" : locale;
 
                         if (QuestionType.GEO == q.getType()) {
-                            createCell(row, offset++,
-                                    (useQID ? questionId + "_" : q.getKeyId().toString() + "|")
-                                            + LAT_LABEL.get(columnLocale),
-                                    headerStyle);
+                            if (useQuestionId) {
+                                createCell(row, offset++,
+                                        (useQID ? questionId + "_" : q.getText() + " - ")
+                                                + LAT_LABEL.get(columnLocale),
+                                        headerStyle);
+                            } else {
+                                createCell(row, offset++,
+                                        (useQID ? questionId + "_" : q.getKeyId() + "|")
+                                                + LAT_LABEL.get(columnLocale),
+                                        headerStyle);
+                            }
                             createCell(row, offset++,
                                     (useQID ? questionId + "_" : "--GEOLON--|")
                                             + LON_LABEL.get(columnLocale),
@@ -718,14 +729,23 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                     useQID ? questionId + "_" + codeLabel.replaceAll("\\s", "")
                                             : "--GEOCODE--|" + codeLabel,
                                     headerStyle);
-                        } else if (QuestionType.CASCADE == q.getType() && q.getLevelNames() != null) {
+                        } else if (QuestionType.CASCADE == q.getType() && q.getLevelNames() != null
+                                && useQuestionId) {
                             for (String level : q.getLevelNames()) {
-                                createCell(row, offset++, level, headerStyle);
+                                String levelName = useQID ? questionId + "_"
+                                        + level.replaceAll(" ", "_") : q.getText()
+                                        + " - " + level;
+                                createCell(row, offset++, levelName, headerStyle);
                             }
                         } else {
                             String header = "";
                             if (useQID) {
                                 header = questionId;
+                            } else if (useQuestionId) {
+                                header = getLocalizedText(q.getText(),
+                                        q.getTranslationMap())
+                                        .replaceAll("\n", "")
+                                        .trim();
                             } else {
                                 header = q.getKeyId().toString()
                                         + "|"
