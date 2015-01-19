@@ -13,7 +13,7 @@
                    optionLabelPath="content.code"
                    optionValuePath="content.keyId"
                    id="surveyGroup"
-                   prompt="Select survey group"
+                   prompt=""
                    promptBinding="Ember.STRINGS._select_survey"}}
 			<span class="infoText">{{t _cant_find_your_survey_}}</span>
 			</div>
@@ -78,7 +78,7 @@
          {{view Ember.TextField
                 valueBinding="view.notificationEmail"
                 id="notificationEmail"
-                placeholder="Enter the notification email"
+                placeholder=""
                 placeholderBinding="Ember.STRINGS._enter_notification_email"
                 size=30}}
          {{#if view.undef}}
