@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2013-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -24,12 +24,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 
 public class TranslationGenerator {
 
     private static final Map<String, String> PATTERNS = new HashMap<String, String>();
+    private static final Pattern ANCHOR = Pattern.compile("<a.*?>.*?</a>");
+    private static final Pattern T_HELPER = Pattern.compile("\\{\\{t\\s\\_\\w+\\}\\}");
+    private static final Pattern BINDING = Pattern.compile(">\\{\\{.*?\\}\\}<");
+    private static final Pattern AKVO_ORG = Pattern.compile(">akvo.org</a>");
 
     static {
         PATTERNS.put("{{t ", "}}");
@@ -44,7 +50,6 @@ public class TranslationGenerator {
             "handlebars", "js", "cljs"
     };
 
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws Exception {
 
         if (args.length < 2) {
@@ -70,7 +75,7 @@ public class TranslationGenerator {
             }
 
             final List<String> lines = FileUtils.readLines(f, "UTF-8");
-
+            int ln = 1;
             for (String line : lines) {
                 if (containsTranslatableKeys(line)) {
                     final List<String> keys = getKeys(line);
@@ -96,6 +101,12 @@ public class TranslationGenerator {
                         }
                     }
                 }
+                if (f.getAbsolutePath().endsWith(".handlebars") &&
+                        containsMissingTranslation(line)) {
+                    System.err.println("Check for missing translation in " + f.getName() + ":" + ln
+                            + " " + line);
+                }
+                ln++;
             }
         }
 
@@ -117,6 +128,20 @@ public class TranslationGenerator {
         }
         FileUtils.writeStringToFile(new File(output, "/ui-strings.properties"),
                 uisource.toString(), "ISO-8859-1");
+    }
+
+    private static boolean containsMissingTranslation(String line) {
+        final Matcher m = ANCHOR.matcher(line);
+        if (!m.find()) {
+            return false;
+        }
+        final Matcher m2 = T_HELPER.matcher(m.group());
+        final Matcher m3 = BINDING.matcher(m.group());
+        final Matcher m4 = AKVO_ORG.matcher(m.group()); // Hack to remove false positive
+        if (!m2.find() && !m3.find() && !m4.find()) {
+            return true;
+        }
+        return false;
     }
 
     private static boolean containsTranslatableKeys(String line) {

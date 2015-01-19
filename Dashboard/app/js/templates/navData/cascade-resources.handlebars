@@ -93,7 +93,7 @@
 							{{/view}}
 						{{/each}}
 					</ul>
-					<div class="addLevelBtn"><a {{action "addLevel" target="this"}} class="addLevel btn addBtn">Add a level</a></div>
+					<div class="addLevelBtn"><a {{action "addLevel" target="this"}} class="addLevel btn addBtn">{{t _add_level}}</a></div>
 	            </nav>
 	        </section>
 			<section {{bindAttr class="view.showImportDialog:hidden:shown  :levelColumns :floats-in"}}>
@@ -107,13 +107,13 @@
 	          							<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
 								{{else}}
 									<label for="level01Name">{{FLOW.cascadeResourceControl.displayLevelName1}}
-									<a {{action "showEditField" target="this"}} class="editSurvey">edit</a></label>
+									<a {{action "showEditField" target="this"}} class="editSurvey">{{t _edit}}</a></label>
 								{{/if}}
                            	 	{{#view FLOW.CascadeNodeView col=1}}
 									{{#if view.showInputField}}
 										{{view Ember.TextField valueBinding="view.cascadeNodeCode" class="cascadeEntryCode" placeholder="code"}}
 										{{view Ember.TextField valueBinding="view.cascadeNodeName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
-										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
+										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">{{t _add}}</button></a>
 									{{/if}}
 								{{/view}}
                         	</fieldset>
@@ -128,8 +128,8 @@
 										<button class="addCascadeItem squeezeR" {{action "cancelEditNode" target="this"}}>Cancel</button>
 									{{else}}
 										<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
-										<a {{action "deleteNode" target="this"}} class="deleteLevel">delete</a>
-										<a {{action "showEditNodeField" target="this"}} class="editLevel">edit</a>
+										<a {{action "deleteNode" target="this"}} class="deleteLevel">{{t _delete}}</a>
+										<a {{action "showEditNodeField" target="this"}} class="editLevel">{{t _edit}}</a>
 									{{/if}}
 								{{/view}}
 							{{/each}}
@@ -145,13 +145,13 @@
 	          							<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
 								{{else}}
 									<label for="level02Name">{{FLOW.cascadeResourceControl.displayLevelName2}}
-									<a {{action "showEditField" target="this"}} class="editSurvey">edit</a></label>
+									<a {{action "showEditField" target="this"}} class="editSurvey">{{t _edit}}</a></label>
 								{{/if}}
                            		{{#view FLOW.CascadeNodeView col=2}}
 									{{#if view.showInputField}}
 										{{view Ember.TextField valueBinding="view.cascadeNodeCode" class="cascadeEntryCode" placeholder="code"placeholder="code"}}
 										{{view Ember.TextField valueBinding="view.cascadeNodeName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
-										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
+										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">{{t _add}}</button></a>
 									{{/if}}
 								{{/view}}
                         </fieldset>
@@ -162,12 +162,12 @@
 									{{#if view.showEditNode}}
 										{{view Ember.TextField valueBinding="view.newCode" class="cascadeEntryCode" placeholder="code"}}
 										{{view Ember.TextField valueBinding="view.newName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
-										<button class="addCascadeItem squeezeR" {{action "saveEditNode" target="this"}}>Save</button>
-										<button class="addCascadeItem squeezeR" {{action "cancelEditNode" target="this"}}>Cancel</button>
+										<button class="addCascadeItem squeezeR" {{action "saveEditNode" target="this"}}>{{t _save}}</button>
+										<button class="addCascadeItem squeezeR" {{action "cancelEditNode" target="this"}}>{{t _cancel}}</button>
 									{{else}}
 										<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
-										<a {{action "deleteNode" target="this"}} class="deleteLevel">delete</a>
-										<a {{action "showEditNodeField" target="this"}} class="editLevel">edit</a>
+										<a {{action "deleteNode" target="this"}} class="deleteLevel">{{t _delete}}</a>
+										<a {{action "showEditNodeField" target="this"}} class="editLevel">{{t _edit}}</a>
 									{{/if}}
 								{{/view}}
 							{{/each}}
@@ -183,13 +183,13 @@
 	          						<a {{action "cancelNewLevelName" target="this"}}>{{t _cancel}}</a>
 							{{else}}
 								<label for="level02Name">{{FLOW.cascadeResourceControl.displayLevelName3}}
-								<a {{action "showEditField" target="this"}} class="editSurvey">edit</a></label>
+								<a {{action "showEditField" target="this"}} class="editSurvey">{{t _edit}}</a></label>
 							{{/if}}
 							{{#view FLOW.CascadeNodeView col=3}}
 								{{#if view.showInputField}}
 										{{view Ember.TextField valueBinding="view.cascadeNodeCode" class="cascadeEntryCode" placeholder="code"placeholder="code"}}
 										{{view Ember.TextField valueBinding="view.cascadeNodeName" class="cascadeEntryName" placeholder="new item name (mandatory)"}}
-										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">Add</button></a>
+										<a {{action "addNewNode" target="this"}}><button class="addCascadeItem">{{t _add}}</button></a>
 								{{/if}}
 							{{/view}}
                         </fieldset>
@@ -204,8 +204,8 @@
 										<button class="addCascadeItem squeezeR" {{action "cancelEditNode" target="this"}}>Cancel</button>
 									{{else}}
 										<a {{action "makeSelected" target="this"}}>{{unbound item.name}}</a>
-										<a {{action "deleteNode" target="this"}} class="deleteLevel">delete</a>
-										<a {{action "showEditNodeField" target="this"}} class="editLevel">edit</a>
+										<a {{action "deleteNode" target="this"}} class="deleteLevel">{{t _delete}}</a>
+										<a {{action "showEditNodeField" target="this"}} class="editLevel">{{t _edit}}</a>
 									{{/if}}
 								{{/view}}
 							{{/each}}
@@ -231,7 +231,7 @@
                         <li class="formList">
                         <p class="noCascade">Please select an existing cascade resource or create a new one</p></li>
                         <li>
-                        <a {{action "newCascade" target="this"}} class="addBtn btn noChanges addMenuAction addNewForm">Add new cascade</a></li>
+                        <a {{action "newCascade" target="this"}} class="addBtn btn noChanges addMenuAction addNewForm">{{t _add_new_cascade}}</a></li>
                     </ul>
                 </section>
           {{/if}}
