@@ -96,7 +96,7 @@
 					<div class="addLevelBtn"><a {{action "addLevel" target="this"}} class="addLevel btn addBtn">Add a level</a></div>
 	            </nav>
 	        </section>
-			<section {{bindAttr class="view.showImportDialog:hidden:display  :levelColumns :floats-in"}}>
+			<section {{bindAttr class="view.showImportDialog:hidden:shown  :levelColumns :floats-in"}}>
                     <div class="levelCol level01">
                     	{{#view FLOW.CascadeLevelNameView col=1 origLevelName=FLOW.cascadeResourceControl.displayLevelName1}}
                        		<span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum1}}</span>
@@ -135,7 +135,7 @@
 							{{/each}}
                         </ul>
                     </div>
-                    <div class="levelCol level02">
+                    <div {{bindAttr class="view.hideColumn2:hidden :levelCol :level02"}}>
                     	{{#view FLOW.CascadeLevelNameView col=2 origLevelName=FLOW.cascadeResourceControl.displayLevelName2}}
            		            <span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum2}}</span>
                 	        <fieldset class="levelHead">
@@ -173,7 +173,7 @@
 							{{/each}}
                         </ul>
                     </div>
-                    <div class="levelCol level03">
+                    <div {{bindAttr class="view.hideColumn3:hidden :levelCol :level03"}}>
                     {{#view FLOW.CascadeLevelNameView col=3 origLevelName=FLOW.cascadeResourceControl.displayLevelName3}}
                         <span class="levelNbr">Level {{FLOW.cascadeResourceControl.displayLevelNum3}}</span>
                         <fieldset class="levelHead">
@@ -213,7 +213,7 @@
                     </div>
                 </section>
             </section>
-            <section {{bindAttr class="view.showImportDialog:hidden:display  :levelSecondNav"}}>
+            <section {{bindAttr class="view.showImportDialog:hidden:shown  :levelSecondNav"}}>
 	            <nav>
 	              <ul>
 	               {{#view FLOW.CascadeSecondNavView dir="down"}}
