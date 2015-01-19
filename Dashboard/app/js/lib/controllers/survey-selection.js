@@ -3,7 +3,7 @@ FLOW.SurveySelection = Ember.ObjectController.extend({
   surveyGroups: null,
 
   populate: function() {
-    this.surveyGroups = FLOW.store.find(FLOW.SurveyGroup);
+    this.surveyGroups = FLOW.store.filter(FLOW.SurveyGroup);
   },
 
   init: function() {
@@ -18,7 +18,11 @@ FLOW.SurveySelection = Ember.ObjectController.extend({
   },
 
   getSurvey: function(keyId) {
-    return FLOW.store.find(FLOW.SurveyGroup, keyId);
+    var surveyGroups = this.get('surveyGroups').filter(function(sg) {
+      return sg.get('keyId') === keyId;
+    });
+
+    return surveyGroups[0];
   },
 
   isSurvey: function(keyId) {
