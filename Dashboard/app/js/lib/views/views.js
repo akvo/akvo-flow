@@ -701,13 +701,14 @@ FLOW.SelectFolder = Ember.Select.extend({
     this.set('optionLabelPath', 'content.code');
     this.set('optionValuePath', 'content.keyId');
     this.set('controller', FLOW.SurveySelection.create());
-    this.set('content', this.get('controller').getByParentId(this.get('parentId')));
+    this.set('content', this.get('controller').getByParentId(this.get('parentId'), this.get('showMonitoringSurveysOnly')));
   },
 
   onChange: function() {
     var childViews = this.get('parentView').get('childViews');
     var keyId = this.get('value');
     var nextIdx = this.get('idx') + 1;
+    var monitoringOnly = this.get('showMonitoringSurveysOnly');
 
     if (nextIdx !== childViews.length) {
       childViews.removeAt(nextIdx, childViews.length - nextIdx);
@@ -719,7 +720,8 @@ FLOW.SelectFolder = Ember.Select.extend({
       FLOW.selectedControl.set('selectedSurveyGroup', null);
       childViews.pushObject(FLOW.SelectFolder.create({
         parentId: keyId,
-        idx: nextIdx
+        idx: nextIdx,
+        showMonitoringSurveysOnly: monitoringOnly
       }));
     }
   }.observes('value'),
@@ -727,7 +729,7 @@ FLOW.SelectFolder = Ember.Select.extend({
 
 
 FLOW.SurveySelectionView = Ember.ContainerView.extend({
-  tagName: 'div', 
+  tagName: 'div',
   classNames: 'modularSelection',
   childViews: [],
 
@@ -736,6 +738,7 @@ FLOW.SurveySelectionView = Ember.ContainerView.extend({
     this.get('childViews').pushObject(FLOW.SelectFolder.create({
       parentId: null,
       idx: 0,
+      showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false
     }));
   },
 })

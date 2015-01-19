@@ -11,9 +11,14 @@ FLOW.SurveySelection = Ember.ObjectController.extend({
     this.populate();
   },
 
-  getByParentId: function(parentId) {
+  getByParentId: function(parentId, monitoringGroupsOnly) {
     return this.get('surveyGroups').filter(function(sg) {
-      return sg.get('parentId') === parentId;
+      if (monitoringGroupsOnly) {
+        return sg.get('parentId') === parentId &&
+          (sg.get('monitoringGroup') || sg.get('projectType') === 'PROJECT_FOLDER');
+      } else {
+        return sg.get('parentId') === parentId;
+      }
     })
   },
 
