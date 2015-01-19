@@ -151,7 +151,6 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 		if (!cascade) {
 			return false;
 		}
-		console.log('hideColumn2', cascade.get('numLevels') < 2);
 		return cascade.get('numLevels') < 2;
 	}.property('FLOW.selectedControl.selectedCascadeResource', 'FLOW.selectedControl.selectedCascadeResource.numLevels'),
 
@@ -160,7 +159,6 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 		if (!cascade) {
 			return false;
 		}
-		console.log('hideColumn3', cascade.get('numLevels') < 3);
 		return cascade.get('numLevels') < 3;
 	}.property('FLOW.selectedControl.selectedCascadeResource', 'FLOW.selectedControl.selectedCascadeResource.numLevels')
 });
