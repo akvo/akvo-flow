@@ -287,7 +287,6 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('inspectData');
           router.set('datasubnavController.selected', 'inspectData');
           router.resetState();
-          FLOW.surveyGroupControl.populate();
         }
       }),
 
@@ -344,7 +343,6 @@ FLOW.Router = Ember.Router.extend({
       route: '/reports',
       connectOutlets: function (router, context) {
         router.get('applicationController').connectOutlet('navReports');
-        FLOW.surveyGroupControl.populate();
         router.resetState();
         router.set('navigationController.selected', 'navReports');
       },
@@ -381,8 +379,6 @@ FLOW.Router = Ember.Router.extend({
           router.resetState();
           router.get('navReportsController').connectOutlet('chartReports');
           router.set('reportsSubnavController.selected', 'chartReports');
-          FLOW.surveyGroupControl.populate();
-
         }
       }),
       statistics: Ember.Route.extend({
