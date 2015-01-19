@@ -707,13 +707,13 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                         if (QuestionType.GEO == q.getType()) {
                             if (useQuestionId) {
                                 createCell(row, offset++,
-                                        (useQID ? questionId + "_" : q.getText() + " - ")
+                                        (useQID ? questionId + "_" : getLocalizedText(q.getText(),
+                                                q.getTranslationMap()) + " - ")
                                                 + LAT_LABEL.get(columnLocale),
                                         headerStyle);
                             } else {
                                 createCell(row, offset++,
-                                        (useQID ? questionId + "_" : q.getKeyId() + "|")
-                                                + LAT_LABEL.get(columnLocale),
+                                        q.getKeyId() + "|" + LAT_LABEL.get(columnLocale),
                                         headerStyle);
                             }
                             createCell(row, offset++,
@@ -733,7 +733,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                                 && useQuestionId) {
                             for (String level : q.getLevelNames()) {
                                 String levelName = useQID ? questionId + "_"
-                                        + level.replaceAll(" ", "_") : q.getText()
+                                        + level.replaceAll(" ", "_") : getLocalizedText(
+                                        q.getText(), q.getTranslationMap())
                                         + " - " + level;
                                 createCell(row, offset++, levelName, headerStyle);
                             }
