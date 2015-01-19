@@ -3,21 +3,25 @@
       <h1>{{t _chart_builder}}</h1>
       {{view FLOW.SurveySelectionView}}
       <span class=""></span>
-      {{view Ember.Select
-        contentBinding="FLOW.surveyControl.arrangedContent"
-        selectionBinding="view.selectedSurvey"
-        optionLabelPath="content.name"
-        optionValuePath="content.keyId"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_form"}}
-
+      {{#if FLOW.selectedControl.selectedSurvey}}
         {{view Ember.Select
-        contentBinding="FLOW.questionControl.OPTIONcontent"
-        selectionBinding="FLOW.selectedControl.selectedQuestion"
-        optionLabelPath="content.text"
-        optionValuePath="content.keyId"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_question"}}
+            contentBinding="FLOW.surveyControl.arrangedContent"
+            selectionBinding="view.selectedSurvey"
+            optionLabelPath="content.name"
+            optionValuePath="content.keyId"
+            prompt=""
+            promptBinding="Ember.STRINGS._select_form"}}
+
+          {{#if view.selectedSurvey}}
+            {{view Ember.Select
+                contentBinding="FLOW.questionControl.OPTIONcontent"
+                selectionBinding="FLOW.selectedControl.selectedQuestion"
+                optionLabelPath="content.text"
+                optionValuePath="content.keyId"
+                prompt=""
+                promptBinding="Ember.STRINGS._select_question"}}
+          {{/if}}
+      {{/if}}
 <div class="chartSetting">
 <h4>{{t _chart_type}}:</h4>
       {{view Ember.Select
