@@ -35,6 +35,8 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
   isGeoType: false,
   isGeoshapeType:false,
   isDateType: false,
+  isCascadeType: false,
+  levelNameList:[],
   isVisible: true,
   optionsList: [],
   optionChoice: null,
@@ -43,7 +45,7 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
   longitude: null,
 
   init: function () {
-    var opList, opListArray, i, sizeList, qId, tempList;
+    var opList, opListArray, i, sizeList, qId, tempList, cascadeNames;
     this._super();
 
     this.set('isTextType', this.content.get('type') == 'FREE_TEXT');
@@ -55,6 +57,7 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
     this.set('isGeoType', this.content.get('type') == 'GEO');
     this.set('isGeoshapeType', this.content.get('type') == 'GEOSHAPE');
     this.set('isDateType', this.content.get('type') == 'DATE');
+    this.set('isCascadeType', this.content.get('type') == 'CASCADE');
 
     // fill option list
     if (this.isOptionType) {
@@ -83,6 +86,15 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
         }));
       }
       this.set('optionsList', tempList);
+    }
+    if (this.isCascadeType) {
+    	cascade = FLOW.store.find(FLOW.CascadeResource,this.content.get('cascadeResourceId'));
+    	if (!Ember.empty(cascade)){
+    		cascadeNames = cascade.get('levelNames');
+    		for (i=0 ; i < cascade.get('numLevels'); i++){
+    			this.levelNameList.push(cascadeNames[i]);
+    		}
+    	}
     }
   },
 
