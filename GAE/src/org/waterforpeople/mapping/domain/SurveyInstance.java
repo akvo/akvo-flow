@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -56,7 +56,7 @@ public class SurveyInstance extends BaseDomain {
     private DeviceFiles deviceFile;
 
     @NotPersistent
-    private ArrayList<QuestionAnswerStore> questionAnswersStore;
+    private List<QuestionAnswerStore> questionAnswersStore;
 
     private Long surveyId;
 
@@ -210,12 +210,12 @@ public class SurveyInstance extends BaseDomain {
             deviceFileId = deviceFile.getKey().getId();
     }
 
-    public ArrayList<QuestionAnswerStore> getQuestionAnswersStore() {
+    public List<QuestionAnswerStore> getQuestionAnswersStore() {
         return questionAnswersStore;
     }
 
     public void setQuestionAnswersStore(
-            ArrayList<QuestionAnswerStore> questionAnswersStore) {
+            List<QuestionAnswerStore> questionAnswersStore) {
         this.questionAnswersStore = questionAnswersStore;
     }
 

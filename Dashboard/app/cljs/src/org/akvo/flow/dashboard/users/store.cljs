@@ -1,4 +1,4 @@
-;; Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014 - 2015 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -45,6 +45,9 @@
          (sort (user-comparator sort-by sort-order))
          (drop offset)
          (take limit))))
+
+(defn user-count [users]
+  (count (vals (:by-id users))))
 
 (defn get-roles [roles]
   (-> roles :by-id vals))

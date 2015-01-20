@@ -28,6 +28,9 @@ FLOW.questionTypeControl = Ember.Object.create({
     }), Ember.Object.create({
       label: Ember.String.loc('_barcode'),
       value: 'SCAN'
+    }), Ember.Object.create({
+      label: Ember.String.loc('_geoshape'),
+      value: 'GEOSHAPE'
     })
   ]
 });

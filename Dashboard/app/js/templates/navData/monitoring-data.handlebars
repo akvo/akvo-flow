@@ -3,7 +3,7 @@
     <div class="floats-in filterData" id="dataFilter">
       <h1>{{t _choose_survey_data_to_display}}:</h1>
       <div class="chooseSurveyData">
-        {{view FLOW.SurveySelectionView showMonitoringSurveysOnly=true}}
+      {{view FLOW.SurveySelectionView showMonitoringSurveysOnly=true}}
 	  </div>
 	  <div class="dataCollectedDate">
 	  </div>
@@ -73,7 +73,7 @@
           <div class="dialogWrap">
         <!-- the dialog contents -->
         <div class="confirmDialog dialogWide">
-		     <a {{action "closeDetailsDialog" target="this"}} class="ok clodeDialog">close window</a>
+		     <a {{action "closeDetailsDialog" target="this"}} class="ok clodeDialog">{{t _close_window}}</a>
 
           <h2>{{t _details}}</h2>
             <nav class="editAnswerMenu">
@@ -129,7 +129,11 @@
                     <td class="submitter" style="text-align:left;">
                       {{#if view.isNotEditable}}
                         {{#if view.isPhotoType}}
+<<<<<<< HEAD
                           {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open photo</a>
+=======
+                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
+>>>>>>> develop
                         {{else}}
                           {{QA.value}}
                         {{/if}}

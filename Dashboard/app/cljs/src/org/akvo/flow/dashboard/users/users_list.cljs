@@ -1,4 +1,4 @@
-;; Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014 - 2015 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -114,7 +114,7 @@
     (init-state [this]
       {:pagination {:offset 0
                     :limit 20}
-       :sort {:sort-by "emailAddress"
+       :sort {:sort-by "userName"
               :sort-order "ascending"}
        :current-user-id nil})
 
@@ -141,8 +141,9 @@
                            :plus (t> _add_new_user))]]]
          (om/build grid
                    {:data (store/get-by-range users
-                                               (merge (:pagination state)
-                                                      (:sort state)))
+                                              (merge (:pagination state)
+                                                     (:sort state)))
+                    :total-count (store/user-count users)
                     :sort (:sort state)
                     :on-sort (fn [sort-by sort-order]
                                (om/set-state! owner :sort {:sort-by sort-by :sort-order sort-order}))

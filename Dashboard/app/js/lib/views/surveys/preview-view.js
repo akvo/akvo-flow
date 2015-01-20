@@ -33,6 +33,7 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
   isVideoType: false,
   isBarcodeType: false,
   isGeoType: false,
+  isGeoshapeType:false,
   isDateType: false,
   isVisible: true,
   optionsList: [],
@@ -52,6 +53,7 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
     this.set('isVideoType', this.content.get('type') == 'VIDEO');
     this.set('isBarcodeType', this.content.get('type') == 'BARCODE');
     this.set('isGeoType', this.content.get('type') == 'GEO');
+    this.set('isGeoshapeType', this.content.get('type') == 'GEOSHAPE');
     this.set('isDateType', this.content.get('type') == 'DATE');
 
     // fill option list
@@ -73,6 +75,13 @@ FLOW.PreviewQuestionView = FLOW.View.extend({
           value: item.get('text')
         }));
       });
+
+      if (this.content.get('allowOtherFlag')) {
+        tempList.push(Ember.Object.create({
+          isSelected: false,
+          value: Ember.String.loc('_other')
+        }));
+      }
       this.set('optionsList', tempList);
     }
   },

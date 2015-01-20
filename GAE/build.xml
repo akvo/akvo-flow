@@ -144,7 +144,7 @@
 	</target>
 
 	<target name="runserver" depends="datanucleusenhance" description="Starts the development server.">
-		<dev_appserver war="war">
+		<dev_appserver war="war" port="8888" address="0.0.0.0">
 			<options>
 				<arg value="--jvm_flag=-Ddatastore.default_high_rep_job_policy_unapplied_job_pct=50"/>
 			</options>

@@ -227,6 +227,16 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
   allowExternalSources: DS.attr('boolean', {
     defaultValue: false
+  }),
+  // Geoshape question type options
+  allowPoints: DS.attr('boolean', {
+    defaultValue: true
+  }),
+  allowLine: DS.attr('boolean', {
+    defaultValue: true
+  }),
+  allowPolygon: DS.attr('boolean', {
+    defaultValue: true
   })
 });
 

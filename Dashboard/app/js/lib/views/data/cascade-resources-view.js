@@ -145,6 +145,22 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	  this.set('cascadeResourceName', null);
 	  this.set('showNewCascadeField', false);
 	},
+
+	hideColumn2: function () {
+		var cascade = FLOW.selectedControl.selectedCascadeResource;
+		if (!cascade) {
+			return false;
+		}
+		return cascade.get('numLevels') < 2;
+	}.property('FLOW.selectedControl.selectedCascadeResource', 'FLOW.selectedControl.selectedCascadeResource.numLevels'),
+
+	hideColumn3: function() {
+		var cascade = FLOW.selectedControl.selectedCascadeResource;
+		if (!cascade) {
+			return false;
+		}
+		return cascade.get('numLevels') < 3;
+	}.property('FLOW.selectedControl.selectedCascadeResource', 'FLOW.selectedControl.selectedCascadeResource.numLevels')
 });
 
 FLOW.CascadeSecondNavView = FLOW.View.extend({
