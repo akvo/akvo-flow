@@ -697,7 +697,7 @@ FLOW.SelectFolder = Ember.Select.extend({
 
   init: function() {
     this._super();
-    this.set('prompt', "Choose a folder or survey");
+    this.set('prompt', Ember.String.loc('_choose_folder_or_survey'));
     this.set('optionLabelPath', 'content.code');
     this.set('optionValuePath', 'content.keyId');
     this.set('controller', FLOW.SurveySelection.create());
