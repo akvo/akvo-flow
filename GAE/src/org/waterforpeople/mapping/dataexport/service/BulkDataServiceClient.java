@@ -531,6 +531,15 @@ public class BulkDataServiceClient {
                         + surveyGroupId, true, apiKey));
     }
 
+    public static List<SurveyDto> fetchSurvey(Long surveyId,
+            String serverBase, String apiKey) throws Exception {
+        return parseSurveys(fetchDataFromServer(serverBase
+                + SURVEY_SERVLET_PATH,
+                "?action=" + SurveyRestRequest.GET_SURVEY_ACTION + "&"
+                        + SurveyRestRequest.SURVEY_ID_PARAM + "="
+                        + surveyId, true, apiKey));
+    }
+
     /**
      * parses a single SurveyInstanceDto from a json response string
      *
