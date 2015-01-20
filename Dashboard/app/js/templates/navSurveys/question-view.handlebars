@@ -34,15 +34,13 @@
   {{#if view.showMetaConfig}}
     {{#if view.amOptionType}}
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}}</label>
-    {{else}}
-      {{#if view.amFreeTextType}}
+    {{else}} {{#if view.amFreeTextType}}
         <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}}</label>
-      {{else}}
-        {{#if view.amGeoType}}
+    {{else}} {{#if view.amNumberType}}
+        <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}}</label>
+    {{else}} {{#if view.amGeoType}}
           <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeLocationFlag"}}{{t _use_as_record_location}}</label>
-        {{/if}}
-      {{/if}}
-    {{/if}}
+    {{/if}} {{/if}} {{/if}} {{/if}}
   {{/if}}
 
     <!-- Question specific material -->
