@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -529,6 +529,15 @@ public class BulkDataServiceClient {
                 "?action=" + SurveyRestRequest.LIST_SURVEYS_ACTION + "&"
                         + SurveyRestRequest.SURVEY_GROUP_ID_PARAM + "="
                         + surveyGroupId, true, apiKey));
+    }
+
+    public static List<SurveyDto> fetchSurvey(Long surveyId,
+            String serverBase, String apiKey) throws Exception {
+        return parseSurveys(fetchDataFromServer(serverBase
+                + SURVEY_SERVLET_PATH,
+                "?action=" + SurveyRestRequest.GET_SURVEY_ACTION + "&"
+                        + SurveyRestRequest.SURVEY_ID_PARAM + "="
+                        + surveyId, true, apiKey));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -36,6 +36,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionGroupDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.QuestionOptionDto;
+import org.waterforpeople.mapping.app.gwt.client.survey.SurveyDto;
 import org.waterforpeople.mapping.app.gwt.client.survey.TranslationDto;
 import org.waterforpeople.mapping.dataexport.service.BulkDataServiceClient;
 
@@ -68,7 +69,17 @@ public class SurveyFormExporter implements DataExporter {
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
         try {
-            populateQuestionMap(criteria.get(SURVEY_ID_KEY), serverBase, criteria.get("apiKey"));
+            String surveyId = criteria.get(SURVEY_ID_KEY);
+            String apiKey = criteria.get("apiKey");
+            populateQuestionMap(surveyId, serverBase, apiKey);
+            List<SurveyDto> surveys = BulkDataServiceClient.fetchSurvey(Long.parseLong(surveyId), serverBase, apiKey);
+            if (surveys == null || surveys.isEmpty()) {
+                surveyTitle = "";
+            } else {
+                SurveyDto surveyDto = surveys.get(0);
+                surveyTitle = String.format("%s (v. %s)", surveyDto.getName(), surveyDto.getVersion());
+            }
+
             writeSurvey(surveyTitle, fileName, groupList, questionMap);
         } catch (Exception e) {
             log.error("Could not write survey", e);
