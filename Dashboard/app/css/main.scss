@@ -1622,73 +1622,76 @@ th.action {
     text-shadow: 0 -1px 0 rgb(185, 185, 185), 0 2px 0 white;
 }
 
-#tabs nav.tabNav {
-    display: block;
-    padding: 1px 0;
-    width: 100%;
-    background-color: white;
-    position: fixed;
-    margin-top: -10px;
-    z-index: 9999;
-    & + div, & + section {
-        margin-top: 40px;
+#tabs {
+    nav.tabNav {
+        display: block;
+        padding: 1px 0;
+        width: 100%;
+        background-color: white;
+        position: fixed;
+        margin-top: -10px;
+        z-index: 9999;
+        & + div, & + section {
+            margin-top: 40px;
+        }
+        ul {
+            padding: 0;
+            li {
+                display: inline;
+                float: left;
+                margin: 0 1px 0 0;
+                @include border-radius(2px 2px 0 0);
+                background: rgb(201, 201, 201);
+                -webkit-background-clip: padding-box;
+                background-clip: padding-box;
+                -webkit-transition: none;
+                transition: none;
+                -moz-background-clip: padding;
+                -webkit-background-clip: padding-box;
+                &:hover {
+                    background: rgb(174, 174, 174);
+                }
+                &.active {
+                    background: rgb(0, 0, 0);
+                    &:hover {
+                        background: rgb(0, 0, 0);    
+                    }
+                    a {
+                        color: white;
+                        text-shadow: none;
+                        -webkit-text-shadow: none;
+                        -moz-text-shadow: none;
+                        &:hover {
+                            color: white;
+                            text-shadow: none;
+                            -webkit-text-shadow: none;
+                            -moz-text-shadow: none;
+                        }
+                    }
+                }
+                a {
+                    display: block;
+                    padding: 0.75em 1em;
+                    color: rgb(147, 145, 144);
+                    text-transform: uppercase;
+                    -webkit-transition: none;
+                    transition: none;
+                    -webkit-text-shadow: 1px 1px 0 rgb(235, 235, 235);
+                    -moz-text-shadow: 1px 1px 0 rgb(235, 235, 235);
+                    text-shadow: 1px 1px 0 rgb(235, 235, 235);
+                    font-weight: bold;
+                    &:hover {
+                        color: white;
+                        text-shadow: none;
+                        -webkit-text-shadow: none;
+                        -moz-text-shadow: none;
+                    }
+                }
+            }
+        }
     }
 }
 
-#tabs nav.tabNav ul {
-    padding: 0;
-}
-
-#tabs nav.tabNav ul li {
-    display: inline;
-    float: left;
-    margin: 0 1px 0 0;
-    @include border-radius(2px 2px 0 0);
-    background: rgb(201, 201, 201);
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-    -webkit-transition: none;
-    transition: none;
-    -moz-background-clip: padding;
-    -webkit-background-clip: padding-box;
-}
-
-#tabs nav.tabNav ul li:hover {
-    background: rgb(174, 174, 174);
-}
-
-#tabs nav.tabNav ul li.active,
-#tabs nav.tabNav ul li.active:hover {
-    background: rgb(0, 0, 0);
-}
-
-#tabs nav.tabNav ul li a {
-    display: block;
-    padding: 0.75em 1em;
-    color: rgb(147, 145, 144);
-    text-transform: uppercase;
-    -webkit-transition: none;
-    transition: none;
-    -webkit-text-shadow: 1px 1px 0 rgb(235, 235, 235);
-    -moz-text-shadow: 1px 1px 0 rgb(235, 235, 235);
-    text-shadow: 1px 1px 0 rgb(235, 235, 235);
-    font-weight: bold;
-}
-
-#tabs nav.tabNav ul li.active a,
-#tabs nav.tabNav ul li.active a:hover {
-    color: white;
-    text-shadow: none;
-    -webkit-text-shadow: none;
-    -moz-text-shadow: none;
-}
-
-#tabs nav.tabNav ul li a:hover {
-    color: white;
-    text-shadow: none;
-    -webkit-text-shadow: none;
-    -moz-text-shadow: none;
-}
 
 /* Survey styles
 --------------------------------------------- */
@@ -3026,7 +3029,12 @@ label[for="surveyLanguage"] a.helpIcon {
         }
     }
 }
-
+div.published {
+    .publishNewSurvey {
+        pointer-events: none;
+        opacity:0.2;
+    }
+}
 a.publishProjectBtn {
     text-transform: uppercase;
     background: $anchorLink url(../images/IconPublishWhite.svg) left center no-repeat;
@@ -5248,6 +5256,18 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
                                 box-shadow: inset 0px 5px 0px 0px rgba($monitorGreen, 1);
                             }
                         }
+                    }
+                    &.published {
+                        background: rgba(32, 32, 36, 0.5) url(../images/IconFormPub.png) no-repeat 10px center;
+                        padding-left: 25px;
+                        background-size: 20px auto;
+                        &.current {
+                            background: rgba(32, 32, 36, 0.9) url(../images/IconFormPubOrange.png) no-repeat 10px center;
+                            background-size: 20px auto;
+                            a {
+                                color: $anchorLinkHover;
+                            }
+                        }                 
                     }
                 }
                 &.newFormTab {
