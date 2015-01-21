@@ -76,7 +76,7 @@
    (assert user-id (str "No user-id for user " user))
    (PUT (str "/rest/users/" user-id)
         (merge ajax/default-ajax-config
-               {:params {"user" user}
+               {:params {"user" (update-in user ["emailAddress"] s/lower-case)}
                 :handler (fn [response]
                            (let [user (get response "user")
                                  user-id (get user "keyId")]
