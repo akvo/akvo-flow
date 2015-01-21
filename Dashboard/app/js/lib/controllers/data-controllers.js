@@ -260,7 +260,25 @@ FLOW.surveyedLocaleControl = Ember.ArrayController.create({
   populate: function () {
     this.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
     this.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, {}));
-  }
+  },
+
+  contentChanged: function() {
+	var mutableContents = [];
+
+	this.get('arrangedContent').forEach(function(item) {
+	  mutableContents.pushObject(item);
+	});
+
+	this.set('currentContents', mutableContents);
+  }.observes('content', 'content.isLoaded'),
+
+  removeLocale: function(locale) {
+	this.get('currentContents').forEach(function(item, i, currentContents) {
+	  if (item.get('id') == locale.get('id')) {
+	    currentContents.removeAt(i, 1);
+	  }
+    });
+  },
 });
 
 FLOW.questionAnswerControl = Ember.ArrayController.create({

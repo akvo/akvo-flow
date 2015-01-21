@@ -42,7 +42,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each sl in FLOW.surveyedLocaleControl.content}}
+          {{#each sl in FLOW.surveyedLocaleControl.currentContents}}
             <tr>
               <td class="device">{{#view FLOW.DataNumView contentBinding="this"}}{{view.rownum}}{{/view}}</td>
               <td class="surveyGroup" style="text-align:left;">{{#with sl}}{{sgName surveyGroupId}}{{/with}}</td>
@@ -111,6 +111,9 @@
                 <a {{action showSurveyInstanceDetails SI target="this"}}>
                   {{t _view_details}}
                 </a>
+                {{#if FLOW.role.ADMIN }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
+                  {{t _delete}}
+                </a>{{/view}} {{/if}}
               </td>
             </tr>
             <tr class="si_details" style="background: #fff; display:none;" data-flow-id="si_details_{{unbound SI.id}}">
