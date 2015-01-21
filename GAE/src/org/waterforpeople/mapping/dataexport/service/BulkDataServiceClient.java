@@ -989,24 +989,25 @@ public class BulkDataServiceClient {
                                     }
                                     dto.setOptionContainerDto(container);
                                 }
-
-                                // The questionDependency check below is related to the
-                                // previous if statements dependentFlag, dependentQuestionId,
-                                // dependentQuestionAnswer i.e. checks whether question is
-                                // dependent on another
-                                if (json.has("questionDependency")
-                                        && !JSONObject.NULL.equals(json
-                                                .get("questionDependency"))) {
-                                    QuestionDependencyDto dep = new QuestionDependencyDto();
-                                    JSONObject depJson = json
-                                            .getJSONObject("questionDependency");
-                                    dep.setQuestionId(depJson
-                                            .getLong("questionId"));
-                                    dep.setAnswerValue(depJson
-                                            .getString("answerValue"));
-                                    dto.setQuestionDependency(dep);
-                                }
                             }
+
+                            // The questionDependency check below is related to the
+                            // previous if statements dependentFlag, dependentQuestionId,
+                            // dependentQuestionAnswer i.e. checks whether question is
+                            // dependent on another
+                            if (json.has("questionDependency")
+                                    && !JSONObject.NULL.equals(json
+                                            .get("questionDependency"))) {
+                                QuestionDependencyDto dep = new QuestionDependencyDto();
+                                JSONObject depJson = json
+                                        .getJSONObject("questionDependency");
+                                dep.setQuestionId(depJson
+                                        .getLong("questionId"));
+                                dep.setAnswerValue(depJson
+                                        .getString("answerValue"));
+                                dto.setQuestionDependency(dep);
+                            }
+
                             if (!json.isNull("levelNames")) {
                                 final List<String> levelNames = new ArrayList<String>();
                                 final JSONArray array = json.getJSONArray("levelNames");
