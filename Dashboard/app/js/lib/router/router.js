@@ -331,9 +331,6 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('monitoringData');
           router.set('datasubnavController.selected', 'monitoringData');
           router.resetState();
-          FLOW.surveyGroupControl.populate(function (item) {
-                 return item.get('monitoringGroup');
-          });
         }
       }),
     }),
