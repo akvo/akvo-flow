@@ -5,9 +5,9 @@
 
     <form>
         <label for="newSurveyName"><span>{{t _title}}<span class="isRequired">({{t _required}})</span>:</span>
-            {{view Ember.TextField valueBinding="view.surveyTitle" placeholder="Type in the name of your survey" placeholderBinding="Ember.STRINGS._type_the_name_of_your_survey" size=30}}</label>
+            {{view Ember.TextField valueBinding="view.surveyTitle" placeholder="" placeholderBinding="Ember.STRINGS._type_the_name_of_your_survey" size=30}}</label>
         <label for="newSurveyDesc"><span>{{t _description}}:</span>
-            {{view Ember.TextArea valueBinding="view.surveyDescription" placeholder="Type in a description of your survey" placeholderBinding="Ember.STRINGS._type_a_description_of_your_survey" size=30 rows="3" }}</label>
+            {{view Ember.TextArea valueBinding="view.surveyDescription" placeholder="" placeholderBinding="Ember.STRINGS._type_a_description_of_your_survey" size=30 rows="3" }}</label>
         <!--  <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.requireApproval"}}{{t _require_approval}} </label> -->
         <dl class="floats-in">
             <dt>{{t _version_number}}:</dt>

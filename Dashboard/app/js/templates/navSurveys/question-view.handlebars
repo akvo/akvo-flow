@@ -13,7 +13,7 @@
       {{view Ember.TextField valueBinding="view.questionId" size=100}}
     </label>
     <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.mandatoryFlag"}}{{t _mandatory}}</label>
-    
+
   {{#if FLOW.Env.showStatisticsFeature}}
     <label class="selectinLabel"><span>{{t _tag}} {{tooltip _what_is_tag}}:</span> {{view Ember.Select
       contentBinding="FLOW.attributeControl.content"
@@ -34,15 +34,13 @@
   {{#if view.showMetaConfig}}
     {{#if view.amOptionType}}
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}}</label>
-    {{else}}
-      {{#if view.amFreeTextType}}
+    {{else}} {{#if view.amFreeTextType}}
         <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}}</label>
-      {{else}}
-        {{#if view.amGeoType}}
+    {{else}} {{#if view.amNumberType}}
+        <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeNameFlag"}}{{t _use_in_record_display}}</label>
+    {{else}} {{#if view.amGeoType}}
           <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.localeLocationFlag"}}{{t _use_as_record_location}}</label>
-        {{/if}}
-      {{/if}}
-    {{/if}}
+    {{/if}} {{/if}} {{/if}} {{/if}}
   {{/if}}
 
     <!-- Question specific material -->
@@ -77,7 +75,7 @@
     <h1 class="answerNbr">{{t _geo_details}}: </h1>
       <label class="labelcheckbox"> {{view Ember.Checkbox checkedBinding="view.geoLocked"}}{{t _disable_manual_geo_edit}} </label>
     {{/if}}
-    
+
     {{#if view.amTextType}}
       {{#if FLOW.Env.showExternalSourcesFeature}}
         <label class="labelcheckbox">{{view Ember.Checkbox checkedBinding="view.allowExternalSources"}}{{t _allow_external_sources}}</label>
@@ -91,7 +89,7 @@
         selectionBinding="FLOW.selectedControl.selectedCascadeResource"
         optionLabelPath="content.name"
         optionValuePath="content.keyId"
-        prompt="Select cascade"
+        prompt=""
         promptBinding="Ember.STRINGS._select_cascade"}}</label>
     {{/if}}
     {{#if view.amGeoshapeType}}
@@ -120,7 +118,7 @@
         selectionBinding="FLOW.selectedControl.dependentQuestion"
         optionLabelPath="content.text"
         optionValuePath="content.keyId"
-        prompt="Select question"
+        prompt=""
         promptBinding="Ember.STRINGS._select_question"}}</label>
     {{/if}}
      {{#if view.dependentFlag}}
