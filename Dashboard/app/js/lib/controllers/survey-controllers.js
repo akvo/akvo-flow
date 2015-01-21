@@ -471,6 +471,12 @@ FLOW.surveyControl = Ember.ArrayController.create({
       action: 'publishSurvey',
       surveyId: surveyId
     });
+
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_publishing_survey'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_survey_published_text_'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
   },
 
   createForm: function() {

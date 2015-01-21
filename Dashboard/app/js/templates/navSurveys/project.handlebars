@@ -109,12 +109,21 @@
                   </ul>
                 </nav>
                 <section class="formsContainer">
-                    <div id="form01">
-                    {{#if FLOW.selectedControl.selectedSurvey}}
-                      <h3>{{FLOW.selectedControl.selectedSurvey.name}}</h3>
-                      {{view FLOW.FormView}}
-                    {{/if}}
+                  {{#if view.isPublished}}
+                    <div id="form01" class="published">
+                      {{#if FLOW.selectedControl.selectedSurvey}}
+                        <h3>{{FLOW.selectedControl.selectedSurvey.name}}</h3>
+                        {{view FLOW.FormView}}
+                      {{/if}}
                     </div>
+                  {{else}}
+                    <div id="form01">
+                      {{#if FLOW.selectedControl.selectedSurvey}}
+                        <h3>{{FLOW.selectedControl.selectedSurvey.name}}</h3>
+                        {{view FLOW.FormView}}
+                      {{/if}}
+                    </div>
+                  {{/if}}
                 </section>
               </div>
             {{/if}}
