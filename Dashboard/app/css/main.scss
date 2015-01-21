@@ -3902,6 +3902,9 @@ table.dataTable.notificationTable thead tr th a:visited {
     text-align: left;
     -webkit-align-items: flex-start;
     align-items: flex-start;
+    select:first-child {
+        margin-left:1%;
+    }
 }
 .filterData {
     h3 {
