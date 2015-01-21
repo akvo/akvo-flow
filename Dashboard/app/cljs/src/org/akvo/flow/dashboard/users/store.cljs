@@ -14,6 +14,7 @@
 
 (ns org.akvo.flow.dashboard.users.store
   (:require  [clojure.set :as set]
+             [clojure.string :as s]
              [org.akvo.flow.dashboard.app-state :refer (app-state)]
              [org.akvo.flow.dashboard.dispatcher :as dispatcher]
              [org.akvo.flow.dashboard.ajax-helpers :as ajax]
@@ -63,7 +64,7 @@
  (assert new-user)
  (POST "/rest/users"
        (merge ajax/default-ajax-config
-              {:params {"user" new-user}
+              {:params {"user" (update-in new-user ["emailAddress"] s/lower-case)}
                :handler (fn [response]
                           (let [user (get response "user")
                                 user-id (get user "keyId")]
