@@ -31,7 +31,8 @@
    "FORM_CREATE" (t> _create_forms)
    "FORM_READ" (t> _access_forms)
    "FORM_UPDATE" (t> _edit_forms)
-   "FORM_DELETE" (t> _delete_forms)})
+   "FORM_DELETE" (t> _delete_forms)
+   "DATA_CLEANING" (t> _data_cleaning)})
 
 (defn header-section [{:keys [role on-close]} owner]
   (om/component
