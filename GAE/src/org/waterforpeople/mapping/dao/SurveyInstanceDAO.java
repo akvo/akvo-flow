@@ -629,13 +629,14 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         QuestionDao qDao = new QuestionDao();
         List<QuestionAnswerStore> qasList = qasDao.listBySurveyInstance(surveyInstanceId);
+        SurveyQuestionSummaryDao summDao = new SurveyQuestionSummaryDao();
         if (qasList != null && !qasList.isEmpty()) {
             for (QuestionAnswerStore qasItem : qasList) {
                 // question summaries
                 Question question = qDao.getByKey(Long.parseLong(qasItem.getQuestionID()));
                 if (question != null && question.canBeCharted()) {
                     Queue questionSummaryQueue = QueueFactory.getQueue("surveyResponseCount");
-                    List<SurveyQuestionSummary> summaryList = summaryDao.listByResponse(
+                    List<SurveyQuestionSummary> summaryList = summDao.listByResponse(
                             qasItem.getQuestionID(), qasItem.getValue());
                     if (summaryList != null && !summaryList.isEmpty()) {
                         TaskOptions to = TaskOptions.Builder
@@ -675,7 +676,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             svDao.delete(surveyalValues);
         }
 
-        // task to adapt cluster data + delete surveyedlocale if not needed
+        // task to adapt cluster data + delete surveyedlocale if not needed anymore
         if (surveyInstance.getSurveyedLocaleId() != null) {
             Long surveyedLocaleId = surveyInstance.getSurveyedLocaleId();
             List<SurveyInstance> relatedSurveyInstances = listByProperty("surveyedLocaleId",
@@ -684,7 +685,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             if (relatedSurveyInstances.size() < 2) {
                 // only the current (or no) survey instance is related to the locale. we fire task
                 // to delete locale and update clusters
-
+            	// TODO at the moment we don't seem to delete the locale.
                 Queue queue = QueueFactory.getDefaultQueue();
                 TaskOptions to = TaskOptions.Builder
                         .withUrl("/app_worker/surveyalservlet")

@@ -249,6 +249,20 @@ FLOW.DataItemView = FLOW.View.extend({
   }
 });
 
+FLOW.DataLocaleItemView = FLOW.View.extend({
+	  tagName: 'span',
+	  deleteSL: function () {
+	    var SL;
+	    SL = FLOW.store.find(FLOW.SurveyedLocale, this.content.get('keyId'));
+	    if (SL !== null){
+	      FLOW.surveyedLocaleControl.removeLocale(SL);
+	      // the filled forms inside this data point will be deleted by the backend
+	      SL.deleteRecord();
+	      FLOW.store.commit();
+	    }
+	  }
+});
+
 FLOW.DataNumView = FLOW.View.extend({
   tagName: 'span',
   content: null,

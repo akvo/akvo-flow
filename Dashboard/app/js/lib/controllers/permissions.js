@@ -152,6 +152,7 @@ FLOW.dialogControl = Ember.Object.create({
   delDeviceGroup: "delDeviceGroup",
   delSI: "delSI",
   delSI2: "delSI2",
+  delSL: "delSL",
   makeMonitor: "makeMonitor",
   delForm: "delForm",
   showDialog: false,
@@ -229,6 +230,12 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', true);
       break;
 
+    case "delSL":
+        this.set('header', Ember.String.loc('_delete_data_point_header'));
+        this.set('message', Ember.String.loc('_are_you_sure_delete_this_data_point'));
+        this.set('showDialog', true);
+        break;
+
     case "makeMonitor":
     	this.set('header', Ember.String.loc('_make_monitor_group_header'));
         this.set('message', Ember.String.loc('_make_monitor_group_text'));
@@ -298,6 +305,11 @@ FLOW.dialogControl = Ember.Object.create({
       this.set('showDialog', false);
       view.deleteSI.apply(view, arguments);
       break;
+
+    case "delSL":
+        this.set('showDialog', false);
+        view.deleteSL.apply(view, arguments);
+        break;
 
     case "makeMonitor":
       this.set('showDialog', false);

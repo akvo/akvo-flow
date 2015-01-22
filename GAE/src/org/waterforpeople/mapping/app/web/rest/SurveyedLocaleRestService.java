@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
@@ -81,6 +84,23 @@ public class SurveyedLocaleRestService {
         statusDto.setSince(newSince);
 
         response.put("surveyed_locales", locales);
+        response.put("meta", statusDto);
+        return response;
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ResponseBody
+    public Map<String, RestStatusDto> deleteSurveyedLocaleById(
+            @PathVariable("id") Long id) {
+        final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
+        SurveyedLocale sl = surveyedLocaleDao.getByKey(id);
+        RestStatusDto statusDto = new RestStatusDto();
+        statusDto.setStatus("failed");
+        // check if surveyInstance exists in the datastore
+        if (sl != null) {
+            surveyedLocaleDao.deleteSurveyedLocale(sl);
+            statusDto.setStatus("ok");
+        }
         response.put("meta", statusDto);
         return response;
     }

@@ -53,6 +53,9 @@
                 <a {{action showDetailsDialog sl target="this" }}>
                   {{t _view_details}}
                 </a>
+                {{#if FLOW.role.ADMIN }} {{#view FLOW.DataLocaleItemView contentBinding="sl"}}<a {{action confirm FLOW.dialogControl.delSL target="FLOW.dialogControl" }}>
+                  {{t _delete}}
+                  </a>{{/view}} {{/if}}
               </td>
             </tr>
             {{/each}}
