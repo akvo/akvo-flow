@@ -198,7 +198,7 @@ public class SurveyInstanceRestService {
         response.put("meta", statusDto);
 
         List<Long> ids = new ArrayList<Long>();
-        ids.add(id);
+        ids.add(s.getSurveyId());
         SurveyUtils.notifyReportService(ids, "invalidate");
 
         return response;
