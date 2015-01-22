@@ -134,6 +134,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
   showGoogleEarthButton: false,
 
   didInsertElement: function () {
+    FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.editControl.set('useQuestionId', false);
     FLOW.uploader.registerEvents();

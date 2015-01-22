@@ -16,6 +16,7 @@ require('akvo-flow/controllers/reports-controllers');
 require('akvo-flow/controllers/maps-controllers-common');
 require('akvo-flow/controllers/messages-controllers');
 require('akvo-flow/controllers/user-controllers');
+require('akvo-flow/controllers/survey-selection');
 
 FLOW.ApplicationController = Ember.Controller.extend({
   init: function () {

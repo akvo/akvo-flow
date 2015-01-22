@@ -3,13 +3,9 @@
     <div class="floats-in filterData" id="dataFilter">
       <h1>{{t _choose_survey_data_to_display}}:</h1>
       <div class="chooseSurveyData">
-        {{view Ember.Select
-          contentBinding="FLOW.surveyGroupControl.arrangedContent"
-          selectionBinding="view.selectedSurveyGroup"
-          optionLabelPath="content.code"
-          optionValuePath="content.keyId"
-          prompt=""
-          promptBinding="Ember.STRINGS._select_survey"}}
+      {{#unless FLOW.savingMessageControl.areLoadingBool}}
+        {{view FLOW.SurveySelectionView showMonitoringSurveysOnly=true}}
+      {{/unless}}
 	  </div>
 	  <div class="dataCollectedDate">
 	  </div>
@@ -135,7 +131,11 @@
                     <td class="submitter" style="text-align:left;">
                       {{#if view.isNotEditable}}
                         {{#if view.isPhotoType}}
+<<<<<<< HEAD
+                          {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">Open photo</a>
+=======
                           {{QA.value}}  <a {{bindAttr href="view.photoUrl"}} target="_blank">{{t _open_photo}}</a>
+>>>>>>> develop
                         {{else}}
                           {{QA.value}}
                         {{/if}}

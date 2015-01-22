@@ -3882,7 +3882,30 @@ table.dataTable.notificationTable thead tr th a:visited {
 
 /****** Data Page
 ****************************************************************************/
-
+.modularSelection {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: center;
+    justify-content: flex-start;
+    text-align: left;
+    -webkit-align-items: flex-start;
+    align-items: flex-start;
+    select:first-child {
+        margin-left:1%;
+    }
+}
 .filterData {
     h3 {
         margin: 0 0 5px 5px;
@@ -3928,11 +3951,6 @@ table.dataTable.notificationTable thead tr th a:visited {
     margin: 0 1% 2em 0;
     width: 100%;
     height: 15px;
-}
-
-.filterData div.chooseSurveyData select {
-    display: inline;
-    width: 47%;
 }
 
 .filterData div.chooseLocationData select {
