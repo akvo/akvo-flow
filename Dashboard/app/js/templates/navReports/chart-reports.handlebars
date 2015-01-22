@@ -1,7 +1,9 @@
  <section class="fullWidth reportTools" id="reportBlocks">
     {{#view FLOW.chartView}}
       <h1>{{t _chart_builder}}</h1>
-      {{view FLOW.SurveySelectionView}}
+      {{#unless FLOW.savingMessageControl.areLoadingBool}}
+        {{view FLOW.SurveySelectionView}}
+      {{/unless}}
       <span class=""></span>
       {{#if FLOW.selectedControl.selectedSurvey}}
         {{view Ember.Select

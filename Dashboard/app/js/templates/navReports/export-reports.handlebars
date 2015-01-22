@@ -2,7 +2,9 @@
 <section class="fullWidth reportTools" id="reportBlocks">
 {{#view FLOW.ExportReportsAppletView}}
   <h1>{{t _export_data}}</h1>
-  {{view FLOW.SurveySelectionView}}
+  {{#unless FLOW.savingMessageControl.areLoadingBool}}
+    {{view FLOW.SurveySelectionView}}
+  {{/unless}}
 
   {{#if FLOW.selectedControl.selectedSurvey}}
     {{view Ember.Select

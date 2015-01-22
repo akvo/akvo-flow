@@ -2,7 +2,9 @@
   {{#view FLOW.ExportReportsAppletView}}
     <h1>{{t _data_cleaning}}</h1>
 
-    {{view FLOW.SurveySelectionView}}
+    {{#unless FLOW.savingMessageControl.areLoadingBool}}
+      {{view FLOW.SurveySelectionView}}
+    {{/unless}}
 
     {{#if FLOW.selectedControl.selectedSurveyGroup}}
       {{view Ember.Select
