@@ -170,7 +170,12 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
 	},
 
 	addNode: function(cascadeResourceId, level, text, code) {
-		var parentNodeId = this.get('parentNode')[level];
+		var parentNodeId;
+		if (level == 1) {
+			parentNodeId = 0;
+		} else {
+			parentNodeId = this.get('parentNode')[level];
+		}
 		FLOW.store.createRecord(FLOW.CascadeNode, {
 			"code": code,
 			"name": capitaliseFirstLetter(text),
