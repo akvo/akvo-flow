@@ -56,15 +56,6 @@
             {{else}}
               <li><a class="saveProject noChanges">{{t _save}}</a></li>
             {{/if}}
-            {{#unless FLOW.projectControl.isPublished}}
-              {{#if FLOW.projectControl.hasForms}}
-                <li><a class="publishProjectBtn" {{action "publishProject" target="FLOW.projectControl"}}>{{t _publish_survey}}</a></li>
-              {{else}}
-                <li><a class="publishProjectBtn noChanges">{{t _publish_survey}}</a></li>
-              {{/if}}
-            {{else}}
-              <li><a class="publishProjectBtn noChanges">{{t _publish_survey}}</a></li>
-            {{/unless}}
           </ul>
         </nav>
       {{/if}}
