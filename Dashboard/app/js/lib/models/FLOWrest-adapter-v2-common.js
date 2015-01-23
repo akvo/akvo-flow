@@ -110,22 +110,34 @@ DS.FLOWRESTAdapter = DS.RESTAdapter.extend({
   ajax: function (url, type, hash) {
     this._super(url, type, hash);
     if (type == "GET") {
+      if (url.indexOf('rest/survey_groups') >= 0) {
+        FLOW.projectControl.set('isLoading', true);
+      }
       FLOW.savingMessageControl.numLoadingChange(1);
     }
   },
 
   didFindRecord: function (store, type, json, id) {
     this._super(store, type, json, id);
+    if (type === FLOW.SurveyGroup) {
+      FLOW.projectControl.set('isLoading', false);
+    }
     FLOW.savingMessageControl.numLoadingChange(-1);
   },
 
   didFindAll: function (store, type, json) {
+    if (type === FLOW.SurveyGroup) {
+      FLOW.projectControl.set('isLoading', false);
+    }
     FLOW.savingMessageControl.numLoadingChange(-1);
     this._super(store, type, json);
   },
 
   didFindQuery: function (store, type, json, recordArray) {
     this._super(store, type, json, recordArray);
+    if (type === FLOW.SurveyGroup) {
+      FLOW.projectControl.set('isLoading', false);
+    }
     FLOW.savingMessageControl.numLoadingChange(-1);
   },
 

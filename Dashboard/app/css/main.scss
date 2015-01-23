@@ -407,9 +407,7 @@ a, a:link, a:visited {
     }
     &.AddBtn {
         display: inline-block;
-        margin: 0.05em 0 0 20%;
         padding: 1em 1% 0.8em 1.5em;
-        width: 58%;
         background: url(../images/addbtn.png) left center no-repeat;
         color: rgb(0, 123, 182);
         text-align: left;
@@ -1531,7 +1529,7 @@ th.action {
 #assignSurveys .fieldSetWrap fieldset.formLeftPanel div nav {
     position: absolute;
     top: 0.3em;
-    right: 3em;
+    right: 2.5%;
     display: inline;
 }
 
@@ -1548,22 +1546,18 @@ th.action {
     color: rgb(0, 123, 182);
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n+1) {
-    float: right;
-    width: 55%;
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div.SelectLayout {
+    display: block;
+    width: 100%;
 }
 
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n) {
-    float: left;
-    width: 45%;
-}
-
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n) select {
-    width: 90%;
-}
-
-#assignSurveys .fieldSetWrap fieldset.formLeftPanel div:nth-child(2n+1) select {
-    width: 90%;
+#assignSurveys .fieldSetWrap fieldset.formLeftPanel div.formSelectorList {
+    display:block;
+    width: 100%;
+    margin-top: 30px;
+    select {
+        width: 97.5%;
+    }
 }
 
 .menuConfirm {

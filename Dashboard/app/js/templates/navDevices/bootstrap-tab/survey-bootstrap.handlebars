@@ -2,22 +2,17 @@
 <section class="fullWidth manualTransfer" id="assignSurveys">
   <h1>{{t _manual_survey_transfer}}</h1>
     <form>
-      <div class="fieldSetWrap">
-        <fieldset id="surveySelect" class="formLeftPanel">
+      <div class="fieldSetWrap floats-in">
+        <fieldset id="surveySelect" class="formLeftPanel floats-in">
           <h2>01. {{t _select_survey}}:</h2>
+          <span class="infoText">{{t _cant_find_your_survey_}}</span>
           <div class="">
             <label for="surveyGroup">{{t _select_survey}}:</label>
-            {{view Ember.Select
-                   contentBinding="FLOW.surveyGroupControl.arrangedContent"
-                   selectionBinding="FLOW.selectedControl.selectedSurveyGroup"
-                   optionLabelPath="content.code"
-                   optionValuePath="content.keyId"
-                   id="surveyGroup"
-                   prompt=""
-                   promptBinding="Ember.STRINGS._select_survey"}}
-			<span class="infoText">{{t _cant_find_your_survey_}}</span>
+            {{#unless FLOW.projectControl.isLoading}}
+              {{view FLOW.SurveySelectionView}}
+            {{/unless}}
 			</div>
-          <div class="">
+          <div class="formSelectorList">
             <nav>
               <ul>
                 <li><a {{action selectAllSurveys target="this"}}>{{t _select_all}}</a></li>
@@ -25,14 +20,14 @@
               </ul>
             </nav>
             <label for="surveys">{{t _select_forms}}:</label>
-           {{view Ember.Select 
+           {{view Ember.Select
            multiple=true
            size=10
-        contentBinding="FLOW.surveyControl.publishedContent.arrangedContent" 
-        selectionBinding="FLOW.selectedControl.selectedSurveys" 
-        optionLabelPath="content.name" 
+        contentBinding="FLOW.surveyControl.publishedContent.arrangedContent"
+        selectionBinding="FLOW.selectedControl.selectedSurveys"
+        optionLabelPath="content.name"
           id="surveys"
-        optionValuePath="content.keyId"}} 
+        optionValuePath="content.keyId"}}
       <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
           </div>
         </fieldset>
@@ -69,7 +64,7 @@
           </div>
         </fieldset>
       </div>
-    
+
     <div class="fieldSetWrap makeWhite noBG">
         <fieldset id="devicesSelect" class="fullWidth">
           <h2>02. {{t _notification_details}}:</h2>

@@ -1,7 +1,7 @@
  <section class="fullWidth reportTools" id="reportBlocks">
     {{#view FLOW.chartView}}
       <h1>{{t _chart_builder}}</h1>
-      {{#unless FLOW.savingMessageControl.areLoadingBool}}
+      {{#unless FLOW.projectControl.isLoading}}
         {{view FLOW.SurveySelectionView}}
       {{/unless}}
       <span class=""></span>
