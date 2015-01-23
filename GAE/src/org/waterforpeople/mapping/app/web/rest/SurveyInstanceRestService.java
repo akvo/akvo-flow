@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -186,13 +186,13 @@ public class SurveyInstanceRestService {
     public Map<String, RestStatusDto> deleteSurveyInstanceById(
             @PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-        SurveyInstance s = surveyInstanceDao.getByKey(id);
+        SurveyInstance si = surveyInstanceDao.getByKey(id);
         RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
 
         // check if surveyInstance exists in the datastore
-        if (s != null) {
-            surveyInstanceDao.deleteSurveyInstance(s);
+        if (si != null) {
+            surveyInstanceDao.deleteSurveyInstance(si);
             statusDto.setStatus("ok");
         }
         response.put("meta", statusDto);
