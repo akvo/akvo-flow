@@ -2,7 +2,7 @@
 <section class="fullWidth reportTools" id="reportBlocks">
 {{#view FLOW.ExportReportsAppletView}}
   <h1>{{t _export_data}}</h1>
-  {{#unless FLOW.savingMessageControl.areLoadingBool}}
+  {{#unless FLOW.projectControl.isLoading}}
     {{view FLOW.SurveySelectionView}}
   {{/unless}}
 

@@ -29,7 +29,7 @@
           <span class="infoText">{{t _cant_find_your_survey_}}</span>
           <div class="SelectLayout">
             <label for="surveyGroup">{{t _select_survey}}:</label>
-            {{#unless FLOW.savingMessageControl.areLoadingBool}}
+            {{#unless FLOW.projectControl.isLoading}}
               {{view FLOW.SurveySelectionView}}
             {{/unless}}
 			    </div>
