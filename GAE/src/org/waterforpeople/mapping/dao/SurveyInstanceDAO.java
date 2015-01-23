@@ -67,9 +67,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     private static final Logger logger = Logger
             .getLogger(SurveyInstanceDAO.class.getName());
 
-    @Inject
-    private SurveyQuestionSummaryDao summaryDao;
-
     // the set of unparsedLines we have here represent values from one surveyInstance
     // as they are split up in the TaskServlet task.
     @SuppressWarnings({
@@ -685,7 +682,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             if (relatedSurveyInstances.size() < 2) {
                 // only the current (or no) survey instance is related to the locale. we fire task
                 // to delete locale and update clusters
-            	// The locale is deleted in the decrement cluster task.
+                // The locale is deleted in the decrement cluster task.
                 Queue queue = QueueFactory.getDefaultQueue();
                 TaskOptions to = TaskOptions.Builder
                         .withUrl("/app_worker/surveyalservlet")

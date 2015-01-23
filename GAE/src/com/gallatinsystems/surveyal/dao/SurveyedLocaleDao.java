@@ -491,24 +491,24 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
     }
 
     // TODO do this in a task, to buy more time
-	public void deleteSurveyedLocale(SurveyedLocale sl) {
-		if (sl != null) {
-			// get the list of all surveyInstances, and delete them first
-			List<SurveyInstance> siList = new ArrayList<SurveyInstance>();
-			SurveyInstanceDAO siDao = new SurveyInstanceDAO();
-			siList = siDao.listInstancesByLocale(sl.getKey().getId(),null,null,null);
-			List<Long> ids = new ArrayList<Long>();
+    public void deleteSurveyedLocale(SurveyedLocale sl) {
+        if (sl != null) {
+            // get the list of all surveyInstances, and delete them first
+            List<SurveyInstance> siList = new ArrayList<SurveyInstance>();
+            SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+            siList = siDao.listInstancesByLocale(sl.getKey().getId(), null, null, null);
+            List<Long> ids = new ArrayList<Long>();
 
-			// delete all containing surveyInstances
-			for (SurveyInstance si : siList){
-				ids.add(si.getSurveyId());
-				siDao.deleteSurveyInstance(si);
-			}
-			// The datapoint will be automatically deleted
-			// once all contained surveyInstances are deleted.
+            // delete all containing surveyInstances
+            for (SurveyInstance si : siList) {
+                ids.add(si.getSurveyId());
+                siDao.deleteSurveyInstance(si);
+            }
+            // The datapoint will be automatically deleted
+            // once all contained surveyInstances are deleted.
 
-			// notify flow services
-			SurveyUtils.notifyReportService(ids, "invalidate");
-		}
-	}
+            // notify flow services
+            SurveyUtils.notifyReportService(ids, "invalidate");
+        }
+    }
 }

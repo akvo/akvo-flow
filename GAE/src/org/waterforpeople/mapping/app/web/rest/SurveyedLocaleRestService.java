@@ -32,9 +32,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.SurveyedLocaleDto;
 import org.waterforpeople.mapping.app.web.rest.dto.RestStatusDto;
-import org.waterforpeople.mapping.domain.SurveyInstance;
-
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
@@ -48,10 +45,8 @@ public class SurveyedLocaleRestService {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> listQuestions(
-            @RequestParam(value = "surveyGroupId", defaultValue = "")
-            Long surveyGroupId,
-            @RequestParam(value = "identifier", defaultValue = "")
-            String identifier,
+            @RequestParam(value = "surveyGroupId", defaultValue = "") Long surveyGroupId,
+            @RequestParam(value = "identifier", defaultValue = "") String identifier,
             @RequestParam(value = "displayName", defaultValue = "") String displayName,
             @RequestParam(value = "since", defaultValue = "") String since) {
 
