@@ -6,20 +6,20 @@
       <fieldset id="assignmentDetails">
         <h2>01. {{t _assignment_details}}</h2>
         <label for="assignmentName">{{t _assignment_name}}:</label>
-          {{view Ember.TextField 
-            valueBinding="view.assignmentName" 
-            id="assignmentName" 
+          {{view Ember.TextField
+            valueBinding="view.assignmentName"
+            id="assignmentName"
             placeholder=""
             placeholderBinding="Ember.STRINGS._enter_a_name_for_this_assignment"
-            size=30}} 
+            size=30}}
         <div class="dateRange">
           <div class="activeDate">
             <label for="startDate">{{t _start_date}}:</label>
-           {{view FLOW.DateField valueBinding="FLOW.dateControl.fromDate" elementId="from_date"  size=30 class=datePicker}} 
+           {{view FLOW.DateField valueBinding="FLOW.dateControl.fromDate" elementId="from_date"  size=30 class=datePicker}}
           </div>
           <div class="expireDate">
             <label for="expireDate">{{t _expiration_date}}:</label>
-           {{view FLOW.DateField valueBinding="FLOW.dateControl.toDate" elementId="to_date" size=30 class=datePicker}} 
+           {{view FLOW.DateField valueBinding="FLOW.dateControl.toDate" elementId="to_date" size=30 class=datePicker}}
           </div>
         </div>
       </fieldset>
@@ -28,9 +28,9 @@
           <h2>02. {{t _select_survey}}:</h2>
           <div class="">
             <label for="surveyGroup">{{t _select_survey}}:</label>
-            {{view Ember.Select contentBinding="FLOW.surveyGroupControl.arrangedContent" selectionBinding="FLOW.selectedControl.selectedSurveyGroup" optionLabelPath="content.code" optionValuePath="content.keyId" id="surveyGroup" 
-            prompt=""
-            promptBinding="Ember.STRINGS._select_survey"}}
+            {{#unless FLOW.savingMessageControl.areLoadingBool}}
+              {{view FLOW.SurveySelectionView}}
+            {{/unless}}
 			<span class="infoText">{{t _cant_find_your_survey_}}</span>
 			</div>
           <div class="">
@@ -41,14 +41,14 @@
               </ul>
             </nav>
             <label for="surveys">{{t _select_forms}}:</label>
-           {{view Ember.Select 
+           {{view Ember.Select
            multiple=true
            size=10
-        contentBinding="FLOW.surveyControl.publishedContent.arrangedContent" 
-        selectionBinding="FLOW.selectedControl.selectedSurveys" 
-        optionLabelPath="content.name" 
+        contentBinding="FLOW.surveyControl.publishedContent.arrangedContent"
+        selectionBinding="FLOW.selectedControl.selectedSurveys"
+        optionLabelPath="content.name"
           id="surveys"
-        optionValuePath="content.keyId"}} 
+        optionValuePath="content.keyId"}}
       <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
           </div>
         </fieldset>
@@ -85,16 +85,16 @@
           </div>
         </fieldset>
       </div>
-    
+
     <div class="fieldSetWrap makeWhite">
         <fieldset id="devicesSelect" class="formLeftPanel">
           <h2>03. {{t _select_devices}}:</h2>
           <div class="">
           <label for="deviceGroup">{{t _select_device_group}}:</label>
-          {{view Ember.Select 
-      contentBinding="FLOW.deviceGroupControl.content" 
-      selectionBinding="FLOW.selectedControl.selectedDeviceGroup" 
-      optionLabelPath="content.code" 
+          {{view Ember.Select
+      contentBinding="FLOW.deviceGroupControl.content"
+      selectionBinding="FLOW.selectedControl.selectedDeviceGroup"
+      optionLabelPath="content.code"
       optionValuePath="content.keyId"
       id="deviceGroup"
       prompt=""
@@ -108,14 +108,14 @@
               </ul>
             </nav>
           <label for="devices">{{t _select_devices}}:</label>
-          {{view Ember.Select 
+          {{view Ember.Select
            multiple=true
            size=10
-        contentBinding="FLOW.devicesInGroupControl.content" 
-        selectionBinding="FLOW.selectedControl.selectedDevices" 
-        optionLabelPath="content.combinedName" 
+        contentBinding="FLOW.devicesInGroupControl.content"
+        selectionBinding="FLOW.selectedControl.selectedDevices"
+        optionLabelPath="content.combinedName"
         optionValuePath="content.keyId"
-       id="devices"}} 
+       id="devices"}}
       <a {{action addSelectedDevices target="this"}} class="AddBtn">{{t _add_selected_devices}}</a>
           </div>
         </fieldset>
