@@ -218,29 +218,28 @@ FLOW.DataItemView = FLOW.View.extend({
     var SI,slKey, sl;
     SI = FLOW.store.find(FLOW.SurveyInstance, this.content.get('keyId'));
     if (SI !== null) {
-    	// check if we also have the data point loaded locally
-    	slKey = SI.get('surveyedLocaleId');
-    	SL = FLOW.store.filter(FLOW.SurveyedLocale,function(item){
-    		return item.get('keyId') == slKey;
-    	});
-    	// if we have found the surveyedLocale, check if there are more 
-    	// formInstances inside it
-    	if (!Ember.empty(SL)){
-    		// are there any other formInstances loaded for this surveyedLocale?
-    		// if not, we also need to not show the locale any more. 
-    		// it will also be deleted automatically in the backend,
-    		// so this is just to not show it in the UI
-    		SiList = FLOW.store.filter(FLOW.SurveyInstance,function(item){
-    			return item.get('surveyedLocaleId') == slKey;
-    		});
-    		console.log("SiList:", SiList, SiList.get('content'), SiList.content.length);
-    		if (SiList.get('content').length == 1) {
-    			// this is the only formInstance, so the surveyedLocale
-    			// will be deleted by the backend, and we need to remove
-    			// it from the UI
-    			FLOW.surveyedLocaleControl.removeLocale(SL.objectAt(0));
-    		}
-    	}
+        // check if we also have the data point loaded locally
+        slKey = SI.get('surveyedLocaleId');
+        SL = FLOW.store.filter(FLOW.SurveyedLocale,function(item){
+            return item.get('keyId') == slKey;
+        });
+        // if we have found the surveyedLocale, check if there are more 
+        // formInstances inside it
+        if (!Ember.empty(SL)){
+            // are there any other formInstances loaded for this surveyedLocale?
+            // if not, we also need to not show the locale any more. 
+            // it will also be deleted automatically in the backend,
+            // so this is just to not show it in the UI
+            SiList = FLOW.store.filter(FLOW.SurveyInstance,function(item){
+                return item.get('surveyedLocaleId') == slKey;
+            });
+            if (SiList.get('content').length == 1) {
+                // this is the only formInstance, so the surveyedLocale
+                // will be deleted by the backend, and we need to remove
+                // it from the UI
+                FLOW.surveyedLocaleControl.removeLocale(SL.objectAt(0));
+            }
+        }
 
       FLOW.surveyInstanceControl.removeInstance(SI);
       SI.deleteRecord();
@@ -250,17 +249,17 @@ FLOW.DataItemView = FLOW.View.extend({
 });
 
 FLOW.DataLocaleItemView = FLOW.View.extend({
-	  tagName: 'span',
-	  deleteSL: function () {
-	    var SL;
-	    SL = FLOW.store.find(FLOW.SurveyedLocale, this.content.get('keyId'));
-	    if (SL !== null){
-	      FLOW.surveyedLocaleControl.removeLocale(SL);
-	      // the filled forms inside this data point will be deleted by the backend
-	      SL.deleteRecord();
-	      FLOW.store.commit();
-	    }
-	  }
+    tagName: 'span',
+    deleteSL: function () {
+        var SL;
+        SL = FLOW.store.find(FLOW.SurveyedLocale, this.content.get('keyId'));
+        if (SL !== null){
+            FLOW.surveyedLocaleControl.removeLocale(SL);
+            // the filled forms inside this data point will be deleted by the backend
+            SL.deleteRecord();
+            FLOW.store.commit();
+            }
+        }
 });
 
 FLOW.DataNumView = FLOW.View.extend({
