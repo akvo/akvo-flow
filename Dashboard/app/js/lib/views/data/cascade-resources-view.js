@@ -101,6 +101,8 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 
 		selectedCascade.set('numLevels', numLevels);
 		selectedCascade.set('levelNames', nameLevels);
+		selectedCascade.set('status', 'NOT_PUBLISHED');
+		FLOW.cascadeResourceControl.triggerStatusUpdate();
 		FLOW.store.commit();
 		FLOW.cascadeResourceControl.setLevelNamesArray();
 		FLOW.cascadeResourceControl.setDisplayLevelNames();
@@ -259,6 +261,8 @@ FLOW.CascadeLevelNameView = FLOW.View.extend({
 		// this is needed, as in this version of Ember, changes in an array do
 		// not make an object dirty, apparently
 		FLOW.selectedControl.selectedCascadeResource.send('becomeDirty');
+		FLOW.selectedControl.selectedCascadeResource.set('status', 'NOT_PUBLISHED');
+		FLOW.cascadeResourceControl.triggerStatusUpdate();
 		FLOW.store.commit();
 
 		// put the names in the array again.
