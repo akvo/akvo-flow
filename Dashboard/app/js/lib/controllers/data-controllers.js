@@ -108,7 +108,7 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
 	}.observes('FLOW.selectedControl.selectedCascadeResource'),
 
 	triggerStatusUpdate: function(){
-		this.set('statusUpdateTrigger',!this.get('statusUpdateTrigger'));
+		this.toggleProperty('statusUpdateTrigger');
 	},
 
 	currentStatus: function () {
