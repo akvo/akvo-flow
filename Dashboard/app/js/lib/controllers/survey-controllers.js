@@ -183,7 +183,7 @@ FLOW.projectControl = Ember.ArrayController.create({
   content: null,
   currentProject: null,
   moveTarget: null,
-  isLoading: true;
+  isLoading: true,
 
   populate: function() {
     FLOW.store.find(FLOW.SurveyGroup);
