@@ -685,7 +685,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             if (relatedSurveyInstances.size() < 2) {
                 // only the current (or no) survey instance is related to the locale. we fire task
                 // to delete locale and update clusters
-            	// TODO at the moment we don't seem to delete the locale.
+            	// The locale is deleted in the decrement cluster task.
                 Queue queue = QueueFactory.getDefaultQueue();
                 TaskOptions to = TaskOptions.Builder
                         .withUrl("/app_worker/surveyalservlet")
