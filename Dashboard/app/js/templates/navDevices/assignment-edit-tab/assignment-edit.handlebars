@@ -23,33 +23,33 @@
           </div>
         </div>
       </fieldset>
-      <div class="fieldSetWrap">
-        <fieldset id="surveySelect" class="formLeftPanel">
+      <div class="fieldSetWrap floats-in">
+        <fieldset id="surveySelect" class="formLeftPanel floats-in">
           <h2>02. {{t _select_survey}}:</h2>
-          <div class="">
+          <span class="infoText">{{t _cant_find_your_survey_}}</span>
+          <div class="SelectLayout">
             <label for="surveyGroup">{{t _select_survey}}:</label>
             {{#unless FLOW.savingMessageControl.areLoadingBool}}
               {{view FLOW.SurveySelectionView}}
             {{/unless}}
-			<span class="infoText">{{t _cant_find_your_survey_}}</span>
-			</div>
-          <div class="">
-            <nav>
-              <ul>
-                <li><a {{action selectAllSurveys target="this"}}>{{t _select_all}}</a></li>
-                <li><a {{action deselectAllSurveys target="this"}}>{{t _deselect_all}}</a></li>
-              </ul>
-            </nav>
-            <label for="surveys">{{t _select_forms}}:</label>
-           {{view Ember.Select
-           multiple=true
-           size=10
-        contentBinding="FLOW.surveyControl.publishedContent.arrangedContent"
-        selectionBinding="FLOW.selectedControl.selectedSurveys"
-        optionLabelPath="content.name"
-          id="surveys"
-        optionValuePath="content.keyId"}}
-      <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
+			    </div>
+          <div class="formSelectorList">
+                <nav>
+                  <ul>
+                    <li><a {{action selectAllSurveys target="this"}}>{{t _select_all}}</a></li>
+                    <li><a {{action deselectAllSurveys target="this"}}>{{t _deselect_all}}</a></li>
+                  </ul>
+                </nav>
+                <label for="surveys">{{t _select_forms}}:</label>
+               {{view Ember.Select
+               multiple=true
+               size=10
+            contentBinding="FLOW.surveyControl.publishedContent.arrangedContent"
+            selectionBinding="FLOW.selectedControl.selectedSurveys"
+            optionLabelPath="content.name"
+              id="surveys"
+            optionValuePath="content.keyId"}}
+          <a {{action addSelectedSurveys target="this"}}  class="AddBtn">{{t _add_selected_forms}}</a>
           </div>
         </fieldset>
         <fieldset id="surveyPreview" class="formRightPanel">
@@ -100,7 +100,7 @@
       prompt=""
       promptBinding="Ember.STRINGS._select_device_group"}}
           </div>
-          <div class="">
+          <div class="formSelectorList">
             <nav>
               <ul>
                 <li><a {{action selectAllDevices target="this"}}>{{t _select_all}}</a></li>

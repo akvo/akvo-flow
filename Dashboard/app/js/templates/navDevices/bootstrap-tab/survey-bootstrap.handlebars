@@ -2,17 +2,17 @@
 <section class="fullWidth manualTransfer" id="assignSurveys">
   <h1>{{t _manual_survey_transfer}}</h1>
     <form>
-      <div class="fieldSetWrap">
-        <fieldset id="surveySelect" class="formLeftPanel">
+      <div class="fieldSetWrap floats-in">  
+        <fieldset id="surveySelect" class="formLeftPanel floats-in">
           <h2>01. {{t _select_survey}}:</h2>
+          <span class="infoText">{{t _cant_find_your_survey_}}</span>
           <div class="">
             <label for="surveyGroup">{{t _select_survey}}:</label>
             {{#unless FLOW.savingMessageControl.areLoadingBool}}
               {{view FLOW.SurveySelectionView}}
             {{/unless}}
-			<span class="infoText">{{t _cant_find_your_survey_}}</span>
 			</div>
-          <div class="">
+          <div class="formSelectorList">
             <nav>
               <ul>
                 <li><a {{action selectAllSurveys target="this"}}>{{t _select_all}}</a></li>
