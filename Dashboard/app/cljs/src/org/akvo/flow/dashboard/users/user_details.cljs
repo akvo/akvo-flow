@@ -74,7 +74,7 @@
                     :on-change #(condp = (target-value %)
                                   "10" (om/set-state! owner "permissionList" "20")
                                   "20" (om/set-state! owner "permissionList" "10"))}]
-           " " (t> _administrator) "?"]]
+           " " (t> _administrator)]]
          [:div.form-group
           (b/btn-primary {:class (when (= state user) "disabled")
                           :on-click #(do (.preventDefault %)
