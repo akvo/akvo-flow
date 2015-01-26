@@ -5,6 +5,37 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.1
+Date: 28 January 2015
+
+## New and noteworthy
+* Add permission for data cleaning [#943]
+* Implement Geoshape question type [#1012]
+* Enable deleting full datapoints and forms inside data point [#1058, #1111]
+* Improve selecting survey using hierarchical dropdowns [#1053]
+
+## Resolved issues
+
+* Test uniqueness of questionID at save time [#905, #1040]
+* Improve deleting data through test harness [#730]
+* Fix dependency handling excel export of survey format [#546, #370]
+* Display option questions and cascading questions correctly in preview [#486, #1072]
+* Cascade resource UI issues (disappearing nodes, unpublish on change, edit level names) [#1102, #1045, #1009]
+* Handle Excel import/export correctly when cascading questions are present [#1041]
+* Bring back publishing per form instead of per survey [#1007]
+* Add missing translations [#1055, #1049]
+* Search results should be returned considering the "To Date " to be inclusive [#325]
+* Clarify meaning of 'administrator' in UI [#1113]
+* Deleting surveyInstance uses wrong id for notifying flow services [#1104]
+* Always save email addresses as lowercase [#1098]
+* Start local development server on port 8888 similar to Eclipse [#1088]
+* Code improvements on RemoteAPI class [#1082]
+* Check validity geoJSON with geoJSON linter and QGIS [#1070]
+* Change default to sort by user name in users tab [#1067]
+* Paging functionality on Users tab malfunctions  [#1065]
+* Identifier search not working on monitoring tab [#1059]
+* Wrong icon in the previous & next buttons [#1052]
+
 #1.8.0
 Date: 15 December 2014
 
