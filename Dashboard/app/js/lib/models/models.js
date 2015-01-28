@@ -154,6 +154,9 @@ FLOW.QuestionGroup = FLOW.BaseModel.extend({
   surveyId: DS.attr('number'),
   sourceId: DS.attr('number', {
     defaultValue: null
+  }),
+  repeatable: DS.attr('boolean', {
+    defaultValue: false
   })
 });
 

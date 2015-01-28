@@ -45,6 +45,7 @@ public class QuestionGroup extends BaseDomain {
     private String path = null;
     private Long surveyId;
     private Integer order;
+    private Boolean repeatable;
 
     public Integer getOrder() {
         return order;
@@ -121,6 +122,14 @@ public class QuestionGroup extends BaseDomain {
             translationMap = new HashMap<String, Translation>();
         }
         translationMap.put(t.getLanguageCode(), t);
+    }
+    
+    public void setRepeatable(Boolean repeatable) {
+        this.repeatable = repeatable;
+    }
+    
+    public Boolean getRepeatable() {
+        return repeatable;
     }
 
 }

@@ -271,6 +271,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
   showQGDeletedialog: false,
   showQGroupNameEditField: false,
   questionGroupName: null,
+  repeatable: false,
 
   amVisible: function () {
     var selected, isVis;
@@ -307,6 +308,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     questionGroup.set('code', this.get('questionGroupName'));
     questionGroup.set('name', this.get('questionGroupName'));
     questionGroup.set('path', path);
+    questionGroup.set('repeatable', this.content.get('repeatable'));// FIXME: Small hack to handle this for now
 
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
@@ -519,7 +521,8 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
       "name": FLOW.selectedControl.selectedForCopyQuestionGroup.get('code'),
       "path": path,
       "surveyId": FLOW.selectedControl.selectedForCopyQuestionGroup.get('surveyId'),
-      "sourceId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('keyId')
+      "sourceId":FLOW.selectedControl.selectedForCopyQuestionGroup.get('keyId'),
+      "repeatable":FLOW.selectedControl.selectedForCopyQuestionGroup.get('repeatable')
     });
 
       // get the question groups again, now it contains the new one as well
@@ -533,6 +536,6 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
     FLOW.selectedControl.selectedSurvey.set('status', 'NOT_PUBLISHED');
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedForCopyQuestionGroup', null);
-  }
+  },
 
 });

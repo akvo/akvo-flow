@@ -391,9 +391,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         TreeMap<Integer, Question> questionList = questionDao
                 .listQuestionsByQuestionGroup(item.getKey().getId(), true);
 
-        StringBuilder sb = new StringBuilder("<questionGroup><heading>")
-                .append(StringEscapeUtils.escapeXml(group.getCode())).append(
-                        "</heading>");
+        StringBuilder sb = new StringBuilder("<questionGroup")
+                .append(Boolean.TRUE.equals(group.getRepeatable()) ? " repeatable=\"true\"" : "")
+                .append("><heading>").append(StringEscapeUtils.escapeXml(group.getCode())).append("</heading>");
 
         if (questionList != null) {
             for (Question q : questionList.values()) {
@@ -445,8 +445,9 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         TreeMap<Integer, Question> questionList = questionDao
                 .listQuestionsByQuestionGroup(Long.parseLong(currentId), true);
 
-        StringBuilder sb = new StringBuilder("<questionGroup><heading>")
-                .append(group.getCode()).append("</heading>");
+        StringBuilder sb = new StringBuilder("<questionGroup")
+                .append(Boolean.TRUE.equals(group.getRepeatable()) ? " repeatable=\"true\"" : "")
+                .append("><heading>").append(group.getCode()).append("</heading>");
 
         if (questionList != null) {
             for (Question q : questionList.values()) {

@@ -34,6 +34,7 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
     private String path;
     private String name;
     private Long sourceId;
+    private Boolean repeatable;
 
     public Integer getOrder() {
         return order;
@@ -118,4 +119,13 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
     public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
     }
+    
+    public void setRepeatable(Boolean repeatable) {
+        this.repeatable = repeatable;
+    }
+    
+    public Boolean getRepeatable() {
+        return repeatable;
+    }
+    
 }
