@@ -22,7 +22,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   findSurveyedLocale: function (evt) {
 	  var ident = this.get('identifier'),
 	      displayName = this.get('displayName'),
-	      sgId = this.get('selectedSurveyGroup'),
+	      sgId = FLOW.selectedControl.get('selectedSurveyGroup'),
 	      cursorType = FLOW.metaControl.get('cursorType');
         criteria = {};
 
