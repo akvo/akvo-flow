@@ -186,19 +186,22 @@ public class SurveyInstanceRestService {
     public Map<String, RestStatusDto> deleteSurveyInstanceById(
             @PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
-        SurveyInstance s = surveyInstanceDao.getByKey(id);
         RestStatusDto statusDto = new RestStatusDto();
         statusDto.setStatus("failed");
-
-        // check if surveyInstance exists in the datastore
-        if (s != null) {
-            surveyInstanceDao.deleteSurveyInstance(s);
-            statusDto.setStatus("ok");
-        }
         response.put("meta", statusDto);
 
+        // check if surveyInstance exists in the datastore
+        SurveyInstance si = surveyInstanceDao.getByKey(id);
+        if (si == null) {
+            return response;
+        }
+
+        Long surveyId = si.getSurveyId();
+        surveyInstanceDao.deleteSurveyInstance(si);
+        statusDto.setStatus("ok");
+
         List<Long> ids = new ArrayList<Long>();
-        ids.add(s.getSurveyId());
+        ids.add(surveyId);
         SurveyUtils.notifyReportService(ids, "invalidate");
 
         return response;
