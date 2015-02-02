@@ -28,4 +28,7 @@ textarea {
 }
 select {
     padding:15px 5px;
+    .modularSelection & {
+        padding:inherit;
+    }
 }

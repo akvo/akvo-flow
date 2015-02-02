@@ -57,7 +57,12 @@ FLOW.Project = FLOW.View.extend({
   updateSelectedRegistrationForm: function() {
     if (!this.get('selectedRegistrationForm')) return;
     FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.selectedRegistrationForm.get('keyId'));
-  }.observes('selectedRegistrationForm')
+  }.observes('selectedRegistrationForm'),
+
+  isPublished: function() {
+    var form = FLOW.selectedControl.get('selectedSurvey');
+    return form.get('status') === 'PUBLISHED'
+  }.property('FLOW.selectedControl.selectedSurvey.status')
 
 });
 
@@ -217,12 +222,14 @@ FLOW.FormTabView = Ember.View.extend({
     // Return "aFormTab" "current" and/or "registrationForm"
     var isActive = form === FLOW.selectedControl.get('selectedSurvey');
     var isRegistrationForm = currentProject.get('monitoringGroup') && form.get('keyId') === currentProject.get('newLocaleSurveyId');
+    var isPublished = form.get('status') === 'PUBLISHED';
 
     if (isActive) classString += ' current';
     if (isRegistrationForm) classString += ' registrationForm';
+    if (isPublished) classString += ' published'
 
     return classString;
-  }.property('FLOW.selectedControl.selectedSurvey', 'FLOW.projectControl.currentProject.newLocaleSurveyId'),
+  }.property('FLOW.selectedControl.selectedSurvey', 'FLOW.projectControl.currentProject.newLocaleSurveyId', 'content.status' ),
 });
 
 // displays survey groups in left sidebar

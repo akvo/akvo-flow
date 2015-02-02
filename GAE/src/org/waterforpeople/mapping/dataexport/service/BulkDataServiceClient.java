@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -531,6 +531,15 @@ public class BulkDataServiceClient {
                         + surveyGroupId, true, apiKey));
     }
 
+    public static List<SurveyDto> fetchSurvey(Long surveyId,
+            String serverBase, String apiKey) throws Exception {
+        return parseSurveys(fetchDataFromServer(serverBase
+                + SURVEY_SERVLET_PATH,
+                "?action=" + SurveyRestRequest.GET_SURVEY_ACTION + "&"
+                        + SurveyRestRequest.SURVEY_ID_PARAM + "="
+                        + surveyId, true, apiKey));
+    }
+
     /**
      * parses a single SurveyInstanceDto from a json response string
      *
@@ -980,24 +989,25 @@ public class BulkDataServiceClient {
                                     }
                                     dto.setOptionContainerDto(container);
                                 }
-
-                                // The questionDependency check below is related to the
-                                // previous if statements dependentFlag, dependentQuestionId,
-                                // dependentQuestionAnswer i.e. checks whether question is
-                                // dependent on another
-                                if (json.has("questionDependency")
-                                        && !JSONObject.NULL.equals(json
-                                                .get("questionDependency"))) {
-                                    QuestionDependencyDto dep = new QuestionDependencyDto();
-                                    JSONObject depJson = json
-                                            .getJSONObject("questionDependency");
-                                    dep.setQuestionId(depJson
-                                            .getLong("questionId"));
-                                    dep.setAnswerValue(depJson
-                                            .getString("answerValue"));
-                                    dto.setQuestionDependency(dep);
-                                }
                             }
+
+                            // The questionDependency check below is related to the
+                            // previous if statements dependentFlag, dependentQuestionId,
+                            // dependentQuestionAnswer i.e. checks whether question is
+                            // dependent on another
+                            if (json.has("questionDependency")
+                                    && !JSONObject.NULL.equals(json
+                                            .get("questionDependency"))) {
+                                QuestionDependencyDto dep = new QuestionDependencyDto();
+                                JSONObject depJson = json
+                                        .getJSONObject("questionDependency");
+                                dep.setQuestionId(depJson
+                                        .getLong("questionId"));
+                                dep.setAnswerValue(depJson
+                                        .getString("answerValue"));
+                                dto.setQuestionDependency(dep);
+                            }
+
                             if (!json.isNull("levelNames")) {
                                 final List<String> levelNames = new ArrayList<String>();
                                 final JSONArray array = json.getJSONArray("levelNames");

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -39,12 +39,14 @@ public class DataProcessorRequest extends RestRequest {
     public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
     public static final String RECOMPUTE_LOCALE_CLUSTERS = "recomputeLocaleClusters";
     public static final String SURVEY_INSTANCE_SUMMARIZER = "surveyInstanceSummarizer";
+    public static final String SURVEY_RESPONSE_COUNT = "surveyResponseCount";
     public static final String TRIM_OPTIONS = "trimOptions";
     public static final String RESCORE_AP_ACTION = "rescoreAp";
     public static final String SOURCE_PARAM = "source";
     public static final String COUNTRY_PARAM = "country";
     public static final String SURVEY_ID_PARAM = "surveyId";
     public static final String QUESTION_GROUP_ID_PARAM = "questionGroupId";
+    public static final String COUNTER_ID_PARAM = "summaryCounterId";
     public static final String SURVEY_INSTANCE_PARAM = "surveyInstanceId";
     public static final String QAS_ID_PARAM = "qasId";
     public static final String DELTA_PARAM = "delta";
@@ -58,6 +60,7 @@ public class DataProcessorRequest extends RestRequest {
     public static final String POP_QUESTION_ORDER_FIELDS_ACTION = "populateQuestionOrders";
     public static final String POPULATE_MONITORING_FIELDS_LOCALE_ACTION = "populateMonitoringFieldsLocale";
     public static final String CREATE_NEW_IDENTIFIERS_LOCALES_ACTION = "createNewIdentifiersLocales";
+    public static final String DELETE_SURVEY_INSTANCE_ACTION = "deleteSurveyInstance";
     public static final String DELETE_CASCADE_NODES = "deleteCascadeNodes";
     public static final String CASCADE_RESOURCE_ID = "cascadeResourceId";
     public static final String PARENT_NODE_ID = "parentNodeId";
@@ -71,6 +74,7 @@ public class DataProcessorRequest extends RestRequest {
     private Integer delta;
     private String apiKey;
     private Long offset = 0L;
+    private Long summaryCounterId;
     private Long cascadeResourceId = 0L;
     private Long parentNodeId = null;
 
@@ -131,6 +135,16 @@ public class DataProcessorRequest extends RestRequest {
 
         if (req.getParameter(OFFSET_PARAM) != null) {
             setOffset(Long.valueOf(req.getParameter(OFFSET_PARAM).trim()));
+        }
+
+        if (req.getParameter(COUNTER_ID_PARAM) != null) {
+            try {
+                setSummaryCounterId(new Long(req.getParameter(COUNTER_ID_PARAM)));
+            } catch (Exception e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE,
+                        RestError.BAD_DATATYPE_MESSAGE, COUNTER_ID_PARAM
+                                + " must be a number"));
+            }
         }
 
         if (req.getParameter(CASCADE_RESOURCE_ID) != null) {
@@ -228,6 +242,14 @@ public class DataProcessorRequest extends RestRequest {
 
     public void setOffset(Long offset) {
         this.offset = offset;
+    }
+
+    public Long getSummaryCounterId() {
+        return summaryCounterId;
+    }
+
+    public void setSummaryCounterId(Long summaryCounterId) {
+        this.summaryCounterId = summaryCounterId;
     }
 
     public Long getCascadeResourceId() {

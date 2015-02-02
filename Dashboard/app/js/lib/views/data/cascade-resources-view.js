@@ -101,6 +101,8 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 
 		selectedCascade.set('numLevels', numLevels);
 		selectedCascade.set('levelNames', nameLevels);
+		selectedCascade.set('status', 'NOT_PUBLISHED');
+		FLOW.cascadeResourceControl.triggerStatusUpdate();
 		FLOW.store.commit();
 		FLOW.cascadeResourceControl.setLevelNamesArray();
 		FLOW.cascadeResourceControl.setDisplayLevelNames();
@@ -145,6 +147,22 @@ FLOW.CascadeResourceView = FLOW.View.extend({
 	  this.set('cascadeResourceName', null);
 	  this.set('showNewCascadeField', false);
 	},
+
+	hideColumn2: function () {
+		var cascade = FLOW.selectedControl.selectedCascadeResource;
+		if (!cascade) {
+			return false;
+		}
+		return cascade.get('numLevels') < 2;
+	}.property('FLOW.selectedControl.selectedCascadeResource', 'FLOW.selectedControl.selectedCascadeResource.numLevels'),
+
+	hideColumn3: function() {
+		var cascade = FLOW.selectedControl.selectedCascadeResource;
+		if (!cascade) {
+			return false;
+		}
+		return cascade.get('numLevels') < 3;
+	}.property('FLOW.selectedControl.selectedCascadeResource', 'FLOW.selectedControl.selectedCascadeResource.numLevels')
 });
 
 FLOW.CascadeSecondNavView = FLOW.View.extend({
@@ -243,6 +261,8 @@ FLOW.CascadeLevelNameView = FLOW.View.extend({
 		// this is needed, as in this version of Ember, changes in an array do
 		// not make an object dirty, apparently
 		FLOW.selectedControl.selectedCascadeResource.send('becomeDirty');
+		FLOW.selectedControl.selectedCascadeResource.set('status', 'NOT_PUBLISHED');
+		FLOW.cascadeResourceControl.triggerStatusUpdate();
 		FLOW.store.commit();
 
 		// put the names in the array again.

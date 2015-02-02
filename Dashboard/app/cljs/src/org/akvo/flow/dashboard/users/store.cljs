@@ -1,4 +1,4 @@
-;; Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014 - 2015 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -14,6 +14,7 @@
 
 (ns org.akvo.flow.dashboard.users.store
   (:require  [clojure.set :as set]
+             [clojure.string :as s]
              [org.akvo.flow.dashboard.app-state :refer (app-state)]
              [org.akvo.flow.dashboard.dispatcher :as dispatcher]
              [org.akvo.flow.dashboard.ajax-helpers :as ajax]
@@ -46,6 +47,9 @@
          (drop offset)
          (take limit))))
 
+(defn user-count [users]
+  (count (vals (:by-id users))))
+
 (defn get-roles [roles]
   (-> roles :by-id vals))
 
@@ -60,7 +64,7 @@
  (assert new-user)
  (POST "/rest/users"
        (merge ajax/default-ajax-config
-              {:params {"user" new-user}
+              {:params {"user" (update-in new-user ["emailAddress"] s/lower-case)}
                :handler (fn [response]
                           (let [user (get response "user")
                                 user-id (get user "keyId")]
@@ -72,7 +76,7 @@
    (assert user-id (str "No user-id for user " user))
    (PUT (str "/rest/users/" user-id)
         (merge ajax/default-ajax-config
-               {:params {"user" user}
+               {:params {"user" (update-in user ["emailAddress"] s/lower-case)}
                 :handler (fn [response]
                            (let [user (get response "user")
                                  user-id (get user "keyId")]

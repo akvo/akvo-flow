@@ -44,6 +44,7 @@ FLOW.attributeControl = Ember.ArrayController.create({
 FLOW.cascadeResourceControl = Ember.ArrayController.create({
 	content:null,
 	published:null,
+	statusUpdateTrigger:false,
 	levelNames:null,
 	displayLevelName1: null, displayLevelName2: null, displayLevelName3: null,
 	displayLevelNum1: null, displayLevelNum2: null, displayLevelNum3: null,
@@ -106,6 +107,10 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
 		FLOW.store.findQuery(FLOW.Question, {cascadeResourceId: FLOW.selectedControl.selectedCascadeResource.get('keyId')});
 	}.observes('FLOW.selectedControl.selectedCascadeResource'),
 
+	triggerStatusUpdate: function(){
+		this.toggleProperty('statusUpdateTrigger');
+	},
+
 	currentStatus: function () {
 		// hack to get translation keys, don't delete them
 		// {{t _not_published}}
@@ -117,14 +122,14 @@ FLOW.cascadeResourceControl = Ember.ArrayController.create({
 		}
 		status = ('_' + FLOW.selectedControl.selectedCascadeResource.get('status')).toLowerCase();
 		return Ember.String.loc(status);
-	}.property('FLOW.selectedControl.selectedCascadeResource'),
+	}.property('FLOW.selectedControl.selectedCascadeResource','this.statusUpdateTrigger'),
 
 	isPublished: function () {
 		if (!FLOW.selectedControl.selectedCascadeResource) {
 			return false;
 		}
 		return FLOW.selectedControl.selectedCascadeResource.get('status') === 'PUBLISHED';
-	}.property('FLOW.selectedControl.selectedCascadeResource')
+	}.property('FLOW.selectedControl.selectedCascadeResource','this.statusUpdateTrigger')
 });
 
 FLOW.cascadeNodeControl = Ember.ArrayController.create({
@@ -170,7 +175,12 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
 	},
 
 	addNode: function(cascadeResourceId, level, text, code) {
-		var parentNodeId = this.get('parentNode')[level];
+		var parentNodeId;
+		if (level == 1) {
+			parentNodeId = 0;
+		} else {
+			parentNodeId = this.get('parentNode')[level];
+		}
 		FLOW.store.createRecord(FLOW.CascadeNode, {
 			"code": code,
 			"name": capitaliseFirstLetter(text),
@@ -178,6 +188,10 @@ FLOW.cascadeNodeControl = Ember.ArrayController.create({
 			"parentNodeId": parentNodeId,
 			"cascadeResourceId": cascadeResourceId
         });
+		if (FLOW.selectedControl.selectedCascadeResource.get('status') == 'PUBLISHED'){
+			FLOW.selectedControl.selectedCascadeResource.set('status','NOT_PUBLISHED');
+			FLOW.cascadeResourceControl.triggerStatusUpdate();
+		}
 		FLOW.store.commit();
 		this.populate(cascadeResourceId, level, parentNodeId);
 	},
@@ -260,7 +274,25 @@ FLOW.surveyedLocaleControl = Ember.ArrayController.create({
   populate: function () {
     this.get('sinceArray').pushObject(FLOW.metaControl.get('since'));
     this.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, {}));
-  }
+  },
+
+  contentChanged: function() {
+	var mutableContents = [];
+
+	this.get('arrangedContent').forEach(function(item) {
+	  mutableContents.pushObject(item);
+	});
+
+	this.set('currentContents', mutableContents);
+  }.observes('content', 'content.isLoaded'),
+
+  removeLocale: function(locale) {
+	this.get('currentContents').forEach(function(item, i, currentContents) {
+	  if (item.get('id') == locale.get('id')) {
+	    currentContents.removeAt(i, 1);
+	  }
+    });
+  },
 });
 
 FLOW.questionAnswerControl = Ember.ArrayController.create({

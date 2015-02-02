@@ -227,6 +227,16 @@ FLOW.Question = FLOW.BaseModel.extend({
   }),
   allowExternalSources: DS.attr('boolean', {
     defaultValue: false
+  }),
+  // Geoshape question type options
+  allowPoints: DS.attr('boolean', {
+    defaultValue: true
+  }),
+  allowLine: DS.attr('boolean', {
+    defaultValue: true
+  }),
+  allowPolygon: DS.attr('boolean', {
+    defaultValue: true
   })
 });
 
@@ -337,6 +347,7 @@ FLOW.SurveyInstance = FLOW.BaseModel.extend({
   approvedFlag: DS.attr('string'),
   approximateLocationFlag: DS.attr('string'),
   surveyId: DS.attr('number'),
+  surveyedLocaleId:DS.attr('number'),
   collectionDate: DS.attr('number'),
   surveyCode: DS.attr('string'),
   submitterName: DS.attr('string'),

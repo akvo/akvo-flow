@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -30,6 +30,7 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
@@ -486,6 +487,28 @@ public class SurveyedLocaleDao extends BaseDAO<SurveyedLocale> {
             return results;
         } else {
             return Collections.emptyList();
+        }
+    }
+
+    // TODO do this in a task, to buy more time
+    public void deleteSurveyedLocale(SurveyedLocale sl) {
+        if (sl != null) {
+            // get the list of all surveyInstances, and delete them first
+            List<SurveyInstance> siList = new ArrayList<SurveyInstance>();
+            SurveyInstanceDAO siDao = new SurveyInstanceDAO();
+            siList = siDao.listInstancesByLocale(sl.getKey().getId(), null, null, null);
+            List<Long> ids = new ArrayList<Long>();
+
+            // delete all containing surveyInstances
+            for (SurveyInstance si : siList) {
+                ids.add(si.getSurveyId());
+                siDao.deleteSurveyInstance(si);
+            }
+            // The datapoint will be automatically deleted
+            // once all contained surveyInstances are deleted.
+
+            // notify flow services
+            SurveyUtils.notifyReportService(ids, "invalidate");
         }
     }
 }

@@ -2,30 +2,28 @@
 <section class="fullWidth reportTools" id="reportBlocks">
 {{#view FLOW.ExportReportsAppletView}}
   <h1>{{t _export_data}}</h1>
- {{view Ember.Select
-      contentBinding="FLOW.surveyGroupControl.arrangedContent"
-      selectionBinding="FLOW.selectedControl.selectedSurveyGroup"
-      optionLabelPath="content.code"
-      optionValuePath="content.keyId"
-      prompt=""
-      promptBinding="Ember.STRINGS._select_survey"}}
+  {{#unless FLOW.projectControl.isLoading}}
+    {{view FLOW.SurveySelectionView}}
+  {{/unless}}
 
-      {{view Ember.Select
+  {{#if FLOW.selectedControl.selectedSurvey}}
+    {{view Ember.Select
         contentBinding="FLOW.surveyControl.arrangedContent"
         selectionBinding="FLOW.selectedControl.selectedSurvey"
         optionLabelPath="content.code"
         optionValuePath="content.keyId"
         prompt=""
         promptBinding="Ember.STRINGS._select_form"}}
-
-  {{view Ember.Select
-        contentBinding="FLOW.reportLanguageControl.arrangedContent"
-        selectionBinding="FLOW.reportLanguageControl.selectedLanguage"
-        optionLabelPath="content.label"
-        optionValuePath="content.value"
-        prompt=""
-        promptBinding="Ember.STRINGS._select_language"}}
-
+    {{#if FLOW.selectedControl.selectedSurvey}}
+      {{view Ember.Select
+          contentBinding="FLOW.reportLanguageControl.arrangedContent"
+          selectionBinding="FLOW.reportLanguageControl.selectedLanguage"
+          optionLabelPath="content.label"
+          optionValuePath="content.value"
+          prompt=""
+          promptBinding="Ember.STRINGS._select_language"}}
+    {{/if}}
+  {{/if}}
 <div class="rawDataReport block">
   <h3>{{t _export_raw_data_report}}</h3>
     <p>{{t _raw_data_report_applet_text_}}</p>

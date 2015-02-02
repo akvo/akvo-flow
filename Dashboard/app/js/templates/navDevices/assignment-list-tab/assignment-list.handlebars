@@ -10,7 +10,7 @@
       <tr> {{#view FLOW.ColumnView item="name" type="assignment"}} <a {{action "sort" target="this"}}>{{t _name}}</a> {{/view}}
         {{#view FLOW.ColumnView item="startDate" type="assignment"}} <a {{action "sort" target="this"}}>{{t _start_date}}</a> {{/view}}
         {{#view FLOW.ColumnView item="endDate" type="assignment"}} <a {{action "sort" target="this"}}>{{t _end_date}}</a> {{/view}}
-        <th class="action noArrows"> <a>Action</a></th>
+        <th class="action noArrows"> <a>{{t _action}}</a></th>
       </tr>
     </thead>
     <!-- TABLE BODY: MAIN CONTENT-->

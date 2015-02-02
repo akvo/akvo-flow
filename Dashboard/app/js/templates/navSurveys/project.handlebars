@@ -8,26 +8,16 @@
           <ul class="projectSummary">
             <li>{{t _forms}}<span class="projectForm">{{FLOW.projectControl.formCount}}</span>
             </li>
+            <!-- Should we display the ID as we do with forms? -->
+            <li>{{t _id}}
+              <span class="projectForm">
+                {{FLOW.projectControl.currentProject.keyId}}
+              </span>
+            </li>
             <li>{{t _monitoring}}
               <span class="projectMonitoring">
                 {{#if FLOW.projectControl.currentProject.monitoringGroup}}{{t _enabled}}{{else}}{{t _not_enabled}}{{/if}}
               </span>
-            </li>
-            <li>{{t _status}}:
-
-              {{#if FLOW.projectControl.isPublished}}
-                <span class="projectStatus">
-                  {{t _published}}
-                </span>
-              {{else}}
-                <span class="projectStatus redColor">
-                  {{#if FLOW.projectControl.hasForms}}
-                    {{t _not_published}}
-                  {{else}}
-                    {{t _no_forms}}
-                  {{/if}}
-                </span>
-              {{/if}}
             </li>
           </ul>
           <section class="projectDetails">
@@ -119,12 +109,21 @@
                   </ul>
                 </nav>
                 <section class="formsContainer">
-                    <div id="form01">
-                    {{#if FLOW.selectedControl.selectedSurvey}}
-                      <h3>{{FLOW.selectedControl.selectedSurvey.name}}</h3>
-                      {{view FLOW.FormView}}
-                    {{/if}}
+                  {{#if view.isPublished}}
+                    <div id="form01" class="published">
+                      {{#if FLOW.selectedControl.selectedSurvey}}
+                        <h3>{{FLOW.selectedControl.selectedSurvey.name}}</h3>
+                        {{view FLOW.FormView}}
+                      {{/if}}
                     </div>
+                  {{else}}
+                    <div id="form01">
+                      {{#if FLOW.selectedControl.selectedSurvey}}
+                        <h3>{{FLOW.selectedControl.selectedSurvey.name}}</h3>
+                        {{view FLOW.FormView}}
+                      {{/if}}
+                    </div>
+                  {{/if}}
                 </section>
               </div>
             {{/if}}

@@ -691,3 +691,54 @@ Ember.RadioButton = Ember.View.extend({
     set(this, 'value', input.attr('value'));
   }
 });
+
+FLOW.SelectFolder = Ember.Select.extend({
+  controller: null,
+
+  init: function() {
+    this._super();
+    this.set('prompt', Ember.String.loc('_choose_folder_or_survey'));
+    this.set('optionLabelPath', 'content.code');
+    this.set('optionValuePath', 'content.keyId');
+    this.set('controller', FLOW.SurveySelection.create());
+    this.set('content', this.get('controller').getByParentId(this.get('parentId'), this.get('showMonitoringSurveysOnly')));
+  },
+
+  onChange: function() {
+    var childViews = this.get('parentView').get('childViews');
+    var keyId = this.get('value');
+    var nextIdx = this.get('idx') + 1;
+    var monitoringOnly = this.get('showMonitoringSurveysOnly');
+
+    if (nextIdx !== childViews.length) {
+      childViews.removeAt(nextIdx, childViews.length - nextIdx);
+    }
+
+    if (this.get('controller').isSurvey(keyId)) {
+      FLOW.selectedControl.set('selectedSurveyGroup', this.get('controller').getSurvey(keyId));
+    } else {
+      FLOW.selectedControl.set('selectedSurveyGroup', null);
+      childViews.pushObject(FLOW.SelectFolder.create({
+        parentId: keyId,
+        idx: nextIdx,
+        showMonitoringSurveysOnly: monitoringOnly
+      }));
+    }
+  }.observes('value'),
+});
+
+
+FLOW.SurveySelectionView = Ember.ContainerView.extend({
+  tagName: 'div',
+  classNames: 'modularSelection',
+  childViews: [],
+
+  init: function() {
+    this._super();
+    this.get('childViews').pushObject(FLOW.SelectFolder.create({
+      parentId: null,
+      idx: 0,
+      showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false
+    }));
+  },
+})

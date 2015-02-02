@@ -22,8 +22,7 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
   findSurveyedLocale: function (evt) {
 	  var ident = this.get('identifier'),
 	      displayName = this.get('displayName'),
-	      sgId = this.get('selectedSurveyGroup'),
-        since = FLOW.metaControl.get('since');
+	      sgId = FLOW.selectedControl.get('selectedSurveyGroup'),
 	      cursorType = FLOW.metaControl.get('cursorType');
         criteria = {};
 
@@ -38,10 +37,6 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
 	  if (sgId) {
 		  criteria.surveyGroupId = sgId.get('keyId');
 	  }
-
-    if (since && cursorType === FLOW.SurveyedLocale) {
-      criteria.since = since;
-    }
 
 	  FLOW.surveyedLocaleControl.set('content', FLOW.store.findQuery(FLOW.SurveyedLocale, criteria));
   },
