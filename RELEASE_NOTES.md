@@ -6,13 +6,13 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 Akvo FLOW Dashboard release notes
 ----
 #1.8.1
-Date: 28 January 2015
+Date: 02 February 2015
 
 ## New and noteworthy
-* Add permission for data cleaning [#943]
 * Implement Geoshape question type [#1012]
 * Enable deleting full datapoints and forms inside data point [#1058, #1111]
 * Improve selecting survey using hierarchical dropdowns [#1053]
+* Enable selection of number questions as display name fields [#924]
 
 ## Resolved issues
 
@@ -35,6 +35,7 @@ Date: 28 January 2015
 * Paging functionality on Users tab malfunctions  [#1065]
 * Identifier search not working on monitoring tab [#1059]
 * Wrong icon in the previous & next buttons [#1052]
+* Include the survey title on exported survey forms [#273]
 
 #1.8.0
 Date: 15 December 2014
