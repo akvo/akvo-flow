@@ -505,7 +505,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         if (filters.size() > 1) {
             q.setFilter(CompositeFilterOperator.and(filters));
         }
-        q.addSort("createdDateTime", SortDirection.DESCENDING);
+        q.addSort("collectionDate", SortDirection.DESCENDING);
         PreparedQuery pq = datastore.prepare(q);
         return pq.asIterable();
     }

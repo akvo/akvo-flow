@@ -312,6 +312,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         this.serverBase = serverBase;
         PrintWriter pw = null;
         boolean useQuestionId = "true".equals(options.get("useQuestionId"));
+        String from = options.get("from");
+        String to = options.get("to");
         try {
             SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                     LOADING_QUESTIONS.get(locale)));
@@ -363,7 +365,8 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 SummaryModel model = fetchAndWriteRawData(
                         criteria.get(SurveyRestRequest.SURVEY_ID_PARAM),
                         serverBase, questionMap, wb, isFullReport, fileName,
-                        criteria.get("apiKey"), lastCollection, useQuestionId);
+                        criteria.get("apiKey"), lastCollection, useQuestionId,
+                        from, to);
                 if (isFullReport) {
                     SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                             WRITING_SUMMARY.get(locale)));
@@ -418,7 +421,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             final String serverBase,
             Map<QuestionGroupDto, List<QuestionDto>> questionMap, Workbook wb,
             final boolean generateSummary, File outputFile, String apiKey, boolean lastCollection,
-            boolean useQuestionId)
+            boolean useQuestionId, String from, String to)
             throws Exception {
         final SummaryModel model = new SummaryModel();
         final String key = apiKey;
@@ -447,7 +450,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                 LOADING_INSTANCES.get(locale)));
         Map<String, String> instanceMap = BulkDataServiceClient
-                .fetchInstanceIds(surveyId, serverBase, key, lastCollection);
+                .fetchInstanceIds(surveyId, serverBase, key, lastCollection, from, to);
         SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                 LOADING_INSTANCE_DETAILS.get(locale)));
 
@@ -1216,8 +1219,11 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
         Map<String, String> options = new HashMap<String, String>();
         options.put(LOCALE_OPT, "en");
         options.put(TYPE_OPT, RAW_ONLY_TYPE);
-        options.put(LAST_COLLECTION_OPT, "true");
+        options.put(LAST_COLLECTION_OPT, "false");
         options.put("useQuestionId", "true");
+        options.put("email", "email@example.com");
+        options.put("from", "2013/02/03");
+        options.put("to", "2015/03/03");
         criteria.put(SurveyRestRequest.SURVEY_ID_PARAM, args[2]);
         criteria.put("apiKey", args[3]);
         exporter.export(criteria, new File(args[0]), args[1], options);
