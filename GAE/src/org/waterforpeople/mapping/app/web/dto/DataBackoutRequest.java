@@ -115,20 +115,20 @@ public class DataBackoutRequest extends RestRequest {
     }
 
     public Date getFromDate() {
-		return fromDate;
-	}
+        return fromDate;
+    }
 
-	public void setFromDate(Date fromDate) {
-		this.fromDate = fromDate;
-	}
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
 
-	public Date getToDate() {
-		return toDate;
-	}
+    public Date getToDate() {
+        return toDate;
+    }
 
-	public void setToDate(Date toDate) {
-		this.toDate = toDate;
-	}
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
+    }
 
     @Override
     protected void populateErrors() {
