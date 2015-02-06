@@ -86,7 +86,7 @@ FLOW.ReportLoader = Ember.Object.create({
     }
     if (resp.message === 'PROCESSING') {
       this.set('processing', false);
-      Ember.run.later(this, this.requestReport, this.requestInterval);
+      this.showEmailNotification();
     } else if (resp.file && this.get('processing')) {
       FLOW.savingMessageControl.numLoadingChange(-1);
       this.set('processing', false);
@@ -124,6 +124,17 @@ FLOW.ReportLoader = Ember.Object.create({
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_error_generating_report'));
     FLOW.dialogControl.set('message', Ember.String.loc('_error_generating_report_try_later'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+  },
+
+  showEmailNotification: function () {
+    FLOW.savingMessageControl.numLoadingChange(-1);
+    this.set('processing', false);
+    this.set('criteria', null);
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', "Your report is being prepared");
+    FLOW.dialogControl.set('message', "We will notify you via email when the report is ready");
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
   }
