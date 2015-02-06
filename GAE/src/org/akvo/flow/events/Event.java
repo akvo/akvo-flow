@@ -14,9 +14,7 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package com.gallatinsystems.events;
-
-
+package org.akvo.flow.events;
 
 public class Event {
 

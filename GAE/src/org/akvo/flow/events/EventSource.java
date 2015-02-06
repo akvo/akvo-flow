@@ -14,53 +14,49 @@
  *  The full license text can also be seen at <http://www.gnu.org/licenses/agpl.html>.
  */
 
-package com.gallatinsystems.events;
+package org.akvo.flow.events;
 
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonAnyGetter;
 
-public class EventEntity {
-    public enum EventType {
-        SURVEY, FORM, QUESTION_GROUP, QUESTION, DATAPOINT, FORM_INSTANCE, ANSWER
+public class EventSource {
+
+    public enum EventSourceType {
+        USER, DEVICE, SENSOR, WEBFORM, API
     };
 
-    private EventType type;
-	private Long id;
+    private EventSourceType type;
+    private Long id;
     private Map<String, Object> data = null;
 
-    public EventEntity(EventType type, Long id) {
+    public EventSource(EventSourceType type, Long id) {
         this.setType(type);
         this.setId(id);
     }
 
-    public EventType getType() {
-		return type;
-	}
+    public EventSourceType getType() {
+        return type;
+    }
 
-    public void setType(EventType type) {
-		this.type = type;
-	}
+    public void setType(EventSourceType type) {
+        this.type = type;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @JsonAnyGetter
-	public Map<String,Object> getData() {
-		return data;
-	}
+    public Map<String, Object> getData() {
+        return data;
+    }
 
-	public void setData(Map<String,Object> data) {
-		this.data = data;
-	}
-	
-    // @JsonAnySetter
-    // public void add(String key, Object value) {
-    // data.put(key, value);
-    // }
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
 }

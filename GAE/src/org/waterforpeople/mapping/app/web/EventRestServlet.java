@@ -24,18 +24,18 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.akvo.flow.events.Event;
+import org.akvo.flow.events.EventContext;
+import org.akvo.flow.events.EventEntity;
+import org.akvo.flow.events.EventEntity.EventType;
+import org.akvo.flow.events.EventSource;
+import org.akvo.flow.events.EventSource.EventSourceType;
+import org.akvo.flow.events.UnifiedLog;
+import org.akvo.flow.events.UnifiedLog.EventTopic;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
-import com.gallatinsystems.events.Event;
-import com.gallatinsystems.events.EventContext;
-import com.gallatinsystems.events.EventEntity;
-import com.gallatinsystems.events.EventEntity.EventType;
-import com.gallatinsystems.events.EventSource;
-import com.gallatinsystems.events.EventSource.EventSourceType;
-import com.gallatinsystems.events.UnifiedLog;
-import com.gallatinsystems.events.UnifiedLog.EventTopic;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
