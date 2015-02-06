@@ -279,7 +279,7 @@ public class BulkDataServiceClient {
      */
     public static Map<String, String> fetchInstanceIds(String surveyId,
             String serverBase, String apiKey, boolean lastCollection,
-            String from, String to) throws Exception {
+            String from, String to, String limit) throws Exception {
         Map<String, String> values = new HashMap<String, String>();
 
         String instanceString = fetchDataFromServer(serverBase
@@ -290,7 +290,8 @@ public class BulkDataServiceClient {
                         + DataBackoutRequest.LAST_COLLECTION_PARAM + "="
                         + lastCollection + "&"
                         + DataBackoutRequest.FROM_DATE_PARAM + "=" + from + "&"
-                        + DataBackoutRequest.TO_DATE_PARAM + "=" + to, true, apiKey);
+                        + DataBackoutRequest.TO_DATE_PARAM + "=" + to + "&"
+                        + DataBackoutRequest.LIMIT_PARAM + "=" + limit, true, apiKey);
 
         if (instanceString != null && instanceString.trim().length() != 0) {
             StringTokenizer strTok = new StringTokenizer(instanceString, ",");
@@ -312,7 +313,7 @@ public class BulkDataServiceClient {
     public static void main(String[] args) {
         try {
             Map<String, String> results = BulkDataServiceClient
-                    .fetchInstanceIds(args[1], args[0], args[2], false, "", "");
+                    .fetchInstanceIds(args[1], args[0], args[2], false, null, null, null);
             if (results != null) {
                 log.info(results);
             }

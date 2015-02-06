@@ -105,7 +105,8 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
                     boReq.includeDate(),
                     boReq.getLastCollection(),
                     boReq.getFromDate(),
-                    boReq.getToDate()));
+                    boReq.getToDate(),
+                    boReq.getLimit()));
         } else if (DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION
                 .equals(boReq.getAction())) {
             deleteSurveyInstance(boReq.getSurveyInstanceId());
@@ -224,13 +225,13 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
      * @return
      */
     private String listSurveyInstance(Long surveyId, boolean includeDate,
-            boolean lastCollection, Date fromDate, Date toDate) {
+            boolean lastCollection, Date fromDate, Date toDate, Integer limit) {
         boolean keysOnly = true;
         if (includeDate || lastCollection) {
             keysOnly = false;
         }
         Iterable<Entity> instances = instanceDao.listRawEntity(keysOnly, fromDate,
-                toDate, surveyId);
+                toDate, limit, surveyId);
         StringBuilder buffer = new StringBuilder();
         List<Long> processed = new ArrayList<Long>();
         if (instances != null) {

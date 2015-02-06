@@ -53,6 +53,7 @@ public class DataBackoutRequest extends RestRequest {
     public static final String LAST_COLLECTION_PARAM = "lastCollection";
     public static final String FROM_DATE_PARAM = "fromDate";
     public static final String TO_DATE_PARAM = "toDate";
+    public static final String LIMIT_PARAM = "limit";
 
     private static final ThreadLocal<DateFormat> inFmt = new ThreadLocal<DateFormat>() {
         @Override
@@ -69,6 +70,7 @@ public class DataBackoutRequest extends RestRequest {
     private boolean lastCollection = false;
     private Date fromDate;
     private Date toDate;
+    private Integer limit;
 
     public Long getSurveyId() {
         return surveyId;
@@ -130,7 +132,15 @@ public class DataBackoutRequest extends RestRequest {
         this.toDate = toDate;
     }
 
-    @Override
+    public Integer getLimit() {
+        return limit;
+    }
+
+	public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
+	@Override
     protected void populateErrors() {
         // TODO: add error checking
     }
@@ -163,6 +173,13 @@ public class DataBackoutRequest extends RestRequest {
         }
         if (req.getParameter(TO_DATE_PARAM) != null) {
             toDate = parseDate(req.getParameter(TO_DATE_PARAM));
+        }
+        if (req.getParameter(LIMIT_PARAM) != null) {
+            try {
+                limit = Integer.parseInt(req.getParameter(LIMIT_PARAM));
+            } catch (Exception e) {
+                limit = null;
+            }
         }
 
         lastCollection = req.getParameter(LAST_COLLECTION_PARAM) != null
