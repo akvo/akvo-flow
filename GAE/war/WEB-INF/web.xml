@@ -62,7 +62,14 @@
 		<servlet-name>CurrentUserServlet</servlet-name>
 		<url-pattern>/currentuser.js</url-pattern>
 	</servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>EventServlet</servlet-name>
+        <url-pattern>/app_worker/eventservlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>EventServlet</servlet-name>
+        <servlet-class>org.waterforpeople.mapping.app.web.EventRestServlet</servlet-class>
+    </servlet>
 	<servlet>
 		<servlet-name>EnvServlet</servlet-name>
 		<servlet-class>org.waterforpeople.mapping.app.web.EnvServlet</servlet-class>
