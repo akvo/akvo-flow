@@ -24,7 +24,15 @@
           <task-retry-limit>10</task-retry-limit>
           <min-backoff-seconds>10</min-backoff-seconds>
         </retry-parameters>
-	</queue>
+    </queue>
+    <queue>
+        <name>events</name>
+        <rate>10/s</rate>
+        <retry-parameters>
+            <task-retry-limit>10</task-retry-limit>
+            <min-backoff-seconds>10</min-backoff-seconds>
+        </retry-parameters>
+    </queue>
 	<queue>
 		<name>dataSummarization</name>
 		<rate>5/s</rate>
