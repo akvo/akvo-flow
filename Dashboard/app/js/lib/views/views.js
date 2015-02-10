@@ -700,7 +700,7 @@ FLOW.SelectFolder = Ember.Select.extend({
     this.set('prompt', Ember.String.loc('_choose_folder_or_survey'));
     this.set('optionLabelPath', 'content.code');
     this.set('optionValuePath', 'content.keyId');
-    this.set('controller', FLOW.SurveySelection.create());
+    this.set('controller', FLOW.SurveySelection.create({ selectionFilter: this.get('selectionFilter')}));
     this.set('content', this.get('controller').getByParentId(this.get('parentId'), this.get('showMonitoringSurveysOnly')));
   },
 
@@ -739,6 +739,23 @@ FLOW.SurveySelectionView = Ember.ContainerView.extend({
       parentId: null,
       idx: 0,
       showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false
+    }));
+  },
+})
+
+
+FLOW.DataCleaningSurveySelectionView = Ember.ContainerView.extend({
+  tagName: 'div',
+  classNames: 'modularSelection',
+  childViews: [],
+
+  init: function() {
+    this._super();
+    this.get('childViews').pushObject(FLOW.SelectFolder.create({
+      parentId: null,
+      idx: 0,
+      showMonitoringSurveysOnly: this.get('showMonitoringSurveysOnly') || false,
+      selectionFilter : FLOW.projectControl.dataCleaningEnabled
     }));
   },
 })

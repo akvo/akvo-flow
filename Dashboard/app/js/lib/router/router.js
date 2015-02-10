@@ -312,7 +312,6 @@ FLOW.Router = Ember.Router.extend({
           router.get('navDataController').connectOutlet('dataCleaning');
           router.set('datasubnavController.selected', 'dataCleaning');
           router.resetState();
-          FLOW.surveyGroupControl.populate(FLOW.projectControl.dataCleaningEnabled);
         }
       }),
 
