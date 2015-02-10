@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.gallatinsystems.framework.rest.RestError;
 import com.gallatinsystems.framework.rest.RestRequest;
+import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.survey.domain.SurveyGroup.ProjectType;
 
 /**
  * request class for the EventServlet.
@@ -38,9 +40,11 @@ public class EventRestRequest extends RestRequest {
     public static final String USER_ID_PARAM = "userId";
     public static final String ORG_ID_PARAM = "orgId";
     public static final String TIMESTAMP_PARAM = "timestamp";
+    public static final String SURVEY_GROUP_TYPE_PARAM = "surveyGroupType";
     public static final String ACTION_DELETED = "Deleted";
     public static final String ACTION_CREATED = "Created";
     public static final String ACTION_UPDATED = "Updated";
+    public static final String SURVEY_GROUP_KIND = "com.gallatinsystems.survey.domain.SurveyGroup";
 
     //list of handled classes.
     public static final List<String> HANDLED_EVENTS = Arrays.asList(
@@ -58,6 +62,7 @@ public class EventRestRequest extends RestRequest {
     private Long id;
     private String orgId;
     private Date timestamp;
+    private ProjectType surveyGroupType = null;
     
     @Override
     protected void populateFields(HttpServletRequest req) throws Exception {
@@ -66,9 +71,14 @@ public class EventRestRequest extends RestRequest {
     		setKind(req.getParameter(KIND_PARAM));
     	}
     	
+        if (req.getParameter(SURVEY_GROUP_TYPE_PARAM) != null) {
+            setSurveyGroupType(SurveyGroup.ProjectType.valueOf(req
+                    .getParameter(SURVEY_GROUP_TYPE_PARAM)));
+        }
+
     	if (req.getParameter(ACTION_TYPE_PARAM) != null) {
-    		setActionType(req.getParameter(ACTION_TYPE_PARAM));
-    	}
+            setActionType(req.getParameter(ACTION_TYPE_PARAM));
+        }
 
     	if (req.getParameter(USER_ID_PARAM) != null) {
     		try {
@@ -158,4 +168,12 @@ public class EventRestRequest extends RestRequest {
 	public void setId(Long id) {
 		this.id = id;
 	}
+
+    public ProjectType getSurveyGroupType() {
+        return surveyGroupType;
+    }
+
+    public void setSurveyGroupType(ProjectType surveyGroupType) {
+        this.surveyGroupType = surveyGroupType;
+    }
 }

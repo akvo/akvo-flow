@@ -108,6 +108,7 @@ public class BaseDAO<T extends BaseDomain> {
         	// get the authentication information so we can get at the userId
         	final Authentication authentication = SecurityContextHolder.getContext()
                   .getAuthentication();
+            String user = authentication.getCredentials().toString();
 
         	// get the orgId from the system properties. We use the s3bucket property
         	// TODO get this from the cache
@@ -117,16 +118,26 @@ public class BaseDAO<T extends BaseDomain> {
         	// create a timestamp
         	Long unixTimestamp = System.currentTimeMillis();
 
-            String user = authentication.getCredentials().toString();
+            // create task options
+            TaskOptions tOptions = TaskOptions.Builder
+                    .withUrl("/app_worker/eventservlet")
+                    .param(EventRestRequest.ID_PARAM, obj.getKey().getId() + "")
+                    .param(EventRestRequest.KIND_PARAM, objectKind)
+                    .param(EventRestRequest.ACTION_TYPE_PARAM, actionType)
+                    .param(EventRestRequest.USER_ID_PARAM,
+                            authentication.getCredentials().toString())
+                    .param(EventRestRequest.ORG_ID_PARAM, orgId)
+                    .param(EventRestRequest.TIMESTAMP_PARAM, unixTimestamp.toString());
+
+            // If this is a surveygroup event, add the type of survey group
+            if (objectKind.equals(EventRestRequest.SURVEY_GROUP_KIND)) {
+                SurveyGroup sg = (SurveyGroup) obj;
+                tOptions.param(EventRestRequest.SURVEY_GROUP_TYPE_PARAM, sg.getProjectType()
+                        .toString());
+            }
         	// fire the event task
         	Queue eventQueue = QueueFactory.getQueue("events");
-        	eventQueue.add(TaskOptions.Builder.withUrl("/app_worker/eventservlet")
-        			.param(EventRestRequest.ID_PARAM, obj.getKey().getId() + "")
-        			.param(EventRestRequest.KIND_PARAM, objectKind)
-        			.param(EventRestRequest.ACTION_TYPE_PARAM, actionType)
-        			.param(EventRestRequest.USER_ID_PARAM, authentication.getCredentials().toString())
-        			.param(EventRestRequest.ORG_ID_PARAM, orgId)
-        			.param(EventRestRequest.TIMESTAMP_PARAM, unixTimestamp.toString()));
+            eventQueue.add(tOptions);
         }
     }
 
