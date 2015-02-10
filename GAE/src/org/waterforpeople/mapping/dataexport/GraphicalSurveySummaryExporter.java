@@ -39,6 +39,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.swing.SwingUtilities;
 
@@ -46,7 +47,6 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -83,7 +83,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
     private static final Logger log = Logger.getLogger(GraphicalSurveySummaryExporter.class);
 
-    private static final int MAX_COL = 255;
     private static final String IMAGE_PREFIX_OPT = "imgPrefix";
     private static final String DO_ROLLUP_OPT = "performRollup";
     private static final String LOCALE_OPT = "locale";
@@ -286,10 +285,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     private int maxSteps;
     private boolean isFullReport;
     private boolean performGeoRollup;
-    private ThreadPoolExecutor threadPool;
-    private BlockingQueue<Runnable> jobQueue;
-    private volatile int threadsCompleted = 0;
-    private Object lock = new Object();
     private boolean generateCharts;
     private Map<Long, QuestionDto> questionsById;
     private boolean lastCollection = false;
@@ -300,9 +295,6 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
     public void export(Map<String, String> criteria, File fileName,
             String serverBase, Map<String, String> options) {
         processOptions(options);
-        jobQueue = new LinkedBlockingQueue<Runnable>();
-        threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
-                jobQueue);
         if (!GraphicsEnvironment.isHeadless()) {
             progressDialog = new ProgressDialog(maxSteps, locale);
             progressDialog.setVisible(true);
@@ -349,14 +341,9 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             } else {
                 currentStep++;
             }
-            Workbook wb = null;
+            Workbook wb = new SXSSFWorkbook(100);
             if (questionMap != null && questionMap.size() > 0) {
-                if (questionMap.size() > MAX_COL - 3) {
-                    wb = new HSSFWorkbook();
-                } else {
-                    // wb = new XSSFWorkbook();
-                    wb = new SXSSFWorkbook(-1); // handle flushing manually
-                }
+
                 headerStyle = wb.createCellStyle();
                 headerStyle.setAlignment(CellStyle.ALIGN_CENTER);
                 Font headerFont = wb.createFont();
@@ -424,6 +411,14 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             final boolean generateSummary, File outputFile, String apiKey, boolean lastCollection,
             boolean useQuestionId, String from, String to, String limit)
             throws Exception {
+
+        BlockingQueue<Runnable> jobQueue = new LinkedBlockingQueue<Runnable>();
+        ThreadPoolExecutor threadPool  = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
+                jobQueue);
+
+        final AtomicLong threadsCompleted = new AtomicLong();
+        final Object lock = new Object();
+
         final SummaryModel model = new SummaryModel();
         final String key = apiKey;
 
@@ -494,7 +489,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                             e.printStackTrace();
                         } finally {
                             synchronized (lock) {
-                                threadsCompleted++;
+                                threadsCompleted.getAndIncrement();
                             }
                         }
                         attempts++;
@@ -503,7 +498,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             });
         }
         while (!jobQueue.isEmpty() || threadPool.getActiveCount() > 0
-                || started > threadsCompleted) {
+                || started > threadsCompleted.get()) {
             try {
                 log.debug("Sleeping, Queue has: " + jobQueue.size());
                 Thread.sleep(5000);
@@ -521,6 +516,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
 
         SwingUtilities.invokeLater(new StatusUpdater(currentStep++,
                 WRITING_RAW_DATA.get(locale)));
+        threadPool.shutdown();
         return model;
     }
 
