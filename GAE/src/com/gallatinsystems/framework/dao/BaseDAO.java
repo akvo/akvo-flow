@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -35,7 +34,6 @@ import net.sf.jsr107cache.CacheException;
 import org.datanucleus.store.appengine.query.JDOCursorHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.waterforpeople.mapping.app.web.EventRestRequest;
 import org.waterforpeople.mapping.app.web.rest.security.AppRole;
 
 import com.gallatinsystems.common.Constants;
@@ -49,10 +47,6 @@ import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
-
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
  * list).
@@ -94,54 +88,6 @@ public class BaseDAO<T extends BaseDomain> {
     }
 
     /**
-     * fires a task which creates and sends an event to the unified log
-     * 
-     * @param obj
-     * @param actionType
-     */
-    private <E extends BaseDomain> void createEvent(E obj, String actionType){
-    	String objectKind = this.concreteClass.getName();
-
-    	 // if we are interested in this object, fire an event task
-    	// TODO get this from the cache
-        if (EventRestRequest.HANDLED_EVENTS.contains(objectKind)){
-        	// get the authentication information so we can get at the userId
-        	final Authentication authentication = SecurityContextHolder.getContext()
-                  .getAuthentication();
-            String user = authentication.getCredentials().toString();
-
-        	// get the orgId from the system properties. We use the s3bucket property
-        	// TODO get this from the cache
-        	Properties props = System.getProperties();
-        	String orgId = props.getProperty("s3bucket");
-
-        	// create a timestamp
-        	Long unixTimestamp = System.currentTimeMillis();
-
-            // create task options
-            TaskOptions tOptions = TaskOptions.Builder
-                    .withUrl("/app_worker/eventservlet")
-                    .param(EventRestRequest.ID_PARAM, obj.getKey().getId() + "")
-                    .param(EventRestRequest.KIND_PARAM, objectKind)
-                    .param(EventRestRequest.ACTION_TYPE_PARAM, actionType)
-                    .param(EventRestRequest.USER_ID_PARAM,
-                            authentication.getCredentials().toString())
-                    .param(EventRestRequest.ORG_ID_PARAM, orgId)
-                    .param(EventRestRequest.TIMESTAMP_PARAM, unixTimestamp.toString());
-
-            // If this is a surveygroup event, add the type of survey group
-            if (objectKind.equals(EventRestRequest.SURVEY_GROUP_KIND)) {
-                SurveyGroup sg = (SurveyGroup) obj;
-                tOptions.param(EventRestRequest.SURVEY_GROUP_TYPE_PARAM, sg.getProjectType()
-                        .toString());
-            }
-        	// fire the event task
-        	Queue eventQueue = QueueFactory.getQueue("events");
-            eventQueue.add(tOptions);
-        }
-    }
-
-    /**
      * saves an object to the data store. This method will set the lastUpdateDateTime on the domain
      * object prior to saving and will set the createdDateTime (if it is null).
      *
@@ -150,15 +96,12 @@ public class BaseDAO<T extends BaseDomain> {
      * @return
      */
     public <E extends BaseDomain> E save(E obj) {
-    	String actionType = EventRestRequest.ACTION_UPDATED;   // the default
         PersistenceManager pm = PersistenceFilter.getManager();
-        if (obj.getCreatedDateTime() == null) {
-            obj.setCreatedDateTime(new Date());
-            actionType = EventRestRequest.ACTION_CREATED;
-        }
         obj.setLastUpdateDateTime(new Date());
+        if (obj.getCreatedDateTime() == null) {
+            obj.setCreatedDateTime(obj.getLastUpdateDateTime());
+        }
         obj = pm.makePersistent(obj);
-        createEvent(obj,actionType);
         return obj;
     }
 
@@ -173,10 +116,10 @@ public class BaseDAO<T extends BaseDomain> {
     @Deprecated
     public <E extends BaseDomain> E saveAndFlush(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        if (obj.getCreatedDateTime() == null) {
-            obj.setCreatedDateTime(new Date());
-        }
         obj.setLastUpdateDateTime(new Date());
+        if (obj.getCreatedDateTime() == null) {
+            obj.setCreatedDateTime(obj.getLastUpdateDateTime());
+        }
         obj = pm.makePersistent(obj);
         pm.flush();
 
@@ -192,26 +135,15 @@ public class BaseDAO<T extends BaseDomain> {
      * @return
      */
     public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
-    	String actionType;
         if (objList != null) {
-        	List<String> objActionList = new ArrayList<>();
             for (E item : objList) {
-                if (item.getCreatedDateTime() == null) {
-                    item.setCreatedDateTime(new Date());
-                    objActionList.add(EventRestRequest.ACTION_CREATED);
-                } else {
-                    objActionList.add(EventRestRequest.ACTION_UPDATED);
-                }
                 item.setLastUpdateDateTime(new Date());
+                if (item.getCreatedDateTime() == null) {
+                    item.setCreatedDateTime(item.getLastUpdateDateTime());
+                }
             }
             PersistenceManager pm = PersistenceFilter.getManager();
             objList = pm.makePersistentAll(objList);
-            // now that we have the ids, create the events
-            int i = 0;
-            for (E item : objList){
-                createEvent(item,objActionList.get(i));
-                i++;
-            }
         }
         return objList;
     }
@@ -622,7 +554,6 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> void delete(E obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        createEvent(obj, EventRestRequest.ACTION_DELETED);
         pm.deletePersistent(obj);
     }
 
@@ -631,9 +562,6 @@ public class BaseDAO<T extends BaseDomain> {
      */
     public <E extends BaseDomain> void delete(Collection<E> obj) {
         PersistenceManager pm = PersistenceFilter.getManager();
-        for (E item : obj){
-        	createEvent(item,EventRestRequest.ACTION_DELETED);
-        }
         pm.deletePersistentAll(obj);
     }
 

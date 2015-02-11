@@ -17,11 +17,19 @@
 package org.akvo.flow.events;
 
 import java.io.StringWriter;
+import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.akvo.flow.events.EventUtils.EventSourceType;
+import org.akvo.flow.events.EventUtils.EventTypes;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.appengine.api.datastore.DeleteContext;
 import com.google.appengine.api.datastore.PostDelete;
 import com.google.appengine.api.datastore.PostPut;
@@ -30,28 +38,111 @@ import com.google.appengine.api.datastore.PutContext;
 public class EventLogger {
     private static Logger logger = Logger.getLogger(EventLogger.class.getName());
     
-    @PostPut(kinds = {
-            "SurveyGroup", "Survey", "QuestionGroup", "Question", "QuestionOption"
+    private static final String LAST_UPDATE_DATE_TIME_PROP = "lastUpdateDateTime";
+    private static final String CREATED_DATE_TIME_PROP = "createdDateTime";
+
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
     })
-    void logPut(PutContext context) {
-        logger.log(Level.INFO, "Finished putting " + context.getCurrentElement().getKey().getId());
+    private void storeEvent(Map<String, Object> event, Date timestamp) {
         try {
             ObjectMapper m = new ObjectMapper();
             StringWriter w = new StringWriter();
-            // getCurrentElement returns an Entity
-            m.writeValue(w, context.getCurrentElement());
-            logger.log(Level.INFO, w.toString());
-        } catch (Exception ex) {
+            m.writeValue(w, event);
+            BaseDAO<EventQueue> eventDao = new BaseDAO(EventQueue.class);
+            EventQueue eventQ = new EventQueue(timestamp, w.toString());
+            eventDao.save(eventQ);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            logger.log(Level.SEVERE, "could not store " + event.get("eventType") + " event");
+            e.printStackTrace();
+        }
+    }
+
+    @PostPut(kinds = {
+            "SurveyGroup", "Survey", "QuestionGroup", "Question", "SurveyInstance",
+            "QuestionAnswerStore", "SurveyedLocale"
+    })
+    void logPut(PutContext context) {
+  
+        // determine type of event and type of action
+        EventTypes types = EventUtils.getEventAndActionType(context.getCurrentElement().getKey()
+                .getKind());
+
+        // determine if this entity was created or updated
+        String actionType = EventUtils.ACTION_UPDATED;
+        if (context.getCurrentElement().getProperty(LAST_UPDATE_DATE_TIME_PROP) == context
+                .getCurrentElement().getProperty(CREATED_DATE_TIME_PROP)) {
+            actionType = EventUtils.ACTION_CREATED;
         }
 
+        // get the orgId from the system properties. We use the s3bucket property
+        Properties props = System.getProperties();
+        String orgId = props.getProperty("s3bucket");
+        
+        // create event source
+        // get the authentication information. This seems to contain the userId, but
+        // according to the documentation, should hold the 'password'
+        final Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        String cred = authentication.getCredentials().toString();
+
+        Map<String, Object> eventSource = EventUtils.newSource(EventSourceType.USER, cred);
+
+        Date timestamp = (Date) context.getCurrentElement().getProperty(LAST_UPDATE_DATE_TIME_PROP);
+        // create event context map
+        Map<String, Object> eventContext = EventUtils.newContext(timestamp, eventSource);
+
+        // create event entity
+        Map<String, Object> eventEntity = EventUtils.newEntity(types.type, context
+                .getCurrentElement()
+                .getKey().getId());
+        EventUtils.populateEntityProperties(types.type, context.getCurrentElement(), eventEntity);
+
+        // create event
+        Map<String, Object> event = EventUtils.newEvent(orgId, types.action + actionType,
+                eventEntity, eventContext);
+        
+        // store it
+        storeEvent(event, timestamp);
     }
 
     @PostDelete(kinds = {
-            "SurveyGroup", "Survey", "QuestionGroup", "Question", "QuestionOption"
+            "SurveyGroup", "Survey", "QuestionGroup", "Question", "SurveyInstance",
+            "QuestionAnswerStore", "SurveyedLocale"
     })
     void logDelete(DeleteContext context) {
-        // getCurrentElement returns a Key
-        logger.log(Level.INFO, "Finished deleting " + context.getCurrentElement().getKind() + " "
-                + context.getCurrentElement().getId());
+        // determine type of event and type of action
+        EventTypes types = EventUtils.getEventAndActionType(context.getCurrentElement().getKind());
+
+        // get the orgId from the system properties. We use the s3bucket property
+        Properties props = System.getProperties();
+        String orgId = props.getProperty("s3bucket");
+
+        // create event source
+        // get the authentication information. This seems to contain the userId, but
+        // according to the documentation, should hold the 'password'
+        final Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        String cred = authentication.getCredentials().toString();
+
+        Map<String, Object> eventSource = EventUtils.newSource(EventSourceType.USER, cred);
+
+        // create event context map
+        // we create our own timestamp here, as we don't have one in the context
+        Date timestamp = new Date();
+        Map<String, Object> eventContext = EventUtils.newContext(timestamp, eventSource);
+
+        // create event entity
+        Map<String, Object> eventEntity = EventUtils.newEntity(types.type, context
+                .getCurrentElement().getId());
+
+        // create event
+        Map<String, Object> event = EventUtils.newEvent(orgId, types.action
+                + EventUtils.ACTION_DELETED,
+                eventEntity, eventContext);
+
+        // store it
+        storeEvent(event, timestamp);
     }
 }

@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
+import com.google.appengine.api.datastore.Entity;
+
 public class EventUtils {
 
     public enum EventSourceType {
@@ -12,11 +15,11 @@ public class EventUtils {
     };
 
     public enum EventType {
-        FOLDER, SURVEY, FORM, QUESTION_GROUP, QUESTION, DATAPOINT, FORM_INSTANCE, ANSWER, UNKNOWN
+        SURVEY_GROUP, FORM, QUESTION_GROUP, QUESTION, DATAPOINT, FORM_INSTANCE, ANSWER
     };
 
     // names of kinds in Google App Engine
-    public static final String SURVEY_KIND = "SurveyGroup";
+    public static final String SURVEY_GROUP_KIND = "SurveyGroup";
     public static final String FORM_KIND = "Survey";
     public static final String QUESTION_GROUP_KIND = "QuestionGroup";
     public static final String QUESTION_KIND = "Question";
@@ -25,17 +28,15 @@ public class EventUtils {
     public static final String ANSWER_KIND = "QuestionAnswerStore";
 
     // How we name the actions
-    public static final String FOLDER_ACTION = "folder";
-    public static final String SURVEY_ACTION = "survey";
+    public static final String SURVEY_GROUP_ACTION = "surveyGroup";
     public static final String FORM_ACTION = "form";
     public static final String QUESTION_GROUP_ACTION = "questionGroup";
     public static final String QUESTION_ACTION = "question";
     public static final String DATAPOINT_ACTION = "dataPoint";
     public static final String FORM_INSTANCE_ACTION = "formInstance";
     public static final String ANSWER_ACTION = "answer";
-    public static final String UNKNOWN_ACTION = "unknown";
 
-    // property keys
+    // property keys in events
     public static final String ID_KEY = "id";
     public static final String DISPLAY_TEXT_KEY = "displayText";
     public static final String NAME_KEY = "name";
@@ -62,7 +63,137 @@ public class EventUtils {
     public static final String PUBLIC_KEY = "public";
     public static final String VALUE_KEY = "value";
     public static final String IDENTIFIER_KEY = "identifier";
+    public static final String SURVEY_GROUP_TYPE_KEY = "surveyGroupType";
 
+    // properties in putContext
+    public static final String SURVEY_INSTANCE_ID_PROP = "surveyInstanceId";
+    public static final String TYPE_PROP = "type";
+    public static final String VALUE_PROP = "value";
+    public static final String SURVEY_ID_PROP = "surveyId";
+    public static final String SURVEYED_LOCALE_ID_PROP = "surveyedLocaleId";
+    public static final String COLLECTION_DATE_PROP = "collectionDate";
+    public static final String SURVEYAL_TIME_PROP = "surveyalTime";
+    public static final String IDENTIFIER_PROP = "identifier";
+    public static final String LATITUDE_PROP = "latitude";
+    public static final String LONGITUDE_PROP = "longitude";
+    public static final String DISPLAY_NAME_PROP = "displayName";
+    public static final String NAME_PROP = "name";
+    public static final String PARENT_ID_PROP = "parentId";
+    public static final String DESCRIPTION_PROP = "description";
+    public static final String PRIVACY_LEVEL_PROP = "privacyLevel";
+    public static final String DESC_PROP = "desc";
+    public static final String SURVEY_GROUP_ID_PROP = "surveyGroupId";
+    public static final String ORDER_PROP = "order";
+    public static final String TEXT_PROP = "text";
+    public static final String QUESTION_ID_PROP = "questionId";
+    public static final String QUESTION_GROUP_ID_PROP = "questionGroupId";
+    public static final String PROJECT_TYPE_PROP = "projectType";
+
+    public static final String ACTION_DELETED = "Deleted";
+    public static final String ACTION_CREATED = "Created";
+    public static final String ACTION_UPDATED = "Updated";
+    
+    public static class EventTypes {
+        EventType type = null;
+        String action = null;
+    }
+
+    public static EventTypes getEventAndActionType(String kindName) {
+        EventTypes names = new EventTypes();
+        switch (kindName) {
+            case EventUtils.ANSWER_KIND:
+                names.action = EventUtils.ANSWER_ACTION;
+                names.type = EventType.ANSWER;
+                break;
+            case EventUtils.FORM_INSTANCE_KIND:
+                names.action = EventUtils.FORM_INSTANCE_ACTION;
+                names.type = EventType.FORM_INSTANCE;
+                break;
+            case EventUtils.DATAPOINT_KIND:
+                names.action = EventUtils.DATAPOINT_ACTION;
+                names.type = EventType.DATAPOINT;
+                break;
+            case EventUtils.SURVEY_GROUP_KIND:
+                names.action = EventUtils.SURVEY_GROUP_ACTION;
+                names.type = EventType.SURVEY_GROUP;
+                break;
+            case EventUtils.FORM_KIND:
+                names.action = EventUtils.FORM_ACTION;
+                names.type = EventType.FORM;
+                break;
+            case EventUtils.QUESTION_GROUP_KIND:
+                names.action = EventUtils.QUESTION_GROUP_ACTION;
+                names.type = EventType.QUESTION_GROUP;
+                break;
+            case EventUtils.QUESTION_KIND:
+                names.action = EventUtils.QUESTION_ACTION;
+                names.type = EventType.QUESTION;
+                break;
+        }
+        return names;
+    }
+
+    
+    private static Map<String, Object> addNonNullProperty(String key, Object val,
+            Map<String, Object> data) {
+      if (val != null) {
+          data.put(key, val);
+          return data;
+      }
+      return data;
+  }
+ 
+    public static Map<String, Object> populateEntityProperties(EventType type, Entity e,
+            Map<String, Object> data) {
+        switch (type){
+            case ANSWER:
+                addNonNullProperty(FORM_INSTANCE_ID_KEY, e.getProperty(SURVEY_INSTANCE_ID_PROP), data);
+                addNonNullProperty(TYPE_KEY, e.getProperty(TYPE_PROP), data);
+                addNonNullProperty(VALUE_KEY, e.getProperty(VALUE_PROP), data);
+                break;
+            case FORM_INSTANCE:
+                addNonNullProperty(FORM_ID_KEY, e.getProperty(SURVEY_ID_PROP), data);
+                addNonNullProperty(DATAPOINT_ID_KEY, e.getProperty(SURVEYED_LOCALE_ID_PROP), data);
+                addNonNullProperty(COLLECTION_DATE_KEY, e.getProperty(COLLECTION_DATE_PROP), data);
+                addNonNullProperty(SURVEYAL_TIME_KEY, e.getProperty(SURVEYAL_TIME_PROP), data);
+                break;
+            case DATAPOINT:
+                addNonNullProperty(IDENTIFIER_KEY, e.getProperty(IDENTIFIER_PROP), data);
+                addNonNullProperty(LAT_KEY, e.getProperty(LATITUDE_PROP), data);
+                addNonNullProperty(LON_KEY, e.getProperty(LONGITUDE_PROP), data);
+                addNonNullProperty(NAME_KEY, e.getProperty(DISPLAY_NAME_PROP), data);
+                break;
+            case SURVEY_GROUP:
+                addNonNullProperty(NAME_KEY, e.getProperty(NAME_PROP), data);
+                addNonNullProperty(PARENT_ID_KEY, e.getProperty(PARENT_ID_PROP), data);
+                addNonNullProperty(SURVEY_GROUP_TYPE_KEY, e.getProperty(PROJECT_TYPE_PROP), data);
+                addNonNullProperty(DESCRIPTION_KEY, e.getProperty(DESCRIPTION_PROP), data);
+                // TODO check if this gives the desired result.
+                addNonNullProperty(PUBLIC_KEY,
+                        e.getProperty(PRIVACY_LEVEL_PROP).toString()
+                                .equals(PrivacyLevel.PUBLIC.toString()), data);
+                break;
+            case FORM:
+                addNonNullProperty(NAME_KEY, e.getProperty(NAME_PROP), data);
+                addNonNullProperty(DESCRIPTION_KEY, e.getProperty(DESC_PROP), data);
+                addNonNullProperty(SURVEY_ID_KEY, e.getProperty(SURVEY_GROUP_ID_PROP), data);
+                break;
+            case QUESTION_GROUP:
+                addNonNullProperty(NAME_KEY, e.getProperty(NAME_PROP), data);
+                addNonNullProperty(ORDER_KEY, e.getProperty(ORDER_PROP), data);
+                addNonNullProperty(FORM_ID_KEY, e.getProperty(SURVEY_ID_PROP), data);
+                break;
+            case QUESTION:
+                addNonNullProperty(DISPLAY_TEXT_KEY, e.getProperty(TEXT_PROP), data);
+                addNonNullProperty(IDENTIFIER_KEY, e.getProperty(QUESTION_ID_PROP), data);
+                addNonNullProperty(QUESTION_GROUP_ID_KEY, e.getProperty(QUESTION_GROUP_ID_PROP), data);
+                addNonNullProperty(FORM_ID_KEY, e.getProperty(SURVEY_ID_PROP), data);
+                addNonNullProperty(QUESTION_TYPE_KEY, e.getProperty(TYPE_PROP), data);
+                break;
+        }
+        return data;
+    }
+    
     public static Map<String, Object> newEvent(String orgId, String eventType,
             Map<String, Object> entity,
             Map<String, Object> context) throws AssertionError {
@@ -82,10 +213,10 @@ public class EventUtils {
         return result;
     }
 
-    public static Map<String, Object> newSource(EventSourceType sourceType, Long id) {
+    public static Map<String, Object> newSource(EventSourceType sourceType, String cred) {
         Map<String, Object> source = new HashMap<String, Object>();
         source.put(TYPE_KEY, sourceType);
-        source.put(ID_KEY, id);
+        source.put(ID_KEY, cred);
         return source;
     }
 
