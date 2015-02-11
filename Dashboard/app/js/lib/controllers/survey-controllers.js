@@ -172,7 +172,23 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     surveyGroup.deleteRecord();
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedSurveyGroup', null);
-  }
+  },
+
+  /* return all the ancestor paths of a survey group */
+  ancestorPaths: function(surveyGroup) {
+    var pathString = surveyGroup.get('path');
+    if(!pathString) {
+        return [];
+    }
+
+    var ancestors = [];
+    while(pathString) {
+        ancestors.push(pathString);
+        pathString = pathString.slice(0, pathString.lastIndexOf("/"));
+    }
+    ancestors.push("/"); // add the root level folder to ancestors list
+    return ancestors;
+  },
 });
 
 
@@ -195,6 +211,20 @@ FLOW.projectControl = Ember.ArrayController.create({
   setCurrentProject: function(project) {
     this.set('currentProject', project);
     window.scrollTo(0,0);
+  },
+
+  /* return true if data cleaning permission is present for the
+  path of the given surveyGroup */
+  dataCleaningEnabled: function(surveyGroup) {
+    var pathPermissions = FLOW.userControl.currentUserPathPermissions();
+    var ancestorPaths = FLOW.surveyGroupControl.ancestorPaths(surveyGroup);
+    for (var i = 0; i < ancestorPaths.length; i++) {
+        var path = ancestorPaths[i];
+        if(path in pathPermissions && pathPermissions[path].indexOf("DATA_CLEANING") > -1) {
+            return true;
+        }
+    }
+    return false;
   },
 
   /* Computed properties */
