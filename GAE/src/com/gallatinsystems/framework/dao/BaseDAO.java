@@ -106,27 +106,6 @@ public class BaseDAO<T extends BaseDomain> {
     }
 
     /**
-     * saves an object and then flushes the persistence manager. In most cases, this method should
-     * <b>NOT</b> be used (prefer the normal save method instead).
-     *
-     * @param <E>
-     * @param obj
-     * @return
-     */
-    @Deprecated
-    public <E extends BaseDomain> E saveAndFlush(E obj) {
-        PersistenceManager pm = PersistenceFilter.getManager();
-        obj.setLastUpdateDateTime(new Date());
-        if (obj.getCreatedDateTime() == null) {
-            obj.setCreatedDateTime(obj.getLastUpdateDateTime());
-        }
-        obj = pm.makePersistent(obj);
-        pm.flush();
-
-        return obj;
-    }
-
-    /**
      * saves all instances contained within the collection passed in. This will set the
      * lastUpdateDateTime for the objects prior to saving.
      *
