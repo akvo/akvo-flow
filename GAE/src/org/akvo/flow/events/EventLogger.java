@@ -19,7 +19,6 @@ package org.akvo.flow.events;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,10 +75,6 @@ public class EventLogger {
             actionType = EventUtils.ACTION_CREATED;
         }
 
-        // get the orgId from the system properties. We use the s3bucket property
-        Properties props = System.getProperties();
-        String orgId = props.getProperty("s3bucket");
-        
         // create event source
         // get the authentication information. This seems to contain the userId, but
         // according to the documentation, should hold the 'password'
@@ -100,7 +95,8 @@ public class EventLogger {
         EventUtils.populateEntityProperties(types.type, context.getCurrentElement(), eventEntity);
 
         // create event
-        Map<String, Object> event = EventUtils.newEvent(orgId, types.action + actionType,
+        Map<String, Object> event = EventUtils.newEvent(context.getCurrentElement().getAppId(),
+                types.action + actionType,
                 eventEntity, eventContext);
         
         // store it
@@ -114,10 +110,6 @@ public class EventLogger {
     void logDelete(DeleteContext context) {
         // determine type of event and type of action
         EventTypes types = EventUtils.getEventAndActionType(context.getCurrentElement().getKind());
-
-        // get the orgId from the system properties. We use the s3bucket property
-        Properties props = System.getProperties();
-        String orgId = props.getProperty("s3bucket");
 
         // create event source
         // get the authentication information. This seems to contain the userId, but
@@ -138,7 +130,8 @@ public class EventLogger {
                 .getCurrentElement().getId());
 
         // create event
-        Map<String, Object> event = EventUtils.newEvent(orgId, types.action
+        Map<String, Object> event = EventUtils.newEvent(context.getCurrentElement().getAppId(),
+                types.action
                 + EventUtils.ACTION_DELETED,
                 eventEntity, eventContext);
 
