@@ -563,7 +563,22 @@ FLOW.surveyControl = Ember.ArrayController.create({
     FLOW.selectedControl.set('selectedForCopyQuestionGroup',null);
     FLOW.selectedControl.set('selectedForMoveQuestion',null);
     FLOW.selectedControl.set('selectedForCopyQuestion',null);
-  }
+  },
+
+  userCanDeleteData: function(surveyId) {
+    var survey;
+    this.get('content').forEach(function(item){
+        if(item.get('keyId') === surveyId) {
+            survey = item;
+        }
+    });
+
+    if(survey && survey.get('path')) {
+        return FLOW.userControl.canDeleteData(survey.get('path'))
+    } else {
+        return false; // need survey and survey path, otherwise prevent delete
+    }
+  },
 });
 
 

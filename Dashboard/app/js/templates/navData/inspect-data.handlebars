@@ -55,7 +55,7 @@
                         <a {{action showEditSurveyInstanceWindow SI target="this" }}>
                   {{t _edit}}
                 </a>
-                        {{#if FLOW.role.ADMIN }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
+                        {{#if FLOW.surveyInstanceControl.userCanDeleteData }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
                   {{t _delete}}
                 </a>{{/view}} {{/if}}
                     </td>
