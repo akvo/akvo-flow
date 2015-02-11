@@ -69,8 +69,8 @@ FLOW.ReportLoader = Ember.Object.create({
     criteria.opts.useQuestionId = '' + !!FLOW.editControl.useQuestionId;
     criteria.opts.from = FLOW.dateControl.get('fromDate');
     criteria.opts.to = FLOW.dateControl.get('toDate');
-    criteria.opts.email: FLOW.currentUser.email;
-    criteria.opts.flowServices: FLOW.Env.flowServices;
+    criteria.opts.email = FLOW.currentUser.email;
+    criteria.opts.flowServices = FLOW.Env.flowServices;
 
     this.set('criteria', criteria);
     FLOW.savingMessageControl.numLoadingChange(1);
