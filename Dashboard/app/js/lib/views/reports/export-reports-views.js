@@ -14,11 +14,7 @@ FLOW.ReportLoader = Ember.Object.create({
         exportMode: 'RAW_DATA',
         generateTabFormat: 'false',
         lastCollection: 'false',
-        useQuestionId: 'false',
-        email: FLOW.currentUser.email,
-        flowServices: FLOW.Env.flowServices,
-        from: null,
-        to: null
+        useQuestionId: 'false'
       }
     },
     RAW_DATA_TEXT: {
@@ -73,6 +69,8 @@ FLOW.ReportLoader = Ember.Object.create({
     criteria.opts.useQuestionId = '' + !!FLOW.editControl.useQuestionId;
     criteria.opts.from = FLOW.dateControl.get('fromDate');
     criteria.opts.to = FLOW.dateControl.get('toDate');
+    criteria.opts.email: FLOW.currentUser.email;
+    criteria.opts.flowServices: FLOW.Env.flowServices;
 
     this.set('criteria', criteria);
     FLOW.savingMessageControl.numLoadingChange(1);
