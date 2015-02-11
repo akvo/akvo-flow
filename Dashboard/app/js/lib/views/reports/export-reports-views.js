@@ -16,6 +16,7 @@ FLOW.ReportLoader = Ember.Object.create({
         lastCollection: 'false',
         useQuestionId: 'false',
         email: FLOW.currentUser.email,
+        flowServices: FLOW.Env.flowServices,
         from: null,
         to: null
       }
