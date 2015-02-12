@@ -76,12 +76,13 @@ public class InstanceConfigurator {
         String gaeId = cli.getOptionValue("gae");
         String outFolder = cli.getOptionValue("o");
         String flowServices = cli.getOptionValue("fs");
+        String eventNotification = cli.getOptionValue("en");
         String alias = cli.getOptionValue("a");
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
         String orgName = cli.getOptionValue("on");
         String signingKey = cli.getOptionValue("sk");
-
+        
         File out = new File(outFolder);
 
         if (!out.exists()) {
@@ -209,6 +210,7 @@ public class InstanceConfigurator {
         webData.put("instanceId", gaeId);
         webData.put("alias", alias);
         webData.put("flowServices", flowServices);
+        webData.put("eventNotification", eventNotification);
         webData.put("apiKey", apiKey);
         webData.put("emailFrom", emailFrom);
         webData.put("emailTo", emailTo);
@@ -268,6 +270,12 @@ public class InstanceConfigurator {
         flowServices.setArgs(1);
         flowServices.setRequired(true);
 
+        Option eventNotification = new Option("en",
+                "FLOW Services event notification endpoint, e.g. http://services.akvoflow.org:3030/event_notification");
+        eventNotification.setLongOpt("eventNotification");
+        eventNotification.setArgs(1);
+        eventNotification.setRequired(true);
+
         Option outputFolder = new Option("o", "Output folder for configuration files");
         outputFolder.setLongOpt("outFolder");
         outputFolder.setArgs(1);
@@ -292,6 +300,7 @@ public class InstanceConfigurator {
         options.addOption(emailTo);
         options.addOption(outputFolder);
         options.addOption(flowServices);
+        options.addOption(eventNotification);
         options.addOption(alias);
         options.addOption(signingKey);
 

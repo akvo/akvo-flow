@@ -38,6 +38,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.appengine.api.datastore.DeleteContext;
 import com.google.appengine.api.datastore.PostDelete;
@@ -51,6 +52,7 @@ public class EventLogger {
     private static final String CREATED_DATE_TIME_PROP = "createdDateTime";
     private static final String UNIFIED_LOG_NOTIFIED = "unifiedLogNotified";
     private static final String APP_ID_KEY = "appId";
+    private static final String EVENT_NOTIFICATION_PROPERTY = "eventNotification";
 
     private Cache cache;
 
@@ -61,25 +63,30 @@ public class EventLogger {
 
     private void sendNotification(String appId) {
         try {
-            URL url = new URL("http://flowdev1.akvo.org:3030/event_notification");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
+            String urlPath = PropertyUtil.getProperty(EVENT_NOTIFICATION_PROPERTY);
+            if (urlPath != null && urlPath.length() > 0) {
+                URL url = new URL("http://flowdev1.akvo.org:3030/event_notification");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoOutput(true);
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
 
-            Map<String, String> messageMap = new HashMap<String, String>();
-            messageMap.put(APP_ID_KEY, appId);
+                Map<String, String> messageMap = new HashMap<String, String>();
+                messageMap.put(APP_ID_KEY, appId);
 
-            ObjectMapper m = new ObjectMapper();
-            StringWriter w = new StringWriter();
-            m.writeValue(w, messageMap);
+                ObjectMapper m = new ObjectMapper();
+                StringWriter w = new StringWriter();
+                m.writeValue(w, messageMap);
 
-            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-            writer.write(w.toString());
-            writer.close();
+                OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+                writer.write(w.toString());
+                writer.close();
 
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                logger.log(Level.SEVERE, "Unified log notification failed");
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    logger.log(Level.SEVERE, "Unified log notification failed");
+                }
+            } else {
+                logger.log(Level.SEVERE, "Event notification URL not present in appengine-web.xml");
             }
         } catch (MalformedURLException e) {
             logger.log(Level.SEVERE, "Unified log notification failed with malformed URL exception");

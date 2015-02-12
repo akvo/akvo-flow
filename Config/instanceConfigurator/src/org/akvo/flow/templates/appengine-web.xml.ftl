@@ -11,6 +11,7 @@
     </static-files>
     <!-- Configure java.util.logging -->
     <system-properties>
+        <property name="eventNotification" value="$eventNotification" />
         <property name="apkS3Path" value="https://akvoflow.s3.amazonaws.com/apk/" />
         <property name="autoUpdateApk" value="true" />
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties" />
