@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
 import com.google.appengine.api.datastore.Entity;
 
@@ -93,6 +94,9 @@ public class EventUtils {
     public static final String ACTION_CREATED = "Created";
     public static final String ACTION_UPDATED = "Updated";
     
+    public static final String SURVEY_GROUP_TYPE_SURVEY = "SURVEY";
+    public static final String SURVEY_GROUP_TYPE_FOLDER = "FOLDER";
+
     public static class EventTypes {
         EventType type = null;
         String action = null;
@@ -166,9 +170,14 @@ public class EventUtils {
             case SURVEY_GROUP:
                 addNonNullProperty(NAME_KEY, e.getProperty(NAME_PROP), data);
                 addNonNullProperty(PARENT_ID_KEY, e.getProperty(PARENT_ID_PROP), data);
-                addNonNullProperty(SURVEY_GROUP_TYPE_KEY, e.getProperty(PROJECT_TYPE_PROP), data);
+                if (e.getProperty(PROJECT_TYPE_PROP).toString()
+                        .equals(SurveyGroup.ProjectType.PROJECT.toString())) {
+                    data.put(SURVEY_GROUP_TYPE_KEY, SURVEY_GROUP_TYPE_SURVEY);
+                } else if (e.getProperty(PROJECT_TYPE_PROP).toString()
+                        .equals(SurveyGroup.ProjectType.PROJECT_FOLDER.toString())) {
+                    data.put(SURVEY_GROUP_TYPE_KEY, SURVEY_GROUP_TYPE_FOLDER);
+                }
                 addNonNullProperty(DESCRIPTION_KEY, e.getProperty(DESCRIPTION_PROP), data);
-                // TODO check if this gives the desired result.
                 addNonNullProperty(PUBLIC_KEY,
                         e.getProperty(PRIVACY_LEVEL_PROP).toString()
                                 .equals(PrivacyLevel.PUBLIC.toString()), data);
