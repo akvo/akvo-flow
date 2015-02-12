@@ -30,22 +30,17 @@ import com.google.appengine.api.datastore.Text;
 public class EventQueue extends BaseDomain {
 
     private static final long serialVersionUID = 89484684617286776L;
-    private Date timestamp = null;
     private Text payload;
     private Boolean synced = false;
 
     public EventQueue(Date timestamp, String eventString) {
-        this.timestamp = timestamp;
         this.payload = new Text(eventString);
+        this.setLastUpdateDateTime(timestamp);
+        this.setCreatedDateTime(timestamp);
     }
 
-    public Date getTimestamp() {
-        return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
 
     public Text getPayload() {
         return payload;
