@@ -132,8 +132,8 @@ FLOW.ReportLoader = Ember.Object.create({
     this.set('processing', false);
     this.set('criteria', null);
     FLOW.dialogControl.set('activeAction', 'ignore');
-    FLOW.dialogControl.set('header', "Your report is being prepared");
-    FLOW.dialogControl.set('message', "We will notify you via email when the report is ready");
+    FLOW.dialogControl.set('header', Ember.String.loc('_your_report_is_being_prepared'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_we_will_notify_via_email'));
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
   }

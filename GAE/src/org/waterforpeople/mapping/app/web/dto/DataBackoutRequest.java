@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -21,6 +21,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -172,7 +173,8 @@ public class DataBackoutRequest extends RestRequest {
             fromDate = parseDate(req.getParameter(FROM_DATE_PARAM));
         }
         if (req.getParameter(TO_DATE_PARAM) != null) {
-            toDate = parseDate(req.getParameter(TO_DATE_PARAM));
+            toDate = new Date(parseDate(req.getParameter(TO_DATE_PARAM)).getTime()
+                    + TimeUnit.DAYS.toMillis(1));
         }
         if (req.getParameter(LIMIT_PARAM) != null) {
             try {
