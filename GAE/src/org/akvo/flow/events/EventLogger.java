@@ -16,11 +16,21 @@
 
 package org.akvo.flow.events;
 
+import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.sf.jsr107cache.Cache;
 
 import org.akvo.flow.events.EventUtils.EventSourceType;
 import org.akvo.flow.events.EventUtils.EventTypes;
@@ -39,11 +49,67 @@ public class EventLogger {
     
     private static final String LAST_UPDATE_DATE_TIME_PROP = "lastUpdateDateTime";
     private static final String CREATED_DATE_TIME_PROP = "createdDateTime";
+    private static final String UNIFIED_LOG_NOTIFIED = "unifiedLogNotified";
+    private static final String APP_ID_KEY = "appId";
+
+    private Cache cache;
+
+    public EventLogger() {
+        super();
+        cache = initCache(60); // cache notification for 1 minute
+    }
+
+    private void sendNotification(String appId) {
+        try {
+            URL url = new URL("http://flowdev1.akvo.org:3030/event_notification");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            Map<String, String> messageMap = new HashMap<String, String>();
+            messageMap.put(APP_ID_KEY, appId);
+
+            ObjectMapper m = new ObjectMapper();
+            StringWriter w = new StringWriter();
+            m.writeValue(w, messageMap);
+
+            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+            writer.write(w.toString());
+            writer.close();
+
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                logger.log(Level.SEVERE, "Unified log notification failed");
+            }
+        } catch (MalformedURLException e) {
+            logger.log(Level.SEVERE, "Unified log notification failed with malformed URL exception");
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Unified log notification failed with IO exception");
+        }
+
+    }
+
+    /*
+     * Notify the log that a new event is ready to be downloaded. The cache has an expiry of 60
+     * seconds, so if another request was fired within that time, we don't do anything.
+     */
+    private void notifyLog(String appId) {
+        if (this.cache != null) {
+            if (!cache.containsKey(UNIFIED_LOG_NOTIFIED)) {
+                sendNotification(appId);
+                cache.put(UNIFIED_LOG_NOTIFIED, null);
+                return;
+            }
+        } else {
+            // cache is not accessible, so we will notify anyway
+            sendNotification(appId);
+        }
+    }
 
     @SuppressWarnings({
             "unchecked", "rawtypes"
     })
-    private void storeEvent(Map<String, Object> event, Date timestamp) {
+    private void storeEvent(Map<String, Object> event, Date timestamp, String appId) {
         try {
             ObjectMapper m = new ObjectMapper();
             StringWriter w = new StringWriter();
@@ -51,6 +117,7 @@ public class EventLogger {
             BaseDAO<EventQueue> eventDao = new BaseDAO(EventQueue.class);
             EventQueue eventQ = new EventQueue(timestamp, w.toString());
             eventDao.save(eventQ);
+            notifyLog(appId);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             logger.log(Level.SEVERE, "could not store " + event.get("eventType") + " event");
@@ -100,7 +167,7 @@ public class EventLogger {
                 eventEntity, eventContext);
         
         // store it
-        storeEvent(event, timestamp);
+        storeEvent(event, timestamp, context.getCurrentElement().getAppId());
     }
 
     @PostDelete(kinds = {
@@ -136,6 +203,6 @@ public class EventLogger {
                 eventEntity, eventContext);
 
         // store it
-        storeEvent(event, timestamp);
+        storeEvent(event, timestamp, context.getCurrentElement().getAppId());
     }
 }
