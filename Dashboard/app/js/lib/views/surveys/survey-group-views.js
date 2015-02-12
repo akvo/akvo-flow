@@ -74,13 +74,17 @@ FLOW.ProjectMainView = FLOW.View.extend({
     var currentForm = FLOW.selectedControl.get('selectedSurvey');
 
     if (currentProject && currentProject.get('isDirty')) {
-      currentProject.set('code', currentProject.get('name'));
+      var name = currentProject.get('name').trim();
+      currentProject.set('name', name);
+      currentProject.set('code', name);
       currentProject.set('path', FLOW.projectControl.get('currentProjectPath'));
     }
 
     if (currentForm && currentForm.get('isDirty')) {
-      currentForm.set('code', currentForm.get('name'));
-      path = FLOW.projectControl.get('currentProjectPath') + "/" + currentForm.get('name');
+      var name = currentForm.get('name').trim();
+      currentForm.set('name', name);
+      currentForm.set('code', name);
+      var path = FLOW.projectControl.get('currentProjectPath') + "/" + currentForm.get('name');
       currentForm.set('path', path);
     }
 
