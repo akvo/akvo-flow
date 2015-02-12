@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -17,8 +17,11 @@
 package org.waterforpeople.mapping.app.web.dto;
 
 import java.text.DateFormat;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,6 +52,9 @@ public class DataBackoutRequest extends RestRequest {
     public static final String DATE_PARAM = "date";
     public static final String INCLUDE_DATE_PARAM = "includeDate";
     public static final String LAST_COLLECTION_PARAM = "lastCollection";
+    public static final String FROM_DATE_PARAM = "fromDate";
+    public static final String TO_DATE_PARAM = "toDate";
+    public static final String LIMIT_PARAM = "limit";
 
     private static final ThreadLocal<DateFormat> inFmt = new ThreadLocal<DateFormat>() {
         @Override
@@ -61,9 +67,11 @@ public class DataBackoutRequest extends RestRequest {
     private Long surveyInstanceId;
     private Long questionId;
     private String countryCode;
-    private Date date;
     private boolean includeDate;
     private boolean lastCollection = false;
+    private Date fromDate;
+    private Date toDate;
+    private Integer limit;
 
     public Long getSurveyId() {
         return surveyId;
@@ -89,14 +97,6 @@ public class DataBackoutRequest extends RestRequest {
         this.countryCode = countryCode;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     public Long getQuestionId() {
         return questionId;
     }
@@ -117,7 +117,31 @@ public class DataBackoutRequest extends RestRequest {
         return lastCollection;
     }
 
-    @Override
+    public Date getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public Date getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+	public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
+	@Override
     protected void populateErrors() {
         // TODO: add error checking
     }
@@ -136,7 +160,7 @@ public class DataBackoutRequest extends RestRequest {
             surveyInstanceId = Long.parseLong(instanceId.trim());
         }
         if (req.getParameter(DATE_PARAM) != null) {
-            date = inFmt.get().parse(req.getParameter(DATE_PARAM));
+            toDate = inFmt.get().parse(req.getParameter(DATE_PARAM));
         }
         if (req.getParameter(INCLUDE_DATE_PARAM) != null) {
             includeDate = Boolean.parseBoolean(req
@@ -145,9 +169,34 @@ public class DataBackoutRequest extends RestRequest {
             includeDate = false;
         }
 
+        if (req.getParameter(FROM_DATE_PARAM) != null) {
+            fromDate = parseDate(req.getParameter(FROM_DATE_PARAM));
+        }
+        if (req.getParameter(TO_DATE_PARAM) != null) {
+            toDate = new Date(parseDate(req.getParameter(TO_DATE_PARAM)).getTime()
+                    + TimeUnit.DAYS.toMillis(1));
+        }
+        if (req.getParameter(LIMIT_PARAM) != null) {
+            try {
+                limit = Integer.parseInt(req.getParameter(LIMIT_PARAM));
+            } catch (Exception e) {
+                limit = null;
+            }
+        }
+
         lastCollection = req.getParameter(LAST_COLLECTION_PARAM) != null
                 && "true".equals(req.getParameter(LAST_COLLECTION_PARAM));
         countryCode = req.getParameter(COUNTRY_PARAM);
     }
 
+    private static Date parseDate(String s) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            ParsePosition pp = new ParsePosition(0);
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return sdf.parse(s, pp);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
