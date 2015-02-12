@@ -49,6 +49,9 @@ usage: org.akvo.flow.InstanceConfigurator
  -et,--emailTo <arg>        Recipient email of error notifications
  -fs,--flowServices <arg>   FLOW Services url, e.g.
                             http://services.akvoflow.org
+ -en,--eventNotification <arg>
+                            FLOW services event notification endpoint, e.g.
+                            http://services.akvoflow.org:3030/event_notification
  -gae,--gaeId <arg>         GAE instance id - The `x` in
                             https://x.appspot.com
  -o,--outFolder <arg>       Output folder for configuration files
