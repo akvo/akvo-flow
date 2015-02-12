@@ -20,6 +20,7 @@ import java.util.Date;
 
 import javax.jdo.annotations.PersistenceCapable;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.framework.domain.BaseDomain;
 import com.google.appengine.api.datastore.Text;
 
@@ -30,24 +31,36 @@ import com.google.appengine.api.datastore.Text;
 public class EventQueue extends BaseDomain {
 
     private static final long serialVersionUID = 89484684617286776L;
-    private Text payload;
+    private String payload;
+    private Text payloadText;
     private Boolean synced = false;
 
     public EventQueue(Date timestamp, String eventString) {
-        this.payload = new Text(eventString);
         this.setLastUpdateDateTime(timestamp);
         this.setCreatedDateTime(timestamp);
+        this.setPayload(payload);
     }
 
+    public String getPayload() {
+        if (payload != null) {
+            return payload;
+        }
+        if (payloadText != null) {
+            return payloadText.getValue();
+        }
+        return null;
     }
 
-
-    public Text getPayload() {
-        return payload;
-    }
-
-    public void setPayload(Text payload) {
-        this.payload = payload;
+    public void setPayload(String payload) {
+        // Explicitly set the non used property to null
+        // to avoid problems when reading the value
+        if (payload != null && payload.length() > Constants.MAX_LENGTH) {
+            this.payload = null;
+            this.payloadText = new Text(payload);
+        } else {
+            this.payloadText = null;
+            this.payload = payload;
+        }
     }
 
     public Boolean getSynced() {
