@@ -20,9 +20,9 @@ public class EnsureHouseholdPrivacy implements Process {
             System.exit(1);
         }
 
-	    Filter projectFilter = new FilterPredicate("projectType", FilterOperator.EQUAL, "PROJECT");
-	    Filter publicFilter = new FilterPredicate("privacyLevel", FilterOperator.EQUAL, "PUBLIC");
-	    Query surveyQuery = new Query("SurveyGroup").setFilter(CompositeFilterOperator.and(projectFilter, publicFilter));
+        Filter projectFilter = new FilterPredicate("projectType", FilterOperator.EQUAL, "PROJECT");
+        Filter publicFilter = new FilterPredicate("privacyLevel", FilterOperator.EQUAL, "PUBLIC");
+        Query surveyQuery = new Query("SurveyGroup").setFilter(CompositeFilterOperator.and(projectFilter, publicFilter));
 
         for (Entity survey : ds.prepare(surveyQuery).asIterable()) {
             long id = survey.getKey().getId();
