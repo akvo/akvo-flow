@@ -119,7 +119,9 @@ public class EventLogger {
             StringWriter w = new StringWriter();
             m.writeValue(w, event);
             BaseDAO<EventQueue> eventDao = new BaseDAO<EventQueue>(EventQueue.class);
-            EventQueue eventQ = new EventQueue(timestamp, w.toString());
+            EventQueue eventQ = new EventQueue();
+            eventQ.setCreatedDateTime(timestamp);
+            eventQ.setPayload(w.toString());
             eventDao.save(eventQ);
             notifyLog(appId);
         } catch (Exception e) {

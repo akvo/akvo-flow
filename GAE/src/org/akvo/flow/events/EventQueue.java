@@ -16,8 +16,6 @@
 
 package org.akvo.flow.events;
 
-import java.util.Date;
-
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.common.Constants;
@@ -34,12 +32,6 @@ public class EventQueue extends BaseDomain {
     private String payload;
     private Text payloadText;
     private Boolean synced = false;
-
-    public EventQueue(Date timestamp, String eventString) {
-        this.setLastUpdateDateTime(timestamp);
-        this.setCreatedDateTime(timestamp);
-        this.setPayload(payload);
-    }
 
     public String getPayload() {
         if (payload != null) {
