@@ -53,7 +53,11 @@ public class CorrectFolderSurveyPath implements Process {
             }
         }
 
-        ds.put(updatedEntities);
+        if (args.length == 1 && args[0].equals("--dry-run")) {
+            System.out.println("This was a dry run. No changes saved to datastore");
+        } else {
+            ds.put(updatedEntities);
+        }
     }
 
     private void updateFolderSurveyPaths(Entity entity, String pathPrefix, List<Entity> entities) {
