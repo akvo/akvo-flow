@@ -16,6 +16,7 @@
 
 package org.akvo.gae.remoteapi;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,8 +27,9 @@ import com.google.appengine.api.datastore.Query;
 
 public class CorrectFolderSurveyPath implements Process {
 
-    private final String SURVEY_GROUP = "SurveyGroup";
-    private final String SURVEY = "Survey";
+    private static final String SURVEY_GROUP = "SurveyGroup";
+    private static final String SURVEY = "Survey";
+    private List<Entity> updatedEntities = new ArrayList<Entity>();
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
@@ -51,22 +53,27 @@ public class CorrectFolderSurveyPath implements Process {
             }
         }
 
-        System.out.println("Saving " + surveyGroups.size() + " survey groups; " + surveys.size()
-                + " surveys.");
-        ds.put(completeList);
+        ds.put(updatedEntities);
     }
 
     private void updateFolderSurveyPaths(Entity entity, String pathPrefix, List<Entity> entities) {
         // set folder/survey path
-        String entityPath = String.format("%s/%s", pathPrefix, entity.getProperty("name"));
-        entity.setProperty("path", entityPath);
-        System.out.println("Setting path for: " + entity.getKey() + " = " + entityPath);
+        String currentPath = (String) entity.getProperty("path");
+        String newEntityPath = String.format("%s/%s", pathPrefix, entity.getProperty("name"));
+        if (newEntityPath.equals(currentPath)) {
+            System.out.println("No changes made for: " + entity.getKey() + " = " + currentPath);
+        } else {
+            entity.setProperty("path", newEntityPath);
+            updatedEntities.add(entity);
+            System.out.println("Setting path for: " + entity.getKey() + "; " + currentPath + " => "
+                    + newEntityPath);
+        }
 
         // set all child folders/surveys paths
         for (Entity childEntity : entities) {
             Long parentId = getParentId(childEntity);
             if (parentId != null && parentId.equals(entity.getKey().getId())) {
-                updateFolderSurveyPaths(childEntity, entityPath, entities);
+                updateFolderSurveyPaths(childEntity, newEntityPath, entities);
             }
         }
     }
