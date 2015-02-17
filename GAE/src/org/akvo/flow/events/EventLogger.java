@@ -17,6 +17,15 @@
 package org.akvo.flow.events;
 
 import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
+import static org.akvo.flow.events.EventUtils.ACTION_CREATED;
+import static org.akvo.flow.events.EventUtils.ACTION_DELETED;
+import static org.akvo.flow.events.EventUtils.ACTION_UPDATED;
+import static org.akvo.flow.events.EventUtils.getEventAndActionType;
+import static org.akvo.flow.events.EventUtils.newContext;
+import static org.akvo.flow.events.EventUtils.newEntity;
+import static org.akvo.flow.events.EventUtils.newEvent;
+import static org.akvo.flow.events.EventUtils.newSource;
+import static org.akvo.flow.events.EventUtils.populateEntityProperties;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -32,12 +41,10 @@ import java.util.logging.Logger;
 
 import net.sf.jsr107cache.Cache;
 
-import org.akvo.flow.events.EventUtils.EventSourceType;
 import org.akvo.flow.events.EventUtils.EventTypes;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -137,14 +144,14 @@ public class EventLogger {
     void logPut(PutContext context) {
 
         // determine type of event and type of action
-        EventTypes types = EventUtils.getEventAndActionType(context.getCurrentElement().getKey()
+        EventTypes types = getEventAndActionType(context.getCurrentElement().getKey()
                 .getKind());
 
         // determine if this entity was created or updated
-        String actionType = EventUtils.ACTION_UPDATED;
+        String actionType = ACTION_UPDATED;
         if (context.getCurrentElement().getProperty(LAST_UPDATE_DATE_TIME_PROP) == context
                 .getCurrentElement().getProperty(CREATED_DATE_TIME_PROP)) {
-            actionType = EventUtils.ACTION_CREATED;
+            actionType = ACTION_CREATED;
         }
 
         // create event source
@@ -152,25 +159,22 @@ public class EventLogger {
         // according to the documentation, should hold the 'password'
         final Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
-        GaeUser usr = (GaeUser) authentication.getPrincipal();
 
-        Map<String, Object> eventSource = EventUtils
-                .newSource(EventSourceType.USER, usr.getEmail());
+        Map<String, Object> eventSource = newSource(authentication.getPrincipal());
 
         Date timestamp = (Date) context.getCurrentElement().getProperty(LAST_UPDATE_DATE_TIME_PROP);
         // create event context map
-        Map<String, Object> eventContext = EventUtils.newContext(timestamp, eventSource);
+        Map<String, Object> eventContext = newContext(timestamp, eventSource);
 
         // create event entity
-        Map<String, Object> eventEntity = EventUtils.newEntity(types.type, context
-                .getCurrentElement()
-                .getKey().getId());
-        EventUtils.populateEntityProperties(types.type, context.getCurrentElement(), eventEntity);
+        Map<String, Object> eventEntity = newEntity(types.type, context
+                .getCurrentElement().getKey().getId());
+
+        populateEntityProperties(types.type, context.getCurrentElement(), eventEntity);
 
         // create event
-        Map<String, Object> event = EventUtils.newEvent(context.getCurrentElement().getAppId(),
-                types.action + actionType,
-                eventEntity, eventContext);
+        Map<String, Object> event = newEvent(context.getCurrentElement().getAppId(),
+                types.action + actionType, eventEntity, eventContext);
 
         // store it
         storeEvent(event, timestamp, context.getCurrentElement().getAppId());
@@ -182,31 +186,29 @@ public class EventLogger {
     })
     void logDelete(DeleteContext context) {
         // determine type of event and type of action
-        EventTypes types = EventUtils.getEventAndActionType(context.getCurrentElement().getKind());
+        EventTypes types = getEventAndActionType(context.getCurrentElement().getKind());
 
         // create event source
         // get the authentication information. This seems to contain the userId, but
         // according to the documentation, should hold the 'password'
         final Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
-        String cred = authentication.getCredentials().toString();
+        Object principal = authentication.getPrincipal();
 
-        Map<String, Object> eventSource = EventUtils.newSource(EventSourceType.USER, cred);
+        Map<String, Object> eventSource = newSource(principal);
 
         // create event context map
         // we create our own timestamp here, as we don't have one in the context
         Date timestamp = new Date();
-        Map<String, Object> eventContext = EventUtils.newContext(timestamp, eventSource);
+        Map<String, Object> eventContext = newContext(timestamp, eventSource);
 
         // create event entity
-        Map<String, Object> eventEntity = EventUtils.newEntity(types.type, context
+        Map<String, Object> eventEntity = newEntity(types.type, context
                 .getCurrentElement().getId());
 
         // create event
-        Map<String, Object> event = EventUtils.newEvent(context.getCurrentElement().getAppId(),
-                types.action
-                        + EventUtils.ACTION_DELETED,
-                eventEntity, eventContext);
+        Map<String, Object> event = newEvent(context.getCurrentElement().getAppId(),
+                types.action + ACTION_DELETED, eventEntity, eventContext);
 
         // store it
         storeEvent(event, timestamp, context.getCurrentElement().getAppId());
