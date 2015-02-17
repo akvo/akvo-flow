@@ -57,7 +57,6 @@ public class EventLogger {
     private Cache cache;
 
     public EventLogger() {
-        super();
         cache = initCache(60); // cache notification for 1 minute
     }
 
@@ -113,22 +112,18 @@ public class EventLogger {
         }
     }
 
-    @SuppressWarnings({
-            "unchecked", "rawtypes"
-    })
+
     private void storeEvent(Map<String, Object> event, Date timestamp, String appId) {
         try {
             ObjectMapper m = new ObjectMapper();
             StringWriter w = new StringWriter();
             m.writeValue(w, event);
-            BaseDAO<EventQueue> eventDao = new BaseDAO(EventQueue.class);
+            BaseDAO<EventQueue> eventDao = new BaseDAO<EventQueue>(EventQueue.class);
             EventQueue eventQ = new EventQueue(timestamp, w.toString());
             eventDao.save(eventQ);
             notifyLog(appId);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             logger.log(Level.SEVERE, "could not store " + event.get("eventType") + " event");
-            e.printStackTrace();
         }
     }
 
