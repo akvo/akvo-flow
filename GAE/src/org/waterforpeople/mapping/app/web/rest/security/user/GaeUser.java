@@ -65,7 +65,7 @@ public class GaeUser implements Serializable {
 
     @Override
     public String toString() {
-        return "GaeUser{" +
+        return "GaeUser{email = '" + email + "' " +
                 ", userName='" + userName + '\'' +
                 ", authorities=" + authorities +
                 '}';

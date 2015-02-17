@@ -39,6 +39,7 @@ public class EventUtils {
 
     // property keys in events
     public static final String ID_KEY = "id";
+    public static final String EMAIL_KEY = "email";
     public static final String DISPLAY_TEXT_KEY = "displayText";
     public static final String NAME_KEY = "name";
     public static final String DESCRIPTION_KEY = "description";
@@ -93,7 +94,7 @@ public class EventUtils {
     public static final String ACTION_DELETED = "Deleted";
     public static final String ACTION_CREATED = "Created";
     public static final String ACTION_UPDATED = "Updated";
-    
+
     public static final String SURVEY_GROUP_TYPE_SURVEY = "SURVEY";
     public static final String SURVEY_GROUP_TYPE_FOLDER = "FOLDER";
 
@@ -137,21 +138,21 @@ public class EventUtils {
         return names;
     }
 
-    
     private static Map<String, Object> addNonNullProperty(String key, Object val,
             Map<String, Object> data) {
-      if (val != null) {
-          data.put(key, val);
-          return data;
-      }
-      return data;
-  }
- 
+        if (val != null) {
+            data.put(key, val);
+            return data;
+        }
+        return data;
+    }
+
     public static Map<String, Object> populateEntityProperties(EventType type, Entity e,
             Map<String, Object> data) {
-        switch (type){
+        switch (type) {
             case ANSWER:
-                addNonNullProperty(FORM_INSTANCE_ID_KEY, e.getProperty(SURVEY_INSTANCE_ID_PROP), data);
+                addNonNullProperty(FORM_INSTANCE_ID_KEY, e.getProperty(SURVEY_INSTANCE_ID_PROP),
+                        data);
                 addNonNullProperty(TYPE_KEY, e.getProperty(TYPE_PROP), data);
                 addNonNullProperty(VALUE_KEY, e.getProperty(VALUE_PROP), data);
                 break;
@@ -195,14 +196,15 @@ public class EventUtils {
             case QUESTION:
                 addNonNullProperty(DISPLAY_TEXT_KEY, e.getProperty(TEXT_PROP), data);
                 addNonNullProperty(IDENTIFIER_KEY, e.getProperty(QUESTION_ID_PROP), data);
-                addNonNullProperty(QUESTION_GROUP_ID_KEY, e.getProperty(QUESTION_GROUP_ID_PROP), data);
+                addNonNullProperty(QUESTION_GROUP_ID_KEY, e.getProperty(QUESTION_GROUP_ID_PROP),
+                        data);
                 addNonNullProperty(FORM_ID_KEY, e.getProperty(SURVEY_ID_PROP), data);
                 addNonNullProperty(QUESTION_TYPE_KEY, e.getProperty(TYPE_PROP), data);
                 break;
         }
         return data;
     }
-    
+
     public static Map<String, Object> newEvent(String orgId, String eventType,
             Map<String, Object> entity,
             Map<String, Object> context) throws AssertionError {
@@ -225,7 +227,7 @@ public class EventUtils {
     public static Map<String, Object> newSource(EventSourceType sourceType, String cred) {
         Map<String, Object> source = new HashMap<String, Object>();
         source.put(TYPE_KEY, sourceType);
-        source.put(ID_KEY, cred);
+        source.put(EMAIL_KEY, cred);
         return source;
     }
 

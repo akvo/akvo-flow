@@ -37,6 +37,7 @@ import org.akvo.flow.events.EventUtils.EventTypes;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
@@ -151,9 +152,10 @@ public class EventLogger {
         // according to the documentation, should hold the 'password'
         final Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
-        String cred = authentication.getCredentials().toString();
+        GaeUser usr = (GaeUser) authentication.getPrincipal();
 
-        Map<String, Object> eventSource = EventUtils.newSource(EventSourceType.USER, cred);
+        Map<String, Object> eventSource = EventUtils
+                .newSource(EventSourceType.USER, usr.getEmail());
 
         Date timestamp = (Date) context.getCurrentElement().getProperty(LAST_UPDATE_DATE_TIME_PROP);
         // create event context map
