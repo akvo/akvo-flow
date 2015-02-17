@@ -47,7 +47,7 @@ import com.google.appengine.api.datastore.PutContext;
 
 public class EventLogger {
     private static Logger logger = Logger.getLogger(EventLogger.class.getName());
-    
+
     private static final String LAST_UPDATE_DATE_TIME_PROP = "lastUpdateDateTime";
     private static final String CREATED_DATE_TIME_PROP = "createdDateTime";
     private static final String UNIFIED_LOG_NOTIFIED = "unifiedLogNotified";
@@ -63,34 +63,35 @@ public class EventLogger {
     private void sendNotification(String appId) {
         try {
             String urlPath = PropertyUtil.getProperty(EVENT_NOTIFICATION_PROPERTY);
-            if (urlPath != null && urlPath.length() > 0) {
-                URL url = new URL("http://flowdev1.akvo.org:3030/event_notification");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoOutput(true);
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json");
 
-                Map<String, String> messageMap = new HashMap<String, String>();
-                messageMap.put(APP_ID_KEY, appId);
-
-                ObjectMapper m = new ObjectMapper();
-                StringWriter w = new StringWriter();
-                m.writeValue(w, messageMap);
-
-                OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-                writer.write(w.toString());
-                writer.close();
-
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                    logger.log(Level.SEVERE, "Unified log notification failed");
-                }
-            } else {
+            if (urlPath == null || urlPath.trim().length() == 0) {
                 logger.log(Level.SEVERE, "Event notification URL not present in appengine-web.xml");
+                return;
+            }
+
+            URL url = new URL(urlPath.trim());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            Map<String, String> messageMap = new HashMap<String, String>();
+            messageMap.put(APP_ID_KEY, appId);
+
+            ObjectMapper m = new ObjectMapper();
+
+            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+            m.writeValue(writer, messageMap);
+            writer.close();
+
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                logger.log(Level.SEVERE, "Unified log notification failed");
             }
         } catch (MalformedURLException e) {
-            logger.log(Level.SEVERE, "Unified log notification failed with malformed URL exception");
+            logger.log(Level.SEVERE,
+                    "Unified log notification failed with malformed URL exception", e);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Unified log notification failed with IO exception");
+            logger.log(Level.SEVERE, "Unified log notification failed with IO exception", e);
         }
 
     }
@@ -112,7 +113,6 @@ public class EventLogger {
         }
     }
 
-
     private void storeEvent(Map<String, Object> event, Date timestamp, String appId) {
         try {
             ObjectMapper m = new ObjectMapper();
@@ -132,7 +132,7 @@ public class EventLogger {
             "QuestionAnswerStore", "SurveyedLocale"
     })
     void logPut(PutContext context) {
-  
+
         // determine type of event and type of action
         EventTypes types = EventUtils.getEventAndActionType(context.getCurrentElement().getKey()
                 .getKind());
@@ -167,7 +167,7 @@ public class EventLogger {
         Map<String, Object> event = EventUtils.newEvent(context.getCurrentElement().getAppId(),
                 types.action + actionType,
                 eventEntity, eventContext);
-        
+
         // store it
         storeEvent(event, timestamp, context.getCurrentElement().getAppId());
     }
@@ -201,7 +201,7 @@ public class EventLogger {
         // create event
         Map<String, Object> event = EventUtils.newEvent(context.getCurrentElement().getAppId(),
                 types.action
-                + EventUtils.ACTION_DELETED,
+                        + EventUtils.ACTION_DELETED,
                 eventEntity, eventContext);
 
         // store it
