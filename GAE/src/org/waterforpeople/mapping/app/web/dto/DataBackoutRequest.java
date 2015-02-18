@@ -137,11 +137,11 @@ public class DataBackoutRequest extends RestRequest {
         return limit;
     }
 
-	public void setLimit(Integer limit) {
+    public void setLimit(Integer limit) {
         this.limit = limit;
     }
 
-	@Override
+    @Override
     protected void populateErrors() {
         // TODO: add error checking
     }
@@ -172,10 +172,13 @@ public class DataBackoutRequest extends RestRequest {
         if (req.getParameter(FROM_DATE_PARAM) != null) {
             fromDate = parseDate(req.getParameter(FROM_DATE_PARAM));
         }
+
         if (req.getParameter(TO_DATE_PARAM) != null) {
-            toDate = new Date(parseDate(req.getParameter(TO_DATE_PARAM)).getTime()
-                    + TimeUnit.DAYS.toMillis(1));
+            Date exclusiveDate = parseDate(req.getParameter(TO_DATE_PARAM));
+            toDate = exclusiveDate == null ? null : new Date(
+                    exclusiveDate.getTime() + TimeUnit.DAYS.toMillis(1));
         }
+
         if (req.getParameter(LIMIT_PARAM) != null) {
             try {
                 limit = Integer.parseInt(req.getParameter(LIMIT_PARAM));

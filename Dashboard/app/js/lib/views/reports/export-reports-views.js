@@ -67,8 +67,14 @@ FLOW.ReportLoader = Ember.Object.create({
 
     criteria.opts.lastCollection = '' + (exportType === 'RAW_DATA' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
     criteria.opts.useQuestionId = '' + !!FLOW.editControl.useQuestionId;
-    criteria.opts.from = FLOW.dateControl.get('fromDate');
-    criteria.opts.to = FLOW.dateControl.get('toDate');
+    var fromDate = FLOW.dateControl.get('fromDate');
+    if (fromDate !== null) {
+      criteria.opts.from = fromDate;
+    }
+    var toDate = FLOW.dateControl.get('toDate');
+    if (toDate !== null) {
+      criteria.opts.to = toDate;
+    }
     criteria.opts.email = FLOW.currentUser.email;
     criteria.opts.flowServices = FLOW.Env.flowServices;
 
