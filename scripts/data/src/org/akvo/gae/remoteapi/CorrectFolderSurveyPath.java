@@ -64,9 +64,7 @@ public class CorrectFolderSurveyPath implements Process {
         // set folder/survey path
         String currentPath = (String) entity.getProperty("path");
         String newEntityPath = String.format("%s/%s", pathPrefix, entity.getProperty("name"));
-        if (newEntityPath.equals(currentPath)) {
-            System.out.println("No changes made for: " + entity.getKey() + " = " + currentPath);
-        } else {
+        if (!newEntityPath.equals(currentPath)) {
             entity.setProperty("path", newEntityPath);
             updatedEntities.add(entity);
             System.out.println("Setting path for: " + entity.getKey() + "; " + currentPath + " => "
