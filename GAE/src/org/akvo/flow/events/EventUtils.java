@@ -22,7 +22,7 @@ public class EventUtils {
     };
 
     public enum EventType {
-        SURVEY_GROUP, FORM, QUESTION_GROUP, QUESTION, DATAPOINT, FORM_INSTANCE, ANSWER
+        SURVEY_GROUP, FORM, QUESTION_GROUP, QUESTION, DATA_POINT, FORM_INSTANCE, ANSWER
     };
 
     // names of kinds in Google App Engine
@@ -122,7 +122,7 @@ public class EventUtils {
                 break;
             case EventUtils.DATAPOINT_KIND:
                 names.action = EventUtils.DATAPOINT_ACTION;
-                names.type = EventType.DATAPOINT;
+                names.type = EventType.DATA_POINT;
                 break;
             case EventUtils.SURVEY_GROUP_KIND:
                 names.action = EventUtils.SURVEY_GROUP_ACTION;
@@ -168,7 +168,7 @@ public class EventUtils {
                 addNonNullProperty(COLLECTION_DATE_KEY, e.getProperty(COLLECTION_DATE_PROP), data);
                 addNonNullProperty(SURVEYAL_TIME_KEY, e.getProperty(SURVEYAL_TIME_PROP), data);
                 break;
-            case DATAPOINT:
+            case DATA_POINT:
                 addNonNullProperty(IDENTIFIER_KEY, e.getProperty(IDENTIFIER_PROP), data);
                 addNonNullProperty(LAT_KEY, e.getProperty(LATITUDE_PROP), data);
                 addNonNullProperty(LON_KEY, e.getProperty(LONGITUDE_PROP), data);
