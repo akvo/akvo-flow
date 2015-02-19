@@ -4,6 +4,10 @@ package org.akvo.flow.events;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 
 import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.survey.domain.SurveyGroup.PrivacyLevel;
@@ -11,12 +15,14 @@ import com.google.appengine.api.datastore.Entity;
 
 public class EventUtils {
 
+    private static Logger log = Logger.getLogger(EventUtils.class.getName());
+
     public enum EventSourceType {
-        USER, DEVICE, SENSOR, WEBFORM, API
+        USER, DEVICE, SENSOR, WEBFORM, API, UNKNOWN
     };
 
     public enum EventType {
-        SURVEY_GROUP, FORM, QUESTION_GROUP, QUESTION, DATAPOINT, FORM_INSTANCE, ANSWER
+        SURVEY_GROUP, FORM, QUESTION_GROUP, QUESTION, DATA_POINT, FORM_INSTANCE, ANSWER
     };
 
     // names of kinds in Google App Engine
@@ -117,7 +123,7 @@ public class EventUtils {
                 break;
             case EventUtils.DATAPOINT_KIND:
                 names.action = EventUtils.DATAPOINT_ACTION;
-                names.type = EventType.DATAPOINT;
+                names.type = EventType.DATA_POINT;
                 break;
             case EventUtils.SURVEY_GROUP_KIND:
                 names.action = EventUtils.SURVEY_GROUP_ACTION;
@@ -163,7 +169,7 @@ public class EventUtils {
                 addNonNullProperty(COLLECTION_DATE_KEY, e.getProperty(COLLECTION_DATE_PROP), data);
                 addNonNullProperty(SURVEYAL_TIME_KEY, e.getProperty(SURVEYAL_TIME_PROP), data);
                 break;
-            case DATAPOINT:
+            case DATA_POINT:
                 addNonNullProperty(IDENTIFIER_KEY, e.getProperty(IDENTIFIER_PROP), data);
                 addNonNullProperty(LAT_KEY, e.getProperty(LATITUDE_PROP), data);
                 addNonNullProperty(LON_KEY, e.getProperty(LONGITUDE_PROP), data);
@@ -225,10 +231,21 @@ public class EventUtils {
         return result;
     }
 
-    public static Map<String, Object> newSource(EventSourceType sourceType, String cred) {
+    public static Map<String, Object> newSource(Object principal) {
         Map<String, Object> source = new HashMap<String, Object>();
-        source.put(TYPE_KEY, sourceType);
-        source.put(EMAIL_KEY, cred);
+
+        if (principal instanceof String) {
+            source.put(TYPE_KEY, EventSourceType.DEVICE); // FIXME: Is this the right thing to do?
+        } else if (principal instanceof GaeUser) {
+            GaeUser usr = (GaeUser) principal;
+            source.put(TYPE_KEY, EventSourceType.USER);
+            source.put(EMAIL_KEY, usr.getEmail());
+            source.put(ID_KEY, usr.getUserId());
+        } else {
+            log.log(Level.WARNING, "Unable to identify source from authentication principal: "
+                    + principal.toString());
+        }
+
         return source;
     }
 
