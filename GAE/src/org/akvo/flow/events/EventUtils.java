@@ -52,6 +52,7 @@ public class EventUtils {
     public static final String ORG_ID_KEY = "orgId";
     public static final String SURVEY_ID_KEY = "surveyId";
     public static final String QUESTION_TYPE_KEY = "questionType";
+    public static final String ANSWER_TYPE_KEY = "answerType";
     public static final String PARENT_ID_KEY = "parentId";
     public static final String FORM_ID_KEY = "formId";
     public static final String QUESTION_GROUP_ID_KEY = "questionGroupId";
@@ -153,7 +154,7 @@ public class EventUtils {
             case ANSWER:
                 addNonNullProperty(FORM_INSTANCE_ID_KEY, e.getProperty(SURVEY_INSTANCE_ID_PROP),
                         data);
-                addNonNullProperty(TYPE_KEY, e.getProperty(TYPE_PROP), data);
+                addNonNullProperty(ANSWER_TYPE_KEY, e.getProperty(TYPE_PROP), data);
                 addNonNullProperty(VALUE_KEY, e.getProperty(VALUE_PROP), data);
                 break;
             case FORM_INSTANCE:
