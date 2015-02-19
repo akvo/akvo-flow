@@ -261,8 +261,11 @@ public class SurveyRestService {
                     });
 
                     s.setDesc(surveyDto.getDescription());
-                    // Make sure that code and name are the same
-                    s.setCode(s.getName());
+
+                    String trimmedName = s.getName().trim();
+                    s.setName(trimmedName);
+                    s.setCode(trimmedName);
+                    s.setPath(SurveyUtils.fixPath(s.getPath(), trimmedName));
 
                     if (surveyDto.getStatus() != null) {
                         // increment version for surveys already published

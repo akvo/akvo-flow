@@ -245,6 +245,16 @@ public class SurveyUtils {
         return sg.getPath() + "/" + s.getName();
     }
 
+    public static String fixPath(String oldPath, String newName) {
+        if (oldPath != null) {
+            int idx = oldPath.lastIndexOf("/");
+            if (idx >= 0) {
+                return oldPath.substring(0, idx) + "/" + newName;
+            }
+        }
+        return oldPath;
+    }
+
     public static List<Translation> getTranslations(Long parentId,
             ParentType... types) {
         final List<Translation> trs = new ArrayList<Translation>();
@@ -279,16 +289,15 @@ public class SurveyUtils {
      * Sends a POST request to publish a cascade resource to a server defined by the `flowServices`
      * property
      *
-     * @param cascadeResourceId
-     *           The id of the cascade resource to publish
+     * @param cascadeResourceId The id of the cascade resource to publish
      * @return "failed" or "publishing requested", depending on the success.
      */
     public static String publishCascade(Long cascadeResourceId) {
-		String status = "failed";
-    	CascadeResourceDao crDao = new CascadeResourceDao();
-    	CascadeResource cr = crDao.getByKey(cascadeResourceId);
-    	if (cr != null){
-    		final String flowServiceURL = PropertyUtil.getProperty("flowServices");
+        String status = "failed";
+        CascadeResourceDao crDao = new CascadeResourceDao();
+        CascadeResource cr = crDao.getByKey(cascadeResourceId);
+        if (cr != null) {
+            final String flowServiceURL = PropertyUtil.getProperty("flowServices");
             final String uploadUrl = PropertyUtil.getProperty("surveyuploadurl");
 
             if (flowServiceURL == null || "".equals(flowServiceURL)) {
@@ -304,7 +313,8 @@ public class SurveyUtils {
                 cr.setVersion(cr.getVersion() + 1);
                 payload.put("version", cr.getVersion().toString());
 
-                log.log(Level.INFO, "Sending cascade publish request for cascade: " + cascadeResourceId);
+                log.log(Level.INFO, "Sending cascade publish request for cascade: "
+                        + cascadeResourceId);
 
                 final String postString = payload.toString();
                 log.log(Level.INFO, "POSTing to: " + flowServiceURL);
@@ -320,19 +330,17 @@ public class SurveyUtils {
                 log.log(Level.SEVERE,
                         "Error publishing cascade: " + e.getMessage(), e);
             }
-    	}
-		return status;
-	}
+        }
+        return status;
+    }
 
     /**
      * Sends a POST request of a collection of surveyIds to a server defined by the `flowServices`
      * property The property `alias` define the baseURL property that is sent in the request
      *
-     * @param surveyIds
-     *            Collection of ids (Long) that requires processing
-     * @param action
-     *            A string indicating the action that will be used, this string is used for building
-     *            the URL, with the `flowServices` property + / + action
+     * @param surveyIds Collection of ids (Long) that requires processing
+     * @param action A string indicating the action that will be used, this string is used for
+     *            building the URL, with the `flowServices` property + / + action
      * @return The response from the server or null when `flowServices` is not defined, or an error
      *         in the request happens
      */
@@ -378,10 +386,8 @@ public class SurveyUtils {
     /**
      * Given the path of an object, return a list of the paths of all its parent objects
      *
-     * @param objectPath
-     *            the path of an object
-     * @param includeRootPath
-     *            include the root path in the list of parent paths
+     * @param objectPath the path of an object
+     * @param includeRootPath include the root path in the list of parent paths
      * @return
      */
     public static List<String> listParentPaths(String objectPath, boolean includeRootPath) {
