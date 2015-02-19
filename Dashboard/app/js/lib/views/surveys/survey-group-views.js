@@ -204,11 +204,12 @@ FLOW.FolderEditView = Ember.TextField.extend({
   },
 
   focusOut: function() {
+    this.get('parentView').set('folderEdit', false);
     this.saveFolderName();
   },
 
   insertNewline: function() {
-    this.get('parentView').toggleEditFolderName();
+    this.get('parentView').set('folderEdit', false);
   }
 });
 
