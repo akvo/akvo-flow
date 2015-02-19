@@ -184,10 +184,13 @@ public class SurveyGroupRestService {
                             "displayName", "questionGroupList"
                     });
 
-                    String trimmedName = s.getName().trim();
-                    s.setName(trimmedName);
-                    s.setCode(trimmedName);
-                    s.setPath(SurveyUtils.fixPath(s.getPath(), trimmedName));
+                    String name = s.getName();
+                    if (name != null) {
+                        String trimmedName = name.trim();
+                        s.setName(trimmedName);
+                        s.setCode(trimmedName);
+                        s.setPath(SurveyUtils.fixPath(s.getPath(), trimmedName));
+                    }
 
                     if (Boolean.FALSE.equals(s.getMonitoringGroup())) {
                         s.setNewLocaleSurveyId(null);

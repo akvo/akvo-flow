@@ -246,11 +246,12 @@ public class SurveyUtils {
     }
 
     public static String fixPath(String oldPath, String newName) {
-        if (oldPath != null) {
-            int idx = oldPath.lastIndexOf("/");
-            if (idx >= 0) {
-                return oldPath.substring(0, idx) + "/" + newName;
-            }
+        if (oldPath == null || newName == null) {
+            return oldPath;
+        }
+        int idx = oldPath.lastIndexOf("/");
+        if (idx >= 0) {
+            return oldPath.substring(0, idx) + "/" + newName;
         }
         return oldPath;
     }
