@@ -39,6 +39,7 @@ import org.waterforpeople.mapping.app.web.rest.dto.SurveyGroupPayload;
 
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
 
@@ -183,8 +184,13 @@ public class SurveyGroupRestService {
                             "displayName", "questionGroupList"
                     });
 
-                    // Make sure that code and name are the same
-                    s.setCode(s.getName());
+                    String name = s.getName();
+                    if (name != null) {
+                        String trimmedName = name.trim();
+                        s.setName(trimmedName);
+                        s.setCode(trimmedName);
+                        s.setPath(SurveyUtils.fixPath(s.getPath(), trimmedName));
+                    }
 
                     if (Boolean.FALSE.equals(s.getMonitoringGroup())) {
                         s.setNewLocaleSurveyId(null);
