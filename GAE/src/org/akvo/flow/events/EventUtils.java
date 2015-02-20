@@ -174,6 +174,7 @@ public class EventUtils {
                 addNonNullProperty(LAT_KEY, e.getProperty(LATITUDE_PROP), data);
                 addNonNullProperty(LON_KEY, e.getProperty(LONGITUDE_PROP), data);
                 addNonNullProperty(NAME_KEY, e.getProperty(DISPLAY_NAME_PROP), data);
+                addNonNullProperty(SURVEY_ID_KEY, e.getProperty(SURVEY_GROUP_ID_PROP), data);
                 break;
             case SURVEY_GROUP:
                 addNonNullProperty(NAME_KEY, e.getProperty(NAME_PROP), data);
