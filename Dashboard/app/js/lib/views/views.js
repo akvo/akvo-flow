@@ -709,6 +709,7 @@ FLOW.SelectFolder = Ember.Select.extend({
     var keyId = this.get('value');
     var nextIdx = this.get('idx') + 1;
     var monitoringOnly = this.get('showMonitoringSurveysOnly');
+    var filter = this.get('selectionFilter');
 
     if (nextIdx !== childViews.length) {
       childViews.removeAt(nextIdx, childViews.length - nextIdx);
@@ -721,7 +722,8 @@ FLOW.SelectFolder = Ember.Select.extend({
       childViews.pushObject(FLOW.SelectFolder.create({
         parentId: keyId,
         idx: nextIdx,
-        showMonitoringSurveysOnly: monitoringOnly
+        showMonitoringSurveysOnly: monitoringOnly,
+        selectionFilter : filter
       }));
     }
   }.observes('value'),

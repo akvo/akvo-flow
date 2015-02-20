@@ -174,9 +174,8 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     FLOW.selectedControl.set('selectedSurveyGroup', null);
   },
 
-  /* return all the ancestor paths of a survey group */
-  ancestorPaths: function(surveyGroup) {
-    var pathString = surveyGroup.get('path');
+  /* return all the ancestor paths of a given path string */
+  ancestorPaths: function(pathString) {
     if(!pathString) {
         return [];
     }
@@ -213,18 +212,30 @@ FLOW.projectControl = Ember.ArrayController.create({
     window.scrollTo(0,0);
   },
 
-  /* return true if data cleaning permission is present for the
-  path of the given surveyGroup */
+  /* return true if the given SurveyGroup's path (partially) matches or is one of the ancestors (paths) of a path for which the data cleaning permission is present. The ancestor SurveyGroups are needed in order to be able to browse to the actual path to which the permission is assigned */
   dataCleaningEnabled: function(surveyGroup) {
     var pathPermissions = FLOW.userControl.currentUserPathPermissions();
-    var ancestorPaths = FLOW.surveyGroupControl.ancestorPaths(surveyGroup);
-    for (var i = 0; i < ancestorPaths.length; i++) {
-        var path = ancestorPaths[i];
-        if(path in pathPermissions && pathPermissions[path].indexOf("DATA_CLEANING") > -1) {
-            return true;
+    var permissionList;
+    var pathStartsWithPattern;
+    var matched = false;
+    for (var key in pathPermissions) {
+        permissionList = pathPermissions[key];
+        if(permissionList.indexOf("DATA_CLEANING") > -1){
+            pathStartsWithPattern = new RegExp('^' + key);
+            if(surveyGroup.get('path').match(pathStartsWithPattern)) {
+                matched = true;
+                break;
+            } else {
+                // match all the ancestor paths to enable browsing to lower level paths
+                FLOW.surveyGroupControl.ancestorPaths(key).forEach(function (path) {
+                    if(!matched && surveyGroup.get('path') === path) {
+                        matched = true;
+                    }
+                });
+            }
         }
     }
-    return false;
+    return matched;
   },
 
   /* Computed properties */
