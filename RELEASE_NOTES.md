@@ -5,6 +5,18 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.2
+Date: 20 February 2015
+
+## New and noteworthy
+* Data cleaning can be restricted via permissioning [#943]
+* Added the ability to filter data by date on the raw data export tab, reports are now also emailed to users [#1103]
+
+## Resolved issues
+* Fixed issue where trailing spaces in folder/survey/form names resulted in permissions problems [#1110]
+* Trailing spaces in option questions no longer impact dependencies appearing [#1123]
+* Permissions are now correctly merged when more than one role is applied to the same path [#1161]
+
 #1.8.1
 Date: 02 February 2015
 
@@ -151,19 +163,19 @@ Date: 5 September 2014
 
 ## New and noteworthy
 * Implement read API [#717] - Akvo FLOW now has a full read API! Details can be found [here](https://github.com/akvo/akvo-flow/wiki/Akvo-FLOW-API)
-* Stylesheet cleaning and refactor [#609, #612] - The user interface has been given a makeover. In addition to various other details, surveys are now displayed in a list, which makes finding them easier. 
+* Stylesheet cleaning and refactor [#609, #612] - The user interface has been given a makeover. In addition to various other details, surveys are now displayed in a list, which makes finding them easier.
 * Introduce textual question identifier [#650] - A question can now be given a textual identifier, which can be used as a column heading when exporting data, and which is present in the read API. This makes it easier to transfer FLOW data to other databases.
 
 ## Resolved issues
-* RAW DATA export keeps using "use question id" in Data Cleaning tab [#756] 
-* Copying a copied survey across instances breaks survey publishing [#744] 
-* Non-specified surveyGroupId query param in SurveyedLocaleRestService causes a JDOUserException [#727] 		
+* RAW DATA export keeps using "use question id" in Data Cleaning tab [#756]
+* Copying a copied survey across instances breaks survey publishing [#744]
+* Non-specified surveyGroupId query param in SurveyedLocaleRestService causes a JDOUserException [#727]
 * Various small UI changes:
-	* Change of wording: "record" => "data point" [#753, #740] 
-	* Monitoring tab style is broken [#751] 
-	* Dashboard tooltips are shown twice  [#745] 
-	* Footer layout breaks using Spanish|French and low resolution [#570] 
-	* Master language tooltip incorrect [#442] 
+	* Change of wording: "record" => "data point" [#753, #740]
+	* Monitoring tab style is broken [#751]
+	* Dashboard tooltips are shown twice  [#745]
+	* Footer layout breaks using Spanish|French and low resolution [#570]
+	* Master language tooltip incorrect [#442]
 
 #1.7.2.2
 
@@ -182,7 +194,7 @@ Date: 5 September 2014
 ## New and noteworthy
 
 * The new APK v2.0 is now available in `http://instance.akvoflow.org/app2` [#666]
-* Introduced more consistent counts, fixing inaccuracies between the Dashboard's 
+* Introduced more consistent counts, fixing inaccuracies between the Dashboard's
   chart builder and the _RAW DATA_ report. [#651]
 * Revamped the way of transferring data to/from _Object Store_ (Amazon S3) [#690]
 
@@ -243,7 +255,7 @@ Date: 5 September 2014
 
 ## New and noteworthy
 
-* Monitoring features — Monitoring features enable users to download data on existing points on their phones, and add information to these points. Regular survey forms can be used to register entities, so they can be retrieved later for further data collection. This makes it possible to see how data has changed over time, or to collect new properties of the same entity. 
+* Monitoring features — Monitoring features enable users to download data on existing points on their phones, and add information to these points. Regular survey forms can be used to register entities, so they can be retrieved later for further data collection. This makes it possible to see how data has changed over time, or to collect new properties of the same entity.
 
 
 ## Resolved issues
@@ -651,4 +663,3 @@ Other minor enhancements
 * Fix a bug where services.akvoflow.org was dishing up stale reports (#246)
 * Fix bug in validation of min/max parameter on type=Number survey questions where string values were being compared instead of int values (#258)
 * Increase maximum map place mark points from 200 to 500 to improve map performance (#263)
-
