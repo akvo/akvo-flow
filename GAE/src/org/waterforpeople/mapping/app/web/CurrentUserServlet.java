@@ -117,7 +117,11 @@ public class CurrentUserServlet extends HttpServlet {
         for (UserAuthorization auth : authorizationList) {
             UserRole role = roleMap.get(auth.getRoleId());
             if (role != null) {
-                permissions.put(auth.getObjectPath(), role.getPermissions());
+                if (permissions.containsKey(auth.getObjectPath())) {
+                    permissions.get(auth.getObjectPath()).addAll(role.getPermissions());
+                } else {
+                    permissions.put(auth.getObjectPath(), role.getPermissions());
+                }
             }
         }
 
