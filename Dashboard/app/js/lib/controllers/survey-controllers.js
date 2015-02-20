@@ -223,8 +223,6 @@ FLOW.projectControl = Ember.ArrayController.create({
         if(permissionList.indexOf("DATA_CLEANING") > -1){
             pathStartsWithPattern = new RegExp('^' + key);
             if(surveyGroup.get('path').match(pathStartsWithPattern)) {
-                console.log("matching " + surveyGroup.get('path'));
-                console.log("against " + pathStartsWithPattern);
                 matched = true;
                 break;
             } else {
