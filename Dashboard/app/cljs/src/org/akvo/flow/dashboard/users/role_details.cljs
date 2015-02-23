@@ -31,7 +31,8 @@
    "FORM_CREATE" (t> _create_forms)
    "FORM_READ" (t> _access_forms)
    "FORM_UPDATE" (t> _edit_forms)
-   "FORM_DELETE" (t> _delete_forms)})
+   "FORM_DELETE" (t> _delete_forms)
+   "DATA_CLEANING" (t> _data_cleaning)})
 
 (defn header-section [{:keys [role on-close]} owner]
   (om/component
@@ -75,7 +76,7 @@
           [:input.form-control {:name "userRoleName" :value name
                                 :on-change #(om/set-state! owner "name" (-> % .-target .-value))}]]
          [:div.topMargin.permissionList
-          (for [[value caption] all-permissions]
+          (for [[value caption] (sort-by first all-permissions)]
             (checkbox owner value caption (contains? (set permissions) value)))]
          [:div.form-group
           (b/btn-primary {:class (if (empty? name) "disabled")

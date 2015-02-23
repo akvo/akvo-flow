@@ -139,7 +139,7 @@ public class RawDataExporter extends AbstractDataExporter {
     private void exportInstances(Writer pw, List<String> idList)
             throws Exception {
         Map<String, String> instances = BulkDataServiceClient.fetchInstanceIds(
-                surveyId, serverBase, apiKey, false);
+                surveyId, serverBase, apiKey, false, null, null, null);
         if (instances != null) {
             String imagePrefix = imgPrefix != null ? imgPrefix : IMAGE_PREFIX;
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -19,7 +19,9 @@ package org.waterforpeople.mapping.app.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -115,9 +117,15 @@ public class CurrentUserServlet extends HttpServlet {
         for (UserAuthorization auth : authorizationList) {
             UserRole role = roleMap.get(auth.getRoleId());
             if (role != null) {
-                permissions.put(auth.getObjectPath(), role.getPermissions());
+                if (permissions.containsKey(auth.getObjectPath())) {
+                    permissions.get(auth.getObjectPath()).addAll(role.getPermissions());
+                } else {
+                    permissions.put(auth.getObjectPath(), role.getPermissions());
+                }
             }
         }
+
+        addSuperAdminPermissions(currentUser, permissions);
 
         ObjectMapper jsonObjectMapper = new ObjectMapper();
         StringWriter writer = new StringWriter();
@@ -132,5 +140,21 @@ public class CurrentUserServlet extends HttpServlet {
         }
 
         return writer.toString();
+    }
+
+    /**
+     * Enable users designated as superAdmin in the backend complete access to all functionality on
+     * the frontend
+     *
+     * @param currentUser
+     * @param permissions
+     */
+    private void addSuperAdminPermissions(User currentUser, Map<String, Set<Permission>> permissions) {
+        if (!currentUser.getPermissionList().equals("0")) {
+            return;
+        }
+
+        List<Permission> permissionList = Arrays.asList(Permission.values());
+        permissions.put("/", new HashSet<Permission>(permissionList));
     }
 }

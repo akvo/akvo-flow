@@ -74,13 +74,17 @@ FLOW.ProjectMainView = FLOW.View.extend({
     var currentForm = FLOW.selectedControl.get('selectedSurvey');
 
     if (currentProject && currentProject.get('isDirty')) {
-      currentProject.set('code', currentProject.get('name'));
+      var name = currentProject.get('name').trim();
+      currentProject.set('name', name);
+      currentProject.set('code', name);
       currentProject.set('path', FLOW.projectControl.get('currentProjectPath'));
     }
 
     if (currentForm && currentForm.get('isDirty')) {
-      currentForm.set('code', currentForm.get('name'));
-      path = FLOW.projectControl.get('currentProjectPath') + "/" + currentForm.get('name');
+      var name = currentForm.get('name').trim();
+      currentForm.set('name', name);
+      currentForm.set('code', name);
+      var path = FLOW.projectControl.get('currentProjectPath') + "/" + name;
       currentForm.set('path', path);
     }
 
@@ -191,18 +195,21 @@ FLOW.FolderEditView = Ember.TextField.extend({
   path: null,
 
   saveFolderName: function() {
-    this.content.set('name', this.content.get('code'));
-    path = FLOW.projectControl.get('currentProjectPath') + "/" + this.content.get('name');
-    this.content.set('path', path );
+    var name = this.content.get('code').trim();
+    this.content.set('name', name);
+    this.content.set('code', name);
+    var path = FLOW.projectControl.get('currentProjectPath') + "/" + name;
+    this.content.set('path', path);
     FLOW.store.commit();
   },
 
   focusOut: function() {
+    this.get('parentView').set('folderEdit', false);
     this.saveFolderName();
   },
 
   insertNewline: function() {
-    this.get('parentView').toggleEditFolderName();
+    this.get('parentView').set('folderEdit', false);
   }
 });
 

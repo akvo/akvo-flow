@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -35,7 +35,11 @@ public enum Permission {
     FORM_CREATE("POST", "/rest/surveys"),
     FORM_READ("GET", "/rest/surveys"),
     FORM_UPDATE("PUT", "/rest/surveys"),
-    FORM_DELETE("DELETE", "/rest/surveys");
+    FORM_DELETE("DELETE", "/rest/surveys"),
+
+    // there is no GAE URI for data export / import as this is handled by FLOW services so we use
+    // empty strings as placeholders
+    DATA_CLEANING("", "");
 
     private final String httpMethod;
     private final String uriPrefix;

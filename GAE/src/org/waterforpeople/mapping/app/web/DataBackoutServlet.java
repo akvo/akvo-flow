@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -102,20 +102,23 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
         } else if (DataBackoutRequest.LIST_INSTANCE_ACTION.equals(boReq
                 .getAction())) {
             response.setMessage(listSurveyInstance(boReq.getSurveyId(),
-                    boReq.getDate(), boReq.includeDate(),
-                    boReq.getLastCollection()));
+                    boReq.includeDate(),
+                    boReq.getLastCollection(),
+                    boReq.getFromDate(),
+                    boReq.getToDate(),
+                    boReq.getLimit()));
         } else if (DataBackoutRequest.DELETE_SURVEY_INSTANCE_ACTION
                 .equals(boReq.getAction())) {
             deleteSurveyInstance(boReq.getSurveyInstanceId());
         } else if (DataBackoutRequest.DELETE_ACCESS_POINT_ACTION.equals(boReq
                 .getAction())) {
             response.setMessage(""
-                    + deleteAccessPoint(boReq.getCountryCode(), boReq.getDate()));
+                    + deleteAccessPoint(boReq.getCountryCode(), boReq.getToDate()));
         } else if (DataBackoutRequest.DELETE_AP_SUMMARY_ACTION.equals(boReq
                 .getAction())) {
             response.setMessage(""
                     + deleteAccessPointSummary(boReq.getCountryCode(),
-                            boReq.getDate()));
+                            boReq.getToDate()));
         } else if (DataBackoutRequest.LIST_INSTANCE_RESPONSE_ACTION
                 .equals(boReq.getAction())) {
             response.setMessage(listResponses(boReq.getSurveyInstanceId()));
@@ -221,14 +224,14 @@ public class DataBackoutServlet extends AbstractRestApiServlet {
      * @param surveyId
      * @return
      */
-    private String listSurveyInstance(Long surveyId, Date beforeDate,
-            boolean includeDate, boolean lastCollection) {
+    private String listSurveyInstance(Long surveyId, boolean includeDate,
+            boolean lastCollection, Date fromDate, Date toDate, Integer limit) {
         boolean keysOnly = true;
         if (includeDate || lastCollection) {
             keysOnly = false;
         }
-        Iterable<Entity> instances = instanceDao.listRawEntity(keysOnly, null,
-                beforeDate, surveyId);
+        Iterable<Entity> instances = instanceDao.listRawEntity(keysOnly, fromDate,
+                toDate, limit, surveyId);
         StringBuilder buffer = new StringBuilder();
         List<Long> processed = new ArrayList<Long>();
         if (instances != null) {
