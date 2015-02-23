@@ -84,7 +84,7 @@ FLOW.ProjectMainView = FLOW.View.extend({
       var name = currentForm.get('name').trim();
       currentForm.set('name', name);
       currentForm.set('code', name);
-      var path = FLOW.projectControl.get('currentProjectPath') + "/" + currentForm.get('name');
+      var path = FLOW.projectControl.get('currentProjectPath') + "/" + name;
       currentForm.set('path', path);
     }
 
@@ -195,18 +195,21 @@ FLOW.FolderEditView = Ember.TextField.extend({
   path: null,
 
   saveFolderName: function() {
-    this.content.set('name', this.content.get('code'));
-    path = FLOW.projectControl.get('currentProjectPath') + "/" + this.content.get('name');
-    this.content.set('path', path );
+    var name = this.content.get('code').trim();
+    this.content.set('name', name);
+    this.content.set('code', name);
+    var path = FLOW.projectControl.get('currentProjectPath') + "/" + name;
+    this.content.set('path', path);
     FLOW.store.commit();
   },
 
   focusOut: function() {
+    this.get('parentView').set('folderEdit', false);
     this.saveFolderName();
   },
 
   insertNewline: function() {
-    this.get('parentView').toggleEditFolderName();
+    this.get('parentView').set('folderEdit', false);
   }
 });
 

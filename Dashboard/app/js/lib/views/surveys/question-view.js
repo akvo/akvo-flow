@@ -370,7 +370,12 @@ FLOW.QuestionView = FLOW.View.extend({
           return false;
         }
       });
-      newOptionStringArray = this.get('optionList').split('\n');
+
+      var newOptionStringArray = [];
+      this.get('optionList').split('\n').forEach(function(optionItem){
+            newOptionStringArray.push(optionItem.trim());
+      });
+
       optionsToDelete = [];
 
       options.forEach(function (item) {
