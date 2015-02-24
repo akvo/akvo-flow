@@ -161,6 +161,7 @@ public class EventUtils {
                 addNonNullProperty(FORM_INSTANCE_ID_KEY, e.getProperty(SURVEY_INSTANCE_ID_PROP),
                         data);
                 addNonNullProperty(ANSWER_TYPE_KEY, e.getProperty(TYPE_PROP), data);
+                addNonNullProperty(QUESTION_ID_KEY, e.getProperty(QUESTION_ID_KEY), data);
                 addNonNullProperty(VALUE_KEY, e.getProperty(VALUE_PROP), data);
                 break;
             case FORM_INSTANCE:
