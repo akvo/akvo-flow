@@ -17,9 +17,6 @@
 package org.akvo.flow.events;
 
 import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
-import static org.akvo.flow.events.EventUtils.ACTION_CREATED;
-import static org.akvo.flow.events.EventUtils.ACTION_DELETED;
-import static org.akvo.flow.events.EventUtils.ACTION_UPDATED;
 import static org.akvo.flow.events.EventUtils.getEventAndActionType;
 import static org.akvo.flow.events.EventUtils.newContext;
 import static org.akvo.flow.events.EventUtils.newEntity;
@@ -41,7 +38,10 @@ import java.util.logging.Logger;
 
 import net.sf.jsr107cache.Cache;
 
+import org.akvo.flow.events.EventUtils.Action;
 import org.akvo.flow.events.EventUtils.EventTypes;
+import org.akvo.flow.events.EventUtils.Key;
+import org.akvo.flow.events.EventUtils.Prop;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,6 +49,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.google.appengine.api.datastore.DeleteContext;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PostDelete;
 import com.google.appengine.api.datastore.PostPut;
 import com.google.appengine.api.datastore.PutContext;
@@ -57,19 +58,12 @@ import com.google.appengine.api.utils.SystemProperty;
 public class EventLogger {
     private static Logger logger = Logger.getLogger(EventLogger.class.getName());
 
-    private static final String LAST_UPDATE_DATE_TIME_PROP = "lastUpdateDateTime";
-    private static final String CREATED_DATE_TIME_PROP = "createdDateTime";
-    private static final String UNIFIED_LOG_NOTIFIED = "unifiedLogNotified";
-    private static final String APP_ID_KEY = "orgId";
-    private static final String ALIAS_KEY = "url";
-    private static final String EVENT_NOTIFICATION_PROPERTY = "eventNotification";
-    private static final String ALIAS_PROPERTY = "alias";
     private static final long MIN_TIME_DIFF = 60000; // 60 seconds
 
     private void sendNotification() {
         try {
-            String urlPath = PropertyUtil.getProperty(EVENT_NOTIFICATION_PROPERTY);
-            String alias = PropertyUtil.getProperty(ALIAS_PROPERTY);
+            String urlPath = PropertyUtil.getProperty(Prop.EVENT_NOTIFICATION);
+            String alias = PropertyUtil.getProperty(Prop.ALIAS);
 
             if (urlPath == null || urlPath.trim().length() == 0) {
                 logger.log(Level.SEVERE, "Event notification URL not present in appengine-web.xml");
@@ -84,9 +78,8 @@ public class EventLogger {
 
             Map<String, String> messageMap = new HashMap<String, String>();
             logger.log(Level.INFO, "appId: ", SystemProperty.applicationId.get());
-            messageMap.put(APP_ID_KEY,
-                    SystemProperty.applicationId.get());
-            messageMap.put(ALIAS_KEY, alias);
+            messageMap.put(Key.APP_ID, SystemProperty.applicationId.get());
+            messageMap.put(Key.ALIAS, alias);
 
             ObjectMapper m = new ObjectMapper();
             OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
@@ -119,9 +112,9 @@ public class EventLogger {
             return;
         }
 
-        if (cache.containsKey(UNIFIED_LOG_NOTIFIED)) {
+        if (cache.containsKey(Action.UNIFIED_LOG_NOTIFIED)) {
             // check if the time the last notification was send is less than one minute ago
-            Date cacheDate = (Date) cache.get(UNIFIED_LOG_NOTIFIED);
+            Date cacheDate = (Date) cache.get(Action.UNIFIED_LOG_NOTIFIED);
             Date nowDate = new Date();
             Long deltaMils = nowDate.getTime() - cacheDate.getTime();
             if (deltaMils < MIN_TIME_DIFF) {
@@ -132,7 +125,7 @@ public class EventLogger {
         // if we are here, either the key is not in the cache, or it is too old
         // in both cases, we send the notification and add a fresh value to the cache
         sendNotification();
-        cache.put(UNIFIED_LOG_NOTIFIED, new Date());
+        cache.put(Action.UNIFIED_LOG_NOTIFIED, new Date());
     }
 
     private void storeEvent(Map<String, Object> event, Date timestamp) {
@@ -158,16 +151,16 @@ public class EventLogger {
     })
     void logPut(PutContext context) {
 
+        Entity current = context.getCurrentElement();
+
         // determine type of event and type of action
-        EventTypes types = getEventAndActionType(context.getCurrentElement().getKey()
-                .getKind());
+        EventTypes types = getEventAndActionType(current.getKey().getKind());
 
         // determine if this entity was created or updated
-        String actionType = ACTION_UPDATED;
-        if (context.getCurrentElement().getProperty(LAST_UPDATE_DATE_TIME_PROP) == context
-                .getCurrentElement().getProperty(CREATED_DATE_TIME_PROP)) {
-            actionType = ACTION_CREATED;
-        }
+        Date lastUpdateDatetime = (Date) current.getProperty(Prop.LAST_UPDATE_DATE_TIME);
+        Date createdDateTime = (Date) current.getProperty(Prop.CREATED_DATE_TIME);
+        String actionType = createdDateTime.equals(lastUpdateDatetime) ? Action.CREATED
+                : Action.UPDATED;
 
         // create event source
         // get the authentication information. This seems to contain the userId, but
@@ -177,7 +170,7 @@ public class EventLogger {
 
         Map<String, Object> eventSource = newSource(authentication.getPrincipal());
 
-        Date timestamp = (Date) context.getCurrentElement().getProperty(LAST_UPDATE_DATE_TIME_PROP);
+        Date timestamp = (Date) context.getCurrentElement().getProperty(Prop.LAST_UPDATE_DATE_TIME);
         // create event context map
         Map<String, Object> eventContext = newContext(timestamp, eventSource);
 
@@ -223,7 +216,7 @@ public class EventLogger {
 
         // create event
         Map<String, Object> event = newEvent(context.getCurrentElement().getAppId(),
-                types.action + ACTION_DELETED, eventEntity, eventContext);
+                types.action + Action.DELETED, eventEntity, eventContext);
 
         // store it
         storeEvent(event, timestamp);
