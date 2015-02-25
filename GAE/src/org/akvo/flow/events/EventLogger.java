@@ -52,6 +52,7 @@ import com.google.appengine.api.datastore.DeleteContext;
 import com.google.appengine.api.datastore.PostDelete;
 import com.google.appengine.api.datastore.PostPut;
 import com.google.appengine.api.datastore.PutContext;
+import com.google.appengine.api.utils.SystemProperty;
 
 public class EventLogger {
     private static Logger logger = Logger.getLogger(EventLogger.class.getName());
@@ -59,18 +60,16 @@ public class EventLogger {
     private static final String LAST_UPDATE_DATE_TIME_PROP = "lastUpdateDateTime";
     private static final String CREATED_DATE_TIME_PROP = "createdDateTime";
     private static final String UNIFIED_LOG_NOTIFIED = "unifiedLogNotified";
-    private static final String APP_ID_KEY = "appId";
+    private static final String APP_ID_KEY = "orgId";
+    private static final String ALIAS_KEY = "url";
     private static final String EVENT_NOTIFICATION_PROPERTY = "eventNotification";
+    private static final String ALIAS_PROPERTY = "alias";
+    private static final long MIN_TIME_DIFF = 60000; // 60 seconds
 
-    private Cache cache;
-
-    public EventLogger() {
-        cache = initCache(60); // cache notification for 1 minute
-    }
-
-    private void sendNotification(String appId) {
+    private void sendNotification() {
         try {
             String urlPath = PropertyUtil.getProperty(EVENT_NOTIFICATION_PROPERTY);
+            String alias = PropertyUtil.getProperty(ALIAS_PROPERTY);
 
             if (urlPath == null || urlPath.trim().length() == 0) {
                 logger.log(Level.SEVERE, "Event notification URL not present in appengine-web.xml");
@@ -84,44 +83,59 @@ public class EventLogger {
             connection.setRequestProperty("Content-Type", "application/json");
 
             Map<String, String> messageMap = new HashMap<String, String>();
-            messageMap.put(APP_ID_KEY, appId);
+            logger.log(Level.INFO, "appId: ", SystemProperty.applicationId.get());
+            messageMap.put(APP_ID_KEY,
+                    SystemProperty.applicationId.get());
+            messageMap.put(ALIAS_KEY, alias);
 
             ObjectMapper m = new ObjectMapper();
-
             OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
             m.writeValue(writer, messageMap);
             writer.close();
-
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                logger.log(Level.SEVERE, "Unified log notification failed");
+                logger.log(Level.SEVERE, "Unified log notification failed with status code: "
+                        + connection.getResponseCode());
             }
         } catch (MalformedURLException e) {
             logger.log(Level.SEVERE,
                     "Unified log notification failed with malformed URL exception", e);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Unified log notification failed with IO exception", e);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unified log notification failed with error", e);
         }
-
     }
 
     /*
-     * Notify the log that a new event is ready to be downloaded. The cache has an expiry of 60
-     * seconds, so if another request was fired within that time, we don't do anything.
+     * Notify the log that a new event is ready to be downloaded.
      */
-    private void notifyLog(String appId) {
-        if (this.cache != null) {
-            if (!cache.containsKey(UNIFIED_LOG_NOTIFIED)) {
-                sendNotification(appId);
-                cache.put(UNIFIED_LOG_NOTIFIED, null);
+    private void notifyLog() {
+        Cache cache = initCache(60 * 60); // 1 hour
+        if (cache == null) {
+            // cache is not accessible, so we will notify anyway
+            logger.log(Level.WARNING,
+                    "cache not accessible, but still sending notification to unified log");
+            sendNotification();
+            return;
+        }
+
+        if (cache.containsKey(UNIFIED_LOG_NOTIFIED)) {
+            // check if the time the last notification was send is less than one minute ago
+            Date cacheDate = (Date) cache.get(UNIFIED_LOG_NOTIFIED);
+            Date nowDate = new Date();
+            Long deltaMils = nowDate.getTime() - cacheDate.getTime();
+            if (deltaMils < MIN_TIME_DIFF) {
+                // it is too soon, so don't send the notification
                 return;
             }
-        } else {
-            // cache is not accessible, so we will notify anyway
-            sendNotification(appId);
         }
+        // if we are here, either the key is not in the cache, or it is too old
+        // in both cases, we send the notification and add a fresh value to the cache
+        sendNotification();
+        cache.put(UNIFIED_LOG_NOTIFIED, new Date());
     }
 
-    private void storeEvent(Map<String, Object> event, Date timestamp, String appId) {
+    private void storeEvent(Map<String, Object> event, Date timestamp) {
         try {
             ObjectMapper m = new ObjectMapper();
             StringWriter w = new StringWriter();
@@ -131,9 +145,10 @@ public class EventLogger {
             eventQ.setCreatedDateTime(timestamp);
             eventQ.setPayload(w.toString());
             eventDao.save(eventQ);
-            notifyLog(appId);
+            notifyLog();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "could not store " + event.get("eventType") + " event");
+            logger.log(Level.SEVERE, "could not store " + event.get("eventType")
+                    + " event. Error: " + e.toString());
         }
     }
 
@@ -173,11 +188,11 @@ public class EventLogger {
         populateEntityProperties(types.type, context.getCurrentElement(), eventEntity);
 
         // create event
-        Map<String, Object> event = newEvent(context.getCurrentElement().getAppId(),
+        Map<String, Object> event = newEvent(SystemProperty.applicationId.get(),
                 types.action + actionType, eventEntity, eventContext);
 
         // store it
-        storeEvent(event, timestamp, context.getCurrentElement().getAppId());
+        storeEvent(event, timestamp);
     }
 
     @PostDelete(kinds = {
@@ -211,6 +226,6 @@ public class EventLogger {
                 types.action + ACTION_DELETED, eventEntity, eventContext);
 
         // store it
-        storeEvent(event, timestamp, context.getCurrentElement().getAppId());
+        storeEvent(event, timestamp);
     }
 }
