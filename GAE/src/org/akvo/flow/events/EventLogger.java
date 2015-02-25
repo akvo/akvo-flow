@@ -92,7 +92,7 @@ public class EventLogger {
             OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
             m.writeValue(writer, messageMap);
             writer.close();
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_NO_CONTENT) {
                 logger.log(Level.SEVERE, "Unified log notification failed with status code: "
                         + connection.getResponseCode());
             }
