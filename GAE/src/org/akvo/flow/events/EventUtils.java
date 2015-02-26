@@ -87,7 +87,7 @@ public class EventUtils {
         public static final String IDENTIFIER = "identifier";
         public static final String SURVEY_GROUP_TYPE = "surveyGroupType";
         public static final String APP_ID = "orgId";
-        public static final String ALIAS = "alias";
+        public static final String URL = "url";
     }
 
     static class Prop {

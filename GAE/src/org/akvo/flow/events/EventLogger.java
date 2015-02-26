@@ -63,7 +63,6 @@ public class EventLogger {
     private void sendNotification() {
         try {
             String urlPath = PropertyUtil.getProperty(Prop.EVENT_NOTIFICATION);
-            String alias = PropertyUtil.getProperty(Prop.ALIAS);
 
             if (urlPath == null || urlPath.trim().length() == 0) {
                 logger.log(Level.SEVERE, "Event notification URL not present in appengine-web.xml");
@@ -77,9 +76,9 @@ public class EventLogger {
             connection.setRequestProperty("Content-Type", "application/json");
 
             Map<String, String> messageMap = new HashMap<String, String>();
-            logger.log(Level.INFO, "appId: ", SystemProperty.applicationId.get());
-            messageMap.put(Key.APP_ID, SystemProperty.applicationId.get());
-            messageMap.put(Key.ALIAS, alias);
+            String appId = SystemProperty.applicationId.get();
+            messageMap.put(Key.APP_ID, appId);
+            messageMap.put(Key.URL, appId + ".appspot.com");
 
             ObjectMapper m = new ObjectMapper();
             OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
