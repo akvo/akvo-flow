@@ -60,7 +60,7 @@
     (render [this]
       (om/build component (om/value data)))))
 
-(defn ^:export init []
+(defn ^:export main []
   (om/root value-component
            app-state
            {:opts {:component root-component}

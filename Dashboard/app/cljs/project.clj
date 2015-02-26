@@ -18,16 +18,15 @@
               :source-paths ["src"]
               :notify-command ["./postcompile.sh"]
               :compiler {
-                :output-to ~(str (System/getenv "DASHBOARD_TAB") ".js")
+                :main org.akvo.flow.dashboard.users.core.main
+                :output-to "users.js"
                 :output-dir "out"
                 :optimizations :none
                 :source-map true}}
              {:id "adv"
               :source-paths ["src"]
-              :notify-command ["./postcompile-adv.sh"]
+              ;;:notify-command ["./postcompile-adv.sh"]
               :compiler {
-                :output-to ~(str (System/getenv "DASHBOARD_TAB") ".js")
-                :optimizations :advanced
-                :pretty-print false
-                :preamble ["react/react.min.js"]
-                :externs ["react/externs/react.js"]}}]})
+                :main org.akvo.flow.dashboard.users.core.main
+                :output-to "users.js"
+                :optimizations :advanced}}]})
