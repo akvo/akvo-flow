@@ -18,11 +18,11 @@ public class EventUtils {
     private static Logger log = Logger.getLogger(EventUtils.class.getName());
 
     public enum EventSourceType {
-        USER, DEVICE, SENSOR, WEBFORM, API, UNKNOWN
+        USER, DEVICE, SENSOR, WEBFORM, API, UNKNOWN, SYSTEM
     };
 
     public enum EventType {
-        SURVEY_GROUP, FORM, QUESTION_GROUP, QUESTION, DATA_POINT, FORM_INSTANCE, ANSWER
+        SURVEY_GROUP, FORM, QUESTION_GROUP, QUESTION, DATA_POINT, FORM_INSTANCE, ANSWER, DEVICE_FILE
     };
 
     // names of kinds in Google App Engine
@@ -34,6 +34,7 @@ public class EventUtils {
         public static final String DATAPOINT = "SurveyedLocale";
         public static final String FORM_INSTANCE = "SurveyInstance";
         public static final String ANSWER = "QuestionAnswerStore";
+        public static final String DEVICE_FILE = "DeviceFiles";
     }
 
     // How we name the actions
@@ -45,6 +46,7 @@ public class EventUtils {
         public static final String DATAPOINT = "dataPoint";
         public static final String FORM_INSTANCE = "formInstance";
         public static final String ANSWER = "answer";
+        public static final String DEVICE_FILE = "deviceFile";
 
         public static final String DELETED = "Deleted";
         public static final String CREATED = "Created";
@@ -146,11 +148,13 @@ public class EventUtils {
                 return new EventTypes(EventType.QUESTION_GROUP, Action.QUESTION_GROUP);
             case Kind.QUESTION:
                 return new EventTypes(EventType.QUESTION, Action.QUESTION);
+            case Kind.DEVICE_FILE:
+                return new EventTypes(EventType.DEVICE_FILE, Action.DEVICE_FILE);
         }
         return null;
     }
 
-    private static Map<String, Object> addNonNullProperty(String key, Object val,
+    private static Map<String, Object> addProperty(String key, Object val,
             Map<String, Object> data) {
         if (val != null) {
             data.put(key, val);
@@ -163,28 +167,28 @@ public class EventUtils {
             Map<String, Object> data) {
         switch (type) {
             case ANSWER:
-                addNonNullProperty(Key.FORM_INSTANCE_ID, e.getProperty(Prop.SURVEY_INSTANCE_ID),
-                        data);
-                addNonNullProperty(Key.ANSWER_TYPE, e.getProperty(Prop.TYPE), data);
-                addNonNullProperty(Key.QUESTION_ID, e.getProperty(Prop.QUESTION_ID), data);
-                addNonNullProperty(Key.VALUE, e.getProperty(Prop.VALUE), data);
+                addProperty(Key.FORM_INSTANCE_ID, e.getProperty(Prop.SURVEY_INSTANCE_ID), data);
+                addProperty(Key.ANSWER_TYPE, e.getProperty(Prop.TYPE), data);
+                addProperty(Key.QUESTION_ID, e.getProperty(Prop.QUESTION_ID), data);
+                addProperty(Key.VALUE, e.getProperty(Prop.VALUE), data);
                 break;
             case FORM_INSTANCE:
-                addNonNullProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
-                addNonNullProperty(Key.DATAPOINT_ID, e.getProperty(Prop.SURVEYED_LOCALE_ID), data);
-                addNonNullProperty(Key.COLLECTION_DATE, e.getProperty(Prop.COLLECTION_DATE), data);
-                addNonNullProperty(Key.SURVEYAL_TIME, e.getProperty(Prop.SURVEYAL_TIME), data);
+                addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
+                addProperty(Key.DATAPOINT_ID, e.getProperty(Prop.SURVEYED_LOCALE_ID), data);
+                addProperty(Key.COLLECTION_DATE, e.getProperty(Prop.COLLECTION_DATE), data);
+                addProperty(Key.SURVEYAL_TIME, e.getProperty(Prop.SURVEYAL_TIME), data);
                 break;
             case DATA_POINT:
-                addNonNullProperty(Key.IDENTIFIER, e.getProperty(Prop.IDENTIFIER), data);
-                addNonNullProperty(Key.LAT, e.getProperty(Prop.LATITUDE), data);
-                addNonNullProperty(Key.LON, e.getProperty(Prop.LONGITUDE), data);
-                addNonNullProperty(Key.NAME, e.getProperty(Prop.DISPLAY_NAME), data);
-                addNonNullProperty(Key.SURVEY_ID, e.getProperty(Prop.SURVEY_GROUP_ID), data);
+                addProperty(Key.IDENTIFIER, e.getProperty(Prop.IDENTIFIER), data);
+                addProperty(Key.LAT, e.getProperty(Prop.LATITUDE), data);
+                addProperty(Key.LON, e.getProperty(Prop.LONGITUDE), data);
+                addProperty(Key.NAME, e.getProperty(Prop.DISPLAY_NAME), data);
+                addProperty(Key.SURVEY_ID, e.getProperty(Prop.SURVEY_GROUP_ID), data);
                 break;
             case SURVEY_GROUP:
-                addNonNullProperty(Key.NAME, e.getProperty(Prop.NAME), data);
-                addNonNullProperty(Key.PARENT_ID, e.getProperty(Prop.PARENT_ID), data);
+                addProperty(Key.NAME, e.getProperty(Prop.NAME), data);
+                addProperty(Key.PARENT_ID, e.getProperty(Prop.PARENT_ID), data);
+
                 if (e.getProperty(Prop.PROJECT_TYPE).toString()
                         .equals(SurveyGroup.ProjectType.PROJECT.toString())) {
                     data.put(Key.SURVEY_GROUP_TYPE, SURVEY_GROUP_TYPE_SURVEY);
@@ -192,27 +196,35 @@ public class EventUtils {
                         .equals(SurveyGroup.ProjectType.PROJECT_FOLDER.toString())) {
                     data.put(Key.SURVEY_GROUP_TYPE, SURVEY_GROUP_TYPE_FOLDER);
                 }
-                addNonNullProperty(Key.DESCRIPTION, e.getProperty(Prop.DESCRIPTION), data);
-                addNonNullProperty(Key.PUBLIC, e.getProperty(Prop.PRIVACY_LEVEL).toString()
+
+                addProperty(Key.DESCRIPTION, e.getProperty(Prop.DESCRIPTION), data);
+                addProperty(Key.PUBLIC, e.getProperty(Prop.PRIVACY_LEVEL).toString()
                         .equals(PrivacyLevel.PUBLIC.toString()), data);
                 break;
             case FORM:
-                addNonNullProperty(Key.NAME, e.getProperty(Prop.NAME), data);
-                addNonNullProperty(Key.DESCRIPTION, e.getProperty(Prop.DESC), data);
-                addNonNullProperty(Key.SURVEY_ID, e.getProperty(Prop.SURVEY_GROUP_ID), data);
+                addProperty(Key.NAME, e.getProperty(Prop.NAME), data);
+                addProperty(Key.DESCRIPTION, e.getProperty(Prop.DESC), data);
+                addProperty(Key.SURVEY_ID, e.getProperty(Prop.SURVEY_GROUP_ID), data);
                 break;
             case QUESTION_GROUP:
-                addNonNullProperty(Key.NAME, e.getProperty(Prop.NAME), data);
-                addNonNullProperty(Key.ORDER, e.getProperty(Prop.ORDER), data);
-                addNonNullProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
+                addProperty(Key.NAME, e.getProperty(Prop.NAME), data);
+                addProperty(Key.ORDER, e.getProperty(Prop.ORDER), data);
+                addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
                 break;
             case QUESTION:
-                addNonNullProperty(Key.DISPLAY_TEXT, e.getProperty(Prop.TEXT), data);
-                addNonNullProperty(Key.IDENTIFIER, e.getProperty(Prop.QUESTION_ID), data);
-                addNonNullProperty(Key.QUESTION_GROUP_ID, e.getProperty(Prop.QUESTION_GROUP_ID),
+                addProperty(Key.DISPLAY_TEXT, e.getProperty(Prop.TEXT), data);
+                addProperty(Key.IDENTIFIER, e.getProperty(Prop.QUESTION_ID), data);
+                addProperty(Key.QUESTION_GROUP_ID, e.getProperty(Prop.QUESTION_GROUP_ID),
                         data);
-                addNonNullProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
-                addNonNullProperty(Key.QUESTION_TYPE, e.getProperty(Prop.TYPE), data);
+                addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
+                addProperty(Key.QUESTION_TYPE, e.getProperty(Prop.TYPE), data);
+                break;
+            case DEVICE_FILE:
+                // FIXME move those keys to the proper place
+                addProperty("uri", e.getProperty("URI"), data);
+                addProperty("checksum", e.getProperty("checksum"), data);
+                addProperty("phoneNumber", e.getProperty("phoneNumber"), data);
+                addProperty("imei", e.getProperty("imei"), data);
                 break;
         }
         return data;
@@ -241,8 +253,8 @@ public class EventUtils {
         Map<String, Object> source = new HashMap<String, Object>();
 
         if (principal instanceof String) {
-            // FIXME: Is this the right thing to do?
-            source.put(Key.TYPE, EventSourceType.DEVICE);
+            // Tasks related events get an "anonymousUser" as principal
+            source.put(Key.TYPE, EventSourceType.SYSTEM);
         } else if (principal instanceof GaeUser) {
             GaeUser usr = (GaeUser) principal;
             source.put(Key.TYPE, EventSourceType.USER);

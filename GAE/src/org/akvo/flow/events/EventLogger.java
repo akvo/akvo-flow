@@ -147,7 +147,7 @@ public class EventLogger {
 
     @PostPut(kinds = {
             "SurveyGroup", "Survey", "QuestionGroup", "Question", "SurveyInstance",
-            "QuestionAnswerStore", "SurveyedLocale"
+            "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles"
     })
     void logPut(PutContext context) {
 
@@ -190,7 +190,7 @@ public class EventLogger {
 
     @PostDelete(kinds = {
             "SurveyGroup", "Survey", "QuestionGroup", "Question", "SurveyInstance",
-            "QuestionAnswerStore", "SurveyedLocale"
+            "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles"
     })
     void logDelete(DeleteContext context) {
         // determine type of event and type of action
