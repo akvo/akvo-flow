@@ -65,3 +65,5 @@
            app-state
            {:opts {:component root-component}
             :target (.getElementById js/document "app")}))
+
+(main)

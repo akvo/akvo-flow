@@ -9,24 +9,32 @@
                  [cljs-ajax "0.3.10"]
                  [sablono "0.3.4"]]
 
-  :plugins [[lein-cljsbuild "1.0.5"]]
+  :plugins [[lein-cljsbuild "1.0.5"]
+            [lein-shell "0.4.0"]]
 
   :source-paths ["src"]
+
+  :clean-targets ^{:protect false}  ["../../../GAE/war/admin/frames/users.html"
+                                     "../../../GAE/war/admin/frames/users.js"
+                                     "../../../GAE/war/admin/frames/out/"]
+
+  :aliases {"copyhtml" ["shell" "./cp-html.sh"]
+            "build" ["do" "clean," "copyhtml," "cljsbuild" "once" "adv"]
+            "watch" ["do" "clean," "copyhtml," "cljsbuild" "auto" "dev"]}
 
   :cljsbuild {
     :builds [{:id "dev"
               :source-paths ["src"]
-              :notify-command ["./postcompile.sh"]
               :compiler {
-                :main org.akvo.flow.dashboard.users.core.main
-                :output-to "users.js"
-                :output-dir "out"
+                :main org.akvo.flow.dashboard.users.core
+                :output-to "../../../GAE/war/admin/frames/users.js"
+                :output-dir "../../../GAE/war/admin/frames/out"
+                :asset-path "out"
                 :optimizations :none
                 :source-map true}}
              {:id "adv"
               :source-paths ["src"]
-              ;;:notify-command ["./postcompile-adv.sh"]
               :compiler {
-                :main org.akvo.flow.dashboard.users.core.main
-                :output-to "users.js"
+                :main org.akvo.flow.dashboard.users.core
+                :output-to "../../../GAE/war/admin/frames/users.js"
                 :optimizations :advanced}}]})
