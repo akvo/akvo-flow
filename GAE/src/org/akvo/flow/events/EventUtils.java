@@ -110,7 +110,7 @@ public class EventUtils {
         public static final String SURVEY_GROUP_ID = "surveyGroupId";
         public static final String ORDER = "order";
         public static final String TEXT = "text";
-        public static final String QUESTION_ID = "questionId";
+        public static final String QUESTION_ID = "questionID";
         public static final String QUESTION_GROUP_ID = "questionGroupId";
         public static final String PROJECT_TYPE = "projectType";
         public static final String LAST_UPDATE_DATE_TIME = "lastUpdateDateTime";
@@ -169,7 +169,8 @@ public class EventUtils {
             case ANSWER:
                 addProperty(Key.FORM_INSTANCE_ID, e.getProperty(Prop.SURVEY_INSTANCE_ID), data);
                 addProperty(Key.ANSWER_TYPE, e.getProperty(Prop.TYPE), data);
-                addProperty(Key.QUESTION_ID, e.getProperty(Prop.QUESTION_ID), data);
+                addProperty(Key.QUESTION_ID,
+                        Long.valueOf((String) e.getProperty(Prop.QUESTION_ID)), data);
                 addProperty(Key.VALUE, e.getProperty(Prop.VALUE), data);
                 break;
             case FORM_INSTANCE:
