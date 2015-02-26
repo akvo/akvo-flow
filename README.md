@@ -13,3 +13,15 @@ Other components of the Akvo FLOW system:
 * [Akvo FLOW Services](https://github.com/akvo/akvo-flow-services)
 
 [Akvo FLOW license](https://github.com/akvo/akvo-flow/blob/master/LICENSE.md)
+
+
+## YourKit
+
+<img src="http://www.yourkit.com/images/yklogo.png"></img>
+
+YourKit supports open source projects with its full-featured Java Profiler.
+YourKit, LLC is the creator of <a href="http://www.yourkit.com/java/profiler/index.jsp">YourKit Java Profiler</a>
+and <a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>,
+innovative and intelligent tools for profiling Java and .NET applications.
+
+YourKit has offered an open source license to the AkvoFLOW team for the profiling of backend to improve its performance.

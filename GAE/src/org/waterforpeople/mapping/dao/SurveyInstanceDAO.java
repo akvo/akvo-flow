@@ -52,6 +52,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
@@ -474,7 +475,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
      * @return
      */
     public Iterable<Entity> listRawEntity(Boolean returnKeysOnly,
-            Date beginDate, Date endDate, Long surveyId) {
+            Date beginDate, Date endDate, Integer limit, Long surveyId) {
         DatastoreService datastore = DatastoreServiceFactory
                 .getDatastoreService();
         // The Query interface assembles a query
@@ -505,9 +506,16 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         if (filters.size() > 1) {
             q.setFilter(CompositeFilterOperator.and(filters));
         }
-        q.addSort("createdDateTime", SortDirection.DESCENDING);
+        q.addSort("collectionDate", SortDirection.DESCENDING);
         PreparedQuery pq = datastore.prepare(q);
-        return pq.asIterable();
+        // TODO: Should we add .withChunkSize as well?
+        FetchOptions fetchOptions;
+        if (limit != null) {
+            fetchOptions = FetchOptions.Builder.withLimit(limit);
+        } else {
+            fetchOptions = FetchOptions.Builder.withDefaults();
+        }
+        return pq.asIterable(fetchOptions);
     }
 
     /**

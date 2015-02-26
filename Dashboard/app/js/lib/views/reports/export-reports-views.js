@@ -67,6 +67,16 @@ FLOW.ReportLoader = Ember.Object.create({
 
     criteria.opts.lastCollection = '' + (exportType === 'RAW_DATA' && FLOW.selectedControl.get('selectedSurveyGroup').get('monitoringGroup') && !!FLOW.editControl.lastCollection);
     criteria.opts.useQuestionId = '' + !!FLOW.editControl.useQuestionId;
+    var fromDate = FLOW.dateControl.get('fromDate');
+    if (fromDate !== null) {
+      criteria.opts.from = fromDate;
+    }
+    var toDate = FLOW.dateControl.get('toDate');
+    if (toDate !== null) {
+      criteria.opts.to = toDate;
+    }
+    criteria.opts.email = FLOW.currentUser.email;
+    criteria.opts.flowServices = FLOW.Env.flowServices;
 
     this.set('criteria', criteria);
     FLOW.savingMessageControl.numLoadingChange(1);
@@ -81,7 +91,7 @@ FLOW.ReportLoader = Ember.Object.create({
     }
     if (resp.message === 'PROCESSING') {
       this.set('processing', false);
-      Ember.run.later(this, this.requestReport, this.requestInterval);
+      this.showEmailNotification();
     } else if (resp.file && this.get('processing')) {
       FLOW.savingMessageControl.numLoadingChange(-1);
       this.set('processing', false);
@@ -119,6 +129,17 @@ FLOW.ReportLoader = Ember.Object.create({
     FLOW.dialogControl.set('activeAction', 'ignore');
     FLOW.dialogControl.set('header', Ember.String.loc('_error_generating_report'));
     FLOW.dialogControl.set('message', Ember.String.loc('_error_generating_report_try_later'));
+    FLOW.dialogControl.set('showCANCEL', false);
+    FLOW.dialogControl.set('showDialog', true);
+  },
+
+  showEmailNotification: function () {
+    FLOW.savingMessageControl.numLoadingChange(-1);
+    this.set('processing', false);
+    this.set('criteria', null);
+    FLOW.dialogControl.set('activeAction', 'ignore');
+    FLOW.dialogControl.set('header', Ember.String.loc('_your_report_is_being_prepared'));
+    FLOW.dialogControl.set('message', Ember.String.loc('_we_will_notify_via_email'));
     FLOW.dialogControl.set('showCANCEL', false);
     FLOW.dialogControl.set('showDialog', true);
   }

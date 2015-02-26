@@ -172,7 +172,22 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     surveyGroup.deleteRecord();
     FLOW.store.commit();
     FLOW.selectedControl.set('selectedSurveyGroup', null);
-  }
+  },
+
+  /* return all the ancestor paths of a given path string */
+  ancestorPaths: function(pathString) {
+    if(!pathString) {
+        return [];
+    }
+
+    var ancestors = [];
+    while(pathString) {
+        ancestors.push(pathString);
+        pathString = pathString.slice(0, pathString.lastIndexOf("/"));
+    }
+    ancestors.push("/"); // add the root level folder to ancestors list
+    return ancestors;
+  },
 });
 
 
@@ -195,6 +210,32 @@ FLOW.projectControl = Ember.ArrayController.create({
   setCurrentProject: function(project) {
     this.set('currentProject', project);
     window.scrollTo(0,0);
+  },
+
+  /* return true if the given SurveyGroup's path (partially) matches or is one of the ancestors (paths) of a path for which the data cleaning permission is present. The ancestor SurveyGroups are needed in order to be able to browse to the actual path to which the permission is assigned */
+  dataCleaningEnabled: function(surveyGroup) {
+    var pathPermissions = FLOW.userControl.currentUserPathPermissions();
+    var permissionList;
+    var pathStartsWithPattern;
+    var matched = false;
+    for (var key in pathPermissions) {
+        permissionList = pathPermissions[key];
+        if(permissionList.indexOf("DATA_CLEANING") > -1){
+            pathStartsWithPattern = new RegExp('^' + key);
+            if(surveyGroup.get('path').match(pathStartsWithPattern)) {
+                matched = true;
+                break;
+            } else {
+                // match all the ancestor paths to enable browsing to lower level paths
+                FLOW.surveyGroupControl.ancestorPaths(key).forEach(function (path) {
+                    if(!matched && surveyGroup.get('path') === path) {
+                        matched = true;
+                    }
+                });
+            }
+        }
+    }
+    return matched;
   },
 
   /* Computed properties */
@@ -313,14 +354,14 @@ FLOW.projectControl = Ember.ArrayController.create({
     var currentFolder = this.get('currentProject');
     var currentFolderId = currentFolder ? currentFolder.get('keyId') : null;
 
-    var name = folder ? "New folder" : "New survey";
+    var name = folder ? Ember.String.loc('_new_folder').trim() : Ember.String.loc('_new_survey').trim();
     var projectType = folder ? "PROJECT_FOLDER" : "PROJECT";
     var path = this.get('currentProjectPath') + "/" + name;
 
     var newRecord = FLOW.store.createRecord(FLOW.SurveyGroup, {
       "code": name,
       "name": name,
-      "path":path,
+      "path": path,
       "parentId": currentFolderId,
       "projectType": projectType
     });
@@ -481,8 +522,8 @@ FLOW.surveyControl = Ember.ArrayController.create({
   },
 
   createForm: function() {
-    code = "New Form";
-    path = FLOW.projectControl.get('currentProjectPath') + "/" + code;
+    var code = Ember.String.loc('_new_form').trim();
+    var path = FLOW.projectControl.get('currentProjectPath') + "/" + code;
     FLOW.store.createRecord(FLOW.Survey, {
       "name": code,
       "code": code,

@@ -3923,21 +3923,21 @@ table.dataTable.notificationTable thead tr th a:visited {
     }
 }
 
-.filterData div.dataCollectedDate input {
+div.dataCollectedDate input {
     display: inline;
     height: 20px;
-    background: url(../images/icon_cal.png) right center no-repeat;
+    background:white url(../images/icon_cal.png) right center no-repeat;
 }
 
 .filterData label {
     display: inline;
 }
 
-.filterData label.collectedTo {
+label.collectedTo {
     margin: 0;
 }
 
-.filterData div.chooseSurveyData {
+div.chooseSurveyData {
     position: relative;
     display: block;
     float: left;
@@ -3946,7 +3946,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     height: 20px;
 }
 
-.filterData div.chooseLocationData {
+div.chooseLocationData {
     position: relative;
     display: block;
     float: left;
@@ -3955,12 +3955,12 @@ table.dataTable.notificationTable thead tr th a:visited {
     height: 15px;
 }
 
-.filterData div.chooseLocationData select {
+div.chooseLocationData select {
     display: inline;
     width: 15%;
 }
 
-.filterData div.dataCollectedDate {
+div.dataCollectedDate {
     position: relative;
     display: block;
     float: right;
@@ -3968,6 +3968,10 @@ table.dataTable.notificationTable thead tr th a:visited {
     width: 50%;
     height: 20px;
     text-align: left;
+    .rawDataReport & {
+        float: none;
+        margin-top:15px;
+    }
 }
 
 .collectedFrom span {
@@ -3978,7 +3982,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     display: block;
 }
 
-.filterData div.dataCollectedDate label {
+div.dataCollectedDate label {
     width: 48%;
     float: left;
     margin-top: -25px;
@@ -3987,7 +3991,7 @@ table.dataTable.notificationTable thead tr th a:visited {
     }
 }
 
-.filterData div.dataCollectedDate label input {
+div.dataCollectedDate label input {
     width: 97%;
 }
 

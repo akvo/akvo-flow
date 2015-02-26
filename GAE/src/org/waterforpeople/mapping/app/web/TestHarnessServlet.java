@@ -451,8 +451,6 @@ public class TestHarnessServlet extends HttpServlet {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if ("projectMigration".equals(action)) {
-            projectMigration();
         } else if ("createCascadeData".equals(action)) {
             createCascadeData(resp);
         }
@@ -470,80 +468,6 @@ public class TestHarnessServlet extends HttpServlet {
         user.setAccessKey(UUID.randomUUID().toString().replaceAll("-", ""));
         user.setSecret(UUID.randomUUID().toString().replaceAll("-", ""));
         userDao.save(user);
-    }
-
-    private static void projectMigration() {
-
-        SurveyGroupDAO surveyGroupDAO = new SurveyGroupDAO();
-        SurveyDAO surveyDAO = new SurveyDAO();
-
-        List<SurveyGroup> surveyGroups = surveyGroupDAO.list(Constants.ALL_RESULTS);
-
-        for (SurveyGroup surveyGroup : surveyGroups) {
-
-            // If the surveyGroup already has projectType set, don't touch it.
-            if (surveyGroup.getProjectType() != null) {
-                continue;
-            }
-
-            List<Survey> surveys = surveyDAO.listSurveysByGroup(surveyGroup.getKey().getId());
-
-            boolean isMonitoring = Boolean.TRUE.equals(surveyGroup.getMonitoringGroup());
-            if (isMonitoring || surveys.size() <= 1) {
-                if (surveyGroup.getProjectType() == null) {
-                    surveyGroup.setProjectType(ProjectType.PROJECT);
-                }
-
-                PrivacyLevel privacyLevel = PrivacyLevel.PRIVATE;
-                String defaultLanguageCode = "en";
-                if (surveys.size() >= 1) {
-                    Survey survey = surveys.get(0);
-                    privacyLevel = survey.getPointType() == "Household" ? PrivacyLevel.PRIVATE
-                            : PrivacyLevel.PUBLIC;
-                    defaultLanguageCode = survey.getDefaultLanguageCode();
-                }
-                surveyGroup.setPrivacyLevel(privacyLevel);
-                surveyGroup.setDefaultLanguageCode(defaultLanguageCode);
-                surveyGroup.setPath("/" + surveyGroup.getName());
-                surveyGroupDAO.save(surveyGroup);
-
-                // set paths for surveys
-                List<Survey> surveyList = new ArrayList<Survey>();
-                for (Survey s : surveys) {
-                    s.setPath(SurveyUtils.getPath(s));
-                    surveyList.add(s);
-                }
-                if (!surveyList.isEmpty()) {
-                    surveyDAO.save(surveyList);
-                }
-                continue;
-            }
-
-            surveyGroup.setProjectType(ProjectType.PROJECT_FOLDER);
-            surveyGroup.setPath("/" + surveyGroup.getName());
-            surveyGroupDAO.save(surveyGroup);
-
-            for (Survey survey : surveys) {
-                surveyGroup.setProjectType(ProjectType.PROJECT_FOLDER);
-                surveyGroupDAO.save(surveyGroup);
-
-                SurveyGroup newSurveyGroup = new SurveyGroup();
-                newSurveyGroup.setName(survey.getName());
-                newSurveyGroup.setCode(survey.getCode());
-                newSurveyGroup.setParentId(surveyGroup.getKey().getId());
-                newSurveyGroup.setMonitoringGroup(false);
-                newSurveyGroup.setProjectType(ProjectType.PROJECT);
-                newSurveyGroup
-                        .setPrivacyLevel(survey.getPointType() == "Household" ? PrivacyLevel.PRIVATE
-                                : PrivacyLevel.PUBLIC);
-                newSurveyGroup.setDefaultLanguageCode(survey.getDefaultLanguageCode());
-                newSurveyGroup.setPath(surveyGroup.getPath() + "/" + newSurveyGroup.getName());
-                surveyGroupDAO.save(newSurveyGroup);
-                survey.setSurveyGroupId(newSurveyGroup.getKey().getId());
-                survey.setPath(SurveyUtils.getPath(survey));
-                surveyDAO.save(survey);
-            }
-        }
     }
 
     private void createCascadeData(HttpServletResponse resp) {
