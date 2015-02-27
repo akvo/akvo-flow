@@ -19,8 +19,15 @@
                                      "../../../GAE/war/admin/frames/out/"]
 
   :aliases {"copyhtml" ["shell" "./cp-html.sh"]
-            "build" ["do" "clean," "copyhtml," "cljsbuild" "once" "adv"]
-            "watch" ["do" "clean," "copyhtml," "cljsbuild" "auto" "dev"]}
+            "copyhtml-production" ["shell" "./cp-html.sh" "--production"]
+            "build" ["do"
+                     ["clean"]
+                     ["copyhtml-production"]
+                     ["cljsbuild" "once" "adv"]]
+            "watch" ["do"
+                     ["clean"]
+                     ["copyhtml"]
+                     ["cljsbuild" "auto" "dev"]]}
 
   :cljsbuild {
     :builds [{:id "dev"
