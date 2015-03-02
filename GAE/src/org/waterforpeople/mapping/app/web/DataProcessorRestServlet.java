@@ -1445,11 +1445,12 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         if (nodes.size() == QAS_PAGE_SIZE) {
             scheduleCascadeNodeDeletion(cascadeResourceId, parentNodeId);
-        } else {
-            for (CascadeNode node : nodes) {
-                scheduleCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
-            }
         }
+
+        for (CascadeNode node : nodes) {
+            scheduleCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
+        }
+
         dao.delete(nodes);
     }
 
