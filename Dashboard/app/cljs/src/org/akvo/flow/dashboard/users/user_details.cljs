@@ -23,7 +23,7 @@
             [org.akvo.flow.dashboard.ajax-helpers :refer (default-ajax-config)]
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros (html)]
-            [ajax.core :refer (ajax-request GET POST PUT DELETE)])
+            [ajax.core :refer (url-request-format GET POST PUT DELETE)])
   (:require-macros [org.akvo.flow.dashboard.t :refer (t>)]))
 
 (defn panel-header-section [{:keys [user close!]} owner]
@@ -225,7 +225,8 @@
 (defn revoke-apikeys [owner user]
   (DELETE (str "/rest/users/" (get user "keyId") "/apikeys")
           (merge default-ajax-config
-                 {:handler (fn [response]
+                 {:format (url-request-format)
+                  :handler (fn [response]
                              (om/set-state! owner {:access-key nil :secret nil})
                              (dispatch :new-access-key {:access-key nil :user user}))})))
 
