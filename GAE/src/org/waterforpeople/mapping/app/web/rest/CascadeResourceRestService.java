@@ -43,30 +43,30 @@ import com.gallatinsystems.survey.domain.CascadeResource;
 @RequestMapping("/cascade_resources")
 public class CascadeResourceRestService {
 
-	@Inject
+    @Inject
     private CascadeResourceDao cascadeResourceDao;
 
-	@Inject
+    @Inject
     private CascadeNodeDao cascadeNodeDao;
 
-	@RequestMapping(method = RequestMethod.GET, value = "")
+    @RequestMapping(method = RequestMethod.GET, value = "")
     @ResponseBody
     public Map<String, List<CascadeResourceDto>> listCascadeResources() {
         final Map<String, List<CascadeResourceDto>> response = new HashMap<String, List<CascadeResourceDto>>();
         List<CascadeResourceDto> results = new ArrayList<CascadeResourceDto>();
         List<CascadeResource> crList = cascadeResourceDao.list(Constants.ALL_RESULTS);
-            if (crList != null) {
-                for (CascadeResource cr : crList) {
-                    CascadeResourceDto dto = new CascadeResourceDto();
-                    BeanUtils.copyProperties(cr, dto);
-                    dto.setLevelNames(cr.getLevelNames());
-                    if (cr.getKey() != null) {
-                        dto.setKeyId(cr.getKey().getId());
-                    }
-                    results.add(dto);
+        if (crList != null) {
+            for (CascadeResource cr : crList) {
+                CascadeResourceDto dto = new CascadeResourceDto();
+                BeanUtils.copyProperties(cr, dto);
+                dto.setLevelNames(cr.getLevelNames());
+                if (cr.getKey() != null) {
+                    dto.setKeyId(cr.getKey().getId());
                 }
+                results.add(dto);
             }
-    
+        }
+
         response.put("cascade_resources", results);
         return response;
     }
@@ -74,8 +74,7 @@ public class CascadeResourceRestService {
     // delete cascade by id
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseBody
-    public Map<String, RestStatusDto> deleteCascadeResourceById(@PathVariable("id")
-    Long id) {
+    public Map<String, RestStatusDto> deleteCascadeResourceById(@PathVariable("id") Long id) {
         final Map<String, RestStatusDto> response = new HashMap<String, RestStatusDto>();
         CascadeResource cr = cascadeResourceDao.getByKey(id);
         RestStatusDto statusDto = null;
@@ -85,23 +84,24 @@ public class CascadeResourceRestService {
         // check if cascadeResource exists in the datastore
         if (cr != null) {
             // delete all nodes belonging to this cascade
-        	// TODO make sure this succeeds for large lists
-        	List<CascadeNode> allNodes = cascadeNodeDao.listCascadeNodesByResourceAndParentId(id, 0l);
-        	cascadeNodeDao.delete(allNodes);
-        
-        	// TODO check if any questions use this cascadeResource. If yes, we can't delete.
+            // TODO make sure this succeeds for large lists
+            List<CascadeNode> allNodes = cascadeNodeDao.listCascadeNodesByResourceAndParentId(id,
+                    0l);
+            cascadeNodeDao.delete(allNodes);
+
+            // TODO check if any questions use this cascadeResource. If yes, we can't delete.
             cascadeResourceDao.delete(cr);
             statusDto.setStatus("ok");
         }
         response.put("meta", statusDto);
         return response;
     }
-	
+
     // update existing cascade resource
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
     @ResponseBody
-    public Map<String, Object> saveExistingCascadeResource(@RequestBody
-    CascadeResourcePayload payLoad) {
+    public Map<String, Object> saveExistingCascadeResource(
+            @RequestBody CascadeResourcePayload payLoad) {
         final CascadeResourceDto cascadeResourceDto = payLoad.getCascade_resource();
         final Map<String, Object> response = new HashMap<String, Object>();
         CascadeResourceDto dto = null;
@@ -123,7 +123,8 @@ public class CascadeResourceRestService {
                     // copy the properties, except the createdDateTime property,
                     // because it is set in the Dao.
                     BeanUtils.copyProperties(cascadeResourceDto, cr, new String[] {
-                            "createdDateTime"});
+                            "createdDateTime"
+                        });
                     cr.setLevelNames(cascadeResourceDto.getLevelNames());
                     cr = cascadeResourceDao.save(cr);
                     dto = new CascadeResourceDto();
@@ -140,13 +141,11 @@ public class CascadeResourceRestService {
         response.put("cascade_resource", dto);
         return response;
     }
-    
-    
+
     // create new cascade resource
     @RequestMapping(method = RequestMethod.POST, value = "")
     @ResponseBody
-    public Map<String, Object> saveNewCascadeResource(@RequestBody
-    CascadeResourcePayload payLoad) {
+    public Map<String, Object> saveNewCascadeResource(@RequestBody CascadeResourcePayload payLoad) {
         final CascadeResourceDto cascadeResourceDto = payLoad.getCascade_resource();
         final Map<String, Object> response = new HashMap<String, Object>();
         CascadeResourceDto dto = null;
@@ -162,7 +161,8 @@ public class CascadeResourceRestService {
             // copy the properties, except the createdDateTime property, because
             // it is set in the Dao.
             BeanUtils.copyProperties(cascadeResourceDto, cr, new String[] {
-                    "createdDateTime"});
+                    "createdDateTime"
+                });
             cr.setLevelNames(cascadeResourceDto.getLevelNames());
             cr = cascadeResourceDao.save(cr);
 
