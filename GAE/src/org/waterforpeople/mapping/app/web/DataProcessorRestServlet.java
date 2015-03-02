@@ -1443,10 +1443,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         List<CascadeNode> nodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId,
                 parentNodeId == null ? 0l : parentNodeId);
 
-        if (nodes.size() == QAS_PAGE_SIZE) {
-            scheduleCascadeNodeDeletion(cascadeResourceId, parentNodeId);
-        }
-
         for (CascadeNode node : nodes) {
             scheduleCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
         }
