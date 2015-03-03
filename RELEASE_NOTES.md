@@ -5,6 +5,12 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.2.1
+Date: 3 March 2015
+
+## Resolved issues
+* Fixed bug where deleting a cascadeResource deletes all the cascadeNodes [#1171]
+
 #1.8.2
 Date: 20 February 2015
 
