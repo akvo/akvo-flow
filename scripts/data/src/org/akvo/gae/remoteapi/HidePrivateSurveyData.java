@@ -67,9 +67,8 @@ public class HidePrivateSurveyData implements Process {
         // retrieve survey ids for private groups
         Query surveyQuery = new Query("Survey")
                 .setFilter(
-                        new Query.FilterPredicate("surveyGroupId", FilterOperator.IN,
-                                privateSurveyGroupIds))
-                .setKeysOnly();
+                new Query.FilterPredicate("surveyGroupId", FilterOperator.IN,
+                        privateSurveyGroupIds));
         Set<Long> privateSurveyIds = new HashSet<Long>();
         for (Entity survey : ds.prepare(surveyQuery).asIterable()) {
             String pointType = (String) survey.getProperty("pointType");
@@ -86,7 +85,7 @@ public class HidePrivateSurveyData implements Process {
                 new Query.FilterPredicate("surveyId", FilterOperator.IN, privateSurveyIds))
                 .setKeysOnly();
         List<Long> surveyInstanceIds = new ArrayList<Long>();
-        for (Entity surveyInstance : ds.prepare(surveyResponses).asList(
+        for (Entity surveyInstance : ds.prepare(surveyResponses).asIterable(
                 FetchOptions.Builder.withChunkSize(1000))) {
             surveyInstanceIds.add(surveyInstance.getKey().getId());
         }
