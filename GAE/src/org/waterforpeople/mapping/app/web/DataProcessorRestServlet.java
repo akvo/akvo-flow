@@ -23,7 +23,6 @@ import static com.gallatinsystems.common.util.MemCacheUtils.putObject;
 import java.io.BufferedInputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1441,34 +1440,14 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
     private void deleteCascadeNodes(Long cascadeResourceId, Long parentNodeId) {
         final CascadeNodeDao dao = new CascadeNodeDao();
-        List<CascadeNode> nodes = Collections.emptyList();
+        List<CascadeNode> nodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId,
+                parentNodeId == null ? 0l : parentNodeId);
 
-        if (parentNodeId == null) {
-            nodes = dao.list(Constants.ALL_RESULTS, QAS_PAGE_SIZE);
-        } else {
-            nodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId, parentNodeId);
+        for (CascadeNode node : nodes) {
+            scheduleCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
         }
 
-        int count = nodes.size();
-
-        if (count == 0) {
-            log.log(Level.INFO, String.format(
-                    "No CascadeNode found with cascadeResourceId = %s , parentNodeId = %s",
-                    cascadeResourceId, parentNodeId));
-            return;
-        }
-
-        if (parentNodeId == null) {
-            dao.delete(nodes);
-            if (count == QAS_PAGE_SIZE) {
-                scheduleCascadeNodeDeletion(cascadeResourceId, parentNodeId);
-            }
-        } else {
-            for (CascadeNode node : nodes) {
-                scheduleCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
-            }
-            dao.delete(nodes);
-        }
+        dao.delete(nodes);
     }
 
     private void scheduleCascadeNodeDeletion(Long cascadeResourceId, Long parentNodeId) {
