@@ -56,8 +56,7 @@ public class HidePrivateSurveyData implements Process {
                 privateLevelFilter);
 
         Query privateSurveyGroupQuery = new Query("SurveyGroup")
-                .setFilter(privateSurveyGroupFilter)
-                .setKeysOnly();
+                .setFilter(privateSurveyGroupFilter).setKeysOnly();
 
         Set<Long> privateSurveyGroupIds = new HashSet<Long>();
         for (Entity surveyGroup : ds.prepare(privateSurveyGroupQuery).asIterable()) {
@@ -65,10 +64,8 @@ public class HidePrivateSurveyData implements Process {
         }
 
         // retrieve survey ids for private groups
-        Query surveyQuery = new Query("Survey")
-                .setFilter(
-                new Query.FilterPredicate("surveyGroupId", FilterOperator.IN,
-                        privateSurveyGroupIds));
+        Query surveyQuery = new Query("Survey").setFilter(new Query.FilterPredicate(
+                "surveyGroupId", FilterOperator.IN, privateSurveyGroupIds));
         Set<Long> privateSurveyIds = new HashSet<Long>();
         for (Entity survey : ds.prepare(surveyQuery).asIterable()) {
             String pointType = (String) survey.getProperty("pointType");
@@ -101,24 +98,21 @@ public class HidePrivateSurveyData implements Process {
                     : startIdx + MAX_UNDERLYING_QUERIES;
 
             final List<Long> instancesSubList = new ArrayList<Long>(surveyInstanceIds.subList(
-                    startIdx,
-                    endIdx));
+                    startIdx, endIdx));
 
             startIdx = endIdx;
 
             Filter surveyInstanceIdFilter = new Query.FilterPredicate("lastSurveyalInstanceId",
                     Query.FilterOperator.IN, instancesSubList);
 
-            Query localesQuery = new
-                    Query("SurveyedLocale").setFilter(surveyInstanceIdFilter);
+            Query localesQuery = new Query("SurveyedLocale").setFilter(surveyInstanceIdFilter);
 
             PreparedQuery pqLocales = ds.prepare(localesQuery);
             for (Entity entity : pqLocales.asIterable()) {
                 String localeType = (String) entity.getProperty("localeType");
                 if (!localeType.trim().equals("Household") && !localeType.trim().equals("PRIVATE")) {
                     publiclyVisibleLocalesList.add(entity);
-                    System.out.println(appId + "," + entity.getKey().getId()
-                            + "," + localeType);
+                    System.out.println(appId + "," + entity.getKey().getId() + "," + localeType);
                 }
             }
         }
