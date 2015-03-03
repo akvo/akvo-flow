@@ -35,7 +35,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  */
 public class HidePrivateSurveyData implements Process {
 
-    private static final int MAX_UNDERLYING_QUERIES = 99;
+    private static final int MAX_UNDERLYING_QUERIES = 30;
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
