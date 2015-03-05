@@ -188,6 +188,20 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     ancestors.push("/"); // add the root level folder to ancestors list
     return ancestors;
   },
+
+  userCanDeleteData: function(surveyGroupId) {
+    var surveyGroupPath;
+    var surveyGroups = FLOW.store.filter(FLOW.SurveyGroup, function(sg){
+        return sg.get('keyId') === surveyGroupId;
+    });
+
+    if(surveyGroups && surveyGroups.get('firstObject')) {
+        surveyGroupPath = surveyGroups.get('firstObject').get('path');
+        return FLOW.userControl.canDeleteData(surveyGroupPath);
+    } else {
+        return false; // need survey group and path, otherwise prevent delete
+    }
+  },
 });
 
 
