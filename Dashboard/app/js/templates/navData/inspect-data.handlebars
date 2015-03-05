@@ -55,7 +55,7 @@
                         <a {{action showEditSurveyInstanceWindow SI target="this" }}>
                   {{t _edit}}
                 </a>
-                        {{#if FLOW.surveyInstanceControl.userCanDeleteData }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
+                        {{#if view.showDeleteButton }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
                   {{t _delete}}
                 </a>{{/view}} {{/if}}
                     </td>
@@ -92,7 +92,7 @@
                     <ul>
                         <li class="prevBtn"><a {{action "doPreviousSI" target="this" }}>&lsaquo; {{t _previous_record}}</a>
                         </li>
-                        {{#if FLOW.role.ADMIN }}
+                        {{#if view.showDeleteButton }}
                         <li class="deleteBtn"><a {{action confirm FLOW.dialogControl.delSI target="FLOW.dialogControl" }} class="smallBtn">{{t _delete}}</a>
                         </li>
                         {{/if}}
