@@ -193,7 +193,7 @@ FLOW.inspectDataTableView = FLOW.View.extend({
     }
   },
 
-  showDeleteButton: function() {
+  showSurveyInstanceDeleteButton: function() {
     var currentSurveyId = this.get('surveyId');
     if(currentSurveyId) {
         return FLOW.surveyControl.userCanDeleteData(currentSurveyId);
