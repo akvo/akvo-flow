@@ -52,7 +52,6 @@ FLOW.userControl = Ember.ArrayController.create({
     var pathPermissions = this.currentUserPathPermissions();
     this.ancestorPaths(surveyPath).forEach(function(path){
         if(path in pathPermissions && pathPermissions[path].indexOf("DATA_DELETE") > -1) {
-            console.log("found");
             canDelete = true;
         }
     });
