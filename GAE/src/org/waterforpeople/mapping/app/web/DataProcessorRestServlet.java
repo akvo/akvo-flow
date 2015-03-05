@@ -1443,6 +1443,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         List<CascadeNode> nodes = dao.listCascadeNodesByResourceAndParentId(cascadeResourceId,
                 parentNodeId == null ? 0l : parentNodeId);
 
+        if (nodes.isEmpty()) {
+            return;
+        }
+
         if (!areLeafNodes(dao, cascadeResourceId, nodes)) {
             for (CascadeNode node : nodes) {
                 scheduleCascadeNodeDeletion(cascadeResourceId, node.getKey().getId());
@@ -1454,14 +1458,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
     private boolean areLeafNodes(CascadeNodeDao dao, Long cascadeResourceId,
             List<CascadeNode> nodes) {
-        if (nodes.size() == 0) {
-            return true;
-        } else {
-            CascadeNode firstNode = nodes.get(0);
-            List<CascadeNode> childNodes = dao.listCascadeNodesByResourceAndParentId(
-                    cascadeResourceId, firstNode.getKey().getId());
-            return childNodes.size() == 0;
-        }
+        CascadeNode firstNode = nodes.get(0);
+        List<CascadeNode> childNodes = dao.listCascadeNodesByResourceAndParentId(
+                cascadeResourceId, firstNode.getKey().getId());
+        return childNodes.size() == 0;
     }
 
     private void scheduleCascadeNodeDeletion(Long cascadeResourceId, Long parentNodeId) {
