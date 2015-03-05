@@ -260,19 +260,7 @@ FLOW.surveyInstanceControl = Ember.ArrayController.create({
   getSortInfo: function () {
     this.set('sortProperties', FLOW.tableColumnControl.get('sortProperties'));
     this.set('sortAscending', FLOW.tableColumnControl.get('sortAscending'));
-  },
-
-  /* extract surveyId from the survey instance and
-  query userControl to determine whether the current
-  user is allowed to delete data for this survey*/
-
-  userCanDeleteData: function() {
-    var surveyInstance = this.get('content').get('firstObject'); //assumes entire list in array is from same survey
-    if(surveyInstance && surveyInstance.get('surveyId')) {
-        return FLOW.surveyControl.userCanDeleteData(surveyInstance.get('surveyId'));
-    }
-    return false; // prevents deletion incase no surveyId found
-  }.property('content'),
+  }
 });
 
 FLOW.surveyedLocaleControl = Ember.ArrayController.create({
