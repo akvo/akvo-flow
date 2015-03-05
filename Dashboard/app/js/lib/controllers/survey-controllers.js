@@ -189,6 +189,9 @@ FLOW.surveyGroupControl = Ember.ArrayController.create({
     return ancestors;
   },
 
+  /* retrieve a survey group based on its id and check based on its
+  path whether or not a user is able to delete data in the group. Used
+  for monitoring groups */
   userCanDeleteData: function(surveyGroupId) {
     var surveyGroupPath;
     var surveyGroups = FLOW.store.filter(FLOW.SurveyGroup, function(sg){
@@ -579,6 +582,8 @@ FLOW.surveyControl = Ember.ArrayController.create({
     FLOW.selectedControl.set('selectedForCopyQuestion',null);
   },
 
+  /* retrieve a survey and check based on its path whether the user
+  is allowed to delete survey instances related to the survey */
   userCanDeleteData: function(surveyId) {
     var survey;
     this.get('content').forEach(function(item){
