@@ -44,7 +44,7 @@ FLOW.userControl = Ember.ArrayController.create({
     return ancestors;
   },
 
-  /* query for survey and check whether user has
+  /* query based on survey (group) path whether a user has
   permissions for data deletion */
 
   canDeleteData: function(surveyPath) {
