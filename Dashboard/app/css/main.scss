@@ -5100,19 +5100,23 @@ table.surveyTranslate .qHelpTooltip label.qTooltip + input {
             -webkit-flex-wrap: nowrap;
             -webkit-align-items: center;
             -webkit-align-content: center;
+            -webkit-justify-content: space-around;
+            justify-content: space-around;
             flex-direction: row;
             flex-wrap: nowrap;
             align-items: center;
             align-content: center;
             margin-top: 10px;
             li {
-                width: 33.33333%;
+                width:49.75%;
                 text-align: center;
                 padding: 10px 0;
                 background: rgba(32, 32, 36, 0.2);
                 color: rgb(128, 130, 133);
                 text-transform: uppercase;
                 font-size: 1.5em;
+                flex-grow: 2;
+
                 @include noWrapTxt;
                 span {
                     display: block;
