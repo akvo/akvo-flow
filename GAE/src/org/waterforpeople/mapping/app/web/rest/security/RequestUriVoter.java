@@ -49,12 +49,14 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
     private static final Logger log = Logger.getLogger(RequestUriVoter.class.getName());
 
-    private static String projectFolderUriPrefix = Permission.PROJECT_FOLDER_CREATE.getUriPrefix();
+    private static String PROJECT_FOLDER_URI_PREFIX = Permission.PROJECT_FOLDER_CREATE.getUriPrefix();
 
-    private static String formUriPrefix = Permission.FORM_CREATE.getUriPrefix();
+    private static String FORM_URI_PREFIX = Permission.FORM_CREATE.getUriPrefix();
 
-    private static final Pattern URI_PATTERN = Pattern.compile("(" + projectFolderUriPrefix + "|"
-            + formUriPrefix + ")(/(\\d*))?");
+    private static String URI_SUFFIX = "/(\\d*)";
+
+    private static final Pattern URI_PATTERN = Pattern.compile("(" + PROJECT_FOLDER_URI_PREFIX + "|"
+            + FORM_URI_PREFIX + ")(" + URI_SUFFIX + ")?");
 
     @Inject
     private UserRoleDao userRoleDao;
