@@ -49,14 +49,15 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
     private static final Logger log = Logger.getLogger(RequestUriVoter.class.getName());
 
-    private static String PROJECT_FOLDER_URI_PREFIX = Permission.PROJECT_FOLDER_CREATE.getUriPrefix();
+    private static String PROJECT_FOLDER_URI_PREFIX = Permission.PROJECT_FOLDER_CREATE
+            .getUriPrefix();
 
     private static String FORM_URI_PREFIX = Permission.FORM_CREATE.getUriPrefix();
 
     private static String URI_SUFFIX = "/(\\d*)";
 
-    private static final Pattern URI_PATTERN = Pattern.compile("(" + PROJECT_FOLDER_URI_PREFIX + "|"
-            + FORM_URI_PREFIX + ")(" + URI_SUFFIX + ")?");
+    private static final Pattern URI_PATTERN = Pattern.compile("(" + PROJECT_FOLDER_URI_PREFIX
+            + "|" + FORM_URI_PREFIX + ")(" + URI_SUFFIX + ")?");
 
     @Inject
     private UserRoleDao userRoleDao;
@@ -88,13 +89,8 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         String requestUri = securedObject.getRequestUrl();
         String httpMethod = httpRequest.getMethod();
 
-        // do not filter super admin requests
-        if (authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)) {
-            return ACCESS_ABSTAIN;
-        }
-
-        // for now we only vote for request access on project folders and forms
-        if (!URI_PATTERN.matcher(requestUri).find()) {
+        // abstain from voting
+        if (abstainVote(authentication, securedObject)) {
             return ACCESS_ABSTAIN;
         }
 
@@ -207,5 +203,19 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             }
         }
         return resourcePath;
+    }
+
+    /**
+     * Checks the secured object passed in via the request and determines whether the
+     * RequestUriVoter will abstain from voting for an access decision
+     *
+     * @param securedObject
+     * @return
+     */
+    public boolean abstainVote(Authentication authentication, FilterInvocation securedObject) {
+        // requester is a super admin user no need to control access or
+        // request URL doest not match the URI patterns we consider for voting
+        return authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)
+                || !URI_PATTERN.matcher(securedObject.getRequestUrl()).find();
     }
 }
