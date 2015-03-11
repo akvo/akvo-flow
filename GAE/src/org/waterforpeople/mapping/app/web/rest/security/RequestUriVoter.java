@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -86,23 +85,71 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     @Override
     public int vote(Authentication authentication, FilterInvocation securedObject,
             Collection<ConfigAttribute> attributes) {
-
-        HttpServletRequest httpRequest = securedObject.getHttpRequest();
         String requestUri = securedObject.getRequestUrl();
-        String httpMethod = httpRequest.getMethod();
 
         // abstain from voting
         if (abstainVote(authentication, securedObject)) {
             return ACCESS_ABSTAIN;
         }
 
-        String resourcePath = retrieveResourcePath(securedObject);
-        if (resourcePath == null) {
-            // enables listing folders and forms
-            return ACCESS_ABSTAIN;
+        if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)) {
+            return voteProjectFolderUri(authentication, securedObject);
+        } else if (requestUri.startsWith(FORM_URI_PREFIX)) {
+            return voteFormUri(authentication, securedObject);
+        } else if (requestUri.startsWith(SURVEY_RESPONSE_URI_PREFIX)) {
+            return voteSurveyResponseUri(authentication, securedObject);
+        }
+
+        // catchall access denied
+        return ACCESS_DENIED;
+    }
+
+    /**
+     * Checks the secured object passed in via the request and determines whether the
+     * RequestUriVoter will abstain from voting for an access decision
+     *
+     * @param securedObject
+     * @return
+     */
+    public boolean abstainVote(Authentication authentication, FilterInvocation securedObject) {
+        // requester is a super admin user no need to control access or
+        // request URL does not match the URI patterns we consider for voting
+        return authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)
+                || !URI_PATTERN.matcher(securedObject.getRequestUrl()).find();
+    }
+
+    /**
+     * Vote access decision for requests to the projects/folders URIs
+     *
+     * @param authentication
+     * @param securedObject
+     * @return
+     */
+    private int voteProjectFolderUri(Authentication authentication, FilterInvocation securedObject) {
+        HttpServletRequest httpRequest = securedObject.getHttpRequest();
+        String httpMethod = securedObject.getHttpRequest().getMethod();
+        String requestUri = securedObject.getRequestUrl();
+        String resourcePath = null;
+
+        if ("GET".equals(httpMethod)) {
+            if (requestUri.equals(PROJECT_FOLDER_URI_PREFIX)) {
+                // if no specific object (id) requested, abstain from voting. filtering is done
+                // via the UserAuthorizationDao.listByUserAuthorization()
+                return ACCESS_ABSTAIN;
+            }
+            resourcePath = retrieveResourcePathFromDataStore(requestUri);
+        } else if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
+            resourcePath = retrieveResourcePathFromPayload(httpRequest);
+        } else if ("DELETE".equals(httpMethod)) {
+            resourcePath = retrieveResourcePathFromDataStore(requestUri);
         }
 
         Long userId = (Long) authentication.getCredentials();
+        if (resourcePath == null || userId == null) {
+            // no path found
+            throw new AccessDeniedException(
+                    "Access is Denied. Unable to identify object path or user");
+        }
 
         // retrieve user authorizations containing resource paths that make up this one
         List<UserAuthorization> authorizations = userAuthorizationDao.listByObjectPath(userId,
@@ -126,98 +173,108 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             }
         }
 
-        throw new AccessDeniedException("Access is Denied. Insufficient permissions");
+        // catchall access denied
+        return ACCESS_DENIED;
     }
 
     /**
-     * Retrieve the resource path for a secured object that is being accessed. The path is either
-     * retrieved from the posted payload or from the datastore. Throws an @{link
-     * AccessDeniedException} in cases where a path should have been found but is missing
+     * Vote access decision for requests to the form URIs
+     *
+     * @param authentication
+     * @param securedObject
+     * @return
+     */
+    private int voteFormUri(Authentication authentication, FilterInvocation securedObject) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /**
+     * Vote access decision for requests to survey response URIs
+     *
+     * @param authentication
+     * @param securedObject
+     * @return
+     */
+    private int voteSurveyResponseUri(Authentication authentication, FilterInvocation securedObject) {
+        return 0;
+    }
+
+    /**
+     * Retrieve the resource path for a secured object that is being accessed. The path is retrieved
+     * from the posted payload. Throws an @{link AccessDeniedException} in cases where a path should
+     * have been found but is missing.
      *
      * @param securedObject
      * @return
      */
     @SuppressWarnings("rawtypes")
-    private String retrieveResourcePath(FilterInvocation securedObject)
+    private String retrieveResourcePathFromPayload(HttpServletRequest httpRequest)
             throws AccessDeniedException {
 
-        HttpServletRequest httpRequest = securedObject.getHttpRequest();
-        String httpMethod = httpRequest.getMethod();
-        String requestUri = securedObject.getRequestUrl();
-        String resourcePath = null;
-
-        if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
-            if ((httpRequest.getContentType() != null
-                    && !httpRequest.getContentType().startsWith("application/json"))
-                    || (httpRequest.getContentLength() == 0)) {
-                return null; // if not JSON payload, conversion exception will be thrown later
-            }
-
-            ObjectMapper mapper = new ObjectMapper();
-            Map payload = null;
-            try {
-                payload = mapper.readValue(httpRequest.getInputStream(), Map.class);
-            } catch (IOException e) {
-                log.severe(e.toString());
-            }
-
-            Map content = null;
-            if (payload.containsKey("survey_group")) {
-                content = (Map) payload.get("survey_group");
-            } else {
-                content = (Map) payload.get("survey");
-            }
-
-            if (content == null || !content.containsKey("path")) {
-                throw new AccessDeniedException("Access is Denied. Unable to identify object path");
-            }
-            resourcePath = (String) content.get("path");
-        } else {
-            Matcher matcher = URI_PATTERN.matcher(requestUri);
-            if (matcher.find()) {
-                String objectIdStr = matcher.group(3);
-                Long objectId = null;
-                if (objectIdStr == null) {
-                    // if no specific object (id) requested, abstain from voting. filtering is done
-                    // via the listByUserAuthorization
-                    return null;
-                }
-                objectId = Long.valueOf(objectIdStr);
-
-                if (requestUri.contains("surveys")) {
-                    Survey s = surveyDao.getByKey(objectId);
-                    if (s != null) {
-                        resourcePath = s.getPath();
-                    }
-                } else {
-                    SurveyGroup sg = surveyGroupDao.getByKey(objectId);
-                    if (sg != null) {
-                        resourcePath = sg.getPath();
-                    }
-                }
-
-                // expecting object with valid path
-                if (resourcePath == null) {
-                    throw new AccessDeniedException(
-                            "Access is Denied. Unable to identify object path");
-                }
-
-            }
+        if (httpRequest.getContentType() == null
+                || !httpRequest.getContentType().startsWith("application/json")
+                || httpRequest.getContentLength() == 0) {
+            return null; // if not JSON payload, conversion exception will be thrown later
         }
-        return resourcePath;
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map payload = null;
+        try {
+            payload = mapper.readValue(httpRequest.getInputStream(), Map.class);
+        } catch (IOException e) {
+            log.severe(e.toString());
+        }
+
+        Map content = null;
+        if (payload.containsKey("survey_group")) {
+            content = (Map) payload.get("survey_group");
+        } else {
+            content = (Map) payload.get("survey");
+        }
+
+        if (content == null || !content.containsKey("path")) {
+            throw new AccessDeniedException("Access is Denied. Unable to identify object path");
+        }
+
+        return (String) content.get("path");
     }
 
     /**
-     * Checks the secured object passed in via the request and determines whether the
-     * RequestUriVoter will abstain from voting for an access decision
+     * Retrieve the resource path for a secured object that is being accessed. The path is retrieved
+     * from the datastore. Throws an @{link AccessDeniedException} in cases where a path should have
+     * been found but is missing.
      *
-     * @param securedObject
+     * @param requestUri
      * @return
      */
-    public boolean abstainVote(Authentication authentication, FilterInvocation securedObject) {
-        // requester is a super admin user no need to control access or
-        // request URL does not match the URI patterns we consider for voting
-        return authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)
-                || !URI_PATTERN.matcher(securedObject.getRequestUrl()).find();
+    private String retrieveResourcePathFromDataStore(String requestUri) {
+        String resourcePath = null;
+
+        String objectIdStr = requestUri.substring(requestUri.lastIndexOf("/") + 1);
+        if (objectIdStr == null) {
+            return null;
+        }
+        Long objectId = Long.valueOf(objectIdStr);
+
+        if (requestUri.contains("surveys")) {
+            Survey s = surveyDao.getByKey(objectId);
+            if (s != null) {
+                resourcePath = s.getPath();
+            }
+        } else {
+            SurveyGroup sg = surveyGroupDao.getByKey(objectId);
+            if (sg != null) {
+                resourcePath = sg.getPath();
+            }
+        }
+
+        // expecting object with valid path
+        if (resourcePath == null) {
+            throw new AccessDeniedException(
+                    "Access is Denied. Unable to identify object path");
+        }
+
+        return resourcePath;
     }
 }
