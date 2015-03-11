@@ -54,10 +54,12 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
     private static String FORM_URI_PREFIX = Permission.FORM_CREATE.getUriPrefix();
 
+    private static String SURVEY_RESPONSE_URI_PREFIX = Permission.DATA_DELETE.getUriPrefix();
+
     private static String URI_SUFFIX = "/(\\d*)";
 
     private static final Pattern URI_PATTERN = Pattern.compile("(" + PROJECT_FOLDER_URI_PREFIX
-            + "|" + FORM_URI_PREFIX + ")(" + URI_SUFFIX + ")?");
+            + "|" + FORM_URI_PREFIX + "|" + SURVEY_RESPONSE_URI_PREFIX + ")(" + URI_SUFFIX + ")?");
 
     @Inject
     private UserRoleDao userRoleDao;
@@ -214,7 +216,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      */
     public boolean abstainVote(Authentication authentication, FilterInvocation securedObject) {
         // requester is a super admin user no need to control access or
-        // request URL doest not match the URI patterns we consider for voting
+        // request URL does not match the URI patterns we consider for voting
         return authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)
                 || !URI_PATTERN.matcher(securedObject.getRequestUrl()).find();
     }
