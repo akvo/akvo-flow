@@ -558,6 +558,11 @@ FLOW.surveyControl = Ember.ArrayController.create({
 
   selectForm: function(evt) {
     FLOW.selectedControl.set('selectedSurvey', evt.context);
+    //  we don't allow copying or moving between forms
+    FLOW.selectedControl.set('selectedForMoveQuestionGroup',null);
+    FLOW.selectedControl.set('selectedForCopyQuestionGroup',null);
+    FLOW.selectedControl.set('selectedForMoveQuestion',null);
+    FLOW.selectedControl.set('selectedForCopyQuestion',null);
   }
 });
 
