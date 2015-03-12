@@ -1,12 +1,18 @@
 
 package org.akvo.flow.events;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.web.rest.security.user.GaeUser;
 
 import com.gallatinsystems.survey.domain.SurveyGroup;
@@ -16,22 +22,23 @@ import com.google.appengine.api.datastore.Entity;
 public class EventUtils {
 
     private static Logger log = Logger.getLogger(EventUtils.class.getName());
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public enum EventSourceType {
         USER, DEVICE, SENSOR, WEBFORM, API, UNKNOWN, SYSTEM
     };
 
-    public enum EventType {
+    public enum EntityType {
         SURVEY_GROUP, FORM, QUESTION_GROUP, QUESTION, DATA_POINT, FORM_INSTANCE, ANSWER, DEVICE_FILE
     };
 
     // names of kinds in Google App Engine
-    static class Kind {
+    static public class Kind {
         public static final String SURVEY_GROUP = "SurveyGroup";
         public static final String FORM = "Survey";
         public static final String QUESTION_GROUP = "QuestionGroup";
         public static final String QUESTION = "Question";
-        public static final String DATAPOINT = "SurveyedLocale";
+        public static final String DATA_POINT = "SurveyedLocale";
         public static final String FORM_INSTANCE = "SurveyInstance";
         public static final String ANSWER = "QuestionAnswerStore";
         public static final String DEVICE_FILE = "DeviceFiles";
@@ -43,7 +50,7 @@ public class EventUtils {
         public static final String FORM = "form";
         public static final String QUESTION_GROUP = "questionGroup";
         public static final String QUESTION = "question";
-        public static final String DATAPOINT = "dataPoint";
+        public static final String DATA_POINT = "dataPoint";
         public static final String FORM_INSTANCE = "formInstance";
         public static final String ANSWER = "answer";
         public static final String DEVICE_FILE = "deviceFile";
@@ -78,7 +85,7 @@ public class EventUtils {
         public static final String QUESTION_ID = "questionId";
         public static final String FORM_INSTANCE_ID = "formInstanceId";
         public static final String ANSWER_ID = "answerId";
-        public static final String DATAPOINT_ID = "dataPointId";
+        public static final String DATA_POINT_ID = "dataPointId";
         public static final String SUBMITTER_NAME = "submitterName";
         public static final String COLLECTION_DATE = "collectionDate";
         public static final String SURVEYAL_TIME = "surveyalTime";
@@ -123,10 +130,10 @@ public class EventUtils {
     public static final String SURVEY_GROUP_TYPE_FOLDER = "FOLDER";
 
     public static class EventTypes {
-        public final EventType type;
+        public final EntityType type;
         public final String action;
 
-        public EventTypes(EventType type, String action) {
+        public EventTypes(EntityType type, String action) {
             this.type = type;
             this.action = action;
         }
@@ -135,21 +142,21 @@ public class EventUtils {
     public static EventTypes getEventAndActionType(String kindName) {
         switch (kindName) {
             case Kind.ANSWER:
-                return new EventTypes(EventType.ANSWER, Action.ANSWER);
+                return new EventTypes(EntityType.ANSWER, Action.ANSWER);
             case Kind.FORM_INSTANCE:
-                return new EventTypes(EventType.FORM_INSTANCE, Action.FORM_INSTANCE);
-            case Kind.DATAPOINT:
-                return new EventTypes(EventType.DATA_POINT, Action.DATAPOINT);
+                return new EventTypes(EntityType.FORM_INSTANCE, Action.FORM_INSTANCE);
+            case Kind.DATA_POINT:
+                return new EventTypes(EntityType.DATA_POINT, Action.DATA_POINT);
             case Kind.SURVEY_GROUP:
-                return new EventTypes(EventType.SURVEY_GROUP, Action.SURVEY_GROUP);
+                return new EventTypes(EntityType.SURVEY_GROUP, Action.SURVEY_GROUP);
             case Kind.FORM:
-                return new EventTypes(EventType.FORM, Action.FORM);
+                return new EventTypes(EntityType.FORM, Action.FORM);
             case Kind.QUESTION_GROUP:
-                return new EventTypes(EventType.QUESTION_GROUP, Action.QUESTION_GROUP);
+                return new EventTypes(EntityType.QUESTION_GROUP, Action.QUESTION_GROUP);
             case Kind.QUESTION:
-                return new EventTypes(EventType.QUESTION, Action.QUESTION);
+                return new EventTypes(EntityType.QUESTION, Action.QUESTION);
             case Kind.DEVICE_FILE:
-                return new EventTypes(EventType.DEVICE_FILE, Action.DEVICE_FILE);
+                return new EventTypes(EntityType.DEVICE_FILE, Action.DEVICE_FILE);
         }
         return null;
     }
@@ -158,12 +165,21 @@ public class EventUtils {
             Map<String, Object> data) {
         if (val != null) {
             data.put(key, val);
-            return data;
         }
         return data;
     }
 
-    public static Map<String, Object> populateEntityProperties(EventType type, Entity e,
+    private static Map<String, Object> addProperty(String key, Object val,
+            Object defaultVal, Map<String, Object> data) {
+        if (val != null) {
+            data.put(key, val);
+        } else {
+            data.put(key, defaultVal);
+        }
+        return data;
+    }
+
+    public static Map<String, Object> populateEntityProperties(EntityType type, Entity e,
             Map<String, Object> data) {
         switch (type) {
             case ANSWER:
@@ -175,7 +191,7 @@ public class EventUtils {
                 break;
             case FORM_INSTANCE:
                 addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
-                addProperty(Key.DATAPOINT_ID, e.getProperty(Prop.SURVEYED_LOCALE_ID), data);
+                addProperty(Key.DATA_POINT_ID, e.getProperty(Prop.SURVEYED_LOCALE_ID), data);
                 addProperty(Key.COLLECTION_DATE, e.getProperty(Prop.COLLECTION_DATE), data);
                 addProperty(Key.SURVEYAL_TIME, e.getProperty(Prop.SURVEYAL_TIME), data);
                 break;
@@ -187,7 +203,7 @@ public class EventUtils {
                 addProperty(Key.SURVEY_ID, e.getProperty(Prop.SURVEY_GROUP_ID), data);
                 break;
             case SURVEY_GROUP:
-                addProperty(Key.NAME, e.getProperty(Prop.NAME), data);
+                addProperty(Key.NAME, e.getProperty(Prop.NAME), "<name missing>", data);
                 addProperty(Key.PARENT_ID, e.getProperty(Prop.PARENT_ID), data);
 
                 if (e.getProperty(Prop.PROJECT_TYPE).toString()
@@ -208,7 +224,7 @@ public class EventUtils {
                 addProperty(Key.SURVEY_ID, e.getProperty(Prop.SURVEY_GROUP_ID), data);
                 break;
             case QUESTION_GROUP:
-                addProperty(Key.NAME, e.getProperty(Prop.NAME), data);
+                addProperty(Key.NAME, e.getProperty(Prop.NAME), "<name missing>", data);
                 addProperty(Key.ORDER, e.getProperty(Prop.ORDER), data);
                 addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
                 break;
@@ -277,10 +293,32 @@ public class EventUtils {
 
     }
 
-    public static Map<String, Object> newEntity(EventType type, Long id) {
+    public static Map<String, Object> newEntity(EntityType type, Long id) {
         Map<String, Object> entity = new HashMap<String, Object>();
         entity.put(Key.TYPE, type);
         entity.put(Key.ID, id);
         return entity;
+    }
+
+    public static void sendEvents(String urlString, List<Map<String, Object>> events)
+            throws IOException {
+        URL url = new URL(urlString);
+        HttpURLConnection connection = (HttpURLConnection) url
+                .openConnection();
+
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type",
+                "application/json");
+
+        OutputStreamWriter writer = new OutputStreamWriter(
+                connection.getOutputStream());
+        objectMapper.writeValue(writer, events);
+
+        System.out.println("    " + connection.getResponseCode());
+
+        writer.close();
+        connection.disconnect();
+
     }
 }
