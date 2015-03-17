@@ -92,10 +92,9 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             return ACCESS_ABSTAIN;
         }
 
-        if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)) {
-            return voteProjectFolderUri(authentication, securedObject);
-        } else if (requestUri.startsWith(FORM_URI_PREFIX)) {
-            return voteFormUri(authentication, securedObject);
+        if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)
+                || requestUri.startsWith(FORM_URI_PREFIX)) {
+            return voteFolderSurveyUri(authentication, securedObject);
         } else if (requestUri.startsWith(SURVEY_RESPONSE_URI_PREFIX)) {
             return voteSurveyResponseUri(authentication, securedObject);
         }
@@ -119,20 +118,20 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
     }
 
     /**
-     * Vote access decision for requests to the projects/folders URIs
+     * Vote access decision for requests to the projects/folders/surveys URIs
      *
      * @param authentication
      * @param securedObject
      * @return
      */
-    private int voteProjectFolderUri(Authentication authentication, FilterInvocation securedObject) {
+    private int voteFolderSurveyUri(Authentication authentication, FilterInvocation securedObject) {
         HttpServletRequest httpRequest = securedObject.getHttpRequest();
         String httpMethod = securedObject.getHttpRequest().getMethod();
         String requestUri = securedObject.getRequestUrl();
         String resourcePath = null;
 
         if ("GET".equals(httpMethod)) {
-            if (requestUri.equals(PROJECT_FOLDER_URI_PREFIX)) {
+            if (requestUri.equals(PROJECT_FOLDER_URI_PREFIX) || requestUri.equals(FORM_URI_PREFIX)) {
                 // if no specific object (id) requested, abstain from voting. filtering is done
                 // via the UserAuthorizationDao.listByUserAuthorization()
                 return ACCESS_ABSTAIN;
@@ -144,7 +143,20 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             resourcePath = retrieveResourcePathFromDataStore(requestUri);
         }
 
+        return checkUserAuthorization(authentication, securedObject, resourcePath);
+    }
+
+    /**
+     * Check the authorization of a user based on an identified path
+     *
+     * @param authentication
+     * @param resourcePath
+     * @return
+     */
+    private int checkUserAuthorization(Authentication authentication,
+            FilterInvocation securedObject, String resourcePath) {
         Long userId = (Long) authentication.getCredentials();
+
         if (resourcePath == null || userId == null) {
             // no path found
             throw new AccessDeniedException(
@@ -166,7 +178,8 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         List<UserRole> authorizedRoles = userRoleDao.listByKeys(authorizedRoleIds
                 .toArray(new Long[0]));
 
-        Permission permission = Permission.lookup(httpMethod, requestUri);
+        Permission permission = Permission.lookup(securedObject.getHttpRequest().getMethod(),
+                securedObject.getRequestUrl());
         for (UserRole role : authorizedRoles) {
             if (role.getPermissions().contains(permission)) {
                 return ACCESS_GRANTED;
@@ -175,18 +188,6 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
         // catchall access denied
         return ACCESS_DENIED;
-    }
-
-    /**
-     * Vote access decision for requests to the form URIs
-     *
-     * @param authentication
-     * @param securedObject
-     * @return
-     */
-    private int voteFormUri(Authentication authentication, FilterInvocation securedObject) {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
     /**
