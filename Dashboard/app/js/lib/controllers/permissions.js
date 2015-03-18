@@ -250,7 +250,7 @@ FLOW.dialogControl = Ember.Object.create({
       break;
 
     case "delCR":
-    	this.set('header', Ember.String.loc('_delete_cascade_resource_header'));
+        this.set('header', Ember.String.loc('_delete_cascade_resource_header'));
         this.set('message', Ember.String.loc('_delete_cascade_resource_text'));
         this.set('showDialog', true);
       break;
