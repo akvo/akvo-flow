@@ -5,6 +5,17 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.3
+Date: 12 March 2015
+
+## Resolved issues
+* Optimize cascade question deletion [#1177]
+* Fix cascade question export bug [#1168]
+* Hide Survey ID from dashboard [#1166]
+* Fix error when revoking a user's API Key [#1156]
+* Update to latest clojurescript & om releases [#1117]
+* Refactor projectMigration to a data script [#1150] 
+
 #1.8.2.1
 Date: 3 March 2015
 
