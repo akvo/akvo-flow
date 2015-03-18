@@ -1,4 +1,4 @@
-;; Copyright (C) 2014 Stichting Akvo (Akvo Foundation)
+;; Copyright (C) 2014-2015 Stichting Akvo (Akvo Foundation)
 ;;
 ;; This file is part of Akvo FLOW.
 ;;
@@ -60,8 +60,10 @@
     (render [this]
       (om/build component (om/value data)))))
 
-(defn ^:export init []
+(defn ^:export main []
   (om/root value-component
            app-state
            {:opts {:component root-component}
             :target (.getElementById js/document "app")}))
+
+(main)

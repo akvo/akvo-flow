@@ -413,7 +413,7 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             throws Exception {
 
         BlockingQueue<Runnable> jobQueue = new LinkedBlockingQueue<Runnable>();
-        ThreadPoolExecutor threadPool  = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
+        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS,
                 jobQueue);
 
         final AtomicLong threadsCompleted = new AtomicLong();
@@ -597,12 +597,15 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
                 } else if (qdto != null && QuestionType.CASCADE.equals(qdto.getType())
                         && useQuestionId) {
                     String cellVal = val.trim();
-                    ArrayList<String> parts = new ArrayList<String>(Arrays.asList(cellVal
-                            .split("\\|", -1)));
-                    int padCount = qdto.getLevelNames().size() - parts.size();
+                    int levelCount = qdto.getLevelNames().size();
+                    List<String> parts = new ArrayList<String>(Arrays.asList(cellVal
+                            .split("\\|", levelCount)));
+                    int padCount = levelCount - parts.size();
+
                     for (int p = 0; p < padCount; p++) { // padding
                         parts.add("");
                     }
+
                     for (String lVal : parts) {
                         createCell(row, col++, lVal, null, Cell.CELL_TYPE_STRING);
                         digest.update(lVal.getBytes());
@@ -615,6 +618,10 @@ public class GraphicalSurveySummaryExporter extends SurveySummaryExporter {
             } else {
                 if (qdto != null && QuestionType.GEO == qdto.getType()) {
                     for (int j = 0; j < 4; j++) {
+                        createCell(row, col++, "", null);
+                    }
+                } else if (qdto != null && useQuestionId && QuestionType.CASCADE == qdto.getType()) {
+                    for (int j = 0; j < qdto.getLevelNames().size(); j++) {
                         createCell(row, col++, "", null);
                     }
                 } else {
