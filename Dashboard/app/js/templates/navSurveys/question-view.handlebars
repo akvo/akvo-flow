@@ -3,8 +3,16 @@
 <div class="innerContent" id="innerContent_01">
   {{#if view.amOpenQuestion}}
     <h1 class="questionNbr"><span>{{view.content.order}}} </span>{{view.content.text}}</h1>
-    <label>{{t _question_text}}: {{view Ember.TextField valueBinding="view.text" size=100 }}</label>
-    <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span> {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
+    <label>{{t _question_text}}:
+    {{#if view.questionValidationFailure }}
+      <span style="color:red">{{t _question_over_500_chars_header}}</span>
+      {{/if}}
+      {{view Ember.TextField valueBinding="view.text" size=100 }}</label>
+    <label>{{t _question_help_tooltip}}: <span class="fadedText">({{t _optional}})</span>
+    {{#if view.questionTooltipValidationFailure }}
+      <span style="color:red">{{t _tooltip_over_500_chars_header}}</span>
+      {{/if}}
+      {{view Ember.TextField valueBinding="view.tip" size=100 }} </label>
     <label>
       {{t _question_id}}: {{tooltip _question_id_tooltip}}
       {{#if view.questionIdValidationFailure }}

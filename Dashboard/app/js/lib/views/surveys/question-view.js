@@ -28,6 +28,8 @@ FLOW.QuestionView = FLOW.View.extend({
   allowPoints: true,
   allowLine: true,
   allowPolygon: true,
+  questionValidationFailure: false,
+  questionTooltipValidationFailure: false,
 
   init: function () {
     var self, qoList, i;
@@ -277,6 +279,16 @@ FLOW.QuestionView = FLOW.View.extend({
       this.showMessageDialog(Ember.String.loc('_question_id_must_be_valid_and_unique'), this.questionIdValidationFailureReason);
       return;
     }
+
+    if (this.questionValidationFailure) {
+        this.showMessageDialog(Ember.String.loc('_question_over_500_chars_header'), Ember.String.loc('_question_over_500_chars_text'));
+        return;
+      }
+
+    if (this.questionTooltipValidationFailure) {
+        this.showMessageDialog(Ember.String.loc('_tooltip_over_500_chars_header'), Ember.String.loc('_tooltip_over_500_chars_text'));
+        return;
+      }
 
     if (this.type.get('value') === 'CASCADE' && Ember.empty(FLOW.selectedControl.get('selectedCascadeResource'))) {
         FLOW.dialogControl.set('activeAction', 'ignore');
@@ -841,6 +853,15 @@ FLOW.QuestionView = FLOW.View.extend({
   cancelAddAttribute: function () {
     this.set('showAddAttributeDialogBool', false);
   },
+
+  validateQuestionObserver: function(){
+      this.set('questionValidationFailure', (this.text != null && this.text.length > 500));
+      console.log("length:" + this.text.length);
+  }.observes('this.text'),
+
+  validateQuestionTooltipObserver: function(){
+      this.set('questionTooltipValidationFailure', (this.tip != null && this.tip.length > 500));
+  }.observes('this.tip'),
 
   validateQuestionIdObserver: function() {
     var self = this;
