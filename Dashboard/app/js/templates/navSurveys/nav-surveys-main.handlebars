@@ -42,7 +42,11 @@
               {{#if view.disableAddSurveyButton }}
                 <li><a class="addSurvey noChanges">{{t _create_new_survey}}</a></li>
               {{else}}
-                <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>{{t _create_new_survey}}</a></li>
+                {{#if view.disableAddSurveyButtonInRoot}}
+                  <li><a class="addSurvey noChanges" >{{t _create_new_survey}}</a></li>
+                {{else}}
+                  <li><a class="addSurvey" {{action "createProject" target="FLOW.projectControl"}}>{{t _create_new_survey}}</a></li>
+                {{/if}}
               {{/if}}
               </ul>
             </nav>
