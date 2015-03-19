@@ -214,7 +214,7 @@ public class EventLogger {
                 .getCurrentElement().getId());
 
         // create event
-        Map<String, Object> event = newEvent(context.getCurrentElement().getAppId(),
+        Map<String, Object> event = newEvent(SystemProperty.applicationId.get(),
                 types.action + Action.DELETED, eventEntity, eventContext);
 
         // store it

@@ -188,6 +188,7 @@ public class EventUtils {
                 addProperty(Key.QUESTION_ID,
                         Long.valueOf((String) e.getProperty(Prop.QUESTION_ID)), data);
                 addProperty(Key.VALUE, e.getProperty(Prop.VALUE), data);
+                addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
                 break;
             case FORM_INSTANCE:
                 addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
