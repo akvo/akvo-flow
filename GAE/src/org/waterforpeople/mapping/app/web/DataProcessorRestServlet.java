@@ -610,7 +610,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                         + " `Question`");
 
         for (Question nQ : dependentQuestionList) {
-            nQ.setDependentQuestionId(qMap.get(nQ.getDependentQuestionId()));
+            // only fix dependencies where the dependent question is inside the same group
+            if (qMap.containsKey(nQ.getDependentQuestionId())) {
+                nQ.setDependentQuestionId(qMap.get(nQ.getDependentQuestionId()));
+            }
         }
 
         qDao.save(dependentQuestionList);
