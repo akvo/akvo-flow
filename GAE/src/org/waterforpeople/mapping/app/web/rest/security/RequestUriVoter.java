@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.AccessDeniedException;
@@ -130,20 +131,57 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         String requestUri = securedObject.getRequestUrl();
         String resourcePath = null;
 
+        String entityKind = requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX) ? "SurveyGroup"
+                : "Survey";
+        Long objectId = parseObjectId(securedObject);
+
         if ("GET".equals(httpMethod)) {
             if (requestUri.equals(PROJECT_FOLDER_URI_PREFIX) || requestUri.equals(FORM_URI_PREFIX)) {
                 // if no specific object (id) requested, abstain from voting. filtering is done
                 // via the UserAuthorizationDao.listByUserAuthorization()
                 return ACCESS_ABSTAIN;
             }
-            resourcePath = retrieveResourcePathFromDataStore(requestUri);
+            resourcePath = retrieveResourcePathFromDataStore(entityKind, objectId);
         } else if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
             resourcePath = retrieveResourcePathFromPayload(httpRequest);
         } else if ("DELETE".equals(httpMethod)) {
-            resourcePath = retrieveResourcePathFromDataStore(requestUri);
+            resourcePath = retrieveResourcePathFromDataStore(entityKind, objectId);
         }
 
         return checkUserAuthorization(authentication, securedObject, resourcePath);
+    }
+
+    /**
+     * Take the request URI and parse to extract the object Id of the survey or survey group being
+     * accessed
+     *
+     * @param requestUri
+     * @return
+     */
+    private Long parseObjectId(FilterInvocation securedObject) {
+        String requestUri = securedObject.getRequestUrl();
+        HttpServletRequest httpRequest = securedObject.getHttpRequest();
+        String objectIdStr = null;
+
+        // match object id in request URI
+        if (StringUtils.isNotBlank(URI_PATTERN.matcher(requestUri).group(2))) {
+            objectIdStr = URI_PATTERN.matcher(requestUri).group(2);
+        } else if (httpRequest.getParameter("surveyId") != null) {
+            objectIdStr = httpRequest.getParameter("surveyId");
+        } else if (httpRequest.getParameter("surveyGroupId") != null) {
+            objectIdStr = httpRequest.getParameter("surveyGroupId");
+        }
+
+        if (objectIdStr != null) {
+            try {
+                Long objectId = Long.valueOf(objectIdStr);
+                return objectId;
+            } catch (NumberFormatException e) {
+                log.fine("Not able to convert to  objectId string: " + objectIdStr);
+                // ignore exception
+            }
+        }
+        return null;
     }
 
     /**
@@ -198,7 +236,35 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      * @return
      */
     private int voteSurveyResponseUri(Authentication authentication, FilterInvocation securedObject) {
-        return 0;
+        HttpServletRequest httpRequest = securedObject.getHttpRequest();
+        String httpMethod = securedObject.getHttpRequest().getMethod();
+        String requestUri = securedObject.getRequestUrl();
+        String resourcePath = null;
+
+        String entityKind = null;
+        if (httpRequest.getParameter("surveyId") != null) {
+            entityKind = "Survey";
+        } else if (httpRequest.getParameter("surveyGroupId") != null) {
+            entityKind = "SurveyGroup";
+        }
+        Long objectId = parseObjectId(securedObject);
+
+        if ("GET".equals(httpMethod)) {
+            if (requestUri.equals(SURVEY_RESPONSE_URI_PREFIX)) {
+                // if no specific id is requested, abstain from voting. filtering is done
+                // via the UserAuthorizationDao.listByUserAuthorization()
+                return ACCESS_ABSTAIN;
+            }
+            resourcePath = retrieveResourcePathFromDataStore(entityKind, objectId);
+        } else if ("DELETE".equals(httpMethod)) {
+            resourcePath = retrieveResourcePathFromDataStore(entityKind, objectId);
+        } else if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
+            // no post or put for survey instances is allowed via rest API at the moment
+            log.info("A POST or PUT of survey responses is not a supported operation at the moment");
+            return ACCESS_DENIED;
+        }
+
+        return checkUserAuthorization(authentication, securedObject, resourcePath);
     }
 
     /**
@@ -246,28 +312,29 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      * from the datastore. Throws an @{link AccessDeniedException} in cases where a path should have
      * been found but is missing.
      *
-     * @param requestUri
+     * @param entityKind
+     * @param objectId
      * @return
      */
-    private String retrieveResourcePathFromDataStore(String requestUri) {
+    private String retrieveResourcePathFromDataStore(String entityKind, Long objectId) {
         String resourcePath = null;
 
-        String objectIdStr = requestUri.substring(requestUri.lastIndexOf("/") + 1);
-        if (objectIdStr == null) {
+        if (entityKind == null || objectId == null) {
             return null;
         }
-        Long objectId = Long.valueOf(objectIdStr);
 
-        if (requestUri.contains("surveys")) {
+        if (entityKind.equals("Survey")) {
             Survey s = surveyDao.getByKey(objectId);
             if (s != null) {
                 resourcePath = s.getPath();
             }
-        } else {
+        } else if (entityKind.equals("SurveyGroup")) {
             SurveyGroup sg = surveyGroupDao.getByKey(objectId);
             if (sg != null) {
                 resourcePath = sg.getPath();
             }
+        } else {
+            return null;
         }
 
         // expecting object with valid path
