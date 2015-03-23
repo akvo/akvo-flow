@@ -134,12 +134,13 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         String resourcePath = null;
 
         if ("GET".equals(httpMethod)) {
-            if (requestUri.equals(PROJECT_FOLDER_URI_PREFIX) || requestUri.equals(FORM_URI_PREFIX)) {
-                // if no specific object (id) requested, abstain from voting. filtering is done
-                // via the UserAuthorizationDao.listByUserAuthorization()
-                return ACCESS_ABSTAIN;
+            // get specific object (id), otherwise abstain from voting. filtering is done
+            // via the UserAuthorizationDao.listByUserAuthorization()
+            Matcher formFolderMatcher = URI_PATTERN.matcher(requestUri);
+            if (formFolderMatcher.matches() && StringUtils.isNotBlank(formFolderMatcher.group(2))) {
+                resourcePath = retrieveResourcePathFromDataStore(securedObject);
             }
-            resourcePath = retrieveResourcePathFromDataStore(securedObject);
+            return ACCESS_ABSTAIN;
         } else if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
             resourcePath = retrieveResourcePathFromPayload(httpRequest);
         } else if ("DELETE".equals(httpMethod)) {
@@ -160,33 +161,30 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         String requestUri = securedObject.getRequestUrl();
         HttpServletRequest httpRequest = securedObject.getHttpRequest();
         String objectIdStr = null;
+        String entityKind = null;
         Map<String, Object> params = new HashMap<String, Object>();
 
         // first check for relevant parameters if they are present in request starting with survey
-        // id which is more specific, then attempt match object id in request URI for surveys and
+        // id which is more specific, then attempt extract object id in request URI for surveys and
         // survey_groups requests
         if (httpRequest.getParameter("surveyId") != null) {
             objectIdStr = httpRequest.getParameter("surveyId");
-            params.put("entityKind", "Survey");
+            entityKind = "Survey";
         } else if (httpRequest.getParameter("surveyGroupId") != null) {
             objectIdStr = httpRequest.getParameter("surveyGroupId");
-            params.put("entityKind", "SurveyGroup");
+            entityKind = "SurveyGroup";
         } else if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)
                 || requestUri.startsWith(FORM_URI_PREFIX)) {
-            Matcher formFolderMatcher = URI_PATTERN.matcher(requestUri);
-            if (formFolderMatcher.matches()) {
-                objectIdStr = formFolderMatcher.group(2);
-                String entityKind = requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX) ? "SurveyGroup"
-                        : "Survey";
-                params.put("entityKind", entityKind);
-
-            }
+            objectIdStr = requestUri.substring(requestUri.lastIndexOf("/") + 1);
+            entityKind = requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX) ? "SurveyGroup"
+                    : "Survey";
         }
 
         if (StringUtils.isNotBlank(objectIdStr)) {
             try {
                 Long objectId = Long.valueOf(objectIdStr);
                 params.put("objectId", objectId);
+                params.put("entityKind", entityKind);
             } catch (NumberFormatException e) {
                 log.fine("Not able to convert to  objectId string: " + objectIdStr);
             }
