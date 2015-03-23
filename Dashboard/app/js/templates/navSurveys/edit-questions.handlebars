@@ -35,6 +35,10 @@
       {{#view FLOW.QuestionGroupItemView contentBinding="questionGroup"}}
         <div class="questionGroupBlock">
           <header><span class="qtnGroupHead">{{t _group}} {{view.content.order}}</span>
+
+          {{#if view.amCopying}} Copying .....
+          {{/if}}
+
             {{#if view.showQGroupNameEditField}}
               {{view Ember.TextField valueBinding="view.questionGroupName" size=45}} <a {{action "saveQuestionGroupNameEdit" target="this"}} class="smallBtn">{{t _save}}</a>
               <a {{action "cancelQuestionGroupNameEdit" target="this"}}>{{t _cancel}}</a>
