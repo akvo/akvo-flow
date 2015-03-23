@@ -109,7 +109,7 @@ public class QuestionGroupRestService {
         statusDto.setStatus("");
         statusDto.setMessage("");
 
-        if (preflight != null && preflight.equals("delete") && questionGroupId != null) {
+        if (preflight.equals("delete") && questionGroupId != null) {
             statusDto.setStatus("preflight-delete-questiongroup");
             statusDto.setMessage("can_delete");
             statusDto.setKeyId(questionGroupId);
@@ -142,7 +142,8 @@ public class QuestionGroupRestService {
             }
         }
 
-        if (questionGroupId != null) {
+        // in this case, we are just trying to get a single question group
+        if (questionGroupId != null && preflight.isEmpty()) {
             QuestionGroup qg = questionGroupDao.getByKey(questionGroupId);
             if (qg != null) {
                 QuestionGroupDto dto = new QuestionGroupDto();
