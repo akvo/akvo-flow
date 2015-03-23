@@ -668,6 +668,12 @@ FLOW.questionControl = Ember.ArrayController.create({
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
+  populateQuestionGroupQuestions: function (qgId) {
+        this.set('content', FLOW.store.findQuery(FLOW.Question, {
+          questionGroupId: qgId
+        }));
+    },
+
   // used for surveyInstances in data edit popup
   doSurveyIdQuery: function (surveyId) {
     this.set('content', FLOW.store.findQuery(FLOW.Question, {

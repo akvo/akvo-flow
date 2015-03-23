@@ -500,8 +500,10 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
           type: 'GET',
           success: function(data) {
             if (data.question_group.status == "READY") {
-             // reload this question group the Ember way, so the UI is updated
-                FLOW.questionGroupControl.getQuestionGroup(self.content.get('keyId'))
+                // reload this question group the Ember way, so the UI is updated
+                FLOW.questionGroupControl.getQuestionGroup(self.content.get('keyId'));
+                // load the questions inside this question group
+                FLOW.questionControl.populateQuestionGroupQuestions(self.content.get('keyId'));
             } else {
                 // fire the remote check again
                 self.pollQuestionGroupCopy();
