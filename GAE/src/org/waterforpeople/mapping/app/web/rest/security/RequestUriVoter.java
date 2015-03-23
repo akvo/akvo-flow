@@ -19,9 +19,11 @@ package org.waterforpeople.mapping.app.web.rest.security;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -111,7 +113,7 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      * @param securedObject
      * @return
      */
-    public boolean abstainVote(Authentication authentication, FilterInvocation securedObject) {
+    private boolean abstainVote(Authentication authentication, FilterInvocation securedObject) {
         // requester is a super admin user no need to control access or
         // request URL does not match the URI patterns we consider for voting
         return authentication.getAuthorities().contains(AppRole.SUPER_ADMIN)
@@ -131,57 +133,65 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
         String requestUri = securedObject.getRequestUrl();
         String resourcePath = null;
 
-        String entityKind = requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX) ? "SurveyGroup"
-                : "Survey";
-        Long objectId = parseObjectId(securedObject);
-
         if ("GET".equals(httpMethod)) {
             if (requestUri.equals(PROJECT_FOLDER_URI_PREFIX) || requestUri.equals(FORM_URI_PREFIX)) {
                 // if no specific object (id) requested, abstain from voting. filtering is done
                 // via the UserAuthorizationDao.listByUserAuthorization()
                 return ACCESS_ABSTAIN;
             }
-            resourcePath = retrieveResourcePathFromDataStore(entityKind, objectId);
+            resourcePath = retrieveResourcePathFromDataStore(securedObject);
         } else if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
             resourcePath = retrieveResourcePathFromPayload(httpRequest);
         } else if ("DELETE".equals(httpMethod)) {
-            resourcePath = retrieveResourcePathFromDataStore(entityKind, objectId);
+            resourcePath = retrieveResourcePathFromDataStore(securedObject);
         }
 
         return checkUserAuthorization(authentication, securedObject, resourcePath);
     }
 
     /**
-     * Take the request URI and parse to extract the object Id of the survey or survey group being
-     * accessed
+     * Take the request URI and parse to extract the object Id and the entity kind of the survey or
+     * survey group being accessed
      *
      * @param requestUri
      * @return
      */
-    private Long parseObjectId(FilterInvocation securedObject) {
+    private Map<String, Object> parseSecuredObject(FilterInvocation securedObject) {
         String requestUri = securedObject.getRequestUrl();
         HttpServletRequest httpRequest = securedObject.getHttpRequest();
         String objectIdStr = null;
+        Map<String, Object> params = new HashMap<String, Object>();
 
-        // match object id in request URI
-        if (StringUtils.isNotBlank(URI_PATTERN.matcher(requestUri).group(2))) {
-            objectIdStr = URI_PATTERN.matcher(requestUri).group(2);
-        } else if (httpRequest.getParameter("surveyId") != null) {
+        // first check for relevant parameters if they are present in request starting with survey
+        // id which is more specific, then attempt match object id in request URI for surveys and
+        // survey_groups requests
+        if (httpRequest.getParameter("surveyId") != null) {
             objectIdStr = httpRequest.getParameter("surveyId");
+            params.put("entityKind", "Survey");
         } else if (httpRequest.getParameter("surveyGroupId") != null) {
             objectIdStr = httpRequest.getParameter("surveyGroupId");
-        }
+            params.put("entityKind", "SurveyGroup");
+        } else if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)
+                || requestUri.startsWith(FORM_URI_PREFIX)) {
+            Matcher formFolderMatcher = URI_PATTERN.matcher(requestUri);
+            if (formFolderMatcher.matches()) {
+                objectIdStr = formFolderMatcher.group(2);
+                String entityKind = requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX) ? "SurveyGroup"
+                        : "Survey";
+                params.put("entityKind", entityKind);
 
-        if (objectIdStr != null) {
-            try {
-                Long objectId = Long.valueOf(objectIdStr);
-                return objectId;
-            } catch (NumberFormatException e) {
-                log.fine("Not able to convert to  objectId string: " + objectIdStr);
-                // ignore exception
             }
         }
-        return null;
+
+        if (StringUtils.isNotBlank(objectIdStr)) {
+            try {
+                Long objectId = Long.valueOf(objectIdStr);
+                params.put("objectId", objectId);
+            } catch (NumberFormatException e) {
+                log.fine("Not able to convert to  objectId string: " + objectIdStr);
+            }
+        }
+        return params;
     }
 
     /**
@@ -236,18 +246,9 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      * @return
      */
     private int voteSurveyResponseUri(Authentication authentication, FilterInvocation securedObject) {
-        HttpServletRequest httpRequest = securedObject.getHttpRequest();
         String httpMethod = securedObject.getHttpRequest().getMethod();
         String requestUri = securedObject.getRequestUrl();
         String resourcePath = null;
-
-        String entityKind = null;
-        if (httpRequest.getParameter("surveyId") != null) {
-            entityKind = "Survey";
-        } else if (httpRequest.getParameter("surveyGroupId") != null) {
-            entityKind = "SurveyGroup";
-        }
-        Long objectId = parseObjectId(securedObject);
 
         if ("GET".equals(httpMethod)) {
             if (requestUri.equals(SURVEY_RESPONSE_URI_PREFIX)) {
@@ -255,9 +256,9 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
                 // via the UserAuthorizationDao.listByUserAuthorization()
                 return ACCESS_ABSTAIN;
             }
-            resourcePath = retrieveResourcePathFromDataStore(entityKind, objectId);
+            resourcePath = retrieveResourcePathFromDataStore(securedObject);
         } else if ("DELETE".equals(httpMethod)) {
-            resourcePath = retrieveResourcePathFromDataStore(entityKind, objectId);
+            resourcePath = retrieveResourcePathFromDataStore(securedObject);
         } else if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)) {
             // no post or put for survey instances is allowed via rest API at the moment
             log.info("A POST or PUT of survey responses is not a supported operation at the moment");
@@ -312,12 +313,15 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
      * from the datastore. Throws an @{link AccessDeniedException} in cases where a path should have
      * been found but is missing.
      *
-     * @param entityKind
-     * @param objectId
+     * @param securedObject
      * @return
      */
-    private String retrieveResourcePathFromDataStore(String entityKind, Long objectId) {
+    private String retrieveResourcePathFromDataStore(FilterInvocation securedObject) {
         String resourcePath = null;
+
+        Map<String, Object> requestParameters = parseSecuredObject(securedObject);
+        String entityKind = (String) requestParameters.get("entityKind");
+        Long objectId = (Long) requestParameters.get("objectId");
 
         if (entityKind == null || objectId == null) {
             return null;
