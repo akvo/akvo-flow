@@ -50,7 +50,11 @@
                 {{#if view.amVisible}}
                   <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown" id="">{{t _hide_questions}} </a></li>
                 {{else}}
-                  <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{t _show_questions}} </a></li>
+                    {{#if view.amCopying}}
+                        <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup noChanges" style="pointer-events: none;" id="">{{t _show_questions}} </a></li>
+                    {{else}}
+                        <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{t _show_questions}} </a></li>
+                    {{/if}}
                 {{/if}}
                 <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id="">{{t _edit_group_name}}</a></li>
                 <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a> </li>
