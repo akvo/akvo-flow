@@ -32,8 +32,6 @@
        vals
        (filter #(= (get % "roleId") role-id))))
 
-
-
 (dispatch-loop
  :user-auth/fetch _
  (GET "/rest/user_auth"

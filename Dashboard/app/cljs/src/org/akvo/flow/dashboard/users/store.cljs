@@ -26,6 +26,13 @@
   {:pre [(integer? user-id)]}
   (get-in users [:by-id user-id]))
 
+(defn get-user-id-by-email [users email]
+  {:pre [(string? email)]
+   :post [(integer? %)]}
+  (let [users (vals (get users :by-id))
+        user (first (filter #(= email (get % "emailAddress")) users))]
+    (get user "keyId")))
+
 (def default-range-params {:limit 20
                            :offset 0
                            :sort-by "emailAddress"

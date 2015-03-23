@@ -160,6 +160,7 @@
                                           (store/get-user users current-user-id))
                                   :close! #(do (scroll-to-top)
                                                (om/set-state! owner :current-user-id nil))
+                                  :users-store users
                                   :projects-store projects
                                   :roles-store user_roles
                                   :user-auth-store user-auth
