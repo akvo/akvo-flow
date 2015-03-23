@@ -572,9 +572,9 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      * @param questionGroup
      */
     private void copyQuestionGroup(QuestionGroup sourceQuestionGroup, QuestionGroup newQuestionGroup) {
-        final Map<Long, Long> qMap = new HashMap<Long, Long>(); // TODO: remove this param as it
-                                                                // seems redundant.
+        final Map<Long, Long> qMap = new HashMap<Long, Long>();
         final QuestionDao qDao = new QuestionDao();
+        final QuestionGroupDao qgDao = new QuestionGroupDao();
 
         final Long surveyId = sourceQuestionGroup.getSurveyId();
 
@@ -617,6 +617,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         }
 
         qDao.save(dependentQuestionList);
+
+        // set status of question group to READY
+        newQuestionGroup.setStatus(QuestionGroup.Status.READY);
+        qgDao.save(newQuestionGroup);
     }
 
     /**
