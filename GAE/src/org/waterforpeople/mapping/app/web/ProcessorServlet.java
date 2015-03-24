@@ -140,6 +140,7 @@ public class ProcessorServlet extends HttpServlet {
 
             if ("published".equals(status)) {
                 cr.setStatus(Status.PUBLISHED);
+                cr.setVersion(cr.getVersion() + 1);
                 m.setShortMessage("Cascade resource " + cr.getName() + " successfully published");
             } else {
                 cr.setStatus(Status.NOT_PUBLISHED);
