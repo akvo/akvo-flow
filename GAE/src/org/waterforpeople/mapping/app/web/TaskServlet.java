@@ -104,18 +104,15 @@ public class TaskServlet extends AbstractRestApiServlet {
     /**
      * Retrieve the file from S3 storage and persist the data to the data store
      *
-     * @param fileName
-     * @param phoneNumber
-     * @param imei
-     * @param checksum
-     * @param offset
+     * @param fileProcessTaskRequest
      */
-    private ArrayList<SurveyInstance> processFile(
-            String fileName,
-            String phoneNumber,
-            String imei,
-            String checksum,
-            Integer offset) {
+    private ArrayList<SurveyInstance> processFile(TaskRequest fileProcessTaskRequest) {
+        String fileName = fileProcessTaskRequest.getFileName();
+        String phoneNumber = fileProcessTaskRequest.getPhoneNumber();
+        String imei = fileProcessTaskRequest.getImei();
+        String checksum = fileProcessTaskRequest.getChecksum();
+        Integer offset = fileProcessTaskRequest.getOffset();
+
         ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
 
         try {
@@ -136,17 +133,7 @@ public class TaskServlet extends AbstractRestApiServlet {
                 conn = S3Util.getConnection(BUCKET_NAME, OBJECTKEY_PREFIX + fileName);
                 bis = new BufferedInputStream(conn.getInputStream());
             } catch (IOException e) {
-                // requeue for execution TASK_RETRY_INTERVAL mins later
-                Queue defaultQueue = QueueFactory.getDefaultQueue();
-                defaultQueue.add(TaskOptions.Builder.withUrl("/app_worker/task")
-                        .param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
-                        .param("fileName", fileName)
-                        .param("phoneNumber", phoneNumber)
-                        .param("imei", imei)
-                        .param("checksum", checksum)
-                        .param("offset", offset.toString())
-                        .countdownMillis(Constants.TASK_RETRY_INTERVAL));
-
+                rescheduleTask(fileProcessTaskRequest);
                 throw new Exception(e);
             }
 
@@ -406,6 +393,24 @@ public class TaskServlet extends AbstractRestApiServlet {
         return lines;
     }
 
+    /**
+     * Requeue the file processing task for execution after TASK_RETRY_INTERVAL mins
+     *
+     * @param fileProcessingRequest
+     */
+    private void rescheduleTask(TaskRequest fileProcessingRequest) {
+        Queue defaultQueue = QueueFactory.getDefaultQueue();
+        TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/task")
+                .param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
+                .param("fileName", fileProcessingRequest.getFileName())
+                .param("phoneNumber", fileProcessingRequest.getPhoneNumber())
+                .param("imei", fileProcessingRequest.getImei())
+                .param("checksum", fileProcessingRequest.getChecksum())
+                .param("offset", fileProcessingRequest.getOffset().toString())
+                .countdownMillis(Constants.TASK_RETRY_INTERVAL);
+        defaultQueue.add(options);
+    }
+
     private String getNowDateTimeFormatted() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
         java.util.Date date = new java.util.Date();
@@ -468,12 +473,7 @@ public class TaskServlet extends AbstractRestApiServlet {
     private void ingestFile(TaskRequest req) {
         if (req.getFileName() != null) {
             log.info("	Task->processFile");
-            ArrayList<SurveyInstance> surveyInstances = processFile(
-                    req.getFileName(),
-                    req.getPhoneNumber(),
-                    req.getImei(),
-                    req.getChecksum(),
-                    req.getOffset());
+            ArrayList<SurveyInstance> surveyInstances = processFile(req);
             Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
             SurveyDAO surveyDao = new SurveyDAO();
             Queue defaultQueue = QueueFactory.getDefaultQueue();
