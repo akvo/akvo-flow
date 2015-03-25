@@ -129,14 +129,14 @@ public class TaskServlet extends AbstractRestApiServlet {
                 log.log(Level.SEVERE, "Error trying to secure zip file: " + e.getMessage(), e);
             }
 
-            URLConnection conn = S3Util.getConnection(BUCKET_NAME, OBJECTKEY_PREFIX + fileName);
-
+            URLConnection conn = null;
             BufferedInputStream bis = null;
 
             try {
+                conn = S3Util.getConnection(BUCKET_NAME, OBJECTKEY_PREFIX + fileName);
                 bis = new BufferedInputStream(conn.getInputStream());
             } catch (IOException e) {
-                // requeue for execution 5 mins later
+                // requeue for execution TASK_RETRY_INTERVAL mins later
                 Queue defaultQueue = QueueFactory.getDefaultQueue();
                 defaultQueue.add(TaskOptions.Builder.withUrl("/app_worker/task")
                         .param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
