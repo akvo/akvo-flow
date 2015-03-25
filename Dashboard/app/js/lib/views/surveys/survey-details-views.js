@@ -510,7 +510,7 @@ FLOW.QuestionGroupItemView = FLOW.View.extend({
             }
           },
           error: function() {
-            console.log("Error in checking ready status survey group copy");
+            console.error("Error in checking ready status survey group copy");
           }
       });
   },
