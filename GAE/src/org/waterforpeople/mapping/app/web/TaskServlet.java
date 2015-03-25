@@ -145,7 +145,7 @@ public class TaskServlet extends AbstractRestApiServlet {
                         .param("imei", imei)
                         .param("checksum", checksum)
                         .param("offset", offset.toString())
-                        .countdownMillis(Constants.CONNECTION_TIMEOUT));
+                        .countdownMillis(Constants.TASK_RETRY_INTERVAL));
 
                 throw new Exception(e);
             }
