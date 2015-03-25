@@ -48,24 +48,24 @@
             <nav class="qtnGroupMenu">
               <ul>
                  {{#if view.amVisible}}
-                   <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown" id="">{{t _hide_questions}} </a></li>
-                   <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id="">{{t _edit_group_name}}</a></li>
+                   <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup shown">{{t _hide_questions}} </a></li>
+                   <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group_name}}</a></li>
                    <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a></li>
-                   <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup" id="">{{t _copy}}</a></li>
-                   <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup" id="">{{t _move}}</a> </li>
+                   <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup">{{t _copy}}</a></li>
+                   <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup">{{t _move}}</a> </li>
                 {{else}}
                   {{#if view.amCopying}}
-                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup disabled" style="pointer-events: none;" id="">{{t _show_questions}} </a></li>
-                    <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup disabled" style="pointer-events: none;" id="">{{t _edit_group_name}}</a></li>
+                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup disabled" style="pointer-events: none;">{{t _show_questions}} </a></li>
+                    <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup disabled" style="pointer-events: none;">{{t _edit_group_name}}</a></li>
                     <li><a {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup disabled" style="pointer-events: none;" id="">{{t _delete}}</a></li>
-                    <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup disabled" style="pointer-events: none;" id="">{{t _copy}}</a></li>
-                    <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup disabled" style="pointer-events: none;" id="">{{t _move}}</a></li>
+                    <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup disabled" style="pointer-events: none;">{{t _copy}}</a></li>
+                    <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup disabled" style="pointer-events: none;">{{t _move}}</a></li>
                   {{else}}
-                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup" id="">{{t _show_questions}} </a></li>
-                    <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup" id="">{{t _edit_group_name}}</a></li>
-                    <li><a  {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup" id="">{{t _delete}}</a></li>
-                    <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup" id="">{{t _copy}}</a></li>
-                    <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup" id="">{{t _move}}</a></li>
+                    <li><a {{action "toggleVisibility" target="this"}} class="showQuestionGroup">{{t _show_questions}} </a></li>
+                    <li><a {{action "doQGroupNameEdit" target="this"}} class="editQuestionGroup">{{t _edit_group_name}}</a></li>
+                    <li><a  {{action confirm FLOW.dialogControl.delQG target="FLOW.dialogControl"}} class="deleteQuestionGroup">{{t _delete}}</a></li>
+                    <li><a {{action "doQGroupCopy" target="this"}} class="copyQuestionGroup">{{t _copy}}</a></li>
+                    <li><a {{action "doQGroupMove" target="this"}} class="moveQuestionGroup">{{t _move}}</a></li>
                   {{/if}}
                 {{/if}}
               </ul>
