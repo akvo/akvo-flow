@@ -399,9 +399,16 @@ public class TaskServlet extends AbstractRestApiServlet {
      * @param fileProcessingRequest
      */
     private void rescheduleTask(TaskRequest fileProcessingRequest) {
+        int retry = fileProcessingRequest.getRetry();
+        if (++retry > Constants.MAX_TASK_RETRIES) {
+            log.severe(String.format("Failed to process file (%s) after (%s) retries",
+                    fileProcessingRequest.getFileName(), Constants.MAX_TASK_RETRIES));
+            return;
+        }
         Queue defaultQueue = QueueFactory.getDefaultQueue();
         TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/task")
                 .param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
+                .param(TaskRequest.TASK_RETRY_PARAM, Integer.toString(retry))
                 .param("fileName", fileProcessingRequest.getFileName())
                 .param("phoneNumber", fileProcessingRequest.getPhoneNumber())
                 .param("imei", fileProcessingRequest.getImei())

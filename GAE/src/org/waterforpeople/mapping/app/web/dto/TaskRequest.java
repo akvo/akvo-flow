@@ -23,7 +23,7 @@ import com.gallatinsystems.framework.rest.RestRequest;
 
 /**
  * request to the task queue servlet
- * 
+ *
  * @author Christopher Fagiani
  */
 public class TaskRequest extends RestRequest {
@@ -40,6 +40,7 @@ public class TaskRequest extends RestRequest {
     private static final String CHECKSUM_PARAM = "checksum";
     public static final String OFFSET_PARAM = "offset";
     public static final String ACCESS_POINT_ID_PARAM = "accessPointId";
+    public static final String TASK_RETRY_PARAM = "retry";
 
     private String fileName;
     private Long surveyId;
@@ -48,6 +49,15 @@ public class TaskRequest extends RestRequest {
     private String checksum;
     private Integer offset = 0;
     private Long accessPointId = null;
+    private Integer retry = 0;
+
+    public Integer getRetry() {
+        return retry;
+    }
+
+    public void setRetry(Integer retry) {
+        this.retry = retry;
+    }
 
     public Integer getOffset() {
         return offset;
@@ -121,6 +131,16 @@ public class TaskRequest extends RestRequest {
                 offset = Integer.parseInt(req.getParameter(OFFSET_PARAM).trim());
             } catch (Exception e) {
                 offset = 0;
+            }
+        }
+
+        if (req.getParameter(TASK_RETRY_PARAM) != null) {
+            try {
+                retry = Integer.parseInt(req.getParameter(TASK_RETRY_PARAM).trim());
+            } catch (Exception e) {
+                addError(new RestError(RestError.BAD_DATATYPE_CODE,
+                        RestError.BAD_DATATYPE_MESSAGE, TASK_RETRY_PARAM
+                                + " must be an integer"));
             }
         }
     }
