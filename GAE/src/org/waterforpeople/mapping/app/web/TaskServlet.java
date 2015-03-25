@@ -401,8 +401,10 @@ public class TaskServlet extends AbstractRestApiServlet {
     private void rescheduleTask(TaskRequest fileProcessingRequest) {
         int retry = fileProcessingRequest.getRetry();
         if (++retry > Constants.MAX_TASK_RETRIES) {
-            log.severe(String.format("Failed to process file (%s) after (%s) retries",
-                    fileProcessingRequest.getFileName(), Constants.MAX_TASK_RETRIES));
+            String message = String.format("Failed to process file (%s) after (%s) retries",
+                    fileProcessingRequest.getFileName(), Constants.MAX_TASK_RETRIES);
+            sendMail(fileProcessingRequest, message);
+            log.severe(message);
             return;
         }
         Queue defaultQueue = QueueFactory.getDefaultQueue();
@@ -416,6 +418,21 @@ public class TaskServlet extends AbstractRestApiServlet {
                 .param("offset", fileProcessingRequest.getOffset().toString())
                 .countdownMillis(Constants.TASK_RETRY_INTERVAL);
         defaultQueue.add(options);
+    }
+
+    /**
+     * Send an email regarding file processing status/outcome
+     *
+     * @param fileProcessingRequest
+     * @param subject
+     * @param messageBody
+     */
+    private void sendMail(TaskRequest fileProcessingRequest, String body) {
+        String fileName = fileProcessingRequest.getFileName();
+        String subject = "Device File Processing Error: " + fileName;
+        String messageBody = DEVICE_FILE_PATH + fileName + "\n" + body;
+
+        MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList, subject, messageBody);
     }
 
     private String getNowDateTimeFormatted() {
