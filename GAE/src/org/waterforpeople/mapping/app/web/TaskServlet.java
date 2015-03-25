@@ -407,16 +407,30 @@ public class TaskServlet extends AbstractRestApiServlet {
             log.severe(message);
             return;
         }
+
         Queue defaultQueue = QueueFactory.getDefaultQueue();
         TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/task")
                 .param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
                 .param(TaskRequest.TASK_RETRY_PARAM, Integer.toString(retry))
-                .param("fileName", fileProcessingRequest.getFileName())
-                .param("phoneNumber", fileProcessingRequest.getPhoneNumber())
-                .param("imei", fileProcessingRequest.getImei())
-                .param("checksum", fileProcessingRequest.getChecksum())
-                .param("offset", fileProcessingRequest.getOffset().toString())
+                .param(TaskRequest.FILE_NAME_PARAM, fileProcessingRequest.getFileName())
                 .countdownMillis(Constants.TASK_RETRY_INTERVAL);
+
+        if (fileProcessingRequest.getPhoneNumber() != null) {
+            options.param(TaskRequest.PHONE_NUM_PARAM, fileProcessingRequest.getPhoneNumber());
+        }
+
+        if (fileProcessingRequest.getImei() != null) {
+            options.param(TaskRequest.IMEI_PARAM, fileProcessingRequest.getImei());
+        }
+
+        if (fileProcessingRequest.getChecksum() != null) {
+            options.param(TaskRequest.CHECKSUM_PARAM, fileProcessingRequest.getChecksum());
+        }
+
+        if (fileProcessingRequest.getOffset() != null) {
+            options.param(TaskRequest.OFFSET_PARAM, fileProcessingRequest.getOffset().toString());
+        }
+
         defaultQueue.add(options);
     }
 

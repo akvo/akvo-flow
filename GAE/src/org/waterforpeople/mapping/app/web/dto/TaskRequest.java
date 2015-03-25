@@ -33,11 +33,11 @@ public class TaskRequest extends RestRequest {
     public static final String PROCESS_FILE_ACTION = "processFile";
     public static final String UPDATE_AP_GEO_SUB = "updateAccessPointGeoSub";
 
-    private static final String FILE_NAME_PARAM = "fileName";
-    private static final String SURVEY_ID_PARAM = "surveyId";
-    private static final String PHONE_NUM_PARAM = "phoneNumber";
-    private static final String IMEI_PARAM = "imei";
-    private static final String CHECKSUM_PARAM = "checksum";
+    public static final String FILE_NAME_PARAM = "fileName";
+    public static final String SURVEY_ID_PARAM = "surveyId";
+    public static final String PHONE_NUM_PARAM = "phoneNumber";
+    public static final String IMEI_PARAM = "imei";
+    public static final String CHECKSUM_PARAM = "checksum";
     public static final String OFFSET_PARAM = "offset";
     public static final String ACCESS_POINT_ID_PARAM = "accessPointId";
     public static final String TASK_RETRY_PARAM = "retry";
