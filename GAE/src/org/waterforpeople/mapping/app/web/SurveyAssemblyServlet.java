@@ -80,6 +80,7 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.utils.SystemProperty;
 
 public class SurveyAssemblyServlet extends AbstractRestApiServlet {
     private static final Logger log = Logger
@@ -286,6 +287,8 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
         final String versionAttribute = s.getVersion() == null ? "" : "version='"
                 + s.getVersion() + "'";
+        final String app = String.format("app=\"%s\"",
+                StringEscapeUtils.escapeXml(SystemProperty.applicationId.get()));
         String name = s.getName();
         String surveyGroupId = "";
         String surveyGroupName = "";
@@ -301,7 +304,7 @@ public class SurveyAssemblyServlet extends AbstractRestApiServlet {
         }
         String surveyHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><survey"
                 + " name=\"" + StringEscapeUtils.escapeXml(name)
-                + "\"" + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute
+                + "\"" + " defaultLanguageCode=\"" + lang + "\" " + versionAttribute + " " + app
                 + registrationForm + " " + surveyGroupId + " " + surveyGroupName + ">";
         String surveyFooter = "</survey>";
         QuestionGroupDao qgDao = new QuestionGroupDao();
