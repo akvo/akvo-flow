@@ -597,6 +597,12 @@ FLOW.questionGroupControl = Ember.ArrayController.create({
     this.setFilteredContent();
   }.observes('FLOW.selectedControl.selectedSurvey'),
 
+  getQuestionGroup: function (id) {
+	  FLOW.store.findQuery(FLOW.QuestionGroup,{
+		  questionGroupId: id
+	  });
+  },
+
   // true if all items have been saved
   // used in models.js
   allRecordsSaved: function () {
@@ -661,6 +667,12 @@ FLOW.questionControl = Ember.ArrayController.create({
       }));
     }
   }.observes('FLOW.selectedControl.selectedSurvey'),
+
+  populateQuestionGroupQuestions: function (qgId) {
+        this.set('content', FLOW.store.findQuery(FLOW.Question, {
+          questionGroupId: qgId
+        }));
+    },
 
   // used for surveyInstances in data edit popup
   doSurveyIdQuery: function (surveyId) {

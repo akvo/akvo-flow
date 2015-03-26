@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -109,7 +109,7 @@ public class QuestionGroupRestService {
         statusDto.setStatus("");
         statusDto.setMessage("");
 
-        if (preflight != null && preflight.equals("delete") && questionGroupId != null) {
+        if (preflight.equals("delete") && questionGroupId != null) {
             statusDto.setStatus("preflight-delete-questiongroup");
             statusDto.setMessage("can_delete");
             statusDto.setKeyId(questionGroupId);
@@ -141,6 +141,17 @@ public class QuestionGroupRestService {
                 }
             }
         }
+
+        // in this case, we are just trying to get a single question group
+        if (questionGroupId != null && preflight.isEmpty()) {
+            QuestionGroup qg = questionGroupDao.getByKey(questionGroupId);
+            if (qg != null) {
+                QuestionGroupDto dto = new QuestionGroupDto();
+                DtoMarshaller.copyToDto(qg, dto);
+                dto.setDescription(qg.getDesc());
+                results.add(dto);
+            }
+        }
         response.put("question_groups", results);
         response.put("meta", statusDto);
         return response;
@@ -163,7 +174,6 @@ public class QuestionGroupRestService {
         }
         response.put("question_group", dto);
         return response;
-
     }
 
     // delete questionGroup by id
@@ -226,7 +236,7 @@ public class QuestionGroupRestService {
                     // Integer origOrder = qg.getOrder();
                     BeanUtils.copyProperties(questionGroupDto, qg,
                             new String[] {
-                                "createdDateTime"
+                                    "createdDateTime", "status"
                             });
                     qg = questionGroupDao.save(qg);
 
@@ -265,6 +275,7 @@ public class QuestionGroupRestService {
         }
 
         QuestionGroup questionGroup = null;
+        // deal with copying a question group
         if (questionGroupDto.getSourceId() != null) {
             // copy question group
             final QuestionGroupDao qgDao = new QuestionGroupDao();
@@ -274,12 +285,14 @@ public class QuestionGroupRestService {
             questionGroup = SurveyUtils.copyQuestionGroup(sourceQuestionGroup,
                     sourceQuestionGroup.getSurveyId(), qMap);
             questionGroup.setOrder(questionGroupDto.getOrder());
+            questionGroup.setStatus(QuestionGroup.Status.COPYING);
         } else {
             // new question group
             questionGroup = new QuestionGroup();
             BeanUtils.copyProperties(questionGroupDto, questionGroup, new String[] {
-                    "createdDateTime"
+                    "createdDateTime", "status"
             });
+            questionGroup.setStatus(QuestionGroup.Status.valueOf(questionGroupDto.getStatus()));
         }
 
         questionGroup = questionGroupDao.save(questionGroup);
