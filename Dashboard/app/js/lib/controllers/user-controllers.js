@@ -27,5 +27,34 @@ FLOW.userControl = Ember.ArrayController.create({
 
   currentUserPathPermissions: function() {
     return FLOW.currentUser.get('pathPermissions');
-  }
+  },
+
+  /* return all the ancestor paths for a given path */
+  ancestorPaths: function(pathString) {
+    if(!pathString) {
+        return [];
+    }
+
+    var ancestors = [];
+    while(pathString) {
+        ancestors.push(pathString);
+        pathString = pathString.slice(0, pathString.lastIndexOf("/"));
+    }
+    ancestors.push("/"); // add the root level folder to ancestors list
+    return ancestors;
+  },
+
+  /* query based on survey (group) path whether a user has
+  permissions for data deletion */
+
+  canDeleteData: function(surveyPath) {
+    var canDelete = false;
+    var pathPermissions = this.currentUserPathPermissions();
+    this.ancestorPaths(surveyPath).forEach(function(path){
+        if(path in pathPermissions && pathPermissions[path].indexOf("DATA_DELETE") > -1) {
+            canDelete = true;
+        }
+    });
+    return canDelete;
+  },
 });
