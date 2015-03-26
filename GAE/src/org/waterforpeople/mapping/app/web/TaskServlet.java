@@ -264,14 +264,14 @@ public class TaskServlet extends AbstractRestApiServlet {
                 }
             }
         } else {
-            deviceFile.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
             String message = "Error empty file: " + deviceFile.getURI();
-            log.log(Level.SEVERE, message);
-            deviceFile.addProcessingMessage(message);
-            MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-                    "Device File Processing Error: " + fileName, DEVICE_FILE_PATH + fileName
-                            + "\n" + message);
 
+            log.log(Level.SEVERE, message);
+
+            deviceFile.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
+            deviceFile.addProcessingMessage(message);
+
+            sendMail(fileProcessTaskRequest, message);
         }
 
         dfDao.save(dfList);
