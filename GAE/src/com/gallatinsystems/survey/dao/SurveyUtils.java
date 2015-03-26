@@ -311,8 +311,7 @@ public class SurveyUtils {
                 final JSONObject payload = new JSONObject();
                 payload.put("cascadeResourceId", cascadeResourceId.toString());
                 payload.put("uploadUrl", uploadUrl);
-                cr.setVersion(cr.getVersion() + 1);
-                payload.put("version", cr.getVersion().toString());
+                payload.put("version", String.valueOf(cr.getVersion() + 1));
 
                 log.log(Level.INFO, "Sending cascade publish request for cascade: "
                         + cascadeResourceId);

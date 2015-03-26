@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2014 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -129,7 +129,6 @@ public class ProcessorServlet extends HttpServlet {
 
             CascadeResource cr = crDao.getByKey(crId);
 
-
             if (cr == null) {
                 return;
             }
@@ -140,6 +139,7 @@ public class ProcessorServlet extends HttpServlet {
 
             if ("published".equals(status)) {
                 cr.setStatus(Status.PUBLISHED);
+                cr.setVersion(cr.getVersion() + 1);
                 m.setShortMessage("Cascade resource " + cr.getName() + " successfully published");
             } else {
                 cr.setStatus(Status.NOT_PUBLISHED);
