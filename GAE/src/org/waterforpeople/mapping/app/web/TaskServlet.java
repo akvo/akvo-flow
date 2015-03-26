@@ -34,6 +34,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
 import javax.crypto.Mac;
@@ -112,27 +113,54 @@ public class TaskServlet extends AbstractRestApiServlet {
         String imei = fileProcessTaskRequest.getImei();
         String checksum = fileProcessTaskRequest.getChecksum();
         Integer offset = fileProcessTaskRequest.getOffset();
-
-        ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
-
-        DeviceFilesDao dfDao = new DeviceFilesDao();
         String url = DEVICE_FILE_PATH + fileName;
 
+        // add private ACL to zip file
         try {
             S3Util.putObjectAcl(BUCKET_NAME, OBJECTKEY_PREFIX + fileName, S3Util.ACL.PRIVATE);
         } catch (IOException e) {
             log.log(Level.SEVERE, "Error trying to secure zip file: " + e.getMessage(), e);
         }
 
+        // attempt retrieve and extract zip file
         URLConnection conn = null;
         BufferedInputStream deviceZipFileInputStream = null;
+        ZipInputStream deviceFilesStream = null;
+        ArrayList<String> unparsedLines = null;
+        final ArrayList<SurveyInstance> emptyList = new ArrayList<SurveyInstance>();
 
         try {
             conn = S3Util.getConnection(BUCKET_NAME, OBJECTKEY_PREFIX + fileName);
             deviceZipFileInputStream = new BufferedInputStream(conn.getInputStream());
-        } catch (IOException e) {
+            deviceFilesStream = new ZipInputStream(deviceZipFileInputStream);
+            unparsedLines = extractDataFromZip(deviceFilesStream);
+        } catch (Exception e) {
+            // catchall
+            int retry = fileProcessTaskRequest.getRetry();
+            if (++retry > Constants.MAX_TASK_RETRIES) {
+                String message = String.format("Failed to process file (%s) after (%s) retries.",
+                        url, Constants.MAX_TASK_RETRIES);
+                sendMail(fileProcessTaskRequest, message);
+                log.severe(message + "\n\n" + e.getMessage());
+                return emptyList;
+            }
+
+            // retry processing
+            fileProcessTaskRequest.setRetry(retry);
             rescheduleTask(fileProcessTaskRequest);
+            log.log(Level.WARNING,
+                    "Failed to process zip file: Rescheduling... " + url + " : " + e.getMessage());
+            return emptyList;
+        } finally {
+            try {
+                deviceFilesStream.close();
+            } catch (IOException e) {
+                log.log(Level.WARNING, "Failed to close zip input stream");
+            }
         }
+
+        // create device file entity
+        DeviceFilesDao dfDao = new DeviceFilesDao();
 
         List<DeviceFiles> dfList = null;
         DeviceFiles deviceFile = null;
@@ -152,29 +180,8 @@ public class TaskServlet extends AbstractRestApiServlet {
         deviceFile.setUploadDateTime(new Date());
         Date collectionDate = new Date();
 
-        ZipInputStream deviceFilesStream = new ZipInputStream(deviceZipFileInputStream);
-        ArrayList<String> unparsedLines = null;
-        try {
-            unparsedLines = extractDataFromZip(deviceFilesStream);
-        } catch (Exception iex) {
-            // Error unzipping the response file
-            String message = "Error inflating device zip: "
-                    + deviceFile.getURI() + " : " + iex.getMessage();
-
-            log.log(Level.SEVERE, message);
-
-            deviceFile.setProcessedStatus(StatusCode.ERROR_INFLATING_ZIP);
-            deviceFile.addProcessingMessage(message);
-
-            sendMail(fileProcessTaskRequest, message);
-        } finally {
-            try {
-                deviceFilesStream.close();
-            } catch (IOException e) {
-                log.log(Level.WARNING, "Failed to close zip input stream");
-            }
-        }
-
+        // process file lines
+        ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
         if (unparsedLines != null && unparsedLines.size() > 0) {
             if (REGION_FLAG.equals(unparsedLines.get(0))) {
                 unparsedLines.remove(0);
@@ -280,7 +287,7 @@ public class TaskServlet extends AbstractRestApiServlet {
     }
 
     public static ArrayList<String> extractDataFromZip(ZipInputStream deviceZipFileInputStream)
-            throws IOException, SignedDataException {
+            throws ZipException, IOException, SignedDataException {
         ArrayList<String> lines = new ArrayList<String>();
         String line = null;
         String surveyDataOnly = null;
@@ -383,19 +390,10 @@ public class TaskServlet extends AbstractRestApiServlet {
      * @param fileProcessingRequest
      */
     private void rescheduleTask(TaskRequest fileProcessingRequest) {
-        int retry = fileProcessingRequest.getRetry();
-        if (++retry > Constants.MAX_TASK_RETRIES) {
-            String message = String.format("Failed to process file (%s) after (%s) retries",
-                    fileProcessingRequest.getFileName(), Constants.MAX_TASK_RETRIES);
-            sendMail(fileProcessingRequest, message);
-            log.severe(message);
-            return;
-        }
-
         Queue defaultQueue = QueueFactory.getDefaultQueue();
         TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/task")
                 .param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
-                .param(TaskRequest.TASK_RETRY_PARAM, Integer.toString(retry))
+                .param(TaskRequest.TASK_RETRY_PARAM, fileProcessingRequest.getRetry().toString())
                 .param(TaskRequest.FILE_NAME_PARAM, fileProcessingRequest.getFileName())
                 .countdownMillis(Constants.TASK_RETRY_INTERVAL);
 
