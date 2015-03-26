@@ -493,7 +493,16 @@ public class TaskServlet extends AbstractRestApiServlet {
     private void ingestFile(TaskRequest req) {
         if (req.getFileName() != null) {
             log.info("	Task->processFile");
-            ArrayList<SurveyInstance> surveyInstances = processFile(req);
+            ArrayList<SurveyInstance> surveyInstances = null;
+            try {
+                surveyInstances = processFile(req);
+            } catch (Exception e) {
+                String message = "Failed to process zip file:" + req.getFileName() + " : "
+                        + e.getMessage();
+                log.severe(message);
+                sendMail(req, message);
+                surveyInstances = new ArrayList<SurveyInstance>();
+            }
             Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
             SurveyDAO surveyDao = new SurveyDAO();
             Queue defaultQueue = QueueFactory.getDefaultQueue();
