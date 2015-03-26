@@ -146,21 +146,9 @@ public class TaskServlet extends AbstractRestApiServlet {
         deviceFile.setProcessDate(getNowDateTimeFormatted());
         deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
         deviceFile.setURI(url);
-        if (phoneNumber == null || phoneNumber.equals("null")) {
-            deviceFile.setPhoneNumber(null);
-        } else {
-            deviceFile.setPhoneNumber(phoneNumber);
-        }
-        if (imei == null || imei.equals("null")) {
-            deviceFile.setImei(null);
-        } else {
-            deviceFile.setImei(imei);
-        }
-        if (checksum == null || checksum.equals("null")) {
-            deviceFile.setChecksum(null);
-        } else {
-            deviceFile.setChecksum(checksum);
-        }
+        deviceFile.setPhoneNumber(phoneNumber);
+        deviceFile.setImei(imei);
+        deviceFile.setChecksum(checksum);
         deviceFile.setUploadDateTime(new Date());
         Date collectionDate = new Date();
 

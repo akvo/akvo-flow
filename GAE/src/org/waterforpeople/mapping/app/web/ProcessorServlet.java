@@ -24,6 +24,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.waterforpeople.mapping.app.web.dto.TaskRequest;
+
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.dao.DeviceFileJobQueueDAO;
 import com.gallatinsystems.device.domain.Device;
@@ -50,44 +53,51 @@ public class ProcessorServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-        String action = req.getParameter("action");
-        String fileName = req.getParameter("fileName");
-
-        if (action == null) {
+        if (req.getParameter("action") == null) {
+            log.info("No action specified for processor");
             return;
         }
+
+        String action = StringUtils.trim(req.getParameter("action"));
+        String fileName = StringUtils.trim(req.getParameter("fileName"));
+        String phoneNumber = StringUtils.trim(req.getParameter("phoneNumber"));
+        String imei = StringUtils.trim(req.getParameter("imei"));
+        String checksum = StringUtils.trim(req.getParameter("checksum"));
 
         log.info("	ProcessorServlet->action->" + action);
 
         if (action.equals("submit")) {
-            if (fileName != null) {
-                log.info("  ProcessorServlet->filename->" + fileName);
-                String phoneNumber = req.getParameter("phoneNumber");
-                String imei = req.getParameter("imei");
-                String checksum = req.getParameter("checksum");
-                if (checksum == null) {
-                    checksum = "null";
-                }
-                if (phoneNumber == null) {
-                    phoneNumber = "null";
-                }
-                if (imei == null) {
-                    imei = "null";
-                }
-                log.info("about to submit task for fileName: " + fileName);
-                // Submit the fileName for processing
-                Queue queue = QueueFactory.getDefaultQueue();
-
-                queue.add(TaskOptions.Builder.withUrl("/app_worker/task")
-                        .param("action", "processFile").param("fileName", fileName)
-                        .param("phoneNumber", phoneNumber).param("checksum", checksum)
-                        .param("imei", imei));
-                log.info("submiting task for fileName: " + fileName);
+            if (fileName == null) {
+                log.info("Request for processing without filename: phoneNumber=(" + phoneNumber
+                        + "); IMEI=(" + imei + ")");
+                return;
             }
-        } else if (action.equals("image")) {
-            String imei = req.getParameter("imei");
-            String phoneNumber = req.getParameter("phoneNumber");
 
+            log.info("  ProcessorServlet->filename->" + fileName);
+            log.info("about to submit task for fileName: " + fileName);
+            // Submit the fileName for processing
+            Queue queue = QueueFactory.getDefaultQueue();
+            TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/task")
+                    .param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
+                    .param(TaskRequest.FILE_NAME_PARAM, fileName);
+
+            if (phoneNumber != null) {
+                options.param(TaskRequest.PHONE_NUM_PARAM, phoneNumber);
+            }
+
+            if (imei != null) {
+                options.param(TaskRequest.IMEI_PARAM, imei);
+            }
+
+            if (checksum != null) {
+                options.param(TaskRequest.CHECKSUM_PARAM, checksum);
+            }
+
+            queue.add(options);
+
+            log.info("submiting task for fileName: " + fileName);
+
+        } else if (action.equals("image")) {
             Device d = null;
             DeviceDAO dao = new DeviceDAO();
 
