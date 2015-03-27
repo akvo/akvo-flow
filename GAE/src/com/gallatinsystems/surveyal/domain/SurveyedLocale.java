@@ -26,6 +26,7 @@ import javax.jdo.annotations.NotPersistent;
 import javax.jdo.annotations.PersistenceCapable;
 
 import com.gallatinsystems.framework.domain.BaseDomain;
+import static com.gallatinsystems.common.Constants.MAX_LENGTH;
 
 /**
  * Domain structure to represent a location about which there is data gathered through one or more
@@ -227,7 +228,7 @@ public class SurveyedLocale extends BaseDomain {
     }
 
     public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+        this.displayName = displayName.substring(0, MAX_LENGTH).trim();
     }
 
     public Set<Long> getSurveyInstanceContrib() {
