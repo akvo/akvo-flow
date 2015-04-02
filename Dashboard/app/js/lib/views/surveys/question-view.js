@@ -101,10 +101,10 @@ FLOW.QuestionView = FLOW.View.extend({
 
   amBarcodeType: function () {
       if (this.type) {
-            return this.type.get('value') === 'SCAN';
-        } else {
-            return false;
-        }
+          return this.type.get('value') === 'SCAN';
+      } else {
+          return false;
+      }
   }.property('this.type').cacheable(),
 
   amFreeTextType: function () {
