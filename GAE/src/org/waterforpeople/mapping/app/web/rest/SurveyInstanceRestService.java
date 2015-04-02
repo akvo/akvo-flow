@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
@@ -43,18 +44,30 @@ import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.survey.dao.SurveyDAO;
+import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 
 @Controller
 @RequestMapping("/survey_instances")
 public class SurveyInstanceRestService {
+
+    private static final Logger log = Logger.getLogger(SurveyInstanceRestService.class.getName());
 
     @Inject
     private SurveyInstanceDAO surveyInstanceDao;
 
     @Inject
     private SurveyDAO surveyDao;
+
+    @Inject
+    private SurveyGroupDAO surveyGroupDao;
+
+    @Inject
+    private SurveyedLocaleDao surveyedLocaleDao;
 
     // list survey instances
     @RequestMapping(method = RequestMethod.GET, value = "")
@@ -119,7 +132,8 @@ public class SurveyInstanceRestService {
 
         // get survey Instances
         List<SurveyInstance> siList = null;
-        if (surveyedLocaleId == null) {
+        if (surveyId != null) {
+            // authorized surveys list
             List<Survey> authorizedSurveys = surveyDao.listAllFilteredByUserAuthorization();
             Set<Long> authorizedSurveyIds = new HashSet<Long>();
             for (Survey s : authorizedSurveys) {
@@ -133,8 +147,29 @@ public class SurveyInstanceRestService {
 
             siList = surveyInstanceDao.listByDateRangeAndSubmitter(beginDate, endDate, false,
                     surveyId, deviceId, submitterName, countryCode, level1, level2, since);
-        } else {
-            siList = surveyInstanceDao.listInstancesByLocale(surveyedLocaleId, null, null, null);
+        } else if (surveyedLocaleId != null) {
+            SurveyedLocale sl = surveyedLocaleDao.getByKey(surveyedLocaleId);
+            if (sl.getSurveyGroupId() == null) {
+                log.warning("No surveyGroupId found for surveyedLocale=" + sl.getKey());
+                response.put("survey_instances", Collections.emptyList());
+                return response;
+            }
+
+            // authorized survey groups list
+            List<SurveyGroup> authorizedSurveyGroups = surveyGroupDao
+                    .listAllFilteredByUserAuthorization();
+            Set<Long> authorizedSurveyGroupIds = new HashSet<Long>();
+            for (SurveyGroup sg : authorizedSurveyGroups) {
+                authorizedSurveyGroupIds.add(sg.getKey().getId());
+            }
+
+            if (authorizedSurveyGroupIds.contains(sl.getSurveyGroupId())) {
+                siList = surveyInstanceDao
+                        .listInstancesByLocale(surveyedLocaleId, null, null, null);
+            } else {
+                siList = Collections.emptyList();
+            }
+
         }
         Integer num = siList.size();
         String newSince = SurveyInstanceDAO.getCursor(siList);

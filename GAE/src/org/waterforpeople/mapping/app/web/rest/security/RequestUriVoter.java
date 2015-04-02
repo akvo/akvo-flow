@@ -41,6 +41,8 @@ import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
 import com.gallatinsystems.survey.domain.Survey;
 import com.gallatinsystems.survey.domain.SurveyGroup;
+import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
+import com.gallatinsystems.surveyal.domain.SurveyedLocale;
 import com.gallatinsystems.user.dao.UserAuthorizationDAO;
 import com.gallatinsystems.user.dao.UserRoleDao;
 import com.gallatinsystems.user.domain.Permission;
@@ -74,6 +76,9 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
     @Inject
     private SurveyDAO surveyDao;
+
+    @Inject
+    private SurveyedLocaleDao surveyedLocaleDao;
 
     @Override
     public boolean supports(ConfigAttribute attribute) {
@@ -172,6 +177,11 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             entityKind = "Survey";
         } else if (httpRequest.getParameter("surveyGroupId") != null) {
             objectIdStr = httpRequest.getParameter("surveyGroupId");
+            entityKind = "SurveyGroup";
+        } else if (httpRequest.getParameter("surveyedLocaleId") != null) {
+            Long surveyedLocaleId = Long.parseLong(httpRequest.getParameter("surveyedLocaleId"));
+            SurveyedLocale sl = surveyedLocaleDao.getByKey(surveyedLocaleId);
+            objectIdStr = sl.getSurveyGroupId().toString();
             entityKind = "SurveyGroup";
         } else if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)
                 || requestUri.startsWith(FORM_URI_PREFIX)) {
