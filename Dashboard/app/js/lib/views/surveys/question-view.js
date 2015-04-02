@@ -100,7 +100,11 @@ FLOW.QuestionView = FLOW.View.extend({
   }.property('this.type').cacheable(),
 
   amBarcodeType: function () {
-	  return this.type.get('value') === 'SCAN';
+      if (this.type) {
+            return this.type.get('value') === 'SCAN';
+        } else {
+            return false;
+        }
   }.property('this.type').cacheable(),
 
   amFreeTextType: function () {
@@ -856,7 +860,6 @@ FLOW.QuestionView = FLOW.View.extend({
 
   validateQuestionObserver: function(){
       this.set('questionValidationFailure', (this.text != null && this.text.length > 500));
-      console.log("length:" + this.text.length);
   }.observes('this.text'),
 
   validateQuestionTooltipObserver: function(){

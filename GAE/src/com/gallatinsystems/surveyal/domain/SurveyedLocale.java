@@ -228,7 +228,8 @@ public class SurveyedLocale extends BaseDomain {
     }
 
     public void setDisplayName(String displayName) {
-        this.displayName = displayName.substring(0, MAX_LENGTH).trim();
+        this.displayName = displayName.length() > MAX_LENGTH ? displayName.substring(0, MAX_LENGTH)
+                .trim() : displayName;
     }
 
     public Set<Long> getSurveyInstanceContrib() {
