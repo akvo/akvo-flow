@@ -5,6 +5,28 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.4
+Date: 7 April 2015
+
+## New and noteworthy
+
+* Enable "All Folders" shortcut for a normal user when coupling a user role with a folder. An administrator who has access to "All Folders" is in turn able to assign the same to another user instead of assigning folders one-by-one as was the case previously [#1197]
+* When defining questions and help tooltip text, the user will get a *maximum length* warning if the contents of either one of these fields exceeds 500 characters in length. [#1184]
+* A new data deletion permission has been added. The permission to delete data can now be selectively applied per survey or per folder for each user [#1115]
+* When copying a question group, we now show UI feedback informing the user whether copying is still going on or has been completed. [#857]
+
+## Resolved issues
+* Truncate the display name if it is over 500 characters [#1213]
+* Disabeling creation of surveys at the first level of the survey tab [#1190]
+* Disable moving questions from one form to the other [#1187]
+* Delay cascade version increase until successfully pusblished [#1186]
+* Review data processing task failures [#1185]
+* Add confirmation to delete button cascade resource [#1170]
+* Make manual loading of survey in wrong FLOW app impossible [#1071]
+* Fix strange behaviour whilst editing question groups which have been copied within a survey [#857]
+* Show devices in alphabetical order in assignment screen [#834]
+* Export fails when NUMBER question contains invalid data [#337]
+
 #1.8.3
 Date: 12 March 2015
 
