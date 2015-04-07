@@ -19,6 +19,10 @@ FLOW.MonitoringDataTableView = FLOW.View.extend({
     $('tr[data-flow-id="si_details_' + evt.context.get('keyId') + '"]').show();
   },
 
+  showSurveyedLocaleDeleteButton: function() {
+    return FLOW.surveyedLocaleControl.get('userCanDelete');
+  }.property(),
+
   findSurveyedLocale: function (evt) {
 	  var ident = this.get('identifier'),
 	      displayName = this.get('displayName'),

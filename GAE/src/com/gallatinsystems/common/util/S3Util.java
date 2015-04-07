@@ -19,6 +19,7 @@ package com.gallatinsystems.common.util;
 import static com.gallatinsystems.common.Constants.AWS_ACCESS_ID;
 import static com.gallatinsystems.common.Constants.AWS_SECRET_KEY;
 import static com.gallatinsystems.common.Constants.CONNECTION_TIMEOUT;
+import static com.gallatinsystems.common.Constants.READ_TIMEOUT;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -89,7 +90,7 @@ public class S3Util {
         final URLConnection conn = url.openConnection();
 
         conn.setConnectTimeout(CONNECTION_TIMEOUT);
-        conn.setReadTimeout(CONNECTION_TIMEOUT);
+        conn.setReadTimeout(READ_TIMEOUT);
         conn.addRequestProperty("Cache-Control", "no-cache,max-age=0");
         conn.setRequestProperty("Date", date);
         conn.setRequestProperty("Authorization", "AWS " + awsAccessKeyId + ":" + signature);

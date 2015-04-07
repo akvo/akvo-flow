@@ -32,7 +32,8 @@
    "FORM_READ" (t> _access_forms)
    "FORM_UPDATE" (t> _edit_forms)
    "FORM_DELETE" (t> _delete_forms)
-   "DATA_CLEANING" (t> _data_cleaning)})
+   "DATA_CLEANING" (t> _data_cleaning)
+   "DATA_DELETE" (t> _delete_data)})
 
 (defn header-section [{:keys [role on-close]} owner]
   (om/component

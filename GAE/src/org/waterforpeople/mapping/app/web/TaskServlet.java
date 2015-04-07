@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -34,6 +34,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
 import javax.crypto.Mac;
@@ -104,223 +105,200 @@ public class TaskServlet extends AbstractRestApiServlet {
     /**
      * Retrieve the file from S3 storage and persist the data to the data store
      *
-     * @param fileName
-     * @param phoneNumber
-     * @param imei
-     * @param checksum
-     * @param offset
+     * @param fileProcessTaskRequest
      */
-    private ArrayList<SurveyInstance> processFile(
-            String fileName,
-            String phoneNumber,
-            String imei,
-            String checksum,
-            Integer offset) {
-        ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
+    private ArrayList<SurveyInstance> processFile(TaskRequest fileProcessTaskRequest) {
+        String fileName = fileProcessTaskRequest.getFileName();
+        String phoneNumber = fileProcessTaskRequest.getPhoneNumber();
+        String imei = fileProcessTaskRequest.getImei();
+        String checksum = fileProcessTaskRequest.getChecksum();
+        Integer offset = fileProcessTaskRequest.getOffset();
+        String url = DEVICE_FILE_PATH + fileName;
+
+        // add private ACL to zip file
+        try {
+            S3Util.putObjectAcl(BUCKET_NAME, OBJECTKEY_PREFIX + fileName, S3Util.ACL.PRIVATE);
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Error trying to secure zip file: " + e.getMessage(), e);
+        }
+
+        // attempt retrieve and extract zip file
+        URLConnection conn = null;
+        BufferedInputStream deviceZipFileInputStream = null;
+        ZipInputStream deviceFilesStream = null;
+        ArrayList<String> unparsedLines = null;
+        final ArrayList<SurveyInstance> emptyList = new ArrayList<SurveyInstance>();
 
         try {
+            conn = S3Util.getConnection(BUCKET_NAME, OBJECTKEY_PREFIX + fileName);
+            deviceZipFileInputStream = new BufferedInputStream(conn.getInputStream());
+            deviceFilesStream = new ZipInputStream(deviceZipFileInputStream);
+            unparsedLines = extractDataFromZip(deviceFilesStream);
+        } catch (Exception e) {
+            // catchall
+            int retry = fileProcessTaskRequest.getRetry();
+            if (++retry > Constants.MAX_TASK_RETRIES) {
+                String message = String.format("Failed to process file (%s) after (%s) retries.",
+                        url, Constants.MAX_TASK_RETRIES);
+                sendMail(fileProcessTaskRequest, message);
+                log.severe(message + "\n\n" + e.getMessage());
+                return emptyList;
+            }
 
-            DeviceFilesDao dfDao = new DeviceFilesDao();
-            String url = DEVICE_FILE_PATH + fileName;
-
+            // retry processing
+            fileProcessTaskRequest.setRetry(retry);
+            rescheduleTask(fileProcessTaskRequest);
+            log.log(Level.WARNING,
+                    "Failed to process zip file: Rescheduling... " + url + " : " + e.getMessage());
+            return emptyList;
+        } finally {
             try {
-                S3Util.putObjectAcl(BUCKET_NAME, OBJECTKEY_PREFIX + fileName, S3Util.ACL.PRIVATE);
+                deviceFilesStream.close();
             } catch (IOException e) {
-                log.log(Level.SEVERE, "Error trying to secure zip file: " + e.getMessage(), e);
+                log.log(Level.WARNING, "Failed to close zip input stream");
             }
+        }
 
-            URLConnection conn = S3Util.getConnection(BUCKET_NAME, OBJECTKEY_PREFIX + fileName);
+        // create device file entity
+        DeviceFilesDao dfDao = new DeviceFilesDao();
 
-            BufferedInputStream bis = null;
+        List<DeviceFiles> dfList = null;
+        DeviceFiles deviceFile = null;
+        dfList = dfDao.listByUri(url);
+        if (dfList != null && dfList.size() > 0) {
+            deviceFile = dfList.get(0);
+        }
+        if (deviceFile == null) {
+            deviceFile = new DeviceFiles();
+        }
+        deviceFile.setProcessDate(getNowDateTimeFormatted());
+        deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
+        deviceFile.setURI(url);
+        deviceFile.setPhoneNumber(phoneNumber);
+        deviceFile.setImei(imei);
+        deviceFile.setChecksum(checksum);
+        deviceFile.setUploadDateTime(new Date());
+        Date collectionDate = new Date();
 
-            try {
-                bis = new BufferedInputStream(conn.getInputStream());
-            } catch (IOException e) {
-                // requeue for execution 5 mins later
-                Queue defaultQueue = QueueFactory.getDefaultQueue();
-                defaultQueue.add(TaskOptions.Builder.withUrl("/app_worker/task")
-                        .param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
-                        .param("fileName", fileName)
-                        .param("phoneNumber", phoneNumber)
-                        .param("imei", imei)
-                        .param("checksum", checksum)
-                        .param("offset", offset.toString())
-                        .countdownMillis(Constants.CONNECTION_TIMEOUT));
-
-                throw new Exception(e);
-            }
-
-            ZipInputStream zis = new ZipInputStream(bis);
-            List<DeviceFiles> dfList = null;
-            DeviceFiles deviceFile = null;
-            dfList = dfDao.listByUri(url);
-            if (dfList != null && dfList.size() > 0) {
-                deviceFile = dfList.get(0);
-            }
-            if (deviceFile == null) {
-                deviceFile = new DeviceFiles();
-            }
-            deviceFile.setProcessDate(getNowDateTimeFormatted());
-            deviceFile.setProcessedStatus(StatusCode.IN_PROGRESS);
-            deviceFile.setURI(url);
-            if (phoneNumber == null || phoneNumber.equals("null")) {
-                deviceFile.setPhoneNumber(null);
+        // process file lines
+        ArrayList<SurveyInstance> surveyInstances = new ArrayList<SurveyInstance>();
+        if (unparsedLines != null && unparsedLines.size() > 0) {
+            if (REGION_FLAG.equals(unparsedLines.get(0))) {
+                unparsedLines.remove(0);
+                GeoRegionHelper grh = new GeoRegionHelper();
+                grh.processRegionsSurvey(unparsedLines);
             } else {
-                deviceFile.setPhoneNumber(phoneNumber);
-            }
-            if (imei == null || imei.equals("null")) {
-                deviceFile.setImei(null);
-            } else {
-                deviceFile.setImei(imei);
-            }
-            if (checksum == null || checksum.equals("null")) {
-                deviceFile.setChecksum(null);
-            } else {
-                deviceFile.setChecksum(checksum);
-            }
-            deviceFile.setUploadDateTime(new Date());
-            Date collectionDate = new Date();
 
-            ArrayList<String> unparsedLines = null;
-            try {
-                unparsedLines = extractDataFromZip(zis);
-            } catch (Exception iex) {
-                // Error unzipping the response file
-
-                deviceFile.setProcessedStatus(StatusCode.ERROR_INFLATING_ZIP);
-                String message = "Error inflating device zip: "
-                        + deviceFile.getURI() + " : " + iex.getMessage();
-                log.log(Level.SEVERE, message);
-                deviceFile.addProcessingMessage(message);
-                MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-                        "Device File Processing Error: " + fileName, message);
-
-            }
-
-            if (unparsedLines != null && unparsedLines.size() > 0) {
-                if (REGION_FLAG.equals(unparsedLines.get(0))) {
-                    unparsedLines.remove(0);
-                    GeoRegionHelper grh = new GeoRegionHelper();
-                    grh.processRegionsSurvey(unparsedLines);
-                } else {
-
-                    int lineNum = offset;
-                    String curId = null;
-                    while (lineNum < unparsedLines.size()) {
-                        String[] parts = unparsedLines.get(lineNum).split("\t");
-                        if (parts.length < 5) {
-                            parts = unparsedLines.get(lineNum).split(",");
-                        }
-                        if (parts.length >= 2) {
-                            if (curId == null) {
-                                curId = parts[1];
-                            } else {
-                                // if this isn't the first time through and
-                                // we are seeing a new id, break since we'll
-                                // process that in another call
-                                if (!curId.equals(parts[1])) {
-                                    break;
-                                }
-                            }
-                        }
-                        lineNum++;
+                int lineNum = offset;
+                String curId = null;
+                while (lineNum < unparsedLines.size()) {
+                    String[] parts = unparsedLines.get(lineNum).split("\t");
+                    if (parts.length < 5) {
+                        parts = unparsedLines.get(lineNum).split(",");
                     }
-
-                    Long userID = 1L;
-                    dfDao.save(deviceFile);
-                    SurveyInstance inst = siDao.save(collectionDate,
-                            deviceFile, userID,
-                            unparsedLines.subList(offset, lineNum));
-                    if (inst != null) {
-                        // fire a survey event
-                        SurveyEventHelper.fireEvent(
-                                SurveyEventHelper.SUBMISSION_EVENT,
-                                inst.getSurveyId(), inst.getKey().getId());
-                        surveyInstances.add(inst);
-                        // TODO: HACK because we were saving so many duplicate
-                        // device files this way they all get the same status
-                        if (dfList != null) {
-                            for (DeviceFiles dfitem : dfList) {
-                                dfitem.setProcessedStatus(inst.getDeviceFile()
-                                        .getProcessedStatus());
+                    if (parts.length >= 2) {
+                        if (curId == null) {
+                            curId = parts[1];
+                        } else {
+                            // if this isn't the first time through and
+                            // we are seeing a new id, break since we'll
+                            // process that in another call
+                            if (!curId.equals(parts[1])) {
+                                break;
                             }
                         }
                     }
-                    if (lineNum < unparsedLines.size()) {
-                        if (inst != null) {
-                            StatusCode processingStatus = inst.getDeviceFile()
-                                    .getProcessedStatus();
-                            if (processingStatus
-                                    .equals(StatusCode.PROCESSED_WITH_ERRORS)) {
-                                String message = "Error in file during first processing step. Continuing to next part";
-                                deviceFile.addProcessingMessage(message);
-                                deviceFile
-                                        .setProcessedStatus(StatusCode.IN_PROGRESS);
-                            } else {
-                                deviceFile.addProcessingMessage("Processed "
-                                        + lineNum
-                                        + " lines spawning queue call");
-                                deviceFile
-                                        .setProcessedStatus(StatusCode.IN_PROGRESS);
-                            }
-                        }
-                        // if we haven't processed everything yet, invoke a
-                        // new service
-                        Queue queue = QueueFactory.getDefaultQueue();
-                        queue.add(TaskOptions.Builder.withUrl("/app_worker/task")
-                                .param("action", "processFile")
-                                .param("fileName", fileName)
-                                .param("offset", lineNum + ""));
-                    } else {
-                        StatusCode status = StatusCode.PROCESSED_NO_ERRORS;
-                        if (deviceFile.getProcessedStatus() != null) {
-                            status = deviceFile.getProcessedStatus();
-                        }
-                        deviceFile.setProcessedStatus(status);
-                        if (dfList != null) {
-                            for (DeviceFiles dfitem : dfList) {
-                                dfitem.setProcessedStatus(status);
-                            }
-                        }
+                    lineNum++;
+                }
 
+                Long userID = 1L;
+                dfDao.save(deviceFile);
+                SurveyInstance inst = siDao.save(collectionDate,
+                        deviceFile, userID,
+                        unparsedLines.subList(offset, lineNum));
+                if (inst != null) {
+                    // fire a survey event
+                    SurveyEventHelper.fireEvent(
+                            SurveyEventHelper.SUBMISSION_EVENT,
+                            inst.getSurveyId(), inst.getKey().getId());
+                    surveyInstances.add(inst);
+                    // TODO: HACK because we were saving so many duplicate
+                    // device files this way they all get the same status
+                    if (dfList != null) {
+                        for (DeviceFiles dfitem : dfList) {
+                            dfitem.setProcessedStatus(inst.getDeviceFile()
+                                    .getProcessedStatus());
+                        }
                     }
                 }
-            } else {
-                deviceFile.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
-                String message = "Error empty file: " + deviceFile.getURI();
-                log.log(Level.SEVERE, message);
-                deviceFile.addProcessingMessage(message);
-                MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-                        "Device File Processing Error: " + fileName, DEVICE_FILE_PATH + fileName
-                                + "\n" + message);
+                if (lineNum < unparsedLines.size()) {
+                    if (inst != null) {
+                        StatusCode processingStatus = inst.getDeviceFile()
+                                .getProcessedStatus();
+                        if (processingStatus
+                                .equals(StatusCode.PROCESSED_WITH_ERRORS)) {
+                            String message = "Error in file during first processing step. Continuing to next part";
+                            deviceFile.addProcessingMessage(message);
+                            deviceFile
+                                    .setProcessedStatus(StatusCode.IN_PROGRESS);
+                        } else {
+                            deviceFile.addProcessingMessage("Processed "
+                                    + lineNum
+                                    + " lines spawning queue call");
+                            deviceFile
+                                    .setProcessedStatus(StatusCode.IN_PROGRESS);
+                        }
+                    }
+                    // if we haven't processed everything yet, invoke a
+                    // new service
+                    Queue queue = QueueFactory.getDefaultQueue();
+                    queue.add(TaskOptions.Builder.withUrl("/app_worker/task")
+                            .param("action", "processFile")
+                            .param("fileName", fileName)
+                            .param("offset", lineNum + ""));
+                } else {
+                    StatusCode status = StatusCode.PROCESSED_NO_ERRORS;
+                    if (deviceFile.getProcessedStatus() != null) {
+                        status = deviceFile.getProcessedStatus();
+                    }
+                    deviceFile.setProcessedStatus(status);
+                    if (dfList != null) {
+                        for (DeviceFiles dfitem : dfList) {
+                            dfitem.setProcessedStatus(status);
+                        }
+                    }
 
+                }
             }
+        } else {
+            String message = "Error empty file: " + deviceFile.getURI();
 
-            dfDao.save(dfList);
-            zis.close();
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Could not process data file", e);
-            MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList,
-                    "Device File Processing Error: " + fileName, DEVICE_FILE_PATH + fileName + "\n"
-                            + (e.getMessage() != null ? e.getMessage() : ""));
+            log.log(Level.SEVERE, message);
+
+            deviceFile.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
+            deviceFile.addProcessingMessage(message);
+
+            sendMail(fileProcessTaskRequest, message);
         }
+
+        dfDao.save(dfList);
 
         return surveyInstances;
     }
 
-    public static ArrayList<String> extractDataFromZip(ZipInputStream zis)
-            throws IOException, SignedDataException {
+    public static ArrayList<String> extractDataFromZip(ZipInputStream deviceZipFileInputStream)
+            throws ZipException, IOException, SignedDataException {
         ArrayList<String> lines = new ArrayList<String>();
         String line = null;
         String surveyDataOnly = null;
         String dataSig = null;
         ZipEntry entry;
-        while ((entry = zis.getNextEntry()) != null) {
+        while ((entry = deviceZipFileInputStream.getNextEntry()) != null) {
             log.info("Unzipping: " + entry.getName());
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buffer = new byte[2048];
             int size;
-            while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
+            while ((size = deviceZipFileInputStream.read(buffer, 0, buffer.length)) != -1) {
                 out.write(buffer, 0, size);
             }
             line = out.toString("UTF-8");
@@ -365,7 +343,7 @@ public class TaskServlet extends AbstractRestApiServlet {
                 }
                 out.close();
             }
-            zis.closeEntry();
+            deviceZipFileInputStream.closeEntry();
         }
 
         // check the signature if we have it
@@ -404,6 +382,53 @@ public class TaskServlet extends AbstractRestApiServlet {
         }
 
         return lines;
+    }
+
+    /**
+     * Requeue the file processing task for execution after TASK_RETRY_INTERVAL mins
+     *
+     * @param fileProcessingRequest
+     */
+    private void rescheduleTask(TaskRequest fileProcessingRequest) {
+        Queue defaultQueue = QueueFactory.getDefaultQueue();
+        TaskOptions options = TaskOptions.Builder.withUrl("/app_worker/task")
+                .param(TaskRequest.ACTION_PARAM, TaskRequest.PROCESS_FILE_ACTION)
+                .param(TaskRequest.TASK_RETRY_PARAM, fileProcessingRequest.getRetry().toString())
+                .param(TaskRequest.FILE_NAME_PARAM, fileProcessingRequest.getFileName())
+                .countdownMillis(Constants.TASK_RETRY_INTERVAL);
+
+        if (fileProcessingRequest.getPhoneNumber() != null) {
+            options.param(TaskRequest.PHONE_NUM_PARAM, fileProcessingRequest.getPhoneNumber());
+        }
+
+        if (fileProcessingRequest.getImei() != null) {
+            options.param(TaskRequest.IMEI_PARAM, fileProcessingRequest.getImei());
+        }
+
+        if (fileProcessingRequest.getChecksum() != null) {
+            options.param(TaskRequest.CHECKSUM_PARAM, fileProcessingRequest.getChecksum());
+        }
+
+        if (fileProcessingRequest.getOffset() != null) {
+            options.param(TaskRequest.OFFSET_PARAM, fileProcessingRequest.getOffset().toString());
+        }
+
+        defaultQueue.add(options);
+    }
+
+    /**
+     * Send an email regarding file processing status/outcome
+     *
+     * @param fileProcessingRequest
+     * @param subject
+     * @param messageBody
+     */
+    private void sendMail(TaskRequest fileProcessingRequest, String body) {
+        String fileName = fileProcessingRequest.getFileName();
+        String subject = "Device File Processing Error: " + fileName;
+        String messageBody = DEVICE_FILE_PATH + fileName + "\n" + body;
+
+        MailUtil.sendMail(FROM_ADDRESS, "FLOW", recepientList, subject, messageBody);
     }
 
     private String getNowDateTimeFormatted() {
@@ -468,12 +493,16 @@ public class TaskServlet extends AbstractRestApiServlet {
     private void ingestFile(TaskRequest req) {
         if (req.getFileName() != null) {
             log.info("	Task->processFile");
-            ArrayList<SurveyInstance> surveyInstances = processFile(
-                    req.getFileName(),
-                    req.getPhoneNumber(),
-                    req.getImei(),
-                    req.getChecksum(),
-                    req.getOffset());
+            ArrayList<SurveyInstance> surveyInstances = null;
+            try {
+                surveyInstances = processFile(req);
+            } catch (Exception e) {
+                String message = "Failed to process zip file:" + req.getFileName() + " : "
+                        + e.getMessage();
+                log.severe(message);
+                sendMail(req, message);
+                surveyInstances = new ArrayList<SurveyInstance>();
+            }
             Map<Long, Survey> surveyMap = new HashMap<Long, Survey>();
             SurveyDAO surveyDao = new SurveyDAO();
             Queue defaultQueue = QueueFactory.getDefaultQueue();

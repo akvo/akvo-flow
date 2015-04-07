@@ -293,6 +293,19 @@ FLOW.surveyedLocaleControl = Ember.ArrayController.create({
 	  }
     });
   },
+
+  /* the current user is able to delete surveyed locales
+    stored in the 'content' property of this controller */
+  userCanDelete: function() {
+    if(this.get('content') === null) {
+        return false;
+    }
+    var surveyedLocale = this.get('content').get('firstObject'); // locale delete only allowed if enabled for the entire monitoring group
+    if(surveyedLocale && surveyedLocale.get('surveyGroupId')) {
+        return FLOW.surveyGroupControl.userCanDeleteData(surveyedLocale.get('surveyGroupId'));
+    }
+    return false; // prevents deletion incase no surveyId found
+  }.property('content'),
 });
 
 FLOW.questionAnswerControl = Ember.ArrayController.create({

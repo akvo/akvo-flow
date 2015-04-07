@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -34,6 +34,7 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
     private String path;
     private String name;
     private Long sourceId;
+    private String status;
 
     public Integer getOrder() {
         return order;
@@ -117,5 +118,13 @@ public class QuestionGroupDto extends BaseDto implements NamedObject {
 
     public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

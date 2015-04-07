@@ -39,6 +39,7 @@ import com.gallatinsystems.framework.domain.BaseDomain;
 import com.gallatinsystems.gis.map.MapUtils;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.domain.Question;
+import static com.gallatinsystems.common.Constants.MAX_LENGTH;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class SurveyInstance extends BaseDomain {
@@ -303,7 +304,8 @@ public class SurveyInstance extends BaseDomain {
     }
 
     public void setSurveyedLocaleDisplayName(String surveyedLocaleDisplayName) {
-        this.surveyedLocaleDisplayName = surveyedLocaleDisplayName;
+        this.surveyedLocaleDisplayName = surveyedLocaleDisplayName.length() > MAX_LENGTH ? surveyedLocaleDisplayName
+                .substring(0, MAX_LENGTH).trim() : surveyedLocaleDisplayName;
     }
 
     /**

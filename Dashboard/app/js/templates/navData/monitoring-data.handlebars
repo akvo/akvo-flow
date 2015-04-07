@@ -49,7 +49,7 @@
                 <a {{action showDetailsDialog sl target="this" }}>
                   {{t _view_details}}
                 </a>
-                {{#if FLOW.role.ADMIN }} {{#view FLOW.DataLocaleItemView contentBinding="sl"}}<a {{action confirm FLOW.dialogControl.delSL target="FLOW.dialogControl" }}>
+                {{#if view.showSurveyedLocaleDeleteButton }} {{#view FLOW.DataLocaleItemView contentBinding="sl"}}<a {{action confirm FLOW.dialogControl.delSL target="FLOW.dialogControl" }}>
                   {{t _delete}}
                   </a>{{/view}} {{/if}}
               </td>
@@ -110,7 +110,7 @@
                 <a {{action showSurveyInstanceDetails SI target="this"}}>
                   {{t _view_details}}
                 </a>
-                {{#if FLOW.role.ADMIN }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
+                {{#if view.showSurveyedLocaleDeleteButton }} {{#view FLOW.DataItemView contentBinding="SI"}}<a {{action confirm FLOW.dialogControl.delSI2 target="FLOW.dialogControl" }}>
                   {{t _delete}}
                 </a>{{/view}} {{/if}}
               </td>
