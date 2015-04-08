@@ -49,6 +49,11 @@
 
 	</path>
 
+    <path id="translate.classpath">
+        <pathelement location="${app_lib_dir}/commons-io-2.4.jar" />
+        <pathelement path="${app_classes_dir}" />
+    </path>
+
 	<target name="check-files">
 	    <available file="build.properties" property="properties.file.exists" />
 	</target>
@@ -121,7 +126,7 @@
 	<target name="translate" depends="compile" description="Generates the en.properties file from handlebars template and JS files">
     <java classname="services.TranslationGenerator" failonerror="true">
       <arg line="${dashboard} ${ui-strings}" />
-      <classpath refid="project.classpath" />
+      <classpath refid="translate.classpath" />
     </java>
   </target>
 
