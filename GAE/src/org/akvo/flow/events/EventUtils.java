@@ -118,6 +118,7 @@ public class EventUtils {
         public static final String ORDER = "order";
         public static final String TEXT = "text";
         public static final String QUESTION_ID = "questionID";
+        public static final String QUESTION_IDENTIFIER = "questionId";
         public static final String QUESTION_GROUP_ID = "questionGroupId";
         public static final String PROJECT_TYPE = "projectType";
         public static final String LAST_UPDATE_DATE_TIME = "lastUpdateDateTime";
@@ -231,7 +232,7 @@ public class EventUtils {
                 break;
             case QUESTION:
                 addProperty(Key.DISPLAY_TEXT, e.getProperty(Prop.TEXT), data);
-                addProperty(Key.IDENTIFIER, e.getProperty(Prop.QUESTION_ID), data);
+                addProperty(Key.IDENTIFIER, e.getProperty(Prop.QUESTION_IDENTIFIER), data);
                 addProperty(Key.QUESTION_GROUP_ID, e.getProperty(Prop.QUESTION_GROUP_ID),
                         data);
                 addProperty(Key.FORM_ID, e.getProperty(Prop.SURVEY_ID), data);
