@@ -148,7 +148,7 @@ public class SurveyUtils {
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
         if (source.getQuestionId() != null) {
-            tmp.setQuestionId(source.getQuestionId() + "_copy");
+            tmp.setQuestionId(source.getQuestionId());
         }
         log.log(Level.INFO, "Copying `Question` " + source.getKey().getId());
 
