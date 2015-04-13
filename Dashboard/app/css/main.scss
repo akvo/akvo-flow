@@ -3979,9 +3979,13 @@ div.dataCollectedDate {
     width: 50%;
     height: 20px;
     text-align: left;
+    @include responsive(small-max-screens) {
+        width: 100%;
+    }
+
     .rawDataReport & {
         float: none;
-        margin-top: 15px;
+        margin-top: 35px;
     }
 }
 
