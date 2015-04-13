@@ -28,6 +28,14 @@
     <div class="rawDataReport block">
       <h3>{{t _export_raw_data_report}}</h3>
       <p>{{t _raw_data_report_applet_text_}}</p>
+      <div class="dataCollectedDate">
+          <label class="collectedFrom">
+            <span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
+          </label>
+          <label class="collectedTo">
+            <span>{{t _to}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.toDate" elementId="to_date" placeholder="" placeholderBinding="Ember.STRINGS._to" size=30}}
+          </label>
+      </div>
       <a {{action showRawDataReport target="this"}} class="standardBtn"> {{t _raw_data_report}} </a>
     </div>
 
