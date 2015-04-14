@@ -125,6 +125,7 @@ public class EventUtils {
         public static final String CREATED_DATE_TIME = "createdDateTime";
         public static final String ALIAS = "alias";
         public static final String EVENT_NOTIFICATION = "eventNotification";
+        public static final String EMIT_CHANGE_EVENTS = "emitChangeEvents";
     }
 
     public static final String SURVEY_GROUP_TYPE_SURVEY = "SURVEY";

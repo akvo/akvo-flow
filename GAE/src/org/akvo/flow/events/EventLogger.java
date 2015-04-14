@@ -149,7 +149,12 @@ public class EventLogger {
             "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles"
     })
     void logPut(PutContext context) {
+
         try {
+            if (!"true".equals(PropertyUtil.getProperty(Prop.EMIT_CHANGE_EVENTS))) {
+                return;
+            }
+
             Entity current = context.getCurrentElement();
 
             // determine type of event and type of action
@@ -198,6 +203,10 @@ public class EventLogger {
     })
     void logDelete(DeleteContext context) {
         try {
+            if (!"true".equals(PropertyUtil.getProperty(Prop.EMIT_CHANGE_EVENTS))) {
+                return;
+            }
+
             // determine type of event and type of action
             EventTypes types = getEventAndActionType(context.getCurrentElement().getKind());
 
