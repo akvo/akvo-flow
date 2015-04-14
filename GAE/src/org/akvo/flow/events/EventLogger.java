@@ -149,42 +149,47 @@ public class EventLogger {
             "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles"
     })
     void logPut(PutContext context) {
+        try {
+            Entity current = context.getCurrentElement();
 
-        Entity current = context.getCurrentElement();
+            // determine type of event and type of action
+            EventTypes types = getEventAndActionType(current.getKey().getKind());
 
-        // determine type of event and type of action
-        EventTypes types = getEventAndActionType(current.getKey().getKind());
+            // determine if this entity was created or updated
+            Date lastUpdateDatetime = (Date) current.getProperty(Prop.LAST_UPDATE_DATE_TIME);
+            Date createdDateTime = (Date) current.getProperty(Prop.CREATED_DATE_TIME);
+            String actionType = createdDateTime.equals(lastUpdateDatetime) ? Action.CREATED
+                    : Action.UPDATED;
 
-        // determine if this entity was created or updated
-        Date lastUpdateDatetime = (Date) current.getProperty(Prop.LAST_UPDATE_DATE_TIME);
-        Date createdDateTime = (Date) current.getProperty(Prop.CREATED_DATE_TIME);
-        String actionType = createdDateTime.equals(lastUpdateDatetime) ? Action.CREATED
-                : Action.UPDATED;
+            // create event source
+            // get the authentication information. This seems to contain the userId, but
+            // according to the documentation, should hold the 'password'
+            final Authentication authentication = SecurityContextHolder.getContext()
+                    .getAuthentication();
 
-        // create event source
-        // get the authentication information. This seems to contain the userId, but
-        // according to the documentation, should hold the 'password'
-        final Authentication authentication = SecurityContextHolder.getContext()
-                .getAuthentication();
+            Map<String, Object> eventSource = newSource(authentication.getPrincipal());
 
-        Map<String, Object> eventSource = newSource(authentication.getPrincipal());
+            Date timestamp = (Date) context.getCurrentElement().getProperty(
+                    Prop.LAST_UPDATE_DATE_TIME);
+            // create event context map
+            Map<String, Object> eventContext = newContext(timestamp, eventSource);
 
-        Date timestamp = (Date) context.getCurrentElement().getProperty(Prop.LAST_UPDATE_DATE_TIME);
-        // create event context map
-        Map<String, Object> eventContext = newContext(timestamp, eventSource);
+            // create event entity
+            Map<String, Object> eventEntity = newEntity(types.type, context
+                    .getCurrentElement().getKey().getId());
 
-        // create event entity
-        Map<String, Object> eventEntity = newEntity(types.type, context
-                .getCurrentElement().getKey().getId());
+            populateEntityProperties(types.type, context.getCurrentElement(), eventEntity);
 
-        populateEntityProperties(types.type, context.getCurrentElement(), eventEntity);
+            // create event
+            Map<String, Object> event = newEvent(SystemProperty.applicationId.get(),
+                    types.action + actionType, eventEntity, eventContext);
 
-        // create event
-        Map<String, Object> event = newEvent(SystemProperty.applicationId.get(),
-                types.action + actionType, eventEntity, eventContext);
+            // store it
+            storeEvent(event, timestamp);
 
-        // store it
-        storeEvent(event, timestamp);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Could not handle datastore put event: " + e.getMessage());
+        }
     }
 
     @PostDelete(kinds = {
@@ -192,32 +197,37 @@ public class EventLogger {
             "QuestionAnswerStore", "SurveyedLocale", "DeviceFiles"
     })
     void logDelete(DeleteContext context) {
-        // determine type of event and type of action
-        EventTypes types = getEventAndActionType(context.getCurrentElement().getKind());
+        try {
+            // determine type of event and type of action
+            EventTypes types = getEventAndActionType(context.getCurrentElement().getKind());
 
-        // create event source
-        // get the authentication information. This seems to contain the userId, but
-        // according to the documentation, should hold the 'password'
-        final Authentication authentication = SecurityContextHolder.getContext()
-                .getAuthentication();
-        Object principal = authentication.getPrincipal();
+            // create event source
+            // get the authentication information. This seems to contain the userId, but
+            // according to the documentation, should hold the 'password'
+            final Authentication authentication = SecurityContextHolder.getContext()
+                    .getAuthentication();
+            Object principal = authentication.getPrincipal();
 
-        Map<String, Object> eventSource = newSource(principal);
+            Map<String, Object> eventSource = newSource(principal);
 
-        // create event context map
-        // we create our own timestamp here, as we don't have one in the context
-        Date timestamp = new Date();
-        Map<String, Object> eventContext = newContext(timestamp, eventSource);
+            // create event context map
+            // we create our own timestamp here, as we don't have one in the context
+            Date timestamp = new Date();
+            Map<String, Object> eventContext = newContext(timestamp, eventSource);
 
-        // create event entity
-        Map<String, Object> eventEntity = newEntity(types.type, context
-                .getCurrentElement().getId());
+            // create event entity
+            Map<String, Object> eventEntity = newEntity(types.type, context
+                    .getCurrentElement().getId());
 
-        // create event
-        Map<String, Object> event = newEvent(SystemProperty.applicationId.get(),
-                types.action + Action.DELETED, eventEntity, eventContext);
+            // create event
+            Map<String, Object> event = newEvent(SystemProperty.applicationId.get(),
+                    types.action + Action.DELETED, eventEntity, eventContext);
 
-        // store it
-        storeEvent(event, timestamp);
+            // store it
+            storeEvent(event, timestamp);
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Could not handle datastore delete event: " + e.getMessage());
+        }
     }
 }
