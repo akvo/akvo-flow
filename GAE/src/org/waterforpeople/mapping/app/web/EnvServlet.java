@@ -42,6 +42,7 @@ import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.gis.geography.domain.Country;
+import com.google.appengine.api.utils.SystemProperty;
 
 public class EnvServlet extends HttpServlet {
 
@@ -60,6 +61,7 @@ public class EnvServlet extends HttpServlet {
         properties.add("showMonitoringFeature");
         properties.add("mandatoryQuestionID");
         properties.add("showExternalSourcesFeature");
+        properties.add("appId");
     }
 
     @Override
@@ -103,6 +105,8 @@ public class EnvServlet extends HttpServlet {
         if (props.get("showExternalSourcesFeature") == null) {
             props.put("showExternalSourcesFeature", "false");
         }
+
+        props.put("appId", SystemProperty.applicationId.get());
 
         final BaseDAO<Country> countryDAO = new BaseDAO<Country>(Country.class);
         final JSONArray jsonArray = new JSONArray();
