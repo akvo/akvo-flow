@@ -95,6 +95,7 @@ FLOW.uploader = Ember.Object.create({
         uniqueIdentifier: file.uniqueIdentifier,
         filename: file.fileName,
         baseURL: location.protocol + '//' + location.host,
+        appId: FLOW.Env.appId,
         uploadDomain: this.opts.uploadDomain,
         complete: true
       },
