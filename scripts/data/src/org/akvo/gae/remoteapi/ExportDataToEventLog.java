@@ -28,9 +28,19 @@ public class ExportDataToEventLog implements Process {
 
         if (args.length != 2) {
             System.err
-                    .println("Usage: "
-                            + RemoteAPI.class.getName()
-                            + "ExportDataToEventLog <appid> <username> <password> <appid> <services-endpoint>");
+                    .println("Usage: \n"
+                            + "This data script depends on code in GAE for generating json event data.\n"
+                            + "* Compile the appengine code by running 'ant compile' in the GAE directory. \n"
+                            + "* Add GAE/war/WEB-INF/classes and GAE/war/WEB-INF/lib/* to the classpath. \n"
+                            + "* Example cli call: \n"
+                            + "    java -classpath \"bin:lib/*:../../GAE/war/WEB-INF/classes:../../GAE/war/WEB-INF/lib/*\"\n"
+                            + "         org.akvo.gae.remoteapi.RemoteAPI\n"
+                            + "         ExportDataToEventLog\n"
+                            + "         <app-id>\n"
+                            + "         <remote-api-email>\n"
+                            + "         <remote-api-password>\n"
+                            + "         <app-id>\n"
+                            + "         <event-notification-endpoint>");
             return;
         }
 
