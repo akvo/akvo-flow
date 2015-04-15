@@ -140,7 +140,7 @@ public class EventLogger {
             notifyLog();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "could not store " + event.get("eventType")
-                    + " event. Error: " + e.toString());
+                    + " event. Error: " + e.toString(), e);
         }
     }
 
