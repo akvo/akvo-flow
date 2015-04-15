@@ -78,6 +78,9 @@ public class InstanceConfigurator {
         String flowServices = cli.getOptionValue("fs");
         String eventNotification = cli.getOptionValue("en");
         String enableChangeEvents = cli.getOptionValue("ce");
+        if (enableChangeEvents == null) {
+            enableChangeEvents = "false";
+        }
         String alias = cli.getOptionValue("a");
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
