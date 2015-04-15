@@ -27,11 +27,15 @@ public class ExportDataToEventLog implements Process {
     public void execute(DatastoreService ds, String[] args) throws Exception {
 
         if (args.length != 2) {
-            System.out.println("Usage: ..");
+            System.err
+                    .println("Usage: "
+                            + RemoteAPI.class.getName()
+                            + "ExportDataToEventLog <appid> <username> <password> <appid> <services-endpoint>");
             return;
         }
 
         final String orgId = args[0];
+        final String servicesEndpoint = args[1];
 
         for (final String kind : kinds) {
             System.out.println("Exporting " + kind);
@@ -58,8 +62,7 @@ public class ExportDataToEventLog implements Process {
             for (List<Map<String, Object>> eventBatch : eventBatches) {
                 System.out.println("  Batch #" + batch);
                 batch++;
-                EventUtils.sendEvents("http://flowdev1.akvo.org:3030/events/"
-                        + orgId, eventBatch);
+                EventUtils.sendEvents(servicesEndpoint + orgId, eventBatch);
             }
         }
     }
