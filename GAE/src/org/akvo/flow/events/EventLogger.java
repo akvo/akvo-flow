@@ -193,7 +193,7 @@ public class EventLogger {
             storeEvent(event, timestamp);
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Could not handle datastore put event: " + e.getMessage());
+            logger.log(Level.SEVERE, "Could not handle datastore put event: " + e.getMessage(), e);
         }
     }
 
@@ -236,7 +236,8 @@ public class EventLogger {
             storeEvent(event, timestamp);
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Could not handle datastore delete event: " + e.getMessage());
+            logger.log(Level.SEVERE, "Could not handle datastore delete event: " + e.getMessage(),
+                    e);
         }
     }
 }
