@@ -30,7 +30,20 @@
     {{#if view.showLastCollection}}
     <p><label for="lastCollection">{{t _export_only_last_collection}}:</label> {{view Ember.Checkbox checkedBinding="FLOW.editControl.lastCollection" id="lastCollection"}}</p>
     {{/if}}
-    <label for="useQuestionId">{{t _export_report_for_external_use_only}}</label> {{view Ember.Checkbox checkedBinding="FLOW.editControl.useQuestionId" id="useQuestionId"}}<br/>
+
+      <div class="exportAdvancedOpt">
+        <a {{action "toggleShowAdvancedSettings" target="this"}} class="showCollapse">
+          {{#if view.showAdvancedSettings}}
+            {{t _collapse}}
+          {{else}}
+            {{t _show_advanced_settings}}
+          {{/if}}
+        </a>
+        {{#if view.showAdvancedSettings}}
+            <label for="useQuestionId">{{t _export_report_for_external_use_only}}</label> {{view Ember.Checkbox checkedBinding="FLOW.editControl.useQuestionId" id="useQuestionId"}}
+        {{/if}}
+      </div>
+      
     <div class="dataCollectedDate">
         <label class="collectedFrom">
           <span>{{t _collected_from}}:</span> {{view FLOW.DateField minDate=false valueBinding="FLOW.dateControl.fromDate" elementId="from_date" placeholder="" placeholderBinding="Ember.STRINGS._collected_from" size=30}}
