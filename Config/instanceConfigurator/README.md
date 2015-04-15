@@ -52,6 +52,10 @@ usage: org.akvo.flow.InstanceConfigurator
  -en,--eventNotification <arg>
                             FLOW services event notification endpoint, e.g.
                             http://services.akvoflow.org:3030/event_notification
+ -ce,--enableChangeEvents true/false
+                            `true` if the instance should store change event data
+                            and notify FLOW services event notification endpoint
+                            of new events
  -gae,--gaeId <arg>         GAE instance id - The `x` in
                             https://x.appspot.com
  -o,--outFolder <arg>       Output folder for configuration files
@@ -64,5 +68,3 @@ usage: org.akvo.flow.InstanceConfigurator
   that is allowed to perform IAM and [S3](https://aws.amazon.com/s3/) operations:
   * IAM operations: create user, create group, associate user to a group, and associate security policies to a group
   * S3 operations: check if a S3 bucket exists, create bucket
-
-

@@ -77,12 +77,13 @@ public class InstanceConfigurator {
         String outFolder = cli.getOptionValue("o");
         String flowServices = cli.getOptionValue("fs");
         String eventNotification = cli.getOptionValue("en");
+        String enableChangeEvents = cli.getOptionValue("ce");
         String alias = cli.getOptionValue("a");
         String emailFrom = cli.getOptionValue("ef");
         String emailTo = cli.getOptionValue("et");
         String orgName = cli.getOptionValue("on");
         String signingKey = cli.getOptionValue("sk");
-        
+
         File out = new File(outFolder);
 
         if (!out.exists()) {
@@ -93,7 +94,8 @@ public class InstanceConfigurator {
         String apiKey = UUID.randomUUID().toString().replaceAll("-", "");
 
         AWSCredentials creds = new BasicAWSCredentials(awsAccessKey, awsSecret);
-        AmazonIdentityManagementClient iamClient = new AmazonIdentityManagementClient(creds);
+        AmazonIdentityManagementClient iamClient = new AmazonIdentityManagementClient(
+                creds);
         AmazonS3Client s3Client = new AmazonS3Client(creds);
 
         // Creating bucket
@@ -102,13 +104,14 @@ public class InstanceConfigurator {
 
         try {
             if (s3Client.doesBucketExist(bucketName)) {
-                System.out.println(bucketName + " already exists, skipping creation");
+                System.out.println(bucketName
+                        + " already exists, skipping creation");
             } else {
                 s3Client.createBucket(bucketName, Region.EU_Ireland);
             }
         } catch (Exception e) {
-            System.err.println("Error trying to create bucket " + bucketName + " : "
-                    + e.getMessage());
+            System.err.println("Error trying to create bucket " + bucketName
+                    + " : " + e.getMessage());
             System.exit(1);
         }
 
@@ -136,7 +139,8 @@ public class InstanceConfigurator {
         CreateAccessKeyRequest gaeAccessRequest = new CreateAccessKeyRequest();
         gaeAccessRequest.setUserName(gaeUser);
 
-        CreateAccessKeyResult gaeAccessResult = iamClient.createAccessKey(gaeAccessRequest);
+        CreateAccessKeyResult gaeAccessResult = iamClient
+                .createAccessKey(gaeAccessRequest);
         accessKeys.put(gaeUser, gaeAccessResult.getAccessKey());
 
         // APK
@@ -158,19 +162,22 @@ public class InstanceConfigurator {
         CreateAccessKeyRequest apkAccessRequest = new CreateAccessKeyRequest();
         apkAccessRequest.setUserName(apkUser);
 
-        CreateAccessKeyResult apkAccessResult = iamClient.createAccessKey(apkAccessRequest);
+        CreateAccessKeyResult apkAccessResult = iamClient
+                .createAccessKey(apkAccessRequest);
         accessKeys.put(apkUser, apkAccessResult.getAccessKey());
 
         System.out.println("Configuring security policies...");
 
         Configuration cfg = new Configuration();
-        cfg.setClassForTemplateLoading(InstanceConfigurator.class, "/org/akvo/flow/templates");
+        cfg.setClassForTemplateLoading(InstanceConfigurator.class,
+                "/org/akvo/flow/templates");
         cfg.setObjectWrapper(new DefaultObjectWrapper());
         cfg.setDefaultEncoding("UTF-8");
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("bucketName", bucketName);
-        data.put("version", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        data.put("version",
+                new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         data.put("accessKey", accessKeys);
 
         Template t1 = cfg.getTemplate("apk-s3-policy.ftl");
@@ -181,11 +188,11 @@ public class InstanceConfigurator {
         StringWriter gaePolicy = new StringWriter();
         t2.process(data, gaePolicy);
 
-        iamClient.putUserPolicy(new PutUserPolicyRequest(apkUser, apkUser, Policy.fromJson(
-                apkPolicy.toString()).toJson()));
+        iamClient.putUserPolicy(new PutUserPolicyRequest(apkUser, apkUser,
+                Policy.fromJson(apkPolicy.toString()).toJson()));
 
-        iamClient.putUserPolicy(new PutUserPolicyRequest(gaeUser, gaeUser, Policy.fromJson(
-                gaePolicy.toString()).toJson()));
+        iamClient.putUserPolicy(new PutUserPolicyRequest(gaeUser, gaeUser,
+                Policy.fromJson(gaePolicy.toString()).toJson()));
 
         System.out.println("Creating configuration files...");
 
@@ -193,7 +200,8 @@ public class InstanceConfigurator {
         Map<String, Object> apkData = new HashMap<String, Object>();
         apkData.put("awsBucket", bucketName);
         apkData.put("awsAccessKeyId", accessKeys.get(apkUser).getAccessKeyId());
-        apkData.put("awsSecretKey", accessKeys.get(apkUser).getSecretAccessKey());
+        apkData.put("awsSecretKey", accessKeys.get(apkUser)
+                .getSecretAccessKey());
         apkData.put("serverBase", "https://" + gaeId + ".appspot.com");
         apkData.put("restApiKey", apiKey);
 
@@ -205,12 +213,14 @@ public class InstanceConfigurator {
         Map<String, Object> webData = new HashMap<String, Object>();
         webData.put("awsBucket", bucketName);
         webData.put("awsAccessKeyId", accessKeys.get(gaeUser).getAccessKeyId());
-        webData.put("awsSecretAccessKey", accessKeys.get(gaeUser).getSecretAccessKey());
+        webData.put("awsSecretAccessKey", accessKeys.get(gaeUser)
+                .getSecretAccessKey());
         webData.put("s3url", "https://" + bucketName + ".s3.amazonaws.com");
         webData.put("instanceId", gaeId);
         webData.put("alias", alias);
         webData.put("flowServices", flowServices);
         webData.put("eventNotification", eventNotification);
+        webData.put("enableChangeEvents", enableChangeEvents);
         webData.put("apiKey", apiKey);
         webData.put("emailFrom", emailFrom);
         webData.put("emailTo", emailTo);
@@ -248,7 +258,8 @@ public class InstanceConfigurator {
         bucketName.setArgs(1);
         bucketName.setRequired(true);
 
-        Option gaeServer = new Option("gae", "GAE instance id - The `x` in https://x.appspot.com");
+        Option gaeServer = new Option("gae",
+                "GAE instance id - The `x` in https://x.appspot.com");
         gaeServer.setLongOpt("gaeId");
         gaeServer.setArgs(1);
         gaeServer.setRequired(true);
@@ -259,7 +270,8 @@ public class InstanceConfigurator {
         emailFrom.setArgs(1);
         emailFrom.setRequired(false);
 
-        Option emailTo = new Option("et", "Recipient email of error notifications");
+        Option emailTo = new Option("et",
+                "Recipient email of error notifications");
         emailTo.setLongOpt("emailTo");
         emailTo.setArgs(1);
         emailTo.setRequired(true);
@@ -270,18 +282,28 @@ public class InstanceConfigurator {
         flowServices.setArgs(1);
         flowServices.setRequired(true);
 
-        Option eventNotification = new Option("en",
+        Option eventNotification = new Option(
+                "en",
                 "FLOW Services event notification endpoint, e.g. http://services.akvoflow.org:3030/event_notification");
         eventNotification.setLongOpt("eventNotification");
         eventNotification.setArgs(1);
         eventNotification.setRequired(true);
 
-        Option outputFolder = new Option("o", "Output folder for configuration files");
+        Option enableChangeEvents = new Option(
+                "ce",
+                "true if the instance should store change event data and notify FLOW services event notification endpoint of new events");
+        enableChangeEvents.setLongOpt("enableChangeEvents");
+        enableChangeEvents.setArgs(1);
+        enableChangeEvents.setRequired(false);
+
+        Option outputFolder = new Option("o",
+                "Output folder for configuration files");
         outputFolder.setLongOpt("outFolder");
         outputFolder.setArgs(1);
         outputFolder.setRequired(true);
 
-        Option alias = new Option("a", "Instance alias, e.g. instance.akvoflow.org");
+        Option alias = new Option("a",
+                "Instance alias, e.g. instance.akvoflow.org");
         alias.setLongOpt("alias");
         alias.setArgs(1);
         alias.setRequired(true);
@@ -301,6 +323,7 @@ public class InstanceConfigurator {
         options.addOption(outputFolder);
         options.addOption(flowServices);
         options.addOption(eventNotification);
+        options.addOption(enableChangeEvents);
         options.addOption(alias);
         options.addOption(signingKey);
 

@@ -151,7 +151,7 @@ public class EventLogger {
     void logPut(PutContext context) {
 
         try {
-            if (!"true".equals(PropertyUtil.getProperty(Prop.EMIT_CHANGE_EVENTS))) {
+            if (!"true".equals(PropertyUtil.getProperty(Prop.ENABLE_CHANGE_EVENTS))) {
                 return;
             }
 
@@ -203,7 +203,7 @@ public class EventLogger {
     })
     void logDelete(DeleteContext context) {
         try {
-            if (!"true".equals(PropertyUtil.getProperty(Prop.EMIT_CHANGE_EVENTS))) {
+            if (!"true".equals(PropertyUtil.getProperty(Prop.ENABLE_CHANGE_EVENTS))) {
                 return;
             }
 
