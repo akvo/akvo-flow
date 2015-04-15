@@ -18,6 +18,7 @@ FLOW.SurveySelection = Ember.ObjectController.extend({
   },
 
   getByParentId: function(parentId, monitoringGroupsOnly) {
+
     return this.get('surveyGroups').filter(function(sg) {
       if (monitoringGroupsOnly) {
         return sg.get('parentId') === parentId &&
@@ -25,7 +26,10 @@ FLOW.SurveySelection = Ember.ObjectController.extend({
       } else {
         return sg.get('parentId') === parentId;
       }
-    })
+    }).sort(function (survey1, survey2) {
+      return survey1.get('name').toLocaleLowerCase().localeCompare(
+        survey2.get('name').toLocaleLowerCase());
+    });
   },
 
   getSurvey: function(keyId) {
