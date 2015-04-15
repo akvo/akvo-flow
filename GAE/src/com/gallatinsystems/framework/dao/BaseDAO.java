@@ -424,6 +424,26 @@ public class BaseDAO<T extends BaseDomain> {
     }
 
     /**
+     * Retrieves a List of objects by key where the keys are represented by a Collection of Longs
+     *
+     * @param ids List of Long representing the keys of objects
+     * @return empty list if ids is null, otherwise a list of objects
+     */
+    public List<T> listByKeys(List<Long> ids) {
+        if (ids == null) {
+            return Collections.emptyList();
+        }
+        final List<T> list = new ArrayList<T>();
+        for (Long id : ids) {
+            final T obj = getByKey(id);
+            if (obj != null) {
+                list.add(obj);
+            }
+        }
+        return list;
+    }
+
+    /**
      * lists all the objects of the same type as the concreteClass with property equal to the value
      * passed in since using this requires the caller know the persistence data type of the field
      * and the field name, this method is protected so that it can only be used by subclass DAOs. We
