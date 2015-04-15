@@ -28,8 +28,6 @@ public class SurveyedLocaleFix implements Process {
 
     @Override
     public void execute(DatastoreService ds, String[] args) throws Exception {
-        // TODO Auto-generated method stub
-
         Query surveyedLocaleQuery = new Query("SurveyedLocale");
 
         Set<Entity> updatedEntities = new HashSet<>();
