@@ -142,6 +142,53 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
             if (originalQuestionGroup != null && newQuestionGroup != null) {
                 copyQuestionGroup(originalQuestionGroup, newQuestionGroup);
             }
+        } else if (DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION
+                .equalsIgnoreCase(dpReq.getAction())) {
+            QuestionGroup newQuestionGroup = new QuestionGroupDao().getByKey(dpReq
+                    .getQuestionGroupId());
+            QuestionGroup originalQuestionGroup = new QuestionGroupDao()
+                    .getByKey(Long.valueOf(dpReq.getSource()));
+
+            if (originalQuestionGroup != null && newQuestionGroup != null) {
+                final List<Long> unresolvedDependentIds = dpReq.getDependentQuestionIds();
+                final List<Question> processedQuestionList = fixQuestionGroupDependencies(
+                        newQuestionGroup, originalQuestionGroup, unresolvedDependentIds);
+
+                // check all resolved else reschedule
+                List<Question> unresolvedDependencies = new ArrayList<Question>();
+                for (Question q : processedQuestionList) {
+                    if (q.getDependentQuestionId() == null) {
+                        unresolvedDependencies.add(q);
+                    }
+                }
+
+                if (!unresolvedDependencies.isEmpty()) {
+                    TaskOptions options = TaskOptions.Builder
+                            .withUrl("/app_worker/dataprocessor")
+                            .param(DataProcessorRequest.ACTION_PARAM, dpReq.getAction())
+                            .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
+                                    dpReq.getQuestionGroupId().toString())
+                            .param(DataProcessorRequest.SOURCE_PARAM, dpReq.getSource());
+                    for (Question q : unresolvedDependencies) {
+                        options.param(DataProcessorRequest.DEPENDENT_QUESTION_PARAM,
+                                Long.toString(q.getKey().getId()));
+                    }
+
+                    int retry = dpReq.getRetry();
+                    if (unresolvedDependencies.size() == unresolvedDependentIds.size()) {
+                        // in case none of dependencies were resolved include retry param
+                        options.param(DataProcessorRequest.RETRY_PARAM, Integer.toString(++retry));
+                    }
+                    if (retry < DataProcessorRequest.MAX_TASK_RETRIES) {
+                        Queue queue = QueueFactory.getQueue("dataUpdate");
+                        queue.add(options);
+                    } else {
+                        log.severe("Failed to resolve dependencies for copied QuestionGroup "
+                                + newQuestionGroup.getKey().getId() + " after multiple retries");
+                    }
+                }
+
+            }
         } else if (DataProcessorRequest.IMPORT_REMOTE_SURVEY_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             SurveyReplicationImporter sri = new SurveyReplicationImporter();
@@ -609,11 +656,11 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                 "Fixing dependencies for " + dependentQuestionList.size()
                         + " `Question`");
 
-        for (Question nQ : dependentQuestionList) {
-            // only fix dependencies where the dependent question is inside the same group
-            if (qMap.containsKey(nQ.getDependentQuestionId())) {
-                nQ.setDependentQuestionId(qMap.get(nQ.getDependentQuestionId()));
-            }
+        for (Question newDependentQuestion : dependentQuestionList) {
+            // for dependencies where both questions are in same group, they are resolved when each
+            // question is in different group, then id is set to null to be resolved later by a task
+            newDependentQuestion.setDependentQuestionId(qMap.get(newDependentQuestion
+                    .getDependentQuestionId()));
         }
 
         qDao.save(dependentQuestionList);
@@ -621,6 +668,97 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         // set status of question group to READY
         newQuestionGroup.setStatus(QuestionGroup.Status.READY);
         qgDao.save(newQuestionGroup);
+
+        final List<Long> unresolvedDependentQuestionIds = new ArrayList<Long>();
+        for (Question q : dependentQuestionList) {
+            if (q.getDependentQuestionId() == null) {
+                unresolvedDependentQuestionIds.add(q.getKey().getId());
+            }
+        }
+
+        if (!unresolvedDependentQuestionIds.isEmpty()) {
+            // fire task to resolve unresolved dependencies
+            TaskOptions options = TaskOptions.Builder
+                    .withUrl("/app_worker/dataprocessor")
+                    .param(DataProcessorRequest.ACTION_PARAM,
+                            DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION)
+                    .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
+                            Long.toString(newQuestionGroup.getKey().getId()))
+                    .param(DataProcessorRequest.SOURCE_PARAM,
+                            Long.toString(sourceQuestionGroup.getKey().getId()));
+            for (Long id : unresolvedDependentQuestionIds) {
+                options.param(DataProcessorRequest.DEPENDENT_QUESTION_PARAM, id.toString());
+            }
+
+            Queue queue = QueueFactory.getQueue("dataUpdate");
+            queue.add(options);
+        }
+    }
+
+    /**
+     * Resolve dependencies for copied questions that are not in the same group as the question on
+     * which they are dependent
+     *
+     * @param newQuestionGroupId the copied question group
+     * @param oldQuestionGroupId the original question group from which this copy has been made
+     * @param dependentQuestionIdsList list of ids for questions in the copied group that are
+     *            dependent on questions *not* in the copied group
+     * @return returns the list of dependentQuestions that has been processed.
+     */
+    private List<Question> fixQuestionGroupDependencies(QuestionGroup newQuestionGroup,
+            QuestionGroup oldQuestionGroup, List<Long> dependentQuestionIdsList) {
+
+        log.info("Resolving dependencies for " + dependentQuestionIdsList.size() + " questions");
+        QuestionDao qDao = new QuestionDao();
+
+        final List<Question> unresolvedDependentQuestions = qDao
+                .listByKeys(dependentQuestionIdsList);
+        List<Question> originalDependentQuestions = new ArrayList<Question>();
+
+        for (Question q : unresolvedDependentQuestions) {
+            if (q.getSourceQuestionId() != null) {
+                Question source = qDao.getByKey(q.getSourceQuestionId());
+                if (source == null) {
+                    continue;
+                }
+                originalDependentQuestions.add(source);
+            }
+        }
+
+        // build mapping from unresolved qn-> original qn -> new dependency question
+        Map<Long, Question> originalQuestionsIdMap = new HashMap<Long, Question>();
+        List<Long> originalDependentQuestionIds = new ArrayList<Long>();
+        for (Question q : originalDependentQuestions) {
+            originalQuestionsIdMap.put(q.getKey().getId(), q);
+            if (q.getDependentQuestionId() != null) {
+                originalDependentQuestionIds.add(q.getDependentQuestionId());
+            }
+        }
+
+        List<Question> newQuestions = qDao.listBySourceQuestionId(originalDependentQuestionIds);
+
+        Map<Long, Question> newQuestionsSourceIdMap = new HashMap<Long, Question>();
+        for (Question q : newQuestions) {
+            if (q.getSourceQuestionId() != null) {
+                newQuestionsSourceIdMap.put(q.getSourceQuestionId(), q);
+            }
+        }
+
+        // resolve question dependencies
+        for (Question unresolved : unresolvedDependentQuestions) {
+            Question source = originalQuestionsIdMap.get(unresolved.getSourceQuestionId());
+            if (source == null) {
+                continue;
+            }
+
+            if (newQuestionsSourceIdMap.containsKey(source.getDependentQuestionId())) {
+                Question newQuestion = newQuestionsSourceIdMap.get(source.getDependentQuestionId());
+                unresolved.setDependentQuestionId(newQuestion.getKey().getId());
+            }
+        }
+
+        qDao.save(unresolvedDependentQuestions);
+        return unresolvedDependentQuestions;
     }
 
     /**

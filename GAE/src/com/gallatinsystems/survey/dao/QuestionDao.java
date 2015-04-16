@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -809,5 +809,24 @@ public class QuestionDao extends BaseDAO<Question> {
 
     public List<Question> listByCascadeResourceId(Long cascadeResourceId) {
         return listByProperty("cascadeResourceId", cascadeResourceId, "Long");
+    }
+
+    /**
+     * Returns a list of questions whose sourceQuestionId parameter is included in the list of ids
+     * passed in as parameter
+     *
+     * @param sourceQuestionIds
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<Question> listBySourceQuestionId(List<Long> sourceQuestionIds) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(Question.class, ":p1.contains(sourceQuestionId)");
+        List<Question> results = (List<Question>) query.execute(sourceQuestionIds);
+        if (results == null) {
+            return Collections.emptyList();
+        } else {
+            return results;
+        }
     }
 }

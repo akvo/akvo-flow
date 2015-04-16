@@ -135,6 +135,7 @@ public class SurveyUtils {
         final QuestionDao qDao = new QuestionDao();
         final QuestionOptionDao qoDao = new QuestionOptionDao();
         final Question tmp = new Question();
+        final Long sourceQuestionId = source.getKey().getId();
 
         final String[] questionExcludedProps = {
                 "questionOptionMap",
@@ -147,10 +148,12 @@ public class SurveyUtils {
 
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
+        tmp.setSourceQuestionId(sourceQuestionId);
+
         if (source.getQuestionId() != null) {
             tmp.setQuestionId(source.getQuestionId() + "_copy");
         }
-        log.log(Level.INFO, "Copying `Question` " + source.getKey().getId());
+        log.log(Level.INFO, "Copying `Question` " + sourceQuestionId);
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
 
@@ -159,7 +162,7 @@ public class SurveyUtils {
 
         log.log(Level.INFO, "Copying question translations");
 
-        SurveyUtils.copyTranslation(source.getKey().getId(), newQuestion
+        SurveyUtils.copyTranslation(sourceQuestionId, newQuestion
                 .getKey().getId(), newSurveyId, newQuestionGroupId, ParentType.QUESTION_NAME,
                 ParentType.QUESTION_DESC, ParentType.QUESTION_TEXT,
                 ParentType.QUESTION_TIP);
@@ -170,7 +173,7 @@ public class SurveyUtils {
         }
 
         final TreeMap<Integer, QuestionOption> options = qoDao
-                .listOptionByQuestion(source.getKey().getId());
+                .listOptionByQuestion(sourceQuestionId);
 
         if (options == null) {
             return newQuestion;

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -412,6 +412,26 @@ public class BaseDAO<T extends BaseDomain> {
     public List<T> listByKeys(Long[] ids) {
         if (ids == null) {
             return null;
+        }
+        final List<T> list = new ArrayList<T>();
+        for (Long id : ids) {
+            final T obj = getByKey(id);
+            if (obj != null) {
+                list.add(obj);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Retrieves a List of objects by key where the keys are represented by a Collection of Longs
+     *
+     * @param ids List of Long representing the keys of objects
+     * @return empty list if ids is null, otherwise a list of objects
+     */
+    public List<T> listByKeys(List<Long> ids) {
+        if (ids == null) {
+            return Collections.emptyList();
         }
         final List<T> list = new ArrayList<T>();
         for (Long id : ids) {
