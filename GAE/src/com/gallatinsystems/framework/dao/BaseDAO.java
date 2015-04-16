@@ -47,7 +47,6 @@ import com.gallatinsystems.user.domain.UserAuthorization;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-
 /**
  * This is a reusable data access object that supports basic operations (save, find by property,
  * list).
@@ -97,34 +96,12 @@ public class BaseDAO<T extends BaseDomain> {
      * @return
      */
     public <E extends BaseDomain> E save(E obj) {
-
         PersistenceManager pm = PersistenceFilter.getManager();
-        if (obj.getCreatedDateTime() == null) {
-            obj.setCreatedDateTime(new Date());
-        }
         obj.setLastUpdateDateTime(new Date());
-        obj = pm.makePersistent(obj);
-
-        return obj;
-    }
-
-    /**
-     * saves an object and then flushes the persistence manager. In most cases, this method should
-     * <b>NOT</b> be used (prefer the normal save method instead).
-     *
-     * @param <E>
-     * @param obj
-     * @return
-     */
-    public <E extends BaseDomain> E saveAndFlush(E obj) {
-        PersistenceManager pm = PersistenceFilter.getManager();
         if (obj.getCreatedDateTime() == null) {
-            obj.setCreatedDateTime(new Date());
+            obj.setCreatedDateTime(obj.getLastUpdateDateTime());
         }
-        obj.setLastUpdateDateTime(new Date());
         obj = pm.makePersistent(obj);
-        pm.flush();
-
         return obj;
     }
 
@@ -139,16 +116,13 @@ public class BaseDAO<T extends BaseDomain> {
     public <E extends BaseDomain> Collection<E> save(Collection<E> objList) {
         if (objList != null) {
             for (E item : objList) {
-
-                if (item.getCreatedDateTime() == null) {
-                    item.setCreatedDateTime(new Date());
-                }
-
                 item.setLastUpdateDateTime(new Date());
+                if (item.getCreatedDateTime() == null) {
+                    item.setCreatedDateTime(item.getLastUpdateDateTime());
+                }
             }
             PersistenceManager pm = PersistenceFilter.getManager();
             objList = pm.makePersistentAll(objList);
-
         }
         return objList;
     }

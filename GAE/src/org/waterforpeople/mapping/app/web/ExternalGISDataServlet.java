@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
-import org.waterforpeople.mapping.analytics.SubCountrySummarizer;
 import org.waterforpeople.mapping.app.util.DtoMarshaller;
 import org.waterforpeople.mapping.app.web.dto.ExternalGISRequest;
 import org.waterforpeople.mapping.app.web.dto.OGRFeatureDto;
@@ -126,12 +125,6 @@ public class ExternalGISDataServlet extends AbstractRestApiServlet {
             }
 
             ogrFeatureDao.save(ogrFeature);
-            SubCountrySummarizer summarizer = new SubCountrySummarizer();
-            summarizer.performSummarization(ogrFeature.getCountryCode(), null,
-                    ogrFeature.getSub1() + "|" + ogrFeature.getSub2() + "|"
-                            + ogrFeature.getSub3() + "|" + ogrFeature.getSub4()
-                            + "|" + ogrFeature.getSub5() + "|"
-                            + ogrFeature.getSub6(), null, null);
             resp = convertToResponse(null, null, null);
         } else if (req.getAction().equals(
                 ExternalGISRequest.LIST_MATCHING_OGRFEATURE_ACTION)) {
