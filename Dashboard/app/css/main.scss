@@ -2277,11 +2277,11 @@ a.addSurvey {
         background: rgba(32, 32, 36, 0.05) url(../images/IconPlusWhite.svg) 2px center no-repeat;
         cursor: default;
         background-size: 25px 45px;
-        color:rgba(32, 32, 36, 0.1);
+        color: rgba(32, 32, 36, 0.1);
         &:hover {
             background: rgba(32, 32, 36, 0.05) url(../images/IconPlusWhite.svg) 2px center no-repeat;
             background-size: 25px 45px;
-            color:rgba(32, 32, 36, 0.1);
+            color: rgba(32, 32, 36, 0.1);
         }
     }
 }
@@ -3376,7 +3376,7 @@ nav.questionActionMenu a:hover {
     text-align: left;
     padding-left: 17px;
     &.disabled {
-        background:none;
+        background: none;
     }
 }
 
@@ -3986,6 +3986,28 @@ div.dataCollectedDate {
     .rawDataReport & {
         float: none;
         margin-top: 35px;
+    }
+}
+
+.rawDataReport {
+    .exportAdvancedOpt {
+        display: block;
+        margin: 15px 0 35px 5px;
+        .showCollapse {
+            background: $anchorLink;
+            color: white;
+            text-transform: uppercase;
+            display: inline-block;
+            padding: 2px 7px 0px 7px;
+            display: inline-block;
+            margin: -2px 0 0 0;
+            border-radius: 3px;
+        }
+        label {
+            color:rgba($akvoBlack, 0.5);
+            margin-top:5px;
+            text-transform: none;
+        }
     }
 }
 
@@ -6037,13 +6059,14 @@ li.disable {
 }
 
 .copyingSpinner {
-        position: absolute;
-        left:45%;
-        z-index: 9999999;
-        border-radius: 3px;
-        box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
-        padding: 5px 3px 5px 25px;
-        background: rgb(248, 248, 248) url(../images/loader.gif) 5px center no-repeat;
-        color: rgb(252, 159, 0);
-        font-weight: bold;
-        font-size: 1.2em;}
+    position: absolute;
+    left: 45%;
+    z-index: 9999999;
+    border-radius: 3px;
+    box-shadow: 0 5px 8px rgba(212, 212, 212, 0.5);
+    padding: 5px 3px 5px 25px;
+    background: rgb(248, 248, 248) url(../images/loader.gif) 5px center no-repeat;
+    color: rgb(252, 159, 0);
+    font-weight: bold;
+    font-size: 1.2em;
+}

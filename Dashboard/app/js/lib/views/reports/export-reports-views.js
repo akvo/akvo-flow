@@ -182,6 +182,10 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     }
     FLOW.ReportLoader.load('RAW_DATA', sId);
   },
+  
+  toggleShowAdvancedSettings: function() {
+    this.set('showAdvancedSettings', !this.get('showAdvancedSettings'));
+  },
 
   showRawTextFileExport: function () {
 	var sId = this.get('selectedSurvey');
