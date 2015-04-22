@@ -27,15 +27,11 @@ FLOW.SurveySelection = Ember.ObjectController.extend({
         return sg.get('parentId') === parentId;
       }
     }).sort(function (survey1, survey2) {
-      var s1 = survey1.get('name');
-      var s2 = survey2.get('name');
+      var s1 = survey1.get('name') || "";
+      var s2 = survey2.get('name') || "";
 
-      if (s1 != null && s2 != null) {
-        return s1.toLocaleLowerCase().localeCompare(
-          s2.toLocaleLowerCase());
-      } else {
-        return -1;
-      }
+      return s1.toLocaleLowerCase().localeCompare(
+        s2.toLocaleLowerCase());
     });
   },
 
