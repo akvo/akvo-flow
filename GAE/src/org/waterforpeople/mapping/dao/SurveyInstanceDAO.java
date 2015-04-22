@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
@@ -35,6 +34,8 @@ import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.domain.response.FormInstance;
+import org.waterforpeople.mapping.domain.response.Response;
 
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
@@ -67,15 +68,78 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
     private static final Logger logger = Logger
             .getLogger(SurveyInstanceDAO.class.getName());
+    
+    public SurveyInstance save(FormInstance formInstance, DeviceFiles deviceFile) {
+        boolean hasErrors = false;
+        boolean surveyInstanceIsNew = true;
+        final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+        final QuestionDao questionDao = new QuestionDao();
+        List<QuestionAnswerStore> newResponses = new ArrayList<QuestionAnswerStore>();
+        
+        // TODO: Does it make sense to skip the whole process if the instance is found?
+        SurveyInstance si = findByUUID(formInstance.getFormInstanceId());
+        if (si != null) {
+            surveyInstanceIsNew = false;
+        } else {
+            si = new SurveyInstance();
+        }
+        
+        si.setDeviceFile(deviceFile);
+        si.setUserID(1L);
+        si.setCollectionDate(new Date(formInstance.getSubmissionDate()));
+        si.setSubmitterName(formInstance.getUsername());
+        si.setDeviceIdentifier(formInstance.getDeviceId());
+        si.setSurveyalTime(formInstance.getDuration());
+        si.setSurveyedLocaleIdentifier(formInstance.getDataPointId());
+        si.setSurveyId(Long.parseLong(formInstance.getFormId()));
+        si.setUuid(formInstance.getFormInstanceId());
+        
+        si = save(si);
+        final long surveyInstanceId = si.getKey().getId();
+        
+        qasDao.listBySurveyInstance(surveyInstanceId);// Cache existing qas????
+        
+        // Process form responses
+        for (Response response : formInstance.getResponses()) {
+            // If one of the answer types is META_GEO or META_NAME, 
+            // set up the surveyedLocale corresponding attribute.
+            if ("META_NAME".equals(response.getAnswerType())) {
+                si.setSurveyedLocaleDisplayName(response.getValue());
+            } else if ("META_GEO".equals(response.getAnswerType())) {
+                si.setLocaleGeoLocation(response.getValue());
+            }
+            
+            final long questionId = Long.valueOf(response.getQuestionId());
+
+            if (questionDao.getByKey(questionId) == null) {
+                continue; // The question does not exist. Skip response.
+            } else if (qasDao.isCached(questionId, surveyInstanceId)) {
+                log.log(Level.INFO,
+                        "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
+                                + surveyInstanceId + ", " + si.getSurveyId() + ", " + questionId);
+                continue; // Skip processing
+            }
+            
+            QuestionAnswerStore qas = new QuestionAnswerStore();
+            qas.setSurveyId(si.getSurveyId());
+            qas.setSurveyInstanceId(surveyInstanceId);
+            qas.setQuestionID(response.getQuestionId());
+            qas.setCollectionDate(si.getCollectionDate());
+            qas.setType(response.getAnswerType());
+            qas.setValue(response.getValue());
+            
+            newResponses.add(qas);
+        }
+        
+        si.setQuestionAnswersStore(newResponses);
+        processResponses(si, surveyInstanceIsNew, hasErrors);
+        return si;
+    }
 
     // the set of unparsedLines we have here represent values from one surveyInstance
     // as they are split up in the TaskServlet task.
-    @SuppressWarnings({
-            "unchecked", "rawtypes"
-    })
     public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
             Long userID, List<String> unparsedLines) {
-
         SurveyInstance si = new SurveyInstance();
         boolean hasErrors = false;
         si.setDeviceFile(deviceFile);
@@ -83,8 +147,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         String delimiter = "\t";
         boolean surveyInstanceIsNew = true;
         boolean listExistingResponses = true;
-        Long geoQasId = null;
-        DeviceDAO deviceDao = new DeviceDAO();
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
 
         ArrayList<QuestionAnswerStore> newResponses = new ArrayList<QuestionAnswerStore>();
@@ -288,41 +350,51 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             newResponses.add(qas);
         }
 
+        si.setQuestionAnswersStore(newResponses);
+        processResponses(si, surveyInstanceIsNew, hasErrors);
+        return si;
+    }
+    
+    private void processResponses(SurveyInstance si, boolean isNew, boolean hasErrors) {
+        final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+        final DeviceFiles deviceFile = si.getDeviceFile();
+        final DeviceDAO deviceDao = new DeviceDAO();
+        
         // batch save all responses
         try {
-            qasDao.save(newResponses);
+            qasDao.save(si.getQuestionAnswersStore());
         } catch (DatastoreTimeoutException te) {
             sleep();
-            qasDao.save(newResponses);
+            qasDao.save(si.getQuestionAnswersStore());
         }
         deviceFile.setSurveyInstanceId(si.getKey().getId());
-        if (!hasErrors) {
-            si.getDeviceFile().setProcessedStatus(
-                    StatusCode.PROCESSED_NO_ERRORS);
-        } else {
-            si.getDeviceFile().setProcessedStatus(
-                    StatusCode.PROCESSED_WITH_ERRORS);
-        }
-        si.setQuestionAnswersStore(newResponses);
-
-        boolean increment = true;
-        si.updateSummaryCounts(increment);
-
-        for (QuestionAnswerStore qas : newResponses) {
-            if (Question.Type.GEO.toString().equals(qas.getType())) {
-                geoQasId = qas.getKey().getId();
-            }
-
-            if ("IMAGE".equals(qas.getType())) {
+        StatusCode sc = hasErrors ? StatusCode.PROCESSED_WITH_ERRORS 
+                : StatusCode.PROCESSED_NO_ERRORS;
+        si.getDeviceFile().setProcessedStatus(sc);
+        
+        si.updateSummaryCounts(true);
+        
+        for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
+            if (Question.Type.GEO.toString().equals(qas.getType()) && isNew) {
+                long geoQasId = qas.getKey().getId();
+                Queue summQueue = QueueFactory.getQueue("dataSummarization");
+                summQueue.add(TaskOptions.Builder
+                        .withUrl("/app_worker/dataprocessor")
+                        .param(
+                                DataProcessorRequest.ACTION_PARAM,
+                                DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
+                        .param("surveyInstanceId", si.getKey().getId() + "")
+                        .param("qasId", geoQasId + "")
+                        .param("delta", 1 + ""));
+            } else if ("IMAGE".equals(qas.getType())) {
                 // the device send values as IMAGE and not PHOTO
                 String filename = qas.getValue().substring(
                         qas.getValue().lastIndexOf("/") + 1);
-                Device d = null;
 
+                Device d = null;
                 if (deviceFile.getImei() != null) {
                     d = deviceDao.getByImei(deviceFile.getImei());
                 }
-
                 if (d == null && deviceFile.getPhoneNumber() != null) {
                     d = deviceDao.get(deviceFile.getPhoneNumber());
                 }
@@ -340,20 +412,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 queue.add(to);
             }
         }
-
-        // invoke a task to update corresponding surveyInstanceSummary objects
-        if (surveyInstanceIsNew && geoQasId != null) {
-            Queue summQueue = QueueFactory.getQueue("dataSummarization");
-            summQueue.add(TaskOptions.Builder
-                    .withUrl("/app_worker/dataprocessor")
-                    .param(
-                            DataProcessorRequest.ACTION_PARAM,
-                            DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-                    .param("surveyInstanceId", si.getKey().getId() + "")
-                    .param("qasId", geoQasId + "")
-                    .param("delta", 1 + ""));
-        }
-        return si;
     }
 
     public SurveyInstanceDAO() {

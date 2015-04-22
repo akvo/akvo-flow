@@ -37,12 +37,14 @@ import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
+import org.waterforpeople.mapping.domain.response.FormInstance;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.SurveyEventHelper;
 
@@ -171,7 +173,7 @@ public class TaskServlet extends AbstractRestApiServlet {
         List<SurveyInstance> surveyInstances = new ArrayList<>();
         if (files.containsKey(JSON_FILENAME)) {
             // Process JSON-formatted response
-            // surveyInstances = ...
+            surveyInstances = processJSONData(files.get(JSON_FILENAME), deviceFile);
         } else if (files.containsKey(TSV_FILENAME)) {
             // Process TSV-formatted response
             surveyInstances = processTSVData(files.get(TSV_FILENAME), collectionDate, deviceFile);
@@ -204,6 +206,20 @@ public class TaskServlet extends AbstractRestApiServlet {
         dfDao.save(dfList);
 
         return surveyInstances;
+    }
+    
+    private List<SurveyInstance> processJSONData(String content, DeviceFiles deviceFile) {
+        List<SurveyInstance> instances = new ArrayList<>();
+        
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            FormInstance fi = mapper.readValue(content, FormInstance.class);
+            SurveyInstance inst = siDao.save(fi, deviceFile);
+            instances.add(inst);
+        } catch (IOException e) {
+            log.log(Level.SEVERE, "Error mapping JSON data: " + e.getMessage(), e);
+        }
+        return instances;
     }
     
     private List<SurveyInstance> processTSVData(String content, Date collectionDate,
