@@ -20,8 +20,6 @@ import static com.gallatinsystems.common.util.MemCacheUtils.containsKey;
 import static com.gallatinsystems.common.util.MemCacheUtils.initCache;
 import static com.gallatinsystems.common.util.MemCacheUtils.putObject;
 
-import java.io.BufferedInputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,7 +30,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipInputStream;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -47,7 +44,6 @@ import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.dao.AccessPointDao;
-import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.QuestionAnswerStoreDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.dataexport.SurveyReplicationImporter;
@@ -57,7 +53,6 @@ import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.common.Constants;
-import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
@@ -196,9 +191,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         } else if (DataProcessorRequest.RESCORE_AP_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             rescoreAp(dpReq.getCountry());
-        } else if (DataProcessorRequest.FIX_NULL_SUBMITTER_ACTION
-                .equalsIgnoreCase(dpReq.getAction())) {
-            fixNullSubmitter();
         } else if (DataProcessorRequest.FIX_DUPLICATE_OTHER_TEXT_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
             fixDuplicateOtherText();
@@ -392,44 +384,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                             DataProcessorRequest.RECOMPUTE_LOCALE_CLUSTERS);
             Queue queue = QueueFactory.getDefaultQueue();
             queue.add(options);
-        }
-    }
-
-    private void fixNullSubmitter() {
-        SurveyInstanceDAO instDao = new SurveyInstanceDAO();
-        List<SurveyInstance> instances = instDao.listInstanceBySubmitter(null);
-
-        if (instances != null) {
-            DeviceFilesDao dfDao = new DeviceFilesDao();
-            for (SurveyInstance inst : instances) {
-                DeviceFiles f = dfDao.findByInstance(inst.getKey().getId());
-                if (f != null) {
-                    try {
-                        URL url = new URL(f.getURI());
-                        BufferedInputStream bis = new BufferedInputStream(
-                                url.openStream());
-                        ZipInputStream zis = new ZipInputStream(bis);
-                        ArrayList<String> lines = TaskServlet
-                                .extractDataFromZip(zis);
-                        zis.close();
-
-                        if (lines != null) {
-                            for (String line : lines) {
-                                String[] parts = line.split("\t");
-                                if (parts.length > 5) {
-                                    if (parts[5] != null
-                                            && parts[5].trim().length() > 0) {
-                                        inst.setSubmitterName(parts[5]);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        log("Could not download zip: " + f.getURI());
-                    }
-                }
-            }
         }
     }
 

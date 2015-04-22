@@ -20,8 +20,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLConnection;
-import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,8 +35,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
@@ -50,18 +46,14 @@ import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.SurveyEventHelper;
 
-import services.S3Driver;
-
 import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.MailUtil;
-import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.common.util.S3Util;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.exceptions.SignedDataException;
 import com.gallatinsystems.framework.rest.AbstractRestApiServlet;
 import com.gallatinsystems.framework.rest.RestRequest;
 import com.gallatinsystems.framework.rest.RestResponse;
-import com.gallatinsystems.image.GAEImageAdapter;
 import com.gallatinsystems.messaging.dao.MessageDao;
 import com.gallatinsystems.messaging.domain.Message;
 import com.gallatinsystems.survey.dao.SurveyDAO;
@@ -76,9 +68,6 @@ public class TaskServlet extends AbstractRestApiServlet {
 
     private static final String TSV_FILENAME = "data.txt";
     private static final String JSON_FILENAME = "data.json";
-    private static final String ALLOW_UNSIGNED = "allowUnsignedData";
-    private static final String SIGNING_KEY = "signingKey";
-    private static final String SIGNING_ALGORITHM = "HmacSHA1";
     private static String DEVICE_FILE_PATH;
     private static String FROM_ADDRESS;
     private static String BUCKET_NAME;
@@ -281,104 +270,6 @@ public class TaskServlet extends AbstractRestApiServlet {
         }
             
         return instances;
-    }
-        
-    public static ArrayList<String> extractDataFromZip(ZipInputStream deviceZipFileInputStream)
-            throws ZipException, IOException, SignedDataException {
-        ArrayList<String> lines = new ArrayList<String>();
-        String line = null;
-        String surveyDataOnly = null;
-        String dataSig = null;
-        ZipEntry entry;
-        while ((entry = deviceZipFileInputStream.getNextEntry()) != null) {
-            log.info("Unzipping: " + entry.getName());
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buffer = new byte[2048];
-            int size;
-            while ((size = deviceZipFileInputStream.read(buffer, 0, buffer.length)) != -1) {
-                out.write(buffer, 0, size);
-            }
-            line = out.toString("UTF-8");
-
-            if (entry.getName().endsWith("txt")) {
-                if (entry.getName().equals("regions.txt")) {
-                    lines.add("regionFlag=true");
-                } else {
-                    surveyDataOnly = line;
-                }
-                String[] linesSplit = line.split("\n");
-                for (String s : linesSplit) {
-                    if (s.contains("\u0000")) {
-                        s = s.replaceAll("\u0000", "");
-                    }
-                    lines.add(s);
-                }
-            } else if (entry.getName().endsWith(".sig")) {
-                dataSig = line.trim();
-            } else {
-                S3Driver s3 = new S3Driver();
-                String[] imageParts = entry.getName().split("/");
-                // comment out while testing locally
-                try {
-                    // GAEImageAdapter gaeIA = new GAEImageAdapter();
-                    // byte[] resizedImage =
-                    // gaeIA.resizeImage(out.toByteArray(), 500, 500);
-                    // s3.uploadFile("dru-test", imageParts[1], resizedImage);
-                    GAEImageAdapter gaeImg = new GAEImageAdapter();
-                    byte[] newImage = gaeImg.resizeImage(out.toByteArray(),
-                            500, 500);
-                    s3.uploadFile("dru-test", imageParts[1], newImage);
-                    // add queue call to resize
-                    Queue queue = QueueFactory.getDefaultQueue();
-
-                    queue.add(TaskOptions.Builder.withUrl("imageprocessor").param("imageURL",
-                            imageParts[1]));
-                    log.info("submiting image resize for imageURL: "
-                            + imageParts[1]);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                out.close();
-            }
-            deviceZipFileInputStream.closeEntry();
-        }
-
-        // check the signature if we have it
-        String allowUnsigned = PropertyUtil.getProperty(ALLOW_UNSIGNED);
-
-        if ("false".equalsIgnoreCase(allowUnsigned)) {
-
-            if (dataSig == null) {
-                throw new SignedDataException("Datafile does not have a signature");
-            }
-
-            if (surveyDataOnly == null) {
-                throw new SignedDataException("data.txt not found in data zip");
-            }
-
-            try {
-                MessageDigest sha1Digest = MessageDigest.getInstance("SHA1");
-                byte[] digest = sha1Digest.digest(surveyDataOnly
-                        .getBytes("UTF-8"));
-                SecretKeySpec signingKey = new SecretKeySpec(PropertyUtil
-                        .getProperty(SIGNING_KEY).getBytes("UTF-8"),
-                        SIGNING_ALGORITHM);
-                Mac mac = Mac.getInstance(SIGNING_ALGORITHM);
-                mac.init(signingKey);
-                byte[] hmac = mac.doFinal(digest);
-
-                String encodedHmac = com.google.gdata.util.common.util.Base64
-                        .encode(hmac);
-                if (!encodedHmac.trim().equals(dataSig.trim())) {
-                    throw new SignedDataException(
-                            "Computed signature does not match the one submitted with the data");
-                }
-            } catch (GeneralSecurityException e) {
-                throw new SignedDataException("Could not calculate signature", e);
-            }
-        }
-
-        return lines;
     }
 
     /**
