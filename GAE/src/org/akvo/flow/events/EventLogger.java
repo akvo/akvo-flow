@@ -46,13 +46,16 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.gallatinsystems.common.Constants;
 import com.gallatinsystems.common.util.PropertyUtil;
-import com.gallatinsystems.framework.dao.BaseDAO;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DeleteContext;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PostDelete;
 import com.google.appengine.api.datastore.PostPut;
 import com.google.appengine.api.datastore.PutContext;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.utils.SystemProperty;
 
 public class EventLogger {
@@ -129,14 +132,26 @@ public class EventLogger {
 
     private void storeEvent(Map<String, Object> event, Date timestamp) {
         try {
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
             ObjectMapper m = new ObjectMapper();
             StringWriter w = new StringWriter();
             m.writeValue(w, event);
-            BaseDAO<EventQueue> eventDao = new BaseDAO<EventQueue>(EventQueue.class);
-            EventQueue eventQ = new EventQueue();
-            eventQ.setCreatedDateTime(timestamp);
-            eventQ.setPayload(w.toString());
-            eventDao.save(eventQ);
+
+            Entity entity = new Entity("EventQueue");
+            entity.setProperty("createdDateTime", timestamp);
+            entity.setProperty("lastUpdateDateTime", timestamp);
+
+            String payload = w.toString();
+            if (payload.length() > Constants.MAX_LENGTH) {
+                entity.setProperty("payload", null);
+                entity.setProperty("payloadText", new Text(payload));
+            } else {
+                entity.setProperty("payload", w.toString());
+                entity.setProperty("payloadText", null);
+            }
+
+            datastore.put(entity);
             notifyLog();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "could not store " + event.get("eventType")
