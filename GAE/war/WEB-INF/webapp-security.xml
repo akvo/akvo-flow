@@ -51,17 +51,17 @@
 	</b:bean>
 
 	<!-- API Authentication -->
-	
+
 	<b:bean id="apiEntryPoint" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationEntryPoint"/>
-	
+
 	<b:bean id="apiFilter" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationFilter">
 		<b:property name="authenticationManager" ref="apiAuthenticationManager"></b:property>
 	</b:bean>
-	
+
 	<authentication-manager id="apiAuthenticationManager">
 		<authentication-provider ref="apiAuthenticationProvider"/>
 	</authentication-manager>
-	
+
 	<b:bean id="apiAuthenticationProvider" class="org.waterforpeople.mapping.app.web.rest.security.ApiAuthenticationProvider"/>
 
 	<!-- GAE Authentication -->

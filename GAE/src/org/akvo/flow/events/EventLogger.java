@@ -144,11 +144,9 @@ public class EventLogger {
 
             String payload = w.toString();
             if (payload.length() > Constants.MAX_LENGTH) {
-                entity.setProperty("payload", null);
                 entity.setProperty("payloadText", new Text(payload));
             } else {
-                entity.setProperty("payload", w.toString());
-                entity.setProperty("payloadText", null);
+                entity.setProperty("payload", payload);
             }
 
             datastore.put(entity);
