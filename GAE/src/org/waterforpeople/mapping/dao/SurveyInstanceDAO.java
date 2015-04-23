@@ -76,7 +76,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         final QuestionDao questionDao = new QuestionDao();
         List<QuestionAnswerStore> newResponses = new ArrayList<QuestionAnswerStore>();
         
-        // TODO: Does it make sense to skip the whole process if the instance is found?
         SurveyInstance si = findByUUID(formInstance.getFormInstanceId());
         if (si != null) {
             surveyInstanceIsNew = false;
@@ -91,7 +90,12 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         si.setDeviceIdentifier(formInstance.getDeviceId());
         si.setSurveyalTime(formInstance.getDuration());
         si.setSurveyedLocaleIdentifier(formInstance.getDataPointId());
-        si.setSurveyId(Long.parseLong(formInstance.getFormId()));
+        try {
+            si.setSurveyId(Long.parseLong(formInstance.getFormId()));
+        } catch (NumberFormatException e) {
+            hasErrors = true;
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
         si.setUuid(formInstance.getFormInstanceId());
         
         si = save(si);
@@ -109,9 +113,15 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 si.setLocaleGeoLocation(response.getValue());
             }
             
-            final long questionId = Long.valueOf(response.getQuestionId());
+            Long questionId = null;
+            try {
+                questionId = Long.valueOf(response.getQuestionId());
+            } catch (NumberFormatException e) {
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
 
-            if (questionDao.getByKey(questionId) == null) {
+            if (questionId == null || questionDao.getByKey(questionId) == null) {
+                hasErrors = true;
                 continue; // The question does not exist. Skip response.
             } else if (qasDao.isCached(questionId, surveyInstanceId)) {
                 log.log(Level.INFO,
