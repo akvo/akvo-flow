@@ -186,7 +186,7 @@ public class SurveyGroupRestService {
 
                     String name = s.getName();
                     if (name != null) {
-                        String trimmedName = name.trim();
+                        String trimmedName = name.replaceAll(",", " ").trim();
                         s.setName(trimmedName);
                         s.setCode(trimmedName);
                         s.setPath(SurveyUtils.fixPath(s.getPath(), trimmedName));
