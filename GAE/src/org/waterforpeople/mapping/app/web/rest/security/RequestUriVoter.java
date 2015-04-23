@@ -36,6 +36,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
+import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
+import org.waterforpeople.mapping.domain.SurveyInstance;
 
 import com.gallatinsystems.survey.dao.SurveyDAO;
 import com.gallatinsystems.survey.dao.SurveyGroupDAO;
@@ -79,6 +81,9 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
 
     @Inject
     private SurveyedLocaleDao surveyedLocaleDao;
+
+    @Inject
+    private SurveyInstanceDAO surveyInstanceDao;
 
     @Override
     public boolean supports(ConfigAttribute attribute) {
@@ -183,6 +188,21 @@ public class RequestUriVoter implements AccessDecisionVoter<FilterInvocation> {
             SurveyedLocale sl = surveyedLocaleDao.getByKey(surveyedLocaleId);
             objectIdStr = sl.getSurveyGroupId().toString();
             entityKind = "SurveyGroup";
+        } else if (requestUri.contains("/survey_instances/")) {
+
+            try {
+                SurveyInstance si = surveyInstanceDao.getByKey(Long.parseLong(requestUri
+                        .substring(requestUri.lastIndexOf("/") + 1)));
+
+                if (si != null) {
+                    objectIdStr = si.getSurveyId().toString();
+                }
+
+                entityKind = "Survey";
+
+            } catch (NumberFormatException e) {
+            }
+
         } else if (requestUri.startsWith(PROJECT_FOLDER_URI_PREFIX)
                 || requestUri.startsWith(FORM_URI_PREFIX)) {
             objectIdStr = requestUri.substring(requestUri.lastIndexOf("/") + 1);
