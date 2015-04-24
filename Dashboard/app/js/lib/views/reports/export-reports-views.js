@@ -159,6 +159,8 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     FLOW.selectedControl.set('surveySelection', FLOW.SurveySelection.create());
     FLOW.selectedControl.set('selectedSurvey', null);
     FLOW.editControl.set('useQuestionId', false);
+    FLOW.dateControl.set('fromDate', null);
+    FLOW.dateControl.set('toDate', null);
     FLOW.uploader.registerEvents();
   },
 
@@ -182,7 +184,7 @@ FLOW.ExportReportsAppletView = FLOW.View.extend({
     }
     FLOW.ReportLoader.load('RAW_DATA', sId);
   },
-  
+
   toggleShowAdvancedSettings: function() {
     this.set('showAdvancedSettings', !this.get('showAdvancedSettings'));
   },
