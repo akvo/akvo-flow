@@ -139,8 +139,10 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
                     .getQuestionGroupId());
             QuestionGroup originalQuestionGroup = new QuestionGroupDao()
                     .getByKey(Long.valueOf(dpReq.getSource()));
+            boolean isCopyingSingleQuestionGroup = dpReq.getIsCopyingSingleQuestionGroup();
             if (originalQuestionGroup != null && newQuestionGroup != null) {
-                copyQuestionGroup(originalQuestionGroup, newQuestionGroup);
+                copyQuestionGroup(originalQuestionGroup, newQuestionGroup,
+                        isCopyingSingleQuestionGroup);
             }
         } else if (DataProcessorRequest.FIX_QUESTIONGROUP_DEPENDENCIES_ACTION
                 .equalsIgnoreCase(dpReq.getAction())) {
@@ -581,7 +583,6 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
     private void copySurvey(Long copiedSurveyId, Long originalSurveyId) {
 
         final QuestionGroupDao qgDao = new QuestionGroupDao();
-        final Map<Long, Long> qMap = new HashMap<Long, Long>();
 
         final List<QuestionGroup> qgList = qgDao.listQuestionGroupBySurvey(originalSurveyId);
 
@@ -594,7 +595,7 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
 
         log.log(Level.INFO, "Copying " + qgList.size() + " `QuestionGroup`");
         for (final QuestionGroup sourceQG : qgList) {
-            SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId, qMap);
+            SurveyUtils.copyQuestionGroup(sourceQG, copiedSurveyId, false);
         }
 
         final SurveyDAO sDao = new SurveyDAO();
@@ -618,7 +619,8 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
      *
      * @param questionGroup
      */
-    private void copyQuestionGroup(QuestionGroup sourceQuestionGroup, QuestionGroup newQuestionGroup) {
+    private void copyQuestionGroup(QuestionGroup sourceQuestionGroup,
+            QuestionGroup newQuestionGroup, boolean isCopyingSingleQuestionGroup) {
         final Map<Long, Long> qMap = new HashMap<Long, Long>();
         final QuestionDao qDao = new QuestionDao();
         final QuestionGroupDao qgDao = new QuestionGroupDao();
@@ -672,7 +674,13 @@ public class DataProcessorRestServlet extends AbstractRestApiServlet {
         final List<Long> unresolvedDependentQuestionIds = new ArrayList<Long>();
         for (Question q : dependentQuestionList) {
             if (q.getDependentQuestionId() == null) {
-                unresolvedDependentQuestionIds.add(q.getKey().getId());
+                if (isCopyingSingleQuestionGroup) {
+                    Question originalQuestion = qDao.getByKey(q.getSourceQuestionId());
+                    q.setDependentQuestionId(originalQuestion.getDependentQuestionId());
+                    qDao.save(q);
+                } else {
+                    unresolvedDependentQuestionIds.add(q.getKey().getId());
+                }
             }
         }
 
