@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -340,6 +341,14 @@ public class QuestionDao extends BaseDAO<Question> {
             }
             // now set the type
             question.setProperty("type", q.getType().toString());
+            // Ensure that createdDateTime and lastUpdateDateTime properties are set
+            Date date = new Date();
+            if (question.getProperty("createdDateTime") == null) {
+                question.setProperty("createdDateTime", date);
+            }
+            if (question.getProperty("lastUpdateDateTime") == null) {
+                question.setProperty("lastUpdateDateTime", date);
+            }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Could not set entity fields", e);
         }
