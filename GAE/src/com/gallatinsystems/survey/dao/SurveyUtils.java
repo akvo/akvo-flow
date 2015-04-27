@@ -20,7 +20,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -96,7 +95,7 @@ public class SurveyUtils {
     }
 
     public static QuestionGroup copyQuestionGroup(QuestionGroup source,
-            Long newSurveyId, Map<Long, Long> qMap) {
+            Long newSurveyId, boolean isCopyingSingleQuestionGroup) {
 
         final QuestionGroupDao qgDao = new QuestionGroupDao();
         final QuestionGroup tmp = new QuestionGroup();
@@ -122,7 +121,9 @@ public class SurveyUtils {
                 .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
                         String.valueOf(newQuestionGroup.getKey().getId()))
                 .param(DataProcessorRequest.SOURCE_PARAM,
-                        String.valueOf(source.getKey().getId()));
+                        String.valueOf(source.getKey().getId()))
+                .param(DataProcessorRequest.IS_COPYING_SINGLE_QUESTION_GROUP_PARAM,
+                        String.valueOf(isCopyingSingleQuestionGroup));
 
         queue.add(options);
 
@@ -135,6 +136,7 @@ public class SurveyUtils {
         final QuestionDao qDao = new QuestionDao();
         final QuestionOptionDao qoDao = new QuestionOptionDao();
         final Question tmp = new Question();
+        final Long sourceQuestionId = source.getKey().getId();
 
         final String[] questionExcludedProps = {
                 "questionOptionMap",
@@ -147,10 +149,12 @@ public class SurveyUtils {
 
         BeanUtils.copyProperties(source, tmp, allExcludedProps);
         tmp.setOrder(order);
+        tmp.setSourceQuestionId(sourceQuestionId);
+
         if (source.getQuestionId() != null) {
             tmp.setQuestionId(source.getQuestionId() + "_copy");
         }
-        log.log(Level.INFO, "Copying `Question` " + source.getKey().getId());
+        log.log(Level.INFO, "Copying `Question` " + sourceQuestionId);
 
         final Question newQuestion = qDao.save(tmp, newQuestionGroupId);
 
@@ -159,7 +163,7 @@ public class SurveyUtils {
 
         log.log(Level.INFO, "Copying question translations");
 
-        SurveyUtils.copyTranslation(source.getKey().getId(), newQuestion
+        SurveyUtils.copyTranslation(sourceQuestionId, newQuestion
                 .getKey().getId(), newSurveyId, newQuestionGroupId, ParentType.QUESTION_NAME,
                 ParentType.QUESTION_DESC, ParentType.QUESTION_TEXT,
                 ParentType.QUESTION_TIP);
@@ -170,7 +174,7 @@ public class SurveyUtils {
         }
 
         final TreeMap<Integer, QuestionOption> options = qoDao
-                .listOptionByQuestion(source.getKey().getId());
+                .listOptionByQuestion(sourceQuestionId);
 
         if (options == null) {
             return newQuestion;

@@ -1393,6 +1393,12 @@ FLOW.translationControl = Ember.ArrayController.create({
     this.get('toBeDeletedTranslations').forEach(function (item) {
       _self.deleteRecord(item);
     });
+
+    // make survey unpublished
+    survey = FLOW.store.find(FLOW.Survey,surveyId);
+    if (!Ember.empty(survey)){
+        survey.set('status','NOT_PUBLISHED');
+    }
     FLOW.store.commit();
     this.set('toBeDeletedTranslations', []);
   }

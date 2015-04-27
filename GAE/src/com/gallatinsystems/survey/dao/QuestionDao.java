@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2010-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -340,6 +341,14 @@ public class QuestionDao extends BaseDAO<Question> {
             }
             // now set the type
             question.setProperty("type", q.getType().toString());
+            // Ensure that createdDateTime and lastUpdateDateTime properties are set
+            Date date = new Date();
+            if (question.getProperty("createdDateTime") == null) {
+                question.setProperty("createdDateTime", date);
+            }
+            if (question.getProperty("lastUpdateDateTime") == null) {
+                question.setProperty("lastUpdateDateTime", date);
+            }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Could not set entity fields", e);
         }
@@ -809,5 +818,24 @@ public class QuestionDao extends BaseDAO<Question> {
 
     public List<Question> listByCascadeResourceId(Long cascadeResourceId) {
         return listByProperty("cascadeResourceId", cascadeResourceId, "Long");
+    }
+
+    /**
+     * Returns a list of questions whose sourceQuestionId parameter is included in the list of ids
+     * passed in as parameter
+     *
+     * @param sourceQuestionIds
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<Question> listBySourceQuestionId(List<Long> sourceQuestionIds) {
+        PersistenceManager pm = PersistenceFilter.getManager();
+        javax.jdo.Query query = pm.newQuery(Question.class, ":p1.contains(sourceQuestionId)");
+        List<Question> results = (List<Question>) query.execute(sourceQuestionIds);
+        if (results == null) {
+            return Collections.emptyList();
+        } else {
+            return results;
+        }
     }
 }
