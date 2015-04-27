@@ -76,7 +76,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         final QuestionDao questionDao = new QuestionDao();
         List<QuestionAnswerStore> newResponses = new ArrayList<QuestionAnswerStore>();
         
-        SurveyInstance si = findByUUID(formInstance.getFormInstanceId());
+        SurveyInstance si = findByUUID(formInstance.getUUID());
         if (si != null) {
             surveyInstanceIsNew = false;
         } else {
@@ -90,13 +90,8 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         si.setDeviceIdentifier(formInstance.getDeviceId());
         si.setSurveyalTime(formInstance.getDuration());
         si.setSurveyedLocaleIdentifier(formInstance.getDataPointId());
-        try {
-            si.setSurveyId(Long.parseLong(formInstance.getFormId()));
-        } catch (NumberFormatException e) {
-            hasErrors = true;
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-        si.setUuid(formInstance.getFormInstanceId());
+        si.setSurveyId(formInstance.getFormId());
+        si.setUuid(formInstance.getUUID());
         
         si = save(si);
         final long surveyInstanceId = si.getKey().getId();

@@ -18,14 +18,14 @@ package org.waterforpeople.mapping.domain.response;
 import java.util.List;
 
 public class FormInstance {
-    private String formId;
-    private String formInstanceId;
+    private long formId;
+    private long submissionDate;
+    private long duration;
+    private String uuid;
     private String dataPointId;
     private String deviceId;
     private String username;
     private String email;
-    private long submissionDate;
-    private long duration;
     private List<Response> responses;
 
     public List<Response> getResponses() {
@@ -44,20 +44,20 @@ public class FormInstance {
         this.username = username;
     }
 
-    public String getFormId() {
+    public long getFormId() {
         return formId;
     }
 
-    public void setFormId(String formId) {
+    public void setFormId(long formId) {
         this.formId = formId;
     }
 
-    public String getFormInstanceId() {
-        return formInstanceId;
+    public String getUUID() {
+        return uuid;
     }
 
-    public void setFormInstanceId(String formInstanceId) {
-        this.formInstanceId = formInstanceId;
+    public void setUUID(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getDataPointId() {
