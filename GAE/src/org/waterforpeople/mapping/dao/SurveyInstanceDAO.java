@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -32,10 +31,7 @@ import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
 import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
-import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
-import org.waterforpeople.mapping.domain.response.FormInstance;
-import org.waterforpeople.mapping.domain.response.Response;
 
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
@@ -66,333 +62,84 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
 
-    private static final Logger logger = Logger
-            .getLogger(SurveyInstanceDAO.class.getName());
+    public SurveyInstanceDAO() {
+        super(SurveyInstance.class);
+    }
     
-    public SurveyInstance save(FormInstance formInstance, DeviceFiles deviceFile) {
-        boolean hasErrors = false;
-        boolean surveyInstanceIsNew = true;
-        final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        final QuestionDao questionDao = new QuestionDao();
-        List<QuestionAnswerStore> newResponses = new ArrayList<QuestionAnswerStore>();
-        
-        SurveyInstance si = findByUUID(formInstance.getUUID());
-        if (si != null) {
-            surveyInstanceIsNew = false;
-        } else {
-            si = new SurveyInstance();
+    public SurveyInstance save(SurveyInstance si, DeviceFiles deviceFile) {
+        // Check whether the instance is already stored in the database.
+        boolean isNew = true;
+        SurveyInstance existing = findByUUID(si.getUuid());
+        if (existing != null) {
+            si.setKey(existing.getKey());
+            si.setCreatedDateTime(existing.getCollectionDate());
+            isNew = false;
         }
         
         si.setDeviceFile(deviceFile);
-        si.setUserID(1L);
-        si.setCollectionDate(new Date(formInstance.getSubmissionDate()));
-        si.setSubmitterName(formInstance.getUsername());
-        si.setDeviceIdentifier(formInstance.getDeviceId());
-        si.setSurveyalTime(formInstance.getDuration());
-        si.setSurveyedLocaleIdentifier(formInstance.getDataPointId());
-        si.setSurveyId(formInstance.getFormId());
-        si.setUuid(formInstance.getUUID());
-        
         si = save(si);
+        
         final long surveyInstanceId = si.getKey().getId();
-        
-        qasDao.listBySurveyInstance(surveyInstanceId);// Cache existing qas????
-        
-        // Process form responses
-        for (Response response : formInstance.getResponses()) {
-            // If one of the answer types is META_GEO or META_NAME, 
-            // set up the surveyedLocale corresponding attribute.
-            if ("META_NAME".equals(response.getAnswerType())) {
-                si.setSurveyedLocaleDisplayName(response.getValue());
-            } else if ("META_GEO".equals(response.getAnswerType())) {
-                si.setLocaleGeoLocation(response.getValue());
-            }
-            
-            Long questionId = null;
-            try {
-                questionId = Long.valueOf(response.getQuestionId());
-            } catch (NumberFormatException e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-
-            if (questionId == null || questionDao.getByKey(questionId) == null) {
-                hasErrors = true;
-                continue; // The question does not exist. Skip response.
-            } else if (qasDao.isCached(questionId, surveyInstanceId)) {
-                log.log(Level.INFO,
-                        "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
-                                + surveyInstanceId + ", " + si.getSurveyId() + ", " + questionId);
-                continue; // Skip processing
-            }
-            
-            QuestionAnswerStore qas = new QuestionAnswerStore();
-            qas.setSurveyId(si.getSurveyId());
-            qas.setSurveyInstanceId(surveyInstanceId);
-            qas.setQuestionID(response.getQuestionId());
-            qas.setCollectionDate(si.getCollectionDate());
-            qas.setType(response.getAnswerType());
-            qas.setValue(response.getValue());
-            
-            newResponses.add(qas);
-        }
-        
-        si.setQuestionAnswersStore(newResponses);
-        processResponses(si, surveyInstanceIsNew, hasErrors);
-        return si;
-    }
-
-    // the set of unparsedLines we have here represent values from one surveyInstance
-    // as they are split up in the TaskServlet task.
-    public SurveyInstance save(Date collectionDate, DeviceFiles deviceFile,
-            Long userID, List<String> unparsedLines) {
-        SurveyInstance si = new SurveyInstance();
-        boolean hasErrors = false;
-        si.setDeviceFile(deviceFile);
-        si.setUserID(userID);
-        String delimiter = "\t";
-        boolean surveyInstanceIsNew = true;
-        boolean listExistingResponses = true;
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-
-        ArrayList<QuestionAnswerStore> newResponses = new ArrayList<QuestionAnswerStore>();
-
-        for (String line : unparsedLines) {
-
-            String[] parts = line.split(delimiter);
-            if (parts.length < 5) {
-                delimiter = ",";
-                parts = line.split(delimiter);
-            }
-            // TODO: this will have to be removed when we use Strength and
-            // ScoredValue Questions
-            while (",".equals(delimiter) && parts.length > 9) {
-                try {
-                    new Date(new Long(parts[7].trim()));
-                    break;
-                } catch (Exception e) {
-                    logger.log(Level.INFO,
-                            "Removing comma because 7th pos doesn't pass got string: "
-                                    + parts[7] + "instead of date");
-                }
-                log.log(Level.INFO, "Has too many commas: " + line);
-                int startIndex = 0;
-                int iCount = 0;
-
-                while ((startIndex = line.indexOf(",", startIndex + 1)) != -1) {
-                    if (iCount == 4) {
-                        String firstPart = line.substring(0, startIndex);
-                        String secondPart = line.substring(startIndex + 1,
-                                line.length());
-                        line = firstPart + secondPart;
-                        break;
-                    }
-                    iCount++;
-                }
-                parts = line.split(",");
-            }
-            QuestionAnswerStore qas = new QuestionAnswerStore();
-
-            Date collDate = collectionDate;
-            try {
-                collDate = new Date(new Long(parts[7].trim()));
-            } catch (Exception e) {
-                logger.log(Level.WARNING,
-                        "Could not construct collection date", e);
-                deviceFile
-                        .addProcessingMessage("Could not construct collection date from: "
-                                + parts[7]);
-                hasErrors = true;
-            }
-
-            if (parts.length > 5) {
-                if (si.getSubmitterName() == null
-                        || si.getSubmitterName().trim().length() == 0) {
-                    si.setSubmitterName(parts[5].trim());
-                }
-            }
-            if (parts.length >= 9) {
-                if (si.getDeviceIdentifier() == null) {
-                    si.setDeviceIdentifier(parts[8].trim());
-                }
-            }
-
-            // Time tracking new column - 13
-            if (parts.length >= 13) {
-                try {
-                    final Long time = Long.valueOf(parts[12].trim());
-                    si.setSurveyalTime(time);
-                } catch (NumberFormatException e) {
-                    logger.log(Level.WARNING, "Surveyal time column is not a number", e);
-                }
-            }
-
-            if (parts.length >= 14) {
-                SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-                si.setSurveyedLocaleIdentifier(parts[13]);
-
-                // if we find an existing surveyedLocale with the same identifier,
-                // set the surveyedLocaleId field on the instance
-                // If we don't find it, it will be handled in SurveyalRestServlet
-                SurveyedLocale sl = slDao.getByIdentifier(parts[13]);
-                if (sl != null) {
-                    si.setSurveyedLocaleId(sl.getKey().getId());
-
-                    // if one of the answer types is META_NAME, interpret this as the
-                    // displayName information of the surveyedLocale
-                    if (parts[3].equals("META_NAME")) {
-                        sl.setDisplayName(parts[4].trim());
-                    }
-
-                    // if one of the answer types is META_GEO, interpret this as the
-                    // geolocation information of the surveyedLocale
-                    if (parts[3].equals("META_GEO")) {
-                        String[] tokens = parts[4].trim().split("\\|");
-                        if (tokens.length >= 2) {
-                            try {
-                                sl.setLatitude(Double.parseDouble(tokens[0]));
-                                sl.setLongitude(Double.parseDouble(tokens[1]));
-                            } catch (NumberFormatException nfe) {
-                                log.log(Level.SEVERE,
-                                        "Could not parse lat/lon from META_GEO: " + parts[4]);
-                            }
-                        }
-                    }
-                    slDao.save(sl);
-                }
-            }
-
-            // if one of the answer types is META_GEO, interpret this as the
-            // geolocation information of the surveyedLocale
-            if (parts[3].equals("META_GEO")) {
-                si.setLocaleGeoLocation(parts[4].trim());
-            }
-
-            // if one of the answer types is META_NAME, interpret this as the
-            // displayName information of the surveyedLocale
-            if (parts[3].equals("META_NAME")) {
-                si.setSurveyedLocaleDisplayName(parts[4].trim());
-            }
-
-            // if this is the first time round, save the surveyInstance or use an existing one
-            if (si.getSurveyId() == null) {
-                try {
-                    if (collDate != null) {
-                        si.setCollectionDate(collDate);
-                    }
-                    si.setSurveyId(Long.parseLong(parts[0].trim()));
-                    if (parts.length >= 12) {
-                        String uuid = parts[11];
-                        if (uuid != null && uuid.trim().length() > 0) {
-                            SurveyInstance existingSi = findByUUID(uuid);
-                            if (existingSi != null) {
-                                // SurveyInstance found, reuse it to process missing data
-                                surveyInstanceIsNew = false;
-                                si = existingSi;
-                                si.setDeviceFile(deviceFile);
-                            } else {
-                                si.setUuid(uuid);
-                            }
-                        }
-                    }
-                    si = save(si);
-
-                } catch (NumberFormatException e) {
-                    logger.log(Level.SEVERE, "Could not parse survey id: "
-                            + parts[0], e);
-                    deviceFile
-                            .addProcessingMessage("Could not parse survey id: "
-                                    + parts[0] + e.getMessage());
-                    hasErrors = true;
-                } catch (DatastoreTimeoutException te) {
-                    sleep();
-                    si = save(si);
-                }
-            }
-
-            if (parts[3].equals("META_GEO") || parts[3].equals("META_NAME")) {
-                continue; // skip processing
-            }
-
-            // now we have instance id check which responses already present
-            final String questionIdStr = parts[2].trim();
-            final Long questionId = Long.valueOf(questionIdStr);
-
-            QuestionDao qDao = new QuestionDao();
-            if (qDao.getByKey(questionId) == null) {
-                continue; // skip processing already logged in getByKey method
-            }
-            final Long surveyInstanceId = si.getKey().getId();
-
-            if (listExistingResponses) {
-                qasDao.listBySurveyInstance(surveyInstanceId);
-                listExistingResponses = false;
-            }
-
-            if (qasDao.isCached(questionId, surveyInstanceId)) {
-                log.log(Level.INFO,
-                        "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
-                                + surveyInstanceId + ", " + si.getSurveyId() + ", "
-                                + questionIdStr);
-                continue; // skip processing
-            }
-
-            qas.setSurveyId(si.getSurveyId());
-            qas.setSurveyInstanceId(surveyInstanceId);
-            qas.setArbitratyNumber(new Long(parts[1].trim()));
-            qas.setQuestionID(questionIdStr);
-            qas.setType(parts[3].trim());
-            qas.setCollectionDate(collDate);
-
-            if (parts.length > 4) {
-                qas.setValue(parts[4].trim());
-            }
-            if (parts.length >= 10) {
-                qas.setScoredValue(parts[9].trim());
-            }
-            if (parts.length >= 11) {
-                qas.setStrength(parts[10].trim());
-            }
-            newResponses.add(qas);
-        }
-
-        si.setQuestionAnswersStore(newResponses);
-        processResponses(si, surveyInstanceIsNew, hasErrors);
-        return si;
-    }
-    
-    private void processResponses(SurveyInstance si, boolean isNew, boolean hasErrors) {
-        final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        final DeviceFiles deviceFile = si.getDeviceFile();
         final DeviceDAO deviceDao = new DeviceDAO();
-        
-        // batch save all responses
-        try {
-            qasDao.save(si.getQuestionAnswersStore());
-        } catch (DatastoreTimeoutException te) {
-            sleep();
-            qasDao.save(si.getQuestionAnswersStore());
+        qasDao.listBySurveyInstance(surveyInstanceId);// Cache existing qas????
+            
+        // If we find an existing surveyedLocale with the same identifier,
+        // set the surveyedLocaleId field on the instance
+        // If we don't find it, it will be handled in SurveyalRestServlet
+        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+        SurveyedLocale sl = null;
+        if (si.getSurveyedLocaleIdentifier() != null) {
+            sl = slDao.getByIdentifier(si.getSurveyedLocaleIdentifier());
         }
-        deviceFile.setSurveyInstanceId(si.getKey().getId());
-        StatusCode sc = hasErrors ? StatusCode.PROCESSED_WITH_ERRORS 
-                : StatusCode.PROCESSED_NO_ERRORS;
-        si.getDeviceFile().setProcessedStatus(sc);
         
-        si.updateSummaryCounts(true);
-        
+        final List<QuestionAnswerStore> responses = new ArrayList<>();
         for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
-            if (Question.Type.GEO.toString().equals(qas.getType()) && isNew) {
+            qas.setSurveyInstanceId(surveyInstanceId);
+            if (qasDao.isCached(Long.valueOf(qas.getQuestionID()), surveyInstanceId)) {
+                log.log(Level.INFO,
+                        "Skipping QAS already present in datasore [SurveyInstance, Survey, Question]: "
+                                + surveyInstanceId + ", " + si.getSurveyId() + ", " + qas.getQuestionID());
+                continue; // Already stored
+            }
+            
+            // If one of the answer types is META_GEO or META_NAME, set up
+            // the surveyedLocale corresponding attribute, and skip QAS
+            if ("META_NAME".equals(qas.getType())) {
+                si.setSurveyedLocaleDisplayName(qas.getValue());
+                if (sl != null) {
+                    sl.setDisplayName(qas.getValue());
+                }
+                continue;
+            } else if ("META_GEO".equals(qas.getType())) {
+                si.setLocaleGeoLocation(qas.getValue());
+                if (sl != null) {
+                    String[] tokens = qas.getValue().split("\\|", -1);
+                    if (tokens.length >= 2) {
+                        try {
+                            sl.setLatitude(Double.parseDouble(tokens[0]));
+                            sl.setLongitude(Double.parseDouble(tokens[1]));
+                        } catch (NumberFormatException nfe) {
+                            log.log(Level.SEVERE,
+                                    "Could not parse lat/lon from META_GEO: " + qas.getValue());
+                        }
+                    }
+                }
+                continue;
+            } else if (Question.Type.GEO.toString().equals(qas.getType()) && isNew) {
                 long geoQasId = qas.getKey().getId();
                 Queue summQueue = QueueFactory.getQueue("dataSummarization");
                 summQueue.add(TaskOptions.Builder
                         .withUrl("/app_worker/dataprocessor")
-                        .param(
-                                DataProcessorRequest.ACTION_PARAM,
-                                DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
+                        .param(DataProcessorRequest.ACTION_PARAM,
+                               DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
                         .param("surveyInstanceId", si.getKey().getId() + "")
                         .param("qasId", geoQasId + "")
                         .param("delta", 1 + ""));
             } else if ("IMAGE".equals(qas.getType())) {
-                // the device send values as IMAGE and not PHOTO
+                // The device send values as IMAGE and not PHOTO.
+                // Enqueue imagecheck task, whereby the presence
+                // of an image in S3 will be checked.
                 String filename = qas.getValue().substring(
                         qas.getValue().lastIndexOf("/") + 1);
 
@@ -403,7 +150,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 if (d == null && deviceFile.getPhoneNumber() != null) {
                     d = deviceDao.get(deviceFile.getPhoneNumber());
                 }
-
                 String deviceId = d == null ? "null" : String.valueOf(d
                         .getKey().getId());
 
@@ -416,11 +162,24 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                         .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
                 queue.add(to);
             }
+            responses.add(qas);
         }
-    }
-
-    public SurveyInstanceDAO() {
-        super(SurveyInstance.class);
+        si = save(si);
+        if (sl != null) {
+            slDao.save(sl);
+        }
+        
+        // batch save all responses
+        try {
+            qasDao.save(responses);
+        } catch (DatastoreTimeoutException te) {
+            sleep();
+            qasDao.save(responses);
+        }
+        deviceFile.setSurveyInstanceId(si.getKey().getId());
+        si.updateSummaryCounts(true);
+        
+        return si;
     }
 
     @SuppressWarnings("unchecked")

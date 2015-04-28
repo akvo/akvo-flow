@@ -42,9 +42,11 @@ import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
 import org.waterforpeople.mapping.domain.ProcessingAction;
+import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.Status.StatusCode;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 import org.waterforpeople.mapping.domain.response.FormInstance;
+import org.waterforpeople.mapping.domain.response.Response;
 import org.waterforpeople.mapping.helper.AccessPointHelper;
 import org.waterforpeople.mapping.helper.SurveyEventHelper;
 
@@ -168,74 +170,140 @@ public class TaskServlet extends AbstractRestApiServlet {
         deviceFile.setImei(imei);
         deviceFile.setChecksum(checksum);
         deviceFile.setUploadDateTime(new Date());
-        Date collectionDate = new Date();
         
-        List<SurveyInstance> surveyInstances = new ArrayList<>();
+        final List<SurveyInstance> surveyInstances = new ArrayList<>();
         if (files.containsKey(JSON_FILENAME)) {
-            // Process JSON-formatted response
-            surveyInstances = processJSONData(files.get(JSON_FILENAME), deviceFile);
+            // Process JSON-formatted response.
+            SurveyInstance instance = fromJSON(files.get(JSON_FILENAME));
+            if (instance != null) {
+                surveyInstances.add(instance);
+            }
         } else if (files.containsKey(TSV_FILENAME)) {
-            // Process TSV-formatted response
-            surveyInstances = processTSVData(files.get(TSV_FILENAME), collectionDate, deviceFile);
-        } else {
-            // No data.
+            // Process TSV-formatted response (can contain multiple instances).
+            Map<String, List<String>> data = splitSurveyInstances(files.get(TSV_FILENAME));
+            for (String id : data.keySet()) {
+                SurveyInstance instance = fromTSV(data.get(id));
+                if (instance != null) {
+                    surveyInstances.add(instance);
+                }
+            }
+        }
+        
+        if (surveyInstances.isEmpty()) {
+            // No data
             String message = "Error empty file: " + deviceFile.getURI();
             log.log(Level.SEVERE, message);
             deviceFile.setProcessedStatus(StatusCode.PROCESSED_WITH_ERRORS);
             deviceFile.addProcessingMessage(message);
             sendMail(fileProcessTaskRequest, message);
-        }
-        
-        for (SurveyInstance si : surveyInstances) {
-            // fire a survey event
-            SurveyEventHelper.fireEvent(SurveyEventHelper.SUBMISSION_EVENT,
-                    si.getSurveyId(), si.getKey().getId());
-        }
-        
-        StatusCode status = StatusCode.PROCESSED_NO_ERRORS;
-        if (deviceFile.getProcessedStatus() != null) {
-            status = deviceFile.getProcessedStatus();
-        }
-        deviceFile.setProcessedStatus(status);
-        if (dfList != null) {
-            for (DeviceFiles dfitem : dfList) {
-                dfitem.setProcessedStatus(status);
+        } else {
+            deviceFile.setProcessedStatus(StatusCode.PROCESSED_NO_ERRORS);
+            for (SurveyInstance si : surveyInstances) {
+                si = siDao.save(si, deviceFile);
+                // Fire a survey event
+                SurveyEventHelper.fireEvent(SurveyEventHelper.SUBMISSION_EVENT,
+                        si.getSurveyId(), si.getKey().getId());
             }
         }
-
+        
+        dfDao.save(deviceFile);
+        if (dfList != null) {
+            for (DeviceFiles dfitem : dfList) {
+                dfitem.setProcessedStatus(deviceFile.getProcessedStatus());
+            }
+        }
         dfDao.save(dfList);
 
         return surveyInstances;
     }
     
-    private List<SurveyInstance> processJSONData(String content, DeviceFiles deviceFile) {
-        List<SurveyInstance> instances = new ArrayList<>();
-        
+    private SurveyInstance fromJSON(String data) {
+        FormInstance formInstance = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
-            FormInstance fi = mapper.readValue(content, FormInstance.class);
-            SurveyInstance inst = siDao.save(fi, deviceFile);
-            instances.add(inst);
+            formInstance = mapper.readValue(data, FormInstance.class);
         } catch (IOException e) {
             log.log(Level.SEVERE, "Error mapping JSON data: " + e.getMessage(), e);
+            return null;
         }
-        return instances;
+        
+        SurveyInstance si = new SurveyInstance();
+        si.setUserID(1L);
+        si.setCollectionDate(new Date(formInstance.getSubmissionDate()));
+        si.setSubmitterName(formInstance.getUsername());
+        si.setDeviceIdentifier(formInstance.getDeviceId());
+        si.setSurveyalTime(formInstance.getDuration());
+        si.setSurveyedLocaleIdentifier(formInstance.getDataPointId());
+        si.setSurveyId(formInstance.getFormId());
+        si.setUuid(formInstance.getUUID());
+        si.setQuestionAnswersStore(new ArrayList<QuestionAnswerStore>());
+        
+        // Process form responses
+        for (Response response : formInstance.getResponses()) {
+            QuestionAnswerStore qas = new QuestionAnswerStore();
+            qas.setSurveyId(si.getSurveyId());
+            qas.setQuestionID(response.getQuestionId());
+            qas.setCollectionDate(si.getCollectionDate());
+            qas.setType(response.getAnswerType());
+            qas.setValue(response.getValue());
+            
+            si.getQuestionAnswersStore().add(qas);
+        }
+        
+        return si;
     }
     
-    private List<SurveyInstance> processTSVData(String content, Date collectionDate,
-            DeviceFiles deviceFile) {
-        Map<String, List<String>> data = splitSurveyInstances(content);
-        List<SurveyInstance> instances = new ArrayList<>();
+    private SurveyInstance fromTSV(List<String> data) {
+        final SurveyInstance si = new SurveyInstance();
+        si.setUserID(1L);
+        si.setQuestionAnswersStore(new ArrayList<QuestionAnswerStore>());
         
-        final Long userID = 1L;
-        for (String id : data.keySet()) {
-            SurveyInstance inst = siDao.save(collectionDate,
-                    deviceFile, userID, data.get(id));
-            if (inst != null) {
-                instances.add(inst);
+        boolean first = true;
+        for (String line : data) {
+            final String[] parts = line.split("\t");
+            if (parts.length < 12) {
+                return null;
             }
+            
+            if (first) {
+                try {
+                    si.setSurveyId(Long.parseLong(parts[0].trim()));
+                    si.setCollectionDate(new Date(new Long(parts[7].trim())));
+                } catch (NumberFormatException e) {
+                    log.log(Level.SEVERE, "Could not parse line: " + line, e);
+                    return null;
+                }
+                si.setSubmitterName(parts[5].trim());
+                si.setDeviceIdentifier(parts[8].trim());
+                si.setUuid(parts[11].trim());
+                
+                // Time and LocaleID. Old app versions might not include these columns.
+                if (parts.length > 12 && si.getSurveyalTime() == null) {
+                    try {
+                        si.setSurveyalTime(Long.valueOf(parts[12].trim()));
+                    } catch (NumberFormatException e) {
+                        log.log(Level.WARNING, "Surveyal time column is not a number", e);
+                    }
+                }
+                if (parts.length > 13 && si.getSurveyedLocaleIdentifier() == null) {
+                    si.setSurveyedLocaleIdentifier(parts[13].trim());
+                }
+                
+                first = false;
+            }
+
+            QuestionAnswerStore qas = new QuestionAnswerStore();
+            qas.setSurveyId(si.getSurveyId());
+            qas.setQuestionID(parts[2].trim());
+            qas.setType(parts[3].trim());
+            qas.setCollectionDate(si.getCollectionDate());
+            qas.setValue(parts[4].trim());
+            qas.setScoredValue(parts[9].trim());
+            qas.setStrength(parts[10].trim());
+            si.getQuestionAnswersStore().add(qas);
         }
-        return instances;
+
+        return si;
     }
     
     public static Map<String, String> extract(ZipInputStream deviceZipFileInputStream) 
