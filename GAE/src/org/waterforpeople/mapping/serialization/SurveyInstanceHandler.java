@@ -31,6 +31,21 @@ import org.waterforpeople.mapping.domain.response.Response;
 public class SurveyInstanceHandler {
     private static final Logger log = Logger.getLogger(SurveyInstanceHandler.class.getName());
     
+    /**
+     * TSV token indexes. For historical/legacy reasons,
+     * many indexes are empty or skipped.
+     */
+    private static final int SURVEY_ID = 0;
+    private static final int QUESTION_ID = 2;
+    private static final int ANSWER_TYPE = 3;
+    private static final int ANSWER_VALUE = 4;
+    private static final int USERNAME = 5;
+    private static final int COLLECTION_DATE = 7;
+    private static final int DEVICE_ID = 8;
+    private static final int UUID = 11;
+    private static final int DURATION = 12;
+    private static final int DATAPOINT_ID = 13;
+    
     public SurveyInstance fromJSON(String data) {
         FormInstance formInstance = null;
         ObjectMapper mapper = new ObjectMapper();
@@ -75,32 +90,32 @@ public class SurveyInstanceHandler {
         boolean first = true;
         for (String line : data) {
             final String[] parts = line.split("\t");
-            if (parts.length < 12) {
+            if (parts.length < UUID + 1) {
                 return null;
             }
             
             if (first) {
                 try {
-                    si.setSurveyId(Long.parseLong(parts[0].trim()));
-                    si.setCollectionDate(new Date(new Long(parts[7].trim())));
+                    si.setSurveyId(Long.parseLong(parts[SURVEY_ID].trim()));
+                    si.setCollectionDate(new Date(new Long(parts[COLLECTION_DATE].trim())));
                 } catch (NumberFormatException e) {
                     log.log(Level.SEVERE, "Could not parse line: " + line, e);
                     return null;
                 }
-                si.setSubmitterName(parts[5].trim());
-                si.setDeviceIdentifier(parts[8].trim());
-                si.setUuid(parts[11].trim());
+                si.setSubmitterName(parts[USERNAME].trim());
+                si.setDeviceIdentifier(parts[DEVICE_ID].trim());
+                si.setUuid(parts[UUID].trim());
                 
                 // Time and LocaleID. Old app versions might not include these columns.
-                if (parts.length > 12 && si.getSurveyalTime() == null) {
+                if (parts.length > DURATION) {
                     try {
-                        si.setSurveyalTime(Long.valueOf(parts[12].trim()));
+                        si.setSurveyalTime(Long.valueOf(parts[DURATION].trim()));
                     } catch (NumberFormatException e) {
                         log.log(Level.WARNING, "Surveyal time column is not a number", e);
                     }
                 }
-                if (parts.length > 13 && si.getSurveyedLocaleIdentifier() == null) {
-                    si.setSurveyedLocaleIdentifier(parts[13].trim());
+                if (parts.length > DATAPOINT_ID) {
+                    si.setSurveyedLocaleIdentifier(parts[DATAPOINT_ID].trim());
                 }
                 
                 first = false;
@@ -108,12 +123,10 @@ public class SurveyInstanceHandler {
 
             QuestionAnswerStore qas = new QuestionAnswerStore();
             qas.setSurveyId(si.getSurveyId());
-            qas.setQuestionID(parts[2].trim());
-            qas.setType(parts[3].trim());
+            qas.setQuestionID(parts[QUESTION_ID].trim());
+            qas.setType(parts[ANSWER_TYPE].trim());
             qas.setCollectionDate(si.getCollectionDate());
-            qas.setValue(parts[4].trim());
-            qas.setScoredValue(parts[9].trim());
-            qas.setStrength(parts[10].trim());
+            qas.setValue(parts[ANSWER_VALUE].trim());
             si.getQuestionAnswersStore().add(qas);
         }
 
