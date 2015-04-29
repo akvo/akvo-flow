@@ -39,7 +39,6 @@ public class DataProcessorRequest extends RestRequest {
     public static final String COPY_SURVEY = "copySurvey";
     public static final String COPY_QUESTION_GROUP = "copyQuestionGroup";
     public static final String FIX_OPTIONS2VALUES_ACTION = "fixOptions2Values";
-    public static final String FIX_NULL_SUBMITTER_ACTION = "fixNullSubmitter";
     public static final String FIX_DUPLICATE_OTHER_TEXT_ACTION = "fixDuplicateOtherText";
     public static final String FIX_QUESTIONGROUP_DEPENDENCIES_ACTION = "fixQuestionGroupDepencencies";
     public static final String DELETE_DUPLICATE_QAS = "deleteDuplicatedQAS";
