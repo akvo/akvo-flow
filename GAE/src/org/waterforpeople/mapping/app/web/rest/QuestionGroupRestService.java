@@ -279,11 +279,10 @@ public class QuestionGroupRestService {
         if (questionGroupDto.getSourceId() != null) {
             // copy question group
             final QuestionGroupDao qgDao = new QuestionGroupDao();
-            final Map<Long, Long> qMap = new HashMap<Long, Long>();
 
             QuestionGroup sourceQuestionGroup = qgDao.getByKey(questionGroupDto.getSourceId());
             questionGroup = SurveyUtils.copyQuestionGroup(sourceQuestionGroup,
-                    sourceQuestionGroup.getSurveyId(), qMap);
+                    sourceQuestionGroup.getSurveyId(), true);
             questionGroup.setOrder(questionGroupDto.getOrder());
             questionGroup.setStatus(QuestionGroup.Status.COPYING);
         } else {

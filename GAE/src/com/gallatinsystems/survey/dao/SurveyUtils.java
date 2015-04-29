@@ -20,7 +20,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -96,7 +95,7 @@ public class SurveyUtils {
     }
 
     public static QuestionGroup copyQuestionGroup(QuestionGroup source,
-            Long newSurveyId, Map<Long, Long> qMap) {
+            Long newSurveyId, boolean isCopyingSingleQuestionGroup) {
 
         final QuestionGroupDao qgDao = new QuestionGroupDao();
         final QuestionGroup tmp = new QuestionGroup();
@@ -122,7 +121,9 @@ public class SurveyUtils {
                 .param(DataProcessorRequest.QUESTION_GROUP_ID_PARAM,
                         String.valueOf(newQuestionGroup.getKey().getId()))
                 .param(DataProcessorRequest.SOURCE_PARAM,
-                        String.valueOf(source.getKey().getId()));
+                        String.valueOf(source.getKey().getId()))
+                .param(DataProcessorRequest.IS_COPYING_SINGLE_QUESTION_GROUP_PARAM,
+                        String.valueOf(isCopyingSingleQuestionGroup));
 
         queue.add(options);
 

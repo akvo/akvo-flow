@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 Stichting Akvo (Akvo Foundation)
+ *  Copyright (C) 2012-2015 Stichting Akvo (Akvo Foundation)
  *
  *  This file is part of Akvo FLOW.
  *
@@ -186,7 +186,7 @@ public class SurveyGroupRestService {
 
                     String name = s.getName();
                     if (name != null) {
-                        String trimmedName = name.trim();
+                        String trimmedName = name.replaceAll(",", " ").trim();
                         s.setName(trimmedName);
                         s.setCode(trimmedName);
                         s.setPath(SurveyUtils.fixPath(s.getPath(), trimmedName));

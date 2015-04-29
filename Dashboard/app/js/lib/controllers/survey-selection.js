@@ -27,8 +27,11 @@ FLOW.SurveySelection = Ember.ObjectController.extend({
         return sg.get('parentId') === parentId;
       }
     }).sort(function (survey1, survey2) {
-      return survey1.get('name').toLocaleLowerCase().localeCompare(
-        survey2.get('name').toLocaleLowerCase());
+      var s1 = survey1.get('name') || "";
+      var s2 = survey2.get('name') || "";
+
+      return s1.toLocaleLowerCase().localeCompare(
+        s2.toLocaleLowerCase());
     });
   },
 
