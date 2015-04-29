@@ -42,24 +42,22 @@ public class DataSerializationTest {
 
     @Test
     public void JSONTest() {
-        SurveyInstanceHandler handler = new SurveyInstanceHandler();
-        SurveyInstance si = handler.fromJSON(JSON_SURVEY_INSTANCE);
+        SurveyInstance si = SurveyInstanceHandler.fromJSON(JSON_SURVEY_INSTANCE);
         testSurveyInstance(si, true, true);
     }
 
     @Test
     public void TSVTest() {
-        SurveyInstanceHandler handler = new SurveyInstanceHandler();
         // 12 token TSV
-        SurveyInstance si = handler.fromTSV(new ArrayList<>(Arrays.asList(TSV_12_SURVEY_INSTANCE)));
+        SurveyInstance si = SurveyInstanceHandler.fromTSV(new ArrayList<>(Arrays.asList(TSV_12_SURVEY_INSTANCE)));
         testSurveyInstance(si, false, false);
         
         // 13 token TSV
-        si = handler.fromTSV(new ArrayList<>(Arrays.asList(TSV_13_SURVEY_INSTANCE)));
+        si = SurveyInstanceHandler.fromTSV(new ArrayList<>(Arrays.asList(TSV_13_SURVEY_INSTANCE)));
         testSurveyInstance(si, true, false);
         
         // 14 token TSV
-        si = handler.fromTSV(new ArrayList<>(Arrays.asList(TSV_14_SURVEY_INSTANCE)));
+        si = SurveyInstanceHandler.fromTSV(new ArrayList<>(Arrays.asList(TSV_14_SURVEY_INSTANCE)));
         testSurveyInstance(si, true, true);
     }
 

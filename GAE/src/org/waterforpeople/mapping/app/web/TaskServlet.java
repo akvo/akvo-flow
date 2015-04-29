@@ -169,10 +169,9 @@ public class TaskServlet extends AbstractRestApiServlet {
         deviceFile.setUploadDateTime(new Date());
         
         final List<SurveyInstance> surveyInstances = new ArrayList<>();
-        SurveyInstanceHandler handler = new SurveyInstanceHandler();
         if (files.containsKey(JSON_FILENAME)) {
             // Process JSON-formatted response.
-            SurveyInstance instance = handler.fromJSON(files.get(JSON_FILENAME));
+            SurveyInstance instance = SurveyInstanceHandler.fromJSON(files.get(JSON_FILENAME));
             if (instance != null) {
                 surveyInstances.add(instance);
             }
@@ -180,7 +179,7 @@ public class TaskServlet extends AbstractRestApiServlet {
             // Process TSV-formatted response (can contain multiple instances).
             Map<String, List<String>> data = splitSurveyInstances(files.get(TSV_FILENAME));
             for (String id : data.keySet()) {
-                SurveyInstance instance = handler.fromTSV(data.get(id));
+                SurveyInstance instance = SurveyInstanceHandler.fromTSV(data.get(id));
                 if (instance != null) {
                     surveyInstances.add(instance);
                 }

@@ -46,7 +46,7 @@ public class SurveyInstanceHandler {
     private static final int DURATION = 12;
     private static final int DATAPOINT_ID = 13;
     
-    public SurveyInstance fromJSON(String data) {
+    public static SurveyInstance fromJSON(String data) {
         FormInstance formInstance = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -82,7 +82,7 @@ public class SurveyInstanceHandler {
         return si;
     }
     
-    public SurveyInstance fromTSV(List<String> data) {
+    public static SurveyInstance fromTSV(List<String> data) {
         final SurveyInstance si = new SurveyInstance();
         si.setUserID(1L);
         si.setQuestionAnswersStore(new ArrayList<QuestionAnswerStore>());
