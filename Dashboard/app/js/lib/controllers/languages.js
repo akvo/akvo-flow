@@ -615,6 +615,10 @@ FLOW.isoLanguagesDict = {
     "name": "Telugu",
     "nativeName": "తెలుగు"
   },
+  "tet": {
+    "name": "Tetum",
+    "nativeName": "Tetum"
+  },
   "tg": {
     "name": "Tajik",
     "nativeName": "тоҷикӣ, toğikī, تاجیکی‎"
