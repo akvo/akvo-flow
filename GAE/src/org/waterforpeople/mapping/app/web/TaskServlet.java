@@ -19,6 +19,8 @@ package org.waterforpeople.mapping.app.web;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -379,6 +381,9 @@ public class TaskServlet extends AbstractRestApiServlet {
             } catch (Exception e) {
                 String message = "Failed to process zip file:" + req.getFileName() + " : "
                         + e.getMessage();
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                message += "\n" + sw.toString();
                 log.severe(message);
                 sendMail(req, message);
                 surveyInstances = new ArrayList<SurveyInstance>();
