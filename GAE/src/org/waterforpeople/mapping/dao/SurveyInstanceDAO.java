@@ -19,8 +19,10 @@ package org.waterforpeople.mapping.dao;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.jdo.PersistenceManager;
@@ -93,6 +95,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             sl = slDao.getByIdentifier(si.getSurveyedLocaleIdentifier());
         }
         
+        final Set<QuestionAnswerStore> images = new HashSet<>();
         final List<QuestionAnswerStore> responses = new ArrayList<>();
         for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
             qas.setSurveyInstanceId(surveyInstanceId);
@@ -138,29 +141,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                         .param("delta", 1 + ""));
             } else if ("IMAGE".equals(qas.getType())) {
                 // The device send values as IMAGE and not PHOTO.
-                // Enqueue imagecheck task, whereby the presence
-                // of an image in S3 will be checked.
-                String filename = qas.getValue().substring(
-                        qas.getValue().lastIndexOf("/") + 1);
-
-                Device d = null;
-                if (deviceFile.getImei() != null) {
-                    d = deviceDao.getByImei(deviceFile.getImei());
-                }
-                if (d == null && deviceFile.getPhoneNumber() != null) {
-                    d = deviceDao.get(deviceFile.getPhoneNumber());
-                }
-                String deviceId = d == null ? "null" : String.valueOf(d
-                        .getKey().getId());
-
-                Queue queue = QueueFactory.getQueue("background-processing");
-                TaskOptions to = TaskOptions.Builder
-                        .withUrl("/app_worker/imagecheck")
-                        .param(ImageCheckRequest.FILENAME_PARAM, filename)
-                        .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
-                        .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
-                        .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
-                queue.add(to);
+                images.add(qas);
             }
             responses.add(qas);
         }
@@ -176,6 +157,33 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             sleep();
             qasDao.save(responses);
         }
+        
+        // Now that QAS IDs are set, enqueue imagecheck tasks,
+        // whereby the presence of an image in S3 will be checked.
+        for (QuestionAnswerStore qas : images) {
+            String filename = qas.getValue().substring(
+                    qas.getValue().lastIndexOf("/") + 1);
+
+            Device d = null;
+            if (deviceFile.getImei() != null) {
+                d = deviceDao.getByImei(deviceFile.getImei());
+            }
+            if (d == null && deviceFile.getPhoneNumber() != null) {
+                d = deviceDao.get(deviceFile.getPhoneNumber());
+            }
+            String deviceId = d == null ? "null" : String.valueOf(d
+                    .getKey().getId());
+
+            Queue queue = QueueFactory.getQueue("background-processing");
+            TaskOptions to = TaskOptions.Builder
+                    .withUrl("/app_worker/imagecheck")
+                    .param(ImageCheckRequest.FILENAME_PARAM, filename)
+                    .param(ImageCheckRequest.DEVICE_ID_PARAM, deviceId)
+                    .param(ImageCheckRequest.QAS_ID_PARAM, String.valueOf(qas.getKey().getId()))
+                    .param(ImageCheckRequest.ATTEMPT_PARAM, "1");
+            queue.add(to);
+        }
+        
         deviceFile.setSurveyInstanceId(si.getKey().getId());
         si.updateSummaryCounts(true);
         
