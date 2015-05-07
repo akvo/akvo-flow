@@ -366,7 +366,7 @@ public class SurveyInstance extends BaseDomain {
             final Long questionId = Long.parseLong(response.getQuestionID());
 
             Question question = qDao.getByKey(questionId);
-            if (!question.canBeCharted()) {
+            if (question == null || !question.canBeCharted()) {
                 continue;
             }
 
