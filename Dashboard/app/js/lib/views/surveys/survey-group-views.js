@@ -30,14 +30,15 @@ FLOW.Project = FLOW.View.extend({
         this.set('currentRegistrationForm', value);
     }
 
-    if(!this.get('currentRegistrationForm')) {
-        var registrationFormId = FLOW.projectControl.currentProject.get('newLocaleSurveyId');
-        var registrationForm = FLOW.surveyControl.content.filter(function(item){
-            return item.get('keyId') === registrationFormId;
-    })[0];
+    var registrationForm = this.get('currentRegistrationForm');
+    if(!registrationForm) {
+        var formId = FLOW.projectControl.currentProject.get('newLocaleSurveyId');
+        registrationForm = FLOW.surveyControl.content.filter(function(item){
+                return item.get('keyId') === formId;
+        })[0];
         this.set('currentRegistrationForm', registrationForm);
     }
-    return this.get('currentRegistrationForm');
+    return registrationForm;
   }.property('FLOW.projectControl.currentProject'),
 
   project: function() {
