@@ -21,7 +21,24 @@ FLOW.Project = FLOW.View.extend({
   showAdvancedSettings: false,
   selectedLanguage: null,
   monitoringGroupEnabled: false,
-  selectedRegistrationForm: null,
+  currentRegistrationForm: null,
+
+  /* computer property for setting / getting the value of the current
+  registration form */
+  selectedRegistrationForm: function(key, value, previousValue){
+    if(arguments.length > 1) {
+        this.set('currentRegistrationForm', value);
+    }
+
+    if(!this.get('currentRegistrationForm')) {
+        var registrationFormId = FLOW.projectControl.currentProject.get('newLocaleSurveyId');
+        var registrationForm = FLOW.surveyControl.content.filter(function(item){
+            return item.get('keyId') === registrationFormId;
+    })[0];
+        this.set('currentRegistrationForm', registrationForm);
+    }
+    return this.get('currentRegistrationForm');
+  }.property('FLOW.projectControl.currentProject'),
 
   project: function() {
     return FLOW.projectControl.get('currentProject');
@@ -55,9 +72,9 @@ FLOW.Project = FLOW.View.extend({
   }.property("FLOW.projectControl.formCount"),
 
   updateSelectedRegistrationForm: function() {
-    if (!this.get('selectedRegistrationForm')) return;
-    FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.selectedRegistrationForm.get('keyId'));
-  }.observes('selectedRegistrationForm'),
+    if (!this.get('currentRegistrationForm')) return;
+    FLOW.projectControl.currentProject.set('newLocaleSurveyId', this.currentRegistrationForm.get('keyId'));
+  }.observes('currentRegistrationForm'),
 
   isPublished: function() {
     var form = FLOW.selectedControl.get('selectedSurvey');
