@@ -26,13 +26,15 @@ FLOW.Project = FLOW.View.extend({
   /* computer property for setting / getting the value of the current
   registration form */
   selectedRegistrationForm: function(key, value, previousValue){
+    var registrationForm, formId;
+
     if(arguments.length > 1) {
         this.set('currentRegistrationForm', value);
     }
 
-    var registrationForm = this.get('currentRegistrationForm');
+    registrationForm = this.get('currentRegistrationForm');
     if(!registrationForm) {
-        var formId = FLOW.projectControl.currentProject.get('newLocaleSurveyId');
+        formId = FLOW.projectControl.currentProject.get('newLocaleSurveyId');
         registrationForm = FLOW.surveyControl.content.filter(function(item){
                 return item.get('keyId') === formId;
         })[0];
