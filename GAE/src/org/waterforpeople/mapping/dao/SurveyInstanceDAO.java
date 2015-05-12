@@ -96,6 +96,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         }
         
         final Set<QuestionAnswerStore> images = new HashSet<>();
+        final Set<QuestionAnswerStore> locations = new HashSet<>();
         final List<QuestionAnswerStore> responses = new ArrayList<>();
         for (QuestionAnswerStore qas : si.getQuestionAnswersStore()) {
             qas.setSurveyInstanceId(surveyInstanceId);
@@ -130,15 +131,7 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 }
                 continue;
             } else if (Question.Type.GEO.toString().equals(qas.getType()) && isNew) {
-                long geoQasId = qas.getKey().getId();
-                Queue summQueue = QueueFactory.getQueue("dataSummarization");
-                summQueue.add(TaskOptions.Builder
-                        .withUrl("/app_worker/dataprocessor")
-                        .param(DataProcessorRequest.ACTION_PARAM,
-                               DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
-                        .param("surveyInstanceId", si.getKey().getId() + "")
-                        .param("qasId", geoQasId + "")
-                        .param("delta", 1 + ""));
+                locations.add(qas);
             } else if ("IMAGE".equals(qas.getType())) {
                 // The device send values as IMAGE and not PHOTO.
                 images.add(qas);
@@ -156,6 +149,19 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         } catch (DatastoreTimeoutException te) {
             sleep();
             qasDao.save(responses);
+        }
+        
+        // Recompute data summarization for new locations.
+        for (QuestionAnswerStore qas : locations) {
+            long geoQasId = qas.getKey().getId();
+            Queue summQueue = QueueFactory.getQueue("dataSummarization");
+            summQueue.add(TaskOptions.Builder
+                    .withUrl("/app_worker/dataprocessor")
+                    .param(DataProcessorRequest.ACTION_PARAM,
+                           DataProcessorRequest.SURVEY_INSTANCE_SUMMARIZER)
+                    .param("surveyInstanceId", si.getKey().getId() + "")
+                    .param("qasId", geoQasId + "")
+                    .param("delta", 1 + ""));
         }
         
         // Now that QAS IDs are set, enqueue imagecheck tasks,
