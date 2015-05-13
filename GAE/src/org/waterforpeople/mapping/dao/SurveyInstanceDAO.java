@@ -69,6 +69,10 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
     }
     
     public SurveyInstance save(SurveyInstance si, DeviceFiles deviceFile) {
+        final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+        final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
+        final DeviceDAO deviceDao = new DeviceDAO();
+        
         // Check whether the instance is already stored in the database.
         boolean isNew = true;
         SurveyInstance existing = findByUUID(si.getUuid());
@@ -81,20 +85,34 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         // If we find an existing surveyedLocale with the same identifier,
         // set the surveyedLocaleId field on the instance
         // If we don't find it, it will be handled in SurveyalRestServlet
-        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
         SurveyedLocale sl = si.getSurveyedLocaleIdentifier() != null ?
                 slDao.getByIdentifier(si.getSurveyedLocaleIdentifier())
                 : null;
         if (sl != null) {
             si.setSurveyedLocaleId(sl.getKey().getId());
+            // Update the display name and location, if applies.
+            if (si.getSurveyedLocaleDisplayName() != null) {
+                sl.setDisplayName(si.getSurveyedLocaleDisplayName());
+            }
+            if (si.getLocaleGeoLocation() != null) {
+                String[] tokens = si.getLocaleGeoLocation().split("\\|", -1);
+                if (tokens.length >= 2) {
+                    try {
+                        sl.setLatitude(Double.parseDouble(tokens[0]));
+                        sl.setLongitude(Double.parseDouble(tokens[1]));
+                    } catch (NumberFormatException nfe) {
+                        log.log(Level.SEVERE,
+                                "Could not parse lat/lon from META_GEO: " + si.getLocaleGeoLocation());
+                    }
+                }
+            }
+            sl = slDao.save(sl);
         }
         
         si.setDeviceFile(deviceFile);
-        si = save(si);
+        si = save(si);// Save the SurveyInstance just once, ensuring the Key is set.
         
         final long surveyInstanceId = si.getKey().getId();
-        final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
-        final DeviceDAO deviceDao = new DeviceDAO();
         qasDao.listBySurveyInstance(surveyInstanceId);// Cache existing qas????
         
         final Set<QuestionAnswerStore> images = new HashSet<>();
@@ -109,40 +127,13 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
                 continue; // Already stored
             }
             
-            // If one of the answer types is META_GEO or META_NAME, set up
-            // the surveyedLocale corresponding attribute, and skip QAS
-            if ("META_NAME".equals(qas.getType())) {
-                si.setSurveyedLocaleDisplayName(qas.getValue());
-                if (sl != null) {
-                    sl.setDisplayName(qas.getValue());
-                }
-                continue;
-            } else if ("META_GEO".equals(qas.getType())) {
-                si.setLocaleGeoLocation(qas.getValue());
-                if (sl != null) {
-                    String[] tokens = qas.getValue().split("\\|", -1);
-                    if (tokens.length >= 2) {
-                        try {
-                            sl.setLatitude(Double.parseDouble(tokens[0]));
-                            sl.setLongitude(Double.parseDouble(tokens[1]));
-                        } catch (NumberFormatException nfe) {
-                            log.log(Level.SEVERE,
-                                    "Could not parse lat/lon from META_GEO: " + qas.getValue());
-                        }
-                    }
-                }
-                continue;
-            } else if (Question.Type.GEO.toString().equals(qas.getType()) && isNew) {
+            if (Question.Type.GEO.toString().equals(qas.getType()) && isNew) {
                 locations.add(qas);
             } else if ("IMAGE".equals(qas.getType())) {
                 // The device send values as IMAGE and not PHOTO.
                 images.add(qas);
             }
             responses.add(qas);
-        }
-        si = save(si);
-        if (sl != null) {
-            slDao.save(sl);
         }
         
         // batch save all responses

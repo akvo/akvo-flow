@@ -76,7 +76,16 @@ public class SurveyInstanceHandler {
             qas.setType(response.getAnswerType());
             qas.setValue(response.getValue());
             
-            si.getQuestionAnswersStore().add(qas);
+            // If one of the answer types is META_GEO or META_NAME, set up
+            // the surveyedLocale corresponding attribute, and skip QAS
+            if ("META_NAME".equals(qas.getType())) {
+                si.setSurveyedLocaleDisplayName(qas.getValue());
+            } else if ("META_GEO".equals(qas.getType())) {
+                si.setLocaleGeoLocation(qas.getValue());
+            } else {
+                si.getQuestionAnswersStore().add(qas);
+            }
+            
         }
         
         return si;
@@ -127,7 +136,16 @@ public class SurveyInstanceHandler {
             qas.setType(parts[ANSWER_TYPE].trim());
             qas.setCollectionDate(si.getCollectionDate());
             qas.setValue(parts[ANSWER_VALUE].trim());
-            si.getQuestionAnswersStore().add(qas);
+            
+            // If one of the answer types is META_GEO or META_NAME, set up
+            // the surveyedLocale corresponding attribute, and skip QAS
+            if ("META_NAME".equals(qas.getType())) {
+                si.setSurveyedLocaleDisplayName(qas.getValue());
+            } else if ("META_GEO".equals(qas.getType())) {
+                si.setLocaleGeoLocation(qas.getValue());
+            } else {
+                si.getQuestionAnswersStore().add(qas);
+            }
         }
 
         return si;
