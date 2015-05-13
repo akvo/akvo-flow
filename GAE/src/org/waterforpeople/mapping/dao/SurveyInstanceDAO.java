@@ -77,6 +77,17 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             si.setCreatedDateTime(existing.getCollectionDate());
             isNew = false;
         }
+            
+        // If we find an existing surveyedLocale with the same identifier,
+        // set the surveyedLocaleId field on the instance
+        // If we don't find it, it will be handled in SurveyalRestServlet
+        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+        SurveyedLocale sl = si.getSurveyedLocaleIdentifier() != null ?
+                slDao.getByIdentifier(si.getSurveyedLocaleIdentifier())
+                : null;
+        if (sl != null) {
+            si.setSurveyedLocaleId(sl.getKey().getId());
+        }
         
         si.setDeviceFile(deviceFile);
         si = save(si);
@@ -85,15 +96,6 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         final DeviceDAO deviceDao = new DeviceDAO();
         qasDao.listBySurveyInstance(surveyInstanceId);// Cache existing qas????
-            
-        // If we find an existing surveyedLocale with the same identifier,
-        // set the surveyedLocaleId field on the instance
-        // If we don't find it, it will be handled in SurveyalRestServlet
-        SurveyedLocaleDao slDao = new SurveyedLocaleDao();
-        SurveyedLocale sl = null;
-        if (si.getSurveyedLocaleIdentifier() != null) {
-            sl = slDao.getByIdentifier(si.getSurveyedLocaleIdentifier());
-        }
         
         final Set<QuestionAnswerStore> images = new HashSet<>();
         final Set<QuestionAnswerStore> locations = new HashSet<>();
