@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.apache.commons.lang.StringUtils;
 import org.waterforpeople.mapping.analytics.dao.SurveyQuestionSummaryDao;
 import org.waterforpeople.mapping.analytics.domain.SurveyQuestionSummary;
 import org.waterforpeople.mapping.app.web.dto.DataProcessorRequest;
@@ -35,13 +36,17 @@ import org.waterforpeople.mapping.app.web.dto.ImageCheckRequest;
 import org.waterforpeople.mapping.domain.QuestionAnswerStore;
 import org.waterforpeople.mapping.domain.SurveyInstance;
 
+import com.gallatinsystems.common.util.PropertyUtil;
 import com.gallatinsystems.device.dao.DeviceDAO;
 import com.gallatinsystems.device.domain.Device;
 import com.gallatinsystems.device.domain.DeviceFiles;
 import com.gallatinsystems.framework.dao.BaseDAO;
 import com.gallatinsystems.framework.servlet.PersistenceFilter;
 import com.gallatinsystems.survey.dao.QuestionDao;
+import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
+import com.gallatinsystems.survey.domain.Survey;
+import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.app.web.SurveyalRestRequest;
 import com.gallatinsystems.surveyal.dao.SurveyalValueDao;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
@@ -63,13 +68,13 @@ import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
+    private static final String DEFAULT_ORG_PROP = "defaultOrg";
 
     public SurveyInstanceDAO() {
         super(SurveyInstance.class);
     }
     
     public SurveyInstance save(SurveyInstance si, DeviceFiles deviceFile) {
-        final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
         final QuestionAnswerStoreDao qasDao = new QuestionAnswerStoreDao();
         final DeviceDAO deviceDao = new DeviceDAO();
         
@@ -81,34 +86,9 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
             si.setCreatedDateTime(existing.getCollectionDate());
             isNew = false;
         }
-            
-        // If we find an existing surveyedLocale with the same identifier,
-        // set the surveyedLocaleId field on the instance
-        // If we don't find it, it will be handled in SurveyalRestServlet
-        SurveyedLocale sl = si.getSurveyedLocaleIdentifier() != null ?
-                slDao.getByIdentifier(si.getSurveyedLocaleIdentifier())
-                : null;
-        if (sl != null) {
-            si.setSurveyedLocaleId(sl.getKey().getId());
-            // Update the display name and location, if applies.
-            if (si.getSurveyedLocaleDisplayName() != null) {
-                sl.setDisplayName(si.getSurveyedLocaleDisplayName());
-            }
-            if (si.getLocaleGeoLocation() != null) {
-                String[] tokens = si.getLocaleGeoLocation().split("\\|", -1);
-                if (tokens.length >= 2) {
-                    try {
-                        sl.setLatitude(Double.parseDouble(tokens[0]));
-                        sl.setLongitude(Double.parseDouble(tokens[1]));
-                    } catch (NumberFormatException nfe) {
-                        log.log(Level.SEVERE,
-                                "Could not parse lat/lon from META_GEO: " + si.getLocaleGeoLocation());
-                    }
-                }
-            }
-            sl = slDao.save(sl);
-        }
         
+        SurveyedLocale sl = saveSurveyedLocale(si);
+        si.setSurveyedLocaleId(sl.getKey().getId());
         si.setDeviceFile(deviceFile);
         si = save(si);// Save the SurveyInstance just once, ensuring the Key is set.
         
@@ -187,6 +167,55 @@ public class SurveyInstanceDAO extends BaseDAO<SurveyInstance> {
         si.updateSummaryCounts(true);
         
         return si;
+    }
+    
+    private SurveyedLocale saveSurveyedLocale(SurveyInstance si) {
+        final SurveyedLocaleDao slDao = new SurveyedLocaleDao();
+        // Fetch or create the corresponding locale for this instance.
+        SurveyedLocale sl = si.getSurveyedLocaleIdentifier() != null ?
+                slDao.getByIdentifier(si.getSurveyedLocaleIdentifier())
+                : null;
+        if (sl == null) {
+            sl = new SurveyedLocale();
+            
+            sl.setOrganization(PropertyUtil.getProperty(DEFAULT_ORG_PROP));
+
+            if (StringUtils.isNotBlank(si.getSurveyedLocaleIdentifier())) {
+                sl.setIdentifier(si.getSurveyedLocaleIdentifier());
+            } else {
+                // if we don't have an identifier, create a random UUID.
+                sl.setIdentifier(SurveyedLocale.generateBase32Uuid());
+            }
+
+            Survey survey = SurveyUtils.retrieveSurvey(si.getSurveyId());
+            if (survey != null) {
+                SurveyGroup surveyGroup = SurveyUtils
+                        .retrieveSurveyGroup(survey.getSurveyGroupId());
+                sl.setLocaleType(surveyGroup.getPrivacyLevel().toString());
+                sl.setSurveyGroupId(survey.getSurveyGroupId());
+                sl.setCreationSurveyId(survey.getKey().getId());
+            }
+        }
+        
+        // Update the display name and location, if applies.
+        if (si.getSurveyedLocaleDisplayName() != null) {
+            sl.setDisplayName(si.getSurveyedLocaleDisplayName());
+        }
+        if (si.getLocaleGeoLocation() != null) {
+            String[] tokens = si.getLocaleGeoLocation().split("\\|", -1);
+            if (tokens.length >= 2) {
+                try {
+                    sl.setLatitude(Double.parseDouble(tokens[0]));
+                    sl.setLongitude(Double.parseDouble(tokens[1]));
+                } catch (NumberFormatException nfe) {
+                    log.log(Level.SEVERE,
+                            "Could not parse lat/lon from META_GEO: " + si.getLocaleGeoLocation());
+                }
+            }
+        }
+        sl = slDao.save(sl);
+        
+        return sl;
     }
 
     @SuppressWarnings("unchecked")
