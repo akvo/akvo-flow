@@ -5,6 +5,41 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.6
+Date: 14 May 2015
+
+# New and noteworthy
+* Add support for Tetum language [#1263]
+
+# Resolved issues
+* Support JSON as data serialization [#1247]
+* Data script for getting the number of data points and submitted forms [#1261]
+
+#1.8.5.2
+Date: 8 May 2015
+
+# Resolved issues
+* The wrong form is shown as registration form [#1267]
+
+#1.8.5.1
+Date: 27 April 2015
+
+# New and noteworthy
+* Date filtering on data cleaning tab. When downloading data via the data cleaning tab it’s now possible to select to and from dates [#1160]
+* Folders and surveys are now ordered alphabetically in dropdown selections [#1212]
+* Dependant questions are now resolved correctly when copying a survey [#1217, #1258]
+* The checkbox for using question id in raw data exports has moved under a new “Advanced Settings” section and the text describing the option has been clarified [#1232]
+* Comma characters are now disallowed as part of folder, survey and form titles [#1252]
+
+# Resolved issues
+* Log data change events [#1130]
+* Script to add new permissions for existing users [#1221]
+* Improvements to application build and deployments code [#1229]
+* Enable form publishing after translation changes [#1231]
+* Made the dashboard aware of the current instance application id [#1238]
+* Date fields are no longer pre-populated with previous selections in export reports and data cleaning tabs [#1248]
+* Ensure that `createdDateTime` and `lastUpdateDateTime` properties are set on copied questions [#1259]
+
 #1.8.4
 Date: 7 April 2015
 

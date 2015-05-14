@@ -39,6 +39,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.waterforpeople.mapping.app.web.dto.TaskRequest;
 import org.waterforpeople.mapping.dao.DeviceFilesDao;
 import org.waterforpeople.mapping.dao.SurveyInstanceDAO;
@@ -143,11 +144,7 @@ public class TaskServlet extends AbstractRestApiServlet {
                     "Failed to process zip file: Rescheduling... " + url + " : " + e.getMessage());
             return emptyList;
         } finally {
-            try {
-                deviceFilesStream.close();
-            } catch (IOException e) {
-                log.log(Level.WARNING, "Failed to close zip input stream");
-            }
+            IOUtils.closeQuietly(deviceFilesStream);
         }
 
         // create device file entity
