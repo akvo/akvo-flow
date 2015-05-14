@@ -53,11 +53,8 @@ import com.gallatinsystems.metric.domain.Metric;
 import com.gallatinsystems.metric.domain.SurveyMetricMapping;
 import com.gallatinsystems.survey.dao.QuestionDao;
 import com.gallatinsystems.survey.dao.QuestionGroupDao;
-import com.gallatinsystems.survey.dao.SurveyUtils;
 import com.gallatinsystems.survey.domain.Question;
 import com.gallatinsystems.survey.domain.QuestionGroup;
-import com.gallatinsystems.survey.domain.Survey;
-import com.gallatinsystems.survey.domain.SurveyGroup;
 import com.gallatinsystems.surveyal.dao.SurveyedLocaleDao;
 import com.gallatinsystems.surveyal.domain.SurveyalValue;
 import com.gallatinsystems.surveyal.domain.SurveyedLocale;
@@ -76,7 +73,6 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 public class SurveyalRestServlet extends AbstractRestApiServlet {
     private static final long serialVersionUID = 5923399458369692813L;
     private static final double UNSET_VAL = -9999.9;
-    private static final String DEFAULT_ORG_PROP = "defaultOrg";
 
     private static final Logger log = Logger
             .getLogger(SurveyalRestServlet.class.getName());
@@ -238,40 +234,14 @@ public class SurveyalRestServlet extends AbstractRestApiServlet {
      * @param surveyInstanceId
      */
     private void ingestSurveyInstance(SurveyInstance surveyInstance) {
-        SurveyedLocale locale = null;
         Boolean adaptClusterData = Boolean.FALSE;
 
-        // if the surveyed locale id was available in the ingested data,
-        // this has been set in the save method in surveyInstanceDao.
-        if (surveyInstance.getSurveyedLocaleId() != null) {
-            locale = surveyedLocaleDao.getByKey(surveyInstance
+        SurveyedLocale locale = surveyedLocaleDao.getByKey(surveyInstance
                     .getSurveyedLocaleId());
-        }
-
-        // create a new locale with basic information
         if (locale == null) {
-            // we don't have a locale
-            locale = new SurveyedLocale();
-
-            if (StringUtils.isNotBlank(surveyInstance
-                    .getSurveyedLocaleIdentifier())) {
-                locale.setIdentifier(surveyInstance.getSurveyedLocaleIdentifier());
-            } else {
-                // if we don't have an identifier, create a random UUID.
-                locale.setIdentifier(SurveyedLocale.generateBase32Uuid());
-            }
-
-            locale.setOrganization(PropertyUtil
-                    .getProperty(DEFAULT_ORG_PROP));
-
-            Survey survey = SurveyUtils.retrieveSurvey(surveyInstance.getSurveyId());
-            if (survey != null) {
-                SurveyGroup surveyGroup = SurveyUtils
-                        .retrieveSurveyGroup(survey.getSurveyGroupId());
-                locale.setLocaleType(surveyGroup.getPrivacyLevel().toString());
-                locale.setSurveyGroupId(survey.getSurveyGroupId());
-                locale.setCreationSurveyId(survey.getKey().getId());
-            }
+            // We must have a valid locale at this point
+            throw new IllegalStateException("Cannot find SurveyedLocale "
+                    + "for SurveyInstance " + surveyInstance.toString());
         }
 
         // try to construct geoPlace. Geo information can come from two sources:
