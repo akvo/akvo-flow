@@ -5,6 +5,16 @@ Read more about the [Akvo Platform](http://www.akvo.org/blog/?p=4822).
 
 Akvo FLOW Dashboard release notes
 ----
+#1.8.6
+Date: 14 May 2015
+
+# New and noteworthy
+* Add support for Tetum language [#1263]
+
+# Resolved issues
+* Support JSON as data serialization [#1247]
+* Data script for getting the number of data points and submitted forms [#1261]
+
 #1.8.5.2
 Date: 8 May 2015
 
