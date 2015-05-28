@@ -47,15 +47,20 @@ FLOW.NavMapsView = FLOW.View.extend({
   didInsertElement: function () {
 	var self = this;
     // insert the map
-    this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
-      .setView([-0.703107, 36.765], 2);
+//    this.map = L.mapbox.map('flowMap', 'akvo.he30g8mm')
+//      .setView([-0.703107, 36.765], 2);
+//
+//    L.control.layers({
+//      'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
+//      'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
+//      'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
+//    }).addTo(this.map);
 
-    L.control.layers({
-      'Terrain': L.mapbox.tileLayer('akvo.he30g8mm').addTo(this.map),
-      'Streets': L.mapbox.tileLayer('akvo.he2pdjhk'),
-      'Satellite': L.mapbox.tileLayer('akvo.he30neh4')
-    }).addTo(this.map);
-
+//  Uncomment this code, and comment out the above code, to show a google map.
+	this.map = new L.Map('flowMap', {center: new L.LatLng(51.51, -0.11), zoom: 6});
+    var googleLayer = new L.Google('ROADMAP');    
+    this.map.addLayer(googleLayer);
+    
     // add scale indication to map
     L.control.scale({position:'topleft', maxWidth:150}).addTo(this.map);
 
